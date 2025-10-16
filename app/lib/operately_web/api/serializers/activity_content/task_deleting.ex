@@ -9,7 +9,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.TaskDel
       task_name: Serializer.serialize(content["name"], level: :essential),
       company: Serializer.serialize(content["company"], level: :essential),
       space: Serializer.serialize(content["space"], level: :essential),
-      project: Serializer.serialize(content["project"], level: :essential),
+      project: Serializer.serialize(content["project"], level: :essential)
     }
   end
 end

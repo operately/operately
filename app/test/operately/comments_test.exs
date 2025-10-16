@@ -25,18 +25,19 @@ defmodule Operately.CommentsTest do
         }
       }
 
-      {:ok, milestone_comment} = Operately.Comments.create_milestone_comment(
-        person,
-        milestone,
-        "none",
-        comment_attrs
-      )
+      {:ok, milestone_comment} =
+        Operately.Comments.create_milestone_comment(
+          person,
+          milestone,
+          "none",
+          comment_attrs
+        )
 
       {:ok, milestone_comment: milestone_comment}
     end
 
     test "list_milestone_comments/0 returns all milestone_comments", ctx do
-      comments = Comments.list_milestone_comments() |> Enum.map(&(Repo.preload(&1, :comment)))
+      comments = Comments.list_milestone_comments() |> Enum.map(&Repo.preload(&1, :comment))
       assert comments == [ctx.milestone_comment]
     end
 

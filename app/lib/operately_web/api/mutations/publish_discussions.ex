@@ -39,5 +39,4 @@ defmodule OperatelyWeb.Api.Mutations.PublishDiscussion do
   defp publish(me, discussion) do
     DiscussionPublishing.run(me, discussion)
   end
-
 end

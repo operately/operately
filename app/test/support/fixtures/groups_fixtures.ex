@@ -8,15 +8,15 @@ defmodule Operately.GroupsFixtures do
   Generate a group.
   """
   def group_fixture(creator, attrs \\ %{}) do
-    attrs = attrs
+    attrs =
+      attrs
       |> Enum.into(%{
         name: "some name",
-        mission: "some mission",
+        mission: "some mission"
       })
 
     {:ok, group} = Operately.Groups.create_group(creator, attrs)
 
     group
   end
-
 end

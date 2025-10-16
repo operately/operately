@@ -89,7 +89,7 @@ defmodule Operately.MD.Goal.CheckInsTest do
 
     test "renders check-in with targets showing value differences", ctx do
       ctx = Factory.add_goal_update(ctx, :update, :goal, :creator)
-      
+
       # Create update targets with previous values to show diffs
       update_targets = [
         %Operately.Goals.Update.Target{
@@ -103,7 +103,7 @@ defmodule Operately.MD.Goal.CheckInsTest do
           index: 0
         },
         %Operately.Goals.Update.Target{
-          id: "target-2", 
+          id: "target-2",
           name: "User Acquisition",
           value: 8200.0,
           previous_value: 8500.0,
@@ -139,7 +139,7 @@ defmodule Operately.MD.Goal.CheckInsTest do
 
     test "renders check-in with targets handling decimal formatting", ctx do
       ctx = Factory.add_goal_update(ctx, :update, :goal, :creator)
-      
+
       # Test various decimal scenarios
       update_targets = [
         %Operately.Goals.Update.Target{
@@ -153,7 +153,7 @@ defmodule Operately.MD.Goal.CheckInsTest do
           index: 0
         },
         %Operately.Goals.Update.Target{
-          id: "target-2", 
+          id: "target-2",
           name: "Percentage B",
           value: 10.0,
           previous_value: 8.5,
@@ -165,11 +165,11 @@ defmodule Operately.MD.Goal.CheckInsTest do
         %Operately.Goals.Update.Target{
           id: "target-3",
           name: "Large Number",
-          value: 1500000.0,
-          previous_value: 1450000.0,
+          value: 1_500_000.0,
+          previous_value: 1_450_000.0,
           unit: "USD",
           from: 0.0,
-          to: 2000000.0,
+          to: 2_000_000.0,
           index: 2
         }
       ]

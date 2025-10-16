@@ -19,13 +19,16 @@ defmodule Operately.Data.Change080CreateSubscriptionsListForTasks do
   defp create_subscriptions_list(task) do
     case SubscriptionList.get(:system, parent_id: task.id) do
       {:error, :not_found} ->
-        {:ok, subscriptions_list} = SubscriptionList.create(%{
-          parent_id: task.id,
-          parent_type: :project_task,
-        })
+        {:ok, subscriptions_list} =
+          SubscriptionList.create(%{
+            parent_id: task.id,
+            parent_type: :project_task
+          })
+
         subscriptions_list
 
-      {:ok, subscriptions_list} -> subscriptions_list
+      {:ok, subscriptions_list} ->
+        subscriptions_list
     end
     |> update_task(task)
   end
@@ -34,6 +37,7 @@ defmodule Operately.Data.Change080CreateSubscriptionsListForTasks do
     if subscriptions_list.id != task.subscription_list_id do
       {:ok, _} = Task.update(task, %{subscription_list_id: subscriptions_list.id})
     end
+
     subscriptions_list
   end
 

@@ -24,10 +24,12 @@ defmodule Operately.Data.Change015CreateCompaniesAccessGroup do
   defp create_group(company_id, tag) do
     case Access.get_group(company_id: company_id, tag: tag) do
       nil ->
-        {:ok, group} = Access.create_group(%{
-          company_id: company_id,
-          tag: tag,
-        })
+        {:ok, group} =
+          Access.create_group(%{
+            company_id: company_id,
+            tag: tag
+          })
+
         create_bindings(company_id, group, tag)
 
       group ->
@@ -41,12 +43,15 @@ defmodule Operately.Data.Change015CreateCompaniesAccessGroup do
     access_level = get_access_level(tag)
 
     case Access.get_binding(group_id: group.id, context_id: context.id, access_level: access_level) do
-      nil -> Access.create_binding(%{
-        group_id: group.id,
-        context_id: context.id,
-        access_level: access_level,
-      })
-      _ -> :ok
+      nil ->
+        Access.create_binding(%{
+          group_id: group.id,
+          context_id: context.id,
+          access_level: access_level
+        })
+
+      _ ->
+        :ok
     end
   end
 

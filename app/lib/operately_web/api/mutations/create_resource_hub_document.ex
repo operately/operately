@@ -47,14 +47,15 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubDocument do
   defp parse_inputs(ctx, inputs) do
     content = Jason.decode!(inputs.content)
 
-    {:ok, Map.merge(inputs, %{
-      content: content,
-      post_as_draft: inputs[:post_as_draft] || false,
-      send_to_everyone: inputs[:send_notifications_to_everyone] || false,
-      subscription_parent_type: :resource_hub_document,
-      subscriber_ids: inputs[:subscriber_ids] || [],
-      copied_document: ctx.copied_document
-    })}
+    {:ok,
+     Map.merge(inputs, %{
+       content: content,
+       post_as_draft: inputs[:post_as_draft] || false,
+       send_to_everyone: inputs[:send_notifications_to_everyone] || false,
+       subscription_parent_type: :resource_hub_document,
+       subscriber_ids: inputs[:subscriber_ids] || [],
+       copied_document: ctx.copied_document
+     })}
   end
 
   defp load_copied_document(_, nil), do: {:ok, nil}

@@ -40,13 +40,14 @@ defmodule Operately.Data.Change075EnhanceTaskDescriptionChangeActivitiesTest do
 
   test "handles tasks with direct project relationship (no milestone)", ctx do
     # Create a task with direct project relationship but no milestone
-    direct_task = Operately.TasksFixtures.task_fixture(%{
-      name: "Direct Project Task",
-      description: %{},
-      project_id: ctx.project.id,
-      milestone_id: nil,
-      creator_id: ctx.creator.id
-    })
+    direct_task =
+      Operately.TasksFixtures.task_fixture(%{
+        name: "Direct Project Task",
+        description: %{},
+        project_id: ctx.project.id,
+        milestone_id: nil,
+        creator_id: ctx.creator.id
+      })
 
     # Get project and space access contexts
     space_context = Repo.one(from c in Context, where: c.group_id == ^ctx.space.id)

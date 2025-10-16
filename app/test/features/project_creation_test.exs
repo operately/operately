@@ -43,7 +43,6 @@ defmodule Operately.Features.ProjectCreationTest do
     |> Steps.assert_project_created_feed(ctx.non_contributor)
   end
 
-
   @tag login_as: :project_manager
   feature "add project for someone else, I'm a contributor", ctx do
     params = %{name: "Website Redesign", space: ctx.group, creator: ctx.project_manager, champion: ctx.champion, reviewer: ctx.reviewer, add_creator_as_contributor: true}

@@ -34,25 +34,28 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHub do
   end
 
   defp load(ctx, inputs) do
-    ResourceHub.get(ctx.me, id: inputs.id, opts: [
-      preload: preload(inputs),
-      after_load: after_load(inputs),
-    ])
+    ResourceHub.get(ctx.me,
+      id: inputs.id,
+      opts: [
+        preload: preload(inputs),
+        after_load: after_load(inputs)
+      ]
+    )
   end
 
   defp preload(inputs) do
     q = from(n in Node, where: is_nil(n.parent_folder_id)) |> Node.preload_content()
 
-    Inputs.parse_includes(inputs, [
+    Inputs.parse_includes(inputs,
       include_space: :space,
-      include_nodes: [nodes: q],
-    ])
+      include_nodes: [nodes: q]
+    )
   end
 
   defp after_load(inputs) do
-    Inputs.parse_includes(inputs, [
+    Inputs.parse_includes(inputs,
       include_potential_subscribers: &ResourceHub.load_potential_subscribers/1,
-      include_permissions: &ResourceHub.set_permissions/1,
-    ])
+      include_permissions: &ResourceHub.set_permissions/1
+    )
   end
 end

@@ -8,10 +8,14 @@ defmodule OperatelyEmail.Emails.ResourceHubFileDeletedEmail do
     author = Repo.preload(activity, :author).author
     company = Repo.preload(author, :company).company
 
-    {:ok, file} = File.get(:system, id: activity.content["file_id"], opts: [
-      preload: [:node, :resource_hub, :space],
-      with_deleted: true,
-    ])
+    {:ok, file} =
+      File.get(:system,
+        id: activity.content["file_id"],
+        opts: [
+          preload: [:node, :resource_hub, :space],
+          with_deleted: true
+        ]
+      )
 
     company
     |> new()

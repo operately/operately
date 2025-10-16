@@ -5,7 +5,8 @@ defmodule Operately.Repo.Migrations.AddCascadeDeleteToProjectAccessContexts do
     drop constraint(:access_contexts, "access_contexts_project_id_fkey")
 
     alter table(:access_contexts) do
-      modify :project_id, references(:projects, on_delete: :delete_all, type: :binary_id), null: true
+      modify :project_id, references(:projects, on_delete: :delete_all, type: :binary_id),
+        null: true
     end
   end
 

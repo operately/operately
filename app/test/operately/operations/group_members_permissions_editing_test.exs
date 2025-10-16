@@ -18,16 +18,17 @@ defmodule Operately.Operations.GroupMembersPermissionsEditingTest do
     members = [
       create_group_member(creator, space, Binding.comment_access()),
       create_group_member(creator, space, Binding.edit_access()),
-      create_group_member(creator, space, Binding.full_access()),
+      create_group_member(creator, space, Binding.full_access())
     ]
 
     {:ok, space: space, creator: creator, members: members}
   end
 
   test "GroupMembersPermissionsEditing operation edits members' permissions", ctx do
-    attrs = Enum.map(ctx.members, fn member ->
-      %{id: member.id, access_level: Binding.view_access}
-    end)
+    attrs =
+      Enum.map(ctx.members, fn member ->
+        %{id: member.id, access_level: Binding.view_access()}
+      end)
 
     {:ok, _} = Operately.Operations.GroupMembersPermissionsEditing.run(ctx.creator, ctx.space, attrs)
     context = Access.get_context!(group_id: ctx.space.id)
@@ -41,6 +42,7 @@ defmodule Operately.Operations.GroupMembersPermissionsEditingTest do
 
     first_member = hd(ctx.members)
     access_group = Access.get_group!(person_id: first_member.id)
+
     attrs = [
       %{id: first_member.id, access_level: Binding.full_access()}
     ]
@@ -52,9 +54,10 @@ defmodule Operately.Operations.GroupMembersPermissionsEditingTest do
   end
 
   test "GroupMembersPermissionsEditing operation creates activity", ctx do
-    attrs = Enum.map(ctx.members, fn member ->
-      %{id: member.id, access_level: Binding.comment_access}
-    end)
+    attrs =
+      Enum.map(ctx.members, fn member ->
+        %{id: member.id, access_level: Binding.comment_access()}
+      end)
 
     {:ok, _} = Operately.Operations.GroupMembersPermissionsEditing.run(ctx.creator, ctx.space, attrs)
 
@@ -78,10 +81,12 @@ defmodule Operately.Operations.GroupMembersPermissionsEditingTest do
   defp create_group_member(creator, space, permissions) do
     person = person_fixture(%{company_id: space.company_id})
 
-    Groups.add_members(creator, space.id, [%{
-      id: person.id,
-      access_level: permissions,
-    }])
+    Groups.add_members(creator, space.id, [
+      %{
+        id: person.id,
+        access_level: permissions
+      }
+    ])
 
     person
   end

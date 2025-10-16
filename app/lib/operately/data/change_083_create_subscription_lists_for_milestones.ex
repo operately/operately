@@ -13,7 +13,9 @@ defmodule Operately.Data.Change083CreateSubscriptionListsForMilestones do
   defp ensure_subscription_list(milestone) do
     subscription_list =
       case SubscriptionList.get(:system, parent_id: milestone.id) do
-        {:ok, subscription_list} -> subscription_list
+        {:ok, subscription_list} ->
+          subscription_list
+
         {:error, :not_found} ->
           {:ok, subscription_list} =
             SubscriptionList.create(%{

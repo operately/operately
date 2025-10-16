@@ -7,6 +7,6 @@ defmodule Operately.Repo.Migrations.AddCommentThreadsTable do
       add :message, :jsonb
 
       timestamps()
-    end 
+    end
   end
 end

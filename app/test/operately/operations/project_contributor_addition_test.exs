@@ -25,7 +25,7 @@ defmodule Operately.Operations.ProjectContributorAdditionTest do
       project_id: ctx.project.id,
       person_id: ctx.contributor.id,
       responsibility: "Developer",
-      permissions: Binding.edit_access(),
+      permissions: Binding.edit_access()
     })
 
     contributors = Projects.list_project_contributors(ctx.project) |> Enum.map(fn c -> {c.person_id, c.role} end)
@@ -44,7 +44,7 @@ defmodule Operately.Operations.ProjectContributorAdditionTest do
       project_id: ctx.project.id,
       person_id: ctx.contributor.id,
       responsibility: "Developer",
-      permissions: Binding.edit_access(),
+      permissions: Binding.edit_access()
     })
 
     assert Access.get_binding(context_id: context.id, group_id: group.id)
@@ -57,7 +57,7 @@ defmodule Operately.Operations.ProjectContributorAdditionTest do
         project_id: ctx.project.id,
         person_id: ctx.contributor.id,
         responsibility: "Developer",
-        permissions: Binding.edit_access(),
+        permissions: Binding.edit_access()
       })
     end)
 
@@ -77,7 +77,7 @@ defmodule Operately.Operations.ProjectContributorAdditionTest do
         project_id: ctx.project.id,
         person_id: ctx.contributor.id,
         responsibility: "Developer",
-        permissions: Binding.edit_access(),
+        permissions: Binding.edit_access()
       })
     end)
 

@@ -13,7 +13,9 @@ defmodule Operately.Data.Change084CreateSubscriptionListsForProjects do
   defp ensure_subscription_list(project) do
     subscription_list =
       case SubscriptionList.get(:system, parent_id: project.id) do
-        {:ok, subscription_list} -> subscription_list
+        {:ok, subscription_list} ->
+          subscription_list
+
         {:error, :not_found} ->
           {:ok, subscription_list} =
             SubscriptionList.create(%{

@@ -127,18 +127,23 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussionTest do
     test "mentioned people are added to subscriptions list", ctx do
       message = create_message(ctx.person.id, ctx.company.company_space_id)
 
-      {:ok, list} = SubscriptionList.get(:system, parent_id: message.id, opts: [
-        preload: :subscriptions
-      ])
+      {:ok, list} =
+        SubscriptionList.get(:system,
+          parent_id: message.id,
+          opts: [
+            preload: :subscriptions
+          ]
+        )
 
       subscriptions = Enum.filter(list.subscriptions, &(&1.person_id != ctx.person.id))
       assert subscriptions == []
 
-      assert {200, _} = mutation(ctx.conn, :edit_discussion, %{
-        id: Paths.message_id(message),
-        title: "New title",
-        body: RichText.rich_text(mentioned_people: [ctx.company_creator]),
-      })
+      assert {200, _} =
+               mutation(ctx.conn, :edit_discussion, %{
+                 id: Paths.message_id(message),
+                 title: "New title",
+                 body: RichText.rich_text(mentioned_people: [ctx.company_creator])
+               })
 
       subscriptions =
         Notifications.list_subscriptions(list)
@@ -157,7 +162,7 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussionTest do
     mutation(conn, :edit_discussion, %{
       id: Paths.message_id(message),
       title: "New title",
-      body: RichText.rich_text("New body", :as_string),
+      body: RichText.rich_text("New body", :as_string)
     })
   end
 
@@ -181,14 +186,16 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussionTest do
   end
 
   defp add_person_to_space(ctx, access_level) do
-    Operately.Groups.add_members(ctx.person, ctx.space_id, [%{
-      id: ctx.person.id,
-      access_level: access_level,
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space_id, [
+      %{
+        id: ctx.person.id,
+        access_level: access_level
+      }
+    ])
   end
 
   defp create_message(person_id, space_id) do
-      board = messages_board_fixture(space_id)
-      message_fixture(person_id, board.id)
+    board = messages_board_fixture(space_id)
+    message_fixture(person_id, board.id)
   end
 end

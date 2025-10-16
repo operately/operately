@@ -17,7 +17,8 @@ defmodule Operately.Operations.CommentEditing do
         OperatelyWeb.ApiSocket.broadcast!("api:reload_comments:#{comment.entity_id}")
         {:ok, comment}
 
-      error -> error
+      error ->
+        error
     end
   end
 end

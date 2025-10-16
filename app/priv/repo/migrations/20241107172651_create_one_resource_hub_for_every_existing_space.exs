@@ -6,6 +6,5 @@ defmodule Operately.Repo.Migrations.CreateOneResourceHubForEveryExistingSpace do
   end
 
   def down do
-
   end
 end

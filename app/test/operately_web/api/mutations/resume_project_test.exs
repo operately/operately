@@ -15,18 +15,16 @@ defmodule OperatelyWeb.Api.Mutations.ResumeProjectTest do
 
   describe "permissions" do
     @table [
-      %{company: :no_access,      space: :no_access,      project: :no_access,      expected: 404},
-      %{company: :no_access,      space: :no_access,      project: :comment_access, expected: 403},
-      %{company: :no_access,      space: :no_access,      project: :edit_access,    expected: 200},
-      %{company: :no_access,      space: :no_access,      project: :full_access,    expected: 200},
-
-      %{company: :no_access,      space: :comment_access, project: :no_access,      expected: 403},
-      %{company: :no_access,      space: :edit_access,    project: :no_access,      expected: 200},
-      %{company: :no_access,      space: :full_access,    project: :no_access,      expected: 200},
-
-      %{company: :comment_access, space: :no_access,      project: :no_access,      expected: 403},
-      %{company: :edit_access,    space: :no_access,      project: :no_access,      expected: 200},
-      %{company: :full_access,    space: :no_access,      project: :no_access,      expected: 200},
+      %{company: :no_access, space: :no_access, project: :no_access, expected: 404},
+      %{company: :no_access, space: :no_access, project: :comment_access, expected: 403},
+      %{company: :no_access, space: :no_access, project: :edit_access, expected: 200},
+      %{company: :no_access, space: :no_access, project: :full_access, expected: 200},
+      %{company: :no_access, space: :comment_access, project: :no_access, expected: 403},
+      %{company: :no_access, space: :edit_access, project: :no_access, expected: 200},
+      %{company: :no_access, space: :full_access, project: :no_access, expected: 200},
+      %{company: :comment_access, space: :no_access, project: :no_access, expected: 403},
+      %{company: :edit_access, space: :no_access, project: :no_access, expected: 200},
+      %{company: :full_access, space: :no_access, project: :no_access, expected: 200}
     ]
 
     setup ctx do
@@ -56,37 +54,42 @@ defmodule OperatelyWeb.Api.Mutations.ResumeProjectTest do
   #
   # Helpers
   #
-    
+
   def create_space(ctx) do
     group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.no_access()})
   end
 
   def create_project(ctx, space, company_members_level, space_members_level, project_member_level) do
-    project = project_fixture(%{
-      company_id: ctx.company.id,
-      name: "Name",
-      creator_id: ctx.creator.id,
-      group_id: space.id,
-      company_access_level: Binding.from_atom(company_members_level),
-      space_access_level: Binding.from_atom(space_members_level),
-    })
+    project =
+      project_fixture(%{
+        company_id: ctx.company.id,
+        name: "Name",
+        creator_id: ctx.creator.id,
+        group_id: space.id,
+        company_access_level: Binding.from_atom(company_members_level),
+        space_access_level: Binding.from_atom(space_members_level)
+      })
 
     if space_members_level != :no_access do
-      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
-        id: ctx.person.id, 
-        access_level: Binding.from_atom(space_members_level)
-      }])
+      {:ok, _} =
+        Operately.Groups.add_members(ctx.creator, space.id, [
+          %{
+            id: ctx.person.id,
+            access_level: Binding.from_atom(space_members_level)
+          }
+        ])
     end
 
     if project_member_level != :no_access do
-      {:ok, _} = Operately.Projects.create_contributor(ctx.creator, %{
-        project_id: project.id,
-        person_id: ctx.person.id, 
-        permissions: Binding.from_atom(project_member_level),
-        responsibility: "some responsibility"
-      })
+      {:ok, _} =
+        Operately.Projects.create_contributor(ctx.creator, %{
+          project_id: project.id,
+          person_id: ctx.person.id,
+          permissions: Binding.from_atom(project_member_level),
+          responsibility: "some responsibility"
+        })
     end
-    
+
     project
   end
-end 
+end

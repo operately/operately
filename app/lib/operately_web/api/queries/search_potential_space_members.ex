@@ -38,11 +38,7 @@ defmodule OperatelyWeb.Api.Queries.SearchPotentialSpaceMembers do
   defp load_members(inputs, space_id, company) do
     limit = inputs[:limit] || 10
 
-    from(p in Person,
-      left_join: m in Member, on: p.id == m.person_id and m.group_id == ^space_id,
-      where: is_nil(m) and p.company_id == ^company.id and not p.suspended,
-      limit: ^limit
-    )
+    from(p in Person, left_join: m in Member, on: p.id == m.person_id and m.group_id == ^space_id, where: is_nil(m) and p.company_id == ^company.id and not p.suspended, limit: ^limit)
     |> exclude_ids(inputs[:exclude_ids])
     |> string_query(inputs[:query])
     |> Repo.all()
@@ -52,6 +48,7 @@ defmodule OperatelyWeb.Api.Queries.SearchPotentialSpaceMembers do
   defp exclude_ids(q, exclude_ids), do: from(p in q, where: p.id not in ^exclude_ids)
 
   defp string_query(q, nil), do: q
+
   defp string_query(q, str) do
     from(p in q, where: ilike(p.full_name, ^"%#{str}%") or ilike(p.title, ^"%#{str}%"))
   end

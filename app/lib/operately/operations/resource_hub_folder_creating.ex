@@ -6,15 +6,18 @@ defmodule Operately.Operations.ResourceHubFolderCreating do
 
   def run(author, hub, attrs) do
     Multi.new()
-    |> Multi.insert(:node, Node.changeset(%{
-      resource_hub_id: hub.id,
-      parent_folder_id: attrs.parent_folder_id,
-      name: attrs.name,
-      type: :folder,
-    }))
+    |> Multi.insert(
+      :node,
+      Node.changeset(%{
+        resource_hub_id: hub.id,
+        parent_folder_id: attrs.parent_folder_id,
+        name: attrs.name,
+        type: :folder
+      })
+    )
     |> Multi.insert(:folder, fn changes ->
       Folder.changeset(%{
-        node_id: changes.node.id,
+        node_id: changes.node.id
       })
     end)
     |> Multi.run(:folder_with_node, fn _, changes ->
@@ -28,7 +31,7 @@ defmodule Operately.Operations.ResourceHubFolderCreating do
         resource_hub_id: hub.id,
         node_id: changes.node.id,
         folder_id: changes.folder.id,
-        resource_name: attrs.name,
+        resource_name: attrs.name
       }
     end)
     |> Repo.transaction()

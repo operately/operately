@@ -23,6 +23,7 @@ defmodule Operately.Data.Change079UpdateMilestoneTasksOrderingStateTest do
     Change079UpdateMilestoneTasksOrderingState.run()
 
     updated_milestone = Repo.get!(Milestone, ctx.milestone.id)
+
     expected_task_ids = [
       OperatelyWeb.Paths.task_id(active_task1),
       OperatelyWeb.Paths.task_id(active_task2)
@@ -93,6 +94,7 @@ defmodule Operately.Data.Change079UpdateMilestoneTasksOrderingStateTest do
     Change079UpdateMilestoneTasksOrderingState.run()
 
     updated_milestone = Repo.get!(Milestone, ctx.milestone.id)
+
     expected_task_ids = [
       OperatelyWeb.Paths.task_id(active_task1),
       OperatelyWeb.Paths.task_id(active_task2)

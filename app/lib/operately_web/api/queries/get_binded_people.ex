@@ -50,5 +50,4 @@ defmodule OperatelyWeb.Api.Queries.GetBindedPeople do
       {:error, :not_found}
     end
   end
-
 end

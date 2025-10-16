@@ -33,10 +33,12 @@ defmodule Operately.Operations.CompanyMemberRemoving do
 
       # For existing members, mark them as suspended
       false ->
-        changeset = People.Person.changeset(person, %{
-          suspended: true,
-          suspended_at: DateTime.utc_now()
-        })
+        changeset =
+          People.Person.changeset(person, %{
+            suspended: true,
+            suspended_at: DateTime.utc_now()
+          })
+
         Multi.update(multi, :person, changeset)
     end
   end
@@ -47,7 +49,7 @@ defmodule Operately.Operations.CompanyMemberRemoving do
         company_id: admin.company_id,
         name: changes[:person].full_name,
         email: changes[:person].email,
-        title: changes[:person].title,
+        title: changes[:person].title
       }
     end)
   end

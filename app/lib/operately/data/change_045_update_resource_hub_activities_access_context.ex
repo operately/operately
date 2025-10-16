@@ -20,8 +20,9 @@ defmodule Operately.Data.Change045UpdateResourceHubActivitiesAccessContext do
     Enum.each(activities, fn activity ->
       context = fetch_context(activity)
 
-      {:ok, _} = Activity.changeset(activity, %{access_context_id: context.id})
-      |> Repo.update
+      {:ok, _} =
+        Activity.changeset(activity, %{access_context_id: context.id})
+        |> Repo.update()
     end)
   end
 

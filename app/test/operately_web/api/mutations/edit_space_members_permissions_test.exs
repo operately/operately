@@ -24,10 +24,12 @@ defmodule OperatelyWeb.Api.Mutations.EditSpaceMembersPermissionsTest do
     test "company members without view access can't see space", ctx do
       {space, p1, p2} = create_space_with_members(ctx, company_permissions: Binding.no_access())
 
-      assert {404, res} = request(ctx.conn, space, [
-        {p1, Binding.edit_access()},
-        {p2, Binding.comment_access()},
-      ])
+      assert {404, res} =
+               request(ctx.conn, space, [
+                 {p1, Binding.edit_access()},
+                 {p2, Binding.comment_access()}
+               ])
+
       assert res.message == "The requested resource was not found"
       refute_member_access_level(space, p1, Binding.edit_access())
       refute_member_access_level(space, p2, Binding.comment_access())
@@ -36,10 +38,12 @@ defmodule OperatelyWeb.Api.Mutations.EditSpaceMembersPermissionsTest do
     test "company members without full access can't edit members permissions", ctx do
       {space, p1, p2} = create_space_with_members(ctx, company_permissions: Binding.edit_access())
 
-      assert {403, res} = request(ctx.conn, space, [
-        {p1, Binding.edit_access()},
-        {p2, Binding.comment_access()},
-      ])
+      assert {403, res} =
+               request(ctx.conn, space, [
+                 {p1, Binding.edit_access()},
+                 {p2, Binding.comment_access()}
+               ])
+
       assert res.message == "You don't have permission to perform this action"
       refute_member_access_level(space, p1, Binding.edit_access())
       refute_member_access_level(space, p2, Binding.comment_access())
@@ -48,10 +52,12 @@ defmodule OperatelyWeb.Api.Mutations.EditSpaceMembersPermissionsTest do
     test "company members with full access can edit members permissions", ctx do
       {space, p1, p2} = create_space_with_members(ctx, company_permissions: Binding.full_access())
 
-      assert {200, _} = request(ctx.conn, space, [
-        {p1, Binding.edit_access()},
-        {p2, Binding.comment_access()},
-      ])
+      assert {200, _} =
+               request(ctx.conn, space, [
+                 {p1, Binding.edit_access()},
+                 {p2, Binding.comment_access()}
+               ])
+
       assert_member_access_level(space, p1, Binding.edit_access())
       assert_member_access_level(space, p2, Binding.comment_access())
     end
@@ -60,20 +66,24 @@ defmodule OperatelyWeb.Api.Mutations.EditSpaceMembersPermissionsTest do
       {space, p1, p2} = create_space_with_members(ctx, company_permissions: Binding.view_access())
 
       # Not owner
-      assert {403, _} = request(ctx.conn, space, [
-        {p1, Binding.edit_access()},
-        {p2, Binding.comment_access()},
-      ])
+      assert {403, _} =
+               request(ctx.conn, space, [
+                 {p1, Binding.edit_access()},
+                 {p2, Binding.comment_access()}
+               ])
+
       refute_member_access_level(space, p1, Binding.edit_access())
       refute_member_access_level(space, p2, Binding.comment_access())
 
       # Owner
       Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
 
-      assert {200, _} = request(ctx.conn, space, [
-        {p1, Binding.edit_access()},
-        {p2, Binding.comment_access()},
-      ])
+      assert {200, _} =
+               request(ctx.conn, space, [
+                 {p1, Binding.edit_access()},
+                 {p2, Binding.comment_access()}
+               ])
+
       assert_member_access_level(space, p1, Binding.edit_access())
       assert_member_access_level(space, p2, Binding.comment_access())
     end
@@ -82,10 +92,12 @@ defmodule OperatelyWeb.Api.Mutations.EditSpaceMembersPermissionsTest do
       {space, p1, p2} = create_space_with_members(ctx, company_permissions: Binding.no_access())
       add_person_to_space(ctx.person, space.id, Binding.comment_access())
 
-      assert {403, res} = request(ctx.conn, space, [
-        {p1, Binding.edit_access()},
-        {p2, Binding.comment_access()},
-      ])
+      assert {403, res} =
+               request(ctx.conn, space, [
+                 {p1, Binding.edit_access()},
+                 {p2, Binding.comment_access()}
+               ])
+
       assert res.message == "You don't have permission to perform this action"
       refute_member_access_level(space, p1, Binding.edit_access())
       refute_member_access_level(space, p2, Binding.comment_access())
@@ -95,10 +107,12 @@ defmodule OperatelyWeb.Api.Mutations.EditSpaceMembersPermissionsTest do
       {space, p1, p2} = create_space_with_members(ctx, company_permissions: Binding.no_access())
       add_person_to_space(ctx.person, space.id, Binding.full_access())
 
-      assert {200, _} = request(ctx.conn, space, [
-        {p1, Binding.edit_access()},
-        {p2, Binding.comment_access()},
-      ])
+      assert {200, _} =
+               request(ctx.conn, space, [
+                 {p1, Binding.edit_access()},
+                 {p2, Binding.comment_access()}
+               ])
+
       assert_member_access_level(space, p1, Binding.edit_access())
       assert_member_access_level(space, p2, Binding.comment_access())
     end
@@ -113,10 +127,12 @@ defmodule OperatelyWeb.Api.Mutations.EditSpaceMembersPermissionsTest do
       assert_member_access_level(space, p1, Binding.view_access())
       assert_member_access_level(space, p2, Binding.view_access())
 
-      assert {200, res} = request(ctx.conn, space, [
-        {p1, Binding.edit_access()},
-        {p2, Binding.comment_access()},
-      ])
+      assert {200, res} =
+               request(ctx.conn, space, [
+                 {p1, Binding.edit_access()},
+                 {p2, Binding.comment_access()}
+               ])
+
       assert res.success
 
       assert_member_access_level(space, p1, Binding.edit_access())
@@ -131,12 +147,13 @@ defmodule OperatelyWeb.Api.Mutations.EditSpaceMembersPermissionsTest do
   defp request(conn, space, people) do
     mutation(conn, :edit_space_members_permissions, %{
       space_id: Paths.space_id(space),
-      members: Enum.map(people, fn {p, level} ->
-        %{
-          id: Paths.person_id(p),
-          access_level: level,
-        }
-      end)
+      members:
+        Enum.map(people, fn {p, level} ->
+          %{
+            id: Paths.person_id(p),
+            access_level: level
+          }
+        end)
     })
   end
 
@@ -159,10 +176,12 @@ defmodule OperatelyWeb.Api.Mutations.EditSpaceMembersPermissionsTest do
   #
 
   defp create_space_with_members(ctx, attrs \\ []) do
-    space = group_fixture(ctx[:creator] || ctx.person, %{
-      company_id: ctx.company.id,
-      company_permissions: Keyword.get(attrs, :company_permissions, Binding.no_access()),
-    })
+    space =
+      group_fixture(ctx[:creator] || ctx.person, %{
+        company_id: ctx.company.id,
+        company_permissions: Keyword.get(attrs, :company_permissions, Binding.no_access())
+      })
+
     p1 = person_fixture(%{company_id: ctx.company.id})
     p2 = person_fixture(%{company_id: ctx.company.id})
 
@@ -173,9 +192,11 @@ defmodule OperatelyWeb.Api.Mutations.EditSpaceMembersPermissionsTest do
   end
 
   defp add_person_to_space(person, space_id, access_level) do
-    Operately.Groups.add_members(person, space_id, [%{
-      id: person.id,
-      access_level: access_level,
-    }])
+    Operately.Groups.add_members(person, space_id, [
+      %{
+        id: person.id,
+        access_level: access_level
+      }
+    ])
   end
 end

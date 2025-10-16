@@ -16,12 +16,13 @@ defmodule Operately.Operations.ResourceHubFolderCopying.Resources do
   end
 
   defp copy_node_children({:documents, documents}) do
-    data = Enum.map(documents, fn d ->
-      common_data(d)
-      |> Map.merge(%{
-        content: d.content,
-      })
-    end)
+    data =
+      Enum.map(documents, fn d ->
+        common_data(d)
+        |> Map.merge(%{
+          content: d.content
+        })
+      end)
 
     count = length(data)
     {^count, new_documents} = Repo.insert_all(Document, data, returning: true)
@@ -30,14 +31,15 @@ defmodule Operately.Operations.ResourceHubFolderCopying.Resources do
   end
 
   defp copy_node_children({:files, files}) do
-    data = Enum.map(files, fn f ->
-      common_data(f)
-      |> Map.merge(%{
-        blob_id: f.blob_id,
-        preview_blob_id: f.preview_blob_id,
-        description: f.description,
-      })
-    end)
+    data =
+      Enum.map(files, fn f ->
+        common_data(f)
+        |> Map.merge(%{
+          blob_id: f.blob_id,
+          preview_blob_id: f.preview_blob_id,
+          description: f.description
+        })
+      end)
 
     count = length(data)
     {^count, new_files} = Repo.insert_all(File, data, returning: true)
@@ -46,14 +48,15 @@ defmodule Operately.Operations.ResourceHubFolderCopying.Resources do
   end
 
   defp copy_node_children({:links, links}) do
-    data = Enum.map(links, fn l ->
-      common_data(l)
-      |> Map.merge(%{
-        url: l.url,
-        description: l.description,
-        type: l.type,
-      })
-    end)
+    data =
+      Enum.map(links, fn l ->
+        common_data(l)
+        |> Map.merge(%{
+          url: l.url,
+          description: l.description,
+          type: l.type
+        })
+      end)
 
     count = length(data)
     {^count, new_links} = Repo.insert_all(Link, data, returning: true)
@@ -77,9 +80,9 @@ defmodule Operately.Operations.ResourceHubFolderCopying.Resources do
     nodes
     |> Enum.reduce(%{links: [], files: [], documents: []}, fn node, acc ->
       cond do
-        node.link -> Map.update!(acc, :links, &([Map.put(node.link, :node_id, node.id) | &1]))
-        node.file -> Map.update!(acc, :files, &([Map.put(node.file, :node_id, node.id) | &1]))
-        node.document -> Map.update!(acc, :documents, &([Map.put(node.document, :node_id, node.id) | &1]))
+        node.link -> Map.update!(acc, :links, &[Map.put(node.link, :node_id, node.id) | &1])
+        node.file -> Map.update!(acc, :files, &[Map.put(node.file, :node_id, node.id) | &1])
+        node.document -> Map.update!(acc, :documents, &[Map.put(node.document, :node_id, node.id) | &1])
       end
     end)
     |> Enum.into([])
@@ -94,6 +97,6 @@ defmodule Operately.Operations.ResourceHubFolderCopying.Resources do
 
   defp find_subscription_list(resources, id) do
     Enum.find(resources, &(&1.subscription_list.id == id))
-    |> then(&(&1.subscription_list))
+    |> then(& &1.subscription_list)
   end
 end

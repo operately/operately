@@ -65,5 +65,4 @@ defmodule Operately.Features.SessionTest do
     |> Steps.fill_out_reset_password_form(@account_info)
     |> Steps.assert_password_changed(@account_info)
   end
-
 end

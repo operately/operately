@@ -5,7 +5,6 @@ defmodule Operately.Invitations do
   alias Operately.Invitations.Invitation
   alias Operately.Invitations.InvitationToken
 
-
   def list_invitations do
     Repo.all(Invitation)
   end
@@ -16,14 +15,16 @@ defmodule Operately.Invitations do
     hashed_token = InvitationToken.hash_token(token)
     now = DateTime.utc_now()
 
-    query = from t in InvitationToken,
-      where: t.hashed_token == ^hashed_token,
-      preload: [:invitation],
-      select: t
+    query =
+      from t in InvitationToken,
+        where: t.hashed_token == ^hashed_token,
+        preload: [:invitation],
+        select: t
 
     case Repo.one(query) do
       nil ->
         nil
+
       token ->
         if InvitationToken.valid_token_time?(token, now) do
           token.invitation
@@ -34,10 +35,11 @@ defmodule Operately.Invitations do
   end
 
   def get_invitation_by_member(member_id) when is_binary(member_id) do
-    query = from i in Operately.Invitations.Invitation,
-      where: i.member_id == ^member_id,
-      preload: [:member],
-      select: i
+    query =
+      from i in Operately.Invitations.Invitation,
+        where: i.member_id == ^member_id,
+        preload: [:member],
+        select: i
 
     Repo.one(query)
   end
@@ -65,7 +67,6 @@ defmodule Operately.Invitations do
   def change_invitation(%Invitation{} = invitation, attrs \\ %{}) do
     Invitation.changeset(invitation, attrs)
   end
-
 
   def list_invitation_tokens do
     Repo.all(InvitationToken)

@@ -35,7 +35,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveCompanyAdmin do
     else
       if author.id == person_id do
         {:error, :bad_request, "Admins cannot remove themselves"}
-      else 
+      else
         query = from(p in Operately.People.Person, where: p.id == ^person_id)
 
         person = filter_by_full_access(query, author.id, join_parent: :company) |> Repo.one()

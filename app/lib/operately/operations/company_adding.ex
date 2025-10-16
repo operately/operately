@@ -25,21 +25,29 @@ defmodule Operately.Operations.CompanyAdding do
   end
 
   defp insert_company(multi, attrs) do
-    attrs = Map.merge(%{
-      trusted_email_domains: [],
-    }, attrs)
+    attrs =
+      Map.merge(
+        %{
+          trusted_email_domains: []
+        },
+        attrs
+      )
 
-    Multi.insert(multi, :company, Company.changeset(%{
-      name: attrs.company_name,
-      trusted_email_domains: attrs.trusted_email_domains,
-      short_id: ShortId.generate(),
-    }))
+    Multi.insert(
+      multi,
+      :company,
+      Company.changeset(%{
+        name: attrs.company_name,
+        trusted_email_domains: attrs.trusted_email_domains,
+        short_id: ShortId.generate()
+      })
+    )
   end
 
   defp insert_access_context(multi) do
     Multi.insert(multi, :company_context, fn changes ->
       Context.changeset(%{
-        company_id: changes.company.id,
+        company_id: changes.company.id
       })
     end)
   end
@@ -48,7 +56,7 @@ defmodule Operately.Operations.CompanyAdding do
     attrs = %{
       name: "General",
       mission: "Organization-wide announcements and resources",
-      company_permissions: Binding.view_access(),
+      company_permissions: Binding.view_access()
     }
 
     multi
@@ -63,19 +71,19 @@ defmodule Operately.Operations.CompanyAdding do
     |> Multi.insert(:admins_access_group, fn changes ->
       Group.changeset(%{
         company_id: changes.company.id,
-        tag: :full_access,
+        tag: :full_access
       })
     end)
     |> Multi.insert(:members_access_group, fn changes ->
       Group.changeset(%{
         company_id: changes.company.id,
-        tag: :standard,
+        tag: :standard
       })
     end)
     |> Multi.insert(:anonymous_access_group, fn changes ->
       Group.changeset(%{
         company_id: changes.company.id,
-        tag: :anonymous,
+        tag: :anonymous
       })
     end)
   end
@@ -86,14 +94,14 @@ defmodule Operately.Operations.CompanyAdding do
       Binding.changeset(%{
         group_id: changes.admins_access_group.id,
         context_id: changes.company_context.id,
-        access_level: Binding.full_access(),
+        access_level: Binding.full_access()
       })
     end)
     |> Multi.insert(:members_access_binding, fn changes ->
       Binding.changeset(%{
         group_id: changes.members_access_group.id,
         context_id: changes.company_context.id,
-        access_level: Binding.view_access(),
+        access_level: Binding.view_access()
       })
     end)
   end
@@ -108,11 +116,12 @@ defmodule Operately.Operations.CompanyAdding do
     if account do
       Multi.put(multi, :account, account)
     else
-      changeset = Account.registration_changeset(%{
-        email: attrs.email,
-        password: attrs.password,
-        full_name: attrs.full_name
-      })
+      changeset =
+        Account.registration_changeset(%{
+          email: attrs.email,
+          password: attrs.password,
+          full_name: attrs.full_name
+        })
 
       Multi.insert(multi, :account, changeset)
     end
@@ -128,34 +137,34 @@ defmodule Operately.Operations.CompanyAdding do
         full_name: changes[:account].full_name,
         email: changes[:account].email,
         avatar_url: "",
-        title: attrs.title,
+        title: attrs.title
       })
     end)
     |> Multi.insert(:admin_access_membership, fn changes ->
       GroupMembership.changeset(%{
         group_id: changes.admins_access_group.id,
-        person_id: changes.person.id,
+        person_id: changes.person.id
       })
     end)
     |> Multi.insert(:creator_managers_membership, fn changes ->
       GroupMembership.changeset(%{
         group_id: changes.space_managers_access_group.id,
-        person_id: changes.person.id,
+        person_id: changes.person.id
       })
     end)
     |> Multi.insert(:creator_members_membership, fn changes ->
       GroupMembership.changeset(%{
         group_id: changes.space_members_access_group.id,
-        person_id: changes.person.id,
+        person_id: changes.person.id
       })
     end)
-    |> Multi.run(:creator_space_group_binding, fn _, changes  ->
+    |> Multi.run(:creator_space_group_binding, fn _, changes ->
       group = Access.get_group!(person_id: changes.person.id)
 
       Access.create_binding(%{
         group_id: group.id,
         context_id: changes.context.id,
-        access_level: Binding.full_access(),
+        access_level: Binding.full_access()
       })
     end)
   end
@@ -166,7 +175,7 @@ defmodule Operately.Operations.CompanyAdding do
       Activities.insert_sync(Multi.new(), parent_changes.person.id, :company_adding, fn _changes ->
         %{
           company_id: parent_changes.company.id,
-          creator_id: parent_changes.person.id,
+          creator_id: parent_changes.person.id
         }
       end)
     end)
@@ -177,7 +186,7 @@ defmodule Operately.Operations.CompanyAdding do
     |> Oban.insert(:send_discord_notification, fn %{account: account, company: company} ->
       OperatelyEE.CompanyCreationNotificationJob.new(%{
         company_id: company.id,
-        account_id: account.id,
+        account_id: account.id
       })
     end)
   end

@@ -29,7 +29,8 @@ defmodule OperatelyWeb.AccountSessionController do
 
       if account do
         conn
-        |> clear_session() # make sure that redirect_to is not in the session
+        # make sure that redirect_to is not in the session
+        |> clear_session()
         |> AccountAuth.log_in_account(account, params)
       else
         conn

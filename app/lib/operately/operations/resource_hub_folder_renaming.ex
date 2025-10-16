@@ -6,9 +6,12 @@ defmodule Operately.Operations.ResourceHubFolderRenaming do
 
   def run(author, folder, new_name) do
     Multi.new()
-    |> Multi.update(:node, Node.changeset(folder.node, %{
-      name: new_name,
-    }))
+    |> Multi.update(
+      :node,
+      Node.changeset(folder.node, %{
+        name: new_name
+      })
+    )
     |> Activities.insert_sync(author.id, :resource_hub_folder_renamed, fn _changes ->
       %{
         company_id: author.company_id,

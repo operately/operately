@@ -11,11 +11,12 @@ defmodule Operately.Demo.People do
     company = Resources.get(resources, :company)
     owner = Resources.get(resources, :owner)
 
-    {:ok, invitation} = Operately.Operations.CompanyMemberAdding.run(owner, %{
-      full_name: data.name,
-      email: create_email(company, data),
-      title: data.title,
-    })
+    {:ok, invitation} =
+      Operately.Operations.CompanyMemberAdding.run(owner, %{
+        full_name: data.name,
+        email: create_email(company, data),
+        title: data.title
+      })
 
     person = Operately.Repo.preload(invitation, :member).member
 
@@ -32,6 +33,7 @@ defmodule Operately.Demo.People do
   end
 
   defp set_manager(person, _resources, nil), do: {:ok, person}
+
   defp set_manager(person, resources, key) do
     Operately.People.update_person(person, %{
       manager_id: Resources.get(resources, key).id

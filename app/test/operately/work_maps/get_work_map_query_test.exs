@@ -56,7 +56,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
     end
 
     test "includes assignees when include_assignees is true", ctx do
-      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{ company_id: ctx.company.id, include_assignees: true })
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, include_assignees: true})
 
       # Find the goal and project
       goal = Enum.find(work_map, fn item -> item.type == :goal end)
@@ -379,7 +379,6 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       |> Factory.add_project(:project2, :space)
       |> Factory.add_project_contributor(:contributor1, :project1, :as_person)
       |> Factory.add_project_contributor(:contributor2, :project2, :as_person)
-
       |> Factory.add_goal(:parent_goal, :space)
     end
 
@@ -393,7 +392,8 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
 
     test "given parent goal with child projects having different contributors, returns full hierarchy", ctx do
       # Create projects under the goal with different contributors
-      ctx = ctx
+      ctx =
+        ctx
         |> Factory.add_project(:child_project1, :space, goal: :parent_goal)
         |> Factory.add_project(:child_project2, :space, goal: :parent_goal)
         |> Factory.add_project_contributor(:goal_contributor1, :child_project1, :as_person)
@@ -411,7 +411,8 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
 
     test "with nested hierarchy, maintains parent path to matching items", ctx do
       # Create a more complex hierarchy with nested goals and projects
-      ctx = ctx
+      ctx =
+        ctx
         |> Factory.add_goal(:child_goal, :space, parent_goal: :parent_goal)
         |> Factory.add_project(:nested_project, :space, goal: :child_goal)
         |> Factory.add_project_contributor(:nested_contributor, :nested_project, :as_person)
@@ -432,6 +433,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       ctx = Factory.add_project(ctx, :project3, :space, reviewer: :contributor1)
 
       {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, contributor_id: ctx.contributor1.id})
+
       assert_work_map_structure(work_map, ctx, %{
         project1: []
       })
@@ -571,7 +573,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
     end
 
     test "0% progress", ctx do
-      {:ok, [project]} = GetWorkMapQuery.execute(:system, %{ company_id: ctx.company.id })
+      {:ok, [project]} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id})
 
       assert project.progress == 0
     end
@@ -582,7 +584,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       |> Factory.close_project_milestone(:milestone2)
       |> Factory.close_project_milestone(:milestone3)
 
-      {:ok, [project]} = GetWorkMapQuery.execute(:system, %{ company_id: ctx.company.id })
+      {:ok, [project]} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id})
 
       assert project.progress == 100
     end
@@ -592,7 +594,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       |> Factory.close_project_milestone(:milestone1)
       |> Factory.close_project_milestone(:milestone2)
 
-      {:ok, [project]} = GetWorkMapQuery.execute(:system, %{ company_id: ctx.company.id })
+      {:ok, [project]} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id})
 
       assert floor(project.progress) == 66
     end
@@ -750,7 +752,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
             internal2: []
           },
           internal1: []
-        },
+        }
       })
     end
 
@@ -839,7 +841,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
 
           assert actual_child_ids == expected_child_ids,
                  "Children of node #{inspect(node_key)} do not match. " <>
-                 "Expected: #{inspect(expected_child_ids)}, Got: #{inspect(actual_child_ids)}"
+                   "Expected: #{inspect(expected_child_ids)}, Got: #{inspect(actual_child_ids)}"
 
           # Recursively check each child's structure
           Enum.each(node.children, fn child ->
@@ -863,7 +865,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
 
         assert actual_child_ids == expected_child_ids,
                "Children of node #{node.id} do not match. " <>
-               "Expected: #{inspect(expected_child_ids)}, Got: #{inspect(actual_child_ids)}"
+                 "Expected: #{inspect(expected_child_ids)}, Got: #{inspect(actual_child_ids)}"
 
         # Recursively check each child's structure
         Enum.each(node.children, fn child ->

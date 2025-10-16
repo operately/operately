@@ -7,9 +7,10 @@ defmodule Operately.Data.Change015CreateCompaniesAccessGroupTest do
   alias Operately.Companies.Company
 
   test "creates access groups, bindings and memberships" do
-    companies = Enum.map(1..3, fn _ ->
-      create_company()
-    end)
+    companies =
+      Enum.map(1..3, fn _ ->
+        create_company()
+      end)
 
     Enum.each(companies, fn company ->
       assert nil == Access.get_group(company_id: company.id)
@@ -47,7 +48,7 @@ defmodule Operately.Data.Change015CreateCompaniesAccessGroupTest do
 
   defp create_access_context(company_id) do
     Access.Context.changeset(%{
-      company_id: company_id,
+      company_id: company_id
     })
     |> Repo.insert()
   end
@@ -57,7 +58,7 @@ defmodule Operately.Data.Change015CreateCompaniesAccessGroupTest do
       {:ok, person} =
         Person.changeset(%{
           full_name: "some name",
-          company_id: company_id,
+          company_id: company_id
         })
         |> Repo.insert()
 
@@ -70,7 +71,7 @@ defmodule Operately.Data.Change015CreateCompaniesAccessGroupTest do
       {:ok, person} =
         Person.changeset(%{
           full_name: "some name",
-          company_id: company_id,
+          company_id: company_id
         })
         |> Repo.insert()
 

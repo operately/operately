@@ -8,9 +8,10 @@ defmodule Operately.Operations.GroupCreation do
   alias Operately.Access.{Binding, GroupMembership}
 
   def run(creator, attrs) do
-    attrs = Map.merge(attrs, %{
-      company_id: creator.company_id,
-    })
+    attrs =
+      Map.merge(attrs, %{
+        company_id: creator.company_id
+      })
 
     Multi.new()
     |> Groups.insert_group(attrs)
@@ -30,7 +31,7 @@ defmodule Operately.Operations.GroupCreation do
     |> Multi.insert(:creator_in_managers, fn changes ->
       GroupMembership.changeset(%{
         group_id: changes.space_managers_access_group.id,
-        person_id: creator.id,
+        person_id: creator.id
       })
     end)
     |> Access.insert_binding(:creator_group_binding, creator_group, Binding.full_access())
@@ -41,7 +42,7 @@ defmodule Operately.Operations.GroupCreation do
       %{
         company_id: group.company_id,
         space_id: group.id,
-        name: group.name,
+        name: group.name
       }
     end)
   end

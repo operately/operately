@@ -21,31 +21,33 @@ defmodule Operately.Data.Change066UpdateTimeframeInGoalActivities.GoalEditingTes
       ctx = Factory.add_goal(ctx, :goal, :space, timeframe: %{type: "year", start_date: start_date, end_date: end_date})
 
       # Create a goal editing activity with previous and current timeframes
-      activity = %Activity{
-        action: "goal_editing",
-        author_id: ctx.creator.id,
-        content: %{
-          "company_id" => ctx.company.id,
-          "space_id" => ctx.space.id,
-          "goal_id" => ctx.goal.id,
-          "old_name" => "Old Goal Name",
-          "new_name" => "New Goal Name",
-          "old_champion_id" => ctx.creator.id,
-          "new_champion_id" => ctx.creator.id,
-          "old_reviewer_id" => ctx.creator.id,
-          "new_reviewer_id" => ctx.creator.id,
-          "previous_timeframe" => %{
-            "type" => "year",
-            "start_date" => start_date,
-            "end_date" => end_date
-          },
-          "current_timeframe" => %{
-            "type" => "year",
-            "start_date" => new_start_date,
-            "end_date" => new_end_date
+      activity =
+        %Activity{
+          action: "goal_editing",
+          author_id: ctx.creator.id,
+          content: %{
+            "company_id" => ctx.company.id,
+            "space_id" => ctx.space.id,
+            "goal_id" => ctx.goal.id,
+            "old_name" => "Old Goal Name",
+            "new_name" => "New Goal Name",
+            "old_champion_id" => ctx.creator.id,
+            "new_champion_id" => ctx.creator.id,
+            "old_reviewer_id" => ctx.creator.id,
+            "new_reviewer_id" => ctx.creator.id,
+            "previous_timeframe" => %{
+              "type" => "year",
+              "start_date" => start_date,
+              "end_date" => end_date
+            },
+            "current_timeframe" => %{
+              "type" => "year",
+              "start_date" => new_start_date,
+              "end_date" => new_end_date
+            }
           }
         }
-      } |> Repo.insert!()
+        |> Repo.insert!()
 
       Operately.Data.Change066UpdateTimeframeInGoalActivities.GoalEditing.run()
 
@@ -84,57 +86,61 @@ defmodule Operately.Data.Change066UpdateTimeframeInGoalActivities.GoalEditingTes
         |> Factory.add_goal(:goal2, :space, timeframe: %{type: "quarter", start_date: start_date2, end_date: end_date2})
 
       # Create two goal editing activities
-      activity1 = %Activity{
-        action: "goal_editing",
-        author_id: ctx.creator.id,
-        content: %{
-          "company_id" => ctx.company.id,
-          "space_id" => ctx.space.id,
-          "goal_id" => ctx.goal1.id,
-          "old_name" => "Old Goal 1 Name",
-          "new_name" => "New Goal 1 Name",
-          "old_champion_id" => ctx.creator.id,
-          "new_champion_id" => ctx.creator.id,
-          "old_reviewer_id" => ctx.creator.id,
-          "new_reviewer_id" => ctx.creator.id,
-          "previous_timeframe" => %{
-            "type" => "year",
-            "start_date" => start_date1,
-            "end_date" => end_date1
-          },
-          "current_timeframe" => %{
-            "type" => "year",
-            "start_date" => start_date1,
-            "end_date" => end_date1
+      activity1 =
+        %Activity{
+          action: "goal_editing",
+          author_id: ctx.creator.id,
+          content: %{
+            "company_id" => ctx.company.id,
+            "space_id" => ctx.space.id,
+            "goal_id" => ctx.goal1.id,
+            "old_name" => "Old Goal 1 Name",
+            "new_name" => "New Goal 1 Name",
+            "old_champion_id" => ctx.creator.id,
+            "new_champion_id" => ctx.creator.id,
+            "old_reviewer_id" => ctx.creator.id,
+            "new_reviewer_id" => ctx.creator.id,
+            "previous_timeframe" => %{
+              "type" => "year",
+              "start_date" => start_date1,
+              "end_date" => end_date1
+            },
+            "current_timeframe" => %{
+              "type" => "year",
+              "start_date" => start_date1,
+              "end_date" => end_date1
+            }
           }
         }
-      } |> Repo.insert!()
+        |> Repo.insert!()
 
-      activity2 = %Activity{
-        action: "goal_editing",
-        author_id: ctx.creator.id,
-        content: %{
-          "company_id" => ctx.company.id,
-          "space_id" => ctx.space.id,
-          "goal_id" => ctx.goal2.id,
-          "old_name" => "Old Goal 2 Name",
-          "new_name" => "New Goal 2 Name",
-          "old_champion_id" => ctx.creator.id,
-          "new_champion_id" => ctx.creator.id,
-          "old_reviewer_id" => ctx.creator.id,
-          "new_reviewer_id" => ctx.creator.id,
-          "previous_timeframe" => %{
-            "type" => "quarter",
-            "start_date" => start_date2,
-            "end_date" => end_date2
-          },
-          "current_timeframe" => %{
-            "type" => "quarter",
-            "start_date" => start_date2,
-            "end_date" => end_date2
+      activity2 =
+        %Activity{
+          action: "goal_editing",
+          author_id: ctx.creator.id,
+          content: %{
+            "company_id" => ctx.company.id,
+            "space_id" => ctx.space.id,
+            "goal_id" => ctx.goal2.id,
+            "old_name" => "Old Goal 2 Name",
+            "new_name" => "New Goal 2 Name",
+            "old_champion_id" => ctx.creator.id,
+            "new_champion_id" => ctx.creator.id,
+            "old_reviewer_id" => ctx.creator.id,
+            "new_reviewer_id" => ctx.creator.id,
+            "previous_timeframe" => %{
+              "type" => "quarter",
+              "start_date" => start_date2,
+              "end_date" => end_date2
+            },
+            "current_timeframe" => %{
+              "type" => "quarter",
+              "start_date" => start_date2,
+              "end_date" => end_date2
+            }
           }
         }
-      } |> Repo.insert!()
+        |> Repo.insert!()
 
       {:ok, result} = Operately.Data.Change066UpdateTimeframeInGoalActivities.GoalEditing.run()
 
@@ -173,23 +179,25 @@ defmodule Operately.Data.Change066UpdateTimeframeInGoalActivities.GoalEditingTes
       ctx = Factory.add_goal(ctx, :goal, :space, timeframe: %{type: "year", start_date: start_date, end_date: end_date})
 
       # Create activity with old timeframe format
-      activity = %Activity{
-        action: "goal_editing",
-        author_id: ctx.creator.id,
-        content: %{
-          "company_id" => ctx.company.id,
-          "space_id" => ctx.space.id,
-          "goal_id" => ctx.goal.id,
-          "old_name" => "Old Goal Name",
-          "new_name" => "New Goal Name",
-          "old_champion_id" => ctx.creator.id,
-          "new_champion_id" => ctx.creator.id,
-          "old_reviewer_id" => ctx.creator.id,
-          "new_reviewer_id" => ctx.creator.id,
-          "old_timeframe" => "2023",
-          "new_timeframe" => "Q2 2024"
+      activity =
+        %Activity{
+          action: "goal_editing",
+          author_id: ctx.creator.id,
+          content: %{
+            "company_id" => ctx.company.id,
+            "space_id" => ctx.space.id,
+            "goal_id" => ctx.goal.id,
+            "old_name" => "Old Goal Name",
+            "new_name" => "New Goal Name",
+            "old_champion_id" => ctx.creator.id,
+            "new_champion_id" => ctx.creator.id,
+            "old_reviewer_id" => ctx.creator.id,
+            "new_reviewer_id" => ctx.creator.id,
+            "old_timeframe" => "2023",
+            "new_timeframe" => "Q2 2024"
+          }
         }
-      } |> Repo.insert!()
+        |> Repo.insert!()
 
       Operately.Data.Change066UpdateTimeframeInGoalActivities.GoalEditing.run()
 

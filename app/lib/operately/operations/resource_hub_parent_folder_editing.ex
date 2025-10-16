@@ -15,7 +15,7 @@ defmodule Operately.Operations.ResourceHubParentFolderEditing do
         node_id: resource.node.id,
         new_folder_id: new_folder_id,
         resource_id: resource.id,
-        resource_type: Atom.to_string(resource.node.type),
+        resource_type: Atom.to_string(resource.node.type)
       }
     end)
     |> Repo.transaction()

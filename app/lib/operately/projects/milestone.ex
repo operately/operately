@@ -89,7 +89,7 @@ defmodule Operately.Projects.Milestone do
 
   def load_comment_notifications(person) do
     fn milestone ->
-      comment_ids = Enum.map(milestone.comments, &(&1.comment_id))
+      comment_ids = Enum.map(milestone.comments, & &1.comment_id)
 
       notifications_map =
         from(n in Operately.Notifications.Notification,
@@ -106,7 +106,9 @@ defmodule Operately.Projects.Milestone do
       comments =
         Enum.map(milestone.comments, fn comment ->
           case Map.get(notifications_map, comment.comment_id) do
-            nil -> comment
+            nil ->
+              comment
+
             notification ->
               milestone_comment = Map.put(comment.comment, :notification, notification)
               Map.put(comment, :comment, milestone_comment)

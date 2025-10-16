@@ -27,7 +27,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "company_member_removed",
         author_id: ctx.author.id,
         content: %{
-          company_id: ctx.company.id,
+          company_id: ctx.company.id
         }
       }
 
@@ -42,7 +42,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "password_first_time_changed",
         author_id: ctx.author.id,
         content: %{
-          company_id: ctx.company.id,
+          company_id: ctx.company.id
         }
       }
 
@@ -57,7 +57,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "company_invitation_token_created",
         author_id: ctx.author.id,
         content: %{
-          company_id: ctx.company.id,
+          company_id: ctx.company.id
         }
       }
 
@@ -72,7 +72,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "company_member_added",
         author_id: ctx.author.id,
         content: %{
-          company_id: ctx.company.id,
+          company_id: ctx.company.id
         }
       }
 
@@ -96,7 +96,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "space_joining",
         author_id: ctx.author.id,
         content: %{
-          space_id: ctx.group.id,
+          space_id: ctx.group.id
         }
       }
 
@@ -111,7 +111,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "goal_archived",
         author_id: ctx.author.id,
         content: %{
-          space_id: ctx.group.id,
+          space_id: ctx.group.id
         }
       }
 
@@ -126,7 +126,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "discussion_posting",
         author_id: ctx.author.id,
         content: %{
-          space_id: ctx.group.id,
+          space_id: ctx.group.id
         }
       }
 
@@ -141,7 +141,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "discussion_editing",
         author_id: ctx.author.id,
         content: %{
-          space_id: ctx.group.id,
+          space_id: ctx.group.id
         }
       }
 
@@ -156,7 +156,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "discussion_comment_submitted",
         author_id: ctx.author.id,
         content: %{
-          space_id: ctx.group.id,
+          space_id: ctx.group.id
         }
       }
 
@@ -171,7 +171,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "task_assignee_assignment",
         author_id: ctx.author.id,
         content: %{
-          space_id: ctx.group.id,
+          space_id: ctx.group.id
         }
       }
 
@@ -186,7 +186,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "task_description_change",
         author_id: ctx.author.id,
         content: %{
-          space_id: ctx.group.id,
+          space_id: ctx.group.id
         }
       }
 
@@ -201,7 +201,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "task_name_editing",
         author_id: ctx.author.id,
         content: %{
-          space_id: ctx.group.id,
+          space_id: ctx.group.id
         }
       }
 
@@ -216,7 +216,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "task_priority_change",
         author_id: ctx.author.id,
         content: %{
-          space_id: ctx.group.id,
+          space_id: ctx.group.id
         }
       }
 
@@ -231,7 +231,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "task_reopening",
         author_id: ctx.author.id,
         content: %{
-          space_id: ctx.group.id,
+          space_id: ctx.group.id
         }
       }
 
@@ -246,7 +246,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "task_size_change",
         author_id: ctx.author.id,
         content: %{
-          space_id: ctx.group.id,
+          space_id: ctx.group.id
         }
       }
 
@@ -261,7 +261,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "group_edited",
         author_id: ctx.author.id,
         content: %{
-          space_id: ctx.group.id,
+          space_id: ctx.group.id
         }
       }
 
@@ -288,7 +288,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         author_id: ctx.author.id,
         content: %{
           company_id: ctx.company.id,
-          new_parent_goal_id: ctx.goal.id,
+          new_parent_goal_id: ctx.goal.id
         }
       }
 
@@ -303,7 +303,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "goal_check_in",
         author_id: ctx.author.id,
         content: %{
-          goal_id: ctx.goal.id,
+          goal_id: ctx.goal.id
         }
       }
 
@@ -318,7 +318,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "goal_check_in_acknowledgement",
         author_id: ctx.author.id,
         content: %{
-          goal_id: ctx.goal.id,
+          goal_id: ctx.goal.id
         }
       }
 
@@ -333,7 +333,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "goal_check_in_commented",
         author_id: ctx.author.id,
         content: %{
-          goal_id: ctx.goal.id,
+          goal_id: ctx.goal.id
         }
       }
 
@@ -348,7 +348,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "goal_check_in_edit",
         author_id: ctx.author.id,
         content: %{
-          goal_id: ctx.goal.id,
+          goal_id: ctx.goal.id
         }
       }
 
@@ -363,7 +363,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "goal_closing",
         author_id: ctx.author.id,
         content: %{
-          goal_id: ctx.goal.id,
+          goal_id: ctx.goal.id
         }
       }
 
@@ -378,7 +378,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "goal_created",
         author_id: ctx.author.id,
         content: %{
-          goal_id: ctx.goal.id,
+          goal_id: ctx.goal.id
         }
       }
 
@@ -393,7 +393,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "goal_discussion_creation",
         author_id: ctx.author.id,
         content: %{
-          goal_id: ctx.goal.id,
+          goal_id: ctx.goal.id
         }
       }
 
@@ -408,7 +408,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "goal_discussion_editing",
         author_id: ctx.author.id,
         content: %{
-          goal_id: ctx.goal.id,
+          goal_id: ctx.goal.id
         }
       }
 
@@ -423,7 +423,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "goal_editing",
         author_id: ctx.author.id,
         content: %{
-          goal_id: ctx.goal.id,
+          goal_id: ctx.goal.id
         }
       }
 
@@ -438,7 +438,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "goal_reopening",
         author_id: ctx.author.id,
         content: %{
-          goal_id: ctx.goal.id,
+          goal_id: ctx.goal.id
         }
       }
 
@@ -453,7 +453,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "goal_timeframe_editing",
         author_id: ctx.author.id,
         content: %{
-          goal_id: ctx.goal.id,
+          goal_id: ctx.goal.id
         }
       }
 
@@ -478,7 +478,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "project_created",
         author_id: ctx.author.id,
         content: %{
-          project_id: ctx.project.id,
+          project_id: ctx.project.id
         }
       }
 
@@ -493,7 +493,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "project_archived",
         author_id: ctx.author.id,
         content: %{
-          project_id: ctx.project.id,
+          project_id: ctx.project.id
         }
       }
 
@@ -508,7 +508,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "project_check_in_acknowledged",
         author_id: ctx.author.id,
         content: %{
-          project_id: ctx.project.id,
+          project_id: ctx.project.id
         }
       }
 
@@ -523,7 +523,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "project_check_in_commented",
         author_id: ctx.author.id,
         content: %{
-          project_id: ctx.project.id,
+          project_id: ctx.project.id
         }
       }
 
@@ -538,7 +538,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "project_check_in_edit",
         author_id: ctx.author.id,
         content: %{
-          project_id: ctx.project.id,
+          project_id: ctx.project.id
         }
       }
 
@@ -553,7 +553,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "project_check_in_submitted",
         author_id: ctx.author.id,
         content: %{
-          project_id: ctx.project.id,
+          project_id: ctx.project.id
         }
       }
 
@@ -568,7 +568,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "project_closed",
         author_id: ctx.author.id,
         content: %{
-          project_id: ctx.project.id,
+          project_id: ctx.project.id
         }
       }
 
@@ -583,7 +583,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "project_contributor_addition",
         author_id: ctx.author.id,
         content: %{
-          project_id: ctx.project.id,
+          project_id: ctx.project.id
         }
       }
 
@@ -598,7 +598,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "project_discussion_submitted",
         author_id: ctx.author.id,
         content: %{
-          project_id: ctx.project.id,
+          project_id: ctx.project.id
         }
       }
 
@@ -613,7 +613,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "project_goal_connection",
         author_id: ctx.author.id,
         content: %{
-          project_id: ctx.project.id,
+          project_id: ctx.project.id
         }
       }
 
@@ -628,7 +628,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "project_goal_disconnection",
         author_id: ctx.author.id,
         content: %{
-          project_id: ctx.project.id,
+          project_id: ctx.project.id
         }
       }
 
@@ -643,7 +643,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "project_milestone_commented",
         author_id: ctx.author.id,
         content: %{
-          project_id: ctx.project.id,
+          project_id: ctx.project.id
         }
       }
 
@@ -658,7 +658,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "project_moved",
         author_id: ctx.author.id,
         content: %{
-          project_id: ctx.project.id,
+          project_id: ctx.project.id
         }
       }
 
@@ -673,7 +673,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "project_pausing",
         author_id: ctx.author.id,
         content: %{
-          project_id: ctx.project.id,
+          project_id: ctx.project.id
         }
       }
 
@@ -688,7 +688,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "project_renamed",
         author_id: ctx.author.id,
         content: %{
-          project_id: ctx.project.id,
+          project_id: ctx.project.id
         }
       }
 
@@ -703,7 +703,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "project_resuming",
         author_id: ctx.author.id,
         content: %{
-          project_id: ctx.project.id,
+          project_id: ctx.project.id
         }
       }
 
@@ -718,7 +718,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "project_timeline_edited",
         author_id: ctx.author.id,
         content: %{
-          project_id: ctx.project.id,
+          project_id: ctx.project.id
         }
       }
 
@@ -737,7 +737,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
       project = Repo.preload(project, :access_context)
 
       milestone = milestone_fixture(%{project_id: project.id})
-      task = task_fixture(%{ space_id: group.id, creator_id: ctx.author.id, milestone_id: milestone.id, project_id: project.id})
+      task = task_fixture(%{space_id: group.id, creator_id: ctx.author.id, milestone_id: milestone.id, project_id: project.id})
 
       Map.merge(ctx, %{project: project, task: task})
     end
@@ -747,7 +747,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "task_adding",
         author_id: ctx.author.id,
         content: %{
-          task_id: ctx.task.id,
+          task_id: ctx.task.id
         }
       }
 
@@ -762,7 +762,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "task_closing",
         author_id: ctx.author.id,
         content: %{
-          task_id: ctx.task.id,
+          task_id: ctx.task.id
         }
       }
 
@@ -777,7 +777,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "task_status_change",
         author_id: ctx.author.id,
         content: %{
-          task_id: ctx.task.id,
+          task_id: ctx.task.id
         }
       }
 
@@ -792,7 +792,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "task_update",
         author_id: ctx.author.id,
         content: %{
-          task_id: ctx.task.id,
+          task_id: ctx.task.id
         }
       }
 
@@ -820,7 +820,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "comment_added",
         author_id: ctx.author.id,
         content: %{
-          comment_id: comment.id,
+          comment_id: comment.id
         }
       }
 
@@ -840,7 +840,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "comment_added",
         author_id: ctx.author.id,
         content: %{
-          comment_id: comment.id,
+          comment_id: comment.id
         }
       }
 
@@ -856,7 +856,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "project_created",
         author_id: ctx.author.id,
         content: %{
-          project_id: ctx.project.id,
+          project_id: ctx.project.id
         }
       }
 
@@ -870,7 +870,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "comment_added",
         author_id: ctx.author.id,
         content: %{
-          comment_id: comment.id,
+          comment_id: comment.id
         }
       }
 
@@ -887,7 +887,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "comment_added",
         author_id: ctx.author.id,
         content: %{
-          comment_id: comment.id,
+          comment_id: comment.id
         }
       }
 
@@ -913,6 +913,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
     Enum.each(activities, fn activity ->
       assert activity.access_context_id == nil
     end)
+
     activities
   end
 

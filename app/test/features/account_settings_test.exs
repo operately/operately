@@ -64,5 +64,4 @@ defmodule Operately.Features.AccountSettingsTest do
     |> Steps.submit_reset_password_form()
     |> Steps.assert_password_changed()
   end
-
 end

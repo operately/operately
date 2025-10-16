@@ -82,9 +82,12 @@ defmodule OperatelyEmail.Emails.ProjectCheckInSubmittedEmail do
       do: [text(" "), text(Person.first_name(reviewer) <> "'s"), text(" help is needed.")]
 
     defp due_date(%{timeframe: nil}), do: []
+
     defp due_date(%{timeframe: timeframe}) do
       case Operately.ContextualDates.Timeframe.end_date(timeframe) do
-        nil -> []
+        nil ->
+          []
+
         date ->
           days = Date.diff(date, Date.utc_today())
           duration = human_duration(abs(days))

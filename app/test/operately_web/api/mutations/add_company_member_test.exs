@@ -6,7 +6,7 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMemberTest do
   @add_company_member_input %{
     :full_name => "John Doe",
     :email => "john@your-company.com",
-    :title => "Developer",
+    :title => "Developer"
   }
 
   describe "security" do

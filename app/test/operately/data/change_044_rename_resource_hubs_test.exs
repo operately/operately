@@ -11,12 +11,16 @@ defmodule Operately.Data.Change044RenameResourceHubsTest do
   end
 
   test "renames existing resource hubs to Documents & Files", ctx do
-    hubs1 = Enum.map(1..3, fn _ ->
-      resource_hub_fixture(ctx.creator, ctx.space1, name: "Some name")
-    end)
-    hubs2 = Enum.map(1..3, fn _ ->
-      resource_hub_fixture(ctx.creator, ctx.space2, name: "Some name")
-    end)
+    hubs1 =
+      Enum.map(1..3, fn _ ->
+        resource_hub_fixture(ctx.creator, ctx.space1, name: "Some name")
+      end)
+
+    hubs2 =
+      Enum.map(1..3, fn _ ->
+        resource_hub_fixture(ctx.creator, ctx.space2, name: "Some name")
+      end)
+
     hubs = hubs1 ++ hubs2
 
     Enum.each(hubs, fn hub ->

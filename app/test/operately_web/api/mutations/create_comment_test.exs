@@ -123,11 +123,12 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
         project = create_project(ctx, space, @test.company, @test.space, @test.project)
         task = create_task(ctx.creator, project)
 
-        assert {code, res} = mutation(ctx.conn, :create_comment, %{
-          entity_id: Paths.task_id(task),
-          entity_type: "project_task",
-          content: RichText.rich_text("Content", :as_string)
-        })
+        assert {code, res} =
+                 mutation(ctx.conn, :create_comment, %{
+                   entity_id: Paths.task_id(task),
+                   entity_type: "project_task",
+                   content: RichText.rich_text("Content", :as_string)
+                 })
 
         assert code == @test.expected
 

@@ -18,5 +18,4 @@ defmodule Operately.Activities.Content.DiscussionPosting do
   def build(params) do
     changeset(params)
   end
-
 end

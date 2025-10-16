@@ -16,14 +16,15 @@ defmodule Operately.Demo.ResourceHubs do
     space = Resources.get(resources, data.space)
     {:ok, hub} = ResourceHub.get(:system, space_id: space.id)
 
-    {:ok, document} = ResourceHubDocumentCreating.run(owner, hub, %{
-      name: data.name,
-      content: PoorMansMarkdown.from_markdown(data.content, resources),
-      post_as_draft: false,
-      send_to_everyone: true,
-      subscription_parent_type: :resource_hub_document,
-      subscriber_ids: [],
-    })
+    {:ok, document} =
+      ResourceHubDocumentCreating.run(owner, hub, %{
+        name: data.name,
+        content: PoorMansMarkdown.from_markdown(data.content, resources),
+        post_as_draft: false,
+        send_to_everyone: true,
+        subscription_parent_type: :resource_hub_document,
+        subscriber_ids: []
+      })
 
     Comments.create_comments(resources, document, data[:comments])
 

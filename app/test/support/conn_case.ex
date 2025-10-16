@@ -51,9 +51,9 @@ defmodule OperatelyWeb.ConnCase do
 
     %{
       conn: log_in_account(conn, account, company),
-      account: account, 
+      account: account,
       company_creator: company_creator,
-      company: company, 
+      company: company,
       person: person
     }
   end
@@ -64,14 +64,17 @@ defmodule OperatelyWeb.ConnCase do
   It returns an updated `conn`.
   """
   def log_in_account(conn, account = %Operately.People.Account{}) do
-    people = Operately.Repo.preload(account, [people: :company]).people
+    people = Operately.Repo.preload(account, people: :company).people
 
     cond do
-      length(people) == 0 -> create_conn_with_session_token(conn, account)
-      length(people) == 1 -> log_in_account(conn, account, hd(people).company)
+      length(people) == 0 ->
+        create_conn_with_session_token(conn, account)
+
+      length(people) == 1 ->
+        log_in_account(conn, account, hd(people).company)
 
       true ->
-        throw "Account has multiple associated companies, please specify the company with log_in_account(conn, account, company)"
+        throw("Account has multiple associated companies, please specify the company with log_in_account(conn, account, company)")
     end
   end
 

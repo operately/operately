@@ -15,6 +15,7 @@ defmodule Operately.Data.Chenge027CreateSubscriptionsListForCheckInsTest do
 
     Enum.each(1..3, fn _ ->
       person = person_fixture_with_account(%{company_id: company.id})
+
       contributor_fixture(creator, %{
         project_id: project.id,
         person_id: person.id
@@ -25,9 +26,10 @@ defmodule Operately.Data.Chenge027CreateSubscriptionsListForCheckInsTest do
   end
 
   test "creates subscriptions list for existing check-ins", ctx do
-    check_ins = Enum.map(1..3, fn _ ->
-      check_in_fixture(%{author_id: ctx.creator.id, project_id: ctx.project.id})
-    end)
+    check_ins =
+      Enum.map(1..3, fn _ ->
+        check_in_fixture(%{author_id: ctx.creator.id, project_id: ctx.project.id})
+      end)
 
     contribs = Projects.list_project_contributors(ctx.project)
 

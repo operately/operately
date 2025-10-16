@@ -13,13 +13,13 @@ defmodule Operately.Data.Change054CreateSubscriptionsForExistingGoalDiscussionsT
     |> Factory.add_space_member(:member1, :space)
     |> Factory.add_space_member(:member2, :space)
     |> Factory.add_space_member(:member3, :space)
-    |> Factory.add_goal(:public_goal, :space, [champion: :champion, reviewer: :reviewer])
-    |> Factory.add_goal(:secret_goal, :space, [
+    |> Factory.add_goal(:public_goal, :space, champion: :champion, reviewer: :reviewer)
+    |> Factory.add_goal(:secret_goal, :space,
       champion: :champion,
       reviewer: :reviewer,
       space_access: Binding.no_access(),
       company_access: Binding.no_access()
-    ])
+    )
   end
 
   test "creates subscriptions list for existing goal discussions", ctx do
@@ -74,38 +74,41 @@ defmodule Operately.Data.Change054CreateSubscriptionsForExistingGoalDiscussionsT
   #
 
   defp create_goal_discussion(ctx, goal) do
-    {:ok, activity} = Operately.Operations.GoalDiscussionCreation.run(ctx.creator, goal, %{
-      title: "some title",
-      content: Operately.Support.RichText.rich_text("content"),
-      send_to_everyone: true,
-      subscriber_ids: [],
-      subscription_parent_type: :comment_thread
-    })
+    {:ok, activity} =
+      Operately.Operations.GoalDiscussionCreation.run(ctx.creator, goal, %{
+        title: "some title",
+        content: Operately.Support.RichText.rich_text("content"),
+        send_to_everyone: true,
+        subscriber_ids: [],
+        subscription_parent_type: :comment_thread
+      })
 
     set_subscription_list_id_to_nil(activity.comment_thread)
   end
 
   defp close_goal(ctx, goal) do
-    {:ok, goal} = Operately.Operations.GoalClosing.run(ctx.creator, goal, %{
-      success: "yes",
-      success_status: "achieved",
-      content: Operately.Support.RichText.rich_text("content"),
-      send_to_everyone: true,
-      subscriber_ids: [],
-      subscription_parent_type: :comment_thread
-    })
+    {:ok, goal} =
+      Operately.Operations.GoalClosing.run(ctx.creator, goal, %{
+        success: "yes",
+        success_status: "achieved",
+        content: Operately.Support.RichText.rich_text("content"),
+        send_to_everyone: true,
+        subscriber_ids: [],
+        subscription_parent_type: :comment_thread
+      })
 
     get_comment_thread(goal.id, "goal_closing")
     |> set_subscription_list_id_to_nil()
   end
 
   defp reopen_goal(ctx, goal) do
-    {:ok, goal} = Operately.Operations.GoalReopening.run(ctx.creator, goal, %{
-      content: Operately.Support.RichText.rich_text("content"),
-      send_to_everyone: true,
-      subscriber_ids: [],
-      subscription_parent_type: :comment_thread
-    })
+    {:ok, goal} =
+      Operately.Operations.GoalReopening.run(ctx.creator, goal, %{
+        content: Operately.Support.RichText.rich_text("content"),
+        send_to_everyone: true,
+        subscriber_ids: [],
+        subscription_parent_type: :comment_thread
+      })
 
     get_comment_thread(goal.id, "goal_reopening")
     |> set_subscription_list_id_to_nil()

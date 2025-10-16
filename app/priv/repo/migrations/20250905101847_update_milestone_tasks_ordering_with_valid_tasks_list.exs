@@ -6,6 +6,5 @@ defmodule Operately.Repo.Migrations.UpdateMilestoneTasksOrderingWithValidTasksLi
   end
 
   def down do
-
   end
 end

@@ -15,7 +15,7 @@ defmodule Operately.Operations.DiscussionPosting do
         title: attrs.title,
         body: attrs.content,
         state: state(attrs),
-        subscription_list_id: changes.subscription_list.id,
+        subscription_list_id: changes.subscription_list.id
       })
     end)
     |> SubscriptionList.update(:message)
@@ -28,12 +28,14 @@ defmodule Operately.Operations.DiscussionPosting do
     if attrs.post_as_draft do
       multi
     else
-      Activities.insert_sync(multi, creator.id, :discussion_posting, fn changes -> %{
-        company_id: space.company_id,
-        space_id: space.id,
-        discussion_id: changes.message.id,
-        title: attrs.title,
-      } end)
+      Activities.insert_sync(multi, creator.id, :discussion_posting, fn changes ->
+        %{
+          company_id: space.company_id,
+          space_id: space.id,
+          discussion_id: changes.message.id,
+          title: attrs.title
+        }
+      end)
     end
   end
 

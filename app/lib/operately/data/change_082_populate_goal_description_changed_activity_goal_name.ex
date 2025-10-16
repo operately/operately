@@ -13,8 +13,12 @@ defmodule Operately.Data.Change082PopulateGoalDescriptionChangedActivityGoalName
 
   defp maybe_update_activity(activity) do
     cond do
-      Map.has_key?(activity.content, "goal_name") -> :ok
-      Map.has_key?(activity.content, :goal_name) -> :ok
+      Map.has_key?(activity.content, "goal_name") ->
+        :ok
+
+      Map.has_key?(activity.content, :goal_name) ->
+        :ok
+
       true ->
         goal_id = activity.content["goal_id"] || activity.content[:goal_id]
         goal_name = fetch_goal_name(goal_id)

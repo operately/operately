@@ -31,10 +31,10 @@ defmodule Operately.UpdatesFixtures do
         type: :status_update,
         content: %{
           "message" => %{},
-          "health" => update_health_fixture(),
+          "health" => update_health_fixture()
         },
         updatable_id: Ecto.UUID.generate(),
-        updatable_type: :objective,
+        updatable_type: :objective
       })
       |> Operately.Updates.create_update()
 
@@ -45,9 +45,9 @@ defmodule Operately.UpdatesFixtures do
     attrs =
       attrs
       |> Enum.into(%{
-        content: %{},
+        content: %{}
       })
-      
+
     {:ok, comment} = Operately.Updates.create_comment(update, attrs)
 
     comment

@@ -62,20 +62,22 @@ defmodule Operately.Support.Features.ProfileSteps do
   step :given_goals_exist_for_person, ctx do
     peer = hd(ctx.peers)
 
-    goal1 = goal_fixture(ctx.person, %{
-      company_id: ctx.company.id,
-      space_id: ctx.company.company_space_id,
-      reviewer_id: peer.id,
-      name: "Improve support first response time",
-    })
+    goal1 =
+      goal_fixture(ctx.person, %{
+        company_id: ctx.company.id,
+        space_id: ctx.company.company_space_id,
+        reviewer_id: peer.id,
+        name: "Improve support first response time"
+      })
 
-    goal2 = goal_fixture(ctx.person, %{
-      company_id: ctx.company.id,
-      space_id: ctx.company.company_space_id,
-      champion_id: peer.id,
-      reviewer_id: ctx.person.id,
-      name: "Increase customer satisfaction",
-    })
+    goal2 =
+      goal_fixture(ctx.person, %{
+        company_id: ctx.company.id,
+        space_id: ctx.company.company_space_id,
+        champion_id: peer.id,
+        reviewer_id: ctx.person.id,
+        name: "Increase customer satisfaction"
+      })
 
     Map.merge(ctx, %{goals: [goal1, goal2]})
   end
@@ -83,23 +85,25 @@ defmodule Operately.Support.Features.ProfileSteps do
   step :given_projects_exist_for_person, ctx do
     peer = hd(ctx.peers)
 
-    project1 = project_fixture(%{
-      company_id: ctx.company.id,
-      group_id: ctx.company.company_space_id,
-      creator_id: ctx.person.id,
-      champion_id: ctx.person.id,
-      reviewer_id: peer.id,
-      name: "Project 1",
-    })
+    project1 =
+      project_fixture(%{
+        company_id: ctx.company.id,
+        group_id: ctx.company.company_space_id,
+        creator_id: ctx.person.id,
+        champion_id: ctx.person.id,
+        reviewer_id: peer.id,
+        name: "Project 1"
+      })
 
-    project2 = project_fixture(%{
-      company_id: ctx.company.id,
-      group_id: ctx.company.company_space_id,
-      creator_id: ctx.person.id,
-      champion_id: peer.id,
-      reviewer_id: ctx.person.id,
-      name: "Project 2",
-    })
+    project2 =
+      project_fixture(%{
+        company_id: ctx.company.id,
+        group_id: ctx.company.company_space_id,
+        creator_id: ctx.person.id,
+        champion_id: peer.id,
+        reviewer_id: ctx.person.id,
+        name: "Project 2"
+      })
 
     Map.merge(ctx, %{projects: [project1, project2]})
   end

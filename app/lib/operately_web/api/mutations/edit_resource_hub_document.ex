@@ -43,8 +43,11 @@ defmodule OperatelyWeb.Api.Mutations.EditResourceHubDocument do
   end
 
   defp find_document(me, inputs) do
-    Document.get(me, id: inputs.document_id, opts: [
-      preload: [:node, :resource_hub],
-    ])
+    Document.get(me,
+      id: inputs.document_id,
+      opts: [
+        preload: [:node, :resource_hub]
+      ]
+    )
   end
 end

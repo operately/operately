@@ -8,7 +8,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Document do
       content: Jason.encode!(document.content),
       resource_hub_id: OperatelyWeb.Paths.resource_hub_id(document.node.resource_hub_id),
       parent_folder_id: document.node.parent_folder_id && OperatelyWeb.Paths.folder_id(document.node.parent_folder_id),
-      comments_count: document.comments_count,
+      comments_count: document.comments_count
     }
   end
 
@@ -30,7 +30,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.Document do
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(document.potential_subscribers),
       subscription_list: OperatelyWeb.Api.Serializer.serialize(document.subscription_list),
       notifications: OperatelyWeb.Api.Serializer.serialize(document.notifications),
-      path_to_document: OperatelyWeb.Api.Serializer.serialize(document.path_to_document),
+      path_to_document: OperatelyWeb.Api.Serializer.serialize(document.path_to_document)
     }
   end
 end

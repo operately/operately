@@ -33,6 +33,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
 
       # 3. Pending task
       project_for_task = create_project(ctx, gen_future_date(3))
+
       create_task(project_for_task, ctx.person, %{
         status: "todo",
         due_date: ContextualDate.create_day_date(Date.utc_today())
@@ -40,6 +41,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
 
       # 4. Pending milestone
       project_for_milestone = create_project(ctx, gen_future_date(3))
+
       create_milestone(project_for_milestone, %{
         status: :pending,
         timeframe: %{
@@ -72,6 +74,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
         status: "todo",
         due_date: ContextualDate.create_day_date(Date.add(Date.utc_today(), 5))
       })
+
       # Upcoming milestone
       create_milestone(project_for_milestone, %{
         status: :pending,
@@ -80,6 +83,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
           contextual_end_date: ContextualDate.create_day_date(Date.add(Date.utc_today(), 5))
         }
       })
+
       # Assignment for another person
       create_goal(ctx.another_person, ctx.company, gen_past_date(3))
 
@@ -110,6 +114,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
         status: "todo",
         due_date: ContextualDate.create_day_date(Date.utc_today())
       })
+
       create_task(project_for_task, ctx.person, %{
         status: "todo",
         due_date: ContextualDate.create_day_date(tomorrow_date())
@@ -126,6 +131,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
         status: "todo",
         due_date: ContextualDate.create_day_date(gen_future_date(2))
       })
+
       create_task(project_for_task, ctx.person, %{
         status: "todo",
         due_date: ContextualDate.create_day_date(gen_future_date(3))
@@ -142,10 +148,12 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
         status: "pending",
         due_date: ContextualDate.create_day_date(Date.utc_today())
       })
+
       create_task(project_for_task, ctx.person, %{
         status: "todo",
         due_date: ContextualDate.create_day_date(Date.utc_today())
       })
+
       create_task(project_for_task, ctx.person, %{
         status: "in_progress",
         due_date: ContextualDate.create_day_date(Date.utc_today())
@@ -162,6 +170,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
         status: "done",
         due_date: ContextualDate.create_day_date(Date.utc_today())
       })
+
       create_task(project_for_task, ctx.person, %{
         status: "canceled",
         due_date: ContextualDate.create_day_date(Date.utc_today())
@@ -170,7 +179,6 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
       assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count_v2, %{})
       assert count == 0
     end
-
   end
 
   describe "get_assignments_count_v2 project check-ins" do
@@ -336,6 +344,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
           contextual_end_date: ContextualDate.create_day_date(Date.utc_today())
         }
       })
+
       create_milestone(project, %{
         status: :pending,
         timeframe: %{
@@ -358,6 +367,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
           contextual_end_date: ContextualDate.create_day_date(gen_future_date(2))
         }
       })
+
       create_milestone(project, %{
         status: :pending,
         timeframe: %{

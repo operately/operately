@@ -5,10 +5,11 @@ defmodule Operately.Operations.CompanyMemberRestoring do
   alias Operately.People.Person
 
   def run(author, person) do
-    changeset = Person.changeset(person, %{
-      suspended: false,
-      suspended_at: nil
-    })
+    changeset =
+      Person.changeset(person, %{
+        suspended: false,
+        suspended_at: nil
+      })
 
     Multi.new()
     |> Multi.update(:person, changeset)

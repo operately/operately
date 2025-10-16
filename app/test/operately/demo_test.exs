@@ -28,9 +28,9 @@ defmodule Operately.DemoTest do
           check_in: nil,
           milestones: [
             %{title: "M1", status: :done},
-            %{title: "M2", status: :pending},
+            %{title: "M2", status: :pending}
           ]
-        },
+        }
       ]
     }
 
@@ -59,9 +59,9 @@ defmodule Operately.DemoTest do
           timeframe: :current_year,
           targets: [
             %{name: "A", from: 0, to: 5, unit: "units"},
-            %{name: "B", from: 0, to: 5, unit: "units"},
+            %{name: "B", from: 0, to: 5, unit: "units"}
           ],
-          update: nil,
+          update: nil
         },
         %{
           key: :quarterly_goal,
@@ -71,9 +71,9 @@ defmodule Operately.DemoTest do
           reviewer: :owner,
           targets: [
             %{name: "A", from: 0, to: 5, unit: "units"},
-            %{name: "B", from: 0, to: 5, unit: "units"},
+            %{name: "B", from: 0, to: 5, unit: "units"}
           ],
-          update: nil,
+          update: nil
         }
       ],
       projects: []

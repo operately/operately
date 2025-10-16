@@ -27,26 +27,29 @@ defmodule Operately.Data.Change064SetGoalClosingActivitySuccessStatusTest do
   defp setup_test_activities(ctx) do
     goal = GoalsFixtures.goal_fixture(ctx.creator, %{space_id: ctx.space.id})
 
-    achieved_activity = create_activity(ctx.creator, "goal_closing", %{
-      "company_id" => ctx.company.id,
-      "space_id" => ctx.space.id,
-      "goal_id" => goal.id,
-      "success" => "yes"
-    })
+    achieved_activity =
+      create_activity(ctx.creator, "goal_closing", %{
+        "company_id" => ctx.company.id,
+        "space_id" => ctx.space.id,
+        "goal_id" => goal.id,
+        "success" => "yes"
+      })
 
-    missed_activity = create_activity(ctx.creator, "goal_closing", %{
-      "company_id" => ctx.company.id,
-      "space_id" => ctx.space.id,
-      "goal_id" => goal.id,
-      "success" => "no"
-    })
+    missed_activity =
+      create_activity(ctx.creator, "goal_closing", %{
+        "company_id" => ctx.company.id,
+        "space_id" => ctx.space.id,
+        "goal_id" => goal.id,
+        "success" => "no"
+      })
 
-    other_activity = create_activity(ctx.creator, "goal_closing", %{
-      "company_id" => ctx.company.id,
-      "space_id" => ctx.space.id,
-      "goal_id" => goal.id,
-      "goal_name" => "Test Goal"
-    })
+    other_activity =
+      create_activity(ctx.creator, "goal_closing", %{
+        "company_id" => ctx.company.id,
+        "space_id" => ctx.space.id,
+        "goal_id" => goal.id,
+        "goal_name" => "Test Goal"
+      })
 
     ctx
     |> Map.put(:achieved_activity, achieved_activity)
@@ -57,11 +60,14 @@ defmodule Operately.Data.Change064SetGoalClosingActivitySuccessStatusTest do
   defp create_activity(author, action, content) do
     {:ok, result} =
       Ecto.Multi.new()
-      |> Ecto.Multi.insert(:activity, Activity.changeset(%{
-        author_id: author.id,
-        action: action,
-        content: content
-      }))
+      |> Ecto.Multi.insert(
+        :activity,
+        Activity.changeset(%{
+          author_id: author.id,
+          action: action,
+          content: content
+        })
+      )
       |> Repo.transaction()
 
     result.activity

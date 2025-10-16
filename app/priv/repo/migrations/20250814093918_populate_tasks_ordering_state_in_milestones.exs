@@ -6,6 +6,5 @@ defmodule Operately.Repo.Migrations.PopulateTasksOrderingStateInMilestones do
   end
 
   def down do
-
   end
 end

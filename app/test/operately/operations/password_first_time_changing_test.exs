@@ -16,7 +16,7 @@ defmodule Operately.Operations.PasswordFirstTimeChangingTest do
 
     attrs = %{
       password: "AaBb12345@#cC",
-      password_confirmation: "AaBb12345@#cC",
+      password_confirmation: "AaBb12345@#cC"
     }
 
     {:ok, company: company, member: member, invitation: invitation, attrs: attrs}

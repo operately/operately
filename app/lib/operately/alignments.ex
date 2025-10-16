@@ -23,7 +23,7 @@ defmodule Operately.Alignments do
   def list_parents(tenet = %Operately.Tenets.Tenet{}) do
     company = Repo.preload(tenet, [:company]).company
 
-    [%{title: company.name, type: :company, id: company.id }]
+    [%{title: company.name, type: :company, id: company.id}]
   end
 
   @doc """

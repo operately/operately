@@ -24,17 +24,19 @@ defmodule OperatelyWeb.Api.Mutations.UnsubscribeFromNotificationsTest do
     end
 
     test "unsubscribes to notifications list", ctx do
-      {:ok, _} = Notifications.create_subscription(%{
-        person_id: ctx.person.id,
-        subscription_list_id: ctx.subscription_list.id,
-        type: :invited,
-      })
+      {:ok, _} =
+        Notifications.create_subscription(%{
+          person_id: ctx.person.id,
+          subscription_list_id: ctx.subscription_list.id,
+          type: :invited
+        })
 
       assert Notifications.is_subscriber?(ctx.person.id, ctx.subscription_list.id)
 
-      assert {200, _} = mutation(ctx.conn, :unsubscribe_from_notifications, %{
-        id: Paths.subscription_list_id(ctx.subscription_list),
-      })
+      assert {200, _} =
+               mutation(ctx.conn, :unsubscribe_from_notifications, %{
+                 id: Paths.subscription_list_id(ctx.subscription_list)
+               })
 
       refute Notifications.is_subscriber?(ctx.person.id, ctx.subscription_list.id)
     end

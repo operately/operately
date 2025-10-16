@@ -51,9 +51,10 @@ defmodule OperatelyWeb.Api.Mutations.ChangePassword do
   defp change_password(conn, inputs) do
     account = conn.assigns[:current_account]
 
-    changeset = Operately.People.Account.password_changeset(account, %{
-      password: inputs.new_password
-    })
+    changeset =
+      Operately.People.Account.password_changeset(account, %{
+        password: inputs.new_password
+      })
 
     case Operately.Repo.update(changeset) do
       {:ok, _} -> :ok

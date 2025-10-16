@@ -122,10 +122,11 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project)})
       assert res.project.notifications == []
 
-      assert {200, res} = query(ctx.conn, :get_project, %{
-        id: Paths.project_id(project),
-        include_unread_notifications: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_project, %{
+                 id: Paths.project_id(project),
+                 include_unread_notifications: true
+               })
 
       assert length(res.project.notifications) == 1
       assert Serializer.serialize(n) == hd(res.project.notifications)
@@ -162,12 +163,14 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       assert res.project.contributors == Serializer.serialize(Operately.Projects.list_project_contributors(project), level: :essential)
 
       dev = person_fixture(company_id: ctx.company.id)
-      {:ok, _} = Operately.Projects.create_contributor(dev, %{
-        person_id: dev.id,
-        responsibility: "some responsibility",
-        project_id: project.id,
-        permissions: Binding.edit_access()
-      })
+
+      {:ok, _} =
+        Operately.Projects.create_contributor(dev, %{
+          person_id: dev.id,
+          responsibility: "some responsibility",
+          project_id: project.id,
+          permissions: Binding.edit_access()
+        })
 
       assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project), include_contributors: true})
       assert length(res.project.contributors) == 2
@@ -243,12 +246,14 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
 
     test "include_access_levels", ctx do
       space = group_fixture(ctx.person)
-      project = create_project(ctx, %{
-        group_id: space.id,
-        anonymous_access_level: Binding.view_access(),
-        company_access_level: Binding.edit_access(),
-        space_access_level: Binding.full_access(),
-      })
+
+      project =
+        create_project(ctx, %{
+          group_id: space.id,
+          anonymous_access_level: Binding.view_access(),
+          company_access_level: Binding.edit_access(),
+          space_access_level: Binding.full_access()
+        })
 
       assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project)})
       refute res.project.access_levels
@@ -267,11 +272,12 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
 
       refute Map.has_key?(res.project, :contributor)
 
-      assert {200, res} = query(ctx.conn, :get_project, %{
-        id: Paths.project_id(project),
-        include_contributors: true,
-        include_contributors_access_levels: true
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_project, %{
+                 id: Paths.project_id(project),
+                 include_contributors: true,
+                 include_contributors_access_levels: true
+               })
 
       assert length(res.project.contributors) > 0
 
@@ -281,7 +287,8 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
     end
 
     test "include_potential_subscribers", ctx do
-      ctx = Factory.add_company_member(ctx, :creator)
+      ctx =
+        Factory.add_company_member(ctx, :creator)
         |> Factory.add_space(:space)
         |> Factory.add_project(:project, :space)
         |> Factory.add_project_contributor(:champion, :project, role: :champion)
@@ -289,7 +296,6 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
         |> Factory.add_project_contributor(:contrib1, :project)
         |> Factory.add_project_contributor(:contrib2, :project)
         |> Factory.add_project_contributor(:contrib3, :project)
-
 
       assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(ctx.project)})
 
@@ -299,19 +305,20 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
 
       [ctx.reviewer, ctx.champion]
       |> Enum.each(fn contrib ->
-        candidate = Enum.find(res.project.potential_subscribers, &(equal_ids?(&1.person.id, contrib.person_id)))
+        candidate = Enum.find(res.project.potential_subscribers, &equal_ids?(&1.person.id, contrib.person_id))
         assert candidate.priority
       end)
 
       [ctx.contrib1, ctx.contrib2, ctx.contrib3]
       |> Enum.each(fn contrib ->
-        candidate = Enum.find(res.project.potential_subscribers, &(equal_ids?(&1.person.id, contrib.person_id)))
+        candidate = Enum.find(res.project.potential_subscribers, &equal_ids?(&1.person.id, contrib.person_id))
         refute candidate.priority
       end)
     end
 
     test "include_milestones", ctx do
-      ctx = Factory.add_company_member(ctx, :creator)
+      ctx =
+        Factory.add_company_member(ctx, :creator)
         |> Factory.add_space(:space)
         |> Factory.add_project(:project, :space)
         |> Factory.add_project_milestone(:milestone1, :project)
@@ -323,10 +330,11 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       refute res.project.milestones
 
       # include milestones
-      assert {200, res} = query(ctx.conn, :get_project, %{
-        id: Paths.project_id(ctx.project),
-        include_milestones: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_project, %{
+                 id: Paths.project_id(ctx.project),
+                 include_milestones: true
+               })
 
       assert length(res.project.milestones) == 2
       assert Enum.find(res.project.milestones, &(&1 == Serializer.serialize(ctx.milestone1)))
@@ -335,10 +343,11 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       # doesn't include archived milestones
       {:ok, _} = Repo.soft_delete(ctx.milestone1)
 
-      assert {200, res} = query(ctx.conn, :get_project, %{
-        id: Paths.project_id(ctx.project),
-        include_milestones: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_project, %{
+                 id: Paths.project_id(ctx.project),
+                 include_milestones: true
+               })
 
       assert length(res.project.milestones) == 1
       assert Enum.find(res.project.milestones, &(&1 == Serializer.serialize(ctx.milestone2)))
@@ -350,24 +359,30 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
   #
 
   def create_project(ctx, attrs \\ %{}) do
-    attrs = Map.merge(%{
-      company_id: ctx.company.id,
-      name: "Project 1",
-      creator_id: ctx[:creator_id] || ctx.person.id,
-      reviewer_id: attrs[:reviewer_id],
-      group_id: ctx[:space_id] || ctx.company.company_space_id,
-      company_access_level: Binding.no_access(),
-      space_access_level: Binding.no_access(),
-    }, Enum.into(attrs, %{}))
+    attrs =
+      Map.merge(
+        %{
+          company_id: ctx.company.id,
+          name: "Project 1",
+          creator_id: ctx[:creator_id] || ctx.person.id,
+          reviewer_id: attrs[:reviewer_id],
+          group_id: ctx[:space_id] || ctx.company.company_space_id,
+          company_access_level: Binding.no_access(),
+          space_access_level: Binding.no_access()
+        },
+        Enum.into(attrs, %{})
+      )
 
     project_fixture(attrs)
   end
 
   defp add_person_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space.id, [%{
-      id: ctx.person.id,
-      access_level: Binding.edit_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space.id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.edit_access()
+      }
+    ])
   end
 
   defp create_person(ctx) do

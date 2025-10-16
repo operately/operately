@@ -13,7 +13,7 @@ defmodule Operately.Operations.ProjectPausing do
       %{
         company_id: project.company_id,
         space_id: project.group_id,
-        project_id: project.id,
+        project_id: project.id
       }
     end)
     |> Repo.transaction()

@@ -18,7 +18,13 @@ defmodule Operately.Data.Change057UpdateProjectCheckInsStatusTest do
     updated_check_ins = reload_check_ins(check_ins)
 
     assert_statuses(updated_check_ins, [
-      :on_track, :caution, :off_track, :off_track, :on_track, :caution, :off_track
+      :on_track,
+      :caution,
+      :off_track,
+      :off_track,
+      :on_track,
+      :caution,
+      :off_track
     ])
   end
 
@@ -35,9 +41,10 @@ defmodule Operately.Data.Change057UpdateProjectCheckInsStatusTest do
   #
 
   defp create_check_ins_with_statuses(ctx, statuses) do
-    check_ins = Enum.map(statuses, fn status ->
-      insert_project_check_in(ctx, status)
-    end)
+    check_ins =
+      Enum.map(statuses, fn status ->
+        insert_project_check_in(ctx, status)
+      end)
 
     check_ins
   end
@@ -52,14 +59,15 @@ defmodule Operately.Data.Change057UpdateProjectCheckInsStatusTest do
   end
 
   defp insert_project_check_in(ctx, status) do
-    check_in = Operately.ProjectsFixtures.check_in_fixture(%{
-      author_id: ctx.creator.id,
-      project_id: ctx.project.id
-    })
-
+    check_in =
+      Operately.ProjectsFixtures.check_in_fixture(%{
+        author_id: ctx.creator.id,
+        project_id: ctx.project.id
+      })
 
     # Update its status directly via SQL to bypass validations
     check_in_id = Ecto.UUID.dump!(check_in.id)
+
     update_sql = """
     UPDATE project_check_ins
     SET status = $1

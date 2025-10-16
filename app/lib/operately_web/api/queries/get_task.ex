@@ -21,8 +21,8 @@ defmodule OperatelyWeb.Api.Queries.GetTask do
 
   def call(conn, inputs) do
     with {:ok, task} <- load(me(conn), inputs),
-      {:ok, :allowed} <- Permissions.check(task.request_info.access_level, :can_view) do
-        {:ok, %{task: Serializer.serialize(task, level: :full)}}
+         {:ok, :allowed} <- Permissions.check(task.request_info.access_level, :can_view) do
+      {:ok, %{task: Serializer.serialize(task, level: :full)}}
     else
       {:error, :forbidden} -> {:error, :forbidden}
       {:error, _} -> {:error, :not_found}
@@ -30,10 +30,13 @@ defmodule OperatelyWeb.Api.Queries.GetTask do
   end
 
   defp load(person, inputs) do
-    Task.get(person, id: inputs.id, opts: [
-      preload: preload(inputs),
-      after_load: after_load(inputs)
-    ])
+    Task.get(person,
+      id: inputs.id,
+      opts: [
+        preload: preload(inputs),
+        after_load: after_load(inputs)
+      ]
+    )
   end
 
   defp preload(inputs) do

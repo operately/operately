@@ -53,7 +53,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateSpaceTest do
       name: "some name",
       mission: "some mission",
       company_permissions: Binding.view_access(),
-      public_permissions: Binding.no_access(),
+      public_permissions: Binding.no_access()
     })
   end
 

@@ -23,17 +23,15 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFileTest do
     end
 
     @table [
-      %{company: :no_access,      space: :no_access,      expected: 404},
-
-      %{company: :no_access,      space: :view_access,    expected: 200},
-      %{company: :no_access,      space: :comment_access, expected: 200},
-      %{company: :no_access,      space: :edit_access,    expected: 200},
-      %{company: :no_access,      space: :full_access,    expected: 200},
-
-      %{company: :view_access,    space: :no_access,      expected: 200},
-      %{company: :comment_access, space: :no_access,      expected: 200},
-      %{company: :edit_access,    space: :no_access,      expected: 200},
-      %{company: :full_access,    space: :no_access,      expected: 200},
+      %{company: :no_access, space: :no_access, expected: 404},
+      %{company: :no_access, space: :view_access, expected: 200},
+      %{company: :no_access, space: :comment_access, expected: 200},
+      %{company: :no_access, space: :edit_access, expected: 200},
+      %{company: :no_access, space: :full_access, expected: 200},
+      %{company: :view_access, space: :no_access, expected: 200},
+      %{company: :comment_access, space: :no_access, expected: 200},
+      %{company: :edit_access, space: :no_access, expected: 200},
+      %{company: :full_access, space: :no_access, expected: 200}
     ]
 
     tabletest @table do
@@ -49,6 +47,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFileTest do
         case @test.expected do
           404 ->
             assert res.message == "The requested resource was not found"
+
           200 ->
             assert res.file.id == Paths.file_id(file)
         end
@@ -80,10 +79,11 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFileTest do
 
       refute res.file.author
 
-      assert {200, res} = query(ctx.conn, :get_resource_hub_file, %{
-        id: Paths.file_id(ctx.my_file),
-        include_author: true
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_resource_hub_file, %{
+                 id: Paths.file_id(ctx.my_file),
+                 include_author: true
+               })
 
       assert res.file.author == Serializer.serialize(ctx.creator)
     end
@@ -93,10 +93,11 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFileTest do
 
       refute res.file.subscription_list
 
-      assert {200, res} = query(ctx.conn, :get_resource_hub_file, %{
-        id: Paths.file_id(ctx.my_file),
-        include_subscriptions_list: true
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_resource_hub_file, %{
+                 id: Paths.file_id(ctx.my_file),
+                 include_subscriptions_list: true
+               })
 
       {:ok, list} = SubscriptionList.get(:system, parent_id: ctx.my_file.id)
 
@@ -108,10 +109,11 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFileTest do
 
       refute res.file.potential_subscribers
 
-      assert {200, res} = query(ctx.conn, :get_resource_hub_file, %{
-        id: Paths.file_id(ctx.my_file),
-        include_potential_subscribers: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_resource_hub_file, %{
+                 id: Paths.file_id(ctx.my_file),
+                 include_potential_subscribers: true
+               })
 
       assert length(res.file.potential_subscribers) == 1
       assert hd(res.file.potential_subscribers).person == Serializer.serialize(ctx.creator)
@@ -126,10 +128,13 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFileTest do
     space = group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.from_atom(company_members_level)})
 
     if space_members_level != :no_access do
-      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
-        id: ctx.person.id,
-        access_level: Binding.from_atom(space_members_level)
-      }])
+      {:ok, _} =
+        Operately.Groups.add_members(ctx.creator, space.id, [
+          %{
+            id: ctx.person.id,
+            access_level: Binding.from_atom(space_members_level)
+          }
+        ])
     end
 
     space

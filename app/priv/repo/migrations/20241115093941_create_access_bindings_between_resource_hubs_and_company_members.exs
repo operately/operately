@@ -6,6 +6,5 @@ defmodule Operately.Repo.Migrations.CreateAccessBindingsBetweenResourceHubsAndCo
   end
 
   def down do
-
   end
 end

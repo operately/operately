@@ -32,5 +32,4 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyOwners do
   defp authorize(company) do
     Permissions.check(company.request_info.access_level, :can_manage_owners)
   end
-
 end

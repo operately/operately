@@ -5,7 +5,7 @@ defmodule Operately.MessagesFixtures do
       |> Enum.into(%{
         space_id: space_id,
         name: "Messages Board",
-        description: Operately.Support.RichText.rich_text("Some description"),
+        description: Operately.Support.RichText.rich_text("Some description")
       })
       |> Operately.Messages.create_messages_board()
 
@@ -23,14 +23,15 @@ defmodule Operately.MessagesFixtures do
         title: "Some message",
         body: Operately.Support.RichText.rich_text("Some content"),
         subscription_list_id: subscription_list.id,
-        state: :published,
+        state: :published
       })
       |> Operately.Messages.create_message()
 
-    {:ok, _} = Operately.Notifications.update_subscription_list(subscription_list, %{
-      parent_type: :message,
-      parent_id: message.id,
-    })
+    {:ok, _} =
+      Operately.Notifications.update_subscription_list(subscription_list, %{
+        parent_type: :message,
+        parent_id: message.id
+      })
 
     message
   end

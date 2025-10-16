@@ -21,5 +21,4 @@ defmodule OperatelyWeb.Api.Queries.GetCompanies do
 
   defp load_member_count(companies, true), do: Company.load_member_count(companies)
   defp load_member_count(companies, _), do: companies
-
 end

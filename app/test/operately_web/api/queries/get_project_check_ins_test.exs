@@ -92,18 +92,21 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckInsTest do
   #
 
   defp create_project_and_check_ins(ctx, opts) do
-    project = project_fixture(%{
-      company_id: ctx.company.id,
-      group_id: ctx.space.id,
-      creator_id: ctx.creator.id,
-      champion_id: Keyword.get(opts, :champion_id, ctx.creator.id),
-      reviewer_id: Keyword.get(opts, :reviewer_id, ctx.creator.id),
-      company_access_level: Keyword.get(opts, :company_access, Binding.no_access()),
-      space_access_level: Keyword.get(opts, :space_access, Binding.no_access()),
-    })
-    check_ins = Enum.map(1..3, fn _ ->
-      check_in_fixture(%{author_id: ctx.creator.id, project_id: project.id})
-    end)
+    project =
+      project_fixture(%{
+        company_id: ctx.company.id,
+        group_id: ctx.space.id,
+        creator_id: ctx.creator.id,
+        champion_id: Keyword.get(opts, :champion_id, ctx.creator.id),
+        reviewer_id: Keyword.get(opts, :reviewer_id, ctx.creator.id),
+        company_access_level: Keyword.get(opts, :company_access, Binding.no_access()),
+        space_access_level: Keyword.get(opts, :space_access, Binding.no_access())
+      })
+
+    check_ins =
+      Enum.map(1..3, fn _ ->
+        check_in_fixture(%{author_id: ctx.creator.id, project_id: project.id})
+      end)
 
     project_id = Paths.project_id(project)
 
@@ -111,14 +114,17 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckInsTest do
   end
 
   defp add_person_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space.id, [%{
-      id: ctx.person.id,
-      access_level: Binding.edit_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space.id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.edit_access()
+      }
+    ])
   end
 
   defp assert_check_ins(res, check_ins) do
     assert length(res.project_check_ins) == length(check_ins)
+
     Enum.each(res.project_check_ins, fn c ->
       assert Enum.find(check_ins, &(Paths.project_check_in_id(&1) == c.id))
     end)

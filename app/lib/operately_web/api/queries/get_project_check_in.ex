@@ -27,7 +27,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
     |> run(:check_in, fn ctx -> load(ctx, inputs) end)
     |> run(:serialized, fn ctx -> {:ok, %{project_check_in: Serializer.serialize(ctx.check_in, level: :full)}} end)
     |> respond()
- end
+  end
 
   defp respond(result) do
     case result do
@@ -39,27 +39,30 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
   end
 
   defp load(ctx, inputs) do
-    CheckIn.get(ctx.me, id: ctx.id, opts: [
-      preload: preload(inputs),
-      after_load: after_load(inputs, ctx.me),
-    ])
+    CheckIn.get(ctx.me,
+      id: ctx.id,
+      opts: [
+        preload: preload(inputs),
+        after_load: after_load(inputs, ctx.me)
+      ]
+    )
   end
 
   defp preload(inputs) do
-    Inputs.parse_includes(inputs, [
+    Inputs.parse_includes(inputs,
       include_author: [:author],
       include_acknowledged_by: [:acknowledged_by],
       include_project: [project: [:champion, :reviewer, [contributors: :person]]],
       include_reactions: [reactions: :person],
-      include_subscriptions_list: :subscription_list,
-    ])
+      include_subscriptions_list: :subscription_list
+    )
   end
 
   defp after_load(inputs, person) do
-    Inputs.parse_includes(inputs, [
+    Inputs.parse_includes(inputs,
       include_project: &Project.set_permissions/1,
       include_potential_subscribers: &CheckIn.load_potential_subscribers/1,
-      include_unread_notifications: UnreadNotificationsLoader.load(person),
-    ])
+      include_unread_notifications: UnreadNotificationsLoader.load(person)
+    )
   end
 end

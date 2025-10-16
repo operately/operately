@@ -32,14 +32,15 @@ defmodule OperatelyWeb.Api.Queries.GetNotifications do
     offset = per_page * (page - 1)
     limit = per_page
 
-    query = from n in Notification,
-      join: a in assoc(n, :activity),
-      where: a.action not in ^Activity.deprecated_actions(),
-      where: n.person_id == ^me.id,
-      order_by: [desc: n.inserted_at],
-      offset: ^offset,
-      limit: ^limit,
-      preload: [activity: {a, [:author, :comment_thread]}]
+    query =
+      from n in Notification,
+        join: a in assoc(n, :activity),
+        where: a.action not in ^Activity.deprecated_actions(),
+        where: n.person_id == ^me.id,
+        order_by: [desc: n.inserted_at],
+        offset: ^offset,
+        limit: ^limit,
+        preload: [activity: {a, [:author, :comment_thread]}]
 
     query
     |> Operately.Repo.all()

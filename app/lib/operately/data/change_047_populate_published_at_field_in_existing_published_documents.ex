@@ -21,7 +21,8 @@ defmodule Operately.Data.Change047PopulatePublishedAtFieldInExistingPublishedDoc
   end
 
   defp update_documents(doc) do
-    {:ok, _} = Document.changeset(doc, %{published_at: doc.inserted_at})
-    |> Repo.update()
+    {:ok, _} =
+      Document.changeset(doc, %{published_at: doc.inserted_at})
+      |> Repo.update()
   end
 end

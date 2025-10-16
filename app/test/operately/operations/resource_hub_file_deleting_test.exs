@@ -21,9 +21,10 @@ defmodule Operately.Operations.ResourceHubFileDeletingTest do
   test "Deleting file sends notifications to everyone", ctx do
     file = create_file(ctx, true, [])
 
-    {:ok, _} = Oban.Testing.with_testing_mode(:manual, fn ->
-      ResourceHubFileDeleting.run(ctx.creator, file)
-    end)
+    {:ok, _} =
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        ResourceHubFileDeleting.run(ctx.creator, file)
+      end)
 
     activity = get_activity(file, @action)
 
@@ -43,9 +44,10 @@ defmodule Operately.Operations.ResourceHubFileDeletingTest do
   test "Deleting file sends notifications to selected people", ctx do
     file = create_file(ctx, false, [ctx.mike.id, ctx.jane.id])
 
-    {:ok, _} = Oban.Testing.with_testing_mode(:manual, fn ->
-      ResourceHubFileDeleting.run(ctx.creator, file)
-    end)
+    {:ok, _} =
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        ResourceHubFileDeleting.run(ctx.creator, file)
+      end)
 
     activity = get_activity(file, @action)
 
@@ -68,9 +70,10 @@ defmodule Operately.Operations.ResourceHubFileDeletingTest do
     content = RichText.rich_text(mentioned_people: [ctx.person]) |> Jason.decode!()
     file = create_file(ctx, false, [ctx.person.id], content)
 
-    {:ok, _} = Oban.Testing.with_testing_mode(:manual, fn ->
-      ResourceHubFileDeleting.run(ctx.creator, file)
-    end)
+    {:ok, _} =
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        ResourceHubFileDeleting.run(ctx.creator, file)
+      end)
 
     activity = get_activity(file, @action)
     perform_job(activity.id)
@@ -86,18 +89,20 @@ defmodule Operately.Operations.ResourceHubFileDeletingTest do
   defp create_file(ctx, send_to_everyone, people_list, description \\ nil) do
     blob = Operately.BlobsFixtures.blob_fixture(%{author_id: ctx.creator.id, company_id: ctx.company.id})
 
-    {:ok, files} = Operately.Operations.ResourceHubFileCreating.run(ctx.creator, ctx.hub, %{
-      files: [
-        %{
-          blob_id: blob.id,
-          name: "Some name",
-          description: description || RichText.rich_text("Content"),
-        }
-      ],
-      send_to_everyone: send_to_everyone,
-      subscription_parent_type: :resource_hub_file,
-      subscriber_ids: people_list,
-    })
+    {:ok, files} =
+      Operately.Operations.ResourceHubFileCreating.run(ctx.creator, ctx.hub, %{
+        files: [
+          %{
+            blob_id: blob.id,
+            name: "Some name",
+            description: description || RichText.rich_text("Content")
+          }
+        ],
+        send_to_everyone: send_to_everyone,
+        subscription_parent_type: :resource_hub_file,
+        subscriber_ids: people_list
+      })
+
     Repo.preload(hd(files), :resource_hub)
   end
 

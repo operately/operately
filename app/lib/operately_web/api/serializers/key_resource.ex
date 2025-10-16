@@ -6,7 +6,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.KeyResource do
       title: key_resource.title,
       link: key_resource.link,
       resource_type: key_resource.resource_type,
-      inserted_at: OperatelyWeb.Api.Serializer.serialize(key_resource.inserted_at),
+      inserted_at: OperatelyWeb.Api.Serializer.serialize(key_resource.inserted_at)
     }
   end
 

@@ -19,9 +19,10 @@ defmodule Operately.Operations.ResourceHubLinkCreatingTest do
   end
 
   test "Creating link sends notifications to everyone", ctx do
-    {:ok, link} = Oban.Testing.with_testing_mode(:manual, fn ->
-      create_link(ctx, true, [])
-    end)
+    {:ok, link} =
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        create_link(ctx, true, [])
+      end)
 
     activity = get_activity(link, @action)
 
@@ -39,9 +40,10 @@ defmodule Operately.Operations.ResourceHubLinkCreatingTest do
   end
 
   test "Creating link sends notifications to selected people", ctx do
-    {:ok, link} = Oban.Testing.with_testing_mode(:manual, fn ->
-      create_link(ctx, false, [ctx.mike.id, ctx.jane.id])
-    end)
+    {:ok, link} =
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        create_link(ctx, false, [ctx.mike.id, ctx.jane.id])
+      end)
 
     activity = get_activity(link, @action)
 
@@ -72,9 +74,10 @@ defmodule Operately.Operations.ResourceHubLinkCreatingTest do
     assert fetch_notifications(activity.id, action: @action) == []
 
     # With permissions
-    {:ok, _} = Operately.Groups.add_members(ctx.creator, ctx.space.id, [
-      %{id: ctx.person.id, access_level: Binding.view_access()}
-    ])
+    {:ok, _} =
+      Operately.Groups.add_members(ctx.creator, ctx.space.id, [
+        %{id: ctx.person.id, access_level: Binding.view_access()}
+      ])
 
     {:ok, link} = create_link(ctx, false, [], content)
 
@@ -97,7 +100,7 @@ defmodule Operately.Operations.ResourceHubLinkCreatingTest do
       content: content || RichText.rich_text("Content"),
       subscription_parent_type: :resource_hub_link,
       send_to_everyone: send_to_everyone,
-      subscriber_ids: people_list,
+      subscriber_ids: people_list
     })
   end
 

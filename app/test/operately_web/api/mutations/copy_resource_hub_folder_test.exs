@@ -19,40 +19,35 @@ defmodule OperatelyWeb.Api.Mutations.CopyResourceHubFolderTest do
 
   describe "permissions" do
     @table [
-      %{company: :no_access,      origin_space: :no_access,     dest_space: :no_access,       expected: 404},
-      %{company: :no_access,      origin_space: :no_access,     dest_space: :view_access,     expected: 404},
-      %{company: :no_access,      origin_space: :no_access,     dest_space: :comment_access,  expected: 404},
-      %{company: :no_access,      origin_space: :no_access,     dest_space: :edit_access,     expected: 404},
-      %{company: :no_access,      origin_space: :no_access,     dest_space: :full_access,     expected: 404},
-
-      %{company: :no_access,      origin_space: :view_access,     dest_space: :no_access,       expected: 404},
-      %{company: :no_access,      origin_space: :view_access,     dest_space: :view_access,     expected: 403},
-      %{company: :no_access,      origin_space: :view_access,     dest_space: :comment_access,  expected: 403},
-      %{company: :no_access,      origin_space: :view_access,     dest_space: :edit_access,     expected: 403},
-      %{company: :no_access,      origin_space: :view_access,     dest_space: :full_access,     expected: 403},
-
-      %{company: :no_access,      origin_space: :comment_access,     dest_space: :no_access,       expected: 404},
-      %{company: :no_access,      origin_space: :comment_access,     dest_space: :view_access,     expected: 403},
-      %{company: :no_access,      origin_space: :comment_access,     dest_space: :comment_access,  expected: 403},
-      %{company: :no_access,      origin_space: :comment_access,     dest_space: :edit_access,     expected: 403},
-      %{company: :no_access,      origin_space: :comment_access,     dest_space: :full_access,     expected: 403},
-
-      %{company: :no_access,      origin_space: :edit_access,     dest_space: :no_access,       expected: 404},
-      %{company: :no_access,      origin_space: :edit_access,     dest_space: :view_access,     expected: 403},
-      %{company: :no_access,      origin_space: :edit_access,     dest_space: :comment_access,  expected: 403},
-      %{company: :no_access,      origin_space: :edit_access,     dest_space: :edit_access,     expected: 200},
-      %{company: :no_access,      origin_space: :edit_access,     dest_space: :full_access,     expected: 200},
-
-      %{company: :no_access,      origin_space: :full_access,     dest_space: :no_access,       expected: 404},
-      %{company: :no_access,      origin_space: :full_access,     dest_space: :view_access,     expected: 403},
-      %{company: :no_access,      origin_space: :full_access,     dest_space: :comment_access,  expected: 403},
-      %{company: :no_access,      origin_space: :full_access,     dest_space: :edit_access,     expected: 200},
-      %{company: :no_access,      origin_space: :full_access,     dest_space: :full_access,     expected: 200},
-
-      %{company: :view_access,      origin_space: :no_access,     dest_space: :no_access,     expected: 403},
-      %{company: :comment_access,   origin_space: :no_access,     dest_space: :no_access,     expected: 403},
-      %{company: :edit_access,      origin_space: :no_access,     dest_space: :no_access,     expected: 200},
-      %{company: :full_access,      origin_space: :no_access,     dest_space: :no_access,     expected: 200},
+      %{company: :no_access, origin_space: :no_access, dest_space: :no_access, expected: 404},
+      %{company: :no_access, origin_space: :no_access, dest_space: :view_access, expected: 404},
+      %{company: :no_access, origin_space: :no_access, dest_space: :comment_access, expected: 404},
+      %{company: :no_access, origin_space: :no_access, dest_space: :edit_access, expected: 404},
+      %{company: :no_access, origin_space: :no_access, dest_space: :full_access, expected: 404},
+      %{company: :no_access, origin_space: :view_access, dest_space: :no_access, expected: 404},
+      %{company: :no_access, origin_space: :view_access, dest_space: :view_access, expected: 403},
+      %{company: :no_access, origin_space: :view_access, dest_space: :comment_access, expected: 403},
+      %{company: :no_access, origin_space: :view_access, dest_space: :edit_access, expected: 403},
+      %{company: :no_access, origin_space: :view_access, dest_space: :full_access, expected: 403},
+      %{company: :no_access, origin_space: :comment_access, dest_space: :no_access, expected: 404},
+      %{company: :no_access, origin_space: :comment_access, dest_space: :view_access, expected: 403},
+      %{company: :no_access, origin_space: :comment_access, dest_space: :comment_access, expected: 403},
+      %{company: :no_access, origin_space: :comment_access, dest_space: :edit_access, expected: 403},
+      %{company: :no_access, origin_space: :comment_access, dest_space: :full_access, expected: 403},
+      %{company: :no_access, origin_space: :edit_access, dest_space: :no_access, expected: 404},
+      %{company: :no_access, origin_space: :edit_access, dest_space: :view_access, expected: 403},
+      %{company: :no_access, origin_space: :edit_access, dest_space: :comment_access, expected: 403},
+      %{company: :no_access, origin_space: :edit_access, dest_space: :edit_access, expected: 200},
+      %{company: :no_access, origin_space: :edit_access, dest_space: :full_access, expected: 200},
+      %{company: :no_access, origin_space: :full_access, dest_space: :no_access, expected: 404},
+      %{company: :no_access, origin_space: :full_access, dest_space: :view_access, expected: 403},
+      %{company: :no_access, origin_space: :full_access, dest_space: :comment_access, expected: 403},
+      %{company: :no_access, origin_space: :full_access, dest_space: :edit_access, expected: 200},
+      %{company: :no_access, origin_space: :full_access, dest_space: :full_access, expected: 200},
+      %{company: :view_access, origin_space: :no_access, dest_space: :no_access, expected: 403},
+      %{company: :comment_access, origin_space: :no_access, dest_space: :no_access, expected: 403},
+      %{company: :edit_access, origin_space: :no_access, dest_space: :no_access, expected: 200},
+      %{company: :full_access, origin_space: :no_access, dest_space: :no_access, expected: 200}
     ]
 
     setup ctx do
@@ -71,20 +66,24 @@ defmodule OperatelyWeb.Api.Mutations.CopyResourceHubFolderTest do
 
         folder = folder_fixture(origin_resource_hub.id)
 
-        assert {code, res} = mutation(ctx.conn, :copy_resource_hub_folder, %{
-          folder_id: Paths.folder_id(folder),
-          dest_resource_hub_id: Paths.resource_hub_id(dest_resource_hub),
-          dest_parent_folder_id: nil,
-        })
+        assert {code, res} =
+                 mutation(ctx.conn, :copy_resource_hub_folder, %{
+                   folder_id: Paths.folder_id(folder),
+                   dest_resource_hub_id: Paths.resource_hub_id(dest_resource_hub),
+                   dest_parent_folder_id: nil
+                 })
+
         assert code == @test.expected
 
         case @test.expected do
           200 ->
             assert res.folder_id
             assert ResourceHubs.count_children(dest_resource_hub) == 1
+
           403 ->
             assert ResourceHubs.count_children(dest_resource_hub) == 0
             assert res.message == "You don't have permission to perform this action"
+
           404 ->
             assert ResourceHubs.count_children(dest_resource_hub) == 0
             assert res.message == "The requested resource was not found"
@@ -113,11 +112,12 @@ defmodule OperatelyWeb.Api.Mutations.CopyResourceHubFolderTest do
       assert ResourceHubs.count_children(ctx.hub) == 4
       assert ResourceHubs.count_children(ctx.folder) == 3
 
-      assert {200, res} = mutation(ctx.conn, :copy_resource_hub_folder, %{
-        folder_id: Paths.folder_id(ctx.folder),
-        dest_resource_hub_id: Paths.resource_hub_id(ctx.hub),
-        dest_parent_folder_id: nil,
-      })
+      assert {200, res} =
+               mutation(ctx.conn, :copy_resource_hub_folder, %{
+                 folder_id: Paths.folder_id(ctx.folder),
+                 dest_resource_hub_id: Paths.resource_hub_id(ctx.hub),
+                 dest_parent_folder_id: nil
+               })
 
       assert ResourceHubs.count_children(ctx.hub) == 8
       assert ResourceHubs.count_children(ctx.folder) == 3
@@ -132,11 +132,12 @@ defmodule OperatelyWeb.Api.Mutations.CopyResourceHubFolderTest do
       assert ResourceHubs.count_children(ctx.parent_folder) == 0
       assert ResourceHubs.count_children(ctx.folder) == 3
 
-      assert {200, res} = mutation(ctx.conn, :copy_resource_hub_folder, %{
-        folder_id: Paths.folder_id(ctx.folder),
-        dest_resource_hub_id: Paths.resource_hub_id(ctx.hub),
-        dest_parent_folder_id: Paths.folder_id(ctx.parent_folder),
-      })
+      assert {200, res} =
+               mutation(ctx.conn, :copy_resource_hub_folder, %{
+                 folder_id: Paths.folder_id(ctx.folder),
+                 dest_resource_hub_id: Paths.resource_hub_id(ctx.hub),
+                 dest_parent_folder_id: Paths.folder_id(ctx.parent_folder)
+               })
 
       assert ResourceHubs.count_children(ctx.hub) == 9
       assert ResourceHubs.count_children(ctx.parent_folder) == 1
@@ -162,11 +163,12 @@ defmodule OperatelyWeb.Api.Mutations.CopyResourceHubFolderTest do
       assert ResourceHubs.count_children(ctx.another_hub) == 0
       assert ResourceHubs.count_children(ctx.folder) == 3
 
-      assert {200, res} = mutation(ctx.conn, :copy_resource_hub_folder, %{
-        folder_id: Paths.folder_id(ctx.folder),
-        dest_resource_hub_id: Paths.resource_hub_id(ctx.another_hub),
-        dest_parent_folder_id: nil,
-      })
+      assert {200, res} =
+               mutation(ctx.conn, :copy_resource_hub_folder, %{
+                 folder_id: Paths.folder_id(ctx.folder),
+                 dest_resource_hub_id: Paths.resource_hub_id(ctx.another_hub),
+                 dest_parent_folder_id: nil
+               })
 
       assert ResourceHubs.count_children(ctx.hub) == 4
       assert ResourceHubs.count_children(ctx.another_hub) == 4
@@ -179,12 +181,13 @@ defmodule OperatelyWeb.Api.Mutations.CopyResourceHubFolderTest do
       assert ResourceHubs.count_children(ctx.hub) == 4
       assert ResourceHubs.count_children(ctx.folder) == 3
 
-      assert {200, res} = mutation(ctx.conn, :copy_resource_hub_folder, %{
-        folder_name: "Brand new name",
-        folder_id: Paths.folder_id(ctx.folder),
-        dest_resource_hub_id: Paths.resource_hub_id(ctx.hub),
-        dest_parent_folder_id: nil,
-      })
+      assert {200, res} =
+               mutation(ctx.conn, :copy_resource_hub_folder, %{
+                 folder_name: "Brand new name",
+                 folder_id: Paths.folder_id(ctx.folder),
+                 dest_resource_hub_id: Paths.resource_hub_id(ctx.hub),
+                 dest_parent_folder_id: nil
+               })
 
       assert ResourceHubs.count_children(ctx.hub) == 8
       assert ResourceHubs.count_children(ctx.folder) == 3
@@ -201,11 +204,12 @@ defmodule OperatelyWeb.Api.Mutations.CopyResourceHubFolderTest do
       assert ResourceHubs.count_children(ctx.hub) == 4
       assert ResourceHubs.count_children(ctx.folder) == 3
 
-      assert {200, res} = mutation(ctx.conn, :copy_resource_hub_folder, %{
-        folder_id: Paths.folder_id(ctx.folder),
-        dest_resource_hub_id: Paths.resource_hub_id(ctx.hub),
-        dest_parent_folder_id: nil,
-      })
+      assert {200, res} =
+               mutation(ctx.conn, :copy_resource_hub_folder, %{
+                 folder_id: Paths.folder_id(ctx.folder),
+                 dest_resource_hub_id: Paths.resource_hub_id(ctx.hub),
+                 dest_parent_folder_id: nil
+               })
 
       assert ResourceHubs.count_children(ctx.hub) == 8
       assert ResourceHubs.count_children(ctx.folder) == 3
@@ -279,10 +283,13 @@ defmodule OperatelyWeb.Api.Mutations.CopyResourceHubFolderTest do
     space = group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.from_atom(company_members_level)})
 
     if space_members_level != :no_access do
-      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
-        id: ctx.person.id,
-        access_level: Binding.from_atom(space_members_level)
-      }])
+      {:ok, _} =
+        Operately.Groups.add_members(ctx.creator, space.id, [
+          %{
+            id: ctx.person.id,
+            access_level: Binding.from_atom(space_members_level)
+          }
+        ])
     end
 
     space

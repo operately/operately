@@ -143,5 +143,4 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
 
     ctx
   end
-
 end

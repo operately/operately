@@ -43,19 +43,23 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
   defp apply_comment_action(multi, milestone, action) do
     case action do
       "complete" ->
-        changeset = Operately.Projects.Milestone.changeset(milestone, %{
-          status: :done,
-          completed_at: DateTime.utc_now()
-        })
+        changeset =
+          Operately.Projects.Milestone.changeset(milestone, %{
+            status: :done,
+            completed_at: DateTime.utc_now()
+          })
 
         Multi.update(multi, :milestone, changeset)
+
       "reopen" ->
-        changeset = Operately.Projects.Milestone.changeset(milestone, %{
-          status: :pending,
-          completed_at: nil
-        })
+        changeset =
+          Operately.Projects.Milestone.changeset(milestone, %{
+            status: :pending,
+            completed_at: nil
+          })
 
         Multi.update(multi, :milestone, changeset)
+
       _ ->
         multi
     end

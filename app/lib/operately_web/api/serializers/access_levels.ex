@@ -3,7 +3,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Access.AccessLevels do
     %{
       public: data.public,
       company: data.company,
-      space: data.space,
+      space: data.space
     }
   end
 end

@@ -29,7 +29,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectRetrospective do
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.retrospective.request_info.access_level, :can_view) end)
     |> run(:serialized, fn ctx -> {:ok, %{retrospective: Serializer.serialize(ctx.retrospective)}} end)
     |> respond()
-   end
+  end
 
   defp respond(result) do
     case result do
@@ -42,27 +42,30 @@ defmodule OperatelyWeb.Api.Queries.GetProjectRetrospective do
   end
 
   defp load(ctx, inputs) do
-    Retrospective.get(ctx.me, project_id: ctx.id, opts: [
-      preload: preload(inputs),
-      after_load: after_load(inputs, ctx.me),
-    ])
+    Retrospective.get(ctx.me,
+      project_id: ctx.id,
+      opts: [
+        preload: preload(inputs),
+        after_load: after_load(inputs, ctx.me)
+      ]
+    )
   end
 
   def preload(inputs) do
-    Inputs.parse_includes(inputs, [
+    Inputs.parse_includes(inputs,
       include_author: [:author],
       include_project: [:project],
       include_closed_at: [:project],
       include_reactions: [reactions: :person],
-      include_subscriptions_list: :subscription_list,
-    ])
+      include_subscriptions_list: :subscription_list
+    )
   end
 
   def after_load(inputs, person) do
-    Inputs.parse_includes(inputs, [
+    Inputs.parse_includes(inputs,
       include_permissions: &Retrospective.set_permissions/1,
       include_potential_subscribers: &Retrospective.load_potential_subscribers/1,
-      include_unread_notifications: UnreadNotificationsLoader.load(person),
-    ])
+      include_unread_notifications: UnreadNotificationsLoader.load(person)
+    )
   end
 end

@@ -37,10 +37,11 @@ defmodule Operately.Notifications do
   end
 
   def mark_as_read(%Notification{} = notification) do
-    {:ok, notification} = update_notification(notification, %{
-      read: true,
-      read_at: DateTime.utc_now()
-    })
+    {:ok, notification} =
+      update_notification(notification, %{
+        read: true,
+        read_at: DateTime.utc_now()
+      })
 
     OperatelyWeb.ApiSocket.broadcast!("api:unread_notifications_count:#{notification.person_id}")
 
@@ -49,10 +50,10 @@ defmodule Operately.Notifications do
 
   def mark_as_read(notifications, person) when is_list(notifications) do
     now = DateTime.utc_now()
-    ids = Enum.map(notifications, &(&1.id))
+    ids = Enum.map(notifications, & &1.id)
 
     from(n in Notification, where: n.id in ^ids and n.person_id == ^person.id)
-    |> Repo.update_all([set: [read: true, read_at: now]])
+    |> Repo.update_all(set: [read: true, read_at: now])
 
     OperatelyWeb.ApiSocket.broadcast!("api:unread_notifications_count:#{person.id}")
 
@@ -64,7 +65,7 @@ defmodule Operately.Notifications do
 
     query = from n in Notification, where: n.person_id == ^person.id and n.read == false
 
-    Repo.update_all(query, [set: [read: true, read_at: now]])
+    Repo.update_all(query, set: [read: true, read_at: now])
 
     OperatelyWeb.ApiSocket.broadcast!("api:unread_notifications_count:#{person.id}")
 
@@ -77,9 +78,10 @@ defmodule Operately.Notifications do
 
     now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
 
-    notifications = Enum.map(notifications, fn notification ->
-      Map.merge(notification, %{inserted_at: now, updated_at: now})
-    end)
+    notifications =
+      Enum.map(notifications, fn notification ->
+        Map.merge(notification, %{inserted_at: now, updated_at: now})
+      end)
 
     Multi.new()
     |> Multi.run(:notifications, fn repo, _ ->
@@ -100,120 +102,119 @@ defmodule Operately.Notifications do
     |> Repo.transaction()
     |> case do
       {:ok, %{notifications: notifications}} ->
-        unique_person_ids = Enum.uniq(Enum.map(notifications, &(&1.person_id)))
+        unique_person_ids = Enum.uniq(Enum.map(notifications, & &1.person_id))
 
         Enum.each(unique_person_ids, fn person_id ->
           OperatelyWeb.ApiSocket.broadcast!("api:unread_notifications_count:#{person_id}")
         end)
 
         {:ok, notifications}
+
       {:error, _} ->
         {:error, :failed_to_create_notifications}
     end
   end
 
   def unread_notifications_count(person) do
-    query = from n in Notification,
-      where: n.person_id == ^person.id and n.read == false,
-      select: count(n.id)
+    query =
+      from n in Notification,
+        where: n.person_id == ^person.id and n.read == false,
+        select: count(n.id)
 
     Repo.one(query)
   end
-
 
   alias Operately.Notifications.SubscriptionList
 
   def get_subscription_list_with_access_level(id, type, person_id) do
     case type do
       :project_check_in ->
-        from(c in Operately.Projects.CheckIn, as: :resource,
-          join: s in assoc(c, :subscription_list), as: :subscription_list,
-          where: s.id == ^id
-        )
+        from(c in Operately.Projects.CheckIn, as: :resource, join: s in assoc(c, :subscription_list), as: :subscription_list, where: s.id == ^id)
+
       :project_retrospective ->
-        from(r in Operately.Projects.Retrospective, as: :resource,
-          join: s in assoc(r, :subscription_list), as: :subscription_list,
-          where: s.id == ^id
-        )
+        from(r in Operately.Projects.Retrospective, as: :resource, join: s in assoc(r, :subscription_list), as: :subscription_list, where: s.id == ^id)
+
       :goal_update ->
-        from(u in Operately.Goals.Update, as: :resource,
-          join: s in assoc(u, :subscription_list), as: :subscription_list,
-          where: s.id == ^id
-        )
+        from(u in Operately.Goals.Update, as: :resource, join: s in assoc(u, :subscription_list), as: :subscription_list, where: s.id == ^id)
+
       :message ->
-        from(m in Operately.Messages.Message, as: :resource,
-          join: s in assoc(m, :subscription_list), as: :subscription_list,
-          where: s.id == ^id
-        )
+        from(m in Operately.Messages.Message, as: :resource, join: s in assoc(m, :subscription_list), as: :subscription_list, where: s.id == ^id)
+
       :resource_hub_document ->
-        from(d in Operately.ResourceHubs.Document, as: :resource,
-          join: s in assoc(d, :subscription_list), as: :subscription_list,
-          where: s.id == ^id
-        )
+        from(d in Operately.ResourceHubs.Document, as: :resource, join: s in assoc(d, :subscription_list), as: :subscription_list, where: s.id == ^id)
+
       :resource_hub_file ->
-        from(f in Operately.ResourceHubs.File, as: :resource,
-          join: s in assoc(f, :subscription_list), as: :subscription_list,
-          where: s.id == ^id
-        )
+        from(f in Operately.ResourceHubs.File, as: :resource, join: s in assoc(f, :subscription_list), as: :subscription_list, where: s.id == ^id)
+
       :resource_hub_link ->
-        from(l in Operately.ResourceHubs.Link, as: :resource,
-          join: s in assoc(l, :subscription_list), as: :subscription_list,
-          where: s.id == ^id
-        )
+        from(l in Operately.ResourceHubs.Link, as: :resource, join: s in assoc(l, :subscription_list), as: :subscription_list, where: s.id == ^id)
+
       :comment_thread ->
-        from(a in Operately.Activities.Activity, as: :resource,
-          join: c in assoc(a, :comment_thread),
-          join: s in assoc(c, :subscription_list), as: :subscription_list,
-          where: s.id == ^id
-        )
+        from(a in Operately.Activities.Activity, as: :resource, join: c in assoc(a, :comment_thread), join: s in assoc(c, :subscription_list), as: :subscription_list, where: s.id == ^id)
     end
     |> Fetch.get_resource_with_access_level(person_id, selected_resource: :subscription_list)
   end
 
   def get_subscription_list_access_level(id, type, person_id) do
-    query = case type do
-      :project_check_in ->
-        from(c in Operately.Projects.CheckIn, as: :resource,
-          join: s in assoc(c, :subscription_list),
-          where: s.id == ^id
-        )
-      :project_retrospective ->
-        from(r in Operately.Projects.Retrospective, as: :resource,
-          join: s in assoc(r, :subscription_list),
-          where: s.id == ^id
-        )
-      :goal_update ->
-        from(c in Operately.Goals.Update, as: :resource,
-          join: s in assoc(c, :subscription_list),
-          where: s.id == ^id
-        )
-      :message ->
-        from(m in Operately.Messages.Message, as: :resource,
-          join: s in assoc(m, :subscription_list),
-          where: s.id == ^id
-        )
-      :resource_hub_document ->
-        from(d in Operately.ResourceHubs.Document, as: :resource,
-          join: s in assoc(d, :subscription_list),
-          where: s.id == ^id
-        )
-      :resource_hub_file ->
-        from(f in Operately.ResourceHubs.File, as: :resource,
-          join: s in assoc(f, :subscription_list),
-          where: s.id == ^id
-        )
-      :resource_hub_link ->
-        from(l in Operately.ResourceHubs.Link, as: :resource,
-          join: s in assoc(l, :subscription_list),
-          where: s.id == ^id
-        )
-      :comment_thread ->
-        from(a in Operately.Activities.Activity, as: :resource,
-          join: c in assoc(a, :comment_thread),
-          join: s in assoc(c, :subscription_list),
-          where: s.id == ^id
-        )
-    end
+    query =
+      case type do
+        :project_check_in ->
+          from(c in Operately.Projects.CheckIn,
+            as: :resource,
+            join: s in assoc(c, :subscription_list),
+            where: s.id == ^id
+          )
+
+        :project_retrospective ->
+          from(r in Operately.Projects.Retrospective,
+            as: :resource,
+            join: s in assoc(r, :subscription_list),
+            where: s.id == ^id
+          )
+
+        :goal_update ->
+          from(c in Operately.Goals.Update,
+            as: :resource,
+            join: s in assoc(c, :subscription_list),
+            where: s.id == ^id
+          )
+
+        :message ->
+          from(m in Operately.Messages.Message,
+            as: :resource,
+            join: s in assoc(m, :subscription_list),
+            where: s.id == ^id
+          )
+
+        :resource_hub_document ->
+          from(d in Operately.ResourceHubs.Document,
+            as: :resource,
+            join: s in assoc(d, :subscription_list),
+            where: s.id == ^id
+          )
+
+        :resource_hub_file ->
+          from(f in Operately.ResourceHubs.File,
+            as: :resource,
+            join: s in assoc(f, :subscription_list),
+            where: s.id == ^id
+          )
+
+        :resource_hub_link ->
+          from(l in Operately.ResourceHubs.Link,
+            as: :resource,
+            join: s in assoc(l, :subscription_list),
+            where: s.id == ^id
+          )
+
+        :comment_thread ->
+          from(a in Operately.Activities.Activity,
+            as: :resource,
+            join: c in assoc(a, :comment_thread),
+            join: s in assoc(c, :subscription_list),
+            where: s.id == ^id
+          )
+      end
 
     {:ok, Fetch.get_access_level(query, person_id)}
   end
@@ -230,10 +231,10 @@ defmodule Operately.Notifications do
     |> Repo.update()
   end
 
-
   alias Operately.Notifications.Subscription
 
   def list_subscriptions(%SubscriptionList{} = subscription_list), do: list_subscriptions(subscription_list.id)
+
   def list_subscriptions(subscription_list_id) do
     from(s in Subscription, where: s.subscription_list_id == ^subscription_list_id)
     |> Repo.all()

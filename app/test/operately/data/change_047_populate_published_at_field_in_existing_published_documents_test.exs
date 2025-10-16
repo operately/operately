@@ -45,11 +45,14 @@ defmodule Operately.Data.Change047PopulatePublishedAtFieldInExistingPublishedDoc
       |> Factory.add_document(:doc3, :hub)
       |> Factory.add_document(:draft_doc, :hub, state: :draft)
 
-    docs = Enum.map([ctx.doc1, ctx.doc2, ctx.doc3], fn doc ->
-      {:ok, document} = Document.changeset(doc, %{published_at: nil})
-      |> Repo.update()
-      document
-    end)
+    docs =
+      Enum.map([ctx.doc1, ctx.doc2, ctx.doc3], fn doc ->
+        {:ok, document} =
+          Document.changeset(doc, %{published_at: nil})
+          |> Repo.update()
+
+        document
+      end)
 
     Map.put(ctx, :docs, docs)
   end

@@ -42,9 +42,11 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
 
     test "company members have access", ctx do
       create_project(ctx, company_access: Binding.no_access())
-      projects = Enum.map(1..3, fn _ ->
-        create_project(ctx, company_access: Binding.view_access())
-      end)
+
+      projects =
+        Enum.map(1..3, fn _ ->
+          create_project(ctx, company_access: Binding.view_access())
+        end)
 
       assert {200, res} = query(ctx.conn, :get_projects, %{space_id: ctx.space_id})
       assert_projects(res, projects)
@@ -69,9 +71,10 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
     test "space members have access", ctx do
       add_person_to_space(ctx)
 
-      projects = Enum.map(1..3, fn _ ->
-        create_project(ctx, space_access: Binding.view_access())
-      end)
+      projects =
+        Enum.map(1..3, fn _ ->
+          create_project(ctx, space_access: Binding.view_access())
+        end)
 
       assert {200, res} = query(ctx.conn, :get_projects, %{space_id: ctx.space_id})
       assert_projects(res, projects)
@@ -207,7 +210,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
       reviewer_id: reviewer_id,
       group_id: ctx.space.id,
       company_access_level: company_access,
-      space_access_level: space_access,
+      space_access_level: space_access
     })
   end
 
@@ -220,9 +223,11 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
   end
 
   defp add_person_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space.id, [%{
-      id: ctx.person.id,
-      access_level: Binding.edit_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space.id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.edit_access()
+      }
+    ])
   end
 end

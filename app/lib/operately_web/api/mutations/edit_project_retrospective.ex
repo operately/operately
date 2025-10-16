@@ -21,7 +21,7 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectRetrospective do
     |> run(:attrs, fn -> parse_inputs(inputs) end)
     |> run(:retrospective, fn ctx -> load(inputs.id, ctx.me) end)
     |> run(:permissions, fn ctx -> Permissions.check(ctx.retrospective.request_info.access_level, :can_edit_retrospective) end)
-    |> run(:operation, fn ctx -> ProjectRetrospectiveEditing.run(ctx.me, ctx.retrospective, ctx.attrs)  end)
+    |> run(:operation, fn ctx -> ProjectRetrospectiveEditing.run(ctx.me, ctx.retrospective, ctx.attrs) end)
     |> run(:serialized, fn ctx -> {:ok, %{retrospective: Serializer.serialize(ctx.operation)}} end)
     |> respond()
   end
@@ -39,16 +39,20 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectRetrospective do
   end
 
   defp load(id, me) do
-    Retrospective.get(me, id: id, opts: [
-      preload: :project,
-    ])
+    Retrospective.get(me,
+      id: id,
+      opts: [
+        preload: :project
+      ]
+    )
   end
 
   defp parse_inputs(inputs) do
-    {:ok, %{
-      id: inputs.id,
-      content: Jason.decode!(inputs.content),
-      success_status: String.to_atom(inputs.success_status),
-    }}
+    {:ok,
+     %{
+       id: inputs.id,
+       content: Jason.decode!(inputs.content),
+       success_status: String.to_atom(inputs.success_status)
+     }}
   end
 end

@@ -60,6 +60,7 @@ defmodule Operately.ContextualDates.Timeframe do
   end
 
   def current_quarter(:as_map), do: current_quarter() |> Map.from_struct()
+
   def current_quarter do
     today = Date.utc_today()
     year = today.year
@@ -73,6 +74,7 @@ defmodule Operately.ContextualDates.Timeframe do
   end
 
   def next_quarter(:as_map), do: next_quarter() |> Map.from_struct()
+
   def next_quarter do
     today = Date.utc_today()
     year = today.year

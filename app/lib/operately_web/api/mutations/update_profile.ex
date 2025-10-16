@@ -48,11 +48,12 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProfile do
   end
 
   defp update_profile(person, inputs, requester_id) do
-    inputs = if person.id == requester_id do
-      Map.take(inputs, @updatable_fields_for_oneself)
-    else
-      Map.take(inputs, @updatable_fields_for_others)
-    end
+    inputs =
+      if person.id == requester_id do
+        Map.take(inputs, @updatable_fields_for_oneself)
+      else
+        Map.take(inputs, @updatable_fields_for_others)
+      end
 
     {:ok, person} = Operately.People.update_person(person, inputs)
 

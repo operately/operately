@@ -4,7 +4,8 @@ defmodule Operately.TimeTest do
   alias Operately.Time
 
   describe "calculate_next_weekly_check_in" do
-    @due ~D[2020-01-03] # this is a Friday
+    # this is a Friday
+    @due ~D[2020-01-03]
 
     test "had no previous due date -> schedule next check-in for next Friday" do
       assert Time.calculate_next_weekly_check_in(nil, ~D[2020-01-03]) == Time.as_datetime(~D[2020-01-10])

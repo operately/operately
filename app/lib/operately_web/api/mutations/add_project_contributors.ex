@@ -44,7 +44,7 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributors do
 
   defp decode_contributors([], acc), do: {:ok, acc}
 
-  defp decode_contributors([contrib| rest], acc) do
+  defp decode_contributors([contrib | rest], acc) do
     case decode_contributor(contrib) do
       {:ok, contrib} -> decode_contributors(rest, [contrib | acc])
       _ -> {:error, :bad_request}

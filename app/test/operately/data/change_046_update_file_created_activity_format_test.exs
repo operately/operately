@@ -39,15 +39,20 @@ defmodule Operately.Data.Change046UpdateFileCreatedActivityFormatTest do
   #
 
   defp create_activities(ctx) do
-    activities = Enum.map(1..3, fn _ ->
-      activity_fixture(author_id: ctx.creator.id, action: "resource_hub_file_created", content: %{
-        "company_id" => ctx.company.id,
-        "space_id" => ctx.space.id,
-        "resource_hub_id" => ctx.hub.id,
-        "file_id" => ctx.my_file.id,
-        "file_name" => ctx.my_file.node.name,
-      })
-    end)
+    activities =
+      Enum.map(1..3, fn _ ->
+        activity_fixture(
+          author_id: ctx.creator.id,
+          action: "resource_hub_file_created",
+          content: %{
+            "company_id" => ctx.company.id,
+            "space_id" => ctx.space.id,
+            "resource_hub_id" => ctx.hub.id,
+            "file_id" => ctx.my_file.id,
+            "file_name" => ctx.my_file.node.name
+          }
+        )
+      end)
 
     Map.put(ctx, :activities, activities)
   end

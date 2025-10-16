@@ -47,9 +47,10 @@ defmodule Operately.Data.Change045UpdateResourceHubActivitiesAccessContextTest d
   defp create_activities(ctx) do
     functions = [&folder_activity/1, &file_activity/1, &link_activity/1, &document_activity/1]
 
-    activities = Enum.reduce(functions, [], fn fun, acc ->
-      acc ++ Enum.map(1..3, fn _ -> fun.(ctx) end)
-    end)
+    activities =
+      Enum.reduce(functions, [], fn fun, acc ->
+        acc ++ Enum.map(1..3, fn _ -> fun.(ctx) end)
+      end)
 
     Map.put(ctx, :activities, activities)
   end
@@ -71,17 +72,19 @@ defmodule Operately.Data.Change045UpdateResourceHubActivitiesAccessContextTest d
   end
 
   defp create_activity(ctx, content) do
-    content = Enum.into(content, %{
-      company_id: ctx.company.id,
-      space_id: ctx.space.id,
-      resource_hub_id: ctx.hub.id,
-    })
+    content =
+      Enum.into(content, %{
+        company_id: ctx.company.id,
+        space_id: ctx.space.id,
+        resource_hub_id: ctx.hub.id
+      })
 
     activity = activity_fixture(author_id: ctx.creator.id, content: content)
     context = fetch_resource_hub_context(ctx)
 
-    {:ok, activity} = Operately.Activities.Activity.changeset(activity, %{access_context_id: context.id})
-    |> Repo.update
+    {:ok, activity} =
+      Operately.Activities.Activity.changeset(activity, %{access_context_id: context.id})
+      |> Repo.update()
 
     activity
   end

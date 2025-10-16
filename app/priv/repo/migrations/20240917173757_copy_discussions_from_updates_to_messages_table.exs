@@ -6,7 +6,10 @@ defmodule Operately.Repo.Migrations.CopyDiscussionsFromUpdatesToMessagesTable do
   alias Operately.Repo
 
   def up do
-    execute("CREATE TABLE messages AS SELECT * FROM updates WHERE updates.type = 'project_discussion';")
+    execute(
+      "CREATE TABLE messages AS SELECT * FROM updates WHERE updates.type = 'project_discussion';"
+    )
+
     execute("ALTER TABLE messages ADD CONSTRAINT messages_pkey PRIMARY KEY (id);")
 
     alter table(:messages) do
@@ -48,11 +51,13 @@ defmodule Operately.Repo.Migrations.CopyDiscussionsFromUpdatesToMessagesTable do
     |> Repo.all()
     |> Enum.each(fn update ->
       from(c in "messages", where: c.id == ^update.id)
-      |> Repo.update_all(set: [
-        space_id: update.updatable_id,
-        title: update.content["title"],
-        body: update.content["body"],
-      ])
+      |> Repo.update_all(
+        set: [
+          space_id: update.updatable_id,
+          title: update.content["title"],
+          body: update.content["body"]
+        ]
+      )
     end)
   end
 end

@@ -41,10 +41,11 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMember do
       {:ok, invitation} ->
         invitation_with_token = create_invitation_token(invitation)
 
-        {:ok, %{
-          invitation: OperatelyWeb.Api.Serializer.serialize(invitation_with_token, level: :full),
-          new_account: true
-        }}
+        {:ok,
+         %{
+           invitation: OperatelyWeb.Api.Serializer.serialize(invitation_with_token, level: :full),
+           new_account: true
+         }}
 
       error ->
         error
@@ -76,10 +77,11 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMember do
   defp create_invitation_token(invitation) do
     token_value = Operately.Invitations.InvitationToken.build_token()
 
-    {:ok, token} = Operately.Invitations.create_invitation_token!(%{
-      token: token_value,
-      invitation_id: invitation.id,
-    })
+    {:ok, token} =
+      Operately.Invitations.create_invitation_token!(%{
+        token: token_value,
+        invitation_id: invitation.id
+      })
 
     invitation = Repo.preload(invitation, [:member, :admin])
 

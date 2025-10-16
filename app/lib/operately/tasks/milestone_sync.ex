@@ -13,6 +13,7 @@ defmodule Operately.Tasks.MilestoneSync do
   Handles milestone sync after task creation
   """
   def sync_after_task_create(multi, milestone_id) when is_nil(milestone_id), do: multi
+
   def sync_after_task_create(multi, milestone_id) do
     Multi.run(multi, :milestone_sync_create, fn _repo, changes ->
       with_milestone_lock(milestone_id, fn milestone ->
@@ -50,7 +51,9 @@ defmodule Operately.Tasks.MilestoneSync do
       task = Map.get(changes, :task) || Map.get(changes, :delete_task)
 
       case task.milestone_id do
-        nil -> {:ok, nil}
+        nil ->
+          {:ok, nil}
+
         milestone_id ->
           with_milestone_lock(milestone_id, fn milestone ->
             ordering_state = OrderingState.load(milestone.tasks_ordering_state)
@@ -92,6 +95,7 @@ defmodule Operately.Tasks.MilestoneSync do
   #
 
   defp sync_remove_from_old_milestone(multi, nil), do: multi
+
   defp sync_remove_from_old_milestone(multi, new_milestone_id) do
     Multi.run(multi, :sync_remove_old, fn _repo, changes ->
       task = get_task_from_changes(changes)
@@ -110,6 +114,7 @@ defmodule Operately.Tasks.MilestoneSync do
   end
 
   defp sync_add_to_new_milestone(multi, nil), do: multi
+
   defp sync_add_to_new_milestone(multi, new_milestone_id) do
     Multi.run(multi, :sync_add_new, fn _repo, changes ->
       task = get_updated_task_from_changes(changes)
@@ -152,6 +157,7 @@ defmodule Operately.Tasks.MilestoneSync do
   defp task_should_be_in_ordering?(_task), do: true
 
   defp with_milestone_lock(nil, _callback), do: {:ok, nil}
+
   defp with_milestone_lock(milestone_id, callback) do
     query = from(m in Milestone, where: m.id == ^milestone_id, lock: "FOR UPDATE")
 
@@ -169,8 +175,12 @@ defmodule Operately.Tasks.MilestoneSync do
   defp validate_and_filter_ordering_states(ordering_states) do
     Enum.map(ordering_states, fn state ->
       case state.ordering_state do
-        nil -> state
-        [] -> state
+        nil ->
+          state
+
+        [] ->
+          state
+
         ordering ->
           {:ok, task_ids} = OperatelyWeb.Api.Helpers.decode_id(ordering)
 
@@ -218,26 +228,28 @@ defmodule Operately.Tasks.MilestoneSync do
   end
 
   defp extract_milestone_from_sync(_repo, changes) do
-    milestone = case changes do
-      %{milestone_sync_create: milestone} -> milestone
-      %{milestone_sync_status: milestone} -> milestone
-      %{milestone_sync_delete: milestone} -> milestone
-      _ -> nil
-    end
+    milestone =
+      case changes do
+        %{milestone_sync_create: milestone} -> milestone
+        %{milestone_sync_status: milestone} -> milestone
+        %{milestone_sync_delete: milestone} -> milestone
+        _ -> nil
+      end
 
     {:ok, milestone}
   end
 
   defp collect_updated_milestones(_repo, changes) do
-    milestones = [
-      Map.get(changes, :sync_remove_old),
-      Map.get(changes, :sync_add_new)
-    ]
-    |> Enum.filter(fn
-      {:ok, milestone} when not is_nil(milestone) -> true
-      _ -> false
-    end)
-    |> Enum.map(fn {:ok, milestone} -> milestone end)
+    milestones =
+      [
+        Map.get(changes, :sync_remove_old),
+        Map.get(changes, :sync_add_new)
+      ]
+      |> Enum.filter(fn
+        {:ok, milestone} when not is_nil(milestone) -> true
+        _ -> false
+      end)
+      |> Enum.map(fn {:ok, milestone} -> milestone end)
 
     {:ok, milestones}
   end

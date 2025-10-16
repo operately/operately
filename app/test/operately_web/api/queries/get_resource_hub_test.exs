@@ -22,17 +22,15 @@ defmodule OperatelyWeb.Api.Queries.ListResourceHubContentTest do
     end
 
     @table [
-      %{company: :no_access,      space: :no_access,      expected: 404},
-
-      %{company: :no_access,      space: :view_access,    expected: 200},
-      %{company: :no_access,      space: :comment_access, expected: 200},
-      %{company: :no_access,      space: :edit_access,    expected: 200},
-      %{company: :no_access,      space: :full_access,    expected: 200},
-
-      %{company: :view_access,    space: :no_access,      expected: 200},
-      %{company: :comment_access, space: :no_access,      expected: 200},
-      %{company: :edit_access,    space: :no_access,      expected: 200},
-      %{company: :full_access,    space: :no_access,      expected: 200},
+      %{company: :no_access, space: :no_access, expected: 404},
+      %{company: :no_access, space: :view_access, expected: 200},
+      %{company: :no_access, space: :comment_access, expected: 200},
+      %{company: :no_access, space: :edit_access, expected: 200},
+      %{company: :no_access, space: :full_access, expected: 200},
+      %{company: :view_access, space: :no_access, expected: 200},
+      %{company: :comment_access, space: :no_access, expected: 200},
+      %{company: :edit_access, space: :no_access, expected: 200},
+      %{company: :full_access, space: :no_access, expected: 200}
     ]
 
     tabletest @table do
@@ -48,6 +46,7 @@ defmodule OperatelyWeb.Api.Queries.ListResourceHubContentTest do
         case @test.expected do
           404 ->
             assert res.message == "The requested resource was not found"
+
           200 ->
             assert length(res.resource_hub.nodes) == 1
         end
@@ -113,10 +112,13 @@ defmodule OperatelyWeb.Api.Queries.ListResourceHubContentTest do
     space = group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.from_atom(company_members_level)})
 
     if space_members_level != :no_access do
-      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
-        id: ctx.person.id,
-        access_level: Binding.from_atom(space_members_level)
-      }])
+      {:ok, _} =
+        Operately.Groups.add_members(ctx.creator, space.id, [
+          %{
+            id: ctx.person.id,
+            access_level: Binding.from_atom(space_members_level)
+          }
+        ])
     end
 
     space

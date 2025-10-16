@@ -119,23 +119,27 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
 
   describe "subscriptions to notifications" do
     setup :register_and_log_in_account
+
     setup ctx do
       space = group_fixture(ctx.company_creator, %{company_id: ctx.company.id, company_permissions: Binding.edit_access()})
-      people = Enum.map(1..3, fn _ ->
-        person_fixture(%{company_id: ctx.company.id})
-      end)
+
+      people =
+        Enum.map(1..3, fn _ ->
+          person_fixture(%{company_id: ctx.company.id})
+        end)
 
       Map.merge(ctx, %{space: space, people: people})
     end
 
     test "creates subscription list for message", ctx do
-      assert {200, res} = mutation(ctx.conn, :post_discussion, %{
-        space_id: Paths.space_id(ctx.space),
-        title: "Message",
-        body: RichText.rich_text("Content", :as_string),
-        send_notifications_to_everyone: true,
-        subscriber_ids: Enum.map(ctx.people, &(Paths.person_id(&1))),
-      })
+      assert {200, res} =
+               mutation(ctx.conn, :post_discussion, %{
+                 space_id: Paths.space_id(ctx.space),
+                 title: "Message",
+                 body: RichText.rich_text("Content", :as_string),
+                 send_notifications_to_everyone: true,
+                 subscriber_ids: Enum.map(ctx.people, &Paths.person_id(&1))
+               })
 
       {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.discussion.id)
       {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
@@ -156,13 +160,14 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
       people = ctx.people ++ ctx.people ++ ctx.people
       content = RichText.rich_text(mentioned_people: people)
 
-      assert {200, res} = mutation(ctx.conn, :post_discussion, %{
-        space_id: Paths.space_id(ctx.space),
-        title: "Message",
-        body: content,
-        send_notifications_to_everyone: false,
-        subscriber_ids: [],
-      })
+      assert {200, res} =
+               mutation(ctx.conn, :post_discussion, %{
+                 space_id: Paths.space_id(ctx.space),
+                 title: "Message",
+                 body: content,
+                 send_notifications_to_everyone: false,
+                 subscriber_ids: []
+               })
 
       subscriptions = fetch_subscriptions(res)
 
@@ -177,13 +182,14 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
       people = [ctx.person | ctx.people]
       content = RichText.rich_text(mentioned_people: people)
 
-      assert {200, res} = mutation(ctx.conn, :post_discussion, %{
-        space_id: Paths.space_id(ctx.space),
-        title: "Message",
-        body: content,
-        send_notifications_to_everyone: true,
-        subscriber_ids: Enum.map(people, &(Paths.person_id(&1))),
-      })
+      assert {200, res} =
+               mutation(ctx.conn, :post_discussion, %{
+                 space_id: Paths.space_id(ctx.space),
+                 title: "Message",
+                 body: content,
+                 send_notifications_to_everyone: true,
+                 subscriber_ids: Enum.map(people, &Paths.person_id(&1))
+               })
 
       subscriptions = fetch_subscriptions(res)
 
@@ -195,7 +201,6 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
     end
   end
 
-
   #
   # Steps
   #
@@ -204,7 +209,7 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
     mutation(conn, :post_discussion, %{
       space_id: Paths.space_id(space),
       title: "Message",
-      body: RichText.rich_text("Content", :as_string),
+      body: RichText.rich_text("Content", :as_string)
     })
   end
 
@@ -236,9 +241,11 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
   end
 
   defp add_person_to_space(ctx, access_level) do
-    Operately.Groups.add_members(ctx.person, ctx.space.id, [%{
-      id: ctx.person.id,
-      access_level: access_level,
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space.id, [
+      %{
+        id: ctx.person.id,
+        access_level: access_level
+      }
+    ])
   end
 end

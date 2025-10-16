@@ -2,7 +2,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Comments.MilestoneComment 
   def serialize(comment, level: :essential) do
     %{
       action: Atom.to_string(comment.action),
-      comment: OperatelyWeb.Api.Serializer.serialize(comment.comment),
+      comment: OperatelyWeb.Api.Serializer.serialize(comment.comment)
     }
   end
 end

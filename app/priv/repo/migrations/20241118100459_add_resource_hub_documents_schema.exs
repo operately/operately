@@ -7,7 +7,9 @@ defmodule Operately.Repo.Migrations.AddResourceHubDocumentsSchema do
       add :node_id, references(:resource_nodes, on_delete: :nothing, type: :binary_id)
 
       add :content, :map
-      add :subscription_list_id, references(:subscription_lists, on_delete: :nothing, type: :binary_id)
+
+      add :subscription_list_id,
+          references(:subscription_lists, on_delete: :nothing, type: :binary_id)
 
       timestamps()
     end

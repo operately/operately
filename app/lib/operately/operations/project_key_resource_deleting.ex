@@ -10,7 +10,7 @@ defmodule Operately.Operations.ProjectKeyResourceDeleting do
         company_id: key_resource.project.company_id,
         space_id: key_resource.project.group_id,
         project_id: key_resource.project_id,
-        title: key_resource.title,
+        title: key_resource.title
       }
     end)
     |> Repo.transaction()

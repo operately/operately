@@ -12,5 +12,4 @@ defmodule Operately.Updates.Types.ProjectMilestoneDeleted do
     |> cast(attrs, __schema__(:fields))
     |> validate_required(__schema__(:fields))
   end
-
 end

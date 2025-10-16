@@ -9,9 +9,10 @@ defmodule Operately.Data.Change011CreateCompaniesAccessContextTest do
   alias Operately.Data.Change011CreateCompaniesAccessContext
 
   test "creates access_context for existing companies" do
-    companies = Enum.map(1..5, fn _ ->
-      create_company()
-    end)
+    companies =
+      Enum.map(1..5, fn _ ->
+        create_company()
+      end)
 
     Enum.each(companies, fn company ->
       assert nil == Repo.get_by(Context, company_id: company.id)
@@ -36,12 +37,13 @@ defmodule Operately.Data.Change011CreateCompaniesAccessContextTest do
   end
 
   defp create_company do
-    {:ok, company} = Operately.Companies.Company.changeset(%{
-      mission: "some mission",
-      name: "some name",
-      trusted_email_domains: []
-    })
-    |> Repo.insert()
+    {:ok, company} =
+      Operately.Companies.Company.changeset(%{
+        mission: "some mission",
+        name: "some name",
+        trusted_email_domains: []
+      })
+      |> Repo.insert()
 
     company
   end

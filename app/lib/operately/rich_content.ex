@@ -54,9 +54,11 @@ defmodule Operately.RichContent do
 
   def empty?(rich_content) do
     case rich_content do
-      nil -> false
+      nil ->
+        false
 
-      rich_content when rich_content == %{} -> false
+      rich_content when rich_content == %{} ->
+        false
 
       %{"type" => "doc", "content" => content} when is_list(content) ->
         # Convert TipTap content to string and check if it's meaningful
@@ -68,7 +70,8 @@ defmodule Operately.RichContent do
           _non_empty -> true
         end
 
-      _ -> false
+      _ ->
+        false
     end
   end
 

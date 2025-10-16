@@ -19,9 +19,12 @@ defmodule Operately.Operations.CommentEditing.Subscriptions do
   defp fetch_subscriptions(multi) do
     multi
     |> Multi.run(:subscription_list, fn _, %{comment: comment} ->
-      SubscriptionList.get(:system, parent_id: comment.entity_id, opts: [
-        preload: :subscriptions
-      ])
+      SubscriptionList.get(:system,
+        parent_id: comment.entity_id,
+        opts: [
+          preload: :subscriptions
+        ]
+      )
     end)
   end
 end

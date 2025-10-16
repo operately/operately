@@ -15,5 +15,4 @@ defmodule Operately.Data.Change006SetLastCheckInOnProjects do
       |> Operately.Repo.update()
     end
   end
-
 end

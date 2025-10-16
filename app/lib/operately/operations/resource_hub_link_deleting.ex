@@ -13,7 +13,7 @@ defmodule Operately.Operations.ResourceHubLinkDeleting do
         space_id: link.resource_hub.space_id,
         resource_hub_id: link.resource_hub.id,
         node_id: link.node_id,
-        link_id: link.id,
+        link_id: link.id
       }
     end)
     |> Repo.transaction()

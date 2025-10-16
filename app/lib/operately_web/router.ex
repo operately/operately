@@ -91,7 +91,17 @@ defmodule OperatelyWeb.Router do
   scope "/:company_id" do
     pipe_through([:api])
 
+    get("/.well-known/oauth-protected-resource", OperatelyWeb.MCPOAuthController, :protected_resource_metadata)
+    get("/.well-known/oauth-authorization-server", OperatelyWeb.MCPOAuthController, :authorization_server_metadata)
+    post("/mcp/oauth/token", OperatelyWeb.MCPOAuthController, :token)
     match(:*, "/mcp", OperatelyWeb.MCPController, :proxy)
+  end
+
+  scope "/:company_id/mcp/oauth", OperatelyWeb do
+    pipe_through([:browser])
+
+    get("/authorize", MCPOAuthController, :authorize)
+    post("/authorize", MCPOAuthController, :approve)
   end
 
   scope "/analytics/beacons" do

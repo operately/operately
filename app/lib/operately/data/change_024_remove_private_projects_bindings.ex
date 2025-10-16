@@ -28,7 +28,9 @@ defmodule Operately.Data.Change024RemovePrivateProjectsBindings do
 
   defp remove_binding(context_id, group_id) do
     case Access.get_binding(context_id: context_id, group_id: group_id) do
-      nil -> :ok
+      nil ->
+        :ok
+
       binding ->
         Access.update_binding(binding, %{access_level: Binding.no_access()})
     end
@@ -38,7 +40,7 @@ defmodule Operately.Data.Change024RemovePrivateProjectsBindings do
     [
       Access.get_group!(company_id: company_id, tag: :anonymous),
       Access.get_group!(company_id: company_id, tag: :standard),
-      Access.get_group!(group_id: space_id, tag: :standard),
+      Access.get_group!(group_id: space_id, tag: :standard)
     ]
   end
 end

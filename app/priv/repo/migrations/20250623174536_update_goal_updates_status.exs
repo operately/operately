@@ -6,6 +6,5 @@ defmodule Operately.Repo.Migrations.UpdateGoalUpdatesStatus do
   end
 
   def down do
-
   end
 end

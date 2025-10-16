@@ -111,11 +111,14 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
 
     test "get_due_project_check_ins", ctx do
       another_person = person_fixture_with_account(%{full_name: "champion", company_id: ctx.company.id})
-      project = create_project(ctx, upcoming_date(), %{
-        name: "project",
-        reviewer_id: ctx.person.id,
-        champion_id: another_person.id,
-      })
+
+      project =
+        create_project(ctx, upcoming_date(), %{
+          name: "project",
+          reviewer_id: ctx.person.id,
+          champion_id: another_person.id
+        })
+
       check_in1 = create_check_in(project)
       check_in2 = create_check_in(project)
 
@@ -148,11 +151,13 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
 
     test "get_due_goal_updates", ctx do
       another_person = person_fixture_with_account(%{full_name: "champion", company_id: ctx.company.id})
-      goal = create_goal(ctx.person, ctx.company, upcoming_date(), %{
-        name: "goal",
-        reviewer_id: ctx.person.id,
-        champion_id: another_person.id,
-      })
+
+      goal =
+        create_goal(ctx.person, ctx.company, upcoming_date(), %{
+          name: "goal",
+          reviewer_id: ctx.person.id,
+          champion_id: another_person.id
+        })
 
       update1 = create_update(another_person, goal)
       update2 = create_update(another_person, goal)
@@ -184,11 +189,14 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
 
     test "returns project check-in creator, not current champion", ctx do
       champion1 = person_fixture_with_account(%{full_name: "first", company_id: ctx.company.id})
-      p = create_project(ctx, upcoming_date(), %{
-        name: "project",
-        reviewer_id: ctx.person.id,
-        champion_id: champion1.id,
-      })
+
+      p =
+        create_project(ctx, upcoming_date(), %{
+          name: "project",
+          reviewer_id: ctx.person.id,
+          champion_id: champion1.id
+        })
+
       create_check_in(p)
 
       # Before updating champion
@@ -198,7 +206,9 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
 
       # Update champion
       champion2 = person_fixture_with_account(%{full_name: "second", company_id: ctx.company.id})
-      {:ok, _} = Projects.get_contributor!(person_id: champion1.id, project_id: p.id)
+
+      {:ok, _} =
+        Projects.get_contributor!(person_id: champion1.id, project_id: p.id)
         |> Projects.update_contributor(%{person_id: champion2.id})
 
       # After updating champion
@@ -209,11 +219,14 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
 
     test "returns goal update creator, not current champion", ctx do
       champion1 = person_fixture_with_account(%{full_name: "first", company_id: ctx.company.id})
-      goal = create_goal(ctx.person, ctx.company, upcoming_date(), %{
-        name: "goal",
-        reviewer_id: ctx.person.id,
-        champion_id: champion1.id,
-      })
+
+      goal =
+        create_goal(ctx.person, ctx.company, upcoming_date(), %{
+          name: "goal",
+          reviewer_id: ctx.person.id,
+          champion_id: champion1.id
+        })
+
       create_update(champion1, goal)
 
       # Before updating champion
@@ -263,16 +276,22 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
 
     test "project check-ins", ctx do
       another_person = person_fixture_with_account(%{full_name: "champion", company_id: ctx.company.id})
-      p1 = create_project(ctx, upcoming_date(), %{
-        reviewer_id: ctx.person.id,
-        champion_id: another_person.id,
-      })
+
+      p1 =
+        create_project(ctx, upcoming_date(), %{
+          reviewer_id: ctx.person.id,
+          champion_id: another_person.id
+        })
+
       create_check_in(p1)
       create_check_in(p1)
-      p2 = create_project(ctx, upcoming_date(), %{
-        reviewer_id: ctx.person.id,
-        champion_id: another_person.id,
-      })
+
+      p2 =
+        create_project(ctx, upcoming_date(), %{
+          reviewer_id: ctx.person.id,
+          champion_id: another_person.id
+        })
+
       create_check_in(p2)
       create_check_in(p2)
 
@@ -292,16 +311,22 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
 
     test "goal updates", ctx do
       another_person = person_fixture_with_account(%{full_name: "champion", company_id: ctx.company.id})
-      g1 = create_goal(ctx.person, ctx.company, upcoming_date(), %{
-        reviewer_id: ctx.person.id,
-        champion_id: another_person.id,
-      })
+
+      g1 =
+        create_goal(ctx.person, ctx.company, upcoming_date(), %{
+          reviewer_id: ctx.person.id,
+          champion_id: another_person.id
+        })
+
       create_update(another_person, g1)
       create_update(another_person, g1)
-      g2 = create_goal(ctx.person, ctx.company, upcoming_date(), %{
-        reviewer_id: ctx.person.id,
-        champion_id: another_person.id,
-      })
+
+      g2 =
+        create_goal(ctx.person, ctx.company, upcoming_date(), %{
+          reviewer_id: ctx.person.id,
+          champion_id: another_person.id
+        })
+
       create_update(another_person, g2)
       create_update(another_person, g2)
 
@@ -338,11 +363,16 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
 
   defp create_project(ctx, date, attrs \\ %{}) do
     {:ok, project} =
-      project_fixture(Map.merge(%{
-        creator_id: ctx.person.id,
-        company_id: ctx.company.id,
-        group_id: ctx.company.company_space_id,
-      }, attrs))
+      project_fixture(
+        Map.merge(
+          %{
+            creator_id: ctx.person.id,
+            company_id: ctx.company.id,
+            group_id: ctx.company.company_space_id
+          },
+          attrs
+        )
+      )
       |> Project.changeset(%{next_check_in_scheduled_at: date})
       |> Repo.update()
 
@@ -354,7 +384,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
       Project.changeset(project, %{
         status: "closed",
         closed_at: DateTime.utc_now(),
-        closed_by_id: project.creator_id,
+        closed_by_id: project.creator_id
       })
       |> Repo.update()
 
@@ -374,7 +404,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
     {:ok, goal} =
       Goal.changeset(goal, %{
         closed_at: DateTime.utc_now(),
-        closed_by_id: goal.creator_id,
+        closed_by_id: goal.creator_id
       })
       |> Repo.update()
 
@@ -383,9 +413,10 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
 
   defp create_check_in(project) do
     project = Repo.preload(project, :champion)
+
     check_in_fixture(%{
       author_id: project.champion.id,
-      project_id: project.id,
+      project_id: project.id
     })
   end
 

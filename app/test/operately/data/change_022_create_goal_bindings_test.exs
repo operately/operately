@@ -18,13 +18,15 @@ defmodule Operately.Data.Change022CreateGoalBindingsTest do
 
     attrs = %{space_id: group.id, champion_id: champion.id, reviewer_id: reviewer.id}
 
-    goals_with_bindings = Enum.map(1..3, fn _ ->
-      goal_fixture(creator, attrs)
-    end)
+    goals_with_bindings =
+      Enum.map(1..3, fn _ ->
+        goal_fixture(creator, attrs)
+      end)
 
-    goals_without_bindings = Enum.map(1..3, fn _ ->
-      create_goal(creator, attrs)
-    end)
+    goals_without_bindings =
+      Enum.map(1..3, fn _ ->
+        create_goal(creator, attrs)
+      end)
 
     {:ok, company: company, group: group, champion: champion, reviewer: reviewer, goals_with_bindings: goals_with_bindings, goals_without_bindings: goals_without_bindings}
   end
@@ -104,14 +106,18 @@ defmodule Operately.Data.Change022CreateGoalBindingsTest do
   end
 
   defp create_goal(creator, attrs) do
-    {:ok, goal} = Map.merge(%{
-        name: "some name",
-        company_id: creator.company_id,
-        group_id: attrs.space_id,
-        champion_id: attrs.champion_id,
-        reviewer_id: attrs.reviewer_id,
-        creator_id: creator.id,
-      }, attrs)
+    {:ok, goal} =
+      Map.merge(
+        %{
+          name: "some name",
+          company_id: creator.company_id,
+          group_id: attrs.space_id,
+          champion_id: attrs.champion_id,
+          reviewer_id: attrs.reviewer_id,
+          creator_id: creator.id
+        },
+        attrs
+      )
       |> Operately.Goals.Goal.changeset()
       |> Repo.insert()
 

@@ -18,19 +18,22 @@ defmodule Operately.Data.Change035AddSpaceToProjectActivitiesTest do
     end
 
     test "migration doesn't delete existing data in activity content", ctx do
-      check_ins = Enum.map(1..3, fn _ ->
-        {:ok, c} = Operately.Operations.ProjectCheckIn.run(ctx.creator, ctx.project, %{
-          project_id: ctx.project.id,
-          status: "on_track",
-          content: RichText.rich_text("content"),
-          send_to_everyone: false,
-          subscription_parent_type: :project_check_in,
-          subscriber_ids: []
-        })
-        c = Repo.preload(c, :project)
-        {:ok, _} = Operately.Operations.ProjectCheckInAcknowledgement.run(ctx.creator, c)
-        c
-      end)
+      check_ins =
+        Enum.map(1..3, fn _ ->
+          {:ok, c} =
+            Operately.Operations.ProjectCheckIn.run(ctx.creator, ctx.project, %{
+              project_id: ctx.project.id,
+              status: "on_track",
+              content: RichText.rich_text("content"),
+              send_to_everyone: false,
+              subscription_parent_type: :project_check_in,
+              subscriber_ids: []
+            })
+
+          c = Repo.preload(c, :project)
+          {:ok, _} = Operately.Operations.ProjectCheckInAcknowledgement.run(ctx.creator, c)
+          c
+        end)
 
       Operately.Data.Change035AddSpaceToProjectActivities.run()
 
@@ -61,10 +64,11 @@ defmodule Operately.Data.Change035AddSpaceToProjectActivitiesTest do
     end
 
     test "migration doesn't delete existing data in activity content", ctx do
-      comments = Enum.map(1..3, fn _ ->
-        {:ok, comment} = Operately.Operations.CommentAdding.run(ctx.creator, ctx.check_in, "project_check_in", RichText.rich_text("content"))
-        comment
-      end)
+      comments =
+        Enum.map(1..3, fn _ ->
+          {:ok, comment} = Operately.Operations.CommentAdding.run(ctx.creator, ctx.check_in, "project_check_in", RichText.rich_text("content"))
+          comment
+        end)
 
       Operately.Data.Change035AddSpaceToProjectActivities.run()
 

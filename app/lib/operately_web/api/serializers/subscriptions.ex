@@ -3,7 +3,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Notifications.Subscription
     %{
       id: OperatelyWeb.Paths.subscription_id(subscription),
       type: subscription.type,
-      person: OperatelyWeb.Api.Serializer.serialize(subscription.person),
+      person: OperatelyWeb.Api.Serializer.serialize(subscription.person)
     }
   end
 

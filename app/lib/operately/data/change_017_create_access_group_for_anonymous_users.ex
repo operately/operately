@@ -21,8 +21,9 @@ defmodule Operately.Data.Change017CreateAccessGroupForAnonymousUsers do
       nil ->
         Access.create_group(%{
           company_id: company_id,
-          tag: :anonymous,
+          tag: :anonymous
         })
+
       _ ->
         :ok
     end

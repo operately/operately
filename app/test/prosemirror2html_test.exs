@@ -143,32 +143,33 @@ defmodule Prosemirror2HtmlTest do
   test "converts a a complex paragraph with various nodes and marks" do
     html = Prosemirror2Html.convert(@fullExample, @opts)
 
-    assert html == Enum.join([
-      "<p>",
-      "<strong>Hello</strong>, ",
-      "<em>Hello</em>, ",
-      "<strong><em>Hello, </em></strong>",
-      "<strong><em><strike>Hello</strike></em></strong>",
-      "</p>",
-      "<ol>",
-      "<li><p>Example 1</p></li>",
-      "<li><p>Example 2</p></li>",
-      "<li><p>Example 3</p></li>",
-      "</ol>",
-      "<p>",
-      "<strong>Michael</strong>",
-      "</p>",
-      "<p>Quote:</p><blockquote><p>Hello World</p></blockquote>",
-      "<p></p>",
-      "<p>Link: <a href=\"github.com/operately/operately\">Repository</a></p>",
-      "<ul><li><p>List 1</p></li><li><p>List 2</p></li></ul>",
-      "<hr>"
-    ])
+    assert html ==
+             Enum.join([
+               "<p>",
+               "<strong>Hello</strong>, ",
+               "<em>Hello</em>, ",
+               "<strong><em>Hello, </em></strong>",
+               "<strong><em><strike>Hello</strike></em></strong>",
+               "</p>",
+               "<ol>",
+               "<li><p>Example 1</p></li>",
+               "<li><p>Example 2</p></li>",
+               "<li><p>Example 3</p></li>",
+               "</ol>",
+               "<p>",
+               "<strong>Michael</strong>",
+               "</p>",
+               "<p>Quote:</p><blockquote><p>Hello World</p></blockquote>",
+               "<p></p>",
+               "<p>Link: <a href=\"github.com/operately/operately\">Repository</a></p>",
+               "<ul><li><p>List 1</p></li><li><p>List 2</p></li></ul>",
+               "<hr>"
+             ])
   end
 
   test "mulitple nodes" do
     content = %{
-      "type" => "doc", 
+      "type" => "doc",
       "content" => [
         %{
           "type" => "paragraph",
@@ -197,7 +198,7 @@ defmodule Prosemirror2HtmlTest do
 
   test "paragraph" do
     content = %{
-      "type" => "doc", 
+      "type" => "doc",
       "content" => [
         %{
           "type" => "paragraph",
@@ -217,11 +218,11 @@ defmodule Prosemirror2HtmlTest do
 
   test "bold mark" do
     content = %{
-      "type" => "doc", 
+      "type" => "doc",
       "content" => [
         %{
-          "type" => "text", 
-          "text" => "Hello", 
+          "type" => "text",
+          "text" => "Hello",
           "marks" => [
             %{
               "type" => "bold"
@@ -237,11 +238,11 @@ defmodule Prosemirror2HtmlTest do
 
   test "multiple marks" do
     content = %{
-      "type" => "doc", 
+      "type" => "doc",
       "content" => [
         %{
-          "type" => "text", 
-          "text" => "Hello", 
+          "type" => "text",
+          "text" => "Hello",
           "marks" => [
             %{
               "type" => "bold"
@@ -259,21 +260,20 @@ defmodule Prosemirror2HtmlTest do
   end
 
   test "blobs" do
-
     content = %{
-      "type" => "doc", 
+      "type" => "doc",
       "content" => [
         %{
           "type" => "blob",
           "attrs" => %{
-             "alt" => "Authentication Failed message", 
-             "filesize" => 91747, 
-             "filetype" => "image/png", 
-             "id" => "loegrjli3g3bgeqlxm8", 
-             "progress" => 100, 
-             "src" => "/blobs/9d278e9b-b2a9-46bb-abcc-f2e190b46ff5", 
-             "status" => "uploaded", 
-             "title" => "Authentication Failed message"
+            "alt" => "Authentication Failed message",
+            "filesize" => 91747,
+            "filetype" => "image/png",
+            "id" => "loegrjli3g3bgeqlxm8",
+            "progress" => 100,
+            "src" => "/blobs/9d278e9b-b2a9-46bb-abcc-f2e190b46ff5",
+            "status" => "uploaded",
+            "title" => "Authentication Failed message"
           }
         }
       ]
@@ -282,5 +282,4 @@ defmodule Prosemirror2HtmlTest do
     html = Prosemirror2Html.convert(content, @opts)
     assert html == "<div>&#128206; <a href=\"https://example.com/blobs/9d278e9b-b2a9-46bb-abcc-f2e190b46ff5\">Authentication Failed message</a></div>"
   end
-
 end

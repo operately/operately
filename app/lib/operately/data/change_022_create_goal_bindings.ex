@@ -48,8 +48,9 @@ defmodule Operately.Data.Change022CreateGoalBindings do
         Access.create_binding(%{
           context_id: context.id,
           group_id: group.id,
-          access_level: access_level,
+          access_level: access_level
         })
+
       _ ->
         :ok
     end

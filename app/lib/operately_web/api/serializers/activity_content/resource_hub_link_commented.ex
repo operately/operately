@@ -7,7 +7,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.Resourc
     %{
       space: Serializer.serialize(content["space"], level: :essential),
       link: Serializer.serialize(link, level: :essential),
-      comment: Serializer.serialize(content["comment"], level: :essential),
+      comment: Serializer.serialize(content["comment"], level: :essential)
     }
   end
 end

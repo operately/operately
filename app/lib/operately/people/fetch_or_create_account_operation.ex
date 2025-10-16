@@ -31,7 +31,7 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
 
   defp first_succesfull([strategy | rest], params, on_not_found: on_not_found) do
     case strategy.(params) do
-      {:ok, result} ->     {:ok, result}
+      {:ok, result} -> {:ok, result}
       {:error, _reason} -> first_succesfull(rest, params, on_not_found: on_not_found)
     end
   end
@@ -57,5 +57,4 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
 
     {:ok, account}
   end
-
 end

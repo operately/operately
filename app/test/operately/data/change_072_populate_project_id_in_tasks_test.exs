@@ -26,22 +26,26 @@ defmodule Operately.Data.Change072PopulateProjectIdInTasksTest do
   end
 
   test "populates project_id for tasks that belong to milestones", %{creator: creator, project: project, milestone: milestone} do
-    task1 = task_fixture(%{
-      creator_id: creator.id,
-      milestone_id: milestone.id,
-      project_id: project.id
-    })
-    task2 = task_fixture(%{
-      creator_id: creator.id,
-      milestone_id: milestone.id,
-      project_id: project.id
-    })
+    task1 =
+      task_fixture(%{
+        creator_id: creator.id,
+        milestone_id: milestone.id,
+        project_id: project.id
+      })
 
-    task3 = task_fixture(%{
-      creator_id: creator.id,
-      milestone_id: nil,
-      project_id: project.id
-    })
+    task2 =
+      task_fixture(%{
+        creator_id: creator.id,
+        milestone_id: milestone.id,
+        project_id: project.id
+      })
+
+    task3 =
+      task_fixture(%{
+        creator_id: creator.id,
+        milestone_id: nil,
+        project_id: project.id
+      })
 
     # Use raw query to set project_id to NULL to simulate pre-migration state
     task1_binary = Ecto.UUID.dump!(task1.id)
@@ -69,11 +73,12 @@ defmodule Operately.Data.Change072PopulateProjectIdInTasksTest do
 
     milestone = milestone_fixture(%{project_id: project1.id, creator_id: creator.id})
 
-    task = task_fixture(%{
-      creator_id: creator.id,
-      milestone_id: milestone.id,
-      project_id: project2.id
-    })
+    task =
+      task_fixture(%{
+        creator_id: creator.id,
+        milestone_id: milestone.id,
+        project_id: project2.id
+      })
 
     # Verify initial state
     assert Tasks.get_task!(task.id).project_id == project2.id

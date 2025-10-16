@@ -20,10 +20,11 @@ defmodule Operately.AccessBindingsTest do
     end
 
     test "list_bindings/0 returns all bindings", ctx do
-      binding = binding_fixture(%{
-        group_id: ctx.group.id,
-        context_id: ctx.context.id,
-      })
+      binding =
+        binding_fixture(%{
+          group_id: ctx.group.id,
+          context_id: ctx.context.id
+        })
 
       bindings_list = Access.list_bindings()
 
@@ -32,10 +33,11 @@ defmodule Operately.AccessBindingsTest do
     end
 
     test "get_binding!/1 returns the binding with given id", ctx do
-      binding = binding_fixture(%{
-        group_id: ctx.group.id,
-        context_id: ctx.context.id,
-      })
+      binding =
+        binding_fixture(%{
+          group_id: ctx.group.id,
+          context_id: ctx.context.id
+        })
 
       assert Access.get_binding!(binding.id) == binding
     end
@@ -44,7 +46,7 @@ defmodule Operately.AccessBindingsTest do
       valid_attrs = %{
         group_id: ctx.group.id,
         context_id: ctx.context.id,
-        access_level: Binding.edit_access(),
+        access_level: Binding.edit_access()
       }
 
       assert {:ok, %Binding{} = binding} = Access.create_binding(valid_attrs)
@@ -56,10 +58,12 @@ defmodule Operately.AccessBindingsTest do
     end
 
     test "update_binding/2 with valid data updates the binding", ctx do
-      binding = binding_fixture(%{
-        group_id: ctx.group.id,
-        context_id: ctx.context.id,
-      })
+      binding =
+        binding_fixture(%{
+          group_id: ctx.group.id,
+          context_id: ctx.context.id
+        })
+
       update_attrs = %{access_level: Binding.full_access()}
 
       assert {:ok, %Binding{} = binding} = Access.update_binding(binding, update_attrs)
@@ -67,28 +71,33 @@ defmodule Operately.AccessBindingsTest do
     end
 
     test "update_binding/2 with invalid data returns error changeset", ctx do
-      binding = binding_fixture(%{
-        group_id: ctx.group.id,
-        context_id: ctx.context.id,
-      })
+      binding =
+        binding_fixture(%{
+          group_id: ctx.group.id,
+          context_id: ctx.context.id
+        })
+
       assert {:error, %Ecto.Changeset{}} = Access.update_binding(binding, @invalid_attrs)
       assert binding == Access.get_binding!(binding.id)
     end
 
     test "delete_binding/1 deletes the binding", ctx do
-      binding = binding_fixture(%{
-        group_id: ctx.group.id,
-        context_id: ctx.context.id,
-      })
+      binding =
+        binding_fixture(%{
+          group_id: ctx.group.id,
+          context_id: ctx.context.id
+        })
+
       assert {:ok, %Binding{}} = Access.delete_binding(binding)
       assert_raise Ecto.NoResultsError, fn -> Access.get_binding!(binding.id) end
     end
 
     test "change_binding/1 returns a binding changeset", ctx do
-      binding = binding_fixture(%{
-        group_id: ctx.group.id,
-        context_id: ctx.context.id,
-      })
+      binding =
+        binding_fixture(%{
+          group_id: ctx.group.id,
+          context_id: ctx.context.id
+        })
 
       assert %Ecto.Changeset{} = Access.change_binding(binding)
     end

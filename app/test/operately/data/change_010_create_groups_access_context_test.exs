@@ -21,9 +21,10 @@ defmodule Operately.Data.Change010CreateGroupsAccessContextTest do
   end
 
   test "creates access_context for existing groups", ctx do
-    groups = Enum.map(1..5, fn _ ->
-      create_group(ctx.company.id)
-    end)
+    groups =
+      Enum.map(1..5, fn _ ->
+        create_group(ctx.company.id)
+      end)
 
     Enum.each(groups, fn group ->
       assert nil == Repo.get_by(Context, group_id: group.id)
@@ -35,7 +36,6 @@ defmodule Operately.Data.Change010CreateGroupsAccessContextTest do
       assert %Context{} = Repo.get_by(Context, group_id: group.id)
     end)
   end
-
 
   test "creates access_context successfully when a group already has access context", ctx do
     group_with_fixtures = group_fixture(ctx.creator)
@@ -66,14 +66,15 @@ defmodule Operately.Data.Change010CreateGroupsAccessContextTest do
   end
 
   def create_group(company_id) do
-    {:ok, group} = Group.changeset(%{
-      company_id: company_id,
-      name: "some name",
-      mission: "some mission",
-      icon: "some icon",
-      color: "come color",
-    })
-    |> Repo.insert()
+    {:ok, group} =
+      Group.changeset(%{
+        company_id: company_id,
+        name: "some name",
+        mission: "some mission",
+        icon: "some icon",
+        color: "come color"
+      })
+      |> Repo.insert()
 
     group
   end

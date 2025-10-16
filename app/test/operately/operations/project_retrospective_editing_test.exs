@@ -19,10 +19,12 @@ defmodule Operately.Operations.ProjectRetrospectiveEditingTest do
   test "ProjectRetrospectiveEditing operation edits retrospective", ctx do
     refute ctx.retrospective.content == @new_content
 
-    {:ok, _} = ProjectRetrospectiveEditing.run(ctx.creator, ctx.retrospective, %{
-      content: @new_content,
-      success_status: "achieved"
-    })
+    {:ok, _} =
+      ProjectRetrospectiveEditing.run(ctx.creator, ctx.retrospective, %{
+        content: @new_content,
+        success_status: "achieved"
+      })
+
     retrospective = Repo.reload(ctx.retrospective)
 
     assert retrospective.content == @new_content
@@ -33,10 +35,11 @@ defmodule Operately.Operations.ProjectRetrospectiveEditingTest do
 
     assert Repo.aggregate(query, :count) == 0
 
-    {:ok, _} = ProjectRetrospectiveEditing.run(ctx.creator, ctx.retrospective, %{
-      content: @new_content,
-      success_status: :achieved
-    })
+    {:ok, _} =
+      ProjectRetrospectiveEditing.run(ctx.creator, ctx.retrospective, %{
+        content: @new_content,
+        success_status: :achieved
+      })
 
     assert Repo.aggregate(query, :count) == 1
 
@@ -45,10 +48,11 @@ defmodule Operately.Operations.ProjectRetrospectiveEditingTest do
       |> Repo.reload()
       |> Repo.preload(:project)
 
-    {:ok, _} = ProjectRetrospectiveEditing.run(ctx.creator, retrospective, %{
-      content: @new_content,
-      success_status: :achieved
-    })
+    {:ok, _} =
+      ProjectRetrospectiveEditing.run(ctx.creator, retrospective, %{
+        content: @new_content,
+        success_status: :achieved
+      })
 
     assert Repo.aggregate(query, :count) == 1
   end
@@ -58,10 +62,11 @@ defmodule Operately.Operations.ProjectRetrospectiveEditingTest do
 
     refute Repo.one(query)
 
-    {:ok, _} = ProjectRetrospectiveEditing.run(ctx.creator, ctx.retrospective, %{
-      content: @new_content,
-      success_status: "achieved"
-    })
+    {:ok, _} =
+      ProjectRetrospectiveEditing.run(ctx.creator, ctx.retrospective, %{
+        content: @new_content,
+        success_status: "achieved"
+      })
 
     assert Repo.one(query)
   end

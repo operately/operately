@@ -174,7 +174,7 @@ defmodule Operately.Demo.Data do
           title: "Lead Software Engineer",
           avatar: "photo-1521341957697-b93449760f30",
           reports_to: :mia_clark
-        },
+        }
       ],
       spaces: [
         %{
@@ -184,7 +184,7 @@ defmodule Operately.Demo.Data do
           members: [
             :walter_baker,
             :liam_harris,
-            :frank_miller,
+            :frank_miller
           ]
         },
         %{
@@ -192,7 +192,7 @@ defmodule Operately.Demo.Data do
           name: "People",
           description: "Hiring, internal operations, and employee experience",
           members: [
-            :karen_martinez,
+            :karen_martinez
           ],
           privacy: :invite_only
         },
@@ -213,7 +213,7 @@ defmodule Operately.Demo.Data do
           name: "Finance",
           description: "Providing accurate and timely financial info and safeguarding company assets",
           members: [
-            :martin_smith,
+            :martin_smith
           ]
         }
       ],
@@ -246,7 +246,8 @@ defmodule Operately.Demo.Data do
             %{name: "Increase percentage of new users acquired through referrals", from: 10, to: 30, unit: "%"}
           ],
           update: %{
-            content: "Our user acquisition efforts are showing promising results with a 15% month-over-month growth in new signups. Our referral program is gaining traction, with 18% of new users now coming from referrals.",
+            content:
+              "Our user acquisition efforts are showing promising results with a 15% month-over-month growth in new signups. Our referral program is gaining traction, with 18% of new users now coming from referrals.",
             target_values: [15, 18]
           }
         },
@@ -401,7 +402,8 @@ defmodule Operately.Demo.Data do
             %{person: :noah_lewis, responsibility: "Growth Marketer"}
           ],
           goal: :optimize_roi_of_ads,
-          description: "This project aims to improve our ad targeting strategies on major social media platforms. By analyzing user behavior and creating an ideal customer profile, we'll develop more effective ad creatives. The project includes A/B testing different ad placements and content to maximize our return on investment. Success will be measured by increased click-through rates and improved conversion from ads to signups.",
+          description:
+            "This project aims to improve our ad targeting strategies on major social media platforms. By analyzing user behavior and creating an ideal customer profile, we'll develop more effective ad creatives. The project includes A/B testing different ad placements and content to maximize our return on investment. Success will be measured by increased click-through rates and improved conversion from ads to signups.",
           check_in: %{
             status: "on_track",
             content: "A/B testing is yielding promising results. We've identified key demographics that respond well to our ads. On track to meet our conversion rate goal."
@@ -423,7 +425,8 @@ defmodule Operately.Demo.Data do
             %{person: :olivia_hall, responsibility: "Product Manager"}
           ],
           goal: :get_more_users_through_word_of_mouth,
-          description: "This project aims to improve our ad targeting strategies on major social media platforms. By analyzing user behavior and creating an ideal customer profile, we'll develop more effective ad creatives. The project includes A/B testing different ad placements and content to maximize our return on investment. Success will be measured by increased click-through rates and improved conversion from ads to signups.",
+          description:
+            "This project aims to improve our ad targeting strategies on major social media platforms. By analyzing user behavior and creating an ideal customer profile, we'll develop more effective ad creatives. The project includes A/B testing different ad placements and content to maximize our return on investment. Success will be measured by increased click-through rates and improved conversion from ads to signups.",
           check_in: %{
             status: :off_track,
             content: "Referral program UI is complete, but we're facing delays in implementing the reward system. May need an additional week to resolve technical issues."
@@ -445,7 +448,8 @@ defmodule Operately.Demo.Data do
             %{person: :paul_young, responsibility: "Market Research Analyst"}
           ],
           goal: :expand_into_new_markets,
-          description: "This project is crucial for our expansion into the German market. We'll conduct comprehensive market research, including hiring a local consultant, attending relevant conferences, and conducting focus groups with potential users. The research will cover competitor analysis, local work habits, and cultural preferences. The insights gained will inform our product localization strategy and go-to-market approach for Germany.",
+          description:
+            "This project is crucial for our expansion into the German market. We'll conduct comprehensive market research, including hiring a local consultant, attending relevant conferences, and conducting focus groups with potential users. The research will cover competitor analysis, local work habits, and cultural preferences. The insights gained will inform our product localization strategy and go-to-market approach for Germany.",
           check_in: %{
             status: :on_track,
             content: "Research is progressing well. We've identified key competitors and potential partners. On track to present findings next week."
@@ -467,7 +471,8 @@ defmodule Operately.Demo.Data do
             %{person: :rachel_king, responsibility: "Localization Specialist"}
           ],
           goal: :expand_into_new_markets,
-          description: "Let's focus on adapting our product for Spanish-speaking markets. We'll develop culturally relevant features like a 'Siesta-Friendly' scheduling option and a 'Fiesta Mode' UI theme. The project includes localizing product copy and establishing partnerships with local coworking spaces for beta testing. Success will be measured by user adoption and engagement rates in Spanish-speaking regions.",
+          description:
+            "Let's focus on adapting our product for Spanish-speaking markets. We'll develop culturally relevant features like a 'Siesta-Friendly' scheduling option and a 'Fiesta Mode' UI theme. The project includes localizing product copy and establishing partnerships with local coworking spaces for beta testing. Success will be measured by user adoption and engagement rates in Spanish-speaking regions.",
           check_in: %{
             status: :caution,
             content: "Facing challenges in adapting our UI for cultural preferences. May need to bring in a local UX consultant to assist."
@@ -489,7 +494,8 @@ defmodule Operately.Demo.Data do
             %{person: :walter_baker, responsibility: "Senior Developer"}
           ],
           goal: :enhance_product_functionality,
-          description: "This project aims to enhance our product's collaborative capabilities. We'll identify and develop the top requested collaborative features, with a focus on real-time document collaboration. The project includes creating detailed wireframes, developing an MVP, and conducting extensive beta testing with power users. Success will be measured by user adoption of new features and improvement in team productivity metrics.",
+          description:
+            "This project aims to enhance our product's collaborative capabilities. We'll identify and develop the top requested collaborative features, with a focus on real-time document collaboration. The project includes creating detailed wireframes, developing an MVP, and conducting extensive beta testing with power users. Success will be measured by user adoption of new features and improvement in team productivity metrics.",
           check_in: %{
             status: :on_track,
             content: "Beta testing of the real-time document collaboration feature is going well. We're on track for the full release next month."
@@ -512,7 +518,8 @@ defmodule Operately.Demo.Data do
             %{person: :quinn_walker, responsibility: "Operations Manager"}
           ],
           goal: :document_core_business_processes,
-          description: "This project focuses on standardizing and documenting core business processes to improve operational efficiency. We'll identify the top 10 most critical processes, create detailed workflow maps, and develop standardized templates. These templates will serve as a company-wide resource, ensuring consistency and facilitating onboarding of new team members. Success will be measured by the number of processes documented and the reduction in time spent on routine tasks.",
+          description:
+            "This project focuses on standardizing and documenting core business processes to improve operational efficiency. We'll identify the top 10 most critical processes, create detailed workflow maps, and develop standardized templates. These templates will serve as a company-wide resource, ensuring consistency and facilitating onboarding of new team members. Success will be measured by the number of processes documented and the reduction in time spent on routine tasks.",
           check_in: %{
             status: :on_track,
             content: "Template creation is on schedule. We've completed drafts for 3 out of 5 top processes and are gathering feedback."
@@ -535,7 +542,8 @@ defmodule Operately.Demo.Data do
             %{person: :karen_martinez, responsibility: "HR Manager"}
           ],
           goal: :expand_team_capabilities,
-          description: "This project aims to strengthen our product team by hiring a Senior UX Designer. We'll define comprehensive job requirements, conduct a thorough recruitment process, and assess candidates through portfolio reviews and practical design challenges. The new hire will play a crucial role in enhancing our product's user experience and driving user satisfaction. Success will be measured by the successful onboarding of a high-quality candidate who can make immediate contributions to our product development.",
+          description:
+            "This project aims to strengthen our product team by hiring a Senior UX Designer. We'll define comprehensive job requirements, conduct a thorough recruitment process, and assess candidates through portfolio reviews and practical design challenges. The new hire will play a crucial role in enhancing our product's user experience and driving user satisfaction. Success will be measured by the successful onboarding of a high-quality candidate who can make immediate contributions to our product development.",
           check_in: %{
             status: :on_track,
             content: "We've narrowed down to 3 top candidates. Design challenge results are due this Friday. On track to make an offer next week."
@@ -558,7 +566,8 @@ defmodule Operately.Demo.Data do
             %{person: :karen_martinez, responsibility: "HR Manager"}
           ],
           goal: :expand_team_capabilities,
-          description: "We need to expand our customer support team by hiring a specialist with both technical knowledge and strong customer service skills. We'll create a comprehensive job description, conduct targeted recruitment, and assess candidates through role-playing exercises. The new hire will play a crucial role in improving customer satisfaction and retention. Success will be measured by the successful onboarding of a candidate who can effectively address complex customer issues and contribute to product improvement based on customer feedback.",
+          description:
+            "We need to expand our customer support team by hiring a specialist with both technical knowledge and strong customer service skills. We'll create a comprehensive job description, conduct targeted recruitment, and assess candidates through role-playing exercises. The new hire will play a crucial role in improving customer satisfaction and retention. Success will be measured by the successful onboarding of a candidate who can effectively address complex customer issues and contribute to product improvement based on customer feedback.",
           check_in: %{
             status: :caution,
             content: "Struggling to find candidates with the right mix of technical knowledge and customer service skills. May need to expand our search or consider internal training options."
@@ -581,7 +590,8 @@ defmodule Operately.Demo.Data do
             %{person: :martin_smith, responsibility: "CFO"}
           ],
           goal: :ensure_financial_stability,
-          description: "This project is critical for securing our Series A funding. We'll gather key metrics and growth data from all departments to develop a comprehensive financial model with 3-year projections. The project includes creating a compelling narrative and designing an impactful pitch deck. We'll also prepare for investor meetings by rehearsing with mentors and advisors. Success will be measured by securing the desired funding amount and establishing valuable relationships with investors.",
+          description:
+            "This project is critical for securing our Series A funding. We'll gather key metrics and growth data from all departments to develop a comprehensive financial model with 3-year projections. The project includes creating a compelling narrative and designing an impactful pitch deck. We'll also prepare for investor meetings by rehearsing with mentors and advisors. Success will be measured by securing the desired funding amount and establishing valuable relationships with investors.",
           check_in: %{
             status: :caution,
             content: "Financial model is taking longer than expected due to complexities in our expansion plans. May need an extra week to finalize projections."
@@ -744,7 +754,7 @@ defmodule Operately.Demo.Data do
               author: :martin_smith,
               content: """
               Great update, Bob. The financial metrics are trending positively. Looking forward to discussing the Series A preparation in our next leadership meeting.
-              """,
+              """
             },
             %{
               author: :karen_martinez,
@@ -806,13 +816,13 @@ defmodule Operately.Demo.Data do
               author: :walter_baker,
               content: """
               The development process section has been incredibly helpful for our new team members. I'd suggest adding a subsection about our code review standards and deployment checklist. Also, could we include more details about our feature flagging strategy? It's become a crucial part of how we safely roll out new features.
-              """,
+              """
             },
             %{
               author: :mia_clark,
               content: """
               Agreed with Walter about the code review standards. I'd also love to see a section about our technical debt management strategy and how we prioritize it alongside new feature development. The current sprint planning section could use some real-world examples from our recent collaborative features project.
-              """,
+              """
             }
           ]
         },
@@ -872,13 +882,13 @@ defmodule Operately.Demo.Data do
               author: :rachel_king,
               content: """
               The updated brand voice guidelines have really improved our content consistency. I've noticed our social media engagement has increased by 23% since we implemented these changes. One thing we should consider adding is guidelines for video content, especially with our upcoming product launch videos.
-              """,
+              """
             },
             %{
               author: :emily_davis,
               content: """
               Excellent point about video content, Rachel. Let's also add guidelines for webinar presentations and virtual events. @olivia_hall - Could you share some insights about how these guidelines have influenced our product marketing materials for the new collaborative features?
-              """,
+              """
             }
           ]
         },
@@ -992,7 +1002,7 @@ defmodule Operately.Demo.Data do
           - Audit preparation
           - Compliance requirements
           """
-        },
+        }
       ]
     }
   end

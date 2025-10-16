@@ -25,7 +25,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
     end
 
     test "(company space) - company members have access", ctx do
-      message = create_message(ctx.creator.id,  ctx.company.company_space_id)
+      message = create_message(ctx.creator.id, ctx.company.company_space_id)
 
       assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(message)})
       assert_message(res)
@@ -33,7 +33,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
 
     test "company members have no access", ctx do
       space = create_space(ctx, company_access: Binding.no_access())
-      message = create_message(ctx.creator.id,  space.id)
+      message = create_message(ctx.creator.id, space.id)
 
       assert {404, %{message: msg} = _res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(message)})
       assert msg == "The requested resource was not found"
@@ -41,7 +41,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
 
     test "company members have access", ctx do
       space = create_space(ctx, company_access: Binding.view_access())
-      message = create_message(ctx.creator.id,  space.id)
+      message = create_message(ctx.creator.id, space.id)
 
       assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(message)})
       assert_message(res)
@@ -49,7 +49,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
 
     test "space members have access", ctx do
       space = create_space(ctx, company_access: Binding.no_access())
-      message = create_message(ctx.creator.id,  space.id)
+      message = create_message(ctx.creator.id, space.id)
       add_person_to_space(ctx, space)
 
       assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(message)})
@@ -68,10 +68,11 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
       assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(message)})
       assert res.discussion.notifications == []
 
-      assert {200, res} = query(ctx.conn, :get_discussion, %{
-        id: Paths.message_id(message),
-        include_unread_notifications: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_discussion, %{
+                 id: Paths.message_id(message),
+                 include_unread_notifications: true
+               })
 
       assert length(res.discussion.notifications) == 1
       assert Serializer.serialize(n) == hd(res.discussion.notifications)
@@ -108,12 +109,13 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
       assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(message), include_reactions: true})
       assert res.discussion.reactions == []
 
-      {:ok, reaction} = Operately.Updates.create_reaction(%{
-        person_id: ctx.person.id,
-        entity_id: message.id,
-        entity_type: :message,
-        emoji: "👍"
-      })
+      {:ok, reaction} =
+        Operately.Updates.create_reaction(%{
+          person_id: ctx.person.id,
+          entity_id: message.id,
+          entity_type: :message,
+          emoji: "👍"
+        })
 
       reaction = Operately.Repo.preload(reaction, [:person])
 
@@ -140,10 +142,12 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
 
       refute res.discussion.potential_subscribers
 
-      assert {200, res} = query(ctx.conn, :get_discussion, %{
-        id: Paths.message_id(ctx.message),
-        include_potential_subscribers: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_discussion, %{
+                 id: Paths.message_id(ctx.message),
+                 include_potential_subscribers: true
+               })
+
       subs = res.discussion.potential_subscribers
 
       assert length(subs) == 4
@@ -180,10 +184,12 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
   end
 
   defp add_person_to_space(ctx, space) do
-    Operately.Groups.add_members(ctx.person, space.id, [%{
-      id: ctx.person.id,
-      access_level: Binding.view_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, space.id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.view_access()
+      }
+    ])
   end
 
   defp create_message(creator_id, space_id) do

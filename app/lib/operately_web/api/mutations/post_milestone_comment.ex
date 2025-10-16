@@ -45,7 +45,7 @@ defmodule OperatelyWeb.Api.Mutations.PostMilestoneComment do
         content: %{"message" => inputs.content},
         author_id: person.id,
         entity_id: milestone.id,
-        entity_type: :project_milestone,
+        entity_type: :project_milestone
       }
     )
   end

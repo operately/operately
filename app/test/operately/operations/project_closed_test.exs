@@ -23,15 +23,17 @@ defmodule Operately.Operations.ProjectClosedTest do
   end
 
   test "Closing project notifies only reviewer", ctx do
-    {:ok, retrospective} = Oban.Testing.with_testing_mode(:manual, fn ->
-      Operately.Operations.ProjectClosed.run(ctx.creator, ctx.project, %{
-        content: @retrospective_content,
-        success_status: "achieved",
-        send_to_everyone: false,
-        subscription_parent_type: :project_retrospective,
-        subscriber_ids: [ctx.creator.id, ctx.reviewer.id]
-      })
-    end)
+    {:ok, retrospective} =
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Operately.Operations.ProjectClosed.run(ctx.creator, ctx.project, %{
+          content: @retrospective_content,
+          success_status: "achieved",
+          send_to_everyone: false,
+          subscription_parent_type: :project_retrospective,
+          subscriber_ids: [ctx.creator.id, ctx.reviewer.id]
+        })
+      end)
+
     activity = get_activity(retrospective)
 
     assert 0 == notifications_count(action: @action)
@@ -48,15 +50,17 @@ defmodule Operately.Operations.ProjectClosedTest do
   test "Closing project notifies contributors", ctx do
     contributors = Operately.Projects.list_project_contributors(ctx.project)
 
-    {:ok, retrospective} = Oban.Testing.with_testing_mode(:manual, fn ->
-      Operately.Operations.ProjectClosed.run(ctx.creator, ctx.project, %{
-        content: @retrospective_content,
-        success_status: "achieved",
-        send_to_everyone: false,
-        subscription_parent_type: :project_retrospective,
-        subscriber_ids: Enum.map(contributors, &(&1.person_id)),
-      })
-    end)
+    {:ok, retrospective} =
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Operately.Operations.ProjectClosed.run(ctx.creator, ctx.project, %{
+          content: @retrospective_content,
+          success_status: "achieved",
+          send_to_everyone: false,
+          subscription_parent_type: :project_retrospective,
+          subscriber_ids: Enum.map(contributors, & &1.person_id)
+        })
+      end)
+
     activity = get_activity(retrospective)
 
     assert 0 == notifications_count(action: @action)
@@ -75,15 +79,17 @@ defmodule Operately.Operations.ProjectClosedTest do
   end
 
   test "Closing project notifies all contributors if send_to_everyone is true", ctx do
-    {:ok, retrospective} = Oban.Testing.with_testing_mode(:manual, fn ->
-      Operately.Operations.ProjectClosed.run(ctx.creator, ctx.project, %{
-        content: @retrospective_content,
-        success_status: "achieved",
-        send_to_everyone: true,
-        subscription_parent_type: :project_retrospective,
-        subscriber_ids: [],
-      })
-    end)
+    {:ok, retrospective} =
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Operately.Operations.ProjectClosed.run(ctx.creator, ctx.project, %{
+          content: @retrospective_content,
+          success_status: "achieved",
+          send_to_everyone: true,
+          subscription_parent_type: :project_retrospective,
+          subscriber_ids: []
+        })
+      end)
+
     activity = get_activity(retrospective)
 
     assert 0 == notifications_count(action: @action)
@@ -102,15 +108,16 @@ defmodule Operately.Operations.ProjectClosedTest do
   end
 
   test "Closing project does not notify creator", ctx do
-    {:ok, retrospective} = Oban.Testing.with_testing_mode(:manual, fn ->
-      Operately.Operations.ProjectClosed.run(ctx.creator, ctx.project, %{
-        content: @retrospective_content,
-        success_status: "achieved",
-        send_to_everyone: false,
-        subscription_parent_type: :project_retrospective,
-        subscriber_ids: [ctx.creator.id],
-      })
-    end)
+    {:ok, retrospective} =
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Operately.Operations.ProjectClosed.run(ctx.creator, ctx.project, %{
+          content: @retrospective_content,
+          success_status: "achieved",
+          send_to_everyone: false,
+          subscription_parent_type: :project_retrospective,
+          subscriber_ids: [ctx.creator.id]
+        })
+      end)
 
     activity = get_activity(retrospective)
     perform_job(activity.id)
@@ -121,15 +128,17 @@ defmodule Operately.Operations.ProjectClosedTest do
   test "Closing project notifies mentioned person", ctx do
     content = RichText.rich_text(mentioned_people: [ctx.reviewer, ctx.contrib1, ctx.contrib2, ctx.contrib3]) |> Jason.decode!()
 
-    {:ok, retrospective} = Oban.Testing.with_testing_mode(:manual, fn ->
-      Operately.Operations.ProjectClosed.run(ctx.creator, ctx.project, %{
-        content: content,
-        success_status: "achieved",
-        send_to_everyone: false,
-        subscription_parent_type: :project_retrospective,
-        subscriber_ids: [],
-      })
-    end)
+    {:ok, retrospective} =
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Operately.Operations.ProjectClosed.run(ctx.creator, ctx.project, %{
+          content: content,
+          success_status: "achieved",
+          send_to_everyone: false,
+          subscription_parent_type: :project_retrospective,
+          subscriber_ids: []
+        })
+      end)
+
     activity = get_activity(retrospective)
 
     assert 0 == notifications_count(action: @action)
@@ -148,25 +157,28 @@ defmodule Operately.Operations.ProjectClosedTest do
   end
 
   test "Doesn't notify person without view access", ctx do
-    project = project_fixture(%{
-      company_id: ctx.company.id,
-      creator_id: ctx.creator.id,
-      group_id: ctx.space.id,
-      company_access_level: Binding.no_access(),
-    })
+    project =
+      project_fixture(%{
+        company_id: ctx.company.id,
+        creator_id: ctx.creator.id,
+        group_id: ctx.space.id,
+        company_access_level: Binding.no_access()
+      })
+
     person = person_fixture_with_account(%{company_id: ctx.company.id})
 
     content = RichText.rich_text(mentioned_people: [person]) |> Jason.decode!()
 
-    {:ok, retrospective} = Oban.Testing.with_testing_mode(:manual, fn ->
-      Operately.Operations.ProjectClosed.run(ctx.creator, project, %{
-        content: content,
-        success_status: "achieved",
-        send_to_everyone: false,
-        subscription_parent_type: :project_retrospective,
-        subscriber_ids: [],
-      })
-    end)
+    {:ok, retrospective} =
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Operately.Operations.ProjectClosed.run(ctx.creator, project, %{
+          content: content,
+          success_status: "achieved",
+          send_to_everyone: false,
+          subscription_parent_type: :project_retrospective,
+          subscriber_ids: []
+        })
+      end)
 
     activity = get_activity(retrospective)
 

@@ -18,7 +18,7 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     UI.visit(ctx, Paths.resource_hub_path(ctx.company, hub))
   end
 
- step :visit_folder_page, ctx, folder_name do
+  step :visit_folder_page, ctx, folder_name do
     UI.visit(ctx, Paths.folder_path(ctx.company, ctx[folder_name]))
   end
 
@@ -38,7 +38,7 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   # Assertions
   #
 
-  step :assert_zero_state, ctx, name \\ "Documents & Files"  do
+  step :assert_zero_state, ctx, name \\ "Documents & Files" do
     ctx
     |> UI.assert_text(name)
     |> UI.assert_text("Ready for your first document")
@@ -219,9 +219,13 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   end
 
   def get_resource_id(resource_name) do
-    {:ok, node} = Node.get(:system, name: resource_name, opts: [
-      preload: [:document, :link, :folder, :file]
-    ])
+    {:ok, node} =
+      Node.get(:system,
+        name: resource_name,
+        opts: [
+          preload: [:document, :link, :folder, :file]
+        ]
+      )
 
     cond do
       node.document -> Paths.document_id(node.document)

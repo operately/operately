@@ -10,7 +10,8 @@ defmodule Operately.ResourceHubs.Notifications do
 
     document =
       from(document in Operately.ResourceHubs.Document,
-        join: c in assoc(document, :access_context), as: :context,
+        join: c in assoc(document, :access_context),
+        as: :context,
         join: h in assoc(document, :resource_hub),
         join: s in assoc(h, :space),
         join: m in assoc(s, :members),
@@ -28,7 +29,8 @@ defmodule Operately.ResourceHubs.Notifications do
 
     file =
       from(file in Operately.ResourceHubs.File,
-        join: c in assoc(file, :access_context), as: :context,
+        join: c in assoc(file, :access_context),
+        as: :context,
         join: h in assoc(file, :resource_hub),
         join: s in assoc(h, :space),
         join: m in assoc(s, :members),
@@ -46,7 +48,8 @@ defmodule Operately.ResourceHubs.Notifications do
 
     link =
       from(link in Operately.ResourceHubs.Link,
-        join: c in assoc(link, :access_context), as: :context,
+        join: c in assoc(link, :access_context),
+        as: :context,
         join: h in assoc(link, :resource_hub),
         join: s in assoc(h, :space),
         join: m in assoc(s, :members),

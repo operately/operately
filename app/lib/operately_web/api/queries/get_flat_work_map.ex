@@ -23,16 +23,20 @@ defmodule OperatelyWeb.Api.Queries.GetFlatWorkMap do
     company = company(conn)
 
     {:ok, flat_work_map} =
-      GetWorkMapQuery.execute(person, %{
-        company_id: company.id,
-        space_id: inputs[:space_id],
-        parent_goal_id: inputs[:parent_goal_id],
-        champion_id: inputs[:champion_id],
-        reviewer_id: inputs[:reviewer_id],
-        contributor_id: inputs[:contributor_id],
-        only_completed: inputs[:only_completed] || false,
-        include_assignees: inputs[:include_assignees] || false
-      }, :flat)
+      GetWorkMapQuery.execute(
+        person,
+        %{
+          company_id: company.id,
+          space_id: inputs[:space_id],
+          parent_goal_id: inputs[:parent_goal_id],
+          champion_id: inputs[:champion_id],
+          reviewer_id: inputs[:reviewer_id],
+          contributor_id: inputs[:contributor_id],
+          only_completed: inputs[:only_completed] || false,
+          include_assignees: inputs[:include_assignees] || false
+        },
+        :flat
+      )
 
     {:ok, %{work_map: Serializer.serialize(flat_work_map)}}
   end

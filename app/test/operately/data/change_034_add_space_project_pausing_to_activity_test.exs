@@ -15,12 +15,13 @@ defmodule Operately.Data.Change034AddSpaceProjectPausingToActivityTest do
 
   describe "project_pausing and project_renamed" do
     test "migration doesn't delete existing data in activity content", ctx do
-      projects = Enum.map(1..3, fn _ ->
-        p = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.creator.id, group_id: ctx.space.id, name: "name"})
-        {:ok, _} = Operately.Operations.ProjectPausing.run(ctx.creator, p)
-        {:ok, p} = Operately.Projects.rename_project(ctx.creator, p, "new name")
-        p
-      end)
+      projects =
+        Enum.map(1..3, fn _ ->
+          p = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.creator.id, group_id: ctx.space.id, name: "name"})
+          {:ok, _} = Operately.Operations.ProjectPausing.run(ctx.creator, p)
+          {:ok, p} = Operately.Projects.rename_project(ctx.creator, p, "new name")
+          p
+        end)
 
       Operately.Data.Change034AddSpaceProjectPausingToActivity.run()
 
@@ -50,13 +51,16 @@ defmodule Operately.Data.Change034AddSpaceProjectPausingToActivityTest do
     end
 
     test "migration doesn't delete existing data in activity content", ctx do
-      comments = Enum.map(1..3, fn _ ->
-        {:ok, comment} = Operately.Comments.create_milestone_comment(ctx.creator, ctx.milestone, "none", %{
-          content: %{"message" => RichText.rich_text("message")},
-          author_id: ctx.creator.id,
-        })
-        comment
-      end)
+      comments =
+        Enum.map(1..3, fn _ ->
+          {:ok, comment} =
+            Operately.Comments.create_milestone_comment(ctx.creator, ctx.milestone, "none", %{
+              content: %{"message" => RichText.rich_text("message")},
+              author_id: ctx.creator.id
+            })
+
+          comment
+        end)
 
       Operately.Data.Change034AddSpaceProjectPausingToActivity.run()
 

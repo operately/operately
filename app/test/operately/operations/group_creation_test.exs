@@ -14,7 +14,7 @@ defmodule Operately.Operations.GroupCreationTest do
     mission: "my mission",
     icon: "IconBuildingEstate",
     color: "text-cyan-500",
-    company_permissions: Binding.comment_access(),
+    company_permissions: Binding.comment_access()
   }
 
   setup do
@@ -46,7 +46,8 @@ defmodule Operately.Operations.GroupCreationTest do
     context = Access.get_context!(group_id: group.id)
 
     assert context
-    assert length(access_groups) == 9 # 4 company and company space's + 2 space's + 2 user's + 1 anonymous
+    # 4 company and company space's + 2 space's + 2 user's + 1 anonymous
+    assert length(access_groups) == 9
 
     assert Access.get_group(group_id: group.id, tag: :standard)
     assert Access.get_group(group_id: group.id, tag: :full_access)
@@ -68,7 +69,7 @@ defmodule Operately.Operations.GroupCreationTest do
   end
 
   test "GroupCreation operation can create no_access binding to company members", ctx do
-    attrs = Map.merge(@group_attrs, %{ company_permissions: Binding.no_access() })
+    attrs = Map.merge(@group_attrs, %{company_permissions: Binding.no_access()})
 
     {:ok, group} = Operately.Operations.GroupCreation.run(ctx.creator, attrs)
 

@@ -22,13 +22,16 @@ defmodule Operately.Data.Change030CreateSubscriptionsListForProjectRetrospective
   defp create_subscriptions_list(retrospective) do
     case SubscriptionList.get(:system, parent_id: retrospective.id) do
       {:error, :not_found} ->
-        {:ok, subscriptions_list} = Notifications.create_subscription_list(%{
-          parent_id: retrospective.id,
-          parent_type: :project_retrospective,
-        })
+        {:ok, subscriptions_list} =
+          Notifications.create_subscription_list(%{
+            parent_id: retrospective.id,
+            parent_type: :project_retrospective
+          })
+
         subscriptions_list
 
-      {:ok, subscriptions_list} -> subscriptions_list
+      {:ok, subscriptions_list} ->
+        subscriptions_list
     end
     |> update_retrospective(retrospective)
   end
@@ -37,6 +40,7 @@ defmodule Operately.Data.Change030CreateSubscriptionsListForProjectRetrospective
     if subscriptions_list.id != retrospective.subscription_list_id do
       {:ok, _} = Operately.Projects.update_retrospective(retrospective, %{subscription_list_id: subscriptions_list.id})
     end
+
     subscriptions_list
   end
 
@@ -61,12 +65,15 @@ defmodule Operately.Data.Change030CreateSubscriptionsListForProjectRetrospective
   defp find_or_create_subscription(subscriptions_list, contrib) do
     case Subscription.get(:system, subscription_list_id: subscriptions_list.id, person_id: contrib.person_id) do
       {:error, :not_found} ->
-        {:ok, _} = Notifications.create_subscription(%{
-          subscription_list_id: subscriptions_list.id,
-          person_id: contrib.person_id,
-          type: :invited,
-        })
-      _ -> :ok
+        {:ok, _} =
+          Notifications.create_subscription(%{
+            subscription_list_id: subscriptions_list.id,
+            person_id: contrib.person_id,
+            type: :invited
+          })
+
+      _ ->
+        :ok
     end
   end
 end

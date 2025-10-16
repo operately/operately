@@ -3,7 +3,7 @@ defmodule Operately.Groups.SpaceTools do
     :projects,
     :goals,
     :messages_boards,
-    :resource_hubs,
+    :resource_hubs
   ]
 
   def build_struct(attrs) do
@@ -11,7 +11,7 @@ defmodule Operately.Groups.SpaceTools do
       projects: attrs.projects,
       goals: attrs.goals,
       messages_boards: attrs.messages_boards,
-      resource_hubs: attrs.resource_hubs,
+      resource_hubs: attrs.resource_hubs
     }
   end
 end

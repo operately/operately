@@ -20,9 +20,10 @@ defmodule Operately.Operations.ResourceHubDocumentDeletingTest do
   test "Deleting document sends notifications to everyone", ctx do
     document = create_document(ctx, true, [])
 
-    {:ok, _} = Oban.Testing.with_testing_mode(:manual, fn ->
-      Operately.Operations.ResourceHubDocumentDeleting.run(ctx.creator, document)
-    end)
+    {:ok, _} =
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Operately.Operations.ResourceHubDocumentDeleting.run(ctx.creator, document)
+      end)
 
     activity = get_activity(document, @action)
 
@@ -42,9 +43,10 @@ defmodule Operately.Operations.ResourceHubDocumentDeletingTest do
   test "Deleting document sends notifications to selected people", ctx do
     document = create_document(ctx, false, [ctx.mike.id, ctx.jane.id])
 
-    {:ok, _} = Oban.Testing.with_testing_mode(:manual, fn ->
-      Operately.Operations.ResourceHubDocumentDeleting.run(ctx.creator, document)
-    end)
+    {:ok, _} =
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Operately.Operations.ResourceHubDocumentDeleting.run(ctx.creator, document)
+      end)
 
     activity = get_activity(document, @action)
 
@@ -67,9 +69,10 @@ defmodule Operately.Operations.ResourceHubDocumentDeletingTest do
     content = RichText.rich_text(mentioned_people: [ctx.person]) |> Jason.decode!()
     document = create_document(ctx, false, [ctx.person.id], content)
 
-    {:ok, _} = Oban.Testing.with_testing_mode(:manual, fn ->
-      Operately.Operations.ResourceHubDocumentDeleting.run(ctx.creator, document)
-    end)
+    {:ok, _} =
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Operately.Operations.ResourceHubDocumentDeleting.run(ctx.creator, document)
+      end)
 
     activity = get_activity(document, @action)
     perform_job(activity.id)
@@ -83,14 +86,16 @@ defmodule Operately.Operations.ResourceHubDocumentDeletingTest do
   #
 
   defp create_document(ctx, send_to_everyone, people_list, content \\ nil) do
-    {:ok, document} = Operately.Operations.ResourceHubDocumentCreating.run(ctx.creator, ctx.hub, %{
-      name: "Some name",
-      content: content || RichText.rich_text("Content"),
-      post_as_draft: false,
-      send_to_everyone: send_to_everyone,
-      subscription_parent_type: :resource_hub_document,
-      subscriber_ids: people_list,
-    })
+    {:ok, document} =
+      Operately.Operations.ResourceHubDocumentCreating.run(ctx.creator, ctx.hub, %{
+        name: "Some name",
+        content: content || RichText.rich_text("Content"),
+        post_as_draft: false,
+        send_to_everyone: send_to_everyone,
+        subscription_parent_type: :resource_hub_document,
+        subscriber_ids: people_list
+      })
+
     Repo.preload(document, :resource_hub)
   end
 

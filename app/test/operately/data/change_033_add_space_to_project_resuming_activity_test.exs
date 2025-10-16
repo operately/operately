@@ -13,12 +13,13 @@ defmodule Operately.Data.Change033AddSpaceToProjectResumingActivityTest do
   end
 
   test "migration doesn't delete existing data in activity content", ctx do
-    projects = Enum.map(1..3, fn _ ->
-      p = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.creator.id, group_id: ctx.space.id})
-      Operately.Operations.ProjectPausing.run(ctx.creator, p)
-      Operately.Operations.ProjectResuming.run(ctx.creator, p)
-      p
-    end)
+    projects =
+      Enum.map(1..3, fn _ ->
+        p = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.creator.id, group_id: ctx.space.id})
+        Operately.Operations.ProjectPausing.run(ctx.creator, p)
+        Operately.Operations.ProjectResuming.run(ctx.creator, p)
+        p
+      end)
 
     Operately.Data.Change033AddSpaceToProjectResumingActivity.run()
 

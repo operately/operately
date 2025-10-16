@@ -45,16 +45,17 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussion do
   defp parse_inputs(inputs) do
     board_id = fetch_board_id(inputs.space_id)
 
-    {:ok, %{
-      messages_board_id: board_id,
-      space_id: inputs.space_id,
-      title: inputs.title,
-      content: Jason.decode!(inputs.body),
-      post_as_draft: inputs[:post_as_draft] || false,
-      send_to_everyone: inputs[:send_notifications_to_everyone] || false,
-      subscription_parent_type: :message,
-      subscriber_ids: inputs[:subscriber_ids] || []
-    }}
+    {:ok,
+     %{
+       messages_board_id: board_id,
+       space_id: inputs.space_id,
+       title: inputs.title,
+       content: Jason.decode!(inputs.body),
+       post_as_draft: inputs[:post_as_draft] || false,
+       send_to_everyone: inputs[:send_notifications_to_everyone] || false,
+       subscription_parent_type: :message,
+       subscriber_ids: inputs[:subscriber_ids] || []
+     }}
   end
 
   # This is a temporary function.

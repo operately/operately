@@ -33,13 +33,14 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
   step :given_a_contributor_exists, ctx, name: name do
     contrib = person_fixture_with_account(%{full_name: name, title: "Manager", company_id: ctx.company.id})
 
-    {:ok, _} = Operately.Projects.create_contributor(contrib, %{
-      person_id: contrib.id,
-      role: "contributor",
-      project_id: ctx.project.id,
-      responsibility: "Lead the backend implementation",
-      permissions: Binding.edit_access(),
-    })
+    {:ok, _} =
+      Operately.Projects.create_contributor(contrib, %{
+        person_id: contrib.id,
+        role: "contributor",
+        project_id: ctx.project.id,
+        responsibility: "Lead the backend implementation",
+        permissions: Binding.edit_access()
+      })
 
     ctx
   end
@@ -49,19 +50,20 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     |> UI.click(testid: "manage-team-button")
     |> UI.click(testid: "add-contributors-button")
 
-    ctx = Enum.reduce(Enum.with_index(people), ctx, fn {person, index}, ctx ->
-      UI.find(ctx, UI.query(testid: "contributor-#{index}"), fn ctx ->
-        ctx
-        |> UI.select_person_in(testid: "contributors-#{index}-personid", name: person.name)
-        |> UI.fill(testid: "contributors-#{index}-responsibility", with: person.responsibility)
-      end)
+    ctx =
+      Enum.reduce(Enum.with_index(people), ctx, fn {person, index}, ctx ->
+        UI.find(ctx, UI.query(testid: "contributor-#{index}"), fn ctx ->
+          ctx
+          |> UI.select_person_in(testid: "contributors-#{index}-personid", name: person.name)
+          |> UI.fill(testid: "contributors-#{index}-responsibility", with: person.responsibility)
+        end)
 
-      if index == length(people) - 1 do
-        ctx
-      else
-        ctx |> UI.click(testid: "add-more")
-      end
-    end)
+        if index == length(people) - 1 do
+          ctx
+        else
+          ctx |> UI.click(testid: "add-more")
+        end
+      end)
 
     ctx
     |> UI.click(testid: "submit")
@@ -154,13 +156,14 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
   step :given_the_project_has_contributor, ctx, name: name do
     contrib = person_fixture_with_account(%{full_name: name, title: "Manager", company_id: ctx.company.id})
 
-    {:ok, _} = Operately.Projects.create_contributor(contrib, %{
-      person_id: contrib.id,
-      role: "contributor",
-      project_id: ctx.project.id,
-      responsibility: "Lead the backend implementation",
-      permissions: Binding.edit_access(),
-    })
+    {:ok, _} =
+      Operately.Projects.create_contributor(contrib, %{
+        person_id: contrib.id,
+        role: "contributor",
+        project_id: ctx.project.id,
+        responsibility: "Lead the backend implementation",
+        permissions: Binding.edit_access()
+      })
 
     ctx
   end
@@ -244,6 +247,7 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
 
   step :assert_reviewer_converted_to_contributor_feed_item_exists, ctx do
     name = Person.first_name(ctx.reviewer)
+
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
     |> UI.assert_feed_item(ctx.champion, "reassigned #{name} as a contributor")
@@ -266,11 +270,11 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
   end
 
   step :given_company_members_have_access, ctx do
-    person = person_fixture_with_account(%{
-      company_id: ctx.company.id,
-      full_name: "Michael Scott"
-    })
-
+    person =
+      person_fixture_with_account(%{
+        company_id: ctx.company.id,
+        full_name: "Michael Scott"
+      })
 
     Map.put(ctx, :company_member, person)
   end
@@ -383,5 +387,4 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     |> UI.click(testid: "promote-to-#{role}")
     |> UI.sleep(500)
   end
-
 end

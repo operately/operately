@@ -44,13 +44,16 @@ defmodule Operately.Data.Change023AddTagToReviewersAndChampionsBindings do
 
     case Access.get_binding(context_id: context.id, group_id: group.id) do
       nil ->
-        {:ok, binding} = Access.create_binding(%{
-          context_id: context.id,
-          group_id: group.id,
-          access_level: Binding.full_access(),
-          tag: tag,
-        })
+        {:ok, binding} =
+          Access.create_binding(%{
+            context_id: context.id,
+            group_id: group.id,
+            access_level: Binding.full_access(),
+            tag: tag
+          })
+
         binding
+
       binding ->
         binding
     end

@@ -103,38 +103,46 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalTest do
     end
 
     test "Goal isn't created when champion doesn't have access to the space", ctx do
-      assert {400, res} = request(ctx.conn, ctx, %{
-        space_id: Paths.space_id(ctx.space),
-        reviewer_id: Paths.person_id(ctx.creator),
-        champion_id: Paths.person_id(ctx.company_member),
-      })
+      assert {400, res} =
+               request(ctx.conn, ctx, %{
+                 space_id: Paths.space_id(ctx.space),
+                 reviewer_id: Paths.person_id(ctx.creator),
+                 champion_id: Paths.person_id(ctx.company_member)
+               })
+
       assert res.message == "The selected champion doesn't have access to the selected space"
     end
 
     test "Goal successfully created when champion has access to the space", ctx do
-      assert {200, res} = request(ctx.conn, ctx, %{
-        space_id: Paths.space_id(ctx.space),
-        reviewer_id: Paths.person_id(ctx.creator),
-        champion_id: Paths.person_id(ctx.space_member),
-      })
+      assert {200, res} =
+               request(ctx.conn, ctx, %{
+                 space_id: Paths.space_id(ctx.space),
+                 reviewer_id: Paths.person_id(ctx.creator),
+                 champion_id: Paths.person_id(ctx.space_member)
+               })
+
       assert_goal_created(res)
     end
 
     test "Goal isn't created when reviewer doesn't have access to the space", ctx do
-      assert {400, res} = request(ctx.conn, ctx, %{
-        space_id: Paths.space_id(ctx.space),
-        reviewer_id: Paths.person_id(ctx.company_member),
-        champion_id: Paths.person_id(ctx.creator),
-      })
+      assert {400, res} =
+               request(ctx.conn, ctx, %{
+                 space_id: Paths.space_id(ctx.space),
+                 reviewer_id: Paths.person_id(ctx.company_member),
+                 champion_id: Paths.person_id(ctx.creator)
+               })
+
       assert res.message == "The selected reviewer doesn't have access to the selected space"
     end
 
     test "Goal successfully created when reviewer has access to the space", ctx do
-      assert {200, res} = request(ctx.conn, ctx, %{
-        space_id: Paths.space_id(ctx.space),
-        reviewer_id: Paths.person_id(ctx.space_member),
-        champion_id: Paths.person_id(ctx.creator),
-      })
+      assert {200, res} =
+               request(ctx.conn, ctx, %{
+                 space_id: Paths.space_id(ctx.space),
+                 reviewer_id: Paths.person_id(ctx.space_member),
+                 champion_id: Paths.person_id(ctx.creator)
+               })
+
       assert_goal_created(res)
     end
   end
@@ -169,20 +177,24 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalTest do
   defp request(conn, ctx, attrs \\ []) do
     timeframe = Timeframe.current_quarter() |> Serializer.serialize()
 
-    mutation(conn, :create_goal, Enum.into(attrs, %{
-      space_id: Paths.space_id(ctx.space),
-      name: "goal",
-      reviewer_id: Paths.person_id(ctx.person),
-      champion_id: Paths.person_id(ctx.person),
-      timeframe: timeframe,
-      targets: [
-        %{name: "name", from: 10, to: 20, unit: "-", index: 1},
-        %{name: "another", from: 10, to: 20, unit: "-", index: 2},
-      ],
-      anonymous_access_level: Binding.no_access(),
-      company_access_level: Binding.view_access(),
-      space_access_level: Binding.edit_access(),
-    }))
+    mutation(
+      conn,
+      :create_goal,
+      Enum.into(attrs, %{
+        space_id: Paths.space_id(ctx.space),
+        name: "goal",
+        reviewer_id: Paths.person_id(ctx.person),
+        champion_id: Paths.person_id(ctx.person),
+        timeframe: timeframe,
+        targets: [
+          %{name: "name", from: 10, to: 20, unit: "-", index: 1},
+          %{name: "another", from: 10, to: 20, unit: "-", index: 2}
+        ],
+        anonymous_access_level: Binding.no_access(),
+        company_access_level: Binding.view_access(),
+        space_access_level: Binding.edit_access()
+      })
+    )
   end
 
   defp assert_goal_created(res) do
@@ -203,9 +215,11 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalTest do
   end
 
   defp add_person_to_space(ctx, access_level) do
-    Operately.Groups.add_members(ctx.person, ctx.space.id, [%{
-      id: ctx.person.id,
-      access_level: access_level,
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space.id, [
+      %{
+        id: ctx.person.id,
+        access_level: access_level
+      }
+    ])
   end
 end

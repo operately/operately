@@ -23,20 +23,17 @@ defmodule OperatelyWeb.Api.Queries.ListGoalContributorsTest do
     end
 
     @table [
-      %{company: :no_access,      space: :no_access,      goal: :no_access,      expected: :forbidden},
-
-      %{company: :no_access,      space: :no_access,      goal: :champion,       expected: :allowed},
-      %{company: :no_access,      space: :no_access,      goal: :reviewer,       expected: :allowed},
-
-      %{company: :no_access,      space: :view_access,    goal: :no_access,      expected: :allowed},
-      %{company: :no_access,      space: :comment_access, goal: :no_access,      expected: :allowed},
-      %{company: :no_access,      space: :edit_access,    goal: :no_access,      expected: :allowed},
-      %{company: :no_access,      space: :full_access,    goal: :no_access,      expected: :allowed},
-
-      %{company: :view_access,    space: :no_access,      goal: :no_access,      expected: :allowed},
-      %{company: :comment_access, space: :no_access,      goal: :no_access,      expected: :allowed},
-      %{company: :edit_access,    space: :no_access,      goal: :no_access,      expected: :allowed},
-      %{company: :full_access,    space: :no_access,      goal: :no_access,      expected: :allowed},
+      %{company: :no_access, space: :no_access, goal: :no_access, expected: :forbidden},
+      %{company: :no_access, space: :no_access, goal: :champion, expected: :allowed},
+      %{company: :no_access, space: :no_access, goal: :reviewer, expected: :allowed},
+      %{company: :no_access, space: :view_access, goal: :no_access, expected: :allowed},
+      %{company: :no_access, space: :comment_access, goal: :no_access, expected: :allowed},
+      %{company: :no_access, space: :edit_access, goal: :no_access, expected: :allowed},
+      %{company: :no_access, space: :full_access, goal: :no_access, expected: :allowed},
+      %{company: :view_access, space: :no_access, goal: :no_access, expected: :allowed},
+      %{company: :comment_access, space: :no_access, goal: :no_access, expected: :allowed},
+      %{company: :edit_access, space: :no_access, goal: :no_access, expected: :allowed},
+      %{company: :full_access, space: :no_access, goal: :no_access, expected: :allowed}
     ]
 
     tabletest @table do
@@ -51,6 +48,7 @@ defmodule OperatelyWeb.Api.Queries.ListGoalContributorsTest do
         case @test.expected do
           :forbidden ->
             assert length(res.contributors) == 0
+
           :allowed ->
             assert length(res.contributors) == 2
         end
@@ -107,39 +105,51 @@ defmodule OperatelyWeb.Api.Queries.ListGoalContributorsTest do
   #
 
   defp create_space(ctx, company_members_level, space_members_level) do
-    space = group_fixture(ctx.creator, %{
-      company_id: ctx.company.id,
-      company_permissions: Binding.from_atom(company_members_level),
-    })
+    space =
+      group_fixture(ctx.creator, %{
+        company_id: ctx.company.id,
+        company_permissions: Binding.from_atom(company_members_level)
+      })
 
     if space_members_level != :no_access do
-      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
-        id: ctx.person.id,
-        access_level: Binding.from_atom(space_members_level)
-      }])
+      {:ok, _} =
+        Operately.Groups.add_members(ctx.creator, space.id, [
+          %{
+            id: ctx.person.id,
+            access_level: Binding.from_atom(space_members_level)
+          }
+        ])
     end
 
     space
   end
 
   defp create_goal(ctx, space, company_members_level, space_members_level, goal_member_level) do
-    attrs = case goal_member_level do
-      :champion -> [champion_id: ctx.person.id]
-      :reviewer -> [reviewer_id: ctx.person.id]
-      _ -> []
-    end
+    attrs =
+      case goal_member_level do
+        :champion -> [champion_id: ctx.person.id]
+        :reviewer -> [reviewer_id: ctx.person.id]
+        _ -> []
+      end
 
-    goal = goal_fixture(ctx.creator, Enum.into(attrs, %{
-      space_id: space.id,
-      company_access_level: Binding.from_atom(company_members_level),
-      space_access_level: Binding.from_atom(space_members_level),
-    }))
+    goal =
+      goal_fixture(
+        ctx.creator,
+        Enum.into(attrs, %{
+          space_id: space.id,
+          company_access_level: Binding.from_atom(company_members_level),
+          space_access_level: Binding.from_atom(space_members_level)
+        })
+      )
 
     if space_members_level != :no_access do
-      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
-        id: ctx.person.id,
-        access_level: Binding.from_atom(space_members_level)
-      }])
+      {:ok, _} =
+        Operately.Groups.add_members(ctx.creator, space.id, [
+          %{
+            id: ctx.person.id,
+            access_level: Binding.from_atom(space_members_level)
+          }
+        ])
     end
 
     goal

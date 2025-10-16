@@ -12,11 +12,10 @@ defmodule OperatelyWeb.Api.Queries.GetAccountTest do
     assert {200, data} = query(conn, :get_account, %{})
 
     assert data == %{
-      account: %{
-        full_name: account.full_name,
-        site_admin: account.site_admin,
-      }
-    }
+             account: %{
+               full_name: account.full_name,
+               site_admin: account.site_admin
+             }
+           }
   end
-
 end

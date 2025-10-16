@@ -12,7 +12,8 @@ defmodule Operately.Operations.MessageArchiving do
 
   defp record_activity(multi, author, message) do
     if message.state == :draft do
-      multi # do nothing
+      # do nothing
+      multi
     else
       message = Repo.preload(message, :space)
 

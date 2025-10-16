@@ -16,13 +16,14 @@ defmodule Operately.ProjectsTest do
     reviewer = person_fixture(%{company_id: company.id})
     group = group_fixture(champion, %{company_id: company.id})
 
-    project = project_fixture(%{
-      company_id: company.id,
-      creator_id: champion.id,
-      champion_id: champion.id,
-      reviewer_id: reviewer.id,
-      group_id: group.id
-    })
+    project =
+      project_fixture(%{
+        company_id: company.id,
+        creator_id: champion.id,
+        champion_id: champion.id,
+        reviewer_id: reviewer.id,
+        group_id: group.id
+      })
 
     {:ok, company: company, project: project, champion: champion, reviewer: reviewer, group: group}
   end
@@ -51,7 +52,7 @@ defmodule Operately.ProjectsTest do
         reviewer_id: ctx.reviewer.id,
         creator_id: ctx.champion.id,
         company_access_level: Binding.view_access(),
-        space_access_level: Binding.comment_access(),
+        space_access_level: Binding.comment_access()
       }
 
       assert {:ok, %Project{} = project} = Projects.create_project(project_attrs)
@@ -83,7 +84,7 @@ defmodule Operately.ProjectsTest do
 
     test "outdated?/1 returns true if the project is outdated" do
       four_days_from_now = DateTime.utc_now() |> DateTime.add(4, :day)
-      tomorrow =  DateTime.utc_now() |> DateTime.add(1, :day)
+      tomorrow = DateTime.utc_now() |> DateTime.add(1, :day)
       yesterday = DateTime.utc_now() |> DateTime.add(-1, :day)
       four_days_ago = DateTime.utc_now() |> DateTime.add(-4, :day)
       last_week = DateTime.utc_now() |> DateTime.add(-7, :day)
@@ -129,7 +130,7 @@ defmodule Operately.ProjectsTest do
       update_attrs = %{
         timeframe: %{
           contextual_start_date: ContextualDate.create_day_date(Date.utc_today()),
-          contextual_end_date: ContextualDate.create_day_date(~D[2023-06-17]),
+          contextual_end_date: ContextualDate.create_day_date(~D[2023-06-17])
         },
         title: "some updated title"
       }
@@ -153,10 +154,11 @@ defmodule Operately.ProjectsTest do
     alias Operately.Projects.Contributor
 
     setup ctx do
-      contributor = contributor_fixture(ctx.champion, %{
-        project_id: ctx.project.id,
-        person_id: ctx.champion.id
-      })
+      contributor =
+        contributor_fixture(ctx.champion, %{
+          project_id: ctx.project.id,
+          person_id: ctx.champion.id
+        })
 
       {:ok, contributor: contributor}
     end
@@ -206,10 +208,11 @@ defmodule Operately.ProjectsTest do
     @invalid_attrs %{content: nil, title: nil}
 
     setup ctx do
-      document = document_fixture(%{
-        project_id: ctx.project.id,
-        author_id: ctx.champion.id
-      })
+      document =
+        document_fixture(%{
+          project_id: ctx.project.id,
+          author_id: ctx.champion.id
+        })
 
       {:ok, document: document}
     end

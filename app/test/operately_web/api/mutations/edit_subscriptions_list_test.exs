@@ -18,21 +18,19 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsListTest do
 
   describe "permissions" do
     @table [
-      %{company: :no_access,      space: :no_access,      project: :no_access,      expected: 404},
-      %{company: :no_access,      space: :no_access,      project: :view_access,    expected: 403},
-      %{company: :no_access,      space: :no_access,      project: :comment_access, expected: 403},
-      %{company: :no_access,      space: :no_access,      project: :edit_access,    expected: 200},
-      %{company: :no_access,      space: :no_access,      project: :full_access,    expected: 200},
-
-      %{company: :no_access,      space: :view_access,    project: :no_access,      expected: 403},
-      %{company: :no_access,      space: :comment_access, project: :no_access,      expected: 403},
-      %{company: :no_access,      space: :edit_access,    project: :no_access,      expected: 200},
-      %{company: :no_access,      space: :full_access,    project: :no_access,      expected: 200},
-
-      %{company: :view_access,    space: :no_access,      project: :no_access,      expected: 403},
-      %{company: :comment_access, space: :no_access,      project: :no_access,      expected: 403},
-      %{company: :edit_access,    space: :no_access,      project: :no_access,      expected: 200},
-      %{company: :full_access,    space: :no_access,      project: :no_access,      expected: 200},
+      %{company: :no_access, space: :no_access, project: :no_access, expected: 404},
+      %{company: :no_access, space: :no_access, project: :view_access, expected: 403},
+      %{company: :no_access, space: :no_access, project: :comment_access, expected: 403},
+      %{company: :no_access, space: :no_access, project: :edit_access, expected: 200},
+      %{company: :no_access, space: :no_access, project: :full_access, expected: 200},
+      %{company: :no_access, space: :view_access, project: :no_access, expected: 403},
+      %{company: :no_access, space: :comment_access, project: :no_access, expected: 403},
+      %{company: :no_access, space: :edit_access, project: :no_access, expected: 200},
+      %{company: :no_access, space: :full_access, project: :no_access, expected: 200},
+      %{company: :view_access, space: :no_access, project: :no_access, expected: 403},
+      %{company: :comment_access, space: :no_access, project: :no_access, expected: 403},
+      %{company: :edit_access, space: :no_access, project: :no_access, expected: 200},
+      %{company: :full_access, space: :no_access, project: :no_access, expected: 200}
     ]
 
     setup ctx do
@@ -48,22 +46,26 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsListTest do
         check_in = check_in_fixture(%{author_id: ctx.creator.id, project_id: project.id})
         {:ok, subscription_list} = SubscriptionList.get(:system, parent_id: check_in.id)
 
-        assert {code, res} = mutation(ctx.conn, :edit_subscriptions_list, %{
-          id: Paths.subscription_list_id(subscription_list),
-          type: "project_check_in",
-          send_notifications_to_everyone: true,
-          subscriber_ids: [],
-        })
+        assert {code, res} =
+                 mutation(ctx.conn, :edit_subscriptions_list, %{
+                   id: Paths.subscription_list_id(subscription_list),
+                   type: "project_check_in",
+                   send_notifications_to_everyone: true,
+                   subscriber_ids: []
+                 })
 
         assert code == @test.expected
 
         subscription_list = Repo.reload(subscription_list)
 
         case @test.expected do
-          200 -> assert subscription_list.send_to_everyone
+          200 ->
+            assert subscription_list.send_to_everyone
+
           403 ->
             refute subscription_list.send_to_everyone
             assert res.message == "You don't have permission to perform this action"
+
           404 ->
             refute subscription_list.send_to_everyone
             assert res.message == "The requested resource was not found"
@@ -86,22 +88,24 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsListTest do
       subscriptions_list = Repo.reload(ctx.subscriptions_list)
       refute subscriptions_list.send_to_everyone
 
-      assert {200, _} = mutation(ctx.conn, :edit_subscriptions_list, %{
-        id: Paths.subscription_list_id(subscriptions_list),
-        type: "project_check_in",
-        send_notifications_to_everyone: true,
-        subscriber_ids: [],
-      })
+      assert {200, _} =
+               mutation(ctx.conn, :edit_subscriptions_list, %{
+                 id: Paths.subscription_list_id(subscriptions_list),
+                 type: "project_check_in",
+                 send_notifications_to_everyone: true,
+                 subscriber_ids: []
+               })
 
       subscriptions_list = Repo.reload(ctx.subscriptions_list)
       assert subscriptions_list.send_to_everyone
 
-      assert {200, _} = mutation(ctx.conn, :edit_subscriptions_list, %{
-        id: Paths.subscription_list_id(subscriptions_list),
-        type: "project_check_in",
-        send_notifications_to_everyone: false,
-        subscriber_ids: [],
-      })
+      assert {200, _} =
+               mutation(ctx.conn, :edit_subscriptions_list, %{
+                 id: Paths.subscription_list_id(subscriptions_list),
+                 type: "project_check_in",
+                 send_notifications_to_everyone: false,
+                 subscriber_ids: []
+               })
 
       subscriptions_list = Repo.reload(ctx.subscriptions_list)
       refute subscriptions_list.send_to_everyone
@@ -110,12 +114,13 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsListTest do
     test "adds new subscriptions", ctx do
       people = create_people(ctx)
 
-      assert {200, _} = mutation(ctx.conn, :edit_subscriptions_list, %{
-        id: Paths.subscription_list_id(ctx.subscriptions_list),
-        type: "project_check_in",
-        send_notifications_to_everyone: true,
-        subscriber_ids: Enum.map(people, &(Paths.person_id(&1))),
-      })
+      assert {200, _} =
+               mutation(ctx.conn, :edit_subscriptions_list, %{
+                 id: Paths.subscription_list_id(ctx.subscriptions_list),
+                 type: "project_check_in",
+                 send_notifications_to_everyone: true,
+                 subscriber_ids: Enum.map(people, &Paths.person_id(&1))
+               })
 
       Enum.each(people, fn p ->
         assert Notifications.is_subscriber?(p.id, ctx.subscriptions_list.id)
@@ -130,12 +135,13 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsListTest do
         assert Notifications.is_subscriber?(p.id, ctx.subscriptions_list.id)
       end)
 
-      assert {200, _} = mutation(ctx.conn, :edit_subscriptions_list, %{
-        id: Paths.subscription_list_id(ctx.subscriptions_list),
-        type: "project_check_in",
-        send_notifications_to_everyone: true,
-        subscriber_ids: [],
-      })
+      assert {200, _} =
+               mutation(ctx.conn, :edit_subscriptions_list, %{
+                 id: Paths.subscription_list_id(ctx.subscriptions_list),
+                 type: "project_check_in",
+                 send_notifications_to_everyone: true,
+                 subscriber_ids: []
+               })
 
       Enum.each(people, fn p ->
         refute Notifications.is_subscriber?(p.id, ctx.subscriptions_list.id)
@@ -149,12 +155,13 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsListTest do
       assert Notifications.is_subscriber?(ctx.person.id, ctx.subscriptions_list.id)
       refute Notifications.is_subscriber?(another.id, ctx.subscriptions_list.id)
 
-      assert {200, _} = mutation(ctx.conn, :edit_subscriptions_list, %{
-        id: Paths.subscription_list_id(ctx.subscriptions_list),
-        type: "project_check_in",
-        send_notifications_to_everyone: true,
-        subscriber_ids: [Paths.person_id(another)],
-      })
+      assert {200, _} =
+               mutation(ctx.conn, :edit_subscriptions_list, %{
+                 id: Paths.subscription_list_id(ctx.subscriptions_list),
+                 type: "project_check_in",
+                 send_notifications_to_everyone: true,
+                 subscriber_ids: [Paths.person_id(another)]
+               })
 
       refute Notifications.is_subscriber?(ctx.person.id, ctx.subscriptions_list.id)
       assert Notifications.is_subscriber?(another.id, ctx.subscriptions_list.id)
@@ -167,12 +174,13 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsListTest do
       assert Notifications.is_subscriber?(ctx.person.id, ctx.subscriptions_list.id)
       assert Notifications.is_subscriber?(another.id, ctx.subscriptions_list.id)
 
-      assert {200, _} = mutation(ctx.conn, :edit_subscriptions_list, %{
-        id: Paths.subscription_list_id(ctx.subscriptions_list),
-        type: "project_check_in",
-        send_notifications_to_everyone: true,
-        subscriber_ids: [Paths.person_id(another)],
-      })
+      assert {200, _} =
+               mutation(ctx.conn, :edit_subscriptions_list, %{
+                 id: Paths.subscription_list_id(ctx.subscriptions_list),
+                 type: "project_check_in",
+                 send_notifications_to_everyone: true,
+                 subscriber_ids: [Paths.person_id(another)]
+               })
 
       refute Notifications.is_subscriber?(ctx.person.id, ctx.subscriptions_list.id)
       assert Notifications.is_subscriber?(another.id, ctx.subscriptions_list.id)
@@ -185,16 +193,17 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsListTest do
       assert Notifications.is_subscriber?(ctx.person.id, ctx.subscriptions_list.id)
       assert Notifications.is_subscriber?(another.id, ctx.subscriptions_list.id)
 
-      Enum.each(subscriptions, &(Notifications.update_subscription(&1, %{canceled: true})))
+      Enum.each(subscriptions, &Notifications.update_subscription(&1, %{canceled: true}))
 
       refute Notifications.is_subscriber?(ctx.person.id, ctx.subscriptions_list.id)
       refute Notifications.is_subscriber?(another.id, ctx.subscriptions_list.id)
 
-      assert {200, _} = mutation(ctx.conn, :edit_subscriptions_list, %{
-        id: Paths.subscription_list_id(ctx.subscriptions_list),
-        type: "project_check_in",
-        subscriber_ids: [Paths.person_id(ctx.person), Paths.person_id(another)],
-      })
+      assert {200, _} =
+               mutation(ctx.conn, :edit_subscriptions_list, %{
+                 id: Paths.subscription_list_id(ctx.subscriptions_list),
+                 type: "project_check_in",
+                 subscriber_ids: [Paths.person_id(ctx.person), Paths.person_id(another)]
+               })
 
       assert Notifications.is_subscriber?(ctx.person.id, ctx.subscriptions_list.id)
       assert Notifications.is_subscriber?(another.id, ctx.subscriptions_list.id)
@@ -213,11 +222,13 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsListTest do
 
   defp subscribe_people(ctx, people) do
     Enum.map(people, fn p ->
-      {:ok, s} = Notifications.create_subscription(%{
-        subscription_list_id: ctx.subscriptions_list.id,
-        person_id: p.id,
-        type: :invited,
-      })
+      {:ok, s} =
+        Notifications.create_subscription(%{
+          subscription_list_id: ctx.subscriptions_list.id,
+          person_id: p.id,
+          type: :invited
+        })
+
       s
     end)
   end
@@ -227,28 +238,33 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsListTest do
   end
 
   def create_project(ctx, space, company_members_level, space_members_level, project_member_level) do
-    project = project_fixture(%{
-      company_id: ctx.company.id,
-      creator_id: ctx.creator.id,
-      group_id: space.id,
-      company_access_level: Binding.from_atom(company_members_level),
-      space_access_level: Binding.from_atom(space_members_level),
-    })
+    project =
+      project_fixture(%{
+        company_id: ctx.company.id,
+        creator_id: ctx.creator.id,
+        group_id: space.id,
+        company_access_level: Binding.from_atom(company_members_level),
+        space_access_level: Binding.from_atom(space_members_level)
+      })
 
     if space_members_level != :no_access do
-      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
-        id: ctx.person.id,
-        access_level: Binding.from_atom(space_members_level)
-      }])
+      {:ok, _} =
+        Operately.Groups.add_members(ctx.creator, space.id, [
+          %{
+            id: ctx.person.id,
+            access_level: Binding.from_atom(space_members_level)
+          }
+        ])
     end
 
     if project_member_level != :no_access do
-      {:ok, _} = Operately.Projects.create_contributor(ctx.creator, %{
-        project_id: project.id,
-        person_id: ctx.person.id,
-        permissions: Binding.from_atom(project_member_level),
-        responsibility: "some responsibility"
-      })
+      {:ok, _} =
+        Operately.Projects.create_contributor(ctx.creator, %{
+          project_id: project.id,
+          person_id: ctx.person.id,
+          permissions: Binding.from_atom(project_member_level),
+          responsibility: "some responsibility"
+        })
     end
 
     project

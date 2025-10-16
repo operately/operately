@@ -22,17 +22,15 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubLinkTest do
     end
 
     @table [
-      %{company: :no_access,      space: :no_access,      expected: 404},
-
-      %{company: :no_access,      space: :view_access,    expected: 200},
-      %{company: :no_access,      space: :comment_access, expected: 200},
-      %{company: :no_access,      space: :edit_access,    expected: 200},
-      %{company: :no_access,      space: :full_access,    expected: 200},
-
-      %{company: :view_access,    space: :no_access,      expected: 200},
-      %{company: :comment_access, space: :no_access,      expected: 200},
-      %{company: :edit_access,    space: :no_access,      expected: 200},
-      %{company: :full_access,    space: :no_access,      expected: 200},
+      %{company: :no_access, space: :no_access, expected: 404},
+      %{company: :no_access, space: :view_access, expected: 200},
+      %{company: :no_access, space: :comment_access, expected: 200},
+      %{company: :no_access, space: :edit_access, expected: 200},
+      %{company: :no_access, space: :full_access, expected: 200},
+      %{company: :view_access, space: :no_access, expected: 200},
+      %{company: :comment_access, space: :no_access, expected: 200},
+      %{company: :edit_access, space: :no_access, expected: 200},
+      %{company: :full_access, space: :no_access, expected: 200}
     ]
 
     tabletest @table do
@@ -48,6 +46,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubLinkTest do
         case @test.expected do
           404 ->
             assert res.message == "The requested resource was not found"
+
           200 ->
             assert res.link.id == Paths.link_id(link)
         end
@@ -78,10 +77,11 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubLinkTest do
 
       refute res.link.author
 
-      assert {200, res} = query(ctx.conn, :get_resource_hub_link, %{
-        id: Paths.link_id(ctx.link),
-        include_author: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_resource_hub_link, %{
+                 id: Paths.link_id(ctx.link),
+                 include_author: true
+               })
 
       assert res.link.author == Serializer.serialize(ctx.creator)
     end
@@ -91,10 +91,11 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubLinkTest do
 
       refute res.link.resource_hub
 
-      assert {200, res} = query(ctx.conn, :get_resource_hub_link, %{
-        id: Paths.link_id(ctx.link),
-        include_resource_hub: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_resource_hub_link, %{
+                 id: Paths.link_id(ctx.link),
+                 include_resource_hub: true
+               })
 
       assert res.link.resource_hub == Serializer.serialize(ctx.hub)
     end
@@ -104,10 +105,11 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubLinkTest do
 
       refute res.link.parent_folder
 
-      assert {200, res} = query(ctx.conn, :get_resource_hub_link, %{
-        id: Paths.link_id(ctx.link),
-        include_parent_folder: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_resource_hub_link, %{
+                 id: Paths.link_id(ctx.link),
+                 include_parent_folder: true
+               })
 
       assert res.link.parent_folder == Repo.preload(ctx.folder, :node) |> Serializer.serialize()
     end
@@ -116,24 +118,30 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubLinkTest do
       assert {200, res} = query(ctx.conn, :get_resource_hub_link, %{id: Paths.link_id(ctx.link)})
       refute res.link.reactions
 
-      assert {200, res} = query(ctx.conn, :get_resource_hub_link, %{
-        id: Paths.link_id(ctx.link),
-        include_reactions: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_resource_hub_link, %{
+                 id: Paths.link_id(ctx.link),
+                 include_reactions: true
+               })
+
       assert res.link.reactions == []
 
-      {:ok, reaction} = Operately.Updates.create_reaction(%{
-        person_id: ctx.creator.id,
-        entity_id: ctx.link.id,
-        entity_type: :resource_hub_link,
-        emoji: "👍"
-      })
+      {:ok, reaction} =
+        Operately.Updates.create_reaction(%{
+          person_id: ctx.creator.id,
+          entity_id: ctx.link.id,
+          entity_type: :resource_hub_link,
+          emoji: "👍"
+        })
+
       reaction = Repo.preload(reaction, [:person])
 
-      assert {200, res} = query(ctx.conn, :get_resource_hub_link, %{
-        id: Paths.link_id(ctx.link),
-        include_reactions: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_resource_hub_link, %{
+                 id: Paths.link_id(ctx.link),
+                 include_reactions: true
+               })
+
       assert res.link.reactions == [Serializer.serialize(reaction)]
     end
 
@@ -141,10 +149,12 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubLinkTest do
       assert {200, res} = query(ctx.conn, :get_resource_hub_link, %{id: Paths.link_id(ctx.link)})
       refute res.link.permissions
 
-      assert {200, res} = query(ctx.conn, :get_resource_hub_link, %{
-        id: Paths.link_id(ctx.link),
-        include_permissions: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_resource_hub_link, %{
+                 id: Paths.link_id(ctx.link),
+                 include_permissions: true
+               })
+
       assert res.link.permissions
     end
 
@@ -152,10 +162,12 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubLinkTest do
       assert {200, res} = query(ctx.conn, :get_resource_hub_link, %{id: Paths.link_id(ctx.link)})
       refute res.link.subscription_list
 
-      assert {200, res} = query(ctx.conn, :get_resource_hub_link, %{
-        id: Paths.link_id(ctx.link),
-        include_subscriptions_list: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_resource_hub_link, %{
+                 id: Paths.link_id(ctx.link),
+                 include_subscriptions_list: true
+               })
+
       assert res.link.subscription_list
     end
 
@@ -163,10 +175,12 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubLinkTest do
       assert {200, res} = query(ctx.conn, :get_resource_hub_link, %{id: Paths.link_id(ctx.link)})
       refute res.link.potential_subscribers
 
-      assert {200, res} = query(ctx.conn, :get_resource_hub_link, %{
-        id: Paths.link_id(ctx.link),
-        include_potential_subscribers: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_resource_hub_link, %{
+                 id: Paths.link_id(ctx.link),
+                 include_potential_subscribers: true
+               })
+
       assert res.link.potential_subscribers
     end
   end
@@ -179,10 +193,13 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubLinkTest do
     space = group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.from_atom(company_members_level)})
 
     if space_members_level != :no_access do
-      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
-        id: ctx.person.id,
-        access_level: Binding.from_atom(space_members_level)
-      }])
+      {:ok, _} =
+        Operately.Groups.add_members(ctx.creator, space.id, [
+          %{
+            id: ctx.person.id,
+            access_level: Binding.from_atom(space_members_level)
+          }
+        ])
     end
 
     space

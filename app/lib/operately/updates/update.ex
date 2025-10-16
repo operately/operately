@@ -12,24 +12,25 @@ defmodule Operately.Updates.Update do
     field :updatable_id, Ecto.UUID
     field :updatable_type, Ecto.Enum, values: [:goal, :project, :space]
 
-    field :type, Ecto.Enum, values: [
-      :message, 
-      :project_discussion,
-      :status_update, 
-      :health_change, 
-      :phase_change, 
-      :review,
-      :project_created,
-      :project_start_time_changed,
-      :project_end_time_changed,
-      :project_contributor_added,
-      :project_contributor_removed,
-      :project_milestone_created,
-      :project_milestone_completed,
-      :project_milestone_deadline_changed,
-      :project_milestone_deleted,
-      :goal_check_in
-    ]
+    field :type, Ecto.Enum,
+      values: [
+        :message,
+        :project_discussion,
+        :status_update,
+        :health_change,
+        :phase_change,
+        :review,
+        :project_created,
+        :project_start_time_changed,
+        :project_end_time_changed,
+        :project_contributor_added,
+        :project_contributor_removed,
+        :project_milestone_created,
+        :project_milestone_completed,
+        :project_milestone_deadline_changed,
+        :project_milestone_deleted,
+        :goal_check_in
+      ]
 
     field :content, :map
 
@@ -45,8 +46,10 @@ defmodule Operately.Updates.Update do
 
     field :title, :string
 
-    field :space, :any, virtual: true # loaded by preload_space
-    field :goal, :any, virtual: true # loaded by preload_goal
+    # loaded by preload_space
+    field :space, :any, virtual: true
+    # loaded by preload_goal
+    field :goal, :any, virtual: true
 
     timestamps()
   end
@@ -64,7 +67,7 @@ defmodule Operately.Updates.Update do
       :updatable_type,
       :author_id,
       :type,
-      :content,
+      :content
     ])
     |> validate_content()
   end
@@ -114,5 +117,4 @@ defmodule Operately.Updates.Update do
 
     %{update | goal: Operately.Repo.one(query)}
   end
-
 end

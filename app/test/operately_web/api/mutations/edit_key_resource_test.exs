@@ -15,18 +15,16 @@ defmodule OperatelyWeb.Api.Mutations.EditKeyResourceTest do
 
   describe "permissions" do
     @table [
-      %{company: :no_access,      space: :no_access,      project: :no_access,      expected: 404},
-      %{company: :no_access,      space: :no_access,      project: :comment_access, expected: 403},
-      %{company: :no_access,      space: :no_access,      project: :edit_access,    expected: 200},
-      %{company: :no_access,      space: :no_access,      project: :full_access,    expected: 200},
-
-      %{company: :no_access,      space: :comment_access, project: :no_access,      expected: 403},
-      %{company: :no_access,      space: :edit_access,    project: :no_access,      expected: 200},
-      %{company: :no_access,      space: :full_access,    project: :no_access,      expected: 200},
-
-      %{company: :comment_access, space: :no_access,      project: :no_access,      expected: 403},
-      %{company: :edit_access,    space: :no_access,      project: :no_access,      expected: 200},
-      %{company: :full_access,    space: :no_access,      project: :no_access,      expected: 200},
+      %{company: :no_access, space: :no_access, project: :no_access, expected: 404},
+      %{company: :no_access, space: :no_access, project: :comment_access, expected: 403},
+      %{company: :no_access, space: :no_access, project: :edit_access, expected: 200},
+      %{company: :no_access, space: :no_access, project: :full_access, expected: 200},
+      %{company: :no_access, space: :comment_access, project: :no_access, expected: 403},
+      %{company: :no_access, space: :edit_access, project: :no_access, expected: 200},
+      %{company: :no_access, space: :full_access, project: :no_access, expected: 200},
+      %{company: :comment_access, space: :no_access, project: :no_access, expected: 403},
+      %{company: :edit_access, space: :no_access, project: :no_access, expected: 200},
+      %{company: :full_access, space: :no_access, project: :no_access, expected: 200}
     ]
 
     setup ctx do
@@ -41,11 +39,12 @@ defmodule OperatelyWeb.Api.Mutations.EditKeyResourceTest do
         project = create_project(ctx, space, @test.company, @test.space, @test.project)
         resource = create_key_resource(project)
 
-        assert {code, res} = mutation(ctx.conn, :edit_key_resource, %{
-          id: Paths.key_resource_id(resource),
-          title: "New title",
-          link: "https://another-resource.com",
-        })
+        assert {code, res} =
+                 mutation(ctx.conn, :edit_key_resource, %{
+                   id: Paths.key_resource_id(resource),
+                   title: "New title",
+                   link: "https://another-resource.com"
+                 })
 
         assert code == @test.expected
 
@@ -53,8 +52,12 @@ defmodule OperatelyWeb.Api.Mutations.EditKeyResourceTest do
           200 ->
             resource = Repo.reload(resource) |> Repo.preload(:project)
             assert res == %{key_resource: Serializer.serialize(resource, level: :essential)}
-          403 -> assert res.message == "You don't have permission to perform this action"
-          404 -> assert res.message == "The requested resource was not found"
+
+          403 ->
+            assert res.message == "You don't have permission to perform this action"
+
+          404 ->
+            assert res.message == "The requested resource was not found"
         end
       end
     end
@@ -71,11 +74,12 @@ defmodule OperatelyWeb.Api.Mutations.EditKeyResourceTest do
     test "edits key resource", ctx do
       resource = key_resource_fixture(%{project_id: ctx.project.id})
 
-      assert {200, res} = mutation(ctx.conn, :edit_key_resource, %{
-        id: Paths.key_resource_id(resource),
-        title: "New title",
-        link: "https://another-resource.com",
-      })
+      assert {200, res} =
+               mutation(ctx.conn, :edit_key_resource, %{
+                 id: Paths.key_resource_id(resource),
+                 title: "New title",
+                 link: "https://another-resource.com"
+               })
 
       resource = Repo.reload(resource) |> Repo.preload(:project)
       assert res.key_resource == Serializer.serialize(resource)
@@ -91,28 +95,33 @@ defmodule OperatelyWeb.Api.Mutations.EditKeyResourceTest do
   end
 
   def create_project(ctx, space, company_members_level, space_members_level, project_member_level) do
-    project = project_fixture(%{
-      company_id: ctx.company.id,
-      creator_id: ctx.creator.id,
-      group_id: space.id,
-      company_access_level: Binding.from_atom(company_members_level),
-      space_access_level: Binding.from_atom(space_members_level),
-    })
+    project =
+      project_fixture(%{
+        company_id: ctx.company.id,
+        creator_id: ctx.creator.id,
+        group_id: space.id,
+        company_access_level: Binding.from_atom(company_members_level),
+        space_access_level: Binding.from_atom(space_members_level)
+      })
 
     if space_members_level != :no_access do
-      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
-        id: ctx.person.id,
-        access_level: Binding.from_atom(space_members_level)
-      }])
+      {:ok, _} =
+        Operately.Groups.add_members(ctx.creator, space.id, [
+          %{
+            id: ctx.person.id,
+            access_level: Binding.from_atom(space_members_level)
+          }
+        ])
     end
 
     if project_member_level != :no_access do
-      {:ok, _} = Operately.Projects.create_contributor(ctx.creator, %{
-        project_id: project.id,
-        person_id: ctx.person.id,
-        permissions: Binding.from_atom(project_member_level),
-        responsibility: "some responsibility"
-      })
+      {:ok, _} =
+        Operately.Projects.create_contributor(ctx.creator, %{
+          project_id: project.id,
+          person_id: ctx.person.id,
+          permissions: Binding.from_atom(project_member_level),
+          responsibility: "some responsibility"
+        })
     end
 
     project

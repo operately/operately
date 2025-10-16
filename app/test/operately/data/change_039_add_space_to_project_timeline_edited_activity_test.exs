@@ -23,9 +23,9 @@ defmodule Operately.Data.Change039AddSpaceToProjectTimelineEditedActivityTest do
         %{
           title: "New milestone",
           description: RichText.rich_text("description"),
-          due_date: ContextualDate.create_day_date(~D[2024-11-14]),
+          due_date: ContextualDate.create_day_date(~D[2024-11-14])
         }
-      ],
+      ]
     }
 
     Enum.each(1..3, fn _ ->

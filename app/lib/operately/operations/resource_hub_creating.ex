@@ -7,14 +7,17 @@ defmodule Operately.Operations.ResourceHubCreating do
 
   def run(author, space, attrs) do
     Multi.new()
-    |> Multi.insert(:resource_hub, ResourceHub.changeset(%{
-      space_id: space.id,
-      name: attrs.name,
-      description: attrs.description,
-    }))
+    |> Multi.insert(
+      :resource_hub,
+      ResourceHub.changeset(%{
+        space_id: space.id,
+        name: attrs.name,
+        description: attrs.description
+      })
+    )
     |> Multi.insert(:context, fn changes ->
       Context.changeset(%{
-        resource_hub_id: changes.resource_hub.id,
+        resource_hub_id: changes.resource_hub.id
       })
     end)
     |> insert_bindings(space, attrs)
@@ -23,7 +26,7 @@ defmodule Operately.Operations.ResourceHubCreating do
         space_id: space.id,
         company_id: space.company_id,
         resource_hub_id: changes.resource_hub.id,
-        name: changes.resource_hub.id,
+        name: changes.resource_hub.id
       }
     end)
     |> Repo.transaction()

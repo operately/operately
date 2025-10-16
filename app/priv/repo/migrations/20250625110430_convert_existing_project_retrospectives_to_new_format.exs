@@ -6,6 +6,5 @@ defmodule Operately.Repo.Migrations.ConvertExistingProjectRetrospectivesToNewFor
   end
 
   def down do
-
   end
 end

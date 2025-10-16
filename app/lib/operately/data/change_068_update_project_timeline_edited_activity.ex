@@ -30,7 +30,8 @@ defmodule Operately.Data.Change068UpdateProjectTimelineEditedActivity do
   # Convert a UTC datetime field to a date if it's not nil
   defp maybe_convert_field(content, field_name) do
     case content[field_name] do
-      nil -> content
+      nil ->
+        content
 
       datetime_str when is_binary(datetime_str) ->
         case DateTime.from_iso8601(datetime_str) do
@@ -42,7 +43,9 @@ defmodule Operately.Data.Change068UpdateProjectTimelineEditedActivity do
             # If parsing fails, leave it unchanged
             content
         end
-      _ -> content
+
+      _ ->
+        content
     end
   end
 end

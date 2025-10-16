@@ -13,14 +13,16 @@ defmodule Operately.Operations.ResourceHubDocumentPublishing do
   end
 
   defp insert_activity(multi, author, document) do
-    Activities.insert_sync(multi, author.id, :resource_hub_document_created, fn _changes -> %{
-      company_id: author.company_id,
-      space_id: document.resource_hub.space_id,
-      resource_hub_id: document.resource_hub.id,
-      document_id: document.id,
-      node_id: document.node_id,
-      name: document.node.name,
-    } end)
+    Activities.insert_sync(multi, author.id, :resource_hub_document_created, fn _changes ->
+      %{
+        company_id: author.company_id,
+        space_id: document.resource_hub.space_id,
+        resource_hub_id: document.resource_hub.id,
+        document_id: document.id,
+        node_id: document.node_id,
+        name: document.node.name
+      }
+    end)
   end
 
   defp update_document(multi, document, nil) do
@@ -28,10 +30,14 @@ defmodule Operately.Operations.ResourceHubDocumentPublishing do
   end
 
   defp update_document(multi, document, content) do
-    Multi.update(multi, :document, Document.changeset(document, %{
-      state: :published,
-      content: content,
-    }))
+    Multi.update(
+      multi,
+      :document,
+      Document.changeset(document, %{
+        state: :published,
+        content: content
+      })
+    )
   end
 
   defp update_node(multi, node, nil) do

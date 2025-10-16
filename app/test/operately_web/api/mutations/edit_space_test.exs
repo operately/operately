@@ -104,7 +104,7 @@ defmodule OperatelyWeb.Api.Mutations.EditSpaceTest do
     mutation(conn, :edit_space, %{
       id: Paths.space_id(space),
       name: Keyword.get(attrs, :name, space.name),
-      mission: Keyword.get(attrs, :mission, space.mission),
+      mission: Keyword.get(attrs, :mission, space.mission)
     })
   end
 
@@ -115,14 +115,16 @@ defmodule OperatelyWeb.Api.Mutations.EditSpaceTest do
   defp create_space(ctx, attrs) do
     group_fixture(ctx.creator, %{
       company_id: ctx.company.id,
-      company_permissions: Keyword.get(attrs, :company_permissions, Binding.no_access()),
+      company_permissions: Keyword.get(attrs, :company_permissions, Binding.no_access())
     })
   end
 
   defp add_person_to_space(ctx, space_id, access_level) do
-    Operately.Groups.add_members(ctx.person, space_id, [%{
-      id: ctx.person.id,
-      access_level: access_level,
-    }])
+    Operately.Groups.add_members(ctx.person, space_id, [
+      %{
+        id: ctx.person.id,
+        access_level: access_level
+      }
+    ])
   end
 end

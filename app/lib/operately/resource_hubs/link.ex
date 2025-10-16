@@ -16,17 +16,19 @@ defmodule Operately.ResourceHubs.Link do
 
     field :url, :string
     field :description, :map
-    field :type, Ecto.Enum, values: [
-      :airtable,
-      :dropbox,
-      :figma,
-      :google,
-      :google_doc,
-      :google_sheet,
-      :google_slides,
-      :notion,
-      :other,
-    ]
+
+    field :type, Ecto.Enum,
+      values: [
+        :airtable,
+        :dropbox,
+        :figma,
+        :google,
+        :google_doc,
+        :google_sheet,
+        :google_slides,
+        :notion,
+        :other
+      ]
 
     # populated with after load hooks
     field :potential_subscribers, :any, virtual: true
@@ -40,7 +42,7 @@ defmodule Operately.ResourceHubs.Link do
     request_info()
   end
 
-def changeset(attrs) do
+  def changeset(attrs) do
     changeset(%__MODULE__{}, attrs)
   end
 

@@ -20,7 +20,7 @@ defmodule OperatelyWeb.Api.Mutations.RequestPasswordReset do
         Logger.info("Password reset requested for non-existent account with email: #{inputs.email}")
         # don't expose that an account with this email doesn't exist
         {:ok, %{}}
-        
+
       {:error, :failed_to_create_token} ->
         Logger.error("Failed to create token for password reset for account with email: #{inputs.email}")
         {:error, :internal_server_error}

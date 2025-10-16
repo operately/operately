@@ -6,6 +6,5 @@ defmodule Operately.Repo.Migrations.CreateSubscriptionsListForExistingGoalUpdate
   end
 
   def down do
-
   end
 end

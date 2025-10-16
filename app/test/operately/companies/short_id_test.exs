@@ -6,13 +6,15 @@ defmodule Operately.Companies.ShortIdTest do
   alias Operately.Companies.Company
 
   test "generate" do
-    companies = 0..99 |> Enum.map(fn i -> 
-      Company.changeset(%{name: "Company #{i}", short_id: generate()}) |> Repo.insert!()
-    end)
+    companies =
+      0..99
+      |> Enum.map(fn i ->
+        Company.changeset(%{name: "Company #{i}", short_id: generate()}) |> Repo.insert!()
+      end)
 
     Enum.each(companies, fn company ->
       assert company.short_id >= 1024
-      assert company.short_id <= 18446744073709551615
+      assert company.short_id <= 18_446_744_073_709_551_615
       assert String.length(encode!(company.short_id)) == 4
     end)
 
@@ -28,7 +30,7 @@ defmodule Operately.Companies.ShortIdTest do
     assert encode!(1025) == "0bab"
 
     assert decode("0a") == {:ok, 0}
-    assert decode("099") == {:ok, 1023}  
+    assert decode("099") == {:ok, 1023}
     assert decode("0baa") == {:ok, 1024}
     assert decode("0bab") == {:ok, 1025}
 

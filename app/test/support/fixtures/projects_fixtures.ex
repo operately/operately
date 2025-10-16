@@ -15,14 +15,18 @@ defmodule Operately.ProjectsFixtures do
   def project_fixture(attrs \\ %{}) do
     attrs = Enum.into(attrs, %{})
 
-    attrs = Map.merge(%{
-      name: "some name",
-      visibility: "everyone",
-      champion_id: attrs[:champion_id] || attrs[:creator_id],
-      reviewer_id: attrs[:reviewer_id],
-      company_access_level: Binding.view_access(),
-      space_access_level: Binding.comment_access(),
-    }, attrs)
+    attrs =
+      Map.merge(
+        %{
+          name: "some name",
+          visibility: "everyone",
+          champion_id: attrs[:champion_id] || attrs[:creator_id],
+          reviewer_id: attrs[:reviewer_id],
+          company_access_level: Binding.view_access(),
+          space_access_level: Binding.comment_access()
+        },
+        attrs
+      )
 
     attrs = struct!(Operately.Operations.ProjectCreation, attrs)
 
@@ -37,21 +41,24 @@ defmodule Operately.ProjectsFixtures do
   def milestone_fixture(attrs) do
     {:ok, subscription_list} = Operately.Notifications.create_subscription_list()
 
-    attrs = attrs
+    attrs =
+      attrs
       |> Enum.into(%{
         title: "some title",
         timeframe: %{
           contextual_start_date: ContextualDate.create_day_date(Date.utc_today()),
-          contextual_end_date: ContextualDate.create_day_date(~D[2023-05-10]),
+          contextual_end_date: ContextualDate.create_day_date(~D[2023-05-10])
         },
-        subscription_list_id: subscription_list.id,
+        subscription_list_id: subscription_list.id
       })
 
     {:ok, milestone} = Operately.Projects.create_milestone(attrs)
-    {:ok, _} = Operately.Notifications.update_subscription_list(subscription_list, %{
-      parent_type: :project_milestone,
-      parent_id: milestone.id,
-    })
+
+    {:ok, _} =
+      Operately.Notifications.update_subscription_list(subscription_list, %{
+        parent_type: :project_milestone,
+        parent_id: milestone.id
+      })
 
     project = Operately.Repo.preload(milestone, :project).project
 
@@ -69,7 +76,7 @@ defmodule Operately.ProjectsFixtures do
   Generate a contributor.
   """
   def contributor_fixture(creator, attrs \\ %{}) do
-    attrs = Enum.into(attrs, %{ responsibility: "some responsibility", permissions: Binding.edit_access() })
+    attrs = Enum.into(attrs, %{responsibility: "some responsibility", permissions: Binding.edit_access()})
 
     {:ok, contributor} = Operately.Projects.create_contributor(creator, attrs)
 
@@ -134,15 +141,16 @@ defmodule Operately.ProjectsFixtures do
       |> Enum.into(%{
         status: attrs[:status] || "on_track",
         description: %{},
-        subscription_list_id: subscription_list.id,
+        subscription_list_id: subscription_list.id
       })
       |> Operately.Projects.CheckIn.changeset()
       |> Operately.Repo.insert()
 
-    {:ok, _} = Operately.Notifications.update_subscription_list(subscription_list, %{
-      parent_type: :project_check_in,
-      parent_id: check_in.id,
-    })
+    {:ok, _} =
+      Operately.Notifications.update_subscription_list(subscription_list, %{
+        parent_type: :project_check_in,
+        parent_id: check_in.id
+      })
 
     check_in
   end
@@ -159,17 +167,18 @@ defmodule Operately.ProjectsFixtures do
         content: %{
           whatWentWell: RichText.rich_text("some content"),
           whatDidYouLearn: RichText.rich_text("some content"),
-          whatCouldHaveGoneBetter: RichText.rich_text("some content"),
+          whatCouldHaveGoneBetter: RichText.rich_text("some content")
         },
         closed_at: DateTime.utc_now(),
-        subscription_list_id: subscription_list.id,
+        subscription_list_id: subscription_list.id
       })
       |> Operately.Projects.create_retrospective()
 
-    {:ok, _} = Operately.Notifications.update_subscription_list(subscription_list, %{
-      parent_type: :project_retrospective,
-      parent_id: retrospective.id,
-    })
+    {:ok, _} =
+      Operately.Notifications.update_subscription_list(subscription_list, %{
+        parent_type: :project_retrospective,
+        parent_id: retrospective.id
+      })
 
     retrospective
   end

@@ -15,29 +15,26 @@ defmodule OperatelyWeb.Api.Mutations.MoveProjectToSpaceTest do
 
   describe "permissions" do
     @project_table [
-      %{company: :no_access,      space: :no_access,      project: :no_access,      expected: 404},
-      %{company: :no_access,      space: :no_access,      project: :comment_access, expected: 403},
-      %{company: :no_access,      space: :no_access,      project: :edit_access,    expected: 200},
-      %{company: :no_access,      space: :no_access,      project: :full_access,    expected: 200},
-
-      %{company: :no_access,      space: :comment_access, project: :no_access,      expected: 403},
-      %{company: :no_access,      space: :edit_access,    project: :no_access,      expected: 200},
-      %{company: :no_access,      space: :full_access,    project: :no_access,      expected: 200},
-
-      %{company: :comment_access, space: :no_access,      project: :no_access,      expected: 403},
-      %{company: :edit_access,    space: :no_access,      project: :no_access,      expected: 200},
-      %{company: :full_access,    space: :no_access,      project: :no_access,      expected: 200},
+      %{company: :no_access, space: :no_access, project: :no_access, expected: 404},
+      %{company: :no_access, space: :no_access, project: :comment_access, expected: 403},
+      %{company: :no_access, space: :no_access, project: :edit_access, expected: 200},
+      %{company: :no_access, space: :no_access, project: :full_access, expected: 200},
+      %{company: :no_access, space: :comment_access, project: :no_access, expected: 403},
+      %{company: :no_access, space: :edit_access, project: :no_access, expected: 200},
+      %{company: :no_access, space: :full_access, project: :no_access, expected: 200},
+      %{company: :comment_access, space: :no_access, project: :no_access, expected: 403},
+      %{company: :edit_access, space: :no_access, project: :no_access, expected: 200},
+      %{company: :full_access, space: :no_access, project: :no_access, expected: 200}
     ]
 
     @new_space_table [
-      %{company: :no_access,      space: :no_access,      expected: 404},
-      %{company: :no_access,      space: :comment_access, expected: 200},
-      %{company: :no_access,      space: :edit_access,    expected: 200},
-      %{company: :no_access,      space: :full_access,    expected: 200},
-
-      %{company: :comment_access, space: :no_access,      expected: 200},
-      %{company: :edit_access,    space: :no_access,      expected: 200},
-      %{company: :full_access,    space: :no_access,      expected: 200},
+      %{company: :no_access, space: :no_access, expected: 404},
+      %{company: :no_access, space: :comment_access, expected: 200},
+      %{company: :no_access, space: :edit_access, expected: 200},
+      %{company: :no_access, space: :full_access, expected: 200},
+      %{company: :comment_access, space: :no_access, expected: 200},
+      %{company: :edit_access, space: :no_access, expected: 200},
+      %{company: :full_access, space: :no_access, expected: 200}
     ]
 
     setup ctx do
@@ -53,10 +50,11 @@ defmodule OperatelyWeb.Api.Mutations.MoveProjectToSpaceTest do
         new_space = create_space(ctx, company_permissions: :view_access)
         project = create_project(ctx, @test.company, @test.space, @test.project)
 
-        assert {code, res} = mutation(ctx.conn, :move_project_to_space, %{
-          project_id: Paths.project_id(project),
-          space_id: Paths.space_id(new_space)
-        })
+        assert {code, res} =
+                 mutation(ctx.conn, :move_project_to_space, %{
+                   project_id: Paths.project_id(project),
+                   space_id: Paths.space_id(new_space)
+                 })
 
         assert code == @test.expected
 
@@ -74,16 +72,20 @@ defmodule OperatelyWeb.Api.Mutations.MoveProjectToSpaceTest do
         project = create_project(ctx, :full_access, :full_access, :full_access)
 
         if @test.space != :no_access do
-          {:ok, _} = Operately.Groups.add_members(ctx.creator, new_space.id, [%{
-            id: ctx.person.id,
-            access_level: Binding.from_atom(@test.space)
-          }])
+          {:ok, _} =
+            Operately.Groups.add_members(ctx.creator, new_space.id, [
+              %{
+                id: ctx.person.id,
+                access_level: Binding.from_atom(@test.space)
+              }
+            ])
         end
 
-        assert {code, res} = mutation(ctx.conn, :move_project_to_space, %{
-          project_id: Paths.project_id(project),
-          space_id: Paths.space_id(new_space)
-        })
+        assert {code, res} =
+                 mutation(ctx.conn, :move_project_to_space, %{
+                   project_id: Paths.project_id(project),
+                   space_id: Paths.space_id(new_space)
+                 })
 
         assert code == @test.expected
 
@@ -100,18 +102,20 @@ defmodule OperatelyWeb.Api.Mutations.MoveProjectToSpaceTest do
     setup :register_and_log_in_account
 
     test "it moves a project to a space", ctx do
-      project = project_fixture(%{
-        company_id: ctx.company.id,
-        group_id: ctx.company.company_space_id,
-        creator_id: ctx.person.id
-      })
+      project =
+        project_fixture(%{
+          company_id: ctx.company.id,
+          group_id: ctx.company.company_space_id,
+          creator_id: ctx.person.id
+        })
 
       space = group_fixture(ctx.person, %{company_id: ctx.company.id})
 
-      assert {200, %{}} = mutation(ctx.conn, :move_project_to_space, %{
-        project_id: Paths.project_id(project),
-        space_id: Paths.space_id(space)
-      })
+      assert {200, %{}} =
+               mutation(ctx.conn, :move_project_to_space, %{
+                 project_id: Paths.project_id(project),
+                 space_id: Paths.space_id(space)
+               })
 
       assert_space_changed(project, space)
     end
@@ -129,33 +133,38 @@ defmodule OperatelyWeb.Api.Mutations.MoveProjectToSpaceTest do
   def create_space(ctx, company_permissions: permission) do
     group_fixture(ctx.creator, %{
       company_id: ctx.company.id,
-      company_permissions: Binding.from_atom(permission),
+      company_permissions: Binding.from_atom(permission)
     })
   end
 
   def create_project(ctx, company_members_level, space_members_level, project_member_level) do
-    project = project_fixture(%{
-      company_id: ctx.company.id,
-      creator_id: ctx.creator.id,
-      group_id: ctx.space.id,
-      company_access_level: Binding.from_atom(company_members_level),
-      space_access_level: Binding.from_atom(space_members_level),
-    })
+    project =
+      project_fixture(%{
+        company_id: ctx.company.id,
+        creator_id: ctx.creator.id,
+        group_id: ctx.space.id,
+        company_access_level: Binding.from_atom(company_members_level),
+        space_access_level: Binding.from_atom(space_members_level)
+      })
 
     if space_members_level != :no_access do
-      {:ok, _} = Operately.Groups.add_members(ctx.creator, ctx.space.id, [%{
-        id: ctx.person.id,
-        access_level: Binding.from_atom(space_members_level)
-      }])
+      {:ok, _} =
+        Operately.Groups.add_members(ctx.creator, ctx.space.id, [
+          %{
+            id: ctx.person.id,
+            access_level: Binding.from_atom(space_members_level)
+          }
+        ])
     end
 
     if project_member_level != :no_access do
-      {:ok, _} = Operately.Projects.create_contributor(ctx.creator, %{
-        project_id: project.id,
-        person_id: ctx.person.id,
-        permissions: Binding.from_atom(project_member_level),
-        responsibility: "some responsibility"
-      })
+      {:ok, _} =
+        Operately.Projects.create_contributor(ctx.creator, %{
+          project_id: project.id,
+          person_id: ctx.person.id,
+          permissions: Binding.from_atom(project_member_level),
+          responsibility: "some responsibility"
+        })
     end
 
     project

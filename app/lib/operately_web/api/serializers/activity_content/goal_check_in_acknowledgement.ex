@@ -5,7 +5,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.GoalChe
     %{
       goal_id: OperatelyWeb.Paths.goal_id(content["goal"]),
       goal: Serializer.serialize(content["goal"], level: :essential),
-      update: Serializer.serialize(content["update"], level: :essential),
+      update: Serializer.serialize(content["update"], level: :essential)
     }
   end
 end

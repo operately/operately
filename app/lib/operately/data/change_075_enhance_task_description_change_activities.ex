@@ -14,10 +14,11 @@ defmodule Operately.Data.Change075EnhanceTaskDescriptionChangeActivities do
       case get_task_with_associations(task_id) do
         nil ->
           # Task doesn't exist anymore, set empty values
-          new_content = activity.content
-          |> Map.put("task_name", "")
-          |> Map.put("project_id", "")
-          |> Map.put("project_name", "")
+          new_content =
+            activity.content
+            |> Map.put("task_name", "")
+            |> Map.put("project_id", "")
+            |> Map.put("project_name", "")
 
           {:ok, _updated} = update_activity(activity, new_content)
 
@@ -25,10 +26,11 @@ defmodule Operately.Data.Change075EnhanceTaskDescriptionChangeActivities do
           # Task exists, populate the fields
           project = get_associated_project(task)
 
-          new_content = activity.content
-          |> Map.put("task_name", task.name)
-          |> Map.put("project_id", project && project.id || "")
-          |> Map.put("project_name", project && project.name || "")
+          new_content =
+            activity.content
+            |> Map.put("task_name", task.name)
+            |> Map.put("project_id", (project && project.id) || "")
+            |> Map.put("project_name", (project && project.name) || "")
 
           # Also update the access_context_id if project exists
           if project do
@@ -48,7 +50,9 @@ defmodule Operately.Data.Change075EnhanceTaskDescriptionChangeActivities do
 
   defp get_task_with_associations(task_id) do
     case Repo.get(Task, task_id) do
-      nil -> nil
+      nil ->
+        nil
+
       task ->
         task
         |> Repo.preload(milestone: [:project], project: [])
@@ -63,9 +67,7 @@ defmodule Operately.Data.Change075EnhanceTaskDescriptionChangeActivities do
   defp get_associated_project(task) do
     cond do
       task.project -> task.project
-
       task.milestone && task.milestone.project -> task.milestone.project
-
       # No project found through either relation
       true -> nil
     end

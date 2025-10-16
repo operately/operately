@@ -23,14 +23,17 @@ defmodule Operately.Data.Chenge027CreateSubscriptionsListForCheckIns do
   defp create_subscriptions_list(check_in) do
     case SubscriptionList.get(:system, parent_id: check_in.id) do
       {:error, :not_found} ->
-        {:ok, subscriptions_list} = Notifications.create_subscription_list(%{
-          parent_id: check_in.id,
-          parent_type: :project_check_in,
-          send_to_everyone: true,
-        })
+        {:ok, subscriptions_list} =
+          Notifications.create_subscription_list(%{
+            parent_id: check_in.id,
+            parent_type: :project_check_in,
+            send_to_everyone: true
+          })
+
         subscriptions_list
 
-      {:ok, subscriptions_list} -> subscriptions_list
+      {:ok, subscriptions_list} ->
+        subscriptions_list
     end
     |> edit_check_in(check_in)
   end
@@ -39,6 +42,7 @@ defmodule Operately.Data.Chenge027CreateSubscriptionsListForCheckIns do
     if subscriptions_list.id != check_in.subscription_list_id do
       {:ok, _} = Operately.Projects.update_check_in(check_in, %{subscription_list_id: subscriptions_list.id})
     end
+
     subscriptions_list
   end
 
@@ -63,12 +67,15 @@ defmodule Operately.Data.Chenge027CreateSubscriptionsListForCheckIns do
   defp find_or_create_subscription(subscriptions_list, contrib) do
     case Subscription.get(:system, subscription_list_id: subscriptions_list.id, person_id: contrib.person_id) do
       {:error, :not_found} ->
-        {:ok, _} = Notifications.create_subscription(%{
-          subscription_list_id: subscriptions_list.id,
-          person_id: contrib.person_id,
-          type: :invited,
-        })
-      _ -> :ok
+        {:ok, _} =
+          Notifications.create_subscription(%{
+            subscription_list_id: subscriptions_list.id,
+            person_id: contrib.person_id,
+            type: :invited
+          })
+
+      _ ->
+        :ok
     end
   end
 end

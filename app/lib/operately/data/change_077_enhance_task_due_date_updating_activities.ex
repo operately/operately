@@ -10,19 +10,22 @@ defmodule Operately.Data.Change077EnhanceTaskDueDateUpdatingActivities do
     |> Enum.each(fn activity ->
       task_id = activity.content["task_id"]
 
-      task_name = case get_task(task_id) do
-        nil -> nil
-        task -> task.name
-      end
+      task_name =
+        case get_task(task_id) do
+          nil -> nil
+          task -> task.name
+        end
 
-      new_content = activity.content
-      |> Map.put("task_name", task_name)
+      new_content =
+        activity.content
+        |> Map.put("task_name", task_name)
 
       {:ok, _updated} = update_activity(activity, new_content)
     end)
   end
 
   defp get_task(nil), do: nil
+
   defp get_task(task_id) do
     Repo.get(Task, task_id)
   end

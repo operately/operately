@@ -6,6 +6,5 @@ defmodule Operately.Repo.Migrations.AddHasDescriptionFieldToTaskDescriptionChang
   end
 
   def down do
-
   end
 end

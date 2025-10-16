@@ -58,9 +58,10 @@ defmodule Operately.Operations.ResourceHubFileCreatingTest do
     @action "resource_hub_file_created"
 
     test "Creating file sends notifications to everyone", ctx do
-      {:ok, file} = Oban.Testing.with_testing_mode(:manual, fn ->
-        create_file(ctx, true, [])
-      end)
+      {:ok, file} =
+        Oban.Testing.with_testing_mode(:manual, fn ->
+          create_file(ctx, true, [])
+        end)
 
       activity = get_activity(ctx.hub, file, @action)
 
@@ -78,9 +79,10 @@ defmodule Operately.Operations.ResourceHubFileCreatingTest do
     end
 
     test "Creating file sends notifications to selected people", ctx do
-      {:ok, file} = Oban.Testing.with_testing_mode(:manual, fn ->
-        create_file(ctx, false, [ctx.mike.id, ctx.jane.id])
-      end)
+      {:ok, file} =
+        Oban.Testing.with_testing_mode(:manual, fn ->
+          create_file(ctx, false, [ctx.mike.id, ctx.jane.id])
+        end)
 
       activity = get_activity(ctx.hub, file, @action)
 
@@ -111,9 +113,10 @@ defmodule Operately.Operations.ResourceHubFileCreatingTest do
       assert fetch_notifications(activity.id, action: @action) == []
 
       # With permissions
-      {:ok, _} = Operately.Groups.add_members(ctx.creator, ctx.space.id, [
-        %{id: ctx.person.id, access_level: Binding.view_access()}
-      ])
+      {:ok, _} =
+        Operately.Groups.add_members(ctx.creator, ctx.space.id, [
+          %{id: ctx.person.id, access_level: Binding.view_access()}
+        ])
 
       {:ok, file} = create_file(ctx, false, [], content)
 
@@ -135,36 +138,38 @@ defmodule Operately.Operations.ResourceHubFileCreatingTest do
         %{
           blob_id: ctx.blob1.id,
           name: "Some name",
-          description: RichText.rich_text("Content"),
+          description: RichText.rich_text("Content")
         },
-      %{
+        %{
           blob_id: ctx.blob2.id,
           name: "Some name",
-          description: RichText.rich_text("Content"),
+          description: RichText.rich_text("Content")
         },
         %{
           blob_id: ctx.blob3.id,
           name: "File 3",
           description: RichText.rich_text(mentioned_people: [ctx.jane]) |> Jason.decode!()
-        },
+        }
       ],
       send_to_everyone: false,
-      subscriber_ids: [ctx.mike.id, ctx.bob.id],
+      subscriber_ids: [ctx.mike.id, ctx.bob.id]
     })
   end
 
   defp create_file(ctx, send_to_everyone, people_list, description \\ nil) do
-    {:ok, files} = ResourceHubFileCreating.run(ctx.creator, ctx.hub, %{
-      files: [
-        %{
-          blob_id: ctx.blob1.id,
-          name: "Some name",
-          description: description || RichText.rich_text("Content"),
-        }
-      ],
-      send_to_everyone: send_to_everyone,
-      subscriber_ids: people_list,
-    })
+    {:ok, files} =
+      ResourceHubFileCreating.run(ctx.creator, ctx.hub, %{
+        files: [
+          %{
+            blob_id: ctx.blob1.id,
+            name: "Some name",
+            description: description || RichText.rich_text("Content")
+          }
+        ],
+        send_to_everyone: send_to_everyone,
+        subscriber_ids: people_list
+      })
+
     {:ok, hd(files)}
   end
 
@@ -176,7 +181,7 @@ defmodule Operately.Operations.ResourceHubFileCreatingTest do
       |> Repo.all()
 
     Enum.find(activities, fn a ->
-      file.id in Enum.map(a.content["files"], &(&1["file_id"]))
+      file.id in Enum.map(a.content["files"], & &1["file_id"])
     end)
   end
 end

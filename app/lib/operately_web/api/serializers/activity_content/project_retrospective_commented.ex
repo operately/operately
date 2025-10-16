@@ -5,7 +5,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.Project
     %{
       project_id: OperatelyWeb.Paths.project_id(content["project"]),
       project: Serializer.serialize(content["project"], level: :essential),
-      comment: Serializer.serialize(content["comment"]),
+      comment: Serializer.serialize(content["comment"])
     }
   end
 end

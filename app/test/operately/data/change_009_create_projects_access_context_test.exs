@@ -23,9 +23,10 @@ defmodule Operately.Data.Change009CreateProjectsAccessContextTest do
   end
 
   test "creates access_context for existing projects", ctx do
-    projects = Enum.map(1..5, fn _ ->
-      create_project(%{company_id: ctx.company.id, group_id: ctx.group.id, creator_id: ctx.creator.id})
-    end)
+    projects =
+      Enum.map(1..5, fn _ ->
+        create_project(%{company_id: ctx.company.id, group_id: ctx.group.id, creator_id: ctx.creator.id})
+      end)
 
     Enum.each(projects, fn project ->
       assert nil == Repo.get_by(Context, project_id: project.id)
@@ -70,12 +71,13 @@ defmodule Operately.Data.Change009CreateProjectsAccessContextTest do
   end
 
   def create_project(attrs) do
-    project = project_fixture(%{
-      name: "some name",
-      company_id: attrs.company_id,
-      group_id: attrs.group_id,
-      creator_id: attrs.creator_id,
-    })
+    project =
+      project_fixture(%{
+        name: "some name",
+        company_id: attrs.company_id,
+        group_id: attrs.group_id,
+        creator_id: attrs.creator_id
+      })
 
     Access.get_context!(project_id: project.id)
     |> Access.delete_context()

@@ -44,7 +44,7 @@ defmodule Operately.Invitations.InvitationToken do
     length = Keyword.get(opts, :length, 32)
 
     :crypto.strong_rand_bytes(length)
-    |> Base.url_encode64
+    |> Base.url_encode64()
     |> binary_part(0, length)
   end
 

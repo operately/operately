@@ -74,14 +74,15 @@ defmodule Operately.Operations.GoalDiscussionCreationTest do
     end
   end
 
-  defp create_discussion(ctx,  send_to_everyone, subscriber_ids) do
-    {:ok, _} = GoalDiscussionCreation.run(ctx.creator, ctx.goal, %{
-      title: "Title",
-      content: RichText.rich_text("Some content"),
-      subscription_parent_type: :comment_thread,
-      send_to_everyone: send_to_everyone,
-      subscriber_ids: subscriber_ids
-    })
+  defp create_discussion(ctx, send_to_everyone, subscriber_ids) do
+    {:ok, _} =
+      GoalDiscussionCreation.run(ctx.creator, ctx.goal, %{
+        title: "Title",
+        content: RichText.rich_text("Some content"),
+        subscription_parent_type: :comment_thread,
+        send_to_everyone: send_to_everyone,
+        subscriber_ids: subscriber_ids
+      })
   end
 
   defp get_activity(goal, action) do

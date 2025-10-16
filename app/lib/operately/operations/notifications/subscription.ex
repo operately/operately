@@ -16,7 +16,7 @@ defmodule Operately.Operations.Notifications.Subscription do
         Subscription.changeset(%{
           subscription_list_id: changes.subscription_list.id,
           person_id: id,
-          type: type,
+          type: type
         })
       end)
     end)
@@ -48,7 +48,7 @@ defmodule Operately.Operations.Notifications.Subscription do
           Notifications.create_subscription(%{
             subscription_list_id: changes.subscription_list.id,
             person_id: id,
-            type: :mentioned,
+            type: :mentioned
           })
         end
       end)
@@ -60,7 +60,7 @@ defmodule Operately.Operations.Notifications.Subscription do
   #
 
   def categorize_ids(invited, mentioned) do
-    mentioned ++ invited
+    (mentioned ++ invited)
     |> Enum.uniq()
     |> Enum.map(fn id ->
       if Enum.member?(invited, id) do

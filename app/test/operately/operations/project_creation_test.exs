@@ -35,9 +35,8 @@ defmodule Operately.Operations.ProjectCreationTest do
       group_id: space.id,
       anonymous_access_level: Binding.view_access(),
       company_access_level: Binding.comment_access(),
-      space_access_level: Binding.edit_access(),
+      space_access_level: Binding.edit_access()
     }
-
 
     {:ok, company: company, space: space, creator: creator, reviewer: reviewer, champion: champion, project_attrs: project_attrs}
   end
@@ -152,9 +151,10 @@ defmodule Operately.Operations.ProjectCreationTest do
   end
 
   test "ProjectCreation operation creates activity and notification", ctx do
-    {:ok, project} = Oban.Testing.with_testing_mode(:manual, fn ->
-      Operately.Operations.ProjectCreation.run(ctx.project_attrs)
-    end)
+    {:ok, project} =
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Operately.Operations.ProjectCreation.run(ctx.project_attrs)
+      end)
 
     activity = from(a in Activity, where: a.action == "project_created" and a.content["project_id"] == ^project.id) |> Repo.one()
 

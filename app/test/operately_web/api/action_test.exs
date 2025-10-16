@@ -6,7 +6,7 @@ defmodule OperatelyWeb.Api.ActionTest do
 
   describe "new/0" do
     test "returns an empty context" do
-      assert {:ok, %{} } == Action.new()
+      assert {:ok, %{}} == Action.new()
     end
   end
 
@@ -17,7 +17,7 @@ defmodule OperatelyWeb.Api.ActionTest do
     end
 
     test "if the function takes a context, it passes the context to the function" do
-      res = 
+      res =
         Action.new()
         |> run(:key, fn -> {:ok, "Hello"} end)
         |> run(:key2, fn ctx -> {:ok, ctx.key <> " World"} end)
@@ -40,7 +40,7 @@ defmodule OperatelyWeb.Api.ActionTest do
     end
 
     test "if one of the functions returns an error, it stops the chain" do
-      res= 
+      res =
         Action.new()
         |> run(:key, fn -> {:ok, "Hello"} end)
         |> run(:key2, fn -> {:error, :bad_request} end)

@@ -37,11 +37,11 @@ defmodule Operately.GoalsTest do
         timeframe: %{
           start_date: ~D[2020-01-01],
           end_date: ~D[2020-12-31],
-          type: "year",
+          type: "year"
         },
         company_access_level: Binding.comment_access(),
         space_access_level: Binding.edit_access(),
-        anonymous_access_level: Binding.view_access(),
+        anonymous_access_level: Binding.view_access()
       }
 
       assert {:ok, %Goal{} = goal} = Goals.create_goal(ctx.person, valid_attrs)
@@ -49,14 +49,15 @@ defmodule Operately.GoalsTest do
     end
 
     test "create_goal/2 with invalid data returns error changeset", ctx do
-      assert {:error, :goal, %Ecto.Changeset{}, _} = Goals.create_goal(ctx.person, %{
-        space_id: ctx.group.id,
-        champion_id: ctx.person.id,
-        reviewer_id: ctx.person.id,
-        company_access_level: Binding.comment_access(),
-        space_access_level: Binding.edit_access(),
-        anonymous_access_level: Binding.view_access(),
-      })
+      assert {:error, :goal, %Ecto.Changeset{}, _} =
+               Goals.create_goal(ctx.person, %{
+                 space_id: ctx.group.id,
+                 champion_id: ctx.person.id,
+                 reviewer_id: ctx.person.id,
+                 company_access_level: Binding.comment_access(),
+                 space_access_level: Binding.edit_access(),
+                 anonymous_access_level: Binding.view_access()
+               })
     end
 
     test "update_goal/2 with valid data updates the goal", ctx do
@@ -67,9 +68,10 @@ defmodule Operately.GoalsTest do
     end
 
     test "update_goal/2 with invalid data returns error changeset", ctx do
-      assert {:error, %Ecto.Changeset{}} = Goals.update_goal(ctx.goal, %{
-        name: nil
-      })
+      assert {:error, %Ecto.Changeset{}} =
+               Goals.update_goal(ctx.goal, %{
+                 name: nil
+               })
 
       assert ctx.goal == Goals.get_goal!(ctx.goal.id)
     end

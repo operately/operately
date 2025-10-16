@@ -19,10 +19,11 @@ defmodule Operately.PubSub.PostgresPubSubTest do
     # so that this process acts as a separate node.
     #
 
-    {:ok, pid} = PostgresPubSub.start_link([
-      adapter_name: @adapter_name,
-      pubsub_name: Operately.PubSub
-    ])
+    {:ok, pid} =
+      PostgresPubSub.start_link(
+        adapter_name: @adapter_name,
+        pubsub_name: Operately.PubSub
+      )
 
     {:ok, pid: pid}
   end
@@ -44,8 +45,8 @@ defmodule Operately.PubSub.PostgresPubSubTest do
     OperatelyWeb.Endpoint.broadcast("some:example:channel", "new_message", %{hello: "world"})
 
     assert_receive %Phoenix.Socket.Broadcast{
-      topic: "some:example:channel", 
-      event: "new_message", 
+      topic: "some:example:channel",
+      event: "new_message",
       payload: %{hello: "world"}
     }
   end

@@ -19,7 +19,7 @@ defmodule Operately.People.InsertPersonIntoOperation do
     |> Multi.insert(:person_access_membership, fn changes ->
       Access.GroupMembership.changeset(%{
         group_id: changes.person_access_group.id,
-        person_id: changes.person.id,
+        person_id: changes.person.id
       })
     end)
   end
@@ -32,7 +32,7 @@ defmodule Operately.People.InsertPersonIntoOperation do
     |> Multi.insert(:company_access_membership, fn changes ->
       Access.GroupMembership.changeset(%{
         group_id: changes.company_access_group.id,
-        person_id: changes.person.id,
+        person_id: changes.person.id
       })
     end)
   end
@@ -47,7 +47,7 @@ defmodule Operately.People.InsertPersonIntoOperation do
         company_space ->
           Operately.Groups.Member.changeset(%{
             group_id: company_space.id,
-            person_id: changes.person.id,
+            person_id: changes.person.id
           })
           |> Repo.insert()
       end

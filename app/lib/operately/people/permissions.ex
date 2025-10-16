@@ -2,7 +2,7 @@ defmodule Operately.People.Permissions do
   alias Operately.Access.Binding
 
   defstruct [
-    :can_edit_profile,
+    :can_edit_profile
   ]
 
   def calculate(access_level) do

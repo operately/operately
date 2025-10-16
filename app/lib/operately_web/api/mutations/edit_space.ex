@@ -34,5 +34,5 @@ defmodule OperatelyWeb.Api.Mutations.EditSpace do
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
     end
-  end 
+  end
 end

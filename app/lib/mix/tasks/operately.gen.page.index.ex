@@ -47,5 +47,4 @@ defmodule Mix.Tasks.Operately.Gen.Page.Index do
     """
     |> String.trim()
   end
-
 end

@@ -21,6 +21,5 @@ defmodule Operately.Repo.Migrations.AddClosedAtToExistingClosedProjects do
   end
 
   def down do
-
   end
 end

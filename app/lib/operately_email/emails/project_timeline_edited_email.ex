@@ -13,9 +13,10 @@ defmodule OperatelyEmail.Emails.ProjectTimelineEditedEmail do
     new_duration = calculate_duration(content["new_start_date"], content["new_end_date"])
     duration_changed = old_duration != new_duration
 
-    new_milestones = Enum.map(activity.content["new_milestones"], fn milestone ->
-      Projects.get_milestone!(milestone["milestone_id"])
-    end)
+    new_milestones =
+      Enum.map(activity.content["new_milestones"], fn milestone ->
+        Projects.get_milestone!(milestone["milestone_id"])
+      end)
 
     link = OperatelyWeb.Paths.project_path(company, project) |> OperatelyWeb.Paths.to_url()
 
@@ -43,10 +44,13 @@ defmodule OperatelyEmail.Emails.ProjectTimelineEditedEmail do
       cond do
         duration_in_days == 1 ->
           "1 day"
+
         duration_in_days < 7 ->
           "#{duration_in_days} days"
+
         duration_in_weeks == 1 ->
           "1 week"
+
         true ->
           "#{duration_in_weeks} weeks"
       end

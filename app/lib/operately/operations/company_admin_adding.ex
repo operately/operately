@@ -29,7 +29,7 @@ defmodule Operately.Operations.CompanyAdminAdding do
     Activities.insert_sync(multi, admin.id, :company_admin_added, fn changes ->
       %{
         company_id: admin.company_id,
-        people: serialize_people(changes),
+        people: serialize_people(changes)
       }
     end)
   end
@@ -37,10 +37,12 @@ defmodule Operately.Operations.CompanyAdminAdding do
   defp serialize_people(changes) do
     changes
     |> Enum.filter(fn {key, _} -> is_binary(key) && String.starts_with?(key, "person_") end)
-    |> Enum.map(fn {_, person} -> %{
-      id: person.id,
-      email: person.email,
-      full_name: person.full_name,
-    } end)
+    |> Enum.map(fn {_, person} ->
+      %{
+        id: person.id,
+        email: person.email,
+        full_name: person.full_name
+      }
+    end)
   end
 end

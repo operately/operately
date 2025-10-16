@@ -17,7 +17,7 @@ defmodule Operately.Support.Features.EditorSteps do
   end
 
   step :post_message_with_bold_italics_strikethrough, ctx do
-    ctx 
+    ctx
     |> start_new_discussion()
     # bold
     |> toggle_bold()
@@ -36,7 +36,7 @@ defmodule Operately.Support.Features.EditorSteps do
   end
 
   step :post_message_with_divider, ctx do
-    ctx 
+    ctx
     |> start_new_discussion()
     |> append_text("This is a discussion with a divider")
     |> add_divider()
@@ -45,7 +45,7 @@ defmodule Operately.Support.Features.EditorSteps do
   end
 
   step :post_message_with_highlight, ctx do
-    ctx 
+    ctx
     |> start_new_discussion()
     |> select_color("textYellow")
     |> append_text("Yellow")
@@ -70,7 +70,7 @@ defmodule Operately.Support.Features.EditorSteps do
 
   step :assert_highlight_is_visible_in_email, _ctx do
     email = UI.Emails.last_sent_email()
-    
+
     assert String.contains?(email.html, "<mark style=\"color: #eab308; background-color: transparent;\">")
     assert String.contains?(email.html, "<mark style=\"background-color: #fed7aa;\">")
   end
@@ -83,7 +83,7 @@ defmodule Operately.Support.Features.EditorSteps do
   end
 
   step :assert_bold_italics_strikethrough_removed_from_feed_summary, ctx do
-    ctx 
+    ctx
     |> UI.visit(Paths.space_path(ctx.company, ctx.marketing_space))
     |> UI.assert_text("bolded text italicized text strikethrough text")
     |> UI.refute_has(Query.css("strong", text: "bolded text"))
@@ -93,7 +93,7 @@ defmodule Operately.Support.Features.EditorSteps do
 
   step :assert_bold_italics_strikethrough_are_visible_in_email, _ctx do
     email = UI.Emails.last_sent_email()
-    
+
     assert String.contains?(email.html, "<strong>bolded text</strong>")
     assert String.contains?(email.html, "<em>italicized text</em>")
     assert String.contains?(email.html, "<strike>strikethrough text</strike>")
@@ -104,7 +104,7 @@ defmodule Operately.Support.Features.EditorSteps do
   end
 
   step :assert_divider_removed_from_feed_summary, ctx do
-    ctx 
+    ctx
     |> UI.visit(Paths.space_path(ctx.company, ctx.marketing_space))
     |> UI.refute_has(Query.css("hr"))
   end
@@ -154,7 +154,7 @@ defmodule Operately.Support.Features.EditorSteps do
   end
 
   def select_color(ctx, color) do
-    ctx 
+    ctx
     |> UI.click(testid: "toolbar-button-highlight")
     |> UI.click(testid: color)
   end

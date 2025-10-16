@@ -39,31 +39,34 @@ defmodule OperatelyWeb.Api.Queries.GetActivity do
   end
 
   defp load(ctx, inputs) do
-    Activity.get(ctx.me, id: ctx.id, opts: [
-      preload: preload(inputs),
-      after_load: after_load(inputs, ctx.me),
-    ])
+    Activity.get(ctx.me,
+      id: ctx.id,
+      opts: [
+        preload: preload(inputs),
+        after_load: after_load(inputs, ctx.me)
+      ]
+    )
   end
 
   defp preload(inputs) do
-    Inputs.parse_includes(inputs, [
+    Inputs.parse_includes(inputs,
       always_include: [:author, comment_thread: [reactions: :person]],
-      include_subscriptions_list: [comment_thread: :subscription_list],
-    ])
+      include_subscriptions_list: [comment_thread: :subscription_list]
+    )
   end
 
   defp after_load(inputs, person) do
-    Inputs.parse_includes(inputs, [
+    Inputs.parse_includes(inputs,
       always_include: &Activities.cast_content/1,
       always_include: &Preloader.preload/1,
       include_unread_goal_notifications: load_unread_goal_notifications(person),
       include_permissions: &Activity.set_permissions/1,
-      include_potential_subscribers: &CommentThread.set_potential_subscribers/1,
-    ])
+      include_potential_subscribers: &CommentThread.set_potential_subscribers/1
+    )
   end
 
   defp serialize(activity) do
-    OperatelyWeb.Api.Serializers.Activity.serialize(activity, [comment_thread: :full])
+    OperatelyWeb.Api.Serializers.Activity.serialize(activity, comment_thread: :full)
   end
 
   defp load_unread_goal_notifications(person) do

@@ -21,7 +21,7 @@ defmodule Operately.Operations.CompanyAdminRemoving do
     Activities.insert_sync(multi, admin.id, :company_admin_removed, fn changes ->
       %{
         company_id: changes.person.company_id,
-        person_id: changes.person.id,
+        person_id: changes.person.id
       }
     end)
   end

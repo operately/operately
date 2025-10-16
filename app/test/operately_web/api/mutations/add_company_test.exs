@@ -36,4 +36,4 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyTest do
       assert Enum.any?(owners, fn o -> o.id == person.id end)
     end
   end
-end 
+end

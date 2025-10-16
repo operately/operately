@@ -5,7 +5,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Contributor do
       role: Atom.to_string(contributor.role),
       responsibility: contributor.responsibility,
       access_level: contributor.access_level,
-      person: OperatelyWeb.Api.Serializer.serialize(contributor.person),
+      person: OperatelyWeb.Api.Serializer.serialize(contributor.person)
     }
   end
 

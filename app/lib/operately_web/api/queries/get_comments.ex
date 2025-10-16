@@ -34,8 +34,10 @@ defmodule OperatelyWeb.Api.Queries.GetComments do
 
   defp load(id, :project_retrospective, person) do
     from(c in Comment,
-      join: retro in Operately.Projects.Retrospective, on: c.entity_id == retro.id,
-      join: project in assoc(retro, :project), as: :project,
+      join: retro in Operately.Projects.Retrospective,
+      on: c.entity_id == retro.id,
+      join: project in assoc(retro, :project),
+      as: :project,
       where: retro.id == ^id and c.entity_type == :project_retrospective
     )
     |> preload_resources()
@@ -45,10 +47,7 @@ defmodule OperatelyWeb.Api.Queries.GetComments do
   end
 
   defp load(id, :project_task, person) do
-    from(c in Comment,
-      join: task in Operately.Tasks.Task, on: c.entity_id == task.id, as: :task,
-      where: task.id == ^id and c.entity_type == :project_task
-    )
+    from(c in Comment, join: task in Operately.Tasks.Task, on: c.entity_id == task.id, as: :task, where: task.id == ^id and c.entity_type == :project_task)
     |> preload_resources()
     |> filter_by_view_access(person.id, named_binding: :task)
     |> Repo.all()

@@ -19,7 +19,8 @@ defmodule OperatelyWeb.Api.Queries.GetPeopleTest do
       person_from_other_company = person_fixture(%{company_id: company2.id})
 
       assert {200, %{people: people}} = query(ctx.conn, :get_people, %{})
-      assert length(people) == 2 # me and the company creator
+      # me and the company creator
+      assert length(people) == 2
       assert Enum.any?(people, fn p -> p.id == Paths.person_id(me) end)
       assert Enum.any?(people, fn p -> p.id == Paths.person_id(ctx.company_creator) end)
       refute find_person_in_response(people, person_from_other_company)
@@ -31,11 +32,13 @@ defmodule OperatelyWeb.Api.Queries.GetPeopleTest do
 
     test "company member can query people from the same company", ctx do
       assert {200, res} = query(ctx.conn, :get_people, %{})
-      assert length(res.people) == 2 # created in the setup
+      # created in the setup
+      assert length(res.people) == 2
 
-      people = Enum.map(1..3, fn _ ->
-        person_fixture(%{company_id: ctx.company.id})
-      end)
+      people =
+        Enum.map(1..3, fn _ ->
+          person_fixture(%{company_id: ctx.company.id})
+        end)
 
       assert {200, res} = query(ctx.conn, :get_people, %{})
       assert length(res.people) == 5
@@ -53,12 +56,15 @@ defmodule OperatelyWeb.Api.Queries.GetPeopleTest do
       end)
 
       assert {200, res} = query(conn2, :get_people, %{})
-      assert length(res.people) == 5 # 2 from setup2 + 3 just created
+      # 2 from setup2 + 3 just created
+      assert length(res.people) == 5
 
       assert {200, res} = query(ctx.conn, :get_people, %{})
-      assert length(res.people) == 2 # only 2 from the setup
+      # only 2 from the setup
+      assert length(res.people) == 2
 
-      assert Repo.aggregate(People.Person, :count, :id) == 7 # total
+      # total
+      assert Repo.aggregate(People.Person, :count, :id) == 7
     end
 
     test "suspended people don't have access", ctx do
@@ -82,7 +88,7 @@ defmodule OperatelyWeb.Api.Queries.GetPeopleTest do
       person3 = person_fixture(company_id: ctx.company.id, full_name: "Jane Doe")
       person4 = person_fixture(company_id: ctx.company.id, full_name: "Michael Johnson")
 
-      all_people = [person0, person1, person2, person3, person4] |> Enum.sort_by(&(&1.full_name))
+      all_people = [person0, person1, person2, person3, person4] |> Enum.sort_by(& &1.full_name)
 
       assert {200, res} = query(ctx.conn, :get_people, %{})
       assert res == %{people: Serializer.serialize(all_people, level: :full)}

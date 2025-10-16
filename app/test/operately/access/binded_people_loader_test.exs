@@ -21,11 +21,11 @@ defmodule Operately.Access.BindedPeopleLoaderTest do
     people = BindedPeopleLoader.load(context.id)
 
     assert length(people) == 5
-    assert_includes_person people, ctx.mike.id
-    assert_includes_person people, ctx.jane.id
-    assert_includes_person people, ctx.silvia.id
-    assert_includes_person people, ctx.creator.id
-    assert_includes_person people, ctx.champion.person_id
+    assert_includes_person(people, ctx.mike.id)
+    assert_includes_person(people, ctx.jane.id)
+    assert_includes_person(people, ctx.silvia.id)
+    assert_includes_person(people, ctx.creator.id)
+    assert_includes_person(people, ctx.champion.person_id)
   end
 
   def assert_includes_person(people, person_id) do

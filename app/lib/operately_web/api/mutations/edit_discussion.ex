@@ -42,11 +42,12 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussion do
   defp parse_inputs(inputs) do
     inputs = Map.put(inputs, :body, Jason.decode!(inputs.body))
 
-    inputs = if Map.has_key?(inputs, :state) do
-      Map.put(inputs, :state, String.to_atom(inputs.state))
-    else
-      inputs
-    end
+    inputs =
+      if Map.has_key?(inputs, :state) do
+        Map.put(inputs, :state, String.to_atom(inputs.state))
+      else
+        inputs
+      end
 
     {:ok, inputs}
   end

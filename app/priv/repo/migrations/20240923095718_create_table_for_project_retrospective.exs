@@ -10,7 +10,10 @@ defmodule Operately.Repo.Migrations.CreateTableForProjectRetrospective do
       add :id, :binary_id, primary_key: true
       add :author_id, references(:people, on_delete: :nothing, type: :binary_id)
       add :project_id, references(:projects, on_delete: :nothing, type: :binary_id)
-      add :subscription_list_id, references(:subscription_lists, on_delete: :nothing, type: :binary_id)
+
+      add :subscription_list_id,
+          references(:subscription_lists, on_delete: :nothing, type: :binary_id)
+
       add :content, :jsonb
       add :closed_at, :utc_datetime
 
@@ -32,13 +35,14 @@ defmodule Operately.Repo.Migrations.CreateTableForProjectRetrospective do
       {:ok, project_id} = Ecto.UUID.cast(p.id)
       author_id = find_author_id(p)
 
-      {:ok, _} = Retrospective.changeset(%{
-        project_id: project_id,
-        author_id: author_id,
-        closed_at: p.closed_at,
-        content: p.retrospective,
-      })
-      |> Repo.insert()
+      {:ok, _} =
+        Retrospective.changeset(%{
+          project_id: project_id,
+          author_id: author_id,
+          closed_at: p.closed_at,
+          content: p.retrospective
+        })
+        |> Repo.insert()
     end)
   end
 
@@ -47,11 +51,13 @@ defmodule Operately.Repo.Migrations.CreateTableForProjectRetrospective do
     |> Repo.all()
     |> Enum.each(fn r ->
       from(p in "projects", where: p.id == ^r.project_id and is_nil(p.retrospective))
-      |> Repo.update_all(set: [
-        retrospective: r.content,
-        closed_at: r.closed_at,
-        closed_by_id: r.author_id,
-      ])
+      |> Repo.update_all(
+        set: [
+          retrospective: r.content,
+          closed_at: r.closed_at,
+          closed_by_id: r.author_id
+        ]
+      )
     end)
 
     drop index(:project_retrospectives, [:subscription_list_id])

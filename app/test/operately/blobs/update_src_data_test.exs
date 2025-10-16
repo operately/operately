@@ -12,7 +12,7 @@ defmodule Operately.Blobs.UpdateSrcDataTest do
           %{
             "attrs" => %{
               "alt" => "image-1.png",
-              "filesize" => 3588253,
+              "filesize" => 3_588_253,
               "filetype" => "image/png",
               "id" => "lxt8duz0yyt5lyjh6vr",
               "progress" => 100,
@@ -27,7 +27,7 @@ defmodule Operately.Blobs.UpdateSrcDataTest do
           }
         ],
         "type" => "paragraph"
-      },
+      }
     ],
     "type" => "doc"
   }
@@ -43,7 +43,7 @@ defmodule Operately.Blobs.UpdateSrcDataTest do
           %{
             "attrs" => %{
               "alt" => "image-1.png",
-              "filesize" => 3588253,
+              "filesize" => 3_588_253,
               "filetype" => "image/png",
               "id" => "4a1ad0ef-bd9d-477e-8050-edf18df55f71",
               "progress" => 100,
@@ -55,7 +55,7 @@ defmodule Operately.Blobs.UpdateSrcDataTest do
           }
         ],
         "type" => "paragraph"
-      },
+      }
     ],
     "type" => "doc"
   }

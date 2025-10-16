@@ -47,5 +47,4 @@ defmodule Operately.Support.Factory.Utils do
   defp is_ecto_schema?(res) do
     is_struct(res) && Map.has_key?(res, :__meta__) && is_struct(res.__meta__, Ecto.Schema.Metadata)
   end
-
 end

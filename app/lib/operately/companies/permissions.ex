@@ -9,7 +9,7 @@ defmodule Operately.Companies.Permissions do
     :can_create_space,
     :can_manage_admins,
     :can_manage_owners,
-    :can_edit_details,
+    :can_edit_details
   ]
 
   def calculate(access_level) when is_number(access_level) do
@@ -21,7 +21,7 @@ defmodule Operately.Companies.Permissions do
       can_create_space: access_level >= Binding.view_access(),
       can_manage_admins: access_level >= Binding.full_access() || dev_env?(),
       can_manage_owners: access_level >= Binding.full_access() || dev_env?(),
-      can_edit_trusted_email_domains: access_level >= Binding.full_access(),
+      can_edit_trusted_email_domains: access_level >= Binding.full_access()
     }
   end
 

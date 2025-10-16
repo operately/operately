@@ -12,7 +12,7 @@ defmodule Operately.Operations.GoalReparent do
         space_id: goal.group_id,
         goal_id: goal.id,
         old_parent_goal_id: goal.parent_goal_id,
-        new_parent_goal_id: changes.goal.parent_goal_id,
+        new_parent_goal_id: changes.goal.parent_goal_id
       }
     end)
     |> Repo.transaction()

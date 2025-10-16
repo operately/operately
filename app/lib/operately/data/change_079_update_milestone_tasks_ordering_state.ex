@@ -15,9 +15,10 @@ defmodule Operately.Data.Change079UpdateMilestoneTasksOrderingState do
   end
 
   defp update_milestone_ordering(milestone) do
-    active_tasks = Enum.filter(milestone.tasks, fn task ->
-      task.status != "done" && task.status != "canceled"
-    end)
+    active_tasks =
+      Enum.filter(milestone.tasks, fn task ->
+        task.status != "done" && task.status != "canceled"
+      end)
 
     task_short_ids = Enum.map(active_tasks, &OperatelyWeb.Paths.task_id/1)
 

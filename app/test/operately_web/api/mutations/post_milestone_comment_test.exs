@@ -17,53 +17,45 @@ defmodule OperatelyWeb.Api.Mutations.PostMilestoneCommentTest do
 
   describe "permissions" do
     @table [
-      %{action: "none",    company: :no_access,      space: :no_access,      project: :no_access,      expected: 404},
-      %{action: "none",    company: :no_access,      space: :no_access,      project: :view_access,    expected: 403},
-      %{action: "none",    company: :no_access,      space: :no_access,      project: :comment_access, expected: 200},
-      %{action: "none",    company: :no_access,      space: :no_access,      project: :edit_access,    expected: 200},
-      %{action: "none",    company: :no_access,      space: :no_access,      project: :full_access,    expected: 200},
-
-      %{action: "none",    company: :no_access,      space: :view_access,    project: :no_access,      expected: 403},
-      %{action: "none",    company: :no_access,      space: :comment_access, project: :no_access,      expected: 200},
-      %{action: "none",    company: :no_access,      space: :edit_access,    project: :no_access,      expected: 200},
-      %{action: "none",    company: :no_access,      space: :full_access,    project: :no_access,      expected: 200},
-
-      %{action: "none",    company: :view_access,    space: :no_access,      project: :no_access,      expected: 403},
-      %{action: "none",    company: :comment_access, space: :no_access,      project: :no_access,      expected: 200},
-      %{action: "none",    company: :edit_access,    space: :no_access,      project: :no_access,      expected: 200},
-      %{action: "none",    company: :full_access,    space: :no_access,      project: :no_access,      expected: 200},
-
-      %{action: "complete",    company: :no_access,      space: :no_access,      project: :no_access,      expected: 404},
-      %{action: "complete",    company: :no_access,      space: :no_access,      project: :view_access,    expected: 403},
-      %{action: "complete",    company: :no_access,      space: :no_access,      project: :comment_access, expected: 403},
-      %{action: "complete",    company: :no_access,      space: :no_access,      project: :edit_access,    expected: 200},
-      %{action: "complete",    company: :no_access,      space: :no_access,      project: :full_access,    expected: 200},
-
-      %{action: "complete",    company: :no_access,      space: :view_access,    project: :no_access,      expected: 403},
-      %{action: "complete",    company: :no_access,      space: :comment_access, project: :no_access,      expected: 403},
-      %{action: "complete",    company: :no_access,      space: :edit_access,    project: :no_access,      expected: 200},
-      %{action: "complete",    company: :no_access,      space: :full_access,    project: :no_access,      expected: 200},
-
-      %{action: "complete",    company: :view_access,    space: :no_access,      project: :no_access,      expected: 403},
-      %{action: "complete",    company: :comment_access, space: :no_access,      project: :no_access,      expected: 403},
-      %{action: "complete",    company: :edit_access,    space: :no_access,      project: :no_access,      expected: 200},
-      %{action: "complete",    company: :full_access,    space: :no_access,      project: :no_access,      expected: 200},
-
-      %{action: "reopen",    company: :no_access,      space: :no_access,      project: :no_access,      expected: 404},
-      %{action: "reopen",    company: :no_access,      space: :no_access,      project: :view_access,    expected: 403},
-      %{action: "reopen",    company: :no_access,      space: :no_access,      project: :comment_access, expected: 403},
-      %{action: "reopen",    company: :no_access,      space: :no_access,      project: :edit_access,    expected: 200},
-      %{action: "reopen",    company: :no_access,      space: :no_access,      project: :full_access,    expected: 200},
-
-      %{action: "reopen",    company: :no_access,      space: :view_access,    project: :no_access,      expected: 403},
-      %{action: "reopen",    company: :no_access,      space: :comment_access, project: :no_access,      expected: 403},
-      %{action: "reopen",    company: :no_access,      space: :edit_access,    project: :no_access,      expected: 200},
-      %{action: "reopen",    company: :no_access,      space: :full_access,    project: :no_access,      expected: 200},
-
-      %{action: "reopen",    company: :view_access,    space: :no_access,      project: :no_access,      expected: 403},
-      %{action: "reopen",    company: :comment_access, space: :no_access,      project: :no_access,      expected: 403},
-      %{action: "reopen",    company: :edit_access,    space: :no_access,      project: :no_access,      expected: 200},
-      %{action: "reopen",    company: :full_access,    space: :no_access,      project: :no_access,      expected: 200},
+      %{action: "none", company: :no_access, space: :no_access, project: :no_access, expected: 404},
+      %{action: "none", company: :no_access, space: :no_access, project: :view_access, expected: 403},
+      %{action: "none", company: :no_access, space: :no_access, project: :comment_access, expected: 200},
+      %{action: "none", company: :no_access, space: :no_access, project: :edit_access, expected: 200},
+      %{action: "none", company: :no_access, space: :no_access, project: :full_access, expected: 200},
+      %{action: "none", company: :no_access, space: :view_access, project: :no_access, expected: 403},
+      %{action: "none", company: :no_access, space: :comment_access, project: :no_access, expected: 200},
+      %{action: "none", company: :no_access, space: :edit_access, project: :no_access, expected: 200},
+      %{action: "none", company: :no_access, space: :full_access, project: :no_access, expected: 200},
+      %{action: "none", company: :view_access, space: :no_access, project: :no_access, expected: 403},
+      %{action: "none", company: :comment_access, space: :no_access, project: :no_access, expected: 200},
+      %{action: "none", company: :edit_access, space: :no_access, project: :no_access, expected: 200},
+      %{action: "none", company: :full_access, space: :no_access, project: :no_access, expected: 200},
+      %{action: "complete", company: :no_access, space: :no_access, project: :no_access, expected: 404},
+      %{action: "complete", company: :no_access, space: :no_access, project: :view_access, expected: 403},
+      %{action: "complete", company: :no_access, space: :no_access, project: :comment_access, expected: 403},
+      %{action: "complete", company: :no_access, space: :no_access, project: :edit_access, expected: 200},
+      %{action: "complete", company: :no_access, space: :no_access, project: :full_access, expected: 200},
+      %{action: "complete", company: :no_access, space: :view_access, project: :no_access, expected: 403},
+      %{action: "complete", company: :no_access, space: :comment_access, project: :no_access, expected: 403},
+      %{action: "complete", company: :no_access, space: :edit_access, project: :no_access, expected: 200},
+      %{action: "complete", company: :no_access, space: :full_access, project: :no_access, expected: 200},
+      %{action: "complete", company: :view_access, space: :no_access, project: :no_access, expected: 403},
+      %{action: "complete", company: :comment_access, space: :no_access, project: :no_access, expected: 403},
+      %{action: "complete", company: :edit_access, space: :no_access, project: :no_access, expected: 200},
+      %{action: "complete", company: :full_access, space: :no_access, project: :no_access, expected: 200},
+      %{action: "reopen", company: :no_access, space: :no_access, project: :no_access, expected: 404},
+      %{action: "reopen", company: :no_access, space: :no_access, project: :view_access, expected: 403},
+      %{action: "reopen", company: :no_access, space: :no_access, project: :comment_access, expected: 403},
+      %{action: "reopen", company: :no_access, space: :no_access, project: :edit_access, expected: 200},
+      %{action: "reopen", company: :no_access, space: :no_access, project: :full_access, expected: 200},
+      %{action: "reopen", company: :no_access, space: :view_access, project: :no_access, expected: 403},
+      %{action: "reopen", company: :no_access, space: :comment_access, project: :no_access, expected: 403},
+      %{action: "reopen", company: :no_access, space: :edit_access, project: :no_access, expected: 200},
+      %{action: "reopen", company: :no_access, space: :full_access, project: :no_access, expected: 200},
+      %{action: "reopen", company: :view_access, space: :no_access, project: :no_access, expected: 403},
+      %{action: "reopen", company: :comment_access, space: :no_access, project: :no_access, expected: 403},
+      %{action: "reopen", company: :edit_access, space: :no_access, project: :no_access, expected: 200},
+      %{action: "reopen", company: :full_access, space: :no_access, project: :no_access, expected: 200}
     ]
 
     setup ctx do
@@ -78,11 +70,12 @@ defmodule OperatelyWeb.Api.Mutations.PostMilestoneCommentTest do
         project = create_project(ctx, space, @test.company, @test.space, @test.project)
         milestone = milestone_fixture(%{project_id: project.id})
 
-        assert {code, res} = mutation(ctx.conn, :post_milestone_comment, %{
-          milestone_id: Paths.milestone_id(milestone),
-          content: RichText.rich_text("Content", :as_string),
-          action: @test.action,
-        })
+        assert {code, res} =
+                 mutation(ctx.conn, :post_milestone_comment, %{
+                   milestone_id: Paths.milestone_id(milestone),
+                   content: RichText.rich_text("Content", :as_string),
+                   action: @test.action
+                 })
 
         assert code == @test.expected
 
@@ -99,7 +92,7 @@ defmodule OperatelyWeb.Api.Mutations.PostMilestoneCommentTest do
     @table [
       %{action: :complete, content: nil, result: nil},
       %{action: :reopen, content: nil, result: nil},
-      %{action: :none, content: RichText.rich_text("Content", :as_string), result: RichText.rich_text("Content")},
+      %{action: :none, content: RichText.rich_text("Content", :as_string), result: RichText.rich_text("Content")}
     ]
 
     setup :register_and_log_in_account
@@ -111,11 +104,12 @@ defmodule OperatelyWeb.Api.Mutations.PostMilestoneCommentTest do
 
         assert Comments.list_milestone_comments(milestone.id) == []
 
-        assert {200, _} = mutation(ctx.conn, :post_milestone_comment, %{
-          milestone_id: Paths.milestone_id(milestone),
-          content: @test.content,
-          action: Atom.to_string(@test.action),
-        })
+        assert {200, _} =
+                 mutation(ctx.conn, :post_milestone_comment, %{
+                   milestone_id: Paths.milestone_id(milestone),
+                   content: @test.content,
+                   action: Atom.to_string(@test.action)
+                 })
 
         comments = Comments.list_milestone_comments(milestone.id)
         assert length(comments) == 1
@@ -136,29 +130,34 @@ defmodule OperatelyWeb.Api.Mutations.PostMilestoneCommentTest do
   end
 
   def create_project(ctx, space, company_members_level, space_members_level, project_member_level) do
-    project = project_fixture(%{
-      company_id: ctx.company.id,
-      name: "Name",
-      creator_id: ctx.creator.id,
-      group_id: space.id,
-      company_access_level: Binding.from_atom(company_members_level),
-      space_access_level: Binding.from_atom(space_members_level),
-    })
+    project =
+      project_fixture(%{
+        company_id: ctx.company.id,
+        name: "Name",
+        creator_id: ctx.creator.id,
+        group_id: space.id,
+        company_access_level: Binding.from_atom(company_members_level),
+        space_access_level: Binding.from_atom(space_members_level)
+      })
 
     if space_members_level != :no_access do
-      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
-        id: ctx.person.id,
-        access_level: Binding.from_atom(space_members_level)
-      }])
+      {:ok, _} =
+        Operately.Groups.add_members(ctx.creator, space.id, [
+          %{
+            id: ctx.person.id,
+            access_level: Binding.from_atom(space_members_level)
+          }
+        ])
     end
 
     if project_member_level != :no_access do
-      {:ok, _} = Operately.Projects.create_contributor(ctx.creator, %{
-        project_id: project.id,
-        person_id: ctx.person.id,
-        permissions: Binding.from_atom(project_member_level),
-        responsibility: "some responsibility"
-      })
+      {:ok, _} =
+        Operately.Projects.create_contributor(ctx.creator, %{
+          project_id: project.id,
+          person_id: ctx.person.id,
+          permissions: Binding.from_atom(project_member_level),
+          responsibility: "some responsibility"
+        })
     end
 
     project

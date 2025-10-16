@@ -1,12 +1,13 @@
 defmodule Operately.Operations.ResourceHubFolderCopying do
   alias Ecto.Multi
   alias Operately.{Repo, Activities}
+
   alias Operately.Operations.ResourceHubFolderCopying.{
     Folders,
     Nodes,
     Resources,
     SubscriptionsLists,
-    Subscriptions,
+    Subscriptions
   }
 
   def run(author, folder, dest_resource_hub, attrs) do
@@ -52,8 +53,8 @@ defmodule Operately.Operations.ResourceHubFolderCopying do
           space_id: folder.resource_hub.space_id,
           resource_hub_id: folder.resource_hub.id,
           node_id: folder.node_id,
-          folder_id: folder.id,
-        },
+          folder_id: folder.id
+        }
       }
     end)
   end

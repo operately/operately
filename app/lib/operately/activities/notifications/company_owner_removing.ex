@@ -4,7 +4,7 @@ defmodule Operately.Activities.Notifications.CompanyOwnerRemoving do
       %{
         person_id: activity.content["person_id"],
         activity_id: activity.id,
-        should_send_email: true,
+        should_send_email: true
       }
     ])
   end

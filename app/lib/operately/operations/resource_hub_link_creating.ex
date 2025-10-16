@@ -8,12 +8,15 @@ defmodule Operately.Operations.ResourceHubLinkCreating do
     Multi.new()
     |> SubscriptionList.insert(attrs)
     |> Subscription.insert(author, attrs)
-    |> Multi.insert(:node, Node.changeset(%{
-      resource_hub_id: hub.id,
-      parent_folder_id: attrs[:folder_id],
-      name: attrs.name,
-      type: :link,
-    }))
+    |> Multi.insert(
+      :node,
+      Node.changeset(%{
+        resource_hub_id: hub.id,
+        parent_folder_id: attrs[:folder_id],
+        name: attrs.name,
+        type: :link
+      })
+    )
     |> Multi.insert(:link, fn changes ->
       Link.changeset(%{
         node_id: changes.node.id,
@@ -21,7 +24,7 @@ defmodule Operately.Operations.ResourceHubLinkCreating do
         url: attrs.url,
         description: attrs.content,
         type: attrs.type,
-        subscription_list_id: changes.subscription_list.id,
+        subscription_list_id: changes.subscription_list.id
       })
     end)
     |> SubscriptionList.update(:link)
@@ -35,7 +38,7 @@ defmodule Operately.Operations.ResourceHubLinkCreating do
         space_id: hub.space_id,
         resource_hub_id: hub.id,
         link_id: changes.link.id,
-        node_id: changes.node.id,
+        node_id: changes.node.id
       }
     end)
     |> Repo.transaction()

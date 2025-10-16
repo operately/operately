@@ -2,7 +2,7 @@ defmodule Mix.Tasks.Operately.Gen.Operation do
   alias Mix.Tasks.Operately.Utils.StringUtils
 
   def run(_) do
-    resource = get_resource_name() 
+    resource = get_resource_name()
     [action, action_gerund] = get_action_name()
 
     ctx = initialize_context(resource, action, action_gerund)
@@ -61,7 +61,6 @@ defmodule Mix.Tasks.Operately.Gen.Operation do
       resource: resource,
       action: action,
       action_gerund: action_gerund,
-
       operation_module_name: operation_module_name,
       activity_item_name: activity_item_name,
       activity_action_name: "#{resource}_#{action_gerund}",
@@ -69,7 +68,6 @@ defmodule Mix.Tasks.Operately.Gen.Operation do
       activity_schema_module_name: "#{Macro.camelize(resource)}#{Macro.camelize(action_gerund)}",
       email_handler_module_name: "#{Macro.camelize(resource)}#{Macro.camelize(action_gerund)}Email",
       activity_item_handler_name: "#{Macro.camelize(resource)}#{Macro.camelize(action_gerund)}",
-
       serializer_file_path: "lib/operately_web/api/serializers/activity_content/#{resource}_#{action_gerund}.ex",
       operation_file_path: "lib/operately/operations/#{resource}_#{action_gerund}.ex",
       api_mutation_file_path: "lib/operately_web/api/mutations/#{action}_#{resource}.ex",
@@ -80,12 +78,12 @@ defmodule Mix.Tasks.Operately.Gen.Operation do
       email_handler_file_path: "lib/operately_email/emails/#{resource}_#{action_gerund}_email.ex",
       email_html_template_file_path: "lib/operately_email/templates/#{resource}_#{action_gerund}.html.eex",
       email_text_template_file_path: "lib/operately_email/templates/#{resource}_#{action_gerund}.text.eex",
-      activity_item_file_path: "assets/js/features/activities/#{activity_item_name}/index.tsx",
+      activity_item_file_path: "assets/js/features/activities/#{activity_item_name}/index.tsx"
     }
   end
 
   defp get_resource_name do
-    name = IO.gets("Enter resource name: (e.g project_milestone): ") 
+    name = IO.gets("Enter resource name: (e.g project_milestone): ")
     name = String.trim(name)
 
     StringUtils.verify_snake_case(name, "project_milestone")
@@ -94,21 +92,21 @@ defmodule Mix.Tasks.Operately.Gen.Operation do
   defp get_action_name do
     action = IO.gets("Enter action name: (e.g create): ") |> String.trim()
 
-    gerund = case action do
-      "add" -> "adding"
-      "create" -> "creating"
-      "update" -> "updating"
-      "delete" -> "deleting"
-      "remove" -> "removing"
-      "move" -> "moving"
-      "post" -> "posting"
-      "submit" -> "submitting"
-      "approve" -> "approving"
-      "reject" -> "rejecting"
-      "edit" -> "editing"
-
-      _ -> IO.gets("Enter gerund form of the action: (e.g add -> adding): ") |> String.trim()
-    end
+    gerund =
+      case action do
+        "add" -> "adding"
+        "create" -> "creating"
+        "update" -> "updating"
+        "delete" -> "deleting"
+        "remove" -> "removing"
+        "move" -> "moving"
+        "post" -> "posting"
+        "submit" -> "submitting"
+        "approve" -> "approving"
+        "reject" -> "rejecting"
+        "edit" -> "editing"
+        _ -> IO.gets("Enter gerund form of the action: (e.g add -> adding): ") |> String.trim()
+      end
 
     [action, gerund]
   end
@@ -118,10 +116,10 @@ defmodule Mix.Tasks.Operately.Gen.Operation do
     IO.puts("1. What are the inputs for the api mutation?")
     IO.puts("   e.g company_id:string space_id:string name:string")
     IO.puts("")
-    
-    IO.gets(">  ") 
-    |> String.trim() 
-    |> String.split(~r/\s+/) 
+
+    IO.gets(">  ")
+    |> String.trim()
+    |> String.split(~r/\s+/)
     |> Enum.map(fn field ->
       [name, fieldType] = String.split(field, ":")
       {name, fieldType}
@@ -134,9 +132,9 @@ defmodule Mix.Tasks.Operately.Gen.Operation do
     IO.puts("   e.g company_id:string space_id:string name:string")
     IO.puts("")
 
-    IO.gets(">  ") 
-    |> String.trim() 
-    |> String.split(~r/\s+/) 
+    IO.gets(">  ")
+    |> String.trim()
+    |> String.split(~r/\s+/)
     |> Enum.map(fn field ->
       [name, fieldType] = String.split(field, ":")
       {name, fieldType}
@@ -145,6 +143,7 @@ defmodule Mix.Tasks.Operately.Gen.Operation do
 
   def continue? do
     IO.puts("")
+
     case IO.gets("Continue? (y/n): ") do
       "y\n" -> IO.puts("")
       "n\n" -> System.halt(1)

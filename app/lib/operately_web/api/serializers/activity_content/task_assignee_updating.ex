@@ -6,7 +6,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.TaskAss
       project: Serializer.serialize(content["project"], level: :essential),
       task: Serializer.serialize(content["task"], level: :essential),
       old_assignee: Serializer.serialize(content["old_assignee"], level: :essential),
-      new_assignee: Serializer.serialize(content["new_assignee"], level: :essential),
+      new_assignee: Serializer.serialize(content["new_assignee"], level: :essential)
     }
   end
 end

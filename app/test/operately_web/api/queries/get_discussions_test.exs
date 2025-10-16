@@ -23,9 +23,11 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionsTest do
     end
 
     test "company space - company members have access", ctx do
-      messages = Enum.map(1..3, fn _ ->
-        create_message(ctx.creator.id, ctx.company.company_space_id)
-      end)
+      messages =
+        Enum.map(1..3, fn _ ->
+          create_message(ctx.creator.id, ctx.company.company_space_id)
+        end)
+
       space = Operately.Groups.get_group!(ctx.company.company_space_id)
 
       assert {200, res} = query(ctx.conn, :get_discussions, %{space_id: Paths.space_id(space)})
@@ -34,6 +36,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionsTest do
 
     test "company members have no access", ctx do
       space = create_space(ctx, company_permissions: Binding.no_access())
+
       Enum.each(1..3, fn _ ->
         create_message(ctx.creator.id, space.id)
       end)
@@ -44,9 +47,11 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionsTest do
 
     test "company members have access", ctx do
       space = create_space(ctx, company_permissions: Binding.view_access())
-      messages = Enum.map(1..3, fn _ ->
-        create_message(ctx.creator.id, space.id)
-      end)
+
+      messages =
+        Enum.map(1..3, fn _ ->
+          create_message(ctx.creator.id, space.id)
+        end)
 
       assert {200, res} = query(ctx.conn, :get_discussions, %{space_id: Paths.space_id(space)})
       assert_messages(res, messages)
@@ -54,9 +59,11 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionsTest do
 
     test "space members have access", ctx do
       space = create_space(ctx, company_permissions: Binding.no_access())
-      messages = Enum.map(1..3, fn _ ->
-        create_message(ctx.creator.id, space.id)
-      end)
+
+      messages =
+        Enum.map(1..3, fn _ ->
+          create_message(ctx.creator.id, space.id)
+        end)
 
       assert {200, res} = query(ctx.conn, :get_discussions, %{space_id: Paths.space_id(space)})
       assert length(res.discussions) == 0
@@ -109,20 +116,24 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionsTest do
     end
 
     test "include_author", ctx do
-      assert {200, res} = query(ctx.conn, :get_discussions, %{
-        space_id: Paths.space_id(ctx.space),
-        include_author: true
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_discussions, %{
+                 space_id: Paths.space_id(ctx.space),
+                 include_author: true
+               })
+
       discussion = hd(res.discussions)
 
       assert discussion.author == Serializer.serialize(ctx.creator)
     end
 
     test "include_comments_count", ctx do
-      assert {200, res} = query(ctx.conn, :get_discussions, %{
-        space_id: Paths.space_id(ctx.space),
-        include_comments_count: true
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_discussions, %{
+                 space_id: Paths.space_id(ctx.space),
+                 include_comments_count: true
+               })
+
       discussion = hd(res.discussions)
 
       assert discussion.comments_count == 2
@@ -135,6 +146,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionsTest do
 
   defp assert_messages(res, messages) do
     assert length(res.discussions) == length(messages)
+
     Enum.each(res.discussions, fn m ->
       assert Enum.find(messages, &(Paths.message_id(&1) == m.id))
       assert m.body
@@ -147,10 +159,12 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionsTest do
   end
 
   defp add_person_to_space(ctx, space) do
-    Operately.Groups.add_members(ctx.person, space.id, [%{
-      id: ctx.person.id,
-      access_level: Binding.view_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, space.id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.view_access()
+      }
+    ])
   end
 
   defp create_message(creator_id, space_id) do

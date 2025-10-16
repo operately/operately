@@ -33,6 +33,7 @@ defmodule Operately.Data.Change060UpdateGoalsLastUpdateStatus do
     SET last_update_status = 'off_track'
     WHERE last_update_status = 'issue'
     """
+
     Repo.query!(update_issue_sql)
 
     # Update 'concern' statuses to 'caution'
@@ -41,6 +42,7 @@ defmodule Operately.Data.Change060UpdateGoalsLastUpdateStatus do
     SET last_update_status = 'caution'
     WHERE last_update_status = 'concern'
     """
+
     Repo.query!(update_concern_sql)
 
     # Update 'pending' statuses to 'on_track'
@@ -49,6 +51,7 @@ defmodule Operately.Data.Change060UpdateGoalsLastUpdateStatus do
     SET last_update_status = 'on_track'
     WHERE last_update_status = 'pending'
     """
+
     Repo.query!(update_pending_sql)
   end
 end

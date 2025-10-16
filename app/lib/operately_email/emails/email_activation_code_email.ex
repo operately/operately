@@ -10,12 +10,13 @@ defmodule OperatelyEmail.Emails.EmailActivationCodeEmail do
       subject: "Operately confirmation code: #{formatted_code}"
     }
 
-    email = new()
-    |> to(email_activation_code.email)
-    |> from({"Operately", OperatelyEmail.notification_email_address()})
-    |> subject(assigns[:subject])
-    |> html_body(html("email_activation_code", assigns))
-    |> text_body(text("email_activation_code", assigns))
+    email =
+      new()
+      |> to(email_activation_code.email)
+      |> from({"Operately", OperatelyEmail.notification_email_address()})
+      |> subject(assigns[:subject])
+      |> html_body(html("email_activation_code", assigns))
+      |> text_body(text("email_activation_code", assigns))
 
     OperatelyEmail.Mailers.BaseMailer.deliver_now(email)
   end
@@ -26,5 +27,4 @@ defmodule OperatelyEmail.Emails.EmailActivationCodeEmail do
 
     "#{left}-#{right}"
   end
-
 end

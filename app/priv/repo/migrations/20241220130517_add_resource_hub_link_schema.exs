@@ -6,7 +6,9 @@ defmodule Operately.Repo.Migrations.AddResourceHubLinkSchema do
       add :id, :binary_id, primary_key: true
       add :node_id, references(:resource_nodes, on_delete: :nothing, type: :binary_id)
       add :author_id, references(:people, on_delete: :nothing, type: :binary_id)
-      add :subscription_list_id, references(:subscription_lists, on_delete: :nothing, type: :binary_id)
+
+      add :subscription_list_id,
+          references(:subscription_lists, on_delete: :nothing, type: :binary_id)
 
       add :url, :string
       add :description, :map

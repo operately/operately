@@ -26,10 +26,7 @@ defmodule OperatelyWeb.Api.Queries.GetTasks do
     {:ok, milestone_id} = decode_id(inputs.milestone_id)
     include_filters = extract_include_filters(inputs)
 
-    from(t in Task, as: :task,
-      join: m in assoc(t, :milestone),
-      join: p in assoc(m, :project), as: :project
-    )
+    from(t in Task, as: :task, join: m in assoc(t, :milestone), join: p in assoc(m, :project), as: :project)
     |> Task.scope_company(person.company_id)
     |> Task.scope_milestone(milestone_id)
     |> filter_by_view_access(person.id, named_binding: :project)

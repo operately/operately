@@ -1,9 +1,8 @@
 defmodule Mix.Tasks.Operation.GenOperationModule do
-
   def gen(ctx) do
-    fields = 
-      ctx.activity_fields 
-      |> Enum.map(fn {name, _} -> "#{name}: \"TODO\"" end) 
+    fields =
+      ctx.activity_fields
+      |> Enum.map(fn {name, _} -> "#{name}: \"TODO\"" end)
       |> Enum.join(",\n")
 
     Mix.Operately.generate_file(ctx.operation_file_path, fn _ ->
@@ -30,5 +29,4 @@ defmodule Mix.Tasks.Operation.GenOperationModule do
       """
     end)
   end
-
 end

@@ -4,7 +4,7 @@ defmodule OperatelyWeb.Api.HelpersTest do
 
   describe "id_with_comments/2" do
     setup do
-       %{id: Operately.ShortUuid.generate()}
+      %{id: Operately.ShortUuid.generate()}
     end
 
     test "returns the id with comments", ctx do

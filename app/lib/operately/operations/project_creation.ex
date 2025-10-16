@@ -51,7 +51,7 @@ defmodule Operately.Operations.ProjectCreation do
         :started_at => DateTime.utc_now(),
         :timeframe => %{
           contextual_start_date: ContextualDate.create_day_date(Date.utc_today()),
-          contextual_end_date: nil,
+          contextual_end_date: nil
         },
         :next_check_in_scheduled_at => Operately.Time.first_friday_from_today(),
         :health => :on_track,

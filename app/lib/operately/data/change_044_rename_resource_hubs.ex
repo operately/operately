@@ -4,9 +4,12 @@ defmodule Operately.Data.Change044RenameResourceHubs do
 
   def run do
     Repo.transaction(fn ->
-      {_, nil} = Repo.update_all(ResourceHub, set: [
-        name: "Documents & Files",
-      ])
+      {_, nil} =
+        Repo.update_all(ResourceHub,
+          set: [
+            name: "Documents & Files"
+          ]
+        )
     end)
   end
 end

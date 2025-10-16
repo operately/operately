@@ -7,19 +7,21 @@ defmodule Operately.Updates.Comment do
     belongs_to :author, Operately.People.Person
 
     field :entity_id, Ecto.UUID
-    field :entity_type, Ecto.Enum, values: [
-      :project_check_in,
-      :project_milestone,
-      :goal_update,
-      :message,
-      :update,
-      :comment_thread,
-      :project_retrospective,
-      :resource_hub_document,
-      :resource_hub_file,
-      :resource_hub_link,
-      :project_task,
-    ]
+
+    field :entity_type, Ecto.Enum,
+      values: [
+        :project_check_in,
+        :project_milestone,
+        :goal_update,
+        :message,
+        :update,
+        :comment_thread,
+        :project_retrospective,
+        :resource_hub_document,
+        :resource_hub_file,
+        :resource_hub_link,
+        :project_task
+      ]
 
     field :content, :map
 
@@ -48,7 +50,7 @@ defmodule Operately.Updates.Comment do
   Loads the comment counts for a list of resources that have comments.
   """
   def load_comments_count(parents) when is_list(parents) do
-    parent_ids = Enum.map(parents, &(&1.id))
+    parent_ids = Enum.map(parents, & &1.id)
 
     counts =
       from(c in Operately.Updates.Comment,

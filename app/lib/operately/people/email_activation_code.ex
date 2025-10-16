@@ -40,11 +40,12 @@ defmodule Operately.People.EmailActivationCode do
       code = generate_code()
       expires_at = DateTime.utc_now() |> DateTime.add(5, :minute)
 
-      cs = changeset(%{
-        email: email, 
-        code: code, 
-        expires_at: expires_at
-      })
+      cs =
+        changeset(%{
+          email: email,
+          code: code,
+          expires_at: expires_at
+        })
 
       case Repo.insert(cs) do
         {:ok, record} -> {:ok, record}
@@ -58,8 +59,7 @@ defmodule Operately.People.EmailActivationCode do
   defp generate_code() do
     alpabet = String.split(@allowed_chars, "", trim: true)
 
-    Enum.map(1..6, fn _ -> Enum.random(alpabet) end) 
+    Enum.map(1..6, fn _ -> Enum.random(alpabet) end)
     |> Enum.join()
   end
-
 end

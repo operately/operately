@@ -6,6 +6,5 @@ defmodule Operately.Repo.Migrations.RemoveSelfManagers do
   end
 
   def down do
-
   end
 end

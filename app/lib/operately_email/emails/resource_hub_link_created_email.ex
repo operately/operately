@@ -8,9 +8,13 @@ defmodule OperatelyEmail.Emails.ResourceHubLinkCreatedEmail do
     author = Repo.preload(activity, :author).author
     company = Repo.preload(author, :company).company
 
-    {:ok, link} = Link.get(:system, id: activity.content["link_id"], opts: [
-      preload: [:node, :space],
-    ])
+    {:ok, link} =
+      Link.get(:system,
+        id: activity.content["link_id"],
+        opts: [
+          preload: [:node, :space]
+        ]
+      )
 
     company
     |> new()

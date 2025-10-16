@@ -24,4 +24,4 @@ defmodule OperatelyWeb.Api.Queries.GetUnreadNotificationCountTest do
       assert res == %{unread: 1}
     end
   end
-end 
+end

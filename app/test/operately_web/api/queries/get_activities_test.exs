@@ -37,7 +37,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
     test "company members have no access", ctx do
       goal_fixture(ctx.champion, %{
         space_id: ctx.company.company_space_id,
-        company_access_level: Binding.no_access(),
+        company_access_level: Binding.no_access()
       })
 
       assert {200, res} = query(ctx.conn, :get_activities, ctx.attrs)
@@ -46,12 +46,13 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
     end
 
     test "company members have access", ctx do
-      goal = goal_fixture(ctx.champion, %{
-        space_id: ctx.company.company_space_id,
-        company_access_level: Binding.view_access(),
-      })
+      goal =
+        goal_fixture(ctx.champion, %{
+          space_id: ctx.company.company_space_id,
+          company_access_level: Binding.view_access()
+        })
 
-      assert {200, %{ activities: activities } = _res} = query(ctx.conn, :get_activities, ctx.attrs)
+      assert {200, %{activities: activities} = _res} = query(ctx.conn, :get_activities, ctx.attrs)
 
       assert length(activities) == 1
       assert Paths.goal_id(goal) == hd(activities).content.goal.id
@@ -59,10 +60,11 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
 
     test "space members have no access", ctx do
       Groups.add_members(ctx.champion, ctx.space.id, [%{id: ctx.person.id, access_level: Binding.edit_access()}])
+
       goal_fixture(ctx.champion, %{
         space_id: ctx.space.id,
         space_access_level: Binding.no_access(),
-        company_access_level: Binding.no_access(),
+        company_access_level: Binding.no_access()
       })
 
       assert {200, res} = query(ctx.conn, :get_activities, ctx.attrs)
@@ -72,47 +74,51 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
 
     test "space members have access", ctx do
       Groups.add_members(ctx.champion, ctx.space.id, [%{id: ctx.person.id, access_level: Binding.edit_access()}])
-      goal = goal_fixture(ctx.champion, %{
-        space_id: ctx.space.id,
-        space_access_level: Binding.view_access(),
-        company_access_level: Binding.no_access(),
-      })
 
-      assert {200, %{ activities: activities } = _res} = query(ctx.conn, :get_activities, ctx.attrs)
+      goal =
+        goal_fixture(ctx.champion, %{
+          space_id: ctx.space.id,
+          space_access_level: Binding.view_access(),
+          company_access_level: Binding.no_access()
+        })
+
+      assert {200, %{activities: activities} = _res} = query(ctx.conn, :get_activities, ctx.attrs)
 
       assert length(activities) == 1
       assert Paths.goal_id(goal) == hd(activities).content.goal.id
     end
 
     test "reviewers have access", ctx do
-      goal = goal_fixture(ctx.champion, %{
-        space_id: ctx.space.id,
-        reviewer_id: ctx.reviewer.id,
-        space_access_level: Binding.no_access(),
-        company_access_level: Binding.no_access(),
-      })
+      goal =
+        goal_fixture(ctx.champion, %{
+          space_id: ctx.space.id,
+          reviewer_id: ctx.reviewer.id,
+          space_access_level: Binding.no_access(),
+          company_access_level: Binding.no_access()
+        })
 
       account = Repo.preload(ctx.reviewer, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, %{ activities: activities } = _res} = query(conn, :get_activities, ctx.attrs)
+      assert {200, %{activities: activities} = _res} = query(conn, :get_activities, ctx.attrs)
 
       assert length(activities) == 1
       assert Paths.goal_id(goal) == hd(activities).content.goal.id
     end
 
     test "champions have access", ctx do
-      goal = goal_fixture(ctx.reviewer, %{
-        space_id: ctx.space.id,
-        champion_id: ctx.champion.id,
-        space_access_level: Binding.no_access(),
-        company_access_level: Binding.no_access(),
-      })
+      goal =
+        goal_fixture(ctx.reviewer, %{
+          space_id: ctx.space.id,
+          champion_id: ctx.champion.id,
+          space_access_level: Binding.no_access(),
+          company_access_level: Binding.no_access()
+        })
 
       account = Repo.preload(ctx.champion, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, %{ activities: activities } = _res} = query(conn, :get_activities, ctx.attrs)
+      assert {200, %{activities: activities} = _res} = query(conn, :get_activities, ctx.attrs)
 
       assert length(activities) == 1
       assert Paths.goal_id(goal) == hd(activities).content.goal.id
@@ -136,11 +142,12 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
     end
 
     test "company scope includes all activities", ctx do
-      assert {200, res} = query(ctx.conn, :get_activities, %{
-        scope_type: :company,
-        scope_id: Paths.company_id(ctx.company),
-        actions: []
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_activities, %{
+                 scope_type: :company,
+                 scope_id: Paths.company_id(ctx.company),
+                 actions: []
+               })
 
       assert Enum.find(res.activities, fn act -> act.action == "company_adding" end)
       assert Enum.find(res.activities, fn act -> act.action == "space_added" end)
@@ -151,11 +158,12 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
     end
 
     test "space scope includes space, goal, project, and task activities", ctx do
-      assert {200, res} = query(ctx.conn, :get_activities, %{
-        scope_type: :space,
-        scope_id: Paths.space_id(ctx.space),
-        actions: []
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_activities, %{
+                 scope_type: :space,
+                 scope_id: Paths.space_id(ctx.space),
+                 actions: []
+               })
 
       refute Enum.find(res.activities, fn act -> act.action == "company_adding" end)
       assert Enum.find(res.activities, fn act -> act.action == "space_added" end)
@@ -166,11 +174,12 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
     end
 
     test "project scope includes project and task activities", ctx do
-      assert {200, res} = query(ctx.conn, :get_activities, %{
-        scope_type: :project,
-        scope_id: Paths.project_id(ctx.project),
-        actions: []
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_activities, %{
+                 scope_type: :project,
+                 scope_id: Paths.project_id(ctx.project),
+                 actions: []
+               })
 
       refute Enum.find(res.activities, fn act -> act.action == "company_adding" end)
       refute Enum.find(res.activities, fn act -> act.action == "space_added" end)
@@ -181,11 +190,12 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
     end
 
     test "goal scope includes only goal activities", ctx do
-      assert {200, res} = query(ctx.conn, :get_activities, %{
-        scope_type: :goal,
-        scope_id: Paths.goal_id(ctx.goal),
-        actions: []
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_activities, %{
+                 scope_type: :goal,
+                 scope_id: Paths.goal_id(ctx.goal),
+                 actions: []
+               })
 
       refute Enum.find(res.activities, fn act -> act.action == "company_adding" end)
       refute Enum.find(res.activities, fn act -> act.action == "space_added" end)
@@ -196,11 +206,12 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
     end
 
     test "milestone scope includes only milestone activities", ctx do
-      assert {200, res} = query(ctx.conn, :get_activities, %{
-        scope_type: :milestone,
-        scope_id: Paths.milestone_id(ctx.milestone),
-        actions: []
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_activities, %{
+                 scope_type: :milestone,
+                 scope_id: Paths.milestone_id(ctx.milestone),
+                 actions: []
+               })
 
       refute Enum.find(res.activities, fn act -> act.action == "company_adding" end)
       refute Enum.find(res.activities, fn act -> act.action == "space_added" end)
@@ -211,11 +222,12 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
     end
 
     test "task scope includes only task activities", ctx do
-      assert {200, res} = query(ctx.conn, :get_activities, %{
-        scope_type: :task,
-        scope_id: Paths.task_id(ctx.task),
-        actions: []
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_activities, %{
+                 scope_type: :task,
+                 scope_id: Paths.task_id(ctx.task),
+                 actions: []
+               })
 
       refute Enum.find(res.activities, fn act -> act.action == "company_adding" end)
       refute Enum.find(res.activities, fn act -> act.action == "space_added" end)
@@ -241,7 +253,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
         "space_id" => ctx.space.id,
         "project_id" => ctx.project.id,
         "milestone_id" => ctx.milestone.id,
-        "milestone_name" => ctx.milestone.title,
+        "milestone_name" => ctx.milestone.title
       }
     }
 
@@ -263,7 +275,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
         "project_id" => ctx.project.id,
         "milestone_id" => ctx.milestone.id,
         "task_id" => ctx.task.id,
-        "name" => ctx.task.name,
+        "name" => ctx.task.name
       }
     }
 

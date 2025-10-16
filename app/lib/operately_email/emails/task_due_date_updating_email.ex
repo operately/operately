@@ -8,9 +8,14 @@ defmodule OperatelyEmail.Emails.TaskDueDateUpdatingEmail do
   def send(person, activity) do
     %{author: author = %{company: company}} = Repo.preload(activity, author: :company)
 
-    {:ok, task} = Task.get(:system, id: activity.content["task_id"], opts: [
-      preload: [:project]
-    ])
+    {:ok, task} =
+      Task.get(:system,
+        id: activity.content["task_id"],
+        opts: [
+          preload: [:project]
+        ]
+      )
+
     previous_date = get_date_value(activity.content["old_due_date"])
     new_date = get_date_value(activity.content["new_due_date"])
 

@@ -91,40 +91,61 @@ defmodule OperatelyWeb.AccountAuth do
   Authenticates the account by looking into the session
   and remember me token.
   """
+  alias Operately.MCP.URL
+  alias Operately.Companies.ShortId
+
   def fetch_current_account(conn, _opts) do
     {account_token, conn} = ensure_account_token(conn)
     account = account_token && People.get_account_by_session_token(account_token)
 
-    assign(conn, :current_account, account)
+    conn =
+      if account do
+        assign(conn, :current_account, account)
+      else
+        conn
+        |> assign(:current_account, nil)
+        |> maybe_authenticate_bearer()
+      end
+
+    conn
   end
 
   def fetch_current_company(conn, _opts) do
-    identifier =
-      case get_req_header(conn, "x-company-id") do
-        [company_id | _] -> company_id
-        _ -> conn.path_params["company_id"]
-      end
-
-    with id when is_binary(id) <- identifier,
-         stripped <- OperatelyWeb.Api.Helpers.id_without_comments(id),
-         {:ok, company_id} <- Operately.Companies.ShortId.decode(stripped) do
-      company = Operately.Companies.get_company!(company_id)
-      assign(conn, :current_company, company)
+    if conn.assigns[:current_company] do
+      conn
     else
-      _ -> conn
+      identifier =
+        case get_req_header(conn, "x-company-id") do
+          [company_id | _] -> company_id
+          _ -> conn.path_params["company_id"]
+        end
+
+      with id when is_binary(id) <- identifier,
+           stripped <- OperatelyWeb.Api.Helpers.id_without_comments(id),
+           {:ok, company_id} <- ShortId.decode(stripped) do
+        company = Operately.Companies.get_company!(company_id)
+        assign(conn, :current_company, company)
+      else
+        _ -> conn
+      end
     end
   end
 
   def fetch_current_person(conn, _opts) do
-    if conn.assigns[:current_account] && conn.assigns[:current_company] do
-      account = conn.assigns[:current_account]
-      company = conn.assigns[:current_company]
+    cond do
+      conn.assigns[:current_person] ->
+        conn
 
-      person = get_person_for_session(conn, account, company)
+      conn.assigns[:current_account] && conn.assigns[:current_company] ->
+        account = conn.assigns[:current_account]
+        company = conn.assigns[:current_company]
 
-      assign(conn, :current_person, person)
-    else
-      conn
+        person = get_person_for_session(conn, account, company)
+
+        assign(conn, :current_person, person)
+
+      true ->
+        conn
     end
   end
 
@@ -200,5 +221,41 @@ defmodule OperatelyWeb.AccountAuth do
             person
         end
     end
+  end
+
+  defp maybe_authenticate_bearer(%{assigns: %{current_account: %Operately.People.Account{}}} = conn), do: conn
+
+  defp maybe_authenticate_bearer(conn) do
+    case get_req_header(conn, "authorization") do
+      ["Bearer " <> token] ->
+        with {:ok, slug} <- company_slug_from_conn(conn),
+             {:ok, decoded_id} <- decode_company_slug(slug),
+             resource <- URL.resource_uri(conn, slug),
+             {:ok, account, company, person} <- Operately.MCP.OAuth.verify_access_token(token, resource),
+             true <- company.id == decoded_id do
+          conn
+          |> assign(:current_account, account)
+          |> assign(:current_company, company)
+          |> assign(:current_person, person)
+        else
+          _ -> conn
+        end
+
+      _ ->
+        conn
+    end
+  end
+
+  defp company_slug_from_conn(conn) do
+    case conn.path_params["company_id"] do
+      nil -> {:error, :missing_company}
+      slug -> {:ok, slug}
+    end
+  end
+
+  defp decode_company_slug(slug) do
+    slug
+    |> OperatelyWeb.Api.Helpers.id_without_comments()
+    |> ShortId.decode()
   end
 end

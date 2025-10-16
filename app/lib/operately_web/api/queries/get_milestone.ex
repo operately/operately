@@ -37,25 +37,28 @@ defmodule OperatelyWeb.Api.Queries.GetMilestone do
   end
 
   defp load(ctx, inputs) do
-    Milestone.get(ctx.me, id: inputs.id, opts: [
-      preload: preload(inputs),
-      after_load: after_load(inputs, ctx.me),
-    ])
+    Milestone.get(ctx.me,
+      id: inputs.id,
+      opts: [
+        preload: preload(inputs),
+        after_load: after_load(inputs, ctx.me)
+      ]
+    )
   end
 
   defp preload(inputs) do
-    Inputs.parse_includes(inputs, [
+    Inputs.parse_includes(inputs,
       include_project: :project,
       include_creator: :creator,
       include_space: :space,
-      include_comments: [comments: [comment: [:author, reactions: :person]]],
-    ])
+      include_comments: [comments: [comment: [:author, reactions: :person]]]
+    )
   end
 
   def after_load(inputs, person) do
-    Inputs.parse_includes(inputs, [
+    Inputs.parse_includes(inputs,
       include_permissions: &Milestone.set_permissions/1,
-      include_comments: Milestone.load_comment_notifications(person),
-    ])
+      include_comments: Milestone.load_comment_notifications(person)
+    )
   end
 end

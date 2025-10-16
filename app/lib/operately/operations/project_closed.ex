@@ -14,21 +14,26 @@ defmodule Operately.Operations.ProjectClosed do
         author_id: author.id,
         project_id: project.id,
         content: attrs.content,
-        subscription_list_id: changes.subscription_list.id,
+        subscription_list_id: changes.subscription_list.id
       })
     end)
     |> SubscriptionList.update(:retrospective)
-    |> Multi.update(:project, Project.changeset(project,%{
-      status: "closed",
-      closed_at: DateTime.utc_now(),
-      success_status: attrs.success_status,
-    }))
-    |> Activities.insert_sync(author.id, :project_closed, fn changes -> %{
-      company_id: project.company_id,
-      space_id: project.group_id,
-      project_id: project.id,
-      retrospective_id: changes.retrospective.id,
-    } end)
+    |> Multi.update(
+      :project,
+      Project.changeset(project, %{
+        status: "closed",
+        closed_at: DateTime.utc_now(),
+        success_status: attrs.success_status
+      })
+    )
+    |> Activities.insert_sync(author.id, :project_closed, fn changes ->
+      %{
+        company_id: project.company_id,
+        space_id: project.group_id,
+        project_id: project.id,
+        retrospective_id: changes.retrospective.id
+      }
+    end)
     |> Repo.transaction()
     |> Repo.extract_result(:retrospective)
   end

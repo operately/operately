@@ -142,29 +142,33 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalDiscussionTest do
 
     test "if goal does not exist, it returns an error", ctx do
       assert mutation(ctx.conn, :create_goal_discussion, %{
-        goal_id: "goal-abc-#{Operately.ShortUuid.encode!(Ecto.UUID.generate())}",
-        title: "Some title",
-        message: rich_text("Hello World") |> Jason.encode!()
-      }) == not_found_response()
+               goal_id: "goal-abc-#{Operately.ShortUuid.encode!(Ecto.UUID.generate())}",
+               title: "Some title",
+               message: rich_text("Hello World") |> Jason.encode!()
+             }) == not_found_response()
     end
   end
 
   describe "subscriptions to notifications" do
     setup :register_and_log_in_account
+
     setup ctx do
       goal = goal_fixture(ctx.person, %{space_id: ctx.company.company_space_id})
-      people = Enum.map(1..3, fn _ ->
-        person_fixture(%{company_id: ctx.company.id})
-      end)
+
+      people =
+        Enum.map(1..3, fn _ ->
+          person_fixture(%{company_id: ctx.company.id})
+        end)
 
       Map.merge(ctx, %{goal: goal, people: people})
     end
 
     test "creates subscription list for goal discussion", ctx do
-      assert {200, res} = request(ctx.conn, ctx.goal, %{
-        send_notifications_to_everyone: true,
-        subscriber_ids: Enum.map(ctx.people, &(Paths.person_id(&1)))
-      })
+      assert {200, res} =
+               request(ctx.conn, ctx.goal, %{
+                 send_notifications_to_everyone: true,
+                 subscriber_ids: Enum.map(ctx.people, &Paths.person_id(&1))
+               })
 
       discussion = fetch_discussion(res.id)
 
@@ -184,11 +188,12 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalDiscussionTest do
       people = ctx.people ++ ctx.people ++ ctx.people
       content = RichText.rich_text(mentioned_people: people)
 
-      assert {200, res} = request(ctx.conn, ctx.goal, %{
-        message: content,
-        send_notifications_to_everyone: false,
-        subscriber_ids: [],
-      })
+      assert {200, res} =
+               request(ctx.conn, ctx.goal, %{
+                 message: content,
+                 send_notifications_to_everyone: false,
+                 subscriber_ids: []
+               })
 
       discussion = fetch_discussion(res.id)
       subscriptions = fetch_subscriptions(discussion.id)
@@ -204,11 +209,12 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalDiscussionTest do
       people = [ctx.person | ctx.people]
       content = RichText.rich_text(mentioned_people: people)
 
-      assert {200, res} = request(ctx.conn, ctx.goal, %{
-        message: content,
-        send_notifications_to_everyone: true,
-        subscriber_ids: Enum.map(people, &(Paths.person_id(&1))),
-      })
+      assert {200, res} =
+               request(ctx.conn, ctx.goal, %{
+                 message: content,
+                 send_notifications_to_everyone: true,
+                 subscriber_ids: Enum.map(people, &Paths.person_id(&1))
+               })
 
       discussion = fetch_discussion(res.id)
       subscriptions = fetch_subscriptions(discussion.id)
@@ -226,11 +232,18 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalDiscussionTest do
   #
 
   defp request(conn, goal, attrs \\ %{}) do
-    mutation(conn, :create_goal_discussion, Map.merge(%{
-      goal_id: Paths.goal_id(goal),
-      title: "Some title",
-      message: rich_text("Hello World") |> Jason.encode!()
-    }, attrs))
+    mutation(
+      conn,
+      :create_goal_discussion,
+      Map.merge(
+        %{
+          goal_id: Paths.goal_id(goal),
+          title: "Some title",
+          message: rich_text("Hello World") |> Jason.encode!()
+        },
+        attrs
+      )
+    )
   end
 
   defp assert_discussion_created(res) do
@@ -258,24 +271,31 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalDiscussionTest do
   #
 
   defp create_goal(ctx, attrs) do
-    goal_fixture(ctx[:creator] || ctx.person, Enum.into(attrs, %{
-      space_id: ctx[:space_id] || ctx.company.company_space_id,
-      company_access_level: Binding.no_access(),
-      space_access_level: Binding.no_access(),
-    }))
+    goal_fixture(
+      ctx[:creator] || ctx.person,
+      Enum.into(attrs, %{
+        space_id: ctx[:space_id] || ctx.company.company_space_id,
+        company_access_level: Binding.no_access(),
+        space_access_level: Binding.no_access()
+      })
+    )
   end
 
   defp add_person_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space_id, [%{
-      id: ctx.person.id,
-      access_level: Binding.edit_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space_id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.edit_access()
+      }
+    ])
   end
 
   defp add_manager_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space_id, [%{
-      id: ctx.person.id,
-      access_level: Binding.full_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space_id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.full_access()
+      }
+    ])
   end
 end

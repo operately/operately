@@ -4,7 +4,7 @@ defmodule Operately.Activities.Notifications.SpaceMembersAdded do
       %{
         person_id: m["person_id"],
         activity_id: activity.id,
-        should_send_email: true,
+        should_send_email: true
       }
     end)
     |> Operately.Notifications.bulk_create()

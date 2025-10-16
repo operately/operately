@@ -27,7 +27,7 @@ defmodule Operately.Activities.Content.ProjectContributorsAddition do
   end
 
   def changeset(attrs) do
-    %__MODULE__{} 
+    %__MODULE__{}
     |> cast(attrs, [:company_id, :project_id, :space_id])
     |> cast_embed(:contributors)
   end

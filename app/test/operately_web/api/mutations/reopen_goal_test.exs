@@ -17,15 +17,13 @@ defmodule OperatelyWeb.Api.Mutations.ReopenGoalTest do
 
   describe "permissions" do
     @table [
-      %{company: :no_access,      space: :no_access,      goal: :full_access,    expected: 200},
-
-      %{company: :no_access,      space: :comment_access, goal: :no_access,      expected: 403},
-      %{company: :no_access,      space: :edit_access,    goal: :no_access,      expected: 200},
-      %{company: :no_access,      space: :full_access,    goal: :no_access,      expected: 200},
-
-      %{company: :comment_access, space: :no_access,      goal: :no_access,      expected: 403},
-      %{company: :edit_access,    space: :no_access,      goal: :no_access,      expected: 200},
-      %{company: :full_access,    space: :no_access,      goal: :no_access,      expected: 200},
+      %{company: :no_access, space: :no_access, goal: :full_access, expected: 200},
+      %{company: :no_access, space: :comment_access, goal: :no_access, expected: 403},
+      %{company: :no_access, space: :edit_access, goal: :no_access, expected: 200},
+      %{company: :no_access, space: :full_access, goal: :no_access, expected: 200},
+      %{company: :comment_access, space: :no_access, goal: :no_access, expected: 403},
+      %{company: :edit_access, space: :no_access, goal: :no_access, expected: 200},
+      %{company: :full_access, space: :no_access, goal: :no_access, expected: 200}
     ]
 
     setup ctx do
@@ -39,10 +37,11 @@ defmodule OperatelyWeb.Api.Mutations.ReopenGoalTest do
         space = create_space(ctx)
         goal = create_goal(ctx, space, @test.company, @test.space, @test.goal)
 
-        assert {code, res} = mutation(ctx.conn, :reopen_goal, %{
-          id: Paths.goal_id(goal),
-          message: RichText.rich_text("Some message", :as_string)
-        })
+        assert {code, res} =
+                 mutation(ctx.conn, :reopen_goal, %{
+                   id: Paths.goal_id(goal),
+                   message: RichText.rich_text("Some message", :as_string)
+                 })
 
         assert code == @test.expected
 
@@ -57,20 +56,24 @@ defmodule OperatelyWeb.Api.Mutations.ReopenGoalTest do
 
   describe "subscriptions to notifications" do
     setup :register_and_log_in_account
+
     setup ctx do
       goal = goal_fixture(ctx.person, %{space_id: ctx.company.company_space_id})
-      people = Enum.map(1..3, fn _ ->
-        person_fixture(%{company_id: ctx.company.id})
-      end)
+
+      people =
+        Enum.map(1..3, fn _ ->
+          person_fixture(%{company_id: ctx.company.id})
+        end)
 
       Map.merge(ctx, %{goal: goal, people: people})
     end
 
     test "creates subscription list for goal reopening", ctx do
-      assert {200, _} = request(ctx.conn, ctx.goal, %{
-        send_notifications_to_everyone: true,
-        subscriber_ids: Enum.map(ctx.people, &(Paths.person_id(&1)))
-      })
+      assert {200, _} =
+               request(ctx.conn, ctx.goal, %{
+                 send_notifications_to_everyone: true,
+                 subscriber_ids: Enum.map(ctx.people, &Paths.person_id(&1))
+               })
 
       thread = fetch_thread(ctx.goal)
       {:ok, list} = SubscriptionList.get(:system, parent_id: thread.id, opts: [preload: :subscriptions])
@@ -89,11 +92,12 @@ defmodule OperatelyWeb.Api.Mutations.ReopenGoalTest do
       people = ctx.people ++ ctx.people ++ ctx.people
       content = RichText.rich_text(mentioned_people: people)
 
-      assert {200, _} = request(ctx.conn, ctx.goal, %{
-        message: content,
-        send_notifications_to_everyone: false,
-        subscriber_ids: []
-      })
+      assert {200, _} =
+               request(ctx.conn, ctx.goal, %{
+                 message: content,
+                 send_notifications_to_everyone: false,
+                 subscriber_ids: []
+               })
 
       thread = fetch_thread(ctx.goal)
       subscriptions = fetch_subscriptions(thread.id)
@@ -109,11 +113,12 @@ defmodule OperatelyWeb.Api.Mutations.ReopenGoalTest do
       people = [ctx.person | ctx.people]
       content = RichText.rich_text(mentioned_people: people)
 
-      assert {200, _} = request(ctx.conn, ctx.goal, %{
-        message: content,
-        send_notifications_to_everyone: true,
-        subscriber_ids: Enum.map(people, &(Paths.person_id(&1)))
-      })
+      assert {200, _} =
+               request(ctx.conn, ctx.goal, %{
+                 message: content,
+                 send_notifications_to_everyone: true,
+                 subscriber_ids: Enum.map(people, &Paths.person_id(&1))
+               })
 
       thread = fetch_thread(ctx.goal)
       subscriptions = fetch_subscriptions(thread.id)
@@ -131,22 +136,27 @@ defmodule OperatelyWeb.Api.Mutations.ReopenGoalTest do
   #
 
   defp request(conn, goal, attrs) do
-    mutation(conn, :reopen_goal, Enum.into(attrs, %{
-      id: Paths.goal_id(goal),
-      message: RichText.rich_text("Some message", :as_string),
-    }))
+    mutation(
+      conn,
+      :reopen_goal,
+      Enum.into(attrs, %{
+        id: Paths.goal_id(goal),
+        message: RichText.rich_text("Some message", :as_string)
+      })
+    )
   end
 
   defp fetch_thread(goal) do
     import Ecto.Query, only: [from: 2]
 
-    activity = from(a in Operately.Activities.Activity,
-      where: a.action == "goal_reopening" and a.content["goal_id"] == ^goal.id,
-      order_by: [desc: a.inserted_at],
-      limit: 1,
-      preload: [:comment_thread]
-    )
-    |> Repo.one()
+    activity =
+      from(a in Operately.Activities.Activity,
+        where: a.action == "goal_reopening" and a.content["goal_id"] == ^goal.id,
+        order_by: [desc: a.inserted_at],
+        limit: 1,
+        preload: [:comment_thread]
+      )
+      |> Repo.one()
 
     activity.comment_thread
   end
@@ -164,22 +174,26 @@ defmodule OperatelyWeb.Api.Mutations.ReopenGoalTest do
     goal_attrs = %{
       space_id: space.id,
       company_access_level: Binding.from_atom(company_members_level),
-      space_access_level: Binding.from_atom(space_members_level),
+      space_access_level: Binding.from_atom(space_members_level)
     }
 
-    goal_attrs = if goal_member_level != :no_access do
-      Map.merge(goal_attrs, %{reviewer_id: ctx.person.id})
-    else
-      goal_attrs
-    end
+    goal_attrs =
+      if goal_member_level != :no_access do
+        Map.merge(goal_attrs, %{reviewer_id: ctx.person.id})
+      else
+        goal_attrs
+      end
 
     goal = goal_fixture(ctx.creator, goal_attrs)
 
     if space_members_level != :no_access do
-      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
-        id: ctx.person.id,
-        access_level: Binding.from_atom(space_members_level)
-      }])
+      {:ok, _} =
+        Operately.Groups.add_members(ctx.creator, space.id, [
+          %{
+            id: ctx.person.id,
+            access_level: Binding.from_atom(space_members_level)
+          }
+        ])
     end
 
     Operately.Repo.preload(goal, :access_context)

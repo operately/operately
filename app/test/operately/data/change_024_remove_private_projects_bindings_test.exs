@@ -18,12 +18,15 @@ defmodule Operately.Data.Change024RemovePrivateProjectsBindingsTest do
   end
 
   test "removes private projects bindings", ctx do
-    private = Enum.map(1..3, fn _ ->
-      create_project(ctx, "no one")
-    end)
-    public = Enum.map(1..3, fn _ ->
-      create_project(ctx, "everyone")
-    end)
+    private =
+      Enum.map(1..3, fn _ ->
+        create_project(ctx, "no one")
+      end)
+
+    public =
+      Enum.map(1..3, fn _ ->
+        create_project(ctx, "everyone")
+      end)
 
     assert_has_access(private)
     assert_has_access(public)
@@ -74,7 +77,7 @@ defmodule Operately.Data.Change024RemovePrivateProjectsBindingsTest do
       company_id: ctx.company.id,
       creator_id: ctx.creator.id,
       group_id: ctx.space.id,
-      visibility: visibility,
+      visibility: visibility
     })
     |> create_anonymous_binding()
   end
@@ -83,24 +86,25 @@ defmodule Operately.Data.Change024RemovePrivateProjectsBindingsTest do
     context = Access.get_context!(project_id: project.id)
     group = Access.get_group!(company_id: project.company_id, tag: :anonymous)
 
-    {:ok, _} = Access.create_binding(%{
-      context_id: context.id,
-      group_id: group.id,
-      access_level: Binding.view_access(),
-    })
+    {:ok, _} =
+      Access.create_binding(%{
+        context_id: context.id,
+        group_id: group.id,
+        access_level: Binding.view_access()
+      })
 
     project
   end
 
   defp reload_project(projects) do
-    Enum.map(projects, &(Repo.reload(&1)))
+    Enum.map(projects, &Repo.reload(&1))
   end
 
   defp fetch_groups(company_id, space_id) do
     [
       Access.get_group!(company_id: company_id, tag: :anonymous),
       Access.get_group!(company_id: company_id, tag: :standard),
-      Access.get_group!(group_id: space_id, tag: :standard),
+      Access.get_group!(group_id: space_id, tag: :standard)
     ]
   end
 end

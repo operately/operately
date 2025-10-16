@@ -17,8 +17,8 @@ defmodule Operately.Goals.CycleDetectionTest do
 
     test "allows creating a goal with a valid parent", ctx do
       grandparent = goal_fixture(ctx.creator, %{space_id: ctx.space.id})
-      parent = goal_fixture(ctx.creator,  %{space_id: ctx.space.id, parent_goal_id: grandparent.id})
-      child = goal_fixture(ctx.creator,   %{space_id: ctx.space.id, parent_goal_id: parent.id})
+      parent = goal_fixture(ctx.creator, %{space_id: ctx.space.id, parent_goal_id: grandparent.id})
+      child = goal_fixture(ctx.creator, %{space_id: ctx.space.id, parent_goal_id: parent.id})
 
       assert child.parent_goal_id == parent.id
       assert parent.parent_goal_id == grandparent.id

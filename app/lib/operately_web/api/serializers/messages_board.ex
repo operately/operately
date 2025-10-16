@@ -7,7 +7,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Messages.MessagesBoard do
       messages: OperatelyWeb.Api.Serializer.serialize(messages_board.messages),
       space: OperatelyWeb.Api.Serializer.serialize(messages_board.space),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(messages_board.inserted_at),
-      updated_at: OperatelyWeb.Api.Serializer.serialize(messages_board.updated_at),
+      updated_at: OperatelyWeb.Api.Serializer.serialize(messages_board.updated_at)
     }
   end
 end

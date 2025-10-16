@@ -42,7 +42,7 @@ defmodule OperatelyWeb.Api.Mutations.EditCompanyTest do
 
     test "it changes the company name", ctx do
       assert {200, _} = mutation(ctx.conn, :edit_company, %{name: "Hello"})
-      
+
       company = Operately.Companies.get_company!(ctx.company.id)
       assert company.name == "Hello"
     end

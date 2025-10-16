@@ -1,7 +1,7 @@
 defmodule OperatelyWeb.Certification do
   @moduledoc """
   Operately can fetch and renew TLS certificates from Let's Encrypt.
-  """ 
+  """
 
   def directory_url do
     case Application.get_env(:operately, :app_env) do
@@ -15,7 +15,7 @@ defmodule OperatelyWeb.Certification do
   def emails, do: System.get_env("CERT_EMAILS", "") |> String.split(",")
   def folder, do: System.get_env("CERT_DB_DIR")
 
-  def mode do 
+  def mode do
     if System.get_env("CERT_AUTO_RENEW") == "yes" do
       :auto
     else
@@ -80,15 +80,15 @@ defmodule OperatelyWeb.Certification do
     config = SiteEncrypt.Registry.config(OperatelyWeb.Endpoint)
 
     case SiteEncrypt.client(config).pems(config) do
-      :error -> :not_ready
+      :error ->
+        :not_ready
 
       {:ok, pems} ->
-        pems.cert 
-        |> X509.Certificate.from_pem!() 
+        pems.cert
+        |> X509.Certificate.from_pem!()
         |> X509.Certificate.issuer()
         |> X509.RDNSequence.get_attr("O")
         |> List.first()
     end
   end
-
 end

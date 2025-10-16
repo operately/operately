@@ -43,7 +43,7 @@ defmodule Operately.Operations.ResourceHubFolderCopying.Subscriptions do
           type: s.type,
           canceled: s.canceled,
           inserted_at: now,
-          updated_at: now,
+          updated_at: now
         }
       end)
     end)

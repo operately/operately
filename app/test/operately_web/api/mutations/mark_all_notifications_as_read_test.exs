@@ -46,4 +46,4 @@ defmodule OperatelyWeb.Api.Mutations.MarkAllNotificationsAsReadTest do
       refute Operately.Notifications.get_notification!(n4.id).read
     end
   end
-end 
+end

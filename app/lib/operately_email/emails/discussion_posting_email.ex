@@ -8,9 +8,13 @@ defmodule OperatelyEmail.Emails.DiscussionPostingEmail do
     author = Repo.preload(activity, :author).author
     company = Repo.preload(author, :company).company
 
-    {:ok, %{space: space, title: title} = message} = Message.get(:system, id: activity.content["discussion_id"], opts: [
-      preload: :space
-    ])
+    {:ok, %{space: space, title: title} = message} =
+      Message.get(:system,
+        id: activity.content["discussion_id"],
+        opts: [
+          preload: :space
+        ]
+      )
 
     company
     |> new()

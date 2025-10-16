@@ -6,6 +6,5 @@ defmodule Operately.Repo.Migrations.PopulateExistingProjectsWithSubscriptionList
   end
 
   def down do
-
   end
 end

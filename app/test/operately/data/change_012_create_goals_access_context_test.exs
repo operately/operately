@@ -23,9 +23,10 @@ defmodule Operately.Data.Change012CreateGoalsAccessContextTest do
   end
 
   test "creates access_context for existing goals", ctx do
-    goals = Enum.map(1..5, fn _ ->
-      create_goal(ctx.company.id, ctx.group.id, ctx.person.id)
-    end)
+    goals =
+      Enum.map(1..5, fn _ ->
+        create_goal(ctx.company.id, ctx.group.id, ctx.person.id)
+      end)
 
     Enum.each(goals, fn goal ->
       assert nil == Repo.get_by(Context, goal_id: goal.id)
@@ -67,15 +68,16 @@ defmodule Operately.Data.Change012CreateGoalsAccessContextTest do
   end
 
   def create_goal(company_id, group_id, person_id) do
-    {:ok, goal} = Goal.changeset(%{
-      company_id: company_id,
-      name: "some name",
-      group_id: group_id,
-      champion_id: person_id,
-      reviewer_id: person_id,
-      creator_id: person_id,
-    })
-    |> Repo.insert()
+    {:ok, goal} =
+      Goal.changeset(%{
+        company_id: company_id,
+        name: "some name",
+        group_id: group_id,
+        champion_id: person_id,
+        reviewer_id: person_id,
+        creator_id: person_id
+      })
+      |> Repo.insert()
 
     goal
   end

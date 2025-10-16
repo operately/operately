@@ -1,0 +1,43 @@
+<section class="max-w-lg mx-auto mt-16 bg-white dark:bg-neutral-900 shadow-lg rounded-2xl p-8">
+  <h1 class="text-2xl font-semibold mb-4">Authorize MCP Access</h1>
+  <p class="text-sm text-neutral-600 dark:text-neutral-300 mb-6">
+    <%= @client_id %> is requesting access to Operately resources for <strong><%= @company.name %></strong>.
+  </p>
+
+  <div class="rounded-lg border border-neutral-200 dark:border-neutral-700 divide-y dark:divide-neutral-700 mb-6">
+    <div class="p-4 text-sm">
+      <span class="block text-neutral-500 dark:text-neutral-400">Signed in as</span>
+      <span class="block font-medium"><%= @person.full_name %> · <%= @person.email %></span>
+    </div>
+    <div class="p-4 text-sm">
+      <span class="block text-neutral-500 dark:text-neutral-400">Redirect URI</span>
+      <span class="block font-mono break-all text-xs"><%= @redirect_uri %></span>
+    </div>
+    <%= if @scope do %>
+      <div class="p-4 text-sm">
+        <span class="block text-neutral-500 dark:text-neutral-400">Requested scopes</span>
+        <span class="block font-mono break-all text-xs"><%= @scope %></span>
+      </div>
+    <% end %>
+  </div>
+
+  <form method="post" action={~p"/#{OperatelyWeb.Paths.company_id(@company)}/mcp/oauth/authorize"}>
+    <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+    <input type="hidden" name="client_id" value={@client_id} />
+    <input type="hidden" name="redirect_uri" value={@redirect_uri} />
+    <input type="hidden" name="scope" value={@scope} />
+    <input type="hidden" name="state" value={@state} />
+    <input type="hidden" name="code_challenge" value={@code_challenge} />
+    <input type="hidden" name="code_challenge_method" value={@code_challenge_method} />
+    <input type="hidden" name="resource" value={@resource} />
+
+    <div class="flex items-center justify-end gap-4">
+      <button type="submit" name="decision" value="deny" class="px-4 py-2 rounded-md text-sm border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-200">
+        Cancel
+      </button>
+      <button type="submit" name="decision" value="approve" class="px-4 py-2 rounded-md text-sm bg-primary text-white">
+        Authorize
+      </button>
+    </div>
+  </form>
+</section>

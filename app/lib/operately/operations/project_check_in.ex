@@ -7,10 +7,11 @@ defmodule Operately.Operations.ProjectCheckIn do
   alias Operately.Operations.Notifications.{Subscription, SubscriptionList}
 
   def run(author, project, attrs) do
-    next_check_in = Operately.Time.calculate_next_weekly_check_in(
-      project.next_check_in_scheduled_at,
-      DateTime.utc_now()
-    )
+    next_check_in =
+      Operately.Time.calculate_next_weekly_check_in(
+        project.next_check_in_scheduled_at,
+        DateTime.utc_now()
+      )
 
     Multi.new()
     |> SubscriptionList.insert(attrs)
@@ -21,7 +22,7 @@ defmodule Operately.Operations.ProjectCheckIn do
         project_id: project.id,
         status: attrs.status,
         description: attrs.content,
-        subscription_list_id: changes.subscription_list.id,
+        subscription_list_id: changes.subscription_list.id
       })
     end)
     |> SubscriptionList.update(:check_in)
@@ -29,7 +30,7 @@ defmodule Operately.Operations.ProjectCheckIn do
       Project.changeset(project, %{
         last_check_in_id: changes.check_in.id,
         last_check_in_status: changes.check_in.status,
-        next_check_in_scheduled_at: next_check_in,
+        next_check_in_scheduled_at: next_check_in
       })
     end)
     |> Activities.insert_sync(author.id, :project_check_in_submitted, fn changes ->
@@ -47,7 +48,8 @@ defmodule Operately.Operations.ProjectCheckIn do
         OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: author.id)
         {:ok, check_in}
 
-      error -> error
+      error ->
+        error
     end
   end
 end

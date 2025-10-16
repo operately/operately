@@ -103,9 +103,11 @@ defmodule Operately.Assignments.LoaderV2 do
   end
 
   defp pending_tasks_query(person) do
-    from(t in ProjectTask, as: :task,
+    from(t in ProjectTask,
+      as: :task,
       join: assignee in assoc(t, :assignees),
-      join: project in assoc(t, :project), as: :project,
+      join: project in assoc(t, :project),
+      as: :project,
       where: assignee.person_id == ^person.id,
       where: t.status in ["pending", "todo", "in_progress"],
       where: is_nil(project.deleted_at),
@@ -155,8 +157,10 @@ defmodule Operately.Assignments.LoaderV2 do
   end
 
   defp pending_milestones_query(person) do
-    from(m in Milestone, as: :milestone,
-      join: project in assoc(m, :project), as: :project,
+    from(m in Milestone,
+      as: :milestone,
+      join: project in assoc(m, :project),
+      as: :project,
       join: champion in assoc(project, :champion),
       where: m.status == :pending,
       where: champion.id == ^person.id,
@@ -204,8 +208,10 @@ defmodule Operately.Assignments.LoaderV2 do
   end
 
   defp pending_project_check_ins_query(person) do
-    from(p in Project, as: :project,
-      join: champion in assoc(p, :champion), as: :champion,
+    from(p in Project,
+      as: :project,
+      join: champion in assoc(p, :champion),
+      as: :champion,
       where: p.next_check_in_scheduled_at <= ^DateTime.utc_now(),
       where: p.status == "active",
       where: champion.id == ^person.id,
@@ -254,11 +260,15 @@ defmodule Operately.Assignments.LoaderV2 do
   end
 
   defp pending_project_check_in_acknowledgements_query(person) do
-    from(c in CheckIn, as: :check_in,
-      join: project in assoc(c, :project), as: :project,
-      join: author in assoc(c, :author), as: :author,
+    from(c in CheckIn,
+      as: :check_in,
+      join: project in assoc(c, :project),
+      as: :project,
+      join: author in assoc(c, :author),
+      as: :author,
       left_join: champion in assoc(project, :champion),
-      left_join: reviewer in assoc(project, :reviewer), as: :reviewer,
+      left_join: reviewer in assoc(project, :reviewer),
+      as: :reviewer,
       where: is_nil(c.acknowledged_by_id),
       where: project.status == "active" and is_nil(project.deleted_at),
       where:
@@ -306,7 +316,8 @@ defmodule Operately.Assignments.LoaderV2 do
   end
 
   defp pending_goal_updates_query(person) do
-    from(g in Goal, as: :goal,
+    from(g in Goal,
+      as: :goal,
       where: g.next_update_scheduled_at <= ^DateTime.utc_now(),
       where: is_nil(g.closed_at),
       where: g.champion_id == ^person.id,
@@ -359,9 +370,12 @@ defmodule Operately.Assignments.LoaderV2 do
   end
 
   defp pending_goal_update_acknowledgements_query(person) do
-    from(u in Update, as: :update,
-      join: goal in assoc(u, :goal), as: :goal,
-      join: author in assoc(u, :author), as: :author,
+    from(u in Update,
+      as: :update,
+      join: goal in assoc(u, :goal),
+      as: :goal,
+      join: author in assoc(u, :author),
+      as: :author,
       where: is_nil(goal.closed_at) and is_nil(goal.deleted_at),
       where: is_nil(u.acknowledged_by_id),
       where:

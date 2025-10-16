@@ -22,7 +22,9 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIns do
       {:ok, id} ->
         project_check_ins = load(me(conn), id, inputs)
         {:ok, %{project_check_ins: Serializer.serialize(project_check_ins, level: :essential)}}
-      {:error, _} -> {:error, :bad_request}
+
+      {:error, _} ->
+        {:error, :bad_request}
     end
   end
 

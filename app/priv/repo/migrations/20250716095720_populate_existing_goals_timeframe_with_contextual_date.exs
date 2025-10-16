@@ -6,6 +6,5 @@ defmodule Operately.Repo.Migrations.PopulateExistingGoalsTimeframeWithContextual
   end
 
   def down do
-
   end
 end

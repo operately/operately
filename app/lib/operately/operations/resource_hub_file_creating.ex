@@ -10,7 +10,7 @@ defmodule Operately.Operations.ResourceHubFileCreating do
 
     attrs.files
     |> Enum.with_index()
-    |> Enum.reduce(multi, fn ({file, index}, multi) ->
+    |> Enum.reduce(multi, fn {file, index}, multi ->
       multi
       |> insert_subscriptions_list(index, attrs)
       |> insert_subscription(author, file, index, attrs)
@@ -27,10 +27,13 @@ defmodule Operately.Operations.ResourceHubFileCreating do
 
   defp insert_subscriptions_list(multi, index, attrs) do
     multi
-    |> Multi.insert(subscriptions_list_name(index), SubscriptionList.changeset(%{
-      send_to_everyone: attrs.send_to_everyone,
-      parent_type: :resource_hub_file,
-    }))
+    |> Multi.insert(
+      subscriptions_list_name(index),
+      SubscriptionList.changeset(%{
+        send_to_everyone: attrs.send_to_everyone,
+        parent_type: :resource_hub_file
+      })
+    )
   end
 
   defp insert_subscription(multi, author, file, index, attrs) do
@@ -47,19 +50,23 @@ defmodule Operately.Operations.ResourceHubFileCreating do
         Subscription.changeset(%{
           subscription_list_id: changes[subscription_list].id,
           person_id: id,
-          type: type,
+          type: type
         })
       end)
     end)
   end
 
   defp insert_node(multi, hub, file, index, attrs) do
-    Multi.insert(multi, node_name(index), Node.changeset(%{
-      resource_hub_id: hub.id,
-      parent_folder_id: attrs[:folder_id],
-      name: file.name,
-      type: :file,
-    }))
+    Multi.insert(
+      multi,
+      node_name(index),
+      Node.changeset(%{
+        resource_hub_id: hub.id,
+        parent_folder_id: attrs[:folder_id],
+        name: file.name,
+        type: :file
+      })
+    )
   end
 
   defp insert_file(multi, author, file, index) do
@@ -70,7 +77,7 @@ defmodule Operately.Operations.ResourceHubFileCreating do
         blob_id: file.blob_id,
         preview_blob_id: file[:preview_blob_id],
         description: file.description,
-        subscription_list_id: changes[subscriptions_list_name(index)].id,
+        subscription_list_id: changes[subscriptions_list_name(index)].id
       })
     end)
   end
@@ -81,7 +88,7 @@ defmodule Operately.Operations.ResourceHubFileCreating do
     multi
     |> Multi.update(name, fn changes ->
       SubscriptionList.changeset(changes[subscriptions_list_name(index)], %{
-        parent_id: changes[file_name(index)].id,
+        parent_id: changes[file_name(index)].id
       })
     end)
   end
@@ -109,9 +116,10 @@ defmodule Operately.Operations.ResourceHubFileCreating do
         company_id: author.company_id,
         space_id: hub.space_id,
         resource_hub_id: hub.id,
-        files: Enum.map(changes.result, fn file ->
-          %{file_id: file.id, node_id: file.node.id}
-        end)
+        files:
+          Enum.map(changes.result, fn file ->
+            %{file_id: file.id, node_id: file.node.id}
+          end)
       }
     end)
   end
@@ -121,12 +129,13 @@ defmodule Operately.Operations.ResourceHubFileCreating do
     |> Multi.run(:result, fn _, changes ->
       count = length(files) - 1
 
-      files = Enum.map(0..count, fn index ->
-        node = changes[node_name(index)]
-        file = changes[file_name(index)]
+      files =
+        Enum.map(0..count, fn index ->
+          node = changes[node_name(index)]
+          file = changes[file_name(index)]
 
-        Map.put(file, :node, node)
-      end)
+          Map.put(file, :node, node)
+        end)
 
       {:ok, files}
     end)

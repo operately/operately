@@ -8,7 +8,7 @@ defmodule Operately.Features.ProjectRetrospectiveTest do
   feature "closing a project and submitting a retrospective", ctx do
     params = %{
       "author" => ctx.champion,
-      "notes" => "We built the thing",
+      "notes" => "We built the thing"
     }
 
     ctx
@@ -32,8 +32,9 @@ defmodule Operately.Features.ProjectRetrospectiveTest do
   feature "edit project retrospective", ctx do
     params = %{
       "author" => ctx.champion,
-      "notes" => "We built the thing",
+      "notes" => "We built the thing"
     }
+
     edited_notes = "We built the thing (edited)"
 
     ctx

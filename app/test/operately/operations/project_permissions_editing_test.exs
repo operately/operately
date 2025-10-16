@@ -21,7 +21,7 @@ defmodule Operately.Operations.ProjectPermissionsEditingTest do
       group_id: space.id,
       space_access_level: Binding.edit_access(),
       company_access_level: Binding.comment_access(),
-      anonymous_access_level: Binding.view_access(),
+      anonymous_access_level: Binding.view_access()
     }
 
     {:ok, company: company, space: space, creator: creator, attrs: attrs}
@@ -33,7 +33,7 @@ defmodule Operately.Operations.ProjectPermissionsEditingTest do
     Operately.Operations.ProjectPermissionsEditing.run(ctx.creator, project, %{
       public: Binding.no_access(),
       company: Binding.view_access(),
-      space: Binding.full_access(),
+      space: Binding.full_access()
     })
 
     context = Access.get_context!(project_id: project.id)
@@ -54,11 +54,12 @@ defmodule Operately.Operations.ProjectPermissionsEditingTest do
 
     assert Access.get_binding(context_id: context.id, group_id: group.id, access_level: Binding.edit_access())
 
-    {:ok, _} = Operately.Operations.ProjectPermissionsEditing.run(ctx.creator, project, %{
-      public: Binding.no_access(),
-      company: Binding.view_access(),
-      space: Binding.full_access(),
-    })
+    {:ok, _} =
+      Operately.Operations.ProjectPermissionsEditing.run(ctx.creator, project, %{
+        public: Binding.no_access(),
+        company: Binding.view_access(),
+        space: Binding.full_access()
+      })
 
     assert Access.get_binding(context_id: context.id, group_id: group.id, access_level: Binding.full_access())
   end
@@ -69,7 +70,7 @@ defmodule Operately.Operations.ProjectPermissionsEditingTest do
     Operately.Operations.ProjectPermissionsEditing.run(ctx.creator, project, %{
       public: Binding.no_access(),
       company: Binding.view_access(),
-      space: Binding.full_access(),
+      space: Binding.full_access()
     })
 
     activity = from(a in Activity, where: a.action == "project_permissions_edited" and a.content["project_id"] == ^project.id) |> Repo.one!()

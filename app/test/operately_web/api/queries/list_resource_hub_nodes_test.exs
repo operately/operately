@@ -21,17 +21,15 @@ defmodule OperatelyWeb.Api.Queries.ListResourceHubNodesTest do
     end
 
     @space [
-      %{company: :no_access,      space: :no_access,      expected: :forbidden},
-
-      %{company: :no_access,      space: :view_access,    expected: :allowed},
-      %{company: :no_access,      space: :comment_access, expected: :allowed},
-      %{company: :no_access,      space: :edit_access,    expected: :allowed},
-      %{company: :no_access,      space: :full_access,    expected: :allowed},
-
-      %{company: :view_access,    space: :no_access,      expected: :allowed},
-      %{company: :comment_access, space: :no_access,      expected: :allowed},
-      %{company: :edit_access,    space: :no_access,      expected: :allowed},
-      %{company: :full_access,    space: :no_access,      expected: :allowed},
+      %{company: :no_access, space: :no_access, expected: :forbidden},
+      %{company: :no_access, space: :view_access, expected: :allowed},
+      %{company: :no_access, space: :comment_access, expected: :allowed},
+      %{company: :no_access, space: :edit_access, expected: :allowed},
+      %{company: :no_access, space: :full_access, expected: :allowed},
+      %{company: :view_access, space: :no_access, expected: :allowed},
+      %{company: :comment_access, space: :no_access, expected: :allowed},
+      %{company: :edit_access, space: :no_access, expected: :allowed},
+      %{company: :full_access, space: :no_access, expected: :allowed}
     ]
 
     tabletest @space do
@@ -42,16 +40,19 @@ defmodule OperatelyWeb.Api.Queries.ListResourceHubNodesTest do
         file_fixture(resource_hub, ctx.creator)
         document_fixture(resource_hub.id, ctx.creator.id, %{state: :published})
         document_fixture(resource_hub.id, ctx.person.id, %{state: :draft})
-        document_fixture(resource_hub.id, ctx.creator.id, %{state: :draft}) # never returned as the request is not from the author
+        # never returned as the request is not from the author
+        document_fixture(resource_hub.id, ctx.creator.id, %{state: :draft})
 
-        assert {200, res} = query(ctx.conn, :list_resource_hub_nodes, %{
-          resource_hub_id: Paths.resource_hub_id(resource_hub),
-        })
+        assert {200, res} =
+                 query(ctx.conn, :list_resource_hub_nodes, %{
+                   resource_hub_id: Paths.resource_hub_id(resource_hub)
+                 })
 
         case @test.expected do
           :forbidden ->
             assert length(res.nodes) == 0
             assert length(res.draft_nodes) == 0
+
           :allowed ->
             assert length(res.nodes) == 3
             assert length(res.draft_nodes) == 1
@@ -76,9 +77,10 @@ defmodule OperatelyWeb.Api.Queries.ListResourceHubNodesTest do
     end
 
     test "fetches all nodes", ctx do
-      assert {200, res} = query(ctx.conn, :list_resource_hub_nodes, %{
-        resource_hub_id: Paths.resource_hub_id(ctx.hub),
-      })
+      assert {200, res} =
+               query(ctx.conn, :list_resource_hub_nodes, %{
+                 resource_hub_id: Paths.resource_hub_id(ctx.hub)
+               })
 
       assert length(res.nodes) == 5
       assert length(res.draft_nodes) == 1
@@ -101,16 +103,18 @@ defmodule OperatelyWeb.Api.Queries.ListResourceHubNodesTest do
         |> Factory.add_document(:document3, :hub, folder: :folder, state: :draft)
         |> Factory.add_document(:document4, :hub, folder: :folder)
 
-      assert {200, res} = query(ctx.conn, :list_resource_hub_nodes, %{
-        resource_hub_id: Paths.resource_hub_id(ctx.hub),
-      })
+      assert {200, res} =
+               query(ctx.conn, :list_resource_hub_nodes, %{
+                 resource_hub_id: Paths.resource_hub_id(ctx.hub)
+               })
 
       assert length(res.nodes) == 6
       assert length(res.draft_nodes) == 1
 
-      assert {200, res} = query(ctx.conn, :list_resource_hub_nodes, %{
-        folder_id: Paths.folder_id(ctx.folder)
-      })
+      assert {200, res} =
+               query(ctx.conn, :list_resource_hub_nodes, %{
+                 folder_id: Paths.folder_id(ctx.folder)
+               })
 
       assert length(res.nodes) == 1
       assert length(res.draft_nodes) == 1
@@ -126,19 +130,21 @@ defmodule OperatelyWeb.Api.Queries.ListResourceHubNodesTest do
         |> Factory.add_comment(:comment1, :document1)
         |> Factory.add_comment(:comment2, :document2)
 
-      assert {200, res} = query(ctx.conn, :list_resource_hub_nodes, %{
-        resource_hub_id: Paths.resource_hub_id(ctx.hub),
-      })
+      assert {200, res} =
+               query(ctx.conn, :list_resource_hub_nodes, %{
+                 resource_hub_id: Paths.resource_hub_id(ctx.hub)
+               })
 
       node1 = hd(res.draft_nodes)
       node2 = Enum.find(res.nodes, &(&1[:document] && &1.document.id == Paths.document_id(ctx.document2)))
       refute node1.document.comments_count
       refute node2.document.comments_count
 
-      assert {200, res} = query(ctx.conn, :list_resource_hub_nodes, %{
-        resource_hub_id: Paths.resource_hub_id(ctx.hub),
-        include_comments_count: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, :list_resource_hub_nodes, %{
+                 resource_hub_id: Paths.resource_hub_id(ctx.hub),
+                 include_comments_count: true
+               })
 
       node1 = hd(res.draft_nodes)
       node2 = Enum.find(res.nodes, &(&1[:document] && &1.document.id == Paths.document_id(ctx.document2)))
@@ -156,17 +162,19 @@ defmodule OperatelyWeb.Api.Queries.ListResourceHubNodesTest do
         |> Factory.add_link(:link3, :hub, folder: :folder)
         |> Factory.add_file(:file3, :hub, folder: :folder)
 
-      assert {200, res} = query(ctx.conn, :list_resource_hub_nodes, %{
-        folder_id: Paths.folder_id(ctx.parent_folder)
-      })
+      assert {200, res} =
+               query(ctx.conn, :list_resource_hub_nodes, %{
+                 folder_id: Paths.folder_id(ctx.parent_folder)
+               })
 
       node = hd(res.nodes)
       refute node.folder.children_count
 
-      assert {200, res} = query(ctx.conn, :list_resource_hub_nodes, %{
-        folder_id: Paths.folder_id(ctx.parent_folder),
-        include_children_count: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, :list_resource_hub_nodes, %{
+                 folder_id: Paths.folder_id(ctx.parent_folder),
+                 include_children_count: true
+               })
 
       node = hd(res.nodes)
       assert node.folder.children_count == 3
@@ -181,10 +189,13 @@ defmodule OperatelyWeb.Api.Queries.ListResourceHubNodesTest do
     space = group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.from_atom(company_members_level)})
 
     if space_members_level != :no_access do
-      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
-        id: ctx.person.id,
-        access_level: Binding.from_atom(space_members_level)
-      }])
+      {:ok, _} =
+        Operately.Groups.add_members(ctx.creator, space.id, [
+          %{
+            id: ctx.person.id,
+            access_level: Binding.from_atom(space_members_level)
+          }
+        ])
     end
 
     space

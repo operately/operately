@@ -4,17 +4,20 @@ defmodule Operately.Data.Change065TimeframeContextualDateBackfill do
   alias Operately.Goals.Goal
 
   def run do
-    goals_with_timeframes = Repo.all(from g in Goal,
-      where: not is_nil(g.timeframe),
-      select: g
-    )
+    goals_with_timeframes =
+      Repo.all(
+        from g in Goal,
+          where: not is_nil(g.timeframe),
+          select: g
+      )
 
-    {success_count, error_count} = Enum.reduce(goals_with_timeframes, {0, 0}, fn goal, {success, error} ->
-      case update_goal_timeframe(goal) do
-        {:ok, _} -> {success + 1, error}
-        {:error, _} -> {success, error + 1}
-      end
-    end)
+    {success_count, error_count} =
+      Enum.reduce(goals_with_timeframes, {0, 0}, fn goal, {success, error} ->
+        case update_goal_timeframe(goal) do
+          {:ok, _} -> {success + 1, error}
+          {:error, _} -> {success, error + 1}
+        end
+      end)
 
     {:ok, %{success_count: success_count, error_count: error_count}}
   end
@@ -39,7 +42,6 @@ defmodule Operately.Data.Change065TimeframeContextualDateBackfill do
       contextual_start_date: contextual_start_date,
       contextual_end_date: contextual_end_date
     }
-
 
     goal
     |> Goal.changeset(%{timeframe: updated_timeframe})

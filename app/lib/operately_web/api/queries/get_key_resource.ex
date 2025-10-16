@@ -21,17 +21,14 @@ defmodule OperatelyWeb.Api.Queries.GetKeyResource do
     case load(id, me(conn)) do
       nil ->
         {:error, :not_found}
+
       resource ->
         {:ok, %{key_resource: Serializer.serialize(resource, level: :full)}}
     end
   end
 
   defp load(id, person) do
-    from(k in Operately.Projects.KeyResource,
-      join: p in assoc(k, :project), as: :project,
-      preload: [project: p],
-      where: k.id == ^id
-    )
+    from(k in Operately.Projects.KeyResource, join: p in assoc(k, :project), as: :project, preload: [project: p], where: k.id == ^id)
     |> filter_by_view_access(person.id, named_binding: :project)
     |> Repo.one()
   end

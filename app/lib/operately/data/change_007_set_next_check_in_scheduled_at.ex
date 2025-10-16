@@ -11,5 +11,4 @@ defmodule Operately.Data.Change007UpdateNextCheckInScheduledAt do
     |> Ecto.Changeset.change(next_check_in_scheduled_at: project.next_update_scheduled_at)
     |> Operately.Repo.update()
   end
-
 end

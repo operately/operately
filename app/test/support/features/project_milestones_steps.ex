@@ -9,22 +9,24 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
   alias Wallaby.QueryError
 
   step :given_that_a_milestone_exists, ctx, title do
-    milestone = Operately.ProjectsFixtures.milestone_fixture(%{
-      project_id: ctx.project.id,
-      title: title,
-      timeframe: %{
-        contextual_start_date: ContextualDate.create_day_date(Date.utc_today()),
-        contextual_end_date: ContextualDate.create_day_date(~D[2023-06-17]),
-      }
-    })
+    milestone =
+      Operately.ProjectsFixtures.milestone_fixture(%{
+        project_id: ctx.project.id,
+        title: title,
+        timeframe: %{
+          contextual_start_date: ContextualDate.create_day_date(Date.utc_today()),
+          contextual_end_date: ContextualDate.create_day_date(~D[2023-06-17])
+        }
+      })
 
     Map.put(ctx, :milestone, milestone)
   end
 
   step :given_that_milestone_is_completed, ctx do
-    {:ok, milestone} = Operately.Projects.update_milestone(ctx.milestone, %{
-      status: :done
-    })
+    {:ok, milestone} =
+      Operately.Projects.update_milestone(ctx.milestone, %{
+        status: :done
+      })
 
     Map.put(ctx, :milestone, milestone)
   end

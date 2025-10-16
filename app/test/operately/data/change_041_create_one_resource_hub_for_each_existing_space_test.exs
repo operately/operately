@@ -12,9 +12,10 @@ defmodule Operately.Data.Change041CreateOneResourceHubForEachExistingSpaceTest d
   end
 
   test "creates one resource hubs for every existing space", ctx do
-    spaces = Enum.map(1..3, fn _ ->
-      group_fixture(ctx.creator)
-    end)
+    spaces =
+      Enum.map(1..3, fn _ ->
+        group_fixture(ctx.creator)
+      end)
 
     Operately.Data.Change041CreateOneResourceHubForEachExistingSpace.run()
 

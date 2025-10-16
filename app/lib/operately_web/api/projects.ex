@@ -206,7 +206,7 @@ defmodule OperatelyWeb.Api.Projects do
           goal_id: inputs.goal_id,
           goal_name: inputs.goal_name,
           previous_goal_id: changes.previous_goal && changes.previous_goal.id,
-          previous_goal_name: changes.previous_goal && changes.previous_goal.name,
+          previous_goal_name: changes.previous_goal && changes.previous_goal.name
         }
       end)
       |> Steps.commit()
@@ -306,7 +306,7 @@ defmodule OperatelyWeb.Api.Projects do
       |> Ecto.Multi.run(:updated_milestone, fn _repo, %{milestone: milestone} ->
         tf = milestone.timeframe || %{}
 
-        Operately.Projects.update_milestone(milestone,  %{
+        Operately.Projects.update_milestone(milestone, %{
           title: inputs.name,
           timeframe: %{
             contextual_start_date: tf[:contextual_start_date],
@@ -390,7 +390,7 @@ defmodule OperatelyWeb.Api.Projects do
             discussions_count: changes.discussions_count,
             tasks_count: changes.open_tasks_count,
             check_ins_count: changes.check_ins_count
-          },
+          }
         }
       end)
     end
@@ -472,16 +472,18 @@ defmodule OperatelyWeb.Api.Projects do
 
     def get_milestones(multi, query) do
       Ecto.Multi.run(multi, :milestones, fn _repo, %{project: project} ->
-        base_query = from(m in Operately.Projects.Milestone,
-          where: m.project_id == ^project.id,
-          order_by: [asc: m.inserted_at]
-        )
+        base_query =
+          from(m in Operately.Projects.Milestone,
+            where: m.project_id == ^project.id,
+            order_by: [asc: m.inserted_at]
+          )
 
-        query = case query do
-          nil -> base_query
-          "" -> base_query
-          search_str -> from(m in base_query, where: ilike(m.title, ^"%#{search_str}%"))
-        end
+        query =
+          case query do
+            nil -> base_query
+            "" -> base_query
+            search_str -> from(m in base_query, where: ilike(m.title, ^"%#{search_str}%"))
+          end
 
         {:ok, Repo.all(query)}
       end)
@@ -523,13 +525,16 @@ defmodule OperatelyWeb.Api.Projects do
         # 1. The task belongs to the specified project
         # 2. The task status is not 'done' and not 'canceled'
         # 3. Either the task has no milestone OR its milestone status is not 'done'
-        query = from(t in Operately.Tasks.Task,
-          left_join: m in Operately.Projects.Milestone, on: t.milestone_id == m.id,
-          where: t.project_id == ^project.id and
-            t.status not in ["done", "canceled"] and
-            (is_nil(t.milestone_id) or m.status != :done),
-          select: count(t.id)
-        )
+        query =
+          from(t in Operately.Tasks.Task,
+            left_join: m in Operately.Projects.Milestone,
+            on: t.milestone_id == m.id,
+            where:
+              t.project_id == ^project.id and
+                t.status not in ["done", "canceled"] and
+                (is_nil(t.milestone_id) or m.status != :done),
+            select: count(t.id)
+          )
 
         count = Repo.one(query)
         {:ok, count || 0}
@@ -604,7 +609,9 @@ defmodule OperatelyWeb.Api.Projects do
       end)
       |> Ecto.Multi.run(:handle_current_champion, fn _repo, changes ->
         case changes.current_champion do
-          nil -> {:ok, nil}
+          nil ->
+            {:ok, nil}
+
           current_champion ->
             Contributor.changeset(current_champion, %{role: :contributor})
             |> Repo.update()
@@ -614,6 +621,7 @@ defmodule OperatelyWeb.Api.Projects do
         case new_champion_id do
           nil ->
             {:ok, nil}
+
           _ ->
             # Check if this person is already a contributor
             case Repo.get_by(Contributor, project_id: project.id, person_id: new_champion_id) do
@@ -621,6 +629,7 @@ defmodule OperatelyWeb.Api.Projects do
                 # Create new contributor with champion role
                 Contributor.changeset(%{project_id: project.id, person_id: new_champion_id, role: :champion})
                 |> Repo.insert()
+
               existing ->
                 # Update existing contributor to champion role
                 existing
@@ -665,7 +674,9 @@ defmodule OperatelyWeb.Api.Projects do
       end)
       |> Ecto.Multi.run(:handle_current_reviewer, fn _repo, changes ->
         case changes.current_reviewer do
-          nil -> {:ok, nil}
+          nil ->
+            {:ok, nil}
+
           current_reviewer ->
             Contributor.changeset(current_reviewer, %{role: :contributor})
             |> Repo.update()
@@ -675,6 +686,7 @@ defmodule OperatelyWeb.Api.Projects do
         case new_reviewer_id do
           nil ->
             {:ok, nil}
+
           _ ->
             # Check if this person is already a contributor
             case Repo.get_by(Contributor, project_id: project.id, person_id: new_reviewer_id) do
@@ -682,6 +694,7 @@ defmodule OperatelyWeb.Api.Projects do
                 # Create new contributor with reviewer role
                 Contributor.changeset(%{project_id: project.id, person_id: new_reviewer_id, role: :reviewer})
                 |> Repo.insert()
+
               existing ->
                 # Update existing contributor to reviewer role
                 existing
@@ -707,7 +720,7 @@ defmodule OperatelyWeb.Api.Projects do
 
     def create_milestone(multi, inputs) do
       multi
-      |> SubscriptionListOps.insert(%{ send_to_everyone: false, subscription_parent_type: :project_milestone })
+      |> SubscriptionListOps.insert(%{send_to_everyone: false, subscription_parent_type: :project_milestone})
       |> Ecto.Multi.run(:milestone, fn _repo, changes ->
         Operately.Projects.create_milestone(%{
           title: inputs.name,
@@ -717,7 +730,7 @@ defmodule OperatelyWeb.Api.Projects do
             contextual_start_date: nil,
             contextual_end_date: inputs.due_date
           },
-          subscription_list_id: changes.subscription_list.id,
+          subscription_list_id: changes.subscription_list.id
         })
       end)
       |> SubscriptionListOps.update(:milestone)
@@ -788,23 +801,28 @@ defmodule OperatelyWeb.Api.Projects do
 
     def get_contributors(multi, inputs) do
       Ecto.Multi.run(multi, :contributors, fn _repo, %{project: project} ->
-        base_query = from(p in Operately.People.Person,
-          join: c in Operately.Projects.Contributor, on: c.person_id == p.id and c.project_id == ^project.id
-        )
+        base_query = from(p in Operately.People.Person, join: c in Operately.Projects.Contributor, on: c.person_id == p.id and c.project_id == ^project.id)
 
-        query = case inputs[:query] do
-          nil -> base_query
-          "" -> base_query
-          search_str -> from(p in base_query,
-            where: ilike(p.full_name, ^"%#{search_str}%") or ilike(p.title, ^"%#{search_str}%")
-          )
-        end
+        query =
+          case inputs[:query] do
+            nil ->
+              base_query
 
-        query = case inputs[:ignored_ids] do
-          nil -> query
-          [] -> query
-          ignored_ids -> from(p in query, where: p.id not in ^ignored_ids)
-        end
+            "" ->
+              base_query
+
+            search_str ->
+              from(p in base_query,
+                where: ilike(p.full_name, ^"%#{search_str}%") or ilike(p.title, ^"%#{search_str}%")
+              )
+          end
+
+        query =
+          case inputs[:ignored_ids] do
+            nil -> query
+            [] -> query
+            ignored_ids -> from(p in query, where: p.id not in ^ignored_ids)
+          end
 
         {:ok, Repo.all(query)}
       end)
@@ -812,11 +830,12 @@ defmodule OperatelyWeb.Api.Projects do
 
     def find_previous_goal(multi) do
       Ecto.Multi.run(multi, :previous_goal, fn _repo, %{project: project} ->
-        goal = case project do
-          %{goal: nil} -> nil
-          %{goal: %Ecto.Association.NotLoaded{}} -> nil
-          %{goal: goal} -> goal
-        end
+        goal =
+          case project do
+            %{goal: nil} -> nil
+            %{goal: %Ecto.Association.NotLoaded{}} -> nil
+            %{goal: goal} -> goal
+          end
 
         {:ok, goal}
       end)
@@ -829,8 +848,7 @@ defmodule OperatelyWeb.Api.Projects do
     def broadcast_review_count_update(result) do
       with {:ok, changes} <- result,
            project = Operately.Repo.preload(changes.project, :champion),
-           %Operately.People.Person{id: champion_id} <- project.champion
-      do
+           %Operately.People.Person{id: champion_id} <- project.champion do
         OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: champion_id)
       else
         _ -> :ok

@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Api.Mutations.JoinCompanyText do
 
     Operately.Invitations.create_invitation_token!(%{
       invitation_id: invitation.id,
-      token: token,
+      token: token
     })
 
     Map.put(ctx, :token, token)
@@ -51,4 +51,4 @@ defmodule OperatelyWeb.Api.Mutations.JoinCompanyText do
       assert res.result == "Password successfully changed"
     end
   end
-end 
+end

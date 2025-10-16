@@ -16,7 +16,7 @@ defmodule OperatelyEmail.Assignments.Cron do
   end
 
   def send_assignments do
-    people = people_who_want_assignment_emails() 
+    people = people_who_want_assignment_emails()
 
     Enum.each(people, fn person ->
       catch_and_log_errors(fn ->
@@ -40,7 +40,8 @@ defmodule OperatelyEmail.Assignments.Cron do
 
     from(
       p in Person,
-      inner_join: a in Account, on: p.account_id == a.id,
+      inner_join: a in Account,
+      on: p.account_id == a.id,
       where: not is_nil(a.email),
       where: p.notify_about_assignments == true
     )
@@ -52,5 +53,4 @@ defmodule OperatelyEmail.Assignments.Cron do
   def is_workday? do
     Date.day_of_week(Date.utc_today()) in [1, 2, 3, 4, 5]
   end
-
 end

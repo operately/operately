@@ -12,10 +12,10 @@ defmodule OperatelyWeb.Api.Queries.GetFlatWorkMapTest do
 
   describe "permissions - flat list access" do
     @table [
-      %{person: :company_member,  count: 1,   expected_items: [:public_project]},
-      %{person: :space_member,    count: 3,   expected_items: [:public_project, :project1, :project2]},
-      %{person: :creator,         count: 4,   expected_items: [:public_project, :project1, :project2, :secret_project]},
-      %{person: :champion,        count: 4,   expected_items: [:public_project, :project1, :project2, :secret_project]},
+      %{person: :company_member, count: 1, expected_items: [:public_project]},
+      %{person: :space_member, count: 3, expected_items: [:public_project, :project1, :project2]},
+      %{person: :creator, count: 4, expected_items: [:public_project, :project1, :project2, :secret_project]},
+      %{person: :champion, count: 4, expected_items: [:public_project, :project1, :project2, :secret_project]}
     ]
 
     setup ctx do
@@ -34,11 +34,11 @@ defmodule OperatelyWeb.Api.Queries.GetFlatWorkMapTest do
       |> Factory.add_project(:public_project, :space)
       |> Factory.add_project(:project1, :space, company_access_level: Binding.no_access())
       |> Factory.add_project(:project2, :space, company_access_level: Binding.no_access())
-      |> Factory.add_project(:secret_project, :space, [
+      |> Factory.add_project(:secret_project, :space,
         champion: :champion,
         company_access_level: Binding.no_access(),
-        space_access_level: Binding.no_access(),
-      ])
+        space_access_level: Binding.no_access()
+      )
     end
 
     tabletest @table do
@@ -53,6 +53,7 @@ defmodule OperatelyWeb.Api.Queries.GetFlatWorkMapTest do
 
         # Verify all expected items are present
         item_ids = Enum.map(res.work_map, & &1.id)
+
         Enum.each(expected_items, fn id ->
           assert id in item_ids
         end)
@@ -81,19 +82,19 @@ defmodule OperatelyWeb.Api.Queries.GetFlatWorkMapTest do
       |> Factory.add_project(:public_project, :space, goal: :child_goal)
       |> Factory.add_project(:project1, :space, goal: :child_goal, company_access_level: Binding.no_access())
       |> Factory.add_project(:project2, :space, goal: :child_goal, company_access_level: Binding.no_access())
-      |> Factory.add_project(:secret_project, :space, [
+      |> Factory.add_project(:secret_project, :space,
         goal: :child_goal,
         champion: :champion,
         company_access_level: Binding.no_access(),
-        space_access_level: Binding.no_access(),
-      ])
+        space_access_level: Binding.no_access()
+      )
     end
 
     @table [
-      %{person: :company_member,  expected_items: 3,   projects_count: 1},
-      %{person: :space_member,    expected_items: 5,   projects_count: 3},
-      %{person: :creator,         expected_items: 6,   projects_count: 4},
-      %{person: :champion,        expected_items: 6,   projects_count: 4},
+      %{person: :company_member, expected_items: 3, projects_count: 1},
+      %{person: :space_member, expected_items: 5, projects_count: 3},
+      %{person: :creator, expected_items: 6, projects_count: 4},
+      %{person: :champion, expected_items: 6, projects_count: 4}
     ]
 
     tabletest @table do

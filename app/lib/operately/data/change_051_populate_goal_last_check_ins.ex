@@ -12,7 +12,7 @@ defmodule Operately.Data.Change051PopulateGoalLastCheckIns do
     ) AS latest_updates
     WHERE goals.id = latest_updates.goal_id
     """
-    
+
     Operately.Repo.query!(sql)
   end
 end

@@ -8,9 +8,13 @@ defmodule OperatelyEmail.Emails.ProjectTaskCommentedEmail do
   def send(person, activity) do
     %{author: author = %{company: company}} = Repo.preload(activity, author: :company)
 
-    {:ok, task} = Task.get(:system, id: activity.content["task_id"], opts: [
-      preload: [:project]
-    ])
+    {:ok, task} =
+      Task.get(:system,
+        id: activity.content["task_id"],
+        opts: [
+          preload: [:project]
+        ]
+      )
 
     comment = Updates.get_comment!(activity.content["comment_id"])
 

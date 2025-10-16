@@ -19,6 +19,7 @@ defmodule Operately.Operations.NotificationsSubscribing do
             subscription_list_id: subscription_list_id,
             type: :joined
           })
+
         subscription ->
           Notifications.update_subscription(subscription, %{
             canceled: false,

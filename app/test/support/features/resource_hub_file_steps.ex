@@ -35,13 +35,14 @@ defmodule Operately.Support.Features.ResourceHubFileSteps do
   end
 
   step :given_file_exists, ctx, hub_key \\ nil do
-    file = if hub_key do
-      create_file(ctx, ctx[hub_key])
-    else
-      {:ok, hub} = ResourceHub.get(:system, space_id: ctx.space.id)
+    file =
+      if hub_key do
+        create_file(ctx, ctx[hub_key])
+      else
+        {:ok, hub} = ResourceHub.get(:system, space_id: ctx.space.id)
 
-      create_file(ctx, hub)
-    end
+        create_file(ctx, hub)
+      end
 
     Map.put(ctx, :file, file)
   end
@@ -123,7 +124,7 @@ defmodule Operately.Support.Features.ResourceHubFileSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.creator,
-      action: "Re: #{ctx.file.node.name}",
+      action: "Re: #{ctx.file.node.name}"
     })
   end
 
@@ -133,7 +134,7 @@ defmodule Operately.Support.Features.ResourceHubFileSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.creator,
-      action: "Deleted a file: Some File",
+      action: "Deleted a file: Some File"
     })
   end
 
@@ -142,20 +143,22 @@ defmodule Operately.Support.Features.ResourceHubFileSteps do
   #
 
   step :assert_file_commented_email_sent, ctx do
-    ctx |> EmailSteps.assert_activity_email_sent(%{
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.space.name,
       to: ctx.other_user,
       action: "commented on: #{ctx.file.node.name}",
-      author: ctx.creator,
+      author: ctx.creator
     })
   end
 
   step :assert_file_deleted_email_sent, ctx do
-    ctx |> EmailSteps.assert_activity_email_sent(%{
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.space.name,
       to: ctx.other_user,
       action: "deleted a file: Some File",
-      author: ctx.creator,
+      author: ctx.creator
     })
   end
 
@@ -166,19 +169,20 @@ defmodule Operately.Support.Features.ResourceHubFileSteps do
   defp create_file(ctx, hub, folder_id \\ nil) do
     blob = Operately.BlobsFixtures.blob_fixture(%{author_id: ctx.creator.id, company_id: ctx.company.id})
 
-    {:ok, files} = Operately.Operations.ResourceHubFileCreating.run(ctx.creator, hub, %{
-      files: [
-        %{
-          blob_id: blob.id,
-          name: "Some File",
-          description: Operately.Support.RichText.rich_text("Content"),
-        }
-      ],
-      send_to_everyone: true,
-      subscription_parent_type: :resource_hub_file,
-      subscriber_ids: [ctx.other_user.id],
-      folder_id: folder_id,
-    })
+    {:ok, files} =
+      Operately.Operations.ResourceHubFileCreating.run(ctx.creator, hub, %{
+        files: [
+          %{
+            blob_id: blob.id,
+            name: "Some File",
+            description: Operately.Support.RichText.rich_text("Content")
+          }
+        ],
+        send_to_everyone: true,
+        subscription_parent_type: :resource_hub_file,
+        subscriber_ids: [ctx.other_user.id],
+        folder_id: folder_id
+      })
 
     hd(files)
   end

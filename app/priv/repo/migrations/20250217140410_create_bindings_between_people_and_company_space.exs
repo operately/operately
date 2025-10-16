@@ -6,6 +6,5 @@ defmodule Operately.Repo.Migrations.CreateBindingsBetweenPeopleAndCompanySpace d
   end
 
   def down do
-
   end
 end

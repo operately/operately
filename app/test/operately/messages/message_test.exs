@@ -13,14 +13,15 @@ defmodule Operately.Messages.MessageTest do
     setup ctx do
       list = Operately.NotificationsFixtures.subscriptions_list_fixture()
 
-      cs = Operately.Messages.Message.changeset(%{
-        subscription_list_id: list.id,
-        author_id: ctx.creator.id,
-        messages_board_id: ctx.message_board.id,
-        title: "Draft Message",
-        body: RichText.rich_text("This is a draft message."),
-        state: :published,
-      })
+      cs =
+        Operately.Messages.Message.changeset(%{
+          subscription_list_id: list.id,
+          author_id: ctx.creator.id,
+          messages_board_id: ctx.message_board.id,
+          title: "Draft Message",
+          body: RichText.rich_text("This is a draft message."),
+          state: :published
+        })
 
       {:ok, message} = Operately.Repo.insert(cs)
 
@@ -36,14 +37,15 @@ defmodule Operately.Messages.MessageTest do
     setup ctx do
       list = Operately.NotificationsFixtures.subscriptions_list_fixture()
 
-      cs = Operately.Messages.Message.changeset(%{
-        subscription_list_id: list.id,
-        author_id: ctx.creator.id,
-        messages_board_id: ctx.message_board.id,
-        title: "Draft Message",
-        body: RichText.rich_text("This is a draft message."),
-        state: :draft,
-      })
+      cs =
+        Operately.Messages.Message.changeset(%{
+          subscription_list_id: list.id,
+          author_id: ctx.creator.id,
+          messages_board_id: ctx.message_board.id,
+          title: "Draft Message",
+          body: RichText.rich_text("This is a draft message."),
+          state: :draft
+        })
 
       {:ok, message} = Operately.Repo.insert(cs)
 
@@ -63,14 +65,15 @@ defmodule Operately.Messages.MessageTest do
     setup ctx do
       list = Operately.NotificationsFixtures.subscriptions_list_fixture()
 
-      cs = Operately.Messages.Message.changeset(%{
-        subscription_list_id: list.id,
-        author_id: ctx.creator.id,
-        messages_board_id: ctx.message_board.id,
-        title: "Draft Message",
-        body: RichText.rich_text("This is a draft message."),
-        state: :draft,
-      })
+      cs =
+        Operately.Messages.Message.changeset(%{
+          subscription_list_id: list.id,
+          author_id: ctx.creator.id,
+          messages_board_id: ctx.message_board.id,
+          title: "Draft Message",
+          body: RichText.rich_text("This is a draft message."),
+          state: :draft
+        })
 
       assert {:ok, message} = Operately.Repo.insert(cs)
       assert message.state == :draft

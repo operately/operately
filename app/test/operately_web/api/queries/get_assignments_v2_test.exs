@@ -132,10 +132,11 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
 
     test "get pending project check-in acknowledgements", ctx do
       another_person = person_fixture_with_account(%{full_name: "champion", company_id: ctx.company.id})
+
       project =
         create_project(ctx, upcoming_date(), %{
           creator_id: another_person.id,
-          reviewer_id: ctx.person.id,
+          reviewer_id: ctx.person.id
         })
 
       check_in = create_check_in(project)
@@ -167,9 +168,10 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
 
     test "get pending goal check-in acknowledgements", ctx do
       another_person = person_fixture_with_account(%{full_name: "champion", company_id: ctx.company.id})
+
       goal =
         create_goal(another_person, ctx.company, upcoming_date(), %{
-          reviewer_id: ctx.person.id,
+          reviewer_id: ctx.person.id
         })
 
       update = create_update(another_person, goal)
@@ -202,20 +204,23 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
     test "get pending tasks", ctx do
       project = create_project(ctx, upcoming_date(), %{name: "My Project"})
 
-      task1 = create_task(project, ctx.person, %{
-        name: "Task 1",
-        status: "todo",
-        due_date: ContextualDate.create_day_date(Date.utc_today())
-      })
+      task1 =
+        create_task(project, ctx.person, %{
+          name: "Task 1",
+          status: "todo",
+          due_date: ContextualDate.create_day_date(Date.utc_today())
+        })
 
-      task2 = create_task(project, ctx.person, %{
-        name: "Task 2",
-        status: "in_progress",
-        due_date: ContextualDate.create_day_date(past_date_as_date())
-      })
+      task2 =
+        create_task(project, ctx.person, %{
+          name: "Task 2",
+          status: "in_progress",
+          due_date: ContextualDate.create_day_date(past_date_as_date())
+        })
 
       # Task for another person - should not appear
       another_person = person_fixture_with_account(%{company_id: ctx.company.id})
+
       create_task(project, another_person, %{
         name: "Other Task",
         status: "todo",
@@ -293,23 +298,25 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
     test "get pending milestones", ctx do
       project = create_project(ctx, upcoming_date(), %{name: "My Project"})
 
-      milestone1 = create_milestone(project, %{
-        title: "Milestone 1",
-        status: :pending,
-        timeframe: %{
-          contextual_start_date: ContextualDate.create_day_date(Date.utc_today()),
-          contextual_end_date: ContextualDate.create_day_date(Date.add(Date.utc_today(), 7))
-        }
-      })
+      milestone1 =
+        create_milestone(project, %{
+          title: "Milestone 1",
+          status: :pending,
+          timeframe: %{
+            contextual_start_date: ContextualDate.create_day_date(Date.utc_today()),
+            contextual_end_date: ContextualDate.create_day_date(Date.add(Date.utc_today(), 7))
+          }
+        })
 
-      milestone2 = create_milestone(project, %{
-        title: "Milestone 2",
-        status: :pending,
-        timeframe: %{
-          contextual_start_date: ContextualDate.create_day_date(Date.utc_today()),
-          contextual_end_date: ContextualDate.create_day_date(Date.add(Date.utc_today(), 14))
-        }
-      })
+      milestone2 =
+        create_milestone(project, %{
+          title: "Milestone 2",
+          status: :pending,
+          timeframe: %{
+            contextual_start_date: ContextualDate.create_day_date(Date.utc_today()),
+            contextual_end_date: ContextualDate.create_day_date(Date.add(Date.utc_today(), 14))
+          }
+        })
 
       # Completed milestone - should not appear
       create_milestone(project, %{
@@ -374,10 +381,12 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
 
     test "get pending milestones for project champion only", ctx do
       another_person = person_fixture_with_account(%{company_id: ctx.company.id})
-      project = create_project(ctx, upcoming_date(), %{
-        creator_id: another_person.id,
-        name: "Other Project"
-      })
+
+      project =
+        create_project(ctx, upcoming_date(), %{
+          creator_id: another_person.id,
+          name: "Other Project"
+        })
 
       create_milestone(project, %{
         title: "Milestone",
@@ -398,10 +407,11 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
         status: :pending
       })
 
-      deleted_milestone = create_milestone(project, %{
-        title: "Deleted Milestone",
-        status: :pending
-      })
+      deleted_milestone =
+        create_milestone(project, %{
+          title: "Deleted Milestone",
+          status: :pending
+        })
 
       Repo.soft_delete(deleted_milestone)
 
@@ -431,18 +441,23 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
 
       # Create another person's check-in to review
       another_person = person_fixture_with_account(%{company_id: ctx.company.id})
-      review_project = create_project(ctx, upcoming_date(), %{
-        creator_id: another_person.id,
-        reviewer_id: ctx.person.id,
-        name: "Review Project"
-      })
+
+      review_project =
+        create_project(ctx, upcoming_date(), %{
+          creator_id: another_person.id,
+          reviewer_id: ctx.person.id,
+          name: "Review Project"
+        })
+
       create_check_in(review_project)
 
       # Create another person's goal update to review
-      review_goal = create_goal(another_person, ctx.company, upcoming_date(), %{
-        reviewer_id: ctx.person.id,
-        name: "Review Goal"
-      })
+      review_goal =
+        create_goal(another_person, ctx.company, upcoming_date(), %{
+          reviewer_id: ctx.person.id,
+          name: "Review Goal"
+        })
+
       create_update(another_person, review_goal)
 
       assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments_v2, %{})

@@ -14,7 +14,8 @@ defmodule Operately.Demo.Resources do
     end
   end
 
-  def add(_, key, {:ok, _}), do: raise "Trying to add {:ok, _} to resources with key #{key}"
+  def add(_, key, {:ok, _}), do: raise("Trying to add {:ok, _} to resources with key #{key}")
+
   def add(resources, key, value) do
     if Map.has_key?(resources, key) do
       raise "Key #{key} already exists in resources"

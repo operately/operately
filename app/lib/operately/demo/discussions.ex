@@ -17,15 +17,16 @@ defmodule Operately.Demo.Discussions do
     space = Resources.get(resources, data.space)
     board = Operately.Messages.get_messages_board(space_id: space.id)
 
-    {:ok, discussion} = DiscussionPosting.run(author, space, %{
-      messages_board_id: board.id,
-      title: data.title,
-      content: PoorMansMarkdown.from_markdown(data.content, resources),
-      post_as_draft: false,
-      send_to_everyone: true,
-      subscription_parent_type: :message,
-      subscriber_ids: []
-    })
+    {:ok, discussion} =
+      DiscussionPosting.run(author, space, %{
+        messages_board_id: board.id,
+        title: data.title,
+        content: PoorMansMarkdown.from_markdown(data.content, resources),
+        post_as_draft: false,
+        send_to_everyone: true,
+        subscription_parent_type: :message,
+        subscriber_ids: []
+      })
 
     update_inserted_at(discussion, index)
     Comments.create_comments(resources, discussion, data[:comments])

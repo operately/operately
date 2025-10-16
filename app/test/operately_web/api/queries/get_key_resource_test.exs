@@ -102,24 +102,28 @@ defmodule OperatelyWeb.Api.Queries.GetKeyResourceTest do
   #
 
   defp create_key_resource(ctx, opts) do
-    project = project_fixture(%{
-      company_id: ctx.company.id,
-      creator_id: ctx.creator.id,
-      champion_id: Keyword.get(opts, :champion_id, ctx.creator.id),
-      reviewer_id: Keyword.get(opts, :reviewer_id, ctx.creator.id),
-      group_id: ctx.space.id,
-      company_access_level: Keyword.get(opts, :company_access, Binding.no_access()),
-      space_access_level: Keyword.get(opts, :space_access, Binding.no_access()),
-    })
+    project =
+      project_fixture(%{
+        company_id: ctx.company.id,
+        creator_id: ctx.creator.id,
+        champion_id: Keyword.get(opts, :champion_id, ctx.creator.id),
+        reviewer_id: Keyword.get(opts, :reviewer_id, ctx.creator.id),
+        group_id: ctx.space.id,
+        company_access_level: Keyword.get(opts, :company_access, Binding.no_access()),
+        space_access_level: Keyword.get(opts, :space_access, Binding.no_access())
+      })
+
     key_resource_fixture(%{project_id: project.id})
     |> Repo.preload(:project)
     |> Serializer.serialize(level: :full)
   end
 
   defp add_person_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space.id, [%{
-      id: ctx.person.id,
-      access_level: Binding.view_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space.id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.view_access()
+      }
+    ])
   end
 end

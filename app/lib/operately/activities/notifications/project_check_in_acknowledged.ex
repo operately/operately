@@ -8,13 +8,15 @@ defmodule Operately.Activities.Notifications.ProjectCheckInAcknowledged do
       |> Repo.preload(:author)
 
     case check_in.author do
-      nil -> :ok
+      nil ->
+        :ok
+
       author ->
         Operately.Notifications.bulk_create([
           %{
             person_id: author.id,
             activity_id: activity.id,
-            should_send_email: true,
+            should_send_email: true
           }
         ])
     end

@@ -6,10 +6,11 @@ defmodule Operately.Operations.ProjectCheckInAcknowledgement do
   alias Operately.Projects.CheckIn
 
   def run(author, check_in) do
-    changeset = CheckIn.changeset(check_in, %{
-      acknowledged_at: NaiveDateTime.utc_now(),
-      acknowledged_by_id: author.id
-    })
+    changeset =
+      CheckIn.changeset(check_in, %{
+        acknowledged_at: NaiveDateTime.utc_now(),
+        acknowledged_by_id: author.id
+      })
 
     Multi.new()
     |> Multi.update(:check_in, changeset)
@@ -28,7 +29,8 @@ defmodule Operately.Operations.ProjectCheckInAcknowledgement do
         OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: author.id)
         {:ok, check_in}
 
-      error -> error
+      error ->
+        error
     end
   end
 end

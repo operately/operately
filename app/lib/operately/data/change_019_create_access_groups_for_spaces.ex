@@ -30,11 +30,14 @@ defmodule Operately.Data.Change019CreateAccessGroupsForSpaces do
   defp create_access_group(space_id, tag) do
     case Access.get_group(group_id: space_id, tag: tag) do
       nil ->
-        {:ok, group} = Access.create_group(%{
-          group_id: space_id,
-          tag: tag,
-        })
+        {:ok, group} =
+          Access.create_group(%{
+            group_id: space_id,
+            tag: tag
+          })
+
         group
+
       group ->
         group
     end
@@ -53,8 +56,9 @@ defmodule Operately.Data.Change019CreateAccessGroupsForSpaces do
       nil ->
         Access.create_group_membership(%{
           group_id: group_id,
-          person_id: person_id,
+          person_id: person_id
         })
+
       _ ->
         :ok
     end
@@ -83,8 +87,9 @@ defmodule Operately.Data.Change019CreateAccessGroupsForSpaces do
         Access.create_binding(%{
           group_id: group.id,
           context_id: context_id,
-          access_level: access_level,
+          access_level: access_level
         })
+
       binding ->
         Access.update_binding(binding, %{access_level: access_level})
     end

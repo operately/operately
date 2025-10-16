@@ -47,9 +47,12 @@ defmodule OperatelyWeb.Api.Mutations.PublishResourceHubDocument do
   end
 
   defp load(me, document_id) do
-    Document.get(me, id: document_id, opts: [
-      preload: [:node, :resource_hub]
-    ])
+    Document.get(me,
+      id: document_id,
+      opts: [
+        preload: [:node, :resource_hub]
+      ]
+    )
   end
 
   defp authorize(me, document) do

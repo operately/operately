@@ -17,17 +17,18 @@ defmodule Operately.Operations.DiscussionPostingTest do
   end
 
   test "Creating message sends notifications to everyone", ctx do
-    {:ok, message} = Oban.Testing.with_testing_mode(:manual, fn ->
-      Operately.Operations.DiscussionPosting.run(ctx.creator, ctx.space, %{
-        messages_board_id: ctx.messages_board.id,
-        title: "Title",
-        content: RichText.rich_text("Content"),
-        post_as_draft: false,
-        send_to_everyone: true,
-        subscription_parent_type: :message,
-        subscriber_ids: [],
-      })
-    end)
+    {:ok, message} =
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Operately.Operations.DiscussionPosting.run(ctx.creator, ctx.space, %{
+          messages_board_id: ctx.messages_board.id,
+          title: "Title",
+          content: RichText.rich_text("Content"),
+          post_as_draft: false,
+          send_to_everyone: true,
+          subscription_parent_type: :message,
+          subscriber_ids: []
+        })
+      end)
 
     action = "discussion_posting"
     activity = get_activity(message, action)
@@ -46,17 +47,18 @@ defmodule Operately.Operations.DiscussionPostingTest do
   end
 
   test "Creating message sends notifications to selected people", ctx do
-    {:ok, message} = Oban.Testing.with_testing_mode(:manual, fn ->
-      Operately.Operations.DiscussionPosting.run(ctx.creator, ctx.space, %{
-        messages_board_id: ctx.messages_board.id,
-        title: "Title",
-        content: RichText.rich_text("Content"),
-        post_as_draft: false,
-        send_to_everyone: false,
-        subscription_parent_type: :message,
-        subscriber_ids: [ctx.mike.id, ctx.jane.id],
-      })
-    end)
+    {:ok, message} =
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Operately.Operations.DiscussionPosting.run(ctx.creator, ctx.space, %{
+          messages_board_id: ctx.messages_board.id,
+          title: "Title",
+          content: RichText.rich_text("Content"),
+          post_as_draft: false,
+          send_to_everyone: false,
+          subscription_parent_type: :message,
+          subscriber_ids: [ctx.mike.id, ctx.jane.id]
+        })
+      end)
 
     action = "discussion_posting"
     activity = get_activity(message, action)
@@ -79,15 +81,16 @@ defmodule Operately.Operations.DiscussionPostingTest do
     person = person_fixture_with_account(%{company_id: ctx.company.id})
     content = RichText.rich_text(mentioned_people: [person]) |> Jason.decode!()
 
-    {:ok, message} = Operately.Operations.DiscussionPosting.run(ctx.creator, ctx.space, %{
-      messages_board_id: ctx.messages_board.id,
-      title: "Title",
-      content: content,
-      post_as_draft: false,
-      send_to_everyone: false,
-      subscription_parent_type: :message,
-      subscriber_ids: [],
-    })
+    {:ok, message} =
+      Operately.Operations.DiscussionPosting.run(ctx.creator, ctx.space, %{
+        messages_board_id: ctx.messages_board.id,
+        title: "Title",
+        content: content,
+        post_as_draft: false,
+        send_to_everyone: false,
+        subscription_parent_type: :message,
+        subscriber_ids: []
+      })
 
     action = "discussion_posting"
     activity = get_activity(message, action)
@@ -96,19 +99,21 @@ defmodule Operately.Operations.DiscussionPostingTest do
     assert fetch_notifications(activity.id, action: action) == []
 
     # With permissions
-    {:ok, _} = Operately.Groups.add_members(ctx.creator, ctx.space.id, [
-      %{id: person.id, access_level: Operately.Access.Binding.view_access()}
-    ])
+    {:ok, _} =
+      Operately.Groups.add_members(ctx.creator, ctx.space.id, [
+        %{id: person.id, access_level: Operately.Access.Binding.view_access()}
+      ])
 
-    {:ok, message} = Operately.Operations.DiscussionPosting.run(ctx.creator, ctx.space, %{
-      messages_board_id: ctx.messages_board.id,
-      title: "Title",
-      content: content,
-      post_as_draft: false,
-      send_to_everyone: false,
-      subscription_parent_type: :message,
-      subscriber_ids: [],
-    })
+    {:ok, message} =
+      Operately.Operations.DiscussionPosting.run(ctx.creator, ctx.space, %{
+        messages_board_id: ctx.messages_board.id,
+        title: "Title",
+        content: content,
+        post_as_draft: false,
+        send_to_everyone: false,
+        subscription_parent_type: :message,
+        subscriber_ids: []
+      })
 
     activity = get_activity(message, action)
     notifications = fetch_notifications(activity.id, action: action)

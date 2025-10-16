@@ -16,12 +16,13 @@ defmodule Operately.Operations.ProjectContributorRemovedTest do
     person = person_fixture_with_account(%{company_id: company.id})
     project = project_fixture(%{company_id: company.id, creator_id: creator.id, group_id: company.company_space_id})
 
-    {:ok, contributor} = Operately.Operations.ProjectContributorAddition.run(creator, %{
-      project_id: project.id,
-      person_id: person.id,
-      responsibility: "Developer",
-      permissions: Binding.edit_access(),
-    })
+    {:ok, contributor} =
+      Operately.Operations.ProjectContributorAddition.run(creator, %{
+        project_id: project.id,
+        person_id: person.id,
+        responsibility: "Developer",
+        permissions: Binding.edit_access()
+      })
 
     {:ok, creator: creator, contributor: contributor, person: person, project: project}
   end

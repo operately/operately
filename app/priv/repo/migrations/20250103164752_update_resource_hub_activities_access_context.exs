@@ -6,6 +6,5 @@ defmodule Operately.Repo.Migrations.UpdateResourceHubActivitiesAccessContext do
   end
 
   def down do
-
   end
 end

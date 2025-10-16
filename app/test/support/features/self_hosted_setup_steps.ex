@@ -9,7 +9,7 @@ defmodule Operately.Support.Features.SelfHostedSetupSteps do
   end
 
   step :assert_on_the_setup_page, ctx do
-    ctx 
+    ctx
     |> UI.assert_page("/setup")
     |> UI.assert_text("Welcome to Operately!")
   end
@@ -23,7 +23,7 @@ defmodule Operately.Support.Features.SelfHostedSetupSteps do
     |> UI.fill(testid: "password", with: company_info[:password])
     |> UI.fill(testid: "password-confirmation", with: company_info[:password_confirmation])
   end
-  
+
   step :submit_setup_form, ctx do
     ctx |> UI.click(testid: "submit-form")
   end
@@ -42,8 +42,8 @@ defmodule Operately.Support.Features.SelfHostedSetupSteps do
   end
 
   step :assert_setup_page_is_no_longer_accessible, ctx do
-    ctx 
-    |> UI.visit("/setup") 
+    ctx
+    |> UI.visit("/setup")
     |> UI.assert_has(testid: "lobby-page")
   end
 end

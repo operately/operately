@@ -155,24 +155,28 @@ defmodule OperatelyWeb.Api.Mutations.CloseGoalTest do
 
   describe "subscriptions to notifications" do
     setup :register_and_log_in_account
+
     setup ctx do
       goal = create_goal(ctx)
-      people = Enum.map(1..3, fn _ ->
-        person_fixture(%{company_id: ctx.company.id})
-      end)
+
+      people =
+        Enum.map(1..3, fn _ ->
+          person_fixture(%{company_id: ctx.company.id})
+        end)
 
       Map.merge(ctx, %{goal: goal, people: people})
     end
 
     test "creates subscription list for goal closing", ctx do
-      assert {200, _} = mutation(ctx.conn, :close_goal, %{
-        goal_id: Paths.goal_id(ctx.goal),
-        success: "yes",
-        success_status: "achieved",
-        retrospective: rich_text("Closing retrospective") |> Jason.encode!(),
-        send_notifications_to_everyone: true,
-        subscriber_ids: Enum.map(ctx.people, &(Paths.person_id(&1)))
-      })
+      assert {200, _} =
+               mutation(ctx.conn, :close_goal, %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 success: "yes",
+                 success_status: "achieved",
+                 retrospective: rich_text("Closing retrospective") |> Jason.encode!(),
+                 send_notifications_to_everyone: true,
+                 subscriber_ids: Enum.map(ctx.people, &Paths.person_id(&1))
+               })
 
       thread = fetch_thread(ctx.goal)
       {:ok, list} = SubscriptionList.get(:system, parent_id: thread.id, opts: [preload: :subscriptions])
@@ -191,14 +195,15 @@ defmodule OperatelyWeb.Api.Mutations.CloseGoalTest do
       people = ctx.people ++ ctx.people ++ ctx.people
       content = rich_text(mentioned_people: people)
 
-      assert {200, _} = mutation(ctx.conn, :close_goal, %{
-        goal_id: Paths.goal_id(ctx.goal),
-        success: "yes",
-        success_status: "missed",
-        retrospective: content,
-        send_notifications_to_everyone: false,
-        subscriber_ids: []
-      })
+      assert {200, _} =
+               mutation(ctx.conn, :close_goal, %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 success: "yes",
+                 success_status: "missed",
+                 retrospective: content,
+                 send_notifications_to_everyone: false,
+                 subscriber_ids: []
+               })
 
       thread = fetch_thread(ctx.goal)
       subscriptions = fetch_subscriptions(thread.id)
@@ -214,14 +219,15 @@ defmodule OperatelyWeb.Api.Mutations.CloseGoalTest do
       people = [ctx.person | ctx.people]
       content = rich_text(mentioned_people: people)
 
-      assert {200, _} = mutation(ctx.conn, :close_goal, %{
-        goal_id: Paths.goal_id(ctx.goal),
-        success: "yes",
-        success_status: "achieved",
-        retrospective: content,
-        send_notifications_to_everyone: true,
-        subscriber_ids: Enum.map(people, &(Paths.person_id(&1))),
-      })
+      assert {200, _} =
+               mutation(ctx.conn, :close_goal, %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 success: "yes",
+                 success_status: "achieved",
+                 retrospective: content,
+                 send_notifications_to_everyone: true,
+                 subscriber_ids: Enum.map(people, &Paths.person_id(&1))
+               })
 
       thread = fetch_thread(ctx.goal)
       subscriptions = fetch_subscriptions(thread.id)
@@ -243,7 +249,7 @@ defmodule OperatelyWeb.Api.Mutations.CloseGoalTest do
       goal_id: Paths.goal_id(goal),
       success: "yes",
       success_status: "achieved",
-      retrospective: rich_text("result") |> Jason.encode!(),
+      retrospective: rich_text("result") |> Jason.encode!()
     })
   end
 
@@ -268,25 +274,32 @@ defmodule OperatelyWeb.Api.Mutations.CloseGoalTest do
   #
 
   defp create_goal(ctx, attrs \\ %{}) do
-    goal_fixture(ctx[:creator] || ctx.person, Enum.into(attrs, %{
-      space_id: ctx[:space_id] || ctx.company.company_space_id,
-      company_access_level: Binding.no_access(),
-      space_access_level: Binding.no_access(),
-    }))
+    goal_fixture(
+      ctx[:creator] || ctx.person,
+      Enum.into(attrs, %{
+        space_id: ctx[:space_id] || ctx.company.company_space_id,
+        company_access_level: Binding.no_access(),
+        space_access_level: Binding.no_access()
+      })
+    )
   end
 
   defp add_person_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space_id, [%{
-      id: ctx.person.id,
-      access_level: Binding.edit_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space_id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.edit_access()
+      }
+    ])
   end
 
   defp add_manager_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space_id, [%{
-      id: ctx.person.id,
-      access_level: Binding.full_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space_id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.full_access()
+      }
+    ])
   end
 
   defp fetch_subscriptions(parent_id) do
@@ -298,13 +311,14 @@ defmodule OperatelyWeb.Api.Mutations.CloseGoalTest do
   defp fetch_thread(goal) do
     import Ecto.Query, only: [from: 2]
 
-    activity = from(a in Activity,
-      where: a.action == "goal_closing" and a.content["goal_id"] == ^goal.id,
-      order_by: [desc: a.inserted_at],
-      limit: 1,
-      preload: [:comment_thread]
-    )
-    |> Repo.one()
+    activity =
+      from(a in Activity,
+        where: a.action == "goal_closing" and a.content["goal_id"] == ^goal.id,
+        order_by: [desc: a.inserted_at],
+        limit: 1,
+        preload: [:comment_thread]
+      )
+      |> Repo.one()
 
     activity.comment_thread
   end

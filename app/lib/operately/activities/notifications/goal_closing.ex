@@ -4,15 +4,15 @@ defmodule Operately.Activities.Notifications.GoalClosing do
   def dispatch(activity) do
     goal_id = activity.content["goal_id"]
 
-    Notifications.get_goal_thread_subscribers(activity.id, goal_id, [
+    Notifications.get_goal_thread_subscribers(activity.id, goal_id,
       ignore: [activity.author_id],
-      comment_thread_id: activity.comment_thread_id,
-    ])
+      comment_thread_id: activity.comment_thread_id
+    )
     |> Enum.map(fn person_id ->
       %{
         person_id: person_id,
         activity_id: activity.id,
-        should_send_email: true,
+        should_send_email: true
       }
     end)
     |> Operately.Notifications.bulk_create()

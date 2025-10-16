@@ -6,16 +6,19 @@ defmodule Operately.Operations.GoalUpdateAcknowledging do
 
   def run(person, update) do
     Multi.new()
-    |> Multi.update(:update, Update.changeset(update, %{
-      acknowledged_at: DateTime.utc_now,
-      acknowledged_by_id: person.id,
-    }))
+    |> Multi.update(
+      :update,
+      Update.changeset(update, %{
+        acknowledged_at: DateTime.utc_now(),
+        acknowledged_by_id: person.id
+      })
+    )
     |> Activities.insert_sync(person.id, :goal_check_in_acknowledgement, fn _changes ->
       %{
         company_id: person.company_id,
         space_id: update.goal.group_id,
         goal_id: update.goal_id,
-        update_id: update.id,
+        update_id: update.id
       }
     end)
     |> Repo.transaction()
@@ -25,7 +28,8 @@ defmodule Operately.Operations.GoalUpdateAcknowledging do
         OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: person.id)
         {:ok, update}
 
-      error -> error
+      error ->
+        error
     end
   end
 end

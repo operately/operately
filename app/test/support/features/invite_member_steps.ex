@@ -57,7 +57,8 @@ defmodule Operately.Support.Features.InviteMemberSteps do
     |> UI.fill(testid: "passwordConfirmation", with: password)
     |> UI.click(testid: "submit")
     |> UI.assert_has(testid: "company-home")
-    |> UI.sleep(200) # Wait for the redirect to complete
+    # Wait for the redirect to complete
+    |> UI.sleep(200)
   end
 
   step :reissue_invitation_token, ctx, name do
@@ -90,12 +91,13 @@ defmodule Operately.Support.Features.InviteMemberSteps do
   end
 
   step :given_that_an_invitation_was_sent, ctx, params do
-    member = person_fixture_with_account(%{
-      company_id: ctx.company.id,
-      full_name: params[:name],
-      email: params[:email],
-      has_open_invitation: true
-    })
+    member =
+      person_fixture_with_account(%{
+        company_id: ctx.company.id,
+        full_name: params[:name],
+        email: params[:email],
+        has_open_invitation: true
+      })
 
     invitation = invitation_fixture(%{member_id: member.id, admin_id: ctx.admin.id})
     token = invitation_token_fixture_unhashed(invitation.id)
@@ -125,21 +127,25 @@ defmodule Operately.Support.Features.InviteMemberSteps do
   end
 
   step :given_that_an_invitation_was_sent_and_expired, ctx, params do
-    member = person_fixture_with_account(%{
-      company_id: ctx.company.id,
-      full_name: params[:name],
-      email: params[:email],
-      has_open_invitation: true
-    })
+    member =
+      person_fixture_with_account(%{
+        company_id: ctx.company.id,
+        full_name: params[:name],
+        email: params[:email],
+        has_open_invitation: true
+      })
 
     invitation = invitation_fixture(%{member_id: member.id, admin_id: ctx.admin.id})
     invitation_token_fixture_unhashed(invitation.id)
 
     invitation = Operately.Repo.preload(invitation, :invitation_token)
 
-    {:ok, _} = Operately.Repo.update(Ecto.Changeset.change(invitation.invitation_token, %{
-      valid_until: DateTime.add(DateTime.utc_now(), -4, :day) |> DateTime.truncate(:second)
-    }))
+    {:ok, _} =
+      Operately.Repo.update(
+        Ecto.Changeset.change(invitation.invitation_token, %{
+          valid_until: DateTime.add(DateTime.utc_now(), -4, :day) |> DateTime.truncate(:second)
+        })
+      )
 
     ctx |> Map.put(:member, member)
   end
@@ -161,18 +167,19 @@ defmodule Operately.Support.Features.InviteMemberSteps do
 
   step :assert_invitation_renewed, ctx do
     member = Operately.People.get_person!(ctx.member.id)
-    member = Operately.Repo.preload(member, [invitation: :invitation_token])
+    member = Operately.Repo.preload(member, invitation: :invitation_token)
 
     assert DateTime.after?(member.invitation.invitation_token.valid_until, DateTime.utc_now())
   end
 
   step :given_that_an_invitation_will_expire_in_minutes, ctx, params do
-    member = person_fixture_with_account(%{
-      company_id: ctx.company.id,
-      full_name: params[:name],
-      email: params[:email],
-      has_open_invitation: true
-    })
+    member =
+      person_fixture_with_account(%{
+        company_id: ctx.company.id,
+        full_name: params[:name],
+        email: params[:email],
+        has_open_invitation: true
+      })
 
     invitation = invitation_fixture(%{member_id: member.id, admin_id: ctx.admin.id})
     invitation_token_fixture_unhashed(invitation.id)
@@ -180,20 +187,24 @@ defmodule Operately.Support.Features.InviteMemberSteps do
     invitation = Operately.Repo.preload(invitation, :invitation_token)
 
     # Set expiration to 30 minutes from now
-    {:ok, _} = Operately.Repo.update(Ecto.Changeset.change(invitation.invitation_token, %{
-      valid_until: DateTime.add(DateTime.utc_now(), 30, :minute) |> DateTime.truncate(:second)
-    }))
+    {:ok, _} =
+      Operately.Repo.update(
+        Ecto.Changeset.change(invitation.invitation_token, %{
+          valid_until: DateTime.add(DateTime.utc_now(), 30, :minute) |> DateTime.truncate(:second)
+        })
+      )
 
     ctx |> Map.put(:member, member)
   end
 
   step :given_that_an_invitation_will_expire_in_hours, ctx, params do
-    member = person_fixture_with_account(%{
-      company_id: ctx.company.id,
-      full_name: params[:name],
-      email: params[:email],
-      has_open_invitation: true
-    })
+    member =
+      person_fixture_with_account(%{
+        company_id: ctx.company.id,
+        full_name: params[:name],
+        email: params[:email],
+        has_open_invitation: true
+      })
 
     invitation = invitation_fixture(%{member_id: member.id, admin_id: ctx.admin.id})
     invitation_token_fixture_unhashed(invitation.id)
@@ -201,20 +212,24 @@ defmodule Operately.Support.Features.InviteMemberSteps do
     invitation = Operately.Repo.preload(invitation, :invitation_token)
 
     # Set expiration to 5 hours from now
-    {:ok, _} = Operately.Repo.update(Ecto.Changeset.change(invitation.invitation_token, %{
-      valid_until: DateTime.add(DateTime.utc_now(), 5, :hour) |> DateTime.truncate(:second)
-    }))
+    {:ok, _} =
+      Operately.Repo.update(
+        Ecto.Changeset.change(invitation.invitation_token, %{
+          valid_until: DateTime.add(DateTime.utc_now(), 5, :hour) |> DateTime.truncate(:second)
+        })
+      )
 
     ctx |> Map.put(:member, member)
   end
 
   step :given_that_an_invitation_will_expire_in_days, ctx, params do
-    member = person_fixture_with_account(%{
-      company_id: ctx.company.id,
-      full_name: params[:name],
-      email: params[:email],
-      has_open_invitation: true
-    })
+    member =
+      person_fixture_with_account(%{
+        company_id: ctx.company.id,
+        full_name: params[:name],
+        email: params[:email],
+        has_open_invitation: true
+      })
 
     invitation = invitation_fixture(%{member_id: member.id, admin_id: ctx.admin.id})
     invitation_token_fixture_unhashed(invitation.id)
@@ -222,9 +237,12 @@ defmodule Operately.Support.Features.InviteMemberSteps do
     invitation = Operately.Repo.preload(invitation, :invitation_token)
 
     # Set expiration to 1 day from now
-    {:ok, _} = Operately.Repo.update(Ecto.Changeset.change(invitation.invitation_token, %{
-      valid_until: DateTime.add(DateTime.utc_now(), 1, :day) |> DateTime.truncate(:second)
-    }))
+    {:ok, _} =
+      Operately.Repo.update(
+        Ecto.Changeset.change(invitation.invitation_token, %{
+          valid_until: DateTime.add(DateTime.utc_now(), 1, :day) |> DateTime.truncate(:second)
+        })
+      )
 
     ctx |> Map.put(:member, member)
   end

@@ -31,7 +31,7 @@ defmodule Operately.Operations.PasswordFirstTimeChanging do
         admin_name: invitation.admin.full_name,
         admin_email: invitation.admin.email,
         member_name: invitation.member.full_name,
-        member_email: invitation.member.email,
+        member_email: invitation.member.email
       }
     end)
   end

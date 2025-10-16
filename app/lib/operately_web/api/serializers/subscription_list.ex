@@ -4,7 +4,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Notifications.Subscription
       id: OperatelyWeb.Paths.subscription_list_id(subscription_list),
       parent_type: subscription_list.parent_type,
       send_to_everyone: subscription_list.send_to_everyone,
-      subscriptions: OperatelyWeb.Api.Serializer.serialize(subscription_list.subscriptions),
+      subscriptions: OperatelyWeb.Api.Serializer.serialize(subscription_list.subscriptions)
     }
   end
 

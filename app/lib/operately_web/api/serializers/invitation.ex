@@ -4,14 +4,15 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Invitations.Invitation do
       id: inv.id,
       admin: OperatelyWeb.Api.Serializer.serialize(inv.admin),
       member: OperatelyWeb.Api.Serializer.serialize(inv.member, level: :full),
-      company: OperatelyWeb.Api.Serializer.serialize(inv.company),
+      company: OperatelyWeb.Api.Serializer.serialize(inv.company)
     }
     |> add_expiration_if_present(inv)
   end
 
   def serialize(inv, level: :full) do
-    serialize(inv, level: :essential) |> Map.merge(%{
-      token: inv.invitation_token && inv.invitation_token.token,
+    serialize(inv, level: :essential)
+    |> Map.merge(%{
+      token: inv.invitation_token && inv.invitation_token.token
     })
   end
 

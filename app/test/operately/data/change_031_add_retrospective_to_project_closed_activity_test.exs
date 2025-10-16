@@ -13,22 +13,25 @@ defmodule Operately.Data.Change031AddRetrospectiveToProjectClosedActivityTest do
   end
 
   test "migration doesn't delete current data in activity content", ctx do
-    projects = Enum.map(1..3, fn _ ->
-      project_fixture(%{company_id: ctx.company.id, creator_id: ctx.creator.id, group_id: ctx.space.id})
-    end)
+    projects =
+      Enum.map(1..3, fn _ ->
+        project_fixture(%{company_id: ctx.company.id, creator_id: ctx.creator.id, group_id: ctx.space.id})
+      end)
 
-    projects = Enum.map(projects, fn p ->
-      attrs = %{
-        content: %{},
-        success_status: "achieved",
-        send_to_everyone: false,
-        subscription_parent_type: :project_retrospective,
-        subscriber_ids: [],
-      }
-      {:ok, _} = Operately.Operations.ProjectClosed.run(ctx.creator, p, attrs)
+    projects =
+      Enum.map(projects, fn p ->
+        attrs = %{
+          content: %{},
+          success_status: "achieved",
+          send_to_everyone: false,
+          subscription_parent_type: :project_retrospective,
+          subscriber_ids: []
+        }
 
-      Repo.preload(p, :retrospective)
-    end)
+        {:ok, _} = Operately.Operations.ProjectClosed.run(ctx.creator, p, attrs)
+
+        Repo.preload(p, :retrospective)
+      end)
 
     Operately.Data.Change031AddRetrospectiveToProjectClosedActivity.run()
 

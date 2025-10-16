@@ -134,10 +134,11 @@ defmodule Operately.Support.Factory.Projects do
         status: status
       })
 
-    {:ok, project} = Operately.Projects.update_project(project, %{
-      last_check_in_id: check_in.id,
-      last_check_in_status: status,
-    })
+    {:ok, project} =
+      Operately.Projects.update_project(project, %{
+        last_check_in_id: check_in.id,
+        last_check_in_status: status
+      })
 
     ctx
     |> Map.put(testid, check_in)
@@ -156,7 +157,6 @@ defmodule Operately.Support.Factory.Projects do
       }
       |> maybe_add_key(:deadline_at, Keyword.get(opts, :deadline_at))
       |> maybe_add_key(:timeframe, Keyword.get(opts, :timeframe))
-
 
     milestone = Operately.ProjectsFixtures.milestone_fixture(attrs)
     milestone = Repo.preload(milestone, :project)
@@ -316,12 +316,13 @@ defmodule Operately.Support.Factory.Projects do
         {nil, project_id}
       end
 
-    attrs = Enum.into(opts, %{
-      creator_id: ctx.creator.id,
-      milestone_id: milestone_id,
-      project_id: project_id,
-      name: Keyword.get(opts, :name, "Task #{testid}")
-    })
+    attrs =
+      Enum.into(opts, %{
+        creator_id: ctx.creator.id,
+        milestone_id: milestone_id,
+        project_id: project_id,
+        name: Keyword.get(opts, :name, "Task #{testid}")
+      })
 
     task = Operately.TasksFixtures.task_fixture(attrs)
 
@@ -332,10 +333,11 @@ defmodule Operately.Support.Factory.Projects do
     task = Map.fetch!(ctx, task_name)
     person = Map.fetch!(ctx, person_name)
 
-    assignee = Operately.TasksFixtures.assignee_fixture(%{
-      task_id: task.id,
-      person_id: person.id
-    })
+    assignee =
+      Operately.TasksFixtures.assignee_fixture(%{
+        task_id: task.id,
+        person_id: person.id
+      })
 
     Map.put(ctx, testid, assignee)
   end

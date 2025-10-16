@@ -59,16 +59,19 @@ defmodule OperatelyWeb.Api.Queries.SearchPeopleTest do
     end
 
     test "returns up to 10 matches", ctx do
-      (1..15) |> Enum.map(fn index -> person_fixture(company_id: ctx.company.id, full_name: "John Doe #{index}") end)
+      1..15 |> Enum.map(fn index -> person_fixture(company_id: ctx.company.id, full_name: "John Doe #{index}") end)
 
       assert {200, res} = query(ctx.conn, :search_people, query: "John", ignored_ids: [], search_scope_type: "company", search_scope_type: "company")
       assert length(res.people) == 10
     end
 
     test "orders by the best prefix match on full name", ctx do
-      person1 = person_fixture(company_id: ctx.company.id, full_name: "John Adam Smith") # index of match: 10
-      person2 = person_fixture(company_id: ctx.company.id, full_name: "John Smith") # index of match: 6
-      person3 = person_fixture(company_id: ctx.company.id, full_name: "John Adam Richard Smith") # index of match: 18
+      # index of match: 10
+      person1 = person_fixture(company_id: ctx.company.id, full_name: "John Adam Smith")
+      # index of match: 6
+      person2 = person_fixture(company_id: ctx.company.id, full_name: "John Smith")
+      # index of match: 18
+      person3 = person_fixture(company_id: ctx.company.id, full_name: "John Adam Richard Smith")
 
       assert {200, res} = query(ctx.conn, :search_people, query: "Smith", ignored_ids: [], search_scope_type: "company", search_scope_type: "company")
       assert res == %{people: [serialized(person2), serialized(person1), serialized(person3)]}

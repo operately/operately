@@ -17,6 +17,7 @@ defmodule Operately.Data.Change049PopulateCommentEntityIdWithMilestoneIdTest do
       refute c.comment.entity_id
       refute c.comment.entity_type
     end)
+
     Enum.each(ctx.complete_comments, fn c ->
       assert c.comment.entity_id == ctx.milestone.id
       assert c.comment.entity_type == :project_milestone
@@ -57,10 +58,14 @@ defmodule Operately.Data.Change049PopulateCommentEntityIdWithMilestoneIdTest do
 
   defp create_comments(ctx) do
     incomplete_comments = Enum.map(1..3, fn _ -> create_comment(ctx) end)
-    complete_comments = Enum.map(1..3, fn _ -> create_comment(ctx, %{
-      entity_id: ctx.milestone.id,
-      entity_type: :project_milestone,
-    }) end)
+
+    complete_comments =
+      Enum.map(1..3, fn _ ->
+        create_comment(ctx, %{
+          entity_id: ctx.milestone.id,
+          entity_type: :project_milestone
+        })
+      end)
 
     ctx
     |> Map.put(:incomplete_comments, incomplete_comments)
@@ -68,15 +73,17 @@ defmodule Operately.Data.Change049PopulateCommentEntityIdWithMilestoneIdTest do
   end
 
   defp create_comment(ctx, attrs \\ %{}) do
-    {:ok, comment} = Operately.Comments.create_milestone_comment(
-      ctx.creator,
-      ctx.milestone,
-      "none",
-      Map.merge(attrs, %{
-        content: %{"message" => RichText.rich_text("content")},
-        author_id: ctx.creator.id,
-      })
-    )
+    {:ok, comment} =
+      Operately.Comments.create_milestone_comment(
+        ctx.creator,
+        ctx.milestone,
+        "none",
+        Map.merge(attrs, %{
+          content: %{"message" => RichText.rich_text("content")},
+          author_id: ctx.creator.id
+        })
+      )
+
     comment
   end
 

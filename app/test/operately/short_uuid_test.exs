@@ -2,7 +2,8 @@ defmodule Operately.ShortUuidTest do
   use Operately.DataCase
 
   test "encode/1 encodes a UUID to a short UUID" do
-    1..1000 |> Enum.each(fn _ ->
+    1..1000
+    |> Enum.each(fn _ ->
       uuid = Ecto.UUID.generate()
       short_uuid = Operately.ShortUuid.encode!(uuid)
 
@@ -17,7 +18,8 @@ defmodule Operately.ShortUuidTest do
   end
 
   test "decode/1 decodes a short UUID to a UUID" do
-    1..1000 |> Enum.each(fn _ ->
+    1..1000
+    |> Enum.each(fn _ ->
       uuid = Ecto.UUID.generate()
       short_uuid = Operately.ShortUuid.encode!(uuid)
 
@@ -34,15 +36,18 @@ defmodule Operately.ShortUuidTest do
   end
 
   test "encoding is performant" do
-    {time, _} = :timer.tc(fn ->
-      1..1000 |> Enum.each(fn _ ->
-        uuid = Ecto.UUID.generate()
-        encoded = Operately.ShortUuid.encode!(uuid)
-        Operately.ShortUuid.decode(encoded)
+    {time, _} =
+      :timer.tc(fn ->
+        1..1000
+        |> Enum.each(fn _ ->
+          uuid = Ecto.UUID.generate()
+          encoded = Operately.ShortUuid.encode!(uuid)
+          Operately.ShortUuid.decode(encoded)
+        end)
       end)
-    end)
 
-    assert time < 100_000 # 100ms
+    # 100ms
+    assert time < 100_000
   end
 
   test "encode! raises an error for invalid UUIDs" do
@@ -56,5 +61,4 @@ defmodule Operately.ShortUuidTest do
       Operately.ShortUuid.decode!("A" <> String.duplicate("A", 24))
     end
   end
-
 end

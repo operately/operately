@@ -50,9 +50,10 @@ defmodule Operately.Data.Change040AddStatusValueForExistingGoalUpdatesTest do
   #
 
   defp create_updates(ctx) do
-    updates = Enum.map(1..3, fn _ ->
-      goal_update_fixture(ctx.creator, ctx.goal)
-    end)
+    updates =
+      Enum.map(1..3, fn _ ->
+        goal_update_fixture(ctx.creator, ctx.goal)
+      end)
 
     {_, nil} = from(u in Operately.Goals.Update) |> Repo.update_all(set: [status: nil])
 
@@ -60,6 +61,6 @@ defmodule Operately.Data.Change040AddStatusValueForExistingGoalUpdatesTest do
   end
 
   defp reload_updates(updates) do
-    Enum.map(updates, &(Repo.reload(&1)))
+    Enum.map(updates, &Repo.reload(&1))
   end
 end

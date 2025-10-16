@@ -46,7 +46,7 @@ defmodule Mix.Tasks.Operately.Gen.Api.Mutation do
       """
     end)
   end
-  
+
   def register_mutation(name, module_name) do
     file_path = "lib/operately_web/api.ex"
     register = "  mutation :#{name}, #{module_name}"

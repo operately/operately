@@ -6,6 +6,5 @@ defmodule Operately.Repo.Migrations.CreateSubscriptionsForExistingGoalDiscussion
   end
 
   def down do
-
   end
 end

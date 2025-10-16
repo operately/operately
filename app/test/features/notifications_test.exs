@@ -40,5 +40,4 @@ defmodule Operately.Features.NotificationsTest do
     |> Steps.click_on_first_mark_all_as_read()
     |> Steps.assert_no_unread_notifications()
   end
-
 end

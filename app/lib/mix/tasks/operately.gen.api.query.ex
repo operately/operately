@@ -46,7 +46,7 @@ defmodule Mix.Tasks.Operately.Gen.Api.Query do
       """
     end)
   end
-  
+
   def register_query(name, module_name) do
     file_path = "lib/operately_web/api.ex"
     register = "  query :#{name}, #{module_name}"

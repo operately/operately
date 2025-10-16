@@ -16,16 +16,16 @@ defmodule Operately.Data.Change004CreateProjectCheckinsFromUpdates do
   def create_project_check_in_for(activity) do
     status_update_id = activity.content["status_update_id"]
 
-    IO.puts "Creating project check-in for status update #{status_update_id}"
+    IO.puts("Creating project check-in for status update #{status_update_id}")
 
     update = Repo.get!(Operately.Updates.Update, status_update_id)
 
-    IO.puts "Found update from #{update.inserted_at}"
+    IO.puts("Found update from #{update.inserted_at}")
 
     old_status = get_in(update.content, ["health", "status", "value"])
     new_status = calculate_new_status(old_status)
 
-    IO.puts "Status Change: #{old_status} -> #{new_status}"
+    IO.puts("Status Change: #{old_status} -> #{new_status}")
 
     description = update.content["message"]
     project_id = update.updatable_id
@@ -49,12 +49,12 @@ defmodule Operately.Data.Change004CreateProjectCheckinsFromUpdates do
     end)
     |> Repo.transaction()
 
-    IO.puts "Done creating project check-in for status update #{status_update_id}"
+    IO.puts("Done creating project check-in for status update #{status_update_id}")
   rescue
     e ->
-      IO.puts "Error creating project check-in for activity #{activity.id}"
-      IO.inspect e
-      IO.inspect activity
+      IO.puts("Error creating project check-in for activity #{activity.id}")
+      IO.inspect(e)
+      IO.inspect(activity)
   end
 
   def calculate_new_status(old_status) do

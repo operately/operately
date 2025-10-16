@@ -6,6 +6,5 @@ defmodule Operately.Repo.Migrations.CreateSubscriptionsListForExistingMessages d
   end
 
   def down do
-
   end
 end

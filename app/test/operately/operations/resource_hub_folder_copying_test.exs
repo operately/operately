@@ -27,6 +27,7 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
       folders = ResourceHubs.list_folders(ctx.hub)
 
       assert length(folders) == 2
+
       Enum.each([ctx.folder1, ctx.folder2], fn f ->
         assert Enum.find(folders, &(&1.id == f.id))
       end)
@@ -44,6 +45,7 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
       folders = Enum.filter(folders, &(&1.id not in [ctx.folder1.id, ctx.folder2.id]))
 
       assert length(folders) == 2
+
       Enum.each(folders, fn f ->
         assert ResourceHubs.count_children(f) in [3, 7]
       end)
@@ -172,9 +174,10 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
       assert ResourceHubs.count_children(ctx.folder1) == 1
       assert ResourceHubs.count_children(ctx.dest_folder) == 0
 
-      {:ok, _} = Operately.Operations.ResourceHubFolderCopying.run(ctx.creator, ctx.copied_folder, ctx.hub, %{
-        parent_folder_id: ctx.dest_folder.id,
-      })
+      {:ok, _} =
+        Operately.Operations.ResourceHubFolderCopying.run(ctx.creator, ctx.copied_folder, ctx.hub, %{
+          parent_folder_id: ctx.dest_folder.id
+        })
 
       assert ResourceHubs.count_children(ctx.hub) == 10
       assert ResourceHubs.count_children(ctx.folder1) == 1
@@ -186,7 +189,6 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
       assert new_folder.node.type == :folder
       assert ResourceHubs.count_children(new_folder) == 3
     end
-
 
     test "folder is copied to the root of another Resource Hub", ctx do
       ctx = Factory.add_resource_hub(ctx, :dest_hub, :space, :creator)
@@ -216,9 +218,10 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
       assert ResourceHubs.count_children(ctx.dest_hub) == 1
       assert ResourceHubs.count_children(ctx.dest_folder) == 0
 
-      {:ok, _} = Operately.Operations.ResourceHubFolderCopying.run(ctx.creator, ctx.copied_folder, ctx.dest_hub, %{
-        parent_folder_id: ctx.dest_folder.id,
-      })
+      {:ok, _} =
+        Operately.Operations.ResourceHubFolderCopying.run(ctx.creator, ctx.copied_folder, ctx.dest_hub, %{
+          parent_folder_id: ctx.dest_folder.id
+        })
 
       assert ResourceHubs.count_children(ctx.hub) == 5
       assert ResourceHubs.count_children(ctx.dest_hub) == 5
@@ -244,9 +247,9 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
       create_subscriptions(people: [ctx.creator, ctx.mike], parents: [ctx.doc1, ctx.file1, ctx.link1])
 
       ctx
-      |> Factory.preload(:doc1, [subscription_list: :subscriptions])
-      |> Factory.preload(:file1, [subscription_list: :subscriptions])
-      |> Factory.preload(:link1, [subscription_list: :subscriptions])
+      |> Factory.preload(:doc1, subscription_list: :subscriptions)
+      |> Factory.preload(:file1, subscription_list: :subscriptions)
+      |> Factory.preload(:link1, subscription_list: :subscriptions)
     end
 
     test "subscriptions list and active subscriptions are copied", ctx do
@@ -316,7 +319,7 @@ defmodule Operately.Operations.ResourceHubFolderCopyingTest do
   end
 
   defp assert_subscriptions_copied(ctx, new_resource, original_resource) do
-    new_resource = Repo.preload(new_resource, [subscription_list: :subscriptions])
+    new_resource = Repo.preload(new_resource, subscription_list: :subscriptions)
     refute new_resource.subscription_list.id == original_resource.subscription_list.id
 
     assert length(new_resource.subscription_list.subscriptions) == 2

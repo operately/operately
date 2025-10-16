@@ -6,5 +6,4 @@ defmodule OperatelyWeb.Api.Subscriptions.ProfileUpdated do
 
     {:ok, socket, [topic]}
   end
-
 end

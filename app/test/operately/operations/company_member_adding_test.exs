@@ -21,7 +21,7 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
   @member_attrs %{
     :full_name => "John Doe",
     :email => @email,
-    :title => "Developer",
+    :title => "Developer"
   }
 
   setup do
@@ -32,11 +32,13 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
   end
 
   test "CompanyMemberAdding operation creates person", ctx do
-    assert Repo.aggregate(Person, :count, :id) == 2 # company creator + company admin
+    # company creator + company admin
+    assert Repo.aggregate(Person, :count, :id) == 2
 
     {:ok, _} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
 
-    assert Repo.aggregate(Person, :count, :id) == 3 # company creator + company admin + new member
+    # company creator + company admin + new member
+    assert Repo.aggregate(Person, :count, :id) == 3
     assert People.get_account_by_email(@email)
 
     person = People.get_person_by_email(ctx.company, @email)

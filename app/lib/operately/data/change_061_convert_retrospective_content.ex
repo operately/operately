@@ -34,22 +34,24 @@ defmodule Operately.Data.Change061ConvertRetrospectiveContent do
 
     %{
       "type" => "doc",
-      "content" => [
-        # What went well section
-        %{"type" => "heading", "attrs" => %{"level" => 2}, "content" => [%{"type" => "text", "text" => "What went well?"}]},
-        merge_content_or_empty(what_went_well),
-        %{"type" => "paragraph", "content" => []},
+      "content" =>
+        [
+          # What went well section
+          %{"type" => "heading", "attrs" => %{"level" => 2}, "content" => [%{"type" => "text", "text" => "What went well?"}]},
+          merge_content_or_empty(what_went_well),
+          %{"type" => "paragraph", "content" => []},
 
-        # What could have gone better section
-        %{"type" => "heading", "attrs" => %{"level" => 2}, "content" => [%{"type" => "text", "text" => "What could have gone better?"}]},
-        merge_content_or_empty(what_could_better),
-        %{"type" => "paragraph", "content" => []},
+          # What could have gone better section
+          %{"type" => "heading", "attrs" => %{"level" => 2}, "content" => [%{"type" => "text", "text" => "What could have gone better?"}]},
+          merge_content_or_empty(what_could_better),
+          %{"type" => "paragraph", "content" => []},
 
-        # What did you learn section
-        %{"type" => "heading", "attrs" => %{"level" => 2}, "content" => [%{"type" => "text", "text" => "What did you learn?"}]},
-        merge_content_or_empty(what_did_learn),
-        %{"type" => "paragraph", "content" => []}
-      ] |> List.flatten()
+          # What did you learn section
+          %{"type" => "heading", "attrs" => %{"level" => 2}, "content" => [%{"type" => "text", "text" => "What did you learn?"}]},
+          merge_content_or_empty(what_did_learn),
+          %{"type" => "paragraph", "content" => []}
+        ]
+        |> List.flatten()
     }
   end
 

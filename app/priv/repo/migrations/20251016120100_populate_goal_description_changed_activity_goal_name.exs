@@ -8,4 +8,3 @@ defmodule Operately.Repo.Migrations.PopulateGoalDescriptionChangedActivityGoalNa
   def down do
   end
 end
-

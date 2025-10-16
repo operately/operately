@@ -19,7 +19,7 @@ defmodule Operately.ResourceHubs.Permissions do
     :can_edit_file,
     :can_edit_link,
     :can_edit_parent_folder,
-    :can_rename_folder,
+    :can_rename_folder
   ]
 
   def calculate(access_level) when is_integer(access_level) do
@@ -41,7 +41,7 @@ defmodule Operately.ResourceHubs.Permissions do
       can_edit_file: access_level >= Binding.edit_access(),
       can_edit_link: access_level >= Binding.edit_access(),
       can_edit_parent_folder: access_level >= Binding.edit_access(),
-      can_rename_folder: access_level >= Binding.edit_access(),
+      can_rename_folder: access_level >= Binding.edit_access()
     }
   end
 

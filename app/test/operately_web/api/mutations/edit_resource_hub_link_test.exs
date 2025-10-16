@@ -19,15 +19,13 @@ defmodule OperatelyWeb.Api.Mutations.EditResourceHubLinkTest do
 
   describe "permissions" do
     @table [
-      %{company: :no_access,      space: :no_access,      expected: 404},
-
-      %{company: :no_access,      space: :comment_access, expected: 403},
-      %{company: :no_access,      space: :edit_access,    expected: 200},
-      %{company: :no_access,      space: :full_access,    expected: 200},
-
-      %{company: :comment_access, space: :no_access,      expected: 403},
-      %{company: :edit_access,    space: :no_access,      expected: 200},
-      %{company: :full_access,    space: :no_access,      expected: 200},
+      %{company: :no_access, space: :no_access, expected: 404},
+      %{company: :no_access, space: :comment_access, expected: 403},
+      %{company: :no_access, space: :edit_access, expected: 200},
+      %{company: :no_access, space: :full_access, expected: 200},
+      %{company: :comment_access, space: :no_access, expected: 403},
+      %{company: :edit_access, space: :no_access, expected: 200},
+      %{company: :full_access, space: :no_access, expected: 200}
     ]
 
     setup ctx do
@@ -42,13 +40,15 @@ defmodule OperatelyWeb.Api.Mutations.EditResourceHubLinkTest do
         resource_hub = resource_hub_fixture(ctx.creator, space)
         link = link_fixture(resource_hub, ctx.creator)
 
-        assert {code, res} = mutation(ctx.conn, :edit_resource_hub_link, %{
-          link_id: Paths.link_id(link),
-          name: "New name",
-          type: "google_doc",
-          url: "http://localhost:3000",
-          description: RichText.rich_text("Brand new description", :as_string)
-        })
+        assert {code, res} =
+                 mutation(ctx.conn, :edit_resource_hub_link, %{
+                   link_id: Paths.link_id(link),
+                   name: "New name",
+                   type: "google_doc",
+                   url: "http://localhost:3000",
+                   description: RichText.rich_text("Brand new description", :as_string)
+                 })
+
         assert code == @test.expected
 
         link = Repo.reload(link)
@@ -57,9 +57,11 @@ defmodule OperatelyWeb.Api.Mutations.EditResourceHubLinkTest do
           200 ->
             assert link.description == RichText.rich_text("Brand new description")
             assert res.link.id == Paths.link_id(link)
+
           403 ->
             assert link.description == RichText.rich_text("Description")
             assert res.message == "You don't have permission to perform this action"
+
           404 ->
             assert link.description == RichText.rich_text("Description")
             assert res.message == "The requested resource was not found"
@@ -84,13 +86,14 @@ defmodule OperatelyWeb.Api.Mutations.EditResourceHubLinkTest do
       assert ctx.link.url === "http://localhost:4000"
       assert ctx.link.description === RichText.rich_text("Description")
 
-      assert {200, _} = mutation(ctx.conn, :edit_resource_hub_link, %{
-        link_id: Paths.link_id(ctx.link),
-        name: "New name",
-        type: "google_doc",
-        url: "http://localhost:3000",
-        description: RichText.rich_text("Brand new description", :as_string)
-      })
+      assert {200, _} =
+               mutation(ctx.conn, :edit_resource_hub_link, %{
+                 link_id: Paths.link_id(ctx.link),
+                 name: "New name",
+                 type: "google_doc",
+                 url: "http://localhost:3000",
+                 description: RichText.rich_text("Brand new description", :as_string)
+               })
 
       node = Repo.reload(ctx.link.node)
       link = Repo.reload(ctx.link)
@@ -110,10 +113,13 @@ defmodule OperatelyWeb.Api.Mutations.EditResourceHubLinkTest do
     space = group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.from_atom(company_members_level)})
 
     if space_members_level != :no_access do
-      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
-        id: ctx.person.id,
-        access_level: Binding.from_atom(space_members_level)
-      }])
+      {:ok, _} =
+        Operately.Groups.add_members(ctx.creator, space.id, [
+          %{
+            id: ctx.person.id,
+            access_level: Binding.from_atom(space_members_level)
+          }
+        ])
     end
 
     space

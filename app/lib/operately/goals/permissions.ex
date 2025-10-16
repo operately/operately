@@ -10,7 +10,7 @@ defmodule Operately.Goals.Permissions do
     :can_reopen,
     :can_delete,
     :can_open_discussion,
-    :can_edit_discussion,
+    :can_edit_discussion
   ]
 
   def calculate(access_level) do
@@ -23,7 +23,7 @@ defmodule Operately.Goals.Permissions do
       can_close: can_edit(access_level),
       can_delete: can_delete(access_level),
       can_open_discussion: can_edit(access_level),
-      can_edit_discussion: can_edit(access_level),
+      can_edit_discussion: can_edit(access_level)
     }
   end
 

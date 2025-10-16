@@ -11,6 +11,7 @@ defmodule Operately.Operations.ResourceHubFolderCopying.SubscriptionsLists do
   new parent_id.
   """
   def update_parent_ids([]), do: {:ok, []}
+
   def update_parent_ids(resources) do
     query = """
     WITH mapping (id, parent_id) AS (
@@ -22,12 +23,14 @@ defmodule Operately.Operations.ResourceHubFolderCopying.SubscriptionsLists do
     WHERE sl.id = m.id;
     """
 
-    params = Enum.map(resources, fn r ->
-      {:ok, list_id} = Ecto.UUID.dump(r.subscription_list.id)
-      {:ok, parent_id} = Ecto.UUID.dump(r.id)
+    params =
+      Enum.map(resources, fn r ->
+        {:ok, list_id} = Ecto.UUID.dump(r.subscription_list.id)
+        {:ok, parent_id} = Ecto.UUID.dump(r.id)
 
-      {list_id, parent_id}
-    end)
+        {list_id, parent_id}
+      end)
+
     {ids, parent_ids} = Enum.unzip(params)
 
     {:ok, _} = Repo.query(query, [ids, parent_ids])
@@ -77,7 +80,7 @@ defmodule Operately.Operations.ResourceHubFolderCopying.SubscriptionsLists do
         parent_type: child.subscription_list.parent_type,
         send_to_everyone: child.subscription_list.send_to_everyone,
         inserted_at: now,
-        updated_at: now,
+        updated_at: now
       }
     end)
   end

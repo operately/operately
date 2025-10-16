@@ -3,7 +3,7 @@ defmodule Mix.Operately do
 
   def generate_file(path, generator) do
     if File.exists?(path) do
-      IO.puts "#{IO.ANSI.red()}Aborting#{IO.ANSI.reset()} #{path} already exists"
+      IO.puts("#{IO.ANSI.red()}Aborting#{IO.ANSI.reset()} #{path} already exists")
       System.halt(1)
     else
       generate_file!(path, generator)
@@ -11,13 +11,13 @@ defmodule Mix.Operately do
   end
 
   def generate_file!(path, generator) do
-    IO.puts "#{IO.ANSI.green()}Generating#{IO.ANSI.reset()} #{path}"
+    IO.puts("#{IO.ANSI.green()}Generating#{IO.ANSI.reset()} #{path}")
     File.mkdir_p!(Path.dirname(path))
     File.write!(path, generator.(path))
   end
 
   def inject_into_file(path, content, line) do
-    IO.puts "#{IO.ANSI.green()}Injecting#{IO.ANSI.reset()} into #{path}"
+    IO.puts("#{IO.ANSI.green()}Injecting#{IO.ANSI.reset()} into #{path}")
 
     file = File.read!(path)
     lines = String.split(file, "\n")

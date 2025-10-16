@@ -10,7 +10,6 @@ defmodule OperatelyWeb.Api.Mutations.PublishResourceHubDocumentTest do
     end
   end
 
-
   describe "permissions" do
     setup ctx do
       ctx
@@ -25,33 +24,39 @@ defmodule OperatelyWeb.Api.Mutations.PublishResourceHubDocumentTest do
     test "User has no permissions", ctx do
       ctx = Factory.log_in_person(ctx, :user_no_permissions)
 
-      assert {404, res} = mutation(ctx.conn, :publish_resource_hub_document, %{
-        document_id: Paths.document_id(ctx.document),
-        name: "some name",
-        content: RichText.rich_text("content", :as_string)
-      })
-      assert res == %{ error: "Not found", message: "The requested resource was not found" }
+      assert {404, res} =
+               mutation(ctx.conn, :publish_resource_hub_document, %{
+                 document_id: Paths.document_id(ctx.document),
+                 name: "some name",
+                 content: RichText.rich_text("content", :as_string)
+               })
+
+      assert res == %{error: "Not found", message: "The requested resource was not found"}
     end
 
     test "User has view access", ctx do
       ctx = Factory.log_in_person(ctx, :user_view_access)
 
-      assert {403, res} = mutation(ctx.conn, :publish_resource_hub_document, %{
-        document_id: Paths.document_id(ctx.document),
-        name: "some name",
-        content: RichText.rich_text("content", :as_string)
-      })
-      assert res == %{ error: "Forbidden", message: "You don't have permission to perform this action" }
+      assert {403, res} =
+               mutation(ctx.conn, :publish_resource_hub_document, %{
+                 document_id: Paths.document_id(ctx.document),
+                 name: "some name",
+                 content: RichText.rich_text("content", :as_string)
+               })
+
+      assert res == %{error: "Forbidden", message: "You don't have permission to perform this action"}
     end
 
     test "User has permissions", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {200, res} = mutation(ctx.conn, :publish_resource_hub_document, %{
-        document_id: Paths.document_id(ctx.document),
-        name: "some name",
-        content: RichText.rich_text("content", :as_string)
-      })
+      assert {200, res} =
+               mutation(ctx.conn, :publish_resource_hub_document, %{
+                 document_id: Paths.document_id(ctx.document),
+                 name: "some name",
+                 content: RichText.rich_text("content", :as_string)
+               })
+
       document = Repo.reload(ctx.document) |> Repo.preload(:node)
 
       assert res.document == Serializer.serialize(document)
@@ -71,11 +76,13 @@ defmodule OperatelyWeb.Api.Mutations.PublishResourceHubDocumentTest do
     test "published draft document", ctx do
       assert ctx.document.state == :draft
 
-      assert {200, res} = mutation(ctx.conn, :publish_resource_hub_document, %{
-        document_id: Paths.document_id(ctx.document),
-        name: "some name",
-        content: RichText.rich_text("content", :as_string)
-      })
+      assert {200, res} =
+               mutation(ctx.conn, :publish_resource_hub_document, %{
+                 document_id: Paths.document_id(ctx.document),
+                 name: "some name",
+                 content: RichText.rich_text("content", :as_string)
+               })
+
       document = Repo.reload(ctx.document) |> Repo.preload(:node)
 
       assert document.state == :published
@@ -85,11 +92,12 @@ defmodule OperatelyWeb.Api.Mutations.PublishResourceHubDocumentTest do
     test "activity is created", ctx do
       refute get_activity(ctx.document)
 
-      assert {200, _} = mutation(ctx.conn, :publish_resource_hub_document, %{
-        document_id: Paths.document_id(ctx.document),
-        name: "some name",
-        content: RichText.rich_text("content", :as_string)
-      })
+      assert {200, _} =
+               mutation(ctx.conn, :publish_resource_hub_document, %{
+                 document_id: Paths.document_id(ctx.document),
+                 name: "some name",
+                 content: RichText.rich_text("content", :as_string)
+               })
 
       assert get_activity(ctx.document)
     end

@@ -7,7 +7,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.Milesto
       milestone: Serializer.serialize(content["milestone"], level: :essential),
       milestone_name: content["milestone_name"],
       old_due_date: Serializer.serialize(content["old_due_date"], level: :essential),
-      new_due_date: Serializer.serialize(content["new_due_date"], level: :essential),
+      new_due_date: Serializer.serialize(content["new_due_date"], level: :essential)
     }
   end
 end

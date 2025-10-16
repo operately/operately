@@ -281,10 +281,12 @@ defmodule OperatelyWeb.Api.GoalsTest do
         value: "Jan 1, 2026"
       }
 
-      assert {200, res} = mutation(ctx.conn, [:goals, :update_due_date], %{
-        goal_id: Paths.goal_id(ctx.goal),
-        due_date: contextual_date
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:goals, :update_due_date], %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 due_date: contextual_date
+               })
+
       assert res.success == true
 
       ctx = Factory.reload(ctx, :goal)
@@ -323,10 +325,12 @@ defmodule OperatelyWeb.Api.GoalsTest do
         value: "Jan 1, 2025"
       }
 
-      assert {200, res} = mutation(ctx.conn, [:goals, :update_start_date], %{
-        goal_id: Paths.goal_id(ctx.goal),
-        start_date: contextual_date
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:goals, :update_start_date], %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 start_date: contextual_date
+               })
+
       assert res.success == true
 
       ctx = Factory.reload(ctx, :goal)

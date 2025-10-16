@@ -49,41 +49,43 @@ defmodule Operately.Data.Change068UpdateProjectTimelineEditedActivityTest do
   end
 
   defp create_test_activity(person) do
-    {:ok, activity} = Repo.insert(%Activity{
-      action: "project_timeline_edited",
-      author_id: person.id,
-      content: %{
-        "project_id" => Ecto.UUID.generate(),
-        "company_id" => Ecto.UUID.generate(),
-        "space_id" => Ecto.UUID.generate(),
-        "old_start_date" => "2023-01-01T12:00:00Z",
-        "new_start_date" => "2023-02-01T12:00:00Z",
-        "old_end_date" => "2023-06-30T12:00:00Z",
-        "new_end_date" => "2023-07-31T12:00:00Z",
-        "milestone_updates" => [],
-        "new_milestones" => []
-      }
-    })
+    {:ok, activity} =
+      Repo.insert(%Activity{
+        action: "project_timeline_edited",
+        author_id: person.id,
+        content: %{
+          "project_id" => Ecto.UUID.generate(),
+          "company_id" => Ecto.UUID.generate(),
+          "space_id" => Ecto.UUID.generate(),
+          "old_start_date" => "2023-01-01T12:00:00Z",
+          "new_start_date" => "2023-02-01T12:00:00Z",
+          "old_end_date" => "2023-06-30T12:00:00Z",
+          "new_end_date" => "2023-07-31T12:00:00Z",
+          "milestone_updates" => [],
+          "new_milestones" => []
+        }
+      })
 
     activity
   end
 
   defp create_test_activity_with_nils(person) do
-    {:ok, activity} = Repo.insert(%Activity{
-      action: "project_timeline_edited",
-      author_id: person.id,
-      content: %{
-        "project_id" => Ecto.UUID.generate(),
-        "company_id" => Ecto.UUID.generate(),
-        "space_id" => Ecto.UUID.generate(),
-        "old_start_date" => "2023-01-01T12:00:00Z",
-        "new_start_date" => nil,
-        "old_end_date" => nil,
-        "new_end_date" => "2023-07-31T12:00:00Z",
-        "milestone_updates" => [],
-        "new_milestones" => []
-      }
-    })
+    {:ok, activity} =
+      Repo.insert(%Activity{
+        action: "project_timeline_edited",
+        author_id: person.id,
+        content: %{
+          "project_id" => Ecto.UUID.generate(),
+          "company_id" => Ecto.UUID.generate(),
+          "space_id" => Ecto.UUID.generate(),
+          "old_start_date" => "2023-01-01T12:00:00Z",
+          "new_start_date" => nil,
+          "old_end_date" => nil,
+          "new_end_date" => "2023-07-31T12:00:00Z",
+          "milestone_updates" => [],
+          "new_milestones" => []
+        }
+      })
 
     activity
   end

@@ -10,7 +10,6 @@ defmodule Operately.InvitationsTest do
   import Operately.PeopleFixtures
   import Operately.InvitationsFixtures
 
-
   describe "invitations" do
     @invalid_attrs %{}
 
@@ -49,9 +48,10 @@ defmodule Operately.InvitationsTest do
       company = company_fixture(%{name: "Test Company"})
       admin = person_fixture(%{email: "admin@test.com", company_id: company.id})
       member = person_fixture(%{email: "member@test.com", company_id: company.id})
+
       valid_attrs = %{
         member_id: member.id,
-        admin_id: admin.id,
+        admin_id: admin.id
       }
 
       assert {:ok, %Invitation{}} = Invitations.create_invitation(valid_attrs)
@@ -92,10 +92,12 @@ defmodule Operately.InvitationsTest do
       invitation = invitation_fixture()
       token = InvitationToken.build_token()
 
-      assert {:ok, %InvitationToken{} = invitation_token} = Invitations.create_invitation_token!(%{
-        invitation_id: invitation.id,
-        token: token,
-      })
+      assert {:ok, %InvitationToken{} = invitation_token} =
+               Invitations.create_invitation_token!(%{
+                 invitation_id: invitation.id,
+                 token: token
+               })
+
       assert invitation_token.invitation_id == invitation.id
     end
 
@@ -103,17 +105,21 @@ defmodule Operately.InvitationsTest do
       invitation = invitation_fixture()
       token = InvitationToken.build_token()
 
-      assert {:ok, %InvitationToken{} = first_token} = Invitations.create_invitation_token!(%{
-        invitation_id: invitation.id,
-        token: token,
-      })
+      assert {:ok, %InvitationToken{} = first_token} =
+               Invitations.create_invitation_token!(%{
+                 invitation_id: invitation.id,
+                 token: token
+               })
+
       queried_token = Invitations.get_invitation_token_by_invitation(invitation.id)
       assert queried_token.id == first_token.id
 
-      assert {:ok, %InvitationToken{} = second_token} = Invitations.create_invitation_token!(%{
-        invitation_id: invitation.id,
-        token: token,
-      })
+      assert {:ok, %InvitationToken{} = second_token} =
+               Invitations.create_invitation_token!(%{
+                 invitation_id: invitation.id,
+                 token: token
+               })
+
       queried_token = Invitations.get_invitation_token_by_invitation(invitation.id)
       assert queried_token.id == second_token.id
 
@@ -132,10 +138,13 @@ defmodule Operately.InvitationsTest do
       invitation = invitation_fixture()
       token = InvitationToken.build_token()
 
-      Operately.Invitations.create_invitation_token!(%{
-        invitation_id: invitation.id,
-        token: token,
-      }, minutes: -1)
+      Operately.Invitations.create_invitation_token!(
+        %{
+          invitation_id: invitation.id,
+          token: token
+        },
+        minutes: -1
+      )
 
       assert nil == Invitations.get_invitation_by_token(token)
     end

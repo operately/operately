@@ -191,13 +191,14 @@ defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
     test "creates subscription list for project retrospective", ctx do
       people = [ctx.contrib1, ctx.contrib2, ctx.contrib3, ctx.contrib4]
 
-      assert {200, res} = mutation(ctx.conn, :close_project, %{
-        project_id: Paths.project_id(ctx.project),
-        retrospective: Jason.encode!(@retrospective_content),
-        success_status: "achieved",
-        send_notifications_to_everyone: true,
-        subscriber_ids: Enum.map(people, &(Paths.person_id(&1))),
-      })
+      assert {200, res} =
+               mutation(ctx.conn, :close_project, %{
+                 project_id: Paths.project_id(ctx.project),
+                 retrospective: Jason.encode!(@retrospective_content),
+                 success_status: "achieved",
+                 send_notifications_to_everyone: true,
+                 subscriber_ids: Enum.map(people, &Paths.person_id(&1))
+               })
 
       {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.retrospective.id)
       {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
@@ -219,13 +220,14 @@ defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
         RichText.rich_text(mentioned_people: [ctx.contrib1, ctx.contrib2, ctx.contrib3, ctx.contrib4])
         |> Jason.decode!()
 
-      assert {200, res} = mutation(ctx.conn, :close_project, %{
-        project_id: Paths.project_id(ctx.project),
-        retrospective: Jason.encode!(retrospective_content),
-        success_status: "achieved",
-        send_notifications_to_everyone: false,
-        subscriber_ids: [],
-      })
+      assert {200, res} =
+               mutation(ctx.conn, :close_project, %{
+                 project_id: Paths.project_id(ctx.project),
+                 retrospective: Jason.encode!(retrospective_content),
+                 success_status: "achieved",
+                 send_notifications_to_everyone: false,
+                 subscriber_ids: []
+               })
 
       subscriptions = fetch_subscriptions(res)
 
@@ -242,17 +244,19 @@ defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
 
     test "doesn't create repeated subscription", ctx do
       people = [ctx.creator, ctx.contrib1, ctx.contrib2]
+
       retrospective_content =
         RichText.rich_text(mentioned_people: [ctx.contrib1, ctx.contrib1, ctx.contrib2])
         |> Jason.decode!()
 
-      assert {200, res} = mutation(ctx.conn, :close_project, %{
-        project_id: Paths.project_id(ctx.project),
-        retrospective: Jason.encode!(retrospective_content),
-        success_status: "achieved",
-        send_notifications_to_everyone: false,
-        subscriber_ids: Enum.map(people, &(Paths.person_id(&1))),
-      })
+      assert {200, res} =
+               mutation(ctx.conn, :close_project, %{
+                 project_id: Paths.project_id(ctx.project),
+                 retrospective: Jason.encode!(retrospective_content),
+                 success_status: "achieved",
+                 send_notifications_to_everyone: false,
+                 subscriber_ids: Enum.map(people, &Paths.person_id(&1))
+               })
 
       subscriptions = fetch_subscriptions(res)
 
@@ -272,7 +276,7 @@ defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
     mutation(conn, :close_project, %{
       project_id: Paths.project_id(project),
       retrospective: RichText.rich_text("some content", :as_string),
-      success_status: "achieved",
+      success_status: "achieved"
     })
   end
 
@@ -303,38 +307,50 @@ defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
   end
 
   defp create_project(ctx, attrs \\ %{}) do
-    project_fixture(Map.merge(%{
-      company_id: ctx.company.id,
-      name: "Project 1",
-      creator_id: ctx[:creator_id] || ctx.person.id,
-      group_id: ctx[:space_id] || ctx.company.company_space_id,
-      company_access_level: Binding.no_access(),
-      space_access_level: Binding.no_access(),
-    }, Enum.into(attrs, %{})))
+    project_fixture(
+      Map.merge(
+        %{
+          company_id: ctx.company.id,
+          name: "Project 1",
+          creator_id: ctx[:creator_id] || ctx.person.id,
+          group_id: ctx[:space_id] || ctx.company.company_space_id,
+          company_access_level: Binding.no_access(),
+          space_access_level: Binding.no_access()
+        },
+        Enum.into(attrs, %{})
+      )
+    )
   end
 
   defp create_contributor(ctx, project, permissions) do
     contributor = person_fixture_with_account(%{company_id: ctx.company.id})
-    {:ok, _} = Projects.create_contributor(ctx.creator, %{
-      project_id: project.id,
-      person_id: contributor.id,
-      responsibility: "some responsibility",
-      permissions: permissions,
-    })
+
+    {:ok, _} =
+      Projects.create_contributor(ctx.creator, %{
+        project_id: project.id,
+        person_id: contributor.id,
+        responsibility: "some responsibility",
+        permissions: permissions
+      })
+
     contributor
   end
 
   defp add_person_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space_id, [%{
-      id: ctx.person.id,
-      access_level: Binding.edit_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space_id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.edit_access()
+      }
+    ])
   end
 
   defp add_manager_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space_id, [%{
-      id: ctx.person.id,
-      access_level: Binding.full_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space_id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.full_access()
+      }
+    ])
   end
 end

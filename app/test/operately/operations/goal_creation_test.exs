@@ -11,7 +11,7 @@ defmodule Operately.Operations.GoalCreationTest do
   alias Operately.Goals
   alias Operately.Activities.Activity
 
-  @target_attrs %{ name: "First response time", from: 30, to: 15, unit: "minutes", index: 0 }
+  @target_attrs %{name: "First response time", from: 30, to: 15, unit: "minutes", index: 0}
 
   setup do
     company = company_fixture()
@@ -25,11 +25,11 @@ defmodule Operately.Operations.GoalCreationTest do
       name: "some name",
       champion_id: champion.id,
       reviewer_id: reviewer.id,
-      timeframe: %{ type: "days", start_date: Date.utc_today(), end_date: Date.add(Date.utc_today(), 2) },
-      targets: [ @target_attrs ],
+      timeframe: %{type: "days", start_date: Date.utc_today(), end_date: Date.add(Date.utc_today(), 2)},
+      targets: [@target_attrs],
       company_access_level: Binding.comment_access(),
       space_access_level: Binding.edit_access(),
-      anonymous_access_level: Binding.view_access(),
+      anonymous_access_level: Binding.view_access()
     }
 
     {:ok, attrs: attrs, company: company, space: space, creator: creator, reviewer: reviewer, champion: champion}
@@ -124,9 +124,10 @@ defmodule Operately.Operations.GoalCreationTest do
   end
 
   test "GoalCreation operation creates activity and notification", ctx do
-    {:ok, goal} = Oban.Testing.with_testing_mode(:manual, fn ->
-      Operately.Operations.GoalCreation.run(ctx.creator, ctx.attrs)
-    end)
+    {:ok, goal} =
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Operately.Operations.GoalCreation.run(ctx.creator, ctx.attrs)
+      end)
 
     activity = from(a in Activity, where: a.action == "goal_created" and a.content["goal_id"] == ^goal.id) |> Repo.one()
 
@@ -135,7 +136,8 @@ defmodule Operately.Operations.GoalCreationTest do
 
     perform_job(activity.id)
 
-    assert 2 == notifications_count() # 1 reviewer + 1 champion = 2
+    # 1 reviewer + 1 champion = 2
+    assert 2 == notifications_count()
     assert fetch_notifications(activity.id)
   end
 end

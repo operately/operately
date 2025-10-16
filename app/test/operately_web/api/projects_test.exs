@@ -27,9 +27,10 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     test "it returns not found for non-existent project", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {404, _} = query(ctx.conn, [:projects, :get_milestones], %{
-        project_id: Ecto.UUID.generate()
-      })
+      assert {404, _} =
+               query(ctx.conn, [:projects, :get_milestones], %{
+                 project_id: Ecto.UUID.generate()
+               })
     end
 
     test "it returns not found for non-space-members", ctx do
@@ -39,17 +40,19 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.add_company_member(:member)
         |> Factory.log_in_person(:member)
 
-      assert {404, _} = query(ctx.conn, [:projects, :get_milestones], %{
-        project_id: Paths.project_id(ctx.project)
-      })
+      assert {404, _} =
+               query(ctx.conn, [:projects, :get_milestones], %{
+                 project_id: Paths.project_id(ctx.project)
+               })
     end
 
     test "it returns milestones for project creator", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {200, res} = query(ctx.conn, [:projects, :get_milestones], %{
-        project_id: Paths.project_id(ctx.project)
-      })
+      assert {200, res} =
+               query(ctx.conn, [:projects, :get_milestones], %{
+                 project_id: Paths.project_id(ctx.project)
+               })
 
       assert length(res.milestones) == 1
       assert hd(res.milestones).id == Paths.milestone_id(ctx.milestone)
@@ -64,9 +67,10 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.add_space_member(:space_member, :engineering)
         |> Factory.log_in_person(:space_member)
 
-      assert {200, res} = query(ctx.conn, [:projects, :get_milestones], %{
-        project_id: Paths.project_id(ctx.project)
-      })
+      assert {200, res} =
+               query(ctx.conn, [:projects, :get_milestones], %{
+                 project_id: Paths.project_id(ctx.project)
+               })
 
       assert length(res.milestones) == 1
       assert hd(res.milestones).id == Paths.milestone_id(ctx.milestone)
@@ -78,9 +82,10 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.add_project(:empty_project, :engineering)
         |> Factory.log_in_person(:creator)
 
-      assert {200, res} = query(ctx.conn, [:projects, :get_milestones], %{
-        project_id: Paths.project_id(ctx.empty_project)
-      })
+      assert {200, res} =
+               query(ctx.conn, [:projects, :get_milestones], %{
+                 project_id: Paths.project_id(ctx.empty_project)
+               })
 
       assert res.milestones == []
     end
@@ -92,9 +97,10 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.add_project_milestone(:milestone3, :project)
         |> Factory.log_in_person(:creator)
 
-      assert {200, res} = query(ctx.conn, [:projects, :get_milestones], %{
-        project_id: Paths.project_id(ctx.project)
-      })
+      assert {200, res} =
+               query(ctx.conn, [:projects, :get_milestones], %{
+                 project_id: Paths.project_id(ctx.project)
+               })
 
       assert length(res.milestones) == 3
       milestone_ids = Enum.map(res.milestones, & &1.id)
@@ -111,9 +117,10 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.add_project_milestone(:milestone3, :project)
         |> Factory.log_in_person(:creator)
 
-      assert {200, res} = query(ctx.conn, [:projects, :get_milestones], %{
-        project_id: Paths.project_id(ctx.project)
-      })
+      assert {200, res} =
+               query(ctx.conn, [:projects, :get_milestones], %{
+                 project_id: Paths.project_id(ctx.project)
+               })
 
       assert length(res.milestones) == 3
       # Verify they are ordered by creation time (first milestone should be first)
@@ -123,9 +130,10 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     test "it includes tasks_ordering_state in milestone data", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {200, res} = query(ctx.conn, [:projects, :get_milestones], %{
-        project_id: Paths.project_id(ctx.project)
-      })
+      assert {200, res} =
+               query(ctx.conn, [:projects, :get_milestones], %{
+                 project_id: Paths.project_id(ctx.project)
+               })
 
       assert length(res.milestones) == 1
       milestone = hd(res.milestones)
@@ -148,9 +156,10 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     test "it returns not found for non-existent project", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {404, _} = query(ctx.conn, [:projects, :get_contributors], %{
-        project_id: Ecto.UUID.generate()
-      })
+      assert {404, _} =
+               query(ctx.conn, [:projects, :get_contributors], %{
+                 project_id: Ecto.UUID.generate()
+               })
     end
 
     test "it returns not found for non-space-members", ctx do
@@ -160,17 +169,19 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.add_company_member(:member)
         |> Factory.log_in_person(:member)
 
-      assert {404, _} = query(ctx.conn, [:projects, :get_contributors], %{
-        project_id: Paths.project_id(ctx.project)
-      })
+      assert {404, _} =
+               query(ctx.conn, [:projects, :get_contributors], %{
+                 project_id: Paths.project_id(ctx.project)
+               })
     end
 
     test "it returns contributors for project", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {200, res} = query(ctx.conn, [:projects, :get_contributors], %{
-        project_id: Paths.project_id(ctx.project)
-      })
+      assert {200, res} =
+               query(ctx.conn, [:projects, :get_contributors], %{
+                 project_id: Paths.project_id(ctx.project)
+               })
 
       assert length(res.contributors) > 0
       contributor_ids = Enum.map(res.contributors, & &1.id)
@@ -186,9 +197,10 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.preload(:champion, :person)
         |> Factory.log_in_person(:creator)
 
-      assert {200, res} = query(ctx.conn, [:projects, :get_contributors], %{
-        project_id: Paths.project_id(ctx.project)
-      })
+      assert {200, res} =
+               query(ctx.conn, [:projects, :get_contributors], %{
+                 project_id: Paths.project_id(ctx.project)
+               })
 
       assert length(res.contributors) >= 3
       contributor_ids = Enum.map(res.contributors, & &1.id)
@@ -206,19 +218,21 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.preload(:another_contributor, :person)
         |> Factory.log_in_person(:creator)
 
-      assert {200, res1} = query(ctx.conn, [:projects, :get_contributors], %{
-        project_id: Paths.project_id(ctx.project),
-        query: "Special"
-      })
+      assert {200, res1} =
+               query(ctx.conn, [:projects, :get_contributors], %{
+                 project_id: Paths.project_id(ctx.project),
+                 query: "Special"
+               })
 
       assert length(res1.contributors) == 1
       assert hd(res1.contributors).id == Paths.person_id(ctx.special_contributor.person)
       assert hd(res1.contributors).full_name == "Special Person"
 
-      assert {200, res2} = query(ctx.conn, [:projects, :get_contributors], %{
-        project_id: Paths.project_id(ctx.project),
-        query: "Person"
-      })
+      assert {200, res2} =
+               query(ctx.conn, [:projects, :get_contributors], %{
+                 project_id: Paths.project_id(ctx.project),
+                 query: "Person"
+               })
 
       assert length(res2.contributors) == 2
       contributor_names = Enum.map(res2.contributors, & &1.full_name)
@@ -226,10 +240,11 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert "Another Regular Person" in contributor_names
 
       # Test case insensitivity
-      assert {200, res3} = query(ctx.conn, [:projects, :get_contributors], %{
-        project_id: Paths.project_id(ctx.project),
-        query: "special"
-      })
+      assert {200, res3} =
+               query(ctx.conn, [:projects, :get_contributors], %{
+                 project_id: Paths.project_id(ctx.project),
+                 query: "special"
+               })
 
       assert length(res3.contributors) == 1
       assert hd(res3.contributors).id == Paths.person_id(ctx.special_contributor.person)
@@ -238,10 +253,11 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     test "it returns empty list when query doesn't match any contributors", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {200, res} = query(ctx.conn, [:projects, :get_contributors], %{
-        project_id: Paths.project_id(ctx.project),
-        query: "NonExistentNameOrEmail"
-      })
+      assert {200, res} =
+               query(ctx.conn, [:projects, :get_contributors], %{
+                 project_id: Paths.project_id(ctx.project),
+                 query: "NonExistentNameOrEmail"
+               })
 
       assert res.contributors == []
     end
@@ -254,9 +270,10 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.log_in_person(:creator)
 
       # Get all contributors first
-      assert {200, res1} = query(ctx.conn, [:projects, :get_contributors], %{
-        project_id: Paths.project_id(ctx.project)
-      })
+      assert {200, res1} =
+               query(ctx.conn, [:projects, :get_contributors], %{
+                 project_id: Paths.project_id(ctx.project)
+               })
 
       test_contributor_id = Paths.person_id(ctx.test_contributor.person)
 
@@ -264,10 +281,11 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert test_contributor_id in contributor_ids
 
       # Now exclude it using ignored_ids
-      assert {200, res2} = query(ctx.conn, [:projects, :get_contributors], %{
-        project_id: Paths.project_id(ctx.project),
-        ignored_ids: [test_contributor_id]
-      })
+      assert {200, res2} =
+               query(ctx.conn, [:projects, :get_contributors], %{
+                 project_id: Paths.project_id(ctx.project),
+                 ignored_ids: [test_contributor_id]
+               })
 
       filtered_ids = Enum.map(res2.contributors, & &1.id)
       refute test_contributor_id in filtered_ids
@@ -284,9 +302,10 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.log_in_person(:creator)
 
       # Get contributors for the first project
-      assert {200, res} = query(ctx.conn, [:projects, :get_contributors], %{
-        project_id: Paths.project_id(ctx.project)
-      })
+      assert {200, res} =
+               query(ctx.conn, [:projects, :get_contributors], %{
+                 project_id: Paths.project_id(ctx.project)
+               })
 
       contributor_ids = Enum.map(res.contributors, & &1.id)
 
@@ -294,9 +313,10 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       refute other_contributor_id in contributor_ids
 
       # Also verify we can get the other project's contributors separately
-      assert {200, other_res} = query(ctx.conn, [:projects, :get_contributors], %{
-        project_id: Paths.project_id(ctx.other_project)
-      })
+      assert {200, other_res} =
+               query(ctx.conn, [:projects, :get_contributors], %{
+                 project_id: Paths.project_id(ctx.other_project)
+               })
 
       other_project_contributor_ids = Enum.map(other_res.contributors, & &1.id)
       assert other_contributor_id in other_project_contributor_ids
@@ -306,18 +326,20 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       # Get all contributors first without query
-      assert {200, res1} = query(ctx.conn, [:projects, :get_contributors], %{
-        project_id: Paths.project_id(ctx.project)
-      })
+      assert {200, res1} =
+               query(ctx.conn, [:projects, :get_contributors], %{
+                 project_id: Paths.project_id(ctx.project)
+               })
 
       all_contributors_count = length(res1.contributors)
       assert all_contributors_count > 0
 
       # Test with empty query
-      assert {200, res2} = query(ctx.conn, [:projects, :get_contributors], %{
-        project_id: Paths.project_id(ctx.project),
-        query: ""
-      })
+      assert {200, res2} =
+               query(ctx.conn, [:projects, :get_contributors], %{
+                 project_id: Paths.project_id(ctx.project),
+                 query: ""
+               })
 
       assert length(res2.contributors) == all_contributors_count
     end
@@ -329,9 +351,10 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.preload(:champion, :person)
         |> Factory.log_in_person(:creator)
 
-      assert {200, res} = query(ctx.conn, [:projects, :get_contributors], %{
-        project_id: Paths.project_id(ctx.project)
-      })
+      assert {200, res} =
+               query(ctx.conn, [:projects, :get_contributors], %{
+                 project_id: Paths.project_id(ctx.project)
+               })
 
       contributor_ids = Enum.map(res.contributors, & &1.id)
       assert Paths.person_id(ctx.champion.person) in contributor_ids
@@ -353,9 +376,10 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     test "it returns 404 if the project does not exist", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {404, _} = query(ctx.conn, [:projects, :count_children], %{
-        id: Ecto.UUID.generate()
-      })
+      assert {404, _} =
+               query(ctx.conn, [:projects, :count_children], %{
+                 id: Ecto.UUID.generate()
+               })
     end
 
     test "it returns counts for project by default", ctx do
@@ -367,9 +391,10 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.add_project_task(:task2, :milestone)
         |> Factory.log_in_person(:creator)
 
-      assert {200, res} = query(ctx.conn, [:projects, :count_children], %{
-        id: Paths.project_id(ctx.project)
-      })
+      assert {200, res} =
+               query(ctx.conn, [:projects, :count_children], %{
+                 id: Paths.project_id(ctx.project)
+               })
 
       assert res.children_count.discussions_count == 2
       assert res.children_count.tasks_count == 2
@@ -379,9 +404,10 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     test "it returns 0 counts when project has no children", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {200, res} = query(ctx.conn, [:projects, :count_children], %{
-        id: Paths.project_id(ctx.project)
-      })
+      assert {200, res} =
+               query(ctx.conn, [:projects, :count_children], %{
+                 id: Paths.project_id(ctx.project)
+               })
 
       assert res.children_count.discussions_count == 0
       assert res.children_count.tasks_count == 0
@@ -396,10 +422,11 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.add_project_check_in(:check_in1, :project, :creator)
         |> Factory.log_in_person(:creator)
 
-      assert {200, res} = query(ctx.conn, [:projects, :count_children], %{
-        id: Paths.task_id(ctx.task1),
-        use_task_id: true
-      })
+      assert {200, res} =
+               query(ctx.conn, [:projects, :count_children], %{
+                 id: Paths.task_id(ctx.task1),
+                 use_task_id: true
+               })
 
       assert res.children_count.discussions_count == 1
       assert res.children_count.tasks_count == 1
@@ -414,10 +441,11 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.add_project_check_in(:check_in1, :project, :creator)
         |> Factory.log_in_person(:creator)
 
-      assert {200, res} = query(ctx.conn, [:projects, :count_children], %{
-        id: Paths.milestone_id(ctx.milestone),
-        use_milestone_id: true
-      })
+      assert {200, res} =
+               query(ctx.conn, [:projects, :count_children], %{
+                 id: Paths.milestone_id(ctx.milestone),
+                 use_milestone_id: true
+               })
 
       assert res.children_count.discussions_count == 1
       assert res.children_count.tasks_count == 1
@@ -427,10 +455,11 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     test "it returns 404 when task does not exist with use_task_id", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {404, res} = query(ctx.conn, [:projects, :count_children], %{
-        id: Ecto.UUID.generate(),
-        use_task_id: true
-      })
+      assert {404, res} =
+               query(ctx.conn, [:projects, :count_children], %{
+                 id: Ecto.UUID.generate(),
+                 use_task_id: true
+               })
 
       assert res.message == "Task not found"
     end
@@ -438,10 +467,11 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     test "it returns 404 when milestone does not exist with use_milestone_id", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {404, res} = query(ctx.conn, [:projects, :count_children], %{
-        id: Ecto.UUID.generate(),
-        use_milestone_id: true
-      })
+      assert {404, res} =
+               query(ctx.conn, [:projects, :count_children], %{
+                 id: Ecto.UUID.generate(),
+                 use_milestone_id: true
+               })
 
       assert res.message == "Milestone not found"
     end
@@ -455,16 +485,17 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.add_project_task(:task4, :milestone, status: "in_progress")
         |> Factory.log_in_person(:creator)
 
-      assert {200, res} = query(ctx.conn, [:projects, :count_children], %{
-        id: Paths.project_id(ctx.project)
-      })
+      assert {200, res} =
+               query(ctx.conn, [:projects, :count_children], %{
+                 id: Paths.project_id(ctx.project)
+               })
 
       # Should only count todo and in_progress tasks (2 tasks)
       assert res.children_count.tasks_count == 2
       assert res.children_count.discussions_count == 0
       assert res.children_count.check_ins_count == 0
     end
-   end
+  end
 
   describe "update due date" do
     test "it requires authentication", ctx do
@@ -487,10 +518,12 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         value: "Jan 1, 2026"
       }
 
-      assert {200, res} = mutation(ctx.conn, [:projects, :update_due_date], %{
-        project_id: Paths.project_id(ctx.project),
-        due_date: contextual_date
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:projects, :update_due_date], %{
+                 project_id: Paths.project_id(ctx.project),
+                 due_date: contextual_date
+               })
+
       assert res.success == true
 
       ctx = Factory.reload(ctx, :project)
@@ -500,10 +533,12 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     test "it can update the due date to nil", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {200, res} = mutation(ctx.conn, [:projects, :update_due_date], %{
-        project_id: Paths.project_id(ctx.project),
-        due_date: nil
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:projects, :update_due_date], %{
+                 project_id: Paths.project_id(ctx.project),
+                 due_date: nil
+               })
+
       assert res.success == true
 
       ctx = Factory.reload(ctx, :project)
@@ -521,10 +556,11 @@ defmodule OperatelyWeb.Api.ProjectsTest do
 
       before_count = count_activities(ctx.project.id, "project_due_date_updating")
 
-      assert {200, _} = mutation(ctx.conn, [:projects, :update_due_date], %{
-        project_id: Paths.project_id(ctx.project),
-        due_date: contextual_date
-      })
+      assert {200, _} =
+               mutation(ctx.conn, [:projects, :update_due_date], %{
+                 project_id: Paths.project_id(ctx.project),
+                 due_date: contextual_date
+               })
 
       after_count = count_activities(ctx.project.id, "project_due_date_updating")
       assert after_count == before_count + 1
@@ -552,10 +588,12 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         value: "Jan 1, 2025"
       }
 
-      assert {200, res} = mutation(ctx.conn, [:projects, :update_start_date], %{
-        project_id: Paths.project_id(ctx.project),
-        start_date: contextual_date
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:projects, :update_start_date], %{
+                 project_id: Paths.project_id(ctx.project),
+                 start_date: contextual_date
+               })
+
       assert res.success == true
 
       ctx = Factory.reload(ctx, :project)
@@ -572,16 +610,19 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         value: "Jan 1, 2026"
       }
 
-      assert {200, _} = mutation(ctx.conn, [:projects, :update_due_date], %{
-        project_id: Paths.project_id(ctx.project),
-        due_date: end_date
-      })
+      assert {200, _} =
+               mutation(ctx.conn, [:projects, :update_due_date], %{
+                 project_id: Paths.project_id(ctx.project),
+                 due_date: end_date
+               })
 
       # Then test setting the start date to nil
-      assert {200, res} = mutation(ctx.conn, [:projects, :update_start_date], %{
-        project_id: Paths.project_id(ctx.project),
-        start_date: nil
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:projects, :update_start_date], %{
+                 project_id: Paths.project_id(ctx.project),
+                 start_date: nil
+               })
+
       assert res.success == true
 
       ctx = Factory.reload(ctx, :project)
@@ -601,10 +642,11 @@ defmodule OperatelyWeb.Api.ProjectsTest do
 
       before_count = count_activities(ctx.project.id, "project_start_date_updating")
 
-      assert {200, _} = mutation(ctx.conn, [:projects, :update_start_date], %{
-        project_id: Paths.project_id(ctx.project),
-        start_date: contextual_date
-      })
+      assert {200, _} =
+               mutation(ctx.conn, [:projects, :update_start_date], %{
+                 project_id: Paths.project_id(ctx.project),
+                 start_date: contextual_date
+               })
 
       after_count = count_activities(ctx.project.id, "project_start_date_updating")
       assert after_count == before_count + 1
@@ -626,10 +668,12 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     test "it updates the champion", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {200, res} = mutation(ctx.conn, [:projects, :update_champion], %{
-        project_id: Paths.project_id(ctx.project),
-        champion_id: Paths.person_id(ctx.new_champion)
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:projects, :update_champion], %{
+                 project_id: Paths.project_id(ctx.project),
+                 champion_id: Paths.person_id(ctx.new_champion)
+               })
+
       assert res.success == true
 
       project = Repo.reload(ctx.project) |> Repo.preload(:champion)
@@ -640,16 +684,19 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       # First set a champion
-      assert {200, _} = mutation(ctx.conn, [:projects, :update_champion], %{
-        project_id: Paths.project_id(ctx.project),
-        champion_id: Paths.person_id(ctx.new_champion)
-      })
+      assert {200, _} =
+               mutation(ctx.conn, [:projects, :update_champion], %{
+                 project_id: Paths.project_id(ctx.project),
+                 champion_id: Paths.person_id(ctx.new_champion)
+               })
 
       # Then remove the champion
-      assert {200, res} = mutation(ctx.conn, [:projects, :update_champion], %{
-        project_id: Paths.project_id(ctx.project),
-        champion_id: nil
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:projects, :update_champion], %{
+                 project_id: Paths.project_id(ctx.project),
+                 champion_id: nil
+               })
+
       assert res.success == true
 
       project = Repo.reload(ctx.project) |> Repo.preload(:champion)
@@ -661,10 +708,11 @@ defmodule OperatelyWeb.Api.ProjectsTest do
 
       before_count = count_activities(ctx.project.id, "project_champion_updating")
 
-      assert {200, _} = mutation(ctx.conn, [:projects, :update_champion], %{
-        project_id: Paths.project_id(ctx.project),
-        champion_id: Paths.person_id(ctx.new_champion)
-      })
+      assert {200, _} =
+               mutation(ctx.conn, [:projects, :update_champion], %{
+                 project_id: Paths.project_id(ctx.project),
+                 champion_id: Paths.person_id(ctx.new_champion)
+               })
 
       after_count = count_activities(ctx.project.id, "project_champion_updating")
       assert after_count == before_count + 1
@@ -683,11 +731,12 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.edit_project_company_members_access(:project, :view_access)
         |> Factory.log_in_person(:user)
 
-      assert {403, _} = mutation(ctx.conn, [:projects, :update_parent_goal], %{
-        project_id: Paths.project_id(ctx.project),
-        goal_id: Ecto.UUID.generate(),
-        goal_name: ""
-      })
+      assert {403, _} =
+               mutation(ctx.conn, [:projects, :update_parent_goal], %{
+                 project_id: Paths.project_id(ctx.project),
+                 goal_id: Ecto.UUID.generate(),
+                 goal_name: ""
+               })
     end
 
     test "it sets the parent goal", ctx do
@@ -696,11 +745,12 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.add_goal(:parent_goal, :engineering)
         |> Factory.log_in_person(:creator)
 
-      assert {200, %{success: true}} = mutation(ctx.conn, [:projects, :update_parent_goal], %{
-        project_id: Paths.project_id(ctx.project),
-        goal_id: Paths.goal_id(ctx.parent_goal),
-        goal_name: ctx.parent_goal.name
-      })
+      assert {200, %{success: true}} =
+               mutation(ctx.conn, [:projects, :update_parent_goal], %{
+                 project_id: Paths.project_id(ctx.project),
+                 goal_id: Paths.goal_id(ctx.parent_goal),
+                 goal_name: ctx.parent_goal.name
+               })
 
       updated_project = Repo.reload(ctx.project)
       assert updated_project.goal_id == ctx.parent_goal.id
@@ -715,11 +765,12 @@ defmodule OperatelyWeb.Api.ProjectsTest do
 
       assert ctx.project2.goal_id == ctx.parent_goal.id
 
-      assert {200, %{success: true}} = mutation(ctx.conn, [:projects, :update_parent_goal], %{
-        project_id: Paths.project_id(ctx.project2),
-        goal_id: nil,
-        goal_name: nil
-      })
+      assert {200, %{success: true}} =
+               mutation(ctx.conn, [:projects, :update_parent_goal], %{
+                 project_id: Paths.project_id(ctx.project2),
+                 goal_id: nil,
+                 goal_name: nil
+               })
 
       updated_project = Repo.reload(ctx.project2)
       assert updated_project.goal_id == nil
@@ -733,11 +784,12 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.add_project(:project1, :engineering, goal: :parent_goal1)
         |> Factory.log_in_person(:creator)
 
-      assert {200, %{success: true}} = mutation(ctx.conn, [:projects, :update_parent_goal], %{
-        project_id: Paths.project_id(ctx.project1),
-        goal_id: Paths.goal_id(ctx.parent_goal2),
-        goal_name: ctx.parent_goal2.name
-      })
+      assert {200, %{success: true}} =
+               mutation(ctx.conn, [:projects, :update_parent_goal], %{
+                 project_id: Paths.project_id(ctx.project1),
+                 goal_id: Paths.goal_id(ctx.parent_goal2),
+                 goal_name: ctx.parent_goal2.name
+               })
 
       count = count_activities(ctx.project1.id, "project_goal_connection")
       assert count == 1
@@ -764,11 +816,11 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.edit_project_company_members_access(:project, :no_access)
         |> Factory.log_in_person(:user)
 
-
-      assert {404, _} = query(ctx.conn, [:projects, :parent_goal_search], %{
-        project_id: Paths.project_id(ctx.project),
-        query: "test"
-      })
+      assert {404, _} =
+               query(ctx.conn, [:projects, :parent_goal_search], %{
+                 project_id: Paths.project_id(ctx.project),
+                 query: "test"
+               })
     end
 
     test "it returns goals matching the search query", ctx do
@@ -779,10 +831,11 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.add_goal(:goal3, :engineering, name: "Another Goal")
         |> Factory.log_in_person(:creator)
 
-      assert {200, %{goals: goals}} = query(ctx.conn, [:projects, :parent_goal_search], %{
-        project_id: Paths.project_id(ctx.project),
-        query: "test"
-      })
+      assert {200, %{goals: goals}} =
+               query(ctx.conn, [:projects, :parent_goal_search], %{
+                 project_id: Paths.project_id(ctx.project),
+                 query: "test"
+               })
 
       goal_ids = Enum.map(goals, & &1.id)
 
@@ -799,10 +852,11 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.add_project(:another_project, :engineering, goal: :goal1)
         |> Factory.log_in_person(:creator)
 
-      assert {200, %{goals: goals}} = query(ctx.conn, [:projects, :parent_goal_search], %{
-        project_id: Paths.project_id(ctx.another_project),
-        query: "test"
-      })
+      assert {200, %{goals: goals}} =
+               query(ctx.conn, [:projects, :parent_goal_search], %{
+                 project_id: Paths.project_id(ctx.another_project),
+                 query: "test"
+               })
 
       goal_ids = Enum.map(goals, & &1.id)
 
@@ -826,10 +880,12 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     test "it updates the reviewer", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {200, res} = mutation(ctx.conn, [:projects, :update_reviewer], %{
-        project_id: Paths.project_id(ctx.project),
-        reviewer_id: Paths.person_id(ctx.new_champion)
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:projects, :update_reviewer], %{
+                 project_id: Paths.project_id(ctx.project),
+                 reviewer_id: Paths.person_id(ctx.new_champion)
+               })
+
       assert res.success == true
 
       project = Repo.reload(ctx.project) |> Repo.preload(:reviewer)
@@ -840,16 +896,19 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       # First set a reviewer
-      assert {200, _} = mutation(ctx.conn, [:projects, :update_reviewer], %{
-        project_id: Paths.project_id(ctx.project),
-        reviewer_id: Paths.person_id(ctx.new_champion)
-      })
+      assert {200, _} =
+               mutation(ctx.conn, [:projects, :update_reviewer], %{
+                 project_id: Paths.project_id(ctx.project),
+                 reviewer_id: Paths.person_id(ctx.new_champion)
+               })
 
       # Then remove the reviewer
-      assert {200, res} = mutation(ctx.conn, [:projects, :update_reviewer], %{
-        project_id: Paths.project_id(ctx.project),
-        reviewer_id: nil
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:projects, :update_reviewer], %{
+                 project_id: Paths.project_id(ctx.project),
+                 reviewer_id: nil
+               })
+
       assert res.success == true
 
       project = Repo.reload(ctx.project) |> Repo.preload(:reviewer)
@@ -861,10 +920,11 @@ defmodule OperatelyWeb.Api.ProjectsTest do
 
       before_count = count_activities(ctx.project.id, "project_reviewer_updating")
 
-      assert {200, _} = mutation(ctx.conn, [:projects, :update_reviewer], %{
-        project_id: Paths.project_id(ctx.project),
-        reviewer_id: Paths.person_id(ctx.new_champion)
-      })
+      assert {200, _} =
+               mutation(ctx.conn, [:projects, :update_reviewer], %{
+                 project_id: Paths.project_id(ctx.project),
+                 reviewer_id: Paths.person_id(ctx.new_champion)
+               })
 
       after_count = count_activities(ctx.project.id, "project_reviewer_updating")
       assert after_count == before_count + 1
@@ -896,11 +956,13 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       project_before = Repo.reload(ctx.project)
       assert project_before.milestones_ordering_state == [Paths.milestone_id(ctx.milestone)]
 
-      assert {200, res} = mutation(ctx.conn, [:projects, :create_milestone], %{
-        project_id: Paths.project_id(ctx.project),
-        name: "Release v1.0",
-        due_date: nil
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:projects, :create_milestone], %{
+                 project_id: Paths.project_id(ctx.project),
+                 name: "Release v1.0",
+                 due_date: nil
+               })
+
       assert res.milestone.title == "Release v1.0"
 
       milestone = Operately.Projects.get_milestone_by_name(ctx.project, "Release v1.0")
@@ -921,11 +983,12 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         value: "Jan 1, 2026"
       }
 
-      assert {200, res} = mutation(ctx.conn, [:projects, :create_milestone], %{
-        project_id: Paths.project_id(ctx.project),
-        name: "Release v1.0",
-        due_date: contextual_date
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:projects, :create_milestone], %{
+                 project_id: Paths.project_id(ctx.project),
+                 name: "Release v1.0",
+                 due_date: contextual_date
+               })
 
       assert res.milestone.title == "Release v1.0"
 
@@ -953,17 +1016,19 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       # First create a milestone
-      milestone = Operately.ProjectsFixtures.milestone_fixture(%{
-        project_id: ctx.project.id,
-        name: "Release v1.0",
-      })
+      milestone =
+        Operately.ProjectsFixtures.milestone_fixture(%{
+          project_id: ctx.project.id,
+          name: "Release v1.0"
+        })
 
-      assert {200, res} = mutation(ctx.conn, [:projects, :update_milestone], %{
-        project_id: Paths.project_id(ctx.project),
-        milestone_id: Paths.milestone_id(milestone),
-        name: "Updated Release",
-        due_date: nil,
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:projects, :update_milestone], %{
+                 project_id: Paths.project_id(ctx.project),
+                 milestone_id: Paths.milestone_id(milestone),
+                 name: "Updated Release",
+                 due_date: nil
+               })
 
       assert res.milestone.title == "Updated Release"
 
@@ -975,10 +1040,11 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       # First create a milestone with no date
-      milestone = Operately.ProjectsFixtures.milestone_fixture(%{
-        project_id: ctx.project.id,
-        name: "Release v1.0",
-      })
+      milestone =
+        Operately.ProjectsFixtures.milestone_fixture(%{
+          project_id: ctx.project.id,
+          name: "Release v1.0"
+        })
 
       contextual_date = %{
         date: "2026-01-01",
@@ -986,12 +1052,13 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         value: "Jan 1, 2026"
       }
 
-      assert {200, res} = mutation(ctx.conn, [:projects, :update_milestone], %{
-        project_id: Paths.project_id(ctx.project),
-        milestone_id: Paths.milestone_id(milestone),
-        name: "Release v1.0",
-        due_date: contextual_date
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:projects, :update_milestone], %{
+                 project_id: Paths.project_id(ctx.project),
+                 milestone_id: Paths.milestone_id(milestone),
+                 name: "Release v1.0",
+                 due_date: contextual_date
+               })
 
       assert res.milestone.timeframe.contextual_end_date == contextual_date
 
@@ -1002,13 +1069,14 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     test "it updates both name and date", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      milestone = Operately.ProjectsFixtures.milestone_fixture(%{
-        project_id: ctx.project.id,
-        timeframe: %{
-          contextual_start_date: nil,
-          contextual_end_date: ContextualDate.create_day_date(~D[2025-12-31]),
-        }
-      })
+      milestone =
+        Operately.ProjectsFixtures.milestone_fixture(%{
+          project_id: ctx.project.id,
+          timeframe: %{
+            contextual_start_date: nil,
+            contextual_end_date: ContextualDate.create_day_date(~D[2025-12-31])
+          }
+        })
 
       new_contextual_date = %{
         date: "2026-03-15",
@@ -1016,12 +1084,13 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         value: "Mar 15, 2026"
       }
 
-      assert {200, res} = mutation(ctx.conn, [:projects, :update_milestone], %{
-        project_id: Paths.project_id(ctx.project),
-        milestone_id: Paths.milestone_id(milestone),
-        name: "Release v2.0",
-        due_date: new_contextual_date
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:projects, :update_milestone], %{
+                 project_id: Paths.project_id(ctx.project),
+                 milestone_id: Paths.milestone_id(milestone),
+                 name: "Release v2.0",
+                 due_date: new_contextual_date
+               })
 
       assert res.milestone.title == "Release v2.0"
       assert res.milestone.timeframe.contextual_end_date == new_contextual_date
@@ -1047,9 +1116,10 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     test "it returns not found for non-existent project", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {404, _} = mutation(ctx.conn, [:projects, :delete], %{
-        project_id: Ecto.UUID.generate()
-      })
+      assert {404, _} =
+               mutation(ctx.conn, [:projects, :delete], %{
+                 project_id: Ecto.UUID.generate()
+               })
     end
 
     test "it returns forbidden for non-space-members", ctx do
@@ -1059,9 +1129,10 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.add_company_member(:member)
         |> Factory.log_in_person(:member)
 
-      assert {403, _} = mutation(ctx.conn, [:projects, :delete], %{
-        project_id: Paths.project_id(ctx.project)
-      })
+      assert {403, _} =
+               mutation(ctx.conn, [:projects, :delete], %{
+                 project_id: Paths.project_id(ctx.project)
+               })
     end
 
     test "it returns forbidden for space members without permission", ctx do
@@ -1072,19 +1143,22 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.add_space_member(:space_member, :engineering)
         |> Factory.log_in_person(:space_member)
 
-      assert {403, _} = mutation(ctx.conn, [:projects, :delete], %{
-        project_id: Paths.project_id(ctx.project)
-      })
+      assert {403, _} =
+               mutation(ctx.conn, [:projects, :delete], %{
+                 project_id: Paths.project_id(ctx.project)
+               })
     end
 
     test "it deletes the project when user has permission", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {200, res} = mutation(ctx.conn, [:projects, :delete], %{
-        project_id: Paths.project_id(ctx.project)
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:projects, :delete], %{
+                 project_id: Paths.project_id(ctx.project)
+               })
 
       assert res.project.id == Paths.project_id(ctx.project)
+
       assert_raise Ecto.NoResultsError, fn ->
         Operately.Projects.get_project!(ctx.project.id)
       end
@@ -1096,11 +1170,13 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.add_project_reviewer(:reviewer, :project, :as_person)
         |> Factory.log_in_person(:reviewer)
 
-      assert {200, res} = mutation(ctx.conn, [:projects, :delete], %{
-        project_id: Paths.project_id(ctx.project)
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:projects, :delete], %{
+                 project_id: Paths.project_id(ctx.project)
+               })
 
       assert res.project.id == Paths.project_id(ctx.project)
+
       assert_raise Ecto.NoResultsError, fn ->
         Operately.Projects.get_project!(ctx.project.id)
       end
@@ -1123,11 +1199,13 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert Operately.Comments.get_thread!(ctx.discussion.id)
       assert Operately.Projects.get_contributor!(ctx.contrib.id)
 
-      assert {200, res} = mutation(ctx.conn, [:projects, :delete], %{
-        project_id: Paths.project_id(ctx.project)
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:projects, :delete], %{
+                 project_id: Paths.project_id(ctx.project)
+               })
 
       assert res.project.id == Paths.project_id(ctx.project)
+
       assert_raise Ecto.NoResultsError, fn ->
         Operately.Projects.get_project!(ctx.project.id)
       end
@@ -1139,15 +1217,19 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert_raise Ecto.NoResultsError, fn ->
         Operately.Projects.get_check_in!(ctx.check_in.id)
       end
+
       assert_raise Ecto.NoResultsError, fn ->
         Operately.Projects.get_milestone!(ctx.milestone.id)
       end
+
       assert_raise Ecto.NoResultsError, fn ->
         Operately.Projects.get_retrospective!(ctx.retrospective.id)
       end
+
       assert_raise Ecto.NoResultsError, fn ->
         Operately.Comments.get_thread!(ctx.discussion.id)
       end
+
       assert_raise Ecto.NoResultsError, fn ->
         Operately.Projects.get_contributor!(ctx.contrib.id)
       end

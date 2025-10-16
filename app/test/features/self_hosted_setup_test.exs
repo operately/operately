@@ -21,5 +21,4 @@ defmodule Operately.Features.SelfHostedSetupTest do
     |> Steps.assert_account_and_company_created(@company_info)
     |> Steps.assert_setup_page_is_no_longer_accessible()
   end
-
 end

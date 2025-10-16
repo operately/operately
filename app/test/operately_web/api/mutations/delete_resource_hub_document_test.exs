@@ -19,15 +19,13 @@ defmodule OperatelyWeb.Api.Mutations.DeleteResourceHubDocumentTest do
 
   describe "permissions" do
     @table [
-      %{company: :no_access,      space: :no_access,      expected: 404},
-
-      %{company: :no_access,      space: :comment_access, expected: 403},
-      %{company: :no_access,      space: :edit_access,    expected: 200},
-      %{company: :no_access,      space: :full_access,    expected: 200},
-
-      %{company: :comment_access, space: :no_access,      expected: 403},
-      %{company: :edit_access,    space: :no_access,      expected: 200},
-      %{company: :full_access,    space: :no_access,      expected: 200},
+      %{company: :no_access, space: :no_access, expected: 404},
+      %{company: :no_access, space: :comment_access, expected: 403},
+      %{company: :no_access, space: :edit_access, expected: 200},
+      %{company: :no_access, space: :full_access, expected: 200},
+      %{company: :comment_access, space: :no_access, expected: 403},
+      %{company: :edit_access, space: :no_access, expected: 200},
+      %{company: :full_access, space: :no_access, expected: 200}
     ]
 
     setup ctx do
@@ -42,18 +40,21 @@ defmodule OperatelyWeb.Api.Mutations.DeleteResourceHubDocumentTest do
         resource_hub = resource_hub_fixture(ctx.creator, space)
         document = document_fixture(resource_hub.id, ctx.creator.id)
 
-        assert {code, res} = mutation(ctx.conn, :delete_resource_hub_document, %{
-          document_id: Paths.document_id(document),
-        })
-        assert code == @test.expected
+        assert {code, res} =
+                 mutation(ctx.conn, :delete_resource_hub_document, %{
+                   document_id: Paths.document_id(document)
+                 })
 
+        assert code == @test.expected
 
         case @test.expected do
           200 ->
             {:error, :not_found} = Document.get(:system, id: document.id)
+
           403 ->
             {:ok, _} = Document.get(:system, id: document.id)
             assert res.message == "You don't have permission to perform this action"
+
           404 ->
             {:ok, _} = Document.get(:system, id: document.id)
             assert res.message == "The requested resource was not found"
@@ -73,9 +74,10 @@ defmodule OperatelyWeb.Api.Mutations.DeleteResourceHubDocumentTest do
     end
 
     test "removes document", ctx do
-      assert {200, res} = mutation(ctx.conn, :delete_resource_hub_document, %{
-        document_id: Paths.document_id(ctx.document),
-      })
+      assert {200, res} =
+               mutation(ctx.conn, :delete_resource_hub_document, %{
+                 document_id: Paths.document_id(ctx.document)
+               })
 
       assert res.document.id == Paths.document_id(ctx.document)
 
@@ -91,10 +93,13 @@ defmodule OperatelyWeb.Api.Mutations.DeleteResourceHubDocumentTest do
     space = group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.from_atom(company_members_level)})
 
     if space_members_level != :no_access do
-      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
-        id: ctx.person.id,
-        access_level: Binding.from_atom(space_members_level)
-      }])
+      {:ok, _} =
+        Operately.Groups.add_members(ctx.creator, space.id, [
+          %{
+            id: ctx.person.id,
+            access_level: Binding.from_atom(space_members_level)
+          }
+        ])
     end
 
     space

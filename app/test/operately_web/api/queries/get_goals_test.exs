@@ -29,7 +29,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
       Enum.each(1..3, fn _ ->
         goal_fixture(ctx.creator, %{
           space_id: ctx.space.id,
-          company_access_level: Binding.no_access(),
+          company_access_level: Binding.no_access()
         })
       end)
 
@@ -38,7 +38,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
 
       goal_fixture(ctx.creator, %{
         space_id: ctx.space.id,
-        company_access_level: Binding.view_access(),
+        company_access_level: Binding.view_access()
       })
 
       assert {200, res} = query(ctx.conn, :get_goals, %{space_id: ctx.space_id})
@@ -48,14 +48,16 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
     test "company members have access", ctx do
       goal_fixture(ctx.creator, %{
         space_id: ctx.space.id,
-        company_access_level: Binding.no_access(),
+        company_access_level: Binding.no_access()
       })
-      goals = Enum.map(1..3, fn _ ->
-        goal_fixture(ctx.creator, %{
-          space_id: ctx.space.id,
-          company_access_level: Binding.view_access(),
-        })
-      end)
+
+      goals =
+        Enum.map(1..3, fn _ ->
+          goal_fixture(ctx.creator, %{
+            space_id: ctx.space.id,
+            company_access_level: Binding.view_access()
+          })
+        end)
 
       assert {200, res} = query(ctx.conn, :get_goals, %{space_id: ctx.space_id})
 
@@ -69,7 +71,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
         goal_fixture(ctx.creator, %{
           space_id: ctx.space.id,
           company_access_level: Binding.no_access(),
-          space_access_level: Binding.no_access(),
+          space_access_level: Binding.no_access()
         })
       end)
 
@@ -79,7 +81,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
       goal_fixture(ctx.creator, %{
         space_id: ctx.space.id,
         company_access_level: Binding.no_access(),
-        space_access_level: Binding.view_access(),
+        space_access_level: Binding.view_access()
       })
 
       assert {200, res} = query(ctx.conn, :get_goals, %{space_id: ctx.space_id})
@@ -89,13 +91,14 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
     test "space members have access", ctx do
       add_person_to_space(ctx)
 
-      goals = Enum.map(1..3, fn _ ->
-        goal_fixture(ctx.creator, %{
-          space_id: ctx.space.id,
-          company_access_level: Binding.no_access(),
-          space_access_level: Binding.view_access(),
-        })
-      end)
+      goals =
+        Enum.map(1..3, fn _ ->
+          goal_fixture(ctx.creator, %{
+            space_id: ctx.space.id,
+            company_access_level: Binding.no_access(),
+            space_access_level: Binding.view_access()
+          })
+        end)
 
       assert {200, res} = query(ctx.conn, :get_goals, %{space_id: ctx.space_id})
 
@@ -104,12 +107,14 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
 
     test "champions have access", ctx do
       champion = person_fixture_with_account(%{company_id: ctx.company.id})
-      goal = goal_fixture(ctx.creator, %{
-        space_id: ctx.space.id,
-        champion_id: champion.id,
-        company_access_level: Binding.no_access(),
-        space_access_level: Binding.no_access(),
-      })
+
+      goal =
+        goal_fixture(ctx.creator, %{
+          space_id: ctx.space.id,
+          champion_id: champion.id,
+          company_access_level: Binding.no_access(),
+          space_access_level: Binding.no_access()
+        })
 
       account = Repo.preload(champion, :account).account
       conn = log_in_account(ctx.conn, account)
@@ -121,12 +126,14 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
 
     test "reviewers have access", ctx do
       reviewer = person_fixture_with_account(%{company_id: ctx.company.id})
-      goal = goal_fixture(ctx.creator, %{
-        space_id: ctx.space.id,
-        reviewer_id: reviewer.id,
-        company_access_level: Binding.no_access(),
-        space_access_level: Binding.no_access(),
-      })
+
+      goal =
+        goal_fixture(ctx.creator, %{
+          space_id: ctx.space.id,
+          reviewer_id: reviewer.id,
+          company_access_level: Binding.no_access(),
+          space_access_level: Binding.no_access()
+        })
 
       account = Repo.preload(reviewer, :account).account
       conn = log_in_account(ctx.conn, account)
@@ -177,10 +184,12 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
   end
 
   defp add_person_to_space(ctx) do
-    Groups.add_members(ctx.person, ctx.space.id, [%{
-      id: ctx.person.id,
-      access_level: Binding.edit_access(),
-    }])
+    Groups.add_members(ctx.person, ctx.space.id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.edit_access()
+      }
+    ])
   end
 
   defp create_update(person, goal) do

@@ -21,26 +21,26 @@ defmodule Operately.Groups do
   end
 
   def list_potential_members(group_id, string_query, exclude_ids, limit) do
-    member_ids = Repo.all(
-      from m in Member,
-      where: m.group_id == ^group_id,
-      select: m.person_id
-    )
+    member_ids =
+      Repo.all(
+        from m in Member,
+          where: m.group_id == ^group_id,
+          select: m.person_id
+      )
 
-    query = (
+    query =
       from p in Person,
-      where: p.id not in ^exclude_ids and p.id not in ^member_ids,
-      where: ilike(p.full_name, ^"%#{string_query}%") or ilike(p.title, ^"%#{string_query}%"),
-      where: not p.suspended,
-      order_by: p.full_name,
-      limit: ^limit
-    )
+        where: p.id not in ^exclude_ids and p.id not in ^member_ids,
+        where: ilike(p.full_name, ^"%#{string_query}%") or ilike(p.title, ^"%#{string_query}%"),
+        where: not p.suspended,
+        order_by: p.full_name,
+        limit: ^limit
 
     Repo.all(query)
   end
 
   def list_contacts(group) do
-    query = (from c in Contact, where: c.group_id == ^group.id)
+    query = from c in Contact, where: c.group_id == ^group.id
 
     Repo.all(query)
   end
@@ -81,14 +81,16 @@ defmodule Operately.Groups do
 
     Multi.new()
     |> Multi.update(:group, changeset)
-    |> Activities.insert_sync(author.id, :group_edited, fn _ -> %{
-      company_id: group.company_id,
-      space_id: group.id,
-      old_name: group.name,
-      old_mission: group.mission,
-      new_name: attrs.name,
-      new_mission: attrs.mission
-    } end)
+    |> Activities.insert_sync(author.id, :group_edited, fn _ ->
+      %{
+        company_id: group.company_id,
+        space_id: group.id,
+        old_name: group.name,
+        old_mission: group.mission,
+        new_name: attrs.name,
+        new_mission: attrs.mission
+      }
+    end)
     |> Repo.transaction()
     |> Repo.extract_result(:group)
   end
@@ -102,23 +104,13 @@ defmodule Operately.Groups do
   alias Operately.Groups.Member
 
   def list_members(group) do
-    query = (
-      from p in Person,
-      join: m in Member, on: m.person_id == p.id,
-      where: m.group_id == ^group.id and not p.suspended,
-      order_by: p.full_name
-    )
+    query = from p in Person, join: m in Member, on: m.person_id == p.id, where: m.group_id == ^group.id and not p.suspended, order_by: p.full_name
 
     Repo.all(query)
   end
 
   def is_member?(group, person) do
-    query = (
-      from m in Member,
-      join: p in Person, on: m.person_id == p.id,
-      where: m.group_id == ^group.id and m.person_id == ^person.id and not p.suspended,
-      limit: 1
-    )
+    query = from m in Member, join: p in Person, on: m.person_id == p.id, where: m.group_id == ^group.id and m.person_id == ^person.id and not p.suspended, limit: 1
 
     Repo.one(query) != nil
   end
@@ -137,24 +129,19 @@ defmodule Operately.Groups do
   end
 
   def list_members(group_id, limit, include_total) do
-    total = if include_total do
-      query = (
-        from m in Member,
-        where: m.group_id == ^group_id,
-        select: count(m.person_id)
-      )
+    total =
+      if include_total do
+        query =
+          from m in Member,
+            where: m.group_id == ^group_id,
+            select: count(m.person_id)
 
-      Repo.one(query)
-    else
-      nil
-    end
+        Repo.one(query)
+      else
+        nil
+      end
 
-    query = (
-      from p in Person,
-      join: m in Member, on: m.person_id == p.id,
-      where: m.group_id == ^group_id and false,
-      limit: ^limit
-    )
+    query = from p in Person, join: m in Member, on: m.person_id == p.id, where: m.group_id == ^group_id and false, limit: ^limit
 
     members = Repo.all(query)
 

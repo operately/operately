@@ -50,15 +50,17 @@ defmodule OperatelyWeb.Api.Queries.ListResourceHubNodes do
   defp serialize(nodes) do
     {drafts, published} = Node.separate_drafts(nodes)
 
-    {:ok, %{
-      nodes: Serializer.serialize(published, level: :essential),
-      draft_nodes: Serializer.serialize(drafts, level: :essential)
-    }}
+    {:ok,
+     %{
+       nodes: Serializer.serialize(published, level: :essential),
+       draft_nodes: Serializer.serialize(drafts, level: :essential)
+     }}
   end
 
   defp filter_nodes(q, %{resource_hub_id: resource_hub_id}) do
     from(n in q, where: n.resource_hub_id == ^resource_hub_id and is_nil(n.parent_folder_id))
   end
+
   defp filter_nodes(q, %{folder_id: folder_id}) do
     from(n in q, where: n.parent_folder_id == ^folder_id)
   end

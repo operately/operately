@@ -40,7 +40,8 @@ defmodule Operately.Access.Fetch do
   def join_access_level(query, person_id) do
     from([resource: r] in query,
       join: c in assoc(r, :access_context),
-      join: b in assoc(c, :bindings), as: :binding,
+      join: b in assoc(c, :bindings),
+      as: :binding,
       join: g in assoc(b, :group),
       join: m in assoc(g, :memberships),
       join: p in assoc(m, :person),

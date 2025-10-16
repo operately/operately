@@ -6,6 +6,5 @@ defmodule Operately.Repo.Migrations.PopulateExistingProjectMilestonesWithSubscri
   end
 
   def down do
-
   end
 end

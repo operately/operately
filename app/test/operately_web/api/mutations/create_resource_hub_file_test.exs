@@ -21,15 +21,13 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubFileTest do
 
   describe "permissions" do
     @table [
-      %{company: :no_access,      space: :no_access,      expected: 404},
-
-      %{company: :no_access,      space: :comment_access, expected: 403},
-      %{company: :no_access,      space: :edit_access,    expected: 200},
-      %{company: :no_access,      space: :full_access,    expected: 200},
-
-      %{company: :comment_access, space: :no_access,      expected: 403},
-      %{company: :edit_access,    space: :no_access,      expected: 200},
-      %{company: :full_access,    space: :no_access,      expected: 200},
+      %{company: :no_access, space: :no_access, expected: 404},
+      %{company: :no_access, space: :comment_access, expected: 403},
+      %{company: :no_access, space: :edit_access, expected: 200},
+      %{company: :no_access, space: :full_access, expected: 200},
+      %{company: :comment_access, space: :no_access, expected: 403},
+      %{company: :edit_access, space: :no_access, expected: 200},
+      %{company: :full_access, space: :no_access, expected: 200}
     ]
 
     setup ctx do
@@ -44,27 +42,31 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubFileTest do
         resource_hub = resource_hub_fixture(ctx.creator, space)
         blob = blob_fixture(%{author_id: ctx.creator.id, company_id: ctx.company.id})
 
-        assert {code, res} = mutation(ctx.conn, :create_resource_hub_file, %{
-          resource_hub_id: Paths.resource_hub_id(resource_hub),
-          send_notifications_to_everyone: true,
-          subscriber_ids: [],
-          files: [
-            %{
-              blob_id: blob.id,
-              name: "My file",
-              description: RichText.rich_text("description", :as_string),
-            }
-          ]
-        })
+        assert {code, res} =
+                 mutation(ctx.conn, :create_resource_hub_file, %{
+                   resource_hub_id: Paths.resource_hub_id(resource_hub),
+                   send_notifications_to_everyone: true,
+                   subscriber_ids: [],
+                   files: [
+                     %{
+                       blob_id: blob.id,
+                       name: "My file",
+                       description: RichText.rich_text("description", :as_string)
+                     }
+                   ]
+                 })
+
         assert code == @test.expected
 
         case @test.expected do
           200 ->
             files = ResourceHubs.list_files(resource_hub)
             assert hd(res.files).id == Paths.document_id(hd(files))
+
           403 ->
             assert ResourceHubs.list_files(resource_hub) == []
             assert res.message == "You don't have permission to perform this action"
+
           404 ->
             assert ResourceHubs.list_files(resource_hub) == []
             assert res.message == "The requested resource was not found"
@@ -88,18 +90,20 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubFileTest do
     test "creates a single file within hub", ctx do
       assert ResourceHubs.list_files(ctx.hub) == []
 
-      assert {200, res} = mutation(ctx.conn, :create_resource_hub_file, %{
-        resource_hub_id: Paths.resource_hub_id(ctx.hub),
-        send_notifications_to_everyone: true,
-        subscriber_ids: [],
-        files: [
-          %{
-            blob_id: ctx.blob1.id,
-            name: "My file",
-            description: RichText.rich_text("description", :as_string),
-          }
-        ]
-      })
+      assert {200, res} =
+               mutation(ctx.conn, :create_resource_hub_file, %{
+                 resource_hub_id: Paths.resource_hub_id(ctx.hub),
+                 send_notifications_to_everyone: true,
+                 subscriber_ids: [],
+                 files: [
+                   %{
+                     blob_id: ctx.blob1.id,
+                     name: "My file",
+                     description: RichText.rich_text("description", :as_string)
+                   }
+                 ]
+               })
+
       assert length(res.files) == 1
 
       files = ResourceHubs.list_files(ctx.hub)
@@ -111,33 +115,36 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubFileTest do
     test "creates multiple files", ctx do
       assert ResourceHubs.list_files(ctx.hub) == []
 
-      assert {200, res} = mutation(ctx.conn, :create_resource_hub_file, %{
-        resource_hub_id: Paths.resource_hub_id(ctx.hub),
-        send_notifications_to_everyone: true,
-        subscriber_ids: [],
-        files: [
-          %{
-            blob_id: ctx.blob1.id,
-            name: "My file",
-            description: RichText.rich_text("description", :as_string),
-          },
-          %{
-            blob_id: ctx.blob2.id,
-            name: "My file",
-            description: RichText.rich_text("description", :as_string),
-          },
-          %{
-            blob_id: ctx.blob3.id,
-            name: "My file",
-            description: RichText.rich_text("description", :as_string),
-          },
-        ]
-      })
+      assert {200, res} =
+               mutation(ctx.conn, :create_resource_hub_file, %{
+                 resource_hub_id: Paths.resource_hub_id(ctx.hub),
+                 send_notifications_to_everyone: true,
+                 subscriber_ids: [],
+                 files: [
+                   %{
+                     blob_id: ctx.blob1.id,
+                     name: "My file",
+                     description: RichText.rich_text("description", :as_string)
+                   },
+                   %{
+                     blob_id: ctx.blob2.id,
+                     name: "My file",
+                     description: RichText.rich_text("description", :as_string)
+                   },
+                   %{
+                     blob_id: ctx.blob3.id,
+                     name: "My file",
+                     description: RichText.rich_text("description", :as_string)
+                   }
+                 ]
+               })
+
       assert length(res.files) == 3
 
       files = ResourceHubs.list_files(ctx.hub)
 
       assert length(files) == 3
+
       Enum.each(files, fn f ->
         assert Enum.find(res.files, &(&1.id == Paths.file_id(f)))
       end)
@@ -152,10 +159,13 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubFileTest do
     space = group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.from_atom(company_members_level)})
 
     if space_members_level != :no_access do
-      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
-        id: ctx.person.id,
-        access_level: Binding.from_atom(space_members_level)
-      }])
+      {:ok, _} =
+        Operately.Groups.add_members(ctx.creator, space.id, [
+          %{
+            id: ctx.person.id,
+            access_level: Binding.from_atom(space_members_level)
+          }
+        ])
     end
 
     space

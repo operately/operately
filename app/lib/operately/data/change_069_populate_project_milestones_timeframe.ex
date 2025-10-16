@@ -45,10 +45,11 @@ defmodule Operately.Data.Change069PopulateProjectMilestonesTimeframe do
   defp update_milestone_timeframe(milestone) do
     timeframe = build_timeframe(milestone)
 
-    {:ok, _} = from(m in Milestone, where: m.id == ^milestone.id)
-    |> Repo.one()
-    |> Ecto.Changeset.change(timeframe: timeframe)
-    |> Repo.update()
+    {:ok, _} =
+      from(m in Milestone, where: m.id == ^milestone.id)
+      |> Repo.one()
+      |> Ecto.Changeset.change(timeframe: timeframe)
+      |> Repo.update()
   end
 
   defmodule Milestone do

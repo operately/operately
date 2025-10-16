@@ -15,7 +15,7 @@ defmodule Operately.Operations.CompanyInvitationTokenCreation do
         invitation_id: invitation.id,
         name: invitation.member.full_name,
         email: invitation.member.email,
-        title: invitation.member.title,
+        title: invitation.member.title
       }
     end)
   end

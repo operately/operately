@@ -16,19 +16,20 @@ defmodule Operately.Data.Change078EnhanceTaskDescriptionChangeActivitiesTest do
 
   test "adds has_description as true when task exists and has meaningful TipTap description", ctx do
     # Update task to have a meaningful TipTap description
-    {:ok, task_with_description} = Repo.update(
-      Ecto.Changeset.change(ctx.task, %{
-        description: %{
-          "content" => [
-            %{
-              "type" => "paragraph",
-              "content" => [%{"type" => "text", "text" => "This is a meaningful description"}]
-            }
-          ],
-          "type" => "doc"
-        }
-      })
-    )
+    {:ok, task_with_description} =
+      Repo.update(
+        Ecto.Changeset.change(ctx.task, %{
+          description: %{
+            "content" => [
+              %{
+                "type" => "paragraph",
+                "content" => [%{"type" => "text", "text" => "This is a meaningful description"}]
+              }
+            ],
+            "type" => "doc"
+          }
+        })
+      )
 
     activity = create_test_activity(ctx.creator, ctx.project.id, task_with_description.id)
 
@@ -55,9 +56,7 @@ defmodule Operately.Data.Change078EnhanceTaskDescriptionChangeActivitiesTest do
 
   test "adds has_description as false when task exists but has empty map description", ctx do
     # Update task to have an empty map description
-    {:ok, task_with_empty_description} = Repo.update(
-      Ecto.Changeset.change(ctx.task, %{description: %{}})
-    )
+    {:ok, task_with_empty_description} = Repo.update(Ecto.Changeset.change(ctx.task, %{description: %{}}))
 
     activity = create_test_activity(ctx.creator, ctx.project.id, task_with_empty_description.id)
 

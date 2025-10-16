@@ -14,7 +14,7 @@ defmodule Operately.ActivitiesFixtures do
       content: %{
         discussion_id: Ecto.UUID.generate(),
         project_id: Ecto.UUID.generate(),
-        company_id: Ecto.UUID.generate(),
+        company_id: Ecto.UUID.generate()
       }
     }
 

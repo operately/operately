@@ -10,6 +10,7 @@ defmodule Operately.Release do
     :ok = wait_until_db_ready(attempts: 10, timeout: 1000)
 
     IO.puts("Creating database")
+
     case storage_up?() do
       :ok -> :ok
       {:error, :already_up} -> :ok
@@ -55,10 +56,11 @@ defmodule Operately.Release do
   def wait_until_db_ready(attempts: attempts, timeout: timeout) do
     if attempts > 0 do
       case :gen_tcp.connect(storage_host(), storage_port(), []) do
-        {:ok, _} -> 
+        {:ok, _} ->
           IO.puts("")
           :ok
-        {:error, _error} -> 
+
+        {:error, _error} ->
           IO.write(".")
           :timer.sleep(timeout)
           wait_until_db_ready(attempts: attempts - 1, timeout: timeout)

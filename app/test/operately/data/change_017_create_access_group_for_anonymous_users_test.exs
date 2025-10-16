@@ -5,9 +5,10 @@ defmodule Operately.Data.Change017CreateAccessGroupForAnonymousUsersTest do
   alias Operately.Companies.Company
 
   test "creates access groups for anonymous users" do
-    companies = Enum.map(1..3, fn _ ->
-      create_company()
-    end)
+    companies =
+      Enum.map(1..3, fn _ ->
+        create_company()
+      end)
 
     Enum.each(companies, fn company ->
       assert nil == Access.get_group(company_id: company.id, tag: :anonymous)

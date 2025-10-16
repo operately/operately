@@ -25,28 +25,31 @@ defmodule OperatelyWeb.Api.Queries.SearchProjectContributorCandidatesTest do
       project1 = project_fixture(%{company_id: ctx1.company.id, creator_id: ctx1.person.id, group_id: ctx1.company.company_space_id})
       project2 = project_fixture(%{company_id: ctx2.company.id, creator_id: ctx2.person.id, group_id: ctx2.company.company_space_id})
 
-      assert {200, res} = query(ctx1.conn, :search_project_contributor_candidates, %{
-        project_id: Paths.project_id(project1),
-        query: "",
-      })
+      assert {200, res} =
+               query(ctx1.conn, :search_project_contributor_candidates, %{
+                 project_id: Paths.project_id(project1),
+                 query: ""
+               })
 
       assert length(res.people) == 3
+
       Enum.each([p1, p2, ctx1.company_creator], fn p ->
         assert Enum.find(res.people, &(&1.id == Paths.person_id(p)))
       end)
 
-      assert {200, res} = query(ctx2.conn, :search_project_contributor_candidates, %{
-        project_id: Paths.project_id(project2),
-        query: "",
-      })
+      assert {200, res} =
+               query(ctx2.conn, :search_project_contributor_candidates, %{
+                 project_id: Paths.project_id(project2),
+                 query: ""
+               })
 
       assert length(res.people) == 3
+
       Enum.each([p3, p4, ctx2.company_creator], fn p ->
         assert Enum.find(res.people, &(&1.id == Paths.person_id(p)))
       end)
     end
   end
-
 
   describe "permissions" do
     setup ctx do
@@ -60,20 +63,24 @@ defmodule OperatelyWeb.Api.Queries.SearchProjectContributorCandidatesTest do
     test "company members have no access", ctx do
       project = create_project(ctx, company_access: Binding.no_access())
 
-      assert {200, res} = query(ctx.conn, :search_project_contributor_candidates, %{
-        project_id: Paths.project_id(project),
-        query: "",
-      })
+      assert {200, res} =
+               query(ctx.conn, :search_project_contributor_candidates, %{
+                 project_id: Paths.project_id(project),
+                 query: ""
+               })
+
       assert length(res.people) == 0
     end
 
     test "company members have access", ctx do
       project = create_project(ctx, company_access: Binding.view_access())
 
-      assert {200, res} = query(ctx.conn, :search_project_contributor_candidates, %{
-        project_id: Paths.project_id(project),
-        query: "",
-      })
+      assert {200, res} =
+               query(ctx.conn, :search_project_contributor_candidates, %{
+                 project_id: Paths.project_id(project),
+                 query: ""
+               })
+
       assert_response(res, ctx)
     end
 
@@ -81,10 +88,12 @@ defmodule OperatelyWeb.Api.Queries.SearchProjectContributorCandidatesTest do
       add_person_to_space(ctx)
       project = create_project(ctx, space_access: Binding.no_access())
 
-      assert {200, res} = query(ctx.conn, :search_project_contributor_candidates, %{
-        project_id: Paths.project_id(project),
-        query: "",
-      })
+      assert {200, res} =
+               query(ctx.conn, :search_project_contributor_candidates, %{
+                 project_id: Paths.project_id(project),
+                 query: ""
+               })
+
       assert length(res.people) == 0
     end
 
@@ -92,10 +101,12 @@ defmodule OperatelyWeb.Api.Queries.SearchProjectContributorCandidatesTest do
       add_person_to_space(ctx)
       project = create_project(ctx, space_access: Binding.view_access())
 
-      assert {200, res} = query(ctx.conn, :search_project_contributor_candidates, %{
-        project_id: Paths.project_id(project),
-        query: "",
-      })
+      assert {200, res} =
+               query(ctx.conn, :search_project_contributor_candidates, %{
+                 project_id: Paths.project_id(project),
+                 query: ""
+               })
+
       assert_response(res, ctx)
     end
 
@@ -107,17 +118,21 @@ defmodule OperatelyWeb.Api.Queries.SearchProjectContributorCandidatesTest do
       account = Repo.preload(champion, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, res} = query(conn, :search_project_contributor_candidates, %{
-        project_id: Paths.project_id(project),
-        query: "",
-      })
+      assert {200, res} =
+               query(conn, :search_project_contributor_candidates, %{
+                 project_id: Paths.project_id(project),
+                 query: ""
+               })
+
       assert_response(res, ctx)
 
       # another user's request
-      assert {200, res} = query(ctx.conn, :search_project_contributor_candidates, %{
-        project_id: Paths.project_id(project),
-        query: "",
-      })
+      assert {200, res} =
+               query(ctx.conn, :search_project_contributor_candidates, %{
+                 project_id: Paths.project_id(project),
+                 query: ""
+               })
+
       assert length(res.people) == 0
     end
 
@@ -129,35 +144,43 @@ defmodule OperatelyWeb.Api.Queries.SearchProjectContributorCandidatesTest do
       account = Repo.preload(reviewer, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, res} = query(conn, :search_project_contributor_candidates, %{
-        project_id: Paths.project_id(project),
-        query: "",
-      })
+      assert {200, res} =
+               query(conn, :search_project_contributor_candidates, %{
+                 project_id: Paths.project_id(project),
+                 query: ""
+               })
+
       assert_response(res, ctx)
 
       # another user's request
-      assert {200, res} = query(ctx.conn, :search_project_contributor_candidates, %{
-        project_id: Paths.project_id(project),
-        query: "",
-      })
+      assert {200, res} =
+               query(ctx.conn, :search_project_contributor_candidates, %{
+                 project_id: Paths.project_id(project),
+                 query: ""
+               })
+
       assert length(res.people) == 0
     end
 
     test "suspended people don't have access", ctx do
       project = create_project(ctx, company_access: Binding.view_access())
 
-      assert {200, res} = query(ctx.conn, :search_project_contributor_candidates, %{
-        project_id: Paths.project_id(project),
-        query: "",
-      })
+      assert {200, res} =
+               query(ctx.conn, :search_project_contributor_candidates, %{
+                 project_id: Paths.project_id(project),
+                 query: ""
+               })
+
       assert_response(res, ctx)
 
       People.update_person(ctx.person, %{suspended_at: DateTime.utc_now()})
 
-      assert {200, res} = query(ctx.conn, :search_project_contributor_candidates, %{
-        project_id: Paths.project_id(project),
-        query: "",
-      })
+      assert {200, res} =
+               query(ctx.conn, :search_project_contributor_candidates, %{
+                 project_id: Paths.project_id(project),
+                 query: ""
+               })
+
       assert length(res.people) == 0
     end
   end
@@ -166,46 +189,53 @@ defmodule OperatelyWeb.Api.Queries.SearchProjectContributorCandidatesTest do
     setup :register_and_log_in_account
 
     test "returns people based on query", ctx do
-      project = project_fixture(%{
-        company_id: ctx.company.id,
-        creator_id: ctx.person.id,
-        group_id: ctx.company.company_space_id
-      })
+      project =
+        project_fixture(%{
+          company_id: ctx.company.id,
+          creator_id: ctx.person.id,
+          group_id: ctx.company.company_space_id
+        })
 
       person = person_fixture(company_id: ctx.company.id)
 
-      assert {200, res} = query(ctx.conn, :search_project_contributor_candidates, %{
-        project_id: Paths.project_id(project),
-        query: person.full_name
-      })
+      assert {200, res} =
+               query(ctx.conn, :search_project_contributor_candidates, %{
+                 project_id: Paths.project_id(project),
+                 query: person.full_name
+               })
 
-      assert res.people == [%{
-        id: Paths.person_id(person),
-        full_name: person.full_name,
-        email: person.email,
-        title: person.title,
-        avatar_url: person.avatar_url,
-        has_open_invitation: false
-      }]
+      assert res.people == [
+               %{
+                 id: Paths.person_id(person),
+                 full_name: person.full_name,
+                 email: person.email,
+                 title: person.title,
+                 avatar_url: person.avatar_url,
+                 has_open_invitation: false
+               }
+             ]
     end
 
     test "doesn't return suspended people", ctx do
-      project = project_fixture(%{
-        company_id: ctx.company.id,
-        creator_id: ctx.person.id,
-        group_id: ctx.company.company_space_id
-      })
+      project =
+        project_fixture(%{
+          company_id: ctx.company.id,
+          creator_id: ctx.person.id,
+          group_id: ctx.company.company_space_id
+        })
 
-      suspended_person = person_fixture(%{
-        company_id: ctx.company.id,
-        suspended: true,
-        suspended_at: DateTime.utc_now()
-      })
+      suspended_person =
+        person_fixture(%{
+          company_id: ctx.company.id,
+          suspended: true,
+          suspended_at: DateTime.utc_now()
+        })
 
-      assert {200, res} = query(ctx.conn, :search_project_contributor_candidates, %{
-        project_id: Paths.project_id(project),
-        query: suspended_person.full_name
-      })
+      assert {200, res} =
+               query(ctx.conn, :search_project_contributor_candidates, %{
+                 project_id: Paths.project_id(project),
+                 query: suspended_person.full_name
+               })
 
       assert res.people == []
     end
@@ -229,15 +259,16 @@ defmodule OperatelyWeb.Api.Queries.SearchProjectContributorCandidatesTest do
       reviewer_id: Keyword.get(opts, :reviewer_id, ctx.creator.id),
       group_id: ctx.space.id,
       company_access_level: Keyword.get(opts, :company_access, Binding.no_access()),
-      space_access_level: Keyword.get(opts, :space_access, Binding.no_access()),
+      space_access_level: Keyword.get(opts, :space_access, Binding.no_access())
     })
   end
 
-
   defp add_person_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space.id, [%{
-      id: ctx.person.id,
-      access_level: Binding.view_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space.id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.view_access()
+      }
+    ])
   end
 end

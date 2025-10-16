@@ -36,6 +36,7 @@ defmodule OperatelyWeb.Api.Queries.GetPeople do
   end
 
   defp load_people(nil, _), do: []
+
   defp load_people(company_id, inputs) do
     from(p in Person,
       where: p.company_id == ^company_id,
@@ -51,8 +52,10 @@ defmodule OperatelyWeb.Api.Queries.GetPeople do
     cond do
       only_suspended ->
         from(p in query, where: not is_nil(p.suspended_at))
+
       include_suspended ->
         query
+
       true ->
         from(p in query, where: is_nil(p.suspended_at))
     end

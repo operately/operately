@@ -13,8 +13,8 @@ defmodule OperatelyWeb.Api.Mutations.RemoveCompanyTrustedEmailDomainTest do
   describe "permissions" do
     @table [
       %{company: :comment_access, expected: 403},
-      %{company: :edit_access,    expected: 403},
-      %{company: :full_access,    expected: 200},
+      %{company: :edit_access, expected: 403},
+      %{company: :full_access, expected: 200}
     ]
 
     setup :register_and_log_in_account
@@ -23,10 +23,11 @@ defmodule OperatelyWeb.Api.Mutations.RemoveCompanyTrustedEmailDomainTest do
       test "if caller has levels company=#{@test.company}, then expect code=#{@test.expected}", ctx do
         set_caller_access_level(ctx, @test.company)
 
-        assert {code, res} = mutation(ctx.conn, :remove_company_trusted_email_domain, %{
-          company_id: Paths.company_id(ctx.company),
-          domain: "@example.com"
-        })
+        assert {code, res} =
+                 mutation(ctx.conn, :remove_company_trusted_email_domain, %{
+                   company_id: Paths.company_id(ctx.company),
+                   domain: "@example.com"
+                 })
 
         assert code == @test.expected
 
@@ -46,4 +47,4 @@ defmodule OperatelyWeb.Api.Mutations.RemoveCompanyTrustedEmailDomainTest do
       Operately.Repo.insert(cs)
     end
   end
-end 
+end

@@ -4,9 +4,14 @@ defmodule OperatelyEmail.Emails.ProjectKeyResourceAddedEmail do
   alias Operately.Projects.Project
 
   def send(person, activity) do
-    {:ok, project = %{company: company}} = Project.get(:system, id: activity.content["project_id"], opts: [
-      preload: [:company]
-    ])
+    {:ok, project = %{company: company}} =
+      Project.get(:system,
+        id: activity.content["project_id"],
+        opts: [
+          preload: [:company]
+        ]
+      )
+
     author = Operately.Repo.preload(activity, :author).author
     link = OperatelyWeb.Paths.project_path(company, project) |> OperatelyWeb.Paths.to_url()
 

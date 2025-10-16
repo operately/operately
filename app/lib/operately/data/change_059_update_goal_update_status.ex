@@ -33,6 +33,7 @@ defmodule Operately.Data.Change059UpdateGoalUpdateStatus do
     SET status = 'off_track'
     WHERE status = 'issue'
     """
+
     Repo.query!(update_issue_sql)
 
     # Update 'concern' statuses to 'caution'
@@ -41,6 +42,7 @@ defmodule Operately.Data.Change059UpdateGoalUpdateStatus do
     SET status = 'caution'
     WHERE status = 'concern'
     """
+
     Repo.query!(update_concern_sql)
 
     # Update 'pending' statuses to 'on_track'
@@ -49,6 +51,7 @@ defmodule Operately.Data.Change059UpdateGoalUpdateStatus do
     SET status = 'on_track'
     WHERE status = 'pending'
     """
+
     Repo.query!(update_pending_sql)
   end
 end

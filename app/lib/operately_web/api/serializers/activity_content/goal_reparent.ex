@@ -5,7 +5,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.GoalRep
     %{
       goal: Serializer.serialize(content["goal"], level: :essential),
       old_parent_goal: Serializer.serialize(content["old_parent_goal"], level: :essential),
-      new_parent_goal: Serializer.serialize(content["new_parent_goal"], level: :essential),
+      new_parent_goal: Serializer.serialize(content["new_parent_goal"], level: :essential)
     }
   end
 end

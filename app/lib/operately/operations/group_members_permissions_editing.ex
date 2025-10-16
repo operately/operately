@@ -16,7 +16,7 @@ defmodule Operately.Operations.GroupMembersPermissionsEditing do
 
   defp update_bindings(multi, members) do
     members
-    |> Enum.reduce(multi, fn (%{id: person_id, access_level: access_level}, multi) ->
+    |> Enum.reduce(multi, fn %{id: person_id, access_level: access_level}, multi ->
       access_group = Access.get_group!(person_id: person_id)
       name = person_id <> "_updated_binding"
 
@@ -29,7 +29,7 @@ defmodule Operately.Operations.GroupMembersPermissionsEditing do
       %{
         company_id: space.company_id,
         space_id: space.id,
-        members: serialize_updated_members(changes),
+        members: serialize_updated_members(changes)
       }
     end)
   end
@@ -42,7 +42,7 @@ defmodule Operately.Operations.GroupMembersPermissionsEditing do
       %{
         person_id: String.replace(key, "_updated_binding", ""),
         previous_access_level: target.previous.access_level,
-        updated_access_level: target.updated.access_level,
+        updated_access_level: target.updated.access_level
       }
     end)
   end

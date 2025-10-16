@@ -67,6 +67,7 @@ defimpl Operately.Notifications.NotifiableResource, for: Operately.Projects.Proj
       "project_timeline_edited"
     ]
   end
+
   def field(_), do: "project_id"
 end
 

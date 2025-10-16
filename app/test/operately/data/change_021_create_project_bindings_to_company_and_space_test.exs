@@ -14,21 +14,23 @@ defmodule Operately.Data.Change021CreateProjectBindingsToCompanyAndSpaceTest do
     creator = person_fixture_with_account(%{company_id: company.id})
     group = group_fixture(creator)
 
-    project_with_bindings = Enum.map(1..3, fn _ ->
-      create_project_with_bindings(%{
-        company_id: company.id,
-        creator_id: creator.id,
-        group_id: group.id,
-      })
-    end)
+    project_with_bindings =
+      Enum.map(1..3, fn _ ->
+        create_project_with_bindings(%{
+          company_id: company.id,
+          creator_id: creator.id,
+          group_id: group.id
+        })
+      end)
 
-    project_without_bindings = Enum.map(1..3, fn _ ->
-      create_project_without_bindings(%{
-        company_id: company.id,
-        creator_id: creator.id,
-        group_id: group.id,
-      })
-    end)
+    project_without_bindings =
+      Enum.map(1..3, fn _ ->
+        create_project_without_bindings(%{
+          company_id: company.id,
+          creator_id: creator.id,
+          group_id: group.id
+        })
+      end)
 
     {:ok, company: company, group: group, creator: creator, project_with_bindings: project_with_bindings, project_without_bindings: project_without_bindings}
   end
@@ -104,13 +106,14 @@ defmodule Operately.Data.Change021CreateProjectBindingsToCompanyAndSpaceTest do
   test "creates access binding to spaces when it's the company space", ctx do
     space_id = ctx.company.company_space_id
 
-    projects_no_space = Enum.map(1..3, fn _ ->
-      create_project_without_bindings(%{
-        company_id: ctx.company.id,
-        creator_id: ctx.creator.id,
-        group_id: space_id,
-      })
-    end)
+    projects_no_space =
+      Enum.map(1..3, fn _ ->
+        create_project_without_bindings(%{
+          company_id: ctx.company.id,
+          creator_id: ctx.creator.id,
+          group_id: space_id
+        })
+      end)
 
     Operately.Data.Change021CreateProjectBindingsToCompanyAndSpace.run()
 
@@ -144,17 +147,18 @@ defmodule Operately.Data.Change021CreateProjectBindingsToCompanyAndSpaceTest do
       reviewer_id: reviewer.id,
       champion_id: champion.id,
       group_id: attrs.group_id,
-      creator_is_contributor: "yes",
+      creator_is_contributor: "yes"
     })
   end
 
   defp create_project_without_bindings(attrs) do
-    project = project_fixture(%{
-      name: "some name",
-      company_id: attrs.company_id,
-      group_id: attrs.group_id,
-      creator_id: attrs.creator_id,
-    })
+    project =
+      project_fixture(%{
+        name: "some name",
+        company_id: attrs.company_id,
+        group_id: attrs.group_id,
+        creator_id: attrs.creator_id
+      })
 
     context = Access.get_context!(project_id: project.id)
 

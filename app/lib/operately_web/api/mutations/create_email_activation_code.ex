@@ -24,5 +24,4 @@ defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCode do
       {:error, :signup_not_allowed}
     end
   end
-
 end

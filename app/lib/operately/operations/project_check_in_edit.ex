@@ -18,20 +18,25 @@ defmodule Operately.Operations.ProjectCheckInEdit do
     end)
     |> Multi.update(:project, fn _ ->
       Project.changeset(project, %{
-        last_check_in_status: status,
+        last_check_in_status: status
       })
     end)
     |> Multi.run(:subscription_list, fn _, changes ->
-      SubscriptionList.get(:system, parent_id: changes.check_in.id, opts: [
-        preload: :subscriptions
-      ])
+      SubscriptionList.get(:system,
+        parent_id: changes.check_in.id,
+        opts: [
+          preload: :subscriptions
+        ]
+      )
     end)
     |> Operately.Operations.Notifications.Subscription.update_mentioned_people(description)
-    |> Activities.insert_sync(author.id, :project_check_in_edit, fn changes -> %{
-      company_id: project.company_id,
-      project_id: changes.project.id,
-      check_in_id: check_in.id
-    } end)
+    |> Activities.insert_sync(author.id, :project_check_in_edit, fn changes ->
+      %{
+        company_id: project.company_id,
+        project_id: changes.project.id,
+        check_in_id: check_in.id
+      }
+    end)
     |> Repo.transaction()
     |> Repo.extract_result(:check_in)
   end

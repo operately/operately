@@ -6,7 +6,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.TaskDes
       task: Serializer.serialize(content["task"], level: :full),
       project_name: Serializer.serialize(content["project_name"], level: :essential),
       has_description: content["has_description"],
-      description: Jason.encode!(content["description"]),
+      description: Jason.encode!(content["description"])
     }
   end
 end

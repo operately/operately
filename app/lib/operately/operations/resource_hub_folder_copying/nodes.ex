@@ -38,7 +38,7 @@ defmodule Operately.Operations.ResourceHubFolderCopying.Nodes do
         name: n.name,
         type: n.type,
         inserted_at: now,
-        updated_at: now,
+        updated_at: now
       }
     end)
   end
@@ -51,7 +51,7 @@ defmodule Operately.Operations.ResourceHubFolderCopying.Nodes do
         folder: original_node.folder,
         document: original_node.document,
         link: original_node.link,
-        file: original_node.file,
+        file: original_node.file
       })
     end)
   end

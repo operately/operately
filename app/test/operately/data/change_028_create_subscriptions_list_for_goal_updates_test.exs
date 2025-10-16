@@ -20,9 +20,10 @@ defmodule Operately.Data.Change028CreateSubscriptionsListForGoalUpdatesTest do
   end
 
   test "creates subscriptions list for existing goal updates", ctx do
-    updates = Enum.map(1..1, fn _ ->
-      create_update(ctx.goal, ctx.creator)
-    end)
+    updates =
+      Enum.map(1..1, fn _ ->
+        create_update(ctx.goal, ctx.creator)
+      end)
 
     Enum.each(updates, fn u ->
       assert {:error, :not_found} = Subscription.get(:system, subscription_list_id: u.subscription_list_id, person_id: ctx.champion.id)
@@ -39,15 +40,16 @@ defmodule Operately.Data.Change028CreateSubscriptionsListForGoalUpdatesTest do
 
   defp create_update(goal, author) do
     with {:ok, subscriptions_list} <- Notifications.create_subscription_list(%{}),
-        {:ok, update} <- Operately.Goals.create_update(%{
-          goal_id: goal.id,
-          author_id: author.id,
-          subscription_list_id: subscriptions_list.id,
-          message: Operately.Support.RichText.rich_text("message"),
-          status: "on_track",
-          timeframe: Timeframe.current_quarter()
-        }),
-        {:ok, _} <- Notifications.update_subscription_list(subscriptions_list, %{parent_id: update.id}) do
+         {:ok, update} <-
+           Operately.Goals.create_update(%{
+             goal_id: goal.id,
+             author_id: author.id,
+             subscription_list_id: subscriptions_list.id,
+             message: Operately.Support.RichText.rich_text("message"),
+             status: "on_track",
+             timeframe: Timeframe.current_quarter()
+           }),
+         {:ok, _} <- Notifications.update_subscription_list(subscriptions_list, %{parent_id: update.id}) do
       update
     end
   end

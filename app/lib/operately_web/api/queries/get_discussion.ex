@@ -30,7 +30,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.message.request_info.access_level, :can_view_message) end)
     |> run(:serialized, fn ctx -> {:ok, %{discussion: OperatelyWeb.Api.Serializer.serialize(ctx.message, level: :full)}} end)
     |> respond()
-   end
+  end
 
   defp respond(result) do
     case result do
@@ -43,28 +43,31 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
   end
 
   defp load(ctx, inputs) do
-    Message.get(ctx.me, id: ctx.id, opts: [
-      preload: preload(inputs),
-      after_load: after_load(inputs, ctx.me),
-    ])
+    Message.get(ctx.me,
+      id: ctx.id,
+      opts: [
+        preload: preload(inputs),
+        after_load: after_load(inputs, ctx.me)
+      ]
+    )
   end
 
   defp preload(inputs) do
-    Inputs.parse_includes(inputs, [
+    Inputs.parse_includes(inputs,
       include_author: :author,
       include_reactions: [reactions: :person],
       include_space: :space,
       include_space_members: [space: [:members, :company]],
       include_subscriptions_list: :subscription_list,
-      include_potential_subscribers: [:access_context, space: :members],
-    ])
+      include_potential_subscribers: [:access_context, space: :members]
+    )
   end
 
   defp after_load(inputs, me) do
-    Inputs.parse_includes(inputs, [
+    Inputs.parse_includes(inputs,
       include_potential_subscribers: &Message.set_potential_subscribers/1,
       include_unread_notifications: UnreadNotificationsLoader.load(me),
-      include_permissions: &Message.set_permissions/1,
-    ])
+      include_permissions: &Message.set_permissions/1
+    )
   end
 end

@@ -20,5 +20,4 @@ defmodule Operately.Updates.Types.ProjectDiscussion do
       :body => body
     }
   end
-
 end

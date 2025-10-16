@@ -35,9 +35,10 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
     test "it returns not found for non-existent milestone", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {404, _} = query(ctx.conn, [:project_milestones, :list_tasks], %{
-        milestone_id: Ecto.UUID.generate()
-      })
+      assert {404, _} =
+               query(ctx.conn, [:project_milestones, :list_tasks], %{
+                 milestone_id: Ecto.UUID.generate()
+               })
     end
 
     test "it returns 404 for non-space-members", ctx do
@@ -47,9 +48,10 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
         |> Factory.add_company_member(:member)
         |> Factory.log_in_person(:member)
 
-      assert {404, _} = query(ctx.conn, [:project_milestones, :list_tasks], %{
-        milestone_id: Paths.milestone_id(ctx.milestone)
-      })
+      assert {404, _} =
+               query(ctx.conn, [:project_milestones, :list_tasks], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone)
+               })
     end
 
     test "it returns 404 for space members without view permission", ctx do
@@ -59,17 +61,19 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
         |> Factory.edit_project_space_members_access(:project, :no_access)
         |> Factory.log_in_person(:space_member)
 
-      assert {404, _} = query(ctx.conn, [:project_milestones, :list_tasks], %{
-        milestone_id: Paths.milestone_id(ctx.milestone)
-      })
+      assert {404, _} =
+               query(ctx.conn, [:project_milestones, :list_tasks], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone)
+               })
     end
 
     test "it returns tasks for project creator", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {200, res} = query(ctx.conn, [:project_milestones, :list_tasks], %{
-        milestone_id: Paths.milestone_id(ctx.milestone)
-      })
+      assert {200, res} =
+               query(ctx.conn, [:project_milestones, :list_tasks], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone)
+               })
 
       assert length(res.tasks) == 3
       task_ids = Enum.map(res.tasks, & &1.id)
@@ -91,9 +95,10 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
         |> Factory.edit_project_space_members_access(:project, :view_access)
         |> Factory.log_in_person(:space_member)
 
-      assert {200, res} = query(ctx.conn, [:project_milestones, :list_tasks], %{
-        milestone_id: Paths.milestone_id(ctx.milestone)
-      })
+      assert {200, res} =
+               query(ctx.conn, [:project_milestones, :list_tasks], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone)
+               })
 
       assert length(res.tasks) == 3
     end
@@ -106,9 +111,10 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
 
       ctx = log_in_account(ctx, ctx.champion.person)
 
-      assert {200, res} = query(ctx.conn, [:project_milestones, :list_tasks], %{
-        milestone_id: Paths.milestone_id(ctx.milestone)
-      })
+      assert {200, res} =
+               query(ctx.conn, [:project_milestones, :list_tasks], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone)
+               })
 
       assert length(res.tasks) == 3
     end
@@ -121,9 +127,10 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
 
       ctx = log_in_account(ctx, ctx.reviewer.person)
 
-      assert {200, res} = query(ctx.conn, [:project_milestones, :list_tasks], %{
-        milestone_id: Paths.milestone_id(ctx.milestone)
-      })
+      assert {200, res} =
+               query(ctx.conn, [:project_milestones, :list_tasks], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone)
+               })
 
       assert length(res.tasks) == 3
     end
@@ -131,9 +138,10 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
     test "it includes assigned people in task details", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {200, res} = query(ctx.conn, [:project_milestones, :list_tasks], %{
-        milestone_id: Paths.milestone_id(ctx.milestone)
-      })
+      assert {200, res} =
+               query(ctx.conn, [:project_milestones, :list_tasks], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone)
+               })
 
       # Find the task with assignee
       assigned_task = Enum.find(res.tasks, &(&1.id == Paths.task_id(ctx.task3)))
@@ -148,9 +156,10 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
         |> Factory.add_project_milestone(:empty_milestone, :project)
         |> Factory.log_in_person(:creator)
 
-      assert {200, res} = query(ctx.conn, [:project_milestones, :list_tasks], %{
-        milestone_id: Paths.milestone_id(ctx.empty_milestone)
-      })
+      assert {200, res} =
+               query(ctx.conn, [:project_milestones, :list_tasks], %{
+                 milestone_id: Paths.milestone_id(ctx.empty_milestone)
+               })
 
       assert res.tasks == []
     end
@@ -162,9 +171,10 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
         |> Factory.add_project_task(:other_task, :other_milestone)
         |> Factory.log_in_person(:creator)
 
-      assert {200, res} = query(ctx.conn, [:project_milestones, :list_tasks], %{
-        milestone_id: Paths.milestone_id(ctx.milestone)
-      })
+      assert {200, res} =
+               query(ctx.conn, [:project_milestones, :list_tasks], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone)
+               })
 
       # Should only return tasks from the first milestone, not the other one
       assert length(res.tasks) == 3
@@ -181,14 +191,16 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
         |> Factory.log_in_person(:creator)
 
       # Query tasks from first milestone
-      assert {200, res1} = query(ctx.conn, [:project_milestones, :list_tasks], %{
-        milestone_id: Paths.milestone_id(ctx.milestone)
-      })
+      assert {200, res1} =
+               query(ctx.conn, [:project_milestones, :list_tasks], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone)
+               })
 
       # Query tasks from second milestone
-      assert {200, res2} = query(ctx.conn, [:project_milestones, :list_tasks], %{
-        milestone_id: Paths.milestone_id(ctx.other_milestone)
-      })
+      assert {200, res2} =
+               query(ctx.conn, [:project_milestones, :list_tasks], %{
+                 milestone_id: Paths.milestone_id(ctx.other_milestone)
+               })
 
       assert length(res1.tasks) == 3
       assert length(res2.tasks) == 1
@@ -198,9 +210,10 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
     test "it includes milestone information in task details", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {200, res} = query(ctx.conn, [:project_milestones, :list_tasks], %{
-        milestone_id: Paths.milestone_id(ctx.milestone)
-      })
+      assert {200, res} =
+               query(ctx.conn, [:project_milestones, :list_tasks], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone)
+               })
 
       task = hd(res.tasks)
       assert task.milestone != nil
@@ -231,10 +244,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
     test "it returns not found for non-existent milestone", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {404, _} = mutation(ctx.conn, [:project_milestones, :update_title], %{
-        milestone_id: Ecto.UUID.generate(),
-        title: "New Title"
-      })
+      assert {404, _} =
+               mutation(ctx.conn, [:project_milestones, :update_title], %{
+                 milestone_id: Ecto.UUID.generate(),
+                 title: "New Title"
+               })
     end
 
     test "it returns forbidden for non-space-members", ctx do
@@ -244,10 +258,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
         |> Factory.add_company_member(:member)
         |> Factory.log_in_person(:member)
 
-      assert {403, _} = mutation(ctx.conn, [:project_milestones, :update_title], %{
-        milestone_id: Paths.milestone_id(ctx.milestone),
-        title: "New Title"
-      })
+      assert {403, _} =
+               mutation(ctx.conn, [:project_milestones, :update_title], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone),
+                 title: "New Title"
+               })
     end
 
     test "it returns forbidden for space members without edit permission", ctx do
@@ -257,20 +272,23 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
         |> Factory.edit_project_space_members_access(:project, :view_access)
         |> Factory.log_in_person(:space_member)
 
-      assert {403, _} = mutation(ctx.conn, [:project_milestones, :update_title], %{
-        milestone_id: Paths.milestone_id(ctx.milestone),
-        title: "New Title"
-      })
+      assert {403, _} =
+               mutation(ctx.conn, [:project_milestones, :update_title], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone),
+                 title: "New Title"
+               })
     end
 
     test "it updates the milestone title for project creator", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
       original_title = ctx.milestone.title
 
-      assert {200, res} = mutation(ctx.conn, [:project_milestones, :update_title], %{
-        milestone_id: Paths.milestone_id(ctx.milestone),
-        title: "Updated Milestone Title"
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:project_milestones, :update_title], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone),
+                 title: "Updated Milestone Title"
+               })
+
       updated_milestone = Repo.reload(ctx.milestone)
 
       assert res.milestone.title == "Updated Milestone Title"
@@ -287,10 +305,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
         |> Factory.edit_project_space_members_access(:project, :edit_access)
         |> Factory.log_in_person(:space_member)
 
-      assert {200, res} = mutation(ctx.conn, [:project_milestones, :update_title], %{
-        milestone_id: Paths.milestone_id(ctx.milestone),
-        title: "Updated by Space Member"
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:project_milestones, :update_title], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone),
+                 title: "Updated by Space Member"
+               })
 
       assert res.milestone.title == "Updated by Space Member"
 
@@ -306,10 +325,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
 
       ctx = log_in_account(ctx, ctx.champion.person)
 
-      assert {200, res} = mutation(ctx.conn, [:project_milestones, :update_title], %{
-        milestone_id: Paths.milestone_id(ctx.milestone),
-        title: "Updated by Champion"
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:project_milestones, :update_title], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone),
+                 title: "Updated by Champion"
+               })
 
       assert res.milestone.title == "Updated by Champion"
 
@@ -325,10 +345,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
 
       ctx = log_in_account(ctx, ctx.reviewer.person)
 
-      assert {200, res} = mutation(ctx.conn, [:project_milestones, :update_title], %{
-        milestone_id: Paths.milestone_id(ctx.milestone),
-        title: "Updated by Reviewer"
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:project_milestones, :update_title], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone),
+                 title: "Updated by Reviewer"
+               })
 
       assert res.milestone.title == "Updated by Reviewer"
 
@@ -343,10 +364,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
       original_timeframe = ctx.milestone.timeframe
       original_project_id = ctx.milestone.project_id
 
-      assert {200, _res} = mutation(ctx.conn, [:project_milestones, :update_title], %{
-        milestone_id: Paths.milestone_id(ctx.milestone),
-        title: "New Title Only"
-      })
+      assert {200, _res} =
+               mutation(ctx.conn, [:project_milestones, :update_title], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone),
+                 title: "New Title Only"
+               })
 
       updated_milestone = Repo.reload(ctx.milestone)
       assert updated_milestone.title == "New Title Only"
@@ -358,10 +380,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
     test "it validates title is not empty", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:project_milestones, :update_title], %{
-        milestone_id: Paths.milestone_id(ctx.milestone),
-        title: ""
-      })
+      assert {400, res} =
+               mutation(ctx.conn, [:project_milestones, :update_title], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone),
+                 title: ""
+               })
 
       assert res.message == "Title cannot be empty"
     end
@@ -371,10 +394,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
 
       before_count = count_activities(ctx.milestone.id, "milestone_title_updating")
 
-      assert {200, _} = mutation(ctx.conn, [:project_milestones, :update_title], %{
-        milestone_id: Paths.milestone_id(ctx.milestone),
-        title: "Activity Test Title"
-      })
+      assert {200, _} =
+               mutation(ctx.conn, [:project_milestones, :update_title], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone),
+                 title: "Activity Test Title"
+               })
 
       after_count = count_activities(ctx.milestone.id, "milestone_title_updating")
       assert after_count == before_count + 1
@@ -392,10 +416,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
       ctx = Factory.log_in_person(ctx, :creator)
       special_title = "Release v2.0 🚀 - Q1 2024 (Critical)"
 
-      assert {200, res} = mutation(ctx.conn, [:project_milestones, :update_title], %{
-        milestone_id: Paths.milestone_id(ctx.milestone),
-        title: special_title
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:project_milestones, :update_title], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone),
+                 title: special_title
+               })
 
       assert res.milestone.title == special_title
 
@@ -407,10 +432,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
       ctx = Factory.log_in_person(ctx, :creator)
       long_title = String.duplicate("A", 255)
 
-      assert {200, res} = mutation(ctx.conn, [:project_milestones, :update_title], %{
-        milestone_id: Paths.milestone_id(ctx.milestone),
-        title: long_title
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:project_milestones, :update_title], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone),
+                 title: long_title
+               })
 
       assert res.milestone.title == long_title
 
@@ -426,16 +452,18 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
         |> Factory.log_in_person(:creator)
 
       # Update milestone from first project
-      assert {200, res1} = mutation(ctx.conn, [:project_milestones, :update_title], %{
-        milestone_id: Paths.milestone_id(ctx.milestone),
-        title: "Project 1 Milestone"
-      })
+      assert {200, res1} =
+               mutation(ctx.conn, [:project_milestones, :update_title], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone),
+                 title: "Project 1 Milestone"
+               })
 
       # Update milestone from second project
-      assert {200, res2} = mutation(ctx.conn, [:project_milestones, :update_title], %{
-        milestone_id: Paths.milestone_id(ctx.other_milestone),
-        title: "Project 2 Milestone"
-      })
+      assert {200, res2} =
+               mutation(ctx.conn, [:project_milestones, :update_title], %{
+                 milestone_id: Paths.milestone_id(ctx.other_milestone),
+                 title: "Project 2 Milestone"
+               })
 
       assert res1.milestone.title == "Project 1 Milestone"
       assert res2.milestone.title == "Project 2 Milestone"
@@ -464,10 +492,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
     test "it returns not found for non-existent milestone", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {404, _} = mutation(ctx.conn, [:project_milestones, :update_due_date], %{
-        milestone_id: Ecto.UUID.generate(),
-        due_date: %{date: "2026-01-01", date_type: "day"}
-      })
+      assert {404, _} =
+               mutation(ctx.conn, [:project_milestones, :update_due_date], %{
+                 milestone_id: Ecto.UUID.generate(),
+                 due_date: %{date: "2026-01-01", date_type: "day"}
+               })
     end
 
     test "it returns forbidden for non-space-members", ctx do
@@ -477,10 +506,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
         |> Factory.add_company_member(:member)
         |> Factory.log_in_person(:member)
 
-      assert {403, _} = mutation(ctx.conn, [:project_milestones, :update_due_date], %{
-        milestone_id: Paths.milestone_id(ctx.milestone),
-        due_date: %{date: "2026-01-01", date_type: "day"}
-      })
+      assert {403, _} =
+               mutation(ctx.conn, [:project_milestones, :update_due_date], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone),
+                 due_date: %{date: "2026-01-01", date_type: "day"}
+               })
     end
 
     test "it returns forbidden for space members without edit permission", ctx do
@@ -490,10 +520,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
         |> Factory.edit_project_space_members_access(:project, :view_access)
         |> Factory.log_in_person(:space_member)
 
-      assert {403, _} = mutation(ctx.conn, [:project_milestones, :update_due_date], %{
-        milestone_id: Paths.milestone_id(ctx.milestone),
-        due_date: %{date: "2026-01-01", date_type: "day"}
-      })
+      assert {403, _} =
+               mutation(ctx.conn, [:project_milestones, :update_due_date], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone),
+                 due_date: %{date: "2026-01-01", date_type: "day"}
+               })
     end
 
     test "it updates the milestone due date for project creator", ctx do
@@ -505,10 +536,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
         value: "Jan 1, 2026"
       }
 
-      assert {200, res} = mutation(ctx.conn, [:project_milestones, :update_due_date], %{
-        milestone_id: Paths.milestone_id(ctx.milestone),
-        due_date: contextual_date
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:project_milestones, :update_due_date], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone),
+                 due_date: contextual_date
+               })
 
       assert res.milestone.id == Paths.milestone_id(ctx.milestone)
       assert res.milestone.timeframe.contextual_end_date == contextual_date
@@ -520,10 +552,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
     test "it can set due date to nil", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {200, res} = mutation(ctx.conn, [:project_milestones, :update_due_date], %{
-        milestone_id: Paths.milestone_id(ctx.milestone),
-        due_date: nil
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:project_milestones, :update_due_date], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone),
+                 due_date: nil
+               })
 
       assert res.milestone.id == Paths.milestone_id(ctx.milestone)
 
@@ -533,12 +566,13 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
 
     test "it preserves start date when updating due date", ctx do
       # First set a timeframe with both start and end dates
-      {:ok, milestone_with_timeframe} = Operately.Projects.update_milestone(ctx.milestone, %{
-        timeframe: %{
-          contextual_start_date: %{date: "2025-12-01", date_type: "day", value: "Dec 1, 2025"},
-          contextual_end_date: %{date: "2025-12-31", date_type: "day", value: "Dec 31, 2025"}
-        }
-      })
+      {:ok, milestone_with_timeframe} =
+        Operately.Projects.update_milestone(ctx.milestone, %{
+          timeframe: %{
+            contextual_start_date: %{date: "2025-12-01", date_type: "day", value: "Dec 1, 2025"},
+            contextual_end_date: %{date: "2025-12-31", date_type: "day", value: "Dec 31, 2025"}
+          }
+        })
 
       ctx = %{ctx | milestone: milestone_with_timeframe}
       ctx = Factory.log_in_person(ctx, :creator)
@@ -549,10 +583,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
         value: "Mar 15, 2026"
       }
 
-      assert {200, _} = mutation(ctx.conn, [:project_milestones, :update_due_date], %{
-        milestone_id: Paths.milestone_id(ctx.milestone),
-        due_date: new_due_date
-      })
+      assert {200, _} =
+               mutation(ctx.conn, [:project_milestones, :update_due_date], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone),
+                 due_date: new_due_date
+               })
 
       updated_milestone = Repo.reload(ctx.milestone)
       assert Operately.ContextualDates.Timeframe.start_date(updated_milestone.timeframe) == ~D[2025-12-01]
@@ -571,10 +606,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
         value: "Jun 1, 2026"
       }
 
-      assert {200, _} = mutation(ctx.conn, [:project_milestones, :update_due_date], %{
-        milestone_id: Paths.milestone_id(ctx.milestone),
-        due_date: contextual_date
-      })
+      assert {200, _} =
+               mutation(ctx.conn, [:project_milestones, :update_due_date], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone),
+                 due_date: contextual_date
+               })
 
       updated_milestone = Repo.reload(ctx.milestone)
       assert updated_milestone.timeframe != nil
@@ -595,10 +631,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
         value: "Feb 14, 2026"
       }
 
-      assert {200, _} = mutation(ctx.conn, [:project_milestones, :update_due_date], %{
-        milestone_id: Paths.milestone_id(ctx.milestone),
-        due_date: contextual_date
-      })
+      assert {200, _} =
+               mutation(ctx.conn, [:project_milestones, :update_due_date], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone),
+                 due_date: contextual_date
+               })
 
       updated_milestone = Repo.reload(ctx.milestone)
       assert Operately.ContextualDates.Timeframe.end_date(updated_milestone.timeframe) == ~D[2026-02-14]
@@ -615,10 +652,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
         "value" => "Apr 1, 2026"
       }
 
-      assert {200, _} = mutation(ctx.conn, [:project_milestones, :update_due_date], %{
-        milestone_id: Paths.milestone_id(ctx.milestone),
-        due_date: contextual_date
-      })
+      assert {200, _} =
+               mutation(ctx.conn, [:project_milestones, :update_due_date], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone),
+                 due_date: contextual_date
+               })
 
       after_count = count_activities(ctx.milestone.id, "milestone_due_date_updating")
       assert after_count == before_count + 1
@@ -640,10 +678,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
         value: "Q2 2026"
       }
 
-      assert {200, res} = mutation(ctx.conn, [:project_milestones, :update_due_date], %{
-        milestone_id: Paths.milestone_id(ctx.milestone),
-        due_date: quarter_date
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:project_milestones, :update_due_date], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone),
+                 due_date: quarter_date
+               })
 
       assert res.milestone.timeframe.contextual_end_date == quarter_date
     end
@@ -659,16 +698,18 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
       date2 = %{date: "2026-02-15", date_type: "day", value: "Feb 15, 2026"}
 
       # Update milestone from first project
-      assert {200, _} = mutation(ctx.conn, [:project_milestones, :update_due_date], %{
-        milestone_id: Paths.milestone_id(ctx.milestone),
-        due_date: date1
-      })
+      assert {200, _} =
+               mutation(ctx.conn, [:project_milestones, :update_due_date], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone),
+                 due_date: date1
+               })
 
       # Update milestone from second project
-      assert {200, _} = mutation(ctx.conn, [:project_milestones, :update_due_date], %{
-        milestone_id: Paths.milestone_id(ctx.other_milestone),
-        due_date: date2
-      })
+      assert {200, _} =
+               mutation(ctx.conn, [:project_milestones, :update_due_date], %{
+                 milestone_id: Paths.milestone_id(ctx.other_milestone),
+                 due_date: date2
+               })
 
       # Verify both milestones were updated correctly
       updated_milestone1 = Repo.reload(ctx.milestone)
@@ -701,10 +742,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
     test "it returns not found for non-existent milestone", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {404, _} = mutation(ctx.conn, [:project_milestones, :update_description], %{
-        milestone_id: Ecto.UUID.generate(),
-        description: RichText.rich_text("Test description", :as_string)
-      })
+      assert {404, _} =
+               mutation(ctx.conn, [:project_milestones, :update_description], %{
+                 milestone_id: Ecto.UUID.generate(),
+                 description: RichText.rich_text("Test description", :as_string)
+               })
     end
 
     test "it returns forbidden for non-space-members", ctx do
@@ -714,10 +756,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
         |> Factory.add_company_member(:member)
         |> Factory.log_in_person(:member)
 
-      assert {403, _} = mutation(ctx.conn, [:project_milestones, :update_description], %{
-        milestone_id: Paths.milestone_id(ctx.milestone),
-        description: RichText.rich_text("Test description", :as_string)
-      })
+      assert {403, _} =
+               mutation(ctx.conn, [:project_milestones, :update_description], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone),
+                 description: RichText.rich_text("Test description", :as_string)
+               })
     end
 
     test "it returns forbidden for space members without edit permission", ctx do
@@ -727,10 +770,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
         |> Factory.edit_project_space_members_access(:project, :view_access)
         |> Factory.log_in_person(:space_member)
 
-      assert {403, _} = mutation(ctx.conn, [:project_milestones, :update_description], %{
-        milestone_id: Paths.milestone_id(ctx.milestone),
-        description: RichText.rich_text("Test description", :as_string)
-      })
+      assert {403, _} =
+               mutation(ctx.conn, [:project_milestones, :update_description], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone),
+                 description: RichText.rich_text("Test description", :as_string)
+               })
     end
 
     test "it updates the milestone description for project creator", ctx do
@@ -738,10 +782,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
 
       description = RichText.rich_text("Updated milestone description")
 
-      assert {200, res} = mutation(ctx.conn, [:project_milestones, :update_description], %{
-        milestone_id: Paths.milestone_id(ctx.milestone),
-        description: Jason.encode!(description)
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:project_milestones, :update_description], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone),
+                 description: Jason.encode!(description)
+               })
 
       assert res.milestone.description == Jason.encode!(description)
       assert res.milestone.id == Paths.milestone_id(ctx.milestone)
@@ -759,10 +804,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
 
       description = RichText.rich_text("Updated by space member")
 
-      assert {200, res} = mutation(ctx.conn, [:project_milestones, :update_description], %{
-        milestone_id: Paths.milestone_id(ctx.milestone),
-        description: Jason.encode!(description)
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:project_milestones, :update_description], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone),
+                 description: Jason.encode!(description)
+               })
 
       assert res.milestone.description == Jason.encode!(description)
 
@@ -780,10 +826,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
 
       description = RichText.rich_text("Updated by champion")
 
-      assert {200, res} = mutation(ctx.conn, [:project_milestones, :update_description], %{
-        milestone_id: Paths.milestone_id(ctx.milestone),
-        description: Jason.encode!(description)
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:project_milestones, :update_description], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone),
+                 description: Jason.encode!(description)
+               })
 
       assert res.milestone.description == Jason.encode!(description)
 
@@ -801,10 +848,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
 
       description = RichText.rich_text("Updated by reviewer")
 
-      assert {200, res} = mutation(ctx.conn, [:project_milestones, :update_description], %{
-        milestone_id: Paths.milestone_id(ctx.milestone),
-        description: Jason.encode!(description)
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:project_milestones, :update_description], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone),
+                 description: Jason.encode!(description)
+               })
 
       assert res.milestone.description == Jason.encode!(description)
 
@@ -822,10 +870,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
 
       description = RichText.rich_text("New description only")
 
-      assert {200, _res} = mutation(ctx.conn, [:project_milestones, :update_description], %{
-        milestone_id: Paths.milestone_id(ctx.milestone),
-        description: Jason.encode!(description)
-      })
+      assert {200, _res} =
+               mutation(ctx.conn, [:project_milestones, :update_description], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone),
+                 description: Jason.encode!(description)
+               })
 
       updated_milestone = Repo.reload(ctx.milestone)
       assert updated_milestone.description == description
@@ -840,10 +889,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
 
       empty_description = RichText.rich_text("")
 
-      assert {200, res} = mutation(ctx.conn, [:project_milestones, :update_description], %{
-        milestone_id: Paths.milestone_id(ctx.milestone),
-        description: Jason.encode!(empty_description)
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:project_milestones, :update_description], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone),
+                 description: Jason.encode!(empty_description)
+               })
 
       assert res.milestone.description == Jason.encode!(empty_description)
 
@@ -856,10 +906,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
 
       before_count = count_activities(ctx.milestone.id, "milestone_description_updating")
 
-      assert {200, _} = mutation(ctx.conn, [:project_milestones, :update_description], %{
-        milestone_id: Paths.milestone_id(ctx.milestone),
-        description: RichText.rich_text("Activity test description", :as_string)
-      })
+      assert {200, _} =
+               mutation(ctx.conn, [:project_milestones, :update_description], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone),
+                 description: RichText.rich_text("Activity test description", :as_string)
+               })
 
       after_count = count_activities(ctx.milestone.id, "milestone_description_updating")
       assert after_count == before_count + 1
@@ -876,10 +927,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
     test "it tracks has_description correctly for empty descriptions", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {200, _} = mutation(ctx.conn, [:project_milestones, :update_description], %{
-        milestone_id: Paths.milestone_id(ctx.milestone),
-        description: RichText.rich_text("", :as_string)
-      })
+      assert {200, _} =
+               mutation(ctx.conn, [:project_milestones, :update_description], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone),
+                 description: RichText.rich_text("", :as_string)
+               })
 
       activity = get_activity(ctx.milestone.id, "milestone_description_updating")
       assert activity.content["has_description"] == false
@@ -910,10 +962,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
 
       fake_project = %Operately.Projects.Project{id: Ecto.UUID.generate(), name: "Missing"}
 
-      assert {404, _} = mutation(ctx.conn, [:project_milestones, :update_ordering], %{
-        project_id: Paths.project_id(fake_project),
-        ordering_state: []
-      })
+      assert {404, _} =
+               mutation(ctx.conn, [:project_milestones, :update_ordering], %{
+                 project_id: Paths.project_id(fake_project),
+                 ordering_state: []
+               })
     end
 
     test "it returns forbidden for members without edit access", ctx do
@@ -923,10 +976,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
         |> Factory.edit_project_space_members_access(:project, :view_access)
         |> Factory.log_in_person(:space_member)
 
-      assert {403, _} = mutation(ctx.conn, [:project_milestones, :update_ordering], %{
-        project_id: Paths.project_id(ctx.project),
-        ordering_state: []
-      })
+      assert {403, _} =
+               mutation(ctx.conn, [:project_milestones, :update_ordering], %{
+                 project_id: Paths.project_id(ctx.project),
+                 ordering_state: []
+               })
     end
 
     test "it rejects milestones from other projects", ctx do
@@ -936,13 +990,14 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
         |> Factory.add_project_milestone(:other_milestone, :other_project)
         |> Factory.log_in_person(:creator)
 
-      assert {400, res} = mutation(ctx.conn, [:project_milestones, :update_ordering], %{
-        project_id: Paths.project_id(ctx.project),
-        ordering_state: [
-          Paths.milestone_id(ctx.milestone),
-          Paths.milestone_id(ctx.other_milestone)
-        ]
-      })
+      assert {400, res} =
+               mutation(ctx.conn, [:project_milestones, :update_ordering], %{
+                 project_id: Paths.project_id(ctx.project),
+                 ordering_state: [
+                   Paths.milestone_id(ctx.milestone),
+                   Paths.milestone_id(ctx.other_milestone)
+                 ]
+               })
 
       assert res.message == "Some milestone IDs do not belong to this project"
     end
@@ -952,10 +1007,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
 
       partial_state = [Paths.milestone_id(ctx.milestone3)]
 
-      assert {200, res} = mutation(ctx.conn, [:project_milestones, :update_ordering], %{
-        project_id: Paths.project_id(ctx.project),
-        ordering_state: partial_state
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:project_milestones, :update_ordering], %{
+                 project_id: Paths.project_id(ctx.project),
+                 ordering_state: partial_state
+               })
 
       project_after = Repo.reload(ctx.project)
 
@@ -978,10 +1034,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
         Paths.milestone_id(ctx.milestone)
       ]
 
-      assert {200, res} = mutation(ctx.conn, [:project_milestones, :update_ordering], %{
-        project_id: Paths.project_id(ctx.project),
-        ordering_state: new_order
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:project_milestones, :update_ordering], %{
+                 project_id: Paths.project_id(ctx.project),
+                 ordering_state: new_order
+               })
 
       project_after = Repo.reload(ctx.project)
 
@@ -1005,9 +1062,10 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
     test "it returns not found for non-existent milestone", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {404, _} = mutation(ctx.conn, [:project_milestones, :delete], %{
-        milestone_id: Ecto.UUID.generate()
-      })
+      assert {404, _} =
+               mutation(ctx.conn, [:project_milestones, :delete], %{
+                 milestone_id: Ecto.UUID.generate()
+               })
     end
 
     test "it returns forbidden for non-space-members", ctx do
@@ -1017,9 +1075,10 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
         |> Factory.add_company_member(:member)
         |> Factory.log_in_person(:member)
 
-      assert {403, _} = mutation(ctx.conn, [:project_milestones, :delete], %{
-        milestone_id: Paths.milestone_id(ctx.milestone)
-      })
+      assert {403, _} =
+               mutation(ctx.conn, [:project_milestones, :delete], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone)
+               })
     end
 
     test "it returns forbidden for space members without edit permission", ctx do
@@ -1029,9 +1088,10 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
         |> Factory.edit_project_space_members_access(:project, :view_access)
         |> Factory.log_in_person(:space_member)
 
-      assert {403, _} = mutation(ctx.conn, [:project_milestones, :delete], %{
-        milestone_id: Paths.milestone_id(ctx.milestone)
-      })
+      assert {403, _} =
+               mutation(ctx.conn, [:project_milestones, :delete], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone)
+               })
     end
 
     test "it deletes the milestone for project creator", ctx do
@@ -1041,9 +1101,10 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
       project_before = Repo.reload(ctx.project)
       assert project_before.milestones_ordering_state == [Paths.milestone_id(ctx.milestone)]
 
-      assert {200, res} = mutation(ctx.conn, [:project_milestones, :delete], %{
-        milestone_id: Paths.milestone_id(ctx.milestone)
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:project_milestones, :delete], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone)
+               })
 
       assert res.success == true
 
@@ -1063,9 +1124,10 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
 
       milestone_id = ctx.milestone.id
 
-      assert {200, res} = mutation(ctx.conn, [:project_milestones, :delete], %{
-        milestone_id: Paths.milestone_id(ctx.milestone)
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:project_milestones, :delete], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone)
+               })
 
       assert res.success == true
 
@@ -1082,9 +1144,10 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
       ctx = log_in_account(ctx, ctx.champion.person)
       milestone_id = ctx.milestone.id
 
-      assert {200, res} = mutation(ctx.conn, [:project_milestones, :delete], %{
-        milestone_id: Paths.milestone_id(ctx.milestone)
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:project_milestones, :delete], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone)
+               })
 
       assert res.success == true
 
@@ -1101,9 +1164,10 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
       ctx = log_in_account(ctx, ctx.reviewer.person)
       milestone_id = ctx.milestone.id
 
-      assert {200, res} = mutation(ctx.conn, [:project_milestones, :delete], %{
-        milestone_id: Paths.milestone_id(ctx.milestone)
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:project_milestones, :delete], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone)
+               })
 
       assert res.success == true
 
@@ -1117,9 +1181,10 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
       before_count = count_activities(ctx.milestone.id, "milestone_deleting")
       milestone_name = ctx.milestone.title
 
-      assert {200, _} = mutation(ctx.conn, [:project_milestones, :delete], %{
-        milestone_id: Paths.milestone_id(ctx.milestone)
-      })
+      assert {200, _} =
+               mutation(ctx.conn, [:project_milestones, :delete], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone)
+               })
 
       after_count = count_activities(ctx.milestone.id, "milestone_deleting")
       assert after_count == before_count + 1
@@ -1143,14 +1208,16 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
       milestone2_id = ctx.other_milestone.id
 
       # Delete milestone from first project
-      assert {200, res1} = mutation(ctx.conn, [:project_milestones, :delete], %{
-        milestone_id: Paths.milestone_id(ctx.milestone)
-      })
+      assert {200, res1} =
+               mutation(ctx.conn, [:project_milestones, :delete], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone)
+               })
 
       # Delete milestone from second project
-      assert {200, res2} = mutation(ctx.conn, [:project_milestones, :delete], %{
-        milestone_id: Paths.milestone_id(ctx.other_milestone)
-      })
+      assert {200, res2} =
+               mutation(ctx.conn, [:project_milestones, :delete], %{
+                 milestone_id: Paths.milestone_id(ctx.other_milestone)
+               })
 
       assert res1.success == true
       assert res2.success == true
@@ -1168,9 +1235,10 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
       tasks = Operately.Tasks.list_tasks(%{milestone_id: milestone_id})
       assert length(tasks) == 0
 
-      assert {200, res} = mutation(ctx.conn, [:project_milestones, :delete], %{
-        milestone_id: Paths.milestone_id(ctx.milestone)
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:project_milestones, :delete], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone)
+               })
 
       assert res.success == true
       assert Repo.get(Operately.Projects.Milestone, milestone_id) == nil
@@ -1185,9 +1253,10 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
       ctx = Factory.log_in_person(ctx, :creator)
       milestone_id = ctx.milestone.id
 
-      assert {200, res} = mutation(ctx.conn, [:project_milestones, :delete], %{
-        milestone_id: Paths.milestone_id(ctx.milestone)
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:project_milestones, :delete], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone)
+               })
 
       assert res.success == true
       assert Repo.get(Operately.Projects.Milestone, milestone_id) == nil
@@ -1199,15 +1268,17 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
         contextual_start_date: %{date: "2025-01-01", date_type: "day", value: "Jan 1, 2025"},
         contextual_end_date: %{date: "2025-12-31", date_type: "day", value: "Dec 31, 2025"}
       }
+
       {:ok, milestone_with_timeframe} = Operately.Projects.update_milestone(ctx.milestone, %{timeframe: timeframe})
 
       ctx = %{ctx | milestone: milestone_with_timeframe}
       ctx = Factory.log_in_person(ctx, :creator)
       milestone_id = ctx.milestone.id
 
-      assert {200, res} = mutation(ctx.conn, [:project_milestones, :delete], %{
-        milestone_id: Paths.milestone_id(ctx.milestone)
-      })
+      assert {200, res} =
+               mutation(ctx.conn, [:project_milestones, :delete], %{
+                 milestone_id: Paths.milestone_id(ctx.milestone)
+               })
 
       assert res.success == true
       assert Repo.get(Operately.Projects.Milestone, milestone_id) == nil

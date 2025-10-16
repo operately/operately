@@ -17,23 +17,25 @@ defmodule OperatelyEmail.ProjectCreatedEmailTest do
 
     group = group_fixture(champion, %{company_id: company.id})
 
-    project = Operately.Projects.create_project(%Operately.Operations.ProjectCreation{
-      company_id: company.id,
-      name: "Hello",
-      creator_id: reviewer.id,
-      champion_id: champion.id,
-      reviewer_id: reviewer.id,
-      group_id: group.id,
-      company_access_level: Binding.view_access(),
-      space_access_level: Binding.comment_access(),
-    })
+    project =
+      Operately.Projects.create_project(%Operately.Operations.ProjectCreation{
+        company_id: company.id,
+        name: "Hello",
+        creator_id: reviewer.id,
+        champion_id: champion.id,
+        reviewer_id: reviewer.id,
+        group_id: group.id,
+        company_access_level: Binding.view_access(),
+        space_access_level: Binding.comment_access()
+      })
 
-    {:ok, %{
-      company: company,
-      project: project,
-      champion: champion,
-      reviewer: reviewer,
-    }}
+    {:ok,
+     %{
+       company: company,
+       project: project,
+       champion: champion,
+       reviewer: reviewer
+     }}
   end
 
   test "sends an email to the project contributors", ctx do

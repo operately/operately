@@ -1,4 +1,4 @@
-  defmodule Operately.Operations.ProjectGoalDisconnectionTest do
+defmodule Operately.Operations.ProjectGoalDisconnectionTest do
   use Operately.DataCase
   use Operately.Support.Notifications
 

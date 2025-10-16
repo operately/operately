@@ -22,10 +22,11 @@ defmodule Operately.Operations.GoalReopeningTest do
   end
 
   defp setup_closed_goal(ctx) do
-    {:ok, goal} = ctx.goal
+    {:ok, goal} =
+      ctx.goal
       |> Goal.changeset(%{
         closed_at: DateTime.utc_now(),
-        closed_by_id: ctx.creator.id,
+        closed_by_id: ctx.creator.id
       })
       |> Repo.update()
 

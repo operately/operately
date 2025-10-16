@@ -15,8 +15,7 @@ defmodule Operately.Updates.Types.Message do
 
   def build(message) do
     %{
-      :message => message,
+      :message => message
     }
   end
-
 end

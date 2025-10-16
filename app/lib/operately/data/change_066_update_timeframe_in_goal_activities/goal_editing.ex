@@ -4,18 +4,20 @@ defmodule Operately.Data.Change066UpdateTimeframeInGoalActivities.GoalEditing do
   alias Operately.Activities.Activity
 
   def run do
-    goal_editing_activities = Repo.all(
-      from a in Activity,
-      where: a.action == "goal_editing",
-      select: a
-    )
+    goal_editing_activities =
+      Repo.all(
+        from a in Activity,
+          where: a.action == "goal_editing",
+          select: a
+      )
 
-    {success_count, error_count} = Enum.reduce(goal_editing_activities, {0, 0}, fn activity, {success, error} ->
-      case update_activity_timeframes(activity) do
-        {:ok, _} -> {success + 1, error}
-        {:error, _} -> {success, error + 1}
-      end
-    end)
+    {success_count, error_count} =
+      Enum.reduce(goal_editing_activities, {0, 0}, fn activity, {success, error} ->
+        case update_activity_timeframes(activity) do
+          {:ok, _} -> {success + 1, error}
+          {:error, _} -> {success, error + 1}
+        end
+      end)
 
     {:ok, %{success_count: success_count, error_count: error_count}}
   end
@@ -48,6 +50,7 @@ defmodule Operately.Data.Change066UpdateTimeframeInGoalActivities.GoalEditing do
   end
 
   defp update_timeframe_with_contextual_dates(content, nil, _field_name), do: content
+
   defp update_timeframe_with_contextual_dates(content, timeframe, field_name) do
     start_date = get_date_from_timeframe(timeframe, "start_date")
     end_date = get_date_from_timeframe(timeframe, "end_date")
@@ -64,10 +67,11 @@ defmodule Operately.Data.Change066UpdateTimeframeInGoalActivities.GoalEditing do
       date: end_date
     }
 
-    updated_timeframe = Map.merge(timeframe, %{
-      "contextual_start_date" => contextual_start_date,
-      "contextual_end_date" => contextual_end_date
-    })
+    updated_timeframe =
+      Map.merge(timeframe, %{
+        "contextual_start_date" => contextual_start_date,
+        "contextual_end_date" => contextual_end_date
+      })
 
     Map.put(content, field_name, updated_timeframe)
   end
@@ -80,15 +84,18 @@ defmodule Operately.Data.Change066UpdateTimeframeInGoalActivities.GoalEditing do
     end
     |> ensure_date()
   end
+
   defp get_date_from_timeframe(_timeframe, _field), do: nil
 
   defp ensure_date(%Date{} = date), do: date
+
   defp ensure_date(date) when is_binary(date) do
     case Date.from_iso8601(date) do
       {:ok, date_struct} -> date_struct
       _ -> nil
     end
   end
+
   defp ensure_date(_), do: nil
 
   def convert_old_timeframe(old_timeframe) do

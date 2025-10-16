@@ -25,21 +25,22 @@ defmodule Operately.Operations.ProjectContributorsAdditionTest do
       %{person_id: contributor3.id, responsibility: "QA", role: :contributor, access_level: Binding.edit_access()}
     ]
 
-    {:ok, company: company, creator: creator, contributors: [contributor1, contributor2, contributor3],
-          contributor_attrs: contributors, project: project}
+    {:ok, company: company, creator: creator, contributors: [contributor1, contributor2, contributor3], contributor_attrs: contributors, project: project}
   end
 
   test "ProjectContributorsAddition operation creates multiple contributors", ctx do
-    {:ok, created_contributors} = Operately.Operations.ProjectContributorsAddition.run(
-      ctx.creator,
-      ctx.project,
-      ctx.contributor_attrs
-    )
+    {:ok, created_contributors} =
+      Operately.Operations.ProjectContributorsAddition.run(
+        ctx.creator,
+        ctx.project,
+        ctx.contributor_attrs
+      )
 
     assert length(created_contributors) == 3
 
     db_contributors = Projects.list_project_contributors(ctx.project)
-    assert length(db_contributors) == 4 # +1 for the creator
+    # +1 for the creator
+    assert length(db_contributors) == 4
 
     Enum.each(ctx.contributor_attrs, fn attr ->
       contributor = Enum.find(db_contributors, fn c -> c.person_id == attr.person_id end)
@@ -59,7 +60,8 @@ defmodule Operately.Operations.ProjectContributorsAdditionTest do
 
     Operately.Operations.ProjectContributorsAddition.run(ctx.creator, ctx.project, ctx.contributor_attrs)
 
-    Enum.zip(ctx.contributors, ctx.contributor_attrs) |> Enum.each(fn {contributor, attrs} ->
+    Enum.zip(ctx.contributors, ctx.contributor_attrs)
+    |> Enum.each(fn {contributor, attrs} ->
       group = Access.get_group!(person_id: contributor.id)
       assert Access.get_binding(context_id: context.id, group_id: group.id)
       assert Access.get_binding(context_id: context.id, group_id: group.id, access_level: attrs.access_level)
@@ -81,9 +83,11 @@ defmodule Operately.Operations.ProjectContributorsAdditionTest do
     assert length(activity.content["contributors"]) == 3
 
     Enum.each(ctx.contributor_attrs, fn attr ->
-      contributor_entry = Enum.find(activity.content["contributors"], fn c ->
-        c["person_id"] == attr.person_id
-      end)
+      contributor_entry =
+        Enum.find(activity.content["contributors"], fn c ->
+          c["person_id"] == attr.person_id
+        end)
+
       assert contributor_entry["responsibility"] == attr.responsibility
       assert contributor_entry["role"] == Atom.to_string(attr.role)
     end)

@@ -6,7 +6,7 @@ defmodule Operately.Features.ResourceHubDocumentTest do
 
   @document %{
     name: "My First Document",
-    content: "This is the document's content",
+    content: "This is the document's content"
   }
 
   setup ctx, do: Steps.setup(ctx)
@@ -25,7 +25,7 @@ defmodule Operately.Features.ResourceHubDocumentTest do
   feature "edit document", ctx do
     new_doc = %{
       name: "Edited name",
-      content: "Brand new content",
+      content: "Brand new content"
     }
 
     ctx
@@ -75,9 +75,10 @@ defmodule Operately.Features.ResourceHubDocumentTest do
 
   feature "copy document into another folder", ctx do
     document_name = "Document"
+
     new_doc = %{
       name: "Document - Copy",
-      content: "Content",
+      content: "Content"
     }
 
     ctx
@@ -175,7 +176,7 @@ defmodule Operately.Features.ResourceHubDocumentTest do
     feature "Draft document can be edited and published", ctx do
       new_doc = %{
         name: "Edited draft",
-        content: "Edited draft content",
+        content: "Edited draft content"
       }
 
       ctx

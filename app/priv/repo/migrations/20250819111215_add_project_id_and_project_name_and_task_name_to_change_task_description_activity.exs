@@ -6,6 +6,5 @@ defmodule Operately.Repo.Migrations.AddProjectIdAndProjectNameAndTaskNameToChang
   end
 
   def down do
-
   end
 end

@@ -1,20 +1,21 @@
 defmodule Operately.Support.RichText do
   def rich_text(mentioned_people: people) do
-    mentions = Enum.map(people, fn p ->
-      %{
-        "content" => [
-          %{
-            "attrs" => %{
-              "id" => OperatelyWeb.Paths.person_id(p),
-              "label" => p.full_name
+    mentions =
+      Enum.map(people, fn p ->
+        %{
+          "content" => [
+            %{
+              "attrs" => %{
+                "id" => OperatelyWeb.Paths.person_id(p),
+                "label" => p.full_name
+              },
+              "type" => "mention"
             },
-            "type" => "mention"
-          },
-          %{"text" => " ", "type" => "text"}
-        ],
-        "type" => "paragraph"
-      }
-    end)
+            %{"text" => " ", "type" => "text"}
+          ],
+          "type" => "paragraph"
+        }
+      end)
 
     %{
       "content" => mentions,

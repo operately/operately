@@ -106,64 +106,73 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckInTest do
       assert {200, res} = query(ctx.conn, :get_project_check_in, %{id: Paths.project_check_in_id(ctx.check_in)})
       assert res.project_check_in.notifications == []
 
-      assert {200, res} = query(ctx.conn, :get_project_check_in, %{
-        id: Paths.project_check_in_id(ctx.check_in),
-        include_unread_notifications: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_project_check_in, %{
+                 id: Paths.project_check_in_id(ctx.check_in),
+                 include_unread_notifications: true
+               })
 
       assert length(res.project_check_in.notifications) == 1
       assert Serializer.serialize(n) == hd(res.project_check_in.notifications)
     end
 
     test "include_author", ctx do
-      assert {200, res} = query(ctx.conn, :get_project_check_in, %{
-        id: Paths.project_check_in_id(ctx.check_in),
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_project_check_in, %{
+                 id: Paths.project_check_in_id(ctx.check_in)
+               })
 
       refute res.project_check_in.author
 
-      assert {200, res} = query(ctx.conn, :get_project_check_in, %{
-        id: Paths.project_check_in_id(ctx.check_in),
-        include_author: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_project_check_in, %{
+                 id: Paths.project_check_in_id(ctx.check_in),
+                 include_author: true
+               })
 
       assert res.project_check_in.author == Serializer.serialize(ctx.creator)
     end
 
     test "include_reactions", ctx do
-      {:ok, reaction} = Operately.Updates.create_reaction(%{
-        person_id: ctx.creator.id,
-        entity_id: ctx.check_in.id,
-        entity_type: :project_check_in,
-        emoji: "👍",
-      })
+      {:ok, reaction} =
+        Operately.Updates.create_reaction(%{
+          person_id: ctx.creator.id,
+          entity_id: ctx.check_in.id,
+          entity_type: :project_check_in,
+          emoji: "👍"
+        })
+
       reaction = Repo.preload(reaction, :person)
 
-      assert {200, res} = query(ctx.conn, :get_project_check_in, %{
-        id: Paths.project_check_in_id(ctx.check_in),
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_project_check_in, %{
+                 id: Paths.project_check_in_id(ctx.check_in)
+               })
 
       refute res.project_check_in.reactions
 
-      assert {200, res} = query(ctx.conn, :get_project_check_in, %{
-        id: Paths.project_check_in_id(ctx.check_in),
-        include_reactions: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_project_check_in, %{
+                 id: Paths.project_check_in_id(ctx.check_in),
+                 include_reactions: true
+               })
 
       assert res.project_check_in.reactions == [Serializer.serialize(reaction)]
     end
 
     test "include_project", ctx do
-      assert {200, res} = query(ctx.conn, :get_project_check_in, %{
-        id: Paths.project_check_in_id(ctx.check_in),
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_project_check_in, %{
+                 id: Paths.project_check_in_id(ctx.check_in)
+               })
 
       refute res.project_check_in.project
 
-      assert {200, res} = query(ctx.conn, :get_project_check_in, %{
-        id: Paths.project_check_in_id(ctx.check_in),
-        include_project: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_project_check_in, %{
+                 id: Paths.project_check_in_id(ctx.check_in),
+                 include_project: true
+               })
 
       assert res.project_check_in.project
       assert res.project_check_in.project.permissions
@@ -174,10 +183,11 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckInTest do
 
       refute res.project_check_in.subscription_list
 
-      assert {200, res} = query(ctx.conn, :get_project_check_in, %{
-        id: Paths.project_check_in_id(ctx.check_in),
-        include_subscriptions_list: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_project_check_in, %{
+                 id: Paths.project_check_in_id(ctx.check_in),
+                 include_subscriptions_list: true
+               })
 
       assert res.project_check_in.subscription_list
     end
@@ -193,16 +203,19 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckInTest do
       subscription_fixture(%{subscription_list_id: list.id, person_id: ctx.person.id})
       subscription_fixture(%{subscription_list_id: list.id, person_id: ctx.contrib1.person_id})
 
-      assert {200, res} = query(ctx.conn, :get_project_check_in, %{
-        id: Paths.project_check_in_id(ctx.check_in),
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_project_check_in, %{
+                 id: Paths.project_check_in_id(ctx.check_in)
+               })
 
       refute res.project_check_in.potential_subscribers
 
-      assert {200, res} = query(ctx.conn, :get_project_check_in, %{
-        id: Paths.project_check_in_id(ctx.check_in),
-        include_potential_subscribers: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_project_check_in, %{
+                 id: Paths.project_check_in_id(ctx.check_in),
+                 include_potential_subscribers: true
+               })
+
       subs = res.project_check_in.potential_subscribers
 
       # person is not contrib, but has subscription
@@ -210,11 +223,11 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckInTest do
       assert person.is_subscribed
 
       # contrib1 has subscription
-      contrib1 = Enum.find(subs, &(equal_ids?(&1.person.id, ctx.contrib1.person_id)))
+      contrib1 = Enum.find(subs, &equal_ids?(&1.person.id, ctx.contrib1.person_id))
       assert contrib1.is_subscribed
 
       # contrib2 doesn't have subscription, but is potential subscriber
-      contrib2 = Enum.find(subs, &(equal_ids?(&1.person.id, ctx.contrib2.person_id)))
+      contrib2 = Enum.find(subs, &equal_ids?(&1.person.id, ctx.contrib2.person_id))
       refute contrib2.is_subscribed
     end
   end
@@ -224,25 +237,28 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckInTest do
   #
 
   defp create_check_in(ctx, opts) do
-    project = project_fixture(%{
-      company_id: ctx.company.id,
-      group_id: ctx.space.id,
-      creator_id: ctx.creator.id,
-      champion_id: Keyword.get(opts, :champion_id, ctx.creator.id),
-      reviewer_id: Keyword.get(opts, :reviewer_id, ctx.creator.id),
-      company_access_level: Keyword.get(opts, :company_access, Binding.no_access()),
-      space_access_level: Keyword.get(opts, :space_access, Binding.no_access()),
-    })
+    project =
+      project_fixture(%{
+        company_id: ctx.company.id,
+        group_id: ctx.space.id,
+        creator_id: ctx.creator.id,
+        champion_id: Keyword.get(opts, :champion_id, ctx.creator.id),
+        reviewer_id: Keyword.get(opts, :reviewer_id, ctx.creator.id),
+        company_access_level: Keyword.get(opts, :company_access, Binding.no_access()),
+        space_access_level: Keyword.get(opts, :space_access, Binding.no_access())
+      })
 
     check_in_fixture(%{author_id: ctx.creator.id, project_id: project.id})
     |> Serializer.serialize(level: :full)
   end
 
   defp add_person_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space.id, [%{
-      id: ctx.person.id,
-      access_level: Binding.edit_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space.id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.edit_access()
+      }
+    ])
   end
 
   def equal_ids?(short_id, id) do

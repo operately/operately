@@ -35,9 +35,12 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalDiscussion do
   end
 
   defp load_activity(author, activity_id) do
-    Activity.get(author, id: activity_id, opts: [
-      preload: [:comment_thread]
-    ])
+    Activity.get(author,
+      id: activity_id,
+      opts: [
+        preload: [:comment_thread]
+      ]
+    )
   end
 
   defp parse_inputs(inputs) do

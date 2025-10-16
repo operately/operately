@@ -118,12 +118,13 @@ defmodule Operately.AccessContextsTest do
   #
 
   defp create_company_without_context do
-    {:ok, company} = Operately.Companies.Company.changeset(%{
-      mission: "some mission",
-      name: "some name",
-      trusted_email_domains: []
-    })
-    |> Repo.insert()
+    {:ok, company} =
+      Operately.Companies.Company.changeset(%{
+        mission: "some mission",
+        name: "some name",
+        trusted_email_domains: []
+      })
+      |> Repo.insert()
 
     Access.create_group(%{company_id: company.id, tag: :full_access})
     Access.create_group(%{company_id: company.id, tag: :standard})
@@ -133,14 +134,15 @@ defmodule Operately.AccessContextsTest do
   end
 
   defp create_group_without_context(company_id) do
-    {:ok, group} = Operately.Groups.Group.changeset(%{
-      company_id: company_id,
-      name: "some name",
-      mission: "some mission",
-      icon: "some icon",
-      color: "come color",
-    })
-    |> Repo.insert()
+    {:ok, group} =
+      Operately.Groups.Group.changeset(%{
+        company_id: company_id,
+        name: "some name",
+        mission: "some mission",
+        icon: "some icon",
+        color: "come color"
+      })
+      |> Repo.insert()
 
     Access.create_group(%{group_id: group.id, tag: :full_access})
     Access.create_group(%{group_id: group.id, tag: :standard})
@@ -149,21 +151,23 @@ defmodule Operately.AccessContextsTest do
   end
 
   defp create_project_without_context(attrs) do
-    Operately.ProjectsFixtures.project_fixture(
-      Map.merge(attrs, %{name: "some name"})
-    )
+    Operately.ProjectsFixtures.project_fixture(Map.merge(attrs, %{name: "some name"}))
   end
 
   defp create_goal_without_context(creator, attrs) do
-    {:ok, goal} = Map.merge(%{
-      name: "some name",
-      company_id: creator.company_id,
-      champion_id: creator.id,
-      reviewer_id: creator.id,
-      creator_id: creator.id,
-    }, attrs)
-    |> Operately.Goals.Goal.changeset()
-    |> Repo.insert()
+    {:ok, goal} =
+      Map.merge(
+        %{
+          name: "some name",
+          company_id: creator.company_id,
+          champion_id: creator.id,
+          reviewer_id: creator.id,
+          creator_id: creator.id
+        },
+        attrs
+      )
+      |> Operately.Goals.Goal.changeset()
+      |> Repo.insert()
 
     goal
   end

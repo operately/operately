@@ -208,10 +208,12 @@ defmodule Operately.Repo.Getter do
   defp base_query(query, requester_id) do
     from([resource: r] in query,
       join: c in assoc(r, :access_context),
-      join: b in assoc(c, :bindings), as: :binding,
+      join: b in assoc(c, :bindings),
+      as: :binding,
       join: g in assoc(b, :group),
       join: m in assoc(g, :memberships),
-      join: p in assoc(m, :person), as: :person,
+      join: p in assoc(m, :person),
+      as: :person,
       where: m.person_id == ^requester_id,
       where: is_nil(p.suspended_at),
       where: b.access_level >= ^Binding.view_access()
@@ -245,12 +247,10 @@ defmodule Operately.Repo.Getter do
   defp to_tuple(resource), do: {:ok, resource}
 
   defmodule GetterArgs do
-    defstruct [
-      field_matchers: [],
-      preload: [],
-      with_deleted: false,
-      after_load: []
-    ]
+    defstruct field_matchers: [],
+              preload: [],
+              with_deleted: false,
+              after_load: []
 
     @allowed_options [:preload, :with_deleted, :after_load]
 

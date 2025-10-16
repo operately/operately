@@ -11,20 +11,23 @@ defmodule Operately.InvitationsFixtures do
   def invitation_fixture() do
     company = company_fixture(%{name: "Test Company"})
 
-    admin = person_fixture(%{
-      email: "admin@test.com",
-      company_id: company.id,
-    })
+    admin =
+      person_fixture(%{
+        email: "admin@test.com",
+        company_id: company.id
+      })
 
-    member = person_fixture_with_account(%{
-      email: "member@test.com",
-      company_id: company.id,
-    })
+    member =
+      person_fixture_with_account(%{
+        email: "member@test.com",
+        company_id: company.id
+      })
 
-    {:ok, invitation} = Invitations.create_invitation(%{
-      member_id: member.id,
-      admin_id: admin.id,
-    })
+    {:ok, invitation} =
+      Invitations.create_invitation(%{
+        member_id: member.id,
+        admin_id: admin.id
+      })
 
     invitation
   end
@@ -47,10 +50,14 @@ defmodule Operately.InvitationsFixtures do
   def invitation_token_fixture(invitation_id, opts) do
     token = InvitationToken.build_token()
 
-    {:ok, invitation_token} = Invitations.create_invitation_token!(%{
-      invitation_id: invitation_id,
-      token: token,
-    }, opts)
+    {:ok, invitation_token} =
+      Invitations.create_invitation_token!(
+        %{
+          invitation_id: invitation_id,
+          token: token
+        },
+        opts
+      )
 
     invitation_token
   end
@@ -66,7 +73,7 @@ defmodule Operately.InvitationsFixtures do
 
     Invitations.create_invitation_token!(%{
       invitation_id: invitation_id,
-      token: token,
+      token: token
     })
 
     token

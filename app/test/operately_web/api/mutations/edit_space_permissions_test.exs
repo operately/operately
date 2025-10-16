@@ -76,10 +76,11 @@ defmodule OperatelyWeb.Api.Mutations.EditSpacePermissionsTest do
     setup :register_and_log_in_account
 
     test "edits space permissions", ctx do
-      space = group_fixture(ctx.person, %{
-        public_permissions: Binding.view_access(),
-        company_permissions: Binding.edit_access(),
-      })
+      space =
+        group_fixture(ctx.person, %{
+          public_permissions: Binding.view_access(),
+          company_permissions: Binding.edit_access()
+        })
 
       assert {200, res} = request(ctx.conn, space)
       assert res.success
@@ -96,8 +97,8 @@ defmodule OperatelyWeb.Api.Mutations.EditSpacePermissionsTest do
       space_id: Paths.space_id(space),
       access_levels: %{
         public: Binding.no_access(),
-        company: Binding.view_access(),
-      },
+        company: Binding.view_access()
+      }
     })
   end
 
@@ -118,14 +119,16 @@ defmodule OperatelyWeb.Api.Mutations.EditSpacePermissionsTest do
     group_fixture(ctx.creator, %{
       company_id: ctx.company.id,
       public_permissions: Keyword.get(attrs, :public_permissions, Binding.no_access()),
-      company_permissions: Keyword.get(attrs, :company_permissions, Binding.no_access()),
+      company_permissions: Keyword.get(attrs, :company_permissions, Binding.no_access())
     })
   end
 
   defp add_person_to_space(ctx, space_id, access_level) do
-    Operately.Groups.add_members(ctx.person, space_id, [%{
-      id: ctx.person.id,
-      access_level: access_level,
-    }])
+    Operately.Groups.add_members(ctx.person, space_id, [
+      %{
+        id: ctx.person.id,
+        access_level: access_level
+      }
+    ])
   end
 end

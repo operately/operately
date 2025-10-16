@@ -258,10 +258,10 @@ defmodule Operately.Support.Features.DiscussionsSteps do
   step :given_a_draft_discussion_exists, ctx do
     ctx
     |> Factory.add_messages_board(:messages_board, :marketing_space)
-    |> Factory.add_message(:draft_discussion, :messages_board, [
+    |> Factory.add_message(:draft_discussion, :messages_board,
       state: :draft,
       creator: ctx.author
-    ])
+    )
   end
 
   step :click_on_continue_editing_last_draft, ctx do
@@ -271,16 +271,16 @@ defmodule Operately.Support.Features.DiscussionsSteps do
   step :given_multiple_draft_discussions_exist, ctx do
     ctx
     |> Factory.add_messages_board(:messages_board, :marketing_space)
-    |> Factory.add_message(:draft_discussion_1, :messages_board, [
+    |> Factory.add_message(:draft_discussion_1, :messages_board,
       state: :draft,
       creator: ctx.author,
       title: "Draft discussion 1"
-    ])
-    |> Factory.add_message(:draft_discussion_2, :messages_board, [
+    )
+    |> Factory.add_message(:draft_discussion_2, :messages_board,
       state: :draft,
       creator: ctx.author,
       title: "Draft discussion 2"
-    ])
+    )
   end
 
   step :click_on_continue_editing_draft, ctx do
@@ -373,15 +373,20 @@ defmodule Operately.Support.Features.DiscussionsSteps do
   defp last_archived_message(ctx, attempts \\ 3) do
     import Ecto.Query
 
-    message = Operately.Repo.one(
-      from m in Operately.Messages.Message,
-      where: not is_nil(m.deleted_at),
-      limit: 1
-    )
+    message =
+      Operately.Repo.one(
+        from m in Operately.Messages.Message,
+          where: not is_nil(m.deleted_at),
+          limit: 1
+      )
 
     cond do
-      message -> message
-      attempts <= 0 -> raise "Could not find the last archived message"
+      message ->
+        message
+
+      attempts <= 0 ->
+        raise "Could not find the last archived message"
+
       true ->
         :timer.sleep(300)
         last_archived_message(ctx, attempts - 1)
@@ -393,8 +398,12 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     message = Operately.Repo.one(from m in Operately.Messages.Message, order_by: [desc: m.updated_at], limit: 1)
 
     cond do
-      message -> message
-      attempts <= 0 -> raise "Could not find the last message"
+      message ->
+        message
+
+      attempts <= 0 ->
+        raise "Could not find the last message"
+
       true ->
         :timer.sleep(300)
         last_message(ctx, attempts - 1)

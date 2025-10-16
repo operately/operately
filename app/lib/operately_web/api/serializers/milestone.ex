@@ -12,14 +12,14 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Milestone do
       tasks_kanban_state: %{
         todo: encode_task_ids(milestone.tasks_kanban_state["todo"]),
         in_progress: encode_task_ids(milestone.tasks_kanban_state["in_progress"]),
-        done: encode_task_ids(milestone.tasks_kanban_state["done"]),
+        done: encode_task_ids(milestone.tasks_kanban_state["done"])
       },
       tasks_ordering_state: OperatelyWeb.Api.Serializer.serialize(milestone.tasks_ordering_state),
       comments: OperatelyWeb.Api.Serializer.serialize(milestone.comments),
       permissions: OperatelyWeb.Api.Serializer.serialize(milestone.permissions),
       timeframe: OperatelyWeb.Api.Serializer.serialize(milestone.timeframe),
       space: OperatelyWeb.Api.Serializer.serialize(milestone.space),
-      subscription_list: OperatelyWeb.Api.Serializer.serialize(milestone.subscription_list),
+      subscription_list: OperatelyWeb.Api.Serializer.serialize(milestone.subscription_list)
     }
   end
 

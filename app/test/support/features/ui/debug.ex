@@ -23,9 +23,9 @@ defmodule Operately.Support.Features.UI.Debug do
   end
 
   defp construct_url_for_current_page(ctx, person) do
-    params = %{ 
-      id: person.account_id, 
-      redirect_to: Wallaby.Browser.current_path(ctx.session) 
+    params = %{
+      id: person.account_id,
+      redirect_to: Wallaby.Browser.current_path(ctx.session)
     }
 
     path = "/accounts/auth/test_login?#{URI.encode_query(params)}"

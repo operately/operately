@@ -6,6 +6,5 @@ defmodule Operately.Repo.Migrations.AddSpaceKeyToProjectActivities do
   end
 
   def down do
-
   end
 end

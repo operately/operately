@@ -43,6 +43,7 @@ defmodule OperatelyWeb.Api.Queries.SearchPeople do
   end
 
   defp load_people(nil, _), do: []
+
   defp load_people(company_id, inputs) do
     Person
     |> match_by_full_name_or_title(inputs)
@@ -60,18 +61,20 @@ defmodule OperatelyWeb.Api.Queries.SearchPeople do
   end
 
   defp order_asc_by_match_position(query, inputs) do
-    from p in query, order_by: [
-      asc: fragment("POSITION(LOWER(?) IN LOWER(?))", ^inputs.query, p.full_name),
-      asc: fragment("POSITION(LOWER(?) IN LOWER(?))", ^inputs.query, p.title),
-      asc: p.full_name
-    ]
+    from p in query,
+      order_by: [
+        asc: fragment("POSITION(LOWER(?) IN LOWER(?))", ^inputs.query, p.full_name),
+        asc: fragment("POSITION(LOWER(?) IN LOWER(?))", ^inputs.query, p.title),
+        asc: p.full_name
+      ]
   end
 
   defp ignore_ids(query, ignored_ids) do
-    ignored_ids = Enum.map(ignored_ids, fn id ->
-      {:ok, decoded_id} = decode_id(id)
-      decoded_id
-    end)
+    ignored_ids =
+      Enum.map(ignored_ids, fn id ->
+        {:ok, decoded_id} = decode_id(id)
+        decoded_id
+      end)
 
     from p in query, where: p.id not in ^ignored_ids
   end

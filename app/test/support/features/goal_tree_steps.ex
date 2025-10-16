@@ -8,17 +8,17 @@ defmodule Operately.Support.Features.GoalTreeSteps do
     |> Factory.setup()
     |> Factory.add_space(:product)
     |> Factory.add_space_member(:john, :product)
-    |> Factory.add_goal(:goal_1, :product, [champion: :john, name: "Goal Uno"])
-    |> Factory.add_goal(:goal_2, :product, [reviewer: :john, name: "Goal Dos", parent_goal: :goal_1])
-    |> Factory.add_project(:project_alpha, :product, [goal: :goal_1, name: "Project Alpha"])
-    |> Factory.add_project(:project_beta, :product, [goal: :goal_1, name: "Project Beta"])
+    |> Factory.add_goal(:goal_1, :product, champion: :john, name: "Goal Uno")
+    |> Factory.add_goal(:goal_2, :product, reviewer: :john, name: "Goal Dos", parent_goal: :goal_1)
+    |> Factory.add_project(:project_alpha, :product, goal: :goal_1, name: "Project Alpha")
+    |> Factory.add_project(:project_beta, :product, goal: :goal_1, name: "Project Beta")
     |> then(fn ctx -> UI.login_as(ctx, ctx.creator) end)
   end
 
   step :given_project_and_goal_with_other_reviewer_exists, ctx do
     ctx
-    |> Factory.add_goal(:goal_3, :product, [reviewer: :john, name: "Goal Tres"])
-    |> Factory.add_project(:project_omega, :product, [reviewer: :john, name: "Project Omega"])
+    |> Factory.add_goal(:goal_3, :product, reviewer: :john, name: "Goal Tres")
+    |> Factory.add_project(:project_omega, :product, reviewer: :john, name: "Project Omega")
   end
 
   step :given_project_is_paused, ctx, project do
@@ -27,21 +27,24 @@ defmodule Operately.Support.Features.GoalTreeSteps do
   end
 
   step :given_project_is_closed, ctx, project_name do
-    {:ok, _} = Operately.Projects.Project.changeset(ctx[project_name], %{status: "closed"})
-    |> Repo.update()
+    {:ok, _} =
+      Operately.Projects.Project.changeset(ctx[project_name], %{status: "closed"})
+      |> Repo.update()
 
     ctx
     |> Factory.add_project_retrospective(:retrospective, project_name, :creator)
   end
 
   step :given_goal_is_closed, ctx, goal_name do
-    {:ok, _} = Operately.Operations.GoalClosing.run(ctx.creator, ctx[goal_name], %{
-      success: "yes",
-      content: RichText.rich_text("text"),
-      send_notifications_to_everyone: true,
-      subscriber_ids: [],
-      subscription_parent_type: :comment_thread
-    })
+    {:ok, _} =
+      Operately.Operations.GoalClosing.run(ctx.creator, ctx[goal_name], %{
+        success: "yes",
+        content: RichText.rich_text("text"),
+        send_notifications_to_everyone: true,
+        subscriber_ids: [],
+        subscription_parent_type: :comment_thread
+      })
+
     ctx
   end
 
@@ -157,10 +160,11 @@ defmodule Operately.Support.Features.GoalTreeSteps do
   end
 
   step :open_status_pop_up, ctx, attrs do
-    testid = cond do
-      Map.has_key?(attrs, :goal) -> UI.testid(["status", Paths.goal_id(attrs.goal)])
-      Map.has_key?(attrs, :project) -> UI.testid(["status", Paths.project_id(attrs.project)])
-    end
+    testid =
+      cond do
+        Map.has_key?(attrs, :goal) -> UI.testid(["status", Paths.goal_id(attrs.goal)])
+        Map.has_key?(attrs, :project) -> UI.testid(["status", Paths.project_id(attrs.project)])
+      end
 
     ctx
     |> UI.click(testid: testid)
@@ -228,24 +232,28 @@ defmodule Operately.Support.Features.GoalTreeSteps do
   end
 
   step :given_goal_is_closed_as_accomplished, ctx, goal_name do
-    {:ok, _} = Operately.Operations.GoalClosing.run(ctx.creator, ctx[goal_name], %{
-      success: "yes",
-      content: RichText.rich_text("text"),
-      send_notifications_to_everyone: true,
-      subscriber_ids: [],
-      subscription_parent_type: :comment_thread
-    })
+    {:ok, _} =
+      Operately.Operations.GoalClosing.run(ctx.creator, ctx[goal_name], %{
+        success: "yes",
+        content: RichText.rich_text("text"),
+        send_notifications_to_everyone: true,
+        subscriber_ids: [],
+        subscription_parent_type: :comment_thread
+      })
+
     ctx
   end
 
   step :given_goal_is_closed_as_not_accomplished, ctx, goal_name do
-    {:ok, _} = Operately.Operations.GoalClosing.run(ctx.creator, ctx[goal_name], %{
-      success: "no",
-      content: RichText.rich_text("text"),
-      send_notifications_to_everyone: true,
-      subscriber_ids: [],
-      subscription_parent_type: :comment_thread
-    })
+    {:ok, _} =
+      Operately.Operations.GoalClosing.run(ctx.creator, ctx[goal_name], %{
+        success: "no",
+        content: RichText.rich_text("text"),
+        send_notifications_to_everyone: true,
+        subscriber_ids: [],
+        subscription_parent_type: :comment_thread
+      })
+
     ctx
   end
 
@@ -270,5 +278,4 @@ defmodule Operately.Support.Features.GoalTreeSteps do
     |> UI.click(testid: "nodeType-project")
     |> UI.click(testid: "submit")
   end
-
 end

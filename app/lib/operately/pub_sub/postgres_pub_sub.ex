@@ -104,7 +104,7 @@ defmodule Operately.PubSub.PostgresPubSub do
       dispatcher: dispatcher
     }
 
-    payload = :erlang.term_to_binary(payload) 
+    payload = :erlang.term_to_binary(payload)
     payload = Base.url_encode64(payload)
 
     if byte_size(payload) < 8000 do

@@ -158,7 +158,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalDiscussionTest do
     mutation(conn, :edit_goal_discussion, %{
       activity_id: Paths.activity_id(discussion),
       title: "Edited title",
-      message: rich_text("Edited content") |> Jason.encode!(),
+      message: rich_text("Edited content") |> Jason.encode!()
     })
   end
 
@@ -174,35 +174,44 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalDiscussionTest do
   #
 
   defp create_goal(ctx, attrs \\ []) do
-    goal_fixture(ctx[:creator] || ctx.person, Enum.into(attrs, %{
-      space_id: ctx[:space_id] || ctx.company.company_space_id,
-      company_access_level: Binding.no_access(),
-      space_access_level: Binding.no_access(),
-    }))
+    goal_fixture(
+      ctx[:creator] || ctx.person,
+      Enum.into(attrs, %{
+        space_id: ctx[:space_id] || ctx.company.company_space_id,
+        company_access_level: Binding.no_access(),
+        space_access_level: Binding.no_access()
+      })
+    )
   end
 
   defp create_discussion(ctx, goal) do
-    {:ok, discussion} = Operately.Operations.GoalDiscussionCreation.run(ctx[:creator] || ctx.person, goal, %{
-      title: "Title",
-      content: rich_text("Content"),
-      subscription_parent_type: :comment_thread,
-      send_notifications_to_everyone: false,
-      subscriber_ids: []
-    })
+    {:ok, discussion} =
+      Operately.Operations.GoalDiscussionCreation.run(ctx[:creator] || ctx.person, goal, %{
+        title: "Title",
+        content: rich_text("Content"),
+        subscription_parent_type: :comment_thread,
+        send_notifications_to_everyone: false,
+        subscriber_ids: []
+      })
+
     discussion
   end
 
   defp add_person_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space_id, [%{
-      id: ctx.person.id,
-      access_level: Binding.edit_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space_id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.edit_access()
+      }
+    ])
   end
 
   defp add_manager_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space_id, [%{
-      id: ctx.person.id,
-      access_level: Binding.full_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space_id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.full_access()
+      }
+    ])
   end
 end

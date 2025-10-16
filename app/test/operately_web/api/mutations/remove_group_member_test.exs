@@ -16,13 +16,13 @@ defmodule OperatelyWeb.Api.Mutations.RemoveGroupMemberTest do
 
   describe "permissions" do
     @table [
-      %{company: Binding.no_access(),      space: Binding.no_access(),      expected: 404},
-      %{company: Binding.no_access(),      space: Binding.comment_access(), expected: 403},
-      %{company: Binding.no_access(),      space: Binding.edit_access(),    expected: 403},
-      %{company: Binding.no_access(),      space: Binding.full_access(),    expected: 200},
-      %{company: Binding.comment_access(), space: Binding.no_access(),      expected: 403},
-      %{company: Binding.edit_access(),    space: Binding.no_access(),      expected: 403},
-      %{company: Binding.full_access(),    space: Binding.no_access(),      expected: 200},
+      %{company: Binding.no_access(), space: Binding.no_access(), expected: 404},
+      %{company: Binding.no_access(), space: Binding.comment_access(), expected: 403},
+      %{company: Binding.no_access(), space: Binding.edit_access(), expected: 403},
+      %{company: Binding.no_access(), space: Binding.full_access(), expected: 200},
+      %{company: Binding.comment_access(), space: Binding.no_access(), expected: 403},
+      %{company: Binding.edit_access(), space: Binding.no_access(), expected: 403},
+      %{company: Binding.full_access(), space: Binding.no_access(), expected: 200}
     ]
 
     setup ctx do
@@ -44,10 +44,11 @@ defmodule OperatelyWeb.Api.Mutations.RemoveGroupMemberTest do
         add_member(ctx, space, ctx.person, @test.space)
 
         # run the mutation
-        assert {code, res} = mutation(ctx.conn, :remove_group_member, %{
-          group_id: Paths.space_id(space),
-          member_id: Paths.person_id(member)
-        })
+        assert {code, res} =
+                 mutation(ctx.conn, :remove_group_member, %{
+                   group_id: Paths.space_id(space),
+                   member_id: Paths.person_id(member)
+                 })
 
         assert code == @test.expected
 

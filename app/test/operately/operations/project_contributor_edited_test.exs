@@ -23,7 +23,7 @@ defmodule Operately.Operations.ProjectContributorEditedTest do
   end
 
   test "updating responsibility", ctx do
-    {:ok, _ } = Operation.run(ctx.creator, ctx.dev, %{responsibility: "Project manager & Designer"})
+    {:ok, _} = Operation.run(ctx.creator, ctx.dev, %{responsibility: "Project manager & Designer"})
 
     assert Operately.Repo.reload(ctx.dev).responsibility == "Project manager & Designer"
   end

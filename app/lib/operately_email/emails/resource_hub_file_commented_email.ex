@@ -7,9 +7,15 @@ defmodule OperatelyEmail.Emails.ResourceHubFileCommentedEmail do
 
   def send(person, activity) do
     %{author: author = %{company: company}} = Repo.preload(activity, author: :company)
-    {:ok, file} = File.get(:system, id: activity.content["file_id"], opts: [
-      preload: [:node, :space]
-    ])
+
+    {:ok, file} =
+      File.get(:system,
+        id: activity.content["file_id"],
+        opts: [
+          preload: [:node, :space]
+        ]
+      )
+
     comment = Updates.get_comment!(activity.content["comment_id"])
 
     company

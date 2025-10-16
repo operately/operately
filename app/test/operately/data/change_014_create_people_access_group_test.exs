@@ -13,9 +13,10 @@ defmodule Operately.Data.Change014CreatePeopleAccessGroupTest do
   end
 
   test "creates access_group for existing people", ctx do
-    people = Enum.map(1..5, fn _ ->
-      create_people(ctx.company.id)
-    end)
+    people =
+      Enum.map(1..5, fn _ ->
+        create_people(ctx.company.id)
+      end)
 
     Enum.each(people, fn person ->
       assert nil == Access.get_group(person_id: person.id)
@@ -45,7 +46,7 @@ defmodule Operately.Data.Change014CreatePeopleAccessGroupTest do
     {:ok, person} =
       Operately.People.Person.changeset(%{
         full_name: "some name",
-        company_id: company_id,
+        company_id: company_id
       })
       |> Repo.insert()
 

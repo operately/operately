@@ -33,11 +33,12 @@ defmodule Operately.Data.Change082PopulateGoalDescriptionChangedActivityGoalName
       "has_description" => true
     }
 
-    activity = Repo.insert!(%Activity{
-      action: "goal_description_changed",
-      author_id: ctx.creator.id,
-      content: content
-    })
+    activity =
+      Repo.insert!(%Activity{
+        action: "goal_description_changed",
+        author_id: ctx.creator.id,
+        content: content
+      })
 
     Change082PopulateGoalDescriptionChangedActivityGoalName.run()
 
@@ -71,4 +72,3 @@ defmodule Operately.Data.Change082PopulateGoalDescriptionChangedActivityGoalName
     })
   end
 end
-

@@ -21,9 +21,9 @@ defmodule Operately.WorkMaps.WorkMap do
     # Get root items (parent_id is nil or parent not in the list)
     root_items =
       (Map.get(items_by_parent, nil, []) ++
-       Enum.filter(items, fn item ->
-         item.parent_id && !Map.has_key?(item_map, item.parent_id)
-       end))
+         Enum.filter(items, fn item ->
+           item.parent_id && !Map.has_key?(item_map, item.parent_id)
+         end))
       |> Enum.uniq_by(fn item -> item.id end)
 
     # Build the hierarchy starting from root items
@@ -124,7 +124,7 @@ defmodule Operately.WorkMaps.WorkMap do
 
       all_qualifying_children =
         (matching_direct_children ++ children_with_matching_descendants)
-        |> Enum.uniq_by(&(&1.id))
+        |> Enum.uniq_by(& &1.id)
 
       matching_descendants =
         Enum.flat_map(all_qualifying_children, fn direct_child ->
@@ -133,7 +133,7 @@ defmodule Operately.WorkMaps.WorkMap do
         end)
 
       (all_qualifying_children ++ matching_descendants)
-      |> Enum.uniq_by(&(&1.id))
+      |> Enum.uniq_by(& &1.id)
     end
   end
 
@@ -144,7 +144,7 @@ defmodule Operately.WorkMaps.WorkMap do
     parent_items = Enum.filter(flat_items, &MapSet.member?(parent_ids, &1.id))
 
     filtered_items = Enum.concat(matched_items, parent_items)
-    unique_items = Enum.uniq_by(filtered_items, &(&1.id))
+    unique_items = Enum.uniq_by(filtered_items, & &1.id)
 
     Enum.map(unique_items, &%{&1 | children: []})
   end
@@ -154,6 +154,7 @@ defmodule Operately.WorkMaps.WorkMap do
   #
 
   defp find_direct_matches(flat_items, filters) when filters == %{}, do: flat_items
+
   defp find_direct_matches(flat_items, filters) do
     Enum.filter(flat_items, fn item -> matches_filter?(item, filters) end)
   end
@@ -180,12 +181,16 @@ defmodule Operately.WorkMaps.WorkMap do
           case filter_key do
             :space_id ->
               item.space && item.space.id == filter_value
+
             :parent_goal_id ->
               item.parent_id == filter_value
+
             :only_completed ->
               matches_completion_status?(item, filter_value)
+
             _ ->
-              true  # Unknown filter keys are ignored
+              # Unknown filter keys are ignored
+              true
           end
         end
       end)
@@ -199,10 +204,12 @@ defmodule Operately.WorkMaps.WorkMap do
       _ -> true
     end
   end
+
   defp matches_completion_status?(_, _), do: true
 
   defp matches_person_filter?(item, filters) do
-    person_filters = filters
+    person_filters =
+      filters
       |> Map.reject(fn {_, v} -> is_nil(v) end)
       |> Map.take([:champion_id, :reviewer_id, :contributor_id])
 
@@ -214,8 +221,10 @@ defmodule Operately.WorkMaps.WorkMap do
         case filter_key do
           :champion_id ->
             item.champion && item.champion.id == filter_value
+
           :reviewer_id ->
             item.reviewer && item.reviewer.id == filter_value
+
           :contributor_id ->
             reviewer_id = get_project_reviewer_id(item.resource)
             item.contributor && item.contributor.id == filter_value && reviewer_id != filter_value
@@ -233,6 +242,7 @@ defmodule Operately.WorkMaps.WorkMap do
   end
 
   defp collect_parent_ids_for_item(%{parent_id: nil}, _all_items_map, acc), do: acc
+
   defp collect_parent_ids_for_item(%{parent_id: parent_id}, all_items_map, acc) do
     acc = MapSet.put(acc, parent_id)
 
@@ -249,28 +259,31 @@ defmodule Operately.WorkMaps.WorkMap do
   # Returns all items in the subtree of the given parent_id (excluding the parent itself)
   defp get_full_subtree(parent_id, all_items) do
     # Find immediate children
-    children = Enum.filter(all_items, fn item ->
-      item.parent_id == parent_id
-    end)
+    children =
+      Enum.filter(all_items, fn item ->
+        item.parent_id == parent_id
+      end)
 
     if Enum.empty?(children) do
       []
     else
       # For each child, recursively get its subtree
-      descendants = Enum.flat_map(children, fn child ->
-        get_full_subtree(child.id, all_items)
-      end)
+      descendants =
+        Enum.flat_map(children, fn child ->
+          get_full_subtree(child.id, all_items)
+        end)
 
       # Return children and all their descendants
       children ++ descendants
     end
   end
 
-  defp get_project_reviewer_id(%{ contributors: contributors }) do
+  defp get_project_reviewer_id(%{contributors: contributors}) do
     Enum.find_value(contributors, fn
-      %{ role: :reviewer, person_id: person_id } -> person_id
+      %{role: :reviewer, person_id: person_id} -> person_id
       _ -> nil
     end)
   end
+
   defp get_project_reviewer_id(_), do: nil
 end

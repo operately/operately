@@ -6,7 +6,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
       privacy: OperatelyWeb.Api.Serializer.serialize(project.privacy),
       status: Operately.Projects.Project.status(project) |> Atom.to_string(),
       success_status: Atom.to_string(project.success_status),
-      goal_id: project.goal_id && OperatelyWeb.Paths.goal_id(project.goal_id),
+      goal_id: project.goal_id && OperatelyWeb.Paths.goal_id(project.goal_id)
     }
   end
 
@@ -37,7 +37,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(project.potential_subscribers),
       notifications: OperatelyWeb.Api.Serializer.serialize(project.notifications),
       state: Operately.Projects.Project.state(project) |> Atom.to_string(),
-      subscription_list: OperatelyWeb.Api.Serializer.serialize(project.subscription_list),
+      subscription_list: OperatelyWeb.Api.Serializer.serialize(project.subscription_list)
     })
   end
 

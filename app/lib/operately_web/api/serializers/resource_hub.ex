@@ -9,7 +9,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.ResourceHubs.ResourceHub d
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(resource_hub.potential_subscribers),
       permissions: OperatelyWeb.Api.Serializer.serialize(resource_hub.permissions),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(resource_hub.inserted_at),
-      updated_at: OperatelyWeb.Api.Serializer.serialize(resource_hub.updated_at),
+      updated_at: OperatelyWeb.Api.Serializer.serialize(resource_hub.updated_at)
     }
   end
 end

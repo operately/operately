@@ -4,7 +4,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Notifications.Subscriber d
       role: subscriber.role,
       priority: subscriber.priority,
       is_subscribed: subscriber.is_subscribed,
-      person: OperatelyWeb.Api.Serializer.serialize(subscriber.person),
+      person: OperatelyWeb.Api.Serializer.serialize(subscriber.person)
     }
   end
 end

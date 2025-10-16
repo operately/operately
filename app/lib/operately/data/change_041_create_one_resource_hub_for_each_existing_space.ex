@@ -13,7 +13,7 @@ defmodule Operately.Data.Change041CreateOneResourceHubForEachExistingSpace do
   end
 
   defp create_hubs(spaces) when is_list(spaces) do
-    Enum.each(spaces, &(create_hubs(&1)))
+    Enum.each(spaces, &create_hubs(&1))
   end
 
   defp create_hubs(space) do
@@ -22,13 +22,14 @@ defmodule Operately.Data.Change041CreateOneResourceHubForEachExistingSpace do
         {:ok, hub} =
           ResourceHub.changeset(%{
             space_id: space.id,
-            name: "Resource Hub",
+            name: "Resource Hub"
           })
           |> Repo.insert()
 
         {:ok, _} = Access.create_context(%{resource_hub_id: hub.id})
 
-      {:ok, _} -> :ok
+      {:ok, _} ->
+        :ok
     end
   end
 end

@@ -34,12 +34,12 @@ defmodule Operately.Operations.ProjectPermissionsEditing do
         previous_permissions: %{
           public: find_access_level(changes, :anonymous_binding, :previous),
           company: find_access_level(changes, :company_members_binding, :previous),
-          space: find_access_level(changes, :space_members_binding, :previous),
+          space: find_access_level(changes, :space_members_binding, :previous)
         },
         new_permissions: %{
           public: find_access_level(changes, :anonymous_binding, :updated),
           company: find_access_level(changes, :company_members_binding, :updated),
-          space: find_access_level(changes, :space_members_binding, :updated),
+          space: find_access_level(changes, :space_members_binding, :updated)
         }
       }
     end)

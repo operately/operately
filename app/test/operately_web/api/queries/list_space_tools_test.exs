@@ -212,7 +212,8 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
 
     test "includes paused projects in the list", ctx do
       # Create an additional paused project using the factory
-      ctx = ctx
+      ctx =
+        ctx
         |> Factory.add_project(:project_paused, :space, name: "Paused Project")
         |> Factory.pause_project(:project_paused)
 
@@ -223,7 +224,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
       assert Enum.find(res.tools.projects, &(&1.id == Paths.project_id(ctx.project1)))
       assert Enum.find(res.tools.projects, &(&1.id == Paths.project_id(ctx.project2)))
       assert Enum.find(res.tools.projects, &(&1.id == Paths.project_id(ctx.project_paused)))
-      
+
       # Verify the paused project has correct state
       paused_project = Enum.find(res.tools.projects, &(&1.id == Paths.project_id(ctx.project_paused)))
       assert paused_project.state == "paused"

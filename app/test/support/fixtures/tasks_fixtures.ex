@@ -22,14 +22,15 @@ defmodule Operately.TasksFixtures do
         name: "some name",
         priority: "some priority",
         size: "some size",
-        subscription_list_id: subscription_list.id,
+        subscription_list_id: subscription_list.id
       })
       |> Operately.Tasks.create_task()
 
-    {:ok, _} = Operately.Notifications.update_subscription_list(subscription_list, %{
-      parent_type: :project_task,
-      parent_id: task.id,
-    })
+    {:ok, _} =
+      Operately.Notifications.update_subscription_list(subscription_list, %{
+        parent_type: :project_task,
+        parent_id: task.id
+      })
 
     task
   end
@@ -40,9 +41,7 @@ defmodule Operately.TasksFixtures do
   def assignee_fixture(attrs \\ %{}) do
     {:ok, assignee} =
       attrs
-      |> Enum.into(%{
-
-      })
+      |> Enum.into(%{})
       |> Operately.Tasks.create_assignee()
 
     assignee

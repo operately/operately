@@ -8,9 +8,13 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentCreatedEmail do
     author = Repo.preload(activity, :author).author
     company = Repo.preload(author, :company).company
 
-    {:ok, document} = Document.get(:system, id: activity.content["document_id"], opts: [
-      preload: [:node, :space],
-    ])
+    {:ok, document} =
+      Document.get(:system,
+        id: activity.content["document_id"],
+        opts: [
+          preload: [:node, :space]
+        ]
+      )
 
     copied_document = get_copied_document(activity.content.copied_document_id)
     action = get_action(activity.content.copied_document_id)
@@ -31,6 +35,7 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentCreatedEmail do
   defp get_action(_), do: "copied"
 
   defp get_copied_document(nil), do: nil
+
   defp get_copied_document(id) do
     {:ok, copied_document} = Document.get(:system, id: id, opts: [preload: :node])
     copied_document

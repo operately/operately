@@ -15,23 +15,25 @@ defmodule Operately.TasksTest do
     person = person_fixture(%{company_id: company.id})
     space = group_fixture(person, %{company_id: company.id})
 
-    project = project_fixture(%{
-      company_id: company.id,
-      creator_id: person.id,
-      champion_id: person.id,
-      reviewer_id: person.id,
-      group_id: space.id,
-    })
+    project =
+      project_fixture(%{
+        company_id: company.id,
+        creator_id: person.id,
+        champion_id: person.id,
+        reviewer_id: person.id,
+        group_id: space.id
+      })
 
     milestone = milestone_fixture(%{project_id: project.id})
 
-    task = task_fixture(%{
-      space_id: space.id,
-      creator_id: person.id,
-      milestone_id: milestone.id,
-      project_id: project.id,
-      status: "todo",
-    })
+    task =
+      task_fixture(%{
+        space_id: space.id,
+        creator_id: person.id,
+        milestone_id: milestone.id,
+        project_id: project.id,
+        status: "todo"
+      })
 
     {:ok, company: company, space: space, task: task, person: person, milestone: milestone, project: project}
   end

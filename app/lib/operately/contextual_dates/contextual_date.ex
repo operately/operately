@@ -86,6 +86,7 @@ defmodule Operately.ContextualDates.ContextualDate do
 
   def create_year_date(date) do
     year = date.year
+
     %__MODULE__{
       date_type: :year,
       value: to_string(year),

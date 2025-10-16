@@ -38,29 +38,32 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFile do
   end
 
   def load(ctx, inputs) do
-    File.get(ctx.me, id: inputs.id, opts: [
-      preload: preload(inputs),
-      after_load: after_load(inputs, ctx.me),
-    ])
+    File.get(ctx.me,
+      id: inputs.id,
+      opts: [
+        preload: preload(inputs),
+        after_load: after_load(inputs, ctx.me)
+      ]
+    )
   end
 
   def preload(inputs) do
-    Inputs.parse_includes(inputs, [
+    Inputs.parse_includes(inputs,
       include_author: :author,
       include_resource_hub: [node: :resource_hub],
       include_parent_folder: [node: [parent_folder: :node]],
       include_space: [resource_hub: :space],
       include_reactions: [reactions: :person],
       include_subscriptions_list: :subscription_list,
-      always_include: [:node, :blob],
-    ])
+      always_include: [:node, :blob]
+    )
   end
 
   defp after_load(inputs, _me) do
-    Inputs.parse_includes(inputs, [
+    Inputs.parse_includes(inputs,
       include_permissions: &File.set_permissions/1,
       include_potential_subscribers: &File.load_potential_subscribers/1,
-      include_path_to_file: &File.find_path_to_file/1,
-    ])
+      include_path_to_file: &File.find_path_to_file/1
+    )
   end
 end

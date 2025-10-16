@@ -38,18 +38,19 @@ defmodule Operately.Data.Change074AddNameToTaskStatusUpdatingActivityTest do
   end
 
   defp create_test_activity_with_task(person, task_id) do
-    {:ok, activity} = Repo.insert(%Activity{
-      action: "task_status_updating",
-      author_id: person.id,
-      content: %{
-        "company_id" => Ecto.UUID.generate(),
-        "space_id" => Ecto.UUID.generate(),
-        "project_id" => Ecto.UUID.generate(),
-        "task_id" => task_id,
-        "old_status" => "not_started",
-        "new_status" => "in_progress"
-      }
-    })
+    {:ok, activity} =
+      Repo.insert(%Activity{
+        action: "task_status_updating",
+        author_id: person.id,
+        content: %{
+          "company_id" => Ecto.UUID.generate(),
+          "space_id" => Ecto.UUID.generate(),
+          "project_id" => Ecto.UUID.generate(),
+          "task_id" => task_id,
+          "old_status" => "not_started",
+          "new_status" => "in_progress"
+        }
+      })
 
     activity
   end

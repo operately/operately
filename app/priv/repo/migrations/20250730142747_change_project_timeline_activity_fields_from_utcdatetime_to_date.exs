@@ -6,6 +6,5 @@ defmodule Operately.Repo.Migrations.ChangeProjectTimelineActivityFieldsFromUtcda
   end
 
   def down do
-
   end
 end

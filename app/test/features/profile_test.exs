@@ -50,5 +50,4 @@ defmodule Operately.Features.ProfileTest do
     |> Steps.assert_reviewing_goals_and_projects_visible()
     |> Steps.refute_assinged_goals_and_projects_visible()
   end
-
 end

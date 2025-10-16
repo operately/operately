@@ -81,9 +81,10 @@ defmodule Operately.Data.Change071ConvertTaskDueDatesToContextualDatesTest do
       {~N[2025-11-25 19:45:00], "Nov 25, 2025"}
     ]
 
-    tasks = Enum.map(test_cases, fn {due_date, _expected_value} ->
-      create_test_task_with_due_date(ctx.creator, ctx.milestone, due_date)
-    end)
+    tasks =
+      Enum.map(test_cases, fn {due_date, _expected_value} ->
+        create_test_task_with_due_date(ctx.creator, ctx.milestone, due_date)
+      end)
 
     Change071ConvertTaskDueDatesToContextualDates.run()
 
@@ -118,10 +119,11 @@ defmodule Operately.Data.Change071ConvertTaskDueDatesToContextualDatesTest do
     ctx = Factory.add_project_milestone(ctx, :milestone, :project)
 
     # Create multiple tasks
-    tasks = Enum.map(1..5, fn i ->
-      due_date = NaiveDateTime.add(~N[2025-01-01 12:00:00], i * 24 * 60 * 60, :second)
-      create_test_task_with_due_date(ctx.creator, ctx.milestone, due_date)
-    end)
+    tasks =
+      Enum.map(1..5, fn i ->
+        due_date = NaiveDateTime.add(~N[2025-01-01 12:00:00], i * 24 * 60 * 60, :second)
+        create_test_task_with_due_date(ctx.creator, ctx.milestone, due_date)
+      end)
 
     Change071ConvertTaskDueDatesToContextualDates.run()
 
@@ -134,27 +136,29 @@ defmodule Operately.Data.Change071ConvertTaskDueDatesToContextualDatesTest do
   end
 
   defp create_test_task_with_due_date(creator, milestone, due_date) do
-    {:ok, task} = Repo.insert(%Task{
-      name: "Test Task #{System.unique_integer()}",
-      description: %{"message" => "Test task description"},
-      deprecated_due_date: due_date,
-      creator_id: creator.id,
-      milestone_id: milestone.id,
-      status: "todo"
-    })
+    {:ok, task} =
+      Repo.insert(%Task{
+        name: "Test Task #{System.unique_integer()}",
+        description: %{"message" => "Test task description"},
+        deprecated_due_date: due_date,
+        creator_id: creator.id,
+        milestone_id: milestone.id,
+        status: "todo"
+      })
 
     task
   end
 
   defp create_test_task_without_due_date(creator, milestone) do
-    {:ok, task} = Repo.insert(%Task{
-      name: "Test Task Without Due Date #{System.unique_integer()}",
-      description: %{"message" => "Test task description"},
-      deprecated_due_date: nil,
-      creator_id: creator.id,
-      milestone_id: milestone.id,
-      status: "todo"
-    })
+    {:ok, task} =
+      Repo.insert(%Task{
+        name: "Test Task Without Due Date #{System.unique_integer()}",
+        description: %{"message" => "Test task description"},
+        deprecated_due_date: nil,
+        creator_id: creator.id,
+        milestone_id: milestone.id,
+        status: "todo"
+      })
 
     task
   end

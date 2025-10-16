@@ -60,89 +60,92 @@ defmodule Operately.Data.Change070UpdateProjectTimelineEditedActivityTest do
   end
 
   defp create_test_activity_with_milestone_updates(person) do
-    {:ok, activity} = Repo.insert(%Activity{
-      action: "project_timeline_edited",
-      author_id: person.id,
-      content: %{
-        "project_id" => Ecto.UUID.generate(),
-        "company_id" => Ecto.UUID.generate(),
-        "space_id" => Ecto.UUID.generate(),
-        "milestone_updates" => [
-          %{
-            "milestone_id" => Ecto.UUID.generate(),
-            "old_due_date" => "2023-03-15T12:00:00Z",
-            "new_due_date" => "2023-04-15T12:00:00Z",
-            "old_title" => "Old Milestone 1",
-            "new_title" => "New Milestone 1"
-          },
-          %{
-            "milestone_id" => Ecto.UUID.generate(),
-            "old_due_date" => "2023-05-15T12:00:00Z",
-            "new_due_date" => "2023-06-15T12:00:00Z",
-            "old_title" => "Old Milestone 2",
-            "new_title" => "New Milestone 2"
-          }
-        ],
-        "new_milestones" => []
-      }
-    })
+    {:ok, activity} =
+      Repo.insert(%Activity{
+        action: "project_timeline_edited",
+        author_id: person.id,
+        content: %{
+          "project_id" => Ecto.UUID.generate(),
+          "company_id" => Ecto.UUID.generate(),
+          "space_id" => Ecto.UUID.generate(),
+          "milestone_updates" => [
+            %{
+              "milestone_id" => Ecto.UUID.generate(),
+              "old_due_date" => "2023-03-15T12:00:00Z",
+              "new_due_date" => "2023-04-15T12:00:00Z",
+              "old_title" => "Old Milestone 1",
+              "new_title" => "New Milestone 1"
+            },
+            %{
+              "milestone_id" => Ecto.UUID.generate(),
+              "old_due_date" => "2023-05-15T12:00:00Z",
+              "new_due_date" => "2023-06-15T12:00:00Z",
+              "old_title" => "Old Milestone 2",
+              "new_title" => "New Milestone 2"
+            }
+          ],
+          "new_milestones" => []
+        }
+      })
 
     activity
   end
 
   defp create_test_activity_with_new_milestones(person) do
-    {:ok, activity} = Repo.insert(%Activity{
-      action: "project_timeline_edited",
-      author_id: person.id,
-      content: %{
-        "project_id" => Ecto.UUID.generate(),
-        "company_id" => Ecto.UUID.generate(),
-        "space_id" => Ecto.UUID.generate(),
-        "milestone_updates" => [],
-        "new_milestones" => [
-          %{
-            "milestone_id" => Ecto.UUID.generate(),
-            "title" => "New Milestone A",
-            "due_date" => "2023-04-20T12:00:00Z"
-          },
-          %{
-            "milestone_id" => Ecto.UUID.generate(),
-            "title" => "New Milestone B",
-            "due_date" => "2023-07-20T12:00:00Z"
-          }
-        ]
-      }
-    })
+    {:ok, activity} =
+      Repo.insert(%Activity{
+        action: "project_timeline_edited",
+        author_id: person.id,
+        content: %{
+          "project_id" => Ecto.UUID.generate(),
+          "company_id" => Ecto.UUID.generate(),
+          "space_id" => Ecto.UUID.generate(),
+          "milestone_updates" => [],
+          "new_milestones" => [
+            %{
+              "milestone_id" => Ecto.UUID.generate(),
+              "title" => "New Milestone A",
+              "due_date" => "2023-04-20T12:00:00Z"
+            },
+            %{
+              "milestone_id" => Ecto.UUID.generate(),
+              "title" => "New Milestone B",
+              "due_date" => "2023-07-20T12:00:00Z"
+            }
+          ]
+        }
+      })
 
     activity
   end
 
   defp create_test_activity_with_nil_values(person) do
-    {:ok, activity} = Repo.insert(%Activity{
-      action: "project_timeline_edited",
-      author_id: person.id,
-      content: %{
-        "project_id" => Ecto.UUID.generate(),
-        "company_id" => Ecto.UUID.generate(),
-        "space_id" => Ecto.UUID.generate(),
-        "milestone_updates" => [
-          %{
-            "milestone_id" => Ecto.UUID.generate(),
-            "old_due_date" => nil,
-            "new_due_date" => "2023-06-01T12:00:00Z",
-            "old_title" => "Some Milestone",
-            "new_title" => "Updated Milestone"
-          }
-        ],
-        "new_milestones" => [
-          %{
-            "milestone_id" => Ecto.UUID.generate(),
-            "title" => "Milestone Without Date",
-            "due_date" => nil
-          }
-        ]
-      }
-    })
+    {:ok, activity} =
+      Repo.insert(%Activity{
+        action: "project_timeline_edited",
+        author_id: person.id,
+        content: %{
+          "project_id" => Ecto.UUID.generate(),
+          "company_id" => Ecto.UUID.generate(),
+          "space_id" => Ecto.UUID.generate(),
+          "milestone_updates" => [
+            %{
+              "milestone_id" => Ecto.UUID.generate(),
+              "old_due_date" => nil,
+              "new_due_date" => "2023-06-01T12:00:00Z",
+              "old_title" => "Some Milestone",
+              "new_title" => "Updated Milestone"
+            }
+          ],
+          "new_milestones" => [
+            %{
+              "milestone_id" => Ecto.UUID.generate(),
+              "title" => "Milestone Without Date",
+              "due_date" => nil
+            }
+          ]
+        }
+      })
 
     activity
   end

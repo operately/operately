@@ -172,7 +172,7 @@ defmodule OperatelyWeb.Api.Mutations.ChangeGoalParentTest do
   defp request(conn, goal, parent) do
     mutation(conn, :change_goal_parent, %{
       goal_id: Paths.goal_id(goal),
-      parent_goal_id: Paths.goal_id(parent),
+      parent_goal_id: Paths.goal_id(parent)
     })
   end
 
@@ -191,25 +191,35 @@ defmodule OperatelyWeb.Api.Mutations.ChangeGoalParentTest do
   #
 
   defp create_goal(ctx, attrs \\ %{}) do
-    goal_fixture(ctx[:creator] || ctx.person, Map.merge(%{
-      space_id: ctx[:space_id] || ctx.company.company_space_id,
-      parent_goal_id: ctx.goal_parent.id,
-      company_access_level: Binding.no_access(),
-      space_access_level: Binding.no_access(),
-    }, Enum.into(attrs, %{})))
+    goal_fixture(
+      ctx[:creator] || ctx.person,
+      Map.merge(
+        %{
+          space_id: ctx[:space_id] || ctx.company.company_space_id,
+          parent_goal_id: ctx.goal_parent.id,
+          company_access_level: Binding.no_access(),
+          space_access_level: Binding.no_access()
+        },
+        Enum.into(attrs, %{})
+      )
+    )
   end
 
   defp add_person_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space_id, [%{
-      id: ctx.person.id,
-      access_level: Binding.edit_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space_id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.edit_access()
+      }
+    ])
   end
 
   defp add_manager_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space_id, [%{
-      id: ctx.person.id,
-      access_level: Binding.full_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space_id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.full_access()
+      }
+    ])
   end
 end

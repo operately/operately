@@ -41,5 +41,4 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyOwnersTest do
   def request(ctx, person_id) when is_binary(person_id) do
     mutation(ctx.conn, :add_company_owners, %{people_ids: [person_id]})
   end
-
 end

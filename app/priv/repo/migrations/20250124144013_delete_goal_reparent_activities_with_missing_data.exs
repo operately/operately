@@ -6,6 +6,5 @@ defmodule Operately.Repo.Migrations.DeleteGoalReparentActivitiesWithMissingData 
   end
 
   def down do
-
   end
 end

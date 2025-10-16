@@ -6,6 +6,5 @@ defmodule Operately.Repo.Migrations.PopulatePublishedAtFieldInExistingPublishedD
   end
 
   def down do
-
   end
 end

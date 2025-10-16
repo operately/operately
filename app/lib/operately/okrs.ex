@@ -10,11 +10,12 @@ defmodule Operately.Okrs do
   alias Operately.Okrs.KeyResult
 
   def list_objectives(filters \\ %{}) when is_map(filters) do
-    query = if filters[:group_id] do
-      from o in Objective, where: o.group_id == ^filters[:group_id]
-    else
-      from o in Objective
-    end
+    query =
+      if filters[:group_id] do
+        from o in Objective, where: o.group_id == ^filters[:group_id]
+      else
+        from(o in Objective)
+      end
 
     query = from o in query, order_by: [asc: o.inserted_at]
 
@@ -22,11 +23,10 @@ defmodule Operately.Okrs do
   end
 
   def list_key_results!(objective_id) do
-    query = (
+    query =
       from kr in KeyResult,
-      where: kr.objective_id == ^objective_id,
-      order_by: [asc: kr.inserted_at]
-    )
+        where: kr.objective_id == ^objective_id,
+        order_by: [asc: kr.inserted_at]
 
     Repo.all(query)
   end
@@ -35,11 +35,7 @@ defmodule Operately.Okrs do
     alias Operately.Alignments.Alignment
     alias Operately.Projects.Project
 
-    query = (
-      from p in Project,
-      join: a in Alignment, on: p.id == a.child and a.child_type == :project,
-      where: a.parent == ^objective_id and a.parent_type == :objective
-    )
+    query = from p in Project, join: a in Alignment, on: p.id == a.child and a.child_type == :project, where: a.parent == ^objective_id and a.parent_type == :objective
 
     Repo.all(query)
   end
@@ -180,7 +176,6 @@ defmodule Operately.Okrs do
   def change_objective(%Objective{} = objective, attrs \\ %{}) do
     Objective.changeset(objective, attrs)
   end
-
 
   @doc """
   Gets a single key_result.

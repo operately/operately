@@ -41,6 +41,7 @@ defmodule OperatelyWeb.Api.Queries.GetSpacesTest do
       Enum.each(1..3, fn _ ->
         group_fixture(ctx.creator, company_id: ctx.company.id)
       end)
+
       spaces = Groups.list_groups_for_company(ctx.company.id)
 
       company_space = Groups.get_group!(ctx.company.company_space_id) |> Repo.preload(:company)
@@ -51,11 +52,13 @@ defmodule OperatelyWeb.Api.Queries.GetSpacesTest do
     end
 
     test "members have access to spaces they are part of", ctx do
-      spaces = Enum.map(1..3, fn _ ->
-        space = group_fixture(ctx.creator, company_id: ctx.company.id)
-        add_person_to_space(ctx, space)
-        Repo.preload(space, :company)
-      end)
+      spaces =
+        Enum.map(1..3, fn _ ->
+          space = group_fixture(ctx.creator, company_id: ctx.company.id)
+          add_person_to_space(ctx, space)
+          Repo.preload(space, :company)
+        end)
+
       Enum.each(1..3, fn _ ->
         group_fixture(ctx.creator, company_id: ctx.company.id)
       end)
@@ -68,13 +71,17 @@ defmodule OperatelyWeb.Api.Queries.GetSpacesTest do
       Enum.each(1..2, fn _ ->
         group_fixture(ctx.creator, company_id: ctx.company.id)
       end)
-      spaces = Enum.map(1..2, fn _ ->
-        space = group_fixture(ctx.creator, [
-          company_id: ctx.company.id,
-          company_permissions: Binding.view_access(),
-        ])
-        Repo.preload(space, :company)
-      end)
+
+      spaces =
+        Enum.map(1..2, fn _ ->
+          space =
+            group_fixture(ctx.creator,
+              company_id: ctx.company.id,
+              company_permissions: Binding.view_access()
+            )
+
+          Repo.preload(space, :company)
+        end)
 
       assert {200, res} = query(ctx.conn, :get_spaces, %{})
       assert_spaces(res, spaces, 3)
@@ -108,15 +115,18 @@ defmodule OperatelyWeb.Api.Queries.GetSpacesTest do
 
   defp assert_spaces(res, spaces, count) do
     assert length(res.spaces) == count
+
     Enum.each(spaces, fn s ->
       assert Enum.find(res.spaces, fn r -> r.id == Paths.space_id(s) end) != nil
     end)
   end
 
   defp add_person_to_space(ctx, space) do
-    Operately.Groups.add_members(ctx.person, space.id, [%{
-      id: ctx.person.id,
-      access_level: Binding.view_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, space.id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.view_access()
+      }
+    ])
   end
 end

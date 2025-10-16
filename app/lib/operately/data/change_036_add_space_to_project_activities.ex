@@ -8,11 +8,12 @@ defmodule Operately.Data.Change036AddSpaceToProjectActivities do
   def run do
     Repo.transaction(fn ->
       from(a in Activity,
-        where: a.action in [
-          "project_archived",
-          "project_goal_connection",
-          "project_goal_disconnection",
-        ]
+        where:
+          a.action in [
+            "project_archived",
+            "project_goal_connection",
+            "project_goal_disconnection"
+          ]
       )
       |> Repo.all()
       |> update_activities()
@@ -26,15 +27,19 @@ defmodule Operately.Data.Change036AddSpaceToProjectActivities do
   end
 
   defp update_activities(activity) do
-    Project.get(:system, id: activity.content["project_id"], opts: [
-      with_deleted: true,
-    ])
+    Project.get(:system,
+      id: activity.content["project_id"],
+      opts: [
+        with_deleted: true
+      ]
+    )
     |> case do
       {:ok, %{group_id: space_id}} ->
         content = Map.put(activity.content, :space_id, space_id)
 
-        {:ok, _} = Activity.changeset(activity, %{content: content})
-        |> Repo.update()
+        {:ok, _} =
+          Activity.changeset(activity, %{content: content})
+          |> Repo.update()
 
       _ ->
         :ok

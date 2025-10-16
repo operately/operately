@@ -118,7 +118,7 @@ defmodule OperatelyWeb.Api.Queries.GetTaskTest do
 
     test "include_milestone", ctx do
       task = create_task(ctx, company_access: Binding.view_access())
-      milestone = Repo.preload(task, [milestone: :project]).milestone
+      milestone = Repo.preload(task, milestone: :project).milestone
 
       assert {200, res} = query(ctx.conn, :get_task, %{id: Paths.task_id(task), include_milestone: true})
       m = %{res.task.milestone | status: to_string(res.task.milestone.status)}
@@ -145,25 +145,29 @@ defmodule OperatelyWeb.Api.Queries.GetTaskTest do
   #
 
   defp create_task(ctx, opts) do
-    project = project_fixture(%{
-      company_id: ctx.company.id,
-      name: "Project",
-      creator_id: ctx.creator.id,
-      champion_id: Keyword.get(opts, :champion_id, ctx.creator.id),
-      reviewer_id: Keyword.get(opts, :reviewer_id, ctx.creator.id),
-      group_id: Keyword.get(opts, :space_id, ctx.space.id),
-      company_access_level: Keyword.get(opts, :company_access, Binding.no_access()),
-      space_access_level: Keyword.get(opts, :space_access, Binding.no_access()),
-    })
-    milestone = milestone_fixture(%{ project_id: project.id })
+    project =
+      project_fixture(%{
+        company_id: ctx.company.id,
+        name: "Project",
+        creator_id: ctx.creator.id,
+        champion_id: Keyword.get(opts, :champion_id, ctx.creator.id),
+        reviewer_id: Keyword.get(opts, :reviewer_id, ctx.creator.id),
+        group_id: Keyword.get(opts, :space_id, ctx.space.id),
+        company_access_level: Keyword.get(opts, :company_access, Binding.no_access()),
+        space_access_level: Keyword.get(opts, :space_access, Binding.no_access())
+      })
+
+    milestone = milestone_fixture(%{project_id: project.id})
 
     task_fixture(%{creator_id: ctx.creator.id, milestone_id: milestone.id, project_id: project.id})
   end
 
   defp add_person_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space.id, [%{
-      id: ctx.person.id,
-      access_level: Binding.edit_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space.id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.edit_access()
+      }
+    ])
   end
 end

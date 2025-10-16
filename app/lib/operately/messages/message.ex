@@ -60,7 +60,7 @@ defmodule Operately.Messages.Message do
   import Ecto.Query, only: [from: 2]
 
   def load_comments_count(messages) do
-    message_ids = Enum.map(messages, &(&1.id))
+    message_ids = Enum.map(messages, & &1.id)
 
     counts =
       from(c in Operately.Updates.Comment,

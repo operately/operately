@@ -12,10 +12,10 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
 
   describe "permissions - query root items" do
     @table [
-      %{person: :company_member,  count: 1,   expected_items: [:public_project]},
-      %{person: :space_member,    count: 3,   expected_items: [:public_project, :project1, :project2]},
-      %{person: :creator,         count: 4,   expected_items: [:public_project, :project1, :project2, :secret_project]},
-      %{person: :champion,        count: 4,   expected_items: [:public_project, :project1, :project2, :secret_project]},
+      %{person: :company_member, count: 1, expected_items: [:public_project]},
+      %{person: :space_member, count: 3, expected_items: [:public_project, :project1, :project2]},
+      %{person: :creator, count: 4, expected_items: [:public_project, :project1, :project2, :secret_project]},
+      %{person: :champion, count: 4, expected_items: [:public_project, :project1, :project2, :secret_project]}
     ]
 
     setup ctx do
@@ -34,11 +34,11 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
       |> Factory.add_project(:public_project, :space)
       |> Factory.add_project(:project1, :space, company_access_level: Binding.no_access())
       |> Factory.add_project(:project2, :space, company_access_level: Binding.no_access())
-      |> Factory.add_project(:secret_project, :space, [
+      |> Factory.add_project(:secret_project, :space,
         champion: :champion,
         company_access_level: Binding.no_access(),
-        space_access_level: Binding.no_access(),
-      ])
+        space_access_level: Binding.no_access()
+      )
     end
 
     tabletest @table do
@@ -49,6 +49,7 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
         assert {200, res} = query(ctx.conn, :get_work_map, %{})
 
         assert length(res.work_map) == @test.count
+
         Enum.each(res.work_map, fn item ->
           assert Enum.member?(expected_items, item.id)
         end)
@@ -58,10 +59,10 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
 
   describe "permissions - query nested items" do
     @table [
-      %{person: :company_member,  count: 1,   expected_items: [:public_project]},
-      %{person: :space_member,    count: 3,   expected_items: [:public_project, :project1, :project2]},
-      %{person: :creator,         count: 4,   expected_items: [:public_project, :project1, :project2, :secret_project]},
-      %{person: :champion,        count: 4,   expected_items: [:public_project, :project1, :project2, :secret_project]},
+      %{person: :company_member, count: 1, expected_items: [:public_project]},
+      %{person: :space_member, count: 3, expected_items: [:public_project, :project1, :project2]},
+      %{person: :creator, count: 4, expected_items: [:public_project, :project1, :project2, :secret_project]},
+      %{person: :champion, count: 4, expected_items: [:public_project, :project1, :project2, :secret_project]}
     ]
 
     setup ctx do
@@ -84,12 +85,12 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
       |> Factory.add_project(:public_project, :space, goal: :child_goal)
       |> Factory.add_project(:project1, :space, goal: :child_goal, company_access_level: Binding.no_access())
       |> Factory.add_project(:project2, :space, goal: :child_goal, company_access_level: Binding.no_access())
-      |> Factory.add_project(:secret_project, :space, [
+      |> Factory.add_project(:secret_project, :space,
         goal: :child_goal,
         champion: :champion,
         company_access_level: Binding.no_access(),
-        space_access_level: Binding.no_access(),
-      ])
+        space_access_level: Binding.no_access()
+      )
     end
 
     tabletest @table do
@@ -107,6 +108,7 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
 
         # Verify the projects under the child goal
         assert length(child_item.children) == @test.count
+
         Enum.each(child_item.children, fn item ->
           assert Enum.member?(expected_items, item.id)
         end)
@@ -134,17 +136,17 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
       |> Factory.add_goal(:public2, :space, parent_goal: :public1)
       |> Factory.add_goal(:internal1, :space, parent_goal: :public1, company_access: Binding.no_access())
       |> Factory.add_goal(:internal2, :space, parent_goal: :public2, company_access: Binding.no_access())
-      |> Factory.add_goal(:secret1, :space, [
+      |> Factory.add_goal(:secret1, :space,
         champion: :champion,
         company_access: Binding.no_access(),
-        space_access: Binding.no_access(),
-      ])
-      |> Factory.add_goal(:secret2, :space, [
+        space_access: Binding.no_access()
+      )
+      |> Factory.add_goal(:secret2, :space,
         parent_goal: :internal2,
         champion: :champion,
         company_access: Binding.no_access(),
-        space_access: Binding.no_access(),
-      ])
+        space_access: Binding.no_access()
+      )
     end
 
     test "company member has access to 2 public goals", ctx do
@@ -191,7 +193,7 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
 
     @table [
       %{person: :creator},
-      %{person: :champion},
+      %{person: :champion}
     ]
 
     tabletest @table do
@@ -328,7 +330,7 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
         |> Factory.add_space(:space4)
         |> Factory.add_project(:project3, :space4, champion: :champion)
 
-      assert {200, %{ work_map: _ = [item] }} = query(ctx.conn, :get_work_map, %{space_id: Paths.space_id(ctx.space4)})
+      assert {200, %{work_map: _ = [item]}} = query(ctx.conn, :get_work_map, %{space_id: Paths.space_id(ctx.space4)})
 
       assert item.id == Paths.project_id(ctx.project3)
       assert item.owner.id == Paths.person_id(ctx.champion)
@@ -336,7 +338,7 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
 
       Factory.suspend_company_member(ctx, :champion)
 
-      assert {200, %{ work_map: _ = [item] }} = query(ctx.conn, :get_work_map, %{space_id: Paths.space_id(ctx.space4)})
+      assert {200, %{work_map: _ = [item]}} = query(ctx.conn, :get_work_map, %{space_id: Paths.space_id(ctx.space4)})
 
       assert item.id == Paths.project_id(ctx.project3)
       refute item.owner

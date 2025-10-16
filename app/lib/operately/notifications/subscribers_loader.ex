@@ -31,21 +31,23 @@ defmodule Operately.Notifications.SubscribersLoader do
       It must have `access_context` preloaded.
   """
   def preload_subscriptions(resource) do
-    query = from(subs in Operately.Notifications.Subscription,
-      join: p in assoc(subs, :person),
-      join: m in assoc(p, :access_group_memberships),
-      join: g in assoc(m, :group),
-      join: b in Binding, on: b.group_id == g.id and b.context_id == ^resource.access_context.id and b.access_level >= ^Binding.view_access(),
-      preload: [person: p],
-      select: subs
-    )
+    query =
+      from(subs in Operately.Notifications.Subscription,
+        join: p in assoc(subs, :person),
+        join: m in assoc(p, :access_group_memberships),
+        join: g in assoc(m, :group),
+        join: b in Binding,
+        on: b.group_id == g.id and b.context_id == ^resource.access_context.id and b.access_level >= ^Binding.view_access(),
+        preload: [person: p],
+        select: subs
+      )
 
     Repo.preload(resource, subscription_list: [subscriptions: query])
   end
 
   defp filter_subscribers(%{subscription_list: list = %{send_to_everyone: false}}, _) do
     Enum.filter(list.subscriptions, fn s -> not s.canceled end)
-    |> Enum.map(&(&1.person_id))
+    |> Enum.map(& &1.person_id)
   end
 
   defp filter_subscribers(%{subscription_list: list = %{send_to_everyone: true}}, people) do
@@ -58,7 +60,7 @@ defmodule Operately.Notifications.SubscribersLoader do
         _ -> false
       end
     end)
-    |> Enum.map(&(&1.id))
+    |> Enum.map(& &1.id)
   end
 
   # If for some reason someone is not part "people", but they have a subscription,

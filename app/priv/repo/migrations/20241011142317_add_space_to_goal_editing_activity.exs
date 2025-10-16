@@ -6,6 +6,5 @@ defmodule Operately.Repo.Migrations.AddSpaceToGoalEditingActivity do
   end
 
   def down do
-
   end
 end

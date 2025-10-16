@@ -19,7 +19,7 @@ defmodule OperatelyWeb.Api.Mutations.EditCompany do
     company = Company.get(me, id: me.company_id) |> unwrap()
 
     authorize(company, :can_edit_details)
-    
+
     company = CompanyEditing.run(me, company, inputs.name) |> unwrap()
     serialized = Serializer.serialize(company, level: :essential)
 
@@ -35,13 +35,12 @@ defmodule OperatelyWeb.Api.Mutations.EditCompany do
 
     case Permissions.check(access_level, action) do
       {:ok, :allowed} -> :ok
-      {:error, _} -> throw {:error, :forbidden}
+      {:error, _} -> throw({:error, :forbidden})
     end
   end
 
   defp unwrap({:ok, value}), do: value
-  defp unwrap({:error, :not_found}), do: throw {:error, :not_found}
-  defp unwrap({:error, :forbidden}), do: throw {:error, :forbidden}
-  defp unwrap({:error, _}), do: throw {:error, :internal_server_error}
-
+  defp unwrap({:error, :not_found}), do: throw({:error, :not_found})
+  defp unwrap({:error, :forbidden}), do: throw({:error, :forbidden})
+  defp unwrap({:error, _}), do: throw({:error, :internal_server_error})
 end

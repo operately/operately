@@ -6,6 +6,5 @@ defmodule Operately.Repo.Migrations.CreateSubcriptionsListForExistingProjectChec
   end
 
   def down do
-
   end
 end

@@ -32,11 +32,12 @@ defmodule Operately.Data.Change061ConvertRetrospectiveContentTest do
       }
     }
 
-    retrospective = Operately.ProjectsFixtures.retrospective_fixture(%{
-      project_id: ctx.project.id,
-      author_id: ctx.creator.id,
-      content: old_format_content,
-    })
+    retrospective =
+      Operately.ProjectsFixtures.retrospective_fixture(%{
+        project_id: ctx.project.id,
+        author_id: ctx.creator.id,
+        content: old_format_content
+      })
 
     Operately.Data.Change061ConvertRetrospectiveContent.run()
 
@@ -49,9 +50,11 @@ defmodule Operately.Data.Change061ConvertRetrospectiveContentTest do
     # Extract heading texts and paragraph content for verification
     content_items = updated_retrospective.content["content"]
     headings = Enum.filter(content_items, fn item -> item["type"] == "heading" end)
-    heading_texts = Enum.map(headings, fn heading ->
-      Enum.at(heading["content"], 0)["text"]
-    end)
+
+    heading_texts =
+      Enum.map(headings, fn heading ->
+        Enum.at(heading["content"], 0)["text"]
+      end)
 
     # Check each heading exists
     assert Enum.member?(heading_texts, "What went well?")
@@ -60,12 +63,15 @@ defmodule Operately.Data.Change061ConvertRetrospectiveContentTest do
 
     # Check the content of the paragraphs
     paragraphs = Enum.filter(content_items, fn item -> item["type"] == "paragraph" end)
-    paragraph_texts = Enum.map(paragraphs, fn paragraph ->
-      case paragraph["content"] do
-        [%{"text" => text} | _] -> text
-        _ -> ""
-      end
-    end) |> Enum.filter(fn text -> text != "" end)
+
+    paragraph_texts =
+      Enum.map(paragraphs, fn paragraph ->
+        case paragraph["content"] do
+          [%{"text" => text} | _] -> text
+          _ -> ""
+        end
+      end)
+      |> Enum.filter(fn text -> text != "" end)
 
     # Verify the paragraph contents were preserved
     assert Enum.member?(paragraph_texts, "Team collaboration was excellent")
@@ -81,11 +87,13 @@ defmodule Operately.Data.Change061ConvertRetrospectiveContentTest do
       ]
     }
 
-    retrospective = Operately.ProjectsFixtures.retrospective_fixture(%{
-      project_id: ctx.project.id,
-      author_id: ctx.creator.id,
-      content: new_format_content,
-    })
+    retrospective =
+      Operately.ProjectsFixtures.retrospective_fixture(%{
+        project_id: ctx.project.id,
+        author_id: ctx.creator.id,
+        content: new_format_content
+      })
+
     original_content = retrospective.content
 
     Operately.Data.Change061ConvertRetrospectiveContent.run()
@@ -109,11 +117,12 @@ defmodule Operately.Data.Change061ConvertRetrospectiveContentTest do
       "whatCouldHaveGoneBetter" => nil
     }
 
-    retrospective = Operately.ProjectsFixtures.retrospective_fixture(%{
-      project_id: ctx.project.id,
-      author_id: ctx.creator.id,
-      content: partial_content,
-    })
+    retrospective =
+      Operately.ProjectsFixtures.retrospective_fixture(%{
+        project_id: ctx.project.id,
+        author_id: ctx.creator.id,
+        content: partial_content
+      })
 
     Operately.Data.Change061ConvertRetrospectiveContent.run()
 
@@ -126,12 +135,15 @@ defmodule Operately.Data.Change061ConvertRetrospectiveContentTest do
     # Verify the content from the non-empty section was preserved
     content_items = updated_retrospective.content["content"]
     paragraphs = Enum.filter(content_items, fn item -> item["type"] == "paragraph" end)
-    paragraph_texts = Enum.map(paragraphs, fn paragraph ->
-      case paragraph["content"] do
-        [%{"text" => text} | _] -> text
-        _ -> ""
-      end
-    end) |> Enum.filter(fn text -> text != "" end)
+
+    paragraph_texts =
+      Enum.map(paragraphs, fn paragraph ->
+        case paragraph["content"] do
+          [%{"text" => text} | _] -> text
+          _ -> ""
+        end
+      end)
+      |> Enum.filter(fn text -> text != "" end)
 
     assert Enum.member?(paragraph_texts, "Good things happened")
   end

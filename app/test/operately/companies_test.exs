@@ -7,7 +7,7 @@ defmodule Operately.CompaniesTest do
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
 
-  setup do 
+  setup do
     account = account_fixture()
 
     {:ok, %{account: account}}

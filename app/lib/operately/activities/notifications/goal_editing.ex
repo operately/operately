@@ -4,18 +4,18 @@ defmodule Operately.Activities.Notifications.GoalEditing do
       activity.content["old_champion_id"],
       activity.content["new_champion_id"],
       activity.content["old_reviewer_id"],
-      activity.content["new_reviewer_id"],
+      activity.content["new_reviewer_id"]
     ]
 
-    notifications = 
+    notifications =
       people
       |> Enum.uniq()
       |> Enum.filter(fn person_id -> person_id != activity.author_id end)
-      |> Enum.map(fn person_id -> 
+      |> Enum.map(fn person_id ->
         %{
           person_id: person_id,
           activity_id: activity.id,
-          should_send_email: true,
+          should_send_email: true
         }
       end)
 

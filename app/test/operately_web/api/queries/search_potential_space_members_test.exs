@@ -53,10 +53,11 @@ defmodule OperatelyWeb.Api.Queries.SearchPotentialSpaceMembersTest do
     end
 
     test "company member has access", ctx do
-      space = group_fixture(ctx.company_creator, [
-        company_id: ctx.company.id,
-        company_permissions: Binding.view_access(),
-      ])
+      space =
+        group_fixture(ctx.company_creator,
+          company_id: ctx.company.id,
+          company_permissions: Binding.view_access()
+        )
 
       assert {200, res} = query(ctx.conn, :search_potential_space_members, %{group_id: Paths.space_id(space)})
 
@@ -66,20 +67,22 @@ defmodule OperatelyWeb.Api.Queries.SearchPotentialSpaceMembersTest do
     end
 
     test "company member has no access", ctx do
-      space = group_fixture(ctx.company_creator, [
-        company_id: ctx.company.id,
-        company_permissions: Binding.no_access(),
-      ])
+      space =
+        group_fixture(ctx.company_creator,
+          company_id: ctx.company.id,
+          company_permissions: Binding.no_access()
+        )
 
       assert {200, res} = query(ctx.conn, :search_potential_space_members, %{group_id: Paths.space_id(space)})
       assert length(res.people) == 0
     end
 
     test "space member has no access", ctx do
-      space = group_fixture(ctx.company_creator, [
-        company_id: ctx.company.id,
-        company_permissions: Binding.no_access(),
-      ])
+      space =
+        group_fixture(ctx.company_creator,
+          company_id: ctx.company.id,
+          company_permissions: Binding.no_access()
+        )
 
       assert {200, res} = query(ctx.conn, :search_potential_space_members, %{group_id: Paths.space_id(space)})
       assert length(res.people) == 0
@@ -92,10 +95,11 @@ defmodule OperatelyWeb.Api.Queries.SearchPotentialSpaceMembersTest do
     end
 
     test "suspended people don't have access", ctx do
-      space = group_fixture(ctx.company_creator, [
-        company_id: ctx.company.id,
-        company_permissions: Binding.view_access(),
-      ])
+      space =
+        group_fixture(ctx.company_creator,
+          company_id: ctx.company.id,
+          company_permissions: Binding.view_access()
+        )
 
       assert {200, res} = query(ctx.conn, :search_potential_space_members, %{group_id: Paths.space_id(space)})
       assert length(res.people) == 2
@@ -129,37 +133,43 @@ defmodule OperatelyWeb.Api.Queries.SearchPotentialSpaceMembersTest do
     end
 
     test "query members by name", ctx do
-      assert {200, res} = query(ctx.conn, :search_potential_space_members, %{
-        group_id: Paths.space_id(ctx.space),
-        query: "Mike",
-      })
+      assert {200, res} =
+               query(ctx.conn, :search_potential_space_members, %{
+                 group_id: Paths.space_id(ctx.space),
+                 query: "Mike"
+               })
 
       assert length(res.people) == 1
       assert Enum.find(res.people, &(&1 == Serializer.serialize(ctx.person2)))
     end
 
     test "query members by title", ctx do
-      assert {200, res} = query(ctx.conn, :search_potential_space_members, %{
-        group_id: Paths.space_id(ctx.space),
-        query: "CEO",
-      })
+      assert {200, res} =
+               query(ctx.conn, :search_potential_space_members, %{
+                 group_id: Paths.space_id(ctx.space),
+                 query: "CEO"
+               })
 
       assert length(res.people) == 1
       assert Enum.find(res.people, &(&1 == Serializer.serialize(ctx.person1)))
     end
 
     test "exlude_ids excludes members from result", ctx do
-      assert {200, res} = query(ctx.conn, :search_potential_space_members, %{
-        group_id: Paths.space_id(ctx.space),
-        exclude_ids: [ctx.person1.id],
-      })
+      assert {200, res} =
+               query(ctx.conn, :search_potential_space_members, %{
+                 group_id: Paths.space_id(ctx.space),
+                 exclude_ids: [ctx.person1.id]
+               })
+
       assert length(res.people) == 1
       assert Enum.find(res.people, &(&1 == Serializer.serialize(ctx.person2)))
 
-      assert {200, res} = query(ctx.conn, :search_potential_space_members, %{
-        group_id: Paths.space_id(ctx.space),
-        exclude_ids: [ctx.person2.id],
-      })
+      assert {200, res} =
+               query(ctx.conn, :search_potential_space_members, %{
+                 group_id: Paths.space_id(ctx.space),
+                 exclude_ids: [ctx.person2.id]
+               })
+
       assert length(res.people) == 1
       assert Enum.find(res.people, &(&1 == Serializer.serialize(ctx.person1)))
     end
@@ -197,9 +207,11 @@ defmodule OperatelyWeb.Api.Queries.SearchPotentialSpaceMembersTest do
   #
 
   defp add_person_to_space(person, space) do
-    Operately.Groups.add_members(person, space.id, [%{
-      id: person.id,
-      access_level: Binding.view_access(),
-    }])
+    Operately.Groups.add_members(person, space.id, [
+      %{
+        id: person.id,
+        access_level: Binding.view_access()
+      }
+    ])
   end
 end

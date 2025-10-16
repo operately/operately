@@ -13,7 +13,7 @@ defmodule Operately.Support.Factory.Comments do
           content: %{"message" => content},
           author_id: creator.id,
           entity_id: ctx[parent_name].id,
-          entity_type: :project_milestone,
+          entity_type: :project_milestone
         })
       else
         Operately.Operations.CommentAdding.run(creator, ctx[parent_name], entity_type, content)

@@ -9,19 +9,20 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Messages.Message do
       updated_at: OperatelyWeb.Api.Serializer.serialize(message.updated_at),
       published_at: OperatelyWeb.Api.Serializer.serialize(message.published_at),
       author: OperatelyWeb.Api.Serializer.serialize(message.author),
-      comments_count: message.comments_count,
+      comments_count: message.comments_count
     }
   end
 
   def serialize(message, level: :full) do
-    serialize(message, level: :essential) |> Map.merge(%{
+    serialize(message, level: :essential)
+    |> Map.merge(%{
       space: serialize_space(message.space),
       reactions: OperatelyWeb.Api.Serializer.serialize(message.reactions),
       comments: OperatelyWeb.Api.Serializer.serialize(message.comments),
       subscription_list: OperatelyWeb.Api.Serializer.serialize(message.subscription_list),
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(message.potential_subscribers),
       notifications: OperatelyWeb.Api.Serializer.serialize(message.notifications),
-      permissions: OperatelyWeb.Api.Serializer.serialize(message.permissions),
+      permissions: OperatelyWeb.Api.Serializer.serialize(message.permissions)
     })
   end
 

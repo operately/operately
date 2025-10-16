@@ -48,10 +48,12 @@ defmodule OperatelyWeb.Api.Mutations.NewInvitationToken do
 
     value = Operately.Invitations.InvitationToken.build_token()
 
-    {:ok, token} = Operately.Invitations.create_invitation_token!(%{
-      token: value,
-      invitation_id: invitation.id,
-    })
+    {:ok, token} =
+      Operately.Invitations.create_invitation_token!(%{
+        token: value,
+        invitation_id: invitation.id
+      })
+
     token = %{token | token: value}
 
     invitation =

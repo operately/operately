@@ -40,15 +40,17 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubFile do
   end
 
   defp parse_inputs(inputs) do
-    files = Enum.map(inputs.files, fn f ->
-      description = Jason.decode!(f.description)
-      %{f | description: description}
-    end)
+    files =
+      Enum.map(inputs.files, fn f ->
+        description = Jason.decode!(f.description)
+        %{f | description: description}
+      end)
 
-    {:ok, Map.merge(inputs, %{
-      files: files,
-      send_to_everyone: inputs[:send_notifications_to_everyone] || false,
-      subscriber_ids: inputs[:subscriber_ids] || []
-    })}
+    {:ok,
+     Map.merge(inputs, %{
+       files: files,
+       send_to_everyone: inputs[:send_notifications_to_everyone] || false,
+       subscriber_ids: inputs[:subscriber_ids] || []
+     })}
   end
 end

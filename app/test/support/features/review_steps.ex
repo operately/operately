@@ -7,9 +7,9 @@ defmodule Operately.Support.Features.ReviewSteps do
     ctx
     |> Factory.setup()
     |> Factory.add_space(:product_space)
-    |> Factory.add_space_member(:me, :product_space, [name: "Michael Scott"])
-    |> Factory.add_space_member(:my_manager, :product_space, [name: "David Wallace"])
-    |> Factory.add_space_member(:my_report, :product_space, [name: "Dwight Schrute"])
+    |> Factory.add_space_member(:me, :product_space, name: "Michael Scott")
+    |> Factory.add_space_member(:my_manager, :product_space, name: "David Wallace")
+    |> Factory.add_space_member(:my_report, :product_space, name: "Dwight Schrute")
     |> Factory.log_in_person(:me)
   end
 
@@ -53,11 +53,11 @@ defmodule Operately.Support.Features.ReviewSteps do
 
   step :given_there_are_due_project_check_ins, ctx do
     ctx
-    |> Factory.add_project(:project, :product_space, [
+    |> Factory.add_project(:project, :product_space,
       champion: :me,
       reviewer: :my_manager,
       name: "Release Dunder Mifflin Infinity"
-    ])
+    )
     |> Factory.set_project_next_check_in_date(:project, past_date())
   end
 
@@ -109,18 +109,18 @@ defmodule Operately.Support.Features.ReviewSteps do
 
   step :given_there_are_due_milestones, ctx do
     ctx
-    |> Factory.add_project(:project, :product_space, [
+    |> Factory.add_project(:project, :product_space,
       champion: :me,
       reviewer: :my_manager,
       name: "Release Dunder Mifflin Infinity"
-    ])
-    |> Factory.add_project_milestone(:milestone, :project, [
+    )
+    |> Factory.add_project_milestone(:milestone, :project,
       title: "Important Work",
       timeframe: %Operately.ContextualDates.Timeframe{
         contextual_start_date: nil,
         contextual_end_date: Operately.ContextualDates.ContextualDate.create_day_date(past_date())
-      },
-    ])
+      }
+    )
   end
 
   step :assert_the_due_milestone_is_listed, ctx do
@@ -202,30 +202,30 @@ defmodule Operately.Support.Features.ReviewSteps do
 
   step :given_there_are_tasks_without_assignee, ctx do
     ctx
-    |> Factory.add_project_task(:task, nil, [
+    |> Factory.add_project_task(:task, nil,
       name: "Urgent Feature",
       project_id: ctx.project.id,
-      due_date: Operately.ContextualDates.ContextualDate.create_day_date(past_date()),
-    ])
+      due_date: Operately.ContextualDates.ContextualDate.create_day_date(past_date())
+    )
   end
 
   step :given_there_are_due_tasks, ctx do
     ctx
-    |> Factory.add_project(:project, :product_space, [
+    |> Factory.add_project(:project, :product_space,
       champion: :me,
       reviewer: :my_manager,
       name: "Release Dunder Mifflin Infinity"
-    ])
-    |> Factory.add_project_milestone(:milestone, :project, [
+    )
+    |> Factory.add_project_milestone(:milestone, :project,
       timeframe: %Operately.ContextualDates.Timeframe{
         contextual_start_date: nil,
-        contextual_end_date: nil,
-      },
-    ])
-    |> Factory.add_project_task(:task, :milestone, [
+        contextual_end_date: nil
+      }
+    )
+    |> Factory.add_project_task(:task, :milestone,
       name: "Urgent Feature",
-      due_date: Operately.ContextualDates.ContextualDate.create_day_date(past_date()),
-    ])
+      due_date: Operately.ContextualDates.ContextualDate.create_day_date(past_date())
+    )
     |> Factory.add_task_assignee(:assignee, :task, :me)
   end
 
@@ -327,11 +327,11 @@ defmodule Operately.Support.Features.ReviewSteps do
 
   step :given_there_are_due_goal_updates, ctx do
     ctx
-    |> Factory.add_goal(:goal, :product_space, [
+    |> Factory.add_goal(:goal, :product_space,
       champion: :me,
       reviewer: :my_manager,
       name: "Expand the customer base"
-    ])
+    )
     |> Factory.set_goal_next_update_date(:goal, past_date())
   end
 
@@ -383,11 +383,11 @@ defmodule Operately.Support.Features.ReviewSteps do
 
   step :given_there_are_submitted_project_check_ins, ctx do
     ctx
-    |> Factory.add_project(:project, :product_space, [
+    |> Factory.add_project(:project, :product_space,
       champion: :my_report,
       reviewer: :me,
       name: "Release Dunder Mifflin Infinity"
-    ])
+    )
     |> Factory.add_project_check_in(:check_in, :project, :my_report)
   end
 
@@ -436,11 +436,11 @@ defmodule Operately.Support.Features.ReviewSteps do
 
   step :given_there_are_submitted_goal_updates, ctx do
     ctx
-    |> Factory.add_goal(:goal, :product_space, [
+    |> Factory.add_goal(:goal, :product_space,
       champion: :my_report,
       reviewer: :me,
       name: "Expand the customer base"
-    ])
+    )
     |> Factory.add_goal_update(:goal_update, :goal, :my_report)
   end
 
@@ -526,7 +526,7 @@ defmodule Operately.Support.Features.ReviewSteps do
   # Review Item Counter
   #
 
-  step :assert_the_review_item_count, ctx, [is: count] do
+  step :assert_the_review_item_count, ctx, is: count do
     if count == 0 do
       UI.refute_has(ctx, testid: "review-link-count")
     else
@@ -543,5 +543,4 @@ defmodule Operately.Support.Features.ReviewSteps do
     |> Date.add(-3)
     |> Operately.Time.as_datetime()
   end
-
 end

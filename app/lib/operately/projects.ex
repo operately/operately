@@ -68,13 +68,15 @@ defmodule Operately.Projects do
   def rename_project(author, project, new_name) do
     Multi.new()
     |> Multi.update(:project, change_project(project, %{name: new_name}))
-    |> Activities.insert_sync(author.id, :project_renamed, fn changes -> %{
-      company_id: project.company_id,
-      space_id: project.group_id,
-      project_id: project.id,
-      old_name: project.name,
-      new_name: changes.project.name
-    } end)
+    |> Activities.insert_sync(author.id, :project_renamed, fn changes ->
+      %{
+        company_id: project.company_id,
+        space_id: project.group_id,
+        project_id: project.id,
+        old_name: project.name,
+        new_name: changes.project.name
+      }
+    end)
     |> Repo.transaction()
     |> Repo.extract_result(:project)
   end
@@ -82,11 +84,13 @@ defmodule Operately.Projects do
   def archive_project(author, %Project{} = project) do
     Multi.new()
     |> Multi.run(:project, fn repo, _ -> repo.soft_delete(project) end)
-    |> Activities.insert_sync(author.id, :project_archived, fn changes -> %{
-      company_id: project.company_id,
-      space_id: project.group_id,
-      project_id: changes.project.id
-    } end)
+    |> Activities.insert_sync(author.id, :project_archived, fn changes ->
+      %{
+        company_id: project.company_id,
+        space_id: project.group_id,
+        project_id: changes.project.id
+      }
+    end)
     |> Repo.transaction()
     |> Repo.extract_result(:project)
   end
@@ -114,9 +118,11 @@ defmodule Operately.Projects do
   def get_milestone!(id, opts \\ []), do: Repo.get!(Milestone, id, opts)
 
   def get_milestone_by_name(project, milestone_name) do
-    Repo.one(from m in Milestone,
-      where: m.project_id == ^project.id,
-      where: m.title == ^milestone_name)
+    Repo.one(
+      from m in Milestone,
+        where: m.project_id == ^project.id,
+        where: m.title == ^milestone_name
+    )
   end
 
   def get_milestone_with_access_level(milestone_id, person_id) do
@@ -125,9 +131,10 @@ defmodule Operately.Projects do
   end
 
   def list_project_milestones(project) do
-    query = from m in Milestone,
-      where: m.project_id == ^project.id,
-      order_by: [asc: m.id]
+    query =
+      from m in Milestone,
+        where: m.project_id == ^project.id,
+        order_by: [asc: m.id]
 
     Repo.all(query)
   end
@@ -156,19 +163,17 @@ defmodule Operately.Projects do
   end
 
   def get_contributor_role!(project, person_id) do
-    Repo.one(from c in Contributor,
-      where: c.project_id == ^project.id,
-      where: c.person_id == ^person_id,
-      select: c.role,
-      limit: 1)
+    Repo.one(
+      from c in Contributor,
+        where: c.project_id == ^project.id,
+        where: c.person_id == ^person_id,
+        select: c.role,
+        limit: 1
+    )
   end
 
   def get_person_by_role(project, role) do
-    query = from p in Person,
-      inner_join: c in Contributor, on: c.person_id == p.id,
-      where: c.project_id == ^project.id,
-      where: c.role == ^role,
-      limit: 1
+    query = from p in Person, inner_join: c in Contributor, on: c.person_id == p.id, where: c.project_id == ^project.id, where: c.role == ^role, limit: 1
 
     Repo.one(query)
   end
@@ -182,7 +187,7 @@ defmodule Operately.Projects do
   end
 
   def list_project_contributors(project) do
-    query = (from c in Contributor, where: c.project_id == ^project.id, preload: :person)
+    query = from c in Contributor, where: c.project_id == ^project.id, preload: :person
 
     query
     |> Contributor.order_by_role_and_insertion_at()
@@ -192,25 +197,21 @@ defmodule Operately.Projects do
   def list_project_contributor_candidates(company_id, project_id, query, exclude_ids, limit) do
     ilike_pattern = "%#{query}%"
 
-    query = (
+    query =
       from person in Person,
-      left_join: contrib in Contributor, on: contrib.project_id == ^project_id and contrib.person_id == person.id,
-      where: is_nil(contrib.project_id),
-      where: person.id not in ^exclude_ids,
-      where: ilike(person.full_name, ^ilike_pattern) or ilike(person.title, ^ilike_pattern),
-      where: not person.suspended and person.company_id == ^company_id,
-      limit: ^limit
-    )
+        left_join: contrib in Contributor,
+        on: contrib.project_id == ^project_id and contrib.person_id == person.id,
+        where: is_nil(contrib.project_id),
+        where: person.id not in ^exclude_ids,
+        where: ilike(person.full_name, ^ilike_pattern) or ilike(person.title, ^ilike_pattern),
+        where: not person.suspended and person.company_id == ^company_id,
+        limit: ^limit
 
     Repo.all(query)
   end
 
   def list_notification_subscribers(project_id, exclude: author_id) do
-    query = from p in Person,
-      join: c in Contributor, on: c.person_id == p.id,
-      where: c.project_id == ^project_id,
-      where: p.id != ^author_id,
-      where: not is_nil(p.email) and p.notify_about_assignments
+    query = from p in Person, join: c in Contributor, on: c.person_id == p.id, where: c.project_id == ^project_id, where: p.id != ^author_id, where: not is_nil(p.email) and p.notify_about_assignments
 
     Repo.all(query)
   end
@@ -328,20 +329,25 @@ defmodule Operately.Projects do
   end
 
   def find_first_phase_history(project_id) do
-    Repo.one(from ph in PhaseHistory,
-      where: ph.project_id == ^project_id,
-      where: ph.phase == ^:planning,
-      order_by: [asc: ph.start_time],
-      limit: 1)
+    Repo.one(
+      from ph in PhaseHistory,
+        where: ph.project_id == ^project_id,
+        where: ph.phase == ^:planning,
+        order_by: [asc: ph.start_time],
+        limit: 1
+    )
   end
 
   def record_phase_history(project, old_phase, new_phase) do
     Repo.transaction(fn ->
-      previous_phase_history = Repo.one(from ph in PhaseHistory,
-        where: ph.project_id == ^project.id,
-        where: ph.phase == ^old_phase,
-        where: is_nil(ph.end_time),
-        limit: 1)
+      previous_phase_history =
+        Repo.one(
+          from ph in PhaseHistory,
+            where: ph.project_id == ^project.id,
+            where: ph.phase == ^old_phase,
+            where: is_nil(ph.end_time),
+            limit: 1
+        )
 
       if previous_phase_history do
         previous_phase_history
@@ -349,11 +355,12 @@ defmodule Operately.Projects do
         |> Repo.update()
       end
 
-      {:ok, phase} = create_phase_history(%{
-        project_id: project.id,
-        phase: new_phase,
-        start_time: DateTime.utc_now()
-      })
+      {:ok, phase} =
+        create_phase_history(%{
+          project_id: project.id,
+          phase: new_phase,
+          start_time: DateTime.utc_now()
+        })
 
       phase
     end)
@@ -405,7 +412,6 @@ defmodule Operately.Projects do
       true
     end
   end
-
 
   alias Operately.Projects.Retrospective
 

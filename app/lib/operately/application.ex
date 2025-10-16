@@ -31,7 +31,7 @@ defmodule Operately.Application do
     ]
 
     :ok = Oban.Telemetry.attach_default_logger()
-    
+
     # Attach Sentry telemetry for Oban job failures
     if System.get_env("SENTRY_DSN") do
       attach_sentry_telemetry()

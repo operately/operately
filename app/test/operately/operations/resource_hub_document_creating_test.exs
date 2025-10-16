@@ -16,16 +16,17 @@ defmodule Operately.Operations.ResourceHubDocumentCreatingTest do
   end
 
   test "Creating document sends notifications to everyone", ctx do
-    {:ok, document} = Oban.Testing.with_testing_mode(:manual, fn ->
-      Operately.Operations.ResourceHubDocumentCreating.run(ctx.creator, ctx.hub, %{
-        name: "Some name",
-        content: RichText.rich_text("Content"),
-        post_as_draft: false,
-        send_to_everyone: true,
-        subscription_parent_type: :resource_hub_document,
-        subscriber_ids: [],
-      })
-    end)
+    {:ok, document} =
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Operately.Operations.ResourceHubDocumentCreating.run(ctx.creator, ctx.hub, %{
+          name: "Some name",
+          content: RichText.rich_text("Content"),
+          post_as_draft: false,
+          send_to_everyone: true,
+          subscription_parent_type: :resource_hub_document,
+          subscriber_ids: []
+        })
+      end)
 
     action = "resource_hub_document_created"
     activity = get_activity(document, action)
@@ -44,16 +45,17 @@ defmodule Operately.Operations.ResourceHubDocumentCreatingTest do
   end
 
   test "Creating message sends notifications to selected people", ctx do
-    {:ok, document} = Oban.Testing.with_testing_mode(:manual, fn ->
-      Operately.Operations.ResourceHubDocumentCreating.run(ctx.creator, ctx.hub, %{
-        name: "Some name",
-        content: RichText.rich_text("Content"),
-        post_as_draft: false,
-        send_to_everyone: false,
-        subscription_parent_type: :resource_hub_document,
-        subscriber_ids: [ctx.mike.id, ctx.jane.id],
-      })
-    end)
+    {:ok, document} =
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Operately.Operations.ResourceHubDocumentCreating.run(ctx.creator, ctx.hub, %{
+          name: "Some name",
+          content: RichText.rich_text("Content"),
+          post_as_draft: false,
+          send_to_everyone: false,
+          subscription_parent_type: :resource_hub_document,
+          subscriber_ids: [ctx.mike.id, ctx.jane.id]
+        })
+      end)
 
     action = "resource_hub_document_created"
     activity = get_activity(document, action)
@@ -80,14 +82,15 @@ defmodule Operately.Operations.ResourceHubDocumentCreatingTest do
     # Without permissions
     content = RichText.rich_text(mentioned_people: [ctx.person]) |> Jason.decode!()
 
-    {:ok, document} = Operately.Operations.ResourceHubDocumentCreating.run(ctx.creator, ctx.hub2, %{
-      name: "Some name",
-      content: content,
-      post_as_draft: false,
-      send_to_everyone: false,
-      subscription_parent_type: :resource_hub_document,
-      subscriber_ids: [],
-    })
+    {:ok, document} =
+      Operately.Operations.ResourceHubDocumentCreating.run(ctx.creator, ctx.hub2, %{
+        name: "Some name",
+        content: content,
+        post_as_draft: false,
+        send_to_everyone: false,
+        subscription_parent_type: :resource_hub_document,
+        subscriber_ids: []
+      })
 
     action = "resource_hub_document_created"
     activity = get_activity(document, action)
@@ -96,18 +99,20 @@ defmodule Operately.Operations.ResourceHubDocumentCreatingTest do
     assert fetch_notifications(activity.id, action: action) == []
 
     # With permissions
-    {:ok, _} = Operately.Groups.add_members(ctx.creator, ctx.space.id, [
-      %{id: ctx.person.id, access_level: Operately.Access.Binding.view_access()}
-    ])
+    {:ok, _} =
+      Operately.Groups.add_members(ctx.creator, ctx.space.id, [
+        %{id: ctx.person.id, access_level: Operately.Access.Binding.view_access()}
+      ])
 
-    {:ok, document} = Operately.Operations.ResourceHubDocumentCreating.run(ctx.creator, ctx.hub2, %{
-      name: "Some name",
-      content: content,
-      post_as_draft: false,
-      send_to_everyone: false,
-      subscription_parent_type: :resource_hub_document,
-      subscriber_ids: [],
-    })
+    {:ok, document} =
+      Operately.Operations.ResourceHubDocumentCreating.run(ctx.creator, ctx.hub2, %{
+        name: "Some name",
+        content: content,
+        post_as_draft: false,
+        send_to_everyone: false,
+        subscription_parent_type: :resource_hub_document,
+        subscriber_ids: []
+      })
 
     activity = get_activity(document, action)
     notifications = fetch_notifications(activity.id, action: action)

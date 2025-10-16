@@ -100,7 +100,7 @@ defmodule OperatelyWeb.Api.Mutations.JoinSpaceTest do
   defp create_space(ctx, attrs) do
     group_fixture(ctx.creator, %{
       company_id: ctx.company.id,
-      company_permissions: Keyword.get(attrs, :company_permissions, Binding.no_access()),
+      company_permissions: Keyword.get(attrs, :company_permissions, Binding.no_access())
     })
   end
 end

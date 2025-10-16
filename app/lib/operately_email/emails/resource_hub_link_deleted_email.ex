@@ -8,10 +8,14 @@ defmodule OperatelyEmail.Emails.ResourceHubLinkDeletedEmail do
     author = Repo.preload(activity, :author).author
     company = Repo.preload(author, :company).company
 
-    {:ok, link} = Link.get(:system, id: activity.content["link_id"], opts: [
-      preload: [:node, :resource_hub, :space],
-      with_deleted: true,
-    ])
+    {:ok, link} =
+      Link.get(:system,
+        id: activity.content["link_id"],
+        opts: [
+          preload: [:node, :resource_hub, :space],
+          with_deleted: true
+        ]
+      )
 
     company
     |> new()

@@ -122,18 +122,22 @@ defmodule OperatelyWeb.Api.Mutations.CreateProjectTest do
   #
 
   defp request(conn, ctx, attrs \\ []) do
-    mutation(conn, :create_project, Enum.into(attrs, %{
-      space_id: Paths.space_id(ctx.space),
-      name: "project",
-      reviewer_id: Paths.person_id(ctx.person),
-      champion_id: Paths.person_id(ctx.person),
-      creator_is_contributor: "yes",
-      creator_role: "Developer",
-      goal_id: Paths.goal_id(ctx.goal),
-      anonymous_access_level: Binding.no_access(),
-      company_access_level: Binding.view_access(),
-      space_access_level: Binding.edit_access(),
-    }))
+    mutation(
+      conn,
+      :create_project,
+      Enum.into(attrs, %{
+        space_id: Paths.space_id(ctx.space),
+        name: "project",
+        reviewer_id: Paths.person_id(ctx.person),
+        champion_id: Paths.person_id(ctx.person),
+        creator_is_contributor: "yes",
+        creator_role: "Developer",
+        goal_id: Paths.goal_id(ctx.goal),
+        anonymous_access_level: Binding.no_access(),
+        company_access_level: Binding.view_access(),
+        space_access_level: Binding.edit_access()
+      })
+    )
   end
 
   defp assert_project_created(res, space_id) do
@@ -155,9 +159,11 @@ defmodule OperatelyWeb.Api.Mutations.CreateProjectTest do
   end
 
   defp add_person_to_space(ctx, access_level) do
-    Operately.Groups.add_members(ctx.person, ctx.space.id, [%{
-      id: ctx.person.id,
-      access_level: access_level,
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space.id, [
+      %{
+        id: ctx.person.id,
+        access_level: access_level
+      }
+    ])
   end
 end

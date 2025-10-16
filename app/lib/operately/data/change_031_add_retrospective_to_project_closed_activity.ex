@@ -22,10 +22,14 @@ defmodule Operately.Data.Change031AddRetrospectiveToProjectClosedActivity do
   end
 
   defp update_activities(activity) do
-    {:ok, project} = Project.get(:system, id: activity.content["project_id"], opts: [
-      with_deleted: true,
-      preload: :retrospective
-    ])
+    {:ok, project} =
+      Project.get(:system,
+        id: activity.content["project_id"],
+        opts: [
+          with_deleted: true,
+          preload: :retrospective
+        ]
+      )
 
     case project.retrospective do
       %{id: id} ->
@@ -37,7 +41,8 @@ defmodule Operately.Data.Change031AddRetrospectiveToProjectClosedActivity do
         Activity.changeset(activity, %{content: content})
         |> Repo.update()
 
-      _ -> :ok
+      _ ->
+        :ok
     end
   end
 end

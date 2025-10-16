@@ -37,12 +37,13 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsList do
     {:ok, id} = decode_id(inputs.id)
     {:ok, subscriber_ids} = decode_id(inputs.subscriber_ids)
 
-    {:ok, %{
-      id: id,
-      type: String.to_existing_atom(inputs.type),
-      send_notifications_to_everyone: inputs[:send_notifications_to_everyone] || false,
-      subscriber_ids: subscriber_ids,
-    }}
+    {:ok,
+     %{
+       id: id,
+       type: String.to_existing_atom(inputs.type),
+       send_notifications_to_everyone: inputs[:send_notifications_to_everyone] || false,
+       subscriber_ids: subscriber_ids
+     }}
   end
 
   defp check_permissions(type, access_level) do

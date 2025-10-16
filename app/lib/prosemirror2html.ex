@@ -130,9 +130,10 @@ defmodule Prosemirror2Html do
   end
 
   defp wrap(html, tag, attrs) do
-    attrs = attrs
-            |> Enum.map(fn {key, value} -> "#{key}=\"#{value}\"" end)
-            |> Enum.join(" ")
+    attrs =
+      attrs
+      |> Enum.map(fn {key, value} -> "#{key}=\"#{value}\"" end)
+      |> Enum.join(" ")
 
     attrs = if attrs == "", do: "", else: " #{attrs}"
 

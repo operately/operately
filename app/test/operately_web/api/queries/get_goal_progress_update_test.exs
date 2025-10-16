@@ -100,10 +100,11 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdateTest do
 
       refute res.update.potential_subscribers
 
-      assert {200, res} = query(ctx.conn, :get_goal_progress_update, %{
-        id: Paths.goal_update_id(ctx.update),
-        include_potential_subscribers: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_goal_progress_update, %{
+                 id: Paths.goal_update_id(ctx.update),
+                 include_potential_subscribers: true
+               })
 
       subs = res.update.potential_subscribers
 
@@ -136,10 +137,11 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdateTest do
       assert {200, res} = query(ctx.conn, :get_goal_progress_update, %{id: Paths.goal_update_id(ctx.update)})
       assert res.update.notifications == []
 
-      assert {200, res} = query(ctx.conn, :get_goal_progress_update, %{
-        id: Paths.goal_update_id(ctx.update),
-        include_unread_notifications: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_goal_progress_update, %{
+                 id: Paths.goal_update_id(ctx.update),
+                 include_unread_notifications: true
+               })
 
       assert length(res.update.notifications) == 1
       assert Serializer.serialize(n) == hd(res.update.notifications)
@@ -151,12 +153,13 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdateTest do
   #
 
   defp allowed_request(conn, update_id) do
-    assert {200, %{update: update} = _res} = query(conn, :get_goal_progress_update, %{
-      id: update_id,
-      include_goal_targets: true,
-      include_author: true,
-      include_permissions: true,
-    })
+    assert {200, %{update: update} = _res} =
+             query(conn, :get_goal_progress_update, %{
+               id: update_id,
+               include_goal_targets: true,
+               include_author: true,
+               include_permissions: true
+             })
 
     assert update.id == update_id
     assert update.author
@@ -176,13 +179,15 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdateTest do
     champion_id = Keyword.get(opts, :champion_id, ctx.creator.id)
     reviewer_id = Keyword.get(opts, :reviewer_id, ctx.creator.id)
 
-    goal = goal_fixture(ctx.creator, %{
-      space_id: ctx.space.id,
-      champion_id: champion_id,
-      reviewer_id: reviewer_id,
-      company_access_level: company_access,
-      space_access_level: space_access,
-    })
+    goal =
+      goal_fixture(ctx.creator, %{
+        space_id: ctx.space.id,
+        champion_id: champion_id,
+        reviewer_id: reviewer_id,
+        company_access_level: company_access,
+        space_access_level: space_access
+      })
+
     update = goal_update_fixture(ctx.creator, goal)
     update_id = Paths.goal_update_id(update)
 
@@ -190,9 +195,11 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdateTest do
   end
 
   defp add_person_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space.id, [%{
-      id: ctx.person.id,
-      access_level: Binding.edit_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space.id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.edit_access()
+      }
+    ])
   end
 end

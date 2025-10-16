@@ -28,7 +28,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectContributor do
   end
 
   def preloaded(inputs) do
-    [:person] ++ (if inputs[:include_project], do: [:project], else: [])
+    [:person] ++ if inputs[:include_project], do: [:project], else: []
   end
 
   def respond(result) do
@@ -39,5 +39,4 @@ defmodule OperatelyWeb.Api.Queries.GetProjectContributor do
       _ -> {:error, :not_found}
     end
   end
-
 end

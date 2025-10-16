@@ -266,10 +266,11 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
     end
 
     def update_project_ordering_state(multi) do
-      Ecto.Multi.run(multi, :updated_project, fn _repo, %{
-        project: project,
-        validated_ordering_state: ordering_state
-      } ->
+      Ecto.Multi.run(multi, :updated_project, fn _repo,
+                                                 %{
+                                                   project: project,
+                                                   validated_ordering_state: ordering_state
+                                                 } ->
         Operately.Projects.update_project(project, %{milestones_ordering_state: ordering_state})
       end)
     end
@@ -382,8 +383,7 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
     def broadcast_review_count_update(result) do
       with {:ok, changes} <- result,
            project = Operately.Repo.preload(changes.milestone.project, :champion),
-           %Operately.People.Person{id: champion_id} <- project.champion
-      do
+           %Operately.People.Person{id: champion_id} <- project.champion do
         OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: champion_id)
       else
         _ -> :ok

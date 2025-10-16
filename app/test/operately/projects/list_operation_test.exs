@@ -22,15 +22,16 @@ defmodule Operately.Projects.ListOperationTest do
       project2 = project_fixture(%{company_id: company.id, group_id: group.id, visibility: "invite-only", creator_id: creator.id})
       project3 = project_fixture(%{company_id: company.id, group_id: group.id, visibility: "invite-only", creator_id: creator.id})
 
-      {:ok, %{
-        company: company,
-        creator: creator,
-        colaborator: colaborator,
-        non_colaborator: non_colaborator,
-        project1: project1,
-        project2: project2,
-        project3: project3
-      }}
+      {:ok,
+       %{
+         company: company,
+         creator: creator,
+         colaborator: colaborator,
+         non_colaborator: non_colaborator,
+         project1: project1,
+         project2: project2,
+         project3: project3
+       }}
     end
 
     test "creator can see all projects", ctx do
@@ -87,7 +88,6 @@ defmodule Operately.Projects.ListOperationTest do
   end
 
   defp not_members(list, ids) do
-    Enum.all?(ids, fn id -> not(Enum.member?(list, id)) end)
+    Enum.all?(ids, fn id -> not Enum.member?(list, id) end)
   end
-
 end

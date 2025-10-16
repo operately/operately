@@ -12,7 +12,7 @@ defmodule Operately.Activities.Notifications.ResourceHubFileCreated do
       %{
         person_id: person_id,
         activity_id: activity.id,
-        should_send_email: true,
+        should_send_email: true
       }
     end)
     |> Operately.Notifications.bulk_create()

@@ -7,20 +7,20 @@ defmodule Operately.Access.AccessLevels do
   defstruct [
     :public,
     :company,
-    :space,
+    :space
   ]
 
   @type t :: %__MODULE__{
           public: Binding.t(),
           company: Binding.t(),
-          space: Binding.t(),
+          space: Binding.t()
         }
 
   def load(context_id, company_id, space_id) do
     %__MODULE__{
       public: query_access_level(context_id, {:company_id, company_id}, :anonymous),
       company: query_access_level(context_id, {:company_id, company_id}, :standard),
-      space: query_access_level(context_id, {:group_id, space_id}, :standard),
+      space: query_access_level(context_id, {:group_id, space_id}, :standard)
     }
   end
 

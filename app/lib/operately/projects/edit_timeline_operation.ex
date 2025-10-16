@@ -8,12 +8,13 @@ defmodule Operately.Projects.EditTimelineOperation do
   alias Operately.ContextualDates.{Timeframe, ContextualDate}
 
   def run(author, project, attrs) do
-    changeset = Project.changeset(project, %{
-      timeframe: %{
-        contextual_start_date: attrs.project_start_date,
-        contextual_end_date: attrs.project_due_date,
-      }
-    })
+    changeset =
+      Project.changeset(project, %{
+        timeframe: %{
+          contextual_start_date: attrs.project_start_date,
+          contextual_end_date: attrs.project_due_date
+        }
+      })
 
     Multi.new()
     |> Multi.update(:project, changeset)
@@ -29,14 +30,15 @@ defmodule Operately.Projects.EditTimelineOperation do
       milestone = Operately.Projects.get_milestone!(milestone_update.milestone_id)
       started_date = Timeframe.start_date(milestone.timeframe) || milestone.inserted_at
 
-      changeset = Operately.Projects.Milestone.changeset(milestone, %{
-        title: milestone_update.title,
-        description: milestone_update.description,
-        timeframe: %{
-          contextual_start_date: ContextualDate.create_day_date(started_date),
-          contextual_end_date: milestone_update.due_date,
-        }
-      })
+      changeset =
+        Operately.Projects.Milestone.changeset(milestone, %{
+          title: milestone_update.title,
+          description: milestone_update.description,
+          timeframe: %{
+            contextual_start_date: ContextualDate.create_day_date(started_date),
+            contextual_end_date: milestone_update.due_date
+          }
+        })
 
       multi |> Multi.update("updated_milestone_#{milestone.id}", changeset)
     end)
@@ -61,7 +63,7 @@ defmodule Operately.Projects.EditTimelineOperation do
           tasks_kanban_state: Operately.Tasks.KanbanState.initialize(),
           timeframe: %{
             contextual_start_date: ContextualDate.create_day_date(Date.utc_today()),
-            contextual_end_date: milestone.due_date,
+            contextual_end_date: milestone.due_date
           },
           subscription_list_id: changes[subscription_key].id
         })
@@ -98,7 +100,7 @@ defmodule Operately.Projects.EditTimelineOperation do
       %{
         milestone_id: milestone.id,
         title: milestone.title,
-        due_date: Timeframe.end_date(milestone.timeframe),
+        due_date: Timeframe.end_date(milestone.timeframe)
       }
     end)
   end

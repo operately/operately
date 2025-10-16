@@ -20,25 +20,23 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
     from(a in Activity,
       where: is_nil(a.access_context_id),
       where: a.action not in ^Activity.deprecated_actions(),
-      order_by: [asc: a.inserted_at])
+      order_by: [asc: a.inserted_at]
+    )
   end
 
   @company_actions [
     "company_member_removed",
     "password_first_time_changed",
     "company_invitation_token_created",
-    "company_member_added",
+    "company_member_added"
   ]
 
   @space_actions [
     "space_joining",
-
     "goal_archived",
-
     "discussion_posting",
     "discussion_editing",
     "discussion_comment_submitted",
-
     "task_assignee_assignment",
     "task_description_change",
     "task_name_editing",
@@ -47,7 +45,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
     "task_size_change",
 
     # exceptions
-    "group_edited",
+    "group_edited"
   ]
 
   @goal_actions [
@@ -61,7 +59,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
     "goal_discussion_editing",
     "goal_editing",
     "goal_reopening",
-    "goal_timeframe_editing",
+    "goal_timeframe_editing"
   ]
 
   @project_actions [
@@ -82,14 +80,14 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
     "project_pausing",
     "project_renamed",
     "project_resuming",
-    "project_timeline_edited",
+    "project_timeline_edited"
   ]
 
   @task_actions [
     "task_adding",
     "task_closing",
     "task_status_change",
-    "task_update",
+    "task_update"
   ]
 
   defp assign_context(activities) when is_list(activities) do
@@ -100,14 +98,30 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
     Logger.info("Assigning access context to activity: #{activity.id}")
 
     cond do
-      activity.action in Activity.deprecated_actions() -> :ok
-      activity.action in @company_actions -> assign_company_context(activity)
-      activity.action in @space_actions -> assign_space_context(activity)
-      activity.action in @goal_actions -> assign_goal_context(activity, activity.content.goal_id)
-      activity.action in @project_actions -> assign_project_context(activity, activity.content.project_id)
-      activity.action in @task_actions -> assign_task_project_context(activity)
-      activity.action == "comment_added" -> assign_context_to_comment_added(activity)
-      activity.action == "goal_reparent" -> assign_goal_context(activity, activity.content.new_parent_goal_id)
+      activity.action in Activity.deprecated_actions() ->
+        :ok
+
+      activity.action in @company_actions ->
+        assign_company_context(activity)
+
+      activity.action in @space_actions ->
+        assign_space_context(activity)
+
+      activity.action in @goal_actions ->
+        assign_goal_context(activity, activity.content.goal_id)
+
+      activity.action in @project_actions ->
+        assign_project_context(activity, activity.content.project_id)
+
+      activity.action in @task_actions ->
+        assign_task_project_context(activity)
+
+      activity.action == "comment_added" ->
+        assign_context_to_comment_added(activity)
+
+      activity.action == "goal_reparent" ->
+        assign_goal_context(activity, activity.content.new_parent_goal_id)
+
       true ->
         Logger.error("Unhandled activity: #{inspect(activity)}")
         raise "Activity not handled in the data migration #{activity.action}"
@@ -124,12 +138,14 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
   end
 
   defp assign_space_context(activity) do
-    space_id = case activity.action do
-      "group_edited" ->
-        activity.content.space_id
-      _ ->
-        activity.content.space_id
-    end
+    space_id =
+      case activity.action do
+        "group_edited" ->
+          activity.content.space_id
+
+        _ ->
+          activity.content.space_id
+      end
 
     from(g in Operately.Groups.Group,
       where: g.id == ^space_id,
@@ -172,9 +188,15 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
     comment = Operately.Updates.get_comment!(activity.content.comment_id)
 
     case comment.entity_type do
-      :project_check_in -> assign_project_context(activity, comment.entity_id)
-      :update -> assign_goal_context(activity, comment.entity_id)
-      :comment_thread -> update_comment_thread_activity(activity, comment)
+      :project_check_in ->
+        assign_project_context(activity, comment.entity_id)
+
+      :update ->
+        assign_goal_context(activity, comment.entity_id)
+
+      :comment_thread ->
+        update_comment_thread_activity(activity, comment)
+
       _ ->
         Logger.error("Unhandled activity: #{inspect(activity)}")
         Logger.error("Comment associated with activity: #{inspect(comment)}")
@@ -189,12 +211,13 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
   end
 
   defp update_comment_thread_activity(activity, comment) do
-    parent = from(a in Activity,
-      join: t in Operately.Comments.CommentThread,
-      on: a.id == t.parent_id,
-      where: t.id == ^comment.entity_id
-    )
-    |> Repo.one!()
+    parent =
+      from(a in Activity,
+        join: t in Operately.Comments.CommentThread,
+        on: a.id == t.parent_id,
+        where: t.id == ^comment.entity_id
+      )
+      |> Repo.one!()
 
     activity
     |> Activity.changeset(%{access_context_id: parent.access_context_id})

@@ -39,7 +39,7 @@ defmodule Operately.ResourceHubs.Folder do
     folder_ids =
       nodes
       |> Enum.filter(&(&1.type == :folder))
-      |> Enum.map(&(&1.folder.id))
+      |> Enum.map(& &1.folder.id)
 
     counts =
       from(n in Operately.ResourceHubs.Node,

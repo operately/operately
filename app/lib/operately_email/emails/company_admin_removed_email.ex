@@ -4,7 +4,7 @@ defmodule OperatelyEmail.Emails.CompanyAdminRemovedEmail do
   alias OperatelyWeb.Paths
 
   def send(person, activity) do
-    activity = Repo.preload(activity, [author: :company])
+    activity = Repo.preload(activity, author: :company)
     author = activity.author
     company = author.company
     link = Paths.home_path(company) |> Paths.to_url()

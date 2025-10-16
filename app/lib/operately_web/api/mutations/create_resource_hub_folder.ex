@@ -42,10 +42,11 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubFolder do
     {:ok, resource_hub_id} = decode_id(inputs.resource_hub_id)
     {:ok, folder_id} = decode_id(inputs[:folder_id], :allow_nil)
 
-    {:ok, Map.merge(inputs, %{
-      resource_hub_id: resource_hub_id,
-      parent_folder_id: folder_id,
-    })}
+    {:ok,
+     Map.merge(inputs, %{
+       resource_hub_id: resource_hub_id,
+       parent_folder_id: folder_id
+     })}
   end
 
   defp find_resource(ctx) do

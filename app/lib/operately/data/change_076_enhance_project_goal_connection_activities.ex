@@ -10,19 +10,22 @@ defmodule Operately.Data.Change076EnhanceProjectGoalConnectionActivities do
     |> Enum.each(fn activity ->
       goal_id = activity.content["goal_id"]
 
-      goal_name = case get_goal(goal_id) do
-        nil -> nil
-        goal -> goal.name
-      end
+      goal_name =
+        case get_goal(goal_id) do
+          nil -> nil
+          goal -> goal.name
+        end
 
-      new_content = activity.content
-      |> Map.put("goal_name", goal_name)
+      new_content =
+        activity.content
+        |> Map.put("goal_name", goal_name)
 
       {:ok, _updated} = update_activity(activity, new_content)
     end)
   end
 
   defp get_goal(nil), do: nil
+
   defp get_goal(goal_id) do
     Repo.get(Goal, goal_id)
   end

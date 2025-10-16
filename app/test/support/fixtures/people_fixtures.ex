@@ -24,17 +24,19 @@ defmodule Operately.PeopleFixtures do
     email = attrs[:email] || unique_account_email(attrs[:full_name])
     password = attrs[:password] || valid_account_password()
 
-    account = account_fixture(%{
-      email: email, 
-      password: password,
-      full_name: attrs[:full_name] || "John Doe"
-    })
+    account =
+      account_fixture(%{
+        email: email,
+        password: password,
+        full_name: attrs[:full_name] || "John Doe"
+      })
 
     person_fixture(Map.merge(attrs, %{account_id: account.id, email: email}))
   end
 
   def unique_account_email(), do: "account#{System.unique_integer()}@example.com"
   def unique_account_email(nil), do: unique_account_email()
+
   def unique_account_email(full_name) do
     sanitized_name = String.replace(full_name, " ", "-") |> String.downcase()
 
@@ -65,5 +67,4 @@ defmodule Operately.PeopleFixtures do
     [_, token | _] = String.split(captured_email.text_body, "[TOKEN]")
     token
   end
-
 end

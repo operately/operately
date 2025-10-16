@@ -269,9 +269,9 @@ defmodule OperatelyWeb.Api.ProjectTasks do
       |> Steps.commit()
       |> Steps.respond(fn changes ->
         %{
-            task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full),
-            updated_milestones: OperatelyWeb.Api.Serializer.serialize(collect_all_updated_milestones(changes)),
-          }
+          task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full),
+          updated_milestones: OperatelyWeb.Api.Serializer.serialize(collect_all_updated_milestones(changes))
+        }
       end)
     end
 
@@ -318,7 +318,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
       end)
       |> Steps.commit()
       |> Steps.respond(fn changes ->
-        %{ task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full) }
+        %{task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full)}
       end)
     end
   end
@@ -396,7 +396,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
           project_id: changes.project.id,
           milestone_id: changes.task.milestone_id,
           task_id: changes.task.id,
-          name: changes.task.name,
+          name: changes.task.name
         }
       end)
       |> Steps.commit()
@@ -539,10 +539,12 @@ defmodule OperatelyWeb.Api.ProjectTasks do
       end)
       |> Ecto.Multi.run(:updated_task, fn _repo, %{task: task} ->
         if new_assignee_id do
-          {:ok, _} = Operately.Tasks.Assignee.changeset(%{
-            task_id: task.id,
-            person_id: new_assignee_id
-          }) |> Operately.Repo.insert()
+          {:ok, _} =
+            Operately.Tasks.Assignee.changeset(%{
+              task_id: task.id,
+              person_id: new_assignee_id
+            })
+            |> Operately.Repo.insert()
         end
 
         # Return the updated task with preloaded assignees
@@ -567,8 +569,10 @@ defmodule OperatelyWeb.Api.ProjectTasks do
         case milestone_id do
           nil ->
             {:ok, nil}
+
           _ ->
             milestone = Operately.Projects.get_milestone!(milestone_id)
+
             if milestone.project_id == project.id do
               {:ok, milestone}
             else
@@ -585,8 +589,10 @@ defmodule OperatelyWeb.Api.ProjectTasks do
           case new_milestone_id do
             nil ->
               {:ok, nil}
+
             _ ->
               milestone = Operately.Projects.get_milestone!(new_milestone_id)
+
               if milestone.project_id == project.id do
                 {:ok, milestone}
               else
@@ -615,7 +621,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
 
     def create_task(multi, inputs) do
       multi
-      |> Notifications.SubscriptionList.insert(%{ send_to_everyone: false, subscription_parent_type: :project_task })
+      |> Notifications.SubscriptionList.insert(%{send_to_everyone: false, subscription_parent_type: :project_task})
       |> Ecto.Multi.run(:new_task, fn _repo, changes ->
         Operately.Tasks.Task.changeset(%{
           name: inputs.name,
@@ -624,16 +630,18 @@ defmodule OperatelyWeb.Api.ProjectTasks do
           project_id: inputs.project_id,
           creator_id: changes.me.id,
           due_date: inputs.due_date,
-          subscription_list_id: changes.subscription_list.id,
+          subscription_list_id: changes.subscription_list.id
         })
         |> Repo.insert()
       end)
       |> Notifications.SubscriptionList.update(:new_task)
       |> Ecto.Multi.run(:assignee, fn _repo, %{new_task: new_task} ->
         case inputs.assignee_id do
-          nil -> {:ok, nil}
+          nil ->
+            {:ok, nil}
+
           assignee_id ->
-            Operately.Tasks.Assignee.changeset(%{ task_id: new_task.id, person_id: assignee_id })
+            Operately.Tasks.Assignee.changeset(%{task_id: new_task.id, person_id: assignee_id})
             |> Repo.insert()
         end
       end)
@@ -659,11 +667,14 @@ defmodule OperatelyWeb.Api.ProjectTasks do
           access_group = Operately.Access.get_group!(person_id: assignee_id)
 
           Ecto.Multi.new()
-          |> Ecto.Multi.insert(:contributor, Contributor.changeset( %{
-            project_id: project.id,
-            person_id: assignee_id,
-            responsibility: "contributor",
-          }))
+          |> Ecto.Multi.insert(
+            :contributor,
+            Contributor.changeset(%{
+              project_id: project.id,
+              person_id: assignee_id,
+              responsibility: "contributor"
+            })
+          )
           |> Ecto.Multi.run(:context, fn _, _ ->
             {:ok, Operately.Access.get_context!(project_id: project.id)}
           end)
@@ -705,7 +716,8 @@ defmodule OperatelyWeb.Api.ProjectTasks do
           broadcast(changes[:task])
           broadcast(changes[:updated_task])
 
-        _result -> :ok
+        _result ->
+          :ok
       end
 
       result
@@ -716,6 +728,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
         OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: person.id)
       end)
     end
+
     defp broadcast(_), do: :ok
 
     defp handle_error(reason) do

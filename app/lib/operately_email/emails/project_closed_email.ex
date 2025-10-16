@@ -6,9 +6,14 @@ defmodule OperatelyEmail.Emails.ProjectClosedEmail do
 
   def send(person, activity) do
     author = Repo.preload(activity, :author).author
-    {:ok, project} = Project.get(:system, id: activity.content["project_id"], opts: [
-      preload: [:company, :retrospective]
-    ])
+
+    {:ok, project} =
+      Project.get(:system,
+        id: activity.content["project_id"],
+        opts: [
+          preload: [:company, :retrospective]
+        ]
+      )
 
     link = OperatelyWeb.Paths.project_retrospective_path(project.company, project) |> OperatelyWeb.Paths.to_url()
 

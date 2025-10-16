@@ -9,35 +9,35 @@ defmodule OperatelyEmail.Templates do
   def body(do: _content), do: ""
 
   def cta_button(url, text) do
-    render "partials/_cta_button.html", url: url, text: text
+    render("partials/_cta_button.html", url: url, text: text)
   end
 
   def title(text), do: title(text, font_size: "24")
 
   def title(text, font_size: font_size) do
-    render "partials/_title.html", text: text, font_size: font_size
+    render("partials/_title.html", text: text, font_size: font_size)
   end
 
   def spacer do
-    render "partials/_spacer.html"
+    render("partials/_spacer.html")
   end
 
   def row(do: content), do: row(%{padding_top: 0, padding_bottom: 0}, do: content)
 
   def row(%{padding_top: pt, padding_bottom: pb}, do: content) do
-    render "partials/_row.html", content: content, padding_top: pt, padding_bottom: pb
+    render("partials/_row.html", content: content, padding_top: pt, padding_bottom: pb)
   end
 
   def line do
-    render "partials/_line.html"
+    render("partials/_line.html")
   end
 
   def link(url, text) do
-    render "partials/_link.html", url: url, text: text
+    render("partials/_link.html", url: url, text: text)
   end
 
   def subtle(text) do
-    render "partials/_subtle.html", text: text
+    render("partials/_subtle.html", text: text)
   end
 
   # Keep this in sync with the colors in the Operately UI
@@ -50,7 +50,6 @@ defmodule OperatelyEmail.Templates do
     "textPurple" => "color: #a855f7; background-color: transparent;",
     "textBlue" => "color: #3b82f6; background-color: transparent;",
     "textGreen" => "color: #22c55e; background-color: transparent;",
-
     "bgYellow" => "background-color: #fef08a;",
     "bgOrange" => "background-color: #fed7aa;",
     "bgRed" => "background-color: #fecaca;",
@@ -66,14 +65,17 @@ defmodule OperatelyEmail.Templates do
 
   def assignment_to_text(assignment) do
     case assignment.type do
-    :project ->
-      "- Check-In #{assignment.url}"
-    :goal ->
-      "- Progress Update #{assignment.url}"
-    :check_in ->
-      "- Acknowledge Check-In #{assignment.url}"
-    :goal_update ->
-      "- Acknowledge Progress Update #{assignment.url}"
+      :project ->
+        "- Check-In #{assignment.url}"
+
+      :goal ->
+        "- Progress Update #{assignment.url}"
+
+      :check_in ->
+        "- Acknowledge Check-In #{assignment.url}"
+
+      :goal_update ->
+        "- Acknowledge Progress Update #{assignment.url}"
     end
   end
 

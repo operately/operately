@@ -41,13 +41,14 @@ defmodule OperatelyWeb.Api.Mutations.CloseGoal do
   end
 
   defp parse_inputs(inputs) do
-    {:ok, %{
-      success: inputs.success,
-      success_status: String.to_atom(inputs.success_status),
-      content: Jason.decode!(inputs.retrospective),
-      send_to_everyone: inputs[:send_notifications_to_everyone] || false,
-      subscriber_ids: inputs[:subscriber_ids] || [],
-      subscription_parent_type: :comment_thread
-    }}
+    {:ok,
+     %{
+       success: inputs.success,
+       success_status: String.to_atom(inputs.success_status),
+       content: Jason.decode!(inputs.retrospective),
+       send_to_everyone: inputs[:send_notifications_to_everyone] || false,
+       subscriber_ids: inputs[:subscriber_ids] || [],
+       subscription_parent_type: :comment_thread
+     }}
   end
 end

@@ -27,36 +27,53 @@ defmodule Operately.Data.Change070UpdateProjectTimelineEditedActivity do
 
   defp update_milestone_updates(content) do
     case content["milestone_updates"] do
-      nil -> content
-      [] -> content
+      nil ->
+        content
+
+      [] ->
+        content
+
       milestone_updates when is_list(milestone_updates) ->
-        updated_updates = Enum.map(milestone_updates, fn update ->
-          update
-          |> maybe_convert_field("old_due_date")
-          |> maybe_convert_field("new_due_date")
-        end)
+        updated_updates =
+          Enum.map(milestone_updates, fn update ->
+            update
+            |> maybe_convert_field("old_due_date")
+            |> maybe_convert_field("new_due_date")
+          end)
+
         Map.put(content, "milestone_updates", updated_updates)
-      _ -> content
+
+      _ ->
+        content
     end
   end
 
   defp update_new_milestones(content) do
     case content["new_milestones"] do
-      nil -> content
-      [] -> content
+      nil ->
+        content
+
+      [] ->
+        content
+
       new_milestones when is_list(new_milestones) ->
-        updated_milestones = Enum.map(new_milestones, fn milestone ->
-          maybe_convert_field(milestone, "due_date")
-        end)
+        updated_milestones =
+          Enum.map(new_milestones, fn milestone ->
+            maybe_convert_field(milestone, "due_date")
+          end)
+
         Map.put(content, "new_milestones", updated_milestones)
-      _ -> content
+
+      _ ->
+        content
     end
   end
 
   # Convert a UTC datetime field to a date if it's not nil
   defp maybe_convert_field(content, field_name) do
     case content[field_name] do
-      nil -> content
+      nil ->
+        content
 
       datetime_str when is_binary(datetime_str) ->
         case DateTime.from_iso8601(datetime_str) do
@@ -68,7 +85,9 @@ defmodule Operately.Data.Change070UpdateProjectTimelineEditedActivity do
             # If parsing fails, leave it unchanged
             content
         end
-      _ -> content
+
+      _ ->
+        content
     end
   end
 end

@@ -102,5 +102,4 @@ defmodule Operately.Activities do
     full_module_name = "Elixir.#{base}.#{Macro.camelize(action)}"
     String.to_existing_atom(full_module_name)
   end
-
 end

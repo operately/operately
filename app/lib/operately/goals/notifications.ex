@@ -25,30 +25,27 @@ defmodule Operately.Goals.Notifications do
     ignore = Keyword.get(opts, :ignore, [])
     comment_thread_id = Keyword.get(opts, :comment_thread_id)
 
-    thread = Repo.one(
-      from(t in Operately.Comments.CommentThread,
-        join: a in assoc(t, :activity), as: :activity,
-        join: c in assoc(t, :access_context),
-        preload: [access_context: c],
-        select: t
+    thread =
+      Repo.one(
+        from(t in Operately.Comments.CommentThread, join: a in assoc(t, :activity), as: :activity, join: c in assoc(t, :access_context), preload: [access_context: c], select: t)
+        |> then(fn query ->
+          if comment_thread_id do
+            where(query, [t], t.id == ^comment_thread_id)
+          else
+            where(query, [activity: a], a.id == ^activity_id)
+          end
+        end)
       )
-      |> then(fn query ->
-        if comment_thread_id do
-          where(query, [t], t.id == ^comment_thread_id)
-        else
-          where(query, [activity: a], a.id == ^activity_id)
-        end
-      end)
-    )
 
-    goal = Repo.one(
-      from(g in Operately.Goals.Goal,
-        join: s in assoc(g, :group),
-        join: p in assoc(s, :members),
-        preload: [group: {s, members: p}],
-        where: g.id == ^goal_id
+    goal =
+      Repo.one(
+        from(g in Operately.Goals.Goal,
+          join: s in assoc(g, :group),
+          join: p in assoc(s, :members),
+          preload: [group: {s, members: p}],
+          where: g.id == ^goal_id
+        )
       )
-    )
 
     SubscribersLoader.load_for_notifications(thread, goal.group.members, ignore)
   end

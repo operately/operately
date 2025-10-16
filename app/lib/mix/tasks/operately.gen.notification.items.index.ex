@@ -54,5 +54,4 @@ defmodule Mix.Tasks.Operately.Gen.Notification.Items.Index do
       return <#{type} notification={notification} />;
     """
   end
-
 end

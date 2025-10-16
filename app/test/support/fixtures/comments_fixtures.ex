@@ -32,10 +32,11 @@ defmodule Operately.CommentsFixtures do
       |> CommentThread.changeset()
       |> Repo.insert()
 
-    {:ok, _} = Operately.Notifications.update_subscription_list(subscription_list, %{
-      parent_type: :comment_thread,
-      parent_id: thread.id,
-    })
+    {:ok, _} =
+      Operately.Notifications.update_subscription_list(subscription_list, %{
+        parent_type: :comment_thread,
+        parent_id: thread.id
+      })
 
     thread
   end

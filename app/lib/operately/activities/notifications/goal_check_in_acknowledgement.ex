@@ -7,12 +7,12 @@ defmodule Operately.Activities.Notifications.GoalCheckInAcknowledgement do
       %{
         person_id: goal.champion_id,
         activity_id: activity.id,
-        should_send_email: true,
+        should_send_email: true
       },
       %{
         person_id: goal.reviewer_id,
         activity_id: activity.id,
-        should_send_email: true,
+        should_send_email: true
       }
     ]
 

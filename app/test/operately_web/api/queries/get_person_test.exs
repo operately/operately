@@ -24,6 +24,7 @@ defmodule OperatelyWeb.Api.Queries.GetPersonTest do
   describe "permissions" do
     setup ctx do
       ctx = register_and_log_in_account(ctx)
+
       company_member =
         person_fixture(%{company_id: ctx.company.id})
         |> Serializer.serialize(level: :full)

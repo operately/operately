@@ -22,11 +22,14 @@ defmodule Operately.Data.Change016CreatePeopleAccessGroupMembership do
     group = get_group(person_id)
 
     case Access.get_group_membership(person_id: person_id, group_id: group.id) do
-      nil -> Access.create_group_membership(%{
-        person_id: person_id,
-        group_id: group.id,
-      })
-      _ -> :ok
+      nil ->
+        Access.create_group_membership(%{
+          person_id: person_id,
+          group_id: group.id
+        })
+
+      _ ->
+        :ok
     end
   end
 
@@ -35,7 +38,9 @@ defmodule Operately.Data.Change016CreatePeopleAccessGroupMembership do
       nil ->
         {:ok, group} = Access.create_group(%{person_id: person_id})
         group
-      group -> group
+
+      group ->
+        group
     end
   end
 end

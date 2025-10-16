@@ -7,9 +7,15 @@ defmodule OperatelyEmail.Emails.ProjectRetrospectiveCommentedEmail do
 
   def send(person, activity) do
     %{author: author} = Repo.preload(activity, [:author])
-    {:ok, project = %{group: space, company: company}} = Project.get(:system, id: activity.content["project_id"], opts: [
-      preload: [:group, :company]
-    ])
+
+    {:ok, project = %{group: space, company: company}} =
+      Project.get(:system,
+        id: activity.content["project_id"],
+        opts: [
+          preload: [:group, :company]
+        ]
+      )
+
     comment = Updates.get_comment!(activity.content["comment_id"])
     action = "commented on the project retrospective"
 

@@ -10,10 +10,12 @@ defmodule Operately.Data.Change074AddNameToTaskStatusUpdatingActivity do
     |> Enum.each(fn activity ->
       task_id = activity.content["task_id"]
 
-      task_name = case get_task_name(task_id) do
-        nil -> ""  # Task doesn't exist anymore
-        name -> name
-      end
+      task_name =
+        case get_task_name(task_id) do
+          # Task doesn't exist anymore
+          nil -> ""
+          name -> name
+        end
 
       new_content = Map.put(activity.content, "name", task_name)
 

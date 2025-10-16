@@ -8,7 +8,7 @@ defmodule Operately.Goals.Update.Permissions do
     :can_edit,
     :can_delete,
     :can_acknowledge,
-    :can_comment,
+    :can_comment
   ]
 
   def calculate(access_level, update, user_id) when is_binary(user_id) do

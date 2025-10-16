@@ -237,8 +237,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
-      action:
-        "Disconnected the #{ctx.project.name} project from the Improve support first response time goal"
+      action: "Disconnected the #{ctx.project.name} project from the Improve support first response time goal"
     })
   end
 

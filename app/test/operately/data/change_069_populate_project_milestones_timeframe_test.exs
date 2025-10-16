@@ -50,10 +50,11 @@ defmodule Operately.Data.Change069PopulateProjectMilestonesTimeframeTest do
       }
     }
 
-    ctx = Factory.add_project_milestone(ctx, :milestone, :project,
-      deadline_at: deadline_at,
-      timeframe: existing_timeframe
-    )
+    ctx =
+      Factory.add_project_milestone(ctx, :milestone, :project,
+        deadline_at: deadline_at,
+        timeframe: existing_timeframe
+      )
 
     Change069PopulateProjectMilestonesTimeframe.run()
 

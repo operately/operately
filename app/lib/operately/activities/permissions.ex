@@ -4,14 +4,14 @@ defmodule Operately.Activities.Permissions do
   defstruct [
     :can_edit_comment_thread,
     :can_comment_on_thread,
-    :can_view,
+    :can_view
   ]
 
   def calculate_permissions(access_level) do
     %__MODULE__{
       can_edit_comment_thread: access_level >= Binding.edit_access(),
       can_comment_on_thread: access_level >= Binding.comment_access(),
-      can_view: access_level >= Binding.view_access(),
+      can_view: access_level >= Binding.view_access()
     }
   end
 

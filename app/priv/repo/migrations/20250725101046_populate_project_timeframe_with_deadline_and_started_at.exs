@@ -6,6 +6,5 @@ defmodule Operately.Repo.Migrations.PopulateProjectTimeframeWithDeadlineAndStart
   end
 
   def down do
-
   end
 end

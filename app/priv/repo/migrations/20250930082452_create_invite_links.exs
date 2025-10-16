@@ -5,7 +5,10 @@ defmodule Operately.Repo.Migrations.CreateInviteLinks do
     create table(:invite_links, primary_key: false) do
       add :id, :binary_id, primary_key: true
       add :token, :string, null: false
-      add :company_id, references(:companies, on_delete: :delete_all, type: :binary_id), null: false
+
+      add :company_id, references(:companies, on_delete: :delete_all, type: :binary_id),
+        null: false
+
       add :author_id, references(:people, on_delete: :delete_all, type: :binary_id), null: false
       add :expires_at, :utc_datetime, null: false
       add :use_count, :integer, default: 0, null: false

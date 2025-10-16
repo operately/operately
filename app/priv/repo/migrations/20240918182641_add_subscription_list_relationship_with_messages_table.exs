@@ -3,7 +3,8 @@ defmodule Operately.Repo.Migrations.AddSubscriptionListRelationshipWithMessagesT
 
   def change do
     alter table(:messages) do
-      add :subscription_list_id, references(:subscription_lists, on_delete: :nothing, type: :binary_id)
+      add :subscription_list_id,
+          references(:subscription_lists, on_delete: :nothing, type: :binary_id)
     end
 
     create index(:messages, [:subscription_list_id])

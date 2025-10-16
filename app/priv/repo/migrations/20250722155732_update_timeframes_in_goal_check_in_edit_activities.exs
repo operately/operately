@@ -2,11 +2,10 @@ defmodule Operately.Repo.Migrations.UpdateTimeframesInGoalCheckInEditActivities 
   use Ecto.Migration
 
   def up do
-
-    {:ok, %{error_count: 0}} = Operately.Data.Change066UpdateTimeframeInGoalActivities.GoalCheckInEdit.run()
+    {:ok, %{error_count: 0}} =
+      Operately.Data.Change066UpdateTimeframeInGoalActivities.GoalCheckInEdit.run()
   end
 
   def down do
-
   end
 end

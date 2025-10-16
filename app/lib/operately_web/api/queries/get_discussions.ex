@@ -22,10 +22,11 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussions do
       messages = load_messages(me, inputs)
       drafts = load_my_drafts(me, inputs)
 
-      {:ok, %{
-        discussions: Serializer.serialize(messages, level: :essential),
-        my_drafts: Serializer.serialize(drafts, level: :essential)
-      }}
+      {:ok,
+       %{
+         discussions: Serializer.serialize(messages, level: :essential),
+         my_drafts: Serializer.serialize(drafts, level: :essential)
+       }}
     else
       _ -> {:error, :internal_server_error}
     end
@@ -55,15 +56,15 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussions do
   end
 
   defp preload(inputs) do
-    Inputs.parse_includes(inputs, [
-      include_author: :author,
-    ])
+    Inputs.parse_includes(inputs,
+      include_author: :author
+    )
   end
 
   defp after_load(messages, inputs) do
-    Inputs.parse_includes(inputs, [
-      include_comments_count: &Message.load_comments_count/1,
-    ])
+    Inputs.parse_includes(inputs,
+      include_comments_count: &Message.load_comments_count/1
+    )
     |> Enum.reduce(messages, fn hook, message ->
       hook.(message)
     end)

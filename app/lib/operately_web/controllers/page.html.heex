@@ -9,8 +9,7 @@
 
     <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
 
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <!-- 
       Disable the React DevTools warning, because they would otherwise
       show up in the console when the app is running in test mode.
@@ -24,7 +23,6 @@
         }
       })()
     </script>
-
     <!-- 
       Inject the app config into the page. This is used by the app to
       configure itself at runtime. The config is passed to the app
@@ -34,7 +32,6 @@
     <script>
       window.appConfig = <%= Jason.encode!(@app_config) |> Phoenix.HTML.raw() %>
     </script>
-
     <!-- 
       Load the app's JavaScript. There are two separate strategies for
       loading the JavaScript:
@@ -55,11 +52,14 @@
         window.__vite_plugin_react_preamble_installed__ = true
       </script>
 
-      <script type="module" src={"#{@vite_url}/@vite/client"}></script>
-      <script type="module" src={"#{@vite_url}/assets/js/app.tsx"}></script>
+      <script type="module" src={"#{@vite_url}/@vite/client"}>
+      </script>
+      <script type="module" src={"#{@vite_url}/assets/js/app.tsx"}>
+      </script>
     <% else %>
       <%= for asset_path <- js_files() do %>
-        <script type="module" src={asset_path}></script>
+        <script type="module" src={asset_path}>
+        </script>
       <% end %>
     <% end %>
   </head>

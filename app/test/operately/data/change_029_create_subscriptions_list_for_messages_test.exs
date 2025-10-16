@@ -19,9 +19,10 @@ defmodule Operately.Data.Change029CreateSubscriptionsListForMessagesTest do
   test "creates subscriptions list for existing messages", ctx do
     people = [ctx.creator, ctx.mike, ctx.bob, ctx.jane]
 
-    messages = Enum.map(1..3, fn _ ->
-      message_fixture(ctx.creator.id, ctx.messages_board.id)
-    end)
+    messages =
+      Enum.map(1..3, fn _ ->
+        message_fixture(ctx.creator.id, ctx.messages_board.id)
+      end)
 
     Enum.each(messages, fn m ->
       Enum.each(people, fn p ->

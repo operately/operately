@@ -30,26 +30,30 @@ defmodule OperatelyWeb.Api.Queries.ListPossibleManagers do
     else
       # Build a recursive CTE to find all reports (direct and indirect)
       # Start with all people who directly report to the user
-      initial_query = from(p in Person,
-        where: p.manager_id == ^user_id,
-        select: p.id
-      )
+      initial_query =
+        from(p in Person,
+          where: p.manager_id == ^user_id,
+          select: p.id
+        )
 
       # Recursively find all reports down the hierarchy
-      recursive_reports = from(p in Person,
-        join: r in "reports_hierarchy",
-        on: p.manager_id == r.id,
-        select: p.id
-      )
+      recursive_reports =
+        from(p in Person,
+          join: r in "reports_hierarchy",
+          on: p.manager_id == r.id,
+          select: p.id
+        )
 
       reports_cte = union_all(initial_query, ^recursive_reports)
 
       from(p in Person,
-        left_join: r in "reports_hierarchy", on: p.id == r.id,
+        left_join: r in "reports_hierarchy",
+        on: p.id == r.id,
         where: p.company_id == ^company_id,
         where: p.id != ^user_id,
         where: not p.suspended,
-        where: is_nil(r.id), # Exclude all direct and indirect reports
+        # Exclude all direct and indirect reports
+        where: is_nil(r.id),
         order_by: p.full_name
       )
       |> recursive_ctes(true)
@@ -60,7 +64,8 @@ defmodule OperatelyWeb.Api.Queries.ListPossibleManagers do
 
   defp check_permissions(inputs, company_id) do
     case inputs[:user_id] do
-      nil -> true
+      nil ->
+        true
 
       user_id ->
         from(p in Person, where: p.id == ^user_id and p.company_id == ^company_id)

@@ -2,7 +2,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Tasks.Task do
   def serialize(task, level: :essential) do
     %{
       id: OperatelyWeb.Paths.task_id(task),
-      name: task.name,
+      name: task.name
     }
   end
 
@@ -22,7 +22,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Tasks.Task do
       project: OperatelyWeb.Api.Serializer.serialize(task.project),
       creator: OperatelyWeb.Api.Serializer.serialize(task.creator),
       space: OperatelyWeb.Api.Serializer.serialize(task.group),
-      permissions: OperatelyWeb.Api.Serializer.serialize(task.permissions),
+      permissions: OperatelyWeb.Api.Serializer.serialize(task.permissions)
     }
   end
 end

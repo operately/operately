@@ -16,7 +16,7 @@ defmodule Operately.Groups.Permissions do
     :can_view,
     :can_view_message,
     :can_add_members,
-    :can_delete,
+    :can_delete
   ]
 
   def calculate_permissions(access_level) do
@@ -35,7 +35,7 @@ defmodule Operately.Groups.Permissions do
       can_view: can_view(access_level),
       can_view_message: can_view_message(access_level),
       can_add_members: can_add_members(access_level),
-      can_delete: can_delete(access_level),
+      can_delete: can_delete(access_level)
     }
   end
 
@@ -61,7 +61,7 @@ defmodule Operately.Groups.Permissions do
     case Map.get(permissions, permission) do
       true -> {:ok, :allowed}
       false -> {:error, :forbidden}
-      nil -> raise ArgumentError, "Unknown permission: #{inspect permission}"
+      nil -> raise ArgumentError, "Unknown permission: #{inspect(permission)}"
     end
   end
 end

@@ -17,10 +17,12 @@ defmodule Operately.Operations.GroupMemberRemovingTest do
 
     member = person_fixture_with_account(%{company_id: company.id})
 
-    Groups.add_members(creator, group.id, [%{
-      id: member.id,
-      access_level: Binding.comment_access(),
-    }])
+    Groups.add_members(creator, group.id, [
+      %{
+        id: member.id,
+        access_level: Binding.comment_access()
+      }
+    ])
 
     {:ok, company: company, creator: creator, group: group, member: member}
   end

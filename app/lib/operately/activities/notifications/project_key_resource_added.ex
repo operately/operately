@@ -10,7 +10,7 @@ defmodule Operately.Activities.Notifications.ProjectKeyResourceAdded do
       %{
         person_id: person.id,
         activity_id: activity.id,
-        should_send_email: true,
+        should_send_email: true
       }
     end)
     |> Notifications.bulk_create()

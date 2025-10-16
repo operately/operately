@@ -22,15 +22,13 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubDocumentTest do
 
   describe "permissions" do
     @table [
-      %{company: :no_access,      space: :no_access,      expected: 404},
-
-      %{company: :no_access,      space: :comment_access, expected: 403},
-      %{company: :no_access,      space: :edit_access,    expected: 200},
-      %{company: :no_access,      space: :full_access,    expected: 200},
-
-      %{company: :comment_access, space: :no_access,      expected: 403},
-      %{company: :edit_access,    space: :no_access,      expected: 200},
-      %{company: :full_access,    space: :no_access,      expected: 200},
+      %{company: :no_access, space: :no_access, expected: 404},
+      %{company: :no_access, space: :comment_access, expected: 403},
+      %{company: :no_access, space: :edit_access, expected: 200},
+      %{company: :no_access, space: :full_access, expected: 200},
+      %{company: :comment_access, space: :no_access, expected: 403},
+      %{company: :edit_access, space: :no_access, expected: 200},
+      %{company: :full_access, space: :no_access, expected: 200}
     ]
 
     setup ctx do
@@ -44,20 +42,24 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubDocumentTest do
         space = create_space(ctx, @test.company, @test.space)
         resource_hub = resource_hub_fixture(ctx.creator, space)
 
-        assert {code, res} = mutation(ctx.conn, :create_resource_hub_document, %{
-          resource_hub_id: Paths.resource_hub_id(resource_hub),
-          name: "My document",
-          content: RichText.rich_text("content", :as_string)
-        })
+        assert {code, res} =
+                 mutation(ctx.conn, :create_resource_hub_document, %{
+                   resource_hub_id: Paths.resource_hub_id(resource_hub),
+                   name: "My document",
+                   content: RichText.rich_text("content", :as_string)
+                 })
+
         assert code == @test.expected
 
         case @test.expected do
           200 ->
             documents = ResourceHubs.list_documents(resource_hub)
             assert res.document.id == Paths.document_id(hd(documents))
+
           403 ->
             assert ResourceHubs.list_documents(resource_hub) == []
             assert res.message == "You don't have permission to perform this action"
+
           404 ->
             assert ResourceHubs.list_documents(resource_hub) == []
             assert res.message == "The requested resource was not found"
@@ -78,11 +80,12 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubDocumentTest do
     test "creates document within hub", ctx do
       assert ResourceHubs.list_documents(ctx.hub) == []
 
-      assert {200, res} = mutation(ctx.conn, :create_resource_hub_document, %{
-        resource_hub_id: Paths.resource_hub_id(ctx.hub),
-        name: "My document",
-        content: RichText.rich_text("content", :as_string)
-      })
+      assert {200, res} =
+               mutation(ctx.conn, :create_resource_hub_document, %{
+                 resource_hub_id: Paths.resource_hub_id(ctx.hub),
+                 name: "My document",
+                 content: RichText.rich_text("content", :as_string)
+               })
 
       documents = ResourceHubs.list_documents(ctx.hub)
 
@@ -97,12 +100,13 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubDocumentTest do
 
       assert ResourceHubs.list_documents(ctx.folder) == []
 
-      assert {200, res} = mutation(ctx.conn, :create_resource_hub_document, %{
-        resource_hub_id: Paths.resource_hub_id(ctx.hub),
-        folder_id: Paths.folder_id(ctx.folder),
-        name: "My document",
-        content: RichText.rich_text("content", :as_string)
-      })
+      assert {200, res} =
+               mutation(ctx.conn, :create_resource_hub_document, %{
+                 resource_hub_id: Paths.resource_hub_id(ctx.hub),
+                 folder_id: Paths.folder_id(ctx.folder),
+                 name: "My document",
+                 content: RichText.rich_text("content", :as_string)
+               })
 
       documents = ResourceHubs.list_documents(ctx.folder)
 
@@ -113,12 +117,13 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubDocumentTest do
     test "creates draft document", ctx do
       assert ResourceHubs.list_documents(ctx.hub) == []
 
-      assert {200, res} = mutation(ctx.conn, :create_resource_hub_document, %{
-        resource_hub_id: Paths.resource_hub_id(ctx.hub),
-        name: "My document",
-        content: RichText.rich_text("content", :as_string),
-        post_as_draft: true,
-      })
+      assert {200, res} =
+               mutation(ctx.conn, :create_resource_hub_document, %{
+                 resource_hub_id: Paths.resource_hub_id(ctx.hub),
+                 name: "My document",
+                 content: RichText.rich_text("content", :as_string),
+                 post_as_draft: true
+               })
 
       assert res.document.state == "draft"
       refute get_activity(res)
@@ -139,13 +144,14 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubDocumentTest do
     test "creates subscription list for document", ctx do
       people = [ctx.p1, ctx.p2, ctx.p3]
 
-      assert {200, res} = mutation(ctx.conn, :create_resource_hub_document, %{
-        resource_hub_id: Paths.resource_hub_id(ctx.hub),
-        name: "My document",
-        content: RichText.rich_text("content", :as_string),
-        send_notifications_to_everyone: true,
-        subscriber_ids: Enum.map(people, &(Paths.person_id(&1))),
-      })
+      assert {200, res} =
+               mutation(ctx.conn, :create_resource_hub_document, %{
+                 resource_hub_id: Paths.resource_hub_id(ctx.hub),
+                 name: "My document",
+                 content: RichText.rich_text("content", :as_string),
+                 send_notifications_to_everyone: true,
+                 subscriber_ids: Enum.map(people, &Paths.person_id(&1))
+               })
 
       {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.document.id)
       {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
@@ -162,13 +168,14 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubDocumentTest do
       people = [ctx.p1, ctx.p2, ctx.p3]
       content = RichText.rich_text(mentioned_people: people)
 
-      assert {200, res} = mutation(ctx.conn, :create_resource_hub_document, %{
-        resource_hub_id: Paths.resource_hub_id(ctx.hub),
-        name: "My document",
-        content: content,
-        send_notifications_to_everyone: false,
-        subscriber_ids: [],
-      })
+      assert {200, res} =
+               mutation(ctx.conn, :create_resource_hub_document, %{
+                 resource_hub_id: Paths.resource_hub_id(ctx.hub),
+                 name: "My document",
+                 content: content,
+                 send_notifications_to_everyone: false,
+                 subscriber_ids: []
+               })
 
       {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.document.id)
       {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
@@ -184,13 +191,14 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubDocumentTest do
       people = [ctx.creator, ctx.p1, ctx.p2, ctx.p3]
       content = RichText.rich_text(mentioned_people: people)
 
-      assert {200, res} = mutation(ctx.conn, :create_resource_hub_document, %{
-        resource_hub_id: Paths.resource_hub_id(ctx.hub),
-        name: "My document",
-        content: content,
-        send_notifications_to_everyone: false,
-        subscriber_ids: Enum.map(people, &(Paths.person_id(&1))),
-      })
+      assert {200, res} =
+               mutation(ctx.conn, :create_resource_hub_document, %{
+                 resource_hub_id: Paths.resource_hub_id(ctx.hub),
+                 name: "My document",
+                 content: content,
+                 send_notifications_to_everyone: false,
+                 subscriber_ids: Enum.map(people, &Paths.person_id(&1))
+               })
 
       {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.document.id)
       {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
@@ -211,10 +219,13 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubDocumentTest do
     space = group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.from_atom(company_members_level)})
 
     if space_members_level != :no_access do
-      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
-        id: ctx.person.id,
-        access_level: Binding.from_atom(space_members_level)
-      }])
+      {:ok, _} =
+        Operately.Groups.add_members(ctx.creator, space.id, [
+          %{
+            id: ctx.person.id,
+            access_level: Binding.from_atom(space_members_level)
+          }
+        ])
     end
 
     space

@@ -7,7 +7,7 @@ defmodule Operately.Support.Notifications do
 
   defmacro __using__(_opts) do
     quote do
-       import Operately.Support.Notifications
+      import Operately.Support.Notifications
     end
   end
 

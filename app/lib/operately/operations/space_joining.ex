@@ -17,30 +17,42 @@ defmodule Operately.Operations.SpaceJoining do
   end
 
   defp insert_member(multi, author_id, space_id) do
-    Multi.insert(multi, :member, Member.changeset(%{
-      person_id: author_id,
-      group_id: space_id,
-    }))
+    Multi.insert(
+      multi,
+      :member,
+      Member.changeset(%{
+        person_id: author_id,
+        group_id: space_id
+      })
+    )
   end
 
   defp insert_access_group_membership(multi, author_id, space_id) do
     access_group = Access.get_group!(group_id: space_id, tag: :standard)
 
-    Multi.insert(multi, :group_membership, GroupMembership.changeset(%{
-      group_id: access_group.id,
-      person_id: author_id,
-    }))
+    Multi.insert(
+      multi,
+      :group_membership,
+      GroupMembership.changeset(%{
+        group_id: access_group.id,
+        person_id: author_id
+      })
+    )
   end
 
   defp insert_access_binding(multi, author_id, space_id) do
     access_group = Access.get_group!(person_id: author_id)
     access_context = Access.get_context!(group_id: space_id)
 
-    Multi.insert(multi, :binding, Binding.changeset(%{
-      group_id: access_group.id,
-      context_id: access_context.id,
-      access_level: Binding.view_access(),
-    }))
+    Multi.insert(
+      multi,
+      :binding,
+      Binding.changeset(%{
+        group_id: access_group.id,
+        context_id: access_context.id,
+        access_level: Binding.view_access()
+      })
+    )
   end
 
   defp insert_activity(multi, author, space_id) do

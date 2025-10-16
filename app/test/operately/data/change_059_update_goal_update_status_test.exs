@@ -12,20 +12,30 @@ defmodule Operately.Data.Change059UpdateGoalUpdateStatusTest do
   end
 
   test "updates statuses according to mapping", ctx do
-    updates = create_updates_with_statuses(ctx, [
-      "on_track",    # should remain on_track
-      "caution",     # should remain caution
-      "concern",     # should become caution
-      "issue",       # should become off_track
-      "pending"      # should become on_track
-    ])
+    updates =
+      create_updates_with_statuses(ctx, [
+        # should remain on_track
+        "on_track",
+        # should remain caution
+        "caution",
+        # should become caution
+        "concern",
+        # should become off_track
+        "issue",
+        # should become on_track
+        "pending"
+      ])
 
     Operately.Data.Change059UpdateGoalUpdateStatus.run()
 
     updated_updates = reload_updates(updates)
 
     assert_statuses(updated_updates, [
-      :on_track, :caution, :caution, :off_track, :on_track
+      :on_track,
+      :caution,
+      :caution,
+      :off_track,
+      :on_track
     ])
   end
 
@@ -42,9 +52,10 @@ defmodule Operately.Data.Change059UpdateGoalUpdateStatusTest do
   #
 
   defp create_updates_with_statuses(ctx, statuses) do
-    updates = Enum.map(statuses, fn status ->
-      insert_update_with_status(ctx, status)
-    end)
+    updates =
+      Enum.map(statuses, fn status ->
+        insert_update_with_status(ctx, status)
+      end)
 
     updates
   end
@@ -63,6 +74,7 @@ defmodule Operately.Data.Change059UpdateGoalUpdateStatusTest do
 
     # Update its status directly via SQL to bypass validations
     update_id = Ecto.UUID.dump!(update.id)
+
     update_sql = """
     UPDATE goal_updates
     SET status = $1

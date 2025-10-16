@@ -6,6 +6,5 @@ defmodule Operately.Repo.Migrations.PupulateGoalUpdatesStatusFieldWithDefaultVal
   end
 
   def down do
-
   end
 end

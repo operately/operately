@@ -20,10 +20,11 @@ defmodule Operately.Projects.Contributor do
   def order_by_role_and_insertion_at(query) do
     import Ecto.Query, warn: false
 
-    from c in query, order_by: [
-      asc: fragment("array_position(?, ?)", ["champion", "reviewer", "contributor"], c.role),
-      asc: c.inserted_at
-    ]
+    from c in query,
+      order_by: [
+        asc: fragment("array_position(?, ?)", ["champion", "reviewer", "contributor"], c.role),
+        asc: c.inserted_at
+      ]
   end
 
   def changeset(attrs) do
@@ -40,13 +41,14 @@ defmodule Operately.Projects.Contributor do
     people_ids = Enum.map(contributors, fn c -> c.person_id end)
     project_ids = Enum.map(contributors, fn c -> c.project_id end)
 
-    query = from(group in Operately.Access.Group,
-      join: binding in assoc(group, :bindings),
-      join: context in assoc(binding, :context),
-      where: group.person_id in ^people_ids and context.project_id in ^project_ids,
-      group_by: [group.person_id, context.project_id],
-      select: {group.person_id, context.project_id, max(binding.access_level)}
-    )
+    query =
+      from(group in Operately.Access.Group,
+        join: binding in assoc(group, :bindings),
+        join: context in assoc(binding, :context),
+        where: group.person_id in ^people_ids and context.project_id in ^project_ids,
+        group_by: [group.person_id, context.project_id],
+        select: {group.person_id, context.project_id, max(binding.access_level)}
+      )
 
     values = Repo.all(query)
 
@@ -55,5 +57,4 @@ defmodule Operately.Projects.Contributor do
       Map.put(c, :access_level, level)
     end)
   end
-
 end

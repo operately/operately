@@ -19,15 +19,13 @@ defmodule OperatelyWeb.Api.Mutations.DeleteResourceHubLinkTest do
 
   describe "permissions" do
     @table [
-      %{company: :no_access,      space: :no_access,      expected: 404},
-
-      %{company: :no_access,      space: :comment_access, expected: 403},
-      %{company: :no_access,      space: :edit_access,    expected: 200},
-      %{company: :no_access,      space: :full_access,    expected: 200},
-
-      %{company: :comment_access, space: :no_access,      expected: 403},
-      %{company: :edit_access,    space: :no_access,      expected: 200},
-      %{company: :full_access,    space: :no_access,      expected: 200},
+      %{company: :no_access, space: :no_access, expected: 404},
+      %{company: :no_access, space: :comment_access, expected: 403},
+      %{company: :no_access, space: :edit_access, expected: 200},
+      %{company: :no_access, space: :full_access, expected: 200},
+      %{company: :comment_access, space: :no_access, expected: 403},
+      %{company: :edit_access, space: :no_access, expected: 200},
+      %{company: :full_access, space: :no_access, expected: 200}
     ]
 
     setup ctx do
@@ -42,17 +40,21 @@ defmodule OperatelyWeb.Api.Mutations.DeleteResourceHubLinkTest do
         resource_hub = resource_hub_fixture(ctx.creator, space)
         link = link_fixture(resource_hub, ctx.creator)
 
-        assert {code, res} = mutation(ctx.conn, :delete_resource_hub_link, %{
-          link_id: Paths.link_id(link),
-        })
+        assert {code, res} =
+                 mutation(ctx.conn, :delete_resource_hub_link, %{
+                   link_id: Paths.link_id(link)
+                 })
+
         assert code == @test.expected
 
         case @test.expected do
           200 ->
             {:error, :not_found} = Link.get(:system, id: link.id)
+
           403 ->
             {:ok, _} = Link.get(:system, id: link.id)
             assert res.message == "You don't have permission to perform this action"
+
           404 ->
             {:ok, _} = Link.get(:system, id: link.id)
             assert res.message == "The requested resource was not found"
@@ -71,9 +73,10 @@ defmodule OperatelyWeb.Api.Mutations.DeleteResourceHubLinkTest do
     end
 
     test "deletes link", ctx do
-      assert {200, res} = mutation(ctx.conn, :delete_resource_hub_link, %{
-        link_id: Paths.link_id(ctx.link),
-      })
+      assert {200, res} =
+               mutation(ctx.conn, :delete_resource_hub_link, %{
+                 link_id: Paths.link_id(ctx.link)
+               })
 
       assert res.success
 
@@ -89,10 +92,13 @@ defmodule OperatelyWeb.Api.Mutations.DeleteResourceHubLinkTest do
     space = group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.from_atom(company_members_level)})
 
     if space_members_level != :no_access do
-      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
-        id: ctx.person.id,
-        access_level: Binding.from_atom(space_members_level)
-      }])
+      {:ok, _} =
+        Operately.Groups.add_members(ctx.creator, space.id, [
+          %{
+            id: ctx.person.id,
+            access_level: Binding.from_atom(space_members_level)
+          }
+        ])
     end
 
     space

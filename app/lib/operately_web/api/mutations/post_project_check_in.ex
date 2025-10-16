@@ -44,13 +44,14 @@ defmodule OperatelyWeb.Api.Mutations.PostProjectCheckIn do
     {:ok, project_id} = decode_id(inputs.project_id)
     {:ok, subscriber_ids} = decode_id(inputs[:subscriber_ids], :allow_nil)
 
-    {:ok, %{
-      project_id: project_id,
-      status: String.to_atom(inputs.status),
-      content: Jason.decode!(inputs.description),
-      send_to_everyone: inputs[:send_notifications_to_everyone] || false,
-      subscription_parent_type: :project_check_in,
-      subscriber_ids: subscriber_ids || []
-    }}
+    {:ok,
+     %{
+       project_id: project_id,
+       status: String.to_atom(inputs.status),
+       content: Jason.decode!(inputs.description),
+       send_to_everyone: inputs[:send_notifications_to_everyone] || false,
+       subscription_parent_type: :project_check_in,
+       subscriber_ids: subscriber_ids || []
+     }}
   end
 end

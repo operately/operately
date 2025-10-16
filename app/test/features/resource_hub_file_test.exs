@@ -9,12 +9,12 @@ defmodule Operately.Features.ResourceHubFileTest do
   describe "File actions" do
     @original_file_attrs %{
       title: "Some File",
-      description: "Content",
+      description: "Content"
     }
     @new_file_attrs %{
       original_title: "Some File",
       title: "Edited title",
-      description: "This is an edited description",
+      description: "This is an edited description"
     }
 
     feature "edit file", ctx do

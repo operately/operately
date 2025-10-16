@@ -12,7 +12,7 @@ defmodule Operately.Features.InviteMemberTest do
       fullName: "John Doe",
       email: "john@some-company.com",
       title: "Developer",
-      password: "Aa12345#&!123",
+      password: "Aa12345#&!123"
     }
 
     ctx
@@ -26,7 +26,7 @@ defmodule Operately.Features.InviteMemberTest do
     params = %{
       fullName: "John Doe",
       email: "john@some-company.com",
-      title: "Developer",
+      title: "Developer"
     }
 
     ctx

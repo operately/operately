@@ -26,5 +26,4 @@ defmodule Operately.Data.Change025PopulateAccountFullNameTest do
     assert account1.full_name == "John Doe"
     assert account2.full_name == "Hannah Poppins"
   end
-
 end

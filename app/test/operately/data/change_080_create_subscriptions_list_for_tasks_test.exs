@@ -47,7 +47,7 @@ defmodule Operately.Data.Change080CreateSubscriptionsListForTasksTest do
       |> Factory.preload(:task_4, :subscription_list)
 
     assert ctx.task_4.subscription_list_id != nil
-    %{ subscription_list: subscription_list } = ctx.task_4
+    %{subscription_list: subscription_list} = ctx.task_4
 
     # Run the migration
     Operately.Data.Change080CreateSubscriptionsListForTasks.run()
@@ -70,10 +70,11 @@ defmodule Operately.Data.Change080CreateSubscriptionsListForTasksTest do
   end
 
   defp reset_task_subscription_list(ctx, task_name) do
-    {1, nil} = Repo.update_all(
-      from(t in Operately.Tasks.Task, where: t.id == ^ctx[task_name].id),
-      set: [subscription_list_id: nil]
-    )
+    {1, nil} =
+      Repo.update_all(
+        from(t in Operately.Tasks.Task, where: t.id == ^ctx[task_name].id),
+        set: [subscription_list_id: nil]
+      )
 
     task = Repo.reload(ctx[task_name])
     Map.put(ctx, task_name, task)

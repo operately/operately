@@ -22,13 +22,16 @@ defmodule Operately.Data.Change029CreateSubscriptionsListForMessages do
   defp create_subscriptions_list(message) do
     case SubscriptionList.get(:system, parent_id: message.id) do
       {:error, :not_found} ->
-        {:ok, subscriptions_list} = Notifications.create_subscription_list(%{
-          parent_id: message.id,
-          parent_type: :message,
-        })
+        {:ok, subscriptions_list} =
+          Notifications.create_subscription_list(%{
+            parent_id: message.id,
+            parent_type: :message
+          })
+
         subscriptions_list
 
-      {:ok, subscriptions_list} -> subscriptions_list
+      {:ok, subscriptions_list} ->
+        subscriptions_list
     end
     |> update_message(message)
   end
@@ -37,6 +40,7 @@ defmodule Operately.Data.Change029CreateSubscriptionsListForMessages do
     if subscriptions_list.id != message.subscription_list_id do
       {:ok, _} = Operately.Messages.update_message(message, %{subscription_list_id: subscriptions_list.id})
     end
+
     subscriptions_list
   end
 
@@ -62,11 +66,13 @@ defmodule Operately.Data.Change029CreateSubscriptionsListForMessages do
   defp find_or_create_subscription(subscriptions_list, person) do
     case Subscription.get(:system, subscription_list_id: subscriptions_list.id, person_id: person.id) do
       {:error, :not_found} ->
-        {:ok, _} = Notifications.create_subscription(%{
-          subscription_list_id: subscriptions_list.id,
-          person_id: person.id,
-          type: :invited,
-        })
+        {:ok, _} =
+          Notifications.create_subscription(%{
+            subscription_list_id: subscriptions_list.id,
+            person_id: person.id,
+            type: :invited
+          })
+
       _ ->
         :ok
     end

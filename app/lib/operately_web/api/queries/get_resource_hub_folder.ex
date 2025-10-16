@@ -34,27 +34,30 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFolder do
   end
 
   def load(ctx, inputs) do
-    Folder.get(ctx.me, id: inputs.id, opts: [
-      preload: preload(inputs),
-      after_load: after_load(inputs),
-    ])
+    Folder.get(ctx.me,
+      id: inputs.id,
+      opts: [
+        preload: preload(inputs),
+        after_load: after_load(inputs)
+      ]
+    )
   end
 
   def preload(inputs) do
     q = Node.preload_content(Node)
 
-    Inputs.parse_includes(inputs, [
+    Inputs.parse_includes(inputs,
       include_nodes: [child_nodes: q],
       include_resource_hub: [node: :resource_hub],
-      always_include: :node,
-    ])
+      always_include: :node
+    )
   end
 
   def after_load(inputs) do
-    Inputs.parse_includes(inputs, [
+    Inputs.parse_includes(inputs,
       include_path_to_folder: &Folder.find_path_to_folder/1,
       include_permissions: &Folder.set_permissions/1,
-      include_potential_subscribers: &Folder.load_potential_subscribers/1,
-    ])
+      include_potential_subscribers: &Folder.load_potential_subscribers/1
+    )
   end
 end

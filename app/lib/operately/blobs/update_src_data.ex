@@ -14,7 +14,7 @@ defmodule Operately.Blobs.UpdateSrcData do
     Enum.map(list, &update/1)
   end
 
-  def update(%{"content" => content, "type" => "doc"}) do 
+  def update(%{"content" => content, "type" => "doc"}) do
     %{"content" => update(content), "type" => "doc"}
   end
 
@@ -40,5 +40,4 @@ defmodule Operately.Blobs.UpdateSrcData do
   end
 
   def update_blob_attrs(attrs), do: attrs
-    
 end

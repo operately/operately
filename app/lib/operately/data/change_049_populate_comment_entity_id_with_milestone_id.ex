@@ -11,7 +11,8 @@ defmodule Operately.Data.Change049PopulateCommentEntityIdWithMilestoneId do
 
   defp update_comments do
     from(c in Operately.Updates.Comment,
-      join: mc in Operately.Comments.MilestoneComment, on: mc.comment_id == c.id,
+      join: mc in Operately.Comments.MilestoneComment,
+      on: mc.comment_id == c.id,
       where: is_nil(c.entity_id) or is_nil(c.entity_type),
       update: [
         set: [

@@ -178,7 +178,7 @@ defmodule OperatelyWeb.Api.Mutations.AddKeyResourceTest do
       project_id: Paths.project_id(project),
       title: "some title",
       link: "http://some-link.com",
-      resource_type: "generic",
+      resource_type: "generic"
     })
   end
 
@@ -196,38 +196,50 @@ defmodule OperatelyWeb.Api.Mutations.AddKeyResourceTest do
   #
 
   defp create_project(ctx, attrs \\ %{}) do
-    project_fixture(Map.merge(%{
-      company_id: ctx.company.id,
-      name: "Project 1",
-      creator_id: ctx[:creator_id] || ctx.person.id,
-      group_id: ctx[:space_id] || ctx.company.company_space_id,
-      company_access_level: Binding.no_access(),
-      space_access_level: Binding.no_access(),
-    }, Enum.into(attrs, %{})))
+    project_fixture(
+      Map.merge(
+        %{
+          company_id: ctx.company.id,
+          name: "Project 1",
+          creator_id: ctx[:creator_id] || ctx.person.id,
+          group_id: ctx[:space_id] || ctx.company.company_space_id,
+          company_access_level: Binding.no_access(),
+          space_access_level: Binding.no_access()
+        },
+        Enum.into(attrs, %{})
+      )
+    )
   end
 
   defp create_contributor(ctx, project, permissions) do
     contributor = person_fixture_with_account(%{company_id: ctx.company.id})
-    {:ok, _} = Projects.create_contributor(ctx.creator, %{
-      project_id: project.id,
-      person_id: contributor.id,
-      responsibility: "some responsibility",
-      permissions: permissions,
-    })
+
+    {:ok, _} =
+      Projects.create_contributor(ctx.creator, %{
+        project_id: project.id,
+        person_id: contributor.id,
+        responsibility: "some responsibility",
+        permissions: permissions
+      })
+
     contributor
   end
 
   defp add_person_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space_id, [%{
-      id: ctx.person.id,
-      access_level: Binding.edit_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space_id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.edit_access()
+      }
+    ])
   end
 
   defp add_manager_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space_id, [%{
-      id: ctx.person.id,
-      access_level: Binding.full_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space_id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.full_access()
+      }
+    ])
   end
 end

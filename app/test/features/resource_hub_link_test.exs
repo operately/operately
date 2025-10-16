@@ -7,14 +7,14 @@ defmodule Operately.Features.ResourceHubLinkTest do
   @link %{
     title: "Link",
     url: "http://localhost:4000",
-    notes: "This is a link",
+    notes: "This is a link"
   }
 
   setup ctx, do: Steps.setup(ctx)
 
   describe "Create links" do
     feature "create link with empty description", ctx do
-      data = %{ title: "Link", url: "http://localhost:4000" }
+      data = %{title: "Link", url: "http://localhost:4000"}
 
       ctx
       |> Steps.visit_resource_hub_page()
@@ -104,9 +104,8 @@ defmodule Operately.Features.ResourceHubLinkTest do
         title: "Link (edited)",
         url: "http://localhost:3000",
         notes: "This is a link (also edited)",
-
         previous_title: @link.title,
-        previous_url: @link.url,
+        previous_url: @link.url
       }
 
       ctx

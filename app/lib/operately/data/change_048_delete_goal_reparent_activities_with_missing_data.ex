@@ -20,8 +20,9 @@ defmodule Operately.Data.Change048DeleteGoalReparentActivitiesWithMissingData do
     ids = find_activities_without_goal(activities)
     count = length(ids)
 
-    {^count, nil} = from(a in Activity, where: a.id in ^ids)
-    |> Repo.delete_all()
+    {^count, nil} =
+      from(a in Activity, where: a.id in ^ids)
+      |> Repo.delete_all()
   end
 
   defp find_activities_without_goal(activities) do

@@ -107,16 +107,19 @@ defmodule OperatelyWeb.Api.Queries.GetTasksTest do
 
     test "include_assignees", ctx do
       {milestone_id, tasks} = create_tasks(ctx, company_access: Binding.view_access())
+
       Enum.each(tasks, fn t ->
         assignee_fixture(task_id: t.id, person_id: ctx.person.id)
       end)
 
       assert {200, res} = query(ctx.conn, :get_tasks, %{milestone_id: milestone_id, include_assignees: true})
+
       Enum.each(res.tasks, fn t ->
         assert t.assignees == [serialize(ctx.person)]
       end)
 
       assert {200, res} = query(ctx.conn, :get_tasks, %{milestone_id: milestone_id})
+
       Enum.each(res.tasks, fn t ->
         refute t.assignees
       end)
@@ -129,34 +132,41 @@ defmodule OperatelyWeb.Api.Queries.GetTasksTest do
 
   defp assert_tasks(res, tasks) do
     assert length(res.tasks) == length(tasks)
+
     Enum.each(res.tasks, fn t ->
       assert Enum.find(tasks, &(t == serialize(&1, level: :full)))
     end)
   end
 
   defp create_tasks(ctx, opts) do
-    project = project_fixture(%{
-      company_id: ctx.company.id,
-      name: "Project",
-      creator_id: ctx.creator.id,
-      champion_id: Keyword.get(opts, :champion_id, ctx.creator.id),
-      reviewer_id: Keyword.get(opts, :reviewer_id, ctx.creator.id),
-      group_id: Keyword.get(opts, :space_id, ctx.space.id),
-      company_access_level: Keyword.get(opts, :company_access, Binding.no_access()),
-      space_access_level: Keyword.get(opts, :space_access, Binding.no_access()),
-    })
-    milestone = milestone_fixture(%{ project_id: project.id })
-    tasks = Enum.map(1..3, fn _ ->
-      task_fixture(%{creator_id: ctx.creator.id, milestone_id: milestone.id, project_id: project.id})
-    end)
+    project =
+      project_fixture(%{
+        company_id: ctx.company.id,
+        name: "Project",
+        creator_id: ctx.creator.id,
+        champion_id: Keyword.get(opts, :champion_id, ctx.creator.id),
+        reviewer_id: Keyword.get(opts, :reviewer_id, ctx.creator.id),
+        group_id: Keyword.get(opts, :space_id, ctx.space.id),
+        company_access_level: Keyword.get(opts, :company_access, Binding.no_access()),
+        space_access_level: Keyword.get(opts, :space_access, Binding.no_access())
+      })
+
+    milestone = milestone_fixture(%{project_id: project.id})
+
+    tasks =
+      Enum.map(1..3, fn _ ->
+        task_fixture(%{creator_id: ctx.creator.id, milestone_id: milestone.id, project_id: project.id})
+      end)
 
     {Paths.milestone_id(milestone), tasks}
   end
 
   defp add_person_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space.id, [%{
-      id: ctx.person.id,
-      access_level: Binding.edit_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space.id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.edit_access()
+      }
+    ])
   end
 end

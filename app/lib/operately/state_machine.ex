@@ -1,5 +1,4 @@
 defmodule Operately.StateMachine do
-
   def cast_and_validate(changeset, field, state_machine) do
     initial = Map.get(state_machine, :initial)
     states = Map.get(state_machine, :states)
@@ -22,7 +21,7 @@ defmodule Operately.StateMachine do
 
       {old_state, new_state} ->
         if valid_transition?(old_state, new_state, states) do
-            run_on_enter(changeset, new_state, states)
+          run_on_enter(changeset, new_state, states)
         else
           add_invalid_transition_error(changeset, field, old_state, new_state)
         end
@@ -37,7 +36,7 @@ defmodule Operately.StateMachine do
 
   defp add_invalid_transition_error(changeset, field, old_state, new_state) do
     msg = "Invalid transition from #{old_state} to #{new_state}"
-   
+
     Ecto.Changeset.add_error(changeset, field, msg)
   end
 
@@ -59,5 +58,4 @@ defmodule Operately.StateMachine do
       on_enter.(changeset)
     end
   end
-
 end

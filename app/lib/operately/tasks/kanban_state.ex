@@ -1,5 +1,6 @@
 defmodule Operately.Tasks.KanbanState do
   def load(nil), do: initialize()
+
   def load(map) do
     if map == %{} do
       initialize()
@@ -27,5 +28,4 @@ defmodule Operately.Tasks.KanbanState do
   def remove(kanban_state, task_id, status) do
     kanban_state |> Map.update!(status, &List.delete(&1, task_id))
   end
-
 end

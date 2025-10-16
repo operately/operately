@@ -4,7 +4,7 @@ defmodule OperatelyWeb.Api.Mutations.ArchiveMessageTest do
   alias Operately.Messages.Message
 
   setup ctx do
-    ctx 
+    ctx
     |> Factory.setup()
     |> Factory.add_space(:marketing_space)
     |> Factory.add_messages_board(:messages, :marketing_space)

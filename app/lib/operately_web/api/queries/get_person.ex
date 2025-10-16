@@ -24,23 +24,27 @@ defmodule OperatelyWeb.Api.Queries.GetPerson do
   end
 
   defp load(me, id, inputs) do
-    Person.get(me, id: id, company_id: me.company_id, opts: [
-      preload: preload(inputs),
-      after_load: after_load(inputs),
-    ])
+    Person.get(me,
+      id: id,
+      company_id: me.company_id,
+      opts: [
+        preload: preload(inputs),
+        after_load: after_load(inputs)
+      ]
+    )
   end
 
-   def preload(inputs) do
-    Inputs.parse_includes(inputs, [
+  def preload(inputs) do
+    Inputs.parse_includes(inputs,
       include_manager: [:manager],
-      include_reports: [:reports],
-    ])
+      include_reports: [:reports]
+    )
   end
 
   def after_load(inputs) do
-    Inputs.parse_includes(inputs, [
+    Inputs.parse_includes(inputs,
       include_peers: &Person.preload_peers/1,
-      include_permissions: &Person.load_permissions/1,
-    ])
+      include_permissions: &Person.load_permissions/1
+    )
   end
 end

@@ -6,5 +6,4 @@ defmodule OperatelyWeb.Api.Subscriptions.UnreadNotificationsCount do
 
     {:ok, socket, [topic]}
   end
-
 end

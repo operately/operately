@@ -13,7 +13,7 @@ defmodule Operately.Data.Change051PopulateGoalLastCheckInsTest do
     |> Factory.add_goal_update(:update2, :goal1, :creator)
     |> Factory.add_goal_update(:update3, :goal2, :creator)
   end
-  
+
   test "updates goals with their latest updates", ctx do
     :ok = nullify_last_check_ins()
 
@@ -47,5 +47,4 @@ defmodule Operately.Data.Change051PopulateGoalLastCheckInsTest do
     {:ok, _} = Repo.update(Ecto.Changeset.change(update, inserted_at: inserted_at))
     :ok
   end
-
 end

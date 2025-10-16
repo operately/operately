@@ -12,7 +12,7 @@ defmodule Operately.Data.Change042PopulateMessagesBoardIdFieldInMessages do
   end
 
   defp create_boards(space_ids) when is_list(space_ids) do
-    Enum.each(space_ids, &(create_boards(&1)))
+    Enum.each(space_ids, &create_boards(&1))
   end
 
   defp create_boards(space_id) do
@@ -22,8 +22,10 @@ defmodule Operately.Data.Change042PopulateMessagesBoardIdFieldInMessages do
     {1, nil} = Repo.insert_all("messages_boards", [[id: board_id, space_id: space_id, name: "Messages Board", inserted_at: DateTime.utc_now(), updated_at: DateTime.utc_now()]])
 
     from(m in "messages", where: m.space_id == ^space_id and is_nil(m.messages_board_id))
-    |> Repo.update_all(set: [
-      messages_board_id: board_id,
-    ])
+    |> Repo.update_all(
+      set: [
+        messages_board_id: board_id
+      ]
+    )
   end
 end

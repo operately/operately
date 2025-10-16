@@ -24,7 +24,7 @@ defmodule Operately.Operations.ProjectSpaceMovingTest do
       company_id: company.id,
       creator_id: creator.id,
       group_id: space.id,
-      space_access_level: Binding.edit_access(),
+      space_access_level: Binding.edit_access()
     }
 
     {:ok, company: company, space: space, new_space: new_space, creator: creator, attrs: attrs}
@@ -91,16 +91,18 @@ defmodule Operately.Operations.ProjectSpaceMovingTest do
     champion = person_fixture_with_account(%{company_id: ctx.company.id})
     reviewer = person_fixture_with_account(%{company_id: ctx.company.id})
 
-    attrs = Map.merge(ctx.attrs, %{
-      champion_id: champion.id,
-      reviewer_id: reviewer.id,
-      creator_is_contributor: "no",
-    })
+    attrs =
+      Map.merge(ctx.attrs, %{
+        champion_id: champion.id,
+        reviewer_id: reviewer.id,
+        creator_is_contributor: "no"
+      })
 
-    {:ok, project} = Oban.Testing.with_testing_mode(:manual, fn ->
-      project = project_fixture(attrs)
-      Operately.Operations.ProjectSpaceMoving.run(ctx.creator, project, ctx.new_space.id)
-    end)
+    {:ok, project} =
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        project = project_fixture(attrs)
+        Operately.Operations.ProjectSpaceMoving.run(ctx.creator, project, ctx.new_space.id)
+      end)
 
     activity = from(a in Activity, where: a.action == "project_moved" and a.content["project_id"] == ^project.id) |> Repo.one()
 

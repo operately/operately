@@ -35,7 +35,7 @@ defmodule Operately.Operations.ProjectContributorAddition do
         person_id: contributor.person_id,
         contributor_id: contributor.id,
         responsibility: contributor.responsibility,
-        role: Atom.to_string(contributor.role),
+        role: Atom.to_string(contributor.role)
       }
     end)
   end

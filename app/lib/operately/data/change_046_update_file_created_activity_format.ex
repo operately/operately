@@ -24,22 +24,26 @@ defmodule Operately.Data.Change046UpdateFileCreatedActivityFormat do
     node = fetch_node(content["file_id"])
 
     if node do
-      {:ok, _} = Activity.changeset(activity, %{content: %{
-        "company_id" => content["company_id"],
-        "space_id" => content["space_id"],
-        "resource_hub_id" => content["resource_hub_id"],
-        "files" => [
-          %{
-            "file_id" => content["file_id"],
-            "node_id" => node.id
+      {:ok, _} =
+        Activity.changeset(activity, %{
+          content: %{
+            "company_id" => content["company_id"],
+            "space_id" => content["space_id"],
+            "resource_hub_id" => content["resource_hub_id"],
+            "files" => [
+              %{
+                "file_id" => content["file_id"],
+                "node_id" => node.id
+              }
+            ]
           }
-        ]
-      }})
-      |> Repo.update()
+        })
+        |> Repo.update()
     end
   end
 
   defp fetch_node(nil), do: nil
+
   defp fetch_node(file_id) do
     from(n in Operately.ResourceHubs.Node,
       join: f in assoc(n, :file),

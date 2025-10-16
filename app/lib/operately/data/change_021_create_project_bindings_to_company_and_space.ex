@@ -41,8 +41,9 @@ defmodule Operately.Data.Change021CreateProjectBindingsToCompanyAndSpace do
         Access.create_binding(%{
           context_id: context_id,
           group_id: group_id,
-          access_level: access_level,
+          access_level: access_level
         })
+
       _ ->
         :ok
     end

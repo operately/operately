@@ -270,9 +270,9 @@ defmodule OperatelyWeb.Api.Types do
     ]
   )
 
-  enum(:review_assignment_roles, values: [ :owner, :reviewer ])
+  enum(:review_assignment_roles, values: [:owner, :reviewer])
 
-  enum(:review_assignment_origin_types, values: [ :project, :goal ])
+  enum(:review_assignment_origin_types, values: [:project, :goal])
 
   enum(:task_status_types,
     values: [

@@ -13,23 +13,25 @@ defmodule Operately.Data.Change066UpdateTimeframeInGoalActivities.GoalCreatedTes
 
   describe "Change066UpdateTimeframeInGoalActivities.GoalCreated" do
     test "updates activities with timeframes", ctx do
-      activity = %Activity{
-        action: "goal_created",
-        author_id: ctx.creator.id,
-        content: %{
-          "company_id" => ctx.company.id,
-          "space_id" => ctx.space.id,
-          "goal_id" => Ecto.UUID.generate(),
-          "goal_name" => "Test Goal",
-          "champion_id" => ctx.champion.id,
-          "creator_id" => ctx.creator.id,
-          "new_timeframe" => %{
-            "type" => "year",
-            "start_date" => Date.to_iso8601(~D[2023-01-01]),
-            "end_date" => Date.to_iso8601(~D[2023-12-31])
+      activity =
+        %Activity{
+          action: "goal_created",
+          author_id: ctx.creator.id,
+          content: %{
+            "company_id" => ctx.company.id,
+            "space_id" => ctx.space.id,
+            "goal_id" => Ecto.UUID.generate(),
+            "goal_name" => "Test Goal",
+            "champion_id" => ctx.champion.id,
+            "creator_id" => ctx.creator.id,
+            "new_timeframe" => %{
+              "type" => "year",
+              "start_date" => Date.to_iso8601(~D[2023-01-01]),
+              "end_date" => Date.to_iso8601(~D[2023-12-31])
+            }
           }
         }
-      } |> Repo.insert!()
+        |> Repo.insert!()
 
       Operately.Data.Change066UpdateTimeframeInGoalActivities.GoalCreated.run()
 
@@ -47,41 +49,45 @@ defmodule Operately.Data.Change066UpdateTimeframeInGoalActivities.GoalCreatedTes
     end
 
     test "handles multiple activities", ctx do
-      activity1 = %Activity{
-        action: "goal_created",
-        author_id: ctx.creator.id,
-        content: %{
-          "company_id" => ctx.company.id,
-          "space_id" => ctx.space.id,
-          "goal_id" => Ecto.UUID.generate(),
-          "goal_name" => "First Goal",
-          "champion_id" => ctx.champion.id,
-          "creator_id" => ctx.creator.id,
-          "new_timeframe" => %{
-            "type" => "year",
-            "start_date" => Date.to_iso8601(~D[2023-01-01]),
-            "end_date" => Date.to_iso8601(~D[2023-12-31])
+      activity1 =
+        %Activity{
+          action: "goal_created",
+          author_id: ctx.creator.id,
+          content: %{
+            "company_id" => ctx.company.id,
+            "space_id" => ctx.space.id,
+            "goal_id" => Ecto.UUID.generate(),
+            "goal_name" => "First Goal",
+            "champion_id" => ctx.champion.id,
+            "creator_id" => ctx.creator.id,
+            "new_timeframe" => %{
+              "type" => "year",
+              "start_date" => Date.to_iso8601(~D[2023-01-01]),
+              "end_date" => Date.to_iso8601(~D[2023-12-31])
+            }
           }
         }
-      } |> Repo.insert!()
+        |> Repo.insert!()
 
-      activity2 = %Activity{
-        action: "goal_created",
-        author_id: ctx.creator.id,
-        content: %{
-          "company_id" => ctx.company.id,
-          "space_id" => ctx.space.id,
-          "goal_id" => Ecto.UUID.generate(),
-          "goal_name" => "Second Goal",
-          "champion_id" => ctx.champion.id,
-          "creator_id" => ctx.creator.id,
-          "new_timeframe" => %{
-            "type" => "quarter",
-            "start_date" => Date.to_iso8601(~D[2023-04-01]),
-            "end_date" => Date.to_iso8601(~D[2023-06-30])
+      activity2 =
+        %Activity{
+          action: "goal_created",
+          author_id: ctx.creator.id,
+          content: %{
+            "company_id" => ctx.company.id,
+            "space_id" => ctx.space.id,
+            "goal_id" => Ecto.UUID.generate(),
+            "goal_name" => "Second Goal",
+            "champion_id" => ctx.champion.id,
+            "creator_id" => ctx.creator.id,
+            "new_timeframe" => %{
+              "type" => "quarter",
+              "start_date" => Date.to_iso8601(~D[2023-04-01]),
+              "end_date" => Date.to_iso8601(~D[2023-06-30])
+            }
           }
         }
-      } |> Repo.insert!()
+        |> Repo.insert!()
 
       {:ok, %{success_count: count}} = Operately.Data.Change066UpdateTimeframeInGoalActivities.GoalCreated.run()
       assert count == 2
@@ -97,19 +103,21 @@ defmodule Operately.Data.Change066UpdateTimeframeInGoalActivities.GoalCreatedTes
     end
 
     test "handles activities with nil timeframes", ctx do
-      activity = %Activity{
-        action: "goal_created",
-        author_id: ctx.creator.id,
-        content: %{
-          "company_id" => ctx.company.id,
-          "space_id" => ctx.space.id,
-          "goal_id" => Ecto.UUID.generate(),
-          "goal_name" => "Test Goal",
-          "champion_id" => ctx.champion.id,
-          "creator_id" => ctx.creator.id
-          # No new_timeframe
+      activity =
+        %Activity{
+          action: "goal_created",
+          author_id: ctx.creator.id,
+          content: %{
+            "company_id" => ctx.company.id,
+            "space_id" => ctx.space.id,
+            "goal_id" => Ecto.UUID.generate(),
+            "goal_name" => "Test Goal",
+            "champion_id" => ctx.champion.id,
+            "creator_id" => ctx.creator.id
+            # No new_timeframe
+          }
         }
-      } |> Repo.insert!()
+        |> Repo.insert!()
 
       Operately.Data.Change066UpdateTimeframeInGoalActivities.GoalCreated.run()
 

@@ -10,20 +10,21 @@ defmodule Operately.Data.Change019CreateAccessGroupsForSpacesTest do
   alias Operately.Groups.{Group, Member}
 
   setup do
-    companies = Enum.map(1..3, fn _ ->
-      company = company_fixture()
-
-      Enum.each(1..3, fn _ ->
-        group = create_group(company.id)
-        person = person_fixture_with_account(%{company_id: company.id})
+    companies =
+      Enum.map(1..3, fn _ ->
+        company = company_fixture()
 
         Enum.each(1..3, fn _ ->
-          create_member(group.id, person.id)
-        end)
-      end)
+          group = create_group(company.id)
+          person = person_fixture_with_account(%{company_id: company.id})
 
-      company
-    end)
+          Enum.each(1..3, fn _ ->
+            create_member(group.id, person.id)
+          end)
+        end)
+
+        company
+      end)
 
     {:ok, companies: companies}
   end
@@ -73,14 +74,15 @@ defmodule Operately.Data.Change019CreateAccessGroupsForSpacesTest do
   end
 
   def create_group(company_id) do
-    {:ok, group} = Group.changeset(%{
-      company_id: company_id,
-      name: "some name",
-      mission: "some mission",
-      icon: "some icon",
-      color: "come color",
-    })
-    |> Repo.insert()
+    {:ok, group} =
+      Group.changeset(%{
+        company_id: company_id,
+        name: "some name",
+        mission: "some mission",
+        icon: "some icon",
+        color: "come color"
+      })
+      |> Repo.insert()
 
     Access.create_context(%{group_id: group.id})
 

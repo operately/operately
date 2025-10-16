@@ -10,19 +10,22 @@ defmodule Operately.Data.Change078EnhanceTaskDescriptionChangeActivities do
     |> Enum.each(fn activity ->
       task_id = activity.content["task_id"]
 
-      has_description = case get_task(task_id) do
-        nil -> false
-        task -> Operately.RichContent.empty?(task.description)
-      end
+      has_description =
+        case get_task(task_id) do
+          nil -> false
+          task -> Operately.RichContent.empty?(task.description)
+        end
 
-      new_content = activity.content
-      |> Map.put("has_description", has_description)
+      new_content =
+        activity.content
+        |> Map.put("has_description", has_description)
 
       {:ok, _updated} = update_activity(activity, new_content)
     end)
   end
 
   defp get_task(nil), do: nil
+
   defp get_task(task_id) do
     Repo.get(Task, task_id)
   end

@@ -22,18 +22,19 @@ defmodule OperatelyEmail.Mailers.NotificationMailer do
   end
 
   def render(email, template) do
-    unless email.subject, do: raise "You must set a subject before rendering an email"
-    unless email.from, do: raise "You must set a from before rendering an email"
-    unless email.to, do: raise "You must set a to before rendering an email"
+    unless email.subject, do: raise("You must set a subject before rendering an email")
+    unless email.from, do: raise("You must set a from before rendering an email")
+    unless email.to, do: raise("You must set a to before rendering an email")
 
     full_assigns = Map.put(email.assigns, :subject, email.subject)
 
-    swoosh_email = Swoosh.Email.new()
-    |> Swoosh.Email.to(email.to)
-    |> Swoosh.Email.from(email.from)
-    |> Swoosh.Email.subject(email.subject)
-    |> Swoosh.Email.html_body(html(template, full_assigns))
-    |> Swoosh.Email.text_body(text(template, full_assigns))
+    swoosh_email =
+      Swoosh.Email.new()
+      |> Swoosh.Email.to(email.to)
+      |> Swoosh.Email.from(email.from)
+      |> Swoosh.Email.subject(email.subject)
+      |> Swoosh.Email.html_body(html(template, full_assigns))
+      |> Swoosh.Email.text_body(text(template, full_assigns))
 
     OperatelyEmail.Mailers.BaseMailer.deliver_now(swoosh_email)
   end
@@ -46,8 +47,8 @@ defmodule OperatelyEmail.Mailers.NotificationMailer do
     full_assigns = Map.put(assigns, :layout, {OperatelyEmail.Layouts, "activity.html"})
 
     Phoenix.View.render_to_string(
-      OperatelyEmail.Templates, 
-      template <> ".html", 
+      OperatelyEmail.Templates,
+      template <> ".html",
       full_assigns
     )
   end
@@ -55,5 +56,4 @@ defmodule OperatelyEmail.Mailers.NotificationMailer do
   def text(template, assigns) do
     Phoenix.View.render_to_string(OperatelyEmail.Templates, template <> ".text", assigns)
   end
-
 end

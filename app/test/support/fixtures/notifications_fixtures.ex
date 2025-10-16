@@ -23,9 +23,10 @@ defmodule Operately.NotificationsFixtures do
   end
 
   def subscriptions_list_fixture(attrs \\ []) do
-    {:ok, subscriptions_list} = Operately.Notifications.create_subscription_list(%{
-      send_to_everyone: Keyword.get(attrs, :send_to_everyone, false),
-    })
+    {:ok, subscriptions_list} =
+      Operately.Notifications.create_subscription_list(%{
+        send_to_everyone: Keyword.get(attrs, :send_to_everyone, false)
+      })
 
     Keyword.get(attrs, :person_ids, [])
     |> Enum.each(fn id ->
@@ -39,7 +40,7 @@ defmodule Operately.NotificationsFixtures do
     {:ok, subscription} =
       attrs
       |> Enum.into(%{
-        type: :invited,
+        type: :invited
       })
       |> Operately.Notifications.create_subscription()
 

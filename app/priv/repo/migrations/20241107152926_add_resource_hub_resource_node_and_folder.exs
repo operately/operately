@@ -17,7 +17,8 @@ defmodule Operately.Repo.Migrations.AddResourceHubResourceNodeAndFolder do
 
     # Add resource_hub_id to access_contexts
     alter table(:access_contexts) do
-      add :resource_hub_id, references(:resource_hubs, on_delete: :nothing, type: :binary_id), null: true
+      add :resource_hub_id, references(:resource_hubs, on_delete: :nothing, type: :binary_id),
+        null: true
     end
 
     create unique_index(:access_contexts, [:resource_hub_id])

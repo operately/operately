@@ -9,7 +9,8 @@ defmodule Operately.Messages.Notifications do
 
     message =
       from(message in Operately.Messages.Message,
-        join: c in assoc(message, :access_context), as: :context,
+        join: c in assoc(message, :access_context),
+        as: :context,
         join: s in assoc(message, :space),
         join: m in assoc(s, :members),
         preload: [space: {s, members: m}, access_context: c],

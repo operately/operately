@@ -29,16 +29,17 @@ defmodule OperatelyWeb.Api.Mutations.CreateBlob do
   defp create_blobs(person, files) do
     Repo.transaction(fn ->
       Enum.map(files, fn file ->
-        {:ok, blob} = Operately.Blobs.create_blob(%{
-          company_id: person.company_id,
-          author_id: person.id,
-          status: :pending,
-          filename: file.filename,
-          size: file.size,
-          content_type: file.content_type,
-          width: file[:width],
-          height: file[:height],
-        })
+        {:ok, blob} =
+          Operately.Blobs.create_blob(%{
+            company_id: person.company_id,
+            author_id: person.id,
+            status: :pending,
+            filename: file.filename,
+            size: file.size,
+            content_type: file.content_type,
+            width: file[:width],
+            height: file[:height]
+          })
 
         blob
       end)
@@ -46,16 +47,17 @@ defmodule OperatelyWeb.Api.Mutations.CreateBlob do
   end
 
   defp serialize(blobs) do
-    files = Enum.map(blobs, fn blob ->
-      {:ok, url} = Operately.Blobs.get_signed_upload_url(blob)
+    files =
+      Enum.map(blobs, fn blob ->
+        {:ok, url} = Operately.Blobs.get_signed_upload_url(blob)
 
-      %{
-        id: blob.id,
-        url: Operately.Blobs.Blob.url(blob),
-        signed_upload_url: url,
-        upload_strategy: Operately.Blobs.Blob.upload_strategy(blob),
-      }
-    end)
+        %{
+          id: blob.id,
+          url: Operately.Blobs.Blob.url(blob),
+          signed_upload_url: url,
+          upload_strategy: Operately.Blobs.Blob.upload_strategy(blob)
+        }
+      end)
 
     {:ok, %{blobs: files}}
   end

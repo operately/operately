@@ -18,11 +18,15 @@ defmodule Operately.Operations.SubscriptionsListEditing do
   end
 
   defp update_subscription_list(multi, _, nil), do: multi
+
   defp update_subscription_list(multi, subscription_list, send_to_everyone) do
     multi
-    |> Multi.update(:subscription_list, SubscriptionList.changeset(subscription_list, %{
-      send_to_everyone: send_to_everyone,
-    }))
+    |> Multi.update(
+      :subscription_list,
+      SubscriptionList.changeset(subscription_list, %{
+        send_to_everyone: send_to_everyone
+      })
+    )
   end
 
   defp insert_subscriptions(multi, subscriber_ids) do
@@ -41,14 +45,18 @@ defmodule Operately.Operations.SubscriptionsListEditing do
 
   defp cancel_subscriptions(multi, subscriber_ids) do
     multi
-    |> Multi.update_all(:canceled_subscriptions, fn changes ->
-      ids = find_subscriptions_to_cancel(changes, subscriber_ids)
+    |> Multi.update_all(
+      :canceled_subscriptions,
+      fn changes ->
+        ids = find_subscriptions_to_cancel(changes, subscriber_ids)
 
-      from(s in Subscription,
-        where: s.subscription_list_id == ^changes.subscription_list.id and s.person_id in ^ids,
-        update: [set: [canceled: true]]
-      )
-    end, [])
+        from(s in Subscription,
+          where: s.subscription_list_id == ^changes.subscription_list.id and s.person_id in ^ids,
+          update: [set: [canceled: true]]
+        )
+      end,
+      []
+    )
   end
 
   #
@@ -68,12 +76,13 @@ defmodule Operately.Operations.SubscriptionsListEditing do
         Notifications.create_subscription(%{
           subscription_list_id: changes.subscription_list.id,
           person_id: id,
-          type: :invited,
+          type: :invited
         })
+
       s ->
         Notifications.update_subscription(s, %{
           canceled: false,
-          type: :invited,
+          type: :invited
         })
     end
   end

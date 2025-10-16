@@ -25,7 +25,7 @@ defmodule Operately.Projects.ContributorTest do
         visibility: "everyone",
         group_id: group.id,
         company_access_level: Binding.view_access(),
-        space_access_level: Binding.comment_access(),
+        space_access_level: Binding.comment_access()
       }
 
       {:ok, project} = Operately.Projects.create_project(params)
@@ -33,10 +33,10 @@ defmodule Operately.Projects.ContributorTest do
       contributors = Operately.Repo.preload(project, :contributors).contributors
 
       %{
-        company: company, 
-        champion: champion, 
-        project: project, 
-        reviewer: reviewer, 
+        company: company,
+        champion: champion,
+        project: project,
+        reviewer: reviewer,
         group: group,
         contributors: contributors,
         contrib: Enum.at(contributors, 0)
@@ -44,8 +44,8 @@ defmodule Operately.Projects.ContributorTest do
     end
 
     test "get", ctx do
-      assert_full_access Contributor.get(:system, id: ctx.contrib.id)
-      assert_full_access Contributor.get(ctx.champion, id: ctx.contrib.id)
+      assert_full_access(Contributor.get(:system, id: ctx.contrib.id))
+      assert_full_access(Contributor.get(ctx.champion, id: ctx.contrib.id))
     end
   end
 end

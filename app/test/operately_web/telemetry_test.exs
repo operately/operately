@@ -70,6 +70,4 @@ defmodule OperatelyWeb.TelemetryTest do
   def api_request(conn) do
     Phoenix.ConnTest.dispatch(conn, OperatelyWeb.Endpoint, :get, "/api/v2/get_me", %{})
   end
-
-
 end

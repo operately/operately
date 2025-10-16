@@ -7,5 +7,4 @@ defmodule OperatelyWeb.Api.Subscriptions.ReloadComments do
 
     {:ok, socket, [resource_id]}
   end
-
 end

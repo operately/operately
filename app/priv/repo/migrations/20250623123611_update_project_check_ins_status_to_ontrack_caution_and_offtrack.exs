@@ -6,6 +6,5 @@ defmodule Operately.Repo.Migrations.UpdateProjectCheckInsStatusToOntrackCautionA
   end
 
   def down do
-
   end
 end

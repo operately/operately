@@ -1,5 +1,4 @@
 defmodule Mix.Tasks.Operately.Utils.StringUtils do
-
   def to_camel(name) do
     name
     |> String.split("_")
@@ -18,5 +17,4 @@ defmodule Mix.Tasks.Operately.Utils.StringUtils do
 
     name
   end
-
 end

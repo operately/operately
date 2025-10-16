@@ -39,7 +39,7 @@ defmodule OperatelyWeb.Api.Queries.GetCompaniesTest do
 
       assert {200, res} = query(ctx.conn, :get_companies, %{include_member_count: true})
       assert length(res.companies) == 1
-      
+
       assert hd(res.companies).member_count == 3
     end
   end
@@ -50,14 +50,16 @@ defmodule OperatelyWeb.Api.Queries.GetCompaniesTest do
 
   defp add_as_admin(person, company) do
     account = Operately.People.get_account!(person.account_id)
-    changeset = Person.changeset(%{
-      company_id: company.id,
-      account_id: account.id,
-      full_name: "John Doe",
-      email: "john@jobh.com",
-      avatar_url: "",
-      title: "COO",
-    })
+
+    changeset =
+      Person.changeset(%{
+        company_id: company.id,
+        account_id: account.id,
+        full_name: "John Doe",
+        email: "john@jobh.com",
+        avatar_url: "",
+        title: "COO"
+      })
 
     {:ok, _} = Operately.Repo.insert(changeset)
   end

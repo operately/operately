@@ -11,10 +11,10 @@ defmodule OperatelyWeb.Api.Mutations.RemoveCompanyMemberTest do
 
   describe "permissions" do
     @table [
-      %{company: :view_access,    expected: 403},
+      %{company: :view_access, expected: 403},
       %{company: :comment_access, expected: 403},
-      %{company: :edit_access,    expected: 403},
-      %{company: :full_access,    expected: 200},
+      %{company: :edit_access, expected: 403},
+      %{company: :full_access, expected: 200}
     ]
 
     setup :register_and_log_in_account
@@ -32,8 +32,12 @@ defmodule OperatelyWeb.Api.Mutations.RemoveCompanyMemberTest do
           200 ->
             member = Repo.reload(member)
             member.suspended
-          403 -> assert res.message == "You don't have permission to perform this action"
-          404 -> assert res.message == "The requested resource was not found"
+
+          403 ->
+            assert res.message == "You don't have permission to perform this action"
+
+          404 ->
+            assert res.message == "The requested resource was not found"
         end
       end
     end

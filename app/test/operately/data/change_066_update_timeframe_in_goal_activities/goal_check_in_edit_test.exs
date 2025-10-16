@@ -17,32 +17,36 @@ defmodule Operately.Data.Change066UpdateTimeframeInGoalActivities.GoalCheckInEdi
 
       ctx =
         ctx
-        |> Factory.add_goal(:goal, :space, timeframe: %{
-          type: "year",
-          start_date: start_date,
-          end_date: end_date
-        })
+        |> Factory.add_goal(:goal, :space,
+          timeframe: %{
+            type: "year",
+            start_date: start_date,
+            end_date: end_date
+          }
+        )
         |> Factory.add_goal_update(:update, :goal, :creator)
 
-      activity = %Activity{
-        action: "goal_check_in_edit",
-        author_id: ctx.creator.id,
-        content: %{
-          "company_id" => ctx.company.id,
-          "goal_id" => ctx.goal.id,
-          "check_in_id" => ctx.update.id,
-          "old_timeframe" => %{
-            "type" => "year",
-            "start_date" => Date.to_iso8601(start_date),
-            "end_date" => Date.to_iso8601(end_date)
-          },
-          "new_timeframe" => %{
-            "type" => "quarter",
-            "start_date" => Date.to_iso8601(~D[2023-04-01]),
-            "end_date" => Date.to_iso8601(~D[2023-06-30])
+      activity =
+        %Activity{
+          action: "goal_check_in_edit",
+          author_id: ctx.creator.id,
+          content: %{
+            "company_id" => ctx.company.id,
+            "goal_id" => ctx.goal.id,
+            "check_in_id" => ctx.update.id,
+            "old_timeframe" => %{
+              "type" => "year",
+              "start_date" => Date.to_iso8601(start_date),
+              "end_date" => Date.to_iso8601(end_date)
+            },
+            "new_timeframe" => %{
+              "type" => "quarter",
+              "start_date" => Date.to_iso8601(~D[2023-04-01]),
+              "end_date" => Date.to_iso8601(~D[2023-06-30])
+            }
           }
         }
-      } |> Repo.insert!()
+        |> Repo.insert!()
 
       Operately.Data.Change066UpdateTimeframeInGoalActivities.GoalCheckInEdit.run()
 
@@ -75,52 +79,58 @@ defmodule Operately.Data.Change066UpdateTimeframeInGoalActivities.GoalCheckInEdi
 
       ctx =
         ctx
-        |> Factory.add_goal(:goal, :space, timeframe: %{
-          type: "year",
-          start_date: start_date,
-          end_date: end_date
-        })
+        |> Factory.add_goal(:goal, :space,
+          timeframe: %{
+            type: "year",
+            start_date: start_date,
+            end_date: end_date
+          }
+        )
         |> Factory.add_goal_update(:update, :goal, :creator)
 
-      activity1 = %Activity{
-        action: "goal_check_in_edit",
-        author_id: ctx.creator.id,
-        content: %{
-          "company_id" => ctx.company.id,
-          "goal_id" => ctx.goal.id,
-          "check_in_id" => ctx.update.id,
-          "old_timeframe" => %{
-            "type" => "year",
-            "start_date" => Date.to_iso8601(start_date),
-            "end_date" => Date.to_iso8601(end_date)
-          },
-          "new_timeframe" => %{
-            "type" => "quarter",
-            "start_date" => Date.to_iso8601(~D[2023-04-01]),
-            "end_date" => Date.to_iso8601(~D[2023-06-30])
+      activity1 =
+        %Activity{
+          action: "goal_check_in_edit",
+          author_id: ctx.creator.id,
+          content: %{
+            "company_id" => ctx.company.id,
+            "goal_id" => ctx.goal.id,
+            "check_in_id" => ctx.update.id,
+            "old_timeframe" => %{
+              "type" => "year",
+              "start_date" => Date.to_iso8601(start_date),
+              "end_date" => Date.to_iso8601(end_date)
+            },
+            "new_timeframe" => %{
+              "type" => "quarter",
+              "start_date" => Date.to_iso8601(~D[2023-04-01]),
+              "end_date" => Date.to_iso8601(~D[2023-06-30])
+            }
           }
         }
-      } |> Repo.insert!()
+        |> Repo.insert!()
 
-      activity2 = %Activity{
-        action: "goal_check_in_edit",
-        author_id: ctx.creator.id,
-        content: %{
-          "company_id" => ctx.company.id,
-          "goal_id" => ctx.goal.id,
-          "check_in_id" => ctx.update.id,
-          "old_timeframe" => %{
-            "type" => "quarter",
-            "start_date" => Date.to_iso8601(~D[2023-04-01]),
-            "end_date" => Date.to_iso8601(~D[2023-06-30])
-          },
-          "new_timeframe" => %{
-            "type" => "month",
-            "start_date" => Date.to_iso8601(~D[2023-07-01]),
-            "end_date" => Date.to_iso8601(~D[2023-07-31])
+      activity2 =
+        %Activity{
+          action: "goal_check_in_edit",
+          author_id: ctx.creator.id,
+          content: %{
+            "company_id" => ctx.company.id,
+            "goal_id" => ctx.goal.id,
+            "check_in_id" => ctx.update.id,
+            "old_timeframe" => %{
+              "type" => "quarter",
+              "start_date" => Date.to_iso8601(~D[2023-04-01]),
+              "end_date" => Date.to_iso8601(~D[2023-06-30])
+            },
+            "new_timeframe" => %{
+              "type" => "month",
+              "start_date" => Date.to_iso8601(~D[2023-07-01]),
+              "end_date" => Date.to_iso8601(~D[2023-07-31])
+            }
           }
         }
-      } |> Repo.insert!()
+        |> Repo.insert!()
 
       {:ok, %{success_count: count}} = Operately.Data.Change066UpdateTimeframeInGoalActivities.GoalCheckInEdit.run()
       assert count == 2
@@ -142,15 +152,17 @@ defmodule Operately.Data.Change066UpdateTimeframeInGoalActivities.GoalCheckInEdi
         |> Factory.add_goal_update(:update, :goal, :creator)
 
       # Create activity with nil timeframes
-      activity = %Activity{
-        action: "goal_check_in_edit",
-        author_id: ctx.creator.id,
-        content: %{
-          "company_id" => ctx.company.id,
-          "goal_id" => ctx.goal.id,
-          "check_in_id" => ctx.update.id
+      activity =
+        %Activity{
+          action: "goal_check_in_edit",
+          author_id: ctx.creator.id,
+          content: %{
+            "company_id" => ctx.company.id,
+            "goal_id" => ctx.goal.id,
+            "check_in_id" => ctx.update.id
+          }
         }
-      } |> Repo.insert!()
+        |> Repo.insert!()
 
       Operately.Data.Change066UpdateTimeframeInGoalActivities.GoalCheckInEdit.run()
 

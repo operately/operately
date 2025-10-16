@@ -18,15 +18,16 @@ defmodule Operately.Operations.ResourceHubDocumentEditingTest do
   @action "resource_hub_document_edited"
   @attrs %{
     name: "new name",
-    content: RichText.rich_text("Content"),
+    content: RichText.rich_text("Content")
   }
 
   test "Editing document doens't send notifications to anyone", ctx do
     document = create_document(ctx, true, [])
 
-    {:ok, _} = Oban.Testing.with_testing_mode(:manual, fn ->
-      Operately.Operations.ResourceHubDocumentEditing.run(ctx.creator, document, @attrs)
-    end)
+    {:ok, _} =
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        Operately.Operations.ResourceHubDocumentEditing.run(ctx.creator, document, @attrs)
+      end)
 
     activity = get_activity(document, @action)
 
@@ -40,14 +41,16 @@ defmodule Operately.Operations.ResourceHubDocumentEditingTest do
   #
 
   defp create_document(ctx, send_to_everyone, people_list) do
-    {:ok, document} = Operately.Operations.ResourceHubDocumentCreating.run(ctx.creator, ctx.hub, %{
-      name: "Some name",
-      content: RichText.rich_text("Content"),
-      post_as_draft: false,
-      send_to_everyone: send_to_everyone,
-      subscription_parent_type: :resource_hub_document,
-      subscriber_ids: people_list,
-    })
+    {:ok, document} =
+      Operately.Operations.ResourceHubDocumentCreating.run(ctx.creator, ctx.hub, %{
+        name: "Some name",
+        content: RichText.rich_text("Content"),
+        post_as_draft: false,
+        send_to_everyone: send_to_everyone,
+        subscription_parent_type: :resource_hub_document,
+        subscriber_ids: people_list
+      })
+
     Repo.preload(document, :resource_hub)
   end
 

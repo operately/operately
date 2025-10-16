@@ -18,7 +18,6 @@ config :operately, Operately.Repo,
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool: Ecto.Adapters.SQL.Sandbox,
-
   pool_size: if(System.get_env("CI"), do: 30, else: 10),
   queue_target: if(System.get_env("CI"), do: 10_000, else: 5_000),
   queue_interval: if(System.get_env("CI"), do: 2_000, else: 1_000),

@@ -18,9 +18,10 @@ defmodule Operately.Operations.ResourceHubLinkDeletingTest do
   end
 
   test "Deleting link sends notifications to everyone", ctx do
-    link = Oban.Testing.with_testing_mode(:manual, fn ->
-      delete_link(ctx, true, [])
-    end)
+    link =
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        delete_link(ctx, true, [])
+      end)
 
     activity = get_activity(link)
 
@@ -38,9 +39,10 @@ defmodule Operately.Operations.ResourceHubLinkDeletingTest do
   end
 
   test "Deleting link sends notifications to selected people", ctx do
-    link = Oban.Testing.with_testing_mode(:manual, fn ->
-      delete_link(ctx, false, [ctx.mike.id, ctx.jane.id])
-    end)
+    link =
+      Oban.Testing.with_testing_mode(:manual, fn ->
+        delete_link(ctx, false, [ctx.mike.id, ctx.jane.id])
+      end)
 
     activity = get_activity(link)
 
@@ -71,9 +73,10 @@ defmodule Operately.Operations.ResourceHubLinkDeletingTest do
     assert fetch_notifications(activity.id, action: @action) == []
 
     # With permissions
-    {:ok, _} = Operately.Groups.add_members(ctx.creator, ctx.space.id, [
-      %{id: ctx.person.id, access_level: Binding.view_access()}
-    ])
+    {:ok, _} =
+      Operately.Groups.add_members(ctx.creator, ctx.space.id, [
+        %{id: ctx.person.id, access_level: Binding.view_access()}
+      ])
 
     link = delete_link(ctx, false, [], content)
 
@@ -89,15 +92,17 @@ defmodule Operately.Operations.ResourceHubLinkDeletingTest do
   #
 
   defp delete_link(ctx, send_to_everyone, people_list, content \\ nil) do
-    {:ok, link} = Operately.Operations.ResourceHubLinkCreating.run(ctx.creator, ctx.hub, %{
-      name: "My link",
-      url: "http://localhost:4000",
-      type: :other,
-      content: content || RichText.rich_text("Content"),
-      subscription_parent_type: :resource_hub_link,
-      send_to_everyone: send_to_everyone,
-      subscriber_ids: people_list,
-    })
+    {:ok, link} =
+      Operately.Operations.ResourceHubLinkCreating.run(ctx.creator, ctx.hub, %{
+        name: "My link",
+        url: "http://localhost:4000",
+        type: :other,
+        content: content || RichText.rich_text("Content"),
+        subscription_parent_type: :resource_hub_link,
+        send_to_everyone: send_to_everyone,
+        subscriber_ids: people_list
+      })
+
     link = Repo.preload(link, [:node, :resource_hub])
 
     {:ok, _} = Operately.Operations.ResourceHubLinkDeleting.run(ctx.creator, link)

@@ -6,6 +6,5 @@ defmodule Operately.Repo.Migrations.UpdateProjectTimelineEditedActivityFromUtcDa
   end
 
   def down do
-
   end
 end

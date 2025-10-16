@@ -4,7 +4,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Notifications.Notification
       id: notification.id,
       inserted_at: OperatelyWeb.Api.Serializer.serialize(notification.inserted_at),
       read: notification.read,
-      read_at: OperatelyWeb.Api.Serializer.serialize(notification.read_at),
+      read_at: OperatelyWeb.Api.Serializer.serialize(notification.read_at)
     }
   end
 
@@ -14,7 +14,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Notifications.Notification
       inserted_at: OperatelyWeb.Api.Serializer.serialize(notification.inserted_at),
       read: notification.read,
       read_at: OperatelyWeb.Api.Serializer.serialize(notification.read_at),
-      activity: OperatelyWeb.Api.Serializers.Activity.serialize(notification.activity, [comment_thread: :minimal])
+      activity: OperatelyWeb.Api.Serializers.Activity.serialize(notification.activity, comment_thread: :minimal)
     }
   end
 end

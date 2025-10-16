@@ -13,7 +13,8 @@ defmodule Operately.Repo.Migrations.CreateMessagesBoardsSchemaAndAddRelationship
     end
 
     alter table(:messages) do
-      add :messages_board_id, references(:messages_boards, on_delete: :nothing, type: :binary_id), null: true
+      add :messages_board_id, references(:messages_boards, on_delete: :nothing, type: :binary_id),
+        null: true
     end
 
     create index(:messages_boards, [:space_id])

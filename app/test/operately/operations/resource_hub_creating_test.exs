@@ -17,7 +17,7 @@ defmodule Operately.Operations.ResourceHubCreatingTest do
     description: RichText.rich_text("Some description"),
     anonymous_access_level: Binding.view_access(),
     company_access_level: Binding.comment_access(),
-    space_access_level: Binding.edit_access(),
+    space_access_level: Binding.edit_access()
   }
 
   test "ResourceHubCreating operation creates resource hub", ctx do

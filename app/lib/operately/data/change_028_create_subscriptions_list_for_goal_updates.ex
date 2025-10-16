@@ -22,13 +22,16 @@ defmodule Operately.Data.Change028CreateSubscriptionsListForGoalUpdates do
   defp create_subscriptions_list(update) do
     case SubscriptionList.get(:system, parent_id: update.id) do
       {:error, :not_found} ->
-        {:ok, subscriptions_list} = Notifications.create_subscription_list(%{
-          parent_id: update.id,
-          parent_type: :goal_update,
-        })
+        {:ok, subscriptions_list} =
+          Notifications.create_subscription_list(%{
+            parent_id: update.id,
+            parent_type: :goal_update
+          })
+
         subscriptions_list
 
-      {:ok, subscriptions_list} -> subscriptions_list
+      {:ok, subscriptions_list} ->
+        subscriptions_list
     end
     |> edit_update(update)
   end
@@ -37,10 +40,13 @@ defmodule Operately.Data.Change028CreateSubscriptionsListForGoalUpdates do
     {:ok, update_id} = Ecto.UUID.dump(update.id)
     {:ok, subscription_list_id} = Ecto.UUID.dump(subscriptions_list.id)
 
-    {_, nil} = from(u in "goal_updates", where: u.id == ^update_id)
-    |> Repo.update_all(set: [
-      subscription_list_id: subscription_list_id
-    ])
+    {_, nil} =
+      from(u in "goal_updates", where: u.id == ^update_id)
+      |> Repo.update_all(
+        set: [
+          subscription_list_id: subscription_list_id
+        ]
+      )
 
     subscriptions_list
   end
@@ -69,11 +75,13 @@ defmodule Operately.Data.Change028CreateSubscriptionsListForGoalUpdates do
   defp find_or_create_subscription(subscriptions_list, person) do
     case Subscription.get(:system, subscription_list_id: subscriptions_list.id, person_id: person.id) do
       {:error, :not_found} ->
-        {:ok, _} = Notifications.create_subscription(%{
-          subscription_list_id: subscriptions_list.id,
-          person_id: person.id,
-          type: :invited,
-        })
+        {:ok, _} =
+          Notifications.create_subscription(%{
+            subscription_list_id: subscriptions_list.id,
+            person_id: person.id,
+            type: :invited
+          })
+
       _ ->
         :ok
     end

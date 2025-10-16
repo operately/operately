@@ -2,7 +2,8 @@ defmodule Operately.ResourceHubs.NodeScopes do
   import Ecto.Query, only: [from: 2]
 
   def preload_content(query, drafts_author \\ nil) do
-    query = query
+    query =
+      query
       |> with_folders()
       |> with_links()
       |> with_files()
@@ -14,16 +15,13 @@ defmodule Operately.ResourceHubs.NodeScopes do
   end
 
   defp with_folders(q) do
-    from(n in q,
-      left_join: folder in assoc(n, :folder), as: :folder,
-      left_join: node_folder in assoc(folder, :node),
-      preload: [folder: {folder, node: node_folder}]
-    )
+    from(n in q, left_join: folder in assoc(n, :folder), as: :folder, left_join: node_folder in assoc(folder, :node), preload: [folder: {folder, node: node_folder}])
   end
 
   defp with_links(q) do
     from(n in q,
-      left_join: link in assoc(n, :link), as: :link,
+      left_join: link in assoc(n, :link),
+      as: :link,
       left_join: node_link in assoc(link, :node),
       left_join: author_link in assoc(link, :author),
       preload: [link: {link, node: node_link, author: author_link}]
@@ -32,7 +30,8 @@ defmodule Operately.ResourceHubs.NodeScopes do
 
   defp with_files(q) do
     from(n in q,
-      left_join: file in assoc(n, :file), as: :file,
+      left_join: file in assoc(n, :file),
+      as: :file,
       left_join: node_file in assoc(file, :node),
       left_join: author_file in assoc(file, :author),
       left_join: blob_file in assoc(file, :blob),

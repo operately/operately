@@ -17,6 +17,7 @@ defmodule OperatelyWeb.Api.Mutations.JoinCompany do
       {:ok, invitation} ->
         Operately.Operations.PasswordFirstTimeChanging.run(inputs, invitation)
         {:ok, %{result: "Password successfully changed"}}
+
       {:error, reason} ->
         {:error, :bad_request, reason}
     end
@@ -26,10 +27,12 @@ defmodule OperatelyWeb.Api.Mutations.JoinCompany do
     cond do
       input.password != input.password_confirmation ->
         {:error, "Passwords don't match"}
+
       true ->
         case Operately.Invitations.get_invitation_by_token(input.token) do
           nil ->
             {:error, "Invalid token"}
+
           invitation ->
             {:ok, invitation}
         end

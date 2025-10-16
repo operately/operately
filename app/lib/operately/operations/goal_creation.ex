@@ -114,7 +114,7 @@ defmodule Operately.Operations.GoalCreation do
   defp default_timeframe do
     %{
       contextual_start_date: Operately.ContextualDates.ContextualDate.create_day_date(Date.utc_today()),
-      contextual_end_date: nil,
+      contextual_end_date: nil
     }
   end
 end

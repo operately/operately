@@ -1,5 +1,4 @@
 defmodule Operately.OkrsFixtures do
-
   def objective_fixture(attrs \\ %{}) do
     {:ok, objective} =
       attrs
@@ -27,5 +26,4 @@ defmodule Operately.OkrsFixtures do
 
     key_result
   end
-
 end

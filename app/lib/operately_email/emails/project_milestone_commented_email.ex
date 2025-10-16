@@ -33,5 +33,4 @@ defmodule OperatelyEmail.Emails.ProjectMilestoneCommentedEmail do
       _ -> raise "Unknown action: #{action}"
     end
   end
-
 end

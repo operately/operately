@@ -22,17 +22,15 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFolderTest do
     end
 
     @table [
-      %{company: :no_access,      space: :no_access,      expected: 404},
-
-      %{company: :no_access,      space: :view_access,    expected: 200},
-      %{company: :no_access,      space: :comment_access, expected: 200},
-      %{company: :no_access,      space: :edit_access,    expected: 200},
-      %{company: :no_access,      space: :full_access,    expected: 200},
-
-      %{company: :view_access,    space: :no_access,      expected: 200},
-      %{company: :comment_access, space: :no_access,      expected: 200},
-      %{company: :edit_access,    space: :no_access,      expected: 200},
-      %{company: :full_access,    space: :no_access,      expected: 200},
+      %{company: :no_access, space: :no_access, expected: 404},
+      %{company: :no_access, space: :view_access, expected: 200},
+      %{company: :no_access, space: :comment_access, expected: 200},
+      %{company: :no_access, space: :edit_access, expected: 200},
+      %{company: :no_access, space: :full_access, expected: 200},
+      %{company: :view_access, space: :no_access, expected: 200},
+      %{company: :comment_access, space: :no_access, expected: 200},
+      %{company: :edit_access, space: :no_access, expected: 200},
+      %{company: :full_access, space: :no_access, expected: 200}
     ]
 
     tabletest @table do
@@ -43,16 +41,18 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFolderTest do
         document_fixture(resource_hub.id, ctx.creator.id, %{parent_folder_id: folder.id})
         document_fixture(resource_hub.id, ctx.creator.id, %{parent_folder_id: folder.id})
 
-        assert {code, res} = query(ctx.conn, :get_resource_hub_folder, %{
-          id: Paths.folder_id(folder),
-          include_nodes: true,
-        })
+        assert {code, res} =
+                 query(ctx.conn, :get_resource_hub_folder, %{
+                   id: Paths.folder_id(folder),
+                   include_nodes: true
+                 })
 
         assert code == @test.expected
 
         case @test.expected do
           404 ->
             assert res.message == "The requested resource was not found"
+
           200 ->
             assert length(res.folder.nodes) == 2
         end
@@ -78,10 +78,11 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFolderTest do
     end
 
     test "include_nodes", ctx do
-      assert {200, res} = query(ctx.conn, :get_resource_hub_folder, %{
-        id: Paths.folder_id(ctx.folder1),
-        include_nodes: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_resource_hub_folder, %{
+                 id: Paths.folder_id(ctx.folder1),
+                 include_nodes: true
+               })
 
       assert res.folder.name == ctx.folder1.node.name
       assert length(res.folder.nodes) == 2
@@ -93,10 +94,11 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFolderTest do
         assert Enum.find(res.folder.nodes, &(&1.id == Paths.node_id(node)))
       end)
 
-      assert {200, res} = query(ctx.conn, :get_resource_hub_folder, %{
-        id: Paths.folder_id(ctx.folder2),
-        include_nodes: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_resource_hub_folder, %{
+                 id: Paths.folder_id(ctx.folder2),
+                 include_nodes: true
+               })
 
       assert res.folder.name == ctx.folder2.node.name
       assert length(res.folder.nodes) == 2
@@ -110,16 +112,19 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFolderTest do
     end
 
     test "include_resource_hub", ctx do
-      assert {200, res} = query(ctx.conn, :get_resource_hub_folder, %{
-        id: Paths.folder_id(ctx.folder1),
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_resource_hub_folder, %{
+                 id: Paths.folder_id(ctx.folder1)
+               })
 
       refute res.folder.resource_hub
 
-      assert {200, res} = query(ctx.conn, :get_resource_hub_folder, %{
-        id: Paths.folder_id(ctx.folder1),
-        include_resource_hub: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_resource_hub_folder, %{
+                 id: Paths.folder_id(ctx.folder1),
+                 include_resource_hub: true
+               })
+
       assert res.folder.resource_hub.id == Paths.resource_hub_id(ctx.hub)
     end
 
@@ -132,17 +137,19 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFolderTest do
         |> Factory.add_folder(:subfolder4, :hub, :subfolder3)
 
       # Not include
-      assert {200, res} = query(ctx.conn, :get_resource_hub_folder, %{
-        id: Paths.folder_id(ctx.subfolder4),
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_resource_hub_folder, %{
+                 id: Paths.folder_id(ctx.subfolder4)
+               })
 
       refute res.folder.path_to_folder
 
       # Include
-      assert {200, res} = query(ctx.conn, :get_resource_hub_folder, %{
-        id: Paths.folder_id(ctx.subfolder4),
-        include_path_to_folder: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_resource_hub_folder, %{
+                 id: Paths.folder_id(ctx.subfolder4),
+                 include_path_to_folder: true
+               })
 
       List.zip([res.folder.path_to_folder, [ctx.folder1, ctx.subfolder1, ctx.subfolder2, ctx.subfolder3]])
       |> Enum.each(fn {f1, f2} ->
@@ -150,10 +157,11 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFolderTest do
       end)
 
       # Include, but no parent folder
-      assert {200, res} = query(ctx.conn, :get_resource_hub_folder, %{
-        id: Paths.folder_id(ctx.folder1),
-        include_path_to_folder: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_resource_hub_folder, %{
+                 id: Paths.folder_id(ctx.folder1),
+                 include_path_to_folder: true
+               })
 
       assert res.folder.path_to_folder == []
     end
@@ -167,10 +175,13 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFolderTest do
     space = group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.from_atom(company_members_level)})
 
     if space_members_level != :no_access do
-      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
-        id: ctx.person.id,
-        access_level: Binding.from_atom(space_members_level)
-      }])
+      {:ok, _} =
+        Operately.Groups.add_members(ctx.creator, space.id, [
+          %{
+            id: ctx.person.id,
+            access_level: Binding.from_atom(space_members_level)
+          }
+        ])
     end
 
     space
