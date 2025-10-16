@@ -31,19 +31,12 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   render: (args) => <ReviewPageV2 {...args} />,
   args: {
-    assignments: data.allAssignments,
-  },
-};
-
-export const WithoutUpcomingWork: Story = {
-  render: (args) => <ReviewPageV2 {...args} />,
-  args: {
     assignments: [...data.dueSoonAssignments, ...data.reviewAssignments],
     showUpcomingSection: false,
   },
 };
 
-export const WithoutUpcomingWorkSmallPlate: Story = {
+export const SmallPlate: Story = {
   render: (args) => <ReviewPageV2 {...args} />,
   args: {
     assignments: [...data.smallPlateDueSoon, ...data.smallPlateReview],
@@ -51,7 +44,7 @@ export const WithoutUpcomingWorkSmallPlate: Story = {
   },
 };
 
-export const WithoutUpcomingWorkOnlyTasks: Story = {
+export const OnlyTasks: Story = {
   render: (args) => <ReviewPageV2 {...args} />,
   args: {
     assignments: data.taskOnlyDueSoon,
@@ -59,23 +52,16 @@ export const WithoutUpcomingWorkOnlyTasks: Story = {
   },
 };
 
-export const UrgentFocus: Story = {
-  render: (args) => <ReviewPageV2 {...args} />,
-  args: {
-    assignments: data.dueSoonAssignments,
-  },
-};
-
-export const UpcomingRoadmap: Story = {
-  render: (args) => <ReviewPageV2 {...args} />,
-  args: {
-    assignments: data.upcomingAssignments,
-  },
-};
-
 export const Empty: Story = {
   render: (args) => <ReviewPageV2 {...args} />,
   args: {
     assignments: data.emptyStateAssignments,
+  },
+};
+
+export const MyUpcomingWorkWIP: Story = {
+  render: (args) => <ReviewPageV2 {...args} />,
+  args: {
+    assignments: data.upcomingAssignments,
   },
 };
