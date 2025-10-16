@@ -7,6 +7,7 @@ import { ResourceManager } from "../ResourceManager";
 import { mockEmptyTasks, mockMilestones, mockTasks } from "../TaskBoard/tests/mockData";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import { genPeople, searchPeopleFn } from "../utils/storybook/genPeople";
+import { useMockMilestoneOrdering } from "../utils/storybook/milestones";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { asRichText, asRichTextWithList } from "../utils/storybook/richContent";
 import { spaceSearchFn } from "../utils/storybook/spaceSearchFn";
@@ -216,7 +217,7 @@ export const Default: Story = {
   render: () => {
     const [tasks, setTasks] = useState([...mockTasks]);
     // Use dynamic, short-horizon milestones to encourage manageable scopes
-    const [milestones, setMilestones] = useState<TaskBoardTypes.Milestone[]>([
+    const initialMilestones: TaskBoardTypes.Milestone[] = [
       {
         id: "m1",
         name: "Kickoff Complete",
@@ -245,7 +246,8 @@ export const Default: Story = {
         status: "pending",
         link: "#",
       },
-    ]);
+    ];
+    const { milestones, setMilestones, reorderMilestones } = useMockMilestoneOrdering({ initialMilestones });
     const [filters, setFilters] = useState<TaskBoardTypes.FilterCondition[]>([]);
     const [parentGoal, setParentGoal] = useState<ProjectPage.ParentGoal | null>({
       id: "1",
@@ -373,6 +375,7 @@ export const Default: Story = {
           console.log("Task status updated:", taskId, status);
         }}
         onMilestoneUpdate={handleMilestoneUpdate}
+        onMilestoneReorder={reorderMilestones}
         searchPeople={mockSearchPeople}
         richTextHandlers={createMockRichEditorHandlers()}
         filters={filters}
@@ -454,6 +457,7 @@ export const ReadOnly: Story = {
         onTaskAssigneeChange={() => {}}
         onTaskDueDateChange={() => {}}
         onMilestoneUpdate={() => {}}
+        onMilestoneReorder={async () => {}}
         searchPeople={mockSearchPeople}
         richTextHandlers={createMockRichEditorHandlers()}
         filters={[]}
@@ -493,7 +497,7 @@ export const ReadOnly: Story = {
 export const EmptyTasks: Story = {
   render: () => {
     const [tasks, setTasks] = useState([...mockEmptyTasks]);
-    const [milestones, setMilestones] = useState<TaskBoardTypes.Milestone[]>([]);
+    const { milestones, setMilestones, reorderMilestones } = useMockMilestoneOrdering({ initialMilestones: [] });
     const [filters, setFilters] = useState<TaskBoardTypes.FilterCondition[]>([]);
     const [reviewer, setReviewer] = useState<ProjectPage.Person | null>(people[3] || null);
     const [startedAt, setStartedAt] = useState<DateField.ContextualDate | null>(() => {
@@ -588,6 +592,7 @@ export const EmptyTasks: Story = {
         onTaskAssigneeChange={() => {}}
         onTaskDueDateChange={() => {}}
         onMilestoneUpdate={() => {}}
+        onMilestoneReorder={reorderMilestones}
         searchPeople={mockSearchPeople}
         richTextHandlers={createMockRichEditorHandlers()}
         filters={filters}
@@ -703,6 +708,7 @@ export const EmptyProject: Story = {
         onTaskAssigneeChange={() => {}}
         onTaskDueDateChange={() => {}}
         onMilestoneUpdate={handleMilestoneUpdate}
+        onMilestoneReorder={async () => {}}
         searchPeople={mockSearchPeople}
         richTextHandlers={createMockRichEditorHandlers()}
         filters={[]}
@@ -777,6 +783,7 @@ export const EmptyProjectReadOnly: Story = {
         onTaskAssigneeChange={() => {}}
         onTaskDueDateChange={() => {}}
         onMilestoneUpdate={() => {}}
+        onMilestoneReorder={async () => {}}
         searchPeople={mockSearchPeople}
         richTextHandlers={createMockRichEditorHandlers()}
         filters={[]}
@@ -935,6 +942,7 @@ export const PausedProject: Story = {
           console.log("Task status updated:", taskId, status);
         }}
         onMilestoneUpdate={handleMilestoneUpdate}
+        onMilestoneReorder={async () => {}}
         searchPeople={mockSearchPeople}
         richTextHandlers={createMockRichEditorHandlers()}
         filters={filters}
@@ -1025,6 +1033,7 @@ export const ClosedProject: Story = {
         onTaskAssigneeChange={() => {}}
         onTaskDueDateChange={() => {}}
         onMilestoneUpdate={() => {}}
+        onMilestoneReorder={async () => {}}
         searchPeople={mockSearchPeople}
         filters={[]}
         onFiltersChange={() => {}}
