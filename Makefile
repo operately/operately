@@ -117,9 +117,7 @@ dev.mix.deps.clean:
 	./devenv bash -c "cd app && mix deps.clean --unlock --unused"
 
 dev.teardown:
-	./devenv bash -c "cd app && MIX_ENV=dev mix ecto.drop"
-	./devenv bash -c "cd app && MIX_ENV=test mix ecto.drop"
-	./devenv down
+	./devenv teardown
 
 #
 # Testing tasks
