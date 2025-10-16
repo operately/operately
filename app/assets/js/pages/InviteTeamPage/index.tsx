@@ -1,14 +1,12 @@
+import type { InviteLink as InviteLinkType } from "@/api";
 import Api from "@/api";
 import React from "react";
 
-import * as Pages from "@/components/Pages";
-import * as Paper from "@/components/PaperContainer";
 import * as InviteLinks from "@/models/inviteLinks";
 
-import { CopyToClipboard } from "@/components/CopyToClipboard";
+import { usePaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
-import { useNavigate } from "react-router-dom";
-import { PrimaryButton, SecondaryButton } from "turboui";
+import { InvitePeoplePage } from "turboui";
 import { useCurrentCompany } from "../../contexts/CurrentCompanyContext";
 
 export default { name: "InviteTeamPage", loader, Page } as PageModule;
@@ -17,13 +15,26 @@ async function loader(): Promise<null> {
   return null;
 }
 
-function Page() {
-  const navigate = useNavigate();
-  const company = useCurrentCompany()!;
+const DOMAIN_REGEX = /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/;
 
-  const [creating, setCreating] = React.useState(false);
-  const [inviteLink, setInviteLink] = React.useState<InviteLinks.InviteLink | null>(null);
-  const [error, setError] = React.useState<string | null>(null);
+function Page() {
+  const company = useCurrentCompany();
+  const paths = usePaths();
+
+  const [inviteLink, setInviteLink] = React.useState<InviteLinkType | null>(null);
+  const [linkEnabled, setLinkEnabled] = React.useState(false);
+  const [initializing, setInitializing] = React.useState(true);
+  const [toggleLoading, setToggleLoading] = React.useState(false);
+  const [resettingLink, setResettingLink] = React.useState(false);
+  const [domainState, setDomainState] = React.useState<{
+    enabled: boolean;
+    value: string;
+    error: string | null;
+  }>({
+    enabled: false,
+    value: "",
+    error: null,
+  });
 
   const handleGenerateLink = async () => {
     setCreating(true);
@@ -40,64 +51,234 @@ function Page() {
     }
   };
 
-  const inviteUrl = inviteLink ? InviteLinks.createInvitationUrl(inviteLink.token!) : "";
+  const syncDomainStateFromLink = React.useCallback((link: InviteLinkType | null) => {
+    const allowedDomains = link?.allowedDomains?.filter(Boolean) ?? [];
+    setDomainState({
+      enabled: allowedDomains.length > 0,
+      value: allowedDomains.join(", "),
+      error: null,
+    });
+  }, []);
 
-  const copyMessage = `Join me on Operately! Click this link to get started: ${inviteUrl}`;
+  React.useEffect(() => {
+    if (!company?.id) return;
+
+    let cancelled = false;
+
+    const loadInviteLink = async () => {
+      setInitializing(true);
+      try {
+        const response = await Api.invitations.listInviteLinks({ companyId: company.id });
+        if (cancelled) return;
+
+        const links = (response.inviteLinks ?? []).filter(Boolean) as InviteLinkType[];
+        const activeLink = links.find((link) => link.isActive);
+
+        setInviteLink(activeLink ?? null);
+        setLinkEnabled(Boolean(activeLink?.isActive));
+        syncDomainStateFromLink(activeLink ?? null);
+      } catch (error) {
+        if (!cancelled) {
+          reportError("Failed to load the invite link. Please try again.", error);
+          setInviteLink(null);
+          setLinkEnabled(false);
+          syncDomainStateFromLink(null);
+        }
+      } finally {
+        if (!cancelled) {
+          setInitializing(false);
+        }
+      }
+    };
+
+    loadInviteLink();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [company?.id, reportError, syncDomainStateFromLink]);
+
+  const handleDomainToggle = React.useCallback((enabled: boolean) => {
+    setDomainState((prev) => ({
+      ...prev,
+      enabled,
+      error: null,
+    }));
+  }, []);
+
+  const handleDomainChange = React.useCallback((value: string) => {
+    setDomainState((prev) => ({
+      ...prev,
+      value,
+      error: null,
+    }));
+  }, []);
+
+  const validateDomainInput = React.useCallback((): string[] | null => {
+    if (!domainState.enabled) {
+      return [];
+    }
+
+    const domains = domainState.value
+      .split(/[\s,]+/)
+      .map((domain) => domain.trim())
+      .filter((domain) => domain.length > 0)
+      .map((domain) => (domain.startsWith("@") ? domain.slice(1) : domain))
+      .map((domain) => domain.toLowerCase());
+
+    if (domains.length === 0) {
+      setDomainState((prev) => ({
+        ...prev,
+        error: "Add at least one domain or disable restrictions.",
+      }));
+      return null;
+    }
+
+    const invalidDomain = domains.find((domain) => !DOMAIN_REGEX.test(domain));
+    if (invalidDomain) {
+      setDomainState((prev) => ({
+        ...prev,
+        error: `“${invalidDomain}” is not a valid domain.`,
+      }));
+      return null;
+    }
+
+    return domains;
+  }, [domainState.enabled, domainState.value]);
+
+  const createInviteLink = React.useCallback(
+    async (allowedDomains: string[]) => {
+      const response = await Api.invitations.createInviteLink({
+        allowedDomains: allowedDomains.length > 0 ? allowedDomains : undefined,
+      });
+      setInviteLink(response.inviteLink);
+      setLinkEnabled(true);
+      syncDomainStateFromLink(response.inviteLink);
+    },
+    [syncDomainStateFromLink],
+  );
+
+  const revokeInviteLink = React.useCallback(async (link: InviteLinkType | null) => {
+    if (!link?.id) return;
+    const response = await Api.invitations.revokeInviteLink({ inviteLinkId: link.id });
+    setInviteLink(response.inviteLink ?? null);
+  }, []);
+
+  const handleToggleLink = React.useCallback(
+    async (enabled: boolean) => {
+      if (!company?.id || toggleLoading || resettingLink || initializing) return;
+
+      if (enabled) {
+        const allowedDomains = validateDomainInput();
+        if (allowedDomains === null) {
+          setLinkEnabled(false);
+          return;
+        }
+
+        setToggleLoading(true);
+        setLinkEnabled(true);
+
+        try {
+          await createInviteLink(allowedDomains);
+        } catch (error) {
+          setLinkEnabled(false);
+          reportError("Failed to enable the invite link. Please try again.", error);
+        } finally {
+          setToggleLoading(false);
+        }
+
+        return;
+      }
+
+      if (!inviteLink?.id) {
+        setLinkEnabled(false);
+        return;
+      }
+
+      setToggleLoading(true);
+      setLinkEnabled(false);
+
+      try {
+        await revokeInviteLink(inviteLink);
+      } catch (error) {
+        setLinkEnabled(true);
+        reportError("Failed to disable the invite link. Please try again.", error);
+      } finally {
+        setToggleLoading(false);
+      }
+    },
+    [
+      company?.id,
+      toggleLoading,
+      resettingLink,
+      initializing,
+      validateDomainInput,
+      createInviteLink,
+      inviteLink,
+      revokeInviteLink,
+      reportError,
+    ],
+  );
+
+  const handleResetLink = React.useCallback(async () => {
+    if (!linkEnabled || resettingLink || toggleLoading || initializing) return;
+
+    const allowedDomains = validateDomainInput();
+    if (allowedDomains === null) return;
+
+    setResettingLink(true);
+    try {
+      await revokeInviteLink(inviteLink);
+      await createInviteLink(allowedDomains);
+    } catch (error) {
+      reportError("Failed to generate a new invite link. Please try again.", error);
+    } finally {
+      setResettingLink(false);
+    }
+  }, [
+    linkEnabled,
+    resettingLink,
+    toggleLoading,
+    initializing,
+    validateDomainInput,
+    revokeInviteLink,
+    inviteLink,
+    createInviteLink,
+    reportError,
+  ]);
+
+  const invitationUrl = React.useMemo(() => {
+    if (!linkEnabled || !inviteLink?.token) return "";
+    return InviteLinks.createInvitationUrl(inviteLink.token);
+  }, [inviteLink?.token, linkEnabled]);
+
+  const domainRestriction = React.useMemo(() => {
+    return {
+      enabled: domainState.enabled,
+      value: domainState.value,
+      onToggle: handleDomainToggle,
+      onChange: handleDomainChange,
+      error: domainState.error ?? undefined,
+      placeholder: "example.com, operately.com",
+      helperText: "Separate multiple domains with commas.",
+    };
+  }, [domainState.enabled, domainState.value, domainState.error, handleDomainToggle, handleDomainChange]);
+
+  if (!company) {
+    return null;
+  }
 
   return (
-    <Pages.Page title="Invite Your Team">
-      <Paper.Root size="small">
-        <Paper.Body>
-          <div className="text-center">
-            <div className="text-content-accent text-2xl font-extrabold mb-4">Invite Your Team</div>
-            <div className="text-content-accent mb-8">
-              Generate a shareable link to invite your team members to join your company.
-            </div>
-
-            {!inviteLink ? (
-              <div>
-                <PrimaryButton onClick={handleGenerateLink} loading={creating} testId="generate-invite-link">
-                  Generate Invite Link
-                </PrimaryButton>
-                {error && <div className="text-red-600 mt-4">{error}</div>}
-              </div>
-            ) : (
-              <div className="space-y-6">
-                <div className="text-green-600 font-medium">✓ Invite link generated successfully!</div>
-
-                <div className="space-y-3">
-                  <div className="text-left">
-                    <label className="block text-sm font-medium text-content-accent mb-2">
-                      Shareable Link (expires in 7 days):
-                    </label>
-                    <div className="flex items-center space-x-2">
-                      <div className="flex-1 text-content-primary border border-surface-outline rounded-lg px-3 py-2 font-mono text-sm break-all bg-surface-base">
-                        {inviteUrl}
-                      </div>
-                      <CopyToClipboard text={inviteUrl} size={20} />
-                    </div>
-                  </div>
-
-                  <div className="text-left">
-                    <label className="block text-sm font-medium text-content-accent mb-2">Message Template:</label>
-                    <div className="flex items-start space-x-2">
-                      <div className="flex-1 text-content-primary border border-surface-outline rounded-lg px-3 py-2 text-sm bg-surface-base">
-                        {copyMessage}
-                      </div>
-                      <CopyToClipboard text={copyMessage} size={20} />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-x-3">
-                  <PrimaryButton onClick={() => navigate(`/${company.id}`)}>Continue to Dashboard</PrimaryButton>
-                  <SecondaryButton onClick={() => setInviteLink(null)}>Generate Another Link</SecondaryButton>
-                </div>
-              </div>
-            )}
-          </div>
-        </Paper.Body>
-      </Paper.Root>
-    </Pages.Page>
+    <InvitePeoplePage
+      companyName={company.name || "Your company"}
+      invitationLink={invitationUrl}
+      onToggleLink={handleToggleLink}
+      linkEnabled={linkEnabled}
+      onResetLink={handleResetLink}
+      isResettingLink={resettingLink}
+      domainRestriction={domainRestriction}
+      inviteIndividuallyHref={paths.companyManagePeopleAddPeoplePath()}
+      testId="invite-team-page"
+    />
   );
 }
