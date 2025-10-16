@@ -10,7 +10,6 @@ import classNames from "../utils/classnames";
 
 export namespace InvitePeoplePage {
   export interface Props {
-    companyName: string;
     invitationLink: string | null;
 
     inviteIndividuallyHref?: string;
@@ -212,12 +211,7 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
             </div>
 
             {props.domainRestriction ? (
-              <div
-                className={classNames(
-                  "mt-6 space-y-3",
-                  !linkEnabled && "opacity-90",
-                )}
-              >
+              <div className={classNames("mt-6 space-y-3", !linkEnabled && "opacity-90")}>
                 <p className="text-sm font-medium text-content-strong">Who can join?</p>
 
                 <div className="space-y-1" data-test-id={domainTestId}>
@@ -282,10 +276,6 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
                   </div>
                 </div>
               </div>
-            ) : null}
-
-            {linkEnabled && (!props.domainRestriction || !props.domainRestriction.enabled) ? (
-              <p className="mt-8 text-sm text-content-dimmed">Anyone with this link can join {props.companyName}.</p>
             ) : null}
           </section>
 

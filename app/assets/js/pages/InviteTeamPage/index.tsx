@@ -162,10 +162,14 @@ function Page() {
   );
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1b8455885 (Semantic updates)
   const revokeInviteLink = React.useCallback(async (link: InviteLinkType | null) => {
     if (!link?.id) return;
     const response = await Api.invitations.revokeInviteLink({ inviteLinkId: link.id });
     setInviteLink(response.inviteLink ?? null);
+<<<<<<< HEAD
   }, []);
 =======
   const revokeInviteLink = React.useCallback(
@@ -178,6 +182,10 @@ function Page() {
     [],
   );
 >>>>>>> e3eff4247 (Feature tests)
+=======
+    setPageError(null);
+  }, []);
+>>>>>>> 1b8455885 (Semantic updates)
 
   const handleToggleLink = React.useCallback(
     async (enabled: boolean) => {
@@ -286,7 +294,6 @@ function Page() {
 
   return (
     <InvitePeoplePage
-      companyName={company.name || "Your company"}
       invitationLink={invitationUrl}
       onToggleLink={handleToggleLink}
       linkEnabled={linkEnabled}
