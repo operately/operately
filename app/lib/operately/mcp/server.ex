@@ -12,26 +12,26 @@ defmodule Operately.MCP.Server do
 
   @impl true
   def init(_client_info, frame) do
+    company_id = frame.assigns[:current_company] && frame.assigns[:current_company].id
+    person_id = frame.assigns[:current_person] && frame.assigns[:current_person].id
+
     {:ok,
      frame
-     |> assign(current_company_id: nil)
-     |> assign(current_person_id: nil)
+     |> assign_new(:current_company_id, fn -> company_id end)
+     |> assign_new(:current_person_id, fn -> person_id end)
      |> register_search_tool()
      |> register_fetch_tool()}
   end
 
   @impl true
   def handle_tool_call("search", params, frame) do
-    case maybe_update_context(frame, params) do
-      {:ok, updated_frame} ->
-        query = Map.get(params, :query, "")
+    query = Map.get(params, :query, "")
 
-        with {:ok, person, company} <- get_current_context(updated_frame),
-             {:ok, results} <- build_search_results(person, company, query) do
-          {:reply, text_content(%{results: results}), updated_frame}
-        else
-          {:error, message} ->
-            {:reply, text_content(%{error: message}), updated_frame}
+    case get_current_context(frame) do
+      {:ok, person, company} ->
+        case build_search_results(person, company, query) do
+          {:ok, results} -> {:reply, text_content(%{results: results}), frame}
+          {:error, message} -> {:reply, text_content(%{error: message}), frame}
         end
 
       {:error, message} ->
@@ -41,16 +41,13 @@ defmodule Operately.MCP.Server do
 
   @impl true
   def handle_tool_call("fetch", params, frame) do
-    case maybe_update_context(frame, params) do
-      {:ok, updated_frame} ->
-        document_id = Map.get(params, :id) || Map.get(params, :document_id)
+    document_id = Map.get(params, :id) || Map.get(params, :document_id)
 
-        with {:ok, person, _company} <- get_current_context(updated_frame),
-             {:ok, document} <- fetch_document(person, document_id) do
-          {:reply, text_content(document), updated_frame}
-        else
-          {:error, message} ->
-            {:reply, text_content(%{error: message}), updated_frame}
+    case get_current_context(frame) do
+      {:ok, person, _company} ->
+        case fetch_document(person, document_id) do
+          {:ok, document} -> {:reply, text_content(document), frame}
+          {:error, message} -> {:reply, text_content(%{error: message}), frame}
         end
 
       {:error, message} ->
@@ -61,9 +58,7 @@ defmodule Operately.MCP.Server do
   defp register_search_tool(frame) do
     register_tool(frame, "search",
       input_schema: %{
-        query: {:required, :string, description: "Query string used to find Operately resources"},
-        company_id: {:optional, :string, description: "Company ID for the Operately context"},
-        person_id: {:optional, :string, description: "Person ID executing the request"}
+        query: {:required, :string, description: "Query string used to find Operately resources"}
       },
       annotations: %{read_only: true},
       description: "Search Operately resources and return matching document identifiers"
@@ -73,46 +68,11 @@ defmodule Operately.MCP.Server do
   defp register_fetch_tool(frame) do
     register_tool(frame, "fetch",
       input_schema: %{
-        id: {:required, :string, description: "Identifier returned from the search tool"},
-        company_id: {:optional, :string, description: "Company ID for the Operately context"},
-        person_id: {:optional, :string, description: "Person ID executing the request"}
+        id: {:required, :string, description: "Identifier returned from the search tool"}
       },
       annotations: %{read_only: true},
       description: "Retrieve the full content for a search result identifier"
     )
-  end
-
-  defp maybe_update_context(frame, params) do
-    company_id = Map.get(params, :company_id)
-    person_id = Map.get(params, :person_id)
-
-    cond do
-      is_nil(company_id) and is_nil(person_id) ->
-        {:ok, frame}
-
-      is_nil(company_id) or is_nil(person_id) ->
-        {:error, "Both company_id and person_id are required to update context"}
-
-      true ->
-        with {:ok, company} <- get_company(company_id),
-             {:ok, person} <- get_person(person_id),
-             true <- person_belongs_to_company?(person, company) do
-          {:ok,
-           frame
-           |> assign(current_company_id: company.id)
-           |> assign(current_person_id: person.id)}
-        else
-          {:error, :not_found} ->
-            {:error, "Company or person not found"}
-
-          false ->
-            {:error, "Person does not belong to the specified company"}
-
-          error ->
-            Logger.error("Error updating context: #{inspect(error)}")
-            {:error, "Failed to update context"}
-        end
-    end
   end
 
   defp build_search_results(person, _company, query) do
@@ -284,16 +244,20 @@ defmodule Operately.MCP.Server do
 
     case {company_id, person_id} do
       {nil, _} ->
-        {:error, "No organization context set. Provide company_id and person_id when calling the tool"}
+        {:error, "No organization context available for this MCP session. Access the /:org_id/sso endpoint to initialize it."}
 
       {_, nil} ->
-        {:error, "No person context set. Provide company_id and person_id when calling the tool"}
+        {:error, "No person context available for this MCP session. Sign in to Operately before calling tools."}
 
       {company_id, person_id} ->
         with {:ok, company} <- get_company(company_id),
-             {:ok, person} <- get_person(person_id) do
+             {:ok, person} <- get_person(person_id),
+             true <- person_belongs_to_company?(person, company) do
           {:ok, person, company}
         else
+          false ->
+            {:error, "Current person cannot access this organization"}
+
           {:error, :not_found} ->
             {:error, "Current context is invalid. Organization or person no longer exists"}
 
