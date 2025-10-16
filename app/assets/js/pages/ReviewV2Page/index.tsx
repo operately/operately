@@ -11,7 +11,7 @@ export default { name: "ReviewV2Page", loader, Page } as PageModule;
 function Page() {
   const { assignments } = Pages.useLoadedData() as LoaderResult;
 
-  return <ReviewPageV2 assignments={assignments} assignmentsCount={assignments.length} />;
+  return <ReviewPageV2 assignments={assignments} assignmentsCount={assignments.length} showUpcomingSection={false} />;
 }
 
 interface LoaderResult {
