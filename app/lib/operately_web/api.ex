@@ -133,7 +133,7 @@ defmodule OperatelyWeb.Api do
     mutation(:join_company_via_invite_link, OperatelyWeb.Api.Invitations.JoinCompanyViaInviteLink)
 
     # internal: managing invite links and invitations
-    mutation(:create_invite_link, OperatelyWeb.Api.Invitations.CreateInviteLink)
+    mutation(:get_company_invite_link, OperatelyWeb.Api.Invitations.GetCompanyInviteLink)
     mutation(:revoke_invite_link, OperatelyWeb.Api.Invitations.RevokeInviteLink)
 
     # single user invitations

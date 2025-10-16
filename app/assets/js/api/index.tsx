@@ -3698,11 +3698,9 @@ export interface GoalsUpdateTargetValueResult {
   success: boolean | null;
 }
 
-export interface InvitationsCreateInviteLinkInput {
-  allowedDomains?: string[] | null;
-}
+export interface InvitationsGetCompanyInviteLinkInput {}
 
-export interface InvitationsCreateInviteLinkResult {
+export interface InvitationsGetCompanyInviteLinkResult {
   inviteLink: InviteLink;
 }
 
@@ -4814,8 +4812,10 @@ class ApiNamespaceInvitations {
     return this.client.get("/invitations/get_invite_link_by_token", input);
   }
 
-  async createInviteLink(input: InvitationsCreateInviteLinkInput): Promise<InvitationsCreateInviteLinkResult> {
-    return this.client.post("/invitations/create_invite_link", input);
+  async getCompanyInviteLink(
+    input: InvitationsGetCompanyInviteLinkInput,
+  ): Promise<InvitationsGetCompanyInviteLinkResult> {
+    return this.client.post("/invitations/get_company_invite_link", input);
   }
 
   async joinCompanyViaInviteLink(
@@ -7370,11 +7370,11 @@ export default {
         defaultApiClient.apiNamespaceInvitations.revokeInviteLink(input),
       ),
 
-    createInviteLink: (input: InvitationsCreateInviteLinkInput) =>
-      defaultApiClient.apiNamespaceInvitations.createInviteLink(input),
-    useCreateInviteLink: () =>
-      useMutation<InvitationsCreateInviteLinkInput, InvitationsCreateInviteLinkResult>((input) =>
-        defaultApiClient.apiNamespaceInvitations.createInviteLink(input),
+    getCompanyInviteLink: (input: InvitationsGetCompanyInviteLinkInput) =>
+      defaultApiClient.apiNamespaceInvitations.getCompanyInviteLink(input),
+    useGetCompanyInviteLink: () =>
+      useMutation<InvitationsGetCompanyInviteLinkInput, InvitationsGetCompanyInviteLinkResult>((input) =>
+        defaultApiClient.apiNamespaceInvitations.getCompanyInviteLink(input),
       ),
 
     joinCompanyViaInviteLink: (input: InvitationsJoinCompanyViaInviteLinkInput) =>

@@ -45,7 +45,7 @@ function useInviteLink(companyId: string): [string, boolean] {
     if (loading) return;
     setLoading(true);
 
-    const response = await Api.invitations.createInviteLink({});
+    const response = await Api.invitations.getCompanyInviteLink({});
     const token = response.inviteLink?.token;
 
     setLink(Companies.createBulkInvitationUrl(token!));

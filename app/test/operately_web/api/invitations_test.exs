@@ -21,9 +21,9 @@ defmodule OperatelyWeb.Api.InvitationsTest do
     end
   end
 
-  describe "create_invite_link" do
+  describe "get_company_invite_link" do
     test "requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, [:invitations, :create_invite_link], %{})
+      assert {401, _} = execute(ctx)
     end
 
     test "returns forbidden when person lacks permission", ctx do
@@ -32,17 +32,33 @@ defmodule OperatelyWeb.Api.InvitationsTest do
         |> Factory.add_company_member(:member)
         |> Factory.log_in_person(:member)
 
-      assert {403, %{message: message}} = mutation(ctx.conn, [:invitations, :create_invite_link], %{})
+      assert {403, %{message: message}} = execute(ctx)
 
       assert message == "You don't have permission to perform this action"
     end
 
-    test "creates and returns invite link for authorized person", ctx do
+    test "if no active invite link exists, creates a new one", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
-      assert {200, %{invite_link: res}} = mutation(ctx.conn, [:invitations, :create_invite_link], %{})
+      assert {200, %{invite_link: res}} = execute(ctx)
 
       {:ok, stored} = InviteLinks.get_invite_link_by_token(res.token)
       assert res == Serializer.serialize(stored, level: :full)
+    end
+
+    test "if an active invite link exists, returns the existing one", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      existing = create_invite_link(ctx)
+
+      assert {200, %{invite_link: res}} = execute(ctx)
+      assert res == Serializer.serialize(existing, level: :full)
+
+      # did not create a new invite link
+      invite_link_count = Repo.aggregate(InviteLinks.InviteLink, :count, :id)
+      assert invite_link_count == 1
+    end
+
+    def execute(ctx) do
+      mutation(ctx.conn, [:invitations, :get_company_invite_link], %{})
     end
   end
 
