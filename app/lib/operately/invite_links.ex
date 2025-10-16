@@ -70,6 +70,10 @@ defmodule Operately.InviteLinks do
     update_invite_link(invite_link, %{is_active: false})
   end
 
+  def activate_invite_link(%InviteLink{} = invite_link) do
+    update_invite_link(invite_link, %{is_active: true})
+  end
+
   def increment_use_count(%InviteLink{} = invite_link) do
     update_invite_link(invite_link, %{use_count: invite_link.use_count + 1})
   end

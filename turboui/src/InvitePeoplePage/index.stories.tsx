@@ -16,7 +16,6 @@ type Story = StoryObj<typeof meta>;
 
 export const LinkDisabled: Story = {
   args: {
-    companyName: "Acme Widgets",
     invitationLink: "https://app.operately.com/invite/acme-widgets",
     inviteIndividuallyHref: "/people/new",
   },
@@ -43,7 +42,6 @@ export const LinkDisabled: Story = {
 
 export const LinkEnabledNoRestrictions: Story = {
   args: {
-    companyName: "Acme Widgets",
     invitationLink: "https://app.operately.com/invite/acme-widgets",
     inviteIndividuallyHref: "/people/new",
   },
@@ -76,7 +74,6 @@ export const LinkEnabledNoRestrictions: Story = {
 
 export const LinkEnabledRestricted: Story = {
   args: {
-    companyName: "Acme Widgets",
     invitationLink: "https://app.operately.com/invite/acme-widgets",
     inviteIndividuallyHref: "/people/new",
   },
