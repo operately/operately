@@ -106,8 +106,7 @@ export function ReviewPageV2(props: ReviewPageV2.Props) {
             <>
               {hasUrgent && <AssignmentGroups groups={urgentGroups} />}
 
-              {/* Disabled temporarily */}
-              {false && (
+              {hasUpcoming && (
                 <Section
                   title="My upcoming work"
                   description="Work assigned to you with future due dates, sorted chronologically."
@@ -193,7 +192,7 @@ function Section({ title, description, infoTooltip, groups, testId }: SectionPro
 
 function CaughtUpState() {
   return (
-    <div className="px-4 py-10">
+    <div className="py-10 flex justify-center">
       <div className="flex max-w-md flex-col items-center gap-4 rounded-xl border border-surface-outline bg-surface-base px-8 py-14 text-center shadow-sm">
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-callout-success-bg">
           <IconSparkles size={20} className="text-callout-success-content" />
