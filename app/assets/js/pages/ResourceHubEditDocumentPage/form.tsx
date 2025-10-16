@@ -8,12 +8,35 @@ import { useFormContext } from "@/components/Forms/FormContext";
 
 import { usePaths } from "@/routes/paths";
 import { areRichTextObjectsEqual } from "turboui";
+import { DimmedSection } from "@/components/PaperContainer";
+import { Options, SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
+import { assertPresent } from "@/utils/assertions";
 
 export function Form({ document }: { document: ResourceHubDocument }) {
   const paths = usePaths();
   const navigate = useNavigate();
   const [edit] = useEditResourceHubDocument();
   const [publish] = usePublishResourceHubDocument();
+
+  const isDraft = document.state === "draft";
+
+  assertPresent(document.potentialSubscribers, "potentialSubscribers must be present in document");
+  assertPresent(document.subscriptionList, "subscriptionList must be present in document");
+  assertPresent(document.resourceHub, "resourceHub must be present in document");
+
+  const subscriptionsState = useSubscriptions(document.potentialSubscribers ?? [], {
+    ignoreMe: true,
+    sendNotificationsToEveryone: document.subscriptionList?.sendToEveryone ?? undefined,
+  });
+
+  const initialSubscriptionsRef = React.useRef<{ subscriptionType: Options; subscriberIds: string[] } | null>(null);
+
+  if (initialSubscriptionsRef.current === null) {
+    initialSubscriptionsRef.current = {
+      subscriptionType: subscriptionsState.subscriptionType,
+      subscriberIds: [...subscriptionsState.currentSubscribersList],
+    };
+  }
 
   const form = Forms.useForm({
     fields: {
@@ -31,20 +54,32 @@ export function Form({ document }: { document: ResourceHubDocument }) {
     cancel: () => navigate(paths.resourceHubDocumentPath(document.id!)),
     submit: async (type: "save" | "publish-draft") => {
       const { title, content } = form.values;
+      const serializedContent = JSON.stringify(content);
+      const subscriptionPayload = {
+        sendNotificationsToEveryone: subscriptionsState.subscriptionType === Options.ALL,
+        subscriberIds: subscriptionsState.currentSubscribersList,
+      };
+      const subscriptionsChanged = hasSubscriptionsChanged(
+        isDraft,
+        initialSubscriptionsRef.current,
+        subscriptionsState,
+      );
 
       if (type === "save") {
-        if (documentHasChanged(document, title, content)) {
+        if (documentHasChanged(document, title, content) || subscriptionsChanged) {
           await edit({
             documentId: document.id,
             name: title,
-            content: JSON.stringify(content),
+            content: serializedContent,
+            ...(isDraft ? subscriptionPayload : {}),
           });
         }
       } else if (type === "publish-draft") {
         await publish({
           documentId: document.id,
           name: title,
-          content: JSON.stringify(content),
+          content: serializedContent,
+          ...(isDraft ? subscriptionPayload : {}),
         });
       }
 
@@ -66,7 +101,15 @@ export function Form({ document }: { document: ResourceHubDocument }) {
         />
       </Forms.FieldGroup>
 
-      <FormActions document={document} />
+      {isDraft ? (
+        <DimmedSection>
+          <SubscribersSelector state={subscriptionsState} resourceHubName={document.resourceHub.name} />
+
+          <FormActions document={document} />
+        </DimmedSection>
+      ) : (
+        <FormActions document={document} />
+      )}
     </Forms.Form>
   );
 }
@@ -100,4 +143,28 @@ function documentHasChanged(document: ResourceHubDocument, name: string, content
   if (document.name !== name) return true;
   if (!areRichTextObjectsEqual(JSON.parse(document.content!), content)) return true;
   return false;
+}
+
+function hasSubscriptionsChanged(
+  isDraft: boolean,
+  initialSubscriptions: { subscriptionType: Options; subscriberIds: string[] } | null,
+  currentState: { subscriptionType: Options; currentSubscribersList: string[] },
+) {
+  if (!isDraft) return false;
+  if (!initialSubscriptions) return false;
+
+  const typeChanged = initialSubscriptions.subscriptionType !== currentState.subscriptionType;
+  const subscribersChanged = !areIdListsEqual(initialSubscriptions.subscriberIds, currentState.currentSubscribersList);
+
+  return typeChanged || subscribersChanged;
+}
+
+function areIdListsEqual(initialIds: string[] | null, currentIds: string[]) {
+  if (!initialIds) return currentIds.length === 0;
+  if (initialIds.length !== currentIds.length) return false;
+
+  const sortedInitial = [...initialIds].sort();
+  const sortedCurrent = [...currentIds].sort();
+
+  return sortedInitial.every((id, index) => id === sortedCurrent[index]);
 }
