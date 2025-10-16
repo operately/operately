@@ -1,0 +1,15 @@
+<%= if @reviewer == nil do %>
+  <%= title("#{short_name(@author)} removed the reviewer on #{@project.name}") %>
+<% else %>
+  <%= if @reviewer.id == @person.id do %>
+    <%= title("#{short_name(@author)} assigned you as the reviewer on #{@project.name}") %>
+  <% else %>
+    <%= title("#{short_name(@author)} assigned #{short_name(@reviewer)} as the reviewer on #{@project.name}") %>
+  <% end %>
+<% end %>
+
+<%= spacer() %>
+
+<%= row do %>
+  <%= cta_button(@cta_url, "View Project") %>
+<% end %>
