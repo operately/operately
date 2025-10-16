@@ -19,7 +19,6 @@ interface Opts {
   notifyPrioritySubscribers?: boolean;
   ignoreMe?: boolean;
   sendNotificationsToEveryone?: boolean;
-  initialSubscriptionType?: Options;
 }
 
 export function useSubscriptions(allSubscribers: Subscriber[], opts?: Opts): SubscriptionsState {
@@ -80,8 +79,6 @@ function determineInitialSubscriptionType(
   selectedSubscribers: Subscriber[],
   alwaysNotify: Subscriber[],
 ): Options {
-  if (opts?.initialSubscriptionType) return opts.initialSubscriptionType;
-
   if (opts?.sendNotificationsToEveryone === true) {
     return Options.ALL;
   }

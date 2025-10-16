@@ -1540,15 +1540,15 @@ export interface ResourceHub {
 }
 
 export interface ResourceHubDocument {
-  id?: string | null;
+  id: string;
   author?: Person | null;
-  resourceHubId?: string | null;
+  resourceHubId: string;
   resourceHub?: ResourceHub | null;
   parentFolder?: ResourceHubFolder | null;
-  parentFolderId?: string | null;
-  name?: string | null;
-  content?: string | null;
-  state?: string | null;
+  parentFolderId: string;
+  name: string;
+  content: string;
+  state: string;
   insertedAt?: string | null;
   updatedAt?: string | null;
   permissions?: ResourceHubPermissions | null;
@@ -3451,9 +3451,9 @@ export interface EditProjectRetrospectiveResult {
 }
 
 export interface EditResourceHubDocumentInput {
-  documentId?: Id | null;
-  name?: string | null;
-  content?: string | null;
+  documentId: Id;
+  name: string;
+  content: Json;
   sendNotificationsToEveryone?: boolean | null;
   subscriberIds?: Id[] | null;
 }

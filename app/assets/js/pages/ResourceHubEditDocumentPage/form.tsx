@@ -9,7 +9,6 @@ import { useFormContext } from "@/components/Forms/FormContext";
 import { usePaths } from "@/routes/paths";
 import { areRichTextObjectsEqual } from "turboui";
 import { DimmedSection } from "@/components/PaperContainer";
-import { Spacer } from "@/components/Spacer";
 import { Options, SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
 import { assertPresent } from "@/utils/assertions";
 
@@ -21,26 +20,22 @@ export function Form({ document }: { document: ResourceHubDocument }) {
 
   const isDraft = document.state === "draft";
 
-  if (isDraft) {
-    assertPresent(document.potentialSubscribers, "potentialSubscribers must be present in document");
-    assertPresent(document.subscriptionList, "subscriptionList must be present in document");
-    assertPresent(document.resourceHub, "resourceHub must be present in document");
-  }
+  assertPresent(document.potentialSubscribers, "potentialSubscribers must be present in document");
+  assertPresent(document.subscriptionList, "subscriptionList must be present in document");
+  assertPresent(document.resourceHub, "resourceHub must be present in document");
 
   const subscriptionsState = useSubscriptions(document.potentialSubscribers ?? [], {
     ignoreMe: true,
     sendNotificationsToEveryone: document.subscriptionList?.sendToEveryone ?? undefined,
   });
 
-  const initialSubscriptionTypeRef = React.useRef<Options | null>(null);
-  const initialSubscriberIdsRef = React.useRef<string[] | null>(null);
+  const initialSubscriptionsRef = React.useRef<{ subscriptionType: Options; subscriberIds: string[] } | null>(null);
 
-  if (initialSubscriptionTypeRef.current === null) {
-    initialSubscriptionTypeRef.current = subscriptionsState.subscriptionType;
-  }
-
-  if (initialSubscriberIdsRef.current === null) {
-    initialSubscriberIdsRef.current = [...subscriptionsState.currentSubscribersList];
+  if (initialSubscriptionsRef.current === null) {
+    initialSubscriptionsRef.current = {
+      subscriptionType: subscriptionsState.subscriptionType,
+      subscriberIds: [...subscriptionsState.currentSubscribersList],
+    };
   }
 
   const form = Forms.useForm({
@@ -60,16 +55,15 @@ export function Form({ document }: { document: ResourceHubDocument }) {
     submit: async (type: "save" | "publish-draft") => {
       const { title, content } = form.values;
       const serializedContent = JSON.stringify(content);
-      const subscriptionPayload = isDraft
-        ? {
-            sendNotificationsToEveryone: subscriptionsState.subscriptionType === Options.ALL,
-            subscriberIds: subscriptionsState.currentSubscribersList,
-          }
-        : null;
-      const subscriptionsChanged =
-        isDraft &&
-        (initialSubscriptionTypeRef.current !== subscriptionsState.subscriptionType ||
-          !areIdListsEqual(initialSubscriberIdsRef.current, subscriptionsState.currentSubscribersList));
+      const subscriptionPayload = {
+        sendNotificationsToEveryone: subscriptionsState.subscriptionType === Options.ALL,
+        subscriberIds: subscriptionsState.currentSubscribersList,
+      };
+      const subscriptionsChanged = hasSubscriptionsChanged(
+        isDraft,
+        initialSubscriptionsRef.current,
+        subscriptionsState,
+      );
 
       if (type === "save") {
         if (documentHasChanged(document, title, content) || subscriptionsChanged) {
@@ -77,7 +71,7 @@ export function Form({ document }: { document: ResourceHubDocument }) {
             documentId: document.id,
             name: title,
             content: serializedContent,
-            ...(subscriptionPayload ? subscriptionPayload : {}),
+            ...(isDraft ? subscriptionPayload : {}),
           });
         }
       } else if (type === "publish-draft") {
@@ -85,7 +79,7 @@ export function Form({ document }: { document: ResourceHubDocument }) {
           documentId: document.id,
           name: title,
           content: serializedContent,
-          ...(subscriptionPayload ? subscriptionPayload : {}),
+          ...(isDraft ? subscriptionPayload : {}),
         });
       }
 
@@ -109,8 +103,7 @@ export function Form({ document }: { document: ResourceHubDocument }) {
 
       {isDraft ? (
         <DimmedSection>
-          <Spacer size={4} />
-          <SubscribersSelector state={subscriptionsState} resourceHubName={document.resourceHub!.name!} />
+          <SubscribersSelector state={subscriptionsState} resourceHubName={document.resourceHub.name} />
 
           <FormActions document={document} />
         </DimmedSection>
@@ -150,6 +143,20 @@ function documentHasChanged(document: ResourceHubDocument, name: string, content
   if (document.name !== name) return true;
   if (!areRichTextObjectsEqual(JSON.parse(document.content!), content)) return true;
   return false;
+}
+
+function hasSubscriptionsChanged(
+  isDraft: boolean,
+  initialSubscriptions: { subscriptionType: Options; subscriberIds: string[] } | null,
+  currentState: { subscriptionType: Options; currentSubscribersList: string[] },
+) {
+  if (!isDraft) return false;
+  if (!initialSubscriptions) return false;
+
+  const typeChanged = initialSubscriptions.subscriptionType !== currentState.subscriptionType;
+  const subscribersChanged = !areIdListsEqual(initialSubscriptions.subscriberIds, currentState.currentSubscribersList);
+
+  return typeChanged || subscribersChanged;
 }
 
 function areIdListsEqual(initialIds: string[] | null, currentIds: string[]) {
