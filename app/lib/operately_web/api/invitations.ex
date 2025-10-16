@@ -22,7 +22,7 @@ defmodule OperatelyWeb.Api.Invitations do
     end
   end
 
-  defmodule CreateInviteLink do
+  defmodule GetCompanyInviteLink do
     use TurboConnect.Mutation
 
     alias OperatelyWeb.Api.Serializer
@@ -31,20 +31,16 @@ defmodule OperatelyWeb.Api.Invitations do
 
     require Logger
 
-    inputs do
-      field?(:allowed_domains, list_of(:string), null: true)
-    end
-
     outputs do
       field(:invite_link, :invite_link)
     end
 
-    def call(conn, inputs) do
+    def call(conn, _inputs) do
       conn
       |> start_transaction()
       |> load_company(conn)
       |> check_permissions()
-      |> create_invite_link(inputs)
+      |> fetch_or_create_invite_link()
       |> commit()
       |> respond()
     end
@@ -65,12 +61,12 @@ defmodule OperatelyWeb.Api.Invitations do
       end)
     end
 
-    defp create_invite_link(multi, inputs) do
+    defp fetch_or_create_invite_link(multi) do
       Ecto.Multi.run(multi, :invite_link, fn _, %{me: me, company: company} ->
-        InviteLinks.create_invite_link(%{
+        InviteLinks.fetch_or_create_invite_link(%{
           company_id: company.id,
           author_id: me.id,
-          allowed_domains: inputs[:allowed_domains] || []
+          allowed_domains: []
         })
       end)
     end
