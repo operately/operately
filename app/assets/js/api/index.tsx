@@ -1529,8 +1529,8 @@ export interface Reaction {
 }
 
 export interface ResourceHub {
-  id?: string | null;
-  name?: string | null;
+  id: string;
+  name: string;
   description?: string | null;
   space?: Space | null;
   nodes?: ResourceHubNode[] | null;
@@ -1541,15 +1541,15 @@ export interface ResourceHub {
 }
 
 export interface ResourceHubDocument {
-  id?: string | null;
+  id: string;
   author?: Person | null;
-  resourceHubId?: string | null;
+  resourceHubId: string;
   resourceHub?: ResourceHub | null;
   parentFolder?: ResourceHubFolder | null;
-  parentFolderId?: string | null;
-  name?: string | null;
-  content?: string | null;
-  state?: string | null;
+  parentFolderId: string;
+  name: string;
+  content: string;
+  state: string;
   insertedAt?: string | null;
   updatedAt?: string | null;
   permissions?: ResourceHubPermissions | null;
@@ -3446,9 +3446,11 @@ export interface EditProjectRetrospectiveResult {
 }
 
 export interface EditResourceHubDocumentInput {
-  documentId?: Id | null;
-  name?: string | null;
-  content?: string | null;
+  documentId: Id;
+  name: string;
+  content: Json;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
 }
 
 export interface EditResourceHubDocumentResult {
@@ -4064,9 +4066,11 @@ export interface PublishDiscussionResult {
 }
 
 export interface PublishResourceHubDocumentInput {
-  documentId?: Id | null;
+  documentId: Id;
   name?: string | null;
-  content?: string | null;
+  content?: Json | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
 }
 
 export interface PublishResourceHubDocumentResult {

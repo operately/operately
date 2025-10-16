@@ -189,6 +189,19 @@ defmodule Operately.Features.ResourceHubDocumentTest do
       |> Steps.assert_document_present_in_files_list(new_doc.name)
     end
 
+    feature "Edit subscriptions when publishing draft", ctx do
+      ctx
+      |> Steps.given_members_exist()
+      |> Steps.given_a_single_draft_document_exists()
+      |> Steps.visit_resource_hub_page("Resource hub")
+      |> Steps.assert_draft_document_not_visible_and_state_is_zero()
+      |> Steps.visit_document_page()
+      |> Steps.click_continue_editing()
+      |> Steps.select_people_to_notify()
+      |> Steps.click_publish_now()
+      |> Steps.assert_subscribers()
+    end
+
     feature "Feed event is created only when draft is published", ctx do
       ctx
       |> Steps.visit_resource_hub_page()

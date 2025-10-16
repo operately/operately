@@ -24,7 +24,7 @@ export function CopyResourceMenuItem({ resource, showModal }: Props) {
 
 interface FormProps {
   form: FormState<any>;
-  resource: Hub.ResourceHubDocument;
+  resource: Hub.ResourceHubDocument | Hub.ResourceHubFolder;
   isOpen: boolean;
   hideModal: () => void;
 }

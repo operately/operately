@@ -47,6 +47,14 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     |> Factory.add_document(:document, :hub, state: :draft)
   end
 
+  step :given_members_exist, ctx do
+    ctx
+    |> Factory.add_space_member(:bob, :space)
+    |> Factory.add_space_member(:fred, :space)
+    |> Factory.add_space_member(:jane, :space)
+    |> Factory.add_space_member(:john, :space)
+  end
+
   step :given_several_draft_documents_exist, ctx do
     ctx
     |> Factory.add_resource_hub(:hub, :space, :creator)
@@ -113,6 +121,36 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     |> UI.fill_rich_text(attrs.content)
     |> UI.click(testid: "publish-draft")
     |> UI.refute_has(testid: "publish-draft")
+  end
+
+  step :click_continue_editing, ctx do
+    ctx
+    |> UI.click(testid: "continue-editing")
+    |> UI.assert_page(Paths.edit_document_path(ctx.company, ctx.document))
+  end
+
+  step :select_people_to_notify, ctx do
+    ctx
+    |> UI.click(testid: "subscribe-specific-people")
+    |> UI.click(testid: "person-option-#{Paths.person_id(ctx.bob)}")
+    |> UI.click(testid: "person-option-#{Paths.person_id(ctx.john)}")
+    |> UI.find(UI.query(testid: "subscribers-selection-modal"), fn el ->
+      el
+      |> UI.click(testid: "submit")
+    end)
+  end
+
+  step :click_publish_now, ctx do
+    ctx
+    |> UI.click_button("Publish Now")
+  end
+
+  step :assert_subscribers, ctx do
+    ctx
+    |> UI.assert_has(testid: UI.testid(["subscriber", Paths.person_id(ctx.bob)]))
+    |> UI.assert_has(testid: UI.testid(["subscriber", Paths.person_id(ctx.john)]))
+    |> UI.refute_has(testid: UI.testid(["subscriber", Paths.person_id(ctx.jane)]))
+    |> UI.refute_has(testid: UI.testid(["subscriber", Paths.person_id(ctx.fred)]))
   end
 
   step :edit_document, ctx, attrs do

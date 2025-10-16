@@ -7,6 +7,7 @@ import { EditSubscriptionsModal } from "./EditSubscriptionsModal";
 import { useCurrentSubscriptionsContext } from "../CurrentSubscriptions";
 import { SecondaryButton } from "turboui";
 import { sortSubscribersByName } from "@/features/Subscriptions";
+import { createTestId } from "@/utils/testid";
 
 export function ExistingSubscriptionsList() {
   const { potentialSubscribers, name } = useCurrentSubscriptionsContext();
@@ -23,8 +24,8 @@ export function ExistingSubscriptionsList() {
       <div className="font-bold text-sm sm:text-[16px]">Subscribers</div>
       <div className="text-xs sm:text-sm mt-1">{label}</div>
       <div className="flex items-center gap-1 mt-2 flex-wrap gap-y-2">
-        {subscribers.map((s) => (
-          <Avatar person={s.person!} size="tiny" key={s.person!.id} />
+        {subscribers.filter((s) => s.person).map((s) => (
+          <Avatar person={s.person!} size="tiny" key={s.person!.id} testId={createTestId("subscriber", s.person!.id)}  />
         ))}
         <SecondaryButton onClick={() => setIsModalOpen(true)} size="xs" testId="add-remove-subscribers">
           Add/remove people...
