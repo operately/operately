@@ -32,6 +32,13 @@ defmodule Operately.InviteLinks do
     end
   end
 
+  def fetch_or_create_invite_link(attrs) do
+    case Repo.get_by(InviteLink, company_id: attrs.company_id) do
+      nil -> create_invite_link(attrs)
+      invite_link -> {:ok, invite_link}
+    end
+  end
+
   def create_invite_link(attrs \\ %{}) do
     token = InviteLink.build_token()
 
