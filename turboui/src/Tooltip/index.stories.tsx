@@ -74,7 +74,7 @@ export const InfoIconTrigger: Story = {
   render: (args) => (
     <div className="flex items-center gap-2 text-sm text-content-base">
       <span>Automated reminders</span>
-      <Tooltip {...args}>
+      <Tooltip content={args.content} delayDuration={args.delayDuration}>
         <button
           type="button"
           aria-label="Show automated reminders info"
