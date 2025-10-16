@@ -1047,15 +1047,15 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :resource_hub_document do
-    field? :id, :string, null: true
+    field :id, :string, null: false
     field? :author, :person, null: true
-    field? :resource_hub_id, :string, null: true
+    field :resource_hub_id, :string, null: false
     field? :resource_hub, :resource_hub, null: true
     field? :parent_folder, :resource_hub_folder, null: true
-    field? :parent_folder_id, :string, null: true
-    field? :name, :string, null: true
-    field? :content, :string, null: true
-    field? :state, :string, null: true
+    field :parent_folder_id, :string, null: false
+    field :name, :string, null: false
+    field :content, :string, null: false
+    field :state, :string, null: false
     field? :inserted_at, :string, null: true
     field? :updated_at, :date, null: true
     field? :permissions, :resource_hub_permissions, null: true

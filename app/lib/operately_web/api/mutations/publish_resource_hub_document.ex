@@ -8,7 +8,7 @@ defmodule OperatelyWeb.Api.Mutations.PublishResourceHubDocument do
   inputs do
     field :document_id, :id, null: false
     field :name, :string, null: false
-    field :content, :json, null: false
+    field? :content, :json, null: true
     field? :send_notifications_to_everyone, :boolean, null: true
     field? :subscriber_ids, list_of(:id), null: true
   end
