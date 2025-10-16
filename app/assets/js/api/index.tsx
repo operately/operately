@@ -1293,6 +1293,7 @@ export interface InviteLink {
   useCount?: number | null;
   isActive?: boolean | null;
   insertedAt?: string | null;
+  allowedDomains?: string[] | null;
 }
 
 export interface MessagesBoard {
@@ -3705,7 +3706,9 @@ export interface GoalsUpdateTargetValueResult {
   success: boolean | null;
 }
 
-export interface InvitationsCreateInviteLinkInput {}
+export interface InvitationsCreateInviteLinkInput {
+  allowedDomains?: string[] | null;
+}
 
 export interface InvitationsCreateInviteLinkResult {
   inviteLink: InviteLink;
