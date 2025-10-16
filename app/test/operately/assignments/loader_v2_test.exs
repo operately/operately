@@ -273,7 +273,7 @@ defmodule Operately.Assignments.LoaderV2Test do
       assert t1.name == "Task 1"
       assert t1.role == :owner
       assert t1.task_status == :todo
-      assert t1.action_label == "Complete Task 1"
+      assert t1.action_label == "Task 1"
       assert t1.origin.name == ctx.project.name
 
       assert t2.resource_id == Paths.task_id(ctx.task2)
@@ -354,7 +354,7 @@ defmodule Operately.Assignments.LoaderV2Test do
 
       Enum.each(milestone_assignments, fn assignment ->
         assert assignment.role == :owner
-        assert assignment.action_label == "Complete #{assignment.name}"
+        assert assignment.action_label == assignment.name
         assert assignment.origin.name == ctx.project.name
       end)
     end
