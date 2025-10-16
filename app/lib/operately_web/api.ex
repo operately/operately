@@ -130,7 +130,6 @@ defmodule OperatelyWeb.Api do
   namespace(:invitations) do
     # bulk invitations
     query(:get_invite_link, OperatelyWeb.Api.Invitations.GetInviteLink)
-    query(:list_invite_links, OperatelyWeb.Api.Invitations.ListInviteLinks)
 
     mutation(:create_invite_link, OperatelyWeb.Api.Invitations.CreateInviteLink)
     mutation(:revoke_invite_link, OperatelyWeb.Api.Invitations.RevokeInviteLink)
