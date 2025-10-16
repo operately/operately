@@ -22,6 +22,7 @@ export namespace InvitePeoplePage {
     linkEnabled?: boolean;
     onToggleLink?: (enabled: boolean) => void;
     domainRestriction?: DomainRestrictionControls;
+    errorMessage?: string;
     testId?: string;
   }
 
@@ -127,6 +128,15 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
           <h1 className="text-3xl font-semibold">Bring your team on board</h1>
         </header>
 
+        {props.errorMessage ? (
+          <div
+            className="mt-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600"
+            data-test-id="invite-people-error"
+          >
+            {props.errorMessage}
+          </div>
+        ) : null}
+
         <div className="mt-8 space-y-8">
           <section className="rounded-2xl border border-surface-outline bg-surface-base p-8 shadow-lg">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -201,8 +211,13 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
               )}
             </div>
 
-            {linkEnabled && props.domainRestriction ? (
-              <div className="mt-6 space-y-3">
+            {props.domainRestriction ? (
+              <div
+                className={classNames(
+                  "mt-6 space-y-3",
+                  !linkEnabled && "opacity-90",
+                )}
+              >
                 <p className="text-sm font-medium text-content-strong">Who can join?</p>
 
                 <div className="space-y-1" data-test-id={domainTestId}>
@@ -220,6 +235,7 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
                       onChange={() => handleDomainToggle(false)}
                       disabled={!props.domainRestriction.onToggle}
                       className="h-4 w-4 border-surface-outline text-brand-1 focus:ring-brand-1"
+                      data-test-id={`${domainTestId}-anyone`}
                     />
                     <span>Anyone with the link</span>
                   </label>
@@ -239,8 +255,11 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
                         onChange={() => handleDomainToggle(true)}
                         disabled={!props.domainRestriction.onToggle}
                         className="h-4 w-4 border-surface-outline text-brand-1 focus:ring-brand-1"
+                        data-test-id={`${domainTestId}-restricted`}
                       />
-                      <span>{props.domainRestriction.label ?? "Trusted email domains only"}</span>
+                      <span data-test-id={`${domainTestId}-label`}>
+                        {props.domainRestriction.label ?? "Trusted email domains only"}
+                      </span>
                     </label>
 
                     {props.domainRestriction.enabled && (
@@ -263,7 +282,9 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
                   </div>
                 </div>
               </div>
-            ) : linkEnabled ? (
+            ) : null}
+
+            {linkEnabled && (!props.domainRestriction || !props.domainRestriction.enabled) ? (
               <p className="mt-8 text-sm text-content-dimmed">Anyone with this link can join {props.companyName}.</p>
             ) : null}
           </section>

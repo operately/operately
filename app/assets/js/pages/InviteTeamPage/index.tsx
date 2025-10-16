@@ -26,6 +26,7 @@ function Page() {
   const [initializing, setInitializing] = React.useState(true);
   const [toggleLoading, setToggleLoading] = React.useState(false);
   const [resettingLink, setResettingLink] = React.useState(false);
+  const [pageError, setPageError] = React.useState<string | null>(null);
   const [domainState, setDomainState] = React.useState<{
     enabled: boolean;
     value: string;
@@ -77,6 +78,7 @@ function Page() {
         setInviteLink(activeLink ?? null);
         setLinkEnabled(Boolean(activeLink?.isActive));
         syncDomainStateFromLink(activeLink ?? null);
+        setPageError(null);
       } catch (error) {
         if (!cancelled) {
           reportError("Failed to load the invite link. Please try again.", error);
@@ -154,15 +156,28 @@ function Page() {
       setInviteLink(response.inviteLink);
       setLinkEnabled(true);
       syncDomainStateFromLink(response.inviteLink);
+      setPageError(null);
     },
     [syncDomainStateFromLink],
   );
 
+<<<<<<< HEAD
   const revokeInviteLink = React.useCallback(async (link: InviteLinkType | null) => {
     if (!link?.id) return;
     const response = await Api.invitations.revokeInviteLink({ inviteLinkId: link.id });
     setInviteLink(response.inviteLink ?? null);
   }, []);
+=======
+  const revokeInviteLink = React.useCallback(
+    async (link: InviteLinkType | null) => {
+      if (!link?.id) return;
+      const response = await Api.invitations.revokeInviteLink({ inviteLinkId: link.id });
+      setInviteLink(response.inviteLink ?? null);
+      setPageError(null);
+    },
+    [],
+  );
+>>>>>>> e3eff4247 (Feature tests)
 
   const handleToggleLink = React.useCallback(
     async (enabled: boolean) => {
@@ -230,6 +245,7 @@ function Page() {
     try {
       await revokeInviteLink(inviteLink);
       await createInviteLink(allowedDomains);
+      setPageError(null);
     } catch (error) {
       reportError("Failed to generate a new invite link. Please try again.", error);
     } finally {
@@ -279,6 +295,7 @@ function Page() {
       domainRestriction={domainRestriction}
       inviteIndividuallyHref={paths.companyManagePeopleAddPeoplePath()}
       testId="invite-team-page"
+      errorMessage={pageError ?? undefined}
     />
   );
 }
