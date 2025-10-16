@@ -133,7 +133,7 @@ export namespace ProjectPage {
     onTaskMilestoneChange?: (taskId: string, milestoneId: string, index: number) => void;
     onMilestoneCreate: (milestone: NewMilestonePayload) => void;
     onMilestoneUpdate: (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => void;
-    onMilestoneReorder?: (sourceId: string, destinationIndex: number) => Promise<void>;
+    onMilestoneReorder: (sourceId: string, destinationIndex: number) => Promise<void>;
     searchPeople: SearchFn;
     filters?: TaskBoardTypes.FilterCondition[];
     onFiltersChange?: (filters: TaskBoardTypes.FilterCondition[]) => void;
