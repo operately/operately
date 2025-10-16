@@ -6,9 +6,11 @@ defmodule OperatelyWeb.Api.Mutations.PublishResourceHubDocument do
   alias Operately.Operations.ResourceHubDocumentPublishing
 
   inputs do
-    field? :document_id, :id, null: true
-    field? :name, :string, null: true
-    field? :content, :string, null: true
+    field :document_id, :id, null: false
+    field :name, :string, null: false
+    field :content, :json, null: false
+    field? :send_notifications_to_everyone, :boolean, null: true
+    field? :subscriber_ids, list_of(:id), null: true
   end
 
   outputs do
@@ -18,10 +20,9 @@ defmodule OperatelyWeb.Api.Mutations.PublishResourceHubDocument do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:attrs, fn -> parse_attrs(inputs) end)
     |> run(:document, fn ctx -> load(ctx.me, inputs.document_id) end)
     |> run(:permissions, fn ctx -> authorize(ctx.me, ctx.document) end)
-    |> run(:operation, fn ctx -> ResourceHubDocumentPublishing.run(ctx.me, ctx.document, ctx.attrs) end)
+    |> run(:operation, fn ctx -> ResourceHubDocumentPublishing.run(ctx.me, ctx.document, inputs) end)
     |> run(:serialized, fn ctx -> {:ok, %{document: Serializer.serialize(ctx.operation)}} end)
     |> respond()
   end
@@ -34,15 +35,6 @@ defmodule OperatelyWeb.Api.Mutations.PublishResourceHubDocument do
       {:error, :permissions, _} -> {:error, :forbidden}
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
-    end
-  end
-
-  defp parse_attrs(inputs) do
-    if inputs[:content] do
-      content = Jason.decode!(inputs.content)
-      {:ok, Map.put(inputs, :content, content)}
-    else
-      {:ok, inputs}
     end
   end
 

@@ -1000,8 +1000,8 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :resource_hub do
-    field? :id, :string, null: true
-    field? :name, :string, null: true
+    field :id, :string, null: false
+    field :name, :string, null: false
     field? :description, :string, null: true
     field? :space, :space, null: true
     field? :nodes, list_of(:resource_hub_node), null: true

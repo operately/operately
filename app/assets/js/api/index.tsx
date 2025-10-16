@@ -1529,8 +1529,8 @@ export interface Reaction {
 }
 
 export interface ResourceHub {
-  id?: string | null;
-  name?: string | null;
+  id: string;
+  name: string;
   description?: string | null;
   space?: Space | null;
   nodes?: ResourceHubNode[] | null;
@@ -3449,6 +3449,8 @@ export interface EditResourceHubDocumentInput {
   documentId?: Id | null;
   name?: string | null;
   content?: string | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
 }
 
 export interface EditResourceHubDocumentResult {
@@ -4064,9 +4066,11 @@ export interface PublishDiscussionResult {
 }
 
 export interface PublishResourceHubDocumentInput {
-  documentId?: Id | null;
-  name?: string | null;
-  content?: string | null;
+  documentId: Id;
+  name: string;
+  content: Json;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
 }
 
 export interface PublishResourceHubDocumentResult {
