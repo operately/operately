@@ -106,7 +106,8 @@ export function ReviewPageV2(props: ReviewPageV2.Props) {
             <>
               {hasUrgent && <AssignmentGroups groups={urgentGroups} />}
 
-              {hasUpcoming && (
+              {/* Disabled temporarily */}
+              {false && (
                 <Section
                   title="My upcoming work"
                   description="Work assigned to you with future due dates, sorted chronologically."
