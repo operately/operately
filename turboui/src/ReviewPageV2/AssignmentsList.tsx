@@ -52,18 +52,20 @@ function GroupHeader({ origin, relationship }: { origin: ReviewPageV2.Assignment
   const Icon = ORIGIN_ICON[origin.type];
 
   return (
-    <div className="flex flex-wrap items-center gap-2 mb-1">
+    <div className="flex flex-wrap items-center gap-2 mb-1.5">
       <BlackLink
         to={origin.path}
         underline="hover"
         testId={createTestId("origin", origin.id)}
-        className="font-medium flex items-center gap-2"
+        className="font-medium flex items-center gap-2 leading-tight"
       >
         <Icon size={16} />
         <span>{origin.name}</span>
       </BlackLink>
       {relationship ? (
-        <span className="text-[10px] font-semibold tracking-wide uppercase text-content-dimmed">{relationship}</span>
+        <span className="text-[10px] font-semibold tracking-wide uppercase text-content-dimmed leading-none relative top-px">
+          {relationship}
+        </span>
       ) : null}
     </div>
   );
