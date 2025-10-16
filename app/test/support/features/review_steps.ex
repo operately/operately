@@ -30,21 +30,8 @@ defmodule Operately.Support.Features.ReviewSteps do
 
   step :assert_zero_state_message, ctx, :v2 do
     ctx
-    |> UI.find([testid: "due-soon-section"], fn el ->
-      el
-      |> UI.assert_text("No urgent work")
-      |> UI.assert_text("You're all caught up on immediate priorities.")
-    end)
-    |> UI.find([testid: "needs-review-section"], fn el ->
-      el
-      |> UI.assert_text("Nothing to review")
-      |> UI.assert_text("No check-ins or updates need your review.")
-    end)
-    |> UI.find([testid: "upcoming-section"], fn el ->
-      el
-      |> UI.assert_text("No upcoming work")
-      |> UI.assert_text("Nothing else is scheduled for you yet.")
-    end)
+    |> UI.assert_text("You're all caught up")
+    |> UI.assert_text("No assignments, check-ins, milestones, or reviews need your attention right now.")
   end
 
   #
@@ -69,12 +56,9 @@ defmodule Operately.Support.Features.ReviewSteps do
 
   step :assert_the_due_project_is_listed, ctx, :v2 do
     ctx
-    |> UI.find([testid: "due-soon-section"], fn el ->
-      el
-      |> UI.assert_text(ctx.project.name)
-      |> UI.assert_text("Submit weekly check-in")
-      |> UI.assert_text("3 days overdue")
-    end)
+    |> UI.assert_text(ctx.project.name)
+    |> UI.assert_text("Submit weekly check-in")
+    |> UI.assert_text("3 days overdue")
   end
 
   step :when_a_project_check_in_is_submitted, ctx do
@@ -98,9 +82,6 @@ defmodule Operately.Support.Features.ReviewSteps do
     ctx
     |> UI.visit(Paths.review_path(ctx.company))
     |> UI.refute_text(ctx.project.name)
-    |> UI.find([testid: "due-soon-section"], fn el ->
-      UI.assert_text(el, "No urgent work")
-    end)
   end
 
   #
@@ -125,12 +106,9 @@ defmodule Operately.Support.Features.ReviewSteps do
 
   step :assert_the_due_milestone_is_listed, ctx do
     ctx
-    |> UI.find([testid: "due-soon-section"], fn el ->
-      el
-      |> UI.assert_text(ctx.project.name)
-      |> UI.assert_text("Complete Important Work")
-      |> UI.assert_text("3 days overdue")
-    end)
+    |> UI.assert_text(ctx.project.name)
+    |> UI.assert_text("Important Work")
+    |> UI.assert_text("3 days overdue")
   end
 
   step :when_a_milestone_is_marked_as_completed, ctx do
@@ -140,16 +118,14 @@ defmodule Operately.Support.Features.ReviewSteps do
     |> UI.find([testid: "sidebar-status"], fn el ->
       UI.assert_text(el, "Completed")
     end)
+    |> UI.sleep(300)
   end
 
   step :assert_completed_milestone_is_no_longer_displayed, ctx do
     ctx
     |> UI.visit(Paths.review_path(ctx.company))
     |> UI.refute_text(ctx.project.name)
-    |> UI.refute_text("Complete Important Work")
-    |> UI.find([testid: "due-soon-section"], fn el ->
-      UI.assert_text(el, "No urgent work")
-    end)
+    |> UI.refute_text("Important Work")
   end
 
   step :create_milestone, ctx, date \\ nil do
@@ -231,12 +207,9 @@ defmodule Operately.Support.Features.ReviewSteps do
 
   step :assert_due_task_is_listed, ctx do
     ctx
-    |> UI.find([testid: "due-soon-section"], fn el ->
-      el
-      |> UI.assert_text(ctx.project.name)
-      |> UI.assert_text("Complete Urgent Feature")
-      |> UI.assert_text("3 days overdue")
-    end)
+    |> UI.assert_text(ctx.project.name)
+    |> UI.assert_text("Urgent Feature")
+    |> UI.assert_text("3 days overdue")
   end
 
   step :when_task_is_marked_as_completed, ctx do
@@ -250,11 +223,7 @@ defmodule Operately.Support.Features.ReviewSteps do
   step :assert_completed_task_is_no_longer_displayed, ctx do
     ctx
     |> UI.visit(Paths.review_path(ctx.company))
-    |> UI.refute_text("Complete Urgent Feature")
-    |> UI.find([testid: "due-soon-section"], fn el ->
-      el
-      |> UI.assert_text("No urgent work")
-    end)
+    |> UI.refute_text("Urgent Feature")
   end
 
   step :create_task, ctx, date \\ nil do
@@ -343,12 +312,9 @@ defmodule Operately.Support.Features.ReviewSteps do
 
   step :assert_the_due_goal_is_listed, ctx, :v2 do
     ctx
-    |> UI.find([testid: "due-soon-section"], fn el ->
-      el
-      |> UI.assert_text(ctx.goal.name)
-      |> UI.assert_text("Submit goal progress update")
-      |> UI.assert_text("3 days overdue")
-    end)
+    |> UI.assert_text(ctx.goal.name)
+    |> UI.assert_text("Submit goal progress update")
+    |> UI.assert_text("3 days overdue")
   end
 
   step :when_a_goal_update_is_submitted, ctx do
@@ -372,9 +338,6 @@ defmodule Operately.Support.Features.ReviewSteps do
     ctx
     |> UI.visit(Paths.review_path(ctx.company))
     |> UI.refute_text(ctx.goal.name)
-    |> UI.find([testid: "due-soon-section"], fn el ->
-      UI.assert_text(el, "No urgent work")
-    end)
   end
 
   #
@@ -399,12 +362,9 @@ defmodule Operately.Support.Features.ReviewSteps do
 
   step :assert_due_project_check_in_review_is_listed, ctx do
     ctx
-    |> UI.find([testid: "needs-review-section"], fn el ->
-      el
-      |> UI.assert_text(ctx.project.name)
-      |> UI.assert_text("Review weekly check-in")
-      |> UI.assert_text("Due today")
-    end)
+    |> UI.assert_text(ctx.project.name)
+    |> UI.assert_text("Review weekly check-in")
+    |> UI.assert_text("Due today")
   end
 
   step :when_a_project_check_in_is_acknowledged, ctx do
@@ -425,9 +385,6 @@ defmodule Operately.Support.Features.ReviewSteps do
     ctx
     |> UI.visit(Paths.review_path(ctx.company))
     |> UI.refute_text(ctx.project.name)
-    |> UI.find([testid: "needs-review-section"], fn el ->
-      UI.assert_text(el, "Nothing to review")
-    end)
   end
 
   #
@@ -452,12 +409,9 @@ defmodule Operately.Support.Features.ReviewSteps do
 
   step :assert_due_goal_check_in_review_is_listed, ctx do
     ctx
-    |> UI.find([testid: "needs-review-section"], fn el ->
-      el
-      |> UI.assert_text(ctx.goal.name)
-      |> UI.assert_text("Review goal progress update")
-      |> UI.assert_text("Due today")
-    end)
+    |> UI.assert_text(ctx.goal.name)
+    |> UI.assert_text("Review goal progress update")
+    |> UI.assert_text("Due today")
   end
 
   step :when_a_goal_update_is_acknowledged, ctx do
@@ -478,9 +432,10 @@ defmodule Operately.Support.Features.ReviewSteps do
     ctx
     |> UI.visit(Paths.review_path(ctx.company))
     |> UI.refute_text(ctx.goal.name)
-    |> UI.find([testid: "needs-review-section"], fn el ->
-      UI.assert_text(el, "Nothing to review")
-    end)
+  end
+
+  step :assert_all_catch_up, ctx do
+    UI.assert_text(ctx, "You're all caught up")
   end
 
   #
@@ -517,9 +472,6 @@ defmodule Operately.Support.Features.ReviewSteps do
     ctx
     |> UI.visit(Paths.review_path(ctx.company))
     |> UI.refute_text(ctx.project.name)
-    |> UI.find([testid: "due-soon-section"], fn el ->
-      UI.assert_text(el, "No urgent work")
-    end)
   end
 
   #

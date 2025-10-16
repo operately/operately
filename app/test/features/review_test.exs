@@ -107,6 +107,7 @@ defmodule Operately.Features.ReviewTest do
       |> Steps.assert_the_due_project_is_listed(:v2)
       |> Steps.when_a_project_check_in_is_submitted()
       |> Steps.assert_the_checked_in_project_is_no_longer_displayed(:v2)
+      |> Steps.assert_all_catch_up()
     end
 
     feature "viewing and completing due milestones", ctx do
@@ -116,6 +117,7 @@ defmodule Operately.Features.ReviewTest do
       |> Steps.assert_the_due_milestone_is_listed()
       |> Steps.when_a_milestone_is_marked_as_completed()
       |> Steps.assert_completed_milestone_is_no_longer_displayed()
+      |> Steps.assert_all_catch_up()
     end
 
     feature "viewing and completing due tasks", ctx do
@@ -134,6 +136,7 @@ defmodule Operately.Features.ReviewTest do
       |> Steps.assert_the_due_goal_is_listed(:v2)
       |> Steps.when_a_goal_update_is_submitted()
       |> Steps.assert_the_updated_goal_is_no_longer_displayed(:v2)
+      |> Steps.assert_all_catch_up()
     end
 
     feature "viewing and acknowledging submitted project check-ins", ctx do
@@ -161,6 +164,7 @@ defmodule Operately.Features.ReviewTest do
       |> Steps.assert_the_due_project_is_listed(:v2)
       |> Steps.when_a_project_is_closed()
       |> Steps.assert_the_closed_project_is_no_longer_displayed(:v2)
+      |> Steps.assert_all_catch_up()
     end
 
     feature "closing work removes reviewer obligations", ctx do
@@ -174,6 +178,7 @@ defmodule Operately.Features.ReviewTest do
       |> Steps.when_a_goal_is_closed()
       |> Steps.assert_the_acknowledged_project_is_no_longer_displayed(:v2)
       |> Steps.assert_the_acknowledged_goal_is_no_longer_displayed(:v2)
+      |> Steps.assert_all_catch_up()
     end
 
     feature "deleting work removes reviewer obligations", ctx do

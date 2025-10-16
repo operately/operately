@@ -243,7 +243,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
       assert t1.name == "Task 1"
       assert t1.type == "project_task"
       assert t1.role == "owner"
-      assert t1.action_label == "Complete Task 1"
+      assert t1.action_label == "Task 1"
       assert t1.task_status == "todo"
       assert t1.origin
       assert t1.origin.type == "project"
@@ -328,7 +328,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
       assert m1.name == "Milestone 1"
       assert m1.type == "milestone"
       assert m1.role == "owner"
-      assert m1.action_label == "Complete Milestone 1"
+      assert m1.action_label == "Milestone 1"
       assert m1.origin
       assert m1.origin.type == "project"
       assert m1.origin.name == "My Project"
