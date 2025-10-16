@@ -48,13 +48,7 @@ function AssignmentGroup({ group }: { group: ReviewPageV2.AssignmentGroup }) {
   );
 }
 
-function GroupHeader({
-  origin,
-  relationship,
-}: {
-  origin: ReviewPageV2.AssignmentOrigin;
-  relationship: string | null;
-}) {
+function GroupHeader({ origin, relationship }: { origin: ReviewPageV2.AssignmentOrigin; relationship: string | null }) {
   const Icon = ORIGIN_ICON[origin.type];
 
   return (
@@ -82,7 +76,7 @@ function AssignmentRow({ assignment }: { assignment: ReviewPageV2.AssignmentWith
   return (
     <DivLink
       to={assignment.path}
-      className="group relative flex items-center gap-3 py-1 pl-6 pr-2 transition-colors hover:bg-surface-highlight rounded"
+      className="group relative flex items-center gap-3 py-0.5 pl-6 pr-2 transition-colors hover:bg-surface-highlight rounded"
       testId={createTestId("assignment", assignment.resourceId)}
     >
       <div className="flex h-6 w-6 items-center justify-center text-content-base">

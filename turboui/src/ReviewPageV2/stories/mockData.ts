@@ -53,6 +53,24 @@ const teamProductivity: ReviewPageV2.AssignmentOrigin = {
   dueDate: getDateOffset(60),
 };
 
+const retentionPlaybook: ReviewPageV2.AssignmentOrigin = {
+  id: "project-retention-playbook",
+  name: "Retention Playbook Refresh",
+  type: "project",
+  path: "/projects/retention-playbook",
+  spaceName: "Customer Success",
+  dueDate: getDateOffset(7),
+};
+
+const engagementGoal: ReviewPageV2.AssignmentOrigin = {
+  id: "goal-engagement-growth",
+  name: "Boost Customer Engagement",
+  type: "goal",
+  path: "/goals/customer-engagement",
+  spaceName: "Marketing",
+  dueDate: getDateOffset(9),
+};
+
 export const dueSoonAssignments: ReviewPageV2.Assignment[] = [
   // Overdue items
   {
@@ -138,40 +156,40 @@ export const dueSoonAssignments: ReviewPageV2.Assignment[] = [
 
 export const reviewAssignments: ReviewPageV2.Assignment[] = [
   {
-    resourceId: "check-in-review-mobile",
-    name: "Mobile App Launch – Week 7 check-in",
+    resourceId: "check-in-review-retention",
+    name: "Retention Playbook – Week 5 check-in",
     due: getDateOffset(-2),
     type: "check_in",
     role: "reviewer",
     actionLabel: "Review project check-in",
-    path: "/projects/mobile-app/check-ins/7",
-    origin: mobileAppLaunch,
+    path: "/projects/retention-playbook/check-ins/5",
+    origin: retentionPlaybook,
     authorId: "user-123",
     authorName: "Sarah Chen",
     taskStatus: null,
   },
   {
-    resourceId: "goal-update-review-productivity",
-    name: "Team Productivity Goal Update",
+    resourceId: "goal-update-review-engagement",
+    name: "Customer Engagement Goal Update",
     due: getDateOffset(-1),
     type: "goal_update",
     role: "reviewer",
     actionLabel: "Review goal check-in",
-    path: "/goals/team-productivity/updates/latest",
-    origin: teamProductivity,
+    path: "/goals/customer-engagement/updates/latest",
+    origin: engagementGoal,
     authorId: "user-456",
     authorName: "Alex Rodriguez",
     taskStatus: null,
   },
   {
-    resourceId: "check-in-review-website",
-    name: "Website Redesign – Week 3 check-in",
+    resourceId: "check-in-review-retention-dependencies",
+    name: "Retention Playbook – Dependencies review",
     due: getDateOffset(0),
-    type: "check_in",
+    type: "project_task",
     role: "reviewer",
-    actionLabel: "Review project check-in",
-    path: "/projects/website-redesign/check-ins/3",
-    origin: websiteRedesign,
+    actionLabel: "Share with the team",
+    path: "/projects/retention-playbook/check-ins/dependencies",
+    origin: retentionPlaybook,
     authorId: "user-789",
     authorName: "Maria Garcia",
     taskStatus: null,

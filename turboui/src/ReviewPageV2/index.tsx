@@ -132,8 +132,8 @@ function Header({ assignmentsCount }: { assignmentsCount: number }) {
 
   return (
     <div className="mt-4 pr-4" data-test-id="page-header">
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-brand-2 rounded-lg flex items-center justify-center">
+      <div className="flex items-center gap-3 border-b border-surface-outline pb-3">
+        <div className="w-12 h-12 bg-brand-2 rounded-lg flex items-center justify-center">
           <IconCoffee size={20} className="text-brand-1" />
         </div>
 
