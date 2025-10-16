@@ -1,8 +1,8 @@
-import Api from "@/api";
+import Api, { InviteLink } from "@/api";
 import React from "react";
 
 import * as Pages from "@/components/Pages";
-import * as InviteLinks from "@/models/inviteLinks";
+
 import { PageModule } from "@/routes/types";
 import { redirect, useNavigate } from "react-router-dom";
 import { InviteLinkJoinPage } from "turboui";
@@ -11,7 +11,7 @@ import { assertPresent } from "../../utils/assertions";
 export default { name: "InviteLinkJoinPage", loader, Page } as PageModule;
 
 interface LoaderResult {
-  invite: InviteLinks.InviteLink | null;
+  invite: InviteLink | null;
   token: string;
   pageState: InviteLinkJoinPage.PageState;
 }
@@ -91,7 +91,7 @@ function Page() {
   );
 }
 
-function prepInvitation(invite: InviteLinks.InviteLink | null): InviteLinkJoinPage.Invitation | null {
+function prepInvitation(invite: InviteLink | null): InviteLinkJoinPage.Invitation | null {
   if (!invite) return null;
 
   assertPresent(invite.company);
@@ -110,16 +110,16 @@ function prepInvitation(invite: InviteLinks.InviteLink | null): InviteLinkJoinPa
   };
 }
 
-function isExpired(invite: InviteLinks.InviteLink): boolean {
+function isExpired(invite: InviteLink): boolean {
   if (!invite.expiresAt) return false;
   return new Date(invite.expiresAt) < new Date();
 }
 
-function isInactive(invite: InviteLinks.InviteLink): boolean {
+function isInactive(invite: InviteLink): boolean {
   return invite.isActive === false;
 }
 
-async function loadInviteLink(token: string): Promise<InviteLinks.InviteLink | null> {
+async function loadInviteLink(token: string): Promise<InviteLink | null> {
   try {
     const result = await Api.invitations.getInviteLinkByToken({ token });
     return result.inviteLink || null;
