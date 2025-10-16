@@ -68,13 +68,16 @@ defmodule Operately.InviteLinks do
     raise "Not implemented yet"
   end
 
-  def validate_invite_link(link) do
+  def validate_invite_link(link, account) do
     cond do
       link.is_active == false ->
         {:error, :invite_link_inactive}
 
       InviteLink.is_expired?(link) ->
         {:error, :invite_link_expired}
+
+      not allowed_for_account?(link.allowed_domains, account) ->
+        {:error, :invite_link_domain_not_allowed}
 
       true ->
         {:ok, link}
@@ -87,7 +90,7 @@ defmodule Operately.InviteLinks do
       get_invite_link_by_token(token)
     end)
     |> Multi.run(:validate_invite_link, fn _, %{invite_link: invite_link} ->
-      validate_invite_link(invite_link)
+      validate_invite_link(invite_link, account)
     end)
     |> Multi.run(:company, fn _, %{invite_link: invite_link} ->
       {:ok, Operately.Companies.get_company!(invite_link.company_id)}
@@ -132,6 +135,10 @@ defmodule Operately.InviteLinks do
         Logger.info("Expired invite token during account creation")
         {:error, :invite_token_expired}
 
+      {:error, :validate_invite_link, :invite_link_domain_not_allowed, _changes} ->
+        Logger.info("Invite link blocked due to email domain restriction")
+        {:error, :invite_token_domain_not_allowed}
+
       {:error, :validate_invite_link, _reason, _changes} ->
         Logger.info("Invalid invite token during account creation")
         {:error, :invite_token_invalid}
@@ -145,4 +152,32 @@ defmodule Operately.InviteLinks do
         {:error, :invite_link_update_failed}
     end
   end
+
+  defp allowed_for_account?(allowed_domains, account) do
+    allowed_domains = allowed_domains || []
+
+    if Enum.empty?(allowed_domains) do
+      true
+    else
+      case account_email_domain(account) do
+        nil -> false
+        domain -> domain in allowed_domains
+      end
+    end
+  end
+
+  defp account_email_domain(%{email: email}), do: account_email_domain(email)
+
+  defp account_email_domain(email) when is_binary(email) do
+    email
+    |> String.trim()
+    |> String.downcase()
+    |> String.split("@")
+    |> case do
+      [_, domain] when domain != "" -> domain
+      _ -> nil
+    end
+  end
+
+  defp account_email_domain(_), do: nil
 end

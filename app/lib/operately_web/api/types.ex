@@ -1321,6 +1321,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :use_count, :integer, null: true
     field? :is_active, :boolean, null: true
     field? :inserted_at, :datetime, null: true
+    field? :allowed_domains, list_of(:string), null: true
   end
 
   object :activity_event_data_milestone_create do
