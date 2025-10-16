@@ -3,9 +3,10 @@ import * as React from "react";
 import { differenceInCalendarDays, isValid, startOfDay } from "date-fns";
 
 import { PageNew } from "../Page";
-import { IconCoffee, IconSparkles } from "../icons";
+import { IconCoffee, IconInfoCircle, IconSparkles } from "../icons";
 import { parseDate } from "../utils/time";
 import { TestableElement } from "../TestableElement";
+import { Tooltip } from "../Tooltip";
 
 import { AssignmentGroups } from "./AssignmentsList";
 
@@ -64,12 +65,29 @@ export namespace ReviewPageV2 {
   export interface Props {
     assignments: Assignment[];
     assignmentsCount?: number;
+    showUpcomingSection?: boolean;
   }
 }
 
 export function ReviewPageV2(props: ReviewPageV2.Props) {
   const assignments = props.assignments || [];
+  const showUpcomingSection = props.showUpcomingSection ?? true;
   const categorized = React.useMemo(() => categorizeAssignments(assignments), [assignments]);
+
+  const urgentGroups = React.useMemo(() => {
+    const dueSoonAssignments = categorized.dueSoon.flatMap((group) => group.assignments);
+    const reviewAssignments = categorized.needsReview.flatMap((group) => group.assignments);
+
+    if (dueSoonAssignments.length === 0 && reviewAssignments.length === 0) {
+      return [];
+    }
+
+    return groupAssignmentsByOrigin([...dueSoonAssignments, ...reviewAssignments]);
+  }, [categorized]);
+
+  const hasUrgent = urgentGroups.length > 0;
+  const hasUpcoming = showUpcomingSection && categorized.upcoming.length > 0;
+  const hasAnyAssignments = hasUrgent || hasUpcoming;
 
   // Count only urgent items (due soon + needs review), not upcoming
   const urgentCount =
@@ -83,34 +101,23 @@ export function ReviewPageV2(props: ReviewPageV2.Props) {
       <div className="p-4 max-w-3xl mx-auto my-6 overflow-auto">
         <Header assignmentsCount={urgentCount} />
 
-        <div className="flex flex-col">
-          <Section
-            title="Due soon"
-            description="Updates, tasks, and milestones that need your attention right away."
-            groups={categorized.dueSoon}
-            testId="due-soon-section"
-            emptyState={
-              <EmptyState title="No urgent work" description="You're all caught up on immediate priorities." />
-            }
-          />
+        <div className="flex flex-col mt-8 gap-6">
+          {hasAnyAssignments ? (
+            <>
+              {hasUrgent && <AssignmentGroups groups={urgentGroups} />}
 
-          <Section
-            title="Needs my review"
-            description="Updates from others waiting for your approval or acknowledgement."
-            groups={categorized.needsReview}
-            testId="needs-review-section"
-            emptyState={
-              <EmptyState title="Nothing to review" description="No check-ins or updates need your review." />
-            }
-          />
-
-          <Section
-            title="My upcoming work"
-            description="Work assigned to you with future due dates, sorted chronologically."
-            groups={categorized.upcoming}
-            testId="upcoming-section"
-            emptyState={<EmptyState title="No upcoming work" description="Nothing else is scheduled for you yet." />}
-          />
+              {hasUpcoming && (
+                <Section
+                  title="My upcoming work"
+                  description="Work assigned to you with future due dates, sorted chronologically."
+                  groups={categorized.upcoming}
+                  testId="upcoming-section"
+                />
+              )}
+            </>
+          ) : (
+            <CaughtUpState />
+          )}
         </div>
       </div>
     </PageNew>
@@ -124,19 +131,21 @@ function Header({ assignmentsCount }: { assignmentsCount: number }) {
       : "All caught up";
 
   return (
-    <div className="mt-4 px-4 flex items-center gap-3" data-test-id="page-header">
-      <div className="w-10 h-10 bg-brand-2 rounded-lg flex items-center justify-center">
-        <IconCoffee size={20} className="text-brand-1" />
-      </div>
-
-      <div>
-        <div className="flex items-baseline gap-2">
-          <h1 className="text-lg font-semibold text-content-strong">Review</h1>
-          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-content-dimmed/10 text-content-dimmed">
-            {headline}
-          </span>
+    <div className="mt-4 pr-4" data-test-id="page-header">
+      <div className="flex items-center gap-3 border-b border-surface-outline pb-3">
+        <div className="w-12 h-12 bg-brand-2 rounded-lg flex items-center justify-center">
+          <IconCoffee size={20} className="text-brand-1" />
         </div>
-        <p className="text-sm text-content-dimmed">Stay on top of your responsibilities</p>
+
+        <div>
+          <div className="flex items-baseline gap-2">
+            <h1 className="text-lg font-semibold text-content-strong">Review</h1>
+            <span className="text-sm text-content-dimmed">{headline}</span>
+          </div>
+          <p className="text-sm text-content-dimmed mt-1">
+            Catch up on work that's due soon or waiting for your review.
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -144,41 +153,55 @@ function Header({ assignmentsCount }: { assignmentsCount: number }) {
 
 interface SectionProps extends TestableElement {
   title: string;
-  description: string;
+  description?: string;
+  infoTooltip?: string;
   groups: ReviewPageV2.AssignmentGroup[];
-  emptyState: React.ReactNode;
 }
 
-function Section({ title, description, groups, emptyState, testId }: SectionProps) {
+function Section({ title, description, infoTooltip, groups, testId }: SectionProps) {
+  if (groups.length === 0) {
+    return null;
+  }
+
   return (
     <section data-test-id={testId}>
       <div className="px-4 py-4">
-        <div className=" border-b-2 border-stroke-base mb-4">
-          <div className="flex items-baseline gap-2 mb-2">
+        <div className="border-b border-surface-outline mb-4">
+          <div className="flex items-center gap-2 mb-1">
             <h2 className="font-bold text-content-strong">{title}</h2>
-            {groups.length > 0 && (
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-content-dimmed/10 text-content-dimmed">
-                {groups.reduce((sum, group) => sum + group.assignments.length, 0)} items
-              </span>
-            )}
+            {infoTooltip ? (
+              <Tooltip content={infoTooltip} delayDuration={150}>
+                <button
+                  type="button"
+                  aria-label={`More information about ${title}`}
+                  className="inline-flex items-center justify-center text-content-dimmed hover:text-content-strong"
+                >
+                  <IconInfoCircle size={14} className="relative top-px" />
+                </button>
+              </Tooltip>
+            ) : null}
           </div>
-          <p className="text-sm text-content-base mb-4">{description}</p>
+          {description ? <p className="text-sm text-content-base mb-4">{description}</p> : null}
         </div>
 
-        {groups.length === 0 ? emptyState : <AssignmentGroups groups={groups} />}
+        <AssignmentGroups groups={groups} />
       </div>
     </section>
   );
 }
 
-function EmptyState({ title, description }: { title: string; description: string }) {
+function CaughtUpState() {
   return (
-    <div className="flex flex-col items-center justify-center gap-1.5 py-4 text-center">
-      <div className="w-8 h-8 bg-callout-success-bg rounded-full flex items-center justify-center">
-        <IconSparkles size={16} className="text-callout-success-content" />
+    <div className="px-4 py-10">
+      <div className="flex max-w-md flex-col items-center gap-4 rounded-xl border border-surface-outline bg-surface-base px-8 py-14 text-center shadow-sm">
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-callout-success-bg">
+          <IconSparkles size={20} className="text-callout-success-content" />
+        </div>
+        <p className="text-lg font-semibold text-content-strong">You're all caught up</p>
+        <p className="text-sm text-content-dimmed">
+          No assignments, check-ins, milestones, or reviews need your attention right now.
+        </p>
       </div>
-      <div className="text-sm font-semibold text-content-strong">{title}</div>
-      <p className="text-xs text-content-dimmed max-w-sm">{description}</p>
     </div>
   );
 }

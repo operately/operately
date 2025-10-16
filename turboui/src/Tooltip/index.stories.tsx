@@ -2,7 +2,7 @@ import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { Tooltip } from "./index";
 import { Page } from "../Page";
-import { IconUser } from "../icons";
+import { IconInfoCircle, IconUser } from "../icons";
 
 const meta: Meta<typeof Tooltip> = {
   title: "Components/Tooltip",
@@ -63,4 +63,26 @@ export const RichContent: Story = {
       </div>
     ),
   },
+};
+
+export const InfoIconTrigger: Story = {
+  args: {
+    content:
+      "We send automatic reminders every Monday at 9 AM in the project’s timezone. You can change this in settings.",
+    delayDuration: 150,
+  },
+  render: (args) => (
+    <div className="flex items-center gap-2 text-sm text-content-base">
+      <span>Automated reminders</span>
+      <Tooltip content={args.content} delayDuration={args.delayDuration}>
+        <button
+          type="button"
+          aria-label="Show automated reminders info"
+          className="inline-flex items-center justify-center text-content-dimmed hover:text-content-strong"
+        >
+          <IconInfoCircle size={16} />
+        </button>
+      </Tooltip>
+    </div>
+  ),
 };

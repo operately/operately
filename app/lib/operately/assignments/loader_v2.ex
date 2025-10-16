@@ -82,7 +82,7 @@ defmodule Operately.Assignments.LoaderV2 do
         due: due_date,
         type: :project_task,
         role: :owner,
-        action_label: "Complete #{task.name}",
+        action_label: task.name,
         path: Paths.project_task_path(company, task),
         origin: origin,
         task_status: String.to_atom(task.status)
@@ -135,7 +135,7 @@ defmodule Operately.Assignments.LoaderV2 do
         due: due_date,
         type: :milestone,
         role: :owner,
-        action_label: "Complete #{milestone.title}",
+        action_label: milestone.title,
         path: Paths.project_milestone_path(company, milestone),
         origin: origin
       }
