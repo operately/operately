@@ -86,18 +86,19 @@ defmodule OperatelyWeb.Api.Invitations do
     require Logger
 
     inputs do
+      field?(:allowed_domains, list_of(:string), null: true)
     end
 
     outputs do
       field(:invite_link, :invite_link)
     end
 
-    def call(conn, _inputs) do
+    def call(conn, inputs) do
       conn
       |> start_transaction()
       |> load_company(conn)
       |> check_permissions()
-      |> create_invite_link()
+      |> create_invite_link(inputs)
       |> commit()
       |> respond()
     end
@@ -118,11 +119,12 @@ defmodule OperatelyWeb.Api.Invitations do
       end)
     end
 
-    defp create_invite_link(multi) do
+    defp create_invite_link(multi, inputs) do
       Ecto.Multi.run(multi, :invite_link, fn _, %{me: me, company: company} ->
         InviteLinks.create_invite_link(%{
           company_id: company.id,
-          author_id: me.id
+          author_id: me.id,
+          allowed_domains: inputs[:allowed_domains] || []
         })
       end)
     end
@@ -178,6 +180,9 @@ defmodule OperatelyWeb.Api.Invitations do
 
         {:error, :invite_token_expired} ->
           {:error, :bad_request, "This invite link has expired"}
+
+        {:error, :invite_token_domain_not_allowed} ->
+          {:error, :bad_request, "This invite link is restricted to specific email domains"}
 
         {:error, :invite_token_invalid} ->
           {:error, :bad_request, "This invite link is no longer valid"}

@@ -6,6 +6,7 @@ defmodule Operately.InviteLinksTest do
   alias Operately.InviteLinks
   alias Operately.InviteLinks.InviteLink
   alias Operately.People
+  alias Operately.PeopleFixtures
   alias Operately.Support.Factory
 
   setup ctx do
@@ -28,6 +29,7 @@ defmodule Operately.InviteLinksTest do
       assert invite_link.token != nil
       assert String.length(invite_link.token) >= 32
       assert invite_link.expires_at != nil
+      assert invite_link.allowed_domains == []
     end
 
     test "create_invite_link/1 sets expiration to 7 days from creation", ctx do
@@ -108,6 +110,28 @@ defmodule Operately.InviteLinksTest do
 
       {:ok, updated_link} = InviteLinks.increment_use_count(invite_link)
       assert updated_link.use_count == 1
+    end
+
+    test "create_invite_link/1 stores normalized allowed domains when provided", ctx do
+      {:ok, invite_link} =
+        InviteLinks.create_invite_link(%{
+          company_id: ctx.company.id,
+          author_id: ctx.creator.id,
+          allowed_domains: ["Example.com", " acme.org ", "example.com"]
+        })
+
+      assert invite_link.allowed_domains == ["example.com", "acme.org"]
+    end
+
+    test "create_invite_link/1 rejects invalid domains", ctx do
+      assert {:error, changeset} =
+               InviteLinks.create_invite_link(%{
+                 company_id: ctx.company.id,
+                 author_id: ctx.creator.id,
+                 allowed_domains: ["invalid domain"]
+               })
+
+      assert "contains invalid domain invalid domain" in errors_on(changeset).allowed_domains
     end
   end
 
@@ -270,6 +294,37 @@ defmodule Operately.InviteLinksTest do
 
       reloaded_link = Repo.get!(InviteLink, invite_link.id)
       assert reloaded_link.use_count == 0
+    end
+
+    test "returns error when the account email domain is not allowed", ctx do
+      account = PeopleFixtures.account_fixture(%{email: "blocked@other.com"})
+
+      {:ok, invite_link} =
+        InviteLinks.create_invite_link(%{
+          company_id: ctx.company.id,
+          author_id: ctx.creator.id,
+          allowed_domains: ["allowed.com"]
+        })
+
+      assert InviteLinks.join_company_via_invite_link(account, invite_link.token) ==
+               {:error, :invite_token_domain_not_allowed}
+    end
+
+    test "allows joining when the account email domain is allowed", ctx do
+      account = PeopleFixtures.account_fixture(%{email: "user@allowed.com"})
+
+      {:ok, invite_link} =
+        InviteLinks.create_invite_link(%{
+          company_id: ctx.company.id,
+          author_id: ctx.creator.id,
+          allowed_domains: ["allowed.com"]
+        })
+
+      assert {:ok, person} = InviteLinks.join_company_via_invite_link(account, invite_link.token)
+      assert person.account_id == account.id
+
+      reloaded_link = Repo.get!(InviteLink, invite_link.id)
+      assert reloaded_link.use_count == 1
     end
   end
 end
