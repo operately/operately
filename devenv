@@ -20,6 +20,7 @@
 #   devenv up          - Start the app container
 #   devenv stop        - Stop the app container
 #   devenv down        - Stop and remove the app container
+#   devenv teardown    - Fully reset the local development environment
 #   devenv shell       - Start a shell in the app container
 #   devenv <command>   - Run a command in the running app container
 #
@@ -107,6 +108,7 @@ export PORT_MAILHOG_UI=$((PORT_OFFSET + 8))
 # - devenv stop  - stop the app container
 # - devenv down  - stop and remove the app container
 # - devenv restart - restart the app container
+# - devenv teardown - remove containers, volumes, and generated data
 # - devenv <command> - run a command in the running app container
 #
 if [ "$FIRST_ARG" = "shell" ]; then
@@ -123,6 +125,22 @@ elif [ "$FIRST_ARG" = "down" ]; then
   docker compose --profile ${PROFILE} down
 elif [ "$FIRST_ARG" = "restart" ]; then
   docker compose --profile ${PROFILE} down && docker compose --profile ${PROFILE} up -d --force-recreate
+elif [ "$FIRST_ARG" = "teardown" ]; then
+  echo "Stopping containers and removing volumes..."
+  docker compose --profile ${PROFILE} down --volumes --remove-orphans
+
+  echo "Removing generated directories..."
+  CLEANUP_PATHS=("locals3root" "media" "screenshots" "tmp")
+
+  for path in "${CLEANUP_PATHS[@]}"; do
+    if [ -e "$path" ]; then
+      rm -rf "$path"
+    fi
+  done
+
+  mkdir -p locals3root media screenshots tmp/certs
+
+  echo "Local development environment reset complete."
 else
   docker compose exec app "$@"
 fi
