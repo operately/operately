@@ -121,7 +121,7 @@ function getUrgencyDetails(status: ReviewPageV2.DueStatus, dueDate: Date | null)
     case "due_today":
       return { label: "Due today", className: "text-callout-warning-content" };
     case "due_soon":
-      return { label: "Due tomorrow", className: "text-callout-warning-content" };
+      return { label: "Due tomorrow", className: "text-content-dimmed" };
     default:
       return null;
   }
