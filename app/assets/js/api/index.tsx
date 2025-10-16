@@ -4072,7 +4072,7 @@ export interface PublishDiscussionResult {
 
 export interface PublishResourceHubDocumentInput {
   documentId: Id;
-  name: string;
+  name?: string | null;
   content?: Json | null;
   sendNotificationsToEveryone?: boolean | null;
   subscriberIds?: Id[] | null;
