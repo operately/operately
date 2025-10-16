@@ -30,7 +30,7 @@ function Page() {
 
     try {
       setError(null);
-      const result = await Api.invitations.createInviteLink({});
+      const result = await Api.invitations.getCompanyInviteLink({});
       setInviteLink(result.inviteLink!);
     } catch (err) {
       setError("Failed to generate invite link. Please try again.");

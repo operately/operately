@@ -33,10 +33,21 @@ defmodule Operately.InviteLinks do
   end
 
   def fetch_or_create_invite_link(attrs) do
-    case Repo.get_by(InviteLink, company_id: attrs.company_id) do
+    case get_invite_link(attrs.company_id) do
       nil -> create_invite_link(attrs)
       invite_link -> {:ok, invite_link}
     end
+  end
+
+  defp get_invite_link(company_id) do
+    # Look for an active, non-expired invite link first
+    from(il in InviteLink,
+      where: il.company_id == ^company_id and il.is_active == true,
+      where: is_nil(il.expires_at) or il.expires_at > ^DateTime.utc_now(),
+      order_by: [desc: il.inserted_at],
+      limit: 1
+    )
+    |> Repo.one()
   end
 
   def create_invite_link(attrs \\ %{}) do
