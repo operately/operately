@@ -2671,20 +2671,12 @@ export interface InvitationsGetInvitationResult {
   invitation?: Invitation | null;
 }
 
-export interface InvitationsGetInviteLinkInput {
-  token?: string;
+export interface InvitationsGetInviteLinkByTokenInput {
+  token: string;
 }
 
-export interface InvitationsGetInviteLinkResult {
+export interface InvitationsGetInviteLinkByTokenResult {
   inviteLink?: InviteLink | null;
-}
-
-export interface InvitationsListInviteLinksInput {
-  companyId?: string;
-}
-
-export interface InvitationsListInviteLinksResult {
-  inviteLinks?: InviteLink[];
 }
 
 export interface ListGoalContributorsInput {
@@ -4816,12 +4808,10 @@ class ApiNamespaceInvitations {
     return this.client.get("/invitations/get_invitation", input);
   }
 
-  async getInviteLink(input: InvitationsGetInviteLinkInput): Promise<InvitationsGetInviteLinkResult> {
-    return this.client.get("/invitations/get_invite_link", input);
-  }
-
-  async listInviteLinks(input: InvitationsListInviteLinksInput): Promise<InvitationsListInviteLinksResult> {
-    return this.client.get("/invitations/list_invite_links", input);
+  async getInviteLinkByToken(
+    input: InvitationsGetInviteLinkByTokenInput,
+  ): Promise<InvitationsGetInviteLinkByTokenResult> {
+    return this.client.get("/invitations/get_invite_link_by_token", input);
   }
 
   async createInviteLink(input: InvitationsCreateInviteLinkInput): Promise<InvitationsCreateInviteLinkResult> {
@@ -7354,15 +7344,12 @@ export default {
   useUpdateProjectDescription,
 
   invitations: {
-    getInviteLink: (input: InvitationsGetInviteLinkInput) =>
-      defaultApiClient.apiNamespaceInvitations.getInviteLink(input),
-    useGetInviteLink: (input: InvitationsGetInviteLinkInput) =>
-      useQuery<InvitationsGetInviteLinkResult>(() => defaultApiClient.apiNamespaceInvitations.getInviteLink(input)),
-
-    listInviteLinks: (input: InvitationsListInviteLinksInput) =>
-      defaultApiClient.apiNamespaceInvitations.listInviteLinks(input),
-    useListInviteLinks: (input: InvitationsListInviteLinksInput) =>
-      useQuery<InvitationsListInviteLinksResult>(() => defaultApiClient.apiNamespaceInvitations.listInviteLinks(input)),
+    getInviteLinkByToken: (input: InvitationsGetInviteLinkByTokenInput) =>
+      defaultApiClient.apiNamespaceInvitations.getInviteLinkByToken(input),
+    useGetInviteLinkByToken: (input: InvitationsGetInviteLinkByTokenInput) =>
+      useQuery<InvitationsGetInviteLinkByTokenResult>(() =>
+        defaultApiClient.apiNamespaceInvitations.getInviteLinkByToken(input),
+      ),
 
     getInvitation: (input: InvitationsGetInvitationInput) =>
       defaultApiClient.apiNamespaceInvitations.getInvitation(input),

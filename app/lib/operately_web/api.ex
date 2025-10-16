@@ -10,9 +10,9 @@ defmodule OperatelyWeb.Api do
       {:mutation, "request_password_reset"},
       {:mutation, "reset_password"},
 
-      # invitations
+      # must be public to allow lookup by token
       {:query, "invitations/get_invitation"},
-      {:query, "invitations/get_invite_link"}
+      {:query, "invitations/get_invite_link_by_token"}
     ]
   )
 
@@ -128,12 +128,13 @@ defmodule OperatelyWeb.Api do
   end
 
   namespace(:invitations) do
-    # bulk invitations
-    query(:get_invite_link, OperatelyWeb.Api.Invitations.GetInviteLink)
+    # external: joining via invite link
+    query(:get_invite_link_by_token, OperatelyWeb.Api.Invitations.GetInviteLinkByToken)
+    mutation(:join_company_via_invite_link, OperatelyWeb.Api.Invitations.JoinCompanyViaInviteLink)
 
+    # internal: managing invite links and invitations
     mutation(:create_invite_link, OperatelyWeb.Api.Invitations.CreateInviteLink)
     mutation(:revoke_invite_link, OperatelyWeb.Api.Invitations.RevokeInviteLink)
-    mutation(:join_company_via_invite_link, OperatelyWeb.Api.Invitations.JoinCompanyViaInviteLink)
 
     # single user invitations
     query(:get_invitation, Q.GetInvitation)

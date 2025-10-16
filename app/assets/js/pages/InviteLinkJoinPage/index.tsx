@@ -121,7 +121,7 @@ function isInactive(invite: InviteLinks.InviteLink): boolean {
 
 async function loadInviteLink(token: string): Promise<InviteLinks.InviteLink | null> {
   try {
-    const result = await Api.invitations.getInviteLink({ token });
+    const result = await Api.invitations.getInviteLinkByToken({ token });
     return result.inviteLink || null;
   } catch (error) {
     console.error("Error loading invite link:", error);
