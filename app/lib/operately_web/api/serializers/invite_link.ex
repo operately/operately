@@ -9,6 +9,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.InviteLinks.InviteLink do
       use_count: invite_link.use_count,
       is_active: invite_link.is_active,
       inserted_at: OperatelyWeb.Api.Serializer.serialize(invite_link.inserted_at),
+      allowed_domains: invite_link.allowed_domains,
     }
   end
 
