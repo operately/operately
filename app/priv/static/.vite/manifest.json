@@ -1,15 +1,15 @@
 {
-  "_vendor-B3aSEC8-.js": {
-    "file": "assets/vendor-B3aSEC8-.js",
+  "_vendor-C6EDoNXF.js": {
+    "file": "assets/vendor-C6EDoNXF.js",
     "name": "vendor"
   },
   "assets/js/app.tsx": {
-    "file": "assets/app-DnrUhUx8.js",
+    "file": "assets/app-Dz7q10XQ.js",
     "name": "app",
     "src": "assets/js/app.tsx",
     "isEntry": true,
     "imports": [
-      "_vendor-B3aSEC8-.js"
+      "_vendor-C6EDoNXF.js"
     ]
   }
 }
