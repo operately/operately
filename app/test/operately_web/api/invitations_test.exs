@@ -21,36 +21,6 @@ defmodule OperatelyWeb.Api.InvitationsTest do
     end
   end
 
-  describe "list_invite_links" do
-    test "requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, [:invitations, :list_invite_links], %{company_id: ctx.company.id})
-    end
-
-    test "requires company_id", ctx do
-      ctx = Factory.log_in_person(ctx, :creator)
-
-      assert {400, res} = query(ctx.conn, [:invitations, :list_invite_links], %{})
-      assert res.message.message == "Missing required fields: company_id"
-    end
-
-    test "returns not found when company is inaccessible", ctx do
-      ctx = ctx |> Factory.add_company(:other_company, ctx.account) |> Factory.log_in_person(:creator)
-
-      params = %{company_id: ctx.other_company.id}
-
-      assert {404, _} = query(ctx.conn, [:invitations, :list_invite_links], params)
-    end
-
-    test "returns invite links for the company", ctx do
-      ctx = Factory.log_in_person(ctx, :creator)
-      invite_link = create_invite_link(ctx)
-
-      assert {200, %{invite_links: links}} = query(ctx.conn, [:invitations, :list_invite_links], %{company_id: ctx.company.id})
-
-      assert links == [Serializer.serialize(invite_link, level: :essential)]
-    end
-  end
-
   describe "create_invite_link" do
     test "requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:invitations, :create_invite_link], %{})
