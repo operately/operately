@@ -1,77 +1,101 @@
 defmodule Operately.MCP.TestHelper do
   @moduledoc """
-  Test helper module to simulate MCP server functionality without network dependencies.
-  This is used to test the core logic of the MCP server tools.
+  Test helper module to simulate the MCP server search and fetch logic without
+  invoking Hermes runtime.
   """
 
+  @sample_goals [
+    %{id: "goal-1", name: "Improve activation"},
+    %{id: "goal-2", name: "Increase retention"}
+  ]
+
+  @sample_projects [
+    %{id: "project-1", name: "Launch onboarding"},
+    %{id: "project-2", name: "Lifecycle emails rollout"}
+  ]
+
   @doc """
-  Simulates the switch_organization tool logic
+  Simulates the server-side search behaviour using in-memory data.
   """
-  def test_switch_organization_logic(company_id, person_id) do
-    # Simulate the logic from handle_tool("switch_organization", ...)
-    with {:ok, company} <- get_company_simulation(company_id),
-         {:ok, person} <- get_person_simulation(person_id),
-         true <- person_belongs_to_company_simulation?(person, company) do
-      
-      response = %{
-        success: true,
-        message: "Switched to organization: #{company.name}",
-        company: %{
-          id: company.id,
-          name: company.name
-        },
-        person: %{
-          id: person.id,
-          full_name: person.full_name,
-          email: person.email
+  def simulate_search(query \\ "") do
+    goals =
+      @sample_goals
+      |> Enum.filter(&matches_query?(&1.name, query))
+      |> Enum.map(fn goal ->
+        %{
+          id: goal_id(goal.id),
+          title: goal.name,
+          url: goal_id(goal.id),
+          metadata: %{type: "goal"}
         }
-      }
-      
-      {:ok, response}
-    else
-      {:error, :not_found} ->
-        {:error, %{success: false, error: "Company or person not found"}}
-      
-      false ->
-        {:error, %{success: false, error: "Person does not belong to this company"}}
-        
-      error ->
-        {:error, %{success: false, error: "Failed to switch organization: #{inspect(error)}"}}
-    end
+      end)
+
+    projects =
+      @sample_projects
+      |> Enum.filter(&matches_query?(&1.name, query))
+      |> Enum.map(fn project ->
+        %{
+          id: project_id(project.id),
+          title: project.name,
+          url: project_id(project.id),
+          metadata: %{type: "project"}
+        }
+      end)
+
+    goals ++ projects
   end
 
   @doc """
-  Simulates the context validation logic
+  Simulates the server-side fetch logic for goals and projects.
   """
-  def test_context_validation(current_company_id, current_person_id) do
-    case {current_company_id, current_person_id} do
-      {nil, _} -> {:error, "No organization context set. Use switch_organization first."}
-      {_, nil} -> {:error, "No person context set. Use switch_organization first."}
-      {company_id, person_id} ->
-        with {:ok, company} <- get_company_simulation(company_id),
-             {:ok, person} <- get_person_simulation(person_id) do
-          {:ok, person, company}
-        else
-          {:error, :not_found} -> {:error, "Current context is invalid. Organization or person no longer exists."}
-          error -> {:error, "Failed to fetch current context: #{inspect(error)}"}
-        end
+  def simulate_fetch("operately://goals/" <> goal_id) do
+    with {:ok, goal} <- fetch_goal(goal_id) do
+      {:ok,
+       %{
+         id: goal_id(goal.id),
+         title: goal.name,
+         text: "**Goal:** #{goal.name}",
+         url: goal_id(goal.id),
+         metadata: %{type: "goal"}
+       }}
     end
   end
 
-  # Simulation functions
-  defp get_company_simulation("valid_company_id") do
-    {:ok, %{id: "valid_company_id", name: "Test Company"}}
+  def simulate_fetch("operately://projects/" <> project_id) do
+    with {:ok, project} <- fetch_project(project_id) do
+      {:ok,
+       %{
+         id: project_id(project.id),
+         title: project.name,
+         text: "**Project:** #{project.name}",
+         url: project_id(project.id),
+         metadata: %{type: "project"}
+       }}
+    end
   end
-  
-  defp get_company_simulation(_), do: {:error, :not_found}
-  
-  defp get_person_simulation("valid_person_id") do
-    {:ok, %{id: "valid_person_id", full_name: "Test Person", email: "test@company.com", company_id: "valid_company_id"}}
+
+  def simulate_fetch(_identifier), do: {:error, "Unsupported document identifier"}
+
+  defp fetch_goal(id) do
+    case Enum.find(@sample_goals, &(&1.id == id)) do
+      nil -> {:error, "Goal not found"}
+      goal -> {:ok, goal}
+    end
   end
-  
-  defp get_person_simulation(_), do: {:error, :not_found}
-  
-  defp person_belongs_to_company_simulation?(person, company) do
-    person.company_id == company.id
+
+  defp fetch_project(id) do
+    case Enum.find(@sample_projects, &(&1.id == id)) do
+      nil -> {:error, "Project not found"}
+      project -> {:ok, project}
+    end
+  end
+
+  defp goal_id(id), do: "operately://goals/#{id}"
+  defp project_id(id), do: "operately://projects/#{id}"
+
+  defp matches_query?(_value, query) when query in [nil, ""], do: true
+
+  defp matches_query?(value, query) do
+    String.contains?(String.downcase(value), String.downcase(query))
   end
 end
