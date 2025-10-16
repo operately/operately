@@ -8,15 +8,15 @@ defmodule OperatelyWeb.Api.InvitationsTest do
     ctx |> Factory.setup()
   end
 
-  describe "get_invite_link" do
+  describe "get_invite_link_by_token" do
     test "returns nil when token is unknown", ctx do
-      assert {200, %{invite_link: nil}} = query(ctx.conn, [:invitations, :get_invite_link], %{token: "missing-token"})
+      assert {200, %{invite_link: nil}} = query(ctx.conn, [:invitations, :get_invite_link_by_token], %{token: "missing-token"})
     end
 
     test "returns serialized invite link when token matches", ctx do
       invite_link = create_invite_link(ctx)
 
-      assert {200, %{invite_link: res}} = query(ctx.conn, [:invitations, :get_invite_link], %{token: invite_link.token})
+      assert {200, %{invite_link: res}} = query(ctx.conn, [:invitations, :get_invite_link_by_token], %{token: invite_link.token})
       assert res == Serializer.serialize(invite_link, level: :full)
     end
   end
