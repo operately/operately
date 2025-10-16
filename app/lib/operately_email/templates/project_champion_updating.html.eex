@@ -1,0 +1,15 @@
+<%= if @champion == nil do %>
+  <%= title("#{short_name(@author)} removed the champion on #{@project.name}") %>
+<% else %>
+  <%= if @champion.id == @person.id do %>
+    <%= title("#{short_name(@author)} assigned you as the champion on #{@project.name}") %>
+  <% else %>
+    <%= title("#{short_name(@author)} assigned #{short_name(@champion)} as the champion on #{@project.name}") %>
+  <% end %>
+<% end %>
+
+<%= spacer() %>
+
+<%= row do %>
+  <%= cta_button(@cta_url, "View Project") %>
+<% end %>

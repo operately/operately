@@ -606,17 +606,17 @@ function useSubscription(project: Projects.Project, refresh?: () => Promise<void
   });
 
   const onToggle = React.useCallback(
-    async (isSubscribed: boolean) => {
+    async (notSubscribed: boolean) => {
       if (!subscriptionList?.id) return;
 
-      const prevValue = isSubscribed;
-      setIsSubscribed(isSubscribed);
+      const prevValue = notSubscribed;
+      setIsSubscribed(notSubscribed);
 
       try {
-        if (isSubscribed) {
-          await Api.unsubscribeFromNotifications({ id: subscriptionList.id });
-        } else {
+        if (notSubscribed) {
           await Api.subscribeToNotifications({ id: subscriptionList.id, type: "project" });
+        } else {
+          await Api.unsubscribeFromNotifications({ id: subscriptionList.id });
         }
 
         PageCache.invalidate(pageCacheKey(project.id));
