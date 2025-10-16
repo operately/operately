@@ -12,6 +12,7 @@ export interface AvatarProps {
   person: AvatarPerson;
   size: AvatarSize;
   className?: string;
+  testId?: string;
 }
 
 export interface AvatarListProps {

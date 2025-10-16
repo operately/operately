@@ -91,7 +91,7 @@ function initials(fullName?: string | null): string {
   }
 }
 
-function BackupAvatar({ person, size, className }: AvatarProps): JSX.Element {
+function BackupAvatar({ person, size, className, testId }: AvatarProps): JSX.Element {
   const around = classNames("rounded-full overflow-hidden shrink-0 border border-stroke-base inline-block", className);
   const baseClass = "text-white-1 bg-gray-500 h-full rounded-full shrink-0 tracking-wider font-semibold";
 
@@ -101,7 +101,7 @@ function BackupAvatar({ person, size, className }: AvatarProps): JSX.Element {
   const style = { width: `${sizeNumber}px`, height: `${sizeNumber}px` };
 
   return (
-    <div title={person.fullName ?? ""} className={around} style={style}>
+    <div title={person.fullName ?? ""} className={around} style={style} data-test-id={testId}>
       <div className={inner}>
         <div className="flex items-center justify-center h-full whitespace-nowrap">{initials(person.fullName)}</div>
       </div>
@@ -119,7 +119,7 @@ function BackupAvatar({ person, size, className }: AvatarProps): JSX.Element {
 //
 // Fixed based on this issue: https://github.com/chakra-ui/chakra-ui/issues/5909.
 //
-function ImageAvatar({ person, size, className }: AvatarProps): JSX.Element {
+function ImageAvatar({ person, size, className, testId }: AvatarProps): JSX.Element {
   if (!person) return <></>;
 
   const cn = classNames(
@@ -131,7 +131,7 @@ function ImageAvatar({ person, size, className }: AvatarProps): JSX.Element {
   const style = { width: `${sizeNumber}px`, height: `${sizeNumber}px` };
 
   return (
-    <div title={person.fullName ?? ""} className={cn} style={style}>
+    <div title={person.fullName ?? ""} className={cn} style={style} data-test-id={testId}>
       <img
         src={person.avatarUrl!}
         alt={person.fullName ?? ""}
