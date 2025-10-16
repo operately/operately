@@ -19,6 +19,7 @@ defmodule OperatelyEmail.Emails.ProjectReviewerUpdatingEmail do
     |> assign(:author, author)
     |> assign(:project, project)
     |> assign(:reviewer, reviewer)
+    |> assign(:person, person)
     |> assign(:cta_url, Paths.project_path(company, project) |> Paths.to_url())
     |> render("project_reviewer_updating")
   end

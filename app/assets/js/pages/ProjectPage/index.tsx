@@ -614,9 +614,9 @@ function useSubscription(project: Projects.Project, refresh?: () => Promise<void
 
       try {
         if (notSubscribed) {
-          await Api.unsubscribeFromNotifications({ id: subscriptionList.id });
-        } else {
           await Api.subscribeToNotifications({ id: subscriptionList.id, type: "project" });
+        } else {
+          await Api.unsubscribeFromNotifications({ id: subscriptionList.id });
         }
 
         PageCache.invalidate(pageCacheKey(project.id));

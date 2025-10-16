@@ -781,7 +781,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.login_as(ctx.subscriber)
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.creator,
-      action: "Changed the reviewer for #{ctx.project.name}"
+      action: "changed the reviewer for #{ctx.project.name}"
     })
   end
 
@@ -791,7 +791,17 @@ defmodule Operately.Support.Features.ProjectSteps do
       where: ctx.project.name,
       to: ctx.subscriber,
       author: ctx.creator,
-      action: "changed the reviewer"
+      action: "assigned #{Person.short_name(ctx.reviewer)} as the reviewer"
+    })
+  end
+
+step :assert_reviewer_removed_email_sent_to_subscriber, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.subscriber,
+      author: ctx.creator,
+      action: "removed the reviewer"
     })
   end
 
@@ -851,13 +861,32 @@ defmodule Operately.Support.Features.ProjectSteps do
     })
   end
 
+  step :assert_champion_removed_notification_sent_to_subscriber, ctx do
+    ctx
+    |> UI.login_as(ctx.subscriber)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.creator,
+      action: "Removed the champion for #{ctx.project.name}"
+    })
+  end
+
   step :assert_champion_change_email_sent_to_subscriber, ctx do
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
       to: ctx.subscriber,
       author: ctx.creator,
-      action: "changed the champion"
+      action: "assigned #{Person.short_name(ctx.champion)} as the champion"
+    })
+  end
+
+  step :assert_champion_removed_email_sent_to_subscriber, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.subscriber,
+      author: ctx.creator,
+      action: "removed the champion"
     })
   end
 
@@ -937,10 +966,8 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :subscribe_to_project, ctx do
     ctx
-    |> UI.take_screenshot()
     |> UI.click(testid: "project-subscribe-button")
     |> UI.sleep(300)
-    |> UI.take_screenshot()
     |> UI.refute_has(testid: "project-subscribe-button")
     |> UI.assert_has(testid: "project-unsubscribe-button")
   end

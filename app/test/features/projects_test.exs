@@ -168,8 +168,8 @@ defmodule Operately.Features.ProjectsTest do
       |> Steps.log_in_as_creator()
       |> Steps.visit_project_page()
       |> Steps.remove_champion()
-      |> Steps.assert_champion_change_notification_sent_to_subscriber()
-      |> Steps.assert_champion_change_email_sent_to_subscriber()
+      |> Steps.assert_champion_removed_notification_sent_to_subscriber()
+      |> Steps.assert_champion_removed_email_sent_to_subscriber()
     end
 
     feature "changing the reviewer", ctx do
@@ -215,7 +215,7 @@ defmodule Operately.Features.ProjectsTest do
       |> Steps.visit_project_page()
       |> Steps.remove_reviewer()
       |> Steps.assert_reviewer_change_notification_sent_to_subscriber()
-      |> Steps.assert_reviewer_change_email_sent_to_subscriber()
+      |> Steps.assert_reviewer_removed_email_sent_to_subscriber()
     end
   end
 end

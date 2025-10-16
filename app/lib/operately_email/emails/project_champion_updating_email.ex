@@ -20,6 +20,7 @@ defmodule OperatelyEmail.Emails.ProjectChampionUpdatingEmail do
     |> assign(:author, author)
     |> assign(:project, project)
     |> assign(:champion, champion)
+    |> assign(:person, person)
     |> assign(:cta_url, Paths.project_path(company, project) |> Paths.to_url())
     |> render("project_champion_updating")
   end
