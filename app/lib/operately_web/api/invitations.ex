@@ -208,4 +208,76 @@ defmodule OperatelyWeb.Api.Invitations do
       |> Enum.join(", ")
     end
   end
+
+  defmodule UpdateCompanyInviteLink do
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
+
+    alias Operately.Companies
+    alias Operately.Companies.Permissions
+
+    inputs do
+      field?(:active, :boolean)
+    end
+
+    outputs do
+      field?(:invite_link, :invite_link, null: false)
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> start_transaction()
+      |> check_permissions()
+      |> find_link()
+      |> update_link(inputs)
+      |> commit()
+      |> respond()
+    end
+
+    def start_transaction(conn) do
+      Ecto.Multi.new() |> Ecto.Multi.put(:me, conn.assigns.current_person)
+    end
+
+    def load_company(multi, conn) do
+      Ecto.Multi.run(multi, :company, fn _, %{me: me} ->
+        Company.get(me, id: conn.assigns.current_company.id)
+      end)
+    end
+
+    def check_permissions(multi) do
+      Ecto.Multi.run(multi, :check_permissions, fn _, %{company: company} ->
+        Permissions.check(company.request_info.access_level, :can_invite_members)
+      end)
+    end
+
+    def find_link(multi) do
+      Ecto.Multi.run(multi, :invite_link, fn _, %{me: me, company: company} ->
+        InviteLinks.get_invite_link(company.id)
+      end)
+    end
+
+    def update_link(multi, inputs) do
+      Ecto.Multi.run(multi, :updated_invite_link, fn _, %{invite_link: invite_link} ->
+        InviteLinks.update_invite_link(invite_link, inputs)
+      end)
+    end
+
+    defp commit(multi), do: Repo.transaction(multi)
+
+    def respond(result) do
+      case result do
+        {:ok, ctx} ->
+          {:ok, ctx.serialized}
+
+        _ ->
+          {:error, :internal_server_error}
+      end
+    end
+
+    defp extract_error_message(changeset) do
+      changeset.errors
+      |> Enum.map(fn {field, {message, _}} -> "#{field} #{message}" end)
+      |> Enum.join(", ")
+    end
+  end
 end
