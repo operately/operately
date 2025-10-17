@@ -3722,11 +3722,11 @@ export interface InvitationsNewInvitationTokenResult {
   invitation?: Invitation | null;
 }
 
-export interface InvitationsRevokeInviteLinkInput {
-  inviteLinkId?: string;
+export interface InvitationsUpdateCompanyInviteLinkInput {
+  isActive?: boolean;
 }
 
-export interface InvitationsRevokeInviteLinkResult {
+export interface InvitationsUpdateCompanyInviteLinkResult {
   inviteLink?: InviteLink;
 }
 
@@ -4832,8 +4832,10 @@ class ApiNamespaceInvitations {
     return this.client.post("/invitations/new_invitation_token", input);
   }
 
-  async revokeInviteLink(input: InvitationsRevokeInviteLinkInput): Promise<InvitationsRevokeInviteLinkResult> {
-    return this.client.post("/invitations/revoke_invite_link", input);
+  async updateCompanyInviteLink(
+    input: InvitationsUpdateCompanyInviteLinkInput,
+  ): Promise<InvitationsUpdateCompanyInviteLinkResult> {
+    return this.client.post("/invitations/update_company_invite_link", input);
   }
 }
 
@@ -7367,18 +7369,18 @@ export default {
         defaultApiClient.apiNamespaceInvitations.newInvitationToken(input),
       ),
 
-    revokeInviteLink: (input: InvitationsRevokeInviteLinkInput) =>
-      defaultApiClient.apiNamespaceInvitations.revokeInviteLink(input),
-    useRevokeInviteLink: () =>
-      useMutation<InvitationsRevokeInviteLinkInput, InvitationsRevokeInviteLinkResult>((input) =>
-        defaultApiClient.apiNamespaceInvitations.revokeInviteLink(input),
-      ),
-
     getCompanyInviteLink: (input: InvitationsGetCompanyInviteLinkInput) =>
       defaultApiClient.apiNamespaceInvitations.getCompanyInviteLink(input),
     useGetCompanyInviteLink: () =>
       useMutation<InvitationsGetCompanyInviteLinkInput, InvitationsGetCompanyInviteLinkResult>((input) =>
         defaultApiClient.apiNamespaceInvitations.getCompanyInviteLink(input),
+      ),
+
+    updateCompanyInviteLink: (input: InvitationsUpdateCompanyInviteLinkInput) =>
+      defaultApiClient.apiNamespaceInvitations.updateCompanyInviteLink(input),
+    useUpdateCompanyInviteLink: () =>
+      useMutation<InvitationsUpdateCompanyInviteLinkInput, InvitationsUpdateCompanyInviteLinkResult>((input) =>
+        defaultApiClient.apiNamespaceInvitations.updateCompanyInviteLink(input),
       ),
 
     joinCompanyViaInviteLink: (input: InvitationsJoinCompanyViaInviteLinkInput) =>
