@@ -6,15 +6,9 @@ import { PrimaryButton, SecondaryButton } from "../Button";
 import { IconMoodSad } from "../icons";
 import { OperatelyLogo } from "../Logo";
 import { useHtmlTitle } from "../Page/useHtmlTitle";
-import { firstName } from "../utils/people";
 
 export namespace InviteLinkJoinPage {
-  export type PageState =
-    | "logged-in-user-valid-token"
-    | "anonymous-user-valid-token"
-    | "expired-token"
-    | "revoked-token"
-    | "invalid-token";
+  export type PageState = "logged-in-user-valid-token" | "anonymous-user-valid-token" | "invalid-token";
 
   export interface Invitation {
     company: {
@@ -56,8 +50,6 @@ export function InviteLinkJoinPage(props: InviteLinkJoinPage.Props) {
       {match(props.pageState)
         .with("logged-in-user-valid-token", () => <LoggedInUserValidTokenState {...props} />)
         .with("anonymous-user-valid-token", () => <AnonymousValidTokenState {...props} />)
-        .with("expired-token", () => <ExpiredTokenState {...props} />)
-        .with("revoked-token", () => <ExpiredTokenState {...props} />)
         .with("invalid-token", () => <InvalidTokenState />)
         .exhaustive()}
     </div>
@@ -111,26 +103,6 @@ function AnonymousValidTokenState(props: InviteLinkJoinPage.Props) {
         <SecondaryButton onClick={props.handleLogInAndJoin} testId="log-in-and-join">
           Log in with your account
         </SecondaryButton>
-      </div>
-    </div>
-  );
-}
-
-function ExpiredTokenState(props: InviteLinkJoinPage.Props) {
-  return (
-    <div className="bg-surface-base mx-auto p-12 w-[500px] border border-stroke-base rounded-xl shadow-lg">
-      <div className="text-center flex flex-col items-center mb-8">
-        <Avatar person={props.invitation?.author!} size={64} className="mb-4" />
-        {props.invitation?.author?.fullName} invited you to join
-        <div className="text-xl font-semibold">{props.invitation?.company?.name}</div>
-      </div>
-
-      <div className="bg-callout-warning-bg p-4 -mb-4 rounded-md">
-        <div className="flex items-center text-center gap-2">
-          <IconMoodSad size={24} className="text-callout-warning-content mb-2" />
-          <div className="font-semibold mb-2">Expired Invitation</div>
-        </div>
-        <div>This invitation has expired. Ask {firstName(props.invitation?.author?.fullName!)} for a new one.</div>
       </div>
     </div>
   );
