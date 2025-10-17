@@ -81,6 +81,7 @@ export function processPersonalItems(items: WorkMap.Item[]): ProcessedItems {
   const allGoals: WorkMap.Item[] = [];
   const allProjects: WorkMap.Item[] = [];
   const completedItems: WorkMap.Item[] = [];
+  const pausedItems: WorkMap.Item[] = [];
 
   const processItem = (item: WorkMap.Item) => {
     const isItemCompleted = CLOSED_STATUSES.includes(item.status);
@@ -89,16 +90,16 @@ export function processPersonalItems(items: WorkMap.Item[]): ProcessedItems {
     if (isItemCompleted) {
       completedItems.push({ ...item, children: [] });
     } else {
-      if (item.type === "goal") {
-        allGoals.push({ ...item, children: [] });
-        if (isItemActive) {
-          ongoingItems.push({ ...item, children: [] });
+      if (isItemActive) {
+        ongoingItems.push({ ...item, children: [] });
+
+        if (item.type === "goal") {
+          allGoals.push({ ...item, children: [] });
+        } else if (item.type === "project") {
+          allProjects.push({ ...item, children: [] });
         }
-      } else if (item.type === "project") {
-        allProjects.push({ ...item, children: [] });
-        if (isItemActive) {
-          ongoingItems.push({ ...item, children: [] });
-        }
+      } else {
+        pausedItems.push({ ...item, children: [] });
       }
     }
 
@@ -119,7 +120,7 @@ export function processPersonalItems(items: WorkMap.Item[]): ProcessedItems {
     goals: allGoals,
     projects: allProjects,
     completedItems,
-    pausedItems: [],
+    pausedItems,
   };
 }
 

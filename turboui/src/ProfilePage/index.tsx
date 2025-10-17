@@ -1,6 +1,6 @@
 import React from "react";
 
-import { IconCircleCheck, IconClipboardCheck, IconEye, IconLogs, IconUserCircle } from "../icons";
+import { IconCircleCheck, IconClipboardCheck, IconEye, IconLogs, IconPlayerPause, IconUserCircle } from "../icons";
 
 import { PageNew } from "../Page";
 import { Tabs, useTabs } from "../Tabs";
@@ -48,8 +48,11 @@ export function ProfilePage(props: ProfilePage.Props) {
       <PageHeader {...props} />
       <Tabs tabs={tabs} />
 
-      {["assigned", "reviewing", "completed"].includes(tabs.active) && (
-        <WorkMapTable items={items[tabs.active]} tab={tabs.active === "completed" ? "completed" : "all"} />
+      {["assigned", "reviewing", "paused", "completed"].includes(tabs.active) && (
+        <WorkMapTable
+          items={items[tabs.active]}
+          tab={["completed", "paused"].includes(tabs.active) ? (tabs.active as WorkMap.Filter) : "all"}
+        />
       )}
       {tabs.active === "activity" && <ActivityFeed {...props} />}
       {tabs.active === "about" && <About {...props} />}
@@ -58,13 +61,14 @@ export function ProfilePage(props: ProfilePage.Props) {
 }
 
 function useTabsWithItems(workMap: WorkMap.Item[], reviewerWorkMap: WorkMap.Item[]) {
-  const { assigned, reviewing, completed } = React.useMemo(() => {
+  const { assigned, reviewing, paused, completed } = React.useMemo(() => {
     const assignedData = processPersonalItems(workMap);
     const reviewerData = processPersonalItems(reviewerWorkMap);
 
     return {
       assigned: sortItemsByDueDate(assignedData.ongoingItems),
       reviewing: sortItemsByDueDate(reviewerData.ongoingItems),
+      paused: sortItemsByDueDate(assignedData.pausedItems),
       completed: sortItemsByClosedDate(assignedData.completedItems),
     };
   }, [workMap, reviewerWorkMap]);
@@ -72,6 +76,7 @@ function useTabsWithItems(workMap: WorkMap.Item[], reviewerWorkMap: WorkMap.Item
   const tabs = useTabs("assigned", [
     { id: "assigned", label: "Assigned", icon: <IconClipboardCheck size={14} />, count: assigned.length },
     { id: "reviewing", label: "Reviewing", icon: <IconEye size={14} />, count: reviewing.length },
+    { id: "paused", label: "Paused", icon: <IconPlayerPause size={14} />, count: paused.length },
     { id: "completed", label: "Completed", icon: <IconCircleCheck size={14} />, count: completed.length },
     { id: "activity", label: "Activity", icon: <IconLogs size={14} /> },
     { id: "about", label: "About", icon: <IconUserCircle size={14} /> },
@@ -79,7 +84,7 @@ function useTabsWithItems(workMap: WorkMap.Item[], reviewerWorkMap: WorkMap.Item
 
   return {
     tabs,
-    items: { assigned, reviewing, completed },
+    items: { assigned, reviewing, paused, completed },
   };
 }
 
