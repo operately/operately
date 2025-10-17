@@ -108,7 +108,7 @@ export function MilestoneItem({ milestone, canEdit, onUpdate, isLast = false, is
     >
       {/* Drag handle - shown on hover when draggable */}
       {isDraggable && (
-        <div className="absolute -left-8 flex items-center mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="flex items-center mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <IconGripVertical size={16} className="text-content-subtle" />
         </div>
       )}
