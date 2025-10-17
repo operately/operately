@@ -22,7 +22,7 @@ defmodule Operately.Support.Features.ProfileSteps do
     peers = [peer_1, peer_2]
     reports = [report_1, report_2, report_3]
 
-    Map.merge(ctx, %{person: person, manager: manager, reports: reports, peers: peers, company: company})
+    Map.merge(ctx, %{creator: manager, person: person, manager: manager, reports: reports, peers: peers, company: company})
   end
 
   step :visit_profile_page, ctx do
@@ -77,7 +77,7 @@ defmodule Operately.Support.Features.ProfileSteps do
       name: "Increase customer satisfaction",
     })
 
-    Map.merge(ctx, %{goals: [goal1, goal2]})
+    Map.merge(ctx, %{goals: [goal1, goal2], goal1: goal1, goal2: goal2})
   end
 
   step :given_projects_exist_for_person, ctx do
@@ -101,7 +101,19 @@ defmodule Operately.Support.Features.ProfileSteps do
       name: "Project 2",
     })
 
-    Map.merge(ctx, %{projects: [project1, project2]})
+    Map.merge(ctx, %{projects: [project1, project2], project1: project1, project2: project2})
+  end
+
+  step :given_a_goal_is_closed, ctx do
+    Factory.close_goal(ctx, :goal1)
+  end
+
+  step :given_a_project_is_closed, ctx do
+    Factory.close_project(ctx, :project1)
+  end
+
+  step :given_a_project_is_paused, ctx do
+    Factory.pause_project(ctx, :project1)
   end
 
   step :click_about_tab, ctx do
@@ -110,6 +122,14 @@ defmodule Operately.Support.Features.ProfileSteps do
 
   step :click_reviewing_tab, ctx do
     UI.click(ctx, testid: "tab-reviewing")
+  end
+
+  step :click_completed_tab, ctx do
+    UI.click(ctx, testid: "tab-completed")
+  end
+
+  step :click_paused_tab, ctx do
+    UI.click(ctx, testid: "tab-paused")
   end
 
   step :assert_assinged_goals_and_projects_visible, ctx do
@@ -134,5 +154,21 @@ defmodule Operately.Support.Features.ProfileSteps do
     ctx
     |> UI.refute_text(Enum.at(ctx.goals, 1).name)
     |> UI.refute_text(Enum.at(ctx.projects, 1).name)
+  end
+
+  step :assert_only_completed_goals_and_projects_visible, ctx do
+    ctx
+    |> UI.assert_text(ctx.goal1.name)
+    |> UI.assert_text(ctx.project1.name)
+    |> UI.refute_text(ctx.goal2.name)
+    |> UI.refute_text(ctx.project2.name)
+  end
+
+  step :assert_only_paused_project_visible, ctx do
+    ctx
+    |> UI.assert_text(ctx.project1.name)
+    |> UI.refute_text(ctx.project2.name)
+    |> UI.refute_text(ctx.goal1.name)
+    |> UI.refute_text(ctx.goal2.name)
   end
 end

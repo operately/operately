@@ -51,4 +51,24 @@ defmodule Operately.Features.ProfileTest do
     |> Steps.refute_assinged_goals_and_projects_visible()
   end
 
+  feature "view completed goals and projects", ctx do
+    ctx
+    |> Steps.given_goals_exist_for_person()
+    |> Steps.given_projects_exist_for_person()
+    |> Steps.given_a_goal_is_closed()
+    |> Steps.given_a_project_is_closed()
+    |> Steps.visit_profile_page()
+    |> Steps.click_completed_tab()
+    |> Steps.assert_only_completed_goals_and_projects_visible()
+  end
+
+  feature "view paused projects", ctx do
+    ctx
+    |> Steps.given_goals_exist_for_person()
+    |> Steps.given_projects_exist_for_person()
+    |> Steps.given_a_project_is_paused()
+    |> Steps.visit_profile_page()
+    |> Steps.click_paused_tab()
+    |> Steps.assert_only_paused_project_visible()
+  end
 end
