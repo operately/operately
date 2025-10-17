@@ -12,6 +12,7 @@ import { OverviewSidebar } from "./OverviewSidebar";
 import { ProjectPage } from "./index";
 import { PageDescription } from "../PageDescription";
 import { DragAndDropProvider, useDropZone, useDraggingAnimation } from "../utils/DragAndDrop";
+import classNames from "../utils/classnames";
 
 export function Overview(props: ProjectPage.State) {
   return (
@@ -65,7 +66,6 @@ function TimelineSection(props: ProjectPage.State) {
   const validMilestones = milestones.filter(
     (m) => m.name !== "Empty Milestone" && !m.name.toLowerCase().includes("empty") && m.name.trim() !== "",
   );
-
 
   const handleAddMilestone = () => {
     if (!newMilestoneName.trim()) return;
@@ -228,7 +228,7 @@ function MilestoneListInner({ milestones, canEdit, onMilestoneUpdate, isDragging
   const { containerStyle, itemStyle } = useDraggingAnimation("milestone-list", milestonesWithIndex);
 
   return (
-    <div ref={dropZoneRef} className="space-y-2" style={containerStyle}>
+    <div ref={dropZoneRef} style={containerStyle} className={classNames("space-y-2", { "-ml-8": isDraggingEnabled })}>
       {milestones.map((milestone, index) => (
         <MilestoneItem
           key={milestone.id}
