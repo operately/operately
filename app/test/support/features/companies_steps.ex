@@ -39,7 +39,7 @@ defmodule Operately.Support.Features.CompaniesSteps do
     ctx
     |> UI.assert_has(testid: "company-creator-onboarding")
     |> UI.assert_has(testid: "company-creator-step-welcome")
-    |> UI.assert_text("Thanks for joining Operately!")
+    |> UI.assert_text("Thanks for signing up!")
   end
 
   step :click_lets_start, ctx do

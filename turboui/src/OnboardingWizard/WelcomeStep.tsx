@@ -29,30 +29,23 @@ export function WelcomeStep({ state, imageUrl, whatReady, headingId, stepTestId,
         <img
           src={imageUrl}
           alt={"Marko Anastasov, CEO & Founder, Operately"}
-          className="w-[120px] h-[120px] rounded-full object-cover shadow-lg"
+          className="w-[80px] h-[80px] sm:w-[120px] sm:h-[120px] rounded-full object-cover shadow-lg"
         />
-        <div className="mt-6 max-w-lg text-content-base space-y-4">
-          <h1 className="font-semibold text-2xl" id={resolvedHeadingId}>
-            Thanks for joining Operately!
+        <div className="mt-6 max-w-lg text-content-base space-y-4 text-left">
+          <h1 className="font-semibold text-xl" id={resolvedHeadingId}>
+            Thanks for signing up!
           </h1>
           <p>
-            I'm thrilled to have you here. We built Operately to help teams work better together — to stay aligned, make
-            progress visible, and keep everyone moving in the same direction.
+            Operately is what I wished I had when I started my first company. We had plenty of tools, but no single
+            place where plans and daily work came together.
           </p>
+          <p>If you ever need a hand or want to talk shop, email me at marko@operately.com and I'll reply.</p>
           <p>
-            We'll walk you through a quick setup to get your {whatReady} ready. It takes just a few minutes, and you can
-            always come back to this later.
-          </p>
-          <p className="italic">
-            If you ever need help, reach out at marko@operately.com.
-            <br /> We're here for you.
-          </p>
-          <p>
-            Best regards,
+            Onward,
             <br />
-            <span className="font-semibold">Marko Anastasov</span>
+            Marko Anastasov
             <br />
-            CEO &amp; Founder, Operately
+            Co-founder &amp; CEO of Operately
           </p>
         </div>
       </div>

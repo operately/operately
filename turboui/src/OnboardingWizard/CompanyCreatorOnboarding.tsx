@@ -241,7 +241,7 @@ function InviteStep({
               id="onboarding-invite-link"
               value={invitationLink ?? ""}
               readOnly
-              className="flex-1 min-w-0 px-3 py-2 border border-surface-outline bg-surface-dimmed rounded-lg bg-surface-base text-sm text-content-accent focus:outline-none focus:ring-2 focus:ring-brand-1"
+              className="flex-1 min-w-0 px-3 py-2 border border-surface-outline rounded-lg bg-surface-base text-sm text-content-accent focus:outline-none focus:ring-2 focus:ring-brand-1"
               aria-label="Invitation link"
               placeholder={linkReady ? undefined : "Generating invite link..."}
               data-test-id="company-creator-invite-link"
