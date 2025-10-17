@@ -55,29 +55,6 @@ defmodule Operately.Support.Features.InviteLinksSteps do
     Map.put(ctx, :invite_link, invite_link)
   end
 
-  step :given_that_an_expired_invite_link_exists, ctx do
-    {:ok, invite_link} =
-      Operately.InviteLinks.create_invite_link(%{
-        company_id: ctx.company.id,
-        author_id: ctx.creator.id,
-        expires_at: DateTime.add(DateTime.utc_now(), -1, :day)
-      })
-
-    Map.put(ctx, :invite_link, invite_link)
-  end
-
-  step :given_that_a_revoked_invite_link_exists, ctx do
-    {:ok, invite_link} =
-      Operately.InviteLinks.create_invite_link(%{
-        company_id: ctx.company.id,
-        author_id: ctx.creator.id
-      })
-
-    {:ok, revoked_link} = Operately.InviteLinks.revoke_invite_link(invite_link)
-
-    Map.put(ctx, :invite_link, revoked_link)
-  end
-
   step :given_that_i_have_an_invalid_invite_link, ctx do
     Map.put(ctx, :invite_link, %{token: "asdasdasd"})
   end
@@ -195,10 +172,6 @@ defmodule Operately.Support.Features.InviteLinksSteps do
     |> UI.fill(testid: "password", with: ctx.invited_member_password)
     |> UI.click(testid: "submit")
     |> UI.sleep(500)
-  end
-
-  step :assert_expired_invite_link_message, ctx do
-    ctx |> UI.assert_text("Expired Invitation")
   end
 
   step :assert_invalid_invite_link_message, ctx do

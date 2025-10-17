@@ -49,40 +49,6 @@ export const AnnonymousUserValidTokenState: Story = {
   },
 };
 
-export const ExpiredTokenState: Story = {
-  args: {
-    pageState: "expired-token",
-    invitation: {
-      company: {
-        id: "1",
-        name: "Textered Rend",
-      },
-      author: author,
-    },
-    token: "expired-token",
-    handleJoin: () => {},
-    handleSignUpAndJoin: () => {},
-    handleLogInAndJoin: () => {},
-  },
-};
-
-export const RevokedTokenState: Story = {
-  args: {
-    pageState: "revoked-token",
-    invitation: {
-      company: {
-        id: "1",
-        name: "Textered Rend",
-      },
-      author: author,
-    },
-    token: "revoked-token",
-    handleJoin: () => {},
-    handleSignUpAndJoin: () => {},
-    handleLogInAndJoin: () => {},
-  },
-};
-
 export const InvalidTokenState: Story = {
   args: {
     pageState: "invalid-token",
