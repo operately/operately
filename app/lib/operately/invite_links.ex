@@ -40,10 +40,8 @@ defmodule Operately.InviteLinks do
   end
 
   def get_invite_link(company_id) do
-    # Look for an active, non-expired invite link first
     from(il in InviteLink,
       where: il.company_id == ^company_id,
-      where: is_nil(il.expires_at) or il.expires_at > ^DateTime.utc_now(),
       order_by: [desc: il.inserted_at],
       limit: 1
     )
@@ -99,9 +97,6 @@ defmodule Operately.InviteLinks do
       link.is_active == false ->
         {:error, :invite_link_inactive}
 
-      InviteLink.is_expired?(link) ->
-        {:error, :invite_link_expired}
-
       not allowed_for_account?(link.allowed_domains, account) ->
         {:error, :invite_link_domain_not_allowed}
 
@@ -156,10 +151,6 @@ defmodule Operately.InviteLinks do
       {:error, :validate_invite_link, :invite_link_inactive, _changes} ->
         Logger.info("Inactive invite token during account creation")
         {:error, :invite_token_inactive}
-
-      {:error, :validate_invite_link, :invite_link_expired, _changes} ->
-        Logger.info("Expired invite token during account creation")
-        {:error, :invite_token_expired}
 
       {:error, :validate_invite_link, :invite_link_domain_not_allowed, _changes} ->
         Logger.info("Invite link blocked due to email domain restriction")

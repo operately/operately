@@ -124,20 +124,6 @@ defmodule Operately.Features.InviteLinksTest do
     end
   end
 
-  feature "attempting to join with expired token", ctx do
-    ctx
-    |> Steps.given_that_an_expired_invite_link_exists()
-    |> Steps.follow_invite_link()
-    |> Steps.assert_expired_invite_link_message()
-  end
-
-  feature "attempting to join with revoked token", ctx do
-    ctx
-    |> Steps.given_that_a_revoked_invite_link_exists()
-    |> Steps.follow_invite_link()
-    |> Steps.assert_expired_invite_link_message()
-  end
-
   feature "attempting to join with non-existent token", ctx do
     ctx
     |> Steps.given_that_i_have_an_invalid_invite_link()

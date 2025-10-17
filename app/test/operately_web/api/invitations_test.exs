@@ -86,15 +86,6 @@ defmodule OperatelyWeb.Api.InvitationsTest do
       assert res.message == "This invite link is no longer valid"
     end
 
-    test "returns error when invite link is expired", ctx do
-      invite_link = create_invite_link(ctx)
-      expired_at = DateTime.add(DateTime.utc_now(), -60, :second)
-      {:ok, expired} = InviteLinks.update_invite_link(invite_link, %{expires_at: expired_at})
-
-      assert {400, res} = execute(ctx, %{token: expired.token})
-      assert res.message == "This invite link has expired"
-    end
-
     test "return company and person when successful", ctx do
       invite_link = create_invite_link(ctx)
 
