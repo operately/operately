@@ -3,6 +3,7 @@ defmodule Operately.Support.Features.ProfileSteps do
 
   import Operately.PeopleFixtures
   import Operately.CompaniesFixtures
+  import Operately.GroupsFixtures
   import Operately.GoalsFixtures
   import Operately.ProjectsFixtures
 
@@ -11,6 +12,8 @@ defmodule Operately.Support.Features.ProfileSteps do
 
     manager = person_fixture_with_account(%{company_id: company.id, full_name: "John Coltrane", manager_id: nil})
     person = person_fixture_with_account(%{company_id: company.id, full_name: "Miles Davis", manager_id: manager.id})
+
+    space = group_fixture(manager, %{company_id: company.id})
 
     report_1 = person_fixture_with_account(%{company_id: company.id, full_name: "Bill Evans", manager_id: person.id})
     report_2 = person_fixture_with_account(%{company_id: company.id, full_name: "Herbie Hancock", manager_id: person.id})
@@ -22,7 +25,15 @@ defmodule Operately.Support.Features.ProfileSteps do
     peers = [peer_1, peer_2]
     reports = [report_1, report_2, report_3]
 
-    Map.merge(ctx, %{creator: manager, person: person, manager: manager, reports: reports, peers: peers, company: company})
+    Map.merge(ctx, %{
+      creator: manager,
+      person: person,
+      manager: manager,
+      reports: reports,
+      peers: peers,
+      company: company,
+      space: space,
+    })
   end
 
   step :visit_profile_page, ctx do
@@ -104,16 +115,38 @@ defmodule Operately.Support.Features.ProfileSteps do
     Map.merge(ctx, %{projects: [project1, project2], project1: project1, project2: project2})
   end
 
-  step :given_a_goal_is_closed, ctx do
-    Factory.close_goal(ctx, :goal1)
+  step :given_goal_with_user_as_reviewer_exists, ctx do
+    Factory.add_goal(ctx, :goal, :space, [
+      name: "Improve support first response time",
+      reviewer: :person,
+      champion: :manager
+    ])
   end
 
-  step :given_a_project_is_closed, ctx do
-    Factory.close_project(ctx, :project1)
+  step :given_project_with_user_as_reviewer_exists, ctx do
+    Factory.add_project(ctx, :project, :space, [
+      name: "Deploy new feature",
+      reviewer: :person,
+      champion: :manager
+    ])
   end
 
-  step :given_a_project_is_paused, ctx do
-    Factory.pause_project(ctx, :project1)
+  step :given_a_goal_is_closed, ctx, opts \\ [] do
+    goal_key = Keyword.get(opts, :goal_key, :goal1)
+
+    Factory.close_goal(ctx, goal_key)
+  end
+
+  step :given_a_project_is_closed, ctx, opts \\ [] do
+    project_key = Keyword.get(opts, :project_key, :project1)
+
+    Factory.close_project(ctx, project_key)
+  end
+
+  step :given_a_project_is_paused, ctx, opts \\ [] do
+    project_key = Keyword.get(opts, :project_key, :project1)
+
+    Factory.pause_project(ctx, project_key)
   end
 
   step :click_about_tab, ctx do
@@ -122,6 +155,10 @@ defmodule Operately.Support.Features.ProfileSteps do
 
   step :click_reviewing_tab, ctx do
     UI.click(ctx, testid: "tab-reviewing")
+  end
+
+  step :click_assigned_tab, ctx do
+    UI.click(ctx, testid: "tab-assigned")
   end
 
   step :click_completed_tab, ctx do
@@ -170,5 +207,13 @@ defmodule Operately.Support.Features.ProfileSteps do
     |> UI.refute_text(ctx.project2.name)
     |> UI.refute_text(ctx.goal1.name)
     |> UI.refute_text(ctx.goal2.name)
+  end
+
+  step :assert_item_visible, ctx, name: name do
+    UI.assert_text(ctx, name)
+  end
+
+  step :refute_item_visible, ctx, name: name do
+    UI.refute_text(ctx, name)
   end
 end
