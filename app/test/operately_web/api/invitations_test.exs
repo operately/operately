@@ -167,6 +167,31 @@ defmodule OperatelyWeb.Api.InvitationsTest do
     end
   end
 
+  describe "update_invite_link" do
+    test "requires authentication", ctx do
+      assert {401, _} = execute(ctx)
+    end
+
+    test "toggle the invite link active status", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      invite_link = create_invite_link(ctx)
+
+      # deactivate
+      assert {200, res} = execute(ctx, %{active: false})
+      invite_link = Operately.Repo.reload(invite_link)
+      refute invite_link.active
+
+      # activate
+      assert {200, res} = execute(ctx, %{active: true})
+      invite_link = Operately.Repo.reload(invite_link)
+      assert invite_link.active
+    end
+
+    def execute(ctx, params) do
+      mutation(ctx.conn, [:invitations, :update_invite_link], params)
+    end
+  end
+
   defp create_invite_link(ctx, attrs \\ %{}) do
     defaults = %{company_id: ctx.company.id, author_id: ctx.creator.id}
     {:ok, invite_link} = InviteLinks.create_invite_link(Map.merge(defaults, attrs))
