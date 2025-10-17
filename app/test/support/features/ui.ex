@@ -149,6 +149,18 @@ defmodule Operately.Support.Features.UI do
       """
   end
 
+  def assert_has(state, testid: id, value: val) do
+    assert_has(state, Query.css("[data-test-id=\"#{id}\"][value=\"#{val}\"]"))
+  rescue
+    _e in Wallaby.QueryError ->
+      raise """
+      Failed to find element with test id: #{id}
+
+      Avalable elements with test-id:
+      #{list_all_testids(state)}
+      """
+  end
+
   def assert_has(state, opts) when is_list(opts) do
     {_, opts} = Keyword.pop(opts, :in)
     css_query = compose_css_query(opts)

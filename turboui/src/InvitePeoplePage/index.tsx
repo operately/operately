@@ -163,6 +163,7 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
                   placeholder={linkEnabled ? "Generating invite link…" : "Invite link disabled"}
                   readOnly
                   disabled={!linkEnabled}
+                  data-test-id="invite-people-invite-link"
                   onFocus={(event) => event.currentTarget.select()}
                 />
                 <PrimaryButton

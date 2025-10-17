@@ -7,75 +7,6 @@ defmodule Operately.Support.Features.InviteLinksSteps do
   alias Operately.Support.Factory
   alias Operately.Support.Features.UI.Emails, as: Emails
 
-  step :given_a_company_and_a_user, ctx do
-    ctx = Factory.setup(ctx)
-    UI.login_as(ctx, ctx.creator)
-  end
-
-  step :open_invite_team_page, ctx do
-    path = Paths.home_path(ctx.company) <> "/invite-team"
-
-    ctx
-    |> UI.visit(path)
-    |> UI.assert_has(testid: "invite-team-page")
-  end
-
-  step :enable_invite_link, ctx do
-    ctx
-    |> UI.click(testid: "invite-people-link-toggle")
-    |> UI.sleep(500)
-  end
-
-  step :assert_active_invite_link_created, ctx do
-    invite_link = wait_for_active_invite_link(ctx.company.id)
-
-    assert invite_link.author_id == ctx.creator.id
-    assert invite_link.is_active
-
-    Map.put(ctx, :invite_link, invite_link)
-  end
-
-  step :reset_invite_link, ctx do
-    ctx
-    |> UI.sleep(500)
-    |> UI.assert_has(testid: "invite-people-reset-link")
-    |> UI.click(testid: "invite-people-reset-link")
-    |> UI.assert_has(testid: "invite-people-reset-confirm")
-    |> UI.click_button("Generate new link")
-    |> UI.sleep(500)
-  end
-
-  step :assert_invite_link_rotated, ctx do
-    old_link = Operately.Repo.reload(ctx.invite_link)
-    new_link = wait_for_new_active_invite_link(ctx.company.id, old_link.id)
-
-    refute old_link.is_active
-    assert new_link.is_active
-    refute new_link.id == old_link.id
-
-    Map.put(ctx, :invite_link, new_link)
-  end
-
-  step :enable_domain_restrictions, ctx do
-    ctx
-    |> UI.assert_has(testid: "invite-people-domain-toggle")
-    |> UI.click(testid: "invite-people-domain-toggle-restricted")
-    |> UI.assert_has(testid: "invite-people-domain-input")
-  end
-
-  step :set_allowed_domains, ctx, domains do
-    ctx
-    |> UI.fill(testid: "invite-people-domain-input-input", with: domains)
-  end
-
-  step :assert_allowed_domains, ctx, expected_domains do
-    invite_link = wait_for_active_invite_link(ctx.company.id)
-
-    assert invite_link.allowed_domains == expected_domains
-
-    Map.put(ctx, :invite_link, invite_link)
-  end
-
   step :setup, ctx do
     prev_allow_signup_with_email = Application.get_env(:operately, :allow_signup_with_email)
     prev_allow_login_with_email = Application.get_env(:operately, :allow_login_with_email)
@@ -274,54 +205,67 @@ defmodule Operately.Support.Features.InviteLinksSteps do
     ctx |> UI.assert_text("Invalid Link")
   end
 
+  step :open_invite_team_page, ctx do
+    path = Paths.home_path(ctx.company) <> "/invite-team"
+
+    ctx
+    |> UI.visit(path)
+    |> UI.assert_has(testid: "invite-team-page")
+    |> UI.sleep(500)
+  end
+
+  step :assert_invite_link_visible, ctx do
+    {:ok, link} = Operately.InviteLinks.get_invite_link(ctx.company.id)
+    expected_url = OperatelyWeb.Endpoint.url() <> "/join/#{link.token}"
+
+    ctx
+    |> UI.click(testid: "invite-people-copy-link")
+    |> UI.assert_has(testid: "invite-people-invite-link", value: expected_url)
+  end
+
+  step :reset_invite_link, ctx do
+    ctx
+    |> UI.sleep(500)
+    |> UI.assert_has(testid: "invite-people-reset-link")
+    |> UI.click(testid: "invite-people-reset-link")
+    |> UI.assert_has(testid: "invite-people-reset-confirm")
+    |> UI.click_button("Generate new link")
+    |> UI.sleep(500)
+  end
+
+  step :enable_domain_restrictions, ctx do
+    ctx
+    |> UI.assert_has(testid: "invite-people-domain-toggle")
+    |> UI.click(testid: "invite-people-domain-toggle-restricted")
+    |> UI.assert_has(testid: "invite-people-domain-input")
+  end
+
+  step :set_allowed_domains, ctx, domains do
+    ctx
+    |> UI.fill(testid: "invite-people-domain-input-input", with: domains)
+  end
+
+  step :assert_invite_link_is_active, ctx do
+    {:ok, link} = Operately.InviteLinks.get_invite_link(ctx.company.id)
+    assert link.is_active
+    ctx
+  end
+
+  step :disable_invite_link, ctx do
+    UI.click(ctx, testid: "invite-people-link-toggle")
+  end
+
+  step :assert_invite_link_is_not_active, ctx do
+    {:ok, link} = Operately.InviteLinks.get_invite_link(ctx.company.id)
+    refute link.is_active
+    ctx
+  end
+
   defp wait_for_signup_code(email) do
     subject = "Operately confirmation code:"
     emails = Emails.wait_for_email_for(email, attempts: 10)
 
     email = Enum.find(emails, fn email -> String.contains?(email.subject, subject) end)
     String.split(email.subject, subject) |> List.last()
-  end
-
-  defp wait_for_active_invite_link(company_id, attempts \\ 30)
-
-  defp wait_for_active_invite_link(_company_id, 0) do
-    flunk("Failed to find active invite link")
-  end
-
-  defp wait_for_active_invite_link(company_id, attempts) do
-    case fetch_active_invite_link(company_id) do
-      nil ->
-        Process.sleep(200)
-        wait_for_active_invite_link(company_id, attempts - 1)
-
-      invite_link ->
-        invite_link
-    end
-  end
-
-  defp wait_for_new_active_invite_link(company_id, ignore_id, attempts \\ 30)
-
-  defp wait_for_new_active_invite_link(_company_id, _ignore_id, 0) do
-    flunk("Active invite link was not rotated")
-  end
-
-  defp wait_for_new_active_invite_link(company_id, ignore_id, attempts) do
-    case fetch_active_invite_link(company_id) do
-      nil ->
-        Process.sleep(200)
-        wait_for_new_active_invite_link(company_id, ignore_id, attempts - 1)
-
-      %{id: ^ignore_id} ->
-        Process.sleep(200)
-        wait_for_new_active_invite_link(company_id, ignore_id, attempts - 1)
-
-      invite_link ->
-        invite_link
-    end
-  end
-
-  defp fetch_active_invite_link(company_id) do
-    Operately.InviteLinks.list_invite_links_for_company(company_id)
-    |> Enum.find(&(&1.is_active == true))
   end
 end

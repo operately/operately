@@ -115,55 +115,28 @@ defmodule OperatelyWeb.Api.InvitationsTest do
     end
   end
 
-  describe "revoke_invite_link" do
+  describe "update_invite_link" do
     test "requires authentication", ctx do
-      invite_link = create_invite_link(ctx)
-
-      assert {401, _} =
-               mutation(ctx.conn, [:invitations, :revoke_invite_link], %{
-                 invite_link_id: invite_link.id
-               })
+      assert {401, _} = update_invite_link(ctx, %{})
     end
 
-    test "requires invite_link_id", ctx do
-      ctx = Factory.log_in_person(ctx, :creator)
-
-      assert {400, res} =
-               mutation(ctx.conn, [:invitations, :revoke_invite_link], %{})
-
-      assert res.message.message == "Missing required fields: invite_link_id"
-    end
-
-    test "returns forbidden when person lacks permission", ctx do
-      invite_link = create_invite_link(ctx)
-
-      ctx =
-        ctx
-        |> Factory.add_company_member(:member)
-        |> Factory.log_in_person(:member)
-
-      assert {403, %{message: message}} =
-               mutation(ctx.conn, [:invitations, :revoke_invite_link], %{
-                 invite_link_id: invite_link.id
-               })
-
-      assert message == "You don't have permission to perform this action"
-    end
-
-    test "revokes invite link for authorized person", ctx do
+    test "toggle the invite link active status", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
       invite_link = create_invite_link(ctx)
 
-      assert {200, %{invite_link: res}} =
-               mutation(ctx.conn, [:invitations, :revoke_invite_link], %{
-                 invite_link_id: invite_link.id
-               })
+      # deactivate
+      assert {200, _res} = update_invite_link(ctx, %{is_active: false})
+      invite_link = Operately.Repo.reload(invite_link)
+      refute invite_link.is_active
 
-      assert res.is_active == false
+      # activate
+      assert {200, _res} = update_invite_link(ctx, %{is_active: true})
+      invite_link = Operately.Repo.reload(invite_link)
+      assert invite_link.is_active
+    end
 
-      {:ok, stored} = InviteLinks.get_invite_link_by_token(res.token)
-      assert stored.is_active == false
-      assert res == Serializer.serialize(stored, level: :full)
+    def update_invite_link(ctx, params) do
+      mutation(ctx.conn, [:invitations, :update_company_invite_link], params)
     end
   end
 

@@ -138,15 +138,16 @@ defmodule OperatelyWeb.Api.Invitations do
     end
   end
 
-  defmodule RevokeInviteLink do
+  defmodule UpdateCompanyInviteLink do
+    require Logger
+
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
-    alias Operately.Companies
-    alias Operately.Companies.Permissions
+    alias Operately.Companies.{Company, Permissions}
 
     inputs do
-      field?(:invite_link_id, :string, null: false)
+      field?(:is_active, :boolean)
     end
 
     outputs do
@@ -154,58 +155,55 @@ defmodule OperatelyWeb.Api.Invitations do
     end
 
     def call(conn, inputs) do
-      Action.new()
-      |> run(:me, fn -> find_me(conn) end)
-      |> run(:invite_link_id, fn -> decode_id(inputs[:invite_link_id]) end)
-      |> run(:invite_link, fn ctx ->
-        {:ok, Operately.InviteLinks.get_invite_link!(ctx.invite_link_id)}
-      end)
-      |> run(:company, fn ctx ->
-        Companies.get_company_with_access_level(ctx.me.id, id: ctx.invite_link.company_id)
-      end)
-      |> run(:check_permissions, fn ctx ->
-        Permissions.check(ctx.company.requester_access_level, :can_invite_members)
-      end)
-      |> run(:revoked_link, fn ctx ->
-        with {:ok, invite_link} <- Operately.InviteLinks.revoke_invite_link(ctx.invite_link) do
-          {:ok, Repo.preload(invite_link, [:author, :company])}
-        end
-      end)
-      |> run(:serialized, fn ctx ->
-        {:ok, %{invite_link: Serializer.serialize(ctx.revoked_link, level: :full)}}
-      end)
+      conn
+      |> start_transaction()
+      |> load_company(conn)
+      |> check_permissions()
+      |> find_link()
+      |> update_link(inputs)
+      |> commit()
       |> respond()
     end
 
-    def respond(result) do
-      case result do
-        {:ok, ctx} ->
-          {:ok, ctx.serialized}
-
-        {:error, :invite_link_id, _} ->
-          {:error, :bad_request, %{message: "Missing required fields: invite_link_id"}}
-
-        {:error, :invite_link, _} ->
-          {:error, :not_found}
-
-        {:error, :company, _} ->
-          {:error, :not_found}
-
-        {:error, :check_permissions, _} ->
-          {:error, :forbidden}
-
-        {:error, :revoked_link, changeset} ->
-          {:error, :bad_request, extract_error_message(changeset)}
-
-        _ ->
-          {:error, :internal_server_error}
-      end
+    def start_transaction(conn) do
+      Ecto.Multi.new() |> Ecto.Multi.put(:me, conn.assigns.current_person)
     end
 
-    defp extract_error_message(changeset) do
-      changeset.errors
-      |> Enum.map(fn {field, {message, _}} -> "#{field} #{message}" end)
-      |> Enum.join(", ")
+    def load_company(multi, conn) do
+      Ecto.Multi.run(multi, :company, fn _, %{me: me} ->
+        Company.get(me, id: conn.assigns.current_company.id)
+      end)
+    end
+
+    def check_permissions(multi) do
+      Ecto.Multi.run(multi, :check_permissions, fn _, %{company: company} ->
+        Permissions.check(company.request_info.access_level, :can_invite_members)
+      end)
+    end
+
+    def find_link(multi) do
+      Ecto.Multi.run(multi, :invite_link, fn _, %{company: company} ->
+        InviteLinks.get_invite_link(company.id)
+      end)
+    end
+
+    def update_link(multi, inputs) do
+      Ecto.Multi.run(multi, :updated_invite_link, fn _, %{invite_link: invite_link} ->
+        InviteLinks.update_invite_link(invite_link, inputs)
+      end)
+    end
+
+    defp commit(multi), do: Repo.transaction(multi)
+
+    def respond(result) do
+      case result do
+        {:ok, %{updated_invite_link: link}} ->
+          {:ok, Serializer.serialize(link, level: :essential)}
+
+        _ ->
+          Logger.error("Failed to update invite link: #{inspect(result)}")
+          {:error, :internal_server_error}
+      end
     end
   end
 end
