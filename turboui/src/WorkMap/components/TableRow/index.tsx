@@ -12,6 +12,7 @@ import { ProgressCell } from "./ProgressCell";
 import { RowContainer } from "./RowContainer";
 import { SpaceCell } from "./SpaceCell";
 import { StatusCell } from "./StatusCell";
+import { RoleCell } from "./RoleCell";
 
 export type IsItemExpandedFn = (id: string) => boolean;
 export type SetItemExpandedFn = (id: string, value: boolean | ((prev: boolean) => boolean)) => void;
@@ -28,6 +29,7 @@ interface Props {
   spaceSearch?: SpaceField.SearchSpaceFn;
   isExpanded: IsItemExpandedFn;
   setItemExpanded: SetItemExpandedFn;
+  profileUser?: WorkMap.Person;
 }
 
 export function TableRow(props: Props) {
@@ -69,6 +71,7 @@ export function TableRow(props: Props) {
         />
         <SpaceCell item={item} hide={columnOptions?.hideSpace} />
         <OwnerCell item={item} hide={columnOptions?.hideOwner} />
+        {props.profileUser && <RoleCell item={item} hide={columnOptions?.hideRole} profileUser={props.profileUser} />}
         <NextStepCell
           nextStep={item.nextStep}
           status={item.status}

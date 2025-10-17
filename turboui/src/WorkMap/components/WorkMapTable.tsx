@@ -9,6 +9,7 @@ import { useStateWithLocalStorage } from "../../utils/useStateWithLocalStorage";
 import { AddItemModal } from "./AddItemModal";
 import { IsItemExpandedFn, SetItemExpandedFn, TableRow } from "./TableRow";
 import { ZeroState } from "./ZeroState";
+import { compareIds } from "../../utils/ids";
 
 interface Props {
   items: WorkMap.Item[];
@@ -19,6 +20,8 @@ interface Props {
   spaceSearch?: SpaceField.SearchSpaceFn;
   addItemDefaultSpace?: SpaceField.Space;
   type?: WorkMap.WorkMapType;
+  viewer?: WorkMap.Person;
+  profileUser?: WorkMap.Person;
 }
 
 export function WorkMapTable({
@@ -30,6 +33,8 @@ export function WorkMapTable({
   spaceSearch,
   addItemDefaultSpace,
   type = "company",
+  viewer,
+  profileUser,
 }: Props) {
   const emptyWorkMap = items.length === 0;
   const showIndentation = React.useMemo(() => items.some((item) => item.children.length > 0), [items]);
@@ -86,7 +91,7 @@ export function WorkMapTable({
         />
       ) : (
         <table className="min-w-full divide-y divide-surface-outline">
-          <TableHeader tab={tab} columnOptions={columnOptions} />
+          <TableHeader tab={tab} columnOptions={columnOptions} profileUser={profileUser} viewer={viewer} />
           <tbody>
             {items.map((item, idx) => (
               <TableRow
@@ -102,6 +107,7 @@ export function WorkMapTable({
                 spaceSearch={spaceSearch}
                 isExpanded={getItemExpanded}
                 setItemExpanded={setItemExpanded}
+                profileUser={profileUser}
               />
             ))}
 
@@ -123,10 +129,13 @@ export function WorkMapTable({
 interface HeaderProps {
   tab: WorkMap.Filter;
   columnOptions?: WorkMap.ColumnOptions;
+  viewer?: WorkMap.Person;
+  profileUser?: WorkMap.Person;
 }
 
-export function TableHeader({ tab, columnOptions = {} }: HeaderProps) {
+export function TableHeader({ tab, columnOptions = {}, viewer, profileUser }: HeaderProps) {
   const isCompletedPage = tab === "completed";
+  const roleLabel = useGetRoleLabel(viewer, profileUser);
 
   return (
     <thead>
@@ -154,6 +163,11 @@ export function TableHeader({ tab, columnOptions = {} }: HeaderProps) {
         <HeaderCell hide={columnOptions.hideOwner} className="hidden xl:table-cell md:px-4">
           Champion
         </HeaderCell>
+        {roleLabel && (
+          <HeaderCell hide={columnOptions.hideRole} className="hidden xl:table-cell md:px-4">
+            {roleLabel}
+          </HeaderCell>
+        )}
         <NextStepHeaderCell hide={isCompletedPage || columnOptions.hideNextStep} />
       </tr>
     </thead>
@@ -238,4 +252,11 @@ function AddNewRow({
       </td>
     </tr>
   );
+}
+
+function useGetRoleLabel(viewer?: WorkMap.Person, profileUser?: WorkMap.Person) {
+  if (!profileUser) return;
+
+  const isViewer = compareIds(viewer?.id, profileUser?.id);
+  return isViewer ? "My Role" : "Role";
 }

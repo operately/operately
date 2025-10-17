@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { WorkMapTable } from "../components/WorkMapTable";
 import * as Steps from "../tests/steps";
-import { mockItems, onlyGoals, onlyProjects, onlyCompleted } from "../tests/mockData";
+import { mockItems, onlyGoals, onlyProjects, onlyCompleted, mockItemsWithReviewers } from "../tests/mockData";
+import { people } from "../tests/mockData";
 
 const meta = {
   title: "Components/WorkMap/WorkMapTable",
@@ -124,3 +125,33 @@ export const Indentation: Story = {
     await Steps.assertIndentation(canvasElement, step, "Implement secure authentication service", 3, "60px");
   },
 };
+
+// Story demonstrating the Role column with selected columns visible
+export const WithRoleColumn: Story = {
+  args: {
+    items: mockItemsWithReviewers,
+    tab: "all",
+    profileUser: {
+      id: "user-alex",
+      fullName: "Alex R.",
+      avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+    },
+    columnOptions: {
+      hideOwner: true, // Hide Champion column to show Role instead
+    },
+  },
+};
+
+// Story demonstrating the My Role column with selected columns visible
+export const WithMyRoleColumn: Story = {
+  args: {
+    items: mockItemsWithReviewers,
+    tab: "all",
+    profileUser: people.alex,
+    viewer: people.alex,
+    columnOptions: {
+      hideOwner: true, // Hide Champion column to show Role instead
+    },
+  },
+};
+
