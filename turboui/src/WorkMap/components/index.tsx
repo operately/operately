@@ -34,6 +34,8 @@ export function WorkMap({
   spaceSearch,
   addItemDefaultSpace,
   navigation,
+  viewer,
+  profileUser,
 }: WorkMap.Props) {
   const { filteredItems, tabsState, tab } = useWorkMapTab({ rawItems: items, type, opts: { tabOptions } });
 
@@ -60,6 +62,8 @@ export function WorkMap({
           spaceSearch={spaceSearch}
           addItemDefaultSpace={addItemDefaultSpace}
           type={type}
+          viewer={viewer}
+          profileUser={profileUser}
         />
       </div>
     </div>
@@ -101,7 +105,7 @@ export namespace WorkMap {
   type ItemStatus = (typeof ALLOWED_STATUSES)[number];
   type ItemType = (typeof ALLOWED_TYPES)[number];
 
-  interface Person {
+  export interface Person {
     id: string;
     fullName: string;
     avatarUrl: string | null;
@@ -128,6 +132,8 @@ export namespace WorkMap {
     spacePath: string;
     owner: Person | null;
     ownerPath: string | null;
+    reviewer: Person | null;
+    reviewerPath: string | null;
     nextStep: string;
     isNew: boolean;
     children: Item[];
@@ -155,6 +161,7 @@ export namespace WorkMap {
     hideProgress?: boolean;
     hideDueDate?: boolean;
     hideOwner?: boolean;
+    hideRole?: boolean;
     hideNextStep?: boolean;
   }
 
@@ -168,6 +175,9 @@ export namespace WorkMap {
     addingEnabled?: boolean;
     spaceSearch?: SpaceField.SearchSpaceFn;
     addItemDefaultSpace?: SpaceField.Space;
+
+    viewer?: Person; // The person viewing the work map (determines role display: Role | My role)
+    profileUser?: Person; // The person whose work map is being displayed
 
     columnOptions?: ColumnOptions;
     tabOptions?: TabOptions;
