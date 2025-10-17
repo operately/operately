@@ -63,7 +63,7 @@ function Page() {
 
     try {
       setLinkEnabled(newValue);
-      await Api.invitations.updateCompanyInviteLink({ active: newValue });
+      await Api.invitations.updateCompanyInviteLink({ isActive: newValue });
     } catch (error) {
       showErrorToast("Network Error", "Failed to disable invite link.");
       setLinkEnabled(oldValue);

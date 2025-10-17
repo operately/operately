@@ -169,7 +169,7 @@ defmodule OperatelyWeb.Api.InvitationsTest do
 
   describe "update_invite_link" do
     test "requires authentication", ctx do
-      assert {401, _} = execute(ctx)
+      assert {401, _} = update_invite_link(ctx, %{})
     end
 
     test "toggle the invite link active status", ctx do
@@ -177,18 +177,18 @@ defmodule OperatelyWeb.Api.InvitationsTest do
       invite_link = create_invite_link(ctx)
 
       # deactivate
-      assert {200, res} = execute(ctx, %{active: false})
+      assert {200, _res} = update_invite_link(ctx, %{is_active: false})
       invite_link = Operately.Repo.reload(invite_link)
-      refute invite_link.active
+      refute invite_link.is_active
 
       # activate
-      assert {200, res} = execute(ctx, %{active: true})
+      assert {200, _res} = update_invite_link(ctx, %{is_active: true})
       invite_link = Operately.Repo.reload(invite_link)
-      assert invite_link.active
+      assert invite_link.is_active
     end
 
-    def execute(ctx, params) do
-      mutation(ctx.conn, [:invitations, :update_invite_link], params)
+    def update_invite_link(ctx, params) do
+      mutation(ctx.conn, [:invitations, :update_company_invite_link], params)
     end
   end
 

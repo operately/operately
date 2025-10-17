@@ -3723,8 +3723,7 @@ export interface InvitationsNewInvitationTokenResult {
 }
 
 export interface InvitationsUpdateCompanyInviteLinkInput {
-  allowedDomains?: string[];
-  active?: boolean;
+  isActive?: boolean;
 }
 
 export interface InvitationsUpdateCompanyInviteLinkResult {
