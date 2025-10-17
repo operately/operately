@@ -23,8 +23,6 @@ defmodule Operately.InviteLinks.InviteLink do
     |> unique_constraint(:token)
   end
 
-  
-
   defp normalize_allowed_domains(changeset) do
     case fetch_change(changeset, :allowed_domains) do
       {:ok, value} ->
@@ -83,7 +81,7 @@ defmodule Operately.InviteLinks.InviteLink do
     |> binary_part(0, length)
   end
 
-  def is_valid?(%__MODULE__{is_active: is_active} = link) do
+  def is_valid?(%__MODULE__{is_active: is_active}) do
     is_active
   end
 end
