@@ -3,7 +3,7 @@ import React from "react";
 
 import { useLoadedData } from "@/components/Pages";
 import { PageModule } from "@/routes/types";
-import { InvitePeoplePage } from "turboui";
+import { InvitePeoplePage, showErrorToast } from "turboui";
 import { usePaths } from "../../routes/paths";
 
 export default { name: "InviteTeamPage", loader, Page } as PageModule;
@@ -29,7 +29,7 @@ function Page() {
   const { link } = useLoadedData();
 
   const invitationUrl = `${window.location.origin}/join/${link.token}`;
-  const [linkEnabled] = React.useState(link.isActive!);
+  const [linkEnabled, setLinkEnabled] = React.useState(link.isActive!);
   const [resettingLink] = React.useState(false);
   const [pageError] = React.useState<string | null>(null);
 
@@ -57,7 +57,19 @@ function Page() {
     }));
   }, []);
 
-  const handleToggleLink = () => {};
+  const handleToggleLink = async () => {
+    const oldValue = linkEnabled;
+    const newValue = !linkEnabled;
+
+    try {
+      setLinkEnabled(newValue);
+      await Api.invitations.updateCompanyInviteLink({ active: newValue });
+    } catch (error) {
+      showErrorToast("Network Error", "Failed to disable invite link.");
+      setLinkEnabled(oldValue);
+    }
+  };
+
   const handleResetLink = () => {};
 
   const domainRestriction = React.useMemo(() => {
