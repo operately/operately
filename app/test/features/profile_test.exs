@@ -71,4 +71,48 @@ defmodule Operately.Features.ProfileTest do
     |> Steps.click_paused_tab()
     |> Steps.assert_only_paused_project_visible()
   end
+
+  feature "paused items appear when user is the reviewer", ctx do
+    ctx = Steps.given_project_with_user_as_reviewer_exists(ctx)
+
+    ctx
+    |> Steps.visit_profile_page()
+    |> Steps.click_assigned_tab()
+    |> Steps.refute_item_visible(name: ctx.project.name)
+    |> Steps.click_reviewing_tab()
+    |> Steps.assert_item_visible(name: ctx.project.name)
+
+    ctx
+    |> Steps.given_a_project_is_paused(project_key: :project)
+    |> Steps.visit_profile_page()
+    |> Steps.click_reviewing_tab()
+    |> Steps.refute_item_visible(name: ctx.project.name)
+    |> Steps.click_paused_tab()
+    |> Steps.assert_item_visible(name: ctx.project.name)
+  end
+
+  feature "completed items appear when user is the reviewer", ctx do
+    ctx = Steps.given_project_with_user_as_reviewer_exists(ctx)
+    ctx = Steps.given_goal_with_user_as_reviewer_exists(ctx)
+
+    ctx
+    |> Steps.visit_profile_page()
+    |> Steps.click_assigned_tab()
+    |> Steps.refute_item_visible(name: ctx.project.name)
+    |> Steps.refute_item_visible(name: ctx.goal.name)
+    |> Steps.click_reviewing_tab()
+    |> Steps.assert_item_visible(name: ctx.project.name)
+    |> Steps.assert_item_visible(name: ctx.goal.name)
+
+    ctx
+    |> Steps.given_a_project_is_closed(project_key: :project)
+    |> Steps.given_a_goal_is_closed(goal_key: :goal)
+    |> Steps.visit_profile_page()
+    |> Steps.click_reviewing_tab()
+    |> Steps.refute_item_visible(name: ctx.project.name)
+    |> Steps.refute_item_visible(name: ctx.goal.name)
+    |> Steps.click_completed_tab()
+    |> Steps.assert_item_visible(name: ctx.project.name)
+    |> Steps.assert_item_visible(name: ctx.goal.name)
+  end
 end
