@@ -23,6 +23,8 @@ function convertToWorkMapItem(paths: Paths, item: WorkMapItem): WorkMap.Item {
       name: item.space.name,
       link: paths.spacePath(item.space.id),
     },
+    reviewer: null,
+    reviewerPath: null,
     timeframe: convertTimeframe(item.timeframe),
     children: item.children.map((c) => convertToWorkMapItem(paths, c)),
   };
