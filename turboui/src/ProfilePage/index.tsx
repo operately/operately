@@ -68,8 +68,8 @@ function useTabsWithItems(workMap: WorkMap.Item[], reviewerWorkMap: WorkMap.Item
     return {
       assigned: sortItemsByDueDate(assignedData.ongoingItems),
       reviewing: sortItemsByDueDate(reviewerData.ongoingItems),
-      paused: sortItemsByDueDate(assignedData.pausedItems),
-      completed: sortItemsByClosedDate(assignedData.completedItems),
+      paused: sortItemsByDueDate([...assignedData.pausedItems, ...reviewerData.pausedItems]),
+      completed: sortItemsByClosedDate([...assignedData.completedItems, ...reviewerData.completedItems]),
     };
   }, [workMap, reviewerWorkMap]);
 
