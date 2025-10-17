@@ -82,45 +82,6 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccountTest do
       # But account should still exist (we can't easily test this without more setup)
     end
 
-    test "creates account but no person when expired invite token is provided", ctx do
-      # Create an expired invite link
-      expired_time = DateTime.add(DateTime.utc_now(), -1, :day)
-
-      {:ok, invite_link} =
-        InviteLinks.create_invite_link(%{
-          company_id: ctx.company.id,
-          author_id: ctx.creator.id,
-          expires_at: expired_time
-        })
-
-      # Create email activation code
-      {:ok, activation} = Operately.People.EmailActivationCode.create("newuser3@test.com")
-
-      # Prepare inputs
-      inputs = %{
-        invite_token: invite_link.token,
-        code: activation.code,
-        email: "newuser3@test.com",
-        password: "password1234",
-        full_name: "New User 3"
-      }
-
-      # Call the mutation
-      assert {200, result} = mutation(ctx.conn, [:create_account], inputs)
-      assert result.error == "This invite link has expired"
-      assert result.company == nil
-      assert result.person == nil
-
-      # Verify no person was created in the company
-      people = People.list_people(ctx.company.id)
-      new_person = Enum.find(people, fn p -> p.email == "newuser3@test.com" end)
-      assert new_person == nil
-
-      # Verify invite link use count was not incremented
-      {:ok, updated_invite_link} = InviteLinks.get_invite_link_by_token(invite_link.token)
-      assert updated_invite_link.use_count == 0
-    end
-
     test "creates account and no person when no invite token is provided", ctx do
       # Create email activation code
       {:ok, activation} = Operately.People.EmailActivationCode.create("newuser4@test.com")

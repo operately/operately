@@ -28,24 +28,7 @@ defmodule Operately.InviteLinksTest do
       assert invite_link.use_count == 0
       assert invite_link.token != nil
       assert String.length(invite_link.token) >= 32
-      assert invite_link.expires_at != nil
       assert invite_link.allowed_domains == []
-    end
-
-    test "create_invite_link/1 sets expiration to 7 days from creation", ctx do
-      attrs = %{
-        company_id: ctx.company.id,
-        author_id: ctx.creator.id
-      }
-
-      {:ok, invite_link} = InviteLinks.create_invite_link(attrs)
-
-      # Check that expires_at is approximately 7 days from now
-      seven_days_from_now = DateTime.add(DateTime.utc_now(), 7 * 24 * 60 * 60, :second)
-      time_diff = DateTime.diff(invite_link.expires_at, seven_days_from_now, :second)
-
-      # Allow for a few seconds difference due to execution time
-      assert abs(time_diff) <= 5
     end
 
     test "get_invite_link_by_token/1 returns the correct link", ctx do
@@ -136,29 +119,6 @@ defmodule Operately.InviteLinksTest do
   end
 
   describe "invite_link validation" do
-    test "is_expired?/1 returns true for expired links", ctx do
-      expired_time = DateTime.add(DateTime.utc_now(), -1, :day)
-
-      {:ok, invite_link} =
-        InviteLinks.create_invite_link(%{
-          company_id: ctx.company.id,
-          author_id: ctx.creator.id,
-          expires_at: expired_time
-        })
-
-      assert InviteLinks.InviteLink.is_expired?(invite_link) == true
-    end
-
-    test "is_expired?/1 returns false for non-expired links", ctx do
-      {:ok, invite_link} =
-        InviteLinks.create_invite_link(%{
-          company_id: ctx.company.id,
-          author_id: ctx.creator.id
-        })
-
-      assert InviteLinks.InviteLink.is_expired?(invite_link) == false
-    end
-
     test "is_valid?/1 returns false for inactive links", ctx do
       {:ok, invite_link} =
         InviteLinks.create_invite_link(%{
@@ -170,20 +130,7 @@ defmodule Operately.InviteLinksTest do
       assert InviteLinks.InviteLink.is_valid?(revoked_link) == false
     end
 
-    test "is_valid?/1 returns false for expired links", ctx do
-      expired_time = DateTime.add(DateTime.utc_now(), -1, :day)
-
-      {:ok, invite_link} =
-        InviteLinks.create_invite_link(%{
-          company_id: ctx.company.id,
-          author_id: ctx.creator.id,
-          expires_at: expired_time
-        })
-
-      assert InviteLinks.InviteLink.is_valid?(invite_link) == false
-    end
-
-    test "is_valid?/1 returns true for active, non-expired links", ctx do
+    test "is_valid?/1 returns true for active", ctx do
       {:ok, invite_link} =
         InviteLinks.create_invite_link(%{
           company_id: ctx.company.id,
@@ -243,19 +190,6 @@ defmodule Operately.InviteLinksTest do
       {:ok, revoked_link} = InviteLinks.revoke_invite_link(invite_link)
 
       assert InviteLinks.join_company_via_invite_link(ctx.new_account, revoked_link.token) == {:error, :invite_token_inactive}
-    end
-
-    test "returns error when the invite link is expired", ctx do
-      ctx = Factory.add_account(ctx, :new_account)
-
-      {:ok, invite_link} =
-        InviteLinks.create_invite_link(%{
-          company_id: ctx.company.id,
-          author_id: ctx.creator.id,
-          expires_at: DateTime.add(DateTime.utc_now(), -60, :second)
-        })
-
-      assert InviteLinks.join_company_via_invite_link(ctx.new_account, invite_link.token) == {:error, :invite_token_expired}
     end
 
     test "returns error when person creation fails", ctx do

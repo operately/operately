@@ -120,9 +120,6 @@ defmodule OperatelyWeb.Api.Invitations do
         {:error, :invite_token_inactive} ->
           {:error, :bad_request, "This invite link is no longer valid"}
 
-        {:error, :invite_token_expired} ->
-          {:error, :bad_request, "This invite link has expired"}
-
         {:error, :invite_token_domain_not_allowed} ->
           {:error, :bad_request, "This invite link is restricted to specific email domains"}
 
