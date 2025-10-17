@@ -5,23 +5,23 @@ defmodule Operately.Features.InviteLinksTest do
   setup ctx, do: Steps.setup(ctx)
 
   describe "managing invite links" do
-    setup ctx, do: Steps.given_a_company_and_a_user(ctx)
-
-    feature "enable invite link", ctx do
-      ctx
-      |> Steps.open_invite_team_page()
-      |> Steps.enable_invite_link()
-      |> Steps.assert_active_invite_link_created()
+    setup ctx do
+      UI.login_as(ctx, ctx.creator)
     end
 
-    # feature "disable invite link", ctx do
-    #   ctx
-    #   |> Steps.open_invite_team_page()
-    #   |> Steps.enable_invite_link()
-    #   |> Steps.assert_active_invite_link_created()
-    #   |> Steps.disable_invite_link()
-    #   |> Steps.assert_no_active_invite_link()
-    # end
+    feature "copy invite link from the invite page", ctx do
+      ctx
+      |> Steps.open_invite_team_page()
+      |> Steps.assert_invite_link_visible()
+    end
+
+    feature "disable the invite link", ctx do
+      ctx
+      |> Steps.open_invite_team_page()
+      |> Steps.assert_invite_link_is_active()
+      |> Steps.disable_invite_link()
+      |> Steps.assert_invite_link_is_not_active()
+    end
 
     # feature "generating a new invite link", ctx do
     #   ctx
