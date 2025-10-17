@@ -28,10 +28,8 @@ async function loader({ params }): Promise<LoaderResult> {
 
   if (!invite) {
     return { invite: null, token, pageState: "invalid-token" };
-  } else if (isExpired(invite)) {
-    return { invite, token, pageState: "expired-token" };
-  } else if (isInactive(invite)) {
-    return { invite, token, pageState: "revoked-token" };
+  } else if (!invite.isActive) {
+    return { invite, token, pageState: "invalid-token" };
   } else if (loggedIn) {
     return { invite, token, pageState: "logged-in-user-valid-token" };
   } else {
@@ -108,15 +106,6 @@ function prepInvitation(invite: InviteLink | null): InviteLinkJoinPage.Invitatio
       avatarUrl: invite.author.avatarUrl,
     },
   };
-}
-
-function isExpired(invite: InviteLink): boolean {
-  if (!invite.expiresAt) return false;
-  return new Date(invite.expiresAt) < new Date();
-}
-
-function isInactive(invite: InviteLink): boolean {
-  return invite.isActive === false;
 }
 
 async function loadInviteLink(token: string): Promise<InviteLink | null> {
