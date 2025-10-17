@@ -3,7 +3,6 @@ defmodule Operately.InviteLinks.InviteLink do
 
   schema "invite_links" do
     field(:token, :string)
-    field(:expires_at, :utc_datetime)
     field(:use_count, :integer, default: 0)
     field(:is_active, :boolean, default: true)
     field(:allowed_domains, {:array, :string}, default: [])
@@ -16,33 +15,15 @@ defmodule Operately.InviteLinks.InviteLink do
 
   def changeset(invite_link \\ %__MODULE__{}, attrs) do
     invite_link
-    |> cast(attrs, [:token, :company_id, :author_id, :expires_at, :use_count, :is_active, :allowed_domains])
-    |> update_change(:expires_at, &truncate_datetime/1)
+    |> cast(attrs, [:token, :company_id, :author_id, :use_count, :is_active, :allowed_domains])
     |> normalize_allowed_domains()
-    |> put_expires_at_if_not_set()
-    |> validate_required([:token, :company_id, :author_id, :expires_at])
+    |> validate_required([:token, :company_id, :author_id])
     |> validate_length(:token, min: 32, max: 72)
     |> validate_allowed_domains()
     |> unique_constraint(:token)
   end
 
-  defp put_expires_at_if_not_set(changeset) do
-    case get_field(changeset, :expires_at) do
-      nil ->
-        expires_at =
-          DateTime.utc_now()
-          |> DateTime.truncate(:second)
-          |> DateTime.add(7 * 24 * 60 * 60, :second)
-
-        put_change(changeset, :expires_at, expires_at)
-
-      _ ->
-        changeset
-    end
-  end
-
-  defp truncate_datetime(nil), do: nil
-  defp truncate_datetime(datetime), do: DateTime.truncate(datetime, :second)
+  
 
   defp normalize_allowed_domains(changeset) do
     case fetch_change(changeset, :allowed_domains) do
@@ -102,11 +83,7 @@ defmodule Operately.InviteLinks.InviteLink do
     |> binary_part(0, length)
   end
 
-  def is_expired?(%__MODULE__{expires_at: expires_at}) do
-    DateTime.compare(expires_at, DateTime.utc_now()) == :lt
-  end
-
   def is_valid?(%__MODULE__{is_active: is_active} = link) do
-    is_active and not is_expired?(link)
+    is_active
   end
 end
