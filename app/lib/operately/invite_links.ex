@@ -34,12 +34,12 @@ defmodule Operately.InviteLinks do
 
   def fetch_or_create_invite_link(attrs) do
     case get_invite_link(attrs.company_id) do
-      nil -> create_invite_link(attrs)
-      invite_link -> {:ok, invite_link}
+      {:error, :not_found} -> create_invite_link(attrs)
+      {:ok, invite_link} -> {:ok, invite_link}
     end
   end
 
-  defp get_invite_link(company_id) do
+  def get_invite_link(company_id) do
     # Look for an active, non-expired invite link first
     from(il in InviteLink,
       where: il.company_id == ^company_id and il.is_active == true,
@@ -48,6 +48,10 @@ defmodule Operately.InviteLinks do
       limit: 1
     )
     |> Repo.one()
+    |> case do
+      nil -> {:error, :not_found}
+      invite_link -> {:ok, invite_link}
+    end
   end
 
   def create_invite_link(attrs \\ %{}) do
