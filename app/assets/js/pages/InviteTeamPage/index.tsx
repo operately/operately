@@ -57,14 +57,16 @@ function Page() {
     }));
   }, []);
 
-  const handleToggleLink = () => {
-    try {
-      const newValue = !linkEnabled;
+  const handleToggleLink = async () => {
+    const oldValue = linkEnabled;
+    const newValue = !linkEnabled;
 
+    try {
       setLinkEnabled(newValue);
-      Api.invitations.updateCompanyInviteLink({ active: newValue });
+      await Api.invitations.updateCompanyInviteLink({ active: newValue });
     } catch (error) {
       showErrorToast("Network Error", "Failed to disable invite link.");
+      setLinkEnabled(oldValue);
     }
   };
 
