@@ -139,13 +139,12 @@ defmodule OperatelyWeb.Api.Invitations do
   end
 
   defmodule UpdateCompanyInviteLink do
-    use TurboConnect.Mutation
     require Logger
+
+    use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
-    alias Operately.Companies
-    alias Operately.Companies.Company
-    alias Operately.Companies.Permissions
+    alias Operately.Companies.{Company, Permissions}
 
     inputs do
       field?(:is_active, :boolean)
