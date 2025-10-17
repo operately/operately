@@ -42,6 +42,8 @@ export function summarize(node: any): any {
       return summarizeBulletList(node);
     case "orderedList":
       return summarizeOrderedList(node);
+    case "blockquote":
+      return summarizeBlockquote(node);
     case "mention":
       return summarizeMention(node);
     case "hardBreak":
@@ -74,6 +76,20 @@ function summarizeOrderedList(node: any): any {
     type: "text",
     text: mapNodes(node.content, (node: any, i: number) => `${i + 1}. ${richContentToString(node)}`).join(" "),
   };
+}
+
+function summarizeBlockquote(node: any): any {
+  // Blockquotes contain paragraphs or other content
+  // We process them similar to a doc - flatten all content into a single result
+  if (!node.content) {
+    return { type: "paragraph", content: [] };
+  }
+  
+  const summarizedContent = node.content.map(summarize).filter((node: any) => node);
+  const flattened = flatten(summarizedContent);
+  
+  // Return a paragraph with the flattened content
+  return { type: "paragraph", content: flattened };
 }
 
 function summarizeParagraph(node: any): any {
