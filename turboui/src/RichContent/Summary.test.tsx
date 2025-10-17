@@ -136,4 +136,61 @@ describe("summarize", () => {
       content: [{ type: "paragraph", content: [{ type: "text", text: "Hello" }] }],
     });
   });
+
+  it("handles blockquotes", () => {
+    const input = {
+      type: "doc",
+      content: [
+        {
+          type: "blockquote",
+          content: [
+            {
+              type: "paragraph",
+              content: [{ type: "text", text: "This is a quote" }],
+            },
+          ],
+        },
+      ],
+    };
+
+    expect(summarize(input)).toEqual({
+      type: "doc",
+      content: [{ type: "paragraph", content: [{ type: "text", text: "This is a quote" }] }],
+    });
+  });
+
+  it("handles blockquotes with multiple paragraphs", () => {
+    const input = {
+      type: "doc",
+      content: [
+        {
+          type: "blockquote",
+          content: [
+            {
+              type: "paragraph",
+              content: [{ type: "text", text: "First paragraph" }],
+            },
+            {
+              type: "paragraph",
+              content: [{ type: "text", text: "Second paragraph" }],
+            },
+          ],
+        },
+      ],
+    };
+
+    expect(summarize(input)).toEqual({
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            { type: "text", text: "First paragraph" },
+            { type: "text", text: " " },
+            { type: "text", text: "Second paragraph" },
+          ],
+        },
+      ],
+    });
+  });
 });
