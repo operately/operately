@@ -164,6 +164,7 @@ defmodule OperatelyWeb.Api.Projects do
       |> Steps.find_project(inputs.project_id)
       |> Steps.check_permissions(:can_edit_contributors)
       |> Steps.update_project_champion(inputs.champion_id)
+      |> Steps.create_subscription(inputs.champion_id)
       |> Steps.save_activity(:project_champion_updating, fn changes ->
         %{
           company_id: changes.project.company_id,
@@ -232,6 +233,7 @@ defmodule OperatelyWeb.Api.Projects do
       |> Steps.find_project(inputs.project_id)
       |> Steps.check_permissions(:can_edit_contributors)
       |> Steps.update_project_reviewer(inputs.reviewer_id)
+      |> Steps.create_subscription(inputs.reviewer_id)
       |> Steps.save_activity(:project_reviewer_updating, fn changes ->
         %{
           company_id: changes.project.company_id,
@@ -416,6 +418,7 @@ defmodule OperatelyWeb.Api.Projects do
     require Logger
     import Ecto.Query, only: [from: 2]
     alias Operately.Projects.{Contributor, OrderingState}
+    alias Operately.Notifications.{Subscription, SubscriptionList}
     alias Operately.Operations.Notifications.SubscriptionList, as: SubscriptionListOps
 
     def start_transaction(conn) do
@@ -702,6 +705,28 @@ defmodule OperatelyWeb.Api.Projects do
           nil -> {:ok, nil}
           _ -> Operately.Access.bind_person(project.access_context, new_reviewer_id, Binding.full_access(), :reviewer)
         end
+      end)
+    end
+
+    def create_subscription(multi, nil), do: multi
+
+    def create_subscription(multi, person_id) do
+      multi
+      |> Ecto.Multi.run(:subscription_list, fn _repo, changes ->
+        SubscriptionList.get(:system, parent_id: changes.project.id)
+      end)
+      |> Ecto.Multi.run(:subscription, fn _repo, changes ->
+          case Subscription.get(:system, subscription_list_id: changes.subscription_list.id, person_id: person_id) do
+            {:error, :not_found} ->
+              Operately.Notifications.create_subscription(%{
+                subscription_list_id: changes.subscription_list.id,
+                person_id: person_id,
+                type: :invited,
+              })
+
+            {:ok, subscription} ->
+              Operately.Notifications.update_subscription(subscription, %{canceled: false})
+          end
       end)
     end
 

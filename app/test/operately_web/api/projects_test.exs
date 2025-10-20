@@ -636,6 +636,69 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert project.champion.id == ctx.new_champion.id
     end
 
+    test "it creates a subscription when a champion is set", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      project = Repo.reload(ctx.project)
+      subscription_list_id = project.subscription_list_id
+      champion_person_id = ctx.new_champion.id
+
+      assert {:error, :not_found} =
+        Operately.Notifications.Subscription.get(:system,
+          subscription_list_id: subscription_list_id,
+          person_id: champion_person_id
+        )
+
+      assert {200, _} = mutation(ctx.conn, [:projects, :update_champion], %{
+        project_id: Paths.project_id(ctx.project),
+        champion_id: Paths.person_id(ctx.new_champion)
+      })
+
+      {:ok, subscription} =
+        Operately.Notifications.Subscription.get(:system,
+          subscription_list_id: subscription_list_id,
+          person_id: champion_person_id
+        )
+
+      assert subscription.type == :invited
+      refute subscription.canceled
+    end
+
+    test "it reactivates an existing champion subscription", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      subscription_list_id = ctx.project.subscription_list_id
+      champion_person_id = ctx.new_champion.id
+
+      assert {200, _} = mutation(ctx.conn, [:projects, :update_champion], %{
+        project_id: Paths.project_id(ctx.project),
+        champion_id: Paths.person_id(ctx.new_champion)
+      })
+
+      {:ok, subscription} =
+        Operately.Notifications.Subscription.get(:system,
+          subscription_list_id: subscription_list_id,
+          person_id: champion_person_id
+        )
+
+      {:ok, canceled_subscription} = Operately.Notifications.update_subscription(subscription, %{canceled: true})
+      assert canceled_subscription.canceled
+
+      assert {200, _} = mutation(ctx.conn, [:projects, :update_champion], %{
+        project_id: Paths.project_id(ctx.project),
+        champion_id: Paths.person_id(ctx.new_champion)
+      })
+
+      {:ok, reactivated_subscription} =
+        Operately.Notifications.Subscription.get(:system,
+          subscription_list_id: subscription_list_id,
+          person_id: champion_person_id
+        )
+
+      assert reactivated_subscription.id == subscription.id
+      refute reactivated_subscription.canceled
+    end
+
     test "it can update the champion to nil", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
@@ -834,6 +897,68 @@ defmodule OperatelyWeb.Api.ProjectsTest do
 
       project = Repo.reload(ctx.project) |> Repo.preload(:reviewer)
       assert project.reviewer.id == ctx.new_champion.id
+    end
+
+    test "it creates a subscription when a reviewer is set", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      subscription_list_id = ctx.project.subscription_list_id
+      reviewer_person_id = ctx.new_champion.id
+
+      assert {:error, :not_found} =
+        Operately.Notifications.Subscription.get(:system,
+          subscription_list_id: subscription_list_id,
+          person_id: reviewer_person_id
+        )
+
+      assert {200, _} = mutation(ctx.conn, [:projects, :update_reviewer], %{
+        project_id: Paths.project_id(ctx.project),
+        reviewer_id: Paths.person_id(ctx.new_champion)
+      })
+
+      {:ok, subscription} =
+        Operately.Notifications.Subscription.get(:system,
+          subscription_list_id: subscription_list_id,
+          person_id: reviewer_person_id
+        )
+
+      assert subscription.type == :invited
+      refute subscription.canceled
+    end
+
+    test "it reactivates an existing reviewer subscription", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      subscription_list_id = ctx.project.subscription_list_id
+      reviewer_person_id = ctx.new_champion.id
+
+      assert {200, _} = mutation(ctx.conn, [:projects, :update_reviewer], %{
+        project_id: Paths.project_id(ctx.project),
+        reviewer_id: Paths.person_id(ctx.new_champion)
+      })
+
+      {:ok, subscription} =
+        Operately.Notifications.Subscription.get(:system,
+          subscription_list_id: subscription_list_id,
+          person_id: reviewer_person_id
+        )
+
+      {:ok, canceled_subscription} = Operately.Notifications.update_subscription(subscription, %{canceled: true})
+      assert canceled_subscription.canceled
+
+      assert {200, _} = mutation(ctx.conn, [:projects, :update_reviewer], %{
+        project_id: Paths.project_id(ctx.project),
+        reviewer_id: Paths.person_id(ctx.new_champion)
+      })
+
+      {:ok, reactivated_subscription} =
+        Operately.Notifications.Subscription.get(:system,
+          subscription_list_id: subscription_list_id,
+          person_id: reviewer_person_id
+        )
+
+      assert reactivated_subscription.id == subscription.id
+      refute reactivated_subscription.canceled
     end
 
     test "it can update the reviewer to nil", ctx do
