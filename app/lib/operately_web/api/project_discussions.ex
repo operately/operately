@@ -104,15 +104,16 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
       |> Steps.find_project(inputs.project_id)
       |> Steps.check_project_permissions(:can_comment)
       |> Steps.create_discussion(inputs.title, inputs.message, inputs.subscriber_ids, inputs.send_notifications_to_everyone)
-      |> Steps.save_activity(:project_discussion_submitted, fn changes ->
-        %{
-          company_id: changes.project.company_id,
-          project_id: changes.project.id,
-          discussion_id: changes.thread.id,
-          title: changes.thread.title
-        }
+      |> Ecto.Multi.merge(fn changes ->
+        Operately.Activities.insert_sync(Ecto.Multi.new(), changes.me.id, :project_discussion_submitted, fn _ ->
+          %{
+            company_id: changes.project.company_id,
+            project_id: changes.project.id,
+            discussion_id: changes.thread.id,
+            title: changes.thread.title
+          }
+        end, [comment_thread_id: changes.thread.id])
       end)
-      |> Steps.connect_activity_to_discussion()
       |> Steps.respond(fn changes ->
         %{discussion: Serializer.serialize(changes.thread, level: :essential)}
       end)
@@ -213,12 +214,6 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
           })
         end)
         |> SubscriptionList.update(:thread)
-      end)
-    end
-
-    def connect_activity_to_discussion(multi) do
-      Ecto.Multi.run(multi, :activity_with_thread, fn _, changes ->
-        Operately.Activities.update_activity(changes.activity, %{comment_thread_id: changes.thread.id})
       end)
     end
 

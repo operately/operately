@@ -1,6 +1,7 @@
 defmodule OperatelyWeb.Api.ProjectDiscussionsTest do
   alias Operately.Support.RichText
   use OperatelyWeb.TurboCase
+  use Operately.Support.Notifications
 
   setup ctx do
     ctx
@@ -127,6 +128,54 @@ defmodule OperatelyWeb.Api.ProjectDiscussionsTest do
       assert res.discussion.title == "Test Discussion"
       assert res.discussion.message == RichText.rich_text("Hello", :as_string)
     end
+
+    test "it creates an activity when a discussion is created", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      action = "project_discussion_submitted"
+      before_count = count_activities(ctx.project.id, action)
+
+      inputs = %{
+        project_id: Paths.project_id(ctx.project),
+        title: "Discussion Activity Test",
+        message: RichText.rich_text("Hello", :as_string)
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:project_discussions, :create], inputs)
+
+      after_count = count_activities(ctx.project.id, action)
+      assert after_count == before_count + 1
+
+      activity = get_activity(ctx.project.id, action)
+      assert activity.content["project_id"] == ctx.project.id
+
+      {_, discussion_id} = OperatelyWeb.Api.Helpers.decode_id(res.discussion.id)
+      assert activity.content["discussion_id"] == discussion_id
+      assert activity.comment_thread_id == discussion_id
+    end
+
+    test "it notifies subscribers when a discussion is created", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_contributor(:subscriber, :project, :as_person)
+        |> Factory.log_in_person(:creator)
+
+      action = "project_discussion_submitted"
+      assert notifications_count(action: action) == 0
+
+      inputs = %{
+        project_id: Paths.project_id(ctx.project),
+        title: "Notify Discussion",
+        message: RichText.rich_text("Ping", :as_string),
+        subscriber_ids: [Paths.person_id(ctx.subscriber)]
+      }
+
+      assert {200, _} = mutation(ctx.conn, [:project_discussions, :create], inputs)
+      activity = get_activity(ctx.project.id, action)
+      notifications = fetch_notifications(activity.id, action: action)
+
+      refute notifications == []
+      assert Enum.any?(notifications, &(&1.person_id == ctx.subscriber.id))
+    end
   end
 
   describe "edit project discussion" do
@@ -174,5 +223,23 @@ defmodule OperatelyWeb.Api.ProjectDiscussionsTest do
       assert discussion.title == "Updated Discussion Title"
       assert discussion.message == RichText.rich_text("Updated content")
     end
+  end
+
+  import Ecto.Query, only: [from: 2]
+
+  defp count_activities(project_id, action) do
+    from(a in Operately.Activities.Activity,
+      where: a.action == ^action and a.content["project_id"] == ^project_id
+    )
+    |> Repo.aggregate(:count)
+  end
+
+  defp get_activity(project_id, action) do
+    from(a in Operately.Activities.Activity,
+      where: a.action == ^action and a.content["project_id"] == ^project_id,
+      order_by: [desc: a.inserted_at],
+      limit: 1
+    )
+    |> Repo.one()
   end
 end

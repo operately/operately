@@ -30,11 +30,13 @@ defmodule Operately.Activities do
     multi
     |> Ecto.Multi.insert(:activity, fn changes ->
       {:ok, content} = build_content(Atom.to_string(action), callback.(changes))
+      comment_thread_id = Keyword.get(opts, :comment_thread_id, nil)
 
       Activity.changeset(%{
         author_id: author_id,
         action: Atom.to_string(action),
-        content: content
+        content: content,
+        comment_thread_id: comment_thread_id,
       })
     end)
     |> assign_context()
