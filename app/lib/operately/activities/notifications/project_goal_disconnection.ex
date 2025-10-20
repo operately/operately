@@ -3,7 +3,7 @@ defmodule Operately.Activities.Notifications.ProjectGoalDisconnection do
   Notifies the following people:
   - Project subscribers: People subscribed to notifications for the project
 
-  The person who authored the comment is excluded from notifications.
+  The person who authored the activity is excluded from notifications.
   """
 
   alias Operately.Projects.{Project, Notifications}
