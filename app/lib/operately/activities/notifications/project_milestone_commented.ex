@@ -9,7 +9,6 @@ defmodule Operately.Activities.Notifications.ProjectMilestoneCommented do
 
   require Logger
 
-  alias Operately.Repo
   alias Operately.Projects.Notifications
   alias Operately.Projects.{Milestone, Project}
 
