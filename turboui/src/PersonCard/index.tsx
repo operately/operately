@@ -6,13 +6,13 @@ import { AvatarWithName } from "../Avatar";
 import { DivLink } from "../Link";
 
 export namespace PersonCard {
-  interface Person {
+  export interface Person {
     id: string;
     fullName: string;
     email: string;
     avatarUrl: string | null;
     title: string;
-    link: string;
+    profileLink: string;
   }
 
   export interface Props {
@@ -57,12 +57,12 @@ export function PersonCard(props: PersonCard.Props) {
 
   // Preserve query parameters when navigating
   const getLinkWithParams = () => {
-    if (typeof window === "undefined") return person.link; // Handle SSR
+    if (typeof window === "undefined") return person.profileLink; // Handle SSR
 
     try {
       const currentSearchParams = new URLSearchParams(location.search);
 
-      const url = new URL(person.link, window.location.origin);
+      const url = new URL(person.profileLink, window.location.origin);
       const targetSearchParams = new URLSearchParams(url.search);
 
       currentSearchParams.forEach((value, key) => {
@@ -75,7 +75,7 @@ export function PersonCard(props: PersonCard.Props) {
 
       return url.pathname + url.search;
     } catch (e) {
-      return person.link;
+      return person.profileLink;
     }
   };
 

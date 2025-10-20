@@ -6,7 +6,7 @@ import { fetchAll } from "@/utils/async";
 
 interface LoaderResult {
   data: {
-    person: People.PersonWithLink;
+    person: People.Person;
     workMap: WorkMap.WorkMapItem[];
     reviewerWorkMap: WorkMap.WorkMapItem[];
   };

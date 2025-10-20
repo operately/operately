@@ -1,7 +1,6 @@
 import React from "react";
 
 import * as People from "@/models/people";
-import { toPersonWithLink } from "@/models/people";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { PageModule } from "@/routes/types";
@@ -12,10 +11,13 @@ import { loader, useLoadedData } from "./loader";
 
 import { usePaths } from "@/routes/paths";
 import { convertToWorkMapItems } from "../../models/workMap";
+import { useMe } from "@/contexts/CurrentCompanyContext";
+
 export default { name: "ProfilePage", loader, Page } as PageModule;
 
 function Page() {
   const paths = usePaths();
+  const me = useMe();
   const { person, workMap, reviewerWorkMap } = useLoadedData();
 
   assertPresent(person.peers);
@@ -25,16 +27,19 @@ function Page() {
   const props = {
     title: [person.fullName!, "Profile"],
 
-    person: toPersonWithLink(paths, person),
-    peers: toPersonWithLink(paths, People.sortByName(person.peers)),
-    reports: toPersonWithLink(paths, People.sortByName(person.reports)),
-    manager: person.manager ? toPersonWithLink(paths, person.manager) : null,
+    person: People.parsePersonForTurboUi(paths, person)!,
+    peers: People.parsePeopleForTurboUi(paths, People.sortByName(person.peers)),
+    reports: People.parsePeopleForTurboUi(paths, People.sortByName(person.reports)),
+    manager: People.parsePersonForTurboUi(paths, person.manager)!,
 
     workMap: convertToWorkMapItems(paths, workMap),
     reviewerWorkMap: convertToWorkMapItems(paths, reviewerWorkMap),
 
     canEditProfile: !!person.permissions.canEditProfile,
     editProfilePath: paths.profileEditPath(person.id!),
+
+    viewer: People.parsePersonForTurboUi(paths, me)!,
+    profileUser: People.parsePersonForTurboUi(paths, person)!,
 
     activityFeed: <ActivityFeed personId={person.id!} />,
   };

@@ -9,16 +9,10 @@ import { Colleagues, Contact, PageHeader } from "./components";
 import { WorkMap, WorkMapTable } from "../WorkMap";
 import { processPersonalItems } from "../WorkMap/utils/itemProcessor";
 import { sortItemsByClosedDate, sortItemsByDueDate } from "../WorkMap/utils/sort";
+import { PersonCard } from "../PersonCard";
 
 export namespace ProfilePage {
-  export interface Person {
-    id: string;
-    fullName: string;
-    email: string;
-    avatarUrl: string | null;
-    title: string;
-    link: string;
-  }
+  export type Person = PersonCard.Person;
 
   export interface Props {
     title: string | string[];
@@ -35,6 +29,9 @@ export namespace ProfilePage {
 
     editProfilePath: string;
     canEditProfile: boolean;
+
+    viewer: Person;
+    profileUser: Person;
   }
 
   export type TabOptions = "assigned" | "reviewing" | "completed" | "activity" | "about";
@@ -52,6 +49,9 @@ export function ProfilePage(props: ProfilePage.Props) {
         <WorkMapTable
           items={items[tabs.active]}
           tab={["completed", "paused"].includes(tabs.active) ? (tabs.active as WorkMap.Filter) : "all"}
+          profileUser={props.profileUser}
+          viewer={props.viewer}
+          columnOptions={{ hideOwner: true }}
         />
       )}
       {tabs.active === "activity" && <ActivityFeed {...props} />}
