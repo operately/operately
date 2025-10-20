@@ -15,6 +15,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.WorkMaps.WorkMapItem do
       space_path: Paths.space_work_map_path(item.company, item.space),
       owner: OperatelyWeb.Api.Serializer.serialize(item.owner),
       owner_path: item.owner && Paths.person_path(item.company, item.owner),
+      reviewer: OperatelyWeb.Api.Serializer.serialize(item.reviewer),
+      reviewer_path: reviewer_path(item),
       next_step: item.next_step,
       is_new: item.is_new,
       completed_on: OperatelyWeb.Api.Serializer.serialize(item.completed_on),
@@ -36,6 +38,14 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.WorkMaps.WorkMapItem do
     cond do
       item.type == :goal -> Paths.goal_path(item.company, item.resource)
       item.type == :project -> Paths.project_path(item.company, item.resource)
+    end
+  end
+
+  defp reviewer_path(item) do
+    if item.reviewer && Ecto.assoc_loaded?(item.reviewer) do
+      Paths.person_path(item.company, item.reviewer)
+    else
+      nil
     end
   end
 end
