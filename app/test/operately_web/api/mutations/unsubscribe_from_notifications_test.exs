@@ -49,12 +49,6 @@ defmodule OperatelyWeb.Api.Mutations.UnsubscribeFromNotificationsTest do
 
       {:ok, subscription_list} = SubscriptionList.get(:system, parent_id: project.id)
 
-      {:ok, _} = Notifications.create_subscription(%{
-        person_id: ctx.person.id,
-        subscription_list_id: subscription_list.id,
-        type: :joined,
-      })
-
       Map.merge(ctx, %{project_subscription_list: subscription_list})
     end
 
