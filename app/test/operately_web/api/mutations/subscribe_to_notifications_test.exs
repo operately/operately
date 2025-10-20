@@ -2,7 +2,7 @@ defmodule OperatelyWeb.Api.Mutations.SubscribeToNotificationsTest do
   use OperatelyWeb.TurboCase
 
   alias Operately.Notifications
-  alias Operately.Notifications.SubscriptionList
+  alias Operately.Notifications.{SubscriptionList, Subscription}
   alias Operately.Access.Binding
 
   import Operately.GroupsFixtures
@@ -152,6 +152,9 @@ defmodule OperatelyWeb.Api.Mutations.SubscribeToNotificationsTest do
     end
 
     test "subscribes to project notifications", ctx do
+      {:ok, _} = Subscription.get!(:system, subscription_list_id: ctx.project_subscription_list.id, person_id: ctx.person.id)
+      |> Notifications.delete_subscription()
+
       refute Notifications.is_subscriber?(ctx.person.id, ctx.project_subscription_list.id)
 
       assert {200, _} = mutation(ctx.conn, :subscribe_to_notifications, %{

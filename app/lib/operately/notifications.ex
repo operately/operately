@@ -255,6 +255,10 @@ defmodule Operately.Notifications do
     |> Repo.insert()
   end
 
+  def delete_subscription(%Subscription{} = subscription) do
+    Repo.delete(subscription)
+  end
+
   def update_subscription(%Subscription{} = subscription, attrs) do
     subscription
     |> Subscription.changeset(attrs)
