@@ -8,6 +8,8 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorTest do
   alias OperatelyWeb.Paths
   alias Operately.Repo
   alias Operately.Access.Binding
+  alias Operately.Notifications
+  alias Operately.Notifications.Subscription
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -167,6 +169,49 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorTest do
 
       assert {200, res} = request(ctx.conn, %{project: project, contributor: contributor})
       assert_contributor_created(res, contributor)
+    end
+
+    test "creates a subscription for the added contributor", ctx do
+      project = create_project(ctx, company_access_level: Binding.full_access())
+      contributor = person_fixture(%{company_id: ctx.company.id})
+
+      subscription_list_id = project.subscription_list_id
+
+      assert {:error, :not_found} =
+        Subscription.get(:system, subscription_list_id: subscription_list_id, person_id: contributor.id)
+
+      assert {200, _} = request(ctx.conn, %{project: project, contributor: contributor})
+
+      {:ok, subscription} =
+        Subscription.get(:system, subscription_list_id: subscription_list_id, person_id: contributor.id)
+
+      assert subscription.type == :invited
+      refute subscription.canceled
+    end
+
+    test "reactivates an existing contributor subscription", ctx do
+      project = create_project(ctx, company_access_level: Binding.full_access())
+      contributor = person_fixture(%{company_id: ctx.company.id})
+
+      subscription_list_id = project.subscription_list_id
+
+      {:ok, subscription} =
+        Notifications.create_subscription(%{
+          subscription_list_id: subscription_list_id,
+          person_id: contributor.id,
+          type: :invited,
+          canceled: true
+        })
+
+      assert subscription.canceled
+
+      assert {200, _} = request(ctx.conn, %{project: project, contributor: contributor})
+
+      {:ok, reactivated} =
+        Subscription.get(:system, subscription_list_id: subscription_list_id, person_id: contributor.id)
+
+      assert reactivated.id == subscription.id
+      refute reactivated.canceled
     end
   end
 
