@@ -135,6 +135,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
   step :edit_task_name, ctx, name do
     ctx
     |> UI.fill_text_field(testid: "task-name", with: name)
+    |> UI.sleep(300)
   end
 
   step :edit_task_description, ctx, description do

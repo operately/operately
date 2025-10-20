@@ -4,6 +4,7 @@ defmodule Operately.Operations.ProjectContributorsAddition do
   alias Operately.Access
   alias Operately.Activities
   alias Operately.Access
+  alias Operately.Notifications.Subscription
   alias Operately.Projects.Contributor
 
   def run(author, project, contributors) do
@@ -36,6 +37,7 @@ defmodule Operately.Operations.ProjectContributorsAddition do
 
     {:ok, contrib} = Operately.Repo.insert(changeset)
     {:ok, _} = Access.bind(access_context, person_id: attrs.person_id, level: attrs.access_level)
+    {:ok, _} = ensure_subscription(project.subscription_list_id, attrs.person_id)
 
     contrib
   end
@@ -56,5 +58,21 @@ defmodule Operately.Operations.ProjectContributorsAddition do
         end)
       }
     end)
+  end
+
+  defp ensure_subscription(nil, _person_id), do: {:ok, nil}
+
+  defp ensure_subscription(subscription_list_id, person_id) do
+    case Subscription.get(:system, subscription_list_id: subscription_list_id, person_id: person_id) do
+      {:error, :not_found} ->
+        Operately.Notifications.create_subscription(%{
+          subscription_list_id: subscription_list_id,
+          person_id: person_id,
+          type: :invited
+        })
+
+      {:ok, subscription} ->
+        Operately.Notifications.update_subscription(subscription, %{canceled: false})
+    end
   end
 end
