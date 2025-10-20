@@ -55,7 +55,9 @@ export function usePeopleSearch(scope: SearchScope) {
 }
 
 export function parsePeopleForTurboUi(paths: Paths, people: Person[]) {
-  return people.map((person) => parsePersonForTurboUi(paths, person)).filter((person) => person !== null);
+  return people
+    .map((person) => parsePersonForTurboUi(paths, person))
+    .filter((person): person is NonNullable<typeof person> => person !== null);
 }
 
 export function parsePersonForTurboUi(paths: Paths, person: Person | null | undefined) {
