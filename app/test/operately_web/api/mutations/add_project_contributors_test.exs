@@ -8,6 +8,8 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorsTest do
   alias OperatelyWeb.Paths
   alias Operately.Repo
   alias Operately.Access.Binding
+  alias Operately.Notifications
+  alias Operately.Notifications.Subscription
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -168,6 +170,69 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorsTest do
       assert_contributor_created(project, person1)
       assert_contributor_created(project, person2)
       assert_contributor_created(project, person3)
+    end
+
+    test "it creates subscriptions for added contributors", ctx do
+      project = create_project(ctx, company_access_level: Binding.full_access())
+      contributor = person_fixture(%{company_id: ctx.company.id})
+
+      subscription_list_id = project.subscription_list_id
+
+      assert {:error, :not_found} =
+        Subscription.get(:system, subscription_list_id: subscription_list_id, person_id: contributor.id)
+
+      assert {200, _} =
+        request(ctx.conn, %{
+          project: project,
+          contributors: [
+            %{
+              person_id: Paths.person_id(contributor),
+              responsibility: "software development",
+              access_level: Binding.edit_access()
+            }
+          ]
+        })
+
+      {:ok, subscription} =
+        Subscription.get(:system, subscription_list_id: subscription_list_id, person_id: contributor.id)
+
+      assert subscription.type == :invited
+      refute subscription.canceled
+    end
+
+    test "it reactivates existing contributor subscriptions", ctx do
+      project = create_project(ctx, company_access_level: Binding.full_access())
+      contributor = person_fixture(%{company_id: ctx.company.id})
+
+      subscription_list_id = project.subscription_list_id
+
+      {:ok, subscription} =
+        Notifications.create_subscription(%{
+          subscription_list_id: subscription_list_id,
+          person_id: contributor.id,
+          type: :invited,
+          canceled: true
+        })
+
+      assert subscription.canceled
+
+      assert {200, _} =
+        request(ctx.conn, %{
+          project: project,
+          contributors: [
+            %{
+              person_id: Paths.person_id(contributor),
+              responsibility: "software development",
+              access_level: Binding.edit_access()
+            }
+          ]
+        })
+
+      {:ok, reactivated} =
+        Subscription.get(:system, subscription_list_id: subscription_list_id, person_id: contributor.id)
+
+      assert reactivated.id == subscription.id
+      refute reactivated.canceled
     end
   end
 
