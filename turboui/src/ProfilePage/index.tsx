@@ -30,8 +30,7 @@ export namespace ProfilePage {
     editProfilePath: string;
     canEditProfile: boolean;
 
-    viewer: Person;
-    profileUser: Person;
+    viewer: Person | null;
   }
 
   export type TabOptions = "assigned" | "reviewing" | "completed" | "activity" | "about";
@@ -49,8 +48,8 @@ export function ProfilePage(props: ProfilePage.Props) {
         <WorkMapTable
           items={items[tabs.active]}
           tab={["completed", "paused"].includes(tabs.active) ? (tabs.active as WorkMap.Filter) : "all"}
-          profileUser={props.profileUser}
-          viewer={props.viewer}
+          profileUser={props.person}
+          viewer={props.viewer || undefined}
           columnOptions={{ hideOwner: true }}
         />
       )}

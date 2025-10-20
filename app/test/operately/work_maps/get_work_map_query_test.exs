@@ -102,6 +102,56 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
     end
   end
 
+  describe "functionality - execute/1 with include_reviewer parameter" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_company_member(:goal_reviewer)
+      |> Factory.add_company_member(:project_reviewer)
+      |> Factory.add_goal(:goal, :space, champion: :creator, reviewer: :goal_reviewer)
+      |> Factory.add_project(:project, :space, champion: :goal_reviewer, reviewer: :project_reviewer)
+    end
+
+    test "includes reviewer when include_reviewer is true", ctx do
+      {:ok, work_map} =
+        GetWorkMapQuery.execute(:system, %{
+          company_id: ctx.company.id,
+          include_reviewer: true
+        })
+
+      goal = Enum.find(work_map, fn item -> item.type == :goal end)
+      project = Enum.find(work_map, fn item -> item.type == :project end)
+
+      assert goal.reviewer.id == ctx.goal_reviewer.id
+      assert project.reviewer.id == ctx.project_reviewer.id
+    end
+
+    test "does not include reviewer when include_reviewer is false", ctx do
+      {:ok, work_map} =
+        GetWorkMapQuery.execute(:system, %{
+          company_id: ctx.company.id,
+          include_reviewer: false
+        })
+
+      goal = Enum.find(work_map, fn item -> item.type == :goal end)
+      project = Enum.find(work_map, fn item -> item.type == :project end)
+
+      assert match?(%Ecto.Association.NotLoaded{}, goal.reviewer)
+      assert match?(%Ecto.Association.NotLoaded{}, project.reviewer)
+    end
+
+    test "does not include reviewer by default", ctx do
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id})
+
+      goal = Enum.find(work_map, fn item -> item.type == :goal end)
+      project = Enum.find(work_map, fn item -> item.type == :project end)
+
+      assert match?(%Ecto.Association.NotLoaded{}, goal.reviewer)
+      assert match?(%Ecto.Association.NotLoaded{}, project.reviewer)
+    end
+  end
+
   describe "functionality - execute/1 with company_id and space_id parameters" do
     setup ctx do
       ctx

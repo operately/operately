@@ -24,24 +24,28 @@ function Page() {
   assertPresent(person.reports);
   assertPresent(person.permissions);
 
-  const props = {
-    title: [person.fullName!, "Profile"],
+  const parsedPerson = People.parsePersonForTurboUi(paths, person);
+  const viewer = People.parsePersonForTurboUi(paths, me) || null;
+  const manager = People.parsePersonForTurboUi(paths, person.manager);
 
-    person: People.parsePersonForTurboUi(paths, person)!,
+  assertPresent(parsedPerson, "parsedPerson is undefined");
+
+  const props = {
+    title: [person.fullName, "Profile"],
+
+    viewer,
+    person: parsedPerson,
     peers: People.parsePeopleForTurboUi(paths, People.sortByName(person.peers)),
     reports: People.parsePeopleForTurboUi(paths, People.sortByName(person.reports)),
-    manager: People.parsePersonForTurboUi(paths, person.manager)!,
+    manager,
 
     workMap: convertToWorkMapItems(paths, workMap),
     reviewerWorkMap: convertToWorkMapItems(paths, reviewerWorkMap),
 
     canEditProfile: !!person.permissions.canEditProfile,
-    editProfilePath: paths.profileEditPath(person.id!),
+    editProfilePath: paths.profileEditPath(person.id),
 
-    viewer: People.parsePersonForTurboUi(paths, me)!,
-    profileUser: People.parsePersonForTurboUi(paths, person)!,
-
-    activityFeed: <ActivityFeed personId={person.id!} />,
+    activityFeed: <ActivityFeed personId={person.id} />,
   };
 
   return <ProfilePage {...props} />;
