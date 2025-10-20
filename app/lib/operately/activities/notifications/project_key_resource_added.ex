@@ -1,9 +1,16 @@
 defmodule Operately.Activities.Notifications.ProjectKeyResourceAdded do
-  alias Operately.Projects.Notifications
+  @moduledoc """
+  Notifies the following people:
+  - Project subscribers: People subscribed to notifications for the project
+
+  The person who authored the comment is excluded from notifications.
+  """
+
+  alias Operately.Projects.{Project, Notifications}
 
   def dispatch(activity) do
-    {:ok, project} = Operately.Projects.Project.get(:system, id: activity.content["project_id"])
-    subscriber_ids = Notifications.get_project_subscribers(project, ignore: [activity.author_id])
+    {:ok, project} = Project.get(:system, id: activity.content["project_id"])
+    subscriber_ids = Notifications.get_project_subscribers(project)
 
     subscriber_ids
     |> Enum.uniq_by(& &1)
