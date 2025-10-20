@@ -4,6 +4,8 @@ defmodule Operately.Operations.ProjectCreation do
   alias Operately.Access
   alias Operately.Access.{Binding, Context}
   alias Operately.Operations.Notifications.SubscriptionList, as: SubscriptionListOps
+  alias Operately.Notifications
+  alias Operately.Notifications.Subscription
   alias Operately.Projects.{Project, Contributor}
   alias Operately.ContextualDates.ContextualDate
   alias Ecto.Multi
@@ -77,6 +79,9 @@ defmodule Operately.Operations.ProjectCreation do
           role: :champion
         })
       end)
+      |> Multi.run(:champion_subscription, fn _repo, %{project: project} ->
+        ensure_subscription(project.subscription_list_id, params.champion_id)
+      end)
     else
       multi
     end
@@ -92,6 +97,9 @@ defmodule Operately.Operations.ProjectCreation do
           role: :reviewer
         })
       end)
+      |> Multi.run(:reviewer_subscription, fn _repo, %{project: project} ->
+        ensure_subscription(project.subscription_list_id, params.reviewer_id)
+      end)
     else
       multi
     end
@@ -106,6 +114,9 @@ defmodule Operately.Operations.ProjectCreation do
           responsibility: params.creator_role,
           role: :contributor
         })
+      end)
+      |> Multi.run(:creator_subscription, fn _repo, %{project: project} ->
+        ensure_subscription(project.subscription_list_id, params.creator_id)
       end)
     else
       multi
@@ -178,5 +189,21 @@ defmodule Operately.Operations.ProjectCreation do
 
   defp is_private(visibility) do
     visibility != "everyone"
+  end
+
+  defp ensure_subscription(nil, _person_id), do: {:ok, nil}
+
+  defp ensure_subscription(subscription_list_id, person_id) do
+    case Subscription.get(:system, subscription_list_id: subscription_list_id, person_id: person_id) do
+      {:error, :not_found} ->
+        Notifications.create_subscription(%{
+          subscription_list_id: subscription_list_id,
+          person_id: person_id,
+          type: :invited
+        })
+
+      {:ok, subscription} ->
+        Notifications.update_subscription(subscription, %{canceled: false})
+    end
   end
 end

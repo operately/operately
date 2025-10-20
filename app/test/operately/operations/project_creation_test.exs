@@ -13,6 +13,7 @@ defmodule Operately.Operations.ProjectCreationTest do
   alias Operately.Access
   alias Operately.Access.Binding
   alias Operately.Activities.Activity
+  alias Operately.Notifications.Subscription
 
   setup do
     company = company_fixture()
@@ -92,6 +93,34 @@ defmodule Operately.Operations.ProjectCreationTest do
     assert Access.get_binding(group_id: creator.id, context_id: context.id, access_level: Binding.full_access())
     assert Access.get_binding(group_id: reviewer.id, context_id: context.id, access_level: Binding.full_access())
     assert Access.get_binding(group_id: champion.id, context_id: context.id, access_level: Binding.full_access())
+  end
+
+  test "ProjectCreation operation creates subscriptions for contributors", ctx do
+    {:ok, project} = Operately.Operations.ProjectCreation.run(ctx.project_attrs)
+
+    {:ok, champion_subscription} =
+      Subscription.get(:system,
+        subscription_list_id: project.subscription_list_id,
+        person_id: ctx.champion.id
+      )
+    assert champion_subscription.type == :invited
+    refute champion_subscription.canceled
+
+    {:ok, reviewer_subscription} =
+      Subscription.get(:system,
+        subscription_list_id: project.subscription_list_id,
+        person_id: ctx.reviewer.id
+      )
+    assert reviewer_subscription.type == :invited
+    refute reviewer_subscription.canceled
+
+    {:ok, creator_subscription} =
+      Subscription.get(:system,
+        subscription_list_id: project.subscription_list_id,
+        person_id: ctx.creator.id
+      )
+    assert creator_subscription.type == :invited
+    refute creator_subscription.canceled
   end
 
   test "ProjectCreation operation doesn't add creator as contributor", ctx do
