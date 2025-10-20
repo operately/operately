@@ -26,7 +26,7 @@ export function NotificationToggle({
 
   return (
     <div className="space-y-2">
-      <SecondaryButton size="xs" onClick={handleToggle} icon={isSubscribed ? IconBell : IconBellOff} testId={testId}>
+      <SecondaryButton size="xs" onClick={handleToggle} icon={isSubscribed ? IconBellOff : IconBell} testId={testId}>
         {isSubscribed ? "Unsubscribe" : "Subscribe"}
       </SecondaryButton>
 
