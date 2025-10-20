@@ -1907,6 +1907,8 @@ export interface WorkMapItem {
   spacePath: string;
   owner: Person | null;
   ownerPath: string | null;
+  reviewer: Person | null;
+  reviewerPath: string | null;
   nextStep: string;
   isNew: boolean;
   completedOn: string | null;
@@ -2259,6 +2261,7 @@ export interface GetFlatWorkMapInput {
   contributorId?: Id | null;
   onlyCompleted?: boolean | null;
   includeAssignees?: boolean | null;
+  includeReviewer?: boolean | null;
 }
 
 export interface GetFlatWorkMapResult {
@@ -2621,6 +2624,7 @@ export interface GetWorkMapInput {
   contributorId?: Id | null;
   onlyCompleted?: boolean | null;
   includeAssignees?: boolean | null;
+  includeReviewer?: boolean | null;
 }
 
 export interface GetWorkMapResult {
