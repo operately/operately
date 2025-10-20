@@ -54,16 +54,21 @@ export function usePeopleSearch(scope: SearchScope) {
   };
 }
 
+export function parsePeopleForTurboUi(paths: Paths, people: Person[]) {
+  return people.map((person) => parsePersonForTurboUi(paths, person)).filter((person) => person !== null);
+}
+
 export function parsePersonForTurboUi(paths: Paths, person: Person | null | undefined) {
   if (!person) {
     return null;
   } else {
     return {
-      id: person.id!,
-      fullName: person.fullName!,
+      id: person.id,
+      fullName: person.fullName,
+      email: person.email,
       title: person.title || "",
       avatarUrl: person.avatarUrl || "",
-      profileLink: paths.profilePath(person.id!),
+      profileLink: paths.profilePath(person.id),
     };
   }
 }
@@ -144,26 +149,4 @@ export function hasInvitationExpired(person: Person): boolean {
   if (!time) return false;
 
   return time < Time.now();
-}
-
-export interface PersonWithLink extends Person {
-  link: string;
-}
-
-/**
- * Converts a Person or array of Person objects to include profile links
- */
-export function toPersonWithLink(paths: Paths, person: Person): PersonWithLink;
-export function toPersonWithLink(paths: Paths, people: Person[]): PersonWithLink[];
-export function toPersonWithLink(paths: Paths, personOrPeople: Person | Person[]) {
-  if (Array.isArray(personOrPeople)) {
-    return personOrPeople.map((person) => toPersonWithLink(paths, person));
-  }
-
-  const person = personOrPeople;
-
-  return {
-    ...person,
-    link: paths.profilePath(person.id!),
-  };
 }

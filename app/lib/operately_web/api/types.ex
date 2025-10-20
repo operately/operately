@@ -2028,6 +2028,8 @@ defmodule OperatelyWeb.Api.Types do
     field :space_path, :string, null: false
     field :owner, :person, null: true
     field :owner_path, :string, null: true
+    field :reviewer, :person, null: true
+    field :reviewer_path, :string, null: true
     field :next_step, :string, null: false
     field :is_new, :boolean, null: false
     field :completed_on, :date, null: true

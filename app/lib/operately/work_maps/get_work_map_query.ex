@@ -24,6 +24,7 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     - reviewer_id (optional): The ID of the reviewer
     - contributor_id (optional): The ID of a contributor
     - include_assignees (optional): A boolean indicating whether to include assignees in the result. Defaults to false
+    - include_reviewer (optional): A boolean indicating whether to include reviewer details in the result. Defaults to false
     - only_completed (optional): A boolean indicating whether to return only completed items. Defaults to false
   """
   def execute(person, args) do
@@ -173,6 +174,8 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
 
   defp include_assignees?(args), do: Map.get(args, :include_assignees, false)
 
+  defp include_reviewer?(args), do: Map.get(args, :include_reviewer, false)
+
   defp needs_reviewer?(args), do: Map.get(args, :reviewer_id) != nil
 
   defp needs_contributor?(args), do: Map.get(args, :contributor_id) != nil
@@ -186,7 +189,9 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   #
 
   defp preload_project_associations(query, args) do
+    include_reviewer = include_reviewer?(args)
     need_reviewer = needs_reviewer?(args)
+    include_assignees = include_assignees?(args)
 
     query
     |> join(:left, [p], company in assoc(p, :company), as: :company)
@@ -200,8 +205,8 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
       last_check_in: lci
     )
     |> preload_project_milestones()
-    |> maybe_preload_project_reviewer(need_reviewer)
-    |> maybe_preload_project_contributors(include_assignees?(args) || needs_contributor?(args))
+    |> maybe_preload_project_reviewer(include_reviewer || need_reviewer)
+    |> maybe_preload_project_contributors(include_assignees || needs_contributor?(args))
     |> preload_access_levels()
   end
 
@@ -227,8 +232,9 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
 
   defp preload_goal_associations(query, args) do
     include_assignees = include_assignees?(args)
+    include_reviewer = include_reviewer?(args)
     need_reviewer = needs_reviewer?(args)
-    need_reviewer_or_assignees = need_reviewer || include_assignees
+    need_reviewer_or_assignees = need_reviewer || include_reviewer || include_assignees
 
     query
     |> join(:left, [goal: g], company in assoc(g, :company), as: :company)

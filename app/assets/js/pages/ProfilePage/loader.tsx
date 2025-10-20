@@ -6,7 +6,7 @@ import { fetchAll } from "@/utils/async";
 
 interface LoaderResult {
   data: {
-    person: People.PersonWithLink;
+    person: People.Person;
     workMap: WorkMap.WorkMapItem[];
     reviewerWorkMap: WorkMap.WorkMapItem[];
   };
@@ -17,7 +17,7 @@ export async function loader({ params, refreshCache = false }): Promise<LoaderRe
   const personId = params.id;
 
   return PageCache.fetch({
-    cacheKey: `v3-PersonalWorkMap-${personId}`,
+    cacheKey: `v4-PersonalWorkMap-${personId}`,
     refreshCache,
     fetchFn: async () =>
       fetchAll({
@@ -31,9 +31,11 @@ export async function loader({ params, refreshCache = false }): Promise<LoaderRe
         workMap: WorkMap.getFlatWorkMap({
           championId: personId,
           contributorId: personId,
+          includeReviewer: true,
         }).then((d) => d.workMap),
         reviewerWorkMap: WorkMap.getFlatWorkMap({
           reviewerId: personId,
+          includeReviewer: true,
         }).then((d) => d.workMap),
       }),
   });

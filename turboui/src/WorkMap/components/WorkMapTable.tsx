@@ -135,7 +135,7 @@ interface HeaderProps {
 
 export function TableHeader({ tab, columnOptions = {}, viewer, profileUser }: HeaderProps) {
   const isCompletedPage = tab === "completed";
-  const roleLabel = useGetRoleLabel(viewer, profileUser);
+  const roleLabel = getRoleLabel(viewer, profileUser);
 
   return (
     <thead>
@@ -254,7 +254,7 @@ function AddNewRow({
   );
 }
 
-function useGetRoleLabel(viewer?: WorkMap.Person, profileUser?: WorkMap.Person) {
+function getRoleLabel(viewer?: WorkMap.Person, profileUser?: WorkMap.Person) {
   if (!profileUser) return;
 
   const isViewer = compareIds(viewer?.id, profileUser?.id);
