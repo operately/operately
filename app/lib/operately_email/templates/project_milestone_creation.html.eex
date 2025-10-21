@@ -1,0 +1,20 @@
+<%= title("#{short_name(@author)} created the #{@milestone.title} milestone") %>
+
+<%= spacer() %>
+
+<%= row do %>
+  A new milestone was added to <%= @project.name %>.
+<% end %>
+
+<%= if @due_date do %>
+  <%= spacer() %>
+  <%= row do %>
+    It is scheduled for <%= @due_date %>.
+  <% end %>
+<% end %>
+
+<%= spacer() %>
+
+<%= row do %>
+  <%= cta_button(@cta_url, "View Milestone") %>
+<% end %>

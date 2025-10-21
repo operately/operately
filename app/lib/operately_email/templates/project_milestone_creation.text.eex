@@ -1,0 +1,6 @@
+<%= short_name(@author) %> created the <%= @milestone.title %> milestone for <%= @project.name %>.
+<%= if @due_date do %>
+It is scheduled for <%= @due_date %>.
+<% end %>
+
+Link: <%= @cta_url %>
