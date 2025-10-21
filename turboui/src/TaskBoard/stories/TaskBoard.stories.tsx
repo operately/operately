@@ -56,7 +56,16 @@ export const Default: Story = {
     const [milestones, setMilestones] = useState<Types.Milestone[]>([
       ...Object.values(mockMilestones),
     ]);
+    const [searchableMilestones, setSearchableMilestones] = useState<Types.Milestone[]>([
+      ...Object.values(mockMilestones),
+    ]);
     const [filters, setFilters] = useState<Types.FilterCondition[]>([]);
+
+    const handleMilestoneSearch = async (query: string) => {
+      const allMilestones = Object.values(mockMilestones);
+      const filtered = allMilestones.filter((m) => m.name.toLowerCase().includes(query.toLowerCase()));
+      setSearchableMilestones(filtered);
+    };
 
     const handleTaskCreate = (newTaskData) => {
       // Generate a fake UUID for the new task
@@ -103,6 +112,7 @@ export const Default: Story = {
       <TaskBoard
         tasks={tasks}
         milestones={milestones}
+        searchableMilestones={searchableMilestones}
         onTaskCreate={handleTaskCreate}
         onMilestoneCreate={handleMilestoneCreate}
         onTaskAssigneeChange={(taskId, assignee) => {
@@ -112,6 +122,7 @@ export const Default: Story = {
           console.log('Task due date updated:', taskId, dueDate);
         }}
         onTaskStatusChange={handleTaskStatusChange}
+        onMilestoneSearch={handleMilestoneSearch}
         searchPeople={mockSearchPeople}
         filters={filters}
         onFiltersChange={setFilters}

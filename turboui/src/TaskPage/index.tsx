@@ -52,7 +52,8 @@ export namespace TaskPage {
     // Milestone selection
     milestone: Milestone | null;
     onMilestoneChange: (milestone: Milestone | null) => void;
-    searchMilestones: (params: { query: string }) => Promise<Milestone[]>;
+    milestones: Milestone[];
+    onMilestoneSearch: (query: string) => Promise<void>;
 
     // Core task data
     name: string;

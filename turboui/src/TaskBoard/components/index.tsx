@@ -28,6 +28,7 @@ export namespace TaskBoard {
 export function TaskBoard({
   tasks: externalTasks,
   milestones: externalMilestones = [],
+  searchableMilestones,
   onTaskCreate,
   onMilestoneCreate,
   onTaskAssigneeChange,
@@ -35,6 +36,7 @@ export function TaskBoard({
   onTaskStatusChange,
   onTaskMilestoneChange,
   onMilestoneUpdate,
+  onMilestoneSearch,
   searchPeople,
   filters = [],
   onFiltersChange,
@@ -116,9 +118,10 @@ export function TaskBoard({
         isOpen={isTaskModalOpen}
         onClose={() => setIsTaskModalOpen(false)}
         onCreateTask={onTaskCreate}
-        milestones={milestones.map((m) => m.milestone)}
+        milestones={searchableMilestones}
         currentMilestoneId={activeTaskMilestoneId}
         searchPeople={searchPeople}
+        onMilestoneSearch={onMilestoneSearch}
         people={internalTasks
           .flatMap((task) => task.assignees || [])
           .filter((person, index, self) => index === self.findIndex((p) => p.id === person.id))}
