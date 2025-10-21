@@ -2,6 +2,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
   alias Operately.ContextualDates.{Timeframe, ContextualDate}
 
   use OperatelyWeb.TurboCase
+  use Operately.Support.Notifications
 
   setup ctx do
     ctx
@@ -528,6 +529,36 @@ defmodule OperatelyWeb.Api.ProjectsTest do
 
       after_count = count_activities(ctx.project.id, "project_due_date_updating")
       assert after_count == before_count + 1
+    end
+
+    test "it notifies project subscribers when the due date is updated", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_contributor(:subscriber, :project, :as_person)
+        |> Factory.log_in_person(:creator)
+
+      action = "project_due_date_updating"
+      contextual_date = %{
+        date: "2026-01-01",
+        date_type: "day",
+        value: "Jan 1, 2026"
+      }
+
+      assert notifications_count(action: action) == 0
+
+      assert {200, _} = mutation(ctx.conn, [:projects, :update_due_date], %{
+        project_id: Paths.project_id(ctx.project),
+        due_date: contextual_date
+      })
+
+      activity = get_activity(ctx.project.id, action)
+      assert activity.content["project_id"] == ctx.project.id
+      assert activity.content["new_due_date"] != nil
+
+      assert notifications_count(action: action) == 1
+
+      notifications = fetch_notifications(activity.id, action: action)
+      assert Enum.any?(notifications, &(&1.person_id == ctx.subscriber.id))
     end
   end
 
@@ -1059,6 +1090,54 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert milestone.title == "Release v1.0"
       assert milestone.project_id == ctx.project.id
       assert Timeframe.end_date(milestone.timeframe) == ~D[2026-01-01]
+    end
+
+    test "it creates an activity when a milestone is created", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      action = "project_milestone_creation"
+      before_count = count_activities(ctx.project.id, action)
+
+      assert {200, res} = mutation(ctx.conn, [:projects, :create_milestone], %{
+        project_id: Paths.project_id(ctx.project),
+        name: "Release activity",
+        due_date: nil
+      })
+
+      after_count = count_activities(ctx.project.id, action)
+      assert after_count == before_count + 1
+
+      activity = get_activity(ctx.project.id, action)
+      {:ok, milestone_id} = OperatelyWeb.Api.Helpers.decode_id(res.milestone.id)
+
+      assert activity.content["project_id"] == ctx.project.id
+      assert activity.content["milestone_id"] == milestone_id
+      assert activity.content["milestone_name"] == "Release activity"
+    end
+
+    test "it notifies project subscribers when a milestone is created", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_contributor(:subscriber, :project, :as_person)
+        |> Factory.log_in_person(:creator)
+
+      action = "project_milestone_creation"
+
+      assert notifications_count(action: action) == 0
+
+      assert {200, res} = mutation(ctx.conn, [:projects, :create_milestone], %{
+        project_id: Paths.project_id(ctx.project),
+        name: "Release notify",
+        due_date: nil
+      })
+
+      activity = get_activity(ctx.project.id, action)
+      {:ok, milestone_id} = OperatelyWeb.Api.Helpers.decode_id(res.milestone.id)
+      assert activity.content["milestone_id"] == milestone_id
+
+      notifications = fetch_notifications(activity.id, action: action)
+      refute notifications == []
+      assert Enum.any?(notifications, &(&1.person_id == ctx.subscriber.id))
+      refute Enum.any?(notifications, &(&1.person_id == ctx.creator.id))
     end
   end
 
