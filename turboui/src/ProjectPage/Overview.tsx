@@ -304,6 +304,7 @@ function AddMilestoneForm({
           onDateSelect={setNewMilestoneDueDate}
           placeholder="Set target date"
           testId="new-milestone-due-date"
+          calendarOnly
         />
         <div className="flex items-center gap-4 justify-between">
           <SwitchToggle testId="add-more-switch" value={addMore} setValue={setAddMore} label="Create more" />

@@ -63,6 +63,7 @@ function SidebarDueDate({
         showOverdueWarning={showOverdueWarning}
         placeholder="Set due date"
         testId="milestone-due-date"
+        calendarOnly
       />
     </SidebarSection>
   );

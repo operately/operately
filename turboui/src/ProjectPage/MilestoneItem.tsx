@@ -17,7 +17,14 @@ interface MilestoneItemProps {
   itemStyle?: (id: string) => React.CSSProperties;
 }
 
-export function MilestoneItem({ milestone, canEdit, onUpdate, isLast = false, isDraggable = false, itemStyle }: MilestoneItemProps) {
+export function MilestoneItem({
+  milestone,
+  canEdit,
+  onUpdate,
+  isLast = false,
+  isDraggable = false,
+  itemStyle,
+}: MilestoneItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(milestone.name);
   const [editDueDate, setEditDueDate] = useState<DateField.ContextualDate | null>(milestone.dueDate || null);
@@ -78,7 +85,13 @@ export function MilestoneItem({ milestone, canEdit, onUpdate, isLast = false, is
                 autoFocus
                 data-test-id={nameTestId}
               />
-              <DateField date={editDueDate} onDateSelect={setEditDueDate} placeholder="Due date (optional)" testId={dateTestId} />
+              <DateField
+                date={editDueDate}
+                onDateSelect={setEditDueDate}
+                placeholder="Due date (optional)"
+                testId={dateTestId}
+                calendarOnly
+              />
               <div className="flex gap-2">
                 <Button size="sm" onClick={handleSave} disabled={!editName.trim()}>
                   Save
