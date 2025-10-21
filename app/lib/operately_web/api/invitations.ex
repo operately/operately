@@ -145,6 +145,7 @@ defmodule OperatelyWeb.Api.Invitations do
 
     inputs do
       field?(:is_active, :boolean)
+      field?(:allowed_domains, list_of(:string))
     end
 
     outputs do

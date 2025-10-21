@@ -126,6 +126,19 @@ defmodule OperatelyWeb.Api.InvitationsTest do
       assert invite_link.is_active
     end
 
+    test "update the allowed domains", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      invite_link = create_invite_link(ctx)
+
+      assert {200, _res} = update_invite_link(ctx, %{allowed_domains: ["example.com", "test.com"]})
+      invite_link = Operately.Repo.reload(invite_link)
+      assert invite_link.allowed_domains == ["example.com", "test.com"]
+
+      assert {200, _res} = update_invite_link(ctx, %{allowed_domains: []})
+      invite_link = Operately.Repo.reload(invite_link)
+      assert invite_link.allowed_domains == []
+    end
+
     def update_invite_link(ctx, params) do
       mutation(ctx.conn, [:invitations, :update_company_invite_link], params)
     end
