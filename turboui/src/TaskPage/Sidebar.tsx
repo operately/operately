@@ -138,7 +138,8 @@ function Milestone(props: TaskPage.State) {
         milestone={props.milestone}
         setMilestone={props.onMilestoneChange}
         readonly={!props.canEdit}
-        searchMilestones={props.searchMilestones || (async () => [])}
+        milestones={props.milestones}
+        onSearch={props.onMilestoneSearch}
         emptyStateMessage="Select milestone"
         emptyStateReadOnlyMessage="No milestone"
       />

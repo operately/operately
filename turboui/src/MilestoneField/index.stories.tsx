@@ -75,15 +75,16 @@ const mockMilestones: Milestone[] = [
 
 const Template = (args: any) => {
   const [milestone, setMilestone] = React.useState<any>(args.milestone || null);
+  const [milestones, setMilestones] = React.useState<Milestone[]>(mockMilestones);
 
-  const searchMilestones = async ({ query }: { query: string }) => {
+  const handleSearch = async (query: string) => {
     // Simulate search delay
     await new Promise((resolve) => setTimeout(resolve, 200));
 
     const filtered = mockMilestones.filter((m) => (m.name || m.title || "").toLowerCase().includes(query.toLowerCase()));
 
     // Sort by due date (earliest first), then by title for those without due dates
-    return filtered.sort((a, b) => {
+    const sorted = filtered.sort((a, b) => {
       if (a.dueDate?.date && b.dueDate?.date) {
         return a.dueDate.date.getTime() - b.dueDate.date.getTime();
       }
@@ -91,21 +92,8 @@ const Template = (args: any) => {
       if (!a.dueDate?.date && b.dueDate?.date) return 1;
       return (a.name || a.title || "").localeCompare((b.name || b.title || "")); // Alphabetical for no due dates
     });
-  };
 
-  const handleCreateNew = (title?: string) => {
-    console.log("Creating new milestone with title:", title);
-    // In a real app, this would open a modal or navigate to a creation page
-    // For Storybook demo purposes, we'll create a simple milestone to show the interaction
-    if (title) {
-      const newMilestone = {
-        id: Date.now().toString(),
-        name: title,
-        status: "pending" as const,
-        projectLink: "/projects/demo",
-      };
-      setMilestone(newMilestone);
-    }
+    setMilestones(sorted);
   };
 
   return (
@@ -114,8 +102,8 @@ const Template = (args: any) => {
         {...args}
         milestone={milestone}
         setMilestone={setMilestone}
-        searchMilestones={searchMilestones}
-        onCreateNew={handleCreateNew}
+        milestones={milestones}
+        onSearch={handleSearch}
       />
 
       <div className="mt-4 p-2 bg-gray-100 rounded text-sm">
@@ -186,16 +174,15 @@ export const CustomMessages: Story = {
   },
 };
 
-export const WithoutCreateNew: Story = {
+export const EmptySearch: Story = {
   render: (args: any) => {
     const [milestone, setMilestone] = React.useState(args.milestone || null);
+    const [milestones, setMilestones] = React.useState<Milestone[]>([]);
 
-    const searchMilestones = async ({ query }: { query: string }) => {
+    const handleSearch = async (_query: string) => {
       await new Promise((resolve) => setTimeout(resolve, 200));
-
-      if (!query) return mockMilestones;
-
-      return mockMilestones.filter((m) => (m.name || m.title || "").toLowerCase().includes(query.toLowerCase()));
+      // Simulate empty search results
+      setMilestones([]);
     };
 
     return (
@@ -204,8 +191,8 @@ export const WithoutCreateNew: Story = {
           {...args}
           milestone={milestone}
           setMilestone={setMilestone}
-          searchMilestones={searchMilestones}
-          // No onCreateNew prop - should hide "Create new" option
+          milestones={milestones}
+          onSearch={handleSearch}
         />
 
         <div className="mt-4 p-2 bg-gray-100 rounded text-sm">
@@ -224,28 +211,18 @@ export const InteractiveDemo: Story = {
   render: () => {
     const [milestone, setMilestone] = React.useState<any>(mockMilestones[0]);
     const [readonly, setReadonly] = React.useState(false);
+    const [milestones, setMilestones] = React.useState<Milestone[]>(mockMilestones);
 
-    const searchMilestones = async ({ query }: { query: string }) => {
+    const handleSearch = async (query: string) => {
       await new Promise((resolve) => setTimeout(resolve, 200));
 
-      if (!query) return mockMilestones;
-
-      return mockMilestones.filter((m) => (m.name || m.title || "").toLowerCase().includes(query.toLowerCase()));
-    };
-
-    const handleCreateNew = (title?: string) => {
-      console.log("Creating new milestone with title:", title);
-      // In a real app, this would open a modal or navigate to milestone creation
-      // For Storybook demo purposes, we'll create a simple milestone to show the interaction
-      if (title) {
-        const newMilestone = {
-          id: Date.now().toString(),
-          name: title,
-          status: "pending" as const,
-          projectLink: "/projects/demo",
-        };
-        setMilestone(newMilestone);
+      if (!query) {
+        setMilestones(mockMilestones);
+        return;
       }
+
+      const filtered = mockMilestones.filter((m) => (m.name || m.title || "").toLowerCase().includes(query.toLowerCase()));
+      setMilestones(filtered);
     };
 
     return (
@@ -268,8 +245,8 @@ export const InteractiveDemo: Story = {
             milestone={milestone}
             setMilestone={setMilestone}
             readonly={readonly}
-            searchMilestones={searchMilestones}
-            onCreateNew={handleCreateNew}
+            milestones={milestones}
+            onSearch={handleSearch}
           />
         </div>
 
@@ -290,6 +267,9 @@ export const InteractiveDemo: Story = {
             )}
             <div>
               <strong>Read only:</strong> {readonly ? "Yes" : "No"}
+            </div>
+            <div>
+              <strong>Available milestones:</strong> {milestones.length}
             </div>
           </div>
         </div>

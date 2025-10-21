@@ -80,6 +80,7 @@ export const Default: Story = {
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
           milestones={sampleMilestones}
+          onMilestoneSearch={async () => {}}
           people={samplePeople}
           onCreateTask={handleCreateTask}
         />

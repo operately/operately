@@ -3,7 +3,7 @@ import * as React from "react";
 
 import { DateField } from "../DateField";
 import FormattedTime from "../FormattedTime";
-import { IconCircleX, IconExternalLink, IconFlag, IconPlus, IconSearch } from "../icons";
+import { IconCircleX, IconExternalLink, IconFlag, IconSearch } from "../icons";
 import { DivLink } from "../Link";
 import classNames from "../utils/classnames";
 import { createTestId, TestableElement } from "../TestableElement";
@@ -37,8 +37,8 @@ export interface MilestoneFieldProps extends TestableElement {
   readonly?: boolean;
   emptyStateMessage?: string;
   emptyStateReadOnlyMessage?: string;
-  searchMilestones: (params: { query: string }) => Promise<Milestone[]>;
-  onCreateNew?: (title?: string) => void;
+  milestones: Milestone[];
+  onSearch: (query: string) => Promise<void>;
   extraDialogMenuOptions?: DialogMenuOptionProps[];
 }
 
@@ -59,8 +59,7 @@ export interface State {
 
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  searchResults: Milestone[];
-  onCreateNew?: (title?: string) => void;
+  milestones: Milestone[];
 
   testId: string;
 }
@@ -81,7 +80,6 @@ export function useState(props: MilestoneFieldProps): State {
   const [dialogMode, setDialogMode] = React.useState<"menu" | "search">("menu");
 
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [searchResults, setSearchResults] = React.useState<Milestone[]>([]);
 
   const readonly = props.readonly ?? false;
   const emptyStateMessage = props.emptyStateMessage ?? "Select milestone";
@@ -96,18 +94,17 @@ export function useState(props: MilestoneFieldProps): State {
   }, [isOpen, props.milestone]);
 
   React.useEffect(() => {
-    let active = true;
+    if (!isOpen) return; // Don't search when dialog is closed
 
-    props.searchMilestones({ query: searchQuery }).then((milestones: Milestone[]) => {
-      if (active) {
-        setSearchResults(milestones);
-      }
-    });
+    // Debounce search by 300ms to avoid excessive API calls while typing
+    const timerId = setTimeout(() => {
+      props.onSearch(searchQuery);
+    }, 300);
 
     return () => {
-      active = false;
+      clearTimeout(timerId);
     };
-  }, [searchQuery, props.searchMilestones]);
+  }, [searchQuery, isOpen, props.onSearch]);
 
   const setIsOpen = (open: boolean) => {
     if (readonly) {
@@ -131,8 +128,7 @@ export function useState(props: MilestoneFieldProps): State {
     extraDialogMenuOptions,
     searchQuery,
     setSearchQuery,
-    searchResults,
-    onCreateNew: props.onCreateNew,
+    milestones: props.milestones,
 
     testId: props.testId || "milestone-field",
   };
@@ -309,7 +305,7 @@ function DialogSearch({ state }: { state: State }) {
   // Reset selected index when search results change
   React.useEffect(() => {
     setSelectedIndex(0);
-  }, [state.searchResults]);
+  }, [state.milestones]);
 
   // Scroll selected item into view
   React.useEffect(() => {
@@ -320,8 +316,7 @@ function DialogSearch({ state }: { state: State }) {
   }, [selectedIndex]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const hasCreateOption = state.searchResults.length === 0 && state.searchQuery && state.onCreateNew;
-    const totalOptions = state.searchResults.length + (hasCreateOption ? 1 : 0);
+    const totalOptions = state.milestones.length;
 
     switch (e.key) {
       case "ArrowDown":
@@ -334,20 +329,11 @@ function DialogSearch({ state }: { state: State }) {
         break;
       case "Enter":
         e.preventDefault();
-        if (hasCreateOption && selectedIndex === 0) {
-          // Create new milestone with search query
-          if (state.onCreateNew) {
-            state.onCreateNew(state.searchQuery);
-            state.setIsOpen(false);
-          }
-        } else {
-          // Select existing milestone
-          const selectedMilestone = state.searchResults[selectedIndex];
-          if (selectedMilestone) {
-            state.setMilestone(selectedMilestone);
-            state.setSearchQuery(""); // Clear search query
-            state.setIsOpen(false);
-          }
+        const selectedMilestone = state.milestones[selectedIndex];
+        if (selectedMilestone) {
+          state.setMilestone(selectedMilestone);
+          state.setSearchQuery(""); // Clear search query
+          state.setIsOpen(false);
         }
         break;
       case "Escape":
@@ -372,7 +358,7 @@ function DialogSearch({ state }: { state: State }) {
       </div>
 
       <div className="overflow-y-auto pt-0.5 pb-0.5" style={{ maxHeight: 210 }}>
-        {state.searchResults.map((milestone, index) => (
+        {state.milestones.map((milestone, index) => (
           <div
             key={milestone.id}
             ref={(el) => (itemRefs.current[index] = el)}
@@ -402,33 +388,7 @@ function DialogSearch({ state }: { state: State }) {
           </div>
         ))}
 
-        {state.searchResults.length === 0 && state.searchQuery && state.onCreateNew && (
-          <div
-            ref={(el) => (itemRefs.current[0] = el)}
-            className={classNames("flex items-center gap-2 px-1.5 py-1 rounded cursor-pointer", {
-              "bg-surface-dimmed": selectedIndex === 0,
-              "hover:bg-surface-dimmed": selectedIndex !== 0,
-            })}
-            onClick={() => {
-              if (state.onCreateNew) {
-                state.onCreateNew(state.searchQuery);
-                state.setIsOpen(false);
-              }
-            }}
-            onMouseEnter={() => setSelectedIndex(0)}
-          >
-            <div className="flex items-center gap-1.5 truncate">
-              <IconPlus size={18} className="text-content-dimmed shrink-0" />
-              <div className="truncate">
-                <div className="text-sm truncate">
-                  Create "<span className="font-medium">{state.searchQuery}</span>"
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {state.searchResults.length === 0 && state.searchQuery && !state.onCreateNew && (
+        {state.milestones.length === 0 && state.searchQuery && (
           <div className="px-1.5 py-2 text-sm text-content-dimmed text-center">No milestones found</div>
         )}
       </div>

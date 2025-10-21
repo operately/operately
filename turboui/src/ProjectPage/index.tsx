@@ -126,6 +126,7 @@ export namespace ProjectPage {
     // TaskBoard props
     tasks: TaskBoardTypes.Task[];
     milestones: Milestone[];
+    searchableMilestones: Milestone[]; // Filtered milestones for task creation
     onTaskCreate: (task: NewTaskPayload) => void;
     onTaskAssigneeChange: (taskId: string, assignee: TaskBoardTypes.Person | null) => void;
     onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
@@ -134,6 +135,7 @@ export namespace ProjectPage {
     onMilestoneCreate: (milestone: NewMilestonePayload) => void;
     onMilestoneUpdate: (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => void;
     onMilestoneReorder: (sourceId: string, destinationIndex: number) => Promise<void>;
+    onMilestoneSearch: (query: string) => Promise<void>;
     searchPeople: SearchFn;
     filters?: TaskBoardTypes.FilterCondition[];
     onFiltersChange?: (filters: TaskBoardTypes.FilterCondition[]) => void;
@@ -214,6 +216,7 @@ export function ProjectPage(props: ProjectPage.Props) {
             <TaskBoard
               tasks={state.tasks}
               milestones={state.milestones}
+              searchableMilestones={state.searchableMilestones}
               onTaskCreate={state.onTaskCreate}
               onMilestoneCreate={state.onMilestoneCreate}
               onTaskAssigneeChange={state.onTaskAssigneeChange}
@@ -221,6 +224,7 @@ export function ProjectPage(props: ProjectPage.Props) {
               onTaskStatusChange={state.onTaskStatusChange}
               onTaskMilestoneChange={state.onTaskMilestoneChange}
               onMilestoneUpdate={state.onMilestoneUpdate}
+              onMilestoneSearch={state.onMilestoneSearch}
               searchPeople={state.searchPeople}
               filters={state.filters}
               onFiltersChange={state.onFiltersChange}

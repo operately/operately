@@ -16,7 +16,6 @@ import {
   mockMentionedPersonLookup,
   mockMilestones,
   mockTaskPeople,
-  searchMilestones,
   searchTaskPeople,
   timelinePeople,
 } from "./mockData";
@@ -41,7 +40,13 @@ export function InProjectContextStory() {
   );
   const [taskAssignee, setTaskAssignee] = useState<TaskPage.Person | null>(mockTaskPeople[1]!);
   const [taskMilestone, setTaskMilestone] = useState<TaskPage.Milestone | null>(mockMilestones[1]!); // Beta Release
+  const [milestones, setMilestones] = useState<TaskPage.Milestone[]>(mockMilestones);
   const [isSubscribed, setIsSubscribed] = useState(false);
+
+  const handleMilestoneSearch = async (query: string) => {
+    const filtered = mockMilestones.filter((m) => m.name.toLowerCase().includes(query.toLowerCase()));
+    setMilestones(filtered);
+  };
   const [space, setSpace] = useState({ id: "1", name: "Product", link: "#" });
   const [isMoveModalOpen, setIsMoveModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -197,7 +202,8 @@ export function InProjectContextStory() {
               onArchive={() => console.log("Task archived")}
               // Search functionality
               searchPeople={searchTaskPeople}
-              searchMilestones={searchMilestones}
+              milestones={milestones}
+              onMilestoneSearch={handleMilestoneSearch}
               richTextHandlers={createMockRichEditorHandlers()}
               // Permissions
               canEdit={true}

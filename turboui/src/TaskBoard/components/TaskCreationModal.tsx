@@ -16,7 +16,7 @@ interface TaskCreationModalProps {
   currentMilestoneId?: string;
   people?: Types.Person[];
   searchPeople?: (params: { query: string }) => Promise<Types.Person[]>;
-  searchMilestones?: (params: { query: string }) => Promise<Types.Milestone[]>;
+  onMilestoneSearch: (query: string) => Promise<void>;
   milestoneReadOnly?: boolean;
 }
 
@@ -28,7 +28,7 @@ export function TaskCreationModal({
   currentMilestoneId,
   people = [],
   searchPeople,
-  searchMilestones,
+  onMilestoneSearch,
   milestoneReadOnly,
 }: TaskCreationModalProps) {
   // Form state
@@ -43,10 +43,6 @@ export function TaskCreationModal({
   // Default search functions if not provided
   const defaultSearchPeople = async ({ query }: { query: string }) => {
     return people.filter((person) => person.fullName.toLowerCase().includes(query.toLowerCase()));
-  };
-
-  const defaultSearchMilestones = async ({ query }: { query: string }) => {
-    return milestones.filter((milestone) => milestone.name.toLowerCase().includes(query.toLowerCase()));
   };
 
   // Update milestone when currentMilestoneId changes or modal opens
@@ -161,7 +157,8 @@ export function TaskCreationModal({
                     setMilestone(null);
                   }
                 }}
-                searchMilestones={searchMilestones || defaultSearchMilestones}
+                milestones={milestones.map((m) => ({ ...m, title: m.name }))}
+                onSearch={onMilestoneSearch}
                 emptyStateMessage="Select milestone"
                 readonly={milestoneReadOnly}
               />

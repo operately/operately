@@ -7,7 +7,6 @@ import {
   mockTaskPeople,
   mockMilestones,
   searchTaskPeople,
-  searchMilestones,
   asRichText,
   asRichTextWithList,
   createActiveTaskTimeline,
@@ -39,7 +38,15 @@ function Component(props: Partial<TaskPage.Props>) {
   const [dueDate, setDueDate] = React.useState<DateField.ContextualDate | undefined>(props.dueDate);
   const [assignee, setAssignee] = React.useState(props.assignee || null);
   const [milestone, setMilestone] = React.useState<TaskPage.Milestone | null>(props.milestone || null);
+  const [milestones, setMilestones] = React.useState<TaskPage.Milestone[]>(mockMilestones);
   const [isSubscribed, setIsSubscribed] = React.useState(props.isSubscribed ?? true);
+
+  const handleMilestoneSearch = React.useCallback(async (query: string) => {
+    await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
+    
+    const filtered = mockMilestones.filter((m) => m.name.toLowerCase().includes(query.toLowerCase()));
+    setMilestones(filtered);
+  }, []);
 
   // Destructure to exclude milestone and onMilestoneChange from props
   const { milestone: _ignoredMilestone, onMilestoneChange: _ignoredOnMilestoneChange, ...restProps } = props;
@@ -109,6 +116,8 @@ function Component(props: Partial<TaskPage.Props>) {
       console.log("Updating milestone:", newMilestone);
       setMilestone(newMilestone);
     },
+    milestones: milestones,
+    onMilestoneSearch: handleMilestoneSearch,
 
     // Subscription
     isSubscribed: isSubscribed,
@@ -137,7 +146,6 @@ function Component(props: Partial<TaskPage.Props>) {
 
     // Search
     searchPeople: searchTaskPeople,
-    searchMilestones: searchMilestones,
     richTextHandlers: createMockRichEditorHandlers(),
 
     // Permissions

@@ -363,6 +363,8 @@ export const Default: Story = {
         activityFeed={<div>Activity feed content</div>}
         tasks={tasks}
         milestones={milestones}
+        searchableMilestones={milestones}
+        onMilestoneSearch={async () => {}}
         onTaskCreate={handleTaskCreate}
         onMilestoneCreate={handleMilestoneCreate}
         onTaskAssigneeChange={(taskId, assignee) => {
@@ -451,6 +453,8 @@ export const ReadOnly: Story = {
         activityFeed={<div>Activity feed content</div>}
         tasks={tasks}
         milestones={milestones}
+        searchableMilestones={milestones}
+        onMilestoneSearch={async () => {}}
         onTaskStatusChange={() => {}}
         onTaskCreate={() => {}}
         onMilestoneCreate={() => {}}
@@ -586,6 +590,8 @@ export const EmptyTasks: Story = {
         activityFeed={<div>Activity feed content</div>}
         tasks={tasks}
         milestones={milestones}
+        searchableMilestones={milestones}
+        onMilestoneSearch={async () => {}}
         onTaskStatusChange={() => {}}
         onTaskCreate={handleTaskCreate}
         onMilestoneCreate={handleMilestoneCreate}
@@ -702,6 +708,8 @@ export const EmptyProject: Story = {
         activityFeed={<div>Activity feed content</div>}
         tasks={[]}
         milestones={milestones}
+        searchableMilestones={milestones}
+        onMilestoneSearch={async () => {}}
         onTaskStatusChange={() => {}}
         onTaskCreate={() => {}}
         onMilestoneCreate={handleMilestoneCreate}
@@ -777,6 +785,8 @@ export const EmptyProjectReadOnly: Story = {
         activityFeed={<div>Activity feed content</div>}
         tasks={tasks}
         milestones={milestones}
+        searchableMilestones={milestones}
+        onMilestoneSearch={async () => {}}
         onTaskStatusChange={() => {}}
         onTaskCreate={() => {}}
         onMilestoneCreate={() => {}}
@@ -930,6 +940,8 @@ export const PausedProject: Story = {
         activityFeed={<div>Activity feed content</div>}
         tasks={tasks}
         milestones={milestones}
+        searchableMilestones={milestones}
+        onMilestoneSearch={async () => {}}
         onTaskCreate={handleTaskCreate}
         onMilestoneCreate={handleMilestoneCreate}
         onTaskAssigneeChange={(taskId, assignee) => {
@@ -1027,6 +1039,8 @@ export const ClosedProject: Story = {
         activityFeed={<div>Activity feed content</div>}
         tasks={tasks}
         milestones={milestones}
+        searchableMilestones={milestones}
+        onMilestoneSearch={async () => {}}
         onTaskStatusChange={() => {}}
         onTaskCreate={() => {}}
         onMilestoneCreate={() => {}}
