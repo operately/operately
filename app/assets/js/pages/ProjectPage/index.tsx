@@ -150,11 +150,15 @@ function Page() {
     onError: () => showErrorToast("Network Error", "Reverted the started date to its previous value."),
   });
 
-  const { milestones, setMilestones, createMilestone, updateMilestone, reorderMilestones } = useMilestones(
-    paths,
-    project,
-    refresh,
-  );
+  const {
+    milestones,
+    filteredMilestones,
+    setMilestones,
+    createMilestone,
+    updateMilestone,
+    reorderMilestones,
+    searchMilestones,
+  } = useMilestones(paths, project, refresh);
   const { resources, createResource, updateResource, removeResource } = useResources(project);
 
   const { tasks, createTask, updateTaskDueDate, updateTaskAssignee, updateTaskStatus, updateTaskMilestone } =
@@ -268,6 +272,8 @@ function Page() {
     onTaskStatusChange: updateTaskStatus,
     onTaskMilestoneChange: updateTaskMilestone,
     milestones,
+    searchableMilestones: filteredMilestones,
+    onMilestoneSearch: searchMilestones,
     onMilestoneCreate: createMilestone,
     onMilestoneUpdate: updateMilestone,
     onMilestoneReorder: reorderMilestones,
@@ -459,6 +465,14 @@ function useMilestones(paths: Paths, project: Projects.Project, refresh?: () => 
     initialOrderingState: parsedMilestones.orderingState,
   });
 
+  // Separate filtered list for MilestoneField - doesn't affect the main milestones list
+  const [filteredMilestones, setFilteredMilestones] = React.useState(milestones);
+
+  // Keep filtered list in sync with main milestones list
+  React.useEffect(() => {
+    setFilteredMilestones(milestones);
+  }, [milestones]);
+
   const createMilestone = async (milestone: ProjectPage.NewMilestonePayload) => {
     return Api.projects
       .createMilestone({
@@ -509,12 +523,27 @@ function useMilestones(paths: Paths, project: Projects.Project, refresh?: () => 
       });
   };
 
+  const searchMilestones = async (query: string) => {
+    const trimmedQuery = query.trim().toLowerCase();
+
+    if (!trimmedQuery) {
+      // Empty query - show all milestones
+      setFilteredMilestones(milestones);
+    } else {
+      // Filter milestones by name
+      const filtered = milestones.filter((m) => m.name.toLowerCase().includes(trimmedQuery));
+      setFilteredMilestones(filtered);
+    }
+  };
+
   return {
     milestones,
+    filteredMilestones,
     setMilestones,
     createMilestone,
     updateMilestone,
     reorderMilestones,
+    searchMilestones,
     orderingState,
   };
 }

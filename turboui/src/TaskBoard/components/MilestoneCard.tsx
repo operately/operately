@@ -215,6 +215,7 @@ export function MilestoneCard({
         onClose={() => setIsTaskModalOpen(false)}
         onCreateTask={handleCreateTask}
         milestones={availableMilestones.length > 0 ? availableMilestones : [milestone]}
+        onMilestoneSearch={async () => {}} // No-op: milestones list is static in this context
         currentMilestoneId={milestone.id}
         people={availablePeople}
       />

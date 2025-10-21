@@ -8,7 +8,7 @@ import * as People from "@/models/people";
 import * as Activities from "@/models/activities";
 import * as Comments from "@/models/comments";
 import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
-import { parseMilestoneForTurboUi, parseMilestonesForTurboUi } from "@/models/milestones";
+import { parseMilestoneForTurboUi } from "@/models/milestones";
 import { parseActivitiesForTurboUi, SUPPORTED_ACTIVITY_TYPES } from "@/models/activities/feed";
 import * as Time from "@/utils/time";
 
@@ -23,6 +23,7 @@ import { parseSpaceForTurboUI } from "@/models/spaces";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useComments } from "./useComments";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { useMilestones } from "@/models/milestones/useMilestones";
 
 type LoaderResult = {
   data: {
@@ -161,7 +162,7 @@ function Page() {
     spaceId: task.space.id,
     transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
   });
-  const searchMilestones = useMilestonesSearch(task.project.id);
+  const { milestones, search: searchMilestones } = useMilestones(task.project.id);
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: task.project.id } });
 
   const props: TaskPage.Props = {
@@ -187,7 +188,8 @@ function Page() {
     // Milestone selection
     milestone: milestone as TaskPage.Milestone | null,
     onMilestoneChange: setMilestone,
-    searchMilestones,
+    milestones,
+    onMilestoneSearch: searchMilestones,
 
     // Core task data
     name: name as string,
@@ -300,15 +302,6 @@ function usePageField<T>({
   return [state, updateState];
 }
 
-function useMilestonesSearch(projectId): TaskPage.Props["searchMilestones"] {
-  const paths = usePaths();
-
-  return async ({ query }: { query: string }): Promise<TaskPage.Milestone[]> => {
-    const data = await Api.projects.getMilestones({ projectId: projectId, query: query.trim() });
-
-    return parseMilestonesForTurboUi(paths, data.milestones || []).orderedMilestones;
-  };
-}
 
 function prepareTimelineItems(paths: Paths, activities: Activities.Activity[], comments: Comments.Comment[]) {
   const parsedActivities = parseActivitiesForTurboUi(paths, activities, "task").map((activity) => ({

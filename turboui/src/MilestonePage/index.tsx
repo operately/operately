@@ -226,6 +226,7 @@ export function MilestonePage(props: MilestonePage.Props) {
         searchPeople={searchPeople}
         currentMilestoneId={milestone.id}
         milestones={[milestone]}
+        onMilestoneSearch={async () => {}} // No-op: milestone is read-only
         milestoneReadOnly={true}
       />
       <DeleteModal {...state} />

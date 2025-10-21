@@ -153,6 +153,7 @@ export interface FilterCondition {
 export interface TaskBoardProps {
   tasks: Task[];
   milestones?: Milestone[];
+  searchableMilestones: Milestone[]; // Filtered milestones for task creation modal
   onTaskCreate: (task: NewTaskPayload) => void;
   onMilestoneCreate?: (milestone: NewMilestonePayload) => void;
   onTaskAssigneeChange: (taskId: string, assignee: Person | null) => void;
@@ -160,6 +161,7 @@ export interface TaskBoardProps {
   onTaskStatusChange: (taskId: string, status: string) => void;
   onTaskMilestoneChange?: (taskId: string, milestoneId: string | null, index: number) => void;
   onMilestoneUpdate?: (milestoneId: string, updates: Partial<Milestone>) => void;
+  onMilestoneSearch: (query: string) => Promise<void>;
   searchPeople?: (params: { query: string }) => Promise<Person[]>;
 
   // Filter functionality
