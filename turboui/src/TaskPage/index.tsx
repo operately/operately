@@ -1,6 +1,5 @@
 import React from "react";
 import { Status } from "../TaskBoard/types";
-import { SearchFn } from "../RichEditor/extensions/MentionPeople";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
 import { TimelineItem, TimelineFilters } from "../Timeline/types";
 import { Person as TimelinePerson } from "../CommentSection/types";
@@ -85,8 +84,9 @@ export namespace TaskPage {
     onDuplicate?: () => void;
     onArchive?: () => void;
 
-    // Search functionality for assignees
-    searchPeople: SearchFn;
+    // Assignee selection
+    assignees: Person[];
+    onAssigneeSearch: (query: string) => Promise<void>;
     richTextHandlers: RichEditorHandlers;
 
     // Permissions

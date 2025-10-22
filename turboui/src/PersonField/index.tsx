@@ -36,7 +36,8 @@ export namespace PersonField {
     avatarOnly?: boolean;
     emptyStateMessage?: string;
     emptyStateReadOnlyMessage?: string;
-    searchPeople: (params: { query: string }) => Promise<Person[]>;
+    people: Person[]; // Pre-loaded list of people
+    onPersonSearch: (query: string) => Promise<void>; // Search callback with debouncing
     extraDialogMenuOptions?: DialogMenuOptionProps[];
     testId?: string;
   }
@@ -83,8 +84,6 @@ export function useState(props: PersonField.Props): PersonField.State {
   const [dialogMode, setDialogMode] = React.useState<"menu" | "search">("menu");
 
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [debouncedSearchQuery, setDebouncedSearchQuery] = React.useState("");
-  const [searchResults, setSearchResults] = React.useState<PersonField.Person[]>([]);
 
   const readonly = props.readonly ?? false;
   const resolvedBySize = props.size === "small" ? 24 : 32; // default normal = 32
@@ -96,40 +95,25 @@ export function useState(props: PersonField.Props): PersonField.State {
   const emptyStateReadOnlyMessage = props.emptyStateReadOnlyMessage ?? "Not assigned";
   const extraDialogMenuOptions = props.extraDialogMenuOptions ?? [];
 
-  // Debounce search query to prevent excessive API calls
-  React.useEffect(() => {
-    const timerId = setTimeout(() => {
-      setDebouncedSearchQuery(searchQuery);
-    }, 300);
-
-    return () => {
-      clearTimeout(timerId);
-    };
-  }, [searchQuery]);
-
   React.useEffect(() => {
     if (!isOpen) {
-      setIsOpen(false);
       setDialogMode(props.person ? "menu" : "search");
       setSearchQuery(""); // Clear search query when dialog closes
     }
   }, [isOpen, props.person]);
 
   React.useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) return; // Don't search when dialog is closed
 
-    let active = true;
-
-    props.searchPeople({ query: debouncedSearchQuery }).then((people: PersonField.Person[]) => {
-      if (active) {
-        setSearchResults(people);
-      }
-    });
+    // Debounce search by 300ms to avoid excessive API calls while typing
+    const timerId = setTimeout(() => {
+      props.onPersonSearch(searchQuery);
+    }, 300);
 
     return () => {
-      active = false;
+      clearTimeout(timerId);
     };
-  }, [isOpen, debouncedSearchQuery, props.searchPeople]);
+  }, [searchQuery, isOpen, props.onPersonSearch]);
 
   const setIsOpen = (open: boolean) => {
     if (readonly) {
@@ -157,7 +141,7 @@ export function useState(props: PersonField.Props): PersonField.State {
     extraDialogMenuOptions,
     searchQuery,
     setSearchQuery,
-    searchResults,
+    searchResults: props.people,
 
     testId: props.testId || "person-field",
   };
