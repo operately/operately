@@ -16,7 +16,7 @@ export function WizardModal(props: WizardModalProps) {
     >
       <div
         ref={dialogRef}
-        className="relative w-full max-w-2xl bg-surface-base border border-surface-outline/60 rounded-2xl shadow-2xl focus:outline-none"
+        className="relative w-full max-w-2xl bg-surface-base border border-stroke-base rounded-2xl shadow-2xl focus:outline-none"
         role="dialog"
         aria-modal="true"
         aria-labelledby={props.labelledBy}
@@ -33,7 +33,9 @@ export function WizardStep(props: { children: React.ReactNode; footer?: React.Re
     <div className="flex flex-col" data-test-id={props.testId}>
       <div className="p-6 sm:p-8">{props.children}</div>
       {props.footer && (
-        <div className="flex flex-col sm:flex-row gap-3 border-t py-4 px-6 w-full sm:justify-end">{props.footer}</div>
+        <div className="flex flex-col sm:flex-row gap-3 border-t border-stroke-base py-4 px-6 w-full sm:justify-end">
+          {props.footer}
+        </div>
       )}
     </div>
   );
