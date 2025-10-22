@@ -144,7 +144,7 @@ function Champion(props: GoalPage.State) {
         person={props.champion}
         setPerson={props.setChampion}
         readonly={!props.canEdit}
-        searchPeople={props.championSearch}
+        searchData={props.championSearch}
         emptyStateMessage="Set champion"
         emptyStateReadOnlyMessage="No champion"
         extraDialogMenuOptions={[
@@ -188,7 +188,7 @@ function Reviewer(props: GoalPage.State) {
         person={props.reviewer}
         setPerson={props.setReviewer}
         readonly={!props.canEdit}
-        searchPeople={props.reviewerSearch}
+        searchData={props.reviewerSearch}
         emptyStateMessage="Set reviewer"
         emptyStateReadOnlyMessage="No reviewer"
         extraDialogMenuOptions={[
