@@ -3,6 +3,7 @@ import React from "react";
 import { TaskItem } from "../components/TaskItem";
 import * as Types from "../types";
 import { DragAndDropProvider } from "../../utils/DragAndDrop";
+import { usePersonFieldSearch } from "../../utils/storybook/usePersonFieldSearch";
 
 /**
  * TaskItem is a draggable component that displays a task with various indicators for status, attachments, comments, and more.
@@ -51,14 +52,6 @@ const mockPeople: Types.Person[] = [
   { id: "user-4", fullName: "Diana Prince", avatarUrl: null },
 ];
 
-// Mock search function for people
-const mockSearchPeople = async ({ query }: { query: string }): Promise<Types.Person[]> => {
-  await new Promise(resolve => setTimeout(resolve, 300)); // Simulate API delay
-  return mockPeople.filter(person => 
-    person.fullName.toLowerCase().includes(query.toLowerCase())
-  );
-};
-
 /**
  * Basic task with just a title and status (pending)
  */
@@ -73,6 +66,8 @@ export const BasicTask: Story = {
     ...sharedProps,
   },
   render: (args) => {
+    const assigneePersonSearch = usePersonFieldSearch(mockPeople);
+    
     // Set up state to track task updates
     const [task, setTask] = React.useState(args.task);
     
@@ -95,7 +90,7 @@ export const BasicTask: Story = {
       onTaskStatusChange={(taskId, status) => {
         console.log('Task status updated:', taskId, status);
       }}
-      searchPeople={mockSearchPeople}
+      assigneePersonSearch={assigneePersonSearch}
     />;
   },
 };

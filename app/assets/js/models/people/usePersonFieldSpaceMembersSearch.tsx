@@ -1,36 +1,47 @@
+import { useState, useEffect, useCallback } from "react";
 import Api from "@/api";
 import { Person } from ".";
 
 interface UseSpaceMembersSearch<T> {
   spaceId: string;
   ignoredIds?: string[];
-  transformResult?: (person: Person) => T;
+  transformResult?: (person: Person) => T; // transformResult must be memoized
 }
 
-interface SpaceMembersSearchParams {
-  query?: string;
-  ignoredIds?: string[];
+// This matches PersonField.SearchData from turboui
+interface SearchData<T> {
+  people: T[];
+  onSearch: (query: string) => Promise<void>;
 }
 
-type SpaceMembersSearchFn<T> = (params: SpaceMembersSearchParams) => Promise<T[]>;
+export function usePersonFieldSpaceMembersSearch<T>(hookParams: UseSpaceMembersSearch<T>): SearchData<T> {
+  const [people, setPeople] = useState<T[]>([]);
 
-export function usePersonFieldSpaceMembersSearch<T>(hookParams: UseSpaceMembersSearch<T>): SpaceMembersSearchFn<T> {
-  const transform = hookParams.transformResult || ((person) => person as unknown as T);
+  const onSearch = useCallback(
+    async (query: string) => {
+      const transform = hookParams.transformResult || ((person) => person as unknown as T)
 
-  return async (callParams: SpaceMembersSearchParams): Promise<T[]> => {
-    const ignoredIds = (hookParams.ignoredIds || [])
-      .concat(callParams.ignoredIds || [])
-      .filter((id): id is string => Boolean(id));
-    const query = callParams.query?.trim();
+      const ignoredIds = (hookParams.ignoredIds || [])
+        .filter((id): id is string => Boolean(id));
+      const trimmedQuery = query.trim();
 
-    const result = await Api.spaces.listMembers({
-      spaceId: hookParams.spaceId,
-      ignoredIds,
-      query: query === "" ? undefined : query,
-    });
+      const result = await Api.spaces.listMembers({
+        spaceId: hookParams.spaceId,
+        ignoredIds,
+        query: trimmedQuery === "" ? undefined : trimmedQuery,
+      });
 
-    const people = result.people || [];
+      const fetchedPeople = result.people || [];
+      const transformedPeople = fetchedPeople.filter((person): person is Person => !!person).map((person) => transform(person)) as T[];
+      setPeople(transformedPeople);
+    },
+    [hookParams.spaceId, hookParams.ignoredIds, hookParams.transformResult],
+  );
 
-    return people.filter((person): person is Person => !!person).map((person) => transform(person)) as T[];
-  };
+  // Load initial people on mount
+  useEffect(() => {
+    onSearch("");
+  }, [onSearch]);
+
+  return { people, onSearch };
 }

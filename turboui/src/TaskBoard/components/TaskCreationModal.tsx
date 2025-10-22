@@ -14,8 +14,7 @@ interface TaskCreationModalProps {
   onCreateTask: (task: Types.NewTaskPayload) => void;
   milestones?: Types.Milestone[];
   currentMilestoneId?: string;
-  people?: Types.Person[];
-  searchPeople?: (params: { query: string }) => Promise<Types.Person[]>;
+  assigneePersonSearch?: PersonField.SearchData;
   onMilestoneSearch: (query: string) => Promise<void>;
   milestoneReadOnly?: boolean;
 }
@@ -26,8 +25,7 @@ export function TaskCreationModal({
   onCreateTask,
   milestones = [],
   currentMilestoneId,
-  people = [],
-  searchPeople,
+  assigneePersonSearch,
   onMilestoneSearch,
   milestoneReadOnly,
 }: TaskCreationModalProps) {
@@ -39,11 +37,6 @@ export function TaskCreationModal({
   const [createMore, setCreateMore] = useState(false);
 
   const disabled = !title.trim();
-
-  // Default search functions if not provided
-  const defaultSearchPeople = async ({ query }: { query: string }) => {
-    return people.filter((person) => person.fullName.toLowerCase().includes(query.toLowerCase()));
-  };
 
   // Update milestone when currentMilestoneId changes or modal opens
   useEffect(() => {
@@ -128,13 +121,23 @@ export function TaskCreationModal({
 
           <div>
             <label className="block text-sm font-medium text-content-base mb-1">Assignee</label>
-            <PersonField
-              person={assignee}
-              setPerson={setAssignee}
-              searchPeople={searchPeople || defaultSearchPeople}
-              emptyStateMessage="Select assignee"
-              testId="assignee"
-            />
+            {assigneePersonSearch ? (
+              <PersonField
+                person={assignee}
+                setPerson={setAssignee}
+                searchData={assigneePersonSearch}
+                emptyStateMessage="Select assignee"
+                testId="assignee"
+              />
+            ) : (
+              <PersonField
+                person={assignee}
+                setPerson={setAssignee}
+                readonly={true}
+                emptyStateMessage="Select assignee"
+                testId="assignee"
+              />
+            )}
           </div>
         </div>
 
