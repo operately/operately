@@ -5,7 +5,7 @@ import { PrimaryButton } from "../../Button";
 import { createContextualDate } from "../../DateField/mockData";
 
 import * as Types from "../types";
-import { searchPeopleFn } from "../../utils/storybook/genPeople";
+import { usePersonFieldSearch } from "../../utils/storybook/usePersonFieldSearch";
 
 const sampleMilestones: Types.Milestone[] = [
   { id: "milestone-1", name: "Sprint 1", dueDate: createContextualDate("2025-06-20", "day"), status: "pending", link: "#" },
@@ -49,6 +49,7 @@ export const Default: Story = {
     onCreateTask: () => {},
   },
   render: () => {
+    const assigneePersonSearch = usePersonFieldSearch(samplePeople);
     const [isOpen, setIsOpen] = useState(false);
     const [taskCount, setTaskCount] = useState(0);
     const [lastTaskTitle, setLastTaskTitle] = useState("");
@@ -76,12 +77,11 @@ export const Default: Story = {
         )}
 
         <TaskCreationModal
-          searchPeople={searchPeopleFn}
+          assigneePersonSearch={assigneePersonSearch}
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
           milestones={sampleMilestones}
           onMilestoneSearch={async () => {}}
-          people={samplePeople}
           onCreateTask={handleCreateTask}
         />
       </div>

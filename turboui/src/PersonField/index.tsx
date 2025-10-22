@@ -24,22 +24,37 @@ export namespace PersonField {
     profileLink?: string;
   }
 
-  export interface Props {
+  export interface SearchData {
+    people: Person[];
+    onSearch: (query: string) => Promise<void>;
+  }
+
+  interface BaseProps {
     person: Person | null;
     setPerson: (person: Person | null) => void;
 
     isOpen?: boolean;
     avatarSize?: number;
     size?: "small" | "normal"; // convenience alias mapped to avatarSize
-    readonly?: boolean;
     showTitle?: boolean;
     avatarOnly?: boolean;
     emptyStateMessage?: string;
     emptyStateReadOnlyMessage?: string;
-    searchPeople: (params: { query: string }) => Promise<Person[]>;
     extraDialogMenuOptions?: DialogMenuOptionProps[];
     testId?: string;
   }
+
+  interface ReadonlyProps extends BaseProps {
+    readonly: true;
+    searchData?: SearchData; // Optional for readonly
+  }
+
+  interface EditableProps extends BaseProps {
+    readonly?: boolean;
+    searchData: SearchData; // Required for editable
+  }
+
+  export type Props = ReadonlyProps | EditableProps;
 
   export interface State {
     isOpen: boolean;
@@ -83,8 +98,6 @@ export function useState(props: PersonField.Props): PersonField.State {
   const [dialogMode, setDialogMode] = React.useState<"menu" | "search">("menu");
 
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [debouncedSearchQuery, setDebouncedSearchQuery] = React.useState("");
-  const [searchResults, setSearchResults] = React.useState<PersonField.Person[]>([]);
 
   const readonly = props.readonly ?? false;
   const resolvedBySize = props.size === "small" ? 24 : 32; // default normal = 32
@@ -96,40 +109,25 @@ export function useState(props: PersonField.Props): PersonField.State {
   const emptyStateReadOnlyMessage = props.emptyStateReadOnlyMessage ?? "Not assigned";
   const extraDialogMenuOptions = props.extraDialogMenuOptions ?? [];
 
-  // Debounce search query to prevent excessive API calls
-  React.useEffect(() => {
-    const timerId = setTimeout(() => {
-      setDebouncedSearchQuery(searchQuery);
-    }, 300);
-
-    return () => {
-      clearTimeout(timerId);
-    };
-  }, [searchQuery]);
-
   React.useEffect(() => {
     if (!isOpen) {
-      setIsOpen(false);
       setDialogMode(props.person ? "menu" : "search");
       setSearchQuery(""); // Clear search query when dialog closes
     }
   }, [isOpen, props.person]);
 
   React.useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) return; // Don't search when dialog is closed
 
-    let active = true;
-
-    props.searchPeople({ query: debouncedSearchQuery }).then((people: PersonField.Person[]) => {
-      if (active) {
-        setSearchResults(people);
-      }
-    });
+    // Debounce search by 300ms to avoid excessive API calls while typing
+    const timerId = setTimeout(() => {
+      props.searchData?.onSearch(searchQuery);
+    }, 300);
 
     return () => {
-      active = false;
+      clearTimeout(timerId);
     };
-  }, [isOpen, debouncedSearchQuery, props.searchPeople]);
+  }, [searchQuery, isOpen]);
 
   const setIsOpen = (open: boolean) => {
     if (readonly) {
@@ -157,7 +155,7 @@ export function useState(props: PersonField.Props): PersonField.State {
     extraDialogMenuOptions,
     searchQuery,
     setSearchQuery,
-    searchResults,
+    searchResults: props.searchData?.people || [],
 
     testId: props.testId || "person-field",
   };

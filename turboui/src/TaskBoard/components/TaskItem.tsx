@@ -17,7 +17,7 @@ interface TaskItemProps {
   onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
   onTaskAssigneeChange: (taskId: string, assignee: Person | null) => void;
   onTaskStatusChange: (taskId: string, status: string) => void;
-  searchPeople?: (params: { query: string }) => Promise<Person[]>;
+  assigneePersonSearch?: PersonField.SearchData;
   draggingDisabled?: boolean;
 }
 
@@ -28,7 +28,7 @@ export function TaskItem({
   onTaskDueDateChange,
   onTaskAssigneeChange,
   onTaskStatusChange,
-  searchPeople,
+  assigneePersonSearch,
   draggingDisabled,
 }: TaskItemProps) {
   const [currentAssignee, setCurrentAssignee] = useState<Person | null>(task.assignees?.[0] || null);
@@ -169,14 +169,23 @@ export function TaskItem({
           </div>
 
           <div className="flex items-center flex-shrink-0 w-6 h-6">
-            <PersonField
-              person={currentAssignee}
-              setPerson={handleAssigneeChange}
-              avatarSize={24}
-              avatarOnly={true}
-              searchPeople={searchPeople || (async () => [])}
-              readonly={!searchPeople}
-            />
+            {assigneePersonSearch ? (
+              <PersonField
+                person={currentAssignee}
+                setPerson={handleAssigneeChange}
+                avatarSize={24}
+                avatarOnly={true}
+                searchData={assigneePersonSearch}
+              />
+            ) : (
+              <PersonField
+                person={currentAssignee}
+                setPerson={handleAssigneeChange}
+                avatarSize={24}
+                avatarOnly={true}
+                readonly={true}
+              />
+            )}
           </div>
         </div>
       </div>

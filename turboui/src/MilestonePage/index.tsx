@@ -17,7 +17,7 @@ import { ProjectPageLayout } from "../ProjectPageLayout";
 import { useTabs } from "../Tabs";
 import { MilestoneSidebar } from "./components/Sidebar";
 import { DeleteModal } from "./components/DeleteModal";
-import { SearchFn } from "../RichEditor/extensions/MentionPeople";
+import { PersonField } from "../PersonField";
 import { TimelineItem } from "../Timeline/types";
 import { Header } from "./components/Header";
 import { TasksSection } from "./components/TasksSection";
@@ -79,7 +79,7 @@ export namespace MilestonePage {
     onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
     onTaskStatusChange: (taskId: string, status: string) => void;
 
-    searchPeople: SearchFn;
+    assigneePersonSearch: PersonField.SearchData;
 
     // Filtering
     filters?: Types.FilterCondition[];
@@ -136,7 +136,7 @@ export function MilestonePage(props: MilestonePage.Props) {
     title,
     onMilestoneTitleChange,
     status,
-    searchPeople,
+    assigneePersonSearch,
     canEdit = true,
     projectName,
     projectLink,
@@ -223,7 +223,7 @@ export function MilestonePage(props: MilestonePage.Props) {
         isOpen={isTaskModalOpen}
         onClose={() => setIsTaskModalOpen(false)}
         onCreateTask={handleCreateTask}
-        searchPeople={searchPeople}
+        assigneePersonSearch={assigneePersonSearch}
         currentMilestoneId={milestone.id}
         milestones={[milestone]}
         onMilestoneSearch={async () => {}} // No-op: milestone is read-only

@@ -161,7 +161,7 @@ function Champion(props: ProjectPage.State) {
         person={props.champion}
         setPerson={props.setChampion}
         readonly={!props.canEdit}
-        searchPeople={props.championSearch}
+        searchData={props.championSearch}
         emptyStateMessage="Set champion"
         emptyStateReadOnlyMessage="No champion"
       />
@@ -195,7 +195,7 @@ function Reviewer(props: ProjectPage.State) {
         person={props.reviewer || null}
         setPerson={props.setReviewer || (() => {})}
         readonly={!props.canEdit}
-        searchPeople={props.reviewerSearch}
+        searchData={props.reviewerSearch}
         emptyStateMessage="Set reviewer"
         emptyStateReadOnlyMessage="No reviewer"
       />
@@ -216,7 +216,6 @@ function Contributors(props: ProjectPage.State) {
               person={person}
               setPerson={() => {}}
               readonly={true}
-              searchPeople={async () => []}
               showTitle={true}
             />
           ))
