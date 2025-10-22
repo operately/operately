@@ -146,7 +146,7 @@ function Component(props: Partial<TaskPage.Props>) {
     },
 
     // Assignee search data
-    assigneeSearchData: searchData,
+    assigneePersonSearch: searchData,
     richTextHandlers: createMockRichEditorHandlers(),
 
     // Permissions

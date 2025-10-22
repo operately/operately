@@ -6,13 +6,14 @@ import { createContextualDate } from "../DateField/mockData";
 import { ResourceManager } from "../ResourceManager";
 import { mockEmptyTasks, mockMilestones, mockTasks } from "../TaskBoard/tests/mockData";
 import * as TaskBoardTypes from "../TaskBoard/types";
-import { genPeople, searchPeopleFn } from "../utils/storybook/genPeople";
+import { genPeople } from "../utils/storybook/genPeople";
 import { useMockMilestoneOrdering } from "../utils/storybook/milestones";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { asRichText, asRichTextWithList } from "../utils/storybook/richContent";
 import { spaceSearchFn } from "../utils/storybook/spaceSearchFn";
 import { ProjectPage } from "./index";
 import { useMockSubscriptions } from "../utils/storybook/subscriptions";
+import { usePersonFieldSearch } from "../utils/storybook/usePersonFieldSearch";
 
 // Date helpers for dynamic, credible timelines
 function addDays(date: Date, days: number): Date {
@@ -76,18 +77,6 @@ const defaultSpace: ProjectPage.Space = {
   id: "1",
   name: "Product",
   link: "#",
-};
-
-// Mock search function for people
-const mockSearchPeople = async ({ query }: { query: string }) => {
-  await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
-  return mockPeople
-    .filter((person) => person.fullName.toLowerCase().includes(query.toLowerCase()))
-    .map((person) => ({
-      ...person,
-      profileLink: "#", // Add required profileLink property
-      title: "Team Member", // Add required title property
-    }));
 };
 
 // Mock parent goal search
@@ -215,6 +204,8 @@ const mockResources: ResourceManager.Resource[] = [
 
 export const Default: Story = {
   render: () => {
+    const championSearch = usePersonFieldSearch(people);
+    const reviewerSearch = usePersonFieldSearch(people);
     const [tasks, setTasks] = useState([...mockTasks]);
     // Use dynamic, short-horizon milestones to encourage manageable scopes
     const initialMilestones: TaskBoardTypes.Milestone[] = [
@@ -365,6 +356,7 @@ export const Default: Story = {
         milestones={milestones}
         searchableMilestones={milestones}
         onMilestoneSearch={async () => {}}
+        assigneePersonSearch={usePersonFieldSearch(mockPeople)}
         onTaskCreate={handleTaskCreate}
         onMilestoneCreate={handleMilestoneCreate}
         onTaskAssigneeChange={(taskId, assignee) => {
@@ -378,7 +370,6 @@ export const Default: Story = {
         }}
         onMilestoneUpdate={handleMilestoneUpdate}
         onMilestoneReorder={reorderMilestones}
-        searchPeople={mockSearchPeople}
         richTextHandlers={createMockRichEditorHandlers()}
         filters={filters}
         onFiltersChange={setFilters}
@@ -395,8 +386,8 @@ export const Default: Story = {
         onResourceRemove={handleResourceRemove}
         contributors={mockContributors}
         manageTeamLink="/projects/1/team"
-        championSearch={searchPeopleFn}
-        reviewerSearch={searchPeopleFn}
+        championSearch={championSearch}
+        reviewerSearch={reviewerSearch}
         newCheckInLink="#"
         checkIns={mockCheckIns}
         newDiscussionLink="#"
@@ -412,6 +403,8 @@ export const Default: Story = {
 
 export const ReadOnly: Story = {
   render: () => {
+    const championSearch = usePersonFieldSearch(people);
+    const reviewerSearch = usePersonFieldSearch(people);
     const [tasks] = useState([...mockTasks]);
     const [milestones] = useState<TaskBoardTypes.Milestone[]>(Object.values(mockMilestones));
     const [reviewer, setReviewer] = useState<ProjectPage.Person | null>(people[1] || null); // Set reviewer for read-only story
@@ -455,6 +448,7 @@ export const ReadOnly: Story = {
         milestones={milestones}
         searchableMilestones={milestones}
         onMilestoneSearch={async () => {}}
+        assigneePersonSearch={usePersonFieldSearch(mockPeople)}
         onTaskStatusChange={() => {}}
         onTaskCreate={() => {}}
         onMilestoneCreate={() => {}}
@@ -462,7 +456,6 @@ export const ReadOnly: Story = {
         onTaskDueDateChange={() => {}}
         onMilestoneUpdate={() => {}}
         onMilestoneReorder={async () => {}}
-        searchPeople={mockSearchPeople}
         richTextHandlers={createMockRichEditorHandlers()}
         filters={[]}
         onFiltersChange={() => {}}
@@ -483,8 +476,8 @@ export const ReadOnly: Story = {
         onResourceRemove={() => {}}
         contributors={mockContributors}
         manageTeamLink="/projects/1/team"
-        championSearch={searchPeopleFn}
-        reviewerSearch={searchPeopleFn}
+        championSearch={championSearch}
+        reviewerSearch={reviewerSearch}
         newCheckInLink="#"
         checkIns={mockCheckIns}
         newDiscussionLink="#"
@@ -500,6 +493,8 @@ export const ReadOnly: Story = {
 
 export const EmptyTasks: Story = {
   render: () => {
+    const championSearch = usePersonFieldSearch(people);
+    const reviewerSearch = usePersonFieldSearch(people);
     const [tasks, setTasks] = useState([...mockEmptyTasks]);
     const { milestones, setMilestones, reorderMilestones } = useMockMilestoneOrdering({ initialMilestones: [] });
     const [filters, setFilters] = useState<TaskBoardTypes.FilterCondition[]>([]);
@@ -592,6 +587,7 @@ export const EmptyTasks: Story = {
         milestones={milestones}
         searchableMilestones={milestones}
         onMilestoneSearch={async () => {}}
+        assigneePersonSearch={usePersonFieldSearch(mockPeople)}
         onTaskStatusChange={() => {}}
         onTaskCreate={handleTaskCreate}
         onMilestoneCreate={handleMilestoneCreate}
@@ -599,7 +595,6 @@ export const EmptyTasks: Story = {
         onTaskDueDateChange={() => {}}
         onMilestoneUpdate={() => {}}
         onMilestoneReorder={reorderMilestones}
-        searchPeople={mockSearchPeople}
         richTextHandlers={createMockRichEditorHandlers()}
         filters={filters}
         onFiltersChange={setFilters}
@@ -616,8 +611,8 @@ export const EmptyTasks: Story = {
         onResourceRemove={handleResourceRemove}
         contributors={mockContributors}
         manageTeamLink="/projects/1/team"
-        championSearch={searchPeopleFn}
-        reviewerSearch={searchPeopleFn}
+        championSearch={championSearch}
+        reviewerSearch={reviewerSearch}
         newCheckInLink="#"
         checkIns={mockCheckIns}
         newDiscussionLink="#"
@@ -633,6 +628,8 @@ export const EmptyTasks: Story = {
 
 export const EmptyProject: Story = {
   render: () => {
+    const championSearch = usePersonFieldSearch(people);
+    const reviewerSearch = usePersonFieldSearch(people);
     const [milestones, setMilestones] = useState<TaskBoardTypes.Milestone[]>([]);
     const [startedAt, setStartedAt] = useState<DateField.ContextualDate | null>(null);
     const [dueAt, setDueAt] = useState<DateField.ContextualDate | null>(null);
@@ -710,6 +707,7 @@ export const EmptyProject: Story = {
         milestones={milestones}
         searchableMilestones={milestones}
         onMilestoneSearch={async () => {}}
+        assigneePersonSearch={usePersonFieldSearch(mockPeople)}
         onTaskStatusChange={() => {}}
         onTaskCreate={() => {}}
         onMilestoneCreate={handleMilestoneCreate}
@@ -717,7 +715,6 @@ export const EmptyProject: Story = {
         onTaskDueDateChange={() => {}}
         onMilestoneUpdate={handleMilestoneUpdate}
         onMilestoneReorder={async () => {}}
-        searchPeople={mockSearchPeople}
         richTextHandlers={createMockRichEditorHandlers()}
         filters={[]}
         onFiltersChange={() => {}}
@@ -734,8 +731,8 @@ export const EmptyProject: Story = {
         onResourceRemove={handleResourceRemove}
         contributors={[]}
         manageTeamLink="/projects/1/team"
-        championSearch={searchPeopleFn}
-        reviewerSearch={searchPeopleFn}
+        championSearch={championSearch}
+        reviewerSearch={reviewerSearch}
         newCheckInLink="#"
         checkIns={[]}
         newDiscussionLink="#"
@@ -751,6 +748,8 @@ export const EmptyProject: Story = {
 
 export const EmptyProjectReadOnly: Story = {
   render: () => {
+    const championSearch = usePersonFieldSearch(people);
+    const reviewerSearch = usePersonFieldSearch(people);
     const [tasks] = useState<TaskBoardTypes.Task[]>([]);
     const [milestones] = useState<TaskBoardTypes.Milestone[]>([]);
     const startedAt = null; // No start date for empty read-only project
@@ -787,6 +786,7 @@ export const EmptyProjectReadOnly: Story = {
         milestones={milestones}
         searchableMilestones={milestones}
         onMilestoneSearch={async () => {}}
+        assigneePersonSearch={usePersonFieldSearch(mockPeople)}
         onTaskStatusChange={() => {}}
         onTaskCreate={() => {}}
         onMilestoneCreate={() => {}}
@@ -794,7 +794,6 @@ export const EmptyProjectReadOnly: Story = {
         onTaskDueDateChange={() => {}}
         onMilestoneUpdate={() => {}}
         onMilestoneReorder={async () => {}}
-        searchPeople={mockSearchPeople}
         richTextHandlers={createMockRichEditorHandlers()}
         filters={[]}
         onFiltersChange={() => {}}
@@ -811,8 +810,8 @@ export const EmptyProjectReadOnly: Story = {
         onResourceRemove={() => {}}
         contributors={[]}
         manageTeamLink="/projects/1/team"
-        championSearch={searchPeopleFn}
-        reviewerSearch={searchPeopleFn}
+        championSearch={championSearch}
+        reviewerSearch={reviewerSearch}
         newCheckInLink="#"
         checkIns={[]}
         newDiscussionLink="#"
@@ -828,6 +827,8 @@ export const EmptyProjectReadOnly: Story = {
 
 export const PausedProject: Story = {
   render: () => {
+    const championSearch = usePersonFieldSearch(people);
+    const reviewerSearch = usePersonFieldSearch(people);
     const [tasks, setTasks] = useState([...mockTasks]);
     const [milestones, setMilestones] = useState<TaskBoardTypes.Milestone[]>(Object.values(mockMilestones));
     const [filters, setFilters] = useState<TaskBoardTypes.FilterCondition[]>([]);
@@ -942,6 +943,7 @@ export const PausedProject: Story = {
         milestones={milestones}
         searchableMilestones={milestones}
         onMilestoneSearch={async () => {}}
+        assigneePersonSearch={usePersonFieldSearch(mockPeople)}
         onTaskCreate={handleTaskCreate}
         onMilestoneCreate={handleMilestoneCreate}
         onTaskAssigneeChange={(taskId, assignee) => {
@@ -955,7 +957,6 @@ export const PausedProject: Story = {
         }}
         onMilestoneUpdate={handleMilestoneUpdate}
         onMilestoneReorder={async () => {}}
-        searchPeople={mockSearchPeople}
         richTextHandlers={createMockRichEditorHandlers()}
         filters={filters}
         onFiltersChange={setFilters}
@@ -972,8 +973,8 @@ export const PausedProject: Story = {
         onResourceRemove={handleResourceRemove}
         contributors={mockContributors}
         manageTeamLink="/projects/1/team"
-        championSearch={searchPeopleFn}
-        reviewerSearch={searchPeopleFn}
+        championSearch={championSearch}
+        reviewerSearch={reviewerSearch}
         newCheckInLink="#"
         checkIns={mockCheckIns}
         newDiscussionLink="#"
@@ -989,6 +990,8 @@ export const PausedProject: Story = {
 
 export const ClosedProject: Story = {
   render: () => {
+    const championSearch = usePersonFieldSearch(people);
+    const reviewerSearch = usePersonFieldSearch(people);
     const [tasks] = useState([...mockTasks]);
     // All milestones completed for closed project
     const completedMilestones = Object.values(mockMilestones).map((milestone) => ({
@@ -1041,6 +1044,7 @@ export const ClosedProject: Story = {
         milestones={milestones}
         searchableMilestones={milestones}
         onMilestoneSearch={async () => {}}
+        assigneePersonSearch={usePersonFieldSearch(mockPeople)}
         onTaskStatusChange={() => {}}
         onTaskCreate={() => {}}
         onMilestoneCreate={() => {}}
@@ -1048,7 +1052,6 @@ export const ClosedProject: Story = {
         onTaskDueDateChange={() => {}}
         onMilestoneUpdate={() => {}}
         onMilestoneReorder={async () => {}}
-        searchPeople={mockSearchPeople}
         filters={[]}
         onFiltersChange={() => {}}
         richTextHandlers={createMockRichEditorHandlers()}
@@ -1065,8 +1068,8 @@ export const ClosedProject: Story = {
         onResourceRemove={() => {}}
         contributors={mockContributors}
         manageTeamLink="/projects/1/team"
-        championSearch={searchPeopleFn}
-        reviewerSearch={searchPeopleFn}
+        championSearch={championSearch}
+        reviewerSearch={reviewerSearch}
         newCheckInLink="#"
         checkIns={mockCheckIns}
         newDiscussionLink="#"
