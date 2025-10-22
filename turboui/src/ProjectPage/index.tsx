@@ -7,8 +7,8 @@ import { IconClipboardText, IconListCheck, IconLogs, IconMessage, IconMessages }
 import { DateField } from "../DateField";
 import { MoveModal } from "../Modal/MoveModal";
 import { ResourceManager } from "../ResourceManager";
-import { SearchFn } from "../RichEditor/extensions/MentionPeople";
 import { BadgeStatus } from "../StatusBadge/types";
+import { PersonField } from "../PersonField";
 import { useTabs } from "../Tabs";
 import { TaskBoard } from "../TaskBoard";
 import * as TaskBoardTypes from "../TaskBoard/types";
@@ -89,11 +89,11 @@ export namespace ProjectPage {
 
     champion: Person | null;
     setChampion: (person: Person | null) => void;
-    championSearch: SearchFn;
+    championSearch: PersonField.SearchData;
 
     reviewer?: Person | null;
     setReviewer?: (person: Person | null) => void;
-    reviewerSearch: SearchFn;
+    reviewerSearch: PersonField.SearchData;
 
     parentGoal: ParentGoal | null;
     setParentGoal: (goal: ParentGoal | null) => void;
@@ -136,7 +136,7 @@ export namespace ProjectPage {
     onMilestoneUpdate: (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => void;
     onMilestoneReorder: (sourceId: string, destinationIndex: number) => Promise<void>;
     onMilestoneSearch: (query: string) => Promise<void>;
-    searchPeople: SearchFn;
+    assigneePersonSearch: PersonField.SearchData;
     filters?: TaskBoardTypes.FilterCondition[];
     onFiltersChange?: (filters: TaskBoardTypes.FilterCondition[]) => void;
 
@@ -225,7 +225,7 @@ export function ProjectPage(props: ProjectPage.Props) {
               onTaskMilestoneChange={state.onTaskMilestoneChange}
               onMilestoneUpdate={state.onMilestoneUpdate}
               onMilestoneSearch={state.onMilestoneSearch}
-              searchPeople={state.searchPeople}
+              assigneePersonSearch={state.assigneePersonSearch}
               filters={state.filters}
               onFiltersChange={state.onFiltersChange}
             />

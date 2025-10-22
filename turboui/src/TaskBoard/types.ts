@@ -1,4 +1,5 @@
 import { DateField } from "../DateField";
+import { PersonField } from "../PersonField";
 
 /**
  * TaskBoard component types
@@ -162,7 +163,7 @@ export interface TaskBoardProps {
   onTaskMilestoneChange?: (taskId: string, milestoneId: string | null, index: number) => void;
   onMilestoneUpdate?: (milestoneId: string, updates: Partial<Milestone>) => void;
   onMilestoneSearch: (query: string) => Promise<void>;
-  searchPeople?: (params: { query: string }) => Promise<Person[]>;
+  assigneePersonSearch?: PersonField.SearchData;
 
   // Filter functionality
   filters?: FilterCondition[];

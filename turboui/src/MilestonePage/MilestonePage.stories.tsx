@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React, { useState } from "react";
 import { MilestonePage } from "./index";
 import * as Types from "../TaskBoard/types";
-import { mockPeople, createMockTimelineItems, mockDescription, mockSearchPeople } from "./mockData";
+import { mockPeople, createMockTimelineItems, mockDescription } from "./mockData";
+import { usePersonFieldSearch } from "../utils/storybook/usePersonFieldSearch";
 import { DateField } from "../DateField";
 import { createContextualDate } from "../DateField/mockData";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
@@ -139,6 +140,8 @@ const createSampleTasks = (): Types.Task[] => [
  */
 export const Default: Story = {
   render: () => {
+    const assigneePersonSearch = usePersonFieldSearch(mockPeople);
+    
     // State for tasks and milestone
     const [tasks, setTasks] = useState<Types.Task[]>(createSampleTasks());
     const [milestone, setMilestone] = useState<Types.Milestone>(sampleMilestone);
@@ -231,10 +234,7 @@ export const Default: Story = {
         onTaskStatusChange={() => {}}
         onMilestoneTitleChange={handleMilestoneNameChange}
         title={milestone.name}
-        searchPeople={async ({ query }) => {
-          const people = await mockSearchPeople({ query });
-          return people.map(person => ({ ...person, profileLink: "#" }));
-        }}
+        assigneePersonSearch={assigneePersonSearch}
         filters={[]}
         onFiltersChange={(filters) => console.log("Filters changed:", filters)}
         timelineItems={createMockTimelineItems()}
@@ -267,6 +267,8 @@ export const Default: Story = {
  */
 export const EmptyMilestone: Story = {
   render: () => {
+    const assigneePersonSearch = usePersonFieldSearch(mockPeople);
+    
     // Use state to manage the milestone with its due date
     const [milestone, setMilestone] = useState<Types.Milestone>({
       id: "milestone-empty",
@@ -340,10 +342,7 @@ export const EmptyMilestone: Story = {
           setMilestone(prev => ({ ...prev, name: newName }));
           return true;
         }}
-        searchPeople={async ({ query }) => {
-          const people = await mockSearchPeople({ query });
-          return people.map(person => ({ ...person, profileLink: "#" }));
-        }}
+        assigneePersonSearch={assigneePersonSearch}
         filters={[]}
         onFiltersChange={(filters) => console.log("Filters changed:", filters)}
         timelineItems={emptyMilestoneTimeline}
@@ -376,6 +375,8 @@ export const EmptyMilestone: Story = {
  */
 export const CompletedMilestone: Story = {
   render: () => {
+    const assigneePersonSearch = usePersonFieldSearch(mockPeople);
+    
     // Create a completed milestone
     const [milestone, setMilestone] = useState<Types.Milestone>({
       id: "milestone-completed",
@@ -546,10 +547,7 @@ export const CompletedMilestone: Story = {
         onTaskStatusChange={(taskId, status) => console.log("Task status change attempted:", taskId, status)}
         onMilestoneTitleChange={handleMilestoneNameChange}
         title={milestone.name}
-        searchPeople={async ({ query }) => {
-          const people = await mockSearchPeople({ query });
-          return people.map(person => ({ ...person, profileLink: "#" }));
-        }}
+        assigneePersonSearch={assigneePersonSearch}
         filters={[]}
         onFiltersChange={(filters) => console.log("Filters changed:", filters)}
         timelineItems={completedMilestoneTimeline}
