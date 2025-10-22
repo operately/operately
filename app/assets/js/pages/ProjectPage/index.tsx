@@ -178,21 +178,34 @@ function Page() {
 
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: project.id } });
 
+  // Transform function must be memoized to prevent infinite loop in the hook
+  const transformPerson = React.useCallback(
+    (p) => People.parsePersonForTurboUi(paths, p)!,
+    [paths]
+  );
+
+  // ignoredIds must be memoized to prevent infinite loop in the hook
+  const ignoredIds = React.useMemo(
+    () => [champion?.id!, reviewer?.id!],
+    [champion?.id, reviewer?.id]
+  );
+
+
   const championSearch = People.usePersonFieldSearch({
     scope: { type: "space", id: project.space.id },
-    ignoredIds: [champion?.id!, reviewer?.id!],
-    transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
+    ignoredIds,
+    transformResult: transformPerson,
   });
 
   const reviewerSearch = People.usePersonFieldSearch({
     scope: { type: "space", id: project.space.id },
-    ignoredIds: [champion?.id!, reviewer?.id!],
-    transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
+    ignoredIds,
+    transformResult: transformPerson,
   });
 
-  const assigneeSearch = People.usePersonFieldSpaceMembersSearch({
+  const assigneePersonSearch = People.usePersonFieldSpaceMembersSearch({
     spaceId: project.space.id,
-    transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
+    transformResult: transformPerson,
   });
 
   const deleteProject = async () => {
@@ -283,7 +296,7 @@ function Page() {
     newCheckInLink: paths.projectCheckInNewPath(project.id),
     newDiscussionLink: paths.projectDiscussionNewPath(project.id),
     currentUser: currentUser ? People.parsePersonForTurboUi(paths, currentUser) : null,
-    searchPeople: assigneeSearch,
+    assigneePersonSearch: assigneePersonSearch,
 
     richTextHandlers: richEditorHandlers,
 

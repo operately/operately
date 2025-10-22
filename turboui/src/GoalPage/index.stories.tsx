@@ -4,7 +4,8 @@ import { GoalPage } from ".";
 import { DateField } from "../DateField";
 import { MiniWorkMap } from "../MiniWorkMap";
 import { PrivacyField } from "../PrivacyField";
-import { genPeople, genPerson, searchPeopleFn } from "../utils/storybook/genPeople";
+import { genPeople, genPerson } from "../utils/storybook/genPeople";
+import { usePersonFieldSearch } from "../utils/storybook/usePersonFieldSearch";
 import { parentGoalSearchFn } from "../utils/storybook/parentGoalSearchFn";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { asRichText } from "../utils/storybook/richContent";
@@ -40,6 +41,10 @@ const defaultSpace: GoalPage.Space = {
 };
 
 function Component(props: Partial<GoalPage.Props>) {
+  const mockPeople = genPeople(10);
+  const championSearch = usePersonFieldSearch(mockPeople);
+  const reviewerSearch = usePersonFieldSearch(mockPeople);
+
   const [goalName, setGoalName] = React.useState<string>(props.goalName || "Launch AI Platform");
   const [space, setSpace] = React.useState<GoalPage.Space>(props.space || defaultSpace);
   const [dueDate, setDueDate] = React.useState<DateField.ContextualDate | null>(props.dueDate || null);
@@ -149,8 +154,8 @@ function Component(props: Partial<GoalPage.Props>) {
       startDate={startDate}
       setStartDate={setStartDate}
       canEdit={props.canEdit ?? true}
-      championSearch={searchPeopleFn}
-      reviewerSearch={searchPeopleFn}
+      championSearch={championSearch}
+      reviewerSearch={reviewerSearch}
       activityFeed={<div></div>}
       onDescriptionChange={async (_description: string | null) => true}
       addTarget={addTarget}

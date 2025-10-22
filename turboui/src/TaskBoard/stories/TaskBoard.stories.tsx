@@ -4,6 +4,7 @@ import * as Types from "../types";
 import { TaskBoard } from "../components";
 import { mockTasks, mockMilestones } from "../tests/mockData";
 import { Page } from "../../Page";
+import { usePersonFieldSearch } from "../../utils/storybook/usePersonFieldSearch";
 
 /**
  * TaskBoard is a comprehensive task management component designed for teams.
@@ -42,15 +43,12 @@ const mockPeople: Types.Person[] = [
   { id: "user-4", fullName: "Diana Prince", avatarUrl: null },
 ];
 
-// Mock search function for people
-const mockSearchPeople = async ({ query }: { query: string }): Promise<Types.Person[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
-  return mockPeople.filter((person) => person.fullName.toLowerCase().includes(query.toLowerCase()));
-};
 
 export const Default: Story = {
   tags: ["autodocs"],
   render: () => {
+    const assigneePersonSearch = usePersonFieldSearch(mockPeople);
+    
     // Create state for tasks and task creation
     const [tasks, setTasks] = useState([...mockTasks]);
     const [milestones, setMilestones] = useState<Types.Milestone[]>([
@@ -123,7 +121,7 @@ export const Default: Story = {
         }}
         onTaskStatusChange={handleTaskStatusChange}
         onMilestoneSearch={handleMilestoneSearch}
-        searchPeople={mockSearchPeople}
+        assigneePersonSearch={assigneePersonSearch}
         filters={filters}
         onFiltersChange={setFilters}
       />

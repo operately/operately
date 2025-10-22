@@ -5,6 +5,7 @@ import * as Types from "../types";
 import { DragAndDropProvider } from "../../utils/DragAndDrop";
 import { reorderTasksInList } from "../utils/taskReorderingUtils";
 import { createContextualDate } from "../../DateField/mockData";
+import { usePersonFieldSearch } from "../../utils/storybook/usePersonFieldSearch";
 
 /**
  * MilestoneCard displays a milestone with its tasks, combining a header with progress
@@ -77,22 +78,15 @@ const meta: Meta<typeof MilestoneCard> = {
           setMilestone(prev => ({ ...prev, ...updates }));
         };
 
-        // Mock search people function
-        const searchPeople = async ({ query }: { query: string }): Promise<Types.Person[]> => {
-          const mockPeople: Types.Person[] = [
-            { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
-            { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" },
-            { id: "user-3", fullName: "Charlie Brown", avatarUrl: "https://i.pravatar.cc/150?u=charlie" },
-            { id: "user-4", fullName: "Diana Prince", avatarUrl: null },
-          ];
-          
-          // Simulate API delay
-          await new Promise(resolve => setTimeout(resolve, 300));
-          
-          return mockPeople.filter(person => 
-            person.fullName.toLowerCase().includes(query.toLowerCase())
-          );
-        };
+        // Mock people data
+        const mockPeople: Types.Person[] = [
+          { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
+          { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" },
+          { id: "user-3", fullName: "Charlie Brown", avatarUrl: "https://i.pravatar.cc/150?u=charlie" },
+          { id: "user-4", fullName: "Diana Prince", avatarUrl: null },
+        ];
+        
+        const assigneePersonSearch = usePersonFieldSearch(mockPeople);
         
         // Return early with loading state if milestone is not yet loaded
         if (!milestone) {
@@ -117,14 +111,8 @@ const meta: Meta<typeof MilestoneCard> = {
                 console.log('Task status updated:', taskId, status);
               }}
               onMilestoneUpdate={handleMilestoneUpdate}
-              searchPeople={searchPeople}
+              assigneePersonSearch={assigneePersonSearch}
               availableMilestones={[milestone]}
-              availablePeople={[
-                { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
-                { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" },
-                { id: "user-3", fullName: "Charlie Brown", avatarUrl: "https://i.pravatar.cc/150?u=charlie" },
-                { id: "user-4", fullName: "Diana Prince", avatarUrl: null },
-              ]}
             />
           </DragAndDropProvider>
         );

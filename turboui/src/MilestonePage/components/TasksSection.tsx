@@ -24,7 +24,7 @@ export function TasksSection({
   onTaskAssigneeChange,
   onTaskDueDateChange,
   onTaskStatusChange,
-  searchPeople,
+  assigneePersonSearch,
   setIsTaskModalOpen,
 }: MilestonePage.State) {
   const { open: creatorOpen, openCreator, closeCreator, creatorRef, hoverBind } = useInlineTaskCreator({
@@ -154,7 +154,7 @@ export function TasksSection({
                 onTaskAssigneeChange={onTaskAssigneeChange}
                 onTaskDueDateChange={onTaskDueDateChange}
                 onTaskStatusChange={onTaskStatusChange}
-                searchPeople={searchPeople}
+                assigneePersonSearch={assigneePersonSearch}
                 inlineCreateRow={
                   creatorOpen ? (
                     <InlineTaskCreator
