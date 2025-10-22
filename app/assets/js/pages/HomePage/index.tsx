@@ -57,7 +57,7 @@ function Page() {
     <Pages.Page title="Home" testId="company-home">
       {shouldPromptOnboarding && <Onboarding company={company} />}
 
-      <Paper.Root size="medium">
+      <Paper.Root size="medium" className="px-4 sm:px-0">
         <Greeting />
         <SpacesSection />
         <FeedSection />
@@ -75,7 +75,7 @@ function SpacesSection() {
         title="Your Operately Spaces"
         subtitle="Manage projects, track goals, and organize your team's work."
         actions={
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2 justify-start sm:justify-end sm:flex-nowrap">
             <InvitePeopleButton />
             <AddSpaceButton />
           </div>
