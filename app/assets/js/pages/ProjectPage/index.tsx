@@ -190,7 +190,7 @@ function Page() {
     transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
   });
 
-  const assigneeSearch = People.usePersonFieldSpaceMembersSearch({
+  const assigneePersonSearch = People.usePersonFieldSpaceMembersSearch({
     spaceId: project.space.id,
     transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
   });
@@ -283,7 +283,7 @@ function Page() {
     newCheckInLink: paths.projectCheckInNewPath(project.id),
     newDiscussionLink: paths.projectDiscussionNewPath(project.id),
     currentUser: currentUser ? People.parsePersonForTurboUi(paths, currentUser) : null,
-    searchPeople: assigneeSearch,
+    assigneePersonSearch: assigneePersonSearch,
 
     richTextHandlers: richEditorHandlers,
 

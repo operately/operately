@@ -73,7 +73,7 @@ function Assignees(props: TaskPage.State) {
         person={props.assignee}
         setPerson={props.onAssigneeChange}
         readonly={!props.canEdit}
-        searchData={props.assigneeSearchData}
+        searchData={props.assigneePersonSearch}
         emptyStateMessage="Assign task"
         emptyStateReadOnlyMessage="No assignee"
         testId="assignee"
@@ -107,7 +107,7 @@ function AssigneeMobile(props: TaskPage.State) {
         person={props.assignee}
         setPerson={props.onAssigneeChange}
         readonly={!props.canEdit}
-        searchData={props.assigneeSearchData}
+        searchData={props.assigneePersonSearch}
         emptyStateMessage="Assign task"
         emptyStateReadOnlyMessage="No assignee"
         size="small"

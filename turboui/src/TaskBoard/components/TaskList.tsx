@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { useDraggingAnimation, useDropZone } from "../../utils/DragAndDrop";
 import { TaskItem } from "./TaskItem";
 import { IconChevronDown, IconChevronRight } from "../../icons";
+import { PersonField } from "../../PersonField";
 import * as Types from "../types";
 import { DateField } from "../../DateField";
 
@@ -15,7 +16,7 @@ export interface TaskListProps {
   onTaskAssigneeChange: (taskId: string, assignee: Types.Person | null) => void;
   onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
   onTaskStatusChange: (taskId: string, status: string) => void;
-  searchPeople?: (params: { query: string }) => Promise<Types.Person[]>;
+  assigneePersonSearch?: PersonField.SearchData;
   /** Whether to show the hidden tasks toggle (ghost row) */
   showHiddenTasksToggle?: boolean;
   /** Optional inline row to render below active tasks (e.g., inline creator) */
@@ -35,7 +36,7 @@ export function TaskList({
   onTaskAssigneeChange,
   onTaskDueDateChange,
   onTaskStatusChange,
-  searchPeople,
+  assigneePersonSearch,
   inlineCreateRow,
 }: TaskListProps) {
   const [hiddenTasksExpanded, setHiddenTasksExpanded] = useState(false);
@@ -86,7 +87,7 @@ export function TaskList({
             onTaskAssigneeChange={onTaskAssigneeChange}
             onTaskDueDateChange={onTaskDueDateChange}
             onTaskStatusChange={onTaskStatusChange}
-            searchPeople={searchPeople}
+            assigneePersonSearch={assigneePersonSearch}
           />
         ))}
       </ul>
@@ -137,7 +138,7 @@ export function TaskList({
               onTaskAssigneeChange={onTaskAssigneeChange}
               onTaskDueDateChange={onTaskDueDateChange}
               onTaskStatusChange={onTaskStatusChange}
-              searchPeople={searchPeople}
+              assigneePersonSearch={assigneePersonSearch}
               draggingDisabled
             />
           </ul>

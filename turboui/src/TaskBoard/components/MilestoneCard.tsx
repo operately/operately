@@ -4,6 +4,7 @@ import { DateField } from "../../DateField";
 import { BlackLink } from "../../Link";
 import { PieChart } from "../../PieChart";
 import * as Types from "../types";
+import { PersonField } from "../../PersonField";
 import { EmptyMilestoneDropZone } from "./EmptyMilestoneDropZone";
 import TaskCreationModal from "./TaskCreationModal";
 import { TaskList } from "./TaskList";
@@ -23,9 +24,8 @@ export interface MilestoneCardProps {
   onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
   onTaskStatusChange: (taskId: string, status: string) => void;
   onMilestoneUpdate?: (milestoneId: string, updates: Types.UpdateMilestonePayload) => void;
-  searchPeople?: (params: { query: string }) => Promise<Types.Person[]>;
+  assigneePersonSearch?: PersonField.SearchData;
   availableMilestones?: Types.Milestone[];
-  availablePeople?: Types.Person[];
 
   /**
    * Milestone statistics - if not provided, will be calculated from tasks
@@ -47,10 +47,9 @@ export function MilestoneCard({
   onTaskDueDateChange,
   onTaskStatusChange,
   onMilestoneUpdate,
-  searchPeople,
+  assigneePersonSearch,
   stats,
   availableMilestones = [],
-  availablePeople = [],
 }: MilestoneCardProps) {
   const sortedTasks = React.useMemo(() => sortTasks(tasks, milestone), [tasks, milestone.tasksOrderingState]);
 
@@ -168,7 +167,7 @@ export function MilestoneCard({
             onTaskAssigneeChange={onTaskAssigneeChange}
             onTaskDueDateChange={onTaskDueDateChange}
             onTaskStatusChange={onTaskStatusChange}
-            searchPeople={searchPeople}
+            assigneePersonSearch={assigneePersonSearch}
             inlineCreateRow={
               creatorOpen ? (
                 <InlineTaskCreator
@@ -210,14 +209,13 @@ export function MilestoneCard({
       </li>
 
       <TaskCreationModal
-        searchPeople={searchPeople}
+        assigneePersonSearch={assigneePersonSearch}
         isOpen={isTaskModalOpen}
         onClose={() => setIsTaskModalOpen(false)}
         onCreateTask={handleCreateTask}
         milestones={availableMilestones.length > 0 ? availableMilestones : [milestone]}
         onMilestoneSearch={async () => {}} // No-op: milestones list is static in this context
         currentMilestoneId={milestone.id}
-        people={availablePeople}
       />
     </>
   );

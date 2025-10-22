@@ -86,7 +86,7 @@ export namespace TaskPage {
     onArchive?: () => void;
 
     // Assignee selection
-    assigneeSearchData: PersonField.SearchData;
+    assigneePersonSearch: PersonField.SearchData;
     richTextHandlers: RichEditorHandlers;
 
     // Permissions

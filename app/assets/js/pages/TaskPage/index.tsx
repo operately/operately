@@ -164,7 +164,7 @@ function Page() {
     [paths]
   );
 
-  const assigneeSearchData = People.usePersonFieldSpaceMembersSearch({
+  const assigneePersonSearch = People.usePersonFieldSpaceMembersSearch({
     spaceId: task.space.id,
     transformResult: transformPerson,
   });
@@ -181,7 +181,7 @@ function Page() {
 
     canEdit: Boolean(task.permissions.canEditTimeline),
 
-    assigneeSearchData,
+    assigneePersonSearch,
     updateProjectName: setProjectName,
 
     // Timeline/Comments
