@@ -4,8 +4,8 @@ import { Person } from ".";
 
 interface UseSpaceMembersSearch<T> {
   spaceId: string;
-  ignoredIds?: string[];
   transformResult?: (person: Person) => T; // transformResult must be memoized
+  ignoredIds?: string[]; // ignoredIds must be memoized
 }
 
 // This matches PersonField.SearchData from turboui

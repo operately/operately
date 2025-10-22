@@ -3,9 +3,9 @@ import Api from "@/api";
 import { Person, SearchScope } from ".";
 
 interface UsePeopleSearch<T> {
-  ignoredIds?: string[];
   scope: SearchScope;
   transformResult?: (person: Person) => T; // transformResult must be memoized
+  ignoredIds?: string[]; // ignoredIds must be memoized
 }
 
 // This matches PersonField.SearchData from turboui

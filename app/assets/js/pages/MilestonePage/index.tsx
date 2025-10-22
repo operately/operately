@@ -136,9 +136,15 @@ function Page() {
 
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: milestone.project.id } });
 
+  // Transform function must be memoized to prevent infinite loop in the hook
+  const transformPerson = React.useCallback(
+    (p) => People.parsePersonForTurboUi(paths, p)!,
+    [paths]
+  );
+
   const assigneeSearch = People.usePersonFieldSpaceMembersSearch({
     spaceId: milestone.space.id,
-    transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
+    transformResult: transformPerson,
   });
 
   const props: MilestonePage.Props = {
