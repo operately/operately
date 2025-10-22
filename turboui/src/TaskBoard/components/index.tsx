@@ -37,7 +37,7 @@ export function TaskBoard({
   onTaskMilestoneChange,
   onMilestoneUpdate,
   onMilestoneSearch,
-  searchPeople,
+  assigneePersonSearch,
   filters = [],
   onFiltersChange,
 }: Types.TaskBoardProps) {
@@ -120,11 +120,8 @@ export function TaskBoard({
         onCreateTask={onTaskCreate}
         milestones={searchableMilestones}
         currentMilestoneId={activeTaskMilestoneId}
-        searchPeople={searchPeople}
+        assigneePersonSearch={assigneePersonSearch}
         onMilestoneSearch={onMilestoneSearch}
-        people={internalTasks
-          .flatMap((task) => task.assignees || [])
-          .filter((person, index, self) => index === self.findIndex((p) => p.id === person.id))}
       />
 
       <MilestoneCreationModal
@@ -182,11 +179,8 @@ export function TaskBoard({
                     onTaskDueDateChange={onTaskDueDateChange}
                     onTaskStatusChange={onTaskStatusChange}
                     onMilestoneUpdate={onMilestoneUpdate}
-                    searchPeople={searchPeople}
+                    assigneePersonSearch={assigneePersonSearch}
                     availableMilestones={milestones.map((m) => m.milestone)}
-                    availablePeople={internalTasks
-                      .flatMap((task) => task.assignees || [])
-                      .filter((person, index, self) => index === self.findIndex((p) => p.id === person.id))}
                   />
                 ))}
 
@@ -219,7 +213,7 @@ export function TaskBoard({
                       onTaskAssigneeChange={onTaskAssigneeChange}
                       onTaskDueDateChange={onTaskDueDateChange}
                       onTaskStatusChange={onTaskStatusChange}
-                      searchPeople={searchPeople}
+                      assigneePersonSearch={assigneePersonSearch}
                       inlineCreateRow={
                         noMilestoneCreatorOpen ? (
                           <InlineTaskCreator

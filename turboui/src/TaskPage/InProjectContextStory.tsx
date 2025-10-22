@@ -6,7 +6,8 @@ import { PageHeader } from "../ProjectPageLayout/PageHeader";
 import { Tabs, useTabs } from "../Tabs";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import { IconClipboardText, IconListCheck, IconLogs, IconMessages } from "../icons";
-import { genPeople, searchPeopleFn } from "../utils/storybook/genPeople";
+import { genPeople } from "../utils/storybook/genPeople";
+import { usePersonFieldSearch } from "../utils/storybook/usePersonFieldSearch";
 import { parentGoalSearchFn } from "../utils/storybook/parentGoalSearchFn";
 import { spaceSearchFn } from "../utils/storybook/spaceSearchFn";
 import { TaskPage } from "./index";
@@ -16,7 +17,6 @@ import {
   mockMentionedPersonLookup,
   mockMilestones,
   mockTaskPeople,
-  searchTaskPeople,
   timelinePeople,
 } from "./mockData";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
@@ -28,6 +28,10 @@ const people = genPeople(5);
  * when navigated to from within a project's Tasks tab (like clicking a task from a task list)
  */
 export function InProjectContextStory() {
+  const assigneePersonSearch = usePersonFieldSearch(mockTaskPeople);
+  const championSearch = usePersonFieldSearch(people);
+  const reviewerSearch = usePersonFieldSearch(people);
+  
   const [taskName, setTaskName] = useState("Implement user authentication flow");
   const [taskDescription, setTaskDescription] = useState(
     asRichText(
@@ -79,11 +83,11 @@ export function InProjectContextStory() {
     onTaskAssigneeChange: () => {},
     onTaskDueDateChange: () => {},
     onMilestoneUpdate: () => {},
-    searchPeople: searchTaskPeople,
+    searchPeople: async () => [], // Not used in this story
     filters: [],
     onFiltersChange: () => {},
-    championSearch: searchPeopleFn,
-    reviewerSearch: searchPeopleFn,
+    championSearch,
+    reviewerSearch,
     setParentGoal: () => {},
     parentGoal: null,
     parentGoalSearch: parentGoalSearchFn,
@@ -201,7 +205,7 @@ export function InProjectContextStory() {
               onDuplicate={() => console.log("Task duplicated")}
               onArchive={() => console.log("Task archived")}
               // Search functionality
-              searchPeople={searchTaskPeople}
+              assigneePersonSearch={assigneePersonSearch}
               milestones={milestones}
               onMilestoneSearch={handleMilestoneSearch}
               richTextHandlers={createMockRichEditorHandlers()}

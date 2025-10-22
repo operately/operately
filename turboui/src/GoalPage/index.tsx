@@ -8,8 +8,8 @@ import { IconClipboardText, IconLogs, IconMessage, IconMessages } from "../icons
 
 import { DateField } from "../DateField";
 import { MoveModal } from "../Modal/MoveModal";
+import { PersonField } from "../PersonField";
 import { PrivacyField } from "../PrivacyField";
-import { SearchFn } from "../RichEditor/extensions/MentionPeople";
 import { BadgeStatus } from "../StatusBadge/types";
 import { Tabs, useTabs } from "../Tabs";
 import { Activity } from "./Activity";
@@ -131,8 +131,8 @@ export namespace GoalPage {
 
     neglectedGoal: boolean;
 
-    championSearch: SearchFn;
-    reviewerSearch: SearchFn;
+    championSearch: PersonField.SearchData;
+    reviewerSearch: PersonField.SearchData;
 
     description: string;
     onDescriptionChange: (description: string | null) => Promise<boolean>;

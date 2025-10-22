@@ -148,16 +148,28 @@ function Page() {
     onSuccess: () => showSuccessToast("Parent Goal Updated", "The parent goal has been successfully changed."),
   });
 
+  // Transform function must be memoized to prevent infinite loop in the hook
+  const transformPerson = React.useCallback(
+    (p) => People.parsePersonForTurboUi(paths, p)!,
+    [paths]
+  );
+
+  // ignoredIds must be memoized to prevent infinite loop in the hook
+  const ignoredIds = React.useMemo(
+    () => [champion?.id!, reviewer?.id!],
+    [champion?.id, reviewer?.id]
+  );
+
   const championSearch = People.usePersonFieldSearch({
     scope: { type: "space", id: goal.space.id! },
-    ignoredIds: [champion?.id!, reviewer?.id!],
-    transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
+    ignoredIds,
+    transformResult: transformPerson,
   });
 
   const reviewerSearch = People.usePersonFieldSearch({
     scope: { type: "space", id: goal.space.id! },
-    ignoredIds: [champion?.id!, reviewer?.id!],
-    transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
+    ignoredIds,
+    transformResult: transformPerson,
   });
 
   const parentGoalSearch = useParentGoalSearch(goal);
