@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useCallback } from "react";
 import Api from "@/api";
 
 import { useNavigate } from "react-router-dom";
@@ -158,9 +158,15 @@ function Page() {
     }
   };
 
-  const assigneeSearch = People.usePersonFieldSpaceMembersSearch({
+  // Transform function must be memoized to prevent infinite loop in the hook
+  const transformPerson = useCallback(
+    (p) => People.parsePersonForTurboUi(paths, p)!,
+    [paths]
+  );
+
+  const assigneeSearchData = People.usePersonFieldSpaceMembersSearch({
     spaceId: task.space.id,
-    transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
+    transformResult: transformPerson,
   });
   const { milestones, search: searchMilestones } = useMilestones(task.project.id);
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: task.project.id } });
@@ -175,7 +181,7 @@ function Page() {
 
     canEdit: Boolean(task.permissions.canEditTimeline),
 
-    searchPeople: assigneeSearch,
+    assigneeSearchData,
     updateProjectName: setProjectName,
 
     // Timeline/Comments
