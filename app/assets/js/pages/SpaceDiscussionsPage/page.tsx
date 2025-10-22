@@ -46,7 +46,7 @@ function NewDiscussionButton() {
 
   return (
     <PrimaryButton linkTo={paths.discussionNewPath(space.id!)} size="sm" testId="new-discussion">
-      New Discussion
+      New discussion
     </PrimaryButton>
   );
 }
