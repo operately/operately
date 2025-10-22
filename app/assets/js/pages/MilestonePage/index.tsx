@@ -21,7 +21,6 @@ import { PageModule } from "@/routes/types";
 import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
 import { projectPageCacheKey } from "../ProjectPage";
 import { useComments } from "./useComments";
-import { usePersonFieldContributorsSearch } from "@/models/projectContributors";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 export default { name: "MilestoneV2Page", loader, Page } as PageModule;
@@ -137,8 +136,8 @@ function Page() {
 
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: milestone.project.id } });
 
-  const assigneeSearch = usePersonFieldContributorsSearch({
-    projectId: milestone.project.id,
+  const assigneeSearch = People.usePersonFieldSpaceMembersSearch({
+    spaceId: milestone.space.id,
     transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
   });
 
@@ -149,7 +148,7 @@ function Page() {
 
     canEdit: Boolean(milestone.permissions.canEditTimeline),
 
-    searchPeople: assigneeSearch,
+    assigneePersonSearch: assigneeSearch,
 
     // Project
     projectName,
