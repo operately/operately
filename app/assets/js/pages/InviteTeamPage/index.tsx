@@ -41,21 +41,33 @@ function Page() {
     }
   });
 
-  const handleDomainToggle = React.useCallback((enabled: boolean) => {
-    setDomainState((prev) => ({
-      ...prev,
-      enabled,
-      error: null,
-    }));
-  }, []);
+  const handleDomainToggle = async (enabled: boolean) => {
+    const oldValue = domainState.value;
+    setDomainState((prev) => ({ ...prev, enabled }));
 
-  const handleDomainChange = React.useCallback((value: string) => {
-    setDomainState((prev) => ({
-      ...prev,
-      value,
-      error: null,
-    }));
-  }, []);
+    try {
+      await Api.invitations.updateCompanyInviteLink({
+        allowedDomains: enabled ? domainState.value.split(",").map((e) => e.trim()) : [],
+      });
+    } catch (error) {
+      showErrorToast("Network Error", "Failed to update trusted domains");
+      setDomainState((prev) => ({ ...prev, oldValue }));
+    }
+  };
+
+  const handleDomainChange = async (value: string) => {
+    const oldValue = domainState.value;
+    setDomainState((prev) => ({ ...prev, value }));
+
+    try {
+      await Api.invitations.updateCompanyInviteLink({
+        allowedDomains: value.split(",").map((e) => e.trim()),
+      });
+    } catch (error) {
+      showErrorToast("Network Error", "Failed to update trusted domains");
+      setDomainState((prev) => ({ ...prev, oldValue }));
+    }
+  };
 
   const handleToggleLink = async () => {
     const oldValue = linkEnabled;
