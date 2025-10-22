@@ -28,7 +28,7 @@ interface SectionTitleProps {
 }
 
 function SectionTitle({ title, subtitle, actions }: SectionTitleProps) {
-  const className = classNames("flex items-center justify-between", {
+  const className = classNames("flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-0", {
     "mb-6": subtitle,
     "mb-2": !subtitle,
   });
@@ -40,7 +40,7 @@ function SectionTitle({ title, subtitle, actions }: SectionTitleProps) {
         {subtitle && <p className="text-sm max-w-xl">{subtitle}</p>}
       </div>
 
-      {actions && <div>{actions}</div>}
+      {actions && <div className="w-full sm:w-auto">{actions}</div>}
     </div>
   );
 }

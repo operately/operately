@@ -59,14 +59,15 @@ function HeaderLeft(props: Props & { className: string }) {
 function HeaderCentered(props: Props & { className: string }) {
   return (
     <div className={props.className}>
-      <div className="w-1/4">{props.actions}</div>
+      {/* allows longer button captions */}
+      <div className="w-[30%]">{props.actions}</div>
 
-      <div className="w-2/4 text-center flex-1">
+      <div className="w-[50%] text-center flex-1">
         <Title title={props.title} />
         {props.subtitle && <Subtitle message={props.subtitle} />}
       </div>
 
-      <div className="w-1/4" />
+      <div className="w-[30%]" />
     </div>
   );
 }
