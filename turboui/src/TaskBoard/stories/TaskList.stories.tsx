@@ -24,7 +24,6 @@ const meta: Meta<typeof TaskList> = {
         initialTasks,
         hiddenTasks,
         showHiddenTasksToggle,
-        assigneePersonSearch,
       }: {
         initialTasks: Types.Task[];
         hiddenTasks?: Types.Task[];
@@ -32,9 +31,9 @@ const meta: Meta<typeof TaskList> = {
         onTaskAssigneeChange?: (taskId: string, assignee: Types.Person | null) => void;
         onTaskDueDateChange?: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
         onTaskStatusChange?: (taskId: string, status: string) => void;
-        assigneePersonSearch: any;
       }) => {
         const [tasks, setTasks] = useState<Types.Task[]>([]);
+        const assigneePersonSearch = usePersonFieldSearch(mockPeople);
 
         // Store the tasks from props when component mounts
         useEffect(() => {
@@ -79,7 +78,6 @@ const meta: Meta<typeof TaskList> = {
             onTaskAssigneeChange={args.onTaskAssigneeChange || (() => {})}
             onTaskDueDateChange={args.onTaskDueDateChange || (() => {})}
             onTaskStatusChange={args.onTaskStatusChange || (() => {})}
-            assigneePersonSearch={args.assigneePersonSearch}
           />
         </div>
       );
@@ -160,7 +158,6 @@ export const MultipleTasksList: Story = {
     onTaskAssigneeChange: () => {},
     onTaskDueDateChange: () => {},
     onTaskStatusChange: () => {},
-    assigneePersonSearch: usePersonFieldSearch(mockPeople),
   },
   render: (args) => {
     return (
@@ -170,7 +167,7 @@ export const MultipleTasksList: Story = {
         onTaskAssigneeChange={() => {}}
         onTaskDueDateChange={() => {}}
         onTaskStatusChange={() => {}}
-        assigneePersonSearch={args.assigneePersonSearch}
+        assigneePersonSearch={{ people: [], onSearch: async () => {} }}
       />
     );
   },
@@ -196,7 +193,6 @@ export const SingleTaskList: Story = {
     onTaskAssigneeChange: () => {},
     onTaskDueDateChange: () => {},
     onTaskStatusChange: () => {},
-    assigneePersonSearch: usePersonFieldSearch(mockPeople),
   },
   render: MultipleTasksList.render,
 };
@@ -211,7 +207,6 @@ export const EmptyTaskList: Story = {
     onTaskAssigneeChange: () => {},
     onTaskDueDateChange: () => {},
     onTaskStatusChange: () => {},
-    assigneePersonSearch: usePersonFieldSearch(mockPeople),
   },
   render: MultipleTasksList.render,
 };
@@ -247,7 +242,6 @@ export const MixedStatusTaskList: Story = {
     onTaskAssigneeChange: () => {},
     onTaskDueDateChange: () => {},
     onTaskStatusChange: () => {},
-    assigneePersonSearch: usePersonFieldSearch(mockPeople),
   },
   render: MultipleTasksList.render,
 };
@@ -307,7 +301,6 @@ export const TaskListWithHiddenCompletedTasks: Story = {
     onTaskAssigneeChange: () => {},
     onTaskDueDateChange: () => {},
     onTaskStatusChange: () => {},
-    assigneePersonSearch: usePersonFieldSearch(mockPeople),
   },
   render: (args) => {
     return (
@@ -319,7 +312,7 @@ export const TaskListWithHiddenCompletedTasks: Story = {
         onTaskAssigneeChange={() => {}}
         onTaskDueDateChange={() => {}}
         onTaskStatusChange={() => {}}
-        assigneePersonSearch={args.assigneePersonSearch}
+        assigneePersonSearch={{ people: [], onSearch: async () => {} }}
       />
     );
   },
