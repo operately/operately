@@ -5,21 +5,21 @@ import { Person } from ".";
 interface UseSpaceMembersSearch<T> {
   spaceId: string;
   ignoredIds?: string[];
-  transformResult?: (person: Person) => T;
+  transformResult?: (person: Person) => T; // transformResult must be memoized
 }
 
-interface UseSpaceMembersSearchResult<T> {
+// This matches PersonField.SearchData from turboui
+interface SearchData<T> {
   people: T[];
-  search: (query: string) => Promise<void>;
+  onSearch: (query: string) => Promise<void>;
 }
 
-export function usePersonFieldSpaceMembersSearch<T>(hookParams: UseSpaceMembersSearch<T>): UseSpaceMembersSearchResult<T> {
+export function usePersonFieldSpaceMembersSearch<T>(hookParams: UseSpaceMembersSearch<T>): SearchData<T> {
   const [people, setPeople] = useState<T[]>([]);
 
-
-  const search = useCallback(
+  const onSearch = useCallback(
     async (query: string) => {
-      const transform = hookParams.transformResult || ((person) => person as unknown as T);
+      const transform = hookParams.transformResult || ((person) => person as unknown as T)
 
       const ignoredIds = (hookParams.ignoredIds || [])
         .filter((id): id is string => Boolean(id));
@@ -40,8 +40,8 @@ export function usePersonFieldSpaceMembersSearch<T>(hookParams: UseSpaceMembersS
 
   // Load initial people on mount
   useEffect(() => {
-    search("");
-  }, [search]);
+    onSearch("");
+  }, [onSearch]);
 
-  return { people, search };
+  return { people, onSearch };
 }

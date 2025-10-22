@@ -24,23 +24,37 @@ export namespace PersonField {
     profileLink?: string;
   }
 
-  export interface Props {
+  export interface SearchData {
+    people: Person[];
+    onSearch: (query: string) => Promise<void>;
+  }
+
+  interface BaseProps {
     person: Person | null;
     setPerson: (person: Person | null) => void;
 
     isOpen?: boolean;
     avatarSize?: number;
     size?: "small" | "normal"; // convenience alias mapped to avatarSize
-    readonly?: boolean;
     showTitle?: boolean;
     avatarOnly?: boolean;
     emptyStateMessage?: string;
     emptyStateReadOnlyMessage?: string;
-    people: Person[]; // Pre-loaded list of people
-    onPersonSearch: (query: string) => Promise<void>; // Search callback with debouncing
     extraDialogMenuOptions?: DialogMenuOptionProps[];
     testId?: string;
   }
+
+  interface ReadonlyProps extends BaseProps {
+    readonly: true;
+    searchData?: SearchData; // Optional for readonly
+  }
+
+  interface EditableProps extends BaseProps {
+    readonly?: boolean;
+    searchData: SearchData; // Required for editable
+  }
+
+  export type Props = ReadonlyProps | EditableProps;
 
   export interface State {
     isOpen: boolean;
@@ -107,13 +121,13 @@ export function useState(props: PersonField.Props): PersonField.State {
 
     // Debounce search by 300ms to avoid excessive API calls while typing
     const timerId = setTimeout(() => {
-      props.onPersonSearch(searchQuery);
+      props.searchData?.onSearch(searchQuery);
     }, 300);
 
     return () => {
       clearTimeout(timerId);
     };
-  }, [searchQuery, isOpen, props.onPersonSearch]);
+  }, [searchQuery, isOpen]);
 
   const setIsOpen = (open: boolean) => {
     if (readonly) {
@@ -141,7 +155,7 @@ export function useState(props: PersonField.Props): PersonField.State {
     extraDialogMenuOptions,
     searchQuery,
     setSearchQuery,
-    searchResults: props.people,
+    searchResults: props.searchData?.people || [],
 
     testId: props.testId || "person-field",
   };
