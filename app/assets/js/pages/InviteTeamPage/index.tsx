@@ -57,15 +57,13 @@ function Page() {
 
   const handleDomainChange = async (value: string) => {
     const oldValue = domainState.value;
-    setDomainState((prev) => ({ ...prev, value }));
-
     try {
       await Api.invitations.updateCompanyInviteLink({
         allowedDomains: value.split(",").map((e) => e.trim()),
       });
     } catch (error) {
       showErrorToast("Network Error", "Failed to update trusted domains");
-      setDomainState((prev) => ({ ...prev, oldValue }));
+      setDomainState((prev) => ({ ...prev, value: oldValue }));
     }
   };
 

@@ -143,10 +143,12 @@ function FormFieldTextField(state: TextField.State & { inputRef?: React.Ref<HTML
           value={state.currentText}
           onChange={(e) => {
             state.setCurrentText(e.target.value);
-            // For form fields, also update parent immediately for real-time validation
+          }}
+          onBlur={(e) => {
+            state.save();
+            // Trigger external onChange with final value on blur
             state.onChange(e.target.value);
           }}
-          onBlur={state.save}
           onKeyDown={handleKeyDown}
           className={"w-full border-none outline-none bg-transparent text-sm px-0 py-0 " + state.className}
           placeholder={state.placeholder}

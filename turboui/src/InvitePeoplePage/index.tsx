@@ -96,10 +96,12 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
 
   const handleDomainChange = useCallback(
     (value: string) => {
+      // Only update local typed value; actual submit happens on blur via onBlur.
       props.domainRestriction?.onChange?.(value);
     },
     [props.domainRestriction],
   );
+
 
   const handleOpenResetConfirm = useCallback(() => {
     if (!props.onResetLink || isResettingLink || !linkEnabled) return;
