@@ -1,8 +1,9 @@
 import type { ActivityContentTaskMilestoneUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
-import { feedTitle, milestoneLink, projectLink } from "../feedItemLinks";
+import { feedTitle, milestoneLink, projectLink, taskLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
+import { compareIds } from "turboui/utils/ids";
 
 const TaskMilestoneUpdating: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -26,18 +27,23 @@ const TaskMilestoneUpdating: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: string }) {
-    const { project, oldMilestone, newMilestone } = content(activity);
+    const { project, task, oldMilestone, newMilestone } = content(activity);
 
     let message: any[];
+    const taskName = task ? taskLink(task) : "task";
 
     if (!oldMilestone && newMilestone) {
-      message = ["assigned task to milestone", milestoneLink(newMilestone)];
+      message = ["assigned", taskName, "to milestone", milestoneLink(newMilestone)];
     } else if (oldMilestone && !newMilestone) {
-      message = ["removed task from milestone", milestoneLink(oldMilestone)];
+      message = ["removed", taskName, "from milestone", milestoneLink(oldMilestone)];
     } else if (oldMilestone && newMilestone) {
-      message = ["moved task from milestone", milestoneLink(oldMilestone), "to", milestoneLink(newMilestone)];
+      if (compareIds(oldMilestone.id, newMilestone.id)) {
+        message = ["reordered", taskName, "in the", milestoneLink(oldMilestone), "milestone"];
+      } else {
+        message = ["moved", taskName, "from milestone", milestoneLink(oldMilestone), "to", milestoneLink(newMilestone)];
+      }
     } else {
-      message = ["updated task milestone"];
+      message = ["updated", taskName, "milestone"];
     }
 
     if (page === "project") {

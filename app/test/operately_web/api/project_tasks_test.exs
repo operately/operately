@@ -800,6 +800,30 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert after_count == before_count + 1
     end
 
+    test "it does not create an activity when milestone stays the same", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_task(:task2, :milestone)
+        |> Factory.log_in_person(:creator)
+
+      before_count = count_activities(ctx.project.id, "task_milestone_updating")
+
+      # Task stays in same milestone, only ordering changes
+      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_milestone_and_ordering], %{
+        task_id: Paths.task_id(ctx.task),
+        milestone_id: Paths.milestone_id(ctx.milestone),  # Same milestone
+        milestones_ordering_state: [
+          %{
+            milestone_id: Paths.milestone_id(ctx.milestone),
+            ordering_state: [Paths.task_id(ctx.task2), Paths.task_id(ctx.task)]
+          }
+        ]
+      })
+
+      after_count = count_activities(ctx.project.id, "task_milestone_updating")
+      assert after_count == before_count  # No new activity created
+    end
+
     test "it can't update to a milestone from a different project", ctx do
       ctx =
         ctx
