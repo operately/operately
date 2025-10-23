@@ -46,7 +46,7 @@
       2. Production strategy: Used in production or in CI test environments.
          JavaScript is loaded from the static assets that are built by Vite.
     -->
-    <%= if OperatelyWeb.PageController.development_mode?() do %>
+    <%= if false do %>
       <script type="module">
         import RefreshRuntime from '<%= @vite_url %>/@react-refresh'
         RefreshRuntime.injectIntoGlobalHook(window)

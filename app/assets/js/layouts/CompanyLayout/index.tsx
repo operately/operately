@@ -183,7 +183,7 @@ function DesktopNavigation({ company }: { company: Api.Company }) {
           </div>
 
           <div className="border-l border-surface-outline pl-4">
-            <Review company={company} />
+            <Review />
           </div>
         </div>
 
