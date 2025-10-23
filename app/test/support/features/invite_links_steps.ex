@@ -216,6 +216,16 @@ defmodule Operately.Support.Features.InviteLinksSteps do
   step :set_allowed_domains, ctx, domains do
     ctx
     |> UI.fill(testid: "invite-people-domain-input-input", with: domains)
+    |> UI.send_keys([:enter])
+  end
+
+  step :assert_allowed_domains, ctx, expected_domains do
+    attempts(ctx, 5, fn ->
+      {:ok, link} = Operately.InviteLinks.get_invite_link(ctx.company.id)
+      assert link.allowed_domains == expected_domains
+    end)
+
+    ctx
   end
 
   step :assert_invite_link_is_active, ctx do

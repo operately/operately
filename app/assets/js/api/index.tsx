@@ -3728,6 +3728,7 @@ export interface InvitationsNewInvitationTokenResult {
 
 export interface InvitationsUpdateCompanyInviteLinkInput {
   isActive?: boolean;
+  allowedDomains?: string[];
 }
 
 export interface InvitationsUpdateCompanyInviteLinkResult {

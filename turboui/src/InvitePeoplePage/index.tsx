@@ -96,6 +96,7 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
 
   const handleDomainChange = useCallback(
     (value: string) => {
+      // Only update local typed value; actual submit happens on blur via onBlur.
       props.domainRestriction?.onChange?.(value);
     },
     [props.domainRestriction],
@@ -261,7 +262,7 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
                           variant="form-field"
                           text={props.domainRestriction.value}
                           onChange={handleDomainChange}
-                          placeholder="e.g. @acme.com, @example.org"
+                          placeholder="e.g. acme.com, example.org"
                           error={props.domainRestriction.error}
                           className={classNames("sm:max-w-md", !props.domainRestriction.onChange && "opacity-60")}
                           testId="invite-people-domain-input"
