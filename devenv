@@ -99,6 +99,8 @@ export PORT_VITE_SERVER=$((PORT_OFFSET + 5))
 export PORT_PGWEB=$((PORT_OFFSET + 6))
 export PORT_S3MOCK=$((PORT_OFFSET + 7))
 export PORT_MAILHOG_UI=$((PORT_OFFSET + 8))
+export PORT_ACME_DEV=$((PORT_OFFSET + 9))
+export PORT_ACME_TEST=$((PORT_OFFSET + 10))
 
 #
 # Main entry point
