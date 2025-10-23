@@ -417,6 +417,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
     alias Operately.Operations.Notifications
     alias Operately.Access.Binding
     alias Operately.Projects.Contributor
+    alias Operately.Notifications.Subscription
 
     def start_transaction(conn) do
       Ecto.Multi.new()
@@ -668,11 +669,30 @@ defmodule OperatelyWeb.Api.ProjectTasks do
             {:ok, Operately.Access.get_context!(project_id: project.id)}
           end)
           |> Operately.Access.insert_binding(:contributor_binding, access_group, Binding.edit_access())
+          |> Ecto.Multi.run(:subscription, fn _repo, _ ->
+            ensure_subscription(project.subscription_list_id, assignee_id)
+          end)
           |> Operately.Repo.transaction()
           |> Operately.Repo.extract_result(:contributor)
 
         contributor ->
           {:ok, contributor}
+      end
+    end
+
+    defp ensure_subscription(nil, _person_id), do: {:ok, nil}
+
+    defp ensure_subscription(subscription_list_id, person_id) do
+      case Subscription.get(:system, subscription_list_id: subscription_list_id, person_id: person_id) do
+        {:error, :not_found} ->
+          Operately.Notifications.create_subscription(%{
+            subscription_list_id: subscription_list_id,
+            person_id: person_id,
+            type: :invited
+          })
+
+        {:ok, subscription} ->
+          Operately.Notifications.update_subscription(subscription, %{canceled: false})
       end
     end
 
