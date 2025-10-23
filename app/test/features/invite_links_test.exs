@@ -32,14 +32,13 @@ defmodule Operately.Features.InviteLinksTest do
     #   |> Steps.assert_invite_link_rotated()
     # end
 
-    # feature "limiting which email domains can use the invite link", ctx do
-    #   ctx
-    #   |> Steps.open_invite_team_page()
-    #   |> Steps.enable_domain_restrictions()
-    #   |> Steps.set_allowed_domains("operately.com, example.org")
-    #   |> Steps.enable_invite_link()
-    #   |> Steps.assert_allowed_domains(["operately.com", "example.org"])
-    # end
+    feature "limiting which email domains can use the invite link", ctx do
+      ctx
+      |> Steps.open_invite_team_page()
+      |> Steps.enable_domain_restrictions()
+      |> Steps.set_allowed_domains("operately.com, example.org")
+      |> Steps.assert_allowed_domains(["operately.com", "example.org"])
+    end
   end
 
   describe "logged in user" do
