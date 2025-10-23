@@ -2,6 +2,7 @@ defmodule Operately.Features.AssignmentsEmailTest do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.ProjectSteps
+  alias Operately.Support.Features.AssignmentsEmailSteps, as: Steps
 
   setup ctx do
     ctx = ProjectSteps.create_project(ctx, name: "Test Project")
@@ -27,5 +28,28 @@ defmodule Operately.Features.AssignmentsEmailTest do
     ctx
     |> UI.visit(link)
     |> UI.assert_text("What's new since the last check-in?")
+  end
+
+  describe "assignments email v2" do
+    setup _ctx do
+      {:ok, Steps.setup_review_v2()}
+    end
+
+    feature "groups champion assignments by origin with urgent items", ctx do
+      ctx
+      |> Steps.prepare_champion_work()
+      |> Steps.prepare_champion_reviews()
+      |> Steps.reload_person(:champion)
+      |> Steps.send_assignments_email_to_champion()
+      |> Steps.assert_champion_email_contains_urgent_work()
+    end
+
+    feature "includes reviewer assignments with clear review labels", ctx do
+      ctx
+      |> Steps.prepare_reviewer_reviews()
+      |> Steps.reload_person(:reviewer)
+      |> Steps.send_assignments_email_to_reviewer()
+      |> Steps.assert_reviewer_email_contains_review_assignments()
+    end
   end
 end
