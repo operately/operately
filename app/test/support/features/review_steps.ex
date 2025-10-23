@@ -23,13 +23,6 @@ defmodule Operately.Support.Features.ReviewSteps do
 
   step :assert_zero_state_message, ctx do
     ctx
-    |> UI.assert_text("Review")
-    |> UI.assert_text("All caught up!")
-    |> UI.assert_text("Nothing to review")
-  end
-
-  step :assert_zero_state_message, ctx, :v2 do
-    ctx
     |> UI.assert_text("You're all caught up")
     |> UI.assert_text("No assignments, check-ins, milestones, or reviews need your attention right now.")
   end
@@ -50,12 +43,6 @@ defmodule Operately.Support.Features.ReviewSteps do
 
   step :assert_the_due_project_is_listed, ctx do
     ctx
-    |> UI.visit(Paths.review_path(ctx.company))
-    |> UI.assert_text("Write the weekly check-in: #{ctx.project.name}")
-  end
-
-  step :assert_the_due_project_is_listed, ctx, :v2 do
-    ctx
     |> UI.assert_text(ctx.project.name)
     |> UI.assert_text("Submit weekly check-in")
     |> UI.assert_text("3 days overdue")
@@ -72,13 +59,6 @@ defmodule Operately.Support.Features.ReviewSteps do
   end
 
   step :assert_the_checked_in_project_is_no_longer_displayed, ctx do
-    ctx
-    |> UI.visit(Paths.review_path(ctx.company))
-    |> UI.refute_text(ctx.project.name)
-    |> UI.assert_text("All caught up!")
-  end
-
-  step :assert_the_checked_in_project_is_no_longer_displayed, ctx, :v2 do
     ctx
     |> UI.visit(Paths.review_path(ctx.company))
     |> UI.refute_text(ctx.project.name)
@@ -306,12 +286,6 @@ defmodule Operately.Support.Features.ReviewSteps do
 
   step :assert_the_due_goal_is_listed, ctx do
     ctx
-    |> UI.visit(Paths.review_path(ctx.company))
-    |> UI.assert_text("Update progress: #{ctx.goal.name}")
-  end
-
-  step :assert_the_due_goal_is_listed, ctx, :v2 do
-    ctx
     |> UI.assert_text(ctx.goal.name)
     |> UI.assert_text("Submit goal progress update")
     |> UI.assert_text("3 days overdue")
@@ -331,13 +305,6 @@ defmodule Operately.Support.Features.ReviewSteps do
     ctx
     |> UI.visit(Paths.review_path(ctx.company))
     |> UI.refute_text(ctx.goal.name)
-    |> UI.assert_text("Nothing to review")
-  end
-
-  step :assert_the_updated_goal_is_no_longer_displayed, ctx, :v2 do
-    ctx
-    |> UI.visit(Paths.review_path(ctx.company))
-    |> UI.refute_text(ctx.goal.name)
   end
 
   #
@@ -352,12 +319,6 @@ defmodule Operately.Support.Features.ReviewSteps do
       name: "Release Dunder Mifflin Infinity"
     ])
     |> Factory.add_project_check_in(:check_in, :project, :my_report)
-  end
-
-  step :assert_the_submitted_project_is_listed, ctx do
-    ctx
-    |> UI.visit(Paths.review_path(ctx.company))
-    |> UI.assert_text("Review: #{ctx.project.name}")
   end
 
   step :assert_due_project_check_in_review_is_listed, ctx do
@@ -378,13 +339,6 @@ defmodule Operately.Support.Features.ReviewSteps do
     ctx
     |> UI.visit(Paths.review_path(ctx.company))
     |> UI.refute_text(ctx.project.name)
-    |> UI.assert_text("Nothing to review")
-  end
-
-  step :assert_the_acknowledged_project_is_no_longer_displayed, ctx, :v2 do
-    ctx
-    |> UI.visit(Paths.review_path(ctx.company))
-    |> UI.refute_text(ctx.project.name)
   end
 
   #
@@ -399,12 +353,6 @@ defmodule Operately.Support.Features.ReviewSteps do
       name: "Expand the customer base"
     ])
     |> Factory.add_goal_update(:goal_update, :goal, :my_report)
-  end
-
-  step :assert_the_submitted_goal_is_listed, ctx do
-    ctx
-    |> UI.visit(Paths.review_path(ctx.company))
-    |> UI.assert_text(ctx.goal.name)
   end
 
   step :assert_due_goal_check_in_review_is_listed, ctx do
@@ -422,13 +370,6 @@ defmodule Operately.Support.Features.ReviewSteps do
   end
 
   step :assert_the_acknowledged_goal_is_no_longer_displayed, ctx do
-    ctx
-    |> UI.visit(Paths.review_path(ctx.company))
-    |> UI.refute_text(ctx.goal.name)
-    |> UI.assert_text("All caught up!")
-  end
-
-  step :assert_the_acknowledged_goal_is_no_longer_displayed, ctx, :v2 do
     ctx
     |> UI.visit(Paths.review_path(ctx.company))
     |> UI.refute_text(ctx.goal.name)
@@ -468,12 +409,6 @@ defmodule Operately.Support.Features.ReviewSteps do
     |> UI.refute_text(ctx.project.name)
   end
 
-  step :assert_the_closed_project_is_no_longer_displayed, ctx, :v2 do
-    ctx
-    |> UI.visit(Paths.review_path(ctx.company))
-    |> UI.refute_text(ctx.project.name)
-  end
-
   #
   # Review Item Counter
   #
@@ -495,5 +430,4 @@ defmodule Operately.Support.Features.ReviewSteps do
     |> Date.add(-3)
     |> Operately.Time.as_datetime()
   end
-
 end
