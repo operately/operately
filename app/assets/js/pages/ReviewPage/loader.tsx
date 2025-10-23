@@ -1,7 +1,5 @@
 import * as Pages from "@/components/Pages";
 import { ReviewAssignment, getAssignments } from "@/models/assignments";
-import { Paths } from "@/routes/paths";
-import { redirectIfFeatureEnabled } from "@/routes/redirectIfFeatureEnabled";
 
 interface LoaderResult {
   assignments: ReviewAssignment[];
@@ -11,10 +9,7 @@ interface LoaderResult {
   forReview: ReviewAssignment[];
 }
 
-export async function loader({ params }): Promise<LoaderResult> {
-  const paths = new Paths({ companyId: params.companyId });
-  await redirectIfFeatureEnabled(params, { feature: "review_v2", path: paths.reviewV2Path() });
-
+export async function loader(): Promise<LoaderResult> {
   const data = await getAssignments({});
 
   const assignments = data.assignments || [];
