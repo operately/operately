@@ -34,7 +34,7 @@ cd ../operately-2
 
 ## 3. Set up a unique port range
 
-Your primary instance is running on ports 4000-4010. Set an unique offset for this instance, e.g. 4100:
+Your primary instance is running on ports 4000-4010 (including the new ACME server ports). Set an unique offset for this instance, e.g. 4100:
 
 ```
 echo 'PORT_OFFSET=4100' >> .env
@@ -52,6 +52,8 @@ This will tell docker-compose to run the services on the following ports:
 | pgweb                | 4006      | 4106                                  |
 | S3 mock              | 4007      | 4107                                  |
 | Mailhog UI           | 4008      | 4108                                  |
+| ACME (dev)           | 4009      | 4109                                  |
+| ACME (test)          | 4010      | 4110                                  |
 
 If you add more worktrees, continue incrementing the offset (e.g. `PORT_OFFSET=4200`, `PORT_OFFSET=4300`, …).
 
