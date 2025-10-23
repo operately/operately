@@ -14,6 +14,8 @@ services:
       - "127.0.0.1:${PORT_TEST_SERVER}:4002"                          # test server
       - "127.0.0.1:${PORT_VITE_SERVER}:4005"                          # vite server for serving JS files in development
       - "127.0.0.1:${PORT_STORYBOOK_SERVER}:${PORT_STORYBOOK_SERVER}" # storybook server
+      - "127.0.0.1:${PORT_ACME_DEV}:${PORT_ACME_DEV}"                 # acme server for dev environment
+      - "127.0.0.1:${PORT_ACME_TEST}:${PORT_ACME_TEST}"               # acme server for test environment
     depends_on:
       - db
       - s3mock
