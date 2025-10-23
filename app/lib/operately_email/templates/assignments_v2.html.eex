@@ -1,0 +1,36 @@
+<%= title(@company.name) %>
+<%= title("Here are your assignments") %>
+
+<%= spacer() %>
+<%= line() %>
+
+<%= Enum.map(@urgent_groups, fn group -> %>
+  <%= spacer() %>
+  <%= row(%{padding_top: 8, padding_bottom: 4}) do %>
+    <div style="font-family: sans-serif;">
+      <div style="font-weight: 700; font-size: 16px;">
+        <%= link(group.origin.url, group.origin.name) %>
+      </div>
+      <%= if group.origin.space_name do %>
+        <div style="margin-top: 4px; color: #6b6b6b; font-size: 12px;">
+          Space: <%= group.origin.space_name %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%= Enum.map(group.assignments, fn assignment -> %>
+    <%= row(%{padding_top: 2, padding_bottom: 6}) do %>
+      <div style="font-family: sans-serif; padding-left: 16px;">
+        <div style="font-weight: 600;">
+          <%= link(assignment.url, assignment.display_label) %>
+        </div>
+        <%= if assignment.badge_label do %>
+          <div style="margin-top: 2px; color: #6b6b6b; font-size: 13px;">
+            <span><%= assignment.badge_label %></span>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  <% end) %>
+<% end) %>
