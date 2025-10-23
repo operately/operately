@@ -256,16 +256,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
       |> Steps.update_task_milestone_if_changed(inputs.milestone_id)
       |> MilestoneSync.sync_after_milestone_change(inputs.milestone_id)
       |> MilestoneSync.sync_manual_ordering(inputs.milestones_ordering_state)
-      |> Steps.save_activity(:task_milestone_updating, fn changes ->
-        %{
-          company_id: changes.project.company_id,
-          space_id: changes.project.group_id,
-          project_id: changes.project.id,
-          task_id: changes.task.id,
-          old_milestone_id: changes.task.milestone_id,
-          new_milestone_id: inputs.milestone_id
-        }
-      end)
+      |> save_activity_if_milestone_changed(inputs.milestone_id)
       |> Steps.commit()
       |> Steps.respond(fn changes ->
         %{
@@ -283,6 +274,25 @@ defmodule OperatelyWeb.Api.ProjectTasks do
       (milestone_change_milestones ++ manual_ordering_milestones)
       |> Enum.filter(fn milestone -> milestone != nil end)
       |> Enum.uniq_by(& &1.id)
+    end
+
+    defp save_activity_if_milestone_changed(multi, new_milestone_id) do
+      Ecto.Multi.merge(multi, fn changes ->
+        if changes.task.milestone_id != new_milestone_id do
+          Operately.Activities.insert_sync(Ecto.Multi.new(), changes.me.id, :task_milestone_updating, fn _ ->
+            %{
+              company_id: changes.project.company_id,
+              space_id: changes.project.group_id,
+              project_id: changes.project.id,
+              task_id: changes.task.id,
+              old_milestone_id: changes.task.milestone_id,
+              new_milestone_id: new_milestone_id
+            }
+          end)
+        else
+          Ecto.Multi.new()
+        end
+      end)
     end
   end
 
