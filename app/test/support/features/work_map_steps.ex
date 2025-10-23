@@ -151,6 +151,7 @@ defmodule Operately.Support.Features.WorkMapSteps do
       el
       |> UI.assert_text("Completed")
     end)
+    |> UI.sleep(300)
   end
 
   step :mark_target_as_completed, ctx do
