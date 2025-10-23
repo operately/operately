@@ -6,9 +6,19 @@ defmodule OperatelyWeb.Certification do
   def directory_url do
     case Application.get_env(:operately, :app_env) do
       :prod -> "https://acme-v02.api.letsencrypt.org/directory"
-      :dev -> {:internal, port: 4003}
-      :test -> {:internal, port: 4004}
+      :dev -> {:internal, port: acme_dev_port()}
+      :test -> {:internal, port: acme_test_port()}
     end
+  end
+
+  defp acme_dev_port do
+    port_offset = String.to_integer(System.get_env("PORT_OFFSET", "4000"))
+    port_offset + 9
+  end
+
+  defp acme_test_port do
+    port_offset = String.to_integer(System.get_env("PORT_OFFSET", "4000"))
+    port_offset + 10
   end
 
   def domain, do: System.get_env("CERT_DOMAIN")
