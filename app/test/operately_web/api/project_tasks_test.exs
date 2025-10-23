@@ -189,6 +189,33 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert contributor.role == :contributor
     end
 
+    test "it creates a subscription for the new contributor when assigning a task", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:space_member, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      # Verify the space member is not a contributor yet
+      refute Operately.Repo.get_by(Contributor, project_id: ctx.project.id, person_id: ctx.space_member.id)
+
+      # Verify no subscription exists
+      project = Operately.Repo.preload(ctx.project, :subscription_list)
+      assert {:error, :not_found} = Operately.Notifications.Subscription.get(:system, subscription_list_id: project.subscription_list_id, person_id: ctx.space_member.id)
+
+      assert {200, _} = mutation(ctx.conn, [:project_tasks, :create], %{
+        project_id: Paths.project_id(ctx.project),
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        name: "Task with assignee",
+        assignee_id: Paths.person_id(ctx.space_member),
+        due_date: nil
+      })
+
+      # Verify subscription was created
+      assert {:ok, subscription} = Operately.Notifications.Subscription.get(:system, subscription_list_id: project.subscription_list_id, person_id: ctx.space_member.id)
+      assert subscription.type == :invited
+      assert subscription.canceled == false
+    end
+
     test "it creates a task with due date", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
@@ -645,6 +672,30 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert contributor
       assert contributor.responsibility == "contributor"
       assert contributor.role == :contributor
+    end
+
+    test "it creates a subscription for the new contributor when updating assignee", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:space_member, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      # Verify the space member is not a contributor yet
+      refute Operately.Repo.get_by(Contributor, project_id: ctx.project.id, person_id: ctx.space_member.id)
+
+      # Verify no subscription exists
+      project = Operately.Repo.preload(ctx.project, :subscription_list)
+      assert {:error, :not_found} = Operately.Notifications.Subscription.get(:system, subscription_list_id: project.subscription_list_id, person_id: ctx.space_member.id)
+
+      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_assignee], %{
+        task_id: Paths.task_id(ctx.task),
+        assignee_id: Paths.person_id(ctx.space_member)
+      })
+
+      # Verify subscription was created
+      assert {:ok, subscription} = Operately.Notifications.Subscription.get(:system, subscription_list_id: project.subscription_list_id, person_id: ctx.space_member.id)
+      assert subscription.type == :invited
+      assert subscription.canceled == false
     end
   end
 
