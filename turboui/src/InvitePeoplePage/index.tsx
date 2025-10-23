@@ -102,7 +102,6 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
     [props.domainRestriction],
   );
 
-
   const handleOpenResetConfirm = useCallback(() => {
     if (!props.onResetLink || isResettingLink || !linkEnabled) return;
     setShowResetConfirm(true);
@@ -263,7 +262,7 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
                           variant="form-field"
                           text={props.domainRestriction.value}
                           onChange={handleDomainChange}
-                          placeholder="e.g. @acme.com, @example.org"
+                          placeholder="e.g. acme.com, example.org"
                           error={props.domainRestriction.error}
                           className={classNames("sm:max-w-md", !props.domainRestriction.onChange && "opacity-60")}
                           testId="invite-people-domain-input"
