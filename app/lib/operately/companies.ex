@@ -146,6 +146,11 @@ defmodule Operately.Companies do
     |> Repo.update()
   end
 
+  def has_experimental_feature?(%Company{} = company, feature) do
+    features = company.enabled_experimental_features || []
+    Enum.member?(features, feature)
+  end
+
   def add_person_to_general_space(%Operately.People.Person{} = person) do
     AddPersonToGeneralSpace.run(person)
   end
