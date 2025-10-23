@@ -35,7 +35,6 @@ import { AiSidebar } from "@/features/AiSidebar";
 import { DevBar } from "@/features/DevBar";
 import { useScrollToTopOnNavigationChange } from "@/hooks/useScrollToTopOnNavigationChange";
 import { Paths, usePaths } from "@/routes/paths";
-import { hasFeature } from "../../models/companies";
 import { useGlobalSearchHandler } from "./useGlobalSearch";
 
 function Navigation({ company }: { company: Api.Company }) {
@@ -192,7 +191,7 @@ function DesktopNavigation({ company }: { company: Api.Company }) {
           <Bell />
           <HelpDropdown company={company} />
           <NewDropdown />
-          <Search company={company} />
+          <Search />
         </div>
       </div>
     </div>
@@ -239,13 +238,9 @@ export default function CompanyLayout() {
   );
 }
 
-function Search({ company }: { company: Api.Company }) {
+function Search() {
   const navigate = useNavigate();
   const handleGlobalSearch = useGlobalSearchHandler();
 
-  if (hasFeature(company, "global-search")) {
-    return <GlobalSearch search={handleGlobalSearch} onNavigate={navigate} testId="header-global-search" />;
-  } else {
-    return null;
-  }
+  return <GlobalSearch search={handleGlobalSearch} onNavigate={navigate} testId="header-global-search" />;
 }
