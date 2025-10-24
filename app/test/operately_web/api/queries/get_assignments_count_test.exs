@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
+defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountTest do
   use OperatelyWeb.TurboCase
 
   alias Operately.Repo
@@ -8,18 +8,18 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, :get_assignments_count_v2, %{})
+      assert {401, _} = query(ctx.conn, :get_assignments_count, %{})
     end
   end
 
-  describe "get_assignments_count_v2" do
+  describe "get_assignments_count" do
     setup ctx, do: set_up(ctx)
 
     test "returns 0 when there are no pending assignments", ctx do
       create_project(ctx, gen_future_date(3))
       create_goal(ctx.person, ctx.company, gen_future_date(3))
 
-      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count_v2, %{})
+      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count, %{})
       assert count == 0
     end
 
@@ -83,12 +83,12 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
       # Assignment for another person
       create_goal(ctx.another_person, ctx.company, gen_past_date(3))
 
-      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count_v2, %{})
+      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count, %{})
       assert count == 6
     end
   end
 
-  describe "get_assignments_count_v2 tasks" do
+  describe "get_assignments_count tasks" do
     setup ctx, do: set_up(ctx)
 
     test "includes tasks past due", ctx do
@@ -99,7 +99,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
         due_date: ContextualDate.create_day_date(gen_past_date(3))
       })
 
-      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count_v2, %{})
+      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count, %{})
       assert count == 1
     end
 
@@ -115,7 +115,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
         due_date: ContextualDate.create_day_date(tomorrow_date())
       })
 
-      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count_v2, %{})
+      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count, %{})
       assert count == 2
     end
 
@@ -131,7 +131,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
         due_date: ContextualDate.create_day_date(gen_future_date(3))
       })
 
-      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count_v2, %{})
+      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count, %{})
       assert count == 0
     end
 
@@ -151,7 +151,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
         due_date: ContextualDate.create_day_date(Date.utc_today())
       })
 
-      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count_v2, %{})
+      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count, %{})
       assert count == 3
     end
 
@@ -167,19 +167,19 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
         due_date: ContextualDate.create_day_date(Date.utc_today())
       })
 
-      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count_v2, %{})
+      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count, %{})
       assert count == 0
     end
 
   end
 
-  describe "get_assignments_count_v2 project check-ins" do
+  describe "get_assignments_count project check-ins" do
     setup ctx, do: set_up(ctx)
 
     test "includes projects with overdue check-ins", ctx do
       create_project(ctx, gen_past_date(3))
 
-      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count_v2, %{})
+      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count, %{})
       assert count == 1
     end
 
@@ -187,7 +187,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
       create_project(ctx, gen_future_date(0))
       create_project(ctx, gen_past_date(1))
 
-      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count_v2, %{})
+      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count, %{})
       assert count == 2
     end
 
@@ -195,7 +195,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
       create_project(ctx, gen_future_date(3))
       create_project(ctx, gen_future_date(2))
 
-      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count_v2, %{})
+      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count, %{})
       assert count == 0
     end
 
@@ -203,12 +203,12 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
       create_project(ctx, gen_past_date(3))
       |> close_project()
 
-      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count_v2, %{})
+      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count, %{})
       assert count == 0
     end
   end
 
-  describe "get_assignments_count_v2 project check-in acknowledgements" do
+  describe "get_assignments_count project check-in acknowledgements" do
     setup ctx, do: set_up(ctx)
 
     test "includes unacknowledged check-ins for reviewers", ctx do
@@ -221,7 +221,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
 
       create_check_in(reviewer_project)
 
-      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count_v2, %{})
+      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count, %{})
       assert count == 1
     end
 
@@ -237,7 +237,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
       |> create_check_in()
       |> acknowledge_check_in(ctx.person)
 
-      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count_v2, %{})
+      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count, %{})
       assert count == 0
     end
 
@@ -245,18 +245,18 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
       create_project(ctx, gen_future_date(3), %{reviewer_id: ctx.person.id})
       |> create_check_in()
 
-      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count_v2, %{})
+      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count, %{})
       assert count == 0
     end
   end
 
-  describe "get_assignments_count_v2 goal updates" do
+  describe "get_assignments_count goal updates" do
     setup ctx, do: set_up(ctx)
 
     test "includes goals with overdue updates", ctx do
       create_goal(ctx.person, ctx.company, gen_past_date(3))
 
-      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count_v2, %{})
+      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count, %{})
       assert count == 1
     end
 
@@ -264,7 +264,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
       create_goal(ctx.person, ctx.company, gen_past_date(0))
       create_goal(ctx.person, ctx.company, gen_past_date(1))
 
-      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count_v2, %{})
+      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count, %{})
       assert count == 2
     end
 
@@ -272,19 +272,19 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
       create_goal(ctx.person, ctx.company, gen_future_date(3))
       create_goal(ctx.person, ctx.company, gen_future_date(2))
 
-      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count_v2, %{})
+      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count, %{})
       assert count == 0
     end
 
     test "doesn't include goals owned by someone else", ctx do
       create_goal(ctx.another_person, ctx.company, gen_past_date(3))
 
-      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count_v2, %{})
+      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count, %{})
       assert count == 0
     end
   end
 
-  describe "get_assignments_count_v2 goal update acknowledgements" do
+  describe "get_assignments_count goal update acknowledgements" do
     setup ctx, do: set_up(ctx)
 
     test "includes unacknowledged goal updates for reviewers", ctx do
@@ -296,7 +296,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
 
       create_update(ctx.another_person, goal)
 
-      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count_v2, %{})
+      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count, %{})
       assert count == 1
     end
 
@@ -310,7 +310,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
       goal_update = create_update(ctx.another_person, goal)
       acknowledge_goal_update(goal_update, ctx.person)
 
-      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count_v2, %{})
+      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count, %{})
       assert count == 0
     end
 
@@ -318,12 +318,12 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
       goal = create_goal(ctx.person, ctx.company, gen_future_date(3))
       create_update(ctx.person, goal)
 
-      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count_v2, %{})
+      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count, %{})
       assert count == 0
     end
   end
 
-  describe "get_assignments_count_v2 milestones" do
+  describe "get_assignments_count milestones" do
     setup ctx, do: set_up(ctx)
 
     test "includes milestones due to today and tomorrow", ctx do
@@ -344,7 +344,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
         }
       })
 
-      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count_v2, %{})
+      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count, %{})
       assert count == 2
     end
 
@@ -366,7 +366,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
         }
       })
 
-      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count_v2, %{})
+      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count, %{})
       assert count == 0
     end
 
@@ -381,7 +381,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
         }
       })
 
-      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count_v2, %{})
+      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count, %{})
       assert count == 0
     end
   end

@@ -16,7 +16,7 @@ defmodule Operately.Assignments.LoaderV2 do
     defstruct [:id, :name, :type, :path, :space_name, :due_date]
   end
 
-  defmodule AssignmentV2 do
+  defmodule Assignment do
     @enforce_keys [:resource_id, :name, :due, :type, :role, :path, :origin]
     defstruct [
       :resource_id,
@@ -76,7 +76,7 @@ defmodule Operately.Assignments.LoaderV2 do
       origin = build_project_origin(company, task.project)
       due_date = ContextualDate.get_date(task.due_date)
 
-      %AssignmentV2{
+      %Assignment{
         resource_id: Paths.task_id(task),
         name: task.name,
         due: due_date,
@@ -129,7 +129,7 @@ defmodule Operately.Assignments.LoaderV2 do
       origin = build_project_origin(company, milestone.project)
       due_date = Timeframe.end_date(milestone.timeframe)
 
-      %AssignmentV2{
+      %Assignment{
         resource_id: Paths.milestone_id(milestone),
         name: milestone.title,
         due: due_date,
@@ -180,7 +180,7 @@ defmodule Operately.Assignments.LoaderV2 do
     |> Enum.map(fn project ->
       origin = build_project_origin(company, project)
 
-      %AssignmentV2{
+      %Assignment{
         resource_id: Paths.project_id(project),
         name: "#{project.name} - Check-in",
         due: Operately.Time.as_datetime(project.next_check_in_scheduled_at),
@@ -228,7 +228,7 @@ defmodule Operately.Assignments.LoaderV2 do
     |> Enum.map(fn check_in ->
       origin = build_project_origin(company, check_in.project)
 
-      %AssignmentV2{
+      %Assignment{
         resource_id: Paths.project_check_in_id(check_in),
         name: "#{check_in.project.name} - Check-in",
         due: Operately.Time.as_datetime(check_in.inserted_at),
@@ -282,7 +282,7 @@ defmodule Operately.Assignments.LoaderV2 do
     |> Enum.map(fn goal ->
       origin = build_goal_origin(company, goal)
 
-      %AssignmentV2{
+      %Assignment{
         resource_id: Paths.goal_id(goal),
         name: "#{goal.name} - Goal Update",
         due: Operately.Time.as_datetime(goal.next_update_scheduled_at),
@@ -333,7 +333,7 @@ defmodule Operately.Assignments.LoaderV2 do
     |> Enum.map(fn update ->
       origin = build_goal_origin(company, update.goal)
 
-      %AssignmentV2{
+      %Assignment{
         resource_id: Paths.goal_update_id(update),
         name: "#{update.goal.name} – Goal Update",
         due: Operately.Time.as_datetime(update.inserted_at),

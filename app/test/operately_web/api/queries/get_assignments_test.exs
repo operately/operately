@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
+defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
   use OperatelyWeb.TurboCase
 
   alias OperatelyWeb.Paths
@@ -12,11 +12,11 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, :get_assignments_v2, %{})
+      assert {401, _} = query(ctx.conn, :get_assignments, %{})
     end
   end
 
-  describe "get_assignments_v2" do
+  describe "get_assignments" do
     setup ctx do
       ctx
       |> Factory.setup()
@@ -35,7 +35,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
       create_project(ctx, past_date(), %{creator_id: another_person.id})
       create_project(ctx, upcoming_date(), %{creator_id: another_person.id})
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments_v2, %{})
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
 
       assert Repo.aggregate(Project, :count, :id) == 5
       assert length(assignments) == 2
@@ -64,7 +64,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
       create_project(ctx, past_date()) |> close_project()
       due_project = create_project(ctx, past_date(), %{name: "single project"})
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments_v2, %{})
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
 
       assert Repo.aggregate(Project, :count, :id) == 3
       assert length(assignments) == 1
@@ -88,7 +88,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
       create_goal(another_person, ctx.company, past_date())
       create_goal(another_person, ctx.company, upcoming_date())
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments_v2, %{})
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
 
       assert Repo.aggregate(Goal, :count, :id) == 5
       assert length(assignments) == 2
@@ -116,7 +116,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
       create_goal(ctx.person, ctx.company, past_date()) |> close_goal()
       due_goal = create_goal(ctx.person, ctx.company, past_date(), %{name: "single goal"})
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments_v2, %{})
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
 
       assert Repo.aggregate(Goal, :count, :id) == 3
       assert length(assignments) == 1
@@ -140,7 +140,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
 
       check_in = create_check_in(project)
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments_v2, %{})
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
 
       assert length(assignments) == 1
 
@@ -160,7 +160,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
       project = create_project(ctx, upcoming_date())
       create_check_in(project)
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments_v2, %{})
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
 
       assert length(assignments) == 0
     end
@@ -174,7 +174,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
 
       update = create_update(another_person, goal)
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments_v2, %{})
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
 
       assert length(assignments) == 1
 
@@ -194,7 +194,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
       goal = create_goal(ctx.person, ctx.company, upcoming_date())
       create_update(ctx.person, goal)
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments_v2, %{})
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
 
       assert length(assignments) == 0
     end
@@ -229,7 +229,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
         due_date: ContextualDate.create_day_date(past_date_as_date())
       })
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments_v2, %{})
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
 
       assert Repo.aggregate(ProjectTask, :count, :id) == 4
       assert length(assignments) == 2
@@ -265,7 +265,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
 
       Repo.soft_delete(project)
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments_v2, %{})
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
 
       task_assignments = Enum.filter(assignments, &(&1.type == "project_task"))
       assert length(task_assignments) == 0
@@ -280,13 +280,13 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
         due_date: ContextualDate.create_day_date(past_date_as_date())
       })
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments_v2, %{})
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
       assert length(assignments) == 1
 
       Map.put(ctx, :project, project)
       |> Factory.close_project(:project)
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments_v2, %{})
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
       assert length(assignments) == 0
     end
 
@@ -317,7 +317,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
         status: :done
       })
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments_v2, %{})
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
 
       milestone_assignments = Enum.filter(assignments, &(&1.type == "milestone"))
       assert length(milestone_assignments) == 2
@@ -348,7 +348,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
       # Soft delete the project
       Repo.soft_delete(project)
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments_v2, %{})
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
 
       milestone_assignments = Enum.filter(assignments, &(&1.type == "milestone"))
       assert length(milestone_assignments) == 0
@@ -362,13 +362,13 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
         status: :pending
       })
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments_v2, %{})
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
       assert length(assignments) == 1
 
       Map.put(ctx, :project, project)
       |> Factory.close_project(:project)
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments_v2, %{})
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
       assert length(assignments) == 0
     end
 
@@ -384,7 +384,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
         status: :pending
       })
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments_v2, %{})
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
 
       milestone_assignments = Enum.filter(assignments, &(&1.type == "milestone"))
       assert length(milestone_assignments) == 0
@@ -405,7 +405,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
 
       Repo.soft_delete(deleted_milestone)
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments_v2, %{})
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
 
       milestone_assignments = Enum.filter(assignments, &(&1.type == "milestone"))
       assert length(milestone_assignments) == 1
@@ -445,7 +445,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
       })
       create_update(another_person, review_goal)
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments_v2, %{})
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
 
       # Should have: 2 check-ins (1 to submit, 1 to review), 2 goal updates (1 to submit, 1 to review), 1 task, 1 milestone
       assert length(assignments) == 6

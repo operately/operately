@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2 do
+defmodule OperatelyWeb.Api.Queries.GetAssignmentsCount do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 

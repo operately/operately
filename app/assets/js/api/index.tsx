@@ -1660,11 +1660,16 @@ export interface ResourceHubUploadedFile {
 export interface ReviewAssignment {
   resourceId: string;
   name: string;
-  due: string;
+  due: string | null;
   type: ReviewAssignmentTypes;
+  role: ReviewAssignmentRoles;
+  actionLabel: string | null;
+  path: string;
+  origin: ReviewAssignmentOrigin;
+  taskStatus: TaskStatusTypes | null;
   authorId: string | null;
   authorName: string | null;
-  path: string;
+  description: string | null;
 }
 
 export interface ReviewAssignmentOrigin {
@@ -1674,21 +1679,6 @@ export interface ReviewAssignmentOrigin {
   path: string;
   spaceName: string | null;
   dueDate: string | null;
-}
-
-export interface ReviewAssignmentV2 {
-  resourceId: string;
-  name: string;
-  due: string | null;
-  type: ReviewAssignmentV2Types;
-  role: ReviewAssignmentRoles;
-  actionLabel: string | null;
-  path: string;
-  origin: ReviewAssignmentOrigin;
-  taskStatus: TaskStatusTypes | null;
-  authorId: string | null;
-  authorName: string | null;
-  description: string | null;
 }
 
 export interface Space {
@@ -2055,9 +2045,7 @@ export type ReviewAssignmentOriginTypes = "project" | "goal";
 
 export type ReviewAssignmentRoles = "owner" | "reviewer";
 
-export type ReviewAssignmentTypes = "goal" | "project" | "goal_update" | "check_in";
-
-export type ReviewAssignmentV2Types = "check_in" | "goal_update" | "project_task" | "milestone";
+export type ReviewAssignmentTypes = "check_in" | "goal_update" | "project_task" | "milestone";
 
 export type SuccessStatus = "achieved" | "missed";
 
@@ -2162,16 +2150,16 @@ export interface GetActivityResult {
   activity?: Activity | null;
 }
 
-export interface GetAssignmentsCountV2Input {}
+export interface GetAssignmentsInput {}
 
-export interface GetAssignmentsCountV2Result {
-  count?: number | null;
+export interface GetAssignmentsResult {
+  assignments: ReviewAssignment[];
 }
 
-export interface GetAssignmentsV2Input {}
+export interface GetAssignmentsCountInput {}
 
-export interface GetAssignmentsV2Result {
-  assignments: ReviewAssignmentV2[];
+export interface GetAssignmentsCountResult {
+  count?: number | null;
 }
 
 export interface GetBindedPeopleInput {
@@ -4243,12 +4231,12 @@ class ApiNamespaceRoot {
     return this.client.get("/get_activity", input);
   }
 
-  async getAssignmentsCountV2(input: GetAssignmentsCountV2Input): Promise<GetAssignmentsCountV2Result> {
-    return this.client.get("/get_assignments_count_v2", input);
+  async getAssignments(input: GetAssignmentsInput): Promise<GetAssignmentsResult> {
+    return this.client.get("/get_assignments", input);
   }
 
-  async getAssignmentsV2(input: GetAssignmentsV2Input): Promise<GetAssignmentsV2Result> {
-    return this.client.get("/get_assignments_v2", input);
+  async getAssignmentsCount(input: GetAssignmentsCountInput): Promise<GetAssignmentsCountResult> {
+    return this.client.get("/get_assignments_count", input);
   }
 
   async getBindedPeople(input: GetBindedPeopleInput): Promise<GetBindedPeopleResult> {
@@ -5225,12 +5213,12 @@ export class ApiClient {
     return this.apiNamespaceRoot.getActivity(input);
   }
 
-  getAssignmentsCountV2(input: GetAssignmentsCountV2Input): Promise<GetAssignmentsCountV2Result> {
-    return this.apiNamespaceRoot.getAssignmentsCountV2(input);
+  getAssignments(input: GetAssignmentsInput): Promise<GetAssignmentsResult> {
+    return this.apiNamespaceRoot.getAssignments(input);
   }
 
-  getAssignmentsV2(input: GetAssignmentsV2Input): Promise<GetAssignmentsV2Result> {
-    return this.apiNamespaceRoot.getAssignmentsV2(input);
+  getAssignmentsCount(input: GetAssignmentsCountInput): Promise<GetAssignmentsCountResult> {
+    return this.apiNamespaceRoot.getAssignmentsCount(input);
   }
 
   getBindedPeople(input: GetBindedPeopleInput): Promise<GetBindedPeopleResult> {
@@ -5773,11 +5761,11 @@ export async function getActivities(input: GetActivitiesInput): Promise<GetActiv
 export async function getActivity(input: GetActivityInput): Promise<GetActivityResult> {
   return defaultApiClient.getActivity(input);
 }
-export async function getAssignmentsCountV2(input: GetAssignmentsCountV2Input): Promise<GetAssignmentsCountV2Result> {
-  return defaultApiClient.getAssignmentsCountV2(input);
+export async function getAssignments(input: GetAssignmentsInput): Promise<GetAssignmentsResult> {
+  return defaultApiClient.getAssignments(input);
 }
-export async function getAssignmentsV2(input: GetAssignmentsV2Input): Promise<GetAssignmentsV2Result> {
-  return defaultApiClient.getAssignmentsV2(input);
+export async function getAssignmentsCount(input: GetAssignmentsCountInput): Promise<GetAssignmentsCountResult> {
+  return defaultApiClient.getAssignmentsCount(input);
 }
 export async function getBindedPeople(input: GetBindedPeopleInput): Promise<GetBindedPeopleResult> {
   return defaultApiClient.getBindedPeople(input);
@@ -6246,14 +6234,12 @@ export function useGetActivity(input: GetActivityInput): UseQueryHookResult<GetA
   return useQuery<GetActivityResult>(() => defaultApiClient.getActivity(input));
 }
 
-export function useGetAssignmentsCountV2(
-  input: GetAssignmentsCountV2Input,
-): UseQueryHookResult<GetAssignmentsCountV2Result> {
-  return useQuery<GetAssignmentsCountV2Result>(() => defaultApiClient.getAssignmentsCountV2(input));
+export function useGetAssignments(input: GetAssignmentsInput): UseQueryHookResult<GetAssignmentsResult> {
+  return useQuery<GetAssignmentsResult>(() => defaultApiClient.getAssignments(input));
 }
 
-export function useGetAssignmentsV2(input: GetAssignmentsV2Input): UseQueryHookResult<GetAssignmentsV2Result> {
-  return useQuery<GetAssignmentsV2Result>(() => defaultApiClient.getAssignmentsV2(input));
+export function useGetAssignmentsCount(input: GetAssignmentsCountInput): UseQueryHookResult<GetAssignmentsCountResult> {
+  return useQuery<GetAssignmentsCountResult>(() => defaultApiClient.getAssignmentsCount(input));
 }
 
 export function useGetBindedPeople(input: GetBindedPeopleInput): UseQueryHookResult<GetBindedPeopleResult> {
@@ -7043,10 +7029,10 @@ export default {
   useGetActivities,
   getActivity,
   useGetActivity,
-  getAssignmentsCountV2,
-  useGetAssignmentsCountV2,
-  getAssignmentsV2,
-  useGetAssignmentsV2,
+  getAssignments,
+  useGetAssignments,
+  getAssignmentsCount,
+  useGetAssignmentsCount,
   getBindedPeople,
   useGetBindedPeople,
   getComments,

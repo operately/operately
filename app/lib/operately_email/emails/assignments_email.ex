@@ -2,7 +2,7 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
   import OperatelyEmail.Mailers.NotificationMailer
 
   alias Operately.Assignments.{Loader, LoaderV2}
-  alias Operately.Assignments.LoaderV2.AssignmentV2
+  alias Operately.Assignments.LoaderV2.Assignment, as: AssignmentV2
   alias Operately.Companies
   alias Operately.Repo
   alias OperatelyWeb.Paths

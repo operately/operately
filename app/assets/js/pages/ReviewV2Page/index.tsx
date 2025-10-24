@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as Pages from "@/components/Pages";
-import { ReviewAssignmentV2, getAssignmentsV2 } from "@/models/assignments";
+import { ReviewAssignment, getAssignments } from "@/models/assignments";
 import { PageModule } from "@/routes/types";
 import { ReviewPageV2 } from "turboui";
 
@@ -13,11 +13,11 @@ function Page() {
 }
 
 interface LoaderResult {
-  assignments: ReviewAssignmentV2[];
+  assignments: ReviewAssignment[];
 }
 
 async function loader(): Promise<LoaderResult> {
   return {
-    assignments: await getAssignmentsV2({}).then((res) => res.assignments),
+    assignments: await getAssignments({}).then((res) => res.assignments),
   };
 }
