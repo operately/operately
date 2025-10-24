@@ -50,8 +50,11 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
     people = Operately.Repo.preload(account, :people).people
 
     Enum.each(people, fn person ->
-      if person.avatar_url != image do
-        {:ok, _} = Operately.People.update_person(person, %{avatar_url: image})
+      cond do
+        person.avatar_blob_id -> :ok
+        person.avatar_url == image -> :ok
+        true ->
+          {:ok, _} = Operately.People.update_person(person, %{avatar_url: image})
       end
     end)
 
