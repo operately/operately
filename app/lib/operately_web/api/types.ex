@@ -244,25 +244,6 @@ defmodule OperatelyWeb.Api.Types do
 
   enum(:review_assignment_types,
     values: [
-      :goal,
-      :project,
-      :goal_update,
-      :check_in
-    ]
-  )
-
-  object :review_assignment do
-    field :resource_id, :string, null: false
-    field :name, :string, null: false
-    field :due, :date, null: false
-    field :type, :review_assignment_types, null: false
-    field :author_id, :string, null: true
-    field :author_name, :string, null: true
-    field :path, :string, null: false
-  end
-
-  enum(:review_assignment_v2_types,
-    values: [
       :check_in,
       :goal_update,
       :project_task,
@@ -293,11 +274,11 @@ defmodule OperatelyWeb.Api.Types do
     field :due_date, :date, null: true
   end
 
-  object :review_assignment_v2 do
+  object :review_assignment do
     field :resource_id, :string, null: false
     field :name, :string, null: false
     field :due, :date, null: true
-    field :type, :review_assignment_v2_types, null: false
+    field :type, :review_assignment_types, null: false
     field :role, :review_assignment_roles, null: false
     field :action_label, :string, null: true
     field :path, :string, null: false
