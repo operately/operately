@@ -96,6 +96,7 @@ defmodule OperatelyWeb.Router do
     scope "/" do
       pipe_through(:browser)
       forward("/dev/mailbox", Plug.Swoosh.MailboxPreview)
+      forward("/dev/emails", OperatelyWeb.DevEmailPreview)
     end
   end
 
