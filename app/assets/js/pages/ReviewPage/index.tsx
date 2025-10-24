@@ -1,13 +1,23 @@
-import React from "react";
-
+import * as React from "react";
+import * as Pages from "@/components/Pages";
+import { ReviewAssignment, getAssignments } from "@/models/assignments";
 import { PageModule } from "@/routes/types";
-import { loader, useLoadedData } from "./loader";
 import { ReviewPage } from "turboui";
 
 export default { name: "ReviewPage", loader, Page } as PageModule;
 
 function Page() {
-  const data = useLoadedData();
+  const { assignments } = Pages.useLoadedData() as LoaderResult;
 
-  return <ReviewPage {...data} />;
+  return <ReviewPage assignments={assignments} assignmentsCount={assignments.length} showUpcomingSection={false} />;
+}
+
+interface LoaderResult {
+  assignments: ReviewAssignment[];
+}
+
+async function loader(): Promise<LoaderResult> {
+  return {
+    assignments: await getAssignments({}).then((res) => res.assignments),
+  };
 }
