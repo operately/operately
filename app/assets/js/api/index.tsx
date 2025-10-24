@@ -2162,18 +2162,6 @@ export interface GetActivityResult {
   activity?: Activity | null;
 }
 
-export interface GetAssignmentsInput {}
-
-export interface GetAssignmentsResult {
-  assignments: ReviewAssignment[];
-}
-
-export interface GetAssignmentsCountInput {}
-
-export interface GetAssignmentsCountResult {
-  count?: number | null;
-}
-
 export interface GetAssignmentsCountV2Input {}
 
 export interface GetAssignmentsCountV2Result {
@@ -4255,14 +4243,6 @@ class ApiNamespaceRoot {
     return this.client.get("/get_activity", input);
   }
 
-  async getAssignments(input: GetAssignmentsInput): Promise<GetAssignmentsResult> {
-    return this.client.get("/get_assignments", input);
-  }
-
-  async getAssignmentsCount(input: GetAssignmentsCountInput): Promise<GetAssignmentsCountResult> {
-    return this.client.get("/get_assignments_count", input);
-  }
-
   async getAssignmentsCountV2(input: GetAssignmentsCountV2Input): Promise<GetAssignmentsCountV2Result> {
     return this.client.get("/get_assignments_count_v2", input);
   }
@@ -5245,14 +5225,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.getActivity(input);
   }
 
-  getAssignments(input: GetAssignmentsInput): Promise<GetAssignmentsResult> {
-    return this.apiNamespaceRoot.getAssignments(input);
-  }
-
-  getAssignmentsCount(input: GetAssignmentsCountInput): Promise<GetAssignmentsCountResult> {
-    return this.apiNamespaceRoot.getAssignmentsCount(input);
-  }
-
   getAssignmentsCountV2(input: GetAssignmentsCountV2Input): Promise<GetAssignmentsCountV2Result> {
     return this.apiNamespaceRoot.getAssignmentsCountV2(input);
   }
@@ -5801,12 +5773,6 @@ export async function getActivities(input: GetActivitiesInput): Promise<GetActiv
 export async function getActivity(input: GetActivityInput): Promise<GetActivityResult> {
   return defaultApiClient.getActivity(input);
 }
-export async function getAssignments(input: GetAssignmentsInput): Promise<GetAssignmentsResult> {
-  return defaultApiClient.getAssignments(input);
-}
-export async function getAssignmentsCount(input: GetAssignmentsCountInput): Promise<GetAssignmentsCountResult> {
-  return defaultApiClient.getAssignmentsCount(input);
-}
 export async function getAssignmentsCountV2(input: GetAssignmentsCountV2Input): Promise<GetAssignmentsCountV2Result> {
   return defaultApiClient.getAssignmentsCountV2(input);
 }
@@ -6278,14 +6244,6 @@ export function useGetActivities(input: GetActivitiesInput): UseQueryHookResult<
 
 export function useGetActivity(input: GetActivityInput): UseQueryHookResult<GetActivityResult> {
   return useQuery<GetActivityResult>(() => defaultApiClient.getActivity(input));
-}
-
-export function useGetAssignments(input: GetAssignmentsInput): UseQueryHookResult<GetAssignmentsResult> {
-  return useQuery<GetAssignmentsResult>(() => defaultApiClient.getAssignments(input));
-}
-
-export function useGetAssignmentsCount(input: GetAssignmentsCountInput): UseQueryHookResult<GetAssignmentsCountResult> {
-  return useQuery<GetAssignmentsCountResult>(() => defaultApiClient.getAssignmentsCount(input));
 }
 
 export function useGetAssignmentsCountV2(
@@ -7085,10 +7043,6 @@ export default {
   useGetActivities,
   getActivity,
   useGetActivity,
-  getAssignments,
-  useGetAssignments,
-  getAssignmentsCount,
-  useGetAssignmentsCount,
   getAssignmentsCountV2,
   useGetAssignmentsCountV2,
   getAssignmentsV2,
