@@ -69,7 +69,7 @@ export namespace ReviewPageV2 {
   }
 }
 
-export function ReviewPageV2(props: ReviewPageV2.Props) {
+export function ReviewPage(props: ReviewPageV2.Props) {
   const assignments = props.assignments || [];
   const showUpcomingSection = props.showUpcomingSection ?? true;
   const categorized = React.useMemo(() => categorizeAssignments(assignments), [assignments]);

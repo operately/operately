@@ -39,7 +39,7 @@ export { CompanyCreatorOnboardingWizard, CompanyMemberOnboardingWizard } from ".
 export { PrivacyField } from "./PrivacyField";
 export { ProfilePage } from "./ProfilePage";
 export { ProjectPage } from "./ProjectPage";
-export { ReviewPageV2 } from "./ReviewPageV2";
+export { ReviewPage } from "./ReviewPage";
 export { SpaceField } from "./SpaceField";
 export { SwitchToggle } from "./SwitchToggle";
 export { Tabs, useTabs } from "./Tabs";
