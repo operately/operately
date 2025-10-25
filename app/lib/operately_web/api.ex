@@ -207,6 +207,7 @@ defmodule OperatelyWeb.Api do
   mutation(:copy_resource_hub_folder, M.CopyResourceHubFolder)
   mutation(:create_account, M.CreateAccount)
   mutation(:create_blob, M.CreateBlob)
+  mutation(:create_avatar_blob, M.CreateAvatarBlob)
   mutation(:create_comment, M.CreateComment)
   mutation(:create_goal, M.CreateGoal)
   mutation(:create_goal_discussion, M.CreateGoalDiscussion)

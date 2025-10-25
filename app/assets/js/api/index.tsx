@@ -3123,6 +3123,14 @@ export interface CreateAccountResult {
   error?: string | null;
 }
 
+export interface CreateAvatarBlobInput {
+  files?: BlobCreationInput[] | null;
+}
+
+export interface CreateAvatarBlobResult {
+  blobs?: BlobCreationOutput[] | null;
+}
+
 export interface CreateBlobInput {
   files?: BlobCreationInput[] | null;
 }
@@ -4506,6 +4514,10 @@ class ApiNamespaceRoot {
     return this.client.post("/create_account", input);
   }
 
+  async createAvatarBlob(input: CreateAvatarBlobInput): Promise<CreateAvatarBlobResult> {
+    return this.client.post("/create_avatar_blob", input);
+  }
+
   async createBlob(input: CreateBlobInput): Promise<CreateBlobResult> {
     return this.client.post("/create_blob", input);
   }
@@ -5488,6 +5500,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.createAccount(input);
   }
 
+  createAvatarBlob(input: CreateAvatarBlobInput): Promise<CreateAvatarBlobResult> {
+    return this.apiNamespaceRoot.createAvatarBlob(input);
+  }
+
   createBlob(input: CreateBlobInput): Promise<CreateBlobResult> {
     return this.apiNamespaceRoot.createBlob(input);
   }
@@ -5989,6 +6005,9 @@ export async function copyResourceHubFolder(input: CopyResourceHubFolderInput): 
 }
 export async function createAccount(input: CreateAccountInput): Promise<CreateAccountResult> {
   return defaultApiClient.createAccount(input);
+}
+export async function createAvatarBlob(input: CreateAvatarBlobInput): Promise<CreateAvatarBlobResult> {
+  return defaultApiClient.createAvatarBlob(input);
 }
 export async function createBlob(input: CreateBlobInput): Promise<CreateBlobResult> {
   return defaultApiClient.createBlob(input);
@@ -6577,6 +6596,12 @@ export function useCopyResourceHubFolder(): UseMutationHookResult<
 
 export function useCreateAccount(): UseMutationHookResult<CreateAccountInput, CreateAccountResult> {
   return useMutation<CreateAccountInput, CreateAccountResult>((input) => defaultApiClient.createAccount(input));
+}
+
+export function useCreateAvatarBlob(): UseMutationHookResult<CreateAvatarBlobInput, CreateAvatarBlobResult> {
+  return useMutation<CreateAvatarBlobInput, CreateAvatarBlobResult>((input) =>
+    defaultApiClient.createAvatarBlob(input),
+  );
 }
 
 export function useCreateBlob(): UseMutationHookResult<CreateBlobInput, CreateBlobResult> {
@@ -7188,6 +7213,8 @@ export default {
   useCopyResourceHubFolder,
   createAccount,
   useCreateAccount,
+  createAvatarBlob,
+  useCreateAvatarBlob,
   createBlob,
   useCreateBlob,
   createComment,

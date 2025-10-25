@@ -126,7 +126,7 @@ function useAvatarMutation(person: People.Person) {
       setProgress(0);
 
       try {
-        const { id, url } = await Blobs.uploadFile(file, (value) => setProgress(value));
+        const { id, url } = await Blobs.uploadAvatarFile(file, (value) => setProgress(value));
         const result = await People.updateProfilePicture({
           personId: person.id,
           avatarBlobId: id,
