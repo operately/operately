@@ -1,17 +1,15 @@
+import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
-import * as Companies from "@/models/companies";
-import * as Blobs from "@/models/blobs";
-import * as React from "react";
 
 import { useNavigate } from "react-router-dom";
 import { Timezones } from "./timezones";
 
 import Forms from "@/components/Forms";
-import { useCurrentCompany, useMe } from "@/contexts/CurrentCompanyContext";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 import { PageModule } from "@/routes/types";
-import { Avatar, SecondaryButton } from "turboui";
+import BigAvatar from "./BigAvatar";
 
 import { usePaths } from "@/routes/paths";
 export default { name: "ProfileEditPage", loader, Page } as PageModule;
@@ -71,46 +69,11 @@ const ManagerOptions = [
 function ProfileForm({ person }: { person: People.Person }) {
   const paths = usePaths();
   const me = useMe()!;
-  const company = useCurrentCompany();
   const navigate = useNavigate();
   const managersLoader = People.usePossibleManagersSearch(person.id);
 
   const managerStatus = person.manager ? "select-from-list" : "no-manager";
   const managerLabel = me.id === person.id ? "Who is your manager?" : "Who is their manager?";
-
-  const [avatar, setAvatar] = React.useState<{ blobId: string | null; url: string | null }>({
-    blobId: person.avatarBlobId ?? null,
-    url: person.avatarUrl ?? null,
-  });
-  const initialAvatarRef = React.useRef<{ blobId: string | null; url: string | null }>({
-    blobId: person.avatarBlobId ?? null,
-    url: person.avatarUrl ?? null,
-  });
-  const [uploadingAvatar, setUploadingAvatar] = React.useState(false);
-  const [uploadProgress, setUploadProgress] = React.useState<number | null>(null);
-  const [avatarError, setAvatarError] = React.useState<string | null>(null);
-
-  React.useEffect(() => {
-    const next = {
-      blobId: person.avatarBlobId ?? null,
-      url: person.avatarUrl ?? null,
-    };
-
-    setAvatar(next);
-    initialAvatarRef.current = next;
-  }, [person.avatarBlobId, person.avatarUrl]);
-
-  const customAvatarEnabled = React.useMemo(() => {
-    if (!company) return false;
-    return Companies.hasFeature(company, "custom-avatar");
-  }, [company]);
-
-  const avatarDirty = React.useMemo(() => {
-    if (!customAvatarEnabled) return false;
-
-    const initial = initialAvatarRef.current;
-    return (initial.blobId || null) !== (avatar.blobId || null) || (initial.url || null) !== (avatar.url || null);
-  }, [avatar, customAvatarEnabled]);
 
   const form = Forms.useForm({
     fields: {
@@ -121,28 +84,6 @@ function ProfileForm({ person }: { person: People.Person }) {
       managerStatus: managerStatus,
     },
     submit: async () => {
-      if (customAvatarEnabled && avatarDirty) {
-        const result = await People.updateProfilePicture({
-          personId: person.id,
-          avatarBlobId: avatar.blobId,
-          avatarUrl: avatar.url,
-        });
-
-        if (result.person) {
-          const updated = {
-            blobId: result.person.avatarBlobId ?? null,
-            url: result.person.avatarUrl ?? null,
-          };
-
-          setAvatar(updated);
-          initialAvatarRef.current = updated;
-        } else {
-          initialAvatarRef.current = avatar;
-        }
-
-        setAvatarError(null);
-      }
-
       const managerId = form.values.managerStatus === "select-from-list" ? form.values.manager : null;
 
       await People.updateProfile({
@@ -163,19 +104,7 @@ function ProfileForm({ person }: { person: People.Person }) {
 
   return (
     <Forms.Form form={form}>
-      <BigAvatar
-        person={person}
-        avatar={avatar}
-        onAvatarChange={setAvatar}
-        uploading={uploadingAvatar}
-        setUploading={setUploadingAvatar}
-        uploadProgress={uploadProgress}
-        setUploadProgress={setUploadProgress}
-        avatarError={avatarError}
-        setAvatarError={setAvatarError}
-        featureEnabled={customAvatarEnabled}
-        setFormState={form.actions.setState}
-      />
+      <BigAvatar person={person} />
 
       <Forms.FieldGroup>
         <Forms.TextInput field={"name"} label="Name" />
@@ -195,122 +124,5 @@ function ProfileForm({ person }: { person: People.Person }) {
 
       <Forms.Submit saveText="Save Changes" />
     </Forms.Form>
-  );
-}
-
-type AvatarState = { blobId: string | null; url: string | null };
-
-function BigAvatar({
-  person,
-  avatar,
-  onAvatarChange,
-  uploading,
-  setUploading,
-  uploadProgress,
-  setUploadProgress,
-  avatarError,
-  setAvatarError,
-  featureEnabled,
-  setFormState,
-}: {
-  person: People.Person;
-  avatar: AvatarState;
-  onAvatarChange: (value: AvatarState) => void;
-  uploading: boolean;
-  setUploading: (value: boolean) => void;
-  uploadProgress: number | null;
-  setUploadProgress: (value: number | null) => void;
-  avatarError: string | null;
-  setAvatarError: (value: string | null) => void;
-  featureEnabled: boolean;
-  setFormState: (state: any) => void;
-}) {
-  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
-
-  const previewPerson = React.useMemo(() => {
-    return {
-      ...person,
-      avatarUrl: avatar.url ?? person.avatarUrl ?? "",
-    };
-  }, [person, avatar.url]);
-
-  const handleFileSelect = React.useCallback(() => {
-    setAvatarError(null);
-    fileInputRef.current?.click();
-  }, [setAvatarError]);
-
-  const handleFileChange = React.useCallback(
-    async (event: React.ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files?.[0];
-      if (!file) return;
-
-      setAvatarError(null);
-      setUploadProgress(0);
-      setUploading(true);
-      setFormState("uploading");
-
-      try {
-        const result = await Blobs.uploadFile(file, (progress) => {
-          setUploadProgress(progress);
-        });
-
-        onAvatarChange({ blobId: result.id, url: result.url });
-      } catch (error) {
-        console.error(error);
-        setAvatarError("Failed to upload avatar. Please try again.");
-      } finally {
-        setUploading(false);
-        setUploadProgress(null);
-        setFormState("idle");
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
-      }
-    },
-    [onAvatarChange, setAvatarError, setFormState, setUploadProgress, setUploading],
-  );
-
-  const handleRemove = React.useCallback(() => {
-    setAvatarError(null);
-    onAvatarChange({ blobId: null, url: null });
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  }, [onAvatarChange, setAvatarError]);
-
-  return (
-    <section className="flex flex-col w-full justify-center items-center text-center my-8">
-      <Avatar person={previewPerson} size="xxlarge" />
-      {featureEnabled && (
-        <>
-          <div className="flex items-center gap-2 mt-4">
-            <SecondaryButton size="xs" onClick={handleFileSelect} disabled={uploading}>
-              Change photo
-            </SecondaryButton>
-            {(avatar.blobId || avatar.url) && (
-              <SecondaryButton size="xs" onClick={handleRemove} disabled={uploading}>
-                Remove
-              </SecondaryButton>
-            )}
-          </div>
-
-          {uploading && (
-            <p className="text-sm text-content-dimmed mt-2">
-              {uploadProgress !== null ? `Uploading ${uploadProgress}%` : "Uploading..."}
-            </p>
-          )}
-
-          {avatarError && <p className="text-sm text-callout-danger mt-2">{avatarError}</p>}
-
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleFileChange}
-          />
-        </>
-      )}
-    </section>
   );
 }
