@@ -6,6 +6,8 @@ import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
 import { useCurrentCompany } from "@/contexts/CurrentCompanyContext";
 
+const MAX_AVATAR_FILE_BYTES = 12 * 1024 * 1024; // 12 MB
+
 type AvatarState = { blobId: string | null; url: string | null };
 
 interface Props {
@@ -18,7 +20,8 @@ export default function BigAvatar({ person }: Props) {
 
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
 
-  const { avatar, uploadAvatar, removeAvatar, uploading, progress, error, resetError } = useAvatarMutation(person);
+  const { avatar, uploadAvatar, removeAvatar, uploading, progress, error, resetError, setError } =
+    useAvatarMutation(person);
 
   const previewPerson = {
     ...person,
@@ -35,13 +38,21 @@ export default function BigAvatar({ person }: Props) {
       const file = event.target.files?.[0];
       if (!file) return;
 
+      if (file.size > MAX_AVATAR_FILE_BYTES) {
+        setError("Please choose an image smaller than 12 MB.");
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+        return;
+      }
+
       await uploadAvatar(file);
 
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
     },
-    [uploadAvatar],
+    [setError, uploadAvatar],
   );
 
   return (
@@ -77,7 +88,7 @@ export default function BigAvatar({ person }: Props) {
             </p>
           )}
 
-          {error && <p className="text-sm text-callout-danger mt-2">{error}</p>}
+          {error && <p className="text-sm text-callout-error-content mt-2">{error}</p>}
 
           <input
             ref={fileInputRef}
@@ -172,6 +183,7 @@ function useAvatarMutation(person: People.Person) {
   );
 
   const resetError = React.useCallback(() => setError(null), []);
+  const setErrorMessage = React.useCallback((message: string | null) => setError(message), []);
 
-  return { avatar, uploadAvatar, removeAvatar, uploading, progress, error, resetError };
+  return { avatar, uploadAvatar, removeAvatar, uploading, progress, error, resetError, setError: setErrorMessage };
 }
