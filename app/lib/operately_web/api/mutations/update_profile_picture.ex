@@ -44,7 +44,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProfilePicture do
   defp update_picture(person, inputs) do
     with {:ok, _} <- maybe_mark_blob_uploaded(inputs.avatar_blob_id),
          {:ok, person} <- Operately.People.update_person(person, Map.take(inputs, [:avatar_blob_id, :avatar_url])) do
-      OperatelyWeb.ApiSocket.broadcast!("api:profile_updated:#{person.id}")
+      OperatelyWeb.Api.Subscriptions.ProfileUpdated.broadcast(person_id: person.id)
       {:ok, person}
     end
   end
