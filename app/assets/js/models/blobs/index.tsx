@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig } from "axios";
 import csrftoken from "@/utils/csrf_token";
 
-import { createBlob } from "@/api";
+import { createBlob, createAvatarBlob } from "@/api";
 import { findImageDimensions, findVideoDimensions } from "./utils";
 
 export { useDownloadFile } from "./useDownloadFile";
@@ -11,6 +11,18 @@ type ProgressCallback = (number: number) => any;
 type UploadResult = { id: string; url: string };
 
 export async function uploadFile(file: File, progressCallback: ProgressCallback): Promise<UploadResult> {
+  return uploadWithCreator(file, progressCallback, createBlob);
+}
+
+export async function uploadAvatarFile(file: File, progressCallback: ProgressCallback): Promise<UploadResult> {
+  return uploadWithCreator(file, progressCallback, createAvatarBlob);
+}
+
+async function uploadWithCreator(
+  file: File,
+  progressCallback: ProgressCallback,
+  createFn: typeof createBlob,
+): Promise<UploadResult> {
   let dimensions = {};
   const attrs = {
     filename: file.name,
@@ -24,7 +36,7 @@ export async function uploadFile(file: File, progressCallback: ProgressCallback)
     dimensions = await findVideoDimensions(file);
   }
 
-  const res = await createBlob({ files: [{ ...attrs, ...dimensions }] });
+  const res = await createFn({ files: [{ ...attrs, ...dimensions }] });
 
   if (!res.blobs || res.blobs!.length === 0) {
     throw Error("Failed to create blobs");

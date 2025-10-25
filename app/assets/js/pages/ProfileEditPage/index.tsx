@@ -1,7 +1,7 @@
+import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
-import * as React from "react";
 
 import { useNavigate } from "react-router-dom";
 import { Timezones } from "./timezones";
@@ -9,7 +9,7 @@ import { Timezones } from "./timezones";
 import Forms from "@/components/Forms";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { PageModule } from "@/routes/types";
-import { Avatar } from "turboui";
+import BigAvatar from "./BigAvatar";
 
 import { usePaths } from "@/routes/paths";
 export default { name: "ProfileEditPage", loader, Page } as PageModule;
@@ -124,13 +124,5 @@ function ProfileForm({ person }: { person: People.Person }) {
 
       <Forms.Submit saveText="Save Changes" />
     </Forms.Form>
-  );
-}
-
-function BigAvatar({ person }: { person: People.Person }) {
-  return (
-    <section className="flex flex-col w-full justify-center items-center text-center my-8">
-      <Avatar person={person} size="xxlarge" />
-    </section>
   );
 }
