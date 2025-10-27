@@ -15,6 +15,9 @@ defmodule OperatelyWeb.EmailPreview.Router do
         preview_result = apply(module, function, [])
         render(conn, preview_result, registry_module.__preview_registry__())
 
+      nil when path_str in ["", "/"] ->
+        render_empty(conn, registry_module.__preview_registry__())
+
       nil ->
         send_resp(conn, 404, "Not Found")
     end
@@ -35,6 +38,14 @@ defmodule OperatelyWeb.EmailPreview.Router do
     full_assigns = Map.put(email.assigns, :subject, email.subject)
     email_body = OperatelyEmail.Mailers.NotificationMailer.html(template, full_assigns)
     full_page = OperatelyWeb.EmailPreview.Sidebar.render(email_body, conn.request_path, registry)
+
+    conn
+    |> put_resp_header("content-type", "text/html")
+    |> send_resp(200, full_page)
+  end
+
+  defp render_empty(conn, registry) do
+    full_page = OperatelyWeb.EmailPreview.Sidebar.render("", conn.request_path, registry)
 
     conn
     |> put_resp_header("content-type", "text/html")
