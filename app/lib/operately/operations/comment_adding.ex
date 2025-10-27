@@ -1,6 +1,7 @@
 defmodule Operately.Operations.CommentAdding do
   alias Ecto.Multi
   alias Operately.Repo
+  alias Operately.Notifications.{Subscription, SubscriptionList}
   alias Operately.Updates.Comment
   alias Operately.Operations.CommentAdding.{Activity, Subscriptions}
 
@@ -17,6 +18,7 @@ defmodule Operately.Operations.CommentAdding do
 
     Multi.new()
     |> Multi.insert(:comment, changeset)
+    |> ensure_subscription_step(creator)
     |> Subscriptions.update(action, content)
     |> Activity.insert(creator, action, entity)
     |> Repo.transaction()
@@ -45,4 +47,41 @@ defmodule Operately.Operations.CommentAdding do
   defp find_action(%Operately.ResourceHubs.Link{}), do: :resource_hub_link_commented
   defp find_action(%Operately.Tasks.Task{}), do: :project_task_commented
   defp find_action(e), do: raise("Unknown entity type #{inspect(e)}")
+
+  defp ensure_subscription_step(multi, creator) do
+    Multi.run(multi, :comment_author_subscription, fn _, changes ->
+      case find_subscription_list(changes) do
+        {:ok, list} -> ensure_subscription(list.id, creator.id)
+        {:error, :not_found} -> {:ok, nil}
+      end
+    end)
+  end
+
+  defp find_subscription_list(%{subscription_list: nil}), do: {:error, :not_found}
+  defp find_subscription_list(%{subscription_list: list}), do: {:ok, list}
+
+  defp find_subscription_list(%{comment: comment}) do
+    case comment.entity_id do
+      nil -> {:error, :not_found}
+      entity_id -> SubscriptionList.get(:system, parent_id: entity_id)
+    end
+  end
+
+  defp find_subscription_list(_changes), do: {:error, :not_found}
+
+  defp ensure_subscription(nil, _person_id), do: {:ok, nil}
+
+  defp ensure_subscription(subscription_list_id, person_id) do
+    case Subscription.get(:system, subscription_list_id: subscription_list_id, person_id: person_id) do
+      {:error, :not_found} ->
+        Operately.Notifications.create_subscription(%{
+          subscription_list_id: subscription_list_id,
+          person_id: person_id,
+          type: :joined
+        })
+
+      {:ok, subscription} ->
+        Operately.Notifications.update_subscription(subscription, %{canceled: false})
+    end
+  end
 end
