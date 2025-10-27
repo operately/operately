@@ -65,7 +65,8 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
   end
 
   step :fill_in_work_item_form, ctx, name do
-    ctx |> UI.fill_text_field(testid: "item-name", with: name)
+    ctx
+    |> UI.fill_text_field(testid: "item-name", with: name)
   end
 
   step :assert_work_item_added, ctx, name do

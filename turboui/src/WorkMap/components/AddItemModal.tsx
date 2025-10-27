@@ -80,8 +80,14 @@ export function AddItemModal(props: AddItemModal.Props) {
           />
         )}
 
-        <div>
-          <div className="flex flex-col gap-4 mt-6">
+        <form
+          className="mt-6"
+          onSubmit={(event: React.FormEvent<HTMLFormElement>) => {
+            event.preventDefault();
+            void state.submit();
+          }}
+        >
+          <div className="flex flex-col gap-4">
             <TextField
               autofocus
               label="Name"
@@ -123,12 +129,12 @@ export function AddItemModal(props: AddItemModal.Props) {
                 Cancel
               </SecondaryButton>
 
-              <PrimaryButton onClick={state.submit} loading={state.submitting} testId="submit" size="sm">
+              <PrimaryButton type="submit" loading={state.submitting} testId="submit" size="sm">
                 Add {state.itemType === "goal" ? "Goal" : "Project"}
               </PrimaryButton>
             </div>
           </div>
-        </div>
+        </form>
       </div>
     </Modal>
   );
