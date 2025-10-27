@@ -51,18 +51,18 @@ defmodule OperatelyWeb.EmailPreview.Sidebar do
     normalized_path = String.replace_prefix(current_path, "/dev/emails", "")
 
     preview_registry
-    |> Enum.map(fn email ->
-      email_html = "<div class=\"sidebar-email\">#{email.email}</div>"
+    |> Enum.map(fn group ->
+      group_html = "<div class=\"sidebar-email\">#{group.label}</div>"
 
       previews_html =
-        email.previews
+        group.previews
         |> Enum.map(fn preview ->
           active_class = if preview.path == normalized_path, do: " active", else: ""
           "<a href=\"/dev/emails#{preview.path}\" class=\"sidebar-link#{active_class}\">#{preview.label}</a>"
         end)
         |> Enum.join("\n          ")
 
-      email_html <> "\n          " <> previews_html
+      group_html <> "\n          " <> previews_html
     end)
     |> Enum.join("\n          ")
   end

@@ -10,12 +10,12 @@ defmodule OperatelyWeb.EmailPreview do
   end
 
   use Plug.Router
-  use OperatelyWeb.EmailPreview.Definition
+  use OperatelyWeb.EmailPreview.Registry
 
   plug :match
   plug :dispatch
 
-  email "assignments", module: AssignmentsV2 do
+  group "assignments", module: AssignmentsV2 do
     preview :single, label: "Single Item"
     preview :simple
     preview :complete

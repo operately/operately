@@ -1,22 +1,22 @@
-defmodule OperatelyWeb.EmailPreview.Definition do
+defmodule OperatelyWeb.EmailPreview.Registry do
   defmacro __using__(_) do
     quote do
-      import OperatelyWeb.EmailPreview.Definition
+      import OperatelyWeb.EmailPreview.Registry
 
       Module.register_attribute(__MODULE__, :preview_registry, accumulate: false, persist: true)
-      Module.register_attribute(__MODULE__, :preview_current_email, accumulate: false)
+      Module.register_attribute(__MODULE__, :preview_current_group, accumulate: false)
 
       Module.put_attribute(__MODULE__, :preview_registry, [])
     end
   end
 
-  defmacro email(slug, opts \\ [], do: block) do
+  defmacro group(slug, opts \\ [], do: block) do
     caller = __CALLER__
-    __start_email__(caller.module, caller, slug, opts)
+    __start_group__(caller.module, caller, slug, opts)
 
     quote do
       unquote(block)
-      OperatelyWeb.EmailPreview.Definition.__end_email__(__MODULE__)
+      OperatelyWeb.EmailPreview.Registry.__end_group__(__MODULE__)
     end
   end
 
@@ -29,29 +29,29 @@ defmodule OperatelyWeb.EmailPreview.Definition do
     end
   end
 
-  def __start_email__(module, env, slug, opts) do
-    if Module.get_attribute(module, :preview_current_email) do
-      raise ArgumentError, "email/3 cannot be nested"
+  def __start_group__(module, env, slug, opts) do
+    if Module.get_attribute(module, :preview_current_group) do
+      raise ArgumentError, "group/3 cannot be nested"
     end
 
     slug = normalize_slug(slug)
     label = Keyword.get(opts, :label, humanize(slug))
     preview_module = resolve_preview_module(module, env, slug, opts)
 
-    email = %{
+    group = %{
       slug: slug,
-      email: label,
+      label: label,
       module: preview_module,
       previews: []
     }
 
-    Module.put_attribute(module, :preview_current_email, email)
+    Module.put_attribute(module, :preview_current_group, group)
   end
 
   def __register_preview__(module, name, opts) do
     current =
-      Module.get_attribute(module, :preview_current_email) ||
-        raise ArgumentError, "preview/2 must be defined inside a email/3 block"
+      Module.get_attribute(module, :preview_current_group) ||
+        raise ArgumentError, "preview/2 must be defined inside a group/3 block"
 
     function = opts |> Keyword.get(:function, name) |> to_atom()
     label = Keyword.get(opts, :label, humanize(name))
@@ -66,22 +66,22 @@ defmodule OperatelyWeb.EmailPreview.Definition do
     }
 
     updated_previews = current.previews ++ [preview_entry]
-    updated_email = %{current | previews: updated_previews}
+    updated_group = %{current | previews: updated_previews}
 
-    Module.put_attribute(module, :preview_current_email, updated_email)
+    Module.put_attribute(module, :preview_current_group, updated_group)
 
     {path, current.module, function}
   end
 
-  def __end_email__(module) do
+  def __end_group__(module) do
     current =
-      Module.get_attribute(module, :preview_current_email) ||
-        raise ArgumentError, "email/3 block must wrap at least one preview/2 call"
+      Module.get_attribute(module, :preview_current_group) ||
+        raise ArgumentError, "group/3 block must wrap at least one preview/2 call"
 
-    Module.delete_attribute(module, :preview_current_email)
+    Module.delete_attribute(module, :preview_current_group)
 
     registry = Module.get_attribute(module, :preview_registry) || []
-    entry = %{email: current.email, previews: current.previews}
+    entry = %{label: current.label, previews: current.previews}
 
     Module.put_attribute(module, :preview_registry, registry ++ [entry])
   end
