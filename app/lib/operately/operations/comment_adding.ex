@@ -18,8 +18,8 @@ defmodule Operately.Operations.CommentAdding do
 
     Multi.new()
     |> Multi.insert(:comment, changeset)
-    |> ensure_subscription_step(creator)
     |> Subscriptions.update(action, content)
+    |> ensure_subscription_step(creator)
     |> Activity.insert(creator, action, entity)
     |> Repo.transaction()
     |> Repo.extract_result(:comment)
@@ -50,26 +50,18 @@ defmodule Operately.Operations.CommentAdding do
 
   defp ensure_subscription_step(multi, creator) do
     Multi.run(multi, :comment_author_subscription, fn _, changes ->
-      case find_subscription_list(changes) do
+      subscription_list =
+        case Map.fetch(changes, :subscription_list) do
+          {:ok, list} -> {:ok, list}
+          :error -> SubscriptionList.get(:system, id: changes.comment.entity_id)
+        end
+
+      case subscription_list do
         {:ok, list} -> ensure_subscription(list.id, creator.id)
         {:error, :not_found} -> {:ok, nil}
       end
     end)
   end
-
-  defp find_subscription_list(%{subscription_list: nil}), do: {:error, :not_found}
-  defp find_subscription_list(%{subscription_list: list}), do: {:ok, list}
-
-  defp find_subscription_list(%{comment: comment}) do
-    case comment.entity_id do
-      nil -> {:error, :not_found}
-      entity_id -> SubscriptionList.get(:system, parent_id: entity_id)
-    end
-  end
-
-  defp find_subscription_list(_changes), do: {:error, :not_found}
-
-  defp ensure_subscription(nil, _person_id), do: {:ok, nil}
 
   defp ensure_subscription(subscription_list_id, person_id) do
     case Subscription.get(:system, subscription_list_id: subscription_list_id, person_id: person_id) do
