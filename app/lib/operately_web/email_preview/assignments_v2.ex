@@ -1,10 +1,10 @@
-defmodule OperatelyWeb.EmailPreviews.AssignmentsV2 do
+defmodule OperatelyWeb.EmailPreview.AssignmentsV2 do
   @moduledoc """
   Mock data for previewing the assignments v2 email template.
   """
 
   alias OperatelyEmail.Mailers.NotificationMailer, as: Mailer
-  alias OperatelyWeb.EmailPreviews.Preview
+  alias OperatelyWeb.EmailPreview.Preview
 
   def simple do
     simple_groups()
@@ -246,4 +246,3 @@ defmodule OperatelyWeb.EmailPreviews.AssignmentsV2 do
     Map.merge(base, extras)
   end
 end
-

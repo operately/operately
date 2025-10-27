@@ -1,14 +1,20 @@
-defmodule OperatelyWeb.DevEmailPreview do
+defmodule OperatelyWeb.EmailPreview do
   @moduledoc """
   Development email preview plug for viewing rendered emails in the browser.
   Only available in development environment.
   """
 
-  alias OperatelyEmail.Mailers.NotificationMailer, as: Mailer
-  alias OperatelyWeb.EmailPreviews.AssignmentsV2
-  alias OperatelyWeb.EmailPreviews.Preview
+  defmodule Preview do
+    @moduledoc """
+    Wrapper struct that carries the prepared email and the template name.
+    """
+
+    @enforce_keys [:email, :template]
+    defstruct [:email, :template]
+  end
 
   use Plug.Router
+  alias OperatelyWeb.EmailPreview.AssignmentsV2
 
   plug :match
   plug :dispatch
@@ -34,7 +40,7 @@ defmodule OperatelyWeb.DevEmailPreview do
 
     full_assigns = Map.put(email.assigns, :subject, email.subject)
 
-    body = Mailer.html(template, full_assigns)
+    body = OperatelyEmail.Mailers.NotificationMailer.html(template, full_assigns)
 
     conn
     |> put_resp_header("content-type", "text/html")
