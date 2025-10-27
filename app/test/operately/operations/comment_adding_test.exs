@@ -8,6 +8,7 @@ defmodule Operately.Operations.CommentAddingTest do
   import Operately.GoalsFixtures
 
   alias Operately.{Groups, Projects}
+  alias Operately.Notifications.Subscription
   alias Operately.Support.{Factory, RichText}
   alias Operately.Access.Binding
   alias Operately.Operations.{GoalCheckIn, ProjectCheckIn, CommentAdding, ProjectClosed, ResourceHubDocumentCreating}
@@ -857,6 +858,26 @@ defmodule Operately.Operations.CommentAddingTest do
 
       assert notifications_count(action: @action) == 1
       assert fetch_notification(activity.id).person_id == ctx.person.id
+    end
+  end
+
+  describe "author subscription" do
+    setup ctx do
+      ctx
+      |> Factory.add_space(:space)
+      |> Factory.add_messages_board(:messages_board, :space)
+      |> Factory.add_message(:message, :messages_board)
+      |> Factory.preload(:message, :space)
+      |> Factory.preload(:message, :subscription_list)
+    end
+
+    test "creates a subscription when the author comments", ctx do
+      {:error, :not_found} = Subscription.get(:system, subscription_list_id: ctx.message.subscription_list_id, person_id: ctx.creator.id)
+
+      {:ok, _comment} =
+        CommentAdding.run(ctx.creator, ctx.message, "message", RichText.rich_text("Subscribing comment"))
+
+      {:ok, _} = Subscription.get(:system, subscription_list_id: ctx.message.subscription_list_id, person_id: ctx.creator.id, type: :joined)
     end
   end
 

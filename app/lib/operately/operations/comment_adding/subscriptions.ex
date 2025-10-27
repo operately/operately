@@ -2,12 +2,15 @@ defmodule Operately.Operations.CommentAdding.Subscriptions do
   alias Ecto.Multi
   alias Operately.Notifications.SubscriptionList
 
+  def update(multi, :discussion_comment_submitted, content), do: execute_update(multi, content)
+  def update(multi, :goal_check_in_commented, content), do: execute_update(multi, content)
   def update(multi, :project_check_in_commented, content), do: execute_update(multi, content)
   def update(multi, :project_retrospective_commented, content), do: execute_update(multi, content)
-  def update(multi, :goal_check_in_commented, content), do: execute_update(multi, content)
-  def update(multi, :discussion_comment_submitted, content), do: execute_update(multi, content)
-  def update(multi, :project_task_commented, content), do: execute_update(multi, content)
   def update(multi, :comment_added, content), do: execute_update(multi, content)
+  def update(multi, :resource_hub_document_commented, content), do: execute_update(multi, content)
+  def update(multi, :resource_hub_file_commented, content), do: execute_update(multi, content)
+  def update(multi, :resource_hub_link_commented, content), do: execute_update(multi, content)
+  def update(multi, :project_task_commented, content), do: execute_update(multi, content)
   def update(multi, _, _), do: multi
 
   defp execute_update(multi, content) do

@@ -80,6 +80,24 @@ defmodule Operately.Comments.CreateMilestoneCommentOperationTest do
     end
   end
 
+  describe "author subscription" do
+    test "creates a subscription for the author", ctx do
+      joined_before = fetch_joined_ids(ctx.milestone)
+      refute ctx.creator.id in joined_before
+
+      {:ok, _comment} =
+        CreateMilestoneCommentOperation.run(
+          ctx.creator,
+          ctx.milestone,
+          "none",
+          comment_attrs(ctx, RichText.rich_text("Great work!"))
+        )
+
+      joined_after = fetch_joined_ids(ctx.milestone)
+      assert ctx.creator.id in joined_after
+    end
+  end
+
   describe "notifications" do
     test "mentioned subscribers and contributors receive notifications", ctx do
       ctx = Factory.add_company_member(ctx, :member)
@@ -123,6 +141,14 @@ defmodule Operately.Comments.CreateMilestoneCommentOperationTest do
   end
 
   defp fetch_mention_ids(milestone) do
+    fetch_subscription_ids(milestone, :mentioned)
+  end
+
+  defp fetch_joined_ids(milestone) do
+    fetch_subscription_ids(milestone, :joined)
+  end
+
+  defp fetch_subscription_ids(milestone, type) do
     {:ok, list} =
       SubscriptionList.get(:system,
         id: milestone.subscription_list_id,
@@ -130,7 +156,7 @@ defmodule Operately.Comments.CreateMilestoneCommentOperationTest do
       )
 
     list.subscriptions
-    |> Enum.filter(&(&1.type == :mentioned and not &1.canceled))
+    |> Enum.filter(&(&1.type == type and not &1.canceled))
     |> Enum.map(& &1.person_id)
   end
 
