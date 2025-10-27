@@ -6,7 +6,6 @@ defmodule Operately.Updates do
   import Ecto.Query, warn: false
 
   alias Operately.Activities
-  alias Operately.Notifications.{Subscription, SubscriptionList}
   alias Operately.Updates.Update
   alias Operately.Access.Fetch
 
@@ -171,7 +170,6 @@ defmodule Operately.Updates do
 
     Multi.new()
     |> Multi.insert(:comment, changeset)
-    |> ensure_subscription_step(author)
     |> then(fn multi ->
       case update.type do
         :project_discussion ->
@@ -214,37 +212,6 @@ defmodule Operately.Updates do
 
   def change_comment(%Comment{} = comment, attrs \\ %{}) do
     Comment.changeset(comment, attrs)
-  end
-
-  defp ensure_subscription_step(multi, author) do
-    Multi.run(multi, :comment_author_subscription, fn _, %{comment: comment} ->
-      case find_subscription_list(comment) do
-        {:ok, list} -> ensure_subscription(list.id, author.id)
-        {:error, :not_found} -> {:ok, nil}
-      end
-    end)
-  end
-
-  defp find_subscription_list(%{entity_id: nil}), do: {:error, :not_found}
-
-  defp find_subscription_list(comment) do
-    SubscriptionList.get(:system, parent_id: comment.entity_id)
-  end
-
-  defp ensure_subscription(nil, _person_id), do: {:ok, nil}
-
-  defp ensure_subscription(subscription_list_id, person_id) do
-    case Subscription.get(:system, subscription_list_id: subscription_list_id, person_id: person_id) do
-      {:error, :not_found} ->
-        Operately.Notifications.create_subscription(%{
-          subscription_list_id: subscription_list_id,
-          person_id: person_id,
-          type: :joined
-        })
-
-      {:ok, subscription} ->
-        Operately.Notifications.update_subscription(subscription, %{canceled: false})
-    end
   end
 
   alias Operately.Updates.Reaction
