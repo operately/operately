@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.EmailPreview.AssignmentsV2 do
+defmodule OperatelyWeb.EmailPreview.Previews.AssignmentsV2 do
   @moduledoc """
   Mock data for previewing the assignments v2 email template.
   """
@@ -33,7 +33,7 @@ defmodule OperatelyWeb.EmailPreview.AssignmentsV2 do
       |> Mailer.assign(:company, company)
       |> Mailer.assign(:urgent_groups, urgent_groups)
 
-    %Preview{email: email, template: "assignments_v2"}
+    Preview.build(email, "assignments_v2")
   end
 
   defp base_context do

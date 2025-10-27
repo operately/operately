@@ -1,141 +1,49 @@
 defmodule OperatelyWeb.EmailPreview.Registry do
+  alias OperatelyWeb.EmailPreview.PreviewRegistryBuilder
+
   defmacro __using__(_) do
     quote do
       import OperatelyWeb.EmailPreview.Registry
 
-      Module.register_attribute(__MODULE__, :preview_registry, accumulate: false, persist: true)
-      Module.register_attribute(__MODULE__, :preview_current_group, accumulate: false)
+      Module.register_attribute(__MODULE__, :preview_groups, accumulate: true)
+      Module.register_attribute(__MODULE__, :current_group, accumulate: false)
 
-      Module.put_attribute(__MODULE__, :preview_registry, [])
+      @before_compile unquote(__MODULE__)
     end
   end
 
   defmacro group(slug, opts \\ [], do: block) do
-    caller = __CALLER__
-    __start_group__(caller.module, caller, slug, opts)
-
     quote do
+      @current_group {unquote(slug), unquote(opts)}
       unquote(block)
-      OperatelyWeb.EmailPreview.Registry.__end_group__(__MODULE__)
+      @current_group nil
     end
   end
 
   defmacro preview(name, opts \\ []) do
-    caller = __CALLER__
-    {_path, _module, _function} = __register_preview__(caller.module, name, opts)
-
     quote do
-      :ok
-    end
-  end
-
-  def __start_group__(module, env, slug, opts) do
-    if Module.get_attribute(module, :preview_current_group) do
-      raise ArgumentError, "group/3 cannot be nested"
-    end
-
-    slug = normalize_slug(slug)
-    label = Keyword.get(opts, :label, humanize(slug))
-    preview_module = resolve_preview_module(module, env, slug, opts)
-
-    group = %{
-      slug: slug,
-      label: label,
-      module: preview_module,
-      previews: []
-    }
-
-    Module.put_attribute(module, :preview_current_group, group)
-  end
-
-  def __register_preview__(module, name, opts) do
-    current =
-      Module.get_attribute(module, :preview_current_group) ||
+      unless @current_group do
         raise ArgumentError, "preview/2 must be defined inside a group/3 block"
+      end
 
-    function = opts |> Keyword.get(:function, name) |> to_atom()
-    label = Keyword.get(opts, :label, humanize(name))
-    preview_slug = opts |> Keyword.get(:slug, name) |> normalize_slug()
-    path = opts |> Keyword.get(:path, build_path(current.slug, preview_slug)) |> ensure_leading_slash()
+      {group_slug, group_opts} = @current_group
 
-    preview_entry = %{
-      path: path,
-      label: label,
-      module: current.module,
-      function: function
-    }
-
-    updated_previews = current.previews ++ [preview_entry]
-    updated_group = %{current | previews: updated_previews}
-
-    Module.put_attribute(module, :preview_current_group, updated_group)
-
-    {path, current.module, function}
-  end
-
-  def __end_group__(module) do
-    current =
-      Module.get_attribute(module, :preview_current_group) ||
-        raise ArgumentError, "group/3 block must wrap at least one preview/2 call"
-
-    Module.delete_attribute(module, :preview_current_group)
-
-    registry = Module.get_attribute(module, :preview_registry) || []
-    entry = %{label: current.label, previews: current.previews}
-
-    Module.put_attribute(module, :preview_registry, registry ++ [entry])
-  end
-
-  defp resolve_preview_module(module, env, slug, opts) do
-    case Keyword.get(opts, :module) do
-      nil ->
-        Module.concat(module, slug |> slug_to_module_suffix())
-
-      mod ->
-        expanded = Macro.expand(mod, env)
-
-        case Module.split(expanded) do
-          [_single] -> Module.concat(module, expanded)
-          _ -> expanded
-        end
+      @preview_groups %{
+        group_slug: group_slug,
+        group_opts: group_opts,
+        name: unquote(name),
+        opts: unquote(opts)
+      }
     end
   end
 
-  defp slug_to_module_suffix(slug) do
-    slug
-    |> String.replace(~r/[_-]+/, " ")
-    |> String.split(" ", trim: true)
-    |> Enum.map(&String.capitalize/1)
-    |> Enum.join()
-  end
-
-  defp humanize(value) do
-    value
-    |> to_string()
-    |> String.replace(~r/[_-]+/, " ")
-    |> String.split(" ", trim: true)
-    |> Enum.map(&String.capitalize/1)
-    |> Enum.join(" ")
-  end
-
-  defp normalize_slug(value) do
-    value
-    |> to_string()
-    |> String.trim()
-    |> String.trim_leading("/")
-  end
-
-  defp build_path(email_slug, preview_slug) do
-    "/" <> email_slug <> "/" <> preview_slug
-  end
-
-  defp ensure_leading_slash(path) do
-    case path do
-      <<"/", _::binary>> -> path
-      _ -> "/" <> path
+  defmacro __before_compile__(_env) do
+    quote do
+      def __preview_registry__() do
+        @preview_groups
+        |> Enum.reverse()
+        |> PreviewRegistryBuilder.build_registry(__MODULE__)
+      end
     end
   end
-
-  defp to_atom(value) when is_atom(value), do: value
-  defp to_atom(value) when is_binary(value), do: String.to_atom(value)
 end
