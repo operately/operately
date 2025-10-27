@@ -7,6 +7,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Spaces from "@/models/spaces";
 
 import Forms from "@/components/Forms";
+import { useFormContext } from "@/components/Forms/FormContext";
 
 import { AccessLevel, AccessSelectors, applyAccessLevelConstraints, initialAccessLevels } from "@/features/spaces";
 import { usePaths } from "@/routes/paths";
@@ -75,7 +76,21 @@ function Title() {
 }
 
 function NameInput({ field }: { field: string }) {
-  return <Forms.TextInput label="Space Name" field={field} placeholder="e.g. Marketing" required />;
+  const form = useFormContext();
+
+  return (
+    <Forms.TextInput
+      label="Space Name"
+      field={field}
+      placeholder="e.g. Marketing"
+      required
+      autoFocus
+      onEnter={(event) => {
+        event.preventDefault();
+        void form.actions.submit();
+      }}
+    />
+  );
 }
 
 function PurposeInput({ field }: { field: string }) {
