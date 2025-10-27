@@ -50,7 +50,7 @@ defmodule Operately.Support.Features.GoalSteps do
 
   step :change_goal_name, ctx do
     ctx
-    |> UI.fill_text_field(testid: "goal-name-field", with: "New Goal Name")
+    |> UI.fill_text_field(testid: "goal-name-field", with: "New Goal Name", submit: true)
   end
 
   step :given_space_member_exists, ctx, opts \\ [] do

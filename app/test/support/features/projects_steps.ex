@@ -222,8 +222,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
-      action:
-        "Disconnected the #{ctx.project.name} project from the Improve support first response time goal"
+      action: "Disconnected the #{ctx.project.name} project from the Improve support first response time goal"
     })
   end
 
@@ -476,7 +475,7 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :rename_project, ctx, new_name: new_name do
     ctx
-    |> UI.fill_text_field(testid: "project-name-field", with: new_name)
+    |> UI.fill_text_field(testid: "project-name-field", with: new_name, submit: true)
     |> UI.sleep(300)
   end
 
@@ -707,7 +706,7 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :change_project_name, ctx do
     ctx
-    |> UI.fill_text_field(testid: "project-name-field", with: "New Project Name")
+    |> UI.fill_text_field(testid: "project-name-field", with: "New Project Name", submit: true)
   end
 
   step :assert_project_name_changed, ctx do
@@ -776,7 +775,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     assert_feed(ctx, title, title_long)
   end
 
-   step :assert_reviewer_change_notification_sent_to_subscriber, ctx do
+  step :assert_reviewer_change_notification_sent_to_subscriber, ctx do
     ctx
     |> UI.login_as(ctx.subscriber)
     |> NotificationsSteps.assert_activity_notification(%{
@@ -795,7 +794,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     })
   end
 
-step :assert_reviewer_removed_email_sent_to_subscriber, ctx do
+  step :assert_reviewer_removed_email_sent_to_subscriber, ctx do
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
@@ -953,7 +952,7 @@ step :assert_reviewer_removed_email_sent_to_subscriber, ctx do
   #
 
   step :given_subscriber_exists, ctx do
-    Factory.add_company_member(ctx,:subscriber)
+    Factory.add_company_member(ctx, :subscriber)
   end
 
   step :log_in_as_subscriber, ctx do
