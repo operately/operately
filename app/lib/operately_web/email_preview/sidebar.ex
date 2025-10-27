@@ -19,7 +19,8 @@ defmodule OperatelyWeb.EmailPreview.Sidebar do
         .sidebar-header { padding: 20px; border-bottom: 1px solid #dee2e6; }
         .sidebar-header h1 { font-size: 18px; font-weight: 600; color: #212529; }
         .sidebar-nav { padding: 12px 0; }
-        .sidebar-link { display: block; padding: 10px 20px; color: #495057; text-decoration: none; font-size: 14px; transition: background 0.15s; }
+        .sidebar-category { padding: 16px 20px 8px 20px; font-weight: 600; font-size: 13px; color: #6c757d; text-transform: uppercase; letter-spacing: 0.5px; }
+        .sidebar-link { display: block; padding: 8px 20px 8px 36px; color: #495057; text-decoration: none; font-size: 14px; transition: background 0.15s; }
         .sidebar-link:hover { background: #e9ecef; }
         .sidebar-link.active { background: #007bff; color: white; font-weight: 500; }
         .content { flex: 1; overflow-y: auto; background: #ffffff; }
@@ -48,11 +49,20 @@ defmodule OperatelyWeb.EmailPreview.Sidebar do
   defp render_links(current_path, preview_registry) do
     # Strip the /dev/emails prefix from current_path for comparison
     normalized_path = String.replace_prefix(current_path, "/dev/emails", "")
-    
+
     preview_registry
-    |> Enum.map(fn preview ->
-      active_class = if preview.path == normalized_path, do: " active", else: ""
-      "<a href=\"/dev/emails#{preview.path}\" class=\"sidebar-link#{active_class}\">#{preview.label}</a>"
+    |> Enum.map(fn category ->
+      category_html = "<div class=\"sidebar-category\">#{category.category}</div>"
+
+      previews_html =
+        category.previews
+        |> Enum.map(fn preview ->
+          active_class = if preview.path == normalized_path, do: " active", else: ""
+          "<a href=\"/dev/emails#{preview.path}\" class=\"sidebar-link#{active_class}\">#{preview.label}</a>"
+        end)
+        |> Enum.join("\n          ")
+
+      category_html <> "\n          " <> previews_html
     end)
     |> Enum.join("\n          ")
   end

@@ -20,9 +20,20 @@ defmodule OperatelyWeb.EmailPreview do
   plug :dispatch
 
   @preview_registry [
-    %{path: "/assignments/simple", label: "Assignments - Simple", module: EmailPreview.AssignmentsV2, function: :simple},
-    %{path: "/assignments/complete", label: "Assignments - Complete", module: EmailPreview.AssignmentsV2, function: :complete}
+    %{
+      category: "Assignments",
+      previews: [
+        %{path: "/assignments/single", label: "Single Item", module: EmailPreview.AssignmentsV2, function: :single},
+        %{path: "/assignments/simple", label: "Simple", module: EmailPreview.AssignmentsV2, function: :simple},
+        %{path: "/assignments/complete", label: "Complete", module: EmailPreview.AssignmentsV2, function: :complete}
+      ]
+    }
   ]
+
+  get "/assignments/single" do
+    conn
+    |> render_preview(EmailPreview.AssignmentsV2.single())
+  end
 
   get "/assignments/simple" do
     conn
