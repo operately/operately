@@ -1348,6 +1348,7 @@ export interface Person {
   fullName: string;
   title: string;
   avatarUrl: string | null;
+  avatarBlobId?: string | null;
   email: string;
   timezone?: string | null;
   sendDailySummary?: boolean | null;
@@ -3122,6 +3123,14 @@ export interface CreateAccountResult {
   error?: string | null;
 }
 
+export interface CreateAvatarBlobInput {
+  files?: BlobCreationInput[] | null;
+}
+
+export interface CreateAvatarBlobResult {
+  blobs?: BlobCreationOutput[] | null;
+}
+
 export interface CreateBlobInput {
   files?: BlobCreationInput[] | null;
 }
@@ -4195,6 +4204,16 @@ export interface UpdateProfileResult {
   person?: Person | null;
 }
 
+export interface UpdateProfilePictureInput {
+  personId: string;
+  avatarBlobId?: string | null;
+  avatarUrl?: string | null;
+}
+
+export interface UpdateProfilePictureResult {
+  person: Person | null;
+}
+
 export interface UpdateProjectContributorInput {
   contribId?: string | null;
   personId?: string | null;
@@ -4495,6 +4514,10 @@ class ApiNamespaceRoot {
     return this.client.post("/create_account", input);
   }
 
+  async createAvatarBlob(input: CreateAvatarBlobInput): Promise<CreateAvatarBlobResult> {
+    return this.client.post("/create_avatar_blob", input);
+  }
+
   async createBlob(input: CreateBlobInput): Promise<CreateBlobResult> {
     return this.client.post("/create_blob", input);
   }
@@ -4765,6 +4788,10 @@ class ApiNamespaceRoot {
 
   async updateProfile(input: UpdateProfileInput): Promise<UpdateProfileResult> {
     return this.client.post("/update_profile", input);
+  }
+
+  async updateProfilePicture(input: UpdateProfilePictureInput): Promise<UpdateProfilePictureResult> {
+    return this.client.post("/update_profile_picture", input);
   }
 
   async updateProjectContributor(input: UpdateProjectContributorInput): Promise<UpdateProjectContributorResult> {
@@ -5473,6 +5500,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.createAccount(input);
   }
 
+  createAvatarBlob(input: CreateAvatarBlobInput): Promise<CreateAvatarBlobResult> {
+    return this.apiNamespaceRoot.createAvatarBlob(input);
+  }
+
   createBlob(input: CreateBlobInput): Promise<CreateBlobResult> {
     return this.apiNamespaceRoot.createBlob(input);
   }
@@ -5741,6 +5772,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.updateProfile(input);
   }
 
+  updateProfilePicture(input: UpdateProfilePictureInput): Promise<UpdateProfilePictureResult> {
+    return this.apiNamespaceRoot.updateProfilePicture(input);
+  }
+
   updateProjectContributor(input: UpdateProjectContributorInput): Promise<UpdateProjectContributorResult> {
     return this.apiNamespaceRoot.updateProjectContributor(input);
   }
@@ -5970,6 +6005,9 @@ export async function copyResourceHubFolder(input: CopyResourceHubFolderInput): 
 }
 export async function createAccount(input: CreateAccountInput): Promise<CreateAccountResult> {
   return defaultApiClient.createAccount(input);
+}
+export async function createAvatarBlob(input: CreateAvatarBlobInput): Promise<CreateAvatarBlobResult> {
+  return defaultApiClient.createAvatarBlob(input);
 }
 export async function createBlob(input: CreateBlobInput): Promise<CreateBlobResult> {
   return defaultApiClient.createBlob(input);
@@ -6210,6 +6248,9 @@ export async function unsubscribeFromNotifications(
 }
 export async function updateProfile(input: UpdateProfileInput): Promise<UpdateProfileResult> {
   return defaultApiClient.updateProfile(input);
+}
+export async function updateProfilePicture(input: UpdateProfilePictureInput): Promise<UpdateProfilePictureResult> {
+  return defaultApiClient.updateProfilePicture(input);
 }
 export async function updateProjectContributor(
   input: UpdateProjectContributorInput,
@@ -6555,6 +6596,12 @@ export function useCopyResourceHubFolder(): UseMutationHookResult<
 
 export function useCreateAccount(): UseMutationHookResult<CreateAccountInput, CreateAccountResult> {
   return useMutation<CreateAccountInput, CreateAccountResult>((input) => defaultApiClient.createAccount(input));
+}
+
+export function useCreateAvatarBlob(): UseMutationHookResult<CreateAvatarBlobInput, CreateAvatarBlobResult> {
+  return useMutation<CreateAvatarBlobInput, CreateAvatarBlobResult>((input) =>
+    defaultApiClient.createAvatarBlob(input),
+  );
 }
 
 export function useCreateBlob(): UseMutationHookResult<CreateBlobInput, CreateBlobResult> {
@@ -7002,6 +7049,15 @@ export function useUpdateProfile(): UseMutationHookResult<UpdateProfileInput, Up
   return useMutation<UpdateProfileInput, UpdateProfileResult>((input) => defaultApiClient.updateProfile(input));
 }
 
+export function useUpdateProfilePicture(): UseMutationHookResult<
+  UpdateProfilePictureInput,
+  UpdateProfilePictureResult
+> {
+  return useMutation<UpdateProfilePictureInput, UpdateProfilePictureResult>((input) =>
+    defaultApiClient.updateProfilePicture(input),
+  );
+}
+
 export function useUpdateProjectContributor(): UseMutationHookResult<
   UpdateProjectContributorInput,
   UpdateProjectContributorResult
@@ -7157,6 +7213,8 @@ export default {
   useCopyResourceHubFolder,
   createAccount,
   useCreateAccount,
+  createAvatarBlob,
+  useCreateAvatarBlob,
   createBlob,
   useCreateBlob,
   createComment,
@@ -7289,6 +7347,8 @@ export default {
   useUnsubscribeFromNotifications,
   updateProfile,
   useUpdateProfile,
+  updateProfilePicture,
+  useUpdateProfilePicture,
   updateProjectContributor,
   useUpdateProjectContributor,
   updateProjectDescription,

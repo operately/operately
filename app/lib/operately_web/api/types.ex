@@ -1465,6 +1465,7 @@ defmodule OperatelyWeb.Api.Types do
     field :full_name, :string
     field :title, :string
     field :avatar_url, :string, null: true
+    field? :avatar_blob_id, :string, null: true
     field :email, :string
 
     field? :timezone, :string, null: true
