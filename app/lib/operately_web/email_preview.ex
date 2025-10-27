@@ -7,9 +7,11 @@ defmodule OperatelyWeb.EmailPreview do
   use Plug.Router
   use OperatelyWeb.EmailPreview.Registry
 
-  alias OperatelyWeb.EmailPreview.Previews.AssignmentsV2
-  alias OperatelyWeb.EmailPreview.Previews.ProjectChampionUpdating
-  alias OperatelyWeb.EmailPreview.Previews.ProjectCheckInSubmitted
+  alias OperatelyWeb.EmailPreview.Previews.{
+    AssignmentsV2,
+    ProjectChampionUpdating,
+    ProjectCheckInSubmitted
+  }
 
   plug :match
   plug :dispatch

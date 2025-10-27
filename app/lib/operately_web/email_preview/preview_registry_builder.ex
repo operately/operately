@@ -16,11 +16,11 @@ defmodule OperatelyWeb.EmailPreview.PreviewRegistryBuilder do
     }
   end
 
-  defp build_preview(preview, base_module) do
+  defp build_preview(preview, _base_module) do
     %{
       path: resolve_path(preview),
       label: get_label(preview.opts, preview.name),
-      module: resolve_module(base_module, preview),
+      module: Keyword.get(preview.group_opts, :module),
       function: Keyword.get(preview.opts, :function, preview.name)
     }
   end
@@ -33,33 +33,8 @@ defmodule OperatelyWeb.EmailPreview.PreviewRegistryBuilder do
     |> ensure_leading_slash()
   end
 
-  defp resolve_module(base_module, preview) do
-    case Keyword.get(preview.opts, :module) || Keyword.get(preview.group_opts, :module) do
-      nil ->
-        Module.concat(base_module, slug_to_module_suffix(preview.group_slug))
-
-      mod when is_atom(mod) ->
-        case Module.split(mod) do
-          [_single] -> Module.concat(base_module, mod)
-          _ -> mod
-        end
-
-      mod when is_binary(mod) ->
-        Module.concat(base_module, mod)
-    end
-  end
-
   defp get_label(opts, fallback) do
     Keyword.get(opts, :label, humanize(fallback))
-  end
-
-  defp slug_to_module_suffix(slug) do
-    slug
-    |> to_string()
-    |> String.replace(~r/[_-]+/, " ")
-    |> String.split(" ", trim: true)
-    |> Enum.map(&String.capitalize/1)
-    |> Enum.join()
   end
 
   defp humanize(value) do
