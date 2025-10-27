@@ -260,6 +260,10 @@ defmodule Operately.Support.Features.UI do
   end
 
   def fill_text_field(state, testid: id, with: message) do
+    fill_text_field(state, testid: id, with: message, submit: false)
+  end
+
+  def fill_text_field(state, testid: id, with: message, submit: submit) do
     #
     # Filling a text field is more compolicated than it seems.
     #
@@ -280,9 +284,12 @@ defmodule Operately.Support.Features.UI do
       backspaces = Enum.map(1..150, fn _ -> :backspace end)
       deletes = Enum.map(1..150, fn _ -> :delete end)
 
+      keys = backspaces ++ deletes ++ [message]
+      final_keys = if submit, do: keys ++ [:enter], else: keys
+
       session
       |> Browser.click(query(testid: id))
-      |> Browser.send_keys(backspaces ++ deletes ++ [message] ++ [:enter])
+      |> Browser.send_keys(final_keys)
     end)
   end
 
