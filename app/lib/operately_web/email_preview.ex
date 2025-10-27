@@ -14,19 +14,24 @@ defmodule OperatelyWeb.EmailPreview do
   end
 
   use Plug.Router
-  alias OperatelyWeb.EmailPreview.AssignmentsV2
+  alias OperatelyWeb.EmailPreview
 
   plug :match
   plug :dispatch
 
+  @preview_registry [
+    %{path: "/assignments/simple", label: "Assignments - Simple", module: EmailPreview.AssignmentsV2, function: :simple},
+    %{path: "/assignments/complete", label: "Assignments - Complete", module: EmailPreview.AssignmentsV2, function: :complete}
+  ]
+
   get "/assignments/simple" do
     conn
-    |> render_preview(AssignmentsV2.simple())
+    |> render_preview(EmailPreview.AssignmentsV2.simple())
   end
 
   get "/assignments/complete" do
     conn
-    |> render_preview(AssignmentsV2.complete())
+    |> render_preview(EmailPreview.AssignmentsV2.complete())
   end
 
   match _ do
@@ -40,10 +45,11 @@ defmodule OperatelyWeb.EmailPreview do
 
     full_assigns = Map.put(email.assigns, :subject, email.subject)
 
-    body = OperatelyEmail.Mailers.NotificationMailer.html(template, full_assigns)
+    email_body = OperatelyEmail.Mailers.NotificationMailer.html(template, full_assigns)
+    full_page = EmailPreview.Sidebar.render(email_body, conn.request_path, @preview_registry)
 
     conn
     |> put_resp_header("content-type", "text/html")
-    |> send_resp(200, body)
+    |> send_resp(200, full_page)
   end
 end
