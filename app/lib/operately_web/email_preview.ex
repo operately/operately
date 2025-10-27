@@ -8,6 +8,8 @@ defmodule OperatelyWeb.EmailPreview do
   use OperatelyWeb.EmailPreview.Registry
 
   alias OperatelyWeb.EmailPreview.Previews.AssignmentsV2
+  alias OperatelyWeb.EmailPreview.Previews.ProjectChampionUpdating
+  alias OperatelyWeb.EmailPreview.Previews.ProjectCheckInSubmitted
 
   plug :match
   plug :dispatch
@@ -16,6 +18,18 @@ defmodule OperatelyWeb.EmailPreview do
     preview :single, label: "Single Item"
     preview :simple
     preview :complete
+  end
+
+  group "project-champion-updating", module: ProjectChampionUpdating do
+    preview :champion_removed, label: "Champion Removed"
+    preview :champion_assigned_to_you, label: "Assigned To You"
+    preview :champion_assigned_to_teammate, label: "Assigned To Teammate"
+  end
+
+  group "project-check-in-submitted", module: ProjectCheckInSubmitted do
+    preview :reviewer_acknowledge, label: "Reviewer Acknowledge"
+    preview :teammate_view, label: "Team Member View"
+    preview :no_reviewer, label: "No Reviewer Assigned"
   end
 
   get "/*_path" do
