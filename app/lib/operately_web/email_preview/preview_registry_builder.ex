@@ -2,9 +2,11 @@ defmodule OperatelyWeb.EmailPreview.PreviewRegistryBuilder do
   def build_registry(previews, base_module) do
     previews
     |> Enum.group_by(& &1.group_slug)
-    |> Enum.map(fn {_slug, group_previews} ->
-      build_group(group_previews, base_module)
+    |> Enum.map(fn {slug, group_previews} ->
+      {slug, build_group(group_previews, base_module)}
     end)
+    |> Enum.sort_by(fn {_slug, group} -> normalize_sort_label(group.label) end)
+    |> Enum.map(&elem(&1, 1))
   end
 
   defp build_group([first | _] = previews, base_module) do
@@ -86,4 +88,6 @@ defmodule OperatelyWeb.EmailPreview.PreviewRegistryBuilder do
       _ -> "/" <> path
     end
   end
+
+  defp normalize_sort_label(label), do: String.downcase(label)
 end
