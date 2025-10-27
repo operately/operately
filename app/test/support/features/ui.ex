@@ -259,7 +259,11 @@ defmodule Operately.Support.Features.UI do
     fill(ctx, query(testid: id), with: value)
   end
 
-  def fill_text_field(state, testid: id, with: message, submit: submit \\ false) do
+  def fill_text_field(state, testid: id, with: message) do
+    fill_text_field(state, testid: id, with: message, submit: false)
+  end
+
+  def fill_text_field(state, testid: id, with: message, submit: submit) do
     #
     # Filling a text field is more compolicated than it seems.
     #
