@@ -3,7 +3,11 @@ defmodule OperatelyWeb.EmailPreview.Sidebar do
   Renders the sidebar navigation for email previews.
   """
 
+  import Plug.HTML, only: [html_escape: 1]
+
   def render(email_body, current_path, preview_registry) do
+    email_content = render_email_content(email_body)
+
     """
     <!DOCTYPE html>
     <html>
@@ -23,8 +27,10 @@ defmodule OperatelyWeb.EmailPreview.Sidebar do
         .sidebar-link { display: block; padding: 8px 20px 8px 36px; color: #495057; text-decoration: none; font-size: 14px; transition: background 0.15s; }
         .sidebar-link:hover { background: #e9ecef; }
         .sidebar-link.active { background: #007bff; color: white; font-weight: 500; }
-        .content { flex: 1; overflow-y: auto; background: #ffffff; }
-        .email-container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+        .content { flex: 1; overflow: hidden; background: #ffffff; display: flex; }
+        .email-container { flex: 1; overflow-y: auto; padding: 40px 20px; display: flex; justify-content: center; }
+        .email-frame { width: 100%; max-width: 800px; min-height: 100vh; border: none; display: block; background: #ffffff; }
+        .email-placeholder { width: 100%; max-width: 800px; min-height: 100vh; background: #ffffff; }
       </style>
     </head>
     <body>
@@ -38,7 +44,7 @@ defmodule OperatelyWeb.EmailPreview.Sidebar do
       </div>
       <div class="content">
         <div class="email-container">
-          #{email_body}
+          #{email_content}
         </div>
       </div>
     </body>
@@ -65,5 +71,17 @@ defmodule OperatelyWeb.EmailPreview.Sidebar do
       group_html <> "\n          " <> previews_html
     end)
     |> Enum.join("\n          ")
+  end
+
+  defp render_email_content(nil), do: placeholder()
+  defp render_email_content(""), do: placeholder()
+
+  defp render_email_content(email_body) do
+    escaped = email_body |> html_escape() |> IO.iodata_to_binary()
+    ~s(<iframe class="email-frame" srcdoc="#{escaped}"></iframe>)
+  end
+
+  defp placeholder do
+    ~s(<div class="email-placeholder"></div>)
   end
 end
