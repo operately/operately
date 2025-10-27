@@ -16,6 +16,11 @@ defmodule OperatelyWeb.EmailPreview.AssignmentsV2 do
     |> build_preview()
   end
 
+  def single do
+    single_group()
+    |> build_preview()
+  end
+
   defp build_preview(urgent_groups) do
     {company, person} = base_context()
 
@@ -42,6 +47,30 @@ defmodule OperatelyWeb.EmailPreview.AssignmentsV2 do
     }
 
     {company, person}
+  end
+
+  defp single_group do
+    [
+      group(
+        %{
+          id: "proj-001",
+          type: :project,
+          name: "Launch Website Project",
+          space_name: "Marketing Team",
+          path: "/projects/launch-website",
+          url: "https://app.operately.dev/projects/launch-website"
+        },
+        [
+          %{
+            display_label: "Submit weekly check-in",
+            badge_label: "Due today",
+            url: "https://app.operately.dev/projects/launch-website/check-ins/new",
+            due_status: :due_today,
+            category: :due_soon
+          }
+        ]
+      )
+    ]
   end
 
   defp simple_groups do
