@@ -4,6 +4,7 @@ import { Milestone, MilestoneComment } from "@/api";
 import { CommentSection } from "turboui";
 import { Paths } from "@/routes/paths";
 import { parseContextualDate } from "../contextualDates";
+import { parseContent, richContentToString } from "turboui/RichContent";
 
 interface ParsedMilestonesForTurboUi {
   orderedMilestones: ReturnType<typeof parseMilestoneForTurboUi>[];
@@ -40,6 +41,11 @@ export function parseMilestonesForTurboUi(
 }
 
 export function parseMilestoneForTurboUi(paths: Paths, milestone: Milestone) {
+  const description = parseContent(milestone.description || "{}");
+  const hasDescription = richContentToString(description).trim().length > 0;
+  const commentCount = milestone.commentsCount || 0;
+  const hasComments = commentCount > 0;
+
   return {
     id: milestone.id,
     name: milestone.title,
@@ -48,6 +54,9 @@ export function parseMilestoneForTurboUi(paths: Paths, milestone: Milestone) {
     link: paths.projectMilestonePath(milestone.id),
     tasksOrderingState: milestone.tasksOrderingState ?? [],
     completedAt: Time.parseDate(milestone.completedAt),
+    hasDescription,
+    hasComments,
+    commentCount,
   };
 }
 
