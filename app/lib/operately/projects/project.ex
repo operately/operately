@@ -304,9 +304,9 @@ defmodule Operately.Projects.Project do
 
   def load_milestones(p = %__MODULE__{}) do
     milestones =
-      for milestone <- Repo.preload(p, :milestones).milestones do
-        %{milestone | project: p}
-      end
+      Repo.preload(p, :milestones).milestones
+      |> Operately.Projects.Milestone.load_comments_count()
+      |> Enum.map(fn milestone -> %{milestone | project: p} end)
 
     Map.put(p, :milestones, milestones)
   end

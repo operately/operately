@@ -1317,6 +1317,7 @@ export interface Milestone {
   completedAt: string;
   description?: string | null;
   comments?: MilestoneComment[] | null;
+  commentsCount?: number | null;
   tasksKanbanState?: string | null;
   tasksOrderingState?: string[] | null;
   permissions?: ProjectPermissions | null;
@@ -1774,6 +1775,7 @@ export interface Task {
   creator?: Person | null;
   space?: Space | null;
   permissions?: ProjectPermissions | null;
+  commentsCount?: number | null;
 }
 
 export interface Timeframe {

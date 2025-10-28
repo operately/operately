@@ -13,6 +13,7 @@ import { InlineTaskCreator } from "./InlineTaskCreator";
 import { useInlineTaskCreator } from "../hooks/useInlineTaskCreator";
 import { SecondaryButton } from "../../Button";
 import classNames from "../../utils/classnames";
+import { createTestId } from "../../TestableElement";
 
 export interface MilestoneCardProps {
   milestone: Types.Milestone;
@@ -83,6 +84,7 @@ export function MilestoneCard({
             "flex items-center justify-between gap-3 px-4 py-3 bg-surface-dimmed border-b border-surface-outline",
             !milestone.dueDate && onMilestoneUpdate ? "group/milestone-header" : undefined,
           )}
+          data-test-id={createTestId("milestone", milestone.id)}
         >
           <div className="flex items-center gap-2 flex-1 min-w-0">
             {/* Progress pie chart */}
@@ -108,17 +110,15 @@ export function MilestoneCard({
               {/* Milestone indicators */}
               <div className="flex items-center gap-1 flex-shrink-0 text-content-dimmed">
                 {milestone.hasDescription && (
-                  <span className="flex items-center">
+                  <span className="flex items-center" data-test-id="description-indicator">
                     <IconFileText size={12} />
                   </span>
                 )}
 
                 {milestone.hasComments && (
-                  <span className="flex items-center">
+                  <span className="flex items-center" data-test-id="comments-indicator">
                     <IconMessageCircle size={12} />
-                    {milestone.commentCount && (
-                      <span className="ml-0.5 text-xs">{milestone.commentCount}</span>
-                    )}
+                    {milestone.commentCount && <span className="ml-0.5 text-xs">{milestone.commentCount}</span>}
                   </span>
                 )}
               </div>
