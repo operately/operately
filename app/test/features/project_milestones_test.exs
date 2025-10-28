@@ -90,6 +90,42 @@ defmodule Operately.Features.ProjectMilestonesTest do
       |> Steps.reload_project_page()
       |> Steps.assert_milestone_updated(name: "Edited milestone", due_date: formatted_date)
     end
+
+    feature "add milestone sends notification and email to champion", ctx do
+      ctx
+      |> UI.login_as(ctx.reviewer)
+      |> Steps.visit_project_page()
+      |> Steps.add_milestone(name: "New milestone")
+      |> Steps.assert_add_milestone_form_closed()
+      |> Steps.assert_milestone_created(name: "New milestone")
+      |> then(fn ctx ->
+        milestone = Operately.Repo.get_by(Operately.Projects.Milestone, title: "New milestone")
+        Map.put(ctx, :milestone, milestone)
+      end)
+      |> Steps.assert_milestone_creation_notification_sent()
+      |> Steps.assert_milestone_creation_email_sent()
+      |> Steps.assert_milestone_creation_visible_in_feed()
+    end
+
+    feature "create and delete milestone, verify notifications and feed still work", ctx do
+      ctx
+      |> UI.login_as(ctx.reviewer)
+      |> Steps.visit_project_page()
+      |> Steps.add_milestone(name: "Temporary milestone")
+      |> Steps.assert_add_milestone_form_closed()
+      |> Steps.assert_milestone_created(name: "Temporary milestone")
+      |> then(fn ctx ->
+        milestone = Operately.Repo.get_by(Operately.Projects.Milestone, title: "Temporary milestone")
+        Map.put(ctx, :milestone, milestone)
+      end)
+      |> Steps.visit_milestone_page()
+      |> Steps.delete_milestone()
+      |> Steps.assert_redirected_to_project_page()
+      |> Steps.assert_milestone_deleted()
+      |> Steps.assert_milestone_creation_notification_sent()
+      |> Steps.assert_milestone_creation_email_sent()
+      |> Steps.assert_milestone_creation_visible_in_feed()
+    end
   end
 
   describe "Milestone page" do

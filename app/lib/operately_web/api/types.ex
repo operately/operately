@@ -127,7 +127,7 @@ defmodule OperatelyWeb.Api.Types do
     field :company, :company
     field :space, :space
     field :project, :project
-    field :milestone, :milestone
+    field :milestone, :milestone, null: true
     field :milestone_name, :string
   end
 

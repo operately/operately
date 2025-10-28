@@ -449,6 +449,36 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     end)
   end
 
+  step :assert_milestone_creation_visible_in_feed, ctx do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
+    |> UI.find(UI.query(testid: "project-feed"), fn el ->
+      el
+      |> FeedSteps.assert_project_milestone_created(
+        author: ctx.reviewer,
+        milestone_name: ctx.milestone.title
+      )
+    end)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> UI.find(UI.query(testid: "space-feed"), fn el ->
+      el
+      |> FeedSteps.assert_project_milestone_created(
+        author: ctx.reviewer,
+        milestone_name: ctx.milestone.title,
+        project_name: ctx.project.name
+      )
+    end)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.find(UI.query(testid: "company-feed"), fn el ->
+      el
+      |> FeedSteps.assert_project_milestone_created(
+        author: ctx.reviewer,
+        milestone_name: ctx.milestone.title,
+        project_name: ctx.project.name
+      )
+    end)
+  end
+
   #
   # Emails
   #
@@ -503,6 +533,16 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     })
   end
 
+  step :assert_milestone_creation_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.champion,
+      author: ctx.reviewer,
+      action: "created the \"#{ctx.milestone.title}\" milestone"
+    })
+  end
+
   #
   # Notifications
   #
@@ -551,6 +591,15 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
       action: "Re: #{ctx.milestone.title}"
+    })
+  end
+
+  step :assert_milestone_creation_notification_sent, ctx do
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.reviewer,
+      action: "A new milestone \"#{ctx.milestone.title}\" was created"
     })
   end
 

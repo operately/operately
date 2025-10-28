@@ -603,7 +603,7 @@ export interface ActivityContentProjectMilestoneCreation {
   company: Company;
   space: Space;
   project: Project;
-  milestone: Milestone;
+  milestone: Milestone | null;
   milestoneName: string;
 }
 
