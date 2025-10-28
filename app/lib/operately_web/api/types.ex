@@ -1189,6 +1189,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :creator, :person, null: true
     field? :space, :space, null: true
     field? :permissions, :project_permissions, null: true
+    field? :comments_count, :integer, null: true
   end
 
   object :activity_content_discussion_editing do
@@ -1631,6 +1632,7 @@ defmodule OperatelyWeb.Api.Types do
     field :completed_at, :date
     field? :description, :string, null: true
     field? :comments, list_of(:milestone_comment), null: true
+    field? :comments_count, :integer, null: true
     field? :tasks_kanban_state, :string, null: true
     field? :tasks_ordering_state, list_of(:string), null: true
     field? :permissions, :project_permissions, null: true

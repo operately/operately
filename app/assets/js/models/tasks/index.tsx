@@ -28,6 +28,8 @@ export function parseTasksForTurboUi(paths: Paths, tasks: BackendTask[]): TaskBo
 
 export function parseTaskForTurboUi(paths: Paths, task: BackendTask): TaskBoard.Task {
   const description = parseContent(task.description || "{}");
+  const commentCount = task.commentsCount || 0;
+  const hasComments = commentCount > 0;
 
   return {
     id: task.id,
@@ -39,8 +41,8 @@ export function parseTaskForTurboUi(paths: Paths, task: BackendTask): TaskBoard.
     milestone: task.milestone ? parseMilestoneForTurboUi(paths, task.milestone) : null,
     dueDate: parseContextualDate(task.dueDate),
     hasDescription: richContentToString(description).trim().length > 0,
-    hasComments: false,
-    commentCount: 0,
+    hasComments,
+    commentCount,
     comments: undefined,
   };
 }

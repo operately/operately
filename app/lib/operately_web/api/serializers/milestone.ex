@@ -16,6 +16,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Milestone do
       },
       tasks_ordering_state: OperatelyWeb.Api.Serializer.serialize(milestone.tasks_ordering_state),
       comments: OperatelyWeb.Api.Serializer.serialize(milestone.comments),
+      comments_count: milestone.comments_count,
       permissions: OperatelyWeb.Api.Serializer.serialize(milestone.permissions),
       timeframe: OperatelyWeb.Api.Serializer.serialize(milestone.timeframe),
       space: OperatelyWeb.Api.Serializer.serialize(milestone.space),

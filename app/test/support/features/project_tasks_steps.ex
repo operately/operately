@@ -26,6 +26,21 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> Factory.add_project_milestone(:another_milestone, :project)
   end
 
+  step :given_task_without_comments_exists, ctx do
+    ctx
+    |> Map.put(:creator, ctx.champion)
+    |> Factory.add_project_task(:task_without_comments, :milestone)
+  end
+
+  step :given_task_with_comments_exists, ctx do
+    ctx
+    |> Map.put(:creator, ctx.champion)
+    |> Factory.add_project_task(:task_with_comments, :milestone)
+    |> Factory.preload(:task_with_comments, :project)
+    |> Factory.add_comment(:comment1, :task_with_comments)
+    |> Factory.add_comment(:comment2, :task_with_comments)
+  end
+
   step :visit_project_page, ctx do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
@@ -650,6 +665,44 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> UI.login_as(ctx.space_member)
     |> NotificationsSteps.visit_notifications_page()
     |> UI.refute_text("Updated the description of: #{ctx.task.name}")
+  end
+
+  step :assert_task_description_indicator_visible, ctx do
+    task_id = Paths.task_id(ctx.task)
+
+    ctx
+    |> UI.find(UI.query(testid: UI.testid(["task", task_id])), fn el ->
+      UI.assert_has(el, testid: "description-indicator")
+    end)
+  end
+
+  step :assert_task_description_indicator_not_visible, ctx do
+    task_id = Paths.task_id(ctx.task)
+
+    ctx
+    |> UI.find(UI.query(testid: UI.testid(["task", task_id])), fn el ->
+      UI.refute_has(el, testid: "description-indicator")
+    end)
+  end
+
+  step :assert_task_comment_indicator_not_visible, ctx do
+    task_id = Paths.task_id(ctx.task_without_comments)
+
+    ctx
+    |> UI.find(UI.query(testid: UI.testid(["task", task_id])), fn el ->
+      UI.refute_has(el, testid: "comments-indicator")
+    end)
+  end
+
+  step :assert_task_comment_count, ctx, expected_count do
+    task_id = Paths.task_id(ctx.task_with_comments)
+
+    ctx
+    |> UI.find(UI.query(testid: UI.testid(["task", task_id])), fn el ->
+      el
+      |> UI.assert_has(testid: "comments-indicator")
+      |> UI.assert_text(Integer.to_string(expected_count))
+    end)
   end
 
   #

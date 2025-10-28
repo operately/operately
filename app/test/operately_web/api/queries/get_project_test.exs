@@ -329,8 +329,8 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       })
 
       assert length(res.project.milestones) == 2
-      assert Enum.find(res.project.milestones, &(&1 == Serializer.serialize(ctx.milestone1)))
-      assert Enum.find(res.project.milestones, &(&1 == Serializer.serialize(ctx.milestone2)))
+      assert Enum.find(res.project.milestones, &(&1.id == Paths.milestone_id(ctx.milestone1)))
+      assert Enum.find(res.project.milestones, &(&1.id == Paths.milestone_id(ctx.milestone2)))
 
       # doesn't include archived milestones
       {:ok, _} = Repo.soft_delete(ctx.milestone1)
@@ -341,7 +341,33 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       })
 
       assert length(res.project.milestones) == 1
-      assert Enum.find(res.project.milestones, &(&1 == Serializer.serialize(ctx.milestone2)))
+      assert Enum.find(res.project.milestones, &(&1.id == Paths.milestone_id(ctx.milestone2)))
+    end
+
+    test "include_milestones includes comments_count", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:creator)
+        |> Factory.add_space(:space)
+        |> Factory.add_project(:project, :space)
+        |> Factory.add_project_milestone(:milestone1, :project)
+        |> Factory.preload(:milestone1, :project)
+        |> Factory.add_project_milestone(:milestone2, :project)
+        |> Factory.add_comment(:comment1, :milestone1)
+        |> Factory.add_comment(:comment2, :milestone1)
+        |> Factory.add_comment(:comment3, :milestone1)
+
+      # include milestones with comments_count
+      assert {200, res} = query(ctx.conn, :get_project, %{
+        id: Paths.project_id(ctx.project),
+        include_milestones: true,
+      })
+
+      milestone1 = Enum.find(res.project.milestones, &(&1.id == Paths.milestone_id(ctx.milestone1)))
+      milestone2 = Enum.find(res.project.milestones, &(&1.id == Paths.milestone_id(ctx.milestone2)))
+
+      assert milestone1.comments_count == 3
+      assert milestone2.comments_count == 0
     end
   end
 

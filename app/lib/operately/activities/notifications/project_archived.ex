@@ -9,7 +9,7 @@ defmodule Operately.Activities.Notifications.ProjectArchived do
   alias Operately.Projects.{Project, Notifications}
 
   def dispatch(activity) do
-    {:ok, project} = Project.get(:system, id: activity.content["project_id"])
+    {:ok, project} = Project.get(:system, id: activity.content["project_id"], opts: [with_deleted: true])
     subscriber_ids = Notifications.get_project_subscribers(project)
 
     subscriber_ids
