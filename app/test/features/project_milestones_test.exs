@@ -213,10 +213,14 @@ defmodule Operately.Features.ProjectMilestonesTest do
       ctx
       |> Steps.visit_tasks_tab_on_project_page()
       |> Steps.assert_milestone_description_indicator_not_visible()
+      |> Steps.visit_project_page()
+      |> Steps.assert_milestone_description_indicator_not_visible_on_overview()
       |> Steps.visit_milestone_page()
       |> Steps.edit_milestone_description("This is a milestone description")
       |> Steps.visit_tasks_tab_on_project_page()
       |> Steps.assert_milestone_description_indicator_visible()
+      |> Steps.visit_project_page()
+      |> Steps.assert_milestone_description_indicator_visible_on_overview()
     end
 
     feature "mark milestone as completed", ctx do
@@ -346,6 +350,9 @@ defmodule Operately.Features.ProjectMilestonesTest do
       |> Steps.visit_tasks_tab_on_project_page()
       |> Steps.assert_milestone_comment_indicator_not_visible()
       |> Steps.assert_milestone_comment_count(2)
+      |> Steps.visit_project_page()
+      |> Steps.assert_milestone_comment_indicator_not_visible_on_overview()
+      |> Steps.assert_milestone_comment_count_on_overview(2)
     end
 
     feature "edit milestone comment", ctx do
