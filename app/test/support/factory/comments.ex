@@ -45,5 +45,6 @@ defmodule Operately.Support.Factory.Comments do
   defp find_entity_type(%Operately.ResourceHubs.File{}), do: "resource_hub_file"
   defp find_entity_type(%Operately.ResourceHubs.Link{}), do: "resource_hub_link"
   defp find_entity_type(%Operately.Projects.Milestone{}), do: "project_milestone"
+  defp find_entity_type(%Operately.Tasks.Task{}), do: "project_task"
   defp find_entity_type(%Operately.Updates.Comment{}), do: "comment"
 end
