@@ -492,6 +492,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
             preload: [:assigned_people, :milestone]
           )
           |> Repo.all()
+          |> Operately.Tasks.Task.load_comments_count()
 
         {:ok, tasks}
       end)

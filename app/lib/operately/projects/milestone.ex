@@ -34,6 +34,7 @@ defmodule Operately.Projects.Milestone do
 
     # populated with after load hooks
     field :permissions, :any, virtual: true
+    field :comments_count, :integer, virtual: true
 
     timestamps()
     soft_delete()
@@ -81,6 +82,28 @@ defmodule Operately.Projects.Milestone do
   #
   # After load hooks
   #
+
+  import Ecto.Query, only: [from: 2]
+
+  def load_comments_count(milestones) do
+    milestone_ids = Enum.map(milestones, &(&1.id))
+
+    # Only count comments with action :none (actual comments).
+    # Actions :complete and :reopen are milestone status changes, not comments.
+    counts =
+      from(mc in Operately.Comments.MilestoneComment,
+        where: mc.milestone_id in ^milestone_ids and mc.action == :none,
+        group_by: mc.milestone_id,
+        select: {mc.milestone_id, count(mc.id)}
+      )
+      |> Operately.Repo.all()
+      |> Enum.into(%{})
+
+    Enum.map(milestones, fn m ->
+      count = Map.get(counts, m.id, 0)
+      Map.put(m, :comments_count, count)
+    end)
+  end
 
   def set_permissions(milestone = %__MODULE__{}) do
     perms = Operately.Projects.Permissions.calculate(milestone.request_info.access_level)

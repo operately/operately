@@ -105,6 +105,26 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert Paths.task_id(ctx.task2) in task_ids
       assert Paths.task_id(ctx.task3) in task_ids
     end
+
+    test "it includes comments_count for tasks", ctx do
+      ctx =
+        ctx
+        |> Factory.preload(:task, :project)
+        |> Factory.add_comment(:comment1, :task)
+        |> Factory.add_comment(:comment2, :task)
+        |> Factory.add_project_task(:task2, :milestone)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = query(ctx.conn, [:project_tasks, :list], %{
+        project_id: Paths.project_id(ctx.project)
+      })
+
+      task_with_comments = Enum.find(res.tasks, &(&1.id == Paths.task_id(ctx.task)))
+      task_without_comments = Enum.find(res.tasks, &(&1.id == Paths.task_id(ctx.task2)))
+
+      assert task_with_comments.comments_count == 2
+      assert task_without_comments.comments_count == 0
+    end
   end
 
   describe "create task" do

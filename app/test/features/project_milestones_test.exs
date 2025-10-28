@@ -209,6 +209,16 @@ defmodule Operately.Features.ProjectMilestonesTest do
       |> Steps.assert_space_member_milestone_description_email_sent()
     end
 
+    feature "milestone shows description indicator when description is added", ctx do
+      ctx
+      |> Steps.visit_tasks_tab_on_project_page()
+      |> Steps.assert_milestone_description_indicator_not_visible()
+      |> Steps.visit_milestone_page()
+      |> Steps.edit_milestone_description("This is a milestone description")
+      |> Steps.visit_tasks_tab_on_project_page()
+      |> Steps.assert_milestone_description_indicator_visible()
+    end
+
     feature "mark milestone as completed", ctx do
       ctx
       |> Steps.visit_milestone_page()
@@ -327,6 +337,15 @@ defmodule Operately.Features.ProjectMilestonesTest do
       |> Steps.assert_comment_visible_in_feed_after_deletion(comment)
       |> Steps.assert_comment_email_sent_to_project_reviewer()
       |> Steps.assert_comment_notification_sent_after_deletion()
+    end
+
+    feature "milestone shows comment indicator with count when comments exist", ctx do
+      ctx
+      |> Steps.given_milestone_without_comments_exists()
+      |> Steps.given_milestone_with_comments_exists()
+      |> Steps.visit_tasks_tab_on_project_page()
+      |> Steps.assert_milestone_comment_indicator_not_visible()
+      |> Steps.assert_milestone_comment_count(2)
     end
 
     feature "edit milestone comment", ctx do
