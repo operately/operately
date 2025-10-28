@@ -37,6 +37,21 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     |> Factory.add_comment(:comment, :milestone)
   end
 
+  step :given_milestone_with_comments_exists, ctx do
+    ctx
+    |> Map.put(:creator, ctx.champion)
+    |> Factory.add_project_milestone(:milestone_with_comments, :project)
+    |> Factory.preload(:milestone_with_comments, :project)
+    |> Factory.add_comment(:comment1, :milestone_with_comments)
+    |> Factory.add_comment(:comment2, :milestone_with_comments)
+    |> Factory.add_comment(:comment3, :milestone_with_comments)
+  end
+
+  step :given_milestone_without_comments_exists, ctx do
+    ctx
+    |> Factory.add_project_milestone(:milestone_without_comments, :project)
+  end
+
   step :given_that_milestone_project_doesnt_have_champion, ctx do
     from(c in Operately.Projects.Contributor,
       where: c.project_id == ^ctx.project.id,
@@ -642,6 +657,44 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
       author: ctx.reviewer,
       action: "A new milestone \"#{ctx.milestone.title}\" was created"
     })
+  end
+
+  step :assert_milestone_description_indicator_visible, ctx do
+    milestone_id = Paths.milestone_id(ctx.milestone)
+
+    ctx
+    |> UI.find(UI.query(testid: UI.testid(["milestone", milestone_id])), fn el ->
+      UI.assert_has(el, testid: "description-indicator")
+    end)
+  end
+
+  step :assert_milestone_description_indicator_not_visible, ctx do
+    milestone_id = Paths.milestone_id(ctx.milestone)
+
+    ctx
+    |> UI.find(UI.query(testid: UI.testid(["milestone", milestone_id])), fn el ->
+      UI.refute_has(el, testid: "description-indicator")
+    end)
+  end
+
+  step :assert_milestone_comment_indicator_not_visible, ctx do
+    milestone_id = Paths.milestone_id(ctx.milestone_without_comments)
+
+    ctx
+    |> UI.find(UI.query(testid: UI.testid(["milestone", milestone_id])), fn el ->
+      UI.refute_has(el, testid: "comments-indicator")
+    end)
+  end
+
+  step :assert_milestone_comment_count, ctx, expected_count do
+    milestone_id = Paths.milestone_id(ctx.milestone_with_comments)
+
+    ctx
+    |> UI.find(UI.query(testid: UI.testid(["milestone", milestone_id])), fn el ->
+      el
+      |> UI.assert_has(testid: "comments-indicator")
+      |> UI.assert_text(Integer.to_string(expected_count))
+    end)
   end
 
   #

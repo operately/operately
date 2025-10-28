@@ -1316,6 +1316,7 @@ export interface Milestone {
   timeframe: Timeframe | null;
   completedAt: string;
   description?: string | null;
+  comments?: MilestoneComment[] | null;
   commentsCount?: number | null;
   tasksKanbanState?: string | null;
   tasksOrderingState?: string[] | null;
