@@ -6,6 +6,7 @@ import { PersonField } from "../../PersonField";
 import { useDraggable } from "../../utils/DragAndDrop";
 import classNames from "../../utils/classnames";
 import { StatusSelector } from "./StatusSelector";
+import { createTestId } from "../../TestableElement";
 
 // Using shared types
 import { Person, TaskWithIndex } from "../types";
@@ -79,7 +80,7 @@ export function TaskItem({
       style={itemStyle(task.id)}
       className={classNames("group/task-row", itemClasses)}
     >
-      <div className="flex items-center px-4 py-2.5 bg-surface-base hover:bg-surface-highlight">
+      <div className="flex items-center px-4 py-2.5 bg-surface-base hover:bg-surface-highlight" data-test-id={createTestId("task", task.id)}>
         {/* Left side: Status and task info */}
         <div className="flex-1 flex items-center gap-2 min-w-0">
           <div className="flex items-center gap-1.5 flex-1 min-w-0">
@@ -105,7 +106,7 @@ export function TaskItem({
                   <span className="truncate">{task.title}</span>
 
                   {task.hasDescription && (
-                    <span className="text-content-dimmed flex-shrink-0" title="Has description">
+                    <span className="text-content-dimmed flex-shrink-0" title="Has description" data-test-id="description-indicator">
                       <IconFileText size={14} />
                     </span>
                   )}
@@ -114,6 +115,7 @@ export function TaskItem({
                     <span
                       className="text-content-dimmed flex items-center flex-shrink-0"
                       title={`${task.commentCount} comment${task.commentCount === 1 ? "" : "s"}`}
+                      data-test-id="comments-indicator"
                     >
                       <IconMessageCircle size={14} />
                       <span className="ml-0.5 text-xs text-content-dimmed">{task.commentCount}</span>

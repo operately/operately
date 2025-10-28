@@ -242,6 +242,20 @@ defmodule Operately.Features.ProjectTasksTest do
   end
 
   @tag login_as: :champion
+  feature "task shows description indicator when description is added", ctx do
+    ctx
+    |> Steps.given_task_exists()
+    |> Steps.visit_project_page()
+    |> Steps.go_to_tasks_tab()
+    |> Steps.assert_task_description_indicator_not_visible()
+    |> Steps.visit_task_page()
+    |> Steps.edit_task_description("This is a task description")
+    |> Steps.visit_project_page()
+    |> Steps.go_to_tasks_tab()
+    |> Steps.assert_task_description_indicator_visible()
+  end
+
+  @tag login_as: :champion
   feature "mentioning a person in a task description sends notification and email", ctx do
     ctx =
       ctx
@@ -433,6 +447,17 @@ defmodule Operately.Features.ProjectTasksTest do
     |> Steps.delete_task()
     |> Steps.assert_task_comment_visible_in_feed(person: ctx.reviewer, task_name: "a task")
     |> Steps.assert_comment_posted_notification_sent(task_name: "a task")
+  end
+
+  @tag login_as: :champion
+  feature "task shows comment indicator with count when comments exist", ctx do
+    ctx
+    |> Steps.given_task_without_comments_exists()
+    |> Steps.given_task_with_comments_exists()
+    |> Steps.visit_project_page()
+    |> Steps.go_to_tasks_tab()
+    |> Steps.assert_task_comment_indicator_not_visible()
+    |> Steps.assert_task_comment_count(2)
   end
 
   @tag login_as: :champion
