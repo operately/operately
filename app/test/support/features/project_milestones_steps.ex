@@ -427,6 +427,37 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     end)
   end
 
+  step :assert_comment_visible_in_feed_after_deletion, ctx, comment do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
+    |> UI.find(UI.query(testid: "project-feed"), fn el ->
+      el
+      |> FeedSteps.assert_project_milestone_commented(
+        author: ctx.champion,
+        milestone_tile: "a milestone",
+        comment: comment
+      )
+    end)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> UI.find(UI.query(testid: "space-feed"), fn el ->
+      el
+      |> FeedSteps.assert_project_milestone_commented(
+        author: ctx.champion,
+        milestone_tile: "a milestone",
+        comment: comment
+      )
+    end)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.find(UI.query(testid: "company-feed"), fn el ->
+      el
+      |> FeedSteps.assert_project_milestone_commented(
+        author: ctx.champion,
+        milestone_tile: "a milestone",
+        comment: comment
+      )
+    end)
+  end
+
   step :assert_milestone_deleted_visible_in_feed, ctx do
     short =
       "#{Operately.People.Person.first_name(ctx.champion)} deleted the \"#{ctx.milestone.title}\" milestone"
@@ -581,6 +612,16 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
       action: "Re: #{ctx.milestone.title}"
+    })
+  end
+
+  step :assert_comment_notification_sent_after_deletion, ctx do
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> UI.visit(Paths.notifications_path(ctx.company))
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.champion,
+      action: "Commented on a milestone"
     })
   end
 

@@ -314,6 +314,21 @@ defmodule Operately.Features.ProjectMilestonesTest do
       |> Steps.assert_comment_notification_sent_to_space_member()
     end
 
+    feature "post comment then delete milestone, verify feed and notifications don't break", ctx do
+      comment = "This is a comment"
+
+      ctx
+      |> Steps.visit_milestone_page()
+      |> Steps.post_comment(comment)
+      |> Steps.assert_comment(comment)
+      |> Steps.delete_milestone()
+      |> Steps.assert_redirected_to_project_page()
+      |> Steps.assert_milestone_deleted()
+      |> Steps.assert_comment_visible_in_feed_after_deletion(comment)
+      |> Steps.assert_comment_email_sent_to_project_reviewer()
+      |> Steps.assert_comment_notification_sent_after_deletion()
+    end
+
     feature "edit milestone comment", ctx do
       new_comment = "Edited comment"
 
