@@ -129,6 +129,7 @@ function ProjectDates(props: ProjectPage.State) {
           placeholder="Set due date"
           testId="project-due-date"
           showOverdueWarning={props.state === "active"}
+          showOverdueMessage={props.state === "active"}
         />
       </SidebarSection>
     </div>
