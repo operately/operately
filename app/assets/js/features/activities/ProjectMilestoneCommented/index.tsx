@@ -14,7 +14,13 @@ const ProjectMilestoneCommented: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity): string {
-    return paths.projectMilestonePath(content(activity).milestone!.id!);
+    const { milestone, project } = content(activity);
+
+    if (milestone) {
+      return paths.projectMilestonePath(milestone.id);
+    } else {
+      return paths.projectPath(project.id);
+    }
   },
 
   PageTitle(_props: { activity: any }) {
@@ -32,7 +38,7 @@ const ProjectMilestoneCommented: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const { milestone, project } = content(activity);
     const milestoneName = milestone ? milestoneLink(milestone) : "a milestone";
-    const what = didWhat(content(activity).commentAction!);
+    const what = didWhat(content(activity).commentAction);
 
     if (page === "project") {
       return feedTitle(activity, what, "the", milestoneName, "milestone");
@@ -66,23 +72,36 @@ const ProjectMilestoneCommented: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    const action = content(activity).commentAction!;
-    const title = content(activity).milestone!.title!;
+    const { milestone, commentAction } = content(activity);
+    const title = milestone?.title;
 
-    switch (action) {
-      case "none":
-        return "Re: " + title;
-      case "complete":
-        return "Closed milestone: " + title;
-      case "reopen":
-        return "Re-opened milestone: " + title;
-      default:
-        throw new Error("Unknown action: " + action);
+    if (title) {
+      switch (commentAction) {
+        case "none":
+          return "Re: " + title;
+        case "complete":
+          return "Closed milestone: " + title;
+        case "reopen":
+          return "Re-opened milestone: " + title;
+        default:
+          throw new Error("Unknown action: " + commentAction);
+      }
+    } else {
+      switch (commentAction) {
+        case "none":
+          return "Commented on a milestone";
+        case "complete":
+          return "Closed a milestone";
+        case "reopen":
+          return "Re-opened a milestone";
+        default:
+          throw new Error("Unknown action: " + commentAction);
+      }
     }
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
-    return content(activity).project!.name!;
+    return content(activity).project.name;
   },
 };
 
