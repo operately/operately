@@ -4,7 +4,7 @@ import { match } from "ts-pattern";
 import { IconCalendarEvent, IconX } from "../icons";
 import { createTestId, TestableElement } from "../TestableElement";
 import classNames from "../utils/classnames";
-import { isOverdue } from "../utils/time";
+import { isOverdue, durationHumanized } from "../utils/time";
 import ActionButtons from "./components/ActionButtons";
 import DateTypeSelector from "./components/DateTypeSelector";
 import { InlineCalendar } from "./components/InlineCalendar";
@@ -36,6 +36,7 @@ export namespace DateField {
     placeholder?: string;
     readonly?: boolean;
     showOverdueWarning?: boolean;
+    showOverdueMessage?: boolean;
     variant?: "inline" | "form-field";
     hideCalendarIcon?: boolean;
     useStartOfPeriod?: boolean;
@@ -81,6 +82,7 @@ export function DateField({
   readonly = false,
   showOverdueWarning = false,
   variant = "inline",
+  showOverdueMessage = false,
   hideCalendarIcon = false,
   useStartOfPeriod = false,
   size = "std",
@@ -164,6 +166,7 @@ export function DateField({
             onClick={handleTriggerClick}
             readonly={readonly}
             showOverdueWarning={showOverdueWarning}
+            showOverdueMessage={showOverdueMessage}
             variant={variant}
             hideCalendarIcon={hideCalendarIcon}
             testId={testId}
@@ -212,6 +215,7 @@ interface DatePickerTriggerProps extends TestableElement {
   onClick: () => void;
   readonly: boolean;
   showOverdueWarning: boolean;
+  showOverdueMessage: boolean;
   variant: "inline" | "form-field";
   hideCalendarIcon: boolean;
   size: "std" | "small" | "lg";
@@ -226,6 +230,7 @@ function DatePickerTrigger({
   onClick,
   readonly,
   showOverdueWarning,
+  showOverdueMessage,
   variant,
   hideCalendarIcon,
   size,
@@ -270,30 +275,43 @@ function DatePickerTrigger({
     onClick();
   };
 
+  const shouldShowMessage = showOverdueMessage && isDateOverdue;
+  const overdueMessage = shouldShowMessage && selectedDate?.date
+    ? `Overdue by ${durationHumanized(selectedDate.date, new Date())}`
+    : null;
+
   return (
-    <button
-      type="button"
-      className={triggerClassName}
-      onClick={handleClick}
-      disabled={readonly}
-      aria-readonly={readonly}
-      aria-label={ariaLabel}
-      data-test-id={testId}
-    >
-      <span className={elemClass}>
-        {!hideCalendarIcon && (
-          <IconCalendarEvent
-            size={match(size)
-              .with("small", () => 12)
-              .with("std", () => 16)
-              .with("lg", () => 18)
-              .exhaustive()}
-            className={isDateOverdue && showOverdueWarning ? "text-content-error -mt-[1px]" : "-mt-[1px]"}
-          />
-        )}
-        <span className="truncate">{displayText}</span>
-      </span>
-    </button>
+    <div className="inline-block">
+      <button
+        type="button"
+        className={triggerClassName}
+        onClick={handleClick}
+        disabled={readonly}
+        aria-readonly={readonly}
+        aria-label={ariaLabel}
+        data-test-id={testId}
+      >
+        <span className={elemClass}>
+          {!hideCalendarIcon && (
+            <IconCalendarEvent
+              size={match(size)
+                .with("small", () => 12)
+                .with("std", () => 16)
+                .with("lg", () => 18)
+                .exhaustive()}
+              className={isDateOverdue && showOverdueWarning ? "text-content-error -mt-[1px]" : "-mt-[1px]"}
+            />
+          )}
+          <span className="truncate">{displayText}</span>
+        </span>
+      </button>
+
+      {overdueMessage && (
+        <div className="text-xs text-content-error mt-1">
+          {overdueMessage}
+        </div>
+      )}
+    </div>
   );
 }
 
