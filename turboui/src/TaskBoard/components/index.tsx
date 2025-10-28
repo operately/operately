@@ -260,7 +260,7 @@ function StickyActionBar({
   internalTasks,
 }: ActionBarProps) {
   return (
-    <header className="sticky top-0 z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between  py-6 bg-surface-base">
+    <header className="sticky top-0 z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between py-6 bg-surface-base px-4 lg:px-0">
       <div className="flex flex-row items-center gap-4">
         <PrimaryButton
           size="xs"
