@@ -11,8 +11,10 @@ const ProjectMilestoneCreation: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(_paths: Paths, _activity: Activity) {
-    throw new Error("Not implemented");
+  pagePath(paths: Paths, activity: Activity) {
+    const { milestone } = content(activity);
+
+    return paths.projectMilestonePath(milestone.id);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -28,8 +30,8 @@ const ProjectMilestoneCreation: ActivityHandler = {
   },
 
   FeedItemTitle(props: { activity: Activity; page: string }) {
-    const project = content(props.activity).project!;
-    const milestoneName = content(props.activity).milestoneName!;
+    const project = content(props.activity).project;
+    const milestoneName = content(props.activity).milestoneName;
     const message = `added the ${milestoneName} milestone`;
 
     if (props.page === "project") {
