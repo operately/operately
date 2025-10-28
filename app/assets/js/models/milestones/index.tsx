@@ -1,10 +1,9 @@
 import * as People from "@/models/people";
 import * as Time from "@/utils/time";
 import { Milestone, MilestoneComment } from "@/api";
-import { CommentSection } from "turboui";
+import { CommentSection, parseContent, richContentToString } from "turboui";
 import { Paths } from "@/routes/paths";
 import { parseContextualDate } from "../contextualDates";
-import { parseContent, richContentToString } from "turboui/RichContent";
 
 interface ParsedMilestonesForTurboUi {
   orderedMilestones: ReturnType<typeof parseMilestoneForTurboUi>[];
