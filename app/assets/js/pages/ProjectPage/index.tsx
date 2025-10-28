@@ -24,7 +24,7 @@ import { parseContextualDate, serializeContextualDate } from "../../models/conte
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 
-export default { name: "ProjectV2Page", loader, Page } as PageModule;
+export default { name: "ProjectPage", loader, Page } as PageModule;
 export { pageCacheKey as projectPageCacheKey };
 
 function pageCacheKey(id: string): string {

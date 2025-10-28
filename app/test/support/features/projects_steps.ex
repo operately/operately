@@ -281,6 +281,10 @@ defmodule Operately.Support.Features.ProjectSteps do
     ctx |> UI.assert_text("Set due date", testid: "project-due-date")
   end
 
+  step :assert_project_overdue_message, ctx, expected_message do
+    ctx |> UI.assert_text(expected_message)
+  end
+
   step :assert_project_due_date_change_visible_in_feed, ctx, date_text do
     short = "#{Person.first_name(ctx.champion)} changed the due date to #{date_text}"
     long = "#{Person.first_name(ctx.champion)} changed the due date to #{date_text} on the #{ctx.project.name}"
