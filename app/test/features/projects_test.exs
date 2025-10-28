@@ -109,6 +109,19 @@ defmodule Operately.Features.ProjectsTest do
     end
 
     @tag login_as: :champion
+    feature "overdue project shows overdue message", ctx do
+      three_days_ago = Date.utc_today() |> Date.add(-3)
+      fifteen_days_ago = Date.utc_today() |> Date.add(-15)
+
+      ctx
+      |> Steps.visit_project_page()
+      |> Steps.edit_project_due_date(three_days_ago)
+      |> Steps.assert_project_overdue_message("Overdue by 3 days")
+      |> Steps.edit_project_due_date(fifteen_days_ago)
+      |> Steps.assert_project_overdue_message("Overdue by 2 weeks")
+    end
+
+    @tag login_as: :champion
     feature "export project as markdown", ctx do
       ctx
       |> Steps.visit_project_page()

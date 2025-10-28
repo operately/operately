@@ -68,7 +68,7 @@ function pageCacheKey(id: string): string {
   return `v7-TaskV2Page.task-${id}`;
 }
 
-export default { name: "TaskV2Page", loader, Page } as PageModule;
+export default { name: "TaskPage", loader, Page } as PageModule;
 
 function Page() {
   const paths = usePaths();

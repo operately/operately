@@ -23,7 +23,7 @@ import { projectPageCacheKey } from "../ProjectPage";
 import { useComments } from "./useComments";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
-export default { name: "MilestoneV2Page", loader, Page } as PageModule;
+export default { name: "MilestonePage", loader, Page } as PageModule;
 
 type TurboUiComment = CommentSection.Comment | CommentSection.MilestoneActivity;
 
