@@ -49,6 +49,7 @@ defmodule Operately.Tasks.Task do
 
     # populated with after load hooks
     field :permissions, :any, virtual: true
+    field :comments_count, :integer, virtual: true
 
     timestamps()
     requester_access_level()
@@ -96,6 +97,24 @@ defmodule Operately.Tasks.Task do
   #
   # After load hooks
   #
+
+  def load_comments_count(tasks) do
+    task_ids = Enum.map(tasks, &(&1.id))
+
+    counts =
+      from(c in Operately.Updates.Comment,
+        where: c.entity_id in ^task_ids and c.entity_type == :project_task,
+        group_by: c.entity_id,
+        select: {c.entity_id, count(c.id)}
+      )
+      |> Operately.Repo.all()
+      |> Enum.into(%{})
+
+    Enum.map(tasks, fn t ->
+      count = Map.get(counts, t.id, 0)
+      Map.put(t, :comments_count, count)
+    end)
+  end
 
   def set_permissions(task = %__MODULE__{}) do
     perms = Operately.Projects.Permissions.calculate(task.request_info.access_level)

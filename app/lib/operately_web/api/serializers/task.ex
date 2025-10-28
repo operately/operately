@@ -23,6 +23,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Tasks.Task do
       creator: OperatelyWeb.Api.Serializer.serialize(task.creator),
       space: OperatelyWeb.Api.Serializer.serialize(task.group),
       permissions: OperatelyWeb.Api.Serializer.serialize(task.permissions),
+      comments_count: task.comments_count,
     }
   end
 end
