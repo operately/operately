@@ -697,6 +697,44 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     end)
   end
 
+  step :assert_milestone_description_indicator_visible_on_overview, ctx do
+    test_id = UI.testid(["milestone", ctx.milestone.title])
+
+    ctx
+    |> UI.find(UI.query(testid: test_id), fn el ->
+      UI.assert_has(el, testid: "description-indicator")
+    end)
+  end
+
+  step :assert_milestone_description_indicator_not_visible_on_overview, ctx do
+    test_id = UI.testid(["milestone", ctx.milestone.title])
+
+    ctx
+    |> UI.find(UI.query(testid: test_id), fn el ->
+      UI.refute_has(el, testid: "description-indicator")
+    end)
+  end
+
+  step :assert_milestone_comment_indicator_not_visible_on_overview, ctx do
+    test_id = UI.testid(["milestone", ctx.milestone_without_comments.title])
+
+    ctx
+    |> UI.find(UI.query(testid: test_id), fn el ->
+      UI.refute_has(el, testid: "comments-indicator")
+    end)
+  end
+
+  step :assert_milestone_comment_count_on_overview, ctx, expected_count do
+    test_id = UI.testid(["milestone", ctx.milestone_with_comments.title])
+
+    ctx
+    |> UI.find(UI.query(testid: test_id), fn el ->
+      el
+      |> UI.assert_has(testid: "comments-indicator")
+      |> UI.assert_text(Integer.to_string(expected_count))
+    end)
+  end
+
   #
   # Helpers
   #

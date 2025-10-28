@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { PrimaryButton as Button, SecondaryButton } from "../Button";
 import { DateField } from "../DateField";
-import { IconFlag, IconFlagFilled, IconGripVertical } from "../icons";
+import { IconFileText, IconFlag, IconFlagFilled, IconGripVertical, IconMessageCircle } from "../icons";
 import { Link } from "../Link";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import classNames from "../utils/classnames";
@@ -56,6 +56,10 @@ export function MilestoneItem({
   };
 
   const isCompleted = milestone.status === "done";
+  const isDueDateInPast = milestone.dueDate?.date
+    ? milestone.dueDate.date < new Date(new Date().setHours(0, 0, 0, 0))
+    : false;
+  const dueDateColorClass = !isCompleted && isDueDateInPast ? "text-content-error" : "text-content-dimmed";
 
   if (isEditing) {
     return (
@@ -143,7 +147,7 @@ export function MilestoneItem({
       {/* Milestone content */}
       <div className="flex-1 min-w-0 pb-2">
         <div className="flex items-start">
-          <div className="flex-1 min-w-0 flex items-center gap-4">
+          <div className="flex-1 min-w-0 flex items-center gap-2">
             <Link
               to={milestone.link!}
               className={classNames(
@@ -153,6 +157,14 @@ export function MilestoneItem({
               {/* Remove flag icon from here, it's now the marker */}
               {milestone.name}
             </Link>
+
+            <MilestoneIndicators
+              hasDescription={milestone.hasDescription}
+              hasComments={milestone.hasComments}
+              commentCount={milestone.commentCount}
+              className="flex-shrink-0"
+            />
+
             {canEdit && (
               <div className="opacity-0 group-hover:opacity-100 transition-opacity">
                 <SecondaryButton testId={editBtnTestId} size="xxs" onClick={() => setIsEditing(true)}>
@@ -163,14 +175,7 @@ export function MilestoneItem({
           </div>
         </div>
         {milestone.dueDate && (
-          <div
-            className={classNames(
-              "text-sm mt-1 flex items-center gap-1",
-              !isCompleted && milestone.dueDate?.date < new Date(new Date().setHours(0, 0, 0, 0))
-                ? "text-content-error"
-                : "text-content-dimmed",
-            )}
-          >
+          <div className={classNames("text-sm mt-1 flex items-center gap-1", dueDateColorClass)}>
             <DateField
               date={milestone.dueDate}
               readonly
@@ -180,6 +185,36 @@ export function MilestoneItem({
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+interface MilestoneIndicatorsProps {
+  hasDescription?: boolean;
+  hasComments?: boolean;
+  commentCount?: number;
+  className?: string;
+}
+
+function MilestoneIndicators({ hasDescription, hasComments, commentCount, className }: MilestoneIndicatorsProps) {
+  if (!hasDescription && !hasComments) {
+    return null;
+  }
+
+  return (
+    <div className={classNames("flex items-center gap-1 text-content-dimmed", className)}>
+      {hasDescription && (
+        <span className="flex items-center" data-test-id="description-indicator">
+          <IconFileText size={12} />
+        </span>
+      )}
+
+      {hasComments && (
+        <span className="flex items-center" data-test-id="comments-indicator">
+          <IconMessageCircle size={12} />
+          {commentCount && <span className="ml-0.5 text-xs">{commentCount}</span>}
+        </span>
+      )}
     </div>
   );
 }
