@@ -4,7 +4,7 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
 
   alias Operately.Activities
   alias Operately.Comments.MilestoneComment
-  alias Operately.Notifications.SubscriptionList
+  alias Operately.Notifications.{Subscription, SubscriptionList}
   alias Operately.Operations.Notifications.Subscription, as: SubscriptionOperations
   alias Operately.Projects.Project
   alias Operately.Updates.Comment
@@ -13,6 +13,7 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
     Multi.new()
     |> Multi.insert(:comment, Comment.changeset(comment_attrs))
     |> maybe_track_mentions(milestone, action, comment_attrs)
+    |> ensure_subscription_step(author, milestone, action)
     |> insert_milestone_comment(milestone, action)
     |> apply_comment_action(milestone, action)
     |> load_project(milestone)
@@ -39,6 +40,25 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
       ])
     end)
     |> SubscriptionOperations.update_mentioned_people(attrs.content["message"])
+  end
+
+  defp ensure_subscription_step(multi, _author, _milestone, action) when action in ["complete", "reopen"],
+    do: multi
+
+  defp ensure_subscription_step(multi, author, milestone, _action) do
+    Multi.run(multi, :comment_author_subscription, fn _, changes ->
+      subscription_list =
+        case Map.fetch(changes, :subscription_list) do
+          {:ok, nil} -> {:error, :not_found}
+          {:ok, list} -> {:ok, list}
+          :error -> SubscriptionList.get(:system, id: milestone.subscription_list_id)
+        end
+
+      case subscription_list do
+        {:ok, list} -> ensure_subscription(list.id, author.id)
+        {:error, :not_found} -> {:ok, nil}
+      end
+    end)
   end
 
   defp insert_milestone_comment(multi, milestone, action) do
@@ -108,5 +128,21 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
     end
 
     result
+  end
+
+  defp ensure_subscription(nil, _person_id), do: {:ok, nil}
+
+  defp ensure_subscription(subscription_list_id, person_id) do
+    case Subscription.get(:system, subscription_list_id: subscription_list_id, person_id: person_id) do
+      {:error, :not_found} ->
+        Operately.Notifications.create_subscription(%{
+          subscription_list_id: subscription_list_id,
+          person_id: person_id,
+          type: :joined
+        })
+
+      {:ok, subscription} ->
+        Operately.Notifications.update_subscription(subscription, %{canceled: false})
+    end
   end
 end

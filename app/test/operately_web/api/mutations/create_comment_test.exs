@@ -312,12 +312,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
       content = RichText.rich_text(mentioned_people: people)
 
       {:ok, list} =
-        SubscriptionList.get(:system,
-          parent_id: ctx.check_in.id,
-          opts: [
-            preload: :subscriptions
-          ]
-        )
+        SubscriptionList.get(:system, parent_id: ctx.check_in.id, opts: [ preload: :subscriptions ])
 
       assert list.subscriptions == []
 
@@ -329,17 +324,13 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
                })
 
       {:ok, list} =
-        SubscriptionList.get(:system,
-          parent_id: ctx.check_in.id,
-          opts: [
-            preload: :subscriptions
-          ]
-        )
+        SubscriptionList.get(:system, parent_id: ctx.check_in.id, opts: [ preload: :subscriptions ])
 
-      assert length(list.subscriptions) == 3
+      # 3 mentioned people + creator's subscription
+      assert length(list.subscriptions) == 4
 
-      Enum.each(list.subscriptions, fn s ->
-        assert Enum.find(people, &(&1.id == s.person_id))
+      Enum.each(people, fn p ->
+        assert Enum.find(list.subscriptions, &(&1.person_id == p.id))
       end)
     end
 
