@@ -1,5 +1,3 @@
-import React from "react";
-
 import type { ActivityContentProjectMilestoneCreation } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
@@ -12,9 +10,13 @@ const ProjectMilestoneCreation: ActivityHandler = {
   },
 
   pagePath(paths: Paths, activity: Activity) {
-    const { milestone } = content(activity);
+    const { milestone, project } = content(activity);
 
-    return paths.projectMilestonePath(milestone.id);
+    if (milestone) {
+      return paths.projectMilestonePath(milestone.id);
+    } else {
+      return paths.projectPath(project.id);
+    }
   },
 
   PageTitle(_props: { activity: any }) {
@@ -57,8 +59,9 @@ const ProjectMilestoneCreation: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle(_props: { activity: Activity }) {
-    return <></>;
+  NotificationTitle(props: { activity: Activity }) {
+    const milestoneName = content(props.activity).milestoneName;
+    return `A new milestone "${milestoneName}" was created`;
   },
 
   NotificationLocation(_props: { activity: Activity }) {
