@@ -22,6 +22,7 @@ import { parseContextualDate, serializeContextualDate } from "@/models/contextua
 import { projectPageCacheKey } from "../ProjectPage";
 import { useComments } from "./useComments";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { useSubscription } from "@/models/subscriptions";
 
 export default { name: "MilestonePage", loader, Page } as PageModule;
 
@@ -50,6 +51,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeSpace: true,
           includePermissions: true,
           includeComments: true,
+          includeSubscriptionList: true,
         }).then((d) => d.milestone),
         tasks: Api.project_milestones.listTasks({ milestoneId: params.id }).then((d) => d.tasks),
         childrenCount: Api.projects.countChildren({ id: params.id, useMilestoneId: true }).then((d) => d.childrenCount),
@@ -78,6 +80,7 @@ function Page() {
   assertPresent(milestone.project, "Milestone must have a project");
   assertPresent(milestone.space, "Milestone must have a space");
   assertPresent(milestone.permissions, "Milestone must have permissions");
+  assertPresent(milestone.subscriptionList);
 
   const workmapLink = paths.spaceWorkMapPath(milestone.space.id, "projects" as const);
 
@@ -147,6 +150,14 @@ function Page() {
     transformResult: transformPerson,
   });
 
+  const subscriptions = useSubscription({
+    subscriptionList: milestone.subscriptionList,
+    entityId: milestone.id,
+    entityType: "milestone",
+    cacheKey: pageCacheKey(milestone.id),
+    onRefresh: refresh,
+  });
+
   const props: MilestonePage.Props = {
     workmapLink,
     space: parseSpaceForTurboUI(paths, milestone.space),
@@ -195,6 +206,9 @@ function Page() {
     // Metadata
     createdBy: People.parsePersonForTurboUi(paths, milestone.creator),
     createdAt: Time.parseDate(milestone.insertedAt)!,
+
+    // Subscriptions
+    subscriptions,
 
     // Rich text editor support
     richTextHandlers: richEditorHandlers,

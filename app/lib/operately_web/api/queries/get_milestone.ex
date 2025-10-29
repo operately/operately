@@ -11,6 +11,7 @@ defmodule OperatelyWeb.Api.Queries.GetMilestone do
     field? :include_creator, :boolean, null: false
     field? :include_permissions, :boolean, null: false
     field? :include_space, :boolean, null: false
+    field? :include_subscription_list, :boolean, null: false
   end
 
   outputs do
@@ -49,6 +50,7 @@ defmodule OperatelyWeb.Api.Queries.GetMilestone do
       include_creator: :creator,
       include_space: :space,
       include_comments: [comments: [comment: [:author, reactions: :person]]],
+      include_subscription_list: [subscription_list: [subscriptions: :person]],
     ])
   end
 

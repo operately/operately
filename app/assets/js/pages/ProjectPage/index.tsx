@@ -23,6 +23,7 @@ import { useAiSidebar } from "../../features/AiSidebar";
 import { parseContextualDate, serializeContextualDate } from "../../models/contextualDates";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useMe } from "@/contexts/CurrentCompanyContext";
+import { useSubscription } from "@/models/subscriptions";
 
 export default { name: "ProjectPage", loader, Page } as PageModule;
 export { pageCacheKey as projectPageCacheKey };
@@ -92,6 +93,7 @@ function Page() {
   assertPresent(project.state);
   assertPresent(project.permissions?.canEditName);
   assertPresent(project.contributors);
+  assertPresent(project.subscriptionList);
 
   const workmapLink = paths.spaceWorkMapPath(project.space.id, "projects" as const);
 
@@ -171,7 +173,13 @@ function Page() {
       refresh,
     });
 
-  const subscriptions = useSubscription(project, refresh);
+  const subscriptions = useSubscription({
+    subscriptionList: project.subscriptionList,
+    entityId: project.id,
+    entityType: "project",
+    cacheKey: pageCacheKey(project.id),
+    onRefresh: refresh,
+  });
 
   const parentGoalSearch = useParentGoalSearch(project);
   const spaceSearch = useSpaceSearch();
@@ -179,17 +187,10 @@ function Page() {
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: project.id } });
 
   // Transform function must be memoized to prevent infinite loop in the hook
-  const transformPerson = React.useCallback(
-    (p) => People.parsePersonForTurboUi(paths, p)!,
-    [paths]
-  );
+  const transformPerson = React.useCallback((p) => People.parsePersonForTurboUi(paths, p)!, [paths]);
 
   // ignoredIds must be memoized to prevent infinite loop in the hook
-  const ignoredIds = React.useMemo(
-    () => [champion?.id!, reviewer?.id!],
-    [champion?.id, reviewer?.id]
-  );
-
+  const ignoredIds = React.useMemo(() => [champion?.id!, reviewer?.id!], [champion?.id, reviewer?.id]);
 
   const championSearch = People.usePersonFieldSearch({
     scope: { type: "space", id: project.space.id },
@@ -632,57 +633,4 @@ function useResources(project: Projects.Project) {
   };
 
   return { resources, createResource, updateResource, removeResource };
-}
-
-function useSubscription(project: Projects.Project, refresh?: () => Promise<void>) {
-  const currentUser = useMe();
-  const { subscriptionList } = project;
-  const hidden = Boolean(!subscriptionList?.subscriptions || !currentUser);
-
-  const [isSubscribed, setIsSubscribed] = React.useState(() => {
-    if (!subscriptionList?.subscriptions || !currentUser) return false;
-
-    return subscriptionList.subscriptions.some(
-      (subscription) => subscription.person?.id === currentUser.id && subscription.canceled !== true,
-    );
-  });
-
-  const onToggle = React.useCallback(
-    async (notSubscribed: boolean) => {
-      if (!subscriptionList?.id) return;
-
-      const prevValue = notSubscribed;
-      setIsSubscribed(notSubscribed);
-
-      try {
-        if (notSubscribed) {
-          await Api.subscribeToNotifications({ id: subscriptionList.id, type: "project" });
-        } else {
-          await Api.unsubscribeFromNotifications({ id: subscriptionList.id });
-        }
-
-        PageCache.invalidate(pageCacheKey(project.id));
-
-        await refresh?.();
-      } catch (error) {
-        setIsSubscribed(prevValue);
-
-        console.error("Failed to toggle project subscription", error);
-        showErrorToast(
-          "Error",
-          prevValue
-            ? "Failed to subscribe to project notifications."
-            : "Failed to unsubscribe from project notifications.",
-        );
-      }
-    },
-    [subscriptionList?.id, project.id, refresh, isSubscribed],
-  );
-
-  return {
-    isSubscribed,
-    onToggle,
-    hidden,
-    entityType: "project" as const,
-  };
 }
