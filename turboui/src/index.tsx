@@ -37,6 +37,7 @@ export { MiniWorkMap } from "./MiniWorkMap";
 export { Modal } from "./Modal";
 export { CompanyCreatorOnboardingWizard, CompanyMemberOnboardingWizard } from "./OnboardingWizard";
 export { PrivacyField } from "./PrivacyField";
+export { ProfileEditPage } from "./ProfileEditPage";
 export { ProfilePage } from "./ProfilePage";
 export { ProjectPage } from "./ProjectPage";
 export { ReviewPage } from "./ReviewPage";
