@@ -2688,6 +2688,7 @@ export interface ListGoalContributorsResult {
 
 export interface ListPossibleManagersInput {
   userId?: Id;
+  query?: string | null;
 }
 
 export interface ListPossibleManagersResult {

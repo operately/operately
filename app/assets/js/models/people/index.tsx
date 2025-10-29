@@ -9,6 +9,7 @@ export { getPeople, getPerson, updateProfile, updateProfilePicture, useGetMe, us
 export { usePersonFieldSearch } from "./usePersonFieldSearch";
 export { usePersonFieldSpaceMembersSearch } from "./usePersonFieldSpaceMembersSearch";
 export { useMentionedPersonSearch } from "./useMentionedPersonSearch";
+export { usePossibleManagersSearch } from "./usePossibleManagersSearch";
 
 export type SearchScope =
   | { type: "company"; id?: undefined }
@@ -73,15 +74,6 @@ export function parsePersonForTurboUi(paths: Paths, person: Person | null | unde
       profileLink: paths.profilePath(person.id),
     };
   }
-}
-
-export function usePossibleManagersSearch(personId: string) {
-  return async (): Promise<Person[]> => {
-    const res = await Api.listPossibleManagers({
-      userId: personId,
-    });
-    return res.people as Person[];
-  };
 }
 
 export function firstName(person: Pick<Person, "fullName">): string {
