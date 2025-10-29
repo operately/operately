@@ -84,7 +84,6 @@ function Page() {
   assertPresent(task.project, "Task must have a project");
   assertPresent(task.space, "Task must have a space");
   assertPresent(task.permissions, "Task must have permissions");
-  assertPresent(task.subscriptionList, "Task must have a subscription list");
 
   const workmapLink = paths.spaceWorkMapPath(task.space.id, "projects" as const);
 
