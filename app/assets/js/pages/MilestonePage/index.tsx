@@ -80,7 +80,6 @@ function Page() {
   assertPresent(milestone.project, "Milestone must have a project");
   assertPresent(milestone.space, "Milestone must have a space");
   assertPresent(milestone.permissions, "Milestone must have permissions");
-  assertPresent(milestone.subscriptionList);
 
   const workmapLink = paths.spaceWorkMapPath(milestone.space.id, "projects" as const);
 

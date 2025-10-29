@@ -5,7 +5,7 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 import { PageCache } from "@/routes/PageCache";
 
 interface UseSubscriptionOptions {
-  subscriptionList: SubscriptionList;
+  subscriptionList?: SubscriptionList | null;
   entityId: string;
   entityType: "project" | "milestone" | "project_task";
   cacheKey: string;
