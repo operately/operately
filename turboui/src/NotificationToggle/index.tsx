@@ -6,7 +6,7 @@ export namespace NotificationToggle {
   export interface Props {
     isSubscribed: boolean;
     onToggle: (subscribed: boolean) => void;
-    entityType: "task" | "project" | "milestone";
+    entityType: "project_task" | "project" | "milestone";
   }
 }
 

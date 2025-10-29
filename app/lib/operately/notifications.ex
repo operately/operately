@@ -165,6 +165,16 @@ defmodule Operately.Notifications do
           join: s in assoc(p, :subscription_list), as: :subscription_list,
           where: s.id == ^id
         )
+      :milestone ->
+        from(m in Operately.Projects.Milestone, as: :resource,
+          join: s in assoc(m, :subscription_list), as: :subscription_list,
+          where: s.id == ^id
+        )
+      :project_task ->
+        from(t in Operately.Tasks.Task, as: :resource,
+          join: s in assoc(t, :subscription_list), as: :subscription_list,
+          where: s.id == ^id
+        )
       :comment_thread ->
         from(a in Operately.Activities.Activity, as: :resource,
           join: c in assoc(a, :comment_thread),
@@ -215,6 +225,11 @@ defmodule Operately.Notifications do
       :project ->
         from(p in Operately.Projects.Project, as: :resource,
           join: s in assoc(p, :subscription_list),
+          where: s.id == ^id
+        )
+      :project_task ->
+        from(t in Operately.Tasks.Task, as: :resource,
+          join: s in assoc(t, :subscription_list),
           where: s.id == ^id
         )
       :milestone ->

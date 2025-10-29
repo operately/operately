@@ -24,6 +24,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Tasks.Task do
       space: OperatelyWeb.Api.Serializer.serialize(task.group),
       permissions: OperatelyWeb.Api.Serializer.serialize(task.permissions),
       comments_count: task.comments_count,
+      subscription_list: OperatelyWeb.Api.Serializer.serialize(task.subscription_list),
     }
   end
 end

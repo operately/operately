@@ -7,7 +7,7 @@ import { PageCache } from "@/routes/PageCache";
 interface UseSubscriptionOptions {
   subscriptionList: SubscriptionList;
   entityId: string;
-  entityType: "project" | "milestone";
+  entityType: "project" | "milestone" | "project_task";
   cacheKey: string;
   onRefresh?: () => Promise<void>;
 }

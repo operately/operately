@@ -20,6 +20,7 @@ import {
   timelinePeople,
 } from "./mockData";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 
 const people = genPeople(5);
 
@@ -45,7 +46,7 @@ export function InProjectContextStory() {
   const [taskAssignee, setTaskAssignee] = useState<TaskPage.Person | null>(mockTaskPeople[1]!);
   const [taskMilestone, setTaskMilestone] = useState<TaskPage.Milestone | null>(mockMilestones[1]!); // Beta Release
   const [milestones, setMilestones] = useState<TaskPage.Milestone[]>(mockMilestones);
-  const [isSubscribed, setIsSubscribed] = useState(false);
+  const subscriptions = useMockSubscriptions({ entityType: "project_task", initial: false });
 
   const handleMilestoneSearch = async (query: string) => {
     const filtered = mockMilestones.filter((m) => m.name.toLowerCase().includes(query.toLowerCase()));
@@ -195,11 +196,7 @@ export function InProjectContextStory() {
                 return true;
               }}
               // Subscription
-              isSubscribed={isSubscribed}
-              onSubscriptionToggle={(subscribed) => {
-                console.log("Toggling subscription:", subscribed);
-                setIsSubscribed(subscribed);
-              }}
+              subscriptions={subscriptions}
               // Actions
               onDelete={async () => console.log("Task deleted")}
               onDuplicate={() => console.log("Task duplicated")}

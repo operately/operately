@@ -40,6 +40,7 @@ defmodule OperatelyWeb.Api.Mutations.SubscribeToNotifications do
       :resource_hub_link -> ResourceHubs.Permissions.check(access_level, :can_view)
       :comment_thread -> Activities.Permissions.check(access_level, :can_view)
       :project -> Projects.Permissions.check(access_level, :can_view)
+      :project_task -> Projects.Permissions.check(access_level, :can_view)
       :milestone -> Projects.Permissions.check(access_level, :can_view)
     end
   end
