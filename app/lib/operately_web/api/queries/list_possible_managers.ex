@@ -9,6 +9,7 @@ defmodule OperatelyWeb.Api.Queries.ListPossibleManagers do
 
   inputs do
     field? :user_id, :id
+    field? :query, :string, null: true
   end
 
   outputs do
@@ -49,12 +50,23 @@ defmodule OperatelyWeb.Api.Queries.ListPossibleManagers do
         where: p.company_id == ^company_id,
         where: p.id != ^user_id,
         where: not p.suspended,
-        where: is_nil(r.id), # Exclude all direct and indirect reports
-        order_by: p.full_name
+        where: is_nil(r.id) # Exclude all direct and indirect reports
       )
+      |> filter_by_query(inputs[:query])
+      |> order_by([p], asc: p.full_name)
       |> recursive_ctes(true)
       |> with_cte("reports_hierarchy", as: ^reports_cte)
       |> Repo.all()
+    end
+  end
+
+  defp filter_by_query(query, nil), do: query
+  defp filter_by_query(query, search_query) do
+    trimmed_query = String.trim(search_query)
+    
+    case trimmed_query do
+      "" -> query
+      _ -> from p in query, where: ilike(p.full_name, ^"%#{trimmed_query}%") or ilike(p.title, ^"%#{trimmed_query}%")
     end
   end
 
