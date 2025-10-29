@@ -3,11 +3,10 @@ import * as Types from "../../TaskBoard/types";
 import { DateField } from "../../DateField";
 import { AvatarWithName } from "../../Avatar";
 import { GhostButton, SecondaryButton } from "../../Button";
-import { NotificationToggle } from "../../NotificationToggle";
 import { IconCalendar, IconCheck, IconLink, IconTrash, IconFlagFilled, IconFlag, IconCircleCheckFilled } from "../../icons";
 import FormattedTime from "../../FormattedTime";
 import { MilestonePage } from "..";
-import { SidebarSection } from "../../SidebarSection";
+import { SidebarSection, SidebarNotificationSection } from "../../SidebarSection";
 import { launchConfetti } from "../../utils/confetti";
 
 export function MilestoneSidebar({
@@ -17,8 +16,7 @@ export function MilestoneSidebar({
   onStatusChange,
   createdBy,
   createdAt,
-  isSubscribed = false,
-  onSubscriptionToggle,
+  subscriptions,
   openDeleteModal,
   canEdit = true,
 }: MilestonePage.State) {
@@ -31,7 +29,7 @@ export function MilestoneSidebar({
           <SidebarCompletedOn completedAt={milestone.completedAt} />
         )}
         {createdBy && <SidebarCreatedBy createdBy={createdBy} createdAt={createdAt} />}
-        <SidebarNotifications isSubscribed={isSubscribed} onSubscriptionToggle={onSubscriptionToggle} />
+        <SidebarNotificationSection {...subscriptions} />
         <SidebarActions onDelete={openDeleteModal} canEdit={canEdit} />
       </div>
     </div>
@@ -164,19 +162,6 @@ function SidebarCreatedBy({ createdBy, createdAt }: { createdBy: MilestonePage.P
   );
 }
 
-function SidebarNotifications(props: { isSubscribed: boolean; onSubscriptionToggle?: (subscribed: boolean) => void }) {
-  if (!props.onSubscriptionToggle) return null;
-
-  const handleToggle = (subscribed: boolean) => {
-    props.onSubscriptionToggle?.(subscribed);
-  };
-
-  return (
-    <SidebarSection title="Notifications">
-      <NotificationToggle isSubscribed={props.isSubscribed} onToggle={handleToggle} entityType="milestone" />
-    </SidebarSection>
-  );
-}
 
 function SidebarActions({ onDelete, canEdit }: { onDelete?: () => void; canEdit: boolean }) {
   const actions = [

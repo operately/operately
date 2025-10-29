@@ -5,7 +5,7 @@ defmodule OperatelyWeb.Api.Mutations.UnsubscribeFromNotifications do
   alias Operately.Operations.NotificationsUnsubscribing
 
   inputs do
-    field? :id, :string, null: true
+    field :id, :id, null: false
   end
 
   def call(conn, inputs) do

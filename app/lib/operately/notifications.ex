@@ -217,6 +217,11 @@ defmodule Operately.Notifications do
           join: s in assoc(p, :subscription_list),
           where: s.id == ^id
         )
+      :milestone ->
+        from(m in Operately.Projects.Milestone, as: :resource,
+          join: s in assoc(m, :subscription_list),
+          where: s.id == ^id
+        )
       :comment_thread ->
         from(a in Operately.Activities.Activity, as: :resource,
           join: c in assoc(a, :comment_thread),
