@@ -7,6 +7,7 @@ import { usePersonFieldSearch } from "../utils/storybook/usePersonFieldSearch";
 import { DateField } from "../DateField";
 import { createContextualDate } from "../DateField/mockData";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 
 /**
  * MilestonePage displays a standalone page for a single milestone and its tasks.
@@ -145,7 +146,8 @@ export const Default: Story = {
     // State for tasks and milestone
     const [tasks, setTasks] = useState<Types.Task[]>(createSampleTasks());
     const [milestone, setMilestone] = useState<Types.Milestone>(sampleMilestone);
-    const [isSubscribed, setIsSubscribed] = useState(false);
+
+    const subscriptions = useMockSubscriptions({ entityType: "milestone" });
 
     // Handler for creating a new task
     const handleTaskCreate = (newTaskData: Types.NewTaskPayload) => {
@@ -244,11 +246,7 @@ export const Default: Story = {
         onEditComment={(commentId, content) => console.log("Edit comment:", { commentId, content })}
         createdBy={mockPeople[0] || null}
         createdAt={new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)} // 7 days ago
-        isSubscribed={isSubscribed}
-        onSubscriptionToggle={(subscribed) => {
-          console.log("Subscription toggled:", subscribed);
-          setIsSubscribed(subscribed);
-        }}
+        subscriptions={subscriptions}
         onDelete={() => console.log("Milestone deleted")}
         canEdit={true}
         description={mockDescription}
@@ -268,6 +266,7 @@ export const Default: Story = {
 export const EmptyMilestone: Story = {
   render: () => {
     const assigneePersonSearch = usePersonFieldSearch(mockPeople);
+    const subscriptions = useMockSubscriptions({ entityType: "milestone" });
     
     // Use state to manage the milestone with its due date
     const [milestone, setMilestone] = useState<Types.Milestone>({
@@ -278,7 +277,6 @@ export const EmptyMilestone: Story = {
       status: "pending", // Add initial status
       link: "#",
     });
-    const [isSubscribed, setIsSubscribed] = useState(true);
 
     // Handler for due date changes
     const handleDueDateChange = (dueDate: DateField.ContextualDate | null) => {
@@ -352,11 +350,7 @@ export const EmptyMilestone: Story = {
         onEditComment={(commentId, content) => console.log("Edit comment:", { commentId, content })}
         createdBy={mockPeople[1] || null}
         createdAt={new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)} // 3 days ago
-        isSubscribed={isSubscribed}
-        onSubscriptionToggle={(subscribed) => {
-          console.log("Subscription toggled:", subscribed);
-          setIsSubscribed(subscribed);
-        }}
+        subscriptions={subscriptions}
         onDelete={() => console.log("Milestone deleted")}
         canEdit={true}
         description={null}
@@ -376,6 +370,7 @@ export const EmptyMilestone: Story = {
 export const CompletedMilestone: Story = {
   render: () => {
     const assigneePersonSearch = usePersonFieldSearch(mockPeople);
+    const subscriptions = useMockSubscriptions({ entityType: "milestone" });
     
     // Create a completed milestone
     const [milestone, setMilestone] = useState<Types.Milestone>({
@@ -449,8 +444,6 @@ export const CompletedMilestone: Story = {
         dueDate: createContextualDate(new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), "day"), // 5 days ago
       },
     ]);
-
-    const [isSubscribed, setIsSubscribed] = useState(false);
 
     // Create timeline items showing the completion process
     const completedMilestoneTimeline = [
@@ -557,11 +550,7 @@ export const CompletedMilestone: Story = {
         onEditComment={(commentId, content) => console.log("Edit comment:", { commentId, content })}
         createdBy={mockPeople[0] || null}
         createdAt={new Date(Date.now() - 21 * 24 * 60 * 60 * 1000)} // 21 days ago
-        isSubscribed={isSubscribed}
-        onSubscriptionToggle={(subscribed) => {
-          console.log("Subscription toggled:", subscribed);
-          setIsSubscribed(subscribed);
-        }}
+        subscriptions={subscriptions}
         onDelete={() => console.log("Milestone delete attempted")}
         canEdit={true}
         description={mockDescription}

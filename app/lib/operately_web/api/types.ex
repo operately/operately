@@ -1963,9 +1963,22 @@ defmodule OperatelyWeb.Api.Types do
     field :index, :integer
   end
 
+  enum(:subscription_parent_type, values: [
+    :project_check_in,
+    :project_retrospective,
+    :goal_update,
+    :message,
+    :resource_hub_document,
+    :resource_hub_file,
+    :resource_hub_link,
+    :comment_thread,
+    :project,
+    :milestone,
+  ])
+
   object :subscription_list do
     field :id, :string, null: false
-    field :parent_type, :string, null: false
+    field :parent_type, :subscription_parent_type, null: false
     field :send_to_everyone, :boolean, null: false
     field :subscriptions, list_of(:subscription), null: true
   end

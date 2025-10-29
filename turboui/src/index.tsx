@@ -40,6 +40,7 @@ export { PrivacyField } from "./PrivacyField";
 export { ProfilePage } from "./ProfilePage";
 export { ProjectPage } from "./ProjectPage";
 export { ReviewPage } from "./ReviewPage";
+export { SidebarNotificationSection } from "./SidebarSection";
 export { SpaceField } from "./SpaceField";
 export { SwitchToggle } from "./SwitchToggle";
 export { Tabs, useTabs } from "./Tabs";

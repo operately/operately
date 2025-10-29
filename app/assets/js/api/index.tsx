@@ -1744,7 +1744,7 @@ export interface Subscription {
 
 export interface SubscriptionList {
   id: string;
-  parentType: string;
+  parentType: SubscriptionParentType;
   sendToEveryone: boolean;
   subscriptions: Subscription[] | null;
 }
@@ -2050,6 +2050,18 @@ export type ReviewAssignmentRoles = "owner" | "reviewer";
 
 export type ReviewAssignmentTypes = "check_in" | "goal_update" | "project_task" | "milestone";
 
+export type SubscriptionParentType =
+  | "project_check_in"
+  | "project_retrospective"
+  | "goal_update"
+  | "message"
+  | "resource_hub_document"
+  | "resource_hub_file"
+  | "resource_hub_link"
+  | "comment_thread"
+  | "project"
+  | "milestone";
+
 export type SuccessStatus = "achieved" | "missed";
 
 export type TaskStatusTypes = "pending" | "todo" | "in_progress" | "done" | "canceled";
@@ -2329,6 +2341,7 @@ export interface GetMilestoneInput {
   includeCreator?: boolean;
   includePermissions?: boolean;
   includeSpace?: boolean;
+  includeSubscriptionList?: boolean;
 }
 
 export interface GetMilestoneResult {
@@ -4181,14 +4194,14 @@ export interface ResumeProjectResult {
 }
 
 export interface SubscribeToNotificationsInput {
-  id?: string | null;
-  type?: string | null;
+  id: Id;
+  type: SubscriptionParentType;
 }
 
 export interface SubscribeToNotificationsResult {}
 
 export interface UnsubscribeFromNotificationsInput {
-  id?: string | null;
+  id: Id;
 }
 
 export interface UnsubscribeFromNotificationsResult {}
