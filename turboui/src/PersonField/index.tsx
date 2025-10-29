@@ -41,6 +41,7 @@ export namespace PersonField {
     emptyStateMessage?: string;
     emptyStateReadOnlyMessage?: string;
     extraDialogMenuOptions?: DialogMenuOptionProps[];
+    variant?: "inline" | "form-field";
     testId?: string;
   }
 
@@ -74,6 +75,7 @@ export namespace PersonField {
     emptyStateMessage: string;
     emptyStateReadOnlyMessage: string;
     extraDialogMenuOptions: DialogMenuOptionProps[];
+    variant: "inline" | "form-field";
 
     searchQuery: string;
     setSearchQuery: (query: string) => void;
@@ -108,6 +110,7 @@ export function useState(props: PersonField.Props): PersonField.State {
   const emptyStateMessage = props.emptyStateMessage ?? "Select person";
   const emptyStateReadOnlyMessage = props.emptyStateReadOnlyMessage ?? "Not assigned";
   const extraDialogMenuOptions = props.extraDialogMenuOptions ?? [];
+  const variant = props.variant ?? "inline";
 
   React.useEffect(() => {
     if (!isOpen) {
@@ -153,6 +156,7 @@ export function useState(props: PersonField.Props): PersonField.State {
     emptyStateMessage,
     emptyStateReadOnlyMessage,
     extraDialogMenuOptions,
+    variant,
     searchQuery,
     setSearchQuery,
     searchResults: props.searchData?.people || [],
@@ -195,6 +199,7 @@ function Trigger({ state }: { state: PersonField.State }) {
 
 function calcTriggerClass(state: PersonField.State) {
   const hasClickableProfile = state.readonly && state.person && state.person.profileLink;
+  const isFormField = state.variant === "form-field";
 
   if (state.avatarOnly) {
     return classNames({
@@ -203,6 +208,14 @@ function calcTriggerClass(state: PersonField.State) {
       "cursor-pointer": !state.readonly || hasClickableProfile,
       "cursor-default": state.readonly && !hasClickableProfile,
       "ring-2 ring-surface-accent": state.isOpen,
+    });
+  } else if (isFormField) {
+    return classNames({
+      "flex items-center gap-2 truncate text-left": true,
+      "w-full border border-stroke-base rounded-lg px-3 py-1.5 bg-surface-base": true,
+      "focus:outline-none focus:ring-2 focus:ring-primary-base": !state.readonly,
+      "cursor-pointer": !state.readonly || hasClickableProfile,
+      "cursor-default": state.readonly && !hasClickableProfile,
     });
   } else {
     return classNames({
