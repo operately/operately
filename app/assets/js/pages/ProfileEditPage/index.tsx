@@ -1,18 +1,21 @@
 import * as React from "react";
 import * as Pages from "@/components/Pages";
-import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
 
 import { useNavigate } from "react-router-dom";
 import { Timezones } from "./timezones";
 
-import Forms from "@/components/Forms";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { PageModule } from "@/routes/types";
-import BigAvatar from "./BigAvatar";
-
 import { usePaths } from "@/routes/paths";
+import { ProfileEditPage } from "turboui";
+import * as Blobs from "@/models/blobs";
+import * as Companies from "@/models/companies";
+import { useCurrentCompany } from "@/contexts/CurrentCompanyContext";
+
 export default { name: "ProfileEditPage", loader, Page } as PageModule;
+
+export type FromLocation = "admin-manage-people" | null;
 
 interface LoaderResult {
   person: People.Person;
@@ -27,102 +30,181 @@ async function loader({ request, params }): Promise<LoaderResult> {
 }
 
 function Page() {
-  const { person } = Pages.useLoadedData() as LoaderResult;
-
-  return (
-    <Pages.Page title="Edit Profile">
-      <Paper.Root size="small">
-        <Navigation />
-        <Paper.Body>
-          <ProfileForm person={person} />
-        </Paper.Body>
-      </Paper.Root>
-    </Pages.Page>
-  );
-}
-
-export type FromLocation = "admin-manage-people" | null;
-
-function Navigation() {
-  const paths = usePaths();
-  const { from } = Pages.useLoadedData() as LoaderResult;
-
-  if (from === "admin-manage-people") {
-    return (
-      <Paper.Navigation
-        items={[
-          { label: "Company Administration", to: paths.companyAdminPath() },
-          { label: "Manage Team Members", to: paths.companyManagePeoplePath() },
-        ]}
-      />
-    );
-  } else {
-    return <Paper.Navigation items={[{ label: "Account", to: paths.accountPath() }]} />;
-  }
-}
-
-const ManagerOptions = [
-  { value: "no-manager", label: "No manager" },
-  { value: "select-from-list", label: "Select manager" },
-];
-
-function ProfileForm({ person }: { person: People.Person }) {
   const paths = usePaths();
   const me = useMe()!;
   const navigate = useNavigate();
-  const managersLoader = People.usePossibleManagersSearch(person.id);
+  const company = useCurrentCompany();
+  const { person, from } = Pages.useLoadedData() as LoaderResult;
 
-  const managerStatus = person.manager ? "select-from-list" : "no-manager";
-  const managerLabel = me.id === person.id ? "Who is your manager?" : "Who is their manager?";
+  const canChangeAvatar = company && Companies.hasFeature(company, "custom-avatar");
+  const isCurrentUser = me.id === person.id;
 
-  const form = Forms.useForm({
-    fields: {
-      name: person.fullName,
-      title: person.title,
-      timezone: person.timezone,
-      manager: person.manager?.id,
-      managerStatus: managerStatus,
-    },
-    submit: async () => {
-      const managerId = form.values.managerStatus === "select-from-list" ? form.values.manager : null;
+  // Form state
+  const [fullName, setFullName] = React.useState(person.fullName || "");
+  const [title, setTitle] = React.useState(person.title || "");
+  const [timezone, setTimezone] = React.useState(person.timezone || "");
+  const [manager, setManager] = React.useState<ProfileEditPage.Person | null>(
+    person.manager ? People.parsePersonForTurboUi(paths, person.manager) : null,
+  );
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
+  // Avatar handlers
+  const avatar = useAvatarHandlers(person.id);
+
+  // Initialize avatar URL from person data
+  React.useEffect(() => {
+    avatar.setAvatarUrl(person.avatarUrl);
+  }, [person.avatarUrl, avatar.setAvatarUrl]);
+
+  // Manager search
+  const transformPerson = React.useCallback(
+    (person: People.Person) => People.parsePersonForTurboUi(paths, person)!,
+    [paths],
+  );
+
+  const managerSearch = People.usePossibleManagersSearch({
+    personId: person.id,
+    transformResult: transformPerson,
+  });
+
+  // Form submit
+  const handleSubmit = React.useCallback(async () => {
+    setIsSubmitting(true);
+
+    try {
       await People.updateProfile({
         id: person.id,
-        fullName: form.values.name?.trim(),
-        title: form.values.title?.trim(),
-        timezone: form.values.timezone,
-        managerId: managerId,
+        fullName: fullName.trim(),
+        title: title.trim(),
+        timezone: timezone,
+        managerId: manager?.id || null,
       });
 
-      if (me.id === person.id) {
+      if (isCurrentUser) {
         navigate(paths.accountPath());
       } else {
         navigate(paths.companyManagePeoplePath());
       }
-    },
-  });
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [fullName, title, timezone, manager, person.id, isCurrentUser, navigate, paths]);
+
+  const displayPerson: ProfileEditPage.Person = {
+    id: person.id,
+    fullName: person.fullName || "",
+    avatarUrl: avatar.avatarUrl,
+    title: person.title,
+    profileLink: paths.profilePath(person.id),
+  };
 
   return (
-    <Forms.Form form={form}>
-      <BigAvatar person={person} />
-
-      <Forms.FieldGroup>
-        <Forms.TextInput field={"name"} label="Name" />
-        <Forms.TextInput field={"title"} label="Title in Company" />
-        <Forms.SelectBox field={"timezone"} label="Timezone" options={Timezones} />
-
-        <Forms.FieldGroup>
-          <Forms.RadioButtons field={"managerStatus"} label={managerLabel} options={ManagerOptions} />
-          <Forms.SelectPerson
-            field={"manager"}
-            hidden={form.values.managerStatus !== "select-from-list"}
-            default={person.manager}
-            searchFn={managersLoader}
-          />
-        </Forms.FieldGroup>
-      </Forms.FieldGroup>
-
-      <Forms.Submit saveText="Save Changes" />
-    </Forms.Form>
+    <ProfileEditPage
+      person={displayPerson}
+      fullName={fullName}
+      title={title}
+      timezone={timezone}
+      manager={manager}
+      onFullNameChange={setFullName}
+      onTitleChange={setTitle}
+      onTimezoneChange={setTimezone}
+      onManagerChange={setManager}
+      onSubmit={handleSubmit}
+      onAvatarUpload={avatar.handleAvatarUpload}
+      onAvatarRemove={avatar.handleAvatarRemove}
+      avatarUploading={avatar.avatarUploading}
+      avatarUploadProgress={avatar.avatarUploadProgress}
+      avatarError={avatar.avatarError}
+      canChangeAvatar={canChangeAvatar || false}
+      managerSearch={managerSearch}
+      timezones={Timezones}
+      isCurrentUser={isCurrentUser}
+      fromLocation={from}
+      companyAdminPath={paths.companyAdminPath()}
+      managePeoplePath={paths.companyManagePeoplePath()}
+      accountPath={paths.accountPath()}
+      isSubmitting={isSubmitting}
+    />
   );
+}
+
+
+function useAvatarHandlers(personId: string) {
+  const MAX_AVATAR_FILE_BYTES = 12 * 1024 * 1024; // 12 MB
+
+  const [avatarUrl, setAvatarUrl] = React.useState<string | null>(null);
+  const [avatarUploading, setAvatarUploading] = React.useState(false);
+  const [avatarUploadProgress, setAvatarUploadProgress] = React.useState<number | null>(null);
+  const [avatarError, setAvatarError] = React.useState<string | null>(null);
+
+  const handleAvatarUpload = React.useCallback(
+    async (file: File) => {
+      if (file.size > MAX_AVATAR_FILE_BYTES) {
+        setAvatarError("Please choose an image smaller than 12 MB.");
+        return;
+      }
+
+      setAvatarError(null);
+      setAvatarUploading(true);
+      setAvatarUploadProgress(0);
+
+      try {
+        const { id, url } = await Blobs.uploadAvatarFile(file, (value) => setAvatarUploadProgress(value));
+        const result = await People.updateProfilePicture({
+          personId: personId,
+          avatarBlobId: id,
+          avatarUrl: url,
+        });
+
+        if (result?.person) {
+          setAvatarUrl(result.person.avatarUrl ?? null);
+        } else {
+          setAvatarUrl(url);
+        }
+      } catch (err) {
+        console.error(err);
+        setAvatarError("Failed to upload avatar. Please try again.");
+      } finally {
+        setAvatarUploading(false);
+        setAvatarUploadProgress(null);
+      }
+    },
+    [personId],
+  );
+
+  const handleAvatarRemove = React.useCallback(async () => {
+    setAvatarError(null);
+    setAvatarUploading(true);
+
+    try {
+      const result = await People.updateProfilePicture({
+        personId: personId,
+        avatarBlobId: null,
+        avatarUrl: null,
+      });
+
+      if (result?.person) {
+        setAvatarUrl(result.person.avatarUrl ?? null);
+      } else {
+        setAvatarUrl(null);
+      }
+    } catch (err) {
+      console.error(err);
+      setAvatarError("Failed to update avatar. Please try again.");
+    } finally {
+      setAvatarUploading(false);
+    }
+  }, [personId]);
+
+  return {
+    avatarUrl,
+    setAvatarUrl,
+    avatarUploading,
+    avatarUploadProgress,
+    avatarError,
+    handleAvatarUpload,
+    handleAvatarRemove,
+  };
 }
