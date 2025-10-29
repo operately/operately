@@ -169,7 +169,7 @@ export function ProfileEditPage(props: ProfileEditPage.Props) {
               label="Name"
               value={props.fullName}
               onChange={(e) => props.onFullNameChange(e.target.value)}
-              testId="profile-name-input"
+              testId="name"
               required
             />
             
@@ -177,7 +177,7 @@ export function ProfileEditPage(props: ProfileEditPage.Props) {
               label="Title in Company"
               value={props.title}
               onChange={(e) => props.onTitleChange(e.target.value)}
-              testId="profile-title-input"
+              testId="title"
             />
             
             <div>
@@ -186,7 +186,7 @@ export function ProfileEditPage(props: ProfileEditPage.Props) {
                 value={props.timezone}
                 onChange={(e) => props.onTimezoneChange(e.target.value)}
                 className="w-full border border-stroke-base rounded-lg px-3 py-1.5 bg-surface-base text-content-base focus:outline-none focus:ring-2 focus:ring-primary-base"
-                data-test-id="profile-timezone-select"
+                data-test-id="timezone"
               >
                 {props.timezones.map((tz) => (
                   <option key={tz.value} value={tz.value}>
@@ -203,7 +203,7 @@ export function ProfileEditPage(props: ProfileEditPage.Props) {
                 person={props.manager}
                 setPerson={props.onManagerChange}
                 searchData={props.managerSearch}
-                testId="profile-manager-field"
+                testId="manager"
                 variant="form-field"
                 emptyStateMessage="Select manager"
               />
@@ -212,7 +212,7 @@ export function ProfileEditPage(props: ProfileEditPage.Props) {
           
           {/* Submit Button */}
           <div className="mt-6 flex gap-2">
-            <PrimaryButton type="submit" loading={props.isSubmitting} testId="profile-save-button">
+            <PrimaryButton type="submit" loading={props.isSubmitting} testId="submit">
               Save Changes
             </PrimaryButton>
             

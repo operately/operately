@@ -68,10 +68,6 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
     |> UI.assert_text(props[:label])
   end
 
-  step :set_select_manager_from_list, ctx do
-    ctx |> UI.click(testid: "managerStatus-select-from-list")
-  end
-
   step :given_a_person_exists_in_company, ctx, manager_name do
     {:ok, _} =
       ctx.person
@@ -84,7 +80,9 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
 
   step :set_manager, ctx, manager_name do
     ctx
-    |> UI.select_person_in(id: "manager", name: manager_name)
+    |> UI.click(testid: "manager")
+    |> UI.click(testid: UI.testid(["manager-search-result", manager_name]))
+    |> UI.sleep(100)
     |> UI.click(testid: "submit")
     |> UI.assert_has(testid: "my-account-page")
   end
@@ -106,7 +104,9 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
 
   step :set_no_manager, ctx do
     ctx
-    |> UI.click(testid: "managerStatus-no-manager")
+    |> UI.click(testid: "manager")
+    |> UI.click(testid: "manager-clear-assignment")
+    |> UI.sleep(100)
     |> UI.click(testid: "submit")
     |> UI.assert_has(testid: "my-account-page")
   end

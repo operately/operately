@@ -44,7 +44,6 @@ defmodule Operately.Features.AccountSettingsTest do
     ctx
     |> Steps.open_account_settings()
     |> Steps.given_a_person_exists_in_company("John Adams")
-    |> Steps.set_select_manager_from_list()
     |> Steps.set_manager("John Adams")
     |> Steps.assert_person_manager_set("John Adams")
   end
