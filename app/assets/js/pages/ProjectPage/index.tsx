@@ -93,7 +93,6 @@ function Page() {
   assertPresent(project.state);
   assertPresent(project.permissions?.canEditName);
   assertPresent(project.contributors);
-  assertPresent(project.subscriptionList);
 
   const workmapLink = paths.spaceWorkMapPath(project.space.id, "projects" as const);
 
