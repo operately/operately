@@ -26,6 +26,7 @@ import { GhostButton, SecondaryButton } from "../Button";
 import { launchConfetti } from "../utils/confetti";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
 import { PageDescription } from "../PageDescription";
+import { SidebarNotificationSection } from "../SidebarSection";
 
 export namespace MilestonePage {
   export type Milestone = Types.Milestone;
@@ -95,9 +96,10 @@ export namespace MilestonePage {
     // Milestone metadata
     createdBy: Person | null;
     createdAt: Date;
-    isSubscribed?: boolean;
-    onSubscriptionToggle?: (subscribed: boolean) => void;
     canEdit?: boolean;
+
+    // Subscriptions
+    subscriptions: SidebarNotificationSection.Props;
 
     // Rich editor support for description and comments
     richTextHandlers: RichEditorHandlers;
