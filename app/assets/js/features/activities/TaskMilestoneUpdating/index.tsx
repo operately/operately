@@ -3,7 +3,6 @@ import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import { feedTitle, milestoneLink, projectLink, taskLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
-import { compareIds } from "turboui/utils/ids";
 
 const TaskMilestoneUpdating: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -37,11 +36,7 @@ const TaskMilestoneUpdating: ActivityHandler = {
     } else if (oldMilestone && !newMilestone) {
       message = ["removed", taskName, "from milestone", milestoneLink(oldMilestone)];
     } else if (oldMilestone && newMilestone) {
-      if (compareIds(oldMilestone.id, newMilestone.id)) {
-        message = ["reordered", taskName, "in the", milestoneLink(oldMilestone), "milestone"];
-      } else {
-        message = ["moved", taskName, "from milestone", milestoneLink(oldMilestone), "to", milestoneLink(newMilestone)];
-      }
+      message = ["moved", taskName, "from milestone", milestoneLink(oldMilestone), "to", milestoneLink(newMilestone)];
     } else {
       message = ["updated", taskName, "milestone"];
     }
