@@ -24,6 +24,7 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useComments } from "./useComments";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useMilestones } from "@/models/milestones/useMilestones";
+import { useSubscription } from "@/models/subscriptions";
 
 type LoaderResult = {
   data: {
@@ -49,6 +50,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeCreator: true,
           includeSpace: true,
           includePermissions: true,
+          includeSubscriptionList: true,
         }).then((d) => d.task!),
         childrenCount: Api.projects.countChildren({ id: params.id, useTaskId: true }).then((d) => d.childrenCount),
         activities: Api.getActivities({
@@ -82,6 +84,7 @@ function Page() {
   assertPresent(task.project, "Task must have a project");
   assertPresent(task.space, "Task must have a space");
   assertPresent(task.permissions, "Task must have permissions");
+  assertPresent(task.subscriptionList, "Task must have a subscription list");
 
   const workmapLink = paths.spaceWorkMapPath(task.space.id, "projects" as const);
 
@@ -171,6 +174,14 @@ function Page() {
   const { milestones, search: searchMilestones } = useMilestones(task.project.id);
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: task.project.id } });
 
+  const subscriptions = useSubscription({
+    subscriptionList: task.subscriptionList,
+    entityType: "project_task",
+    entityId: task.id,
+    cacheKey: pageCacheKey(task.id),
+    onRefresh: refreshPageData,
+  });
+
   const props: TaskPage.Props = {
     projectName,
     projectLink: paths.projectPath(task.project.id),
@@ -217,8 +228,7 @@ function Page() {
     closedAt: Time.parse(task.project.closedAt),
 
     // Subscription
-    isSubscribed: false,
-    onSubscriptionToggle: () => {},
+    subscriptions,
 
     richTextHandlers: richEditorHandlers,
   };

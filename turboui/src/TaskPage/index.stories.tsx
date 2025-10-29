@@ -18,6 +18,7 @@ import {
 import { createContextualDate } from "../DateField/mockData";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { usePersonFieldSearch } from "../utils/storybook/usePersonFieldSearch";
+import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 
 const meta: Meta<typeof TaskPage> = {
   title: "Pages/TaskPage",
@@ -39,8 +40,11 @@ function Component(props: Partial<TaskPage.Props>) {
   const [assignee, setAssignee] = React.useState(props.assignee || null);
   const [milestone, setMilestone] = React.useState<TaskPage.Milestone | null>(props.milestone || null);
   const [milestones, setMilestones] = React.useState<TaskPage.Milestone[]>(mockMilestones);
-  const [isSubscribed, setIsSubscribed] = React.useState(props.isSubscribed ?? true);
   const searchData = usePersonFieldSearch(mockTaskPeople);
+  const mockSubscriptions = useMockSubscriptions({
+    entityType: "project_task",
+    initial: props.subscriptions?.isSubscribed ?? true,
+  });
 
   const handleMilestoneSearch = React.useCallback(async (query: string) => {
     await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
@@ -121,11 +125,7 @@ function Component(props: Partial<TaskPage.Props>) {
     onMilestoneSearch: handleMilestoneSearch,
 
     // Subscription
-    isSubscribed: isSubscribed,
-    onSubscriptionToggle: (subscribed) => {
-      console.log("Toggling subscription:", subscribed);
-      setIsSubscribed(subscribed);
-    },
+    subscriptions: props.subscriptions ?? mockSubscriptions,
 
     // Metadata
     createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // One week ago

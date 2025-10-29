@@ -13,6 +13,7 @@ defmodule OperatelyWeb.Api.Queries.GetTask do
     field? :include_creator, :boolean, null: false
     field? :include_space, :boolean, null: false
     field? :include_permissions, :boolean, null: false
+    field? :include_subscription_list, :boolean, null: false
   end
 
   outputs do
@@ -42,7 +43,8 @@ defmodule OperatelyWeb.Api.Queries.GetTask do
       include_milestone: [milestone: :project],
       include_project: [:project],
       include_creator: [:creator],
-      include_space: [:group]
+      include_space: [:group],
+      include_subscription_list: [subscription_list: [subscriptions: :person]]
     )
   end
 

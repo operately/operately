@@ -1776,6 +1776,7 @@ export interface Task {
   space?: Space | null;
   permissions?: ProjectPermissions | null;
   commentsCount?: number | null;
+  subscriptionList?: SubscriptionList | null;
 }
 
 export interface Timeframe {
@@ -2060,7 +2061,8 @@ export type SubscriptionParentType =
   | "resource_hub_link"
   | "comment_thread"
   | "project"
-  | "milestone";
+  | "milestone"
+  | "project_task";
 
 export type SuccessStatus = "achieved" | "missed";
 
@@ -2587,6 +2589,7 @@ export interface GetTaskInput {
   includeCreator?: boolean;
   includeSpace?: boolean;
   includePermissions?: boolean;
+  includeSubscriptionList?: boolean;
 }
 
 export interface GetTaskResult {
