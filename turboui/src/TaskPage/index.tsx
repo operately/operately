@@ -8,6 +8,7 @@ import { DateField } from "../DateField";
 import { ProjectPageLayout } from "../ProjectPageLayout";
 import { useTabs } from "../Tabs";
 import { IconClipboardText, IconListCheck, IconLogs, IconMessage, IconMessages } from "../icons";
+import { SidebarNotificationSection } from "../SidebarSection";
 
 import { PageHeader } from "./PageHeader";
 import { Overview } from "./Overview";
@@ -76,9 +77,8 @@ export namespace TaskPage {
     createdBy: Person;
     closedAt: Date | null;
 
-    // Subscription
-    isSubscribed: boolean;
-    onSubscriptionToggle: (subscribed: boolean) => void;
+    // Subscriptions
+    subscriptions: SidebarNotificationSection.Props;
 
     // Actions
     onDelete: () => Promise<void>;
@@ -101,8 +101,6 @@ export namespace TaskPage {
     onAddComment: (content: any) => void;
     onEditComment: (id: string, content: any) => void;
     timelineFilters?: TimelineFilters;
-
-    notifications?: any;
   }
 
   export interface State extends Props {

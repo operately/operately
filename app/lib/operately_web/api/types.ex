@@ -1190,6 +1190,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :space, :space, null: true
     field? :permissions, :project_permissions, null: true
     field? :comments_count, :integer, null: true
+    field? :subscription_list, :subscription_list, null: true
   end
 
   object :activity_content_discussion_editing do
@@ -1974,6 +1975,7 @@ defmodule OperatelyWeb.Api.Types do
     :comment_thread,
     :project,
     :milestone,
+    :project_task,
   ])
 
   object :subscription_list do

@@ -1,5 +1,4 @@
 import { IconArchive, IconCalendar, IconLink, IconTrash } from "../icons";
-import { NotificationToggle } from "../NotificationToggle";
 import React from "react";
 import { TaskPage } from ".";
 import { AvatarWithName } from "../Avatar";
@@ -10,7 +9,7 @@ import { MilestoneField } from "../MilestoneField";
 import { PersonField } from "../PersonField";
 import { durationHumanized, isOverdue } from "../utils/time";
 import { StatusSelector } from "../TaskBoard/components/StatusSelector";
-import { SidebarSection } from "../SidebarSection";
+import { SidebarNotificationSection, SidebarSection } from "../SidebarSection";
 
 export function Sidebar(props: TaskPage.State) {
   return (
@@ -162,17 +161,7 @@ function CreatedBy(props: TaskPage.State) {
 }
 
 function Subscription(props: TaskPage.State) {
-  const handleToggle = (subscribed: boolean) => {
-    props.onSubscriptionToggle(subscribed);
-  };
-
-  if (!props.notifications) return null;
-
-  return (
-    <SidebarSection title="Notifications">
-      <NotificationToggle isSubscribed={props.isSubscribed} onToggle={handleToggle} entityType="task" />
-    </SidebarSection>
-  );
+  return <SidebarNotificationSection {...props.subscriptions} />;
 }
 
 function Actions(props: TaskPage.State) {
