@@ -122,6 +122,70 @@ export const AllStates: Story = {
 
 const Label = ({ children }) => <div className="font-bold text-xs text-content-dimmed mb-3">{children}</div>;
 
+export const Variants: Story = {
+  render: () => {
+    return (
+      <Page title="PersonField - Variants" size="medium">
+        <div className="space-y-8 p-8">
+          <div>
+            <Label>Inline Variant (Default)</Label>
+            <div className="space-y-4">
+              <div>
+                <div className="text-sm text-content-subtle mb-2">With person assigned</div>
+                <Component person={person} variant="inline" />
+              </div>
+              <div>
+                <div className="text-sm text-content-subtle mb-2">Empty state</div>
+                <Component person={null} variant="inline" />
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <Label>Form Field Variant</Label>
+            <div className="space-y-4 max-w-md">
+              <div>
+                <div className="text-sm text-content-subtle mb-2">With person assigned</div>
+                <Component person={person} variant="form-field" />
+              </div>
+              <div>
+                <div className="text-sm text-content-subtle mb-2">Empty state</div>
+                <Component person={null} variant="form-field" emptyStateMessage="Select person" />
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <Label>Form Field Variant - In Form Context</Label>
+            <div className="max-w-md space-y-4 p-6 bg-surface-base border rounded-lg">
+              <div>
+                <label className="font-bold text-sm mb-1 block">Full Name</label>
+                <input
+                  type="text"
+                  placeholder="Enter name"
+                  className="w-full border border-stroke-base rounded-lg px-3 py-1.5 bg-surface-base"
+                />
+              </div>
+              <div>
+                <label className="font-bold text-sm mb-1 block">Manager</label>
+                <Component person={null} variant="form-field" emptyStateMessage="Select manager" />
+              </div>
+              <div>
+                <label className="font-bold text-sm mb-1 block">Timezone</label>
+                <select className="w-full border border-stroke-base rounded-lg px-3 py-1.5 bg-surface-base">
+                  <option>UTC</option>
+                  <option>EST</option>
+                  <option>PST</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Page>
+    );
+  },
+};
+
 export const AvatarOnlyMode: Story = {
   render: () => {
     return (
