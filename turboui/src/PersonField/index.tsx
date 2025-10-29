@@ -499,8 +499,9 @@ function DialogSearch({ state }: { state: PersonField.State }) {
   return (
     <div className="p-1">
       <div className="p-1 pb-0.5">
+        {/* Use text-base (16px) on mobile to prevent auto-zoom and text-sm (14px) on desktop for consistency */}
         <input
-          className="w-full border border-surface-outline rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-base bg-surface-base text-content-base"
+          className="w-full border border-surface-outline rounded-lg px-2 py-1.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary-base bg-surface-base text-content-base"
           placeholder="Search..."
           value={state.searchQuery}
           autoFocus
