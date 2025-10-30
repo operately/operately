@@ -1,3 +1,4 @@
+import { MilestoneActivity } from "../Timeline/types";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
 
 export interface Person {
@@ -23,20 +24,6 @@ export interface Comment {
   notification?: any; // For notification intersection handling
 }
 
-export interface MilestoneActivity {
-  id: string;
-  type:
-    | "milestone-completed"
-    | "milestone-reopened"
-    | "project_milestone_creation"
-    | "milestone_description_updating"
-    | "milestone_update"
-    | "acknowledgment";
-  author: Person;
-  insertedAt: string;
-  content?: string; // For activities that have descriptive content
-}
-
 export type CommentItem =
   | {
       type: "comment";
@@ -60,13 +47,6 @@ export interface CommentFormState {
   editComment: (id: string, content: any) => void;
 }
 
-export interface CommentSectionProps {
-  form: CommentFormState;
-  commentParentType: string;
-  canComment: boolean;
-  richTextHandlers: RichEditorHandlers;
-}
-
 export interface CommentItemProps {
   comment: Comment;
   form: CommentFormState;
@@ -81,13 +61,4 @@ export interface CommentInputProps {
   onSubmit?: () => void;
   onCancel?: () => void;
   richTextHandlers: RichEditorHandlers;
-}
-
-export interface ActivityProps {
-  activity: MilestoneActivity;
-}
-
-export interface AcknowledgmentProps {
-  person: Person;
-  ackAt: string;
 }

@@ -19,4 +19,5 @@ export type {
   TimelineFilters,
   TimelineItemProps,
   TaskActivityProps,
+  MilestoneActivity,
 } from "./types";

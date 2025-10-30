@@ -10,17 +10,15 @@ export function MilestoneCompletedActivity({ activity }: ActivityProps) {
       <div className="flex-1">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <AvatarWithName 
-              person={activity.author} 
-              size="normal" 
+            <AvatarWithName
+              person={activity.author}
+              size="normal"
               nameFormat="short"
               link={activity.author.profileLink}
               className="font-semibold"
             />
             <IconSquareCheckFilled size={20} className="text-accent-1" />
-            <div className="pr-2 font-semibold text-content-accent">
-              completed the milestone
-            </div>
+            <div className="pr-2 font-semibold text-content-accent">completed the milestone</div>
           </div>
 
           <div className="flex items-center justify-between gap-2">
@@ -40,17 +38,15 @@ export function MilestoneReopenedActivity({ activity }: ActivityProps) {
       <div className="flex-1">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <AvatarWithName 
-              person={activity.author} 
-              size="normal" 
+            <AvatarWithName
+              person={activity.author}
+              size="normal"
               nameFormat="short"
               link={activity.author.profileLink}
               className="font-semibold"
             />
             <IconSquareChevronsLeftFilled size={20} className="text-yellow-500" />
-            <div className="pr-2 font-semibold text-content-accent">
-              re-opened the milestone
-            </div>
+            <div className="pr-2 font-semibold text-content-accent">re-opened the milestone</div>
           </div>
 
           <div className="flex items-center justify-between gap-2">
@@ -162,9 +158,9 @@ export function AcknowledgmentActivity({ person, ackAt }: AcknowledgmentProps) {
     <div className="flex items-center justify-between gap-3 py-6 not-first:border-t border-stroke-base text-content-accent">
       <div className="flex items-center justify-between flex-1">
         <div className="flex items-center gap-2 font-bold flex-1">
-          <AvatarWithName 
-            person={person} 
-            size="normal" 
+          <AvatarWithName
+            person={person}
+            size="normal"
             nameFormat="short"
             link={person.profileLink}
             className="font-semibold"
