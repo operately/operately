@@ -100,7 +100,8 @@ export function MilestoneCard({
             <div className="flex items-center gap-2 flex-1 min-w-0">
               <BlackLink
                 to={milestone.link || ""}
-                className="truncate text-sm font-semibold text-content-base hover:text-link-hover transition-colors min-w-0"
+                // Hover color change on medium+ screens (hover disabled on small screens to prevent double-tap on mobile) 
+                className="truncate text-sm font-semibold text-content-base md:hover:text-link-hover transition-colors min-w-0"
                 underline="hover"
                 title={milestone.name}
               >
@@ -136,7 +137,8 @@ export function MilestoneCard({
                     size="small"
                   />
                 ) : (
-                  <div className="opacity-0 transition-opacity group-hover/milestone-due-date:opacity-100 group-hover/milestone-header:opacity-100">
+                  // Show date picker on hover on medium+ screens (hover disabled on small screens to prevent double-tap on mobile)
+                  <div className="opacity-0 transition-opacity md:group-hover/milestone-due-date:opacity-100 md:group-hover/milestone-header:opacity-100">
                     <DateField
                       date={null}
                       onDateSelect={handleMilestoneDueDateChange}
