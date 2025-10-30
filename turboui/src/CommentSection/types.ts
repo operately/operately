@@ -1,5 +1,6 @@
 import { MilestoneActivity } from "../Timeline/types";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
+import { Reactions } from "../Reactions";
 
 export interface Person {
   id: string;
@@ -8,19 +9,12 @@ export interface Person {
   profileLink: string;
 }
 
-export interface Reaction {
-  id: string;
-  emoji: string;
-  count: number;
-  reacted: boolean;
-}
-
 export interface Comment {
   id: string;
   content: string; // JSON string
   author: Person;
   insertedAt: string;
-  reactions: Reaction[];
+  reactions: Reactions.Reaction[];
   notification?: any; // For notification intersection handling
 }
 
@@ -54,6 +48,9 @@ export interface CommentItemProps {
   canComment: boolean;
   onEdit?: () => void;
   richTextHandlers: RichEditorHandlers;
+  currentUserId?: string;
+  onAddReaction?: (commentId: string, emoji: string) => void | Promise<void>;
+  onRemoveReaction?: (commentId: string, reactionId: string) => void | Promise<void>;
 }
 
 export interface CommentInputProps {

@@ -348,11 +348,35 @@ defmodule OperatelyWeb.Api.Types do
     field? :milestone, :milestone, null: true
   end
 
+  enum(:reaction_entity_type, values: [
+    :project_check_in,
+    :project_retrospective,
+    :comment_thread,
+    :goal_update,
+    :message,
+    :comment,
+    :resource_hub_document,
+    :resource_hub_file,
+    :resource_hub_link,
+  ])
+
+  enum(:reaction_parent_type, values: [
+    :project_check_in,
+    :project_retrospective,
+    :comment_thread,
+    :goal_update,
+    :message,
+    :milestone,
+    :project_task,
+    :resource_hub_document,
+    :resource_hub_file,
+    :resource_hub_link,
+  ])
+
   object :reaction do
-    field? :id, :string, null: true
-    field? :emoji, :string, null: true
-    field? :reaction_type, :string, null: true
-    field? :person, :person, null: true
+    field :id, :string, null: false
+    field :emoji, :string, null: false
+    field :person, :person, null: true
   end
 
   object :activity_content_project_pausing do

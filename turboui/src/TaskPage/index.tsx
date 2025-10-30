@@ -100,6 +100,8 @@ export namespace TaskPage {
     canComment?: boolean;
     onAddComment: (content: any) => void;
     onEditComment: (id: string, content: any) => void;
+    onAddReaction?: (commentId: string, emoji: string) => void | Promise<void>;
+    onRemoveReaction?: (commentId: string, reactionId: string) => void | Promise<void>;
     timelineFilters?: TimelineFilters;
   }
 

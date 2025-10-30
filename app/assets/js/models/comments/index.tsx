@@ -47,12 +47,36 @@ export function parseCommentsForTurboUi(paths: Paths, comments: Comment[]) {
 }
 
 function parseCommentForTurboUi(paths: Paths, comment: Comment) {
+  const reactions = parseReactionsForTurboUi(paths, comment.reactions);
+
   return {
     id: comment.id,
     content: comment.content || "{}",
     author: People.parsePersonForTurboUi(paths, comment.author),
     insertedAt: comment.insertedAt,
-    reactions: comment.reactions || [],
+    reactions,
     notification: comment.notification,
   };
+}
+
+function parseReactionsForTurboUi(paths: Paths, reactions: Comment["reactions"] | null | undefined) {
+  if (!reactions) return [];
+
+  return reactions
+    .map((reaction) => {
+      if (!reaction?.id || !reaction.emoji) return null;
+
+      const person = People.parsePersonForTurboUi(paths, reaction.person);
+      if (!person) return null;
+
+      return {
+        id: reaction.id,
+        emoji: reaction.emoji,
+        person,
+      };
+    })
+    .filter(
+      (reaction): reaction is { id: string; emoji: string; person: NonNullable<ReturnType<typeof People.parsePersonForTurboUi>> } =>
+        reaction !== null,
+    );
 }
