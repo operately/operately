@@ -120,7 +120,7 @@ function Page() {
       fromLocation={from}
       companyAdminPath={paths.companyAdminPath()}
       managePeoplePath={paths.companyManagePeoplePath()}
-      accountPath={paths.accountPath()}
+      homePath={paths.homePath()}
       isSubmitting={isSubmitting}
     />
   );
