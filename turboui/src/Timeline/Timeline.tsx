@@ -1,7 +1,15 @@
 import React, { useMemo } from "react";
 import { TimelineItem } from "./TimelineItem";
 import { CommentInput } from "../CommentSection/CommentInput";
-import { TimelineProps } from "./types";
+import * as Types from "./types";
+
+export namespace Timeline {
+  export type MilestoneActivity = Types.MilestoneActivity
+
+  export type Comment = Types.Comment;
+
+  export type Props = Types.TimelineProps;
+}
 
 export function Timeline({
   items,
@@ -12,7 +20,7 @@ export function Timeline({
   onEditComment,
   richTextHandlers,
   filters,
-}: TimelineProps) {
+}: Timeline.Props) {
   const filteredItems = useMemo(() => {
     if (!filters) return items;
 

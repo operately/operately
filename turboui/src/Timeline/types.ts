@@ -3,6 +3,8 @@ import { Person, Comment } from "../CommentSection/types";
 import { Status } from "../TaskBoard/types";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
 
+export type { Comment } from "../CommentSection/types";
+
 export type ActivityPageContext = "task" | "milestone";
 
 export interface MilestoneActivity {
