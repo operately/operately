@@ -2,6 +2,7 @@ import React from "react";
 
 import Api from "@/api";
 import * as Milestones from "@/models/milestones";
+import * as People from "@/models/people";
 
 import { Paths } from "@/routes/paths";
 import { useMe } from "@/contexts/CurrentCompanyContext";
@@ -13,6 +14,20 @@ export function useComments(paths: Paths, milestone: Milestones.Milestone, inval
 
   const [comments, setComments] = React.useState(
     Milestones.parseMilestoneCommentsForTurboUi(paths, milestone.comments),
+  );
+
+  const updateCommentById = React.useCallback(
+    (commentId: string, updater: (comment: any) => any) => {
+      setComments((prev) =>
+        prev.map((comment) => {
+          if ("content" in comment && compareIds(comment.id, commentId)) {
+            return updater(comment);
+          }
+          return comment;
+        }),
+      );
+    },
+    [setComments],
   );
 
   const handleCreateComment = React.useCallback(
@@ -87,8 +102,84 @@ export function useComments(paths: Paths, milestone: Milestones.Milestone, inval
         showErrorToast("Error", "Failed to edit comment.");
       }
     },
-    [comments],
+    [comments, invalidateCache],
   );
 
-  return { comments, setComments, handleCreateComment, handleEditComment };
+  const handleAddReaction = React.useCallback(
+    async (commentId: string, emoji: string) => {
+      const parsedPerson = People.parsePersonForTurboUi(paths, me);
+
+      if (!parsedPerson) {
+        showErrorToast("Error", "Failed to add reaction.");
+        return;
+      }
+
+      const tempReactionId = `temp-${Date.now()}`;
+      const optimisticReaction = { id: tempReactionId, emoji, person: parsedPerson };
+
+      // Optimistically add reaction
+      updateCommentById(commentId, (comment: any) => ({
+        ...comment,
+        reactions: [...(comment.reactions ?? []), optimisticReaction],
+      }));
+
+      try {
+        await Api.addReaction({
+          entityId: commentId,
+          entityType: "comment",
+          parentType: "milestone",
+          emoji,
+        });
+
+        invalidateCache();
+      } catch (error) {
+        // Rollback on error
+        updateCommentById(commentId, (comment: any) => ({
+          ...comment,
+          reactions: (comment.reactions ?? []).filter((reaction: any) => reaction.id !== tempReactionId),
+        }));
+
+        showErrorToast("Error", "Failed to add reaction.");
+      }
+    },
+    [paths, me, updateCommentById, invalidateCache],
+  );
+
+  const handleRemoveReaction = React.useCallback(
+    async (commentId: string, reactionId: string) => {
+      let removedReaction: any = null;
+
+      // Optimistically remove reaction
+      updateCommentById(commentId, (comment: any) => {
+        const reactions = comment.reactions ?? [];
+        removedReaction = reactions.find((r: any) => r.id === reactionId);
+        return { ...comment, reactions: reactions.filter((r: any) => r.id !== reactionId) };
+      });
+
+      try {
+        await Api.removeReaction({ reactionId });
+        invalidateCache();
+      } catch (error) {
+        // Rollback on error
+        if (removedReaction) {
+          updateCommentById(commentId, (comment: any) => ({
+            ...comment,
+            reactions: [...(comment.reactions ?? []), removedReaction],
+          }));
+        }
+
+        showErrorToast("Error", "Failed to remove reaction.");
+      }
+    },
+    [updateCommentById, invalidateCache],
+  );
+
+  return {
+    comments,
+    setComments,
+    handleCreateComment,
+    handleEditComment,
+    handleAddReaction,
+    handleRemoveReaction,
+  };
 }

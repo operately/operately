@@ -1524,10 +1524,9 @@ export interface ProjectReviewRequest {
 }
 
 export interface Reaction {
-  id?: string | null;
-  emoji?: string | null;
-  reactionType?: string | null;
-  person?: Person | null;
+  id: string;
+  emoji: string;
+  person: Person | null;
 }
 
 export interface ResourceHub {
@@ -2044,6 +2043,29 @@ export type MilestoneCommentAction = "none" | "complete" | "reopen";
 export type MilestoneStatus = "pending" | "done";
 
 export type ProjectCheckInStatus = "on_track" | "caution" | "off_track";
+
+export type ReactionEntityType =
+  | "project_check_in"
+  | "project_retrospective"
+  | "comment_thread"
+  | "goal_update"
+  | "message"
+  | "comment"
+  | "resource_hub_document"
+  | "resource_hub_file"
+  | "resource_hub_link";
+
+export type ReactionParentType =
+  | "project_check_in"
+  | "project_retrospective"
+  | "comment_thread"
+  | "goal_update"
+  | "message"
+  | "milestone"
+  | "project_task"
+  | "resource_hub_document"
+  | "resource_hub_file"
+  | "resource_hub_link";
 
 export type ReviewAssignmentOriginTypes = "project" | "goal";
 
@@ -2945,10 +2967,10 @@ export interface AddProjectContributorsResult {
 }
 
 export interface AddReactionInput {
-  entityId?: Id | null;
-  entityType?: string | null;
-  parentType?: string | null;
-  emoji?: string | null;
+  entityId: Id;
+  entityType: ReactionEntityType;
+  parentType?: ReactionParentType;
+  emoji: string;
 }
 
 export interface AddReactionResult {

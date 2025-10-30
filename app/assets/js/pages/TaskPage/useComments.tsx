@@ -16,6 +16,13 @@ export function useComments(task: Tasks.Task, initialComments: Comments.Comment[
     setComments(initialComments);
   }, [initialComments]);
 
+  const updateCommentById = React.useCallback(
+    (commentId: string, updater: (comment: Comments.Comment) => Comments.Comment) => {
+      setComments((prev) => prev.map((comment) => (compareIds(comment.id, commentId) ? updater(comment) : comment)));
+    },
+    [setComments],
+  );
+
   const handleAddComment = React.useCallback(
     async (content: any) => {
       const randomId = `temp-${Math.random().toString(36).substring(2, 15)}`;
@@ -48,7 +55,7 @@ export function useComments(task: Tasks.Task, initialComments: Comments.Comment[
         showErrorToast("Error", "Failed to add comment.");
       }
     },
-    [task.id, comments],
+    [task.id, currentUser, invalidateCache],
   );
 
   const handleEditComment = React.useCallback(
@@ -72,12 +79,84 @@ export function useComments(task: Tasks.Task, initialComments: Comments.Comment[
         showErrorToast("Error", "Failed to edit comment.");
       }
     },
-    [task.id, comments],
+    [comments, invalidateCache],
+  );
+
+  const handleAddReaction = React.useCallback(
+    async (commentId: string, emoji: string) => {
+      if (!currentUser) {
+        showErrorToast("Error", "Failed to add reaction.");
+        return;
+      }
+
+      const tempReactionId = `temp-${Date.now()}`;
+      const optimisticReaction = {
+        id: tempReactionId,
+        emoji,
+        person: currentUser,
+      };
+
+      // Optimistically add reaction
+      updateCommentById(commentId, (comment) => ({
+        ...comment,
+        reactions: [...(comment.reactions ?? []), optimisticReaction],
+      }));
+
+      try {
+        await Api.addReaction({
+          entityId: commentId,
+          entityType: "comment",
+          parentType: "project_task",
+          emoji,
+        });
+
+        invalidateCache();
+      } catch (error) {
+        // Rollback on error
+        updateCommentById(commentId, (comment) => ({
+          ...comment,
+          reactions: (comment.reactions ?? []).filter((reaction) => reaction.id !== tempReactionId),
+        }));
+        showErrorToast("Error", "Failed to add reaction.");
+      }
+    },
+    [currentUser, updateCommentById, invalidateCache],
+  );
+
+  const handleRemoveReaction = React.useCallback(
+    async (commentId: string, reactionId: string) => {
+      let removedReaction: any = null;
+
+      // Optimistically remove reaction
+      updateCommentById(commentId, (comment) => {
+        const reactions = comment.reactions ?? [];
+        removedReaction = reactions.find((r) => r.id === reactionId);
+        return { ...comment, reactions: reactions.filter((r) => r.id !== reactionId) };
+      });
+
+      try {
+        await Api.removeReaction({ reactionId });
+        invalidateCache();
+      } catch (error) {
+        // Rollback on error
+        if (removedReaction) {
+          updateCommentById(commentId, (comment) => ({
+            ...comment,
+            reactions: [...(comment.reactions ?? []), removedReaction],
+          }));
+        }
+
+        showErrorToast("Error", "Failed to remove reaction.");
+      }
+    },
+    [updateCommentById, invalidateCache],
   );
 
   return {
     comments,
     handleAddComment,
     handleEditComment,
+    handleAddReaction,
+    handleRemoveReaction,
   };
 }
