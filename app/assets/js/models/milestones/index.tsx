@@ -1,7 +1,7 @@
 import * as People from "@/models/people";
 import * as Time from "@/utils/time";
 import { Milestone, MilestoneComment } from "@/api";
-import { CommentSection, parseContent, richContentToString } from "turboui";
+import { Timeline, parseContent, richContentToString } from "turboui";
 import { Paths } from "@/routes/paths";
 import { parseContextualDate } from "../contextualDates";
 
@@ -72,14 +72,14 @@ export function parseMilestoneCommentForTurboUi(paths: Paths, comment: Milestone
       type: "milestone-completed",
       insertedAt: comment.comment.insertedAt,
       author: People.parsePersonForTurboUi(paths, comment.comment.author),
-    } as CommentSection.MilestoneActivity;
+    } as Timeline.MilestoneActivity;
   } else if (comment.action === "reopen") {
     return {
       id: comment.comment.id,
       type: "milestone-reopened",
       insertedAt: comment.comment.insertedAt,
       author: People.parsePersonForTurboUi(paths, comment.comment.author),
-    } as CommentSection.MilestoneActivity;
+    } as Timeline.MilestoneActivity;
   } else {
     return {
       id: comment.comment.id,
@@ -88,7 +88,7 @@ export function parseMilestoneCommentForTurboUi(paths: Paths, comment: Milestone
       insertedAt: comment.comment.insertedAt,
       reactions: [],
       notification: comment.comment.notification,
-    } as CommentSection.Comment;
+    } as Timeline.Comment;
   }
 }
 

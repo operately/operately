@@ -51,6 +51,7 @@ export { TaskPage } from "./TaskPage";
 export { TextField } from "./TextField";
 export { showErrorToast, showInfoToast, showSuccessToast, ToasterBar } from "./Toasts";
 export { Tooltip } from "./Tooltip";
+export { Timeline } from "./Timeline";
 
 export { Summary } from "./RichContent";
 export { Editor, useEditor } from "./RichEditor";

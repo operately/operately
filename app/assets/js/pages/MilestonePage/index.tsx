@@ -10,7 +10,7 @@ import * as Projects from "@/models/projects";
 import * as Activities from "@/models/activities";
 import { parseActivitiesForTurboUi, SUPPORTED_ACTIVITY_TYPES } from "@/models/activities/feed";
 
-import { showErrorToast, MilestonePage, CommentSection } from "turboui";
+import { showErrorToast, MilestonePage, Timeline } from "turboui";
 import { Paths, usePaths } from "@/routes/paths";
 import { PageCache } from "@/routes/PageCache";
 import { fetchAll } from "@/utils/async";
@@ -26,7 +26,7 @@ import { useSubscription } from "@/models/subscriptions";
 
 export default { name: "MilestonePage", loader, Page } as PageModule;
 
-type TurboUiComment = CommentSection.Comment | CommentSection.MilestoneActivity;
+type TurboUiComment = Timeline.Comment | Timeline.MilestoneActivity;
 
 type LoaderResult = {
   data: {
