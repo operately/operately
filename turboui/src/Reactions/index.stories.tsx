@@ -39,6 +39,7 @@ function toReactionPerson(person: { id: string; fullName: string; avatarUrl: str
     id: person.id,
     fullName: person.fullName,
     avatarUrl: person.avatarUrl,
+    profileLink: "#",
   };
 }
 
