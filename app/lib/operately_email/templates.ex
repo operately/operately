@@ -12,10 +12,14 @@ defmodule OperatelyEmail.Templates do
     render "partials/_cta_button.html", url: url, text: text
   end
 
-  def title(text), do: title(text, font_size: "24")
+  def title(text), do: title(text, font_size: "20")
 
   def title(text, font_size: font_size) do
     render "partials/_title.html", text: text, font_size: font_size
+  end
+
+  def subtitle(text) do
+    render "partials/_subtitle.html", text: text
   end
 
   def spacer do
