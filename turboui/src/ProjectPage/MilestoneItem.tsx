@@ -124,8 +124,8 @@ export function MilestoneItem({
       data-test-id={milestoneTestId}
     >
       {isDraggable && (
-        // Drag handle - shown on hover when draggable (hover only on devices with hover capability)
-        <div className="flex items-center mt-1 opacity-0 [@media(hover:hover)]:group-hover:opacity-100 transition-opacity">
+        // Drag handle - shown on hover when draggable (hover disabled on small screens to prevent double-tap on mobile)
+        <div className="flex items-center mt-1 opacity-0 md:group-hover:opacity-100 transition-opacity">
           <IconGripVertical size={16} className="text-content-subtle" />
         </div>
       )}
@@ -166,8 +166,8 @@ export function MilestoneItem({
             />
 
             {canEdit && (
-              // Edit button - shown on hover only for devices with hover capability (prevents double-tap on mobile)
-              <div className="opacity-0 [@media(hover:hover)]:group-hover:opacity-100 transition-opacity">
+              // Edit button - shown on hover on medium+ screens (hover disabled on small screens to prevent double-tap on mobile)
+              <div className="opacity-0 md:group-hover:opacity-100 transition-opacity">
                 <SecondaryButton testId={editBtnTestId} size="xxs" onClick={() => setIsEditing(true)}>
                   Edit
                 </SecondaryButton>
