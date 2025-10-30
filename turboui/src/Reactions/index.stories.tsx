@@ -1,12 +1,12 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { ReactionList } from "./index";
+import { Reactions } from "./index";
 import { genPeople } from "../utils/storybook/genPeople";
 
-const meta: Meta<typeof ReactionList> = {
+const meta: Meta<typeof Reactions> = {
   title: "Components/Reactions",
-  component: ReactionList,
+  component: Reactions,
   parameters: {
     layout: "centered",
   },
@@ -28,17 +28,18 @@ const PEOPLE = genPeople(5);
 const CURRENT_USER = toReactionPerson(PEOPLE[0]!);
 const TEAMMATES = PEOPLE.slice(1).map((person) => toReactionPerson(person));
 
-const INITIAL_REACTIONS: ReactionList.Item[] = [
+const INITIAL_REACTIONS: Reactions.Reaction[] = [
   { id: "reaction-1", emoji: "🎉", person: TEAMMATES[0] ?? CURRENT_USER },
   { id: "reaction-2", emoji: "🔥", person: CURRENT_USER },
   { id: "reaction-3", emoji: "🚀", person: TEAMMATES[1] ?? CURRENT_USER },
 ];
 
-function toReactionPerson(person: { id: string; fullName: string; avatarUrl: string | null }): ReactionList.Item["person"] {
+function toReactionPerson(person: { id: string; fullName: string; avatarUrl: string | null }): Reactions.Reaction["person"] {
   return {
     id: person.id,
     fullName: person.fullName,
     avatarUrl: person.avatarUrl,
+    profileLink: "#",
   };
 }
 
@@ -64,7 +65,7 @@ export const Interactive: Story = {
     canAddReaction: true,
   },
   render: ({ size, canAddReaction }) => {
-    const [reactions, setReactions] = React.useState<ReactionList.Item[]>(() => [...INITIAL_REACTIONS]);
+    const [reactions, setReactions] = React.useState<Reactions.Reaction[]>(() => [...INITIAL_REACTIONS]);
 
     const handleAddReaction = React.useCallback((emoji: string) => {
       setReactions((prev) => [
@@ -83,7 +84,7 @@ export const Interactive: Story = {
 
     return (
       <StoryContainer>
-        <ReactionList
+        <Reactions
           reactions={reactions}
           size={size}
           canAddReaction={canAddReaction}
@@ -106,7 +107,7 @@ export const ReadOnly: Story = {
 
     return (
       <StoryContainer>
-        <ReactionList reactions={reactions} size={size} canAddReaction={false} />
+        <Reactions reactions={reactions} size={size} canAddReaction={false} />
       </StoryContainer>
     );
   },

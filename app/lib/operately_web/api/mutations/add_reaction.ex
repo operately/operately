@@ -19,10 +19,10 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
   alias Operately.Comments.CommentThread
 
   inputs do
-    field? :entity_id, :id, null: true
-    field? :entity_type, :string, null: true
-    field? :parent_type, :string, null: true
-    field? :emoji, :string, null: true
+    field :entity_id, :id, null: false
+    field :entity_type, :reaction_entity_type, null: false
+    field? :parent_type, :reaction_parent_type, null: false
+    field :emoji, :string, null: false
   end
 
   outputs do
@@ -30,13 +30,10 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
   end
 
   def call(conn, inputs) do
-    type = String.to_existing_atom(inputs.entity_type)
-    parent_type = parse_comment_parent(inputs[:parent_type])
-
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:parent, fn ctx -> fetch_parent(inputs.entity_id, ctx.me, type, parent_type) end)
-    |> run(:check_permissions, fn ctx -> check_permissions(ctx.parent, type, parent_type, ctx.me) end)
+    |> run(:parent, fn ctx -> fetch_parent(inputs.entity_id, ctx.me, inputs.entity_type, inputs[:parent_type]) end)
+    |> run(:check_permissions, fn ctx -> check_permissions(ctx.parent, inputs.entity_type, inputs[:parent_type], ctx.me) end)
     |> run(:operation, fn ctx -> execute(ctx, inputs) end)
     |> run(:serialized, fn ctx -> {:ok, %{reaction: Serializer.serialize(ctx.operation, level: :essential)}} end)
     |> respond()
@@ -89,6 +86,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
       :goal_update -> Goals.Update.Permissions.check(parent.requester_access_level, parent.entity_id, me.id, :can_comment)
       :message -> Groups.Permissions.check(parent.requester_access_level, :can_comment_on_discussions)
       :milestone -> Projects.Permissions.check(parent.requester_access_level, :can_comment_on_milestone)
+      :project_task -> Projects.Permissions.check(parent.requester_access_level, :can_comment_on_task)
       :resource_hub_document -> ResourceHubs.Permissions.check(parent.requester_access_level, :can_comment_on_document)
       :resource_hub_file -> ResourceHubs.Permissions.check(parent.requester_access_level, :can_comment_on_file)
       :resource_hub_link -> ResourceHubs.Permissions.check(parent.requester_access_level, :can_comment_on_link)
@@ -96,12 +94,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
   end
 
   defp execute(ctx, inputs) do
-    ReactionAdding.run(ctx.me, inputs.entity_id, inputs.entity_type, inputs.emoji)
-  end
-
-  defp parse_comment_parent(nil), do: :ok
-
-  defp parse_comment_parent(parent_type) do
-    String.to_existing_atom(parent_type)
+    entity_type = Atom.to_string(inputs.entity_type)
+    ReactionAdding.run(ctx.me, inputs.entity_id, entity_type, inputs.emoji)
   end
 end

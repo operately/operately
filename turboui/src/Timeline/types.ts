@@ -162,6 +162,8 @@ export interface TimelineProps {
   commentParentType: string;
   onAddComment: (content: any) => void;
   onEditComment: (id: string, content: any) => void;
+  onAddReaction?: (commentId: string, emoji: string) => void | Promise<void>;
+  onRemoveReaction?: (commentId: string, reactionId: string) => void | Promise<void>;
   filters?: TimelineFilters;
   richTextHandlers: RichEditorHandlers;
 }
@@ -183,6 +185,8 @@ export interface TimelineItemProps {
   commentParentType: string;
   onEditComment: (id: string, content: any) => void;
   richTextHandlers: RichEditorHandlers;
+  onAddReaction?: (commentId: string, emoji: string) => void | Promise<void>;
+  onRemoveReaction?: (commentId: string, reactionId: string) => void | Promise<void>;
 }
 
 // Activity component props

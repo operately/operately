@@ -244,6 +244,8 @@ export const Default: Story = {
         canComment={true}
         onAddComment={(comment) => console.log("Add comment:", comment)}
         onEditComment={(commentId, content) => console.log("Edit comment:", { commentId, content })}
+        onAddReaction={(commentId, emoji) => console.log("Add reaction:", commentId, emoji)}
+        onRemoveReaction={(commentId, reactionId) => console.log("Remove reaction:", commentId, reactionId)}
         createdBy={mockPeople[0] || null}
         createdAt={new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)} // 7 days ago
         subscriptions={subscriptions}
@@ -348,6 +350,8 @@ export const EmptyMilestone: Story = {
         canComment={true}
         onAddComment={(comment) => console.log("Add comment:", comment)}
         onEditComment={(commentId, content) => console.log("Edit comment:", { commentId, content })}
+        onAddReaction={(commentId, emoji) => console.log("Add reaction:", commentId, emoji)}
+        onRemoveReaction={(commentId, reactionId) => console.log("Remove reaction:", commentId, reactionId)}
         createdBy={mockPeople[1] || null}
         createdAt={new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)} // 3 days ago
         subscriptions={subscriptions}
@@ -548,6 +552,8 @@ export const CompletedMilestone: Story = {
         canComment={true}
         onAddComment={(comment) => console.log("Add comment:", comment)}
         onEditComment={(commentId, content) => console.log("Edit comment:", { commentId, content })}
+        onAddReaction={(commentId, emoji) => console.log("Add reaction:", commentId, emoji)}
+        onRemoveReaction={(commentId, reactionId) => console.log("Remove reaction:", commentId, reactionId)}
         createdBy={mockPeople[0] || null}
         createdAt={new Date(Date.now() - 21 * 24 * 60 * 60 * 1000)} // 21 days ago
         subscriptions={subscriptions}

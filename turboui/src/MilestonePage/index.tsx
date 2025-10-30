@@ -92,6 +92,8 @@ export namespace MilestonePage {
     canComment: boolean;
     onAddComment: (comment: string) => void;
     onEditComment: (commentId: string, content: string) => void;
+    onAddReaction?: (commentId: string, emoji: string) => void | Promise<void>;
+    onRemoveReaction?: (commentId: string, reactionId: string) => void | Promise<void>;
 
     // Milestone metadata
     createdBy: Person | null;
@@ -320,6 +322,8 @@ function TimelineSection(props: MilestonePage.State) {
         commentParentType="milestone"
         onAddComment={props.onAddComment}
         onEditComment={props.onEditComment}
+        onAddReaction={props.onAddReaction}
+        onRemoveReaction={props.onRemoveReaction}
         richTextHandlers={props.richTextHandlers}
       />
     </div>

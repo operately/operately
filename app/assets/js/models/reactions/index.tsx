@@ -15,13 +15,15 @@ type EntityType =
   | "resource_hub_file"
   | "resource_hub_link";
 
+type ParentType = api.CommentParentType;
+
 // Which entity the reactions are for
 export type Entity = {
   id: string;
   type: EntityType;
-  parentType?: string;
+  parentType?: ParentType;
 };
 
-export function entity(id: string, type: EntityType, parentType?: string): Entity {
+export function entity(id: string, type: EntityType, parentType?: ParentType): Entity {
   return { id, type, parentType };
 }
