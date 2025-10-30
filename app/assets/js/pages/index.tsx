@@ -5,7 +5,6 @@
 
 import AccountAppearancePage from "./AccountAppearancePage";
 import AccountChangePasswordPage from "./AccountChangePasswordPage";
-import AccountPage from "./AccountPage";
 import AccountSecurityPage from "./AccountSecurityPage";
 import AgentPage from "./AgentPage";
 import AiPlaygroundPage from "./AiPlaygroundPage";
@@ -100,7 +99,6 @@ import TaskPage from "./TaskPage";
 export default {
   AccountAppearancePage,
   AccountChangePasswordPage,
-  AccountPage,
   AccountSecurityPage,
   AgentPage,
   AiPlaygroundPage,
