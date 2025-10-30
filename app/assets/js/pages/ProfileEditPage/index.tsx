@@ -10,8 +10,6 @@ import { PageModule } from "@/routes/types";
 import { usePaths } from "@/routes/paths";
 import { ProfileEditPage } from "turboui";
 import * as Blobs from "@/models/blobs";
-import * as Companies from "@/models/companies";
-import { useCurrentCompany } from "@/contexts/CurrentCompanyContext";
 
 export default { name: "ProfileEditPage", loader, Page } as PageModule;
 
@@ -33,10 +31,8 @@ function Page() {
   const paths = usePaths();
   const me = useMe()!;
   const navigate = useNavigate();
-  const company = useCurrentCompany();
   const { person, from } = Pages.useLoadedData() as LoaderResult;
 
-  const canChangeAvatar = company && Companies.hasFeature(company, "custom-avatar");
   const isCurrentUser = me.id === person.id;
 
   // Form state
@@ -117,7 +113,7 @@ function Page() {
       avatarUploading={avatar.avatarUploading}
       avatarUploadProgress={avatar.avatarUploadProgress}
       avatarError={avatar.avatarError}
-      canChangeAvatar={canChangeAvatar || false}
+      canChangeAvatar={true}
       managerSearch={managerSearch}
       timezones={Timezones}
       isCurrentUser={isCurrentUser}
