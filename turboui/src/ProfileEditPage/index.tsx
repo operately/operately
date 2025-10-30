@@ -201,13 +201,12 @@ function AvatarSection(props: ProfileEditPage.Props) {
             size="tiny"
             testId="profile-avatar-menu"
             customTrigger={
-              <button
-                type="button"
-                className="absolute bottom-2 -right-2 opacity-60 hover:opacity-100 transition-all duration-200 flex items-center justify-center focus:outline-none"
-                aria-label="Edit profile photo"
-              >
-                <IconPencil size={18} />
-              </button>
+              <div className="absolute bottom-2 -right-7 opacity-85 hover:opacity-100 transition-all duration-200 focus:outline-none">
+                <div className="flex items-center gap-0.5 text-xs text-content-dimmed cursor-pointer">
+                  <IconPencil size={16} />
+                  Edit
+                </div>
+              </div>
             }
           >
             <MenuActionItem onClick={handleChangePhotoClick} testId="profile-avatar-menu-change">
