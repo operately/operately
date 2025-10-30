@@ -7,7 +7,7 @@ import {
   MilestoneDescriptionActivity,
   MilestoneUpdateActivity,
   AcknowledgmentActivity,
-} from "../CommentSection/ActivityComponents";
+} from "./ActivityComponents";
 import { TaskActivityItem } from "./TaskActivities";
 import { TimelineItemProps } from "./types";
 
