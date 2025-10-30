@@ -115,7 +115,7 @@ function ReactionItemComponent({
   onReactionClick,
   onDeleteClick,
 }: ReactionItemProps) {
-  const testId = `reaction-${reaction.emoji}`;
+  const testId = `reaction-${reaction.emoji}-${reaction.id}`;
 
   const className = classNames("flex items-center transition-all bg-surface-dimmed rounded-full relative", {
     "cursor-pointer": canDelete,
