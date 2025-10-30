@@ -1,9 +1,23 @@
 import { DateField } from "../DateField";
-import { Person, Comment, MilestoneActivity } from "../CommentSection/types";
+import { Person, Comment } from "../CommentSection/types";
 import { Status } from "../TaskBoard/types";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
 
 export type ActivityPageContext = "task" | "milestone";
+
+export interface MilestoneActivity {
+  id: string;
+  type:
+    | "milestone-completed"
+    | "milestone-reopened"
+    | "project_milestone_creation"
+    | "milestone_description_updating"
+    | "milestone_update"
+    | "acknowledgment";
+  author: Person;
+  insertedAt: string;
+  content?: string; // For activities that have descriptive content
+}
 
 // Task-specific activity types
 export interface TaskAssignmentActivity {
@@ -172,4 +186,13 @@ export interface TimelineItemProps {
 // Activity component props
 export interface TaskActivityProps {
   activity: TaskActivity;
+}
+
+export interface ActivityProps {
+  activity: MilestoneActivity;
+}
+
+export interface AcknowledgmentProps {
+  person: Person;
+  ackAt: string;
 }
