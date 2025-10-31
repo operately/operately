@@ -7,6 +7,12 @@ defmodule Operately.Activities.ContextAutoAssigner do
   alias Operately.Repo
   alias Operately.Activities.Activity
   alias Operately.Access.Context
+  alias Operately.Messages.{Message, MessagesBoard}
+  alias Operately.Projects.{CheckIn, Milestone, Retrospective}
+  alias Operately.ResourceHubs.{Document, File, Link}
+  alias Operately.Tasks.Task
+  alias Operately.Goals.Update, as: GoalUpdate
+  alias Operately.Updates.Comment, as: UpdateComment
 
   @deprecated_actions [
     "project_status_update_acknowledged",
@@ -149,7 +155,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
       activity.action in @project_actions -> fetch_project_context(activity.content.project_id)
       activity.action in @task_actions -> fetch_task_project_context(activity.content.task_id)
       activity.action in @resource_hub_actions-> fetch_resource_hub_context(activity.content.space_id)
-      activity.action == "comment_added" -> fetch_comment_added_context(activity)
+      activity.action in ["comment_added", "comment_deleted"] -> fetch_comment_added_context(activity)
       true ->
         Logger.error("Unhandled activity: #{inspect(activity)}")
         raise "Activity not handled in context assignment #{activity.action}"
@@ -210,19 +216,62 @@ defmodule Operately.Activities.ContextAutoAssigner do
     |> Repo.one()
   end
 
-  defp fetch_comment_added_context(activity) do
-    comment = Operately.Updates.get_comment!(activity.content.comment_id)
+  defp fetch_comment_added_context(%Activity{action: "comment_deleted"} = activity) do
+    fetch_comment_deleted_context(activity)
+  end
 
-    case comment.entity_type do
-      :project_check_in -> fetch_project_context(comment.entity_id)
-      :update -> fetch_goal_context(comment.entity_id)
-      :comment_thread -> fetch_comment_thread_context(comment)
-      _ ->
-        Logger.error("Unhandled activity: #{inspect(activity)}")
-        Logger.error("Comment associated with activity: #{inspect(comment)}")
-        raise "Activity not handled in context assignment #{activity.action}"
+  defp fetch_comment_added_context(activity) do
+    case Repo.get(UpdateComment, activity.content.comment_id) do
+      %UpdateComment{} = comment ->
+        case comment.entity_type do
+          :project_check_in -> fetch_project_context(comment.entity_id)
+          :update -> fetch_goal_context_from_update(comment.entity_id)
+          :goal_update -> fetch_goal_context_from_update(comment.entity_id)
+          :comment_thread -> fetch_comment_thread_context(comment)
+          :project_retrospective -> fetch_project_context_from_retrospective(comment.entity_id)
+          :project_task -> fetch_project_context_from_task(comment.entity_id)
+          :project_milestone -> fetch_project_context_from_milestone(comment.entity_id)
+          :message -> fetch_space_context_from_message(comment.entity_id)
+          :resource_hub_document -> fetch_resource_hub_context_from_document(comment.entity_id)
+          :resource_hub_file -> fetch_resource_hub_context_from_file(comment.entity_id)
+          :resource_hub_link -> fetch_resource_hub_context_from_link(comment.entity_id)
+          _ ->
+            log_unhandled_comment(activity, comment)
+        end
+
+      nil ->
+        fetch_comment_deleted_context(activity)
     end
   end
+
+  defp fetch_comment_deleted_context(%Activity{content: %{parent_type: parent_type, parent_id: parent_id}} = activity) do
+    case do_fetch_comment_deleted_context(parent_type, parent_id) do
+      nil ->
+        Logger.error("Unhandled activity: #{inspect(activity)}")
+        raise "Activity not handled in context assignment #{activity.action}"
+
+      context_id ->
+        context_id
+    end
+  end
+
+  defp fetch_comment_deleted_context(activity) do
+    Logger.error("Unhandled activity: #{inspect(activity)}")
+    raise "Activity not handled in context assignment #{activity.action}"
+  end
+
+  defp do_fetch_comment_deleted_context(:project_check_in, parent_id), do: fetch_project_context_from_check_in(parent_id)
+  defp do_fetch_comment_deleted_context(:project_retrospective, parent_id), do: fetch_project_context_from_retrospective(parent_id)
+  defp do_fetch_comment_deleted_context(:project_task, parent_id), do: fetch_project_context_from_task(parent_id)
+  defp do_fetch_comment_deleted_context(:project_milestone, parent_id), do: fetch_project_context_from_milestone(parent_id)
+  defp do_fetch_comment_deleted_context(:goal_update, parent_id), do: fetch_goal_context_from_update(parent_id)
+  defp do_fetch_comment_deleted_context(:update, parent_id), do: fetch_goal_context_from_update(parent_id)
+  defp do_fetch_comment_deleted_context(:comment_thread, parent_id), do: fetch_comment_thread_context(%{entity_id: parent_id})
+  defp do_fetch_comment_deleted_context(:message, parent_id), do: fetch_space_context_from_message(parent_id)
+  defp do_fetch_comment_deleted_context(:resource_hub_document, parent_id), do: fetch_resource_hub_context_from_document(parent_id)
+  defp do_fetch_comment_deleted_context(:resource_hub_file, parent_id), do: fetch_resource_hub_context_from_file(parent_id)
+  defp do_fetch_comment_deleted_context(:resource_hub_link, parent_id), do: fetch_resource_hub_context_from_link(parent_id)
+  defp do_fetch_comment_deleted_context(_, _), do: nil
 
   defp fetch_comment_thread_context(comment) do
     from(a in Activity,
@@ -232,5 +281,112 @@ defmodule Operately.Activities.ContextAutoAssigner do
       select: a.access_context_id
     )
     |> Repo.one()
+  end
+
+  defp fetch_project_context_from_check_in(check_in_id) do
+    from(ci in CheckIn, where: ci.id == ^check_in_id, select: ci.project_id)
+    |> Repo.one()
+    |> case do
+      nil -> fetch_project_context(check_in_id)
+      project_id -> fetch_project_context(project_id)
+    end
+  end
+
+  defp fetch_project_context_from_retrospective(retrospective_id) do
+    from(r in Retrospective, where: r.id == ^retrospective_id, select: r.project_id)
+    |> Repo.one()
+    |> case do
+      nil -> fetch_project_context(retrospective_id)
+      project_id -> fetch_project_context(project_id)
+    end
+  end
+
+  defp fetch_project_context_from_task(task_id) do
+    from(t in Task, where: t.id == ^task_id, select: t.project_id)
+    |> Repo.one()
+    |> case do
+      nil -> fetch_project_context(task_id)
+      project_id -> fetch_project_context(project_id)
+    end
+  end
+
+  defp fetch_project_context_from_milestone(milestone_id) do
+    from(m in Milestone, where: m.id == ^milestone_id, select: m.project_id)
+    |> Repo.one()
+    |> case do
+      nil -> fetch_project_context(milestone_id)
+      project_id -> fetch_project_context(project_id)
+    end
+  end
+
+  defp fetch_goal_context_from_update(update_id) do
+    from(u in GoalUpdate, where: u.id == ^update_id, select: u.goal_id)
+    |> Repo.one()
+    |> case do
+      nil -> fetch_goal_context(update_id)
+      goal_id -> fetch_goal_context(goal_id)
+    end
+  end
+
+  defp fetch_space_context_from_message(message_id) do
+    from(m in Message,
+      join: b in MessagesBoard,
+      on: b.id == m.messages_board_id,
+      where: m.id == ^message_id,
+      select: b.space_id
+    )
+    |> Repo.one()
+    |> case do
+      nil -> nil
+      space_id -> fetch_space_context(%{content: %{space_id: space_id}})
+    end
+  end
+
+  defp fetch_resource_hub_context_from_document(document_id) do
+    from(d in Document,
+      join: n in assoc(d, :node),
+      join: hub in assoc(n, :resource_hub),
+      where: d.id == ^document_id,
+      select: hub.space_id
+    )
+    |> Repo.one()
+    |> case do
+      nil -> nil
+      space_id -> fetch_resource_hub_context(space_id)
+    end
+  end
+
+  defp fetch_resource_hub_context_from_file(file_id) do
+    from(f in File,
+      join: n in assoc(f, :node),
+      join: hub in assoc(n, :resource_hub),
+      where: f.id == ^file_id,
+      select: hub.space_id
+    )
+    |> Repo.one()
+    |> case do
+      nil -> nil
+      space_id -> fetch_resource_hub_context(space_id)
+    end
+  end
+
+  defp fetch_resource_hub_context_from_link(link_id) do
+    from(l in Link,
+      join: n in assoc(l, :node),
+      join: hub in assoc(n, :resource_hub),
+      where: l.id == ^link_id,
+      select: hub.space_id
+    )
+    |> Repo.one()
+    |> case do
+      nil -> nil
+      space_id -> fetch_resource_hub_context(space_id)
+    end
+  end
+
+  defp log_unhandled_comment(activity, comment) do
+    Logger.error("Unhandled activity: #{inspect(activity)}")
+    Logger.error("Comment associated with activity: #{inspect(comment)}")
+    raise "Activity not handled in context assignment #{activity.action}"
   end
 end
