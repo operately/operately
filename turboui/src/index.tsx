@@ -20,6 +20,7 @@ export * from "./WorkMap";
 
 import RichContent from "./RichContent";
 
+export { AccountPage } from "./AccountPage";
 export { InfoCallout, WarningCallout } from "./Callouts";
 export { Checkbox } from "./Checkbox";
 export { Checklist } from "./Checklist";
