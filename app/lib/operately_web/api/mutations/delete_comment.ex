@@ -3,7 +3,6 @@ defmodule OperatelyWeb.Api.Mutations.DeleteComment do
   use OperatelyWeb.Api.Helpers
 
   alias Operately.Updates
-  alias Operately.Operations.CommentDeleting
 
   inputs do
     field(:comment_id, :id, null: false)
@@ -21,7 +20,8 @@ defmodule OperatelyWeb.Api.Mutations.DeleteComment do
       Updates.get_comment_with_access_level(inputs.comment_id, ctx.me.id, inputs.parent_type)
     end)
     |> run(:check_permissions, fn ctx -> check_permissions(ctx.me, ctx.comment) end)
-    |> run(:operation, fn ctx -> CommentDeleting.run(ctx.me, ctx.comment) end)
+    |> run(:operation, fn ctx -> delete_comment(ctx.comment) end)
+    |> run(:broadcast, fn ctx -> broadcast_deletion(ctx.comment) end)
     |> run(:serialized, fn ctx ->
       {:ok, %{comment: Serializer.serialize(ctx.operation, level: :essential)}}
     end)
@@ -44,5 +44,14 @@ defmodule OperatelyWeb.Api.Mutations.DeleteComment do
     else
       {:error, :forbidden}
     end
+  end
+
+  defp delete_comment(comment) do
+    Updates.delete_comment(comment)
+  end
+
+  defp broadcast_deletion(comment) do
+    OperatelyWeb.Api.Subscriptions.ReloadComments.broadcast(comment.entity_id)
+    {:ok, true}
   end
 end

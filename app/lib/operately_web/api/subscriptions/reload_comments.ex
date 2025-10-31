@@ -8,4 +8,7 @@ defmodule OperatelyWeb.Api.Subscriptions.ReloadComments do
     {:ok, socket, [resource_id]}
   end
 
+  def broadcast(comment_entity_id) do
+    OperatelyWeb.ApiSocket.broadcast!("api:reload_comments:#{comment_entity_id}")
+  end
 end

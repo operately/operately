@@ -20,7 +20,7 @@ defmodule OperatelyWeb.Api.Mutations.DeleteCommentTest do
       |> Factory.add_space(:space)
       |> Factory.add_space_member(:member, :space)
       |> Factory.add_project(:project, :space)
-      |> Factory.add_project_contributor(:project_member, :project, project_member: ctx.member)
+      |> Factory.add_project_contributor(:project_member, :project, :as_person)
       |> Factory.add_project_check_in(:check_in, :project, :creator)
       |> Factory.preload(:check_in, :project)
       |> Factory.add_comment(:comment, :check_in)
