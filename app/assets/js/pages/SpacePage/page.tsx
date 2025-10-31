@@ -217,7 +217,7 @@ function SpaceOptions() {
         {space.permissions.canEdit && (
           <PageOptions.Link keepOutsideOnBigScreen icon={IconPencil} to={editLink} title="Edit" testId="edit-space" />
         )}
-        {space.permissions.canDelete && (
+        {space.permissions.canDelete && !space.isCompanySpace && (
           <PageOptions.Action icon={IconTrash} title="Delete" onClick={handleDelete} testId="delete-space" />
         )}
       </PageOptions.Root>
