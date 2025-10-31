@@ -1,7 +1,7 @@
 import React from "react";
 import classNames from "../utils/classnames";
 
-export function Paper({ children }: { children: React.ReactNode }) {
+export function Paper({ children, testId }: { children: React.ReactNode; testId?: string }) {
   const classname = classNames(
     "relative",
     "bg-surface-base",
@@ -18,5 +18,9 @@ export function Paper({ children }: { children: React.ReactNode }) {
     "sm:mx-4"
   );
 
-  return <div className={classname}>{children}</div>;
+  return (
+    <div className={classname} data-test-id={testId}>
+      {children}
+    </div>
+  );
 }
