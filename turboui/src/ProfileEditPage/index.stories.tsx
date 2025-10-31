@@ -116,7 +116,7 @@ const DefaultStory = (args: Partial<ProfileEditPage.Props>) => {
       fromLocation={args.fromLocation ?? null}
       companyAdminPath="/admin"
       managePeoplePath="/admin/people"
-      accountPath="/account"
+      homePath="#"
       isSubmitting={isSubmitting}
     />
   );
