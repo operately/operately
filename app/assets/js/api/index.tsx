@@ -2011,6 +2011,8 @@ export type AgentMessageSender = "user" | "ai";
 
 export type AgentMessageStatus = "pending" | "done";
 
+export type AssignableResourceType = "task" | "milestone" | "project";
+
 export type CommentParentType =
   | "project_check_in"
   | "project_retrospective"
@@ -2713,6 +2715,16 @@ export interface ListSpaceToolsInput {
 
 export interface ListSpaceToolsResult {
   tools?: SpaceTools | null;
+}
+
+export interface ListTaskAssignablePeopleInput {
+  projectId: Id;
+  query?: string | null;
+  ignoredIds?: Id[] | null;
+}
+
+export interface ListTaskAssignablePeopleResult {
+  people: Person[] | null;
 }
 
 export interface ProjectDiscussionsGetInput {
@@ -4429,6 +4441,10 @@ class ApiNamespaceRoot {
     return this.client.get("/list_space_tools", input);
   }
 
+  async listTaskAssignablePeople(input: ListTaskAssignablePeopleInput): Promise<ListTaskAssignablePeopleResult> {
+    return this.client.get("/list_task_assignable_people", input);
+  }
+
   async searchPeople(input: SearchPeopleInput): Promise<SearchPeopleResult> {
     return this.client.get("/search_people", input);
   }
@@ -5419,6 +5435,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.listSpaceTools(input);
   }
 
+  listTaskAssignablePeople(input: ListTaskAssignablePeopleInput): Promise<ListTaskAssignablePeopleResult> {
+    return this.apiNamespaceRoot.listTaskAssignablePeople(input);
+  }
+
   searchPeople(input: SearchPeopleInput): Promise<SearchPeopleResult> {
     return this.apiNamespaceRoot.searchPeople(input);
   }
@@ -5940,6 +5960,11 @@ export async function listResourceHubNodes(input: ListResourceHubNodesInput): Pr
 }
 export async function listSpaceTools(input: ListSpaceToolsInput): Promise<ListSpaceToolsResult> {
   return defaultApiClient.listSpaceTools(input);
+}
+export async function listTaskAssignablePeople(
+  input: ListTaskAssignablePeopleInput,
+): Promise<ListTaskAssignablePeopleResult> {
+  return defaultApiClient.listTaskAssignablePeople(input);
 }
 export async function searchPeople(input: SearchPeopleInput): Promise<SearchPeopleResult> {
   return defaultApiClient.searchPeople(input);
@@ -6470,6 +6495,12 @@ export function useListResourceHubNodes(
 
 export function useListSpaceTools(input: ListSpaceToolsInput): UseQueryHookResult<ListSpaceToolsResult> {
   return useQuery<ListSpaceToolsResult>(() => defaultApiClient.listSpaceTools(input));
+}
+
+export function useListTaskAssignablePeople(
+  input: ListTaskAssignablePeopleInput,
+): UseQueryHookResult<ListTaskAssignablePeopleResult> {
+  return useQuery<ListTaskAssignablePeopleResult>(() => defaultApiClient.listTaskAssignablePeople(input));
 }
 
 export function useSearchPeople(input: SearchPeopleInput): UseQueryHookResult<SearchPeopleResult> {
@@ -7184,6 +7215,8 @@ export default {
   useListResourceHubNodes,
   listSpaceTools,
   useListSpaceTools,
+  listTaskAssignablePeople,
+  useListTaskAssignablePeople,
   searchPeople,
   useSearchPeople,
   searchPotentialSpaceMembers,

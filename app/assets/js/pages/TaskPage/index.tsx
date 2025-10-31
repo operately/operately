@@ -166,8 +166,8 @@ function Page() {
     [paths]
   );
 
-  const assigneePersonSearch = People.usePersonFieldSpaceMembersSearch({
-    spaceId: task.space.id,
+  const assigneePersonSearch = Tasks.useTaskAssigneeSearch({
+    projectId: task.project.id,
     transformResult: transformPerson,
   });
   const { milestones, search: searchMilestones } = useMilestones(task.project.id);
