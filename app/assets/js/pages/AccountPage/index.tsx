@@ -2,22 +2,27 @@ import React from "react";
 
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
+import * as People from "@/models/people";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { logOut } from "@/routes/auth";
 import { PageModule } from "@/routes/types";
 import { BurgerActionsGroup, BurgerButton, BurgerLink } from "./BurgerActions";
-import { IconUserCircle, IconPalette, IconLockPassword, IconDoorExit } from "turboui";
+import { IconUserCircle, IconPalette, IconLockPassword, IconDoorExit, Avatar } from "turboui";
 
 import { usePaths } from "@/routes/paths";
 export default { name: "AccountPage", loader: Pages.emptyLoader, Page } as PageModule;
 
 function Page() {
+  const me = useMe()!;
+
   return (
     <Pages.Page title="My Account" testId="my-account-page">
       <Paper.Root size="small">
         <Paper.Body minHeight="500px">
           <Paper.Title>My Account</Paper.Title>
+
+          <UserInfo person={me} />
 
           <div className="flex flex-col gap-8">
             <BurgerActionsGroup>
@@ -78,5 +83,17 @@ function LogOutButton() {
     <BurgerButton onClick={handleClick} testId="log-out-button" icon={IconDoorExit}>
       Sign Out
     </BurgerButton>
+  );
+}
+
+function UserInfo({ person }: { person: People.Person }) {
+  return (
+    <div className="flex items-center gap-3 mb-8 p-3 bg-surface-dimmed rounded-lg border border-surface-outline">
+      <Avatar person={person} size={48} />
+      <div className="flex flex-col">
+        <div className="text-lg font-semibold text-content-base">{person.fullName}</div>
+        <div className="text-xs text-content-dimmed">{person.email}</div>
+      </div>
+    </div>
   );
 }
