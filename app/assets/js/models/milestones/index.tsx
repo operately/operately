@@ -1,4 +1,5 @@
 import * as People from "@/models/people";
+import * as ReactionsModel from "@/models/reactions";
 import * as Time from "@/utils/time";
 import { Milestone, MilestoneComment } from "@/api";
 import { Timeline, parseContent, richContentToString } from "turboui";
@@ -86,7 +87,7 @@ export function parseMilestoneCommentForTurboUi(paths: Paths, comment: Milestone
       content: comment.comment.content || "{}",
       author: People.parsePersonForTurboUi(paths, comment.comment.author),
       insertedAt: comment.comment.insertedAt,
-      reactions: [],
+      reactions: ReactionsModel.parseReactionsForTurboUi(paths, comment.comment.reactions),
       notification: comment.comment.notification,
     } as Timeline.Comment;
   }

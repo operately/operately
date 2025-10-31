@@ -115,9 +115,10 @@ function Page() {
       setMilestones: setMilestones,
       refresh,
     });
-  const { comments, setComments, handleCreateComment, handleEditComment } = useComments(paths, milestone, () => {
-    PageCache.invalidate(pageCacheKey(milestone.id));
-  });
+  const { comments, setComments, handleCreateComment, handleEditComment, handleAddReaction, handleRemoveReaction } =
+    useComments(paths, milestone, () => {
+      PageCache.invalidate(pageCacheKey(milestone.id));
+    });
   const [status, setStatus] = useStatusField(paths, pageData, setComments);
 
   const timelineItems = React.useMemo(
@@ -180,6 +181,8 @@ function Page() {
     timelineItems,
     onAddComment: handleCreateComment,
     onEditComment: handleEditComment,
+    onAddReaction: handleAddReaction,
+    onRemoveReaction: handleRemoveReaction,
     canComment: Boolean(milestone.permissions.canComment),
 
     // Core milestone data

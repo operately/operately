@@ -139,9 +139,13 @@ function Page() {
     refreshPageData,
   });
 
-  const { comments, handleAddComment, handleEditComment } = useComments(task, data.comments, () => {
-    PageCache.invalidate(pageCacheKey(task.id));
-  });
+  const { comments, handleAddComment, handleEditComment, handleAddReaction, handleRemoveReaction } = useComments(
+    task,
+    data.comments,
+    () => {
+      PageCache.invalidate(pageCacheKey(task.id));
+    },
+  );
 
   const timelineItems = useMemo(() => prepareTimelineItems(paths, activities, comments), [paths, activities, comments]);
 
@@ -199,6 +203,8 @@ function Page() {
     timelineItems,
     onAddComment: handleAddComment,
     onEditComment: handleEditComment,
+    onAddReaction: handleAddReaction,
+    onRemoveReaction: handleRemoveReaction,
     canComment: Boolean(task.permissions.canComment),
 
     // Milestone selection

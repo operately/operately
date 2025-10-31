@@ -3,10 +3,10 @@ import React from "react";
 import Api from "@/api";
 import * as Tasks from "@/models/tasks";
 import * as Comments from "@/models/comments";
+import * as Reactions from "@/models/reactions";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { showErrorToast } from "turboui";
-import { compareIds } from "@/routes/paths";
 
 export function useComments(task: Tasks.Task, initialComments: Comments.Comment[], invalidateCache: () => void) {
   const currentUser = useMe();
@@ -15,6 +15,19 @@ export function useComments(task: Tasks.Task, initialComments: Comments.Comment[
   React.useEffect(() => {
     setComments(initialComments);
   }, [initialComments]);
+
+  const { handleAddReaction, handleRemoveReaction } = Reactions.useReactionHandlers(
+    setComments,
+    "project_task",
+    invalidateCache,
+  );
+
+  const { handleEditComment } = Comments.useEditCommentHandler(
+    comments,
+    setComments,
+    "project_task",
+    invalidateCache,
+  );
 
   const handleAddComment = React.useCallback(
     async (content: any) => {
@@ -48,36 +61,15 @@ export function useComments(task: Tasks.Task, initialComments: Comments.Comment[
         showErrorToast("Error", "Failed to add comment.");
       }
     },
-    [task.id, comments],
+    [task.id, currentUser, invalidateCache],
   );
 
-  const handleEditComment = React.useCallback(
-    async (commentId: string, content: any) => {
-      const comment = comments.find((c) => compareIds(c.id, commentId));
-
-      try {
-        if (comment) {
-          setComments((prev) =>
-            prev.map((c) =>
-              compareIds(c.id, commentId) ? { ...c, content: JSON.stringify({ message: content }) } : c,
-            ),
-          );
-        }
-
-        await Api.editComment({ commentId, parentType: "project_task", content: JSON.stringify(content) });
-
-        invalidateCache();
-      } catch (error) {
-        setComments((prev) => prev.map((c) => (compareIds(c.id, commentId) ? { ...c, content: comment?.content } : c)));
-        showErrorToast("Error", "Failed to edit comment.");
-      }
-    },
-    [task.id, comments],
-  );
 
   return {
     comments,
     handleAddComment,
     handleEditComment,
+    handleAddReaction,
+    handleRemoveReaction,
   };
 }

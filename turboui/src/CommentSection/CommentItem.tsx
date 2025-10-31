@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 import { Avatar } from "../Avatar";
 import { Menu, MenuActionItem } from "../Menu";
@@ -11,6 +11,7 @@ import { Editor, useEditor, MentionedPersonLookupFn } from "../RichEditor";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
 import { createTestId } from "../TestableElement";
+import { Reactions } from "../Reactions";
 
 // Function to shorten name for display
 function shortName(name: string | undefined): string {
@@ -42,10 +43,14 @@ export function CommentItem({
   currentUserId,
   form,
   richTextHandlers,
-}: CommentItemProps & { currentUserId?: string }) {
+  onAddReaction,
+  onRemoveReaction,
+}: CommentItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const parsedContent = JSON.parse(comment.content)["message"];
   const isOwnComment = compareIds(currentUserId, comment.author.id);
+
+  const canAddReaction = Boolean(canComment && onAddReaction);
 
   const handleSaveEdit = (content: any) => {
     if (form && form.editComment) {
@@ -53,6 +58,24 @@ export function CommentItem({
       setIsEditing(false);
     }
   };
+
+  const handleAddReaction = useCallback(
+    (emoji: string) => {
+      if (onAddReaction) {
+        return onAddReaction(comment.id, emoji);
+      }
+    },
+    [onAddReaction, comment.id],
+  );
+
+  const handleRemoveReaction = useCallback(
+    (reactionId: string) => {
+      if (onRemoveReaction) {
+        return onRemoveReaction(comment.id, reactionId);
+      }
+    },
+    [onRemoveReaction, comment.id],
+  );
 
   return (
     <div
@@ -106,7 +129,10 @@ export function CommentItem({
             content={parsedContent}
             mentionedPersonLookup={richTextHandlers.mentionedPersonLookup}
             reactions={comment.reactions}
-            canComment={canComment}
+            currentUserId={currentUserId}
+            canAddReaction={canAddReaction}
+            onAddReaction={handleAddReaction}
+            onRemoveReaction={handleRemoveReaction}
           />
         )}
       </div>
@@ -117,17 +143,39 @@ export function CommentItem({
 interface CommentViewModeProps {
   content: any;
   mentionedPersonLookup: MentionedPersonLookupFn;
-  reactions: any[];
-  canComment: boolean;
+  reactions: Reactions.Reaction[];
+  currentUserId?: string;
+  canAddReaction: boolean;
+  onAddReaction?: (emoji: string) => void | Promise<void>;
+  onRemoveReaction?: (reactionId: string) => void | Promise<void>;
 }
 
-function CommentViewMode({ content, mentionedPersonLookup, reactions, canComment }: CommentViewModeProps) {
+function CommentViewMode({
+  content,
+  mentionedPersonLookup,
+  reactions,
+  currentUserId,
+  canAddReaction,
+  onAddReaction,
+  onRemoveReaction,
+}: CommentViewModeProps) {
+  const shouldShowReactions = reactions.length > 0 || canAddReaction;
+
   return (
     <div>
       <div className="mb-2">
         <RichContent content={content} mentionedPersonLookup={mentionedPersonLookup} />
       </div>
-      {canComment && false && <ReactionList reactions={reactions} />}
+      {shouldShowReactions && (
+        <Reactions
+          reactions={reactions}
+          size={20}
+          canAddReaction={canAddReaction}
+          currentPersonId={currentUserId}
+          onAddReaction={onAddReaction}
+          onRemoveReaction={onRemoveReaction}
+        />
+      )}
     </div>
   );
 }
@@ -166,9 +214,4 @@ function CommentEditMode({ content, onSave, onCancel, richTextHandlers }: Commen
       </div>
     </div>
   );
-}
-
-function ReactionList({ reactions }: { reactions: any[] }) {
-  // This should integrate with the actual reaction system
-  return <div>Reactions: {reactions.length}</div>;
 }

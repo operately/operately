@@ -18,6 +18,8 @@ export function Timeline({
   commentParentType,
   onAddComment,
   onEditComment,
+  onAddReaction,
+  onRemoveReaction,
   richTextHandlers,
   filters,
 }: Timeline.Props) {
@@ -60,8 +62,10 @@ export function Timeline({
       submitting: false,
       postComment: onAddComment || (() => {}),
       editComment: onEditComment || (() => {}),
+      addReaction: onAddReaction,
+      removeReaction: onRemoveReaction,
     }),
-    [onAddComment, onEditComment],
+    [onAddComment, onEditComment, onAddReaction, onRemoveReaction],
   );
 
   return (
@@ -78,6 +82,8 @@ export function Timeline({
             commentParentType={commentParentType}
             onEditComment={onEditComment}
             richTextHandlers={richTextHandlers}
+            onAddReaction={onAddReaction}
+            onRemoveReaction={onRemoveReaction}
           />
         ))
       )}

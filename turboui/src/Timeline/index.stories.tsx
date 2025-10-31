@@ -57,8 +57,9 @@ const mockComment: TimelineItem = {
     author: mockAuthor,
     insertedAt: new Date(Date.now() - 1800000).toISOString(), // 30 min ago
     reactions: [
-      { id: "1", emoji: "👍", count: 2, reacted: false },
-      { id: "2", emoji: "🎉", count: 1, reacted: true },
+      { id: "reaction-1", emoji: "👍", person: mockUser },
+      { id: "reaction-2", emoji: "🎉", person: mockAuthor },
+      { id: "reaction-3", emoji: "👍", person: mockAssignee },
     ],
   },
 };
@@ -157,7 +158,13 @@ const createMockProps = (items: TimelineItem[]): TimelineProps => ({
   onEditComment: (id: string, content: any) => {
     console.log("Edit comment:", id, content);
   },
-  richTextHandlers:  createMockRichEditorHandlers(),
+  onAddReaction: (commentId: string, emoji: string) => {
+    console.log("Add reaction:", commentId, emoji);
+  },
+  onRemoveReaction: (commentId: string, reactionId: string) => {
+    console.log("Remove reaction:", commentId, reactionId);
+  },
+  richTextHandlers: createMockRichEditorHandlers(),
 });
 
 export const Default: Story = {
