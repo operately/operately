@@ -2,6 +2,7 @@ defmodule Operately.Support.Features.SpacesSteps do
   use Operately.FeatureCase
 
   alias Operately.Access.Binding
+  alias Operately.Groups.Group
   alias Operately.Support.Features.UI
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
@@ -19,6 +20,14 @@ defmodule Operately.Support.Features.SpacesSteps do
 
   step(:visit_home, ctx, do: UI.visit(ctx, Paths.home_path(ctx.company)))
   step(:visit_space, ctx, do: UI.visit(ctx, Paths.space_path(ctx.company, ctx.marketing)))
+
+  step :visit_general_space, ctx do
+    {:ok, space} = Group.get(:system, id: ctx.company.company_space_id)
+
+    ctx
+    |> Map.put(:general_space, space)
+    |> UI.visit(Paths.space_path(ctx.company, space))
+  end
 
   step :visit_access_management, ctx, name do
     ctx
@@ -53,6 +62,12 @@ defmodule Operately.Support.Features.SpacesSteps do
       |> UI.assert_text(space.name)
       |> UI.assert_text(space.mission)
     end)
+  end
+
+  step :assert_delete_option_not_visible, ctx do
+    ctx
+    |> UI.refute_has(testid: "options-button")
+    |> UI.refute_has(testid: "delete-space")
   end
 
   step(:click_on_add_space, ctx, do: UI.click(ctx, testid: "add-space"))
