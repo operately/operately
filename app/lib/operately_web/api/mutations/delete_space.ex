@@ -15,8 +15,10 @@ defmodule OperatelyWeb.Api.Mutations.DeleteSpace do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:space, fn ctx -> Group.get(ctx.me, id: inputs.space_id) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.request_info.access_level, :can_delete) end)
+    |> run(:space, fn ctx -> Group.get(ctx.me, id: inputs.space_id, opts: [preload: :company]) end)
+    |> run(:check_permissions, fn ctx ->
+      Permissions.check(ctx.space.request_info.access_level, :can_delete)
+    end)
     |> run(:operation, fn ctx -> Operately.Operations.SpaceDeleting.run(ctx.space) end)
     |> run(:serialized, fn ctx -> {:ok, %{space: Serializer.serialize(ctx.operation)}} end)
     |> respond()
@@ -25,9 +27,16 @@ defmodule OperatelyWeb.Api.Mutations.DeleteSpace do
   defp respond(result) do
     case result do
       {:ok, ctx} -> {:ok, ctx.serialized}
+
       {:error, :space, _} -> {:error, :not_found}
+
       {:error, :check_permissions, _} -> {:error, :forbidden}
+
+      {:error, :operation, %{error: :cannot_delete_general_space}} ->
+        {:error, :bad_request, "You cannot delete the general space"}
+
       {:error, :operation, _} -> {:error, :internal_server_error}
+
       _ -> {:error, :internal_server_error}
     end
   end
