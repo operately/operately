@@ -58,7 +58,7 @@ export namespace ProfileEditPage {
     fromLocation: string | null;
     companyAdminPath: string;
     managePeoplePath: string;
-    accountPath: string;
+    homePath: string;
 
     // State
     isSubmitting?: boolean;
@@ -76,9 +76,9 @@ export function ProfileEditPage(props: ProfileEditPage.Props) {
         { label: "Manage Team Members", to: props.managePeoplePath },
       ];
     } else {
-      return [{ label: "Account", to: props.accountPath }];
+      return [{ label: "Home", to: props.homePath }];
     }
-  }, [props.fromLocation, props.companyAdminPath, props.managePeoplePath, props.accountPath]);
+  }, [props.fromLocation, props.companyAdminPath, props.managePeoplePath, props.homePath]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

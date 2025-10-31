@@ -47,7 +47,7 @@ export function Page(props: Page.Props) {
     <div className={containerClass}>
       {props.navigation && <Navigation items={props.navigation} />}
 
-      <Paper>
+      <Paper testId={props.testId}>
         <PageOptions options={props.options} />
         {props.children}
       </Paper>

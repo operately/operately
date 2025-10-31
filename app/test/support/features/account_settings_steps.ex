@@ -9,9 +9,20 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
   end
 
   step :change_theme, ctx, theme do
+    ctx = try do
+      # Try to find and click appearance-link within the account page content
+      UI.find(ctx, UI.query(testid: "my-account-page"), fn el ->
+        UI.click(el, testid: "appearance-link")
+      end)
+    rescue
+      _ ->
+        # If not on account page, use the dropdown menu
+        ctx
+        |> UI.click(testid: "account-menu")
+        |> UI.click(testid: "appearance-link")
+    end
+
     ctx
-    |> UI.visit(Paths.account_path(ctx.company))
-    |> UI.click(testid: "appearance-link")
     |> UI.click(testid: "color-mode-#{theme}")
     |> UI.click(testid: "submit")
     |> UI.assert_has(testid: "my-account-page")
@@ -24,7 +35,7 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
 
   step :open_account_settings, ctx do
     ctx
-    |> UI.visit(Paths.account_path(ctx.company))
+    |> UI.click(testid: "account-menu")
     |> UI.click(testid: "profile-link")
   end
 
@@ -63,8 +74,9 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
     assert Operately.People.get_person!(ctx.person.id).timezone == props[:value]
 
     ctx
-    |> UI.visit(Paths.account_path(ctx.company))
-    |> UI.click(testid: "profile-link")
+    |> UI.find(UI.query(testid: "my-account-page"), fn el ->
+      UI.click(el, testid: "profile-link")
+    end)
     |> UI.assert_text(props[:label])
   end
 
