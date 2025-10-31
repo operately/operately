@@ -162,6 +162,12 @@ function Component(props: Partial<TaskPage.Props>) {
     onEditComment: (id: string, content: any) => {
       console.log("Edit comment:", id, content);
     },
+    onAddReaction: (commentId: string, emoji: string) => {
+      console.log("Add reaction:", commentId, emoji);
+    },
+    onRemoveReaction: (commentId: string, reactionId: string) => {
+      console.log("Remove reaction:", commentId, reactionId);
+    },
   };
 
   return <TaskPage {...defaults} />;

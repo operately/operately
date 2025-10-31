@@ -2,23 +2,26 @@ import * as Popover from "@radix-ui/react-popover";
 import * as React from "react";
 
 import classNames from "../utils/classnames";
-import { Avatar, AvatarPerson } from "../Avatar";
+import { Avatar } from "../Avatar";
 import { IconMoodPlus, IconTrash, IconX } from "../icons";
 import { compareIds } from "../utils/ids";
 
-export namespace ReactionList {
-  export interface Person extends AvatarPerson {
+export namespace Reactions {
+  export interface Person {
     id: string;
+    fullName: string;
+    avatarUrl: string | null;
+    profileLink: string;
   }
   
-  export interface Item {
+  export interface Reaction {
     id: string;
     person: Person;
     emoji: string;
   }
   
   export interface Props {
-    reactions: Item[];
+    reactions: Reaction[];
     size?: number;
     canAddReaction?: boolean;
     currentPersonId?: string | null;
@@ -27,14 +30,14 @@ export namespace ReactionList {
   }
 }
 
-export function ReactionList({
+export function Reactions({
   reactions,
   size = 24,
   canAddReaction = true,
   currentPersonId,
   onAddReaction,
   onRemoveReaction,
-}: ReactionList.Props) {
+}: Reactions.Props) {
   const [deleteMode, setDeleteMode] = React.useState<string | null>(null);
 
   const handleReactionClick = React.useCallback((reactionId: string) => {
@@ -98,7 +101,7 @@ export function ReactionList({
 }
 
 interface ReactionItemProps {
-  reaction: ReactionList.Item;
+  reaction: Reactions.Reaction;
   size: number;
   isInDeleteMode: boolean;
   isMyReaction: boolean;

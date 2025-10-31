@@ -1,6 +1,7 @@
 import * as api from "@/api";
 import * as Time from "@/utils/time";
 import * as People from "@/models/people";
+import * as Reactions from "@/models/reactions";
 import { Paths } from "@/routes/paths";
 
 type Comment = api.Comment;
@@ -11,6 +12,7 @@ export type { CommentableResource } from "./CommentableResource";
 export type { Comment };
 export { useCreateComment, useEditComment, useGetComments, getComments } from "@/api";
 export { useReloadCommentsSignal } from "@/signals";
+export { useEditComment as useEditCommentHandler } from "./useEditComment";
 
 export type ItemType = "comment" | "acknowledgement" | "milestone-completed" | "milestone-reopened";
 
@@ -47,12 +49,14 @@ export function parseCommentsForTurboUi(paths: Paths, comments: Comment[]) {
 }
 
 function parseCommentForTurboUi(paths: Paths, comment: Comment) {
+  const reactions = Reactions.parseReactionsForTurboUi(paths, comment.reactions);
+
   return {
     id: comment.id,
     content: comment.content || "{}",
     author: People.parsePersonForTurboUi(paths, comment.author),
     insertedAt: comment.insertedAt,
-    reactions: comment.reactions || [],
+    reactions,
     notification: comment.notification,
   };
 }

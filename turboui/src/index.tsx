@@ -52,6 +52,7 @@ export { TextField } from "./TextField";
 export { showErrorToast, showInfoToast, showSuccessToast, ToasterBar } from "./Toasts";
 export { Tooltip } from "./Tooltip";
 export { Timeline } from "./Timeline";
+export { Reactions } from "./Reactions";
 
 export { Summary } from "./RichContent";
 export { Editor, useEditor } from "./RichEditor";

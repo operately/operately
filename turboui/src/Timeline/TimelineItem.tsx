@@ -18,6 +18,8 @@ export function TimelineItem({
   commentParentType,
   onEditComment,
   richTextHandlers,
+  onAddReaction,
+  onRemoveReaction,
 }: TimelineItemProps) {
   switch (item.type) {
     case "comment":
@@ -34,6 +36,8 @@ export function TimelineItem({
           canComment={canComment}
           currentUserId={currentUser.id}
           richTextHandlers={richTextHandlers}
+          onAddReaction={onAddReaction}
+          onRemoveReaction={onRemoveReaction}
         />
       );
 
