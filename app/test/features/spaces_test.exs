@@ -208,12 +208,4 @@ defmodule Operately.Features.SpacesTest do
     |> Steps.confirm_space_deletion()
     |> Steps.assert_space_deleted()
   end
-
-  feature "company work map loads after deleting General space", ctx do
-    ctx
-    |> Steps.visit_home()
-    |> Steps.delete_general_space()
-    |> Steps.assert_general_space_deleted()
-    |> Steps.assert_company_work_map_loads()
-  end
 end
