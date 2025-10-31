@@ -27,7 +27,6 @@ defmodule OperatelyWeb.Api.Queries.ListTaskAssignablePeople do
       {:ok, %{people: Serializer.serialize(people, level: :essential)}}
     else
       {:error, :not_found} -> {:error, :not_found}
-      _ -> {:error, :internal_server_error}
     end
   end
 
