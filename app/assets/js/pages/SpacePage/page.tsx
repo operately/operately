@@ -151,6 +151,7 @@ function SpaceOptions() {
   const { space, tools } = useLoadedData();
 
   assertPresent(space.permissions, "permissions must be present in space");
+  if (space.isCompanySpace) return null;
   if (!space.permissions.canDelete || !space.permissions.canEdit) return null;
 
   const navigate = useNavigate();

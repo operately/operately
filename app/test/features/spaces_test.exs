@@ -41,6 +41,12 @@ defmodule Operately.Features.SpacesTest do
     |> Steps.assert_space_name_mission_and_privacy_indicator()
   end
 
+  feature "general space does not show delete option", ctx do
+    ctx
+    |> Steps.visit_general_space()
+    |> Steps.assert_delete_option_not_visible()
+  end
+
   feature "viewing space home with paused projects", ctx do
     ctx
     |> Steps.given_a_space_with_active_and_paused_projects()

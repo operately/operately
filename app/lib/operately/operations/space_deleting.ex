@@ -18,14 +18,32 @@ defmodule Operately.Operations.SpaceDeleting do
   alias Operately.Projects.{Project, CheckIn}
   alias Operately.Goals.{Goal, Update}
   alias Operately.Messages.{Message, MessagesBoard}
+  alias Operately.Companies
 
   def run(space) do
-    Multi.new()
-    |> collect_sub_resources(space)
-    |> delete_polymorphic_associations()
-    |> Multi.delete(:space, space)
-    |> Repo.transaction()
-    |> Repo.extract_result(:space)
+    if general_space?(space) do
+      {:error, :cannot_delete_general_space}
+    else
+      Multi.new()
+      |> collect_sub_resources(space)
+      |> delete_polymorphic_associations()
+      |> Multi.delete(:space, space)
+      |> Repo.transaction()
+      |> Repo.extract_result(:space)
+    end
+  end
+
+  defp general_space?(space) do
+    company =
+      cond do
+        Map.has_key?(space, :company) and space.company ->
+          space.company
+
+        true ->
+          Companies.get_company!(space.company_id)
+      end
+
+    company.company_space_id == space.id
   end
 
   defp collect_sub_resources(multi, space) do
