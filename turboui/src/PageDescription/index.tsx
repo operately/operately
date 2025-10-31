@@ -4,6 +4,8 @@ import RichContent, { countCharacters, isContentEmpty, shortenContent } from "..
 import { Editor, MentionedPersonLookupFn, useEditor } from "../RichEditor";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
 
+const PREVIEW_CHARACTER_LIMIT = 450;
+
 interface Props {
   description: any;
   onDescriptionChange: (newDescription: any) => Promise<boolean>;
@@ -89,7 +91,7 @@ function ViewMode({ rawDescription, mentionedPersonLookup }: ViewModeProps) {
     <div className="mt-2">
       <RichContent content={description} mentionedPersonLookup={mentionedPersonLookup} />
 
-      {length > 200 && (
+      {length > PREVIEW_CHARACTER_LIMIT && (
         <button onClick={toggleExpand} className="text-content-dimmed hover:underline text-sm mt-1 font-medium">
           {isExpanded ? "Collapse" : "Expand"}
         </button>
@@ -178,10 +180,10 @@ function useExpandDescription(rawDescription: any) {
   }, [rawDescription]);
 
   const description = useMemo(() => {
-    if (length <= 200 || isExpanded) {
+    if (length <= PREVIEW_CHARACTER_LIMIT || isExpanded) {
       return rawDescription;
     } else {
-      return shortenContent(rawDescription, 200, { suffix: "...", skipParse: true });
+      return shortenContent(rawDescription, PREVIEW_CHARACTER_LIMIT, { suffix: "...", skipParse: true });
     }
   }, [rawDescription, length, isExpanded]);
 
