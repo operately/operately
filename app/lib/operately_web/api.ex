@@ -223,6 +223,7 @@ defmodule OperatelyWeb.Api do
   mutation(:publish_resource_hub_document, M.PublishResourceHubDocument)
 
   mutation(:delete_goal, M.DeleteGoal)
+  mutation(:delete_comment, M.DeleteComment)
   mutation(:delete_resource_hub_document, M.DeleteResourceHubDocument)
   mutation(:delete_resource_hub_file, M.DeleteResourceHubFile)
   mutation(:delete_resource_hub_folder, M.DeleteResourceHubFolder)
