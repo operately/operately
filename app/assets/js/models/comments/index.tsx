@@ -1,6 +1,7 @@
 import * as api from "@/api";
 import * as Time from "@/utils/time";
 import * as People from "@/models/people";
+import * as Reactions from "@/models/reactions";
 import { Paths } from "@/routes/paths";
 
 type Comment = api.Comment;
@@ -48,7 +49,7 @@ export function parseCommentsForTurboUi(paths: Paths, comments: Comment[]) {
 }
 
 function parseCommentForTurboUi(paths: Paths, comment: Comment) {
-  const reactions = parseReactionsForTurboUi(paths, comment.reactions);
+  const reactions = Reactions.parseReactionsForTurboUi(paths, comment.reactions);
 
   return {
     id: comment.id,
@@ -58,26 +59,4 @@ function parseCommentForTurboUi(paths: Paths, comment: Comment) {
     reactions,
     notification: comment.notification,
   };
-}
-
-function parseReactionsForTurboUi(paths: Paths, reactions: Comment["reactions"] | null | undefined) {
-  if (!reactions) return [];
-
-  return reactions
-    .map((reaction) => {
-      if (!reaction?.id || !reaction.emoji) return null;
-
-      const person = People.parsePersonForTurboUi(paths, reaction.person);
-      if (!person) return null;
-
-      return {
-        id: reaction.id,
-        emoji: reaction.emoji,
-        person,
-      };
-    })
-    .filter(
-      (reaction): reaction is { id: string; emoji: string; person: NonNullable<ReturnType<typeof People.parsePersonForTurboUi>> } =>
-        reaction !== null,
-    );
 }

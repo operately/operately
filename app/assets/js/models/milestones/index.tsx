@@ -1,7 +1,8 @@
 import * as People from "@/models/people";
+import * as ReactionsModel from "@/models/reactions";
 import * as Time from "@/utils/time";
 import { Milestone, MilestoneComment } from "@/api";
-import { Timeline, parseContent, richContentToString, Reactions } from "turboui";
+import { Timeline, parseContent, richContentToString } from "turboui";
 import { Paths } from "@/routes/paths";
 import { parseContextualDate } from "../contextualDates";
 
@@ -65,27 +66,6 @@ export function parseMilestoneCommentsForTurboUi(paths: Paths, comments: Milesto
   return comments.map((comment) => parseMilestoneCommentForTurboUi(paths, comment));
 }
 
-function parseReactionsForTurboUi(paths: Paths, reactions: MilestoneComment["comment"]["reactions"] | null | undefined) {
-  if (!reactions) return [];
-
-  return reactions
-    .map((reaction) => {
-      const person = People.parsePersonForTurboUi(paths, reaction.person);
-
-      if (!person) return null;
-
-      return {
-        id: reaction.id,
-        emoji: reaction.emoji,
-        person,
-      } as Reactions.Reaction;
-    })
-    .filter(
-      (reaction) =>
-        reaction !== null,
-    );
-}
-
 export function parseMilestoneCommentForTurboUi(paths: Paths, comment: MilestoneComment) {
   if (comment.action === "complete") {
     return {
@@ -107,7 +87,7 @@ export function parseMilestoneCommentForTurboUi(paths: Paths, comment: Milestone
       content: comment.comment.content || "{}",
       author: People.parsePersonForTurboUi(paths, comment.comment.author),
       insertedAt: comment.comment.insertedAt,
-      reactions: parseReactionsForTurboUi(paths, comment.comment.reactions),
+      reactions: ReactionsModel.parseReactionsForTurboUi(paths, comment.comment.reactions),
       notification: comment.comment.notification,
     } as Timeline.Comment;
   }
