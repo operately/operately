@@ -1,5 +1,6 @@
+import * as React from "react";
+
 import { GoalTargetList } from ".";
-import { useListState } from "../utils/useListState";
 
 export type TargetState = GoalTargetList.Target & {
   expanded: boolean;
@@ -32,138 +33,124 @@ export interface State {
 }
 
 export function useGoalTargetListState(props: GoalTargetList.Props): State {
-  const [targets, { update, remove, reorder, append }] = useListState<TargetState>(() => {
-    return props.targets.map((t) => ({
-      ...t,
-      editButtonVisible: !!props.showEditButton,
-      updateButtonVisible: !!props.showUpdateButton,
-      expanded: false,
-    }));
-  });
+  const [targets, setTargetsState] = React.useState<TargetState[]>(() => initializeTargets(props));
+  const targetsRef = React.useRef<TargetState[]>(targets);
+
+  const replaceTargets = React.useCallback((next: TargetState[]) => {
+    targetsRef.current = next;
+    setTargetsState(next);
+  }, []);
+
+  const updateTargets = React.useCallback(
+    (updater: (prev: TargetState[]) => TargetState[]) => {
+      replaceTargets(updater(targetsRef.current));
+    },
+    [replaceTargets],
+  );
+
+  React.useEffect(() => {
+    replaceTargets(mergeTargets(targetsRef.current, props));
+  }, [props.targets, props.showEditButton, props.showUpdateButton, replaceTargets]);
+
+  const updateTargetState = React.useCallback(
+    (id: string, updater: (target: TargetState) => TargetState) => {
+      updateTargets((prev) => prev.map((target) => (target.id === id ? updater(target) : target)));
+    },
+    [updateTargets],
+  );
 
   const state: State = {
     targets,
     addActive: !!props.addActive,
 
     addTarget: (values) => {
-      const target: TargetState = {
-        ...values,
-        value: values.from,
-        id: crypto.randomUUID() as string,
-        index: targets.length,
-        mode: "view",
-        expanded: false,
-        editButtonVisible: !!props.showEditButton,
-        updateButtonVisible: !!props.showUpdateButton,
-      };
-
-      append(target);
-
-      props
-        .addTarget({
-          name: target.name,
-          startValue: target.from,
-          targetValue: target.to,
-          unit: target.unit,
-        })
-        .then((res) => {
-          if (!res.success) {
-            remove(target.id);
-          } else {
-            update(target.id, (t) => ({ ...t, id: res.id }));
-          }
-        });
+      props.addTarget({
+        name: values.name,
+        startValue: values.from,
+        targetValue: values.to,
+        unit: values.unit,
+      });
     },
 
     toggleExpand: (id: string) => {
-      update(id, (t) => ({ ...t, expanded: !t.expanded }));
+      updateTargetState(id, (target) => ({ ...target, expanded: !target.expanded }));
     },
 
-    // Adding
     cancelAdd: () => {
       props.onAddActiveChange?.(false);
     },
 
-    // Updating
     startUpdating: (id: string) => {
-      update(id, (t) => ({ ...t, mode: "update" as const }));
+      updateTargetState(id, (target) => ({ ...target, mode: "update" as const }));
     },
     cancelUpdate: (id: string) => {
-      update(id, (t) => ({ ...t, mode: "view" as const }));
+      updateTargetState(id, (target) => ({ ...target, mode: "view" as const }));
     },
     updateTarget: (id: string, newValue: number) => {
-      const oldValue = targets.find((t) => t.id === id)?.value;
-      update(id, (t) => ({ ...t, value: newValue, mode: "view" as const }));
-
-      props.updateTargetValue(id, newValue).then((success) => {
-        if (!success) {
-          // If the update failed, revert the value
-          update(id, (t) => ({ ...t, value: oldValue! }));
-        }
-      });
+      updateTargetState(id, (target) => ({ ...target, value: newValue, mode: "view" as const }));
+      props.updateTargetValue(id, newValue);
     },
 
-    // Editing
     startEditing: (id: string) => {
-      update(id, (t) => ({ ...t, mode: "edit" as const }));
+      updateTargetState(id, (target) => ({ ...target, mode: "edit" as const }));
     },
     cancelEdit: (id: string) => {
-      update(id, (t) => ({ ...t, mode: "view" as const }));
+      updateTargetState(id, (target) => ({ ...target, mode: "view" as const }));
     },
     saveEdit: (id: string, values: { name: string; from: number; to: number; unit: string }) => {
-      update(id, (t) => ({ ...t, ...values, mode: "view" as const }));
+      updateTargetState(id, (target) => ({ ...target, ...values, mode: "view" as const }));
 
-      props
-        .updateTarget({
-          targetId: id,
-          name: values.name,
-          startValue: values.from,
-          targetValue: values.to,
-          unit: values.unit,
-        })
-        .catch((e) => {
-          console.error("Failed to update target", e);
-
-          // Revert the changes if the update fails
-          update(id, (t) => ({ ...t, mode: "view" as const }));
-        });
+      props.updateTarget({
+        targetId: id,
+        name: values.name,
+        startValue: values.from,
+        targetValue: values.to,
+        unit: values.unit,
+      });
     },
 
-    // Deleting
     startDeleting: (id: string) => {
-      update(id, (t) => ({ ...t, mode: "delete" as const }));
+      updateTargetState(id, (target) => ({ ...target, mode: "delete" as const }));
     },
     deleteTarget: (id: string) => {
-      const target = remove(id);
-
-      props.deleteTarget(id).then((success) => {
-        if (!success) {
-          append(target!);
-        }
-      });
+      updateTargetState(id, (target) => ({ ...target, mode: "view" as const }));
+      props.deleteTarget(id);
     },
     cancelDelete: (id: string) => {
-      update(id, (t) => ({ ...t, mode: "view" as const }));
+      updateTargetState(id, (target) => ({ ...target, mode: "view" as const }));
     },
 
-    // Drag and drop
-    reorder: (_: any, id: string, newIndex: number) => {
-      const oldIndex = targets.find((t) => t.id === id)?.index;
-      if (oldIndex === undefined || oldIndex === null || oldIndex === newIndex) {
-        return false; // No change needed
+    reorder: (_: any, targetId: string, indexInDropZone: number) => {
+      const current = targetsRef.current.find((target) => target.id === targetId);
+      if (!current || current.index === indexInDropZone) {
+        return false;
       }
 
-      reorder(id, newIndex);
+      props.updateTargetIndex(targetId, indexInDropZone);
 
-      props.updateTargetIndex(id, newIndex).then((success) => {
-        if (!success) {
-          reorder(id, oldIndex); // Revert if the update fails
-        }
-      });
-
-      return true; // Successfully initiated reorder
+      return true;
     },
   };
 
   return state;
+}
+
+function initializeTargets(props: GoalTargetList.Props): TargetState[] {
+  return mergeTargets([], props);
+}
+
+function mergeTargets(previous: TargetState[], props: GoalTargetList.Props): TargetState[] {
+  const previousMap = new Map(previous.map((target) => [target.id, target]));
+
+  return props.targets.map((target) => {
+    const prev = previousMap.get(target.id);
+
+    return {
+      ...target,
+      expanded: prev?.expanded ?? false,
+      editButtonVisible: !!props.showEditButton,
+      updateButtonVisible: !!props.showUpdateButton,
+      mode: prev?.mode ?? target.mode,
+    };
+  });
 }

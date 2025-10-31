@@ -32,7 +32,7 @@ import { useChecklists } from "./useChecklists";
 export default { name: "GoalPage", loader, Page } as PageModule;
 
 export function pageCacheKey(id: string): string {
-  return `v30-GoalPage.goal-${id}`;
+  return `v31-GoalPage.goal-${id}`;
 }
 
 type LoaderResult = {
@@ -76,7 +76,8 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
 function Page() {
   const paths = usePaths();
   const navigate = useNavigate();
-  const { goal, workMap, checkIns, discussions } = PageCache.useData(loader).data;
+  const { data, refresh } = PageCache.useData(loader);
+  const { goal, workMap, checkIns, discussions } = data;
   const currentUser = useMe();
 
   assertPresent(goal.space);
@@ -149,16 +150,10 @@ function Page() {
   });
 
   // Transform function must be memoized to prevent infinite loop in the hook
-  const transformPerson = React.useCallback(
-    (p) => People.parsePersonForTurboUi(paths, p)!,
-    [paths]
-  );
+  const transformPerson = React.useCallback((p) => People.parsePersonForTurboUi(paths, p)!, [paths]);
 
   // ignoredIds must be memoized to prevent infinite loop in the hook
-  const ignoredIds = React.useMemo(
-    () => [champion?.id!, reviewer?.id!],
-    [champion?.id, reviewer?.id]
-  );
+  const ignoredIds = React.useMemo(() => [champion?.id!, reviewer?.id!], [champion?.id, reviewer?.id]);
 
   const championSearch = People.usePersonFieldSearch({
     scope: { type: "space", id: goal.space.id! },
@@ -178,6 +173,15 @@ function Page() {
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "goal", id: goal.id } });
 
   const checklists = useChecklists({ goalId: goal.id!, initialChecklist: goal.checklist! });
+
+  const initialTargets = React.useMemo(() => prepareTargets(goal.targets), [goal.targets]);
+
+  const { targets, setTargets, addTarget, deleteTarget, updateTarget, updateTargetValue, updateTargetIndex } =
+    Goals.useGoalTargets({ goalId: goal.id, cacheKey: pageCacheKey(goal.id), initialTargets, refresh });
+
+  React.useEffect(() => {
+    setTargets(initialTargets);
+  }, [initialTargets, setTargets]);
 
   const deleteGoal = async () => {
     try {
@@ -241,7 +245,7 @@ function Page() {
 
     status: goal.status,
     state: goal.closedAt ? "closed" : "active",
-    targets: prepareTargets(goal.targets),
+    targets,
     checkIns: prepareCheckIns(paths, checkIns),
     discussions: prepareDiscussions(paths, discussions),
     contributors: [],
@@ -250,72 +254,11 @@ function Page() {
 
     richTextHandlers: richEditorHandlers,
 
-    addTarget: function (inputs): Promise<{ id: string; success: boolean }> {
-      return Api.goals
-        .addTarget({ ...inputs, goalId: goal.id! })
-        .then((data) => {
-          PageCache.invalidate(pageCacheKey(goal.id!));
-
-          return { id: data.targetId!, success: true };
-        })
-        .catch((e) => {
-          console.error("Failed to add target", e);
-
-          return { id: "", success: false };
-        });
-    },
-
-    deleteTarget: function (id: string): Promise<boolean> {
-      return Api.goals
-        .deleteTarget({ goalId: goal.id!, targetId: id })
-        .then(() => {
-          PageCache.invalidate(pageCacheKey(goal.id!));
-          return true;
-        })
-        .catch((e) => {
-          console.error("Failed to delete target", e);
-          return false;
-        });
-    },
-
-    updateTarget: function (inputs): Promise<boolean> {
-      return Api.goals
-        .updateTarget({ ...inputs, goalId: goal.id! })
-        .then(() => {
-          PageCache.invalidate(pageCacheKey(goal.id!));
-          return true;
-        })
-        .catch((e) => {
-          console.error("Failed to update target", e);
-          return false;
-        });
-    },
-
-    updateTargetValue: function (id: string, value: number): Promise<boolean> {
-      return Api.goals
-        .updateTargetValue({ goalId: goal.id!, targetId: id, value })
-        .then(() => {
-          PageCache.invalidate(pageCacheKey(goal.id!));
-          return true;
-        })
-        .catch((e) => {
-          console.error("Failed to update target value", e);
-          return false;
-        });
-    },
-
-    updateTargetIndex: function (id: string, index: number): Promise<boolean> {
-      return Api.goals
-        .updateTargetIndex({ goalId: goal.id!, targetId: id, index })
-        .then(() => {
-          PageCache.invalidate(pageCacheKey(goal.id!));
-          return true;
-        })
-        .catch((e) => {
-          console.error("Failed to update target index", e);
-          return false;
-        });
-    },
+    addTarget,
+    deleteTarget,
+    updateTarget,
+    updateTargetValue,
+    updateTargetIndex,
 
     checklistItems: checklists.items,
     addChecklistItem: checklists.add,

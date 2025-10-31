@@ -21,6 +21,7 @@ export {
 } from "@/api";
 
 export { filterPossibleParentGoals } from "./filterPossibleParentGoals";
+export { useGoalTargets } from "./useGoalTargets";
 
 export function targetProgressPercentage(target: Target, clamped: boolean = true): number {
   const from = target.from!;
