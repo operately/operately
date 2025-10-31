@@ -1,8 +1,8 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as React from "react";
+import { useNavigate } from "react-router-dom";
 import { IconChevronRight, IconDots } from "../icons";
 
-import { DivLink } from "../Link";
 import { TestableElement, createTestId } from "../TestableElement";
 import classNames from "../utils/classnames";
 
@@ -14,6 +14,7 @@ interface MenuProps extends TestableElement {
   headerContent?: React.ReactNode;
   size?: Size;
   onOpenChange?: (open: boolean) => void;
+  showArrow?: boolean;
 }
 
 interface MenuItemProps extends TestableElement {
@@ -45,6 +46,7 @@ export function Menu(props: MenuProps) {
 
       <DropdownMenu.Portal>
         <DropdownMenu.Content className={menuContentClass} style={menuContentStyle(props.size)}>
+          {props.showArrow && <DropdownMenu.Arrow className="fill-surface-base" />}
           {props.headerContent && (
             <div className="px-3 py-2 border-b border-surface-outline">{props.headerContent}</div>
           )}
@@ -92,17 +94,23 @@ export function SubMenu({ label, icon, children, hidden }: SubMenuProps) {
   );
 }
 
+
 export function MenuLinkItem(props: MenuLinkItemProps) {
+  const navigate = useNavigate();
+
   if (props.hidden) return null;
 
+  const handleClick = () => {
+    navigate(props.to);
+  };
+
   return (
-    <DropdownMenu.Item>
-      <DivLink to={props.to} className={menuItemClassNames(props)} testId={props.testId}>
-        <MenuItemIconAndTitle icon={props.icon}>{props.children}</MenuItemIconAndTitle>
-      </DivLink>
+    <DropdownMenu.Item className={menuItemClassNames(props)} data-test-id={props.testId} onSelect={handleClick}>
+      <MenuItemIconAndTitle icon={props.icon}>{props.children}</MenuItemIconAndTitle>
     </DropdownMenu.Item>
   );
 }
+
 
 export function MenuActionItem(props: MenuActionItemProps) {
   if (props.hidden) return null;
@@ -135,7 +143,7 @@ function menuContentStyle(size?: Size) {
 }
 
 const menuContentClass = classNames(
-  "relative rounded-md mt-1 z-10",
+  "relative rounded-md mt-1 z-[100]",
   "py-2 shadow-lg ring-1 transition ring-surface-outline",
   "focus:outline-none",
   "bg-surface-base",
