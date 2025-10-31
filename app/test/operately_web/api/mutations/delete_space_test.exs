@@ -101,6 +101,16 @@ defmodule OperatelyWeb.Api.Mutations.DeleteSpaceTest do
       # Verify space is deleted
       {:error, :not_found} = Group.get(:system, id: space.id)
     end
+
+    test "returns an error when deleting the general space", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      {:ok, general_space} = Group.get(:system, id: ctx.company.company_space_id)
+
+      assert {400, res} = mutation(ctx.conn, :delete_space, %{space_id: Paths.space_id(general_space)})
+      assert res.message == "You cannot delete the general space"
+
+      {:ok, _} = Group.get(:system, id: general_space.id)
+    end
   end
 
   #

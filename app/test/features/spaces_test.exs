@@ -41,6 +41,12 @@ defmodule Operately.Features.SpacesTest do
     |> Steps.assert_space_name_mission_and_privacy_indicator()
   end
 
+  feature "general space does not show delete option", ctx do
+    ctx
+    |> Steps.visit_general_space()
+    |> Steps.assert_delete_option_not_visible()
+  end
+
   feature "viewing space home with paused projects", ctx do
     ctx
     |> Steps.given_a_space_with_active_and_paused_projects()
@@ -201,13 +207,5 @@ defmodule Operately.Features.SpacesTest do
     |> Steps.assert_space_still_exists()
     |> Steps.confirm_space_deletion()
     |> Steps.assert_space_deleted()
-  end
-
-  feature "company work map loads after deleting General space", ctx do
-    ctx
-    |> Steps.visit_home()
-    |> Steps.delete_general_space()
-    |> Steps.assert_general_space_deleted()
-    |> Steps.assert_company_work_map_loads()
   end
 end
