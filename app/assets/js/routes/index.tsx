@@ -85,6 +85,7 @@ export function createAppRoutes() {
         pageRoute("admin/permissions", pages.CompanyPermissionsPage),
         pageRoute("admin/rename", pages.CompanyRenamePage),
 
+        pageRoute("account", pages.AccountPage),
         pageRoute("account/appearance", pages.AccountAppearancePage),
         pageRoute("account/security", pages.AccountSecurityPage),
         pageRoute("account/security/change-password", pages.AccountChangePasswordPage),

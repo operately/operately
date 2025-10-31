@@ -119,6 +119,28 @@ export function Body({
   );
 }
 
+export function Title({ children }) {
+  return (
+    <div className="flex items-center gap-4 mb-8">
+      <FancyLineSeparator />
+      <h1 className="text-4xl font-extrabold text-center">{children}</h1>
+      <FancyLineSeparator />
+    </div>
+  );
+}
+
+function FancyLineSeparator() {
+  return (
+    <div
+      className="flex-1"
+      style={{
+        height: "2px",
+        background: "linear-gradient(90deg, var(--color-pink-600) 0%, var(--color-sky-600) 100%)",
+      }}
+    />
+  );
+}
+
 export function usePaperSizeHelpers(): { size: Size; negHor: string; negTop: string; horPadding: string } {
   const { size } = React.useContext(Context);
 
