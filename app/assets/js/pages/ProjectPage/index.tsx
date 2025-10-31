@@ -203,8 +203,8 @@ function Page() {
     transformResult: transformPerson,
   });
 
-  const assigneePersonSearch = People.usePersonFieldSpaceMembersSearch({
-    spaceId: project.space.id,
+  const assigneePersonSearch = Tasks.useTaskAssigneeSearch({
+    projectId: project.id,
     transformResult: transformPerson,
   });
 
