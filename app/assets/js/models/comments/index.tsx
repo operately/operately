@@ -11,6 +11,7 @@ export type { CommentableResource } from "./CommentableResource";
 export type { Comment };
 export { useCreateComment, useEditComment, useGetComments, getComments } from "@/api";
 export { useReloadCommentsSignal } from "@/signals";
+export { useEditComment as useEditCommentHandler } from "./useEditComment";
 
 export type ItemType = "comment" | "acknowledgement" | "milestone-completed" | "milestone-reopened";
 

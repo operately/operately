@@ -3,6 +3,7 @@ import * as api from "@/api";
 export type Reaction = api.Reaction;
 
 export { useAddReaction, useRemoveReaction } from "@/api";
+export { useReactionHandlers } from "./useReactionHandlers";
 
 type EntityType =
   | "project_check_in"
