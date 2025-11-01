@@ -39,6 +39,7 @@ export interface CommentFormState {
   mentionSearchScope?: any;
   postComment: (content: any) => void;
   editComment: (id: string, content: any) => void;
+  deleteComment?: (id: string) => void;
 }
 
 export interface CommentItemProps {

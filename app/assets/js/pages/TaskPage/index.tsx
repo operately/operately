@@ -139,7 +139,7 @@ function Page() {
     refreshPageData,
   });
 
-  const { comments, handleAddComment, handleEditComment, handleAddReaction, handleRemoveReaction } = useComments(
+  const { comments, handleAddComment, handleEditComment, handleDeleteComment, handleAddReaction, handleRemoveReaction } = useComments(
     task,
     data.comments,
     () => {
@@ -203,6 +203,7 @@ function Page() {
     timelineItems,
     onAddComment: handleAddComment,
     onEditComment: handleEditComment,
+    onDeleteComment: handleDeleteComment,
     onAddReaction: handleAddReaction,
     onRemoveReaction: handleRemoveReaction,
     canComment: Boolean(task.permissions.canComment),

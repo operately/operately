@@ -13,6 +13,7 @@ export type { Comment };
 export { useCreateComment, useEditComment, useGetComments, getComments } from "@/api";
 export { useReloadCommentsSignal } from "@/signals";
 export { useEditComment as useEditCommentHandler } from "./useEditComment";
+export { useDeleteComment as useDeleteCommentHandler } from "./useDeleteComment";
 
 export type ItemType = "comment" | "acknowledgement" | "milestone-completed" | "milestone-reopened";
 

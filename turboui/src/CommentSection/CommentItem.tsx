@@ -4,7 +4,7 @@ import { Avatar } from "../Avatar";
 import { Menu, MenuActionItem } from "../Menu";
 import { FormattedTime } from "../FormattedTime";
 import RichContent from "../RichContent";
-import { IconEdit } from "../icons";
+import { IconEdit, IconTrash } from "../icons";
 import { CommentItemProps } from "./types";
 import { compareIds } from "../utils/ids";
 import { Editor, useEditor, MentionedPersonLookupFn } from "../RichEditor";
@@ -112,6 +112,16 @@ export function CommentItem({
                 >
                   Edit
                 </MenuActionItem>
+                {form.deleteComment && (
+                  <MenuActionItem
+                    onClick={() => form.deleteComment?.(comment.id)}
+                    icon={IconTrash}
+                    danger
+                    testId={createTestId("delete", comment.id)}
+                  >
+                    Delete
+                  </MenuActionItem>
+                )}
               </Menu>
             )}
           </div>
