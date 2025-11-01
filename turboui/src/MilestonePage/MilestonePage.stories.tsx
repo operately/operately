@@ -244,6 +244,7 @@ export const Default: Story = {
         canComment={true}
         onAddComment={(comment) => console.log("Add comment:", comment)}
         onEditComment={(commentId, content) => console.log("Edit comment:", { commentId, content })}
+        onDeleteComment={(commentId) => console.log("Delete comment:", commentId)}
         onAddReaction={(commentId, emoji) => console.log("Add reaction:", commentId, emoji)}
         onRemoveReaction={(commentId, reactionId) => console.log("Remove reaction:", commentId, reactionId)}
         createdBy={mockPeople[0] || null}
@@ -350,6 +351,7 @@ export const EmptyMilestone: Story = {
         canComment={true}
         onAddComment={(comment) => console.log("Add comment:", comment)}
         onEditComment={(commentId, content) => console.log("Edit comment:", { commentId, content })}
+        onDeleteComment={(commentId) => console.log("Delete comment:", commentId)}
         onAddReaction={(commentId, emoji) => console.log("Add reaction:", commentId, emoji)}
         onRemoveReaction={(commentId, reactionId) => console.log("Remove reaction:", commentId, reactionId)}
         createdBy={mockPeople[1] || null}
@@ -552,6 +554,7 @@ export const CompletedMilestone: Story = {
         canComment={true}
         onAddComment={(comment) => console.log("Add comment:", comment)}
         onEditComment={(commentId, content) => console.log("Edit comment:", { commentId, content })}
+        onDeleteComment={(commentId) => console.log("Delete comment:", commentId)}
         onAddReaction={(commentId, emoji) => console.log("Add reaction:", commentId, emoji)}
         onRemoveReaction={(commentId, reactionId) => console.log("Remove reaction:", commentId, reactionId)}
         createdBy={mockPeople[0] || null}

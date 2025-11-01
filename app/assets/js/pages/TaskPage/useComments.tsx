@@ -29,6 +29,13 @@ export function useComments(task: Tasks.Task, initialComments: Comments.Comment[
     invalidateCache,
   );
 
+  const { handleDeleteComment } = Comments.useDeleteCommentHandler(
+    comments,
+    setComments,
+    "project_task",
+    invalidateCache,
+  );
+
   const handleAddComment = React.useCallback(
     async (content: any) => {
       const randomId = `temp-${Math.random().toString(36).substring(2, 15)}`;
@@ -69,6 +76,7 @@ export function useComments(task: Tasks.Task, initialComments: Comments.Comment[
     comments,
     handleAddComment,
     handleEditComment,
+    handleDeleteComment,
     handleAddReaction,
     handleRemoveReaction,
   };

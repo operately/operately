@@ -29,6 +29,13 @@ export function useComments(paths: Paths, milestone: Milestones.Milestone, inval
     invalidateCache,
   );
 
+  const { handleDeleteComment } = Comments.useDeleteCommentHandler(
+    comments,
+    setComments,
+    "milestone",
+    invalidateCache,
+  );
+
   const handleCreateComment = React.useCallback(
     async (content: any) => {
       const tempId = `temp-${Math.random().toString(36).substring(2, 15)}`;
@@ -80,6 +87,7 @@ export function useComments(paths: Paths, milestone: Milestones.Milestone, inval
     setComments,
     handleCreateComment,
     handleEditComment,
+    handleDeleteComment,
     handleAddReaction,
     handleRemoveReaction,
   };

@@ -18,6 +18,7 @@ export function Timeline({
   commentParentType,
   onAddComment,
   onEditComment,
+  onDeleteComment,
   onAddReaction,
   onRemoveReaction,
   richTextHandlers,
@@ -81,6 +82,7 @@ export function Timeline({
             canComment={canComment}
             commentParentType={commentParentType}
             onEditComment={onEditComment}
+            onDeleteComment={onDeleteComment}
             richTextHandlers={richTextHandlers}
             onAddReaction={onAddReaction}
             onRemoveReaction={onRemoveReaction}

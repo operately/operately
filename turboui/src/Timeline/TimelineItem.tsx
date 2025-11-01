@@ -17,6 +17,7 @@ export function TimelineItem({
   canComment,
   commentParentType,
   onEditComment,
+  onDeleteComment,
   richTextHandlers,
   onAddReaction,
   onRemoveReaction,
@@ -31,6 +32,7 @@ export function TimelineItem({
             submitting: false,
             postComment: () => {},
             editComment: onEditComment,
+            deleteComment: onDeleteComment,
           }}
           commentParentType={commentParentType}
           canComment={canComment}

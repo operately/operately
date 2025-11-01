@@ -158,6 +158,9 @@ const createMockProps = (items: TimelineItem[]): TimelineProps => ({
   onEditComment: (id: string, content: any) => {
     console.log("Edit comment:", id, content);
   },
+  onDeleteComment: (id: string) => {
+    console.log("Delete comment:", id);
+  },
   onAddReaction: (commentId: string, emoji: string) => {
     console.log("Add reaction:", commentId, emoji);
   },

@@ -253,6 +253,26 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     |> UI.sleep(300)
   end
 
+  step :delete_comment, ctx do
+    id = get_comment_id(ctx)
+
+    ctx
+    |> UI.click(testid: UI.testid(["comment-menu", id]))
+    |> UI.click(testid: UI.testid(["delete", id]))
+    |> UI.sleep(300)
+  end
+
+  step :delete_comment_by_content, ctx do
+    comment = hd(Operately.Updates.list_comments(ctx.milestone.id, :project_milestone))
+    id = OperatelyWeb.Paths.comment_id(comment)
+
+    ctx
+    |> Map.put(:comment, comment)
+    |> UI.click(testid: UI.testid(["comment-menu", id]))
+    |> UI.click(testid: UI.testid(["delete", id]))
+    |> UI.sleep(300)
+  end
+
   step :delete_milestone, ctx do
     ctx
     |> UI.find(UI.query(testid: "sidebar"), fn el ->
@@ -379,6 +399,20 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     |> UI.refute_has(testid: "inline-task-creator-milestonepage-empty")
   end
 
+  step :assert_comment_deleted, ctx do
+    id = get_comment_id(ctx)
+
+    ctx
+    |> UI.refute_has(testid: UI.testid(["comment-menu", id]))
+  end
+
+  step :assert_comment_menu_not_visible, ctx do
+    id = get_comment_id(ctx)
+
+    ctx
+    |> UI.refute_has(testid: UI.testid(["comment-menu", id]))
+  end
+
   step :assert_activity_added_to_feed, ctx, description do
     UI.find(ctx, UI.query(testid: "timeline-section"), fn el ->
       UI.assert_text(el, description)
@@ -469,6 +503,37 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
         author: ctx.champion,
         milestone_tile: "a milestone",
         comment: comment
+      )
+    end)
+  end
+
+  step :assert_comment_visible_in_feed_after_deletion, ctx do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
+    |> UI.find(UI.query(testid: "project-feed"), fn el ->
+      el
+      |> FeedSteps.assert_project_milestone_commented(
+        author: ctx.champion,
+        milestone_tile: ctx.milestone.title,
+        comment: ""
+      )
+    end)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> UI.find(UI.query(testid: "space-feed"), fn el ->
+      el
+      |> FeedSteps.assert_project_milestone_commented(
+        author: ctx.champion,
+        milestone_tile: ctx.milestone.title,
+        comment: ""
+      )
+    end)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.find(UI.query(testid: "company-feed"), fn el ->
+      el
+      |> FeedSteps.assert_project_milestone_commented(
+        author: ctx.champion,
+        milestone_tile: ctx.milestone.title,
+        comment: ""
       )
     end)
   end
@@ -757,5 +822,14 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     ctx
     |> UI.click_button("Save")
     |> UI.sleep(300)
+  end
+
+  defp get_comment_id(ctx) do
+    if Map.has_key?(ctx.comment, :comment) do
+      Repo.preload(ctx.comment, :comment).comment
+    else
+      ctx.comment
+    end
+    |> OperatelyWeb.Paths.comment_id()
   end
 end
