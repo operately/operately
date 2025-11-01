@@ -2010,8 +2010,6 @@ export type AgentMessageSender = "user" | "ai";
 
 export type AgentMessageStatus = "pending" | "done";
 
-export type AssignableResourceType = "task" | "milestone" | "project";
-
 export type CommentParentType =
   | "project_check_in"
   | "project_retrospective"
@@ -3331,6 +3329,15 @@ export interface CreateSpaceResult {
   space?: Space | null;
 }
 
+export interface DeleteCommentInput {
+  commentId: Id;
+  parentType: CommentParentType;
+}
+
+export interface DeleteCommentResult {
+  comment: Comment;
+}
+
 export interface DeleteGoalInput {
   goalId?: Id | null;
 }
@@ -4623,6 +4630,10 @@ class ApiNamespaceRoot {
     return this.client.post("/create_space", input);
   }
 
+  async deleteComment(input: DeleteCommentInput): Promise<DeleteCommentResult> {
+    return this.client.post("/delete_comment", input);
+  }
+
   async deleteGoal(input: DeleteGoalInput): Promise<DeleteGoalResult> {
     return this.client.post("/delete_goal", input);
   }
@@ -5613,6 +5624,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.createSpace(input);
   }
 
+  deleteComment(input: DeleteCommentInput): Promise<DeleteCommentResult> {
+    return this.apiNamespaceRoot.deleteComment(input);
+  }
+
   deleteGoal(input: DeleteGoalInput): Promise<DeleteGoalResult> {
     return this.apiNamespaceRoot.deleteGoal(input);
   }
@@ -6116,6 +6131,9 @@ export async function createResourceHubLink(input: CreateResourceHubLinkInput): 
 }
 export async function createSpace(input: CreateSpaceInput): Promise<CreateSpaceResult> {
   return defaultApiClient.createSpace(input);
+}
+export async function deleteComment(input: DeleteCommentInput): Promise<DeleteCommentResult> {
+  return defaultApiClient.deleteComment(input);
 }
 export async function deleteGoal(input: DeleteGoalInput): Promise<DeleteGoalResult> {
   return defaultApiClient.deleteGoal(input);
@@ -6756,6 +6774,10 @@ export function useCreateSpace(): UseMutationHookResult<CreateSpaceInput, Create
   return useMutation<CreateSpaceInput, CreateSpaceResult>((input) => defaultApiClient.createSpace(input));
 }
 
+export function useDeleteComment(): UseMutationHookResult<DeleteCommentInput, DeleteCommentResult> {
+  return useMutation<DeleteCommentInput, DeleteCommentResult>((input) => defaultApiClient.deleteComment(input));
+}
+
 export function useDeleteGoal(): UseMutationHookResult<DeleteGoalInput, DeleteGoalResult> {
   return useMutation<DeleteGoalInput, DeleteGoalResult>((input) => defaultApiClient.deleteGoal(input));
 }
@@ -7313,6 +7335,8 @@ export default {
   useCreateResourceHubLink,
   createSpace,
   useCreateSpace,
+  deleteComment,
+  useDeleteComment,
   deleteGoal,
   useDeleteGoal,
   deleteResourceHubDocument,

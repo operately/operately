@@ -29,6 +29,7 @@ function ActivitySection(props: TaskPage.State) {
           commentParentType="task"
           onAddComment={props.onAddComment}
           onEditComment={props.onEditComment}
+          onDeleteComment={props.onDeleteComment}
           onAddReaction={props.onAddReaction}
           onRemoveReaction={props.onRemoveReaction}
           richTextHandlers={props.richTextHandlers}

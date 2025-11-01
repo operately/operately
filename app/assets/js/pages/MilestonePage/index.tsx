@@ -115,7 +115,7 @@ function Page() {
       setMilestones: setMilestones,
       refresh,
     });
-  const { comments, setComments, handleCreateComment, handleEditComment, handleAddReaction, handleRemoveReaction } =
+  const { comments, setComments, handleCreateComment, handleEditComment, handleDeleteComment, handleAddReaction, handleRemoveReaction } =
     useComments(paths, milestone, () => {
       PageCache.invalidate(pageCacheKey(milestone.id));
     });
@@ -181,6 +181,7 @@ function Page() {
     timelineItems,
     onAddComment: handleCreateComment,
     onEditComment: handleEditComment,
+    onDeleteComment: handleDeleteComment,
     onAddReaction: handleAddReaction,
     onRemoveReaction: handleRemoveReaction,
     canComment: Boolean(milestone.permissions.canComment),
