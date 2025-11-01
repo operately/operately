@@ -50,7 +50,16 @@ const ProjectTaskCommented: ActivityHandler = {
   FeedItemContent({ activity }: { activity: Activity }) {
     const { mentionedPersonLookup } = useRichEditorHandlers();
     const { comment } = content(activity);
-    const commentContent = comment?.content ? JSON.parse(comment.content)["message"] : "";
+    
+    if (!comment?.content) {
+      return null;
+    }
+
+    const commentContent = comment?.content ? JSON.parse(comment.content)["message"] : null;
+
+    if (!commentContent) {
+      return null;
+    }
 
     return <Summary content={commentContent} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
   },

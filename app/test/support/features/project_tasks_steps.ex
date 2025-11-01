@@ -41,6 +41,13 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> Factory.add_comment(:comment2, :task_with_comments)
   end
 
+  step :given_task_has_comment, ctx do
+    ctx
+    |> Map.put(:creator, ctx.champion)
+    |> Factory.preload(:task, :project)
+    |> Factory.add_comment(:comment, :task)
+  end
+
   step :visit_project_page, ctx do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
@@ -477,6 +484,27 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     end)
   end
 
+  step :assert_task_comment_visible_in_feed_after_deletion, ctx do
+    short = "#{Operately.People.Person.first_name(ctx.champion)} commented on #{ctx.task.name}"
+
+    long =
+      "#{Operately.People.Person.first_name(ctx.champion)} commented on #{ctx.task.name} in the #{ctx.project.name} project"
+
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
+    |> UI.find(UI.query(testid: "project-feed"), fn el ->
+      UI.assert_text(el, short)
+    end)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> UI.find(UI.query(testid: "space-feed"), fn el ->
+      UI.assert_text(el, long)
+    end)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.find(UI.query(testid: "company-feed"), fn el ->
+      UI.assert_text(el, long)
+    end)
+  end
+
   #
   # Emails
   #
@@ -705,6 +733,40 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     end)
   end
 
+  step :delete_comment, ctx do
+    id = get_comment_id(ctx)
+
+    ctx
+    |> UI.click(testid: UI.testid(["comment-menu", id]))
+    |> UI.click(testid: UI.testid(["delete", id]))
+    |> UI.sleep(300)
+  end
+
+  step :delete_comment_by_content, ctx do
+    comment = hd(Operately.Updates.list_comments(ctx.task.id, :project_task))
+    id = OperatelyWeb.Paths.comment_id(comment)
+
+    ctx
+    |> Map.put(:comment, comment)
+    |> UI.click(testid: UI.testid(["comment-menu", id]))
+    |> UI.click(testid: UI.testid(["delete", id]))
+    |> UI.sleep(300)
+  end
+
+  step :assert_comment_deleted, ctx do
+    id = get_comment_id(ctx)
+
+    ctx
+    |> UI.refute_has(testid: UI.testid(["comment-menu", id]))
+  end
+
+  step :assert_comment_menu_not_visible, ctx do
+    id = get_comment_id(ctx)
+
+    ctx
+    |> UI.refute_has(testid: UI.testid(["comment-menu", id]))
+  end
+
   #
   # Helpers
   #
@@ -713,5 +775,9 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
 
   defp if_present(ctx, _property, func) do
     func.(ctx)
+  end
+
+  defp get_comment_id(ctx) do
+    OperatelyWeb.Paths.comment_id(ctx.comment)
   end
 end

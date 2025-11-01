@@ -461,6 +461,45 @@ defmodule Operately.Features.ProjectTasksTest do
   end
 
   @tag login_as: :champion
+  feature "delete task comment", ctx do
+    ctx
+    |> Steps.given_task_exists()
+    |> Steps.given_task_has_comment()
+    |> Steps.visit_task_page()
+    |> Steps.assert_comment("Content")
+    |> Steps.delete_comment()
+    |> Steps.assert_comment_deleted()
+    |> Steps.reload_task_page()
+    |> Steps.assert_comment_deleted()
+  end
+
+  @tag login_as: :champion
+  feature "comment menu not visible to other users on task", ctx do
+    ctx
+    |> Steps.given_task_exists()
+    |> Steps.given_task_has_comment()
+    |> Steps.given_space_member_exists()
+    |> Factory.log_in_person(:space_member)
+    |> Steps.visit_task_page()
+    |> Steps.assert_comment("Content")
+    |> Steps.assert_comment_menu_not_visible()
+  end
+
+  @tag login_as: :champion
+  feature "post comment then delete comment on task, verify feed doesn't break", ctx do
+    comment = "This is a comment"
+
+    ctx
+    |> Steps.given_task_exists()
+    |> Steps.visit_task_page()
+    |> Steps.post_comment(comment)
+    |> Steps.assert_comment(comment)
+    |> Steps.delete_comment_by_content()
+    |> Steps.assert_comment_deleted()
+    |> Steps.assert_task_comment_visible_in_feed_after_deletion()
+  end
+
+  @tag login_as: :champion
   feature "task page activity feed handles deleted milestone gracefully", ctx do
     ctx
     |> Steps.given_task_exists()
