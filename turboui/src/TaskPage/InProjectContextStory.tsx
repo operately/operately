@@ -214,6 +214,7 @@ export function InProjectContextStory() {
               canComment={true}
               onAddComment={(content: any) => console.log("Add comment:", content)}
               onEditComment={(id: string, content: any) => console.log("Edit comment:", id, content)}
+              onDeleteComment={(id: string) => console.log("Delete comment:", id)}
             />
           </div>
         )}
