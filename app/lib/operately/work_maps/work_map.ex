@@ -102,7 +102,7 @@ defmodule Operately.WorkMaps.WorkMap do
       filter_by_parent_goal(flat_items, parent_goal_id, other_filters)
     else
       directly_matched_items = find_direct_matches(flat_items, other_filters)
-      filter_without_parent_goal(flat_items, directly_matched_items)
+      filter_without_parent_goal(flat_items, directly_matched_items, other_filters)
     end
   end
 
@@ -137,10 +137,10 @@ defmodule Operately.WorkMaps.WorkMap do
     end
   end
 
-  defp filter_without_parent_goal(flat_items, matched_items) do
+  defp filter_without_parent_goal(flat_items, matched_items, filters) do
     all_items_map = Map.new(flat_items, &{&1.id, &1})
 
-    parent_ids = collect_all_parent_ids(matched_items, all_items_map)
+    parent_ids = collect_all_parent_ids(matched_items, all_items_map, filters)
     parent_items = Enum.filter(flat_items, &MapSet.member?(parent_ids, &1.id))
 
     filtered_items = Enum.concat(matched_items, parent_items)
@@ -224,26 +224,42 @@ defmodule Operately.WorkMaps.WorkMap do
     end
   end
 
-  defp collect_all_parent_ids(items, all_items_map) do
-    parent_ids = MapSet.new()
-
-    Enum.reduce(items, parent_ids, fn item, acc ->
-      collect_parent_ids_for_item(item, all_items_map, acc)
+  defp collect_all_parent_ids(items, all_items_map, filters) do
+    Enum.reduce(items, MapSet.new(), fn item, acc ->
+      restriction = parent_restriction_for_item(item, filters)
+      collect_parent_ids_for_item(item, all_items_map, acc, restriction)
     end)
   end
 
-  defp collect_parent_ids_for_item(%{parent_id: nil}, _all_items_map, acc), do: acc
-  defp collect_parent_ids_for_item(%{parent_id: parent_id}, all_items_map, acc) do
-    acc = MapSet.put(acc, parent_id)
-
+  defp collect_parent_ids_for_item(%{parent_id: nil}, _all_items_map, acc, _restriction), do: acc
+  defp collect_parent_ids_for_item(%{parent_id: parent_id}, all_items_map, acc, restriction) do
     parent = Map.get(all_items_map, parent_id)
 
-    if parent do
-      collect_parent_ids_for_item(parent, all_items_map, acc)
+    if include_parent?(parent, restriction) do
+      acc = MapSet.put(acc, parent_id)
+
+      if parent do
+        collect_parent_ids_for_item(parent, all_items_map, acc, restriction)
+      else
+        acc
+      end
     else
       acc
     end
   end
+
+  defp parent_restriction_for_item(%{type: :project, state: state}, filters) when state in [:paused, :closed] do
+    Map.get(filters, :space_id)
+  end
+  defp parent_restriction_for_item(%{type: :goal, state: :closed}, filters) do
+    Map.get(filters, :space_id)
+  end
+  defp parent_restriction_for_item(_, _), do: nil
+
+  defp include_parent?(_parent, nil), do: true
+  defp include_parent?(nil, _restriction), do: false
+  defp include_parent?(%{space: nil}, _restriction), do: false
+  defp include_parent?(%{space: space}, restriction), do: space.id == restriction
 
   # Recursively collects all items in the subtrees of the given parent IDs
   # Returns all items in the subtree of the given parent_id (excluding the parent itself)
