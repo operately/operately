@@ -215,6 +215,15 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       })
     end
 
+    #
+    # The next tests are for the following behavior:
+    #
+    # Active projects still pull their goal ancestry,
+    # even if they belong to another space,
+    # but when a project is closed or paused we only keep the project itself
+    # unless those ancestors also live in the filtered space.
+    #
+
     test "given parent and greatgrandchild have the same space, but child and grandchild have another space, returns full hierarchy with parent, child, grandchild and greatgrandchild", ctx do
       ctx =
         ctx
@@ -249,6 +258,54 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
         root_goal: %{
           child: []
         }
+      })
+    end
+
+    test "given project's parent goal has different space and project is closed, project's parent goal is not included", ctx do
+      ctx =
+        ctx
+        |> Factory.add_goal(:child, :space2, parent_goal: :goal1)
+        |> Factory.add_project(:grand_child_project, :space1, goal: :child)
+        |> Factory.close_project(:grand_child_project)
+
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, space_id: ctx.space1.id})
+
+      assert_work_map_structure(work_map, ctx, %{
+        project1: [],
+        goal1: [],
+        grand_child_project: []
+      })
+    end
+
+    test "given project's parent goal has different space and project is paused, project's parent goal is not included", ctx do
+      ctx =
+        ctx
+        |> Factory.add_goal(:child, :space2, parent_goal: :goal1)
+        |> Factory.add_project(:grand_child_project, :space1, goal: :child)
+        |> Factory.pause_project(:grand_child_project)
+
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, space_id: ctx.space1.id})
+
+      assert_work_map_structure(work_map, ctx, %{
+        project1: [],
+        goal1: [],
+        grand_child_project: []
+      })
+    end
+
+    test "given goal's parent goal has different space and goal is closed, goal's parent goal is not included", ctx do
+      ctx =
+        ctx
+        |> Factory.add_goal(:child, :space2, parent_goal: :goal1)
+        |> Factory.add_goal(:grand_child_goal, :space1, parent_goal: :child)
+        |> Factory.close_goal(:grand_child_goal)
+
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, space_id: ctx.space1.id})
+
+      assert_work_map_structure(work_map, ctx, %{
+        project1: [],
+        goal1: [],
+        grand_child_goal: []
       })
     end
   end
