@@ -20,7 +20,7 @@
 - For component workflow, see `turboui/AGENTS.md`.
 - Docker image: `make docker.build` (see `Dockerfile.prod`).
 
-## Coding Style & Naming Conventions
+## Coding Style & Naming Conventions 
 
 - Elixir: `mix format` with `app/.formatter.exs` (line_length 200). Modules under `Operately.*`. Tests end with `_test.exs`.
 - Agents should not wrap Elixir macros with parentheses unless explicitly requested. Keep keyword-style macro calls such as `field`, `field?`, `object`, `enum`, `plug`, etc. in their existing form (e.g., `field :company, :company`) across schemas, API modules, and similar contexts. Example of what not to do: do not rewrite `field :company, :company` to `field(:company, :company)` or `object :task` to `object(:task), do: ...`.
