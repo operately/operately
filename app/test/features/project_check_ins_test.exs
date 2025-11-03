@@ -69,6 +69,16 @@ defmodule Operately.Features.ProjectCheckInsTest do
     |> Steps.assert_comment_on_check_in_received_in_email()
   end
 
+  feature "delete comment from check-in", ctx do
+    check_in_values = %{status: "on_track", description: "This is a check-in."}
+
+    ctx
+    |> Steps.submit_check_in(check_in_values)
+    |> Steps.leave_comment_on_check_in()
+    |> Steps.delete_comment()
+    |> Steps.assert_comment_deleted()
+  end
+
   feature "edit a submitted check-in", ctx do
     original_values = %{status: "on_track", description: "This is a check-in."}
     new_values = %{status: "caution", description: "This is an edited check-in."}
