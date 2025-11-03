@@ -30,6 +30,15 @@ defmodule Operately.Features.ProjectDiscussionTest do
     |> Steps.assert_comment_feed_posted()
   end
 
+  feature "delete comment from discussion", ctx do
+    ctx
+    |> Steps.given_a_discussion_exists()
+    |> Steps.visit_discussion_page()
+    |> Steps.leave_comment("This is a comment")
+    |> Steps.delete_comment("This is a comment")
+    |> Steps.assert_comment_deleted()
+  end
+
   feature "writing a new discussion", ctx do
     ctx
     |> Steps.visit_project_page()
