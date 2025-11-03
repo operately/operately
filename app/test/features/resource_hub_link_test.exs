@@ -153,6 +153,15 @@ defmodule Operately.Features.ResourceHubLinkTest do
       |> Steps.assert_link_commented_notification_sent(@link.title)
       |> Steps.assert_link_commented_email_sent(@link.title)
     end
+
+    feature "delete comment from link", ctx do
+      ctx
+      |> Steps.visit_resource_hub_page()
+      |> Steps.create_link(@link)
+      |> Steps.visit_link_page()
+      |> leave_one_comment()
+      |> delete_comment_on_resource()
+    end
   end
 
   describe "Delete" do

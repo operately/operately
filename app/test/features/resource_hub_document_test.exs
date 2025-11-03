@@ -104,6 +104,15 @@ defmodule Operately.Features.ResourceHubDocumentTest do
     |> Steps.assert_document_commented_email_sent(@document.name)
   end
 
+  feature "delete comment from document", ctx do
+    ctx
+    |> Steps.visit_resource_hub_page()
+    |> Steps.create_document(@document)
+    |> Steps.assert_document_content(@document)
+    |> leave_one_comment()
+    |> delete_comment_on_resource()
+  end
+
   feature "document navigation works", ctx do
     ctx
     |> Steps.given_document_within_nested_folders_exists()

@@ -53,7 +53,12 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> UI.click(testid: "status-dropdown-#{status}")
     |> UI.fill_rich_text(description)
     |> UI.click(testid: "submit")
+    |> UI.sleep(300)
     |> UI.assert_has(testid: "project-check-in-page")
+    |> then(fn ctx ->
+      check_in = Operately.Projects.CheckIn.get!(:system, project_id: ctx.project.id)
+      Map.put(ctx, :check_in, check_in)
+    end)
   end
 
   step :edit_check_in, ctx, %{status: status, description: description} do
@@ -203,8 +208,12 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> UI.click(testid: "add-comment")
     |> UI.fill_rich_text("This is a comment.")
     |> UI.click(testid: "post-comment")
-    # Wait for the comment to be posted
+    |> UI.refute_has(testid: "post-comment")
     |> UI.sleep(300)
+    |> then(fn ctx ->
+      comment = last_comment(ctx)
+      Map.put(ctx, :comment, comment)
+    end)
   end
 
   step :assert_comment_on_check_in_received_in_notifications, ctx do
@@ -248,5 +257,22 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
       author: ctx.champion,
       action: "submitted a check-in"
     })
+  end
+
+  step :delete_comment, ctx do
+    ctx
+    |> UI.assert_text("This is a comment.")
+    |> UI.click(testid: "comment-options")
+    |> UI.click(testid: "delete-comment")
+    |> UI.sleep(300)
+  end
+
+  step :assert_comment_deleted, ctx do
+    ctx
+    |> UI.refute_has(testid: "comment-#{ctx.comment.id}")
+  end
+
+  defp last_comment(ctx) do
+    Operately.Updates.list_comments(ctx.check_in.id, :project_check_in) |> List.last()
   end
 end

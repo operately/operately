@@ -14,4 +14,18 @@ defmodule Operately.Support.ResourceHub.Comments do
     |> Steps.navigate_back("Documents & Files")
     |> Steps.assert_comments_count(%{index: 0, count: "2"})
   end
+
+  def leave_one_comment(ctx) do
+    ctx
+    |> Steps.leave_comment()
+    |> Steps.assert_comment_present()
+  end
+
+  def delete_comment_on_resource(ctx) do
+    ctx
+    |> Steps.delete_comment()
+    |> Steps.assert_comment_deleted()
+    |> Steps.reload_document_page()
+    |> Steps.assert_comment_deleted()
+  end
 end

@@ -18,6 +18,11 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     end)
   end
 
+  step :visit_check_in, ctx do
+    ctx
+    |> UI.visit(Paths.goal_check_in_path(ctx.company, ctx.check_in))
+  end
+
   step :check_in, ctx, %{status: status, targets: targets, message: message} do
     ctx
     |> UI.click(testid: "check-in-button")
@@ -324,5 +329,35 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     |> UI.visit(Paths.goal_check_in_path(ctx.company, older))
     |> UI.click(testid: "edit-check-in")
     |> UI.assert_text("Editing locked after 3 days")
+  end
+
+  step :leave_comment_on_check_in, ctx, message do
+    ctx
+    |> UI.click(testid: "add-comment")
+    |> UI.fill_rich_text(message)
+    |> UI.click(testid: "post-comment")
+    |> UI.sleep(300)
+    |> UI.refute_has(testid: "post-comment")
+    |> then(fn ctx ->
+      comment = last_comment(ctx)
+      Map.put(ctx, :comment, comment)
+    end)
+  end
+
+  step :delete_comment, ctx, message do
+    ctx
+    |> UI.assert_text(message)
+    |> UI.click(testid: "comment-options")
+    |> UI.click(testid: "delete-comment")
+    |> UI.sleep(300)
+  end
+
+  step :assert_comment_deleted, ctx do
+    ctx
+    |> UI.refute_has(testid: "comment-#{ctx.comment.id}")
+  end
+
+  defp last_comment(ctx) do
+    Operately.Updates.list_comments(ctx.check_in.id, :goal_update) |> List.last()
   end
 end

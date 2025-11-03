@@ -45,4 +45,37 @@ defmodule Operately.Features.ProjectRetrospectiveTest do
     |> Steps.submit_retrospective()
     |> Steps.assert_project_retrospective_edited(edited_notes)
   end
+
+  @tag login_as: :champion
+  feature "comment on project retrospective", ctx do
+    params = %{
+      "author" => ctx.champion,
+      "notes" => "We built the thing",
+    }
+
+    ctx
+    |> Steps.initiate_project_closing()
+    |> Steps.fill_in_retrospective(params)
+    |> Steps.submit_retrospective()
+    |> Steps.visit_retrospective_page()
+    |> Steps.leave_comment("This is a comment.")
+    |> Steps.assert_comment_present()
+  end
+
+  @tag login_as: :champion
+  feature "delete comment from retrospective", ctx do
+    params = %{
+      "author" => ctx.champion,
+      "notes" => "We built the thing",
+    }
+
+    ctx
+    |> Steps.initiate_project_closing()
+    |> Steps.fill_in_retrospective(params)
+    |> Steps.submit_retrospective()
+    |> Steps.visit_retrospective_page()
+    |> Steps.leave_comment("This is a comment.")
+    |> Steps.delete_comment()
+    |> Steps.assert_comment_deleted()
+  end
 end

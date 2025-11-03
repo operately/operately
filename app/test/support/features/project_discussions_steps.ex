@@ -133,7 +133,12 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
     |> UI.click(testid: "add-comment")
     |> UI.fill_rich_text(comment)
     |> UI.click(testid: "post-comment")
-    |> UI.sleep(500)
+    |> UI.sleep(300)
+    |> UI.refute_has(testid: "post-comment")
+    |> then(fn ctx ->
+      comment = last_comment(ctx)
+      Map.put(ctx, :comment, comment)
+    end)
   end
 
   step :assert_comment_submitted, ctx, message do
@@ -174,6 +179,19 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
       author: ctx.creator,
       title: "posted Existing Discussion"
     })
+  end
+
+  step :delete_comment, ctx, comment do
+    ctx
+    |> UI.assert_text(comment)
+    |> UI.click(testid: "comment-options")
+    |> UI.click(testid: "delete-comment")
+    |> UI.sleep(300)
+  end
+
+  step :assert_comment_deleted, ctx do
+    ctx
+    |> UI.refute_has(testid: "comment-#{ctx.comment.id}")
   end
 
   #
