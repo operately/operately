@@ -91,6 +91,15 @@ defmodule Operately.Features.GoalChecksInsTest do
     |> Steps.assert_comment_email_sent()
   end
 
+  feature "delete comment from check-in", ctx do
+    ctx
+    |> Steps.given_a_check_in_exists()
+    |> Steps.visit_check_in()
+    |> Steps.leave_comment_on_check_in("This is a comment")
+    |> Steps.delete_comment("This is a comment")
+    |> Steps.assert_comment_deleted()
+  end
+
   feature "cannot edit check-in after 72 hours", ctx do
     ctx
     |> Steps.given_an_old_check_in_exists()
