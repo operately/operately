@@ -45,6 +45,14 @@ defmodule Operately.Features.ResourceHubFileTest do
       |> Steps.assert_file_commented_email_sent()
     end
 
+    feature "delete comment from file", ctx do
+      ctx
+      |> Steps.given_file_exists()
+      |> Steps.visit_file_page()
+      |> leave_one_comment()
+      |> delete_comment_on_resource()
+    end
+
     feature "file navigation works", ctx do
       ctx
       |> Steps.given_file_within_nested_folders_exists()

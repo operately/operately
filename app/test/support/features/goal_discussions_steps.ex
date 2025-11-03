@@ -159,6 +159,32 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
     })
   end
 
+  step :leave_comment, ctx, message do
+    ctx
+    |> UI.click(testid: "add-comment")
+    |> UI.fill_rich_text(message)
+    |> UI.click(testid: "post-comment")
+    |> UI.sleep(300)
+    |> UI.refute_has(testid: "post-comment")
+    |> then(fn ctx ->
+      comment = last_comment()
+      Map.put(ctx, :comment, comment)
+    end)
+  end
+
+  step :delete_comment, ctx, message do
+    ctx
+    |> UI.assert_text(message)
+    |> UI.click(testid: "comment-options")
+    |> UI.click(testid: "delete-comment")
+    |> UI.sleep(300)
+  end
+
+  step :assert_comment_deleted, ctx do
+    ctx
+    |> UI.refute_has(testid: "comment-#{ctx.comment.id}")
+  end
+
   #
   # Helper functions
   #

@@ -22,6 +22,7 @@ import {
   IconSquareCheckFilled,
   IconSquareChevronsLeftFilled,
   IconEdit,
+  IconTrash,
   useEditor,
   Editor,
 } from "turboui";
@@ -73,6 +74,7 @@ function Comment({ comment, form, commentParentType, canComment }) {
       <ViewComment
         comment={comment}
         onEdit={startEditing}
+        onDelete={() => void form.deleteComment(comment.id)}
         commentParentType={commentParentType}
         canComment={canComment}
       />
@@ -173,7 +175,7 @@ function MilestoneReopened({ comment }) {
   );
 }
 
-function ViewComment({ comment, onEdit, commentParentType, canComment }) {
+function ViewComment({ comment, onEdit, onDelete, commentParentType, canComment }) {
   const commentRef = useClearNotificationOnIntersection(comment.notification);
   useScrollIntoViewOnLoad(comment.id);
 
@@ -205,7 +207,7 @@ function ViewComment({ comment, onEdit, commentParentType, canComment }) {
                 <FormattedTime time={comment.insertedAt} format="relative" />
               </span>
 
-              <CommentDropdownMenu comment={comment} onEdit={onEdit} />
+              <CommentDropdownMenu comment={comment} onEdit={onEdit} onDelete={onDelete} />
             </div>
           </div>
         </div>
@@ -220,7 +222,7 @@ function ViewComment({ comment, onEdit, commentParentType, canComment }) {
   );
 }
 
-function CommentDropdownMenu({ comment, onEdit }) {
+function CommentDropdownMenu({ comment, onEdit, onDelete }) {
   const me = useMe()!;
   if (!compareIds(me.id, comment.author.id)) return null;
 
@@ -229,6 +231,11 @@ function CommentDropdownMenu({ comment, onEdit }) {
       <MenuActionItem onClick={onEdit} testId="edit-comment" icon={IconEdit}>
         Edit
       </MenuActionItem>
+      {onDelete && (
+        <MenuActionItem onClick={onDelete} testId="delete-comment" icon={IconTrash} danger>
+          Delete
+        </MenuActionItem>
+      )}
     </Menu>
   );
 }

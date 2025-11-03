@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-
 import * as Comments from "@/models/comments";
 import { SearchScope } from "@/models/people";
 import { assertPresent } from "@/utils/assertions";
 
 import { FormState } from "./form";
-import { parseComments, useCreateComment, useEditComment } from "./utils";
+import { parseComments, useCreateComment, useDeleteComment, useEditComment } from "./utils";
 
 export function useComments(props: Comments.CommentableResource): FormState {
   const parent = findParent(props);
@@ -23,12 +22,19 @@ export function useComments(props: Comments.CommentableResource): FormState {
     setComments: setItems,
     parentType: props.parentType,
   });
+  const { deleteComment, loading: deleting } = useDeleteComment({
+    comments: items,
+    setComments: setItems,
+    parentType: props.parentType,
+    refetch,
+  });
 
   if (loading && items.length < 1)
     return {
       items: [],
       postComment: async (_content: string) => {},
       editComment: async (_commentID: string, _content: string) => {},
+      deleteComment: async (_commentID: string) => {},
       submitting: false,
       mentionSearchScope: { type: "none" },
     };
@@ -39,7 +45,8 @@ export function useComments(props: Comments.CommentableResource): FormState {
     items,
     postComment,
     editComment,
-    submitting: creating || editing,
+    deleteComment,
+    submitting: creating || editing || deleting,
     mentionSearchScope: findMentionedScope(props),
   };
 }

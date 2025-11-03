@@ -11,6 +11,16 @@ defmodule Operately.Support.Features.ProjectRetrospectiveSteps do
     |> ProjectSteps.login()
   end
 
+  step :visit_retrospective_page, ctx do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.find(UI.query(testid: "closed-status-banner"), fn el ->
+      el
+      |> UI.assert_text("This project was closed on")
+      |> UI.click_text("retrospective")
+    end)
+  end
+
   step :initiate_project_closing, ctx do
     ctx
     |> ProjectSteps.visit_project_page()
@@ -27,6 +37,15 @@ defmodule Operately.Support.Features.ProjectRetrospectiveSteps do
   step :submit_retrospective, ctx do
     ctx
     |> UI.click(testid: "submit")
+    |> UI.sleep(300)
+    |> then(fn ctx ->
+      case Operately.Projects.Retrospective.get(:system, project_id: ctx.project.id) do
+        {:ok, retrospective} ->
+          Map.put(ctx, :retrospective, retrospective)
+        {:error, _} ->
+          ctx
+      end
+    end)
   end
 
   step :edit_project_retrospective, ctx, notes do
@@ -78,10 +97,44 @@ defmodule Operately.Support.Features.ProjectRetrospectiveSteps do
     ctx |> UI.assert_text("Can't be empty")
   end
 
+  step :leave_comment, ctx, comment do
+    ctx
+    |> UI.click(testid: "add-comment")
+    |> UI.fill_rich_text(comment)
+    |> UI.click(testid: "post-comment")
+    |> UI.refute_has(testid: "post-comment")
+    |> UI.sleep(300)
+    |> then(fn ctx ->
+      comment = last_comment(ctx)
+      Map.put(ctx, :comment, comment)
+    end)
+  end
+
+  step :assert_comment_present, ctx do
+    ctx
+    |> UI.assert_text("This is a comment.")
+  end
+
+  step :delete_comment, ctx do
+    ctx
+    |> UI.click(testid: "comment-options")
+    |> UI.click(testid: "delete-comment")
+    |> UI.sleep(300)
+  end
+
+  step :assert_comment_deleted, ctx do
+    ctx
+    |> UI.refute_has(testid: "comment-#{ctx.comment.id}")
+  end
+
   defp fill_rich_text(ctx, testid, content) do
     ctx
     |> UI.find(UI.query(testid: testid), fn el ->
       UI.fill_rich_text(el, content)
     end)
+  end
+
+  defp last_comment(ctx) do
+    Operately.Updates.list_comments(ctx.retrospective.id, :project_retrospective) |> List.last()
   end
 end

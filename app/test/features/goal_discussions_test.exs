@@ -38,4 +38,13 @@ defmodule Operately.Features.GoalDiscussionsTest do
     |> Steps.assert_comment_submitted_feed_posted()
     |> Steps.assert_comment_submitted_notification_sent()
   end
+
+  @tag login_as: :champion
+  feature "delete comment from discussion", ctx do
+    ctx
+    |> Steps.start_new_discussion(%{title: "Test Discussion", message: "Test message"})
+    |> Steps.leave_comment("This is a comment")
+    |> Steps.delete_comment("This is a comment")
+    |> Steps.assert_comment_deleted()
+  end
 end
