@@ -94,6 +94,14 @@ defmodule Operately.Features.DiscussionsTest do
     |> Steps.assert_comment_is_listed_in_the_feed()
   end
 
+  feature "delete comment from discussion", ctx do
+    ctx
+    |> Steps.given_a_discussion_exists()
+    |> Steps.leave_a_comment()
+    |> Steps.delete_comment()
+    |> Steps.assert_comment_deleted()
+  end
+
   feature "edit a posted discussion", ctx do
     ctx
     |> Steps.given_a_discussion_exists()

@@ -235,6 +235,12 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     |> UI.click(testid: "add-comment")
     |> UI.fill_rich_text("This is a comment.")
     |> UI.click(testid: "post-comment")
+    |> UI.sleep(300)
+    |> UI.refute_has(testid: "post-comment")
+    |> then(fn ctx ->
+      comment = last_comment(ctx)
+      Map.put(ctx, :comment, comment)
+    end)
   end
 
   step :assert_comment_notification_and_email_sent, ctx do
@@ -366,6 +372,19 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     |> UI.assert_feed_item(ctx.reader, "commented on #{@title}")
   end
 
+  step :delete_comment, ctx do
+    ctx
+    |> UI.assert_text("This is a comment.")
+    |> UI.click(testid: "comment-options")
+    |> UI.click(testid: "delete-comment")
+    |> UI.sleep(300)
+  end
+
+  step :assert_comment_deleted, ctx do
+    ctx
+    |> UI.refute_has(testid: "comment-#{ctx.comment.id}")
+  end
+
   #
   # Utilities
   #
@@ -399,5 +418,10 @@ defmodule Operately.Support.Features.DiscussionsSteps do
         :timer.sleep(300)
         last_message(ctx, attempts - 1)
     end
+  end
+
+  defp last_comment(ctx) do
+    message = last_message(ctx)
+    Operately.Updates.list_comments(message.id, :message) |> List.last()
   end
 end
