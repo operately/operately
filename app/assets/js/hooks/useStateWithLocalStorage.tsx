@@ -14,19 +14,19 @@ const DEFAULT_OPTIONS: Options<any> = {
 export function useStateWithLocalStorage<T>(namespace: string, key: string, initialValue?: T, options?: Options<T>) {
   options = { ...DEFAULT_OPTIONS, ...options };
 
-  const { setItem, getItem } = useLocalStorage(`${namespace}:${key}`);
+  const { setItem, getItem, removeItem } = useLocalStorage(`${namespace}:${key}`);
 
   const [value, setValue] = useState<T>(() => {
     try {
       const storedValue = getItem();
 
-      if (storedValue) {
-        return options.deserialize!(storedValue) as unknown as T;
+      if (typeof storedValue !== "undefined" && storedValue !== null) {
+        return options.deserialize!(storedValue);
       }
 
       return initialValue as T;
     } catch (error) {
-      setItem(null);
+      removeItem();
       console.error(`Error reading localStorage: ${error}`);
       return initialValue as T;
     }
@@ -36,8 +36,13 @@ export function useStateWithLocalStorage<T>(namespace: string, key: string, init
     setValue((currentValue) => {
       const updatedValue = typeof newValue === "function" ? (newValue as (prevValue: T) => T)(currentValue) : newValue;
 
-      const serialized = options.serialize!(updatedValue);
-      setItem(serialized);
+      try {
+        const serialized = options.serialize!(updatedValue);
+        setItem(serialized);
+      } catch (error) {
+        console.error(`Error writing localStorage value: ${error}`);
+        removeItem();
+      }
 
       return updatedValue;
     });
