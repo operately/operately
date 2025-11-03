@@ -2,6 +2,7 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   use Operately.FeatureCase
 
   alias Operately.ResourceHubs.{ResourceHub, Node}
+  alias Operately.Updates
 
   step :setup, ctx do
     ctx =
@@ -32,6 +33,45 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     |> UI.fill_rich_text("This is a comment.")
     |> UI.click(testid: "post-comment")
     |> UI.refute_has(testid: "post-comment")
+    |> UI.sleep(300)
+    |> then(fn ctx ->
+      comment = find_last_comment(ctx)
+      Map.put(ctx, :comment, comment)
+    end)
+  end
+
+  step :assert_comment_present, ctx do
+    comment = Map.fetch!(ctx, :comment)
+
+    ctx
+    |> UI.assert_has(testid: "comment-#{Paths.comment_id(comment)}")
+  end
+
+  step :delete_comment, ctx do
+    comment = Map.fetch!(ctx, :comment)
+
+    ctx
+    |> UI.find(UI.query(testid: "comment-#{Paths.comment_id(comment)}"), fn el ->
+      el
+      |> UI.click(testid: "comment-options")
+    end)
+    |> UI.click(testid: "delete-comment")
+    |> UI.sleep(300)
+  end
+
+  step :assert_comment_deleted, ctx do
+    comment = Map.fetch!(ctx, :comment)
+
+    ctx
+    |> UI.refute_has(testid: "comment-#{Paths.comment_id(comment)}")
+  end
+
+  step :reload_document_page, ctx do
+    cond do
+      Map.has_key?(ctx, :document) -> UI.visit(ctx, Paths.document_path(ctx.company, ctx.document))
+      Map.has_key?(ctx, :link) -> UI.visit(ctx, Paths.link_path(ctx.company, ctx.link))
+      Map.has_key?(ctx, :file) -> UI.visit(ctx, Paths.file_path(ctx.company, ctx.file))
+    end
   end
 
   #
@@ -207,6 +247,15 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   #
   # Helpers
   #
+
+  defp find_last_comment(ctx) do
+    cond do
+      Map.has_key?(ctx, :document) -> Updates.list_comments(ctx.document.id, :resource_hub_document)
+      Map.has_key?(ctx, :link) -> Updates.list_comments(ctx.link.id, :resource_hub_link)
+      Map.has_key?(ctx, :file) -> Updates.list_comments(ctx.file.id, :resource_hub_file)
+    end
+    |> List.last()
+  end
 
   def create_nested_folders(ctx) do
     ctx
