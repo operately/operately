@@ -23,7 +23,7 @@ export function getLocalStorage(): Storage | null {
 }
 
 // Different browsers report quota exhaustion via different DOMException shapes.
-export function isQuotaExceededError(error: unknown): boolean {
+function isQuotaExceededError(error: unknown): boolean {
   if (typeof error !== "object" || error === null) {
     return false;
   }
@@ -56,7 +56,7 @@ export function safeGetItem(storage: Storage | null, key: string, context?: stri
   }
 }
 
-export interface SafeSetResult {
+interface SafeSetResult {
   success: boolean;
   quotaExceeded: boolean;
 }
