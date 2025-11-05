@@ -5,7 +5,7 @@ import * as React from "react";
 
 import { Form as CheckInForm, useForm } from "@/features/goals/GoalCheckIn";
 import { banner } from "@/features/goals/GoalPageHeader/Banner";
-import { useSubscriptions } from "@/features/Subscriptions";
+import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import { PageModule } from "@/routes/types";
 import { assertPresent } from "@/utils/assertions";
 
@@ -77,9 +77,10 @@ function Form({ goal }: { goal: Goals.Goal }) {
   assertPresent(goal.space, "space must be present in goal");
   assertPresent(goal.potentialSubscribers, "potentialSubscribers must be present in goal");
 
-  const subscriptionsState = useSubscriptions(goal.potentialSubscribers, {
+  const subscriptionsState = useSubscriptionsAdapter(goal.potentialSubscribers, {
     ignoreMe: true,
     notifyPrioritySubscribers: true,
+    resourceHubName: goal.space.name,
   });
 
   const form = useForm({ mode: "new", goal, subscriptionsState });

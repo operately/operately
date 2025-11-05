@@ -4,9 +4,9 @@ import * as Projects from "@/models/projects";
 import * as React from "react";
 
 import { PageModule } from "@/routes/types";
-import { DimmedLink, Editor, PrimaryButton } from "turboui";
+import { DimmedLink, Editor, PrimaryButton, SubscribersSelector } from "turboui";
 import { FormTitleInput } from "../../components/FormTitleInput";
-import { SubscribersSelector, useSubscriptions } from "../../features/Subscriptions";
+import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import { usePaths } from "../../routes/paths";
 import { assertPresent } from "../../utils/assertions";
 import { useForm } from "./useForm";
@@ -64,7 +64,10 @@ function Form() {
 
   assertPresent(project.potentialSubscribers, "potentialSubscribers must be present in project");
 
-  const subscriptionsState = useSubscriptions(project.potentialSubscribers, { ignoreMe: true });
+  const subscriptionsState = useSubscriptionsAdapter(project.potentialSubscribers, {
+    ignoreMe: true,
+    projectName: project.name,
+  });
 
   const form = useForm({ project, subscriptionsState });
 
@@ -82,7 +85,7 @@ function Form() {
       </div>
 
       <div className="my-10">
-        <SubscribersSelector state={subscriptionsState} projectName={project.name} />
+        <SubscribersSelector {...subscriptionsState} />
       </div>
 
       <div className="flex items-center gap-4 mt-4">

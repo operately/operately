@@ -3,7 +3,7 @@ import * as Discussions from "@/models/discussions";
 import * as Spaces from "@/models/spaces";
 import * as React from "react";
 
-import { Options, SubscriptionsState, useSubscriptions } from "@/features/Subscriptions";
+import { SubscriptionsState, useSubscriptionsAdapter } from "@/models/subscriptions";
 import { Subscriber } from "@/models/notifications";
 import { usePaths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
@@ -48,17 +48,17 @@ interface Error {
 
 export function useForm({ space, mode, discussion, potentialSubscribers = [] }: UseFormOptions): FormState {
   const paths = usePaths();
-  const subscriptionsState = useSubscriptions(potentialSubscribers, { ignoreMe: true });
+  const subscriptionsState = useSubscriptionsAdapter(potentialSubscribers, { ignoreMe: true, spaceName: space.name });
 
   const [errors, setErrors] = React.useState<Error[]>([]);
   const [title, setTitle] = React.useState(() => discussion?.title || "");
 
-  const handlers = useRichEditorHandlers({ scope: { type: "space", id: space ? space.id : discussion?.space?.id! }});
+  const handlers = useRichEditorHandlers({ scope: { type: "space", id: space ? space.id : discussion?.space?.id! } });
   const editor = useEditor({
     placeholder: "Write here...",
     className: "min-h-[350px] py-2 px-1",
     content: discussion?.body && JSON.parse(discussion.body),
-    handlers
+    handlers,
   });
 
   const validate = () => {
@@ -107,7 +107,15 @@ export function useForm({ space, mode, discussion, potentialSubscribers = [] }: 
   };
 }
 
-function usePostMessage({ space, title, editor, subscriptionsState, validate }): [() => Promise<boolean>, boolean] {
+interface UsePostMessageOptions {
+  space: Spaces.Space;
+  title: string;
+  editor: TipTapEditor.EditorState;
+  subscriptionsState: SubscriptionsState;
+  validate: () => boolean;
+}
+
+function usePostMessage({ space, title, editor, subscriptionsState, validate }: UsePostMessageOptions): [() => Promise<boolean>, boolean] {
   const paths = usePaths();
   const navigate = useNavigate();
   const [post] = Discussions.usePostDiscussion();
@@ -124,7 +132,7 @@ function usePostMessage({ space, title, editor, subscriptionsState, validate }):
       title: title,
       postAsDraft: false,
       body: JSON.stringify(editor.editor.getJSON()),
-      sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
+      sendNotificationsToEveryone: subscriptionsState.notifyEveryone,
       subscriberIds: subscriptionsState.currentSubscribersList,
     });
 
@@ -138,7 +146,7 @@ function usePostMessage({ space, title, editor, subscriptionsState, validate }):
   return [postMessage, submitting];
 }
 
-function usePostAsDraft({ space, title, editor, subscriptionsState, validate }): [() => Promise<boolean>, boolean] {
+function usePostAsDraft({ space, title, editor, subscriptionsState, validate }: UsePostMessageOptions): [() => Promise<boolean>, boolean] {
   const paths = usePaths();
   const navigate = useNavigate();
   const [post] = Discussions.usePostDiscussion();
@@ -155,7 +163,7 @@ function usePostAsDraft({ space, title, editor, subscriptionsState, validate }):
       title: title,
       postAsDraft: true,
       body: JSON.stringify(editor.editor.getJSON()),
-      sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
+      sendNotificationsToEveryone: subscriptionsState.notifyEveryone,
       subscriberIds: subscriptionsState.currentSubscribersList,
     });
 

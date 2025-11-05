@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 import { formValidator, useFormState } from "@/components/Form/useFormState";
-import { Options, SubscriptionsState } from "@/features/Subscriptions";
+import { SubscriptionsState } from "@/models/subscriptions";
 import * as Goals from "@/models/goals";
 import { Validators } from "@/utils/validators";
 
@@ -49,7 +49,7 @@ export function useForm({ goal, subscriptionsState }: { goal: Goals.Goal; subscr
           goalId: goal.id,
           title: fields.title,
           message: JSON.stringify(fields.editor.editor.getJSON()),
-          sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
+          sendNotificationsToEveryone: subscriptionsState.notifyEveryone,
           subscriberIds: subscriptionsState.currentSubscribersList,
         })
           .then((data) => navigate(paths.goalActivityPath(data.id!)))

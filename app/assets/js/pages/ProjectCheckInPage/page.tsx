@@ -19,7 +19,7 @@ import { CommentSection, useForProjectCheckIn } from "@/features/CommentSection"
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { useCurrentSubscriptionsAdapter } from "@/features/Subscriptions";
+import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
 import { banner } from "./Banner";

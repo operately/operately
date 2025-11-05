@@ -9,7 +9,7 @@ import { Spacer } from "@/components/Spacer";
 import { CommentSection, useComments } from "@/features/CommentSection";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 
-import { CurrentSubscriptions } from "@/features/Subscriptions";
+import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 import { DocumentTitle } from "@/features/documents/DocumentTitle";
 import { compareIds } from "@/routes/paths";
 
@@ -19,7 +19,7 @@ import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
 import { useNavigate } from "react-router-dom";
 import { useLoadedData } from "./loader";
-import { IconEdit, IconTrash, RichContent } from "turboui";
+import { IconEdit, IconTrash, RichContent, CurrentSubscriptions } from "turboui";
 
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { usePaths } from "@/routes/paths";
@@ -72,17 +72,23 @@ function DiscussionSubscriptions() {
 
   if (discussion.state === "draft") return null;
 
+  if (!discussion.potentialSubscribers || !discussion.subscriptionList) {
+    return null;
+  }
+
+  const subscriptionsState = useCurrentSubscriptionsAdapter({
+    potentialSubscribers: discussion.potentialSubscribers,
+    subscriptionList: discussion.subscriptionList,
+    resourceName: "discussion",
+    type: "message",
+    onRefresh: refresh,
+  });
+
   return (
     <>
       <div className="border-t border-stroke-base mt-16 mb-8" />
 
-      <CurrentSubscriptions
-        potentialSubscribers={discussion.potentialSubscribers!}
-        subscriptionList={discussion.subscriptionList!}
-        name="discussion"
-        type="message"
-        callback={refresh}
-      />
+      <CurrentSubscriptions {...subscriptionsState} />
     </>
   );
 }
