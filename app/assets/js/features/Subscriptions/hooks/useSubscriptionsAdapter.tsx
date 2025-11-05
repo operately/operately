@@ -4,10 +4,7 @@ import { Subscriber } from "@/models/notifications";
 import { compareIds } from "@/routes/paths";
 import { SubscribersSelector } from "turboui";
 
-type LabelContext =
-  | { projectName: string }
-  | { spaceName: string }
-  | { resourceHubName: string };
+type LabelContext = { projectName: string } | { spaceName: string } | { resourceHubName: string };
 
 type UseSubscriptionsAdapterOpts = {
   notifyPrioritySubscribers?: boolean;
@@ -24,7 +21,10 @@ interface SubscriptionsAdapterState {
   alwaysNotify: Subscriber[];
   currentSubscribersList: string[];
   allSubscribersLabel: string;
+  notifyEveryone: boolean;
 }
+
+export { SubscriptionsAdapterState as SubscriptionsState };
 
 /**
  * Adapter hook that prepares data and callbacks for the TurboUI SubscribersSelector component.
@@ -36,9 +36,7 @@ export function useSubscriptionsAdapter(
 ): SubscriptionsAdapterState {
   const me = useMe();
 
-  const subscribers = opts.ignoreMe
-    ? allSubscribers.filter((s) => !compareIds(s.person!.id, me?.id))
-    : allSubscribers;
+  const subscribers = opts.ignoreMe ? allSubscribers.filter((s) => !compareIds(s.person!.id, me?.id)) : allSubscribers;
 
   const alwaysNotify = useMemo(
     () => findPrioritySubscribers(subscribers, opts),
@@ -66,10 +64,7 @@ export function useSubscriptionsAdapter(
     }
   }, [subscriptionType, selectedSubscribers, subscribers, alwaysNotify]);
 
-  const allSubscribersLabel = useMemo(
-    () => buildAllSubscribersLabel(subscribers, opts),
-    [subscribers, opts],
-  );
+  const allSubscribersLabel = useMemo(() => buildAllSubscribersLabel(subscribers, opts), [subscribers, opts]);
 
   return {
     subscribers,
@@ -80,6 +75,7 @@ export function useSubscriptionsAdapter(
     alwaysNotify,
     currentSubscribersList,
     allSubscribersLabel,
+    notifyEveryone: subscriptionType === SubscribersSelector.SubscriptionOption.ALL,
   };
 }
 
@@ -106,7 +102,9 @@ function determineInitialSubscriptionType(
     const additionalSelected = selectedSubscribers.filter(
       (subscriber) => !isSubscriberInList(alwaysNotify, subscriber),
     );
-    return additionalSelected.length > 0 ? SubscribersSelector.SubscriptionOption.SELECTED : SubscribersSelector.SubscriptionOption.NONE;
+    return additionalSelected.length > 0
+      ? SubscribersSelector.SubscriptionOption.SELECTED
+      : SubscribersSelector.SubscriptionOption.NONE;
   }
 
   return SubscribersSelector.SubscriptionOption.ALL;

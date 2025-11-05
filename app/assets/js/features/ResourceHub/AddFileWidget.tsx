@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 
-import { emptyContent, IconX } from "turboui";
+import { emptyContent, IconX, SubscribersSelector } from "turboui";
 import { findFileSize, resizeImage, uploadFile } from "@/models/blobs";
 import { ResourceHub, ResourceHubFile, ResourceHubFolder, createResourceHubFile } from "@/models/resourceHubs";
 
 import Forms from "@/components/Forms";
 import Modal from "@/components/Modal";
-import { Options, SubscribersSelector, useSubscriptions, SubscriptionsState } from "@/features/Subscriptions";
+import { SubscriptionsState, useSubscriptionsAdapter } from "@/features/Subscriptions";
 import { assertPresent } from "@/utils/assertions";
 import { Spacer } from "@/components/Spacer";
 import { LoadingProgressBar } from "@/components/LoadingProgressBar";
@@ -28,8 +28,9 @@ export function AddFileWidget({ resourceHub, folder, refresh }: FormProps) {
   assertPresent(potentialSubscribers, "potentialSubscribers must be present in folder or resourceHub");
 
   const [progress, setProgress] = useState(0);
-  const subscriptionsState = useSubscriptions(potentialSubscribers, {
+  const subscriptionsState = useSubscriptionsAdapter(potentialSubscribers, {
     ignoreMe: true,
+    resourceHubName: resourceHub.name,
   });
 
   const form = Forms.useForm({
@@ -78,7 +79,7 @@ export function AddFileWidget({ resourceHub, folder, refresh }: FormProps) {
         <Files field="items" />
 
         <Spacer size={2} />
-        <SubscribersSelector state={subscriptionsState} resourceHubName={resourceHub.name!} />
+        <SubscribersSelector {...subscriptionsState} />
 
         <Forms.Submit cancelText="Cancel" />
       </Forms.Form>
@@ -215,7 +216,7 @@ class FileUploader {
       })),
       resourceHubId: this.resourceHubId,
       folderId: this.folderId,
-      sendNotificationsToEveryone: this.subscriptions.subscriptionType == Options.ALL,
+      sendNotificationsToEveryone: this.subscriptions.notifyEveryone,
       subscriberIds: this.subscriptions.currentSubscribersList,
     });
   }

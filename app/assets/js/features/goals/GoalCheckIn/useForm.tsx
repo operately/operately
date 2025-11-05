@@ -6,7 +6,7 @@ import * as Pages from "@/components/Pages";
 import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
 
 import Forms from "@/components/Forms";
-import { Options, SubscriptionsState } from "@/features/Subscriptions";
+import { SubscriptionsState } from "@/features/Subscriptions";
 import { assertPresent } from "@/utils/assertions";
 import { validateTargets } from "../GoalTargetsV2/targetErrors";
 
@@ -75,7 +75,7 @@ export function useForm(props: EditProps | NewProps) {
         const payload = {
           ...commonAttrs,
           goalId: goal.id,
-          sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
+          sendNotificationsToEveryone: subscriptionsState.notifyEveryone,
           subscriberIds: subscriptionsState.currentSubscribersList,
         };
 
