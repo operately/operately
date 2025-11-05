@@ -158,7 +158,7 @@ function Subscriptions() {
   const subscriptionsState = useCurrentSubscriptionsAdapter({
     potentialSubscribers: retrospective.potentialSubscribers,
     subscriptionList: retrospective.subscriptionList,
-    resourceName: "retrospective",
+    resourceName: "project retrospective",
     type: "project_retrospective",
     onRefresh: refresh,
   });
