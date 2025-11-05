@@ -57,7 +57,7 @@ export function CurrentSubscriptions({
               testId={`${testIdPrefix}-subscriber-${s.person!.id}`}
             />
           ))}
-        <SecondaryButton onClick={() => setIsModalOpen(true)} size="xs" testId={`${testIdPrefix}-add-remove`}>
+        <SecondaryButton onClick={() => setIsModalOpen(true)} size="xs" testId="add-remove-subscribers">
           Add/remove people...
         </SecondaryButton>
       </div>
@@ -68,10 +68,9 @@ export function CurrentSubscriptions({
             resourceName={resourceName}
             onUnsubscribe={onUnsubscribe}
             isLoading={isUnsubscribeLoading}
-            testIdPrefix={testIdPrefix}
           />
         ) : (
-          <SubscribeSection onSubscribe={onSubscribe} isLoading={isSubscribeLoading} testIdPrefix={testIdPrefix} />
+          <SubscribeSection onSubscribe={onSubscribe} isLoading={isSubscribeLoading} />
         )}
       </div>
 
@@ -104,16 +103,15 @@ function buildLabel(count: number, resourceName: string): string {
 interface SubscribeSectionProps {
   onSubscribe: () => void;
   isLoading: boolean;
-  testIdPrefix: string;
 }
 
-function SubscribeSection({ onSubscribe, isLoading, testIdPrefix }: SubscribeSectionProps) {
+function SubscribeSection({ onSubscribe, isLoading }: SubscribeSectionProps) {
   return (
     <div>
       <div className="font-bold">You&apos;re not subscribed</div>
       <p className="text-sm">You won&apos;t be notified when comments are posted.</p>
       <div className="flex mt-2">
-        <SecondaryButton onClick={onSubscribe} loading={isLoading} size="xs" testId={`${testIdPrefix}-subscribe`}>
+        <SecondaryButton onClick={onSubscribe} loading={isLoading} size="xs" testId="subscribe">
           Subscribe me
         </SecondaryButton>
       </div>
@@ -125,10 +123,9 @@ interface UnsubscribeSectionProps {
   resourceName: string;
   onUnsubscribe: () => void;
   isLoading: boolean;
-  testIdPrefix: string;
 }
 
-function UnsubscribeSection({ resourceName, onUnsubscribe, isLoading, testIdPrefix }: UnsubscribeSectionProps) {
+function UnsubscribeSection({ resourceName, onUnsubscribe, isLoading }: UnsubscribeSectionProps) {
   return (
     <div>
       <div className="font-bold text-sm sm:text-[16px]">You&apos;re subscribed</div>
@@ -136,7 +133,7 @@ function UnsubscribeSection({ resourceName, onUnsubscribe, isLoading, testIdPref
         You&apos;ll get a notification when someone comments on this {resourceName}.
       </p>
       <div className="flex mt-2">
-        <SecondaryButton onClick={onUnsubscribe} loading={isLoading} size="xs" testId={`${testIdPrefix}-unsubscribe`}>
+        <SecondaryButton onClick={onUnsubscribe} loading={isLoading} size="xs" testId="unsubscribe">
           Unsubscribe me
         </SecondaryButton>
       </div>
