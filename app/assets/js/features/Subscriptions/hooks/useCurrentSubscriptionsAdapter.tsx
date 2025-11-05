@@ -18,7 +18,7 @@ interface UseCurrentSubscriptionsAdapterOpts {
   onRefresh: () => void;
 }
 
-export interface CurrentSubscriptionsAdapterState {
+interface CurrentSubscriptionsAdapterState {
   subscribers: Subscriber[];
   subscribedPeople: Subscriber[];
   isCurrentUserSubscribed: boolean;

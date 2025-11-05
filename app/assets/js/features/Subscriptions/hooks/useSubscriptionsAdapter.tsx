@@ -15,7 +15,7 @@ type UseSubscriptionsAdapterOpts = {
   sendNotificationsToEveryone?: boolean;
 } & LabelContext;
 
-export interface SubscriptionsAdapterState {
+interface SubscriptionsAdapterState {
   subscribers: Subscriber[];
   selectedSubscribers: Subscriber[];
   onSelectedSubscribersChange: (subscribers: Subscriber[]) => void;
