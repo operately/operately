@@ -13,7 +13,6 @@ import { RichTextArea } from "./RichTextArea";
 import { PasswordInput } from "./PasswordInput";
 import { CheckboxInput } from "./CheckboxInput";
 import { SelectStatus } from "./SelectStatus";
-import { MultiPeopleSelectField } from "./MultiPeopleSelectField";
 import { NumberInput } from "./NumberInput";
 
 import { useForm } from "./useForm";
@@ -39,7 +38,6 @@ export default {
   RichTextArea,
   SelectPerson,
   PasswordInput,
-  MultiPeopleSelectField,
   CheckboxInput,
   SelectStatus,
   NumberInput,

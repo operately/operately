@@ -3,13 +3,13 @@ import React from "react";
 import Forms from "@/components/Forms";
 import * as Goals from "@/models/goals";
 
-import { Options, SubscribersSelector, SubscriptionsState, useSubscriptions } from "@/features/Subscriptions";
+import { SubscriptionsState, useSubscriptionsAdapter } from "@/models/subscriptions";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData } from "./loader";
 
 import { usePaths } from "@/routes/paths";
-import { emptyContent } from "turboui";
+import { emptyContent, SubscribersSelector } from "turboui";
 
 export function Form() {
   const paths = usePaths();
@@ -19,10 +19,12 @@ export function Form() {
   const navigateToGoal = useNavigateTo(paths.goalPath(goal.id!));
 
   assertPresent(goal.potentialSubscribers, "potentialSubscribers must be present in goal");
+  assertPresent(goal.space, "space must be present in goal");
 
-  const subscriptionsState = useSubscriptions(goal.potentialSubscribers, {
+  const subscriptionsState = useSubscriptionsAdapter(goal.potentialSubscribers, {
     ignoreMe: true,
     notifyPrioritySubscribers: true,
+    spaceName: goal.space.name,
   });
 
   const form = Forms.useForm({
@@ -38,7 +40,7 @@ export function Form() {
         success: form.values.success,
         successStatus: successStatus,
         retrospective: JSON.stringify(form.values.retrospective),
-        sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
+        sendNotificationsToEveryone: subscriptionsState.notifyEveryone,
         subscriberIds: subscriptionsState.currentSubscribersList,
       });
       navigateToGoal();
@@ -53,7 +55,7 @@ export function Form() {
         <RetrospectiveNotes />
       </Forms.FieldGroup>
 
-      <Subscribers goal={goal} subscriptionsState={subscriptionsState} />
+      <Subscribers subscriptionsState={subscriptionsState} />
 
       <Forms.Submit saveText="Close Goal" />
     </Forms.Form>
@@ -87,12 +89,10 @@ function RetrospectiveNotes() {
   );
 }
 
-function Subscribers({ goal, subscriptionsState }: { goal: Goals.Goal; subscriptionsState: SubscriptionsState }) {
-  assertPresent(goal.space, "space must be present in goal");
-
+function Subscribers({ subscriptionsState }: { subscriptionsState: SubscriptionsState }) {
   return (
     <div className="my-10">
-      <SubscribersSelector state={subscriptionsState} spaceName={goal.space.name} />
+      <SubscribersSelector {...subscriptionsState} />
     </div>
   );
 }

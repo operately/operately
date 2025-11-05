@@ -5,9 +5,8 @@ import * as Paper from "@/components/PaperContainer";
 import * as Spaces from "@/models/spaces";
 
 import { Form, FormState, useForm } from "@/features/DiscussionForm";
-import { SubscribersSelector } from "@/features/Subscriptions";
 import { PageModule } from "@/routes/types";
-import { GhostButton, Link, PrimaryButton } from "turboui";
+import { GhostButton, Link, PrimaryButton, SubscribersSelector } from "turboui";
 
 import { usePaths } from "@/routes/paths";
 export default { name: "DiscussionNewPage", loader, Page } as PageModule;
@@ -36,31 +35,37 @@ function Page() {
 
         <Paper.Body>
           <Form form={form} />
-          <Submit form={form} />
+          <Footer form={form} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
 }
 
-function Submit({ form }) {
+function Footer({ form }: { form: FormState }) {
   return (
     <Paper.DimmedSection>
       <div className="flex flex-col gap-8">
-        <SubscribersSelector state={form.subscriptionsState} spaceName={form.space.name!} />
+        <SubscribersSelector {...form.subscriptionsState} />
 
-        <div>
-          <div className="flex items-center gap-2">
-            <PostButton form={form} />
-            <SaveAsDraftButton form={form} />
-          </div>
-
-          <div className="mt-4">
-            Or, <DiscardLink form={form} />
-          </div>
-        </div>
+        <Submit form={form} />
       </div>
     </Paper.DimmedSection>
+  );
+}
+
+function Submit({ form }: { form: FormState }) {
+  return (
+    <div>
+      <div className="flex items-center gap-2">
+        <PostButton form={form} />
+        <SaveAsDraftButton form={form} />
+      </div>
+
+      <div className="mt-4">
+        Or, <DiscardLink form={form} />
+      </div>
+    </div>
   );
 }
 
@@ -80,7 +85,7 @@ function SaveAsDraftButton({ form }: { form: FormState }) {
   );
 }
 
-function DiscardLink({ form }) {
+function DiscardLink({ form }: { form: FormState }) {
   return (
     <Link to={form.cancelPath} testId="discard" className="font-medium">
       Discard this message
