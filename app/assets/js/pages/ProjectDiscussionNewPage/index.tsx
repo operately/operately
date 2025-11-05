@@ -6,7 +6,7 @@ import * as React from "react";
 import { PageModule } from "@/routes/types";
 import { DimmedLink, Editor, PrimaryButton, SubscribersSelector } from "turboui";
 import { FormTitleInput } from "../../components/FormTitleInput";
-import { useSubscriptionsAdapter } from "../../features/Subscriptions";
+import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import { usePaths } from "../../routes/paths";
 import { assertPresent } from "../../utils/assertions";
 import { useForm } from "./useForm";

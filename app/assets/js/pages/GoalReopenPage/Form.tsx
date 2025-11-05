@@ -5,7 +5,7 @@ import * as Goals from "@/models/goals";
 
 import { Editor, PrimaryButton, SubscribersSelector, DimmedLink } from "turboui";
 import { assertPresent } from "@/utils/assertions";
-import { SubscriptionsState, useSubscriptionsAdapter } from "@/features/Subscriptions";
+import { SubscriptionsState, useSubscriptionsAdapter } from "@/models/subscriptions";
 
 import { FormState, useForm } from "./useForm";
 

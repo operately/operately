@@ -5,7 +5,7 @@ import { DimmedLink, Editor, PrimaryButton, SubscribersSelector } from "turboui"
 import { FormTitleInput } from "@/components/FormTitleInput";
 import * as Goals from "@/models/goals";
 
-import { useSubscriptionsAdapter } from "@/features/Subscriptions";
+import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import { assertPresent } from "@/utils/assertions";
 
 import { useForm } from "./useForm";

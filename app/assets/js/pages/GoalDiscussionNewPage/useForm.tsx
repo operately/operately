@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 import { formValidator, useFormState } from "@/components/Form/useFormState";
-import { SubscriptionsState } from "@/features/Subscriptions";
+import { SubscriptionsState } from "@/models/subscriptions";
 import * as Goals from "@/models/goals";
 import { Validators } from "@/utils/validators";
 

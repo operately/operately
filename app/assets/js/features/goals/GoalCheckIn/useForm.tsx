@@ -6,7 +6,7 @@ import * as Pages from "@/components/Pages";
 import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
 
 import Forms from "@/components/Forms";
-import { SubscriptionsState } from "@/features/Subscriptions";
+import { SubscriptionsState } from "@/models/subscriptions";
 import { assertPresent } from "@/utils/assertions";
 import { validateTargets } from "../GoalTargetsV2/targetErrors";
 

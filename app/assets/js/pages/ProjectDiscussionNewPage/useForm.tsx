@@ -5,7 +5,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 import { formValidator, useFormState } from "@/components/Form/useFormState";
-import { SubscriptionsState } from "@/features/Subscriptions";
+import { SubscriptionsState } from "@/models/subscriptions";
 import { Validators } from "@/utils/validators";
 import { useEditor } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";

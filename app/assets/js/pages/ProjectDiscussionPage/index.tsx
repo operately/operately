@@ -18,7 +18,7 @@ import FormattedTime from "@/components/FormattedTime";
 import { RichContent } from "turboui";
 import { useMe, useMentionedPersonLookupFn } from "../../contexts/CurrentCompanyContext";
 import { usePaths } from "../../routes/paths";
-import { useCurrentSubscriptionsAdapter } from "@/features/Subscriptions";
+import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 
 export default { name: "ProjectDiscussionPage", loader, Page } as PageModule;
 

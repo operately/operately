@@ -3,7 +3,7 @@ import React from "react";
 import Forms from "@/components/Forms";
 import * as Goals from "@/models/goals";
 
-import { SubscriptionsState, useSubscriptionsAdapter } from "@/features/Subscriptions";
+import { SubscriptionsState, useSubscriptionsAdapter } from "@/models/subscriptions";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData } from "./loader";

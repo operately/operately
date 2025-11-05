@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { useLoadedData, useRefresh } from "./loader";
 import { CurrentSubscriptions } from "turboui";
-import { useCurrentSubscriptionsAdapter } from "@/features/Subscriptions";
+import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 
 export function Subscriptions() {
   const refresh = useRefresh();

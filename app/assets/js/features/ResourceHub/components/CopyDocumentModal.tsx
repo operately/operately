@@ -1,7 +1,7 @@
 import React from "react";
 
 import Forms from "@/components/Forms";
-import { useSubscriptionsAdapter } from "@/features/Subscriptions";
+import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import * as Hub from "@/models/resourceHubs";
 import { assertPresent } from "@/utils/assertions";
 import { useNavigate } from "react-router-dom";

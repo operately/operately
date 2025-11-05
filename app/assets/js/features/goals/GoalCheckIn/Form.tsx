@@ -2,7 +2,7 @@ import * as Goals from "@/models/goals";
 import * as People from "@/models/people";
 import * as React from "react";
 
-import { SubscriptionsState } from "@/features/Subscriptions";
+import { SubscriptionsState } from "@/models/subscriptions";
 
 import { InfoCallout } from "@/components/Callouts";
 import Forms from "@/components/Forms";

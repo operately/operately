@@ -5,7 +5,7 @@ import * as React from "react";
 
 import { Form as CheckInForm, useForm } from "@/features/goals/GoalCheckIn";
 import { banner } from "@/features/goals/GoalPageHeader/Banner";
-import { useSubscriptionsAdapter } from "@/features/Subscriptions";
+import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import { PageModule } from "@/routes/types";
 import { assertPresent } from "@/utils/assertions";
 

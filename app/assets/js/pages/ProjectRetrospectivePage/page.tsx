@@ -9,7 +9,7 @@ import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { Spacer } from "@/components/Spacer";
 import { CommentSection, useComments } from "@/features/CommentSection";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
-import { useCurrentSubscriptionsAdapter } from "@/features/Subscriptions";
+import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 import { AvatarWithName, IconEdit, StatusBadge } from "turboui";
 
 import { CurrentSubscriptions, parseContent, RichContent } from "turboui";

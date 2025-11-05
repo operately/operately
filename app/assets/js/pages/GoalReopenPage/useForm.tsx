@@ -1,4 +1,4 @@
-import { SubscriptionsState } from "@/features/Subscriptions";
+import { SubscriptionsState } from "@/models/subscriptions";
 import * as Goals from "@/models/goals";
 import { usePaths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";

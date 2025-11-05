@@ -9,7 +9,7 @@ import { useFormContext } from "@/components/Forms/FormContext";
 import { usePaths } from "@/routes/paths";
 import { areRichTextObjectsEqual, SubscribersSelector } from "turboui";
 import { DimmedSection } from "@/components/PaperContainer";
-import { useSubscriptionsAdapter } from "@/features/Subscriptions";
+import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import { assertPresent } from "@/utils/assertions";
 
 export function Form({ document }: { document: ResourceHubDocument }) {

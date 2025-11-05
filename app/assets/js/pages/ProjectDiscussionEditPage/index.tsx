@@ -10,7 +10,7 @@ import Api from "@/api";
 import { DimmedLink, PrimaryButton, Editor, useEditor, SubscribersSelector } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { FormTitleInput } from "../../components/FormTitleInput";
-import { SubscriptionsState, useSubscriptionsAdapter } from "../../features/Subscriptions";
+import { useSubscriptionsAdapter, SubscriptionsState } from "@/models/subscriptions";
 import { usePaths } from "../../routes/paths";
 
 import { useNavigate } from "react-router-dom";

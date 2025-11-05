@@ -14,7 +14,7 @@ import Forms from "@/components/Forms";
 import { findFileSize, useDownloadFile } from "@/models/blobs";
 import { CommentSection, useComments } from "@/features/CommentSection";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
-import { useCurrentSubscriptionsAdapter } from "@/features/Subscriptions";
+import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 import { Spacer } from "@/components/Spacer";
 import { assertPresent } from "@/utils/assertions";
 import { Avatar, richContentToString, RichContent, CurrentSubscriptions } from "turboui";

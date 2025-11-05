@@ -3,7 +3,7 @@ import React from "react";
 import Forms from "@/components/Forms";
 import * as Projects from "@/models/projects";
 
-import { SubscriptionsState, useSubscriptionsAdapter } from "@/features/Subscriptions";
+import { SubscriptionsState, useSubscriptionsAdapter } from "@/models/subscriptions";
 import { useNavigate } from "react-router-dom";
 import { emptyContent, SubscribersSelector } from "turboui";
 import { usePaths } from "@/routes/paths";

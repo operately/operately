@@ -15,7 +15,7 @@ import { Spacer } from "@/components/Spacer";
 import { assertPresent } from "@/utils/assertions";
 
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
-import { useCurrentSubscriptionsAdapter } from "@/features/Subscriptions";
+import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 import { CommentSection, useComments } from "@/features/CommentSection";
 import { LinkIcon, LinkOptions, ResourcePageNavigation } from "@/features/ResourceHub";
 import { useClearNotificationsOnLoad } from "@/features/notifications";

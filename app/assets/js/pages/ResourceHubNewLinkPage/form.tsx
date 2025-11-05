@@ -7,7 +7,7 @@ import { emptyContent, SubscribersSelector } from "turboui";
 import Forms from "@/components/Forms";
 import { useFieldValue } from "@/components/Forms/FormContext";
 import { LinkIcon, LinkOptions } from "@/features/ResourceHub";
-import { useSubscriptionsAdapter } from "@/features/Subscriptions";
+import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { isValidURL } from "@/utils/validators";

@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 import Forms from "@/components/Forms";
 import { Spacer } from "@/components/Spacer";
-import { useSubscriptionsAdapter } from "@/features/Subscriptions";
+import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import { SubscribersSelector } from "turboui";
 import { assertPresent } from "@/utils/assertions";
 

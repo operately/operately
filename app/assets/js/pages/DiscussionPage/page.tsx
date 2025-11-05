@@ -9,7 +9,7 @@ import { Spacer } from "@/components/Spacer";
 import { CommentSection, useComments } from "@/features/CommentSection";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 
-import { useCurrentSubscriptionsAdapter } from "@/features/Subscriptions";
+import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 import { DocumentTitle } from "@/features/documents/DocumentTitle";
 import { compareIds } from "@/routes/paths";
 

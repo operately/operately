@@ -3,7 +3,7 @@ import * as Discussions from "@/models/discussions";
 import * as Spaces from "@/models/spaces";
 import * as React from "react";
 
-import { SubscriptionsState, useSubscriptionsAdapter } from "@/features/Subscriptions";
+import { SubscriptionsState, useSubscriptionsAdapter } from "@/models/subscriptions";
 import { Subscriber } from "@/models/notifications";
 import { usePaths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";

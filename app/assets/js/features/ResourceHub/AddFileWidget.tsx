@@ -6,7 +6,7 @@ import { ResourceHub, ResourceHubFile, ResourceHubFolder, createResourceHubFile 
 
 import Forms from "@/components/Forms";
 import Modal from "@/components/Modal";
-import { SubscriptionsState, useSubscriptionsAdapter } from "@/features/Subscriptions";
+import { SubscriptionsState, useSubscriptionsAdapter } from "@/models/subscriptions";
 import { assertPresent } from "@/utils/assertions";
 import { Spacer } from "@/components/Spacer";
 import { LoadingProgressBar } from "@/components/LoadingProgressBar";

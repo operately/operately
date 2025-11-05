@@ -15,7 +15,7 @@ import ActivityHandler from "@/features/activities";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
 import { PageModule } from "@/routes/types";
-import { useCurrentSubscriptionsAdapter } from "@/features/Subscriptions";
+import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 
 export default { name: "GoalActivityPage", loader, Page } as PageModule;
 
