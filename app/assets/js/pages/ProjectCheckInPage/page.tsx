@@ -5,7 +5,7 @@ import * as Reactions from "@/models/reactions";
 import * as React from "react";
 
 import FormattedTime from "@/components/FormattedTime";
-import { Avatar, IconEdit, IconSquareCheckFilled } from "turboui";
+import { Avatar, IconEdit, IconSquareCheckFilled, CurrentSubscriptions } from "turboui";
 
 import { TextSeparator } from "@/components/TextSeparator";
 import { compareIds } from "@/routes/paths";
@@ -19,7 +19,7 @@ import { CommentSection, useForProjectCheckIn } from "@/features/CommentSection"
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { CurrentSubscriptions } from "@/features/Subscriptions";
+import { useCurrentSubscriptionsAdapter } from "@/features/Subscriptions";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
 import { banner } from "./Banner";
@@ -28,7 +28,6 @@ import { useLoadedData, useRefresh } from "./loader";
 import { usePaths } from "@/routes/paths";
 export function Page() {
   const { checkIn } = useLoadedData();
-  const refresh = useRefresh();
 
   assertPresent(checkIn.notifications, "Check-in notifications must be defined");
   assertPresent(checkIn.project, "Check-in project must be defined");
@@ -55,13 +54,7 @@ export function Page() {
 
           <div className="border-t border-stroke-base mt-16 mb-8" />
 
-          <CurrentSubscriptions
-            potentialSubscribers={checkIn.potentialSubscribers!}
-            subscriptionList={checkIn.subscriptionList!}
-            name="check-in"
-            type="project_check_in"
-            callback={refresh}
-          />
+          <SubscriptionsSection />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -92,6 +85,25 @@ function CheckInReactions() {
   assertPresent(checkIn.project?.permissions?.canCommentOnCheckIn, "permissions must be present in project checkIn");
 
   return <ReactionList form={form} size={24} canAddReaction={checkIn.project.permissions.canCommentOnCheckIn} />;
+}
+
+function SubscriptionsSection() {
+  const { checkIn } = useLoadedData();
+  const refresh = useRefresh();
+
+  if (!checkIn.potentialSubscribers || !checkIn.subscriptionList) {
+    return null;
+  }
+
+  const subscriptionsState = useCurrentSubscriptionsAdapter({
+    potentialSubscribers: checkIn.potentialSubscribers,
+    subscriptionList: checkIn.subscriptionList,
+    resourceName: "check-in",
+    type: "project_check_in",
+    onRefresh: refresh,
+  });
+
+  return <CurrentSubscriptions {...subscriptionsState} />;
 }
 
 function Title() {

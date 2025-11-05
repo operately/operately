@@ -7,10 +7,12 @@ import { useNavigate } from "react-router-dom";
 
 import Forms from "@/components/Forms";
 import { Spacer } from "@/components/Spacer";
-import { Options, SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
+import { useSubscriptionsAdapter } from "@/features/Subscriptions";
+import { SubscribersSelector } from "turboui";
 import { assertPresent } from "@/utils/assertions";
 
 import { usePaths } from "@/routes/paths";
+
 export function Form({ project }: { project: Project }) {
   const paths = usePaths();
   assertPresent(project.potentialSubscribers, "potentialSubscribers must be present in project");
@@ -18,9 +20,10 @@ export function Form({ project }: { project: Project }) {
   const [post] = usePostProjectCheckIn();
   const navigate = useNavigate();
 
-  const subscriptionsState = useSubscriptions(project.potentialSubscribers, {
+  const subscriptionsState = useSubscriptionsAdapter(project.potentialSubscribers, {
     ignoreMe: true,
     notifyPrioritySubscribers: true,
+    projectName: project.name,
   });
 
   const form = Forms.useForm({
@@ -44,7 +47,7 @@ export function Form({ project }: { project: Project }) {
         projectId: project.id,
         status: form.values.status,
         description: JSON.stringify(form.values.description),
-        sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
+        sendNotificationsToEveryone: subscriptionsState.subscriptionType === SubscribersSelector.SubscriptionOption.ALL,
         subscriberIds: subscriptionsState.currentSubscribersList,
       });
 
@@ -63,7 +66,7 @@ export function Form({ project }: { project: Project }) {
 
       <Spacer size={4} />
 
-      <SubscribersSelector state={subscriptionsState} projectName={project.name!} />
+      <SubscribersSelector {...subscriptionsState} />
 
       <Forms.Submit saveText="Submit" buttonSize="base" />
     </Forms.Form>
