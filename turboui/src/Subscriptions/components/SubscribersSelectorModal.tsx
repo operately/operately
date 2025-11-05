@@ -85,10 +85,10 @@ export function SubscribersSelectorModal({
           />
 
           <div className="flex gap-2">
-            <PrimaryButton onClick={handleSave} testId="save-selection">
+            <PrimaryButton onClick={handleSave} testId="submit">
               Save selection
             </PrimaryButton>
-            <SecondaryButton onClick={onClose} testId="cancel-selection">
+            <SecondaryButton onClick={onClose} testId="cancel">
               Never mind
             </SecondaryButton>
           </div>
@@ -138,6 +138,7 @@ function SubscribersList({ subscribers, localSelected, alwaysNotifyIds, onToggle
             <label
               key={personId}
               className="flex items-center gap-3 py-3 px-2 cursor-pointer border-b border-stroke-base last:border-b-0"
+              data-test-id={`person-option-${personId}`}
             >
               <Avatar person={subscriber.person} size="small" />
               <div className="flex-1">
