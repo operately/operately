@@ -3,9 +3,9 @@ import React from "react";
 import Forms from "@/components/Forms";
 import * as Projects from "@/models/projects";
 
-import { Options, SubscribersSelector, SubscriptionsState, useSubscriptions } from "@/features/Subscriptions";
+import { SubscriptionsState, useSubscriptionsAdapter } from "@/features/Subscriptions";
 import { useNavigate } from "react-router-dom";
-import { emptyContent } from "turboui/RichContent";
+import { emptyContent, SubscribersSelector } from "turboui";
 import { usePaths } from "@/routes/paths";
 
 type Mode = "create" | "edit";
@@ -22,9 +22,10 @@ export function Form({ mode, project, retrospective }: Props) {
   const [post] = Projects.useCloseProject();
   const [edit] = Projects.useEditProjectRetrospective();
 
-  const subscriptionsState = useSubscriptions(project.potentialSubscribers || [], {
+  const subscriptionsState = useSubscriptionsAdapter(project.potentialSubscribers || [], {
     ignoreMe: true,
     notifyPrioritySubscribers: true,
+    resourceHubName: project.name,
   });
 
   const form = Forms.useForm({
@@ -38,7 +39,7 @@ export function Form({ mode, project, retrospective }: Props) {
         await post({
           projectId: project.id,
           retrospective: JSON.stringify(form.values.retrospective),
-          sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
+          sendNotificationsToEveryone: subscriptionsState.notifyEveryone,
           subscriberIds: subscriptionsState.currentSubscribersList,
           successStatus: form.values.success === "yes" ? "achieved" : "missed",
         });
@@ -61,7 +62,7 @@ export function Form({ mode, project, retrospective }: Props) {
         <RetrospectiveNotes project={project} />
       </Forms.FieldGroup>
 
-      <Subscribers mode={mode} project={project} subscriptionsState={subscriptionsState} />
+      <Subscribers mode={mode} subscriptionsState={subscriptionsState} />
 
       <Forms.Submit saveText={mode === "create" ? "Close Project" : "Save"} />
     </Forms.Form>
@@ -96,17 +97,16 @@ function RetrospectiveNotes({ project }: { project: Projects.Project }) {
 }
 
 interface SubscribersProps {
-  project: Projects.Project;
   subscriptionsState: SubscriptionsState;
   mode: Mode;
 }
 
-function Subscribers({ mode, project, subscriptionsState }: SubscribersProps) {
+function Subscribers({ mode, subscriptionsState }: SubscribersProps) {
   if (mode !== "create") return null;
 
   return (
     <div className="my-10">
-      <SubscribersSelector state={subscriptionsState} projectName={project.name} />
+      <SubscribersSelector {...subscriptionsState} />
     </div>
   );
 }
