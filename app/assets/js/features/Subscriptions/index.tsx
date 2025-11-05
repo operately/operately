@@ -2,7 +2,6 @@ export { SubscribersSelector } from "./SubscribersSelector";
 export { SubscribersSelectorForm } from "./selector/SubscribersSelectorForm";
 export { CurrentSubscriptions } from "./CurrentSubscriptions";
 
-export type { SubscriptionsState } from "./useSubscriptions";
 export { useSubscriptions } from "./useSubscriptions";
 
 export { sortSubscribersByName } from "./utils";
@@ -15,3 +14,4 @@ export enum Options {
 
 export { useSubscriptionsAdapter } from "./hooks/useSubscriptionsAdapter";
 export { useCurrentSubscriptionsAdapter } from "./hooks/useCurrentSubscriptionsAdapter";
+export type { SubscriptionsState } from "./hooks/useSubscriptionsAdapter";

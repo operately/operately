@@ -47,7 +47,7 @@ export function Form({ project }: { project: Project }) {
         projectId: project.id,
         status: form.values.status,
         description: JSON.stringify(form.values.description),
-        sendNotificationsToEveryone: subscriptionsState.subscriptionType === SubscribersSelector.SubscriptionOption.ALL,
+        sendNotificationsToEveryone: subscriptionsState.notifyEveryone,
         subscriberIds: subscriptionsState.currentSubscribersList,
       });
 
