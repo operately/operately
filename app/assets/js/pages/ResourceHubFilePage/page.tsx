@@ -14,10 +14,10 @@ import Forms from "@/components/Forms";
 import { findFileSize, useDownloadFile } from "@/models/blobs";
 import { CommentSection, useComments } from "@/features/CommentSection";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
-import { CurrentSubscriptions } from "@/features/Subscriptions";
+import { useCurrentSubscriptionsAdapter } from "@/features/Subscriptions";
 import { Spacer } from "@/components/Spacer";
 import { assertPresent } from "@/utils/assertions";
-import { Avatar, richContentToString, RichContent } from "turboui";
+import { Avatar, richContentToString, RichContent, CurrentSubscriptions } from "turboui";
 import FormattedTime from "@/components/FormattedTime";
 import { TextSeparator } from "@/components/TextSeparator";
 import { ResourcePageNavigation } from "@/features/ResourceHub";
@@ -206,20 +206,23 @@ function FileSubscriptions() {
   const { file } = useLoadedData();
   const refresh = Pages.useRefresh();
 
-  assertPresent(file.potentialSubscribers, "potentialSubscribers should be present in file");
-  assertPresent(file.subscriptionList, "subscriptionList should be present in file");
+  if (!file.potentialSubscribers || !file.subscriptionList) {
+    return null;
+  }
+
+  const subscriptionsState = useCurrentSubscriptionsAdapter({
+    potentialSubscribers: file.potentialSubscribers,
+    subscriptionList: file.subscriptionList,
+    resourceName: "file",
+    type: "resource_hub_file",
+    onRefresh: refresh,
+  });
 
   return (
     <>
       <div className="border-t border-stroke-base mt-16 mb-8" />
 
-      <CurrentSubscriptions
-        potentialSubscribers={file.potentialSubscribers}
-        subscriptionList={file.subscriptionList}
-        name="file"
-        type="resource_hub_file"
-        callback={refresh}
-      />
+      <CurrentSubscriptions {...subscriptionsState} />
     </>
   );
 }

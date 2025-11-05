@@ -1,4 +1,4 @@
-import { Options, SubscriptionsState } from "@/features/Subscriptions";
+import { SubscriptionsState } from "@/features/Subscriptions";
 import * as Goals from "@/models/goals";
 import { usePaths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
@@ -31,7 +31,7 @@ export function useForm(goal: Goals.Goal, subscriptionsState: SubscriptionsState
     await reopen({
       id: goal.id,
       message: JSON.stringify(messageEditor.editor.getJSON()),
-      sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
+      sendNotificationsToEveryone: subscriptionsState.notifyEveryone,
       subscriberIds: subscriptionsState.currentSubscribersList,
     });
     navigate(goalPath);

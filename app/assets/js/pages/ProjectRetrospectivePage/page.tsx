@@ -9,10 +9,10 @@ import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { Spacer } from "@/components/Spacer";
 import { CommentSection, useComments } from "@/features/CommentSection";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
-import { CurrentSubscriptions } from "@/features/Subscriptions";
+import { useCurrentSubscriptionsAdapter } from "@/features/Subscriptions";
 import { AvatarWithName, IconEdit, StatusBadge } from "turboui";
 
-import RichContent, { parseContent } from "turboui/RichContent";
+import { CurrentSubscriptions, parseContent, RichContent } from "turboui";
 import { useMentionedPersonLookupFn } from "@/contexts/CurrentCompanyContext";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
@@ -151,17 +151,23 @@ function Subscriptions() {
   const { retrospective } = useLoadedData();
   const refresh = useRefresh();
 
+  if (!retrospective.potentialSubscribers || !retrospective.subscriptionList) {
+    return null;
+  }
+
+  const subscriptionsState = useCurrentSubscriptionsAdapter({
+    potentialSubscribers: retrospective.potentialSubscribers,
+    subscriptionList: retrospective.subscriptionList,
+    resourceName: "retrospective",
+    type: "project_retrospective",
+    onRefresh: refresh,
+  });
+
   return (
     <>
       <div className="border-t border-stroke-base mt-16 mb-8" />
 
-      <CurrentSubscriptions
-        potentialSubscribers={retrospective.potentialSubscribers!}
-        subscriptionList={retrospective.subscriptionList!}
-        name="project retrospective"
-        type="project_retrospective"
-        callback={refresh}
-      />
+      <CurrentSubscriptions {...subscriptionsState} />
     </>
   );
 }

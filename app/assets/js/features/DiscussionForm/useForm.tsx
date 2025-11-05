@@ -3,7 +3,7 @@ import * as Discussions from "@/models/discussions";
 import * as Spaces from "@/models/spaces";
 import * as React from "react";
 
-import { Options, SubscriptionsState, useSubscriptions } from "@/features/Subscriptions";
+import { Options, SubscriptionsState, useSubscriptionsAdapter } from "@/features/Subscriptions";
 import { Subscriber } from "@/models/notifications";
 import { usePaths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
@@ -48,17 +48,17 @@ interface Error {
 
 export function useForm({ space, mode, discussion, potentialSubscribers = [] }: UseFormOptions): FormState {
   const paths = usePaths();
-  const subscriptionsState = useSubscriptions(potentialSubscribers, { ignoreMe: true });
+  const subscriptionsState = useSubscriptionsAdapter(potentialSubscribers, { ignoreMe: true, spaceName: space.name });
 
   const [errors, setErrors] = React.useState<Error[]>([]);
   const [title, setTitle] = React.useState(() => discussion?.title || "");
 
-  const handlers = useRichEditorHandlers({ scope: { type: "space", id: space ? space.id : discussion?.space?.id! }});
+  const handlers = useRichEditorHandlers({ scope: { type: "space", id: space ? space.id : discussion?.space?.id! } });
   const editor = useEditor({
     placeholder: "Write here...",
     className: "min-h-[350px] py-2 px-1",
     content: discussion?.body && JSON.parse(discussion.body),
-    handlers
+    handlers,
   });
 
   const validate = () => {
