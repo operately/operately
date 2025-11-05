@@ -3,6 +3,7 @@ import { Avatar } from "../Avatar";
 import { SecondaryButton } from "../Button";
 import { sortSubscribersByName } from "./utils";
 import { SubscribersSelectorModal } from "./components/SubscribersSelectorModal";
+import { createTestId } from "../TestableElement";
 import type { SubscribersSelector } from "./SubscribersSelector";
 
 export namespace CurrentSubscriptions {
@@ -16,7 +17,6 @@ export namespace CurrentSubscriptions {
     onEditSubscribers: (subscriberIds: string[]) => void;
     isSubscribeLoading?: boolean;
     isUnsubscribeLoading?: boolean;
-    testIdPrefix?: string;
   }
 }
 
@@ -30,7 +30,6 @@ export function CurrentSubscriptions({
   onEditSubscribers,
   isSubscribeLoading = false,
   isUnsubscribeLoading = false,
-  testIdPrefix = "subscription",
 }: CurrentSubscriptions.Props) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -49,12 +48,12 @@ export function CurrentSubscriptions({
       <div className="flex items-center gap-1 mt-2 flex-wrap gap-y-2">
         {sortedSubscribers
           .filter((s) => s.person)
-          .map((s) => (
+          .map((s, idx) => (
             <Avatar
               person={s.person!}
               size="tiny"
               key={s.person!.id}
-              testId={`${testIdPrefix}-subscriber-${s.person!.id}`}
+              testId={createTestId("subscriber", s.person?.id || idx.toString())}
             />
           ))}
         <SecondaryButton onClick={() => setIsModalOpen(true)} size="xs" testId="add-remove-subscribers">

@@ -42,7 +42,8 @@ export function Page() {
           <DiscussionBody />
           <DiscussionReactions />
           <DicusssionComments />
-          <DiscussionSubscriptions />
+
+          {discussion.state !== "draft" && <DiscussionSubscriptions />}
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -69,8 +70,6 @@ function DiscussionBody() {
 function DiscussionSubscriptions() {
   const { discussion } = useLoadedData();
   const refresh = Pages.useRefresh();
-
-  if (discussion.state === "draft") return null;
 
   if (!discussion.potentialSubscribers || !discussion.subscriptionList) {
     return null;
