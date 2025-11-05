@@ -3,10 +3,9 @@ import React from "react";
 import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
 
-import { Editor, PrimaryButton } from "turboui";
-import { DimmedLink } from "turboui";
+import { Editor, PrimaryButton, SubscribersSelector, DimmedLink } from "turboui";
 import { assertPresent } from "@/utils/assertions";
-import { SubscribersSelector, SubscriptionsState, useSubscriptions } from "@/features/Subscriptions";
+import { SubscriptionsState, useSubscriptionsAdapter } from "@/features/Subscriptions";
 
 import { FormState, useForm } from "./useForm";
 
@@ -14,10 +13,12 @@ export function Form() {
   const { goal } = Pages.useLoadedData<{ goal: Goals.Goal }>();
 
   assertPresent(goal.potentialSubscribers, "potentialSubscribers must be present in goal");
+  assertPresent(goal.space, "space must be present in goal");
 
-  const subscriptionsState = useSubscriptions(goal.potentialSubscribers, {
+  const subscriptionsState = useSubscriptionsAdapter(goal.potentialSubscribers, {
     ignoreMe: true,
     notifyPrioritySubscribers: true,
+    spaceName: goal.space.name,
   });
   const form = useForm(goal, subscriptionsState);
 
@@ -25,7 +26,7 @@ export function Form() {
     <>
       <Message form={form} />
 
-      <Subscribers goal={goal} subscriptionsState={subscriptionsState} />
+      <Subscribers subscriptionsState={subscriptionsState} />
 
       <div className="flex items-center gap-6 mt-8">
         <SubmitButton form={form} />
@@ -55,12 +56,10 @@ function SubmitButton({ form }: { form: FormState }) {
   );
 }
 
-function Subscribers({ goal, subscriptionsState }: { goal: Goals.Goal; subscriptionsState: SubscriptionsState }) {
-  assertPresent(goal.space, "space must be present in goal");
-
+function Subscribers({ subscriptionsState }: { subscriptionsState: SubscriptionsState }) {
   return (
     <div className="my-10">
-      <SubscribersSelector state={subscriptionsState} spaceName={goal.space.name} />
+      <SubscribersSelector {...subscriptionsState} />
     </div>
   );
 }
