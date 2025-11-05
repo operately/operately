@@ -7,10 +7,10 @@ import Forms from "@/components/Forms";
 import { useFormContext } from "@/components/Forms/FormContext";
 import { DimmedSection } from "@/components/PaperContainer";
 import { Spacer } from "@/components/Spacer";
-import { Options, SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
+import { useSubscriptionsAdapter } from "@/features/Subscriptions";
 import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
-import { Link } from "turboui";
+import { Link, SubscribersSelector } from "turboui";
 
 import { useLoadedData } from "./loader";
 
@@ -22,8 +22,9 @@ export function Form() {
 
   assertPresent(resourceHub.potentialSubscribers, "potentialSubscribers must be present in resourceHub");
 
-  const subscriptionsState = useSubscriptions(resourceHub.potentialSubscribers, {
+  const subscriptionsState = useSubscriptionsAdapter(resourceHub.potentialSubscribers, {
     ignoreMe: true,
+    resourceHubName: resourceHub.name,
   });
 
   const form = Forms.useForm({
@@ -45,7 +46,7 @@ export function Form() {
         folderId: folder?.id,
         name: form.values.title,
         content: JSON.stringify(form.values.content),
-        sendNotificationsToEveryone: subscriptionsState.subscriptionType === Options.ALL,
+        sendNotificationsToEveryone: subscriptionsState.notifyEveryone,
         subscriberIds: subscriptionsState.currentSubscribersList,
         postAsDraft: isDraft,
       });
@@ -75,7 +76,7 @@ export function Form() {
 
       <DimmedSection>
         <Spacer size={4} />
-        <SubscribersSelector state={subscriptionsState} resourceHubName={resourceHub.name!} />
+        <SubscribersSelector {...subscriptionsState} />
 
         <FormActions resourceHub={resourceHub} />
       </DimmedSection>
