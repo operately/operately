@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Modal } from "../../Modal";
 import type { SubscribersSelector } from "../SubscribersSelector";
-import { sortSubscribersByName } from "../utils";
+import { sortSubscribers } from "../utils";
 import { Avatar } from "../../Avatar";
 import { PrimaryButton, SecondaryButton } from "../../Button";
 import { ActionLink } from "../../Link";
@@ -125,10 +125,12 @@ interface SubscribersListProps {
 }
 
 function SubscribersList({ subscribers, localSelected, alwaysNotifyIds, onToggle }: SubscribersListProps) {
+  const sortedSubscribers = React.useMemo(() => sortSubscribers(subscribers, alwaysNotifyIds), [subscribers, alwaysNotifyIds]);
+
   return (
     <div className="max-h-[380px] overflow-y-auto">
       <div className="flex flex-col">
-        {sortSubscribersByName(subscribers).map((subscriber) => {
+        {sortedSubscribers.map((subscriber) => {
           if (!subscriber.person) return null;
           const personId = subscriber.person.id;
           const isAlwaysNotify = alwaysNotifyIds.has(personId);
