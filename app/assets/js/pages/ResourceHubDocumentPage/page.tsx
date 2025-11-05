@@ -17,11 +17,11 @@ import { OngoingDraftActions } from "@/features/drafts";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CopyDocumentModal, ResourcePageNavigation } from "@/features/ResourceHub";
-import { CurrentSubscriptions } from "@/features/Subscriptions";
+import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 import { useBoolState } from "@/hooks/useBoolState";
 import { assertPresent } from "@/utils/assertions";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
-import { RichContent } from "turboui";
+import { RichContent, CurrentSubscriptions } from "turboui";
 
 import { useLoadedData } from "./loader";
 import { Options } from "./Options";
@@ -175,19 +175,23 @@ function DocumentSubscriptions() {
   const { document } = useLoadedData();
   const refresh = Pages.useRefresh();
 
-  assertPresent(document.subscriptionList, "subscriptionList should be present in document");
+  if (!document.potentialSubscribers || !document.subscriptionList) {
+    return null;
+  }
+
+  const subscriptionsState = useCurrentSubscriptionsAdapter({
+    potentialSubscribers: document.potentialSubscribers,
+    subscriptionList: document.subscriptionList,
+    resourceName: "document",
+    type: "resource_hub_document",
+    onRefresh: refresh,
+  });
 
   return (
     <>
       <div className="border-t border-stroke-base mt-16 mb-8" />
 
-      <CurrentSubscriptions
-        potentialSubscribers={document.potentialSubscribers!}
-        subscriptionList={document.subscriptionList}
-        name="document"
-        type="resource_hub_document"
-        callback={refresh}
-      />
+      <CurrentSubscriptions {...subscriptionsState} />
     </>
   );
 }

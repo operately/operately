@@ -6,8 +6,6 @@ type Ref = HTMLFormElement;
 
 import { PrimaryButton } from "turboui";
 
-export * from "./radio";
-
 interface Props {
   children?: React.ReactNode;
   loading?: boolean;

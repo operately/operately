@@ -5,7 +5,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 import { formValidator, useFormState } from "@/components/Form/useFormState";
-import { Options, SubscriptionsState } from "@/features/Subscriptions";
+import { SubscriptionsState } from "@/models/subscriptions";
 import { Validators } from "@/utils/validators";
 import { useEditor } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -57,7 +57,7 @@ export function useForm({ project, subscriptionsState }: UseFormProps) {
             projectId: project.id,
             title: fields.title,
             message: JSON.stringify(fields.editor.editor.getJSON()),
-            sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
+            sendNotificationsToEveryone: subscriptionsState.notifyEveryone,
             subscriberIds: subscriptionsState.currentSubscribersList,
           })
           .then((data) => navigate(paths.projectDiscussionPath(data.discussion.id!)))

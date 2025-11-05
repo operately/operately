@@ -2,16 +2,15 @@ import * as Goals from "@/models/goals";
 import * as People from "@/models/people";
 import * as React from "react";
 
-import { SubscribersSelector, SubscriptionsState } from "@/features/Subscriptions";
+import { SubscriptionsState } from "@/models/subscriptions";
 
 import { InfoCallout } from "@/components/Callouts";
 import Forms from "@/components/Forms";
 import { useFieldValue } from "@/components/Forms/FormContext";
 import { GoalTargetsField } from "@/features/goals/GoalTargetsV2";
-import { assertPresent } from "@/utils/assertions";
 import { durationHumanized } from "@/utils/time";
 import { match } from "ts-pattern";
-import { Checklist, DateField, IconInfoCircle, RichContent, Tooltip } from "turboui";
+import { Checklist, DateField, IconInfoCircle, RichContent, Tooltip, SubscribersSelector } from "turboui";
 import { StatusSelector } from "./StatusSelector";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
@@ -278,12 +277,11 @@ function useTargetCount(): number {
 
 function Subscribers(props: Props) {
   if (props.mode !== "new") return null;
-
-  assertPresent(props.goal.potentialSubscribers, "potentialSubscribers must be present in goal");
+  if (!props.subscriptionsState) return null;
 
   return (
     <div className="mt-6">
-      <SubscribersSelector state={props.subscriptionsState!} spaceName={props.goal!.space!.name!} />
+      <SubscribersSelector {...props.subscriptionsState} />
     </div>
   );
 }
