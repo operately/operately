@@ -12,3 +12,6 @@ export enum Options {
   SELECTED = "selected",
   NONE = "none",
 }
+
+export { useSubscriptionsAdapter } from "./hooks/useSubscriptionsAdapter";
+export { useCurrentSubscriptionsAdapter } from "./hooks/useCurrentSubscriptionsAdapter";
