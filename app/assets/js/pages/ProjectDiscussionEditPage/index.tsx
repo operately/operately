@@ -7,10 +7,10 @@ import { PageModule } from "@/routes/types";
 import { assertPresent } from "@/utils/assertions";
 
 import Api from "@/api";
-import { DimmedLink, PrimaryButton, Editor, useEditor } from "turboui";
+import { DimmedLink, PrimaryButton, Editor, useEditor, SubscribersSelector } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { FormTitleInput } from "../../components/FormTitleInput";
-import { SubscribersSelector, SubscriptionsState, useSubscriptions } from "../../features/Subscriptions";
+import { SubscriptionsState, useSubscriptionsAdapter } from "../../features/Subscriptions";
 import { usePaths } from "../../routes/paths";
 
 import { useNavigate } from "react-router-dom";
@@ -74,10 +74,12 @@ function Form() {
   const paths = usePaths();
 
   assertPresent(discussion.potentialSubscribers, "potentialSubscribers must be present in discussion");
+  assertPresent(discussion.project, "project must be present in discussion");
 
-  const subscriptionsState = useSubscriptions(discussion.potentialSubscribers, {
+  const subscriptionsState = useSubscriptionsAdapter(discussion.potentialSubscribers, {
     ignoreMe: true,
     notifyPrioritySubscribers: true,
+    spaceName: discussion.project.name,
   });
 
   const form = useForm({ discussion, subscriptionsState });
@@ -119,7 +121,7 @@ function Subscribers({
 
   return (
     <div className="my-10">
-      <SubscribersSelector state={subscriptionsState} spaceName={discussion.space.name} />
+      <SubscribersSelector {...subscriptionsState} />
     </div>
   );
 }
