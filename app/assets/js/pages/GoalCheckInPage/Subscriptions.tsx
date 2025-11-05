@@ -16,7 +16,7 @@ export function Subscriptions() {
     potentialSubscribers: update.potentialSubscribers,
     subscriptionList: update.subscriptionList,
     resourceName: "check-in",
-    type: "project_check_in",
+    type: "goal_update",
     onRefresh: refresh,
   });
 

@@ -80,7 +80,7 @@ function Form({ goal }: { goal: Goals.Goal }) {
   const subscriptionsState = useSubscriptionsAdapter(goal.potentialSubscribers, {
     ignoreMe: true,
     notifyPrioritySubscribers: true,
-    resourceHubName: goal.space.name,
+    spaceName: goal.space.name,
   });
 
   const form = useForm({ mode: "new", goal, subscriptionsState });

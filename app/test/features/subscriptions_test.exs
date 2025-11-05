@@ -245,7 +245,7 @@ defmodule Operately.Features.SubscriptionsTest do
       |> Steps.fill_out_goal_update_form()
       |> Steps.select_all_people()
       |> Steps.submit_goal_update_form()
-      |> Steps.assert_current_subscribers(%{count: 5, resource: "update"})
+      |> Steps.assert_current_subscribers(%{count: 5, resource: "check-in"})
     end
 
     feature "Select specific contributors", ctx do
@@ -257,7 +257,7 @@ defmodule Operately.Features.SubscriptionsTest do
       |> Steps.toggle_person_checkbox(ctx.jane)
       |> Steps.save_people_selection()
       |> Steps.submit_goal_update_form()
-      |> Steps.assert_current_subscribers(%{count: 3, resource: "update"})
+      |> Steps.assert_current_subscribers(%{count: 3, resource: "check-in"})
     end
 
     feature "No one", ctx do
@@ -266,7 +266,7 @@ defmodule Operately.Features.SubscriptionsTest do
       |> Steps.fill_out_goal_update_form()
       |> Steps.select_no_one()
       |> Steps.submit_goal_update_form()
-      |> Steps.assert_current_subscribers(%{count: 1, resource: "update"})
+      |> Steps.assert_current_subscribers(%{count: 1, resource: "check-in"})
     end
 
     feature "Subscribe and unsubribe", ctx do
@@ -275,7 +275,7 @@ defmodule Operately.Features.SubscriptionsTest do
       |> Steps.fill_out_goal_update_form()
       |> Steps.select_all_people()
       |> Steps.submit_goal_update_form()
-      |> test_current_subscriptions_widget("update")
+      |> test_current_subscriptions_widget("check-in")
     end
   end
 
