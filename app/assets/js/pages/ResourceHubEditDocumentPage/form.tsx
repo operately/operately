@@ -7,9 +7,9 @@ import Forms from "@/components/Forms";
 import { useFormContext } from "@/components/Forms/FormContext";
 
 import { usePaths } from "@/routes/paths";
-import { areRichTextObjectsEqual } from "turboui";
+import { areRichTextObjectsEqual, SubscribersSelector } from "turboui";
 import { DimmedSection } from "@/components/PaperContainer";
-import { Options, SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
+import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import { assertPresent } from "@/utils/assertions";
 
 export function Form({ document }: { document: ResourceHubDocument }) {
@@ -24,12 +24,13 @@ export function Form({ document }: { document: ResourceHubDocument }) {
   assertPresent(document.subscriptionList, "subscriptionList must be present in document");
   assertPresent(document.resourceHub, "resourceHub must be present in document");
 
-  const subscriptionsState = useSubscriptions(document.potentialSubscribers ?? [], {
+  const subscriptionsState = useSubscriptionsAdapter(document.potentialSubscribers ?? [], {
     ignoreMe: true,
     sendNotificationsToEveryone: document.subscriptionList?.sendToEveryone ?? undefined,
+    resourceHubName: document.resourceHub.name,
   });
 
-  const initialSubscriptionsRef = React.useRef<{ subscriptionType: Options; subscriberIds: string[] } | null>(null);
+  const initialSubscriptionsRef = React.useRef<{ subscriptionType: SubscribersSelector.SubscriptionOption; subscriberIds: string[] } | null>(null);
 
   if (initialSubscriptionsRef.current === null) {
     initialSubscriptionsRef.current = {
@@ -56,7 +57,7 @@ export function Form({ document }: { document: ResourceHubDocument }) {
       const { title, content } = form.values;
       const serializedContent = JSON.stringify(content);
       const subscriptionPayload = {
-        sendNotificationsToEveryone: subscriptionsState.subscriptionType === Options.ALL,
+        sendNotificationsToEveryone: subscriptionsState.notifyEveryone,
         subscriberIds: subscriptionsState.currentSubscribersList,
       };
       const subscriptionsChanged = hasSubscriptionsChanged(
@@ -103,7 +104,7 @@ export function Form({ document }: { document: ResourceHubDocument }) {
 
       {isDraft ? (
         <DimmedSection>
-          <SubscribersSelector state={subscriptionsState} resourceHubName={document.resourceHub.name} />
+          <SubscribersSelector {...subscriptionsState} />
 
           <FormActions document={document} />
         </DimmedSection>
@@ -147,8 +148,8 @@ function documentHasChanged(document: ResourceHubDocument, name: string, content
 
 function hasSubscriptionsChanged(
   isDraft: boolean,
-  initialSubscriptions: { subscriptionType: Options; subscriberIds: string[] } | null,
-  currentState: { subscriptionType: Options; currentSubscribersList: string[] },
+  initialSubscriptions: { subscriptionType: SubscribersSelector.SubscriptionOption; subscriberIds: string[] } | null,
+  currentState: { subscriptionType: SubscribersSelector.SubscriptionOption; currentSubscribersList: string[] },
 ) {
   if (!isDraft) return false;
   if (!initialSubscriptions) return false;

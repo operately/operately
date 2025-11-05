@@ -2,12 +2,12 @@ import React, { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useCreateResourceHubLink } from "@/models/resourceHubs";
-import { emptyContent } from "turboui/RichContent";
+import { emptyContent, SubscribersSelector } from "turboui";
 
 import Forms from "@/components/Forms";
 import { useFieldValue } from "@/components/Forms/FormContext";
 import { LinkIcon, LinkOptions } from "@/features/ResourceHub";
-import { Options, SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
+import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { isValidURL } from "@/utils/validators";
@@ -22,8 +22,9 @@ export function Form() {
 
   assertPresent(resourceHub.potentialSubscribers, "potentialSubscribers must be present in resourceHub");
 
-  const subscriptionsState = useSubscriptions(resourceHub.potentialSubscribers, {
+  const subscriptionsState = useSubscriptionsAdapter(resourceHub.potentialSubscribers, {
     ignoreMe: true,
+    resourceHubName: resourceHub.name,
   });
 
   const form = Forms.useForm({
@@ -49,7 +50,7 @@ export function Form() {
         url: form.values.link,
         type: form.values.type || "other",
         description: JSON.stringify(form.values.description),
-        sendNotificationsToEveryone: subscriptionsState.subscriptionType === Options.ALL,
+        sendNotificationsToEveryone: subscriptionsState.notifyEveryone,
         subscriberIds: subscriptionsState.currentSubscribersList,
       });
       navigate(paths.resourceHubLinkPath(res.link.id));
@@ -67,7 +68,7 @@ export function Form() {
           <FormFields />
 
           <div className="mt-12">
-            <SubscribersSelector state={subscriptionsState} resourceHubName={resourceHub.name!} />
+            <SubscribersSelector {...subscriptionsState} />
             <Forms.Submit saveText="Add link" buttonSize="base" />
           </div>
         </div>

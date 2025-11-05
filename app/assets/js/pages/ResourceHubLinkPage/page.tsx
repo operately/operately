@@ -15,14 +15,14 @@ import { Spacer } from "@/components/Spacer";
 import { assertPresent } from "@/utils/assertions";
 
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
-import { CurrentSubscriptions } from "@/features/Subscriptions";
+import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 import { CommentSection, useComments } from "@/features/CommentSection";
 import { LinkIcon, LinkOptions, ResourcePageNavigation } from "@/features/ResourceHub";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 
 import { Options } from "./Options";
 import { useLoadedData } from "./loader";
-import { isContentEmpty, PrimaryButton, RichContent } from "turboui";
+import { isContentEmpty, PrimaryButton, RichContent, CurrentSubscriptions } from "turboui";
 import { BulletDot } from "@/components/TextElements";
 import FormattedTime from "@/components/FormattedTime";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -197,20 +197,23 @@ function LinkSubscriptions() {
   const { link } = useLoadedData();
   const refresh = Pages.useRefresh();
 
-  assertPresent(link.subscriptionList, "subscriptionList should be present in link");
-  assertPresent(link.potentialSubscribers, "potentialSubscribers should be present in link");
+  if (!link.potentialSubscribers || !link.subscriptionList) {
+    return null;
+  }
+
+  const subscriptionsState = useCurrentSubscriptionsAdapter({
+    potentialSubscribers: link.potentialSubscribers,
+    subscriptionList: link.subscriptionList,
+    resourceName: "link",
+    type: "resource_hub_link",
+    onRefresh: refresh,
+  });
 
   return (
     <>
       <div className="border-t border-stroke-base mt-16 mb-8" />
 
-      <CurrentSubscriptions
-        potentialSubscribers={link.potentialSubscribers}
-        subscriptionList={link.subscriptionList}
-        name="link"
-        type="resource_hub_link"
-        callback={refresh}
-      />
+      <CurrentSubscriptions {...subscriptionsState} />
     </>
   );
 }

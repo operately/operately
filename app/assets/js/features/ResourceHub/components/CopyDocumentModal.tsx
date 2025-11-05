@@ -1,7 +1,7 @@
 import React from "react";
 
 import Forms from "@/components/Forms";
-import { useSubscriptions } from "@/features/Subscriptions";
+import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import * as Hub from "@/models/resourceHubs";
 import { assertPresent } from "@/utils/assertions";
 import { useNavigate } from "react-router-dom";
@@ -25,7 +25,10 @@ export function CopyDocumentModal(props: FormProps) {
   assertPresent(parent?.potentialSubscribers, "potentialSubscribers must be present in resourceHub or folder");
   assertPresent(resource.resourceHubId, "resourceHubId must be present in resource");
 
-  const subscriptionsState = useSubscriptions(parent.potentialSubscribers, { ignoreMe: true });
+  const subscriptionsState = useSubscriptionsAdapter(parent.potentialSubscribers, {
+    ignoreMe: true,
+    resourceHubName: parent.name || "",
+  });
 
   const form = Forms.useForm({
     fields: {

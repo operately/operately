@@ -9,16 +9,16 @@ import { CommentSection, useComments } from "@/features/CommentSection";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 
 import { useClearNotificationsOnLoad } from "@/features/notifications";
-import { CurrentSubscriptions } from "@/features/Subscriptions";
 import { PageModule } from "@/routes/types";
 import { assertPresent } from "@/utils/assertions";
-import { Avatar, IconEdit } from "turboui";
+import { Avatar, IconEdit, CurrentSubscriptions } from "turboui";
 
 import Api from "@/api";
 import FormattedTime from "@/components/FormattedTime";
 import { RichContent } from "turboui";
 import { useMe, useMentionedPersonLookupFn } from "../../contexts/CurrentCompanyContext";
 import { usePaths } from "../../routes/paths";
+import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 
 export default { name: "ProjectDiscussionPage", loader, Page } as PageModule;
 
@@ -158,18 +158,21 @@ function Subscriptions() {
   const refresh = Pages.useRefresh();
   const { discussion } = Pages.useLoadedData<LoaderResult>();
 
-  assertPresent(discussion.subscriptionList, "subscriptionList must be present in commentThread");
-  assertPresent(discussion.potentialSubscribers, "potentialSubscribers must be present in commentThread");
+  if (!discussion.potentialSubscribers || !discussion.subscriptionList) {
+    return null;
+  }
+
+  const subscriptionsState = useCurrentSubscriptionsAdapter({
+    potentialSubscribers: discussion.potentialSubscribers,
+    subscriptionList: discussion.subscriptionList,
+    resourceName: "discussion",
+    type: "comment_thread",
+    onRefresh: refresh,
+  });
 
   return (
     <div className="border-t border-stroke-base mt-16 pt-8">
-      <CurrentSubscriptions
-        subscriptionList={discussion.subscriptionList}
-        potentialSubscribers={discussion.potentialSubscribers}
-        name="discussion"
-        type="comment_thread"
-        callback={refresh}
-      />
+      <CurrentSubscriptions {...subscriptionsState} />
     </div>
   );
 }

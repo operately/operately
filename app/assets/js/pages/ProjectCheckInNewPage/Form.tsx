@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 import Forms from "@/components/Forms";
 import { Spacer } from "@/components/Spacer";
-import { useSubscriptionsAdapter } from "@/features/Subscriptions";
+import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import { SubscribersSelector } from "turboui";
 import { assertPresent } from "@/utils/assertions";
 
@@ -47,7 +47,7 @@ export function Form({ project }: { project: Project }) {
         projectId: project.id,
         status: form.values.status,
         description: JSON.stringify(form.values.description),
-        sendNotificationsToEveryone: subscriptionsState.subscriptionType === SubscribersSelector.SubscriptionOption.ALL,
+        sendNotificationsToEveryone: subscriptionsState.notifyEveryone,
         subscriberIds: subscriptionsState.currentSubscribersList,
       });
 

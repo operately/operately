@@ -9,13 +9,13 @@ import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CommentSection, useComments } from "@/features/CommentSection";
 
-import { Avatar } from "turboui";
+import { Avatar, CurrentSubscriptions } from "turboui";
 import FormattedTime from "@/components/FormattedTime";
 import ActivityHandler from "@/features/activities";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
 import { PageModule } from "@/routes/types";
-import { CurrentSubscriptions } from "@/features/Subscriptions";
+import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 
 export default { name: "GoalActivityPage", loader, Page } as PageModule;
 
@@ -121,18 +121,21 @@ function Subscriptions() {
   const refresh = Pages.useRefresh();
   const { activity } = Pages.useLoadedData<LoaderResult>();
 
-  assertPresent(activity.commentThread?.subscriptionList, "subscriptionList must be present in commentThread");
-  assertPresent(activity.commentThread?.potentialSubscribers, "potentialSubscribers must be present in commentThread");
+  if (!activity.commentThread?.potentialSubscribers || !activity.commentThread?.subscriptionList) {
+    return null;
+  }
+
+  const subscriptionsState = useCurrentSubscriptionsAdapter({
+    potentialSubscribers: activity.commentThread.potentialSubscribers,
+    subscriptionList: activity.commentThread.subscriptionList,
+    resourceName: "discussion",
+    type: "comment_thread",
+    onRefresh: refresh,
+  });
 
   return (
     <div className="border-t border-stroke-base mt-16 pt-8">
-      <CurrentSubscriptions
-        subscriptionList={activity.commentThread.subscriptionList}
-        potentialSubscribers={activity.commentThread.potentialSubscribers}
-        name="discussion"
-        type="comment_thread"
-        callback={refresh}
-      />
+      <CurrentSubscriptions {...subscriptionsState} />
     </div>
   );
 }
