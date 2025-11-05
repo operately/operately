@@ -137,10 +137,11 @@ function SubscribersList({ subscribers, localSelected, alwaysNotifyIds, onToggle
           const isChecked = localSelected.has(personId);
 
           return (
-            <label
+            <div
               key={personId}
               className="flex items-center gap-3 py-3 px-2 cursor-pointer border-b border-stroke-base last:border-b-0"
               data-test-id={`person-option-${personId}`}
+              onClick={() => !isAlwaysNotify && onToggle(personId)}
             >
               <Avatar person={subscriber.person} size="small" />
               <div className="flex-1">
@@ -149,7 +150,7 @@ function SubscribersList({ subscribers, localSelected, alwaysNotifyIds, onToggle
                 {isAlwaysNotify && <div className="text-xs text-content-subtle mt-0.5">(Always notified)</div>}
               </div>
               <Checkbox checked={isChecked} onChange={() => !isAlwaysNotify && onToggle(personId)} disabled={isAlwaysNotify} />
-            </label>
+            </div>
           );
         })}
       </div>
