@@ -51,6 +51,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeSpace: true,
           includePermissions: true,
           includeSubscriptionList: true,
+          includePotentialSubscribers: true,
         }).then((d) => d.task!),
         childrenCount: Api.projects.countChildren({ id: params.id, useTaskId: true }).then((d) => d.childrenCount),
         activities: Api.getActivities({
@@ -67,7 +68,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
 }
 
 function pageCacheKey(id: string): string {
-  return `v7-TaskV2Page.task-${id}`;
+  return `v8-TaskV2Page.task-${id}`;
 }
 
 export default { name: "TaskPage", loader, Page } as PageModule;
@@ -139,7 +140,7 @@ function Page() {
     refreshPageData,
   });
 
-  const { comments, handleAddComment, handleEditComment, handleDeleteComment, handleAddReaction, handleRemoveReaction } = useComments(
+  const { comments, handleAddComment, handleEditComment, handleDeleteComment, handleAddReaction, handleRemoveReaction, commentNotificationSelector } = useComments(
     task,
     data.comments,
     () => {
@@ -206,6 +207,7 @@ function Page() {
     onDeleteComment: handleDeleteComment,
     onAddReaction: handleAddReaction,
     onRemoveReaction: handleRemoveReaction,
+    commentNotificationSelector,
     canComment: Boolean(task.permissions.canComment),
 
     // Milestone selection

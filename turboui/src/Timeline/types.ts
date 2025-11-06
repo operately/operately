@@ -2,6 +2,7 @@ import { DateField } from "../DateField";
 import { Person, Comment } from "../CommentSection/types";
 import { Status } from "../TaskBoard/types";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
+import { CommentSubscribersSelector } from "../Subscriptions";
 
 export type { Comment } from "../CommentSection/types";
 
@@ -167,6 +168,7 @@ export interface TimelineProps {
   onRemoveReaction?: (commentId: string, reactionId: string) => void | Promise<void>;
   filters?: TimelineFilters;
   richTextHandlers: RichEditorHandlers;
+  commentNotificationSelector: CommentSubscribersSelector.Props 
 }
 
 export interface TimelineFilters {
