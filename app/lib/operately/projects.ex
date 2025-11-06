@@ -199,6 +199,7 @@ defmodule Operately.Projects do
       where: person.id not in ^exclude_ids,
       where: ilike(person.full_name, ^ilike_pattern) or ilike(person.title, ^ilike_pattern),
       where: not person.suspended and person.company_id == ^company_id,
+      where: person.type != :ai,
       limit: ^limit
     )
 
