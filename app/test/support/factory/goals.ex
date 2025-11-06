@@ -137,4 +137,22 @@ defmodule Operately.Support.Factory.Goals do
 
     Map.put(ctx, testid, check)
   end
+
+  def acknowledge_goal_update(ctx, update_name, person_name) do
+    update = Map.fetch!(ctx, update_name)
+    person = Map.fetch!(ctx, person_name)
+
+    {:ok, update} = Operately.Operations.GoalUpdateAcknowledging.run(person, update)
+
+    Map.put(ctx, update_name, update)
+  end
+
+  def set_goal_reviewer(ctx, goal_name, reviewer_name) do
+    goal = Map.fetch!(ctx, goal_name)
+    reviewer = Map.fetch!(ctx, reviewer_name)
+
+    {:ok, goal} = Operately.Goals.update_goal(goal, %{reviewer_id: reviewer.id})
+
+    Map.put(ctx, goal_name, goal)
+  end
 end

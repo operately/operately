@@ -69,6 +69,19 @@ defmodule Operately.Features.ReviewTest do
       |> Steps.assert_the_acknowledged_goal_is_no_longer_displayed()
     end
 
+    feature "acknowledging goal updates clears reassigned reviewer obligations", ctx do
+      ctx
+      |> Steps.given_there_are_goal_updates_pending_acknowledgement()
+      |> Steps.visit_review_page()
+      |> Steps.assert_goal_update_reviews_are_listed()
+      |> Steps.when_all_goal_updates_are_acknowledged()
+      |> Steps.assert_no_goal_update_reviews_are_listed()
+      |> Steps.given_the_goal_has_a_new_reviewer()
+      |> Steps.log_in_as_the_new_goal_reviewer()
+      |> Steps.visit_review_page()
+      |> Steps.assert_no_goal_update_reviews_are_listed()
+    end
+
     feature "closing a project removes the check-in from the review page", ctx do
       ctx
       |> Steps.given_there_are_due_project_check_ins()
