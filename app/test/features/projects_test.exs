@@ -49,7 +49,22 @@ defmodule Operately.Features.ProjectsTest do
       |> Steps.assert_project_paused()
       |> Steps.resume_project()
       |> Steps.assert_project_active()
+      |> Steps.assert_next_checkin_properly_scheduled()
       |> Steps.assert_resume_notification_sent_to_reviewer()
+      |> Steps.assert_project_resumed_visible_on_feed()
+      |> Steps.assert_resume_email_sent_to_reviewer()
+    end
+
+    @tag login_as: :champion
+    feature "resuming a project with a message", ctx do
+      ctx
+      |> Steps.visit_project_page()
+      |> Steps.pause_project()
+      |> Steps.assert_project_paused()
+      |> Steps.resume_project_with_message()
+      |> Steps.assert_project_active()
+      |> Steps.assert_next_checkin_properly_scheduled()
+      |> Steps.assert_resume_with_message_notification_sent()
       |> Steps.assert_project_resumed_visible_on_feed()
       |> Steps.assert_resume_email_sent_to_reviewer()
     end
