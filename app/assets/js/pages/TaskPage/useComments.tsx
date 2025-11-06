@@ -6,11 +6,17 @@ import * as Comments from "@/models/comments";
 import * as Reactions from "@/models/reactions";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { showErrorToast } from "turboui";
+import { showErrorToast, CommentSubscribersSelector } from "turboui";
+import { useNotificationRecipientsAdapter } from "@/models/subscriptions";
 
 export function useComments(task: Tasks.Task, initialComments: Comments.Comment[], invalidateCache: () => void) {
   const currentUser = useMe();
   const [comments, setComments] = React.useState(initialComments);
+
+  const notificationRecipients = useNotificationRecipientsAdapter(task.potentialSubscribers ?? [], {
+    ignoreMe: true,
+    initialSubscriptions: task.subscriptionList?.subscriptions ?? [],
+  });
 
   React.useEffect(() => {
     setComments(initialComments);
@@ -22,12 +28,7 @@ export function useComments(task: Tasks.Task, initialComments: Comments.Comment[
     invalidateCache,
   );
 
-  const { handleEditComment } = Comments.useEditCommentHandler(
-    comments,
-    setComments,
-    "project_task",
-    invalidateCache,
-  );
+  const { handleEditComment } = Comments.useEditCommentHandler(comments, setComments, "project_task", invalidateCache);
 
   const { handleDeleteComment } = Comments.useDeleteCommentHandler(
     comments,
@@ -71,6 +72,20 @@ export function useComments(task: Tasks.Task, initialComments: Comments.Comment[
     [task.id, currentUser, invalidateCache],
   );
 
+  const commentNotificationSelector = React.useMemo<CommentSubscribersSelector.Props>(
+    () => ({
+      subscribers: notificationRecipients.subscribers,
+      selectedSubscriberIds: notificationRecipients.selectedSubscriberIds,
+      onSelectedSubscriberIdsChange: notificationRecipients.onSelectedSubscriberIdsChange,
+      alwaysNotify: notificationRecipients.alwaysNotify,
+    }),
+    [
+      notificationRecipients.subscribers,
+      notificationRecipients.selectedSubscriberIds,
+      notificationRecipients.onSelectedSubscriberIdsChange,
+      notificationRecipients.alwaysNotify,
+    ],
+  );
 
   return {
     comments,
@@ -79,5 +94,6 @@ export function useComments(task: Tasks.Task, initialComments: Comments.Comment[
     handleDeleteComment,
     handleAddReaction,
     handleRemoveReaction,
+    commentNotificationSelector,
   };
 }

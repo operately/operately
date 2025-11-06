@@ -27,6 +27,7 @@ function ActivitySection(props: TaskPage.State) {
           currentUser={props.currentUser}
           canComment={props.canComment ?? true}
           commentParentType="task"
+          commentNotificationSelector={props.commentNotificationSelector}
           onAddComment={props.onAddComment}
           onEditComment={props.onEditComment}
           onDeleteComment={props.onDeleteComment}
