@@ -7,13 +7,13 @@ import * as Reactions from "@/models/reactions";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { showErrorToast, CommentSubscribersSelector } from "turboui";
-import { useNotificationRecipientsAdapter } from "@/models/subscriptions";
+import { useCommentSubscriptionsAdapter } from "@/models/subscriptions";
 
 export function useComments(task: Tasks.Task, initialComments: Comments.Comment[], invalidateCache: () => void) {
   const currentUser = useMe();
   const [comments, setComments] = React.useState(initialComments);
 
-  const notificationRecipients = useNotificationRecipientsAdapter(task.potentialSubscribers ?? [], {
+  const notificationRecipients = useCommentSubscriptionsAdapter(task.potentialSubscribers ?? [], {
     ignoreMe: true,
     initialSubscriptions: task.subscriptionList?.subscriptions ?? [],
   });

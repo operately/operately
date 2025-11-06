@@ -1,6 +1,6 @@
 export { useSubscription } from "./useSubscription";
 export { useCurrentSubscriptionsAdapter } from "./useCurrentSubscriptionsAdapter";
 export { useSubscriptionsAdapter } from "./useSubscriptionsAdapter";
-export { useNotificationRecipientsAdapter } from "./useNotificationRecipientsAdapter";
+export { useCommentSubscriptionsAdapter } from "./useCommentSubscriptionsAdapter";
 export type { SubscriptionsState } from "./useSubscriptionsAdapter";
-export type { NotificationRecipientsAdapterState } from "./useNotificationRecipientsAdapter";
+export type { CommentSubscriptionsState } from "./useCommentSubscriptionsAdapter";

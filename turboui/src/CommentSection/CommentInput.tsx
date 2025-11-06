@@ -95,12 +95,11 @@ function CommentInputActive({ form, currentUser, onBlur, onPost, richTextHandler
         <div className="border border-surface-outline rounded-lg overflow-hidden">
           <Editor editor={editor} hideBorder />
 
-          <div className="mt-3">
+          <div className="border-t border-stroke-dimmed px-4 pt-4 pb-1">
             <CommentSubscribersSelector {...notificationSelector} />
           </div>
 
-          <div className="flex justify-between items-center m-4">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 px-4 py-3">
               <PrimaryButton
                 size="xs"
                 onClick={handlePost}
@@ -114,7 +113,6 @@ function CommentInputActive({ form, currentUser, onBlur, onPost, richTextHandler
                 Cancel
               </SecondaryButton>
             </div>
-          </div>
         </div>
       </div>
     </div>
