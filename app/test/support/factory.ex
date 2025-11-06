@@ -43,6 +43,8 @@ defmodule Operately.Support.Factory do
   defdelegate reopen_goal(ctx, testid, opts \\ []), to: Factory.Goals
   defdelegate add_goal_discussion(ctx, testid, goal_name, opts \\ []), to: Factory.Goals
   defdelegate add_goal_check(ctx, testid, goal_name, opts \\ []), to: Factory.Goals
+  defdelegate acknowledge_goal_update(ctx, update_name, person_name), to: Factory.Goals
+  defdelegate set_goal_reviewer(ctx, goal_name, reviewer_name), to: Factory.Goals
 
   # projects
   defdelegate add_project(ctx, testid, space_name, opts \\ []), to: Factory.Projects

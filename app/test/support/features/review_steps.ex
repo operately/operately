@@ -345,6 +345,24 @@ defmodule Operately.Support.Features.ReviewSteps do
   # Due Goal Update Review
   #
 
+  step :given_there_are_goal_updates_pending_acknowledgement, ctx do
+    update_keys = [:goal_update_alpha, :goal_update_beta, :goal_update_gamma]
+
+    ctx = Factory.add_goal(ctx, :goal, :product_space, [
+      champion: :my_report,
+      reviewer: :me,
+      name: "Expand East Coast Sales"
+    ])
+
+    ctx = Enum.reduce(update_keys, ctx, fn update_key, acc ->
+      acc
+      |> Factory.add_goal_update(update_key, :goal, :my_report)
+      |> Factory.preload(update_key, :goal)
+    end)
+
+    Map.put(ctx, :goal_updates_pending_acknowledgement, update_keys)
+  end
+
   step :given_there_are_submitted_goal_updates, ctx do
     ctx
     |> Factory.add_goal(:goal, :product_space, [
@@ -373,6 +391,50 @@ defmodule Operately.Support.Features.ReviewSteps do
     ctx
     |> UI.visit(Paths.review_path(ctx.company))
     |> UI.refute_text(ctx.goal.name)
+  end
+
+  step :assert_goal_update_reviews_are_listed, ctx do
+    Enum.reduce(ctx.goal_updates_pending_acknowledgement, ctx, fn update_key, acc ->
+      update = Map.fetch!(acc, update_key)
+
+      acc
+      |> UI.assert_text(update.goal.name)
+      |> UI.assert_text("Review goal progress update")
+    end)
+  end
+
+  step :when_all_goal_updates_are_acknowledged, ctx do
+    Enum.reduce(ctx.goal_updates_pending_acknowledgement, ctx, fn update_key, acc ->
+      Factory.acknowledge_goal_update(acc, update_key, :me)
+    end)
+  end
+
+  step :assert_no_goal_update_reviews_are_listed, ctx do
+    ctx
+    |> UI.visit(Paths.review_path(ctx.company))
+    |> then(fn ctx ->
+      Enum.reduce(ctx.goal_updates_pending_acknowledgement, ctx, fn update_key, acc ->
+        update = Map.fetch!(acc, update_key)
+
+        acc
+        |> UI.refute_text(update.goal.name)
+        |> UI.refute_text("Review goal progress update")
+      end)
+    end)
+  end
+
+  step :given_the_goal_has_a_new_reviewer, ctx do
+    ctx
+    |> Factory.add_space_member(:new_goal_reviewer, :product_space, [name: "Jim Halpert"])
+    |> Factory.set_goal_reviewer(:goal, :new_goal_reviewer)
+  end
+
+  step :log_in_as_the_new_goal_reviewer, ctx do
+    ctx
+    |> Factory.log_in_person(:new_goal_reviewer)
+    |> then(fn ctx ->
+      Map.put(ctx, :me, ctx.new_goal_reviewer)
+    end)
   end
 
   step :assert_all_catch_up, ctx do
