@@ -98,6 +98,7 @@ export function CommentSubscribersSelector({
         selectedSubscribers={selectedSubscribers}
         alwaysNotify={resolvedAlwaysNotify}
         onSave={handleSaveSelection}
+        alwaysNotifyLabel="Already subscribed"
       />
     </div>
   );
