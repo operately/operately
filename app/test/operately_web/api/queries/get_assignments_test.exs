@@ -466,6 +466,171 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
     end
   end
 
+  describe "reviewer change filtering" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_space_member(:person, :space)
+      |> Factory.add_company_member(:reviewer)
+      |> Factory.add_company_member(:new_reviewer)
+      |> Factory.add_company_member(:champion)
+      |> Factory.log_in_person(:reviewer)
+    end
+
+    test "filters project check-ins created before reviewer change", ctx do
+      # Create project with old reviewer
+      project = create_project(ctx, upcoming_date(), %{
+        creator_id: ctx.champion.id,
+        champion_id: ctx.champion.id,
+        reviewer_id: ctx.reviewer.id,
+      })
+      create_check_in(project)
+
+      assert {200, %{assignments: assignments}} = query(ctx.conn, :get_assignments, %{})
+
+      assert length(assignments) == 1
+
+      # Change reviewer to new reviewer
+      assert {200, _} = mutation(ctx.conn, [:projects, :update_reviewer], %{
+        project_id: Paths.project_id(project),
+        reviewer_id: Paths.person_id(ctx.new_reviewer)
+      })
+
+      ctx = Factory.log_in_person(ctx, :new_reviewer)
+      assert {200, %{assignments: assignments}} = query(ctx.conn, :get_assignments, %{})
+
+      assert length(assignments) == 0
+
+      # Small delay to ensure the new check-in has a later timestamp than the activity
+      Process.sleep(1000)
+      new_check_in = create_check_in(project)
+
+      assert {200, %{assignments: assignments}} = query(ctx.conn, :get_assignments, %{})
+
+      assert length(assignments) == 1
+
+      [assignment] = assignments
+      assert assignment.resource_id == Paths.project_check_in_id(new_check_in)
+    end
+
+    test "includes all project check-ins when no reviewer change occurred", ctx do
+      project = create_project(ctx, upcoming_date(), %{
+        creator_id: ctx.champion.id,
+        champion_id: ctx.champion.id,
+        reviewer_id: ctx.reviewer.id,
+      })
+
+      check_in1 = create_check_in(project, ctx.champion)
+      check_in2 = create_check_in(project, ctx.champion)
+
+      # Reviewer should see both check-ins (no reviewer change activity exists)
+      ctx = Factory.log_in_person(ctx, :reviewer)
+      assert {200, %{assignments: assignments}} = query(ctx.conn, :get_assignments, %{})
+
+      check_in_assignments = Enum.filter(assignments, &(&1.type == "check_in" && &1.role == "reviewer"))
+      assert length(check_in_assignments) == 2
+
+      check_in_ids = Enum.map(check_in_assignments, & &1.resource_id)
+      assert Paths.project_check_in_id(check_in1) in check_in_ids
+      assert Paths.project_check_in_id(check_in2) in check_in_ids
+    end
+
+    test "uses latest reviewer change when multiple changes occur", ctx do
+      project = create_project(ctx, upcoming_date(), %{
+        creator_id: ctx.champion.id,
+        champion_id: ctx.champion.id,
+        reviewer_id: ctx.reviewer.id,
+      })
+
+      create_check_in(project, ctx.champion)
+
+      # First reviewer change
+      assert {200, _} = mutation(ctx.conn, [:projects, :update_reviewer], %{
+        project_id: Paths.project_id(project),
+        reviewer_id: Paths.person_id(ctx.person)
+      })
+
+      # Small delay to ensure the new check-in has a later timestamp than the activity
+      Process.sleep(1000)
+
+      create_check_in(project, ctx.champion)
+
+      # Second reviewer change to new reviewer
+      assert {200, _} = mutation(ctx.conn, [:projects, :update_reviewer], %{
+        project_id: Paths.project_id(project),
+        reviewer_id: Paths.person_id(ctx.new_reviewer)
+      })
+
+      # Small delay to ensure the new check-in has a later timestamp than the activity
+      Process.sleep(1000)
+
+      # Champion creates check-in with new reviewer
+      new_check_in = create_check_in(project, ctx.champion)
+
+      # New reviewer should only see check-ins after the latest reviewer change
+      ctx = Factory.log_in_person(ctx, :new_reviewer)
+      assert {200, %{assignments: assignments}} = query(ctx.conn, :get_assignments, %{})
+
+      check_in_assignments = Enum.filter(assignments, &(&1.type == "check_in" && &1.role == "reviewer"))
+      assert length(check_in_assignments) == 1
+
+      [assignment] = check_in_assignments
+      assert assignment.resource_id == Paths.project_check_in_id(new_check_in)
+    end
+
+    test "filters goal updates created before reviewer change", ctx do
+      # Create goal with old reviewer
+      goal = create_goal(ctx.champion, ctx.company, upcoming_date(), %{
+        reviewer_id: ctx.reviewer.id,
+      })
+
+      create_update(ctx.champion, goal)
+
+      # Change reviewer to new reviewer (creates goal_reviewer_updating activity)
+      assert {200, _} = mutation(ctx.conn, [:goals, :update_reviewer], %{
+        goal_id: Paths.goal_id(goal),
+        reviewer_id: Paths.person_id(ctx.new_reviewer)
+      })
+
+      # Small delay to ensure the new update has a later timestamp than the activity
+      Process.sleep(1000)
+
+      # Champion creates another update after reviewer change
+      new_update = create_update(ctx.champion, goal)
+
+      # New reviewer should only see the update created after they became reviewer
+      ctx = Factory.log_in_person(ctx, :new_reviewer)
+      assert {200, %{assignments: assignments}} = query(ctx.conn, :get_assignments, %{})
+
+      update_assignments = Enum.filter(assignments, &(&1.type == "goal_update" && &1.role == "reviewer"))
+      assert length(update_assignments) == 1
+
+      [assignment] = update_assignments
+      assert assignment.resource_id == Paths.goal_update_id(new_update)
+    end
+
+    test "includes all goal updates when no reviewer change occurred", ctx do
+      goal = create_goal(ctx.champion, ctx.company, upcoming_date(), %{
+        reviewer_id: ctx.reviewer.id,
+      })
+
+      update1 = create_update(ctx.champion, goal)
+      update2 = create_update(ctx.champion, goal)
+
+      # Reviewer should see both updates (no reviewer change activity exists)
+      ctx = Factory.log_in_person(ctx, :reviewer)
+      assert {200, %{assignments: assignments}} = query(ctx.conn, :get_assignments, %{})
+
+      update_assignments = Enum.filter(assignments, &(&1.type == "goal_update" && &1.role == "reviewer"))
+      assert length(update_assignments) == 2
+
+      update_ids = Enum.map(update_assignments, & &1.resource_id)
+      assert Paths.goal_update_id(update1) in update_ids
+      assert Paths.goal_update_id(update2) in update_ids
+    end
+  end
+
   #
   # Helpers
   #
@@ -542,6 +707,13 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
 
     Operately.ProjectsFixtures.check_in_fixture(%{
       author_id: project.champion.id,
+      project_id: project.id
+    })
+  end
+
+  defp create_check_in(project, author) do
+    Operately.ProjectsFixtures.check_in_fixture(%{
+      author_id: author.id,
       project_id: project.id
     })
   end

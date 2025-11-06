@@ -254,16 +254,24 @@ defmodule Operately.Assignments.LoaderV2 do
   end
 
   defp pending_project_check_in_acknowledgements_query(person) do
+    latest_reviewer_change_subquery = from(a in Operately.Activities.Activity,
+      where: a.action == "project_reviewer_updating",
+      group_by: fragment("(?->>'project_id')::uuid", a.content),
+      select: %{project_id: type(fragment("(?->>'project_id')::uuid", a.content), :binary_id), inserted_at: max(a.inserted_at)}
+    )
+
     from(c in CheckIn, as: :check_in,
       join: project in assoc(c, :project), as: :project,
       join: author in assoc(c, :author), as: :author,
       left_join: champion in assoc(project, :champion),
       left_join: reviewer in assoc(project, :reviewer), as: :reviewer,
+      left_join: reviewer_change in subquery(latest_reviewer_change_subquery), on: reviewer_change.project_id == project.id,
       where: is_nil(c.acknowledged_by_id),
       where: project.status == "active" and is_nil(project.deleted_at),
       where:
         (reviewer.id == ^person.id and author.id != reviewer.id) or
-          (champion.id == ^person.id and author.id != champion.id)
+          (champion.id == ^person.id and author.id != champion.id),
+      where: is_nil(reviewer_change.inserted_at) or c.inserted_at > reviewer_change.inserted_at
     )
   end
 
@@ -359,14 +367,22 @@ defmodule Operately.Assignments.LoaderV2 do
   end
 
   defp pending_goal_update_acknowledgements_query(person) do
+    latest_reviewer_change_subquery = from(a in Operately.Activities.Activity,
+      where: a.action == "goal_reviewer_updating",
+      group_by: fragment("(?->>'goal_id')::uuid", a.content),
+      select: %{goal_id: type(fragment("(?->>'goal_id')::uuid", a.content), :binary_id), inserted_at: max(a.inserted_at)}
+    )
+
     from(u in Update, as: :update,
       join: goal in assoc(u, :goal), as: :goal,
       join: author in assoc(u, :author), as: :author,
+      left_join: reviewer_change in subquery(latest_reviewer_change_subquery), on: reviewer_change.goal_id == goal.id,
       where: is_nil(goal.closed_at) and is_nil(goal.deleted_at),
       where: is_nil(u.acknowledged_by_id),
       where:
         (goal.reviewer_id == ^person.id and author.id != goal.reviewer_id) or
-          (goal.champion_id == ^person.id and author.id != goal.champion_id)
+          (goal.champion_id == ^person.id and author.id != goal.champion_id),
+      where: is_nil(reviewer_change.inserted_at) or u.inserted_at > reviewer_change.inserted_at
     )
   end
 
