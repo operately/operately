@@ -16,6 +16,7 @@ export function Timeline({
   currentUser,
   canComment,
   commentParentType,
+  commentNotificationSelector,
   onAddComment,
   onEditComment,
   onDeleteComment,
@@ -95,6 +96,7 @@ export function Timeline({
           form={mockForm}
           currentUser={currentUser}
           richTextHandlers={richTextHandlers}
+          notificationSelector={commentNotificationSelector}
         />
       )}
     </div>

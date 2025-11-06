@@ -3,6 +3,7 @@ import { Avatar } from "../Avatar";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { CommentInputProps, Person } from "./types";
 import { Editor, useEditor } from "../RichEditor";
+import { CommentSubscribersSelector } from "../Subscriptions";
 
 interface CommentInputActiveProps extends CommentInputProps {
   currentUser: Person;
@@ -15,11 +16,7 @@ interface CommentInputInactiveProps {
   onClick: () => void;
 }
 
-export function CommentInput({
-  form,
-  currentUser,
-  richTextHandlers,
-}: CommentInputProps & { currentUser: Person }) {
+export function CommentInput({ form, currentUser, richTextHandlers, notificationSelector }: CommentInputProps & { currentUser: Person }) {
   const [active, setActive] = useState(false);
 
   const handleActivate = () => setActive(true);
@@ -33,6 +30,7 @@ export function CommentInput({
         onBlur={handleDeactivate}
         onPost={handleDeactivate}
         richTextHandlers={richTextHandlers}
+        notificationSelector={notificationSelector}
       />
     );
   }
@@ -52,13 +50,7 @@ function CommentInputInactive({ currentUser, onClick }: CommentInputInactiveProp
   );
 }
 
-function CommentInputActive({
-  form,
-  currentUser,
-  onBlur,
-  onPost,
-  richTextHandlers,
-}: CommentInputActiveProps) {
+function CommentInputActive({ form, currentUser, onBlur, onPost, richTextHandlers, notificationSelector }: CommentInputActiveProps) {
   const [uploading] = useState(false);
 
   const editor = useEditor({
@@ -102,6 +94,10 @@ function CommentInputActive({
       <div className="flex-1">
         <div className="border border-surface-outline rounded-lg overflow-hidden">
           <Editor editor={editor} hideBorder />
+
+          <div className="mt-3">
+            <CommentSubscribersSelector {...notificationSelector} />
+          </div>
 
           <div className="flex justify-between items-center m-4">
             <div className="flex items-center gap-2">
