@@ -104,6 +104,9 @@ function Form() {
   return (
     <Forms.Form form={form}>
       <Paper.Body minHeight="300px">
+        <p className="text-sm text-content-dimmed mb-6">
+          Only Project Name and Space are required. You can fill out the rest later.
+        </p>
         <Forms.FieldGroup>
           <Forms.TextInput label="Project Name" field="name" placeholder="e.g. HR System Update" autoFocus />
           <Forms.SelectBox label="Space" field="space" options={spaceOptions} />
