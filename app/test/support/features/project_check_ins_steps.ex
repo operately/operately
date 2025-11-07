@@ -272,6 +272,19 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> UI.refute_has(testid: "comment-#{ctx.comment.id}")
   end
 
+  step :copy_comment_link, ctx do
+    ctx
+    |> UI.click(testid: "comment-options")
+    |> UI.click(testid: "copy-comment-link")
+    |> UI.sleep(100)
+  end
+
+  step :assert_comment_link_copied_message, ctx do
+    ctx
+    |> UI.assert_text("Success")
+    |> UI.assert_text("The comment link has been copied to your clipboard")
+  end
+
   defp last_comment(ctx) do
     Operately.Updates.list_comments(ctx.check_in.id, :project_check_in) |> List.last()
   end

@@ -389,6 +389,15 @@ defmodule Operately.Features.ProjectMilestonesTest do
       |> Steps.assert_comment_menu_not_visible()
     end
 
+    feature "copy comment link shows success message", ctx do
+      ctx
+      |> Steps.given_that_milestone_has_comment()
+      |> Steps.visit_milestone_page()
+      |> Steps.assert_comment("Content")
+      |> Steps.copy_comment_link()
+      |> Steps.assert_comment_link_copied_message()
+    end
+
     feature "post comment then delete comment, verify feed doesn't break", ctx do
       comment = "This is a comment"
 

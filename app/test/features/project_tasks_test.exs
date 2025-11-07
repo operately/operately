@@ -486,6 +486,17 @@ defmodule Operately.Features.ProjectTasksTest do
   end
 
   @tag login_as: :champion
+  feature "copy comment link shows success message", ctx do
+    ctx
+    |> Steps.given_task_exists()
+    |> Steps.given_task_has_comment()
+    |> Steps.visit_task_page()
+    |> Steps.assert_comment("Content")
+    |> Steps.copy_comment_link()
+    |> Steps.assert_comment_link_copied_message()
+  end
+
+  @tag login_as: :champion
   feature "post comment then delete comment on task, verify feed doesn't break", ctx do
     comment = "This is a comment"
 
