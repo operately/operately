@@ -38,16 +38,7 @@ export function EditTargetCard({ target, index, style }: Props) {
 }
 
 function TitleSection({ target, index, editing }) {
-  const { startEdit, closeEdit } = useTargetsContext();
   const className = classNames("flex items-center gap-2 truncate", { "col-span-2": target.isNew });
-
-  const toggle = () => {
-    if (editing) {
-      closeEdit(target.id);
-    } else {
-      startEdit(target.id);
-    }
-  };
 
   return (
     <>
@@ -60,7 +51,7 @@ function TitleSection({ target, index, editing }) {
           <TargetValue readonly index={index} target={target} />
         </div>
       )}
-      <ExpandIcon expanded={editing} onClick={toggle} className="cursor-pointer" />
+      <ExpandIcon expanded={editing} className="cursor-pointer" />
     </>
   );
 }
