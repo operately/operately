@@ -49,6 +49,7 @@ export interface InputFieldProps {
   label?: string | React.ReactNode;
   labelIcon?: React.ReactNode;
   error?: string;
+  required?: boolean;
 }
 
 export function InputField(props: InputFieldProps) {

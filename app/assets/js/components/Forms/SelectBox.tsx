@@ -18,14 +18,15 @@ interface SelectBoxProps {
   hidden?: boolean;
   placeholder?: string;
   options: Option[];
+  required?: boolean;
 }
 
 export function SelectBox(props: SelectBoxProps) {
-  const { field, label, labelIcon, hidden } = props;
+  const { field, label, labelIcon, hidden, required } = props;
   const error = useFieldError(field);
 
   return (
-    <InputField field={field} label={label} error={error} hidden={hidden} labelIcon={labelIcon}>
+    <InputField field={field} label={label} error={error} hidden={hidden} labelIcon={labelIcon} required={required}>
       <SelectBoxInput {...props} />
     </InputField>
   );

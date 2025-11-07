@@ -24,7 +24,7 @@ interface TextInputProps {
 }
 
 const DEFAULT_VALIDATION_PROPS = {
-  required: true,
+  required: false,
   minLength: undefined,
   maxLength: undefined,
 };
@@ -40,7 +40,7 @@ export function TextInput(props: TextInputProps) {
   useValidation(field, validateTextLength(minLength, maxLength));
 
   return (
-    <InputField field={field} label={label} error={error} hidden={hidden}>
+    <InputField field={field} label={label} error={error} hidden={hidden} required={required}>
       <InputElement
         testId={props.testId ?? createTestId(field)}
         error={!!error}
