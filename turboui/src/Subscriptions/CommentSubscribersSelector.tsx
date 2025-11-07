@@ -80,7 +80,7 @@ export function CommentSubscribersSelector({
     <div>
       {label && <div className="text-sm text-content-dimmed font-medium mb-1">{label}</div>}
       <div className="flex items-center gap-1 flex-wrap">
-        <AvatarList people={sortedSelectedSubscribers.map((s) => s.person!)} size="tiny" />
+        <AvatarList people={sortedSelectedSubscribers.map((s) => s.person!)} size="tiny" maxElements={100} />
         <button
           type="button"
           onClick={() => setShowModal(true)}
