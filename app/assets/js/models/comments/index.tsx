@@ -59,5 +59,8 @@ function parseCommentForTurboUi(paths: Paths, comment: Comment) {
     insertedAt: comment.insertedAt,
     reactions,
     notification: comment.notification,
+    isSolution: Boolean(comment.isSolution),
+    canMarkAsSolution: Boolean(comment.canMarkAsSolution),
+    canUnmarkSolution: Boolean(comment.canUnmarkSolution),
   };
 }
