@@ -4,7 +4,7 @@ import { Avatar } from "../Avatar";
 import { Menu, MenuActionItem } from "../Menu";
 import { FormattedTime } from "../FormattedTime";
 import RichContent from "../RichContent";
-import { IconEdit, IconTrash } from "../icons";
+import { IconEdit, IconTrash, IconLink } from "../icons";
 import { CommentItemProps } from "./types";
 import { compareIds } from "../utils/ids";
 import { Editor, useEditor, MentionedPersonLookupFn } from "../RichEditor";
@@ -12,6 +12,7 @@ import { PrimaryButton, SecondaryButton } from "../Button";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
 import { createTestId } from "../TestableElement";
 import { Reactions } from "../Reactions";
+import { useScrollIntoViewOnLoad } from "../utils/useScrollIntoViewOnLoad";
 
 // Function to shorten name for display
 function shortName(name: string | undefined): string {
@@ -50,6 +51,8 @@ export function CommentItem({
   const parsedContent = JSON.parse(comment.content)["message"];
   const isOwnComment = compareIds(currentUserId, comment.author.id);
 
+  useScrollIntoViewOnLoad(comment.id);
+
   const canAddReaction = Boolean(canComment && onAddReaction);
 
   const handleSaveEdit = (content: any) => {
@@ -77,9 +80,12 @@ export function CommentItem({
     [onRemoveReaction, comment.id],
   );
 
+  const testId = "comment-" + comment.id;
+
   return (
     <div
       className="flex items-start gap-3 py-4 not-first:border-t border-stroke-base text-content-accent relative bg-surface-dimmed rounded-lg px-4 my-2"
+      data-test-id={testId}
       id={comment.id}
     >
       <div className="shrink-0">
@@ -103,26 +109,13 @@ export function CommentItem({
               <FormattedTime time={comment.insertedAt} format="relative" />
             </span>
 
-            {isOwnComment && !isEditing && (
-              <Menu size="small" testId={createTestId("comment-menu", comment.id)}>
-                <MenuActionItem
-                  onClick={() => setIsEditing(true)}
-                  icon={IconEdit}
-                  testId={createTestId("edit", comment.id)}
-                >
-                  Edit
-                </MenuActionItem>
-                {form.deleteComment && (
-                  <MenuActionItem
-                    onClick={() => form.deleteComment?.(comment.id)}
-                    icon={IconTrash}
-                    danger
-                    testId={createTestId("delete", comment.id)}
-                  >
-                    Delete
-                  </MenuActionItem>
-                )}
-              </Menu>
+            {!isEditing && (
+              <CommentMenu
+                comment={comment}
+                isOwnComment={isOwnComment}
+                onEdit={() => setIsEditing(true)}
+                onDelete={form.deleteComment ? () => form.deleteComment?.(comment.id) : undefined}
+              />
             )}
           </div>
         </div>
@@ -147,6 +140,54 @@ export function CommentItem({
         )}
       </div>
     </div>
+  );
+}
+
+interface CommentMenuProps {
+  comment: CommentItemProps["comment"];
+  isOwnComment: boolean;
+  onEdit: () => void;
+  onDelete?: () => void;
+}
+
+function CommentMenu({ comment, isOwnComment, onEdit, onDelete }: CommentMenuProps) {
+  const handleCopyLink = useCallback(() => {
+    const url = new URL(window.location.href);
+    url.hash = comment.id;
+    void navigator.clipboard?.writeText(url.toString());
+  }, [comment.id]);
+
+  return (
+    <Menu size="small" testId={createTestId("comment-menu", comment.id)}>
+      <MenuActionItem
+        onClick={handleCopyLink}
+        icon={IconLink}
+        testId={createTestId("copy-link", comment.id)}
+      >
+        Copy link
+      </MenuActionItem>
+      {isOwnComment && (
+        <>
+          <MenuActionItem
+            onClick={onEdit}
+            icon={IconEdit}
+            testId={createTestId("edit", comment.id)}
+          >
+            Edit
+          </MenuActionItem>
+          {onDelete && (
+            <MenuActionItem
+              onClick={onDelete}
+              icon={IconTrash}
+              danger
+              testId={createTestId("delete", comment.id)}
+            >
+              Delete
+            </MenuActionItem>
+          )}
+        </>
+      )}
+    </Menu>
   );
 }
 
