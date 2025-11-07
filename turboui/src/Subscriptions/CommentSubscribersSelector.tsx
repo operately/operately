@@ -15,7 +15,7 @@ export namespace CommentSubscribersSelector {
   }
 }
 
-const DEFAULT_LABEL = "People who will be notified:";
+const DEFAULT_LABEL = "Who will be notified:";
 
 export function CommentSubscribersSelector({
   subscribers,

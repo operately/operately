@@ -16,7 +16,12 @@ interface CommentInputInactiveProps {
   onClick: () => void;
 }
 
-export function CommentInput({ form, currentUser, richTextHandlers, notificationSelector }: CommentInputProps & { currentUser: Person }) {
+export function CommentInput({
+  form,
+  currentUser,
+  richTextHandlers,
+  notificationSelector,
+}: CommentInputProps & { currentUser: Person }) {
   const [active, setActive] = useState(false);
 
   const handleActivate = () => setActive(true);
@@ -50,7 +55,14 @@ function CommentInputInactive({ currentUser, onClick }: CommentInputInactiveProp
   );
 }
 
-function CommentInputActive({ form, currentUser, onBlur, onPost, richTextHandlers, notificationSelector }: CommentInputActiveProps) {
+function CommentInputActive({
+  form,
+  currentUser,
+  onBlur,
+  onPost,
+  richTextHandlers,
+  notificationSelector,
+}: CommentInputActiveProps) {
   const [uploading] = useState(false);
 
   const editor = useEditor({
@@ -99,20 +111,20 @@ function CommentInputActive({ form, currentUser, onBlur, onPost, richTextHandler
             <CommentSubscribersSelector {...notificationSelector} />
           </div>
 
-            <div className="flex items-center gap-2 px-4 py-3">
-              <PrimaryButton
-                size="xs"
-                onClick={handlePost}
-                loading={form.submitting || uploading}
-                disabled={editor.empty}
-              >
-                {uploading ? "Uploading..." : "Post"}
-              </PrimaryButton>
+          <div className="flex items-center gap-2 px-4 py-3">
+            <PrimaryButton
+              size="xs"
+              onClick={handlePost}
+              loading={form.submitting || uploading}
+              disabled={editor.empty}
+            >
+              {uploading ? "Uploading..." : "Post"}
+            </PrimaryButton>
 
-              <SecondaryButton size="xs" onClick={onBlur}>
-                Cancel
-              </SecondaryButton>
-            </div>
+            <SecondaryButton size="xs" onClick={onBlur}>
+              Cancel
+            </SecondaryButton>
+          </div>
         </div>
       </div>
     </div>
