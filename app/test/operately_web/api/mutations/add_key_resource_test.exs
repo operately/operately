@@ -167,6 +167,18 @@ defmodule OperatelyWeb.Api.Mutations.AddKeyResourceTest do
       assert {200, res} = request(ctx.conn, project)
       assert_response(res, project)
     end
+
+    test "classifies resource type when link matches a known provider", ctx do
+      project = create_project(ctx)
+
+      assert {200, res} = mutation(ctx.conn, :add_key_resource, %{
+               project_id: Paths.project_id(project),
+               title: "Repository",
+               link: "https://github.com/operately/operately"
+             })
+
+      assert res.key_resource.resource_type == "github-repository"
+    end
   end
 
   #

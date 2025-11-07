@@ -39,8 +39,7 @@ defmodule OperatelyWeb.Api.Mutations.AddKeyResource do
   end
 
   defp parse_attrs(inputs) do
-    attrs = Map.put_new(inputs, :resource_type, "link")
-    {:ok, attrs}
+    {:ok, inputs}
   end
 
   defp load_project(ctx) do

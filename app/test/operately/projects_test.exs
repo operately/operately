@@ -293,6 +293,13 @@ defmodule Operately.ProjectsTest do
       assert key_resource.resource_type == "slack-channel"
     end
 
+    test "create_key_resource/1 classifies the resource when type is missing", ctx do
+      attrs = %{link: "https://github.com/operately/operately", title: "Repo", project_id: ctx.project.id}
+
+      assert {:ok, %KeyResource{} = key_resource} = Projects.create_key_resource(attrs)
+      assert key_resource.resource_type == "github-repository"
+    end
+
     test "create_key_resource/1 with invalid data returns error changeset" do
       assert {:error, %Ecto.Changeset{}} = Projects.create_key_resource(@invalid_attrs)
     end
@@ -304,6 +311,13 @@ defmodule Operately.ProjectsTest do
       assert key_resource.link == "some updated link"
       assert key_resource.title == "some updated title"
       assert key_resource.project_id == ctx.project.id
+    end
+
+    test "update_key_resource/2 reclassifies when the link changes", ctx do
+      update_attrs = %{link: "https://slack.com/archives/product", title: "Slack"}
+
+      assert {:ok, %KeyResource{} = key_resource} = Projects.update_key_resource(ctx.key_resource, update_attrs)
+      assert key_resource.resource_type == "slack-channel"
     end
 
     test "update_key_resource/2 with invalid data returns error changeset", ctx do
@@ -318,6 +332,30 @@ defmodule Operately.ProjectsTest do
 
     test "change_key_resource/1 returns a key_resource changeset", ctx do
       assert %Ecto.Changeset{} = Projects.change_key_resource(ctx.key_resource)
+    end
+  end
+
+  describe "key resource classifier" do
+    alias Operately.Projects.KeyResourceClassifier
+
+    test "classifies github links" do
+      assert KeyResourceClassifier.classify("https://github.com/operately/operately") == "github-repository"
+      assert KeyResourceClassifier.classify("github.com/operately/operately") == "github-repository"
+    end
+
+    test "classifies slack links" do
+      assert KeyResourceClassifier.classify("https://operately.slack.com/archives/C123") == "slack-channel"
+      assert KeyResourceClassifier.classify("slack.com/app_redirect?channel=C123") == "slack-channel"
+    end
+
+    test "classifies discord links" do
+      assert KeyResourceClassifier.classify("https://discord.gg/example") == "discord-channel"
+      assert KeyResourceClassifier.classify("discord.com/channels/123") == "discord-channel"
+    end
+
+    test "defaults to generic when no pattern matches" do
+      assert KeyResourceClassifier.classify("https://operately.com") == "generic"
+      assert KeyResourceClassifier.classify(nil) == "generic"
     end
   end
 end

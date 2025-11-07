@@ -2,6 +2,8 @@ defmodule Operately.Projects.KeyResource do
   use Operately.Schema
   use Operately.Repo.Getter
 
+  alias Operately.Projects.KeyResourceClassifier
+
   schema "project_key_resources" do
     belongs_to :project, Operately.Projects.Project, foreign_key: :project_id
     has_one :access_context, through: [:project, :access_context]
@@ -22,6 +24,17 @@ defmodule Operately.Projects.KeyResource do
   def changeset(key_resource, attrs) do
     key_resource
     |> cast(attrs, [:title, :link, :project_id, :resource_type])
+    |> ensure_resource_type()
     |> validate_required([:title, :link, :project_id, :resource_type])
+  end
+
+  defp ensure_resource_type(changeset) do
+    cond do
+      get_change(changeset, :resource_type) -> changeset
+      link = get_change(changeset, :link) -> put_change(changeset, :resource_type, KeyResourceClassifier.classify(link))
+      value = get_field(changeset, :resource_type) when not is_nil(value) -> changeset
+      link = get_field(changeset, :link) -> put_change(changeset, :resource_type, KeyResourceClassifier.classify(link))
+      true -> changeset
+    end
   end
 end

@@ -462,7 +462,7 @@ function prepareResource(resource: Projects.Resource): ProjectPage.Resource {
     id: resource.id,
     name: resource.title,
     url: resource.link,
-    type: resource.resourceType,
+    type: resource.resourceType || "generic",
   };
 }
 
