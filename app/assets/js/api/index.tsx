@@ -3196,6 +3196,7 @@ export interface CreateCommentInput {
   entityId: Id;
   entityType: CommentParentType;
   content: string;
+  subscriberIds?: Id[];
 }
 
 export interface CreateCommentResult {

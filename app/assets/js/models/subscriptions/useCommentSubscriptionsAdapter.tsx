@@ -3,20 +3,13 @@ import { useCallback, useMemo, useState } from "react";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { Subscriber, Subscription } from "@/models/notifications";
 import { compareIds } from "@/routes/paths";
+import { CommentSubscribersSelector } from "turboui";
 
 interface Options {
   initialSelectedIds?: string[];
   initialSubscriptions?: Subscription[];
   ignoreMe?: boolean;
   lockAlwaysNotify?: boolean;
-}
-
-export interface CommentSubscriptionsState {
-  subscribers: Subscriber[];
-  selectedSubscribers: Subscriber[];
-  selectedSubscriberIds: string[];
-  alwaysNotify: Subscriber[];
-  onSelectedSubscriberIdsChange: (subscriberIds: string[]) => void;
 }
 
 /**
@@ -26,7 +19,7 @@ export interface CommentSubscriptionsState {
 export function useCommentSubscriptionsAdapter(
   allSubscribers: Subscriber[],
   opts: Options = {},
-): CommentSubscriptionsState {
+): CommentSubscribersSelector.Props {
   const me = useMe();
   const { initialSelectedIds, initialSubscriptions, ignoreMe, lockAlwaysNotify } = opts;
 
@@ -72,13 +65,6 @@ export function useCommentSubscriptionsAdapter(
 
   const [selectedIds, setSelectedIds] = useState<string[]>(initialSelected);
 
-  const selectedIdsSet = useMemo(() => new Set(selectedIds), [selectedIds]);
-
-  const selectedSubscribers = useMemo(
-    () => subscribers.filter((subscriber) => subscriber.person?.id && selectedIdsSet.has(subscriber.person.id)),
-    [subscribers, selectedIdsSet],
-  );
-
   const handleChange = useCallback(
     (ids: string[]) => {
       const nextIds = new Set<string>();
@@ -103,7 +89,6 @@ export function useCommentSubscriptionsAdapter(
 
   return {
     subscribers,
-    selectedSubscribers,
     selectedSubscriberIds: selectedIds,
     alwaysNotify,
     onSelectedSubscriberIdsChange: handleChange,

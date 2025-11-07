@@ -22,6 +22,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateComment do
     field :entity_id, :id, null: false
     field :entity_type, :comment_parent_type, null: false
     field :content, :string, null: false
+    field? :subscriber_ids, list_of(:id), default: [], null: false
   end
 
   outputs do
@@ -80,6 +81,6 @@ defmodule OperatelyWeb.Api.Mutations.CreateComment do
   end
 
   defp execute(ctx, inputs) do
-    CommentAdding.run(ctx.me, ctx.parent, inputs.entity_type, ctx.content)
+    CommentAdding.run(ctx.me, ctx.parent, inputs.entity_type, ctx.content, inputs[:subscriber_ids])
   end
 end

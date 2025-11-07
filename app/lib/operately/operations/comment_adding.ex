@@ -5,7 +5,7 @@ defmodule Operately.Operations.CommentAdding do
   alias Operately.Updates.Comment
   alias Operately.Operations.CommentAdding.{Activity, Subscriptions}
 
-  def run(creator, entity, entity_type, content) do
+  def run(creator, entity, entity_type, content, subscriber_ids \\ nil) do
     changeset =
       Comment.changeset(%{
         author_id: creator.id,
@@ -18,7 +18,7 @@ defmodule Operately.Operations.CommentAdding do
 
     Multi.new()
     |> Multi.insert(:comment, changeset)
-    |> Subscriptions.update(action, content)
+    |> Subscriptions.update(action, content, subscriber_ids)
     |> ensure_subscription_step(creator)
     |> Activity.insert(creator, action, entity)
     |> Repo.transaction()

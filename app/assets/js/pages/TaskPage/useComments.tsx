@@ -6,14 +6,14 @@ import * as Comments from "@/models/comments";
 import * as Reactions from "@/models/reactions";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { showErrorToast, CommentSubscribersSelector } from "turboui";
+import { showErrorToast } from "turboui";
 import { useCommentSubscriptionsAdapter } from "@/models/subscriptions";
 
 export function useComments(task: Tasks.Task, initialComments: Comments.Comment[], invalidateCache: () => void) {
   const currentUser = useMe();
   const [comments, setComments] = React.useState(initialComments);
 
-  const notificationRecipients = useCommentSubscriptionsAdapter(task.potentialSubscribers ?? [], {
+  const commentNotificationSelector = useCommentSubscriptionsAdapter(task.potentialSubscribers ?? [], {
     ignoreMe: true,
     initialSubscriptions: task.subscriptionList?.subscriptions ?? [],
   });
@@ -56,6 +56,7 @@ export function useComments(task: Tasks.Task, initialComments: Comments.Comment[
           entityId: task.id,
           entityType: "project_task",
           content: JSON.stringify(content),
+          subscriberIds: commentNotificationSelector.selectedSubscriberIds,
         });
 
         if (res.comment) {
@@ -69,22 +70,7 @@ export function useComments(task: Tasks.Task, initialComments: Comments.Comment[
         showErrorToast("Error", "Failed to add comment.");
       }
     },
-    [task.id, currentUser, invalidateCache],
-  );
-
-  const commentNotificationSelector = React.useMemo<CommentSubscribersSelector.Props>(
-    () => ({
-      subscribers: notificationRecipients.subscribers,
-      selectedSubscriberIds: notificationRecipients.selectedSubscriberIds,
-      onSelectedSubscriberIdsChange: notificationRecipients.onSelectedSubscriberIdsChange,
-      alwaysNotify: notificationRecipients.alwaysNotify,
-    }),
-    [
-      notificationRecipients.subscribers,
-      notificationRecipients.selectedSubscriberIds,
-      notificationRecipients.onSelectedSubscriberIdsChange,
-      notificationRecipients.alwaysNotify,
-    ],
+    [task.id, currentUser, invalidateCache, commentNotificationSelector.selectedSubscriberIds],
   );
 
   return {

@@ -55,6 +55,33 @@ defmodule Operately.Operations.Notifications.Subscription do
     end)
   end
 
+  @doc """
+  Creates subscriptions for invited people (subscriber_ids).
+  
+  Before calling update_invited_people/2,
+  "subscription_list" and "subscription_list.subscriptions"
+  must be part of multi.
+  """
+  def update_invited_people(multi, subscriber_ids) when is_list(subscriber_ids) and length(subscriber_ids) > 0 do
+    Enum.reduce(subscriber_ids, multi, fn id, multi ->
+      name = "invited_subscription_" <> id
+
+      Multi.run(multi, name, fn _, changes ->
+        if subscription_exists?(changes, id) do
+          {:ok, nil}
+        else
+          Notifications.create_subscription(%{
+            subscription_list_id: changes.subscription_list.id,
+            person_id: id,
+            type: :invited,
+          })
+        end
+      end)
+    end)
+  end
+
+  def update_invited_people(multi, _), do: multi
+
   #
   # Helpers
   #
