@@ -118,10 +118,11 @@ defmodule Operately.Tasks.Task do
   end
 
   def load_potential_subscribers(task = %__MODULE__{}) do
-    q = from(c in Operately.Projects.Contributor, join: p in assoc(c, :person), preload: :person)
-    task = Repo.preload(task, [project: [contributors: q]], force: true)
+    task = Repo.preload(task, :access_context)
 
-    subscribers = Operately.Notifications.Subscriber.from_project_contributor(task.project.contributors)
+    people = Operately.Access.BindedPeopleLoader.load(task.access_context.id)
+    subscribers = Operately.Notifications.Subscriber.from_people(people)
+
     Map.put(task, :potential_subscribers, subscribers)
   end
 
