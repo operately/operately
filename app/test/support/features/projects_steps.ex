@@ -658,20 +658,18 @@ defmodule Operately.Support.Features.ProjectSteps do
       |> EmailSteps.assert_activity_email_sent(%{
         where: ctx.project.name,
         to: ctx.reviewer,
-        action: "added #{resource.title} to resources",
+        action: "added the \"#{resource.title}\" resource",
         author: ctx.champion
       })
 
     email = UIEmails.last_sent_email(to: ctx.reviewer.email)
 
-    assert email.text =~ resource.title
+    assert email.text =~ "added the \"#{resource.title}\" resource to the #{ctx.project.name} project resources"
 
     if resource.link do
       assert email.text =~ resource.link
       assert email.html =~ resource.link
     end
-
-    refute email.text =~ "key resource"
 
     ctx
   end
