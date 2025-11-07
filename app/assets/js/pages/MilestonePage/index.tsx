@@ -8,7 +8,7 @@ import * as Milestones from "@/models/milestones";
 import * as Tasks from "@/models/tasks";
 import * as Projects from "@/models/projects";
 import * as Activities from "@/models/activities";
-import { parseActivitiesForTurboUi, SUPPORTED_ACTIVITY_TYPES } from "@/models/activities/feed";
+import { parseActivitiesForTurboUi, SUPPORTED_MILESTONE_ACTIVITY_TYPES } from "@/models/activities/feed";
 
 import { showErrorToast, MilestonePage, Timeline } from "turboui";
 import { Paths, usePaths } from "@/routes/paths";
@@ -58,7 +58,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
         activities: Api.getActivities({
           scopeId: params.id,
           scopeType: "milestone",
-          actions: SUPPORTED_ACTIVITY_TYPES,
+          actions: SUPPORTED_MILESTONE_ACTIVITY_TYPES,
         }).then((d) => d.activities!),
       }),
   });

@@ -9,7 +9,7 @@ import * as Activities from "@/models/activities";
 import * as Comments from "@/models/comments";
 import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
 import { parseMilestoneForTurboUi } from "@/models/milestones";
-import { parseActivitiesForTurboUi, SUPPORTED_ACTIVITY_TYPES } from "@/models/activities/feed";
+import { parseActivitiesForTurboUi, SUPPORTED_TASK_ACTIVITY_TYPES } from "@/models/activities/feed";
 import * as Time from "@/utils/time";
 
 import { Paths, usePaths } from "../../routes/paths";
@@ -56,7 +56,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
         activities: Api.getActivities({
           scopeId: params.id,
           scopeType: "task",
-          actions: SUPPORTED_ACTIVITY_TYPES,
+          actions: SUPPORTED_TASK_ACTIVITY_TYPES,
         }).then((d) => d.activities!),
         comments: Api.getComments({
           entityId: params.id,

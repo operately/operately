@@ -24,7 +24,7 @@ import { parseMilestoneForTurboUi } from "../milestones";
 import { parsePersonForTurboUi } from "../people";
 import { parseTaskStatus } from "../tasks";
 
-export const SUPPORTED_ACTIVITY_TYPES = [
+const TASK_ACTIVITY_TYPES = [
   "task_adding",
   "task_name_updating",
   "task_description_change",
@@ -32,19 +32,35 @@ export const SUPPORTED_ACTIVITY_TYPES = [
   "task_due_date_updating",
   "task_milestone_updating",
   "task_status_updating",
+];
+
+const MILESTONE_ACTIVITY_TYPES = [
   "project_milestone_creation",
   "milestone_description_updating",
   "milestone_title_updating",
   "milestone_due_date_updating",
 ];
 
-type TurboUiPerson = NonNullable<ReturnType<typeof parsePersonForTurboUi>>;
+export const SUPPORTED_TASK_ACTIVITY_TYPES = [...TASK_ACTIVITY_TYPES];
+
+export const SUPPORTED_MILESTONE_ACTIVITY_TYPES = Array.from(
+  new Set([...TASK_ACTIVITY_TYPES, ...MILESTONE_ACTIVITY_TYPES]),
+);
 
 type PageContext = "task" | "milestone";
 
+const SUPPORTED_ACTIVITY_TYPES_BY_CONTEXT: Record<PageContext, string[]> = {
+  task: SUPPORTED_TASK_ACTIVITY_TYPES,
+  milestone: SUPPORTED_MILESTONE_ACTIVITY_TYPES,
+};
+
+type TurboUiPerson = NonNullable<ReturnType<typeof parsePersonForTurboUi>>;
+
 export function parseActivitiesForTurboUi(paths: Paths, activities: Activity[], pageContext: PageContext) {
+  const supportedActivityTypes = SUPPORTED_ACTIVITY_TYPES_BY_CONTEXT[pageContext];
+
   return activities
-    .filter((activity) => SUPPORTED_ACTIVITY_TYPES.includes(activity.action))
+    .filter((activity) => supportedActivityTypes.includes(activity.action))
     .map((activity) => parseActivityForTurboUi(paths, activity, pageContext))
     .filter((activity) => activity !== null);
 }
