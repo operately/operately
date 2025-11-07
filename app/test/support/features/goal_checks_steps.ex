@@ -1,5 +1,6 @@
 defmodule Operately.Support.Features.GoalChecksSteps do
   use Operately.FeatureCase
+  alias Operately.Support.RichText
 
   step :setup, ctx do
     ctx
@@ -146,6 +147,81 @@ defmodule Operately.Support.Features.GoalChecksSteps do
     ctx
     |> UI.visit(Paths.feed_path(ctx.company))
     |> UI.assert_feed_item(ctx.creator, "marked a checklist item as pending", ctx.check.name)
+  end
+
+  #
+  # Comments on check-ins (updates)
+  #
+
+  step :given_goal_has_update, ctx do
+    ctx
+    |> Factory.add_goal_update(:update, :goal, :creator)
+  end
+
+  step :visit_goal_update_page, ctx do
+    UI.visit(ctx, Paths.goal_check_in_path(ctx.company, ctx.update))
+  end
+
+  step :post_comment_on_update, ctx do
+    ctx
+    |> UI.click(testid: "add-comment")
+    |> UI.fill_rich_text("This is a comment on the check-in.")
+    |> UI.click(testid: "post-comment")
+    |> UI.sleep(300)
+  end
+
+  step :assert_comment_visible, ctx do
+    ctx
+    |> UI.assert_text("This is a comment on the check-in.")
+  end
+
+  step :given_update_has_comment, ctx do
+    ctx
+    |> Factory.add_goal_update(:update, :goal, :creator)
+    |> Factory.preload(:update, :goal)
+    |> Factory.add_comment(:comment, :update, content: RichText.rich_text("Original comment"), creator: ctx.champion)
+  end
+
+  step :edit_comment, ctx do
+    ctx
+    |> UI.assert_text("Original comment")
+    |> UI.click(testid: "comment-options")
+    |> UI.click(testid: "edit-comment")
+    |> UI.fill_rich_text("Edited comment")
+    |> UI.click(testid: "post-comment")
+    |> UI.sleep(300)
+  end
+
+  step :assert_comment_edited, ctx do
+    ctx
+    |> UI.assert_text("Edited comment")
+    |> UI.refute_text("Original comment")
+  end
+
+  step :delete_comment, ctx do
+    ctx
+    |> UI.assert_text("Original comment")
+    |> UI.click(testid: "comment-options")
+    |> UI.click(testid: "delete-comment")
+    |> UI.sleep(300)
+  end
+
+  step :assert_comment_deleted, ctx do
+    ctx
+    |> UI.refute_text("Original comment")
+  end
+
+  step :copy_comment_link, ctx do
+    ctx
+    |> UI.click(testid: "comment-options")
+    |> UI.click(testid: "copy-comment-link")
+    |> UI.sleep(100)
+  end
+
+  step :assert_comment_link_copied_message, ctx do
+    ctx
+    |> UI.assert_text("Success")
+    |> UI.assert_text("The comment link has been copied to your clipboard")
   end
 
   #

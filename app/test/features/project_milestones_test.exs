@@ -379,14 +379,23 @@ defmodule Operately.Features.ProjectMilestonesTest do
       |> Steps.assert_comment_deleted()
     end
 
-    feature "comment menu not visible to other users", ctx do
+    feature "comment edit and delete not visible to other users", ctx do
       ctx
       |> Steps.given_that_milestone_has_comment()
       |> Steps.given_space_member_exists()
       |> Factory.log_in_person(:space_member)
       |> Steps.visit_milestone_page()
       |> Steps.assert_comment("Content")
-      |> Steps.assert_comment_menu_not_visible()
+      |> Steps.assert_comment_edit_delete_not_visible()
+    end
+
+    feature "copy comment link shows success message", ctx do
+      ctx
+      |> Steps.given_that_milestone_has_comment()
+      |> Steps.visit_milestone_page()
+      |> Steps.assert_comment("Content")
+      |> Steps.copy_comment_link()
+      |> Steps.assert_comment_link_copied_message()
     end
 
     feature "post comment then delete comment, verify feed doesn't break", ctx do

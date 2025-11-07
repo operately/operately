@@ -760,11 +760,29 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> UI.refute_has(testid: UI.testid(["comment-menu", id]))
   end
 
-  step :assert_comment_menu_not_visible, ctx do
+  step :assert_comment_edit_delete_not_visible, ctx do
     id = get_comment_id(ctx)
 
     ctx
-    |> UI.refute_has(testid: UI.testid(["comment-menu", id]))
+    |> UI.click(testid: UI.testid(["comment-menu", id]))
+    |> UI.assert_has(testid: UI.testid(["copy-link", id]))
+    |> UI.refute_has(testid: UI.testid(["edit", id]))
+    |> UI.refute_has(testid: UI.testid(["delete", id]))
+  end
+
+  step :copy_comment_link, ctx do
+    id = get_comment_id(ctx)
+
+    ctx
+    |> UI.click(testid: UI.testid(["comment-menu", id]))
+    |> UI.click(testid: UI.testid(["copy-link", id]))
+    |> UI.sleep(100)
+  end
+
+  step :assert_comment_link_copied_message, ctx do
+    ctx
+    |> UI.assert_text("Success")
+    |> UI.assert_text("The comment link has been copied to your clipboard")
   end
 
   #

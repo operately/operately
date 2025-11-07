@@ -48,4 +48,38 @@ defmodule Operately.Features.GoalChecksTest do
     |> Steps.assert_check_completed_feed_posted()
     |> Steps.assert_check_pending_feed_posted()
   end
+
+  describe "comments on check-ins" do
+    feature "add comment on goal check-in", ctx do
+      ctx
+      |> Steps.given_goal_has_update()
+      |> Steps.visit_goal_update_page()
+      |> Steps.post_comment_on_update()
+      |> Steps.assert_comment_visible()
+    end
+
+    feature "edit comment on goal check-in", ctx do
+      ctx
+      |> Steps.given_update_has_comment()
+      |> Steps.visit_goal_update_page()
+      |> Steps.edit_comment()
+      |> Steps.assert_comment_edited()
+    end
+
+    feature "delete comment on goal check-in", ctx do
+      ctx
+      |> Steps.given_update_has_comment()
+      |> Steps.visit_goal_update_page()
+      |> Steps.delete_comment()
+      |> Steps.assert_comment_deleted()
+    end
+
+    feature "copy comment link shows success message", ctx do
+      ctx
+      |> Steps.given_update_has_comment()
+      |> Steps.visit_goal_update_page()
+      |> Steps.copy_comment_link()
+      |> Steps.assert_comment_link_copied_message()
+    end
+  end
 end
