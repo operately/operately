@@ -69,6 +69,16 @@ defmodule Operately.Features.ProjectCheckInsTest do
     |> Steps.assert_comment_on_check_in_received_in_email()
   end
 
+  feature "copy comment link shows success message", ctx do
+    check_in_values = %{status: "on_track", description: "This is a check-in."}
+
+    ctx
+    |> Steps.submit_check_in(check_in_values)
+    |> Steps.leave_comment_on_check_in()
+    |> Steps.copy_comment_link()
+    |> Steps.assert_comment_link_copied_message()
+  end
+
   feature "delete comment from check-in", ctx do
     check_in_values = %{status: "on_track", description: "This is a check-in."}
 
