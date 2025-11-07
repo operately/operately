@@ -20,21 +20,23 @@ export function DefaultTargetCard(props: Props) {
   const containerClass = classNames("max-w-full py-2 px-px border-t last:border-b border-stroke-base");
 
   const handleToggle = () => {
-    if (!readonly) return;
     setOpen(!open);
   };
 
-  const handleChevronToggle = () => {
-    if (readonly) return;
-    setOpen(!open);
-  };
+  const handlePropagation = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (!readonly) {
+      e.stopPropagation()
+    }
+  }
 
   return (
     <div className={containerClass}>
       <div onClick={handleToggle} className="grid grid-cols-[1fr_auto_14px] gap-2 items-start cursor-pointer">
         <TargetNameSection target={target} truncate={!open} />
-        <TargetValue readonly={readonlyValue} index={index} target={target} />
-        <ExpandIcon expanded={open} onClick={handleChevronToggle} />
+        <div onClick={handlePropagation}>
+          <TargetValue readonly={readonlyValue} index={index} target={target} />
+        </div>
+        <ExpandIcon expanded={open}  />
       </div>
       {open && <TargetDetails target={target} />}
     </div>
