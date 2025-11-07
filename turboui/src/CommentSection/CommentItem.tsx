@@ -13,6 +13,7 @@ import { RichEditorHandlers } from "../RichEditor/useEditor";
 import { createTestId } from "../TestableElement";
 import { Reactions } from "../Reactions";
 import { useScrollIntoViewOnLoad } from "../utils/useScrollIntoViewOnLoad";
+import { showErrorToast, showSuccessToast } from "../Toasts";
 
 // Function to shorten name for display
 function shortName(name: string | undefined): string {
@@ -151,10 +152,15 @@ interface CommentMenuProps {
 }
 
 function CommentMenu({ comment, isOwnComment, onEdit, onDelete }: CommentMenuProps) {
-  const handleCopyLink = useCallback(() => {
-    const url = new URL(window.location.href);
-    url.hash = comment.id;
-    void navigator.clipboard?.writeText(url.toString());
+  const handleCopyLink = useCallback(async () => {
+    try {
+      const url = new URL(window.location.href);
+      url.hash = comment.id;
+      await navigator.clipboard.writeText(url.toString());
+      showSuccessToast("Success", "The comment link has been copied to your clipboard");
+    } catch (err) {
+      showErrorToast("Unexpected error", "Failed to copy comment link to clipboard");
+    }
   }, [comment.id]);
 
   return (
