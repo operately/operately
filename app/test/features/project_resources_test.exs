@@ -20,6 +20,8 @@ defmodule Operately.Features.ProjectResourcesTest do
     |> ProjectSteps.visit_project_page()
     |> UI.assert_text("Code Repository")
     |> UI.assert_text("Website")
+    |> UI.assert_has(testid: UI.testid(["resource-icon", "github-repository"]))
+    |> UI.assert_has(testid: UI.testid(["resource-icon", "generic"]))
   end
 
   @tag login_as: :champion
@@ -28,11 +30,23 @@ defmodule Operately.Features.ProjectResourcesTest do
     |> ProjectSteps.visit_project_page()
     |> ProjectSteps.add_link_as_key_resource()
     |> ProjectSteps.assert_new_key_resource_visible()
+    |> UI.assert_has(testid: UI.testid(["resource-icon", "github-repository"]))
     |> ProjectSteps.visit_project_page()
     |> ProjectSteps.assert_new_key_resource_visible()
     |> ProjectSteps.assert_project_key_resource_added_visible_on_feed()
     |> ProjectSteps.assert_key_resource_added_notification_sent()
     |> ProjectSteps.assert_key_resource_email_sent()
+  end
+
+  @tag login_as: :champion
+  feature "classifying key resource icons based on the link", ctx do
+    ctx
+    |> ProjectSteps.visit_project_page()
+    |> UI.click_button("Add resource")
+    |> UI.fill(label: "Title", with: "Slack")
+    |> UI.fill(label: "URL", with: "https://operately.slack.com/archives/product")
+    |> UI.click_button("Save")
+    |> UI.assert_has(testid: UI.testid(["resource-icon", "slack-channel"]))
   end
 
   @tag login_as: :champion

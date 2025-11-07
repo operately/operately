@@ -1,5 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
-import { IconLink, IconExternalLink, IconDots, IconCopy, IconPencil, IconTrash } from "../icons";
+import {
+  IconLink,
+  IconExternalLink,
+  IconDots,
+  IconCopy,
+  IconPencil,
+  IconTrash,
+  IconBrandGithub,
+  IconBrandSlack,
+  IconBrandDiscordFilled,
+} from "../icons";
 import { ResourceManager } from "../ResourceManager";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { showInfoToast } from "../Toasts";
@@ -25,6 +35,7 @@ export function ResourceLink({ resource, onEdit, onRemove, canEdit }: ResourceLi
   const containerRef = useRef<HTMLDivElement>(null);
 
   const testId = createTestId("edit", resource.name);
+  const { IconComponent, iconTestId } = getResourceIcon(resource.type);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -98,7 +109,12 @@ export function ResourceLink({ resource, onEdit, onRemove, canEdit }: ResourceLi
           rel="noopener noreferrer"
           className="flex items-center gap-2 px-3 py-1.5 min-w-0"
         >
-          <IconLink size={14} className="text-link-base flex-shrink-0" />
+          <IconComponent
+            size={14}
+            className="text-link-base flex-shrink-0"
+            data-test-id={createTestId("resource-icon", iconTestId)}
+            aria-hidden="true"
+          />
           <span className="text-sm text-link-base font-medium truncate max-w-[200px]">
             {resource.name.trim() || resource.url}
           </span>
@@ -225,6 +241,7 @@ function EditResourceModal({
       id: resource.id,
       url: url.trim(),
       name: name.trim(),
+      type: resource.type,
     });
   };
 
@@ -268,4 +285,24 @@ function EditResourceModal({
       </form>
     </Modal>
   );
+}
+
+type IconComponentProps = {
+  size?: number;
+  className?: string;
+  "data-test-id"?: string;
+  "aria-hidden"?: boolean;
+};
+
+function getResourceIcon(type?: string | null): { IconComponent: React.ComponentType<IconComponentProps>; iconTestId: string } {
+  switch (type) {
+    case "github-repository":
+      return { IconComponent: IconBrandGithub, iconTestId: "github-repository" };
+    case "slack-channel":
+      return { IconComponent: IconBrandSlack, iconTestId: "slack-channel" };
+    case "discord-channel":
+      return { IconComponent: IconBrandDiscordFilled, iconTestId: "discord-channel" };
+    default:
+      return { IconComponent: IconLink, iconTestId: "generic" };
+  }
 }
