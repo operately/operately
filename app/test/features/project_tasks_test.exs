@@ -474,7 +474,7 @@ defmodule Operately.Features.ProjectTasksTest do
   end
 
   @tag login_as: :champion
-  feature "comment menu not visible to other users on task", ctx do
+  feature "comment edit and delete not visible to other users on task", ctx do
     ctx
     |> Steps.given_task_exists()
     |> Steps.given_task_has_comment()
@@ -482,7 +482,7 @@ defmodule Operately.Features.ProjectTasksTest do
     |> Factory.log_in_person(:space_member)
     |> Steps.visit_task_page()
     |> Steps.assert_comment("Content")
-    |> Steps.assert_comment_menu_not_visible()
+    |> Steps.assert_comment_edit_delete_not_visible()
   end
 
   @tag login_as: :champion
