@@ -1049,6 +1049,9 @@ export interface Comment {
   author?: Person | null;
   reactions?: Reaction[] | null;
   notification?: Notification | null;
+  isSolution?: boolean | null;
+  canMarkAsSolution?: boolean | null;
+  canUnmarkSolution?: boolean | null;
 }
 
 export interface CommentThread {

@@ -19,6 +19,7 @@ import {
   Menu,
   MenuActionItem,
   RichContent,
+  IconSquare,
   IconSquareCheckFilled,
   IconSquareChevronsLeftFilled,
   IconEdit,
@@ -66,6 +67,15 @@ export function CommentSection(props: CommentSectionProps) {
 
 function Comment({ comment, form, commentParentType, canComment }) {
   const [editing, _, startEditing, stopEditing] = useBoolState(false);
+  const isSolution = Boolean(comment.isSolution);
+  const markSolution = form.markCommentAsSolution
+    ? () => form.markCommentAsSolution?.(comment.id)
+    : undefined;
+  const unmarkSolution = form.unmarkCommentAsSolution
+    ? () => form.unmarkCommentAsSolution?.(comment.id)
+    : undefined;
+  const canMarkSolution = Boolean(markSolution && comment.canMarkAsSolution && !isSolution);
+  const canUnmarkSolution = Boolean(unmarkSolution && comment.canUnmarkSolution && isSolution);
 
   if (editing) {
     return <EditComment comment={comment} onCancel={stopEditing} form={form} />;
@@ -75,6 +85,11 @@ function Comment({ comment, form, commentParentType, canComment }) {
         comment={comment}
         onEdit={startEditing}
         onDelete={() => void form.deleteComment(comment.id)}
+        onMarkSolution={markSolution}
+        onUnmarkSolution={unmarkSolution}
+        isSolution={isSolution}
+        canMarkSolution={canMarkSolution}
+        canUnmarkSolution={canUnmarkSolution}
         commentParentType={commentParentType}
         canComment={canComment}
       />
@@ -175,7 +190,18 @@ function MilestoneReopened({ comment }) {
   );
 }
 
-function ViewComment({ comment, onEdit, onDelete, commentParentType, canComment }) {
+function ViewComment({
+  comment,
+  onEdit,
+  onDelete,
+  onMarkSolution,
+  onUnmarkSolution,
+  isSolution,
+  canMarkSolution,
+  canUnmarkSolution,
+  commentParentType,
+  canComment,
+}) {
   const commentRef = useClearNotificationOnIntersection(comment.notification);
   useScrollIntoViewOnLoad(comment.id);
 
@@ -200,14 +226,25 @@ function ViewComment({ comment, onEdit, onDelete, commentParentType, canComment 
       <div className="flex-1">
         <div className="flex-1">
           <div className="flex items-center justify-between">
-            <div className="font-bold -mt-0.5">{comment.author.fullName}</div>
+            <div className="flex items-center gap-2 font-bold -mt-0.5">
+              {comment.author.fullName}
+              {isSolution && <SolutionBadge />}
+            </div>
 
             <div className="flex items-center justify-between gap-2">
               <span className="text-content-dimmed text-sm">
                 <FormattedTime time={comment.insertedAt} format="relative" />
               </span>
 
-              <CommentDropdownMenu comment={comment} onEdit={onEdit} onDelete={onDelete} />
+              <CommentDropdownMenu
+                comment={comment}
+                onEdit={onEdit}
+                onDelete={onDelete}
+                onMarkSolution={onMarkSolution}
+                onUnmarkSolution={onUnmarkSolution}
+                canMarkSolution={canMarkSolution}
+                canUnmarkSolution={canUnmarkSolution}
+              />
             </div>
           </div>
         </div>
@@ -222,21 +259,57 @@ function ViewComment({ comment, onEdit, onDelete, commentParentType, canComment 
   );
 }
 
-function CommentDropdownMenu({ comment, onEdit, onDelete }) {
+function CommentDropdownMenu({
+  comment,
+  onEdit,
+  onDelete,
+  onMarkSolution,
+  onUnmarkSolution,
+  canMarkSolution,
+  canUnmarkSolution,
+}) {
   const me = useMe()!;
-  if (!compareIds(me.id, comment.author.id)) return null;
+  const isAuthor = compareIds(me.id, comment.author.id);
+
+  const showEdit = isAuthor && Boolean(onEdit);
+  const showDelete = isAuthor && Boolean(onDelete);
+  const showMarkSolution = Boolean(canMarkSolution && onMarkSolution);
+  const showUnmarkSolution = Boolean(canUnmarkSolution && onUnmarkSolution);
+
+  if (!showEdit && !showDelete && !showMarkSolution && !showUnmarkSolution) return null;
 
   return (
     <Menu size="small" testId="comment-options">
-      <MenuActionItem onClick={onEdit} testId="edit-comment" icon={IconEdit}>
-        Edit
-      </MenuActionItem>
-      {onDelete && (
+      {showEdit && (
+        <MenuActionItem onClick={onEdit} testId="edit-comment" icon={IconEdit}>
+          Edit
+        </MenuActionItem>
+      )}
+      {showMarkSolution && (
+        <MenuActionItem onClick={onMarkSolution!} testId="mark-solution" icon={IconSquareCheckFilled}>
+          Mark as solution
+        </MenuActionItem>
+      )}
+      {showUnmarkSolution && (
+        <MenuActionItem onClick={onUnmarkSolution!} testId="remove-solution" icon={IconSquare}>
+          Remove solution
+        </MenuActionItem>
+      )}
+      {showDelete && (
         <MenuActionItem onClick={onDelete} testId="delete-comment" icon={IconTrash} danger>
           Delete
         </MenuActionItem>
       )}
     </Menu>
+  );
+}
+
+function SolutionBadge() {
+  return (
+    <span className="flex items-center gap-1 rounded-full bg-accent-1/10 px-2 py-0.5 text-xs font-semibold text-accent-1">
+      <IconSquareCheckFilled size={14} />
+      Solution
+    </span>
   );
 }
 

@@ -16,6 +16,9 @@ export interface Comment {
   insertedAt: string;
   reactions: Reactions.Reaction[];
   notification?: any; // For notification intersection handling
+  isSolution?: boolean;
+  canMarkAsSolution?: boolean;
+  canUnmarkSolution?: boolean;
 }
 
 export type CommentItem =
@@ -40,6 +43,8 @@ export interface CommentFormState {
   postComment: (content: any) => void;
   editComment: (id: string, content: any) => void;
   deleteComment?: (id: string) => void;
+  markCommentAsSolution?: (id: string) => void | Promise<void>;
+  unmarkCommentAsSolution?: (id: string) => void | Promise<void>;
 }
 
 export interface CommentItemProps {
@@ -52,6 +57,8 @@ export interface CommentItemProps {
   currentUserId?: string;
   onAddReaction?: (commentId: string, emoji: string) => void | Promise<void>;
   onRemoveReaction?: (commentId: string, reactionId: string) => void | Promise<void>;
+  onMarkSolution?: (commentId: string) => void | Promise<void>;
+  onUnmarkSolution?: (commentId: string) => void | Promise<void>;
 }
 
 export interface CommentInputProps {

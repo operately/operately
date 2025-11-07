@@ -4,7 +4,7 @@ import { Avatar } from "../Avatar";
 import { Menu, MenuActionItem } from "../Menu";
 import { FormattedTime } from "../FormattedTime";
 import RichContent from "../RichContent";
-import { IconEdit, IconTrash } from "../icons";
+import { IconEdit, IconSquare, IconSquareCheckFilled, IconTrash } from "../icons";
 import { CommentItemProps } from "./types";
 import { compareIds } from "../utils/ids";
 import { Editor, useEditor, MentionedPersonLookupFn } from "../RichEditor";
@@ -45,10 +45,15 @@ export function CommentItem({
   richTextHandlers,
   onAddReaction,
   onRemoveReaction,
+  onMarkSolution,
+  onUnmarkSolution,
 }: CommentItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const parsedContent = JSON.parse(comment.content)["message"];
   const isOwnComment = compareIds(currentUserId, comment.author.id);
+  const isSolution = Boolean(comment.isSolution);
+
+  const { markCommentAsSolution, unmarkCommentAsSolution } = form;
 
   const canAddReaction = Boolean(canComment && onAddReaction);
 
@@ -58,6 +63,43 @@ export function CommentItem({
       setIsEditing(false);
     }
   };
+
+  const handleMarkSolution = useCallback(() => {
+    if (markCommentAsSolution) {
+      return markCommentAsSolution(comment.id);
+    }
+
+    if (onMarkSolution) {
+      return onMarkSolution(comment.id);
+    }
+  }, [markCommentAsSolution, onMarkSolution, comment.id]);
+
+  const handleUnmarkSolution = useCallback(() => {
+    if (unmarkCommentAsSolution) {
+      return unmarkCommentAsSolution(comment.id);
+    }
+
+    if (onUnmarkSolution) {
+      return onUnmarkSolution(comment.id);
+    }
+  }, [unmarkCommentAsSolution, onUnmarkSolution, comment.id]);
+
+  const canEditComment = isOwnComment && Boolean(form.editComment);
+  const canDeleteComment = isOwnComment && Boolean(form.deleteComment);
+  const canMarkSolution = Boolean(
+    !isEditing &&
+      !isSolution &&
+      comment.canMarkAsSolution &&
+      (markCommentAsSolution || onMarkSolution),
+  );
+  const canUnmarkSolution = Boolean(
+    !isEditing &&
+      isSolution &&
+      comment.canUnmarkSolution &&
+      (unmarkCommentAsSolution || onUnmarkSolution),
+  );
+  const shouldShowMenu =
+    !isEditing && (canEditComment || canDeleteComment || canMarkSolution || canUnmarkSolution);
 
   const handleAddReaction = useCallback(
     (emoji: string) => {
@@ -88,14 +130,17 @@ export function CommentItem({
 
       <div className="flex-1">
         <div className="flex items-center justify-between">
-          <div className="font-bold -mt-0.5">
-            {comment.author.profileLink ? (
-              <BlackLink to={comment.author.profileLink} underline="hover">
-                {shortName(comment.author.fullName)}
-              </BlackLink>
-            ) : (
-              shortName(comment.author.fullName)
-            )}
+          <div className="flex items-center gap-2">
+            <div className="font-bold -mt-0.5">
+              {comment.author.profileLink ? (
+                <BlackLink to={comment.author.profileLink} underline="hover">
+                  {shortName(comment.author.fullName)}
+                </BlackLink>
+              ) : (
+                shortName(comment.author.fullName)
+              )}
+            </div>
+            {isSolution && <SolutionBadge />}
           </div>
 
           <div className="flex items-center gap-2">
@@ -103,16 +148,36 @@ export function CommentItem({
               <FormattedTime time={comment.insertedAt} format="relative" />
             </span>
 
-            {isOwnComment && !isEditing && (
+            {shouldShowMenu && (
               <Menu size="small" testId={createTestId("comment-menu", comment.id)}>
-                <MenuActionItem
-                  onClick={() => setIsEditing(true)}
-                  icon={IconEdit}
-                  testId={createTestId("edit", comment.id)}
-                >
-                  Edit
-                </MenuActionItem>
-                {form.deleteComment && (
+                {canEditComment && (
+                  <MenuActionItem
+                    onClick={() => setIsEditing(true)}
+                    icon={IconEdit}
+                    testId={createTestId("edit", comment.id)}
+                  >
+                    Edit
+                  </MenuActionItem>
+                )}
+                {canMarkSolution && (
+                  <MenuActionItem
+                    onClick={() => handleMarkSolution?.()}
+                    icon={IconSquareCheckFilled}
+                    testId={createTestId("mark-solution", comment.id)}
+                  >
+                    Mark as solution
+                  </MenuActionItem>
+                )}
+                {canUnmarkSolution && (
+                  <MenuActionItem
+                    onClick={() => handleUnmarkSolution?.()}
+                    icon={IconSquare}
+                    testId={createTestId("remove-solution", comment.id)}
+                  >
+                    Remove solution
+                  </MenuActionItem>
+                )}
+                {canDeleteComment && form.deleteComment && (
                   <MenuActionItem
                     onClick={() => form.deleteComment?.(comment.id)}
                     icon={IconTrash}
@@ -147,6 +212,15 @@ export function CommentItem({
         )}
       </div>
     </div>
+  );
+}
+
+function SolutionBadge() {
+  return (
+    <span className="flex items-center gap-1 rounded-full bg-accent-1/10 px-2 py-0.5 text-xs font-semibold text-accent-1">
+      <IconSquareCheckFilled size={14} />
+      Solution
+    </span>
   );
 }
 

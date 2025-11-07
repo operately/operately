@@ -8,4 +8,6 @@ export interface FormState {
   deleteComment: (commentID: string) => Promise<void>;
   submitting: boolean;
   mentionSearchScope: People.SearchScope;
+  markCommentAsSolution?: (commentID: string) => Promise<void> | void;
+  unmarkCommentAsSolution?: (commentID: string) => Promise<void> | void;
 }
