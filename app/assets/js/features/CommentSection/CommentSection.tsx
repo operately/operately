@@ -23,6 +23,7 @@ import {
   IconSquareChevronsLeftFilled,
   IconEdit,
   IconTrash,
+  IconLink,
   useEditor,
   Editor,
 } from "turboui";
@@ -224,17 +225,30 @@ function ViewComment({ comment, onEdit, onDelete, commentParentType, canComment 
 
 function CommentDropdownMenu({ comment, onEdit, onDelete }) {
   const me = useMe()!;
-  if (!compareIds(me.id, comment.author.id)) return null;
+  const canManageComment = compareIds(me.id, comment.author.id);
+
+  const handleCopyLink = React.useCallback(() => {
+    const url = new URL(window.location.href);
+    url.hash = comment.id;
+    void navigator.clipboard?.writeText(url.toString());
+  }, [comment.id]);
 
   return (
     <Menu size="small" testId="comment-options">
-      <MenuActionItem onClick={onEdit} testId="edit-comment" icon={IconEdit}>
-        Edit
+      <MenuActionItem onClick={handleCopyLink} testId="copy-comment-link" icon={IconLink}>
+        Copy link
       </MenuActionItem>
-      {onDelete && (
-        <MenuActionItem onClick={onDelete} testId="delete-comment" icon={IconTrash} danger>
-          Delete
-        </MenuActionItem>
+      {canManageComment && (
+        <>
+          <MenuActionItem onClick={onEdit} testId="edit-comment" icon={IconEdit}>
+            Edit
+          </MenuActionItem>
+          {onDelete && (
+            <MenuActionItem onClick={onDelete} testId="delete-comment" icon={IconTrash} danger>
+              Delete
+            </MenuActionItem>
+          )}
+        </>
       )}
     </Menu>
   );
