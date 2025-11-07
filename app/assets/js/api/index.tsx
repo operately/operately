@@ -584,6 +584,7 @@ export interface ActivityContentProjectKeyResourceAdded {
   projectId?: string | null;
   project?: Project | null;
   title?: string | null;
+  link?: string | null;
 }
 
 export interface ActivityContentProjectKeyResourceDeleted {

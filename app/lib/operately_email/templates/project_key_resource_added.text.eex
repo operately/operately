@@ -1,3 +1,16 @@
-<%= short_name(@author) %> added a key resource to the <%= @project.name %> project.
+<% resource_headline =
+     case @resource_title do
+       nil -> "a resource"
+       title -> "\"#{title}\""
+     end %>
 
-Link: <%= @link %>
+<%= short_name(@author) %> added <%= resource_headline %> to the <%= @project.name %> project resources.
+
+<%= if @resource_title do %>
+Resource: <%= @resource_title %>
+
+<% end %><%= if @resource_link do %>
+Link: <%= @resource_link %>
+
+<% end %>
+Project: <%= @link %>

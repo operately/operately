@@ -4,6 +4,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.Project
       project: OperatelyWeb.Api.Serializer.serialize(content.project),
       project_id: OperatelyWeb.Paths.project_id(content.project),
       title: content[:title],
+      link: content[:link],
     }
   end
 end

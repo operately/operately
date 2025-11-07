@@ -6,7 +6,9 @@ defmodule Operately.Activities.Content.ProjectKeyResourceAdded do
     belongs_to :space, Operately.Groups.Group
     belongs_to :project, Operately.Projects.Project
 
+    field :key_resource_id, :id
     field :title, :string
+    field :link, :string
   end
 
   def changeset(attrs) do

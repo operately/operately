@@ -1,4 +1,34 @@
-<%= title("#{short_name(@author)} added a key resource to the #{@project.name} project") %>
+<% resource_headline =
+     case @resource_title do
+       nil -> "a resource"
+       title -> "\"#{title}\""
+     end %>
+
+<%= title("#{short_name(@author)} added #{resource_headline} to the #{@project.name} project resources") %>
+
+<%= spacer() %>
+
+<%= if @resource_title do %>
+  <%= row do %>
+    <p>
+      <strong>Resource:</strong>
+      <%= if @resource_link do %>
+        <a href="<%= @resource_link %>"><%= @resource_title %></a>
+      <% else %>
+        <%= @resource_title %>
+      <% end %>
+    </p>
+  <% end %>
+<% end %>
+
+<%= if @resource_link do %>
+  <%= row do %>
+    <p>
+      <strong>Link:</strong>
+      <a href="<%= @resource_link %>"><%= @resource_link %></a>
+    </p>
+  <% end %>
+<% end %>
 
 <%= spacer() %>
 
