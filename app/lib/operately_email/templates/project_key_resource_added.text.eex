@@ -1,3 +1,10 @@
-<%= short_name(@author) %> added a key resource to the <%= @project.name %> project.
+<%= short_name(@author) %> added <%= @resource_headline %> to the <%= @project.name %> project resources.
 
-Link: <%= @link %>
+<%= if @resource_title do %>
+Resource: <%= @resource_title %>
+
+<% end %><%= if @resource_link do %>
+Link: <%= @resource_link %>
+
+<% end %>
+Project: <%= @link %>
