@@ -130,7 +130,7 @@ function Trigger({ state }: { state: GoalField.State }) {
     const goalContent = (
       <>
         <IconGoal size={state.iconSize} />
-        <div className="text-sm font-medium whitespace-normal break-words flex-1 min-w-0">
+        <div className="text-sm font-medium truncate flex-1 min-w-0" title={state.goal.name}>
           {state.goal.name}
         </div>
       </>
