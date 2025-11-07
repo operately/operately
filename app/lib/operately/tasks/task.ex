@@ -50,6 +50,7 @@ defmodule Operately.Tasks.Task do
     # populated with after load hooks
     field :permissions, :any, virtual: true
     field :comments_count, :integer, virtual: true
+    field :potential_subscribers, :any, virtual: true
 
     timestamps()
     requester_access_level()
@@ -114,6 +115,15 @@ defmodule Operately.Tasks.Task do
       count = Map.get(counts, t.id, 0)
       Map.put(t, :comments_count, count)
     end)
+  end
+
+  def load_potential_subscribers(task = %__MODULE__{}) do
+    task = Repo.preload(task, :access_context)
+
+    people = Operately.Access.BindedPeopleLoader.load(task.access_context.id)
+    subscribers = Operately.Notifications.Subscriber.from_people(people)
+
+    Map.put(task, :potential_subscribers, subscribers)
   end
 
   def set_permissions(task = %__MODULE__{}) do

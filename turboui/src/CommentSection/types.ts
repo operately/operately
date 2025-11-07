@@ -1,6 +1,7 @@
 import { MilestoneActivity } from "../Timeline/types";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
 import { Reactions } from "../Reactions";
+import { CommentSubscribersSelector } from "../Subscriptions";
 
 export interface Person {
   id: string;
@@ -59,4 +60,5 @@ export interface CommentInputProps {
   onSubmit?: () => void;
   onCancel?: () => void;
   richTextHandlers: RichEditorHandlers;
+  notificationSelector: CommentSubscribersSelector.Props;
 }

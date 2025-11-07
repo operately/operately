@@ -7,10 +7,16 @@ import * as Reactions from "@/models/reactions";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { showErrorToast } from "turboui";
+import { useCommentSubscriptionsAdapter } from "@/models/subscriptions";
 
 export function useComments(task: Tasks.Task, initialComments: Comments.Comment[], invalidateCache: () => void) {
   const currentUser = useMe();
   const [comments, setComments] = React.useState(initialComments);
+
+  const commentNotificationSelector = useCommentSubscriptionsAdapter(task.potentialSubscribers ?? [], {
+    ignoreMe: true,
+    initialSubscriptions: task.subscriptionList?.subscriptions ?? [],
+  });
 
   React.useEffect(() => {
     setComments(initialComments);
@@ -22,12 +28,7 @@ export function useComments(task: Tasks.Task, initialComments: Comments.Comment[
     invalidateCache,
   );
 
-  const { handleEditComment } = Comments.useEditCommentHandler(
-    comments,
-    setComments,
-    "project_task",
-    invalidateCache,
-  );
+  const { handleEditComment } = Comments.useEditCommentHandler(comments, setComments, "project_task", invalidateCache);
 
   const { handleDeleteComment } = Comments.useDeleteCommentHandler(
     comments,
@@ -55,6 +56,7 @@ export function useComments(task: Tasks.Task, initialComments: Comments.Comment[
           entityId: task.id,
           entityType: "project_task",
           content: JSON.stringify(content),
+          subscriberIds: commentNotificationSelector.selectedSubscriberIds,
         });
 
         if (res.comment) {
@@ -68,9 +70,8 @@ export function useComments(task: Tasks.Task, initialComments: Comments.Comment[
         showErrorToast("Error", "Failed to add comment.");
       }
     },
-    [task.id, currentUser, invalidateCache],
+    [task.id, currentUser, invalidateCache, commentNotificationSelector.selectedSubscriberIds],
   );
-
 
   return {
     comments,
@@ -79,5 +80,6 @@ export function useComments(task: Tasks.Task, initialComments: Comments.Comment[
     handleDeleteComment,
     handleAddReaction,
     handleRemoveReaction,
+    commentNotificationSelector,
   };
 }

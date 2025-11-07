@@ -4,6 +4,7 @@ import { RichEditorHandlers } from "../RichEditor/useEditor";
 import { PersonField } from "../PersonField";
 import { TimelineItem, TimelineFilters } from "../Timeline/types";
 import { Person as TimelinePerson } from "../CommentSection/types";
+import { CommentSubscribersSelector } from "../Subscriptions";
 import { DateField } from "../DateField";
 import { ProjectPageLayout } from "../ProjectPageLayout";
 import { useTabs } from "../Tabs";
@@ -98,6 +99,7 @@ export namespace TaskPage {
     timelineItems?: TimelineItem[];
     currentUser?: TimelinePerson;
     canComment?: boolean;
+    commentNotificationSelector: CommentSubscribersSelector.Props;
     onAddComment: (content: any) => void;
     onEditComment: (id: string, content: any) => void;
     onDeleteComment: (id: string) => void;

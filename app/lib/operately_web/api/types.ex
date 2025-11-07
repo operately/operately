@@ -1215,6 +1215,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :permissions, :project_permissions, null: true
     field? :comments_count, :integer, null: true
     field? :subscription_list, :subscription_list, null: true
+    field? :potential_subscribers, list_of(:subscriber), null: true
   end
 
   object :activity_content_discussion_editing do

@@ -14,6 +14,7 @@ defmodule OperatelyWeb.Api.Queries.GetTask do
     field? :include_space, :boolean, null: false
     field? :include_permissions, :boolean, null: false
     field? :include_subscription_list, :boolean, null: false
+    field? :include_potential_subscribers, :boolean, null: false
   end
 
   outputs do
@@ -50,7 +51,8 @@ defmodule OperatelyWeb.Api.Queries.GetTask do
 
   defp after_load(inputs) do
     Inputs.parse_includes(inputs,
-      include_permissions: &Task.set_permissions/1
+      include_permissions: &Task.set_permissions/1,
+      include_potential_subscribers: &Task.load_potential_subscribers/1
     )
   end
 end

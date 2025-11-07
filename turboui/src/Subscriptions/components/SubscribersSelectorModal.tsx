@@ -15,6 +15,7 @@ interface SubscribersSelectorModalProps {
   selectedSubscribers: SubscribersSelector.Subscriber[];
   alwaysNotify: SubscribersSelector.Subscriber[];
   onSave: (selected: SubscribersSelector.Subscriber[]) => void;
+  alwaysNotifyLabel?: string;
 }
 
 export function SubscribersSelectorModal({
@@ -24,6 +25,7 @@ export function SubscribersSelectorModal({
   selectedSubscribers,
   alwaysNotify,
   onSave,
+  alwaysNotifyLabel = "Always notified",
 }: SubscribersSelectorModalProps) {
   const [localSelected, setLocalSelected] = useState<Set<string>>(
     new Set(selectedSubscribers.map((s) => s.person?.id || "").filter(Boolean)),
@@ -82,6 +84,7 @@ export function SubscribersSelectorModal({
             localSelected={localSelected}
             alwaysNotifyIds={alwaysNotifyIds}
             onToggle={handleToggle}
+            alwaysNotifyLabel={alwaysNotifyLabel}
           />
 
           <div className="flex gap-2">
@@ -122,9 +125,10 @@ interface SubscribersListProps {
   localSelected: Set<string>;
   alwaysNotifyIds: Set<string>;
   onToggle: (personId: string) => void;
+  alwaysNotifyLabel: string;
 }
 
-function SubscribersList({ subscribers, localSelected, alwaysNotifyIds, onToggle }: SubscribersListProps) {
+function SubscribersList({ subscribers, localSelected, alwaysNotifyIds, onToggle, alwaysNotifyLabel }: SubscribersListProps) {
   const sortedSubscribers = React.useMemo(() => sortSubscribers(subscribers, alwaysNotifyIds), [subscribers, alwaysNotifyIds]);
 
   return (
@@ -147,7 +151,7 @@ function SubscribersList({ subscribers, localSelected, alwaysNotifyIds, onToggle
               <div className="flex-1">
                 <div className="font-medium text-content-accent">{subscriber.person.fullName}</div>
                 {subscriber.person.title && <div className="text-sm text-content-dimmed">{subscriber.person.title}</div>}
-                {isAlwaysNotify && <div className="text-xs text-content-subtle mt-0.5">(Always notified)</div>}
+                {isAlwaysNotify && <div className="text-xs text-content-subtle mt-0.5">({alwaysNotifyLabel})</div>}
               </div>
               <Checkbox checked={isChecked} onChange={() => !isAlwaysNotify && onToggle(personId)} disabled={isAlwaysNotify} />
             </div>

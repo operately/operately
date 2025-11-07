@@ -22,11 +22,9 @@ defmodule Operately.Notifications.Subscriber do
     build_struct(contributor.person, role, priority: priority)
   end
 
-  def from_space_members(members) do
-    Enum.map(members, fn m ->
-      from_person(m)
-    end)
-  end
+  def from_space_members(members), do: Enum.map(members, &from_person/1)
+
+  def from_people(people), do: Enum.map(people, &from_person/1)
 
   def from_project_child(project_child) do
     subs =
