@@ -214,7 +214,7 @@ defmodule OperatelyWeb.Api.Invitations do
     alias Operately.Companies.{Company, Permissions}
 
     outputs do
-      field(:invite_link, :invite_link)
+      field :invite_link, :invite_link
     end
 
     def call(conn, _inputs) do
@@ -266,6 +266,9 @@ defmodule OperatelyWeb.Api.Invitations do
 
         {:error, :check_permissions, :forbidden, _} ->
           {:error, :forbidden}
+
+        {:error, :invite_link, :not_found, _} ->
+          {:error, :not_found}
 
         e ->
           Logger.error("Failed to reset invite link: #{inspect(e)}")
