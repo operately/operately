@@ -3771,6 +3771,12 @@ export interface InvitationsNewInvitationTokenResult {
   invitation?: Invitation | null;
 }
 
+export interface InvitationsResetCompanyInviteLinkInput {}
+
+export interface InvitationsResetCompanyInviteLinkResult {
+  inviteLink: InviteLink;
+}
+
 export interface InvitationsUpdateCompanyInviteLinkInput {
   isActive?: boolean;
   allowedDomains?: string[];
@@ -4898,6 +4904,12 @@ class ApiNamespaceInvitations {
 
   async newInvitationToken(input: InvitationsNewInvitationTokenInput): Promise<InvitationsNewInvitationTokenResult> {
     return this.client.post("/invitations/new_invitation_token", input);
+  }
+
+  async resetCompanyInviteLink(
+    input: InvitationsResetCompanyInviteLinkInput,
+  ): Promise<InvitationsResetCompanyInviteLinkResult> {
+    return this.client.post("/invitations/reset_company_invite_link", input);
   }
 
   async updateCompanyInviteLink(
@@ -7470,6 +7482,13 @@ export default {
     useNewInvitationToken: () =>
       useMutation<InvitationsNewInvitationTokenInput, InvitationsNewInvitationTokenResult>((input) =>
         defaultApiClient.apiNamespaceInvitations.newInvitationToken(input),
+      ),
+
+    resetCompanyInviteLink: (input: InvitationsResetCompanyInviteLinkInput) =>
+      defaultApiClient.apiNamespaceInvitations.resetCompanyInviteLink(input),
+    useResetCompanyInviteLink: () =>
+      useMutation<InvitationsResetCompanyInviteLinkInput, InvitationsResetCompanyInviteLinkResult>((input) =>
+        defaultApiClient.apiNamespaceInvitations.resetCompanyInviteLink(input),
       ),
 
     getCompanyInviteLink: (input: InvitationsGetCompanyInviteLinkInput) =>

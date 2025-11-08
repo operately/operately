@@ -204,4 +204,73 @@ defmodule OperatelyWeb.Api.Invitations do
       end
     end
   end
+
+  defmodule ResetCompanyInviteLink do
+    require Logger
+
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
+
+    alias Operately.Companies.{Company, Permissions}
+
+    outputs do
+      field(:invite_link, :invite_link)
+    end
+
+    def call(conn, _inputs) do
+      conn
+      |> start_transaction()
+      |> load_company(conn)
+      |> check_permissions()
+      |> find_link()
+      |> reset_token()
+      |> commit()
+      |> respond()
+    end
+
+    def start_transaction(conn) do
+      Ecto.Multi.new() |> Ecto.Multi.put(:me, conn.assigns.current_person)
+    end
+
+    def load_company(multi, conn) do
+      Ecto.Multi.run(multi, :company, fn _, %{me: me} ->
+        Company.get(me, id: conn.assigns.current_company.id)
+      end)
+    end
+
+    def check_permissions(multi) do
+      Ecto.Multi.run(multi, :check_permissions, fn _, %{company: company} ->
+        Permissions.check(company.request_info.access_level, :can_invite_members)
+      end)
+    end
+
+    def find_link(multi) do
+      Ecto.Multi.run(multi, :invite_link, fn _, %{company: company} ->
+        InviteLinks.get_invite_link(company.id)
+      end)
+    end
+
+    def reset_token(multi) do
+      Ecto.Multi.run(multi, :reset_invite_link, fn _, %{invite_link: invite_link} ->
+        InviteLinks.reset_invite_link_token(invite_link)
+      end)
+    end
+
+    defp commit(multi), do: Repo.transaction(multi)
+
+    def respond(result) do
+      case result do
+        {:ok, %{reset_invite_link: link}} ->
+          link = Repo.preload(link, [:author, :company])
+          {:ok, %{invite_link: Serializer.serialize(link, level: :full)}}
+
+        {:error, :check_permissions, :forbidden, _} ->
+          {:error, :forbidden}
+
+        e ->
+          Logger.error("Failed to reset invite link: #{inspect(e)}")
+          {:error, :internal_server_error}
+      end
+    end
+  end
 end
