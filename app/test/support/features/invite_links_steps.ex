@@ -196,6 +196,23 @@ defmodule Operately.Support.Features.InviteLinksSteps do
     |> UI.assert_has(testid: "invite-people-invite-link", value: expected_url)
   end
 
+  step :capture_current_invite_token, ctx do
+    {:ok, link} = Operately.InviteLinks.get_invite_link(ctx.company.id)
+    expected_url = OperatelyWeb.Endpoint.url() <> "/join/#{link.token}"
+
+    ctx
+    |> Map.put(:original_token, link.token)
+    |> Map.put(:original_url, expected_url)
+  end
+
+  step :assert_invite_link_on_page, ctx do
+    {:ok, link} = Operately.InviteLinks.get_invite_link(ctx.company.id)
+    expected_url = OperatelyWeb.Endpoint.url() <> "/join/#{link.token}"
+
+    ctx
+    |> UI.assert_has(testid: "invite-people-invite-link", value: expected_url)
+  end
+
   step :reset_invite_link, ctx do
     ctx
     |> UI.sleep(500)
@@ -204,6 +221,19 @@ defmodule Operately.Support.Features.InviteLinksSteps do
     |> UI.assert_has(testid: "invite-people-reset-confirm")
     |> UI.click_button("Generate new link")
     |> UI.sleep(500)
+  end
+
+  step :assert_invite_link_token_changed, ctx do
+    attempts(ctx, 5, fn ->
+      {:ok, link} = Operately.InviteLinks.get_invite_link(ctx.company.id)
+      assert link.token != ctx.original_token, "Token should have changed after reset"
+      assert link.is_active, "Link should still be active after reset"
+
+      new_url = OperatelyWeb.Endpoint.url() <> "/join/#{link.token}"
+      assert new_url != ctx.original_url, "URL should have changed after reset"
+    end)
+
+    ctx
   end
 
   step :enable_domain_restrictions, ctx do

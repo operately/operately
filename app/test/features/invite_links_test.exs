@@ -23,14 +23,16 @@ defmodule Operately.Features.InviteLinksTest do
       |> Steps.assert_invite_link_is_not_active()
     end
 
-    # feature "generating a new invite link", ctx do
-    #   ctx
-    #   |> Steps.open_invite_team_page()
-    #   |> Steps.enable_invite_link()
-    #   |> Steps.assert_active_invite_link_created()
-    #   |> Steps.reset_invite_link()
-    #   |> Steps.assert_invite_link_rotated()
-    # end
+    feature "generating a new invite link", ctx do
+      ctx
+      |> Steps.open_invite_team_page()
+      |> Steps.assert_invite_link_is_active()
+      |> Steps.capture_current_invite_token()
+      |> Steps.assert_invite_link_on_page()
+      |> Steps.reset_invite_link()
+      |> Steps.assert_invite_link_token_changed()
+      |> Steps.assert_invite_link_on_page()
+    end
 
     feature "limiting which email domains can use the invite link", ctx do
       ctx
