@@ -144,6 +144,81 @@ defmodule OperatelyWeb.Api.InvitationsTest do
     end
   end
 
+  describe "reset_company_invite_link" do
+    test "requires authentication", ctx do
+      assert {401, _} = reset_invite_link(ctx)
+    end
+
+    test "returns forbidden when person lacks permission", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:member)
+        |> Factory.log_in_person(:member)
+
+      create_invite_link(ctx)
+
+      assert {403, %{message: message}} = reset_invite_link(ctx)
+      assert message == "You don't have permission to perform this action"
+    end
+
+    test "returns 404 when no invite link exists", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {404, _} = reset_invite_link(ctx)
+    end
+
+    test "generates a new token for the invite link", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      invite_link = create_invite_link(ctx)
+      original_token = invite_link.token
+
+      assert {200, %{invite_link: res}} = reset_invite_link(ctx)
+
+      # token should be different
+      assert res.token != original_token
+
+      # link should still be active
+      assert res.is_active
+
+      # verify in database
+      {:ok, stored} = InviteLinks.get_invite_link(ctx.company.id)
+      assert stored.token == res.token
+      assert stored.token != original_token
+      assert stored.is_active
+    end
+
+    test "preserves other invite link properties", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      original = create_invite_link(ctx, %{allowed_domains: ["example.com", "test.com"]})
+
+      assert {200, %{invite_link: res}} = reset_invite_link(ctx)
+
+      # properties should be preserved
+      assert res.allowed_domains == ["example.com", "test.com"]
+      assert res.company_id == ctx.company.id
+      assert res.author == Serializer.serialize(original.author, level: :essential)
+    end
+
+    test "does not create a new invite link record", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      invite_link = create_invite_link(ctx)
+      original_id = invite_link.id
+
+      assert {200, %{invite_link: res}} = reset_invite_link(ctx)
+
+      # should be the same record
+      assert res.id == original_id
+
+      # should still be only one invite link
+      invite_link_count = Repo.aggregate(InviteLinks.InviteLink, :count, :id)
+      assert invite_link_count == 1
+    end
+
+    def reset_invite_link(ctx) do
+      mutation(ctx.conn, [:invitations, :reset_company_invite_link], %{})
+    end
+  end
+
   defp create_invite_link(ctx, attrs \\ %{}) do
     defaults = %{company_id: ctx.company.id, author_id: ctx.creator.id}
     {:ok, invite_link} = InviteLinks.create_invite_link(Map.merge(defaults, attrs))

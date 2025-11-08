@@ -28,10 +28,11 @@ function Page() {
   const paths = usePaths();
   const { link } = useLoadedData();
 
-  const invitationUrl = `${window.location.origin}/join/${link.token}`;
+  const [currentToken, setCurrentToken] = React.useState(link.token!);
+  const invitationUrl = `${window.location.origin}/join/${currentToken}`;
   const [linkEnabled, setLinkEnabled] = React.useState(link.isActive!);
-  const [resettingLink] = React.useState(false);
-  const [pageError] = React.useState<string | null>(null);
+  const [resettingLink, setResettingLink] = React.useState(false);
+  const [pageError, setPageError] = React.useState<string | null>(null);
 
   const [domainState, setDomainState] = React.useState<DomainState>(() => {
     if (link.allowedDomains.length > 0) {
@@ -80,7 +81,20 @@ function Page() {
     }
   };
 
-  const handleResetLink = () => {};
+  const handleResetLink = async () => {
+    setResettingLink(true);
+    setPageError(null);
+
+    try {
+      const result = await Api.invitations.resetCompanyInviteLink({});
+      setCurrentToken(result.inviteLink.token!);
+    } catch (error) {
+      showErrorToast("Network Error", "Failed to reset invite link.");
+      setPageError("Failed to reset invite link. Please try again.");
+    } finally {
+      setResettingLink(false);
+    }
+  };
 
   const domainRestriction = React.useMemo(() => {
     return {
