@@ -16,7 +16,7 @@ export namespace InvitePeoplePage {
     onInviteIndividually?: () => void;
 
     onCopyLink?: (link: string) => void | Promise<void>;
-    onResetLink?: () => void | Promise<void>;
+    onResetLink: () => void | Promise<void>;
     isResettingLink?: boolean;
     linkEnabled?: boolean;
     onToggleLink?: (enabled: boolean) => void;
@@ -67,7 +67,7 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
   }, [props.invitationLink, props.onCopyLink, linkEnabled]);
 
   const handleResetLink = useCallback(async () => {
-    if (!props.onResetLink || isResettingLink || !linkEnabled) return;
+    if (isResettingLink || !linkEnabled) return;
 
     setResettingLink(true);
     try {
@@ -75,7 +75,7 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
     } finally {
       setResettingLink(false);
     }
-  }, [props.onResetLink, isResettingLink, linkEnabled]);
+  }, [isResettingLink, linkEnabled]);
 
   const handleLinkToggle = useCallback(
     (enabled: boolean) => {
@@ -103,9 +103,9 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
   );
 
   const handleOpenResetConfirm = useCallback(() => {
-    if (!props.onResetLink || isResettingLink || !linkEnabled) return;
+    if (isResettingLink || !linkEnabled) return;
     setShowResetConfirm(true);
-  }, [props.onResetLink, isResettingLink, linkEnabled]);
+  }, [isResettingLink, linkEnabled]);
 
   const handleCancelResetConfirm = useCallback(() => {
     setShowResetConfirm(false);
@@ -160,7 +160,7 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
                     "flex-1 rounded-lg border border-surface-outline bg-surface-raised px-3 py-2 text-sm text-content-base focus:border-brand-1 focus:outline-none",
                     !linkEnabled && "opacity-60",
                   )}
-                  value={linkEnabled ? props.invitationLink ?? "" : ""}
+                  value={linkEnabled ? (props.invitationLink ?? "") : ""}
                   placeholder={linkEnabled ? "Generating invite link…" : "Invite link disabled"}
                   readOnly
                   disabled={!linkEnabled}
@@ -180,26 +180,20 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
 
               {linkEnabled ? (
                 <p className="text-xs text-content-dimmed">
-                  Only company admins can see and share this link.
-                  {props.onResetLink ? (
-                    <>
-                      {" "}
-                      You can also{" "}
-                      <button
-                        type="button"
-                        onClick={handleOpenResetConfirm}
-                        disabled={isResettingLink}
-                        data-test-id="invite-people-reset-link"
-                        className={classNames(
-                          "font-medium text-content-link underline focus:outline-none",
-                          isResettingLink && "cursor-not-allowed opacity-60",
-                        )}
-                      >
-                        generate a new link
-                      </button>
-                      .
-                    </>
-                  ) : null}
+                  Only company admins can see and share this link. You can also{" "}
+                  <button
+                    type="button"
+                    onClick={handleOpenResetConfirm}
+                    disabled={isResettingLink}
+                    data-test-id="invite-people-reset-link"
+                    className={classNames(
+                      "font-medium text-content-link underline focus:outline-none",
+                      isResettingLink && "cursor-not-allowed opacity-60",
+                    )}
+                  >
+                    generate a new link
+                  </button>
+                  .
                 </p>
               ) : null}
 

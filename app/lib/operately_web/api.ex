@@ -135,6 +135,7 @@ defmodule OperatelyWeb.Api do
     # internal: managing invite links and invitations
     mutation(:get_company_invite_link, OperatelyWeb.Api.Invitations.GetCompanyInviteLink)
     mutation(:update_company_invite_link, OperatelyWeb.Api.Invitations.UpdateCompanyInviteLink)
+    mutation(:reset_company_invite_link, OperatelyWeb.Api.Invitations.ResetCompanyInviteLink)
 
     # single user invitations
     query(:get_invitation, Q.GetInvitation)
