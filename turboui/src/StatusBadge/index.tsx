@@ -2,6 +2,8 @@ import { IconCheck, IconCircleFilled, IconX } from "../icons";
 import React from "react";
 import { BadgeStatus, StatusBadgeProps } from "./types";
 
+export type { BadgeStatus };
+
 export function StatusBadge({ status, hideIcon = false, className = "", style, customLabel }: StatusBadgeProps) {
   const { bgColor, textColor, borderColor, label } = getStatusProperties(status);
   const icon = hideIcon ? null : getStatusIcon(status, textColor);

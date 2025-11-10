@@ -33,6 +33,15 @@ defmodule Operately.Features.ProjectCheckInsTest do
     |> Steps.assert_email_is_sent_to_contributors()
   end
 
+  feature "check-in status is displayed on the check-ins tab", ctx do
+    values = %{status: "caution", description: "We're facing some challenges."}
+
+    ctx
+    |> Steps.submit_check_in(values)
+    |> Steps.visit_check_ins_tab()
+    |> Steps.assert_check_in_status_displayed("caution")
+  end
+
   feature "acknowledge a check-in in the web app", ctx do
     values = %{status: "on_track", description: "This is a check-in."}
 

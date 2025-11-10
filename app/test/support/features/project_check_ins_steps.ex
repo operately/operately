@@ -9,7 +9,7 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
   @status_to_on_screen %{
     "on_track" => "On Track",
     "caution" => "Caution",
-    "issue" => "Issue"
+    "off_track" => "Off Track"
   }
 
   step :given_a_project_exists, ctx do
@@ -84,6 +84,17 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> UI.click(testid: "tab-check-ins")
     |> UI.assert_text(description)
+  end
+
+  step :visit_check_ins_tab, ctx do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.click(testid: "tab-check-ins")
+  end
+
+  step :assert_check_in_status_displayed, ctx, status do
+    ctx
+    |> UI.assert_text(@status_to_on_screen[status])
   end
 
   step :assert_check_in_visible_on_feed, ctx, %{description: description} do

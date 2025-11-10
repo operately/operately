@@ -21,6 +21,22 @@ defmodule Operately.Features.GoalChecksInsTest do
     |> Steps.assert_check_in_email_sent()
   end
 
+  feature "check-in status is displayed on the check-ins tab", ctx do
+    params = %{
+      status: "caution",
+      message: "We're facing some challenges",
+      targets: %{
+        "First response time" => 15,
+        "Increase feedback score to 90%" => 70
+      }
+    }
+
+    ctx
+    |> Steps.check_in(params)
+    |> Steps.visit_check_ins_tab()
+    |> Steps.assert_check_in_status_displayed("caution")
+  end
+
   feature "acknowledge a check-in in the web app", ctx do
     ctx
     |> Steps.given_a_check_in_exists()

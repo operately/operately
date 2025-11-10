@@ -23,6 +23,16 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     |> UI.visit(Paths.goal_check_in_path(ctx.company, ctx.check_in))
   end
 
+  step :visit_check_ins_tab, ctx do
+    ctx
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal, tab: "check-ins"))
+  end
+
+  step :assert_check_in_status_displayed, ctx, status do
+    ctx
+    |> UI.assert_text(status_label(status))
+  end
+
   step :check_in, ctx, %{status: status, targets: targets, message: message} do
     ctx
     |> UI.click(testid: "check-in-button")
@@ -360,4 +370,11 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
   defp last_comment(ctx) do
     Operately.Updates.list_comments(ctx.check_in.id, :goal_update) |> List.last()
   end
+
+  defp status_label("on_track"), do: "On track"
+  defp status_label("caution"), do: "Caution"
+  defp status_label("off_track"), do: "Off track"
+  defp status_label("paused"), do: "Paused"
+  defp status_label("pending"), do: "Pending"
+  defp status_label(status), do: status
 end
