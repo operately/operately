@@ -412,6 +412,10 @@ export class Paths {
     return this.createCompanyPath(["tasks", taskId]);
   }
 
+  inviteTeamPath() {
+    return this.createCompanyPath(["invite-team"]);
+  }
+
   //
   // Private utility methods
   //
