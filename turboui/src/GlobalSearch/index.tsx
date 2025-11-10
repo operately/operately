@@ -532,12 +532,21 @@ function SearchResultGroupHeader({ title }: { title: string }) {
   return <div className="px-3 py-0.5 text-xs font-medium text-content-dimmed">{title}</div>;
 }
 
-function SearchActivator({ placeholder, onActivate }: { placeholder: string; onActivate: () => void }) {
+function SearchActivator({
+  placeholder,
+  onActivate,
+  testId,
+}: {
+  placeholder: string;
+  onActivate: () => void;
+  testId?: string;
+}) {
   return (
     <button
       type="button"
       onClick={onActivate}
       className="w-[250px] flex items-center gap-2 px-3 py-1.5 -mb-0.5 text-sm text-content-dimmed bg-transparent border border-surface-outline rounded-lg hover:bg-surface-dimmed transition"
+      data-test-id={testId ? `${testId}-activator` : undefined}
     >
       <IconSearch size={14} className="text-content-dimmed" />
       <span className="flex-1 text-left truncate">{placeholder}</span>
@@ -574,7 +583,7 @@ export function GlobalSearch(props: GlobalSearch.Props) {
 
   return (
     <>
-      <SearchActivator placeholder={state.placeholder} onActivate={openOverlay} />
+      <SearchActivator placeholder={state.placeholder} onActivate={openOverlay} testId={state.testId} />
       <SearchOverlay state={state} isOpen={overlayOpen} onClose={closeOverlay} />
     </>
   );
