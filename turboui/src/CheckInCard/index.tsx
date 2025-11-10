@@ -7,6 +7,7 @@ import { Avatar, AvatarPerson } from "../Avatar";
 import { Summary } from "../RichContent";
 import FormattedTime from "../FormattedTime";
 import { CommentCountIndicator } from "../CommentCountIndicator";
+import { StatusBadge, BadgeStatus } from "../StatusBadge";
 
 namespace CheckInCard {
   interface CheckIn {
@@ -15,6 +16,7 @@ namespace CheckInCard {
     date: Date;
     content: string;
     commentCount: number;
+    status: BadgeStatus;
   }
 
   export interface Props {
@@ -39,7 +41,10 @@ export function CheckInCard({ checkIn, mentionedPersonLookup }: CheckInCard.Prop
         </div>
 
         <div className="flex-1 h-full">
-          <div className="font-semibold leading-none mb-1">Check-In for {getMonth(checkIn.date)}</div>
+          <div className="flex items-center gap-2 mb-1">
+            <div className="font-semibold leading-none">Check-In for {getMonth(checkIn.date)}</div>
+            <StatusBadge status={checkIn.status} hideIcon className="scale-95 inline-block shrink-0" />
+          </div>
           <div className="break-words">
             <Summary content={checkIn.content} characterCount={130} mentionedPersonLookup={mentionedPersonLookup} />
           </div>
