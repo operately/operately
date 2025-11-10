@@ -7,8 +7,8 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearch do
 
   alias Operately.Repo
   alias Operately.Projects.Project
+  alias Operately.Projects.Milestone
   alias Operately.Goals.Goal
-  alias Operately.Tasks.Task
   alias Operately.People.Person
   alias OperatelyWeb.Api.Serializer
 
@@ -19,6 +19,7 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearch do
   outputs do
     field :projects, list_of(:project)
     field :goals, list_of(:goal)
+    field :milestones, list_of(:milestone)
     field :tasks, list_of(:task)
     field :people, list_of(:person)
   end
@@ -30,16 +31,22 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearch do
     query = String.trim(inputs.query)
 
     if String.length(query) < 2 do
-      {:ok, %{projects: [], goals: [], tasks: [], people: []}}
+      {:ok, %{projects: [], goals: [], milestones: [], tasks: [], people: []}}
     else
-      projects = search_projects(person, query)
-      goals = search_goals(person, query)
-      tasks = search_tasks(person, query)
-      people = search_people(person, query)
+      [projects, goals, milestones, tasks, people] =
+        [
+          Task.async(fn -> search_projects(person, query) end),
+          Task.async(fn -> search_goals(person, query) end),
+          Task.async(fn -> search_milestones(person, query) end),
+          Task.async(fn -> search_tasks(person, query) end),
+          Task.async(fn -> search_people(person, query) end)
+        ]
+        |> Task.await_many()
 
       output = %{
         projects: Serializer.serialize(projects, level: :full),
         goals: Serializer.serialize(goals, level: :essential),
+        milestones: Serializer.serialize(milestones, level: :essential),
         tasks: Serializer.serialize(tasks, level: :full),
         people: Serializer.serialize(people, level: :essential)
       }
@@ -96,7 +103,35 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearch do
     |> Repo.all()
   end
 
+  defp search_milestones(person, search_term) do
+    ilike_query = "%" <> search_term <> "%"
+
+    ranked_milestones_query =
+      from(m in Milestone, as: :milestone)
+      |> join(:inner, [m], p in assoc(m, :project), as: :project)
+      |> where([_m, p], p.company_id == ^person.company_id)
+      |> where([_m, p], p.status != "closed")
+      |> where([m], m.status != :done)
+      |> where([m], ilike(m.title, ^ilike_query))
+      |> filter_by_view_access(person.id, named_binding: :project)
+      |> select([m], %{
+        id: m.id,
+        search_rank: fragment("POSITION(LOWER(?) IN LOWER(?))", ^search_term, m.title)
+      })
+
+    limited_milestones =
+      from(r in subquery(ranked_milestones_query),
+        order_by: [asc: r.search_rank, asc: r.id],
+        limit: @limit
+      )
+
+    from(m in Milestone, join: r in subquery(limited_milestones), on: m.id == r.id, preload: [:project, :creator, :space], order_by: [asc: r.search_rank, asc: m.id], select: m)
+    |> Repo.all()
+  end
+
   defp search_tasks(person, search_term) do
+    alias Operately.Tasks.Task
+
     ilike_query = "%" <> search_term <> "%"
 
     ranked_tasks_query =
