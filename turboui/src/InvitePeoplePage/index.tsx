@@ -157,7 +157,7 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
               <div className="flex flex-col gap-2 sm:flex-row sm:items-stretch">
                 <input
                   className={classNames(
-                    "flex-1 rounded-lg border border-surface-outline bg-surface-raised px-3 py-2 text-sm text-content-base focus:border-brand-1 focus:outline-none",
+                    "flex-1 rounded-lg border border-surface-outline bg-surface-base px-3 py-2 text-sm text-content-base focus:border-brand-1 focus:outline-none",
                     !linkEnabled && "opacity-60",
                   )}
                   value={linkEnabled ? (props.invitationLink ?? "") : ""}
