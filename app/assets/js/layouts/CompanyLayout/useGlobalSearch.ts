@@ -17,6 +17,7 @@ export function useGlobalSearchHandler(): (params: SearchParams) => Promise<Glob
         return {
           projects: prepareProjects(paths, result),
           goals: prepareGoals(paths, result),
+          milestones: prepareMilestones(paths, result),
           tasks: prepareTasks(paths, result),
           people: preparePeople(paths, result),
         };
@@ -49,6 +50,18 @@ function prepareGoals(paths: Paths, result: Api.GlobalSearchResult): GlobalSearc
       link: paths.goalPath(goal.id!),
       champion: goal.champion ?? null,
       space: goal.space ?? null,
+    })) || []
+  );
+}
+
+function prepareMilestones(paths: Paths, result: Api.GlobalSearchResult): GlobalSearch.Milestone[] {
+  return (
+    result.milestones?.map((milestone) => ({
+      id: milestone.id!,
+      title: milestone.title!,
+      link: paths.projectMilestonePath(milestone.id!),
+      project: milestone.project ?? null,
+      space: milestone.space ?? null,
     })) || []
   );
 }

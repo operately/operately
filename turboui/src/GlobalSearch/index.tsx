@@ -2,7 +2,7 @@ import * as React from "react";
 import { createPortal } from "react-dom";
 
 import { Avatar } from "../Avatar";
-import { IconGoal, IconProject, IconSearch, IconTask, IconX } from "../icons";
+import { IconGoal, IconMilestone, IconProject, IconSearch, IconTask, IconX } from "../icons";
 import { createTestId } from "../TestableElement";
 
 export namespace GlobalSearch {
@@ -30,6 +30,14 @@ export namespace GlobalSearch {
     space?: { name: string } | null;
   }
 
+  export interface Milestone {
+    id: string;
+    title: string;
+    link: string;
+    project?: { name: string } | null;
+    space?: { name: string } | null;
+  }
+
   export interface Person {
     id: string;
     fullName: string;
@@ -41,6 +49,7 @@ export namespace GlobalSearch {
   export interface SearchResult {
     projects?: Project[] | null;
     goals?: Goal[] | null;
+    milestones?: Milestone[] | null;
     tasks?: Task[] | null;
     people?: Person[] | null;
   }
@@ -182,10 +191,11 @@ export function SearchResults({
   flatResults: { type: string; item: any; link: string }[];
 }) {
   const hasResults = React.useMemo(() => {
-    const { projects, goals, tasks, people } = state.results;
+    const { projects, goals, milestones, tasks, people } = state.results;
     return (
       (projects && projects.length > 0) ||
       (goals && goals.length > 0) ||
+      (milestones && milestones.length > 0) ||
       (tasks && tasks.length > 0) ||
       (people && people.length > 0)
     );
@@ -217,6 +227,33 @@ export function SearchResults({
 
   return (
     <div className="py-1">
+      {/* Goals */}
+      {state.results.goals && state.results.goals.length > 0 && (
+        <div className="mb-2">
+          <SearchResultGroupHeader title="GOALS" />
+
+          {state.results.goals.map((goal) => {
+            const currentIndex = getCurrentIndex("goal", goal.id);
+            const isSelected = currentIndex === state.selectedIndex;
+            const subtitle = [goal.champion?.fullName, goal.space?.name].filter(Boolean).join(" • ");
+
+            return (
+              <SearchResultItem
+                key={goal.id}
+                id={goal.id}
+                name={goal.name}
+                link={goal.link}
+                icon={<IconGoal size={24} />}
+                subtitle={subtitle || undefined}
+                isSelected={isSelected}
+                onClick={handleItemClick}
+                testId={createTestId(state.testId, "goal", goal.name)}
+              />
+            );
+          })}
+        </div>
+      )}
+
       {/* Projects */}
       {state.results.projects && state.results.projects.length > 0 && (
         <div className="mb-2">
@@ -244,27 +281,27 @@ export function SearchResults({
         </div>
       )}
 
-      {/* Goals */}
-      {state.results.goals && state.results.goals.length > 0 && (
+      {/* Milestones */}
+      {state.results.milestones && state.results.milestones.length > 0 && (
         <div className="mb-2">
-          <SearchResultGroupHeader title="GOALS" />
+          <SearchResultGroupHeader title="MILESTONES" />
 
-          {state.results.goals.map((goal) => {
-            const currentIndex = getCurrentIndex("goal", goal.id);
+          {state.results.milestones.map((milestone) => {
+            const currentIndex = getCurrentIndex("milestone", milestone.id);
             const isSelected = currentIndex === state.selectedIndex;
-            const subtitle = [goal.champion?.fullName, goal.space?.name].filter(Boolean).join(" • ");
+            const subtitle = [milestone.project?.name, milestone.space?.name].filter(Boolean).join(" • ");
 
             return (
               <SearchResultItem
-                key={goal.id}
-                id={goal.id}
-                name={goal.name}
-                link={goal.link}
-                icon={<IconGoal size={24} />}
-                subtitle={subtitle || undefined}
+                key={milestone.id}
+                id={milestone.id}
+                name={milestone.title}
+                link={milestone.link}
+                icon={<IconMilestone size={24} />}
+                subtitle={subtitle}
                 isSelected={isSelected}
                 onClick={handleItemClick}
-                testId={createTestId(state.testId, "goal", goal.name)}
+                testId={createTestId(state.testId, "milestone", milestone.title)}
               />
             );
           })}
@@ -353,6 +390,12 @@ function SearchOverlay({ state, isOpen, onClose }: SearchOverlayProps) {
       });
     }
 
+    if (state.results.milestones) {
+      state.results.milestones.forEach((milestone) => {
+        items.push({ type: "milestone", item: milestone, link: milestone.link });
+      });
+    }
+
     if (state.results.tasks) {
       state.results.tasks.forEach((task) => {
         items.push({ type: "task", item: task, link: task.link });
@@ -369,10 +412,11 @@ function SearchOverlay({ state, isOpen, onClose }: SearchOverlayProps) {
   }, [state.results]);
 
   const hasResults = React.useMemo(() => {
-    const { projects, goals, tasks, people } = state.results;
+    const { projects, goals, milestones, tasks, people } = state.results;
     return (
       (projects && projects.length > 0) ||
       (goals && goals.length > 0) ||
+      (milestones && milestones.length > 0) ||
       (tasks && tasks.length > 0) ||
       (people && people.length > 0)
     );
@@ -461,7 +505,7 @@ function SearchOverlay({ state, isOpen, onClose }: SearchOverlayProps) {
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               onKeyDown={handleInputKeyDown}
-              placeholder="Search for projects, goals, tasks, or people..."
+              placeholder="Search for projects, goals, milestones, tasks, or people..."
               className="w-full pl-10 pr-12 py-2.5 text-base bg-surface-base border-b border-surface-outline focus:outline-none rounded-b-lg"
               data-test-id={testId}
             />

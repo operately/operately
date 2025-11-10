@@ -2655,6 +2655,7 @@ export interface GlobalSearchInput {
 export interface GlobalSearchResult {
   projects: Project[];
   goals: Goal[];
+  milestones: Milestone[];
   tasks: Task[];
   people: Person[];
 }
