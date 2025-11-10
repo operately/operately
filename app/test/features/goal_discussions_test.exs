@@ -47,4 +47,13 @@ defmodule Operately.Features.GoalDiscussionsTest do
     |> Steps.delete_comment("This is a comment")
     |> Steps.assert_comment_deleted()
   end
+
+  @tag login_as: :champion
+  feature "navigation has complete breadcrumb", ctx do
+    ctx
+    |> Steps.start_new_discussion(@discussion_params)
+    |> Steps.assert_navigation_shows_space_and_goal()
+    |> Steps.navigate_to_goal_from_discussion()
+    |> Steps.assert_goal_discussions_tab()
+  end
 end
