@@ -21,7 +21,7 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearchTest do
       ctx = log_in(ctx)
 
       assert {200, res} = query(ctx.conn, :global_search, query: "a")
-      assert res == %{projects: [], goals: [], tasks: [], people: []}
+      assert res == %{projects: [], goals: [], milestones: [], tasks: [], people: []}
     end
 
     test "searches projects by name", ctx do
@@ -196,6 +196,43 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearchTest do
       assert length(res.projects) == 1
       assert length(res.goals) == 1
       assert length(res.people) == 1
+    end
+
+    test "searches milestones by title", ctx do
+      ctx =
+        ctx
+        |> log_in()
+        |> Factory.add_project(:website, :marketing)
+        |> Factory.add_project_milestone(:launch, :website, title: "Launch Milestone")
+        |> Factory.add_project_milestone(:beta, :website, title: "Beta Release")
+
+      assert {200, res} = query(ctx.conn, :global_search, query: "Launch")
+
+      assert length(res.milestones) == 1
+      assert List.first(res.milestones).title == "Launch Milestone"
+    end
+
+    test "does not return done milestones", ctx do
+      ctx =
+        ctx
+        |> log_in()
+        |> Factory.add_project(:website, :marketing)
+        |> Factory.add_project_milestone(:launch, :website, title: "Launch Milestone", status: :done)
+
+      assert {200, res} = query(ctx.conn, :global_search, query: "Launch")
+      assert res.milestones == []
+    end
+
+    test "does not return milestones that belong to closed projects", ctx do
+      ctx =
+        ctx
+        |> log_in()
+        |> Factory.add_project(:website, :marketing, name: "Website Redesign")
+        |> Factory.add_project_milestone(:launch, :website, title: "Launch Milestone")
+        |> Factory.close_project(:website)
+
+      assert {200, res} = query(ctx.conn, :global_search, query: "Launch")
+      assert res.milestones == []
     end
 
     defp add_multiple_projects(ctx, count, space_key) do

@@ -390,6 +390,22 @@ export function IconProjectPlain({ size = 16, className = "" }: IconProps) {
   return <IconChecklist size={size} className={outer} />;
 }
 
+export function IconMilestone({ size = 16, className = "" }: IconProps) {
+  const outer = classNames(
+    "flex-shrink-0 rounded-full flex items-center justify-center",
+    "text-blue-500 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30",
+    className,
+  );
+
+  const innerSize = size - 8;
+
+  return (
+    <div className={outer} style={{ width: size, height: size }}>
+      <IconFlag size={innerSize} />
+    </div>
+  );
+}
+
 export function IconPaintBucket({
   size = 24,
   color = "currentColor",
