@@ -5,7 +5,7 @@ import * as Goals from "@/models/goals";
 import * as Activities from "@/models/activities";
 import * as Reactions from "@/models/reactions";
 
-import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
+import { usePaths } from "@/routes/paths";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CommentSection, useComments } from "@/features/CommentSection";
 
@@ -17,26 +17,12 @@ import { assertPresent } from "@/utils/assertions";
 import { PageModule } from "@/routes/types";
 import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 
+import { loader, useLoaderData } from "./loader";
+
 export default { name: "GoalActivityPage", loader, Page } as PageModule;
 
-interface LoaderResult {
-  activity: Activities.Activity;
-}
-
-async function loader({ params }): Promise<LoaderResult> {
-  return {
-    activity: await Activities.getActivity({
-      id: params.id,
-      includeUnreadGoalNotifications: true,
-      includePermissions: true,
-      includeSubscriptionsList: true,
-      includePotentialSubscribers: true,
-    }),
-  };
-}
-
 function Page() {
-  const { activity } = Pages.useLoadedData<LoaderResult>();
+  const { activity } = useLoaderData();
   const goal = Activities.getGoal(activity);
 
   assertPresent(activity.notifications, "Activity notifications must be defined");
@@ -45,7 +31,7 @@ function Page() {
   return (
     <Pages.Page title={[ActivityHandler.pageHtmlTitle(activity), goal.name!]}>
       <Paper.Root>
-        <GoalSubpageNavigation goal={goal} />
+        <Nav />
 
         <Paper.Body>
           <ActivityHandler.PageOptions activity={activity} />
@@ -62,6 +48,24 @@ function Page() {
       </Paper.Root>
     </Pages.Page>
   );
+}
+
+function Nav() {
+  const paths = usePaths();
+  const { goal, activity } = useLoaderData();
+
+  const isDiscussion = activity.action === "goal_discussion_creation";
+  const goalPath = isDiscussion ? paths.goalPath(goal.id, { tab: "discussions" }) : paths.goalPath(goal.id);
+
+  const items: Array<{ to: string; label: string }> = [];
+
+  if (goal.space) {
+    items.push({ to: paths.spacePath(goal.space.id), label: goal.space.name });
+    items.push({ to: paths.spaceWorkMapPath(goal.space.id), label: "Work Map" });
+  }
+  items.push({ to: goalPath, label: goal.name });
+
+  return <Paper.Navigation items={items} />;
 }
 
 function Title({ activity }: { activity: Activities.Activity }) {
@@ -82,7 +86,7 @@ function Title({ activity }: { activity: Activities.Activity }) {
 }
 
 function ActivityReactions() {
-  const { activity } = Pages.useLoadedData<LoaderResult>();
+  const { activity } = useLoaderData();
 
   assertPresent(
     activity.commentThread?.reactions,
@@ -98,7 +102,7 @@ function ActivityReactions() {
 }
 
 function Comments({ goal }: { goal: Goals.Goal }) {
-  const { activity } = Pages.useLoadedData<LoaderResult>();
+  const { activity } = useLoaderData();
 
   assertPresent(activity.commentThread, "commentThread must be present in activity");
   assertPresent(activity.permissions?.canCommentOnThread, "permissions must be present in activity");
@@ -119,7 +123,7 @@ function Comments({ goal }: { goal: Goals.Goal }) {
 
 function Subscriptions() {
   const refresh = Pages.useRefresh();
-  const { activity } = Pages.useLoadedData<LoaderResult>();
+  const { activity } = useLoaderData();
 
   if (!activity.commentThread?.potentialSubscribers || !activity.commentThread?.subscriptionList) {
     return null;

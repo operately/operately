@@ -185,6 +185,24 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
     |> UI.refute_has(testid: "comment-#{ctx.comment.id}")
   end
 
+  step :assert_navigation_shows_space_and_goal, ctx do
+    ctx
+    |> UI.assert_text(ctx.group.name)
+    |> UI.assert_text("Work Map")
+    |> UI.assert_text(ctx.goal.name)
+  end
+
+  step :navigate_to_goal_from_discussion, ctx do
+    UI.click(ctx, testid: UI.testid(["nav-item", ctx.goal.name]))
+  end
+
+  step :assert_goal_discussions_tab, ctx do
+    ctx
+    |> UI.assert_page(Paths.goal_path(ctx.company, ctx.goal))
+    |> UI.assert_text("Discussions")
+    |> UI.assert_has(testid: "start-discussion")
+  end
+
   #
   # Helper functions
   #

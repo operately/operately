@@ -336,7 +336,7 @@ export class Paths {
     return this.createCompanyPath(["goals", goalId, "complete"]);
   }
 
-  goalPath(goalId: string, params?: { tab?: string }) {
+  goalPath(goalId: string, params?: { tab?: "overview" | "discussions" | "check-ins" | "activity" }) {
     return this.createCompanyPath(["goals", goalId]) + (params?.tab ? "?tab=" + params.tab : "");
   }
 
