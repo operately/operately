@@ -123,6 +123,17 @@ defmodule Operately.Features.InviteLinksTest do
       |> Steps.assert_you_are_member_of_the_general_space()
       |> Steps.assert_you_are_redirected_to_company_home_page()
     end
+
+    feature "shows error when email delivery is not configured", ctx do
+      ctx
+      |> Steps.given_email_delivery_is_not_configured()
+      |> Steps.given_that_an_invite_link_exists()
+      |> Steps.follow_invite_link()
+      |> Steps.assert_on_join_page_with_invitation()
+      |> Steps.follow_sign_up_and_join()
+      |> Steps.attempt_sign_up_with_email()
+      |> Steps.assert_email_delivery_not_configured_error()
+    end
   end
 
   feature "attempting to join with non-existent token", ctx do
