@@ -97,6 +97,9 @@
   font-family: monospace;
   padding: 0.75rem 1rem;
   border-radius: 0.5rem;
+  white-space: pre;
+  overflow-x: auto;
+  max-width: 100%;
 }
 .ProseMirror pre code {
   color: inherit;
