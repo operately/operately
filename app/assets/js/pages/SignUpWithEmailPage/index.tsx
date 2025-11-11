@@ -12,6 +12,7 @@ import { PasswordStrength } from "@/features/auth/PasswordStrength";
 import { validatePassword } from "@/features/auth/validatePassword";
 
 import { useFieldValue } from "@/components/Forms/FormContext";
+import { ErrorMessage } from "@/components/Forms/ErrorMessage";
 import { logIn } from "@/routes/auth";
 import { PageModule } from "@/routes/types";
 import { match } from "ts-pattern";
@@ -19,6 +20,9 @@ import { match } from "ts-pattern";
 export default { name: "SignUpWithEmailPage", loader: Pages.emptyLoader, Page } as PageModule;
 
 type PageState = "form" | "code-verification";
+
+const EMAIL_DELIVERY_NOT_CONFIGURED_MESSAGE =
+  "Email signup isn't available because email delivery hasn't been configured. Please contact your workspace administrator.";
 
 //
 // The page is split into two states: "form" and "code-verification".
@@ -35,6 +39,7 @@ type PageState = "form" | "code-verification";
 function Page() {
   const inviteToken = new URLSearchParams(window.location.search).get("invite_token");
   const [pageState, setPageState] = React.useState<PageState>("form");
+  const [submitError, setSubmitError] = React.useState<string | null>(null);
 
   const form = Forms.useForm({
     fields: {
@@ -52,6 +57,8 @@ function Page() {
     },
     submit: async () => {
       if (pageState === "form") {
+        setSubmitError(null);
+
         await Api.createEmailActivationCode({ email: form.values.email });
         setPageState("code-verification");
       } else {
@@ -73,15 +80,25 @@ function Page() {
         await logIn(form.values.email, form.values.password, { redirectTo });
       }
     },
+    onError: (error) => {
+      const message = error.response?.data?.message;
+
+      if (message === EMAIL_DELIVERY_NOT_CONFIGURED_MESSAGE) {
+        setSubmitError(message);
+        return;
+      }
+
+      setSubmitError("We couldn't send the confirmation email. Please try again later.");
+    },
   });
 
   return match(pageState)
-    .with("form", () => <Form form={form} />)
+    .with("form", () => <Form form={form} submitError={submitError} />)
     .with("code-verification", () => <CodeVerification form={form} />)
     .exhaustive();
 }
 
-function Form({ form }) {
+function Form({ form, submitError }: { form: ReturnType<typeof Forms.useForm>; submitError: string | null }) {
   const validation = validateForm(form);
 
   return (
@@ -94,6 +111,12 @@ function Form({ form }) {
             <p className="text-content-dimmed mb-8">Use your work email — keep work and life separate.</p>
 
             <Forms.Form form={form}>
+              {submitError && (
+                <div className="mb-4" role="alert">
+                  <ErrorMessage error={submitError} />
+                </div>
+              )}
+
               <Forms.FieldGroup>
                 <Forms.TextInput
                   field={"email"}

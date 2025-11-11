@@ -3,12 +3,23 @@ defmodule OperatelyEmail.Mailers.BaseMailer do
     Operately.Mailer.deliver(email, config())
   end
 
+  def email_delivery_configured? do
+    case Application.get_env(:operately, :app_env) do
+      :prod -> prod_email_configured?()
+      _ -> true
+    end
+  end
+
   defp config do
     case Application.get_env(:operately, :app_env) do
       :dev -> dev_config()
       :test -> test_config()
       :prod -> prod_config()
     end
+  end
+
+  defp prod_email_configured? do
+    System.get_env("SENDGRID_API_KEY", "") != "" or System.get_env("SMTP_SERVER", "") != ""
   end
 
   defp dev_config do

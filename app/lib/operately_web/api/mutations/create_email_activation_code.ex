@@ -13,7 +13,11 @@ defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCode do
     ) do
       {:ok, %{}}
     else
-      {:error, _} -> {:error, :internal_server_error}
+      {:error, :email_delivery_not_configured} ->
+        {:error, :bad_request, email_delivery_not_configured_message()}
+
+      {:error, _} ->
+        {:error, :internal_server_error}
     end
   end
 
@@ -23,6 +27,10 @@ defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCode do
     else
       {:error, :signup_not_allowed}
     end
+  end
+
+  defp email_delivery_not_configured_message do
+    "Email signup isn't available because email delivery hasn't been configured. Please contact your workspace administrator."
   end
 
 end
