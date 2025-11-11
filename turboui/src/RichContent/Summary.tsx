@@ -29,6 +29,8 @@ function useSummarized(content: any, characterCount: number): string {
 }
 
 export function summarize(node: any): any {
+  if (!node) return { type: "doc", content: [] };
+
   switch (node.type) {
     case "doc":
       return summarizeDoc(node);
