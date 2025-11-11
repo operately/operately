@@ -121,13 +121,14 @@ defmodule Operately.Operations.CompanyAdding do
   defp insert_person(multi, attrs) do
     multi
     |> Multi.run(:company_space, fn _, changes -> {:ok, changes.group} end)
+    |> Multi.run(:avatar_url, fn _, changes -> find_avatar_from_account(changes.account) end)
     |> Operately.People.insert_person(fn changes ->
       Person.changeset(%{
         company_id: changes[:company].id,
         account_id: changes[:account].id,
         full_name: changes[:account].full_name,
         email: changes[:account].email,
-        avatar_url: "",
+        avatar_url: changes[:avatar_url],
         title: attrs.title,
       })
     end)
@@ -180,5 +181,18 @@ defmodule Operately.Operations.CompanyAdding do
         account_id: account.id,
       })
     end)
+  end
+
+  defp find_avatar_from_account(account) do
+    people = Repo.preload(account, :people).people
+
+    avatar_url = Enum.find_value(people, "", fn person ->
+      cond do
+        person.avatar_url && person.avatar_url != "" -> person.avatar_url
+        true -> ""
+      end
+    end)
+
+    {:ok, avatar_url}
   end
 end
