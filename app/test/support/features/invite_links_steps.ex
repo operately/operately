@@ -274,6 +274,43 @@ defmodule Operately.Support.Features.InviteLinksSteps do
     ctx
   end
 
+  step :given_email_delivery_is_not_configured, ctx do
+    original_app_env = Application.get_env(:operately, :app_env)
+    original_sendgrid = System.get_env("SENDGRID_API_KEY")
+    original_smtp = System.get_env("SMTP_SERVER")
+
+    Application.put_env(:operately, :app_env, :prod)
+    System.delete_env("SENDGRID_API_KEY")
+    System.delete_env("SMTP_SERVER")
+
+    on_exit(fn ->
+      Application.put_env(:operately, :app_env, original_app_env)
+      if original_sendgrid, do: System.put_env("SENDGRID_API_KEY", original_sendgrid)
+      if original_smtp, do: System.put_env("SMTP_SERVER", original_smtp)
+    end)
+
+    ctx
+  end
+
+  step :attempt_sign_up_with_email, ctx do
+    email = PeopleFixtures.unique_account_email()
+    ctx = Map.put(ctx, :new_member_email, email)
+
+    ctx
+    |> UI.click(testid: "sign-up-with-email")
+    |> UI.fill(testid: "email", with: email)
+    |> UI.fill(testid: "name", with: "Michael")
+    |> UI.fill(testid: "password", with: "123456789ABCder")
+    |> UI.fill(testid: "confirmPassword", with: "123456789ABCder")
+    |> UI.click(testid: "submit")
+    |> UI.sleep(500)
+  end
+
+  step :assert_email_delivery_not_configured_error, ctx do
+    ctx
+    |> UI.assert_text("Email signup isn't available because email delivery hasn't been configured. Please contact your organization administrator.")
+  end
+
   defp wait_for_signup_code(email) do
     subject = "Operately confirmation code:"
     emails = Emails.wait_for_email_for(email, attempts: 10)
