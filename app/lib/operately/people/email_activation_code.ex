@@ -2,6 +2,8 @@ defmodule Operately.People.EmailActivationCode do
   use Operately.Schema
   use Operately.Repo.Getter
 
+  alias OperatelyEmail.Mailers.BaseMailer
+
   schema "email_activation_codes" do
     field :email, :string
     field :code, :string
@@ -13,6 +15,7 @@ defmodule Operately.People.EmailActivationCode do
 
   def create(email) do
     with(
+      {:ok, :configured} <- ensure_email_delivery_configured(),
       {:ok, code} <- create_unique_code(email, attempts_left: 10),
       {:ok, _} <- OperatelyEmail.Emails.EmailActivationCodeEmail.send(code)
     ) do
@@ -22,6 +25,14 @@ defmodule Operately.People.EmailActivationCode do
 
   defp changeset(attrs) do
     changeset(%__MODULE__{}, attrs)
+  end
+
+  defp ensure_email_delivery_configured do
+    if BaseMailer.email_delivery_configured?() do
+      {:ok, :configured}
+    else
+      {:error, :email_delivery_not_configured}
+    end
   end
 
   defp changeset(email_activation_code, attrs) do
