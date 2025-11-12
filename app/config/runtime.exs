@@ -20,8 +20,11 @@ if System.get_env("PHX_SERVER") do
   config :operately, OperatelyWeb.Endpoint, server: true
 end
 
-config :langchain, :anthropic_key, System.get_env("ANTHROPIC_API_KEY")
-config :langchain, :openai_key, System.get_env("OPENAI_API_KEY")
+anthropic_key = System.get_env("ANTHROPIC_API_KEY")
+openai_key = System.get_env("OPENAI_API_KEY")
+
+config :langchain, :anthropic_key, anthropic_key
+config :langchain, :openai_key, openai_key
 
 config :operately, :demo_builder_allowed, System.get_env("OPERATELY_DEMO_BUILDER_ALLOWED") == "true"
 config :operately, :blob_token_secret_key, System.get_env("OPERATELY_BLOB_TOKEN_SECRET_KEY")
@@ -60,8 +63,17 @@ config :operately, :sendgrid_saas_onboarding_list_id, System.get_env("SENDGRID_S
 config :operately, :send_company_creation_notifications, System.get_env("SEND_COMPANY_CREATION_NOTIFICATIONS", "no") == "yes"
 config :operately, :company_creation_notification_webhook_url, System.get_env("COMPANY_CREATION_NOTIFICATION_WEBHOOK_URL")
 
-config :operately, :ai_provider, System.get_env("OPERATELY_AI_PROVIDER") || "openai"
+ai_provider = System.get_env("OPERATELY_AI_PROVIDER") || "openai"
+config :operately, :ai_provider, ai_provider
 config :operately, :openai_model, System.get_env("OPERATELY_AI_OPENAI_MODEL") || "gpt-5"
+
+ai_configured =
+  case ai_provider do
+    "claude" -> is_binary(anthropic_key) && String.trim(anthropic_key) != ""
+    _ -> is_binary(openai_key) && String.trim(openai_key) != ""
+  end
+
+config :operately, :ai_configured, ai_configured
 
 if config_env() == :prod do
   database_url =

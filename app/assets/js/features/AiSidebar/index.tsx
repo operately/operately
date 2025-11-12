@@ -37,6 +37,10 @@ export function AiSidebar() {
 function AiSidebarElements() {
   const state = useSidebarState();
   const me = useMe();
+  const aiConfigured = window.appConfig.aiConfigured;
+  const disabledMessage = aiConfigured
+    ? undefined
+    : "Ask Alfred isn't available because the AI integration hasn't been configured.";
 
   return (
     <>
@@ -58,6 +62,7 @@ function AiSidebarElements() {
         onCreateConversation={state.createConvo}
         onSendMessage={state.sendMessage}
         contextActions={state.actions}
+        disabledMessage={disabledMessage}
         contextAttachment={state.conversationContext!}
         me={me!}
         maxWidth={1000}

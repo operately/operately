@@ -36,6 +36,7 @@ declare global {
     };
 
     aiActions: AiConvoAction[];
+    aiConfigured: boolean;
 
     discordUrl: string;
     bookDemoUrl: string;
