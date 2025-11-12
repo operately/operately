@@ -93,6 +93,7 @@ defmodule Operately.MD.ProjectTest do
 
     assert rendered =~ "## Milestones"
     assert rendered =~ ctx.milestone.title
+    refute rendered =~ "Tasks:"
   end
 
   test "it includes completion timestamp for completed milestones", ctx do
@@ -156,5 +157,36 @@ defmodule Operately.MD.ProjectTest do
     assert rendered =~ "Created:"
     assert rendered =~ "Last Updated:"
     assert rendered =~ "Parent Goal: None (Company-wide project)"
+  end
+
+  test "it renders tasks grouped by milestone with assignee and due date", ctx do
+    ctx =
+      ctx
+      |> Factory.add_project_milestone(:milestone, :project, title: "Launch")
+      |> Factory.add_project_task(:task_one, :milestone, name: "Kick-off meeting")
+      |> Factory.add_project_task(:task_two, :milestone, name: "Finalize assets")
+      |> Factory.add_company_member(:teammate, name: "Jordan Teammate")
+      |> Factory.add_task_assignee(:assignee, :task_one, :teammate)
+
+    rendered = Operately.MD.Project.render(ctx.project)
+
+    refute rendered =~ "## Tasks"
+    assert rendered =~ "## Milestones"
+    assert rendered =~ "- #{ctx.milestone.title} (Status: pending)"
+    assert rendered =~ "Tasks:"
+    assert rendered =~ "- Kick-off meeting | Assigned to: #{ctx.teammate.full_name} | Due: 2024-02-11"
+    assert rendered =~ "- Finalize assets | Assigned to: Unassigned | Due: 2024-02-11"
+  end
+
+  test "it renders tasks without milestones in a dedicated section", ctx do
+    ctx =
+      ctx
+      |> Factory.add_project_task(:standalone_task, nil, project_id: ctx.project.id, name: "General prep task")
+
+    rendered = Operately.MD.Project.render(ctx.project)
+
+    assert rendered =~ "## Milestones"
+    assert rendered =~ "### Tasks Without Milestone"
+    assert rendered =~ "General prep task"
   end
 end

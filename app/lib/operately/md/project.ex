@@ -8,7 +8,8 @@ defmodule Operately.MD.Project do
         :retrospective,
         :milestones,
         [check_ins: [:author]],
-        [contributors: [:person]]
+        [contributors: [:person]],
+        [tasks: [:assigned_people, :milestone]]
       ])
 
     check_ins_with_comments = load_check_ins_with_comments(project.check_ins)
@@ -21,7 +22,7 @@ defmodule Operately.MD.Project do
     #{render_description(project)}
     #{render_people(project)}
     #{Operately.MD.Project.Timeframe.render(project)}
-    #{render_milestones(project.milestones)}
+    #{render_milestones(project.milestones, project.tasks)}
     #{render_check_ins(check_ins_with_comments)}
     #{render_discussions(discussions)}
     #{render_retrospective(project.retrospective)}
@@ -77,31 +78,42 @@ defmodule Operately.MD.Project do
     Operately.Time.as_date(d) |> Date.to_iso8601()
   end
 
-  defp render_milestones([]) do
-    """
+  defp render_milestones([], tasks) do
+    base = """
     ## Milestones
 
     _No milestones defined._
     """
+
+    case render_unassigned_tasks_section(tasks || []) do
+      nil -> base
+      unassigned -> base <> "\n\n" <> unassigned
+    end
   end
 
-  defp render_milestones(milestones) do
+  defp render_milestones(milestones, tasks) do
+    sorted_tasks =
+      (tasks || [])
+      |> Enum.sort_by(&(&1.inserted_at || ~N[0001-01-01 00:00:00]))
+
+    grouped_tasks = Enum.group_by(sorted_tasks, & &1.milestone_id)
+
+    milestone_sections =
+      milestones
+      |> Enum.sort_by(& &1.inserted_at)
+      |> Enum.map(&render_milestone_entry(&1, Map.get(grouped_tasks, &1.id, [])))
+
+    sections =
+      case render_unassigned_tasks_section(Map.get(grouped_tasks, nil, [])) do
+        nil -> milestone_sections
+        unassigned -> milestone_sections ++ [unassigned]
+      end
+
     """
     ## Milestones
 
-    #{milestones |> Enum.sort_by(& &1.inserted_at) |> Enum.map_join("\n", fn milestone -> """
-      - #{milestone.title} (Status: #{milestone.status})
-        Due: #{render_milestone_due(milestone)}#{render_milestone_completion(milestone)}
-      """ end)}
+    #{Enum.join(sections, "\n\n")}
     """
-  end
-
-  defp render_milestone_completion(milestone) do
-    if milestone.status == :done && milestone.completed_at do
-      "\n  Completed: #{render_date(milestone.completed_at)}"
-    else
-      ""
-    end
   end
 
   defp render_milestone_due(milestone) do
@@ -109,6 +121,72 @@ defmodule Operately.MD.Project do
       nil -> "Not Set"
       date -> render_date(date)
     end
+  end
+
+  defp render_milestone_entry(milestone, tasks) do
+    [
+      "  - #{milestone.title} (Status: #{milestone.status})",
+      "",
+      "    Due: #{render_milestone_due(milestone)}",
+      render_milestone_completion_line(milestone),
+      render_milestone_tasks_block(tasks)
+    ]
+    |> Enum.reject(&is_nil/1)
+    |> Enum.join("\n")
+  end
+
+  defp render_milestone_completion_line(milestone) do
+    if milestone.status == :done && milestone.completed_at do
+      "    Completed: #{render_date(milestone.completed_at)}"
+    else
+      nil
+    end
+  end
+
+  defp render_milestone_tasks_block(nil), do: nil
+  defp render_milestone_tasks_block([]), do: nil
+
+  defp render_milestone_tasks_block(tasks) do
+    [
+      "",
+      "    Tasks:",
+      render_task_lines(tasks, "      ")
+    ]
+    |> Enum.join("\n")
+  end
+
+  defp render_unassigned_tasks_section([]), do: nil
+
+  defp render_unassigned_tasks_section(tasks) do
+    """
+    ### Tasks Without Milestone
+
+    #{render_task_lines(tasks)}
+    """
+  end
+
+  defp render_task_lines(tasks, indent \\ "") do
+    tasks
+    |> Enum.map_join("\n", fn task -> indent <> render_task_line(task) end)
+  end
+
+  defp render_task_line(task) do
+    assignees = render_task_assignees(task.assigned_people)
+    due_date = render_task_due_date(task.due_date)
+
+    "- #{task.name} | Assigned to: #{assignees} | Due: #{due_date}"
+  end
+
+  defp render_task_assignees(people) when is_list(people) and length(people) > 0 do
+    people |> Enum.map(& &1.full_name) |> Enum.join(", ")
+  end
+
+  defp render_task_assignees(_), do: "Unassigned"
+
+  defp render_task_due_date(nil), do: "Not set"
+
+  defp render_task_due_date(%Operately.ContextualDates.ContextualDate{date: date}) do
+    render_date(date)
   end
 
   defp render_check_ins([]) do
