@@ -1,4 +1,5 @@
 defmodule OperatelyWeb.Api.AiTest do
+  import ExUnit.Callbacks, only: [on_exit: 1]
   use OperatelyWeb.TurboCase
   import Mock
 
@@ -7,6 +8,14 @@ defmodule OperatelyWeb.Api.AiTest do
   end
 
   setup ctx do
+    # Set AI as configured for tests
+    previous = Application.get_env(:operately, :ai_configured)
+    Application.put_env(:operately, :ai_configured, true)
+
+    on_exit(fn ->
+      Application.put_env(:operately, :ai_configured, previous)
+    end)
+
     ctx
     |> Factory.setup()
     |> Factory.enable_feature("ai")
@@ -27,6 +36,13 @@ defmodule OperatelyWeb.Api.AiTest do
     test "returns error if feature is not enabled", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
       ctx = Factory.disable_feature(ctx, "ai")
+
+      assert {404, _} = query(ctx.conn, [:ai, :prompt], %{prompt: "Hello"})
+    end
+
+    test "returns error if ai is not configured", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      set_ai_configured(false)
 
       assert {404, _} = query(ctx.conn, [:ai, :prompt], %{prompt: "Hello"})
     end
@@ -280,5 +296,14 @@ defmodule OperatelyWeb.Api.AiTest do
 
       assert res.conversations == []
     end
+  end
+
+  defp set_ai_configured(value) do
+    previous = Application.get_env(:operately, :ai_configured)
+    Application.put_env(:operately, :ai_configured, value)
+
+    on_exit(fn ->
+      Application.put_env(:operately, :ai_configured, previous)
+    end)
   end
 end

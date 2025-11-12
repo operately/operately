@@ -156,6 +156,14 @@ defmodule Operately.Support.Features.ProjectSteps do
     ctx |> UI.visit(Paths.project_path(ctx.company, ctx.project))
   end
 
+  step :open_ai_sidebar, ctx do
+    ctx |> UI.click(css: "button[title*=\"Ask Alfred\"]")
+  end
+
+  step :assert_ai_sidebar_disabled_message, ctx, message: message do
+    ctx |> UI.assert_text(message)
+  end
+
   step :choose_new_goal, ctx, goal_name: goal_name do
     ctx
     |> UI.click_text("Set parent goal")

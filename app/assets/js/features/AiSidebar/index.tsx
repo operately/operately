@@ -8,6 +8,8 @@ import { Conversations, FloatingActionButton, IconRobotFace } from "turboui";
 import { useNewAgentMessageSignal } from "../../signals";
 import { useAiSidebarContext } from "./context";
 
+const AI_CONFIGURED = window.appConfig.aiConfigured;
+
 interface AiSidebarProps {
   conversationContext: Conversations.ContextAttachment | null;
 }
@@ -37,6 +39,9 @@ export function AiSidebar() {
 function AiSidebarElements() {
   const state = useSidebarState();
   const me = useMe();
+  const disabledMessage = AI_CONFIGURED
+    ? undefined
+    : "Ask Alfred isn't available because the AI integration hasn't been configured.";
 
   return (
     <>
@@ -58,6 +63,7 @@ function AiSidebarElements() {
         onCreateConversation={state.createConvo}
         onSendMessage={state.sendMessage}
         contextActions={state.actions}
+        disabledMessage={disabledMessage}
         contextAttachment={state.conversationContext!}
         me={me!}
         maxWidth={1000}
@@ -126,6 +132,11 @@ function useSidebarState() {
   }, []);
 
   const refreshConversations = React.useCallback(() => {
+    // Don't fetch conversations if AI is not configured
+    if (!AI_CONFIGURED) {
+      return;
+    }
+
     const params: any = {};
     if (conversationContext) {
       params.contextType = conversationContext.type;
@@ -142,6 +153,7 @@ function useSidebarState() {
     (action: Conversations.ContextAction | null) => {
       if (!action) return;
       if (!conversationContext) return;
+      if (!AI_CONFIGURED) return;
 
       Api.ai
         .createConversation({
@@ -161,6 +173,7 @@ function useSidebarState() {
   const sendMessage = React.useCallback(
     async (message: string) => {
       if (!activeConversationId) return;
+      if (!AI_CONFIGURED) return;
 
       try {
         const resp = await Api.ai.sendMessage({

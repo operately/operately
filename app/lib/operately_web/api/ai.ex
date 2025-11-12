@@ -284,6 +284,7 @@ defmodule OperatelyWeb.Api.Ai do
     def call(conn, inputs) do
       conn
       |> Steps.start()
+      |> Steps.verify_feature_enabled()
       |> Ecto.Multi.run(:convo, fn _repo, %{me: me} ->
         AgentConvo.create(me, inputs.action_id, inputs.context_type, inputs.context_id)
       end)
@@ -310,6 +311,7 @@ defmodule OperatelyWeb.Api.Ai do
     def call(conn, inputs) do
       conn
       |> Steps.start()
+      |> Steps.verify_feature_enabled()
       |> Steps.get_conversation(inputs.conversation_id)
       |> Ecto.Multi.run(:message, fn _repo, %{conversation: convo} ->
         Operately.People.AgentMessage.create(convo, inputs.message)
@@ -337,6 +339,7 @@ defmodule OperatelyWeb.Api.Ai do
     def call(conn, inputs) do
       conn
       |> Steps.start()
+      |> Steps.verify_feature_enabled()
       |> Ecto.Multi.run(:messages, fn _repo, %{me: me} ->
         Operately.People.AgentConvo.get(me, id: inputs.convo_id)
       end)
@@ -364,6 +367,7 @@ defmodule OperatelyWeb.Api.Ai do
     def call(conn, inputs) do
       conn
       |> Steps.start()
+      |> Steps.verify_feature_enabled()
       |> Ecto.Multi.run(:convos, fn _repo, %{me: me} ->
         {:ok, Operately.People.AgentConvo.list(me, inputs.context_type, inputs.context_id)}
       end)
@@ -519,10 +523,15 @@ defmodule OperatelyWeb.Api.Ai do
       Ecto.Multi.run(multi, :feature_enabled?, fn _repo, %{me: me} ->
         company = Operately.Companies.get_company!(me.company_id)
 
-        if "ai" in company.enabled_experimental_features do
-          {:ok, true}
-        else
-          {:error, :not_found}
+        cond do
+          not ("ai" in company.enabled_experimental_features) ->
+            {:error, :not_found}
+
+          not ai_configured?() ->
+            {:error, :not_found}
+
+          true ->
+            {:ok, true}
         end
       end)
     end
@@ -559,6 +568,10 @@ defmodule OperatelyWeb.Api.Ai do
           Logger.error("Unexpected error: #{inspect(e)}")
           {:error, :internal_server_error}
       end
+    end
+
+    defp ai_configured? do
+      Application.get_env(:operately, :ai_configured, false)
     end
   end
 end
