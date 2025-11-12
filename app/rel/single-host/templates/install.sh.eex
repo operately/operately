@@ -60,7 +60,35 @@ case $EMAIL_OPTION in
 esac
 
 echo -e ""
-echo -e "3. Do you want Operately to issue and auto-renew a Let's Encrypt SSL certificate?"
+echo -e "3. How would you like to configure AI (Ask Alfred)?"
+echo -e "   ${LBLUE}1)${CLEAR} Use OpenAI"
+echo -e "   ${LBLUE}2)${CLEAR} Use Anthropic Claude"
+echo -e "   ${LBLUE}3)${CLEAR} I'll set it up later"
+read -p "   Choose an option (1-3): " AI_OPTION
+
+case $AI_OPTION in
+    1)
+        echo -e ""
+        echo -e "   Please provide your OpenAI API key:"
+        read -p "   OpenAI API Key: " OPENAI_API_KEY
+        ;;
+    2)
+        echo -e ""
+        echo -e "   Please provide your Anthropic API key:"
+        read -p "   Anthropic API Key: " ANTHROPIC_API_KEY
+        ;;
+    3)
+        echo -e ""
+        echo -e "   ${LBLUE}Note:${CLEAR} You can configure AI later by setting the AI-related environment variables."
+        ;;
+    *)
+        echo "Invalid option. Please choose 1, 2, or 3."
+        exit 1
+        ;;
+esac
+
+echo -e ""
+echo -e "4. Do you want Operately to issue and auto-renew a Let's Encrypt SSL certificate?"
 read -p "   Manage SSL certs? (y/n): " MANAGE_CERTS_YN
 
 case $MANAGE_CERTS_YN in
@@ -91,6 +119,18 @@ case $EMAIL_OPTION in
         ;;
     3)
         echo -e "- Email delivery will be configured later (emails will not be sent until configured)"
+        ;;
+esac
+
+case $AI_OPTION in
+    1)
+        echo -e "- Alfred will use ${LBLUE}OpenAI${CLEAR} with the default GPT-5 model."
+        ;;
+    2)
+        echo -e "- Alfred will use ${LBLUE}Anthropic Claude${CLEAR}."
+        ;;
+    3)
+        echo -e "- AI configuration will be completed later (Alfred will stay disabled until configured)."
         ;;
 esac
 
@@ -172,6 +212,23 @@ case $EMAIL_OPTION in
         echo "# Email configuration not set - configure later by adding:" >> operately.env
         echo "# For SendGrid: SENDGRID_API_KEY=\"your_api_key\"" >> operately.env
         echo "# For SMTP: SMTP_SERVER, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD, SMTP_SSL" >> operately.env
+        ;;
+esac
+
+# Write AI configuration based on user choice
+case $AI_OPTION in
+    1)
+        echo "OPERATELY_AI_PROVIDER=\"openai\"" >> operately.env
+        echo "OPENAI_API_KEY=\"${OPENAI_API_KEY}\"" >> operately.env
+        ;;
+    2)
+        echo "OPERATELY_AI_PROVIDER=\"claude\"" >> operately.env
+        echo "ANTHROPIC_API_KEY=\"${ANTHROPIC_API_KEY}\"" >> operately.env
+        ;;
+    3)
+        echo "# AI configuration not set - configure later by adding:" >> operately.env
+        echo "# For OpenAI: OPERATELY_AI_PROVIDER=\"openai\" and OPENAI_API_KEY=\"your_openai_key\"" >> operately.env
+        echo "# For Claude: OPERATELY_AI_PROVIDER=\"claude\" and ANTHROPIC_API_KEY=\"your_claude_key\"" >> operately.env
         ;;
 esac
 
