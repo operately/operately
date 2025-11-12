@@ -84,6 +84,9 @@ function MyApp() {
 | `activeConversationId` | `string`                                                      | -       | Currently active conversation ID          |
 | `onSelectConversation` | `(conversationId: string) => void`                            | -       | Called when a conversation is selected    |
 | `onCreateConversation` | `() => void`                                                  | -       | Called when a new conversation is created |
+| `contextActions`       | `ContextAction[]`                                             | `[]`    | Context-aware quick actions               |
+| `contextActionsUnavailableMessage` | `string`                                         | -       | Message shown when actions can't be used  |
+| `disabledMessage`      | `string`                                                      | -       | Disables the UI and displays this message |
 | `initialWidth`         | `number`                                                      | `384`   | Initial width of the panel in pixels      |
 | `minWidth`             | `number`                                                      | `320`   | Minimum width of the panel in pixels      |
 | `maxWidth`             | `number`                                                      | `600`   | Maximum width of the panel in pixels      |

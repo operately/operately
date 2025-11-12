@@ -1,9 +1,9 @@
 defmodule Operately.Features.ProjectsTest do
+  import ExUnit.Callbacks, only: [on_exit: 1]
   use Operately.FeatureCase
+  alias Operately.Support.Features.ProjectSteps, as: Steps
 
   describe "project page" do
-    alias Operately.Support.Features.ProjectSteps, as: Steps
-
     setup ctx do
       ctx = Steps.create_project(ctx, name: "Test Project")
       ctx = Steps.login(ctx)
@@ -131,8 +131,6 @@ defmodule Operately.Features.ProjectsTest do
   end
 
   describe "new project page" do
-    alias Operately.Support.Features.ProjectSteps, as: Steps
-
     setup ctx, do: Steps.setup(ctx)
 
     feature "changing project name", ctx do
@@ -229,6 +227,34 @@ defmodule Operately.Features.ProjectsTest do
       |> Steps.remove_reviewer()
       |> Steps.assert_reviewer_change_notification_sent_to_subscriber()
       |> Steps.assert_reviewer_removed_email_sent_to_subscriber()
+    end
+  end
+
+  describe "ai sidebar" do
+    setup ctx do
+      ctx =
+        ctx
+        |> Steps.create_project(name: "AI Project")
+        |> Steps.login()
+
+      previous = Application.get_env(:operately, :ai_configured)
+      Application.put_env(:operately, :ai_configured, false)
+
+      on_exit(fn ->
+        Application.put_env(:operately, :ai_configured, previous)
+      end)
+
+      {:ok, ctx}
+    end
+
+    @tag login_as: :champion
+    feature "shows a message when ai isn't configured", ctx do
+      ctx
+      |> Steps.visit_project_page()
+      |> Steps.open_ai_sidebar()
+      |> Steps.assert_ai_sidebar_disabled_message(
+        message: "Ask Alfred isn't available because the AI integration hasn't been configured."
+      )
     end
   end
 end

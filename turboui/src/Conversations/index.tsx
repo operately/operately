@@ -101,6 +101,14 @@ export namespace Conversations {
      * Context-aware actions available for current page
      */
     contextActions?: ContextAction[];
+    /**
+     * Message shown when context actions cannot be used (takes precedence over actual actions)
+     */
+    contextActionsUnavailableMessage?: string;
+    /**
+     * When set, disables interactions and shows the provided message instead of the assistant UI
+     */
+    disabledMessage?: string;
 
     /**
      * Current context attachment (goal, project, etc.)
@@ -170,6 +178,8 @@ export function Conversations({
   onCreateConversation,
   onUpdateConversationTitle,
   contextActions = [],
+  contextActionsUnavailableMessage,
+  disabledMessage,
   contextAttachment,
   me,
   initialWidth = 448, // (w-md equivalent)
@@ -184,6 +194,8 @@ export function Conversations({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+
+  const isDisabled = Boolean(disabledMessage);
 
   // Get the active conversation
   const activeConversation = conversations.find((c) => c.id === activeConversationId);
@@ -214,6 +226,12 @@ export function Conversations({
     }
     return undefined;
   }, [isOpen, onClose]);
+
+  useEffect(() => {
+    if (isDisabled && showConversationsList) {
+      setShowConversationsList(false);
+    }
+  }, [isDisabled, showConversationsList]);
 
   // Handle resize functionality
   useEffect(() => {
@@ -331,6 +349,11 @@ export function Conversations({
     }).format(dateObj);
   };
 
+  const showContextActions =
+    contextActions.length > 0 && !activeConversation && !contextActionsUnavailableMessage && !isDisabled;
+  const showContextActionsUnavailable =
+    Boolean(contextActionsUnavailableMessage) && !activeConversation && !isDisabled;
+
   if (!mounted || !isOpen) {
     return null;
   }
@@ -376,23 +399,27 @@ export function Conversations({
           )}
         </div>
         <div className="flex items-center gap-1">
-          {/* Conversations List Toggle */}
-          <button
-            onClick={() => setShowConversationsList(!showConversationsList)}
-            className="p-2 text-content-dimmed hover:text-content-base hover:bg-surface-highlight rounded transition-colors"
-            title="View past conversations"
-          >
-            <IconHistory size={16} />
-          </button>
+          {!isDisabled && (
+            <>
+              {/* Conversations List Toggle */}
+              <button
+                onClick={() => setShowConversationsList(!showConversationsList)}
+                className="p-2 text-content-dimmed hover:text-content-base hover:bg-surface-highlight rounded transition-colors"
+                title="View past conversations"
+              >
+                <IconHistory size={16} />
+              </button>
 
-          {/* New Conversation */}
-          <button
-            onClick={() => onSelectConversation?.(undefined)}
-            className="p-2 text-content-dimmed hover:text-content-base hover:bg-surface-highlight rounded transition-colors"
-            title="New conversation"
-          >
-            <IconPlus size={16} />
-          </button>
+              {/* New Conversation */}
+              <button
+                onClick={() => onSelectConversation?.(undefined)}
+                className="p-2 text-content-dimmed hover:text-content-base hover:bg-surface-highlight rounded transition-colors"
+                title="New conversation"
+              >
+                <IconPlus size={16} />
+              </button>
+            </>
+          )}
 
           {/* Close */}
           <button
@@ -406,7 +433,7 @@ export function Conversations({
       </div>
 
       {/* Conversations List Overlay */}
-      {showConversationsList && (
+      {!isDisabled && showConversationsList && (
         <div className="absolute inset-0 z-10 bg-surface-base border-l border-surface-outline">
           <div className="flex items-center justify-between px-4 py-3 border-b border-surface-outline">
             <h3 className="font-semibold text-content-accent">Conversations</h3>
@@ -456,23 +483,29 @@ export function Conversations({
         </div>
       )}
 
-      {/* Context Attachment */}
-      {(activeConversation?.context || contextAttachment) && (
-        <div className="px-4 py-3 border-b border-surface-outline bg-surface-base">
-          <div className="text-xs text-content-dimmed mb-2 uppercase tracking-wide font-medium">Context</div>
-          <div className="flex items-center gap-2">
-            <IconPaperclip size={14} className="text-content-base flex-shrink-0" />
-            <div className="min-w-0 flex-1">
-              <div className="text-sm text-content-base truncate">
-                {(activeConversation?.context || contextAttachment)?.title}
+      {isDisabled ? (
+        <div className="flex-1 flex items-center justify-center px-6 text-center">
+          <p className="text-lg font-semibold text-content-base max-w-sm">{disabledMessage}</p>
+        </div>
+      ) : (
+        <>
+          {/* Context Attachment */}
+          {(activeConversation?.context || contextAttachment) && (
+            <div className="px-4 py-3 border-b border-surface-outline bg-surface-base">
+              <div className="text-xs text-content-dimmed mb-2 uppercase tracking-wide font-medium">Context</div>
+              <div className="flex items-center gap-2">
+                <IconPaperclip size={14} className="text-content-base flex-shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <div className="text-sm text-content-base truncate">
+                    {(activeConversation?.context || contextAttachment)?.title}
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      )}
+          )}
 
       {/* Context Actions */}
-      {contextActions.length > 0 && !activeConversation && (
+      {showContextActions && (
         <div className="px-4 py-3 border-b border-surface-outline bg-surface-base">
           <div className="text-xs text-content-dimmed mb-2 uppercase tracking-wide font-medium">Available Actions</div>
           <div className="flex flex-col gap-2">
@@ -491,6 +524,12 @@ export function Conversations({
               </button>
             ))}
           </div>
+        </div>
+      )}
+
+      {showContextActionsUnavailable && (
+        <div className="px-4 py-3 border-b border-surface-outline bg-surface-base">
+          <p className="text-sm text-content-dimmed">{contextActionsUnavailableMessage}</p>
         </div>
       )}
 
@@ -618,33 +657,35 @@ export function Conversations({
         )}
       </div>
 
-      {/* Input Area */}
-      {activeConversation && (
-        <div className="border-t border-surface-outline p-4">
-          <div className="flex gap-2">
-            <textarea
-              ref={inputRef}
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Type your message..."
-              rows={1}
-              className="flex-1 resize-none border border-surface-outline rounded px-3 py-2 text-sm bg-surface-base text-content-base placeholder-content-dimmed focus:outline-none focus:ring-2 focus:ring-accent-base focus:border-transparent"
-              style={{
-                minHeight: "38px",
-                maxHeight: "120px",
-              }}
-            />
-            <button
-              onClick={handleSendMessage}
-              disabled={!inputMessage.trim()}
-              className="px-3 py-2 bg-accent-base text-white rounded hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              <IconArrowRight size={16} />
-            </button>
-          </div>
-          <div className="text-[10px] text-content-dimmed mt-1">Press Enter to send, Shift+Enter for new line</div>
-        </div>
+          {/* Input Area */}
+          {activeConversation && (
+            <div className="border-t border-surface-outline p-4">
+              <div className="flex gap-2">
+                <textarea
+                  ref={inputRef}
+                  value={inputMessage}
+                  onChange={(e) => setInputMessage(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="Type your message..."
+                  rows={1}
+                  className="flex-1 resize-none border border-surface-outline rounded px-3 py-2 text-sm bg-surface-base text-content-base placeholder-content-dimmed focus:outline-none focus:ring-2 focus:ring-accent-base focus:border-transparent"
+                  style={{
+                    minHeight: "38px",
+                    maxHeight: "120px",
+                  }}
+                />
+                <button
+                  onClick={handleSendMessage}
+                  disabled={!inputMessage.trim()}
+                  className="px-3 py-2 bg-accent-base text-white rounded hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <IconArrowRight size={16} />
+                </button>
+              </div>
+              <div className="text-[10px] text-content-dimmed mt-1">Press Enter to send, Shift+Enter for new line</div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
