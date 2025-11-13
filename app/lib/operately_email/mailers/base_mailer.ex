@@ -37,6 +37,7 @@ defmodule OperatelyEmail.Mailers.BaseMailer do
   defp prod_config do
     cond do
       System.get_env("SENDGRID_API_KEY", "") != "" -> prod_sendgrid_config()
+      System.get_env("SMTP_PROVIDER", "") == "aws-ses" -> aws_ses_smtp_config()
       System.get_env("SMTP_SERVER", "") != "" -> smtp_config()
       true -> raise "No valid email configuration found"
     end
@@ -51,6 +52,24 @@ defmodule OperatelyEmail.Mailers.BaseMailer do
       password: System.get_env("SMTP_PASSWORD"),
       ssl: System.get_env("SMTP_SSL", "false") == "true",
       tls: :if_available,
+      auth: :always,
+      retries: 2
+    ]
+  end
+
+  defp aws_ses_smtp_config() do
+    [
+      adapter: Swoosh.Adapters.SMTP,
+      relay: System.get_env("SMTP_SERVER"),
+      port: String.to_integer(System.get_env("SMTP_PORT", "587")),
+      username: System.get_env("SMTP_USERNAME"),
+      password: System.get_env("SMTP_PASSWORD"),
+      ssl: System.get_env("SMTP_SSL", "false") == "true",
+      tls: :always,
+      tls_options: [
+        verify: :verify_none,
+        versions: [:"tlsv1.2"]
+      ],
       auth: :always,
       retries: 2
     ]

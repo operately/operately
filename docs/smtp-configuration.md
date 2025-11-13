@@ -17,8 +17,11 @@ Configure SMTP using the following environment variables:
 | `SMTP_USERNAME` | SMTP authentication username | - | Yes* |
 | `SMTP_PASSWORD` | SMTP authentication password | - | Yes* |
 | `SMTP_SSL` | Use SSL encryption (true/false) | false | No |
+| `SMTP_PROVIDER` | Provider name for optimized settings | - | No** |
 
 *Required for authenticated SMTP servers (most production services)
+
+**Optional but recommended for AWS SES to prevent TLS handshake errors
 
 ## Popular Email Service Providers
 
@@ -28,6 +31,7 @@ AWS SES is a reliable, scalable email service. First, verify your domain or emai
 
 ```bash
 # Environment variables for AWS SES
+SMTP_PROVIDER=aws-ses
 SMTP_SERVER=email-smtp.us-east-1.amazonaws.com
 SMTP_PORT=587
 SMTP_USERNAME=your-aws-access-key-id
@@ -38,13 +42,20 @@ SMTP_SSL=false
 **Setup steps:**
 1. Sign up for AWS and enable SES
 2. Verify your sending domain or email address
-3. Create SMTP credentials in the SES console
-4. Use the SMTP credentials as username/password
+3. Create SMTP credentials in the SES console (not IAM access keys)
+4. Set `SMTP_PROVIDER=aws-ses` to enable optimized TLS 1.2 configuration
+5. Use the SMTP credentials as username/password
+
+**Important Notes:**
+- Setting `SMTP_PROVIDER=aws-ses` enables optimized TLS configuration for AWS SES compatibility
+- New AWS accounts start in sandbox mode with sending restrictions
+- Verify your sender email addresses or domains before sending
 
 **Regional endpoints:**
 - US East (N. Virginia): `email-smtp.us-east-1.amazonaws.com`
 - US West (Oregon): `email-smtp.us-west-2.amazonaws.com`
 - Europe (Ireland): `email-smtp.eu-west-1.amazonaws.com`
+- Europe (Frankfurt): `email-smtp.eu-central-1.amazonaws.com`
 - Asia Pacific (Sydney): `email-smtp.ap-southeast-2.amazonaws.com`
 
 ### Gmail (Google Workspace)
@@ -230,6 +241,8 @@ services:
       - SMTP_USERNAME=your-username
       - SMTP_PASSWORD=your-password
       - SMTP_SSL=false
+      # For AWS SES, add:
+      - SMTP_PROVIDER=aws-ses
 ```
 
 ### Environment File
@@ -237,12 +250,15 @@ services:
 Create a `.env` file in your project root:
 
 ```bash
-# SMTP Configuration
+# SMTP Configuration (Generic)
 SMTP_SERVER=smtp.example.com
 SMTP_PORT=587
 SMTP_USERNAME=your-username
 SMTP_PASSWORD=your-password
 SMTP_SSL=false
+
+# For AWS SES, add the provider:
+SMTP_PROVIDER=aws-ses
 ```
 
 ### Production Deployment
@@ -311,10 +327,11 @@ Ensure the following ports are open for outbound connections:
 
 ## Provider-Specific Notes
 
-### AWS SES Limitations
-- Requires domain or email verification
+### AWS SES Configuration
+- **Requires** domain or email verification before sending
 - New accounts start in sandbox mode (limited sending)
 - Need to request production access for full sending
+- **Set `SMTP_PROVIDER=aws-ses`** to prevent TLS handshake errors that can occur with default settings
 
 ### Gmail Limitations
 - Daily sending limits apply
