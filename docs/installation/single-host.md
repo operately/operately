@@ -79,6 +79,7 @@ and ask you for the following information:
 - **Email delivery method**: Choose between SendGrid, SMTP, or configure later
   - If you choose **SendGrid**: You'll need to provide your SendGrid API key
   - If you choose **SMTP**: You'll need to provide your SMTP server details (host, port, username, password, SSL settings)
+    - For AWS SES users: Set `SMTP_PROVIDER=aws-ses` in your environment for optimized configuration
   - If you choose **Configure later**: Email delivery will be skipped and can be configured later
 - **SSL certificates**: Whether you want Operately to automatically manage SSL certificates via Let's Encrypt
 
