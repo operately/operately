@@ -55,7 +55,8 @@
     "ts-pattern": "^5.0.8"
   },
   "dependencies": {
-    "canvas-confetti": "^1.9.3",
+    "@atlaskit/pragmatic-drag-and-drop": "^1.7.7",
+    "@atlaskit/pragmatic-drag-and-drop-react-drop-indicator": "^3.2.9",
     "@radix-ui/react-switch": "^1.2.5",
     "@tabler/icons-react": "^3.14.0",
     "@tiptap/core": "^2.3.0",
@@ -66,6 +67,7 @@
     "@tiptap/react": "^2.3.0",
     "@tiptap/starter-kit": "^2.3.0",
     "@tiptap/suggestion": "^2.3.0",
+    "canvas-confetti": "^1.9.3",
     "hotkeys-js": "^3.13.15",
     "react-hook-form": "^7.56.1",
     "react-hot-toast": "^2.5.2"

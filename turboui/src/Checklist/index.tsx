@@ -2,7 +2,7 @@ import React from "react";
 
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { IconGripVertical } from "../icons";
-import { DragAndDropProvider, useDraggable, useDraggingAnimation, useDropZone } from "../utils/DragAndDrop";
+import { useSortableList, useSortableItem } from "../utils/PragmaticDragAndDrop";
 
 import { useForm } from "react-hook-form";
 import classNames from "../utils/classnames";
@@ -162,23 +162,22 @@ function ChecklistSectionHeader({
 function ChecklistInternal(props: Checklist.InternalProps) {
   const state = useChecklistState(props);
 
-  const handleDrop = state.togglable ? state.reorder : () => false;
-
-  return (
-    <DragAndDropProvider onDrop={handleDrop}>
-      <ChecklistItemList state={state} />
-    </DragAndDropProvider>
-  );
+  return <ChecklistItemList state={state} />;
 }
 
 function ChecklistItemList({ state }: { state: State }) {
-  const { ref } = useDropZone({ id: "checklist", dependencies: [state.items] });
   const sorted = React.useMemo(() => {
     return [...state.items].sort((a, b) => a.index - b.index);
   }, [state.items]);
 
+  useSortableList(sorted, (itemId, newIndex) => {
+    if (state.togglable) {
+      state.reorder(itemId, newIndex);
+    }
+  });
+
   return (
-    <div ref={ref} className="space-y-0">
+    <div className="space-y-0">
       {sorted.map((item, index) => (
         <div key={item.id}>
           {index === 0 && <div className="h-2" />}
@@ -334,11 +333,11 @@ function InlineModal({ index, children }: { index: number; children: React.React
 
 function ChecklistItemView({ state, item }: { state: State; item: ChecklistItemState }) {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const { itemStyle } = useDraggingAnimation("checklist", state.items);
 
-  const { ref, isDragging } = useDraggable({
-    id: item.id,
-    zoneId: "checklist",
+  const { ref, dragHandleRef, isDragging, closestEdge } = useSortableItem({
+    itemId: item.id,
+    index: item.index,
+    disabled: !state.togglable,
   });
 
   const handleCheckboxChange = () => {
@@ -346,9 +345,6 @@ function ChecklistItemView({ state, item }: { state: State; item: ChecklistItemS
       state.toggleItem(item.id, !item.completed);
     }
   };
-
-  const undraggedStyle = itemStyle(item.id);
-  const draggedStyle = { background: "var(--color-surface-base)" };
 
   const dragGripClass = classNames(
     "absolute -left-5 mt-0.5 text-content-subtle opacity-0 group-hover:opacity-100 transition-all",
@@ -362,16 +358,30 @@ function ChecklistItemView({ state, item }: { state: State; item: ChecklistItemS
 
   const groupClass = classNames("group relative flex items-start gap-2 rounded", {
     "hover:bg-surface-highlight transition-colors": state.togglable,
+    "opacity-40": isDragging,
   });
+
+  const wrapperStyle: React.CSSProperties = {
+    position: "relative",
+  };
+
+  // Add drop indicator styling
+  if (closestEdge === "top") {
+    wrapperStyle.borderTop = "2px solid var(--color-blue-500)";
+  } else if (closestEdge === "bottom") {
+    wrapperStyle.borderBottom = "2px solid var(--color-blue-500)";
+  }
 
   return (
     <div
       className={groupClass}
-      ref={ref}
-      style={isDragging ? draggedStyle : undraggedStyle}
+      ref={ref as React.RefObject<HTMLDivElement>}
+      style={wrapperStyle}
       data-test-id={createTestId("checklist-item", item.name)}
     >
-      <IconGripVertical size={16} className={dragGripClass} />
+      <div ref={dragHandleRef as React.RefObject<HTMLDivElement>}>
+        <IconGripVertical size={16} className={dragGripClass} />
+      </div>
       <Checkbox
         checked={item.completed}
         onChange={handleCheckboxChange}
