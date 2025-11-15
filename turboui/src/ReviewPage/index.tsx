@@ -98,7 +98,7 @@ export function ReviewPage(props: ReviewPageV2.Props) {
 
   return (
     <PageNew title={pageTitle} size="fullwidth" testId="review-page">
-      <div className="p-4 max-w-3xl mx-auto my-6 overflow-auto">
+      <div className="p-4 max-w-3xl mx-auto md:my-6 overflow-auto">
         <Header assignmentsCount={urgentCount} />
 
         <div className="flex flex-col mt-8 gap-6">
@@ -133,7 +133,7 @@ function Header({ assignmentsCount }: { assignmentsCount: number }) {
   return (
     <div className="mt-4 pr-4" data-test-id="page-header">
       <div className="flex items-center gap-3 border-b border-surface-outline pb-3">
-        <div className="w-12 h-12 bg-brand-2 rounded-lg flex items-center justify-center">
+        <div className="w-12 h-12 flex-shrink-0 bg-brand-2 rounded-lg flex items-center justify-center">
           <IconCoffee size={20} className="text-brand-1" />
         </div>
 
