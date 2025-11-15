@@ -33,6 +33,14 @@ defmodule Operately.Features.ProjectCheckInsTest do
     |> Steps.assert_email_is_sent_to_contributors()
   end
 
+  feature "check-in page shows navigation breadcrumbs", ctx do
+    values = %{status: "on_track", description: "Checking breadcrumbs."}
+
+    ctx
+    |> Steps.submit_check_in(values)
+    |> Steps.assert_navigation_elements_displayed()
+  end
+
   feature "check-in status is displayed on the check-ins tab", ctx do
     values = %{status: "caution", description: "We're facing some challenges."}
 

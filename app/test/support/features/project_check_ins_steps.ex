@@ -79,6 +79,14 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> UI.assert_text(@status_to_on_screen[status])
   end
 
+  step :assert_navigation_elements_displayed, ctx do
+    ctx
+    |> UI.assert_has(testid: UI.testid(["nav-item", ctx.space.name]))
+    |> UI.assert_has(testid: UI.testid(["nav-item", "Work Map"]))
+    |> UI.assert_has(testid: UI.testid(["nav-item", ctx.project.name]))
+    |> UI.assert_has(testid: UI.testid(["nav-item", "Check-Ins"]))
+  end
+
   step :assert_check_in_visible_on_project_page, ctx, %{description: description} do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
