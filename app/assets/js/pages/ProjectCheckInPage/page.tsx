@@ -127,10 +127,14 @@ function Title() {
 
 function Navigation({ project }) {
   const paths = usePaths();
+  assertPresent(project.space, "space must be present on project");
+
   return (
     <Paper.Navigation
       items={[
-        { to: paths.projectPath(project.id), label: project.name! },
+        { to: paths.spacePath(project.space.id), label: project.space.name },
+        { to: paths.spaceWorkMapPath(project.space.id, "projects" as const), label: "Work Map" },
+        { to: paths.projectPath(project.id), label: project.name },
         { to: paths.projectCheckInsPath(project.id), label: "Check-Ins" },
       ]}
     />
