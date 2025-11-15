@@ -5,9 +5,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.Discuss
     %{
       space: Serializer.serialize(content["space"], level: :essential),
       discussion: Serializer.serialize(content["discussion"], level: :essential),
-      space_id: OperatelyWeb.Paths.space_id(content["space"]),
       comment: Serializer.serialize(content["comment"], level: :essential),
-      discussion_id: OperatelyWeb.Paths.message_id(content["discussion"]),
       title: content["title"]
     }
   end
