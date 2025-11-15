@@ -201,7 +201,6 @@ export interface ActivityContentDiscussionCommentSubmitted {
   discussion: Discussion | null;
   comment: Comment | null;
   space: Space;
-  title: string;
 }
 
 export interface ActivityContentDiscussionEditing {

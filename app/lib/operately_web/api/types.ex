@@ -1447,7 +1447,6 @@ defmodule OperatelyWeb.Api.Types do
     field :discussion, :discussion, null: true
     field :comment, :comment, null: true
     field :space, :space, null: false
-    field :title, :string, null: false
   end
 
   object :update_content_project_created do

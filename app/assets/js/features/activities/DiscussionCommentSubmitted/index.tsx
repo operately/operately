@@ -37,9 +37,9 @@ const DiscussionCommentSubmitted: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const paths = usePaths();
-    const { discussion, space, title } = content(activity);
+    const { discussion, space } = content(activity);
 
-    const activityLink = discussion ? <Link to={paths.discussionPath(discussion.id)}>{discussion.title}</Link> : title;
+    const activityLink = discussion ? <Link to={paths.discussionPath(discussion.id)}>{discussion.title}</Link> : "a message";
 
     if (page === "space") {
       return feedTitle(activity, "commented on", activityLink);
@@ -73,9 +73,9 @@ const DiscussionCommentSubmitted: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    const { title } = content(activity);
+    const { discussion } = content(activity);
 
-    return "Re: " + title;
+    return "Re: " + discussion?.title || "a message";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
