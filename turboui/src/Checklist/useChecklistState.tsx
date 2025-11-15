@@ -21,7 +21,7 @@ export interface State {
 
   cancelAdd: () => void;
 
-  reorder: (dropZoneId: string, draggedId: string, indexInDropZone: number) => boolean;
+  reorder: (draggedId: string, indexInDropZone: number) => void;
 }
 
 export function useChecklistState(props: Checklist.InternalProps): State {
@@ -91,15 +91,13 @@ export function useChecklistState(props: Checklist.InternalProps): State {
     setAddActive(false);
   };
 
-  const reorder = (dropZoneId: string, draggedId: string, indexInDropZone: number) => {
-    if (dropZoneId !== "checklist") return false;
-
+  const reorder = (draggedId: string, indexInDropZone: number) => {
     const draggedItem = items.find((item) => item.id === draggedId);
-    if (!draggedItem) return false;
+    if (!draggedItem) return;
 
     const oldIndex = items.findIndex((item) => item.id === draggedId);
     if (oldIndex === -1 || oldIndex === indexInDropZone) {
-      return false;
+      return;
     }
 
     // Reorder the array
@@ -127,8 +125,6 @@ export function useChecklistState(props: Checklist.InternalProps): State {
         });
       }
     });
-
-    return true;
   };
 
   return {
