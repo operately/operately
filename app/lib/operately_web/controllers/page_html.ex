@@ -6,6 +6,14 @@ defmodule OperatelyWeb.PageHTML do
   def js_files do
     js_manifest()
     |> Enum.map(fn {_, asset} -> asset["file"] end)
+    |> Enum.filter(fn path -> String.ends_with?(path, ".js") end)
+    |> Enum.map(fn path -> "/" <> path end)
+  end
+
+  def css_files do
+    js_manifest()
+    |> Enum.map(fn {_, asset} -> asset["file"] end)
+    |> Enum.filter(fn path -> String.ends_with?(path, ".css") end)
     |> Enum.map(fn path -> "/" <> path end)
   end
 

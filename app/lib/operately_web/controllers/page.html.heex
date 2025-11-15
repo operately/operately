@@ -58,6 +58,9 @@
       <script type="module" src={"#{@vite_url}/@vite/client"}></script>
       <script type="module" src={"#{@vite_url}/assets/js/app.tsx"}></script>
     <% else %>
+      <%= for asset_path <- css_files() do %>
+        <link rel="stylesheet" href={asset_path} />
+      <% end %>
       <%= for asset_path <- js_files() do %>
         <script type="module" src={asset_path}></script>
       <% end %>
