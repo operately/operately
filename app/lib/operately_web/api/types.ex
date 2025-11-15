@@ -506,8 +506,8 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :discussion do
-    field? :id, :string, null: true
-    field? :name, :string, null: true
+    field :id, :string, null: false
+    field :name, :string, null: false
     field? :inserted_at, :date, null: true
     field? :updated_at, :date, null: true
     field? :published_at, :date, null: true
@@ -1444,12 +1444,10 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_discussion_comment_submitted do
-    field? :space_id, :string, null: true
-    field? :discussion_id, :string, null: true
-    field? :discussion, :discussion, null: true
-    field? :comment, :comment, null: true
-    field? :space, :space, null: true
-    field? :title, :string, null: true
+    field :discussion, :discussion, null: true
+    field :comment, :comment, null: true
+    field :space, :space, null: false
+    field :title, :string, null: false
   end
 
   object :update_content_project_created do
