@@ -198,12 +198,9 @@ export interface ActivityContentCompanyOwnersAddingPerson {
 }
 
 export interface ActivityContentDiscussionCommentSubmitted {
-  spaceId?: string | null;
-  discussionId?: string | null;
-  discussion?: Discussion | null;
-  comment?: Comment | null;
-  space?: Space | null;
-  title?: string | null;
+  discussion: Discussion | null;
+  comment: Comment | null;
+  space: Space;
 }
 
 export interface ActivityContentDiscussionEditing {
@@ -1108,8 +1105,8 @@ export interface CreateTargetInput {
 }
 
 export interface Discussion {
-  id?: string | null;
-  name?: string | null;
+  id: string;
+  name: string;
   insertedAt?: string | null;
   updatedAt?: string | null;
   publishedAt?: string | null;

@@ -13,8 +13,14 @@ const DiscussionCommentSubmitted: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(paths, _activity: Activity): string {
-    return paths.discussionPath(content(_activity).discussion!.id!);
+  pagePath(paths, activity: Activity): string {
+    const { discussion, space } = content(activity);
+
+    if (!discussion) {
+      return paths.spacePath(space.id);
+    }
+
+    return paths.discussionPath(discussion.id);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -31,23 +37,25 @@ const DiscussionCommentSubmitted: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const paths = usePaths();
-    const discussion = content(activity).discussion!;
-    const space = content(activity).space!;
+    const { discussion, space } = content(activity);
 
-    const path = paths.discussionPath(discussion.id!);
-    const activityLink = <Link to={path}>{discussion.title}</Link>;
+    const activityLink = discussion ? <Link to={paths.discussionPath(discussion.id)}>{discussion.title}</Link> : "a message";
 
     if (page === "space") {
       return feedTitle(activity, "commented on", activityLink);
     } else {
-      return feedTitle(activity, "commented on", activityLink, "in", space.name!, "space");
+      return feedTitle(activity, "commented on", activityLink, "in", space.name, "space");
     }
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
     const { comment } = content(activity);
-    const commentContent = comment?.content ? JSON.parse(comment.content)["message"] : "";
+    const commentContent = parseCommentContent(comment?.content);
     const { mentionedPersonLookup } = useRichEditorHandlers();
+
+    if (!commentContent) {
+      return null;
+    }
 
     return <Summary content={commentContent} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
   },
@@ -65,16 +73,32 @@ const DiscussionCommentSubmitted: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return "Re: " + content(activity).discussion!.title!;
+    const { discussion } = content(activity);
+
+    return "Re: " + discussion?.title || "a message";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
-    return content(activity).space!.name!;
+    return content(activity).space.name;
   },
 };
 
 function content(activity: Activity): ActivityContentDiscussionCommentSubmitted {
   return activity.content as ActivityContentDiscussionCommentSubmitted;
+}
+
+function parseCommentContent(content: string | null | undefined) {
+  if (!content || content.trim() === "") {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(content);
+    return parsed?.message || "";
+  } catch (error) {
+    console.error("Failed to parse comment content:", error);
+    return null;
+  }
 }
 
 export default DiscussionCommentSubmitted;

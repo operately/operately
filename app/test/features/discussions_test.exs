@@ -100,6 +100,7 @@ defmodule Operately.Features.DiscussionsTest do
     |> Steps.leave_a_comment()
     |> Steps.delete_comment()
     |> Steps.assert_comment_deleted()
+    |> Steps.assert_comment_is_listed_in_the_feed()
   end
 
   feature "edit a posted discussion", ctx do
