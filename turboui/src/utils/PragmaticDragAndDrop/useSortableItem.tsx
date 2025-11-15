@@ -47,7 +47,7 @@ export function useSortableItem({ itemId, index, disabled = false }: UseSortable
   const [isDragging, setIsDragging] = useState(false);
   const [closestEdge, setClosestEdge] = useState<Edge | null>(null);
   const closestEdgeRef = useRef<Edge | null>(null);
-  const edgeUpdateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const edgeUpdateTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     const element = ref.current;
@@ -64,7 +64,7 @@ export function useSortableItem({ itemId, index, disabled = false }: UseSortable
       // Only update if different from current
       if (edge !== closestEdgeRef.current) {
         // Add a small delay to prevent rapid flickering
-        edgeUpdateTimeoutRef.current = setTimeout(() => {
+        edgeUpdateTimeoutRef.current = window.setTimeout(() => {
           closestEdgeRef.current = edge;
           setClosestEdge(edge);
         }, 100);
