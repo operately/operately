@@ -2,7 +2,7 @@ import React from "react";
 
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { IconGripVertical } from "../icons";
-import { useSortableList, useSortableItem } from "../utils/PragmaticDragAndDrop";
+import { useSortableList, useSortableItem, DropIndicator } from "../utils/PragmaticDragAndDrop";
 
 import { useForm } from "react-hook-form";
 import classNames from "../utils/classnames";
@@ -356,29 +356,18 @@ function ChecklistItemView({ state, item }: { state: State; item: ChecklistItemS
     },
   );
 
-  const groupClass = classNames("group relative flex items-start gap-2 rounded", {
+  const groupClass = classNames("group relative flex items-start gap-2", {
     "hover:bg-surface-highlight transition-colors": state.togglable,
     "opacity-40": isDragging,
   });
-
-  const wrapperStyle: React.CSSProperties = {
-    position: "relative",
-  };
-
-  // Add drop indicator styling
-  if (closestEdge === "top") {
-    wrapperStyle.borderTop = "2px solid var(--color-blue-500)";
-  } else if (closestEdge === "bottom") {
-    wrapperStyle.borderBottom = "2px solid var(--color-blue-500)";
-  }
 
   return (
     <div
       className={groupClass}
       ref={ref as React.RefObject<HTMLDivElement>}
-      style={wrapperStyle}
       data-test-id={createTestId("checklist-item", item.name)}
     >
+      {closestEdge && <DropIndicator edge={closestEdge} />}
       <div ref={dragHandleRef as React.RefObject<HTMLDivElement>}>
         <IconGripVertical size={16} className={dragGripClass} />
       </div>

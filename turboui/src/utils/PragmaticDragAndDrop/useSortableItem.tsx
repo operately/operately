@@ -46,12 +46,30 @@ export function useSortableItem({ itemId, index, disabled = false }: UseSortable
   const dragHandleRef = useRef<HTMLElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [closestEdge, setClosestEdge] = useState<Edge | null>(null);
+  const closestEdgeRef = useRef<Edge | null>(null);
+  const edgeUpdateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const element = ref.current;
     const dragHandle = dragHandleRef.current;
 
     if (!element || disabled) return;
+
+    const updateEdgeWithDelay = (edge: Edge | null) => {
+      // Clear any pending update
+      if (edgeUpdateTimeoutRef.current) {
+        clearTimeout(edgeUpdateTimeoutRef.current);
+      }
+
+      // Only update if different from current
+      if (edge !== closestEdgeRef.current) {
+        // Add a small delay to prevent rapid flickering
+        edgeUpdateTimeoutRef.current = setTimeout(() => {
+          closestEdgeRef.current = edge;
+          setClosestEdge(edge);
+        }, 100);
+      }
+    };
 
     return combine(
       draggable({
@@ -75,16 +93,25 @@ export function useSortableItem({ itemId, index, disabled = false }: UseSortable
         },
         onDragEnter: (args) => {
           const edge = extractClosestEdge(args.self.data);
+          closestEdgeRef.current = edge;
           setClosestEdge(edge);
         },
         onDrag: (args) => {
           const edge = extractClosestEdge(args.self.data);
-          setClosestEdge(edge);
+          updateEdgeWithDelay(edge);
         },
         onDragLeave: () => {
+          if (edgeUpdateTimeoutRef.current) {
+            clearTimeout(edgeUpdateTimeoutRef.current);
+          }
+          closestEdgeRef.current = null;
           setClosestEdge(null);
         },
         onDrop: () => {
+          if (edgeUpdateTimeoutRef.current) {
+            clearTimeout(edgeUpdateTimeoutRef.current);
+          }
+          closestEdgeRef.current = null;
           setClosestEdge(null);
         },
       }),
