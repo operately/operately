@@ -696,9 +696,9 @@ export interface ActivityContentProjectTimelineEdited {
 }
 
 export interface ActivityContentResourceHubDocumentCommented {
-  space?: Space | null;
-  document?: ResourceHubDocument | null;
-  comment?: Comment | null;
+  space: Space;
+  document: ResourceHubDocument | null;
+  comment: Comment | null;
 }
 
 export interface ActivityContentResourceHubDocumentCreated {

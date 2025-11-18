@@ -756,9 +756,9 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_resource_hub_document_commented do
-    field? :space, :space, null: true
-    field? :document, :resource_hub_document, null: true
-    field? :comment, :comment, null: true
+    field :space, :space, null: false
+    field :document, :resource_hub_document, null: true
+    field :comment, :comment, null: true
   end
 
   object :activity_content_resource_hub_link_created do
