@@ -367,6 +367,27 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     |> UI.refute_has(testid: "comment-#{ctx.comment.id}")
   end
 
+  step :assert_check_in_comment_visible_on_feed_after_deletion, ctx do
+    author = ctx.champion
+
+    ctx
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal, tab: "activity"))
+    |> FeedSteps.assert_feed_item_exists(%{
+      author: author,
+      title: "commented on a Check-In"
+    })
+    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
+    |> FeedSteps.assert_feed_item_exists(%{
+      author: author,
+      title: "commented on a Check-In in the #{ctx.goal.name} goal"
+    })
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> FeedSteps.assert_feed_item_exists(%{
+      author: author,
+      title: "commented on a Check-In in the #{ctx.goal.name} goal"
+    })
+  end
+
   defp last_comment(ctx) do
     Operately.Updates.list_comments(ctx.check_in.id, :goal_update) |> List.last()
   end

@@ -27,11 +27,23 @@ export const projectLink = (project: api.Project) => {
 
 export const goalLink = (goal: api.Goal) => {
   const paths = usePaths();
-  const path = paths.goalPath(goal!.id!);
-  const name = goal!.name!;
+  const path = paths.goalPath(goal.id);
+  const name = goal.name;
 
   return <Link to={path}>{name}</Link>;
 };
+
+export const goalCheckInLink = (checkIn?: api.GoalProgressUpdate | null) => {
+  const paths = usePaths();
+
+  if (!checkIn) {
+    return "Check-In";
+  }
+
+  const path = paths.goalCheckInPath(checkIn.id);
+
+  return <Link to={path}>Check-In</Link>;
+}
 
 export const spaceLink = (space: api.Space) => {
   const paths = usePaths();
@@ -52,7 +64,7 @@ export const resourceHubLink = (hub: api.ResourceHub) => {
 export const documentLink = (document: api.ResourceHubDocument) => {
   const paths = usePaths();
   const path = paths.resourceHubDocumentPath(document.id!);
-  const name = document.name!;
+  const name = document.name;
 
   return <Link to={path}>{name}</Link>;
 };
