@@ -721,9 +721,9 @@ export interface ActivityContentResourceHubDocumentEdited {
 }
 
 export interface ActivityContentResourceHubFileCommented {
-  space?: Space | null;
-  file?: ResourceHubFile | null;
-  comment?: Comment | null;
+  space: Space;
+  file: ResourceHubFile | null;
+  comment: Comment | null;
 }
 
 export interface ActivityContentResourceHubFileCreated {
@@ -1554,7 +1554,7 @@ export interface ResourceHubDocument {
 }
 
 export interface ResourceHubFile {
-  id?: string | null;
+  id: string;
   author?: Person | null;
   resourceHubId?: string | null;
   resourceHub?: ResourceHub | null;
