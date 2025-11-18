@@ -108,6 +108,7 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
         Operately.Activities.insert_sync(Ecto.Multi.new(), changes.me.id, :project_discussion_submitted, fn _ ->
           %{
             company_id: changes.project.company_id,
+            space_id: changes.project.group_id,
             project_id: changes.project.id,
             discussion_id: changes.thread.id,
             title: changes.thread.title

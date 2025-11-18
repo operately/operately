@@ -544,11 +544,9 @@ export interface ActivityContentProjectDescriptionChanged {
 }
 
 export interface ActivityContentProjectDiscussionSubmitted {
-  projectId?: string | null;
-  discussionId?: string | null;
-  title?: string | null;
-  project?: Project | null;
-  discussion?: CommentThread | null;
+  title: string | null;
+  project: Project;
+  discussion: CommentThread | null;
 }
 
 export interface ActivityContentProjectDueDateUpdating {
