@@ -772,9 +772,9 @@ export interface ActivityContentResourceHubFolderRenamed {
 }
 
 export interface ActivityContentResourceHubLinkCommented {
-  space?: Space | null;
-  link?: ResourceHubLink | null;
-  comment?: Comment | null;
+  space: Space;
+  link: ResourceHubLink | null;
+  comment: Comment | null;
 }
 
 export interface ActivityContentResourceHubLinkCreated {
@@ -1589,7 +1589,7 @@ export interface ResourceHubFolder {
 }
 
 export interface ResourceHubLink {
-  id?: string | null;
+  id: string;
   author?: Person | null;
   resourceHubId?: string | null;
   resourceHub?: ResourceHub | null;

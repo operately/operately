@@ -784,9 +784,9 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_resource_hub_link_commented do
-    field? :space, :space, null: true
-    field? :link, :resource_hub_link, null: true
-    field? :comment, :comment, null: true
+    field :space, :space, null: false
+    field :link, :resource_hub_link, null: true
+    field :comment, :comment, null: true
   end
 
   object :activity_content_project_discussion_submitted do
@@ -1101,7 +1101,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :resource_hub_link do
-    field? :id, :string, null: true
+    field :id, :string, null: false
     field? :author, :person, null: true
     field? :resource_hub_id, :string, null: true
     field? :resource_hub, :resource_hub, null: true
