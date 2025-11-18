@@ -79,7 +79,7 @@ const ResourceHubLinkCommented: ActivityHandler = {
   NotificationTitle({ activity }: { activity: Activity }) {
     const data = content(activity);
 
-    return "Re: " + data.link?.name || "a link";
+    return "Re: " + (data.link?.name || "a link");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

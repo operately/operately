@@ -78,7 +78,7 @@ const ResourceHubFileCommented: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return "Re: " + content(activity).file?.name || "a file";
+    return "Re: " + (content(activity).file?.name || "a file");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

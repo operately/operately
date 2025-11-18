@@ -77,7 +77,7 @@ const ResourceHubDocumentCommented: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return "Re: " + content(activity).document?.name || "a document";
+    return "Re: " + (content(activity).document?.name || "a document");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
