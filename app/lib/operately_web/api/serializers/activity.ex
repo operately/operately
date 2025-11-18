@@ -375,10 +375,14 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   defp serialize_comment(nil), do: nil
 
   defp serialize_comment(comment) do
-    %{
-      id: comment.id,
-      content: Jason.encode!(comment.content),
-      inserted_at: OperatelyWeb.Api.Serializer.serialize(comment.inserted_at)
-    }
+    if Ecto.assoc_loaded?(comment) do
+      %{
+        id: comment.id,
+        content: Jason.encode!(comment.content),
+        inserted_at: OperatelyWeb.Api.Serializer.serialize(comment.inserted_at)
+      }
+    else
+      nil
+    end
   end
 end

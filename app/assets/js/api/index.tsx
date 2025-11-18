@@ -295,9 +295,7 @@ export interface ActivityContentGoalDescriptionChanged {
 }
 
 export interface ActivityContentGoalDiscussionCreation {
-  companyId?: string | null;
-  goalId?: string | null;
-  goal?: Goal | null;
+  goal: Goal;
 }
 
 export interface ActivityContentGoalDiscussionEditing {
