@@ -114,6 +114,7 @@ defmodule Operately.Features.GoalChecksInsTest do
     |> Steps.leave_comment_on_check_in("This is a comment")
     |> Steps.delete_comment("This is a comment")
     |> Steps.assert_comment_deleted()
+    |> Steps.assert_check_in_comment_visible_on_feed_after_deletion()
   end
 
   feature "cannot edit check-in after 72 hours", ctx do

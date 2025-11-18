@@ -251,10 +251,9 @@ export interface ActivityContentGoalCheckInAcknowledgement {
 }
 
 export interface ActivityContentGoalCheckInCommented {
-  goalId?: string | null;
-  goal?: Goal | null;
-  update?: GoalProgressUpdate | null;
-  comment?: Comment | null;
+  goal: Goal;
+  update: GoalProgressUpdate | null;
+  comment: Comment | null;
 }
 
 export interface ActivityContentGoalCheckInEdit {
@@ -1223,7 +1222,7 @@ export interface GoalPermissions {
 }
 
 export interface GoalProgressUpdate {
-  id?: string | null;
+  id: string;
   status?: string | null;
   message?: string | null;
   insertedAt?: string | null;

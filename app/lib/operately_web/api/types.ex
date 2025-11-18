@@ -1880,10 +1880,9 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_goal_check_in_commented do
-    field? :goal_id, :string, null: true
-    field? :goal, :goal, null: true
-    field? :update, :goal_progress_update, null: true
-    field? :comment, :comment, null: true
+    field :goal, :goal, null: false
+    field :update, :goal_progress_update, null: true
+    field :comment, :comment, null: true
   end
 
   object :activity_content_project_retrospective_commented do
@@ -1947,7 +1946,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :goal_progress_update do
-    field? :id, :string, null: true
+    field :id, :string, null: false
     field? :status, :string, null: true
     field? :message, :string, null: true
     field? :inserted_at, :datetime, null: true

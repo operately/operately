@@ -7,6 +7,7 @@ import React from "react";
 import { Link, Summary } from "turboui";
 import { feedTitle } from "../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { parseCommentContent } from "@/models/comments";
 
 const DiscussionCommentSubmitted: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -85,20 +86,6 @@ const DiscussionCommentSubmitted: ActivityHandler = {
 
 function content(activity: Activity): ActivityContentDiscussionCommentSubmitted {
   return activity.content as ActivityContentDiscussionCommentSubmitted;
-}
-
-function parseCommentContent(content: string | null | undefined) {
-  if (!content || content.trim() === "") {
-    return null;
-  }
-
-  try {
-    const parsed = JSON.parse(content);
-    return parsed?.message || "";
-  } catch (error) {
-    console.error("Failed to parse comment content:", error);
-    return null;
-  }
 }
 
 export default DiscussionCommentSubmitted;
