@@ -790,11 +790,9 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_project_discussion_submitted do
-    field? :project_id, :string, null: true
-    field? :discussion_id, :string, null: true
-    field? :title, :string, null: true
-    field? :project, :project, null: true
-    field? :discussion, :comment_thread, null: true
+    field :title, :string, null: true
+    field :project, :project, null: false
+    field :discussion, :comment_thread, null: true
   end
 
   object :activity_content_project_review_acknowledged do

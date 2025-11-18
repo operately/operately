@@ -225,12 +225,20 @@ defmodule Operately.Activities.ContextAutoAssigner do
   end
 
   defp fetch_comment_thread_context(comment) do
-    from(a in Activity,
-      join: t in Operately.Comments.CommentThread,
-      on: a.id == t.parent_id,
-      where: t.id == ^comment.entity_id,
-      select: a.access_context_id
-    )
-    |> Repo.one()
+    thread = Repo.get!(Operately.Comments.CommentThread, comment.entity_id)
+
+    case thread.parent_type do
+      :activity ->
+        # Goal discussions: parent is an activity, get its context
+        from(a in Activity,
+          where: a.id == ^thread.parent_id,
+          select: a.access_context_id
+        )
+        |> Repo.one()
+
+      :project ->
+        # Project discussions: parent is a project, get its context
+        fetch_project_context(thread.parent_id)
+    end
   end
 end
