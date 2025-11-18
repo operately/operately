@@ -104,6 +104,7 @@ defmodule Operately.Features.ProjectCheckInsTest do
     |> Steps.leave_comment_on_check_in()
     |> Steps.delete_comment()
     |> Steps.assert_comment_deleted()
+    |> Steps.assert_project_check_in_comment_visible_on_feed_after_deletion()
   end
 
   feature "edit a submitted check-in", ctx do

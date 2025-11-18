@@ -8,6 +8,7 @@ import { usePaths } from "@/routes/paths";
 import { Link, Summary } from "turboui";
 import { feedTitle, projectLink } from "./../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { parseCommentContent } from "@/models/comments";
 
 const ProjectCheckInCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -15,7 +16,7 @@ const ProjectCheckInCommented: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity): string {
-    return paths.projectCheckInPath(content(activity).checkIn!.id!);
+    return paths.projectCheckInPath(content(activity).checkIn.id);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -32,10 +33,10 @@ const ProjectCheckInCommented: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const paths = usePaths();
-    const project = content(activity).project!;
-    const checkIn = content(activity).checkIn!;
+    const project = content(activity).project;
+    const checkIn = content(activity).checkIn;
 
-    const checkInPath = paths.projectCheckInPath(checkIn.id!);
+    const checkInPath = paths.projectCheckInPath(checkIn.id);
     const checkInLink = <Link to={checkInPath}>Check-In</Link>;
 
     if (page === "project") {
@@ -48,7 +49,11 @@ const ProjectCheckInCommented: ActivityHandler = {
   FeedItemContent({ activity }: { activity: Activity }) {
     const { mentionedPersonLookup } = useRichEditorHandlers();
     const { comment } = content(activity);
-    const commentContent = comment?.content ? JSON.parse(comment.content)["message"] : "";
+    const commentContent = parseCommentContent(comment?.content);
+
+    if (!commentContent) {
+      return null;
+    }
 
     return <Summary content={commentContent} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
   },
@@ -70,7 +75,7 @@ const ProjectCheckInCommented: ActivityHandler = {
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
-    return content(activity).project!.name!;
+    return content(activity).project.name;
   },
 };
 

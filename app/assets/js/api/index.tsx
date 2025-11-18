@@ -474,11 +474,9 @@ export interface ActivityContentProjectCheckInAcknowledged {
 }
 
 export interface ActivityContentProjectCheckInCommented {
-  projectId?: string | null;
-  checkInId?: string | null;
-  project?: Project | null;
-  checkIn?: ProjectCheckIn | null;
-  comment?: Comment | null;
+  project: Project;
+  checkIn: ProjectCheckIn;
+  comment: Comment | null;
 }
 
 export interface ActivityContentProjectCheckInEdit {
