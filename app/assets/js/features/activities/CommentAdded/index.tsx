@@ -14,7 +14,7 @@ import type { ActivityHandler } from "../interfaces";
 import { usePaths } from "@/routes/paths";
 import { match } from "ts-pattern";
 import { Link, Summary } from "turboui";
-import { feedTitle, goalLink } from "../feedItemLinks";
+import { feedTitle, goalLink, projectLink } from "../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { parseCommentContent } from "@/models/comments";
 
@@ -109,15 +109,18 @@ const CommentAdded: ActivityHandler = {
         }
       })
       .with("project_discussion_submitted", () => {
-        const c = commentedActivity.content as ActivityContentProjectDiscussionSubmitted;
-        const discussionTitle = commentedActivity.commentThread!.title;
-        const path = paths.projectDiscussionPath(c.discussionId!);
-        const activityLink = <Link to={path}>{discussionTitle}</Link>;
+        const { discussion, title, project } = commentedActivity.content as ActivityContentProjectDiscussionSubmitted;
+        let activityLink: any = "a discussion";
+
+        if (discussion?.id && (title || discussion.title)) {
+          const path = paths.projectDiscussionPath(discussion.id);
+          activityLink = <Link to={path}>{title || discussion.title}</Link>;
+        }
 
         if (page === "project") {
-          return feedTitle(activity, "commented on the", activityLink);
+          return feedTitle(activity, "commented on", activityLink);
         } else {
-          return feedTitle(activity, "commented on the", activityLink, "in the project discussion");
+          return feedTitle(activity, "commented on", activityLink, "in the", projectLink(project), "project");
         }
       })
       .otherwise(() => {

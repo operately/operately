@@ -194,6 +194,19 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
     |> UI.refute_has(testid: "comment-#{ctx.comment.id}")
   end
 
+  step :assert_comment_feed_posted_after_deletion, ctx do
+    author = ctx.creator
+    title = ctx.discussion.title
+
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
+    |> UI.assert_feed_item(author, "commented on #{title}")
+    |> UI.visit(Paths.space_path(ctx.company, ctx.marketing))
+    |> UI.assert_feed_item(author, "commented on #{title} in the #{ctx.project.name} project")
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_feed_item(author, "commented on #{title} in the #{ctx.project.name} project")
+  end
+
   #
   # Helper functions
   #

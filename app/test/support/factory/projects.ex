@@ -292,6 +292,7 @@ defmodule Operately.Support.Factory.Projects do
         Activities.insert_sync(Ecto.Multi.new(), author.id, :project_discussion_submitted, fn _ ->
           %{
             company_id: project.company_id,
+            space_id: project.group_id,
             project_id: project.id,
             discussion_id: changes.thread.id,
             title: changes.thread.title
