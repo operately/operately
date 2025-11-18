@@ -1870,11 +1870,9 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_project_check_in_commented do
-    field? :project_id, :string, null: true
-    field? :check_in_id, :string, null: true
-    field? :project, :project, null: true
-    field? :check_in, :project_check_in, null: true
-    field? :comment, :comment, null: true
+    field :project, :project, null: false
+    field :check_in, :project_check_in, null: false
+    field :comment, :comment, null: true
   end
 
   object :activity_content_goal_check_in_commented do
