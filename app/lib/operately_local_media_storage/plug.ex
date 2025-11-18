@@ -6,11 +6,6 @@ defmodule OperatelyLocalMediaStorage.Plug do
   plug :verify_token
   plug :dispatch
 
-  plug Plug.Parsers,
-    parsers: [:urlencoded, :multipart, :json],
-    pass: ["*/*"],
-    json_decoder: Jason
-
   get "*path" do
     conn
     |> put_cache_headers()
