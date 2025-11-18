@@ -16,6 +16,7 @@ import { match } from "ts-pattern";
 import { Link, Summary } from "turboui";
 import { feedTitle, goalLink } from "../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { parseCommentContent } from "@/models/comments";
 
 const CommentAdded: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -81,15 +82,18 @@ const CommentAdded: ActivityHandler = {
         }
       })
       .with("goal_discussion_creation", () => {
-        const c = commentedActivity.content as ActivityContentGoalDiscussionCreation;
-        const goal = c.goal!;
-        const path = paths.goalActivityPath(commentedActivity.id!);
-        const activityLink = <Link to={path}>{commentedActivity.commentThread!.title}</Link>;
+        const { goal } = commentedActivity.content as ActivityContentGoalDiscussionCreation;
+        let activityLink: any = "a discussion";
+
+        if (commentedActivity.commentThread) {
+          const path = paths.goalActivityPath(commentedActivity.id);
+          activityLink = <Link to={path}>{commentedActivity.commentThread.title}</Link>;
+        }
 
         if (page === "goal") {
-          return feedTitle(activity, "commented on the", activityLink);
+          return feedTitle(activity, "commented on", activityLink);
         } else {
-          return feedTitle(activity, "commented on the", activityLink, "in the", goalLink(goal), "goal");
+          return feedTitle(activity, "commented on", activityLink, "in the", goalLink(goal), "goal");
         }
       })
       .with("goal_reopening", () => {
@@ -123,8 +127,12 @@ const CommentAdded: ActivityHandler = {
 
   FeedItemContent({ activity }: { activity: Activity }) {
     const { comment } = content(activity);
-    const commentContent = comment?.content ? JSON.parse(comment.content)["message"] : "";
     const { mentionedPersonLookup } = useRichEditorHandlers();
+    const commentContent = parseCommentContent(comment?.content);
+
+    if (!commentContent) {
+      return null;
+    }
 
     return <Summary content={commentContent} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
   },

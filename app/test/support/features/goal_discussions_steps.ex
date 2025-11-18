@@ -145,7 +145,7 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
     |> UI.visit(Paths.goal_path(ctx.company, ctx.goal, tab: "activity"))
     |> FeedSteps.assert_feed_item_exists(%{
       author: ctx.champion,
-      title: "commented on the #{last_comment_thread().title}",
+      title: "commented on #{last_comment_thread().title}",
       subtitle: last_comment_thread().message
     })
   end
@@ -183,6 +183,27 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
   step :assert_comment_deleted, ctx do
     ctx
     |> UI.refute_has(testid: "comment-#{ctx.comment.id}")
+  end
+
+  step :assert_comment_feed_posted_after_deletion, ctx do
+    author = ctx.champion
+
+    ctx
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal, tab: "activity"))
+    |> FeedSteps.assert_feed_item_exists(%{
+      author: author,
+      title: "commented on #{last_comment_thread().title}"
+    })
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> FeedSteps.assert_feed_item_exists(%{
+      author: author,
+      title: "commented on #{last_comment_thread().title} in the #{ctx.goal.name} goal"
+    })
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> FeedSteps.assert_feed_item_exists(%{
+      author: author,
+      title: "commented on #{last_comment_thread().title} in the #{ctx.goal.name} goal"
+    })
   end
 
   step :assert_navigation_shows_space_and_goal, ctx do

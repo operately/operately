@@ -46,6 +46,7 @@ defmodule Operately.Features.GoalDiscussionsTest do
     |> Steps.leave_comment("This is a comment")
     |> Steps.delete_comment("This is a comment")
     |> Steps.assert_comment_deleted()
+    |> Steps.assert_comment_feed_posted_after_deletion()
   end
 
   @tag login_as: :champion
