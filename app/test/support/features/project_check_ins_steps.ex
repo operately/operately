@@ -291,6 +291,28 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> UI.refute_has(testid: "comment-#{ctx.comment.id}")
   end
 
+  step :assert_project_check_in_comment_visible_on_feed_after_deletion, ctx do
+    author = ctx.champion
+
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.click(testid: "tab-activity")
+    |> FeedSteps.assert_feed_item_exists(%{
+      author: author,
+      title: "commented on Check-In"
+    })
+    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
+    |> FeedSteps.assert_feed_item_exists(%{
+      author: author,
+      title: "commented on Check-In"
+    })
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> FeedSteps.assert_feed_item_exists(%{
+      author: author,
+      title: "commented on Check-In"
+    })
+  end
+
   step :copy_comment_link, ctx do
     ctx
     |> UI.click(testid: "comment-options")
