@@ -4,11 +4,10 @@ import type { ActivityContentGoalCheckInCommented } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { usePaths } from "@/routes/paths";
-import { assertPresent } from "@/utils/assertions";
-import { Link, Summary } from "turboui";
-import { feedTitle, goalLink } from "./../feedItemLinks";
+import { Summary } from "turboui";
+import { feedTitle, goalCheckInLink, goalLink } from "./../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { parseCommentContent } from "@/models/comments";
 
 const GoalUpdateCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -32,27 +31,25 @@ const GoalUpdateCommented: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const paths = usePaths();
-    const data = content(activity);
+    const { update, goal } = content(activity);
 
-    assertPresent(data.goal, "Goal must be present in activity content");
-    assertPresent(data.update, "Update must be present in activity content");
-    assertPresent(data.update.id, "Update ID must be present in activity content");
-
-    const checkInPath = paths.goalCheckInPath(data.update.id);
-    const checkInLink = <Link to={checkInPath}>Check-In</Link>;
+    const checkInLink = goalCheckInLink(update);
 
     if (page === "goal") {
       return feedTitle(activity, "commented on a", checkInLink);
     } else {
-      return feedTitle(activity, "commented on a", checkInLink, " in the ", goalLink(data.goal), "goal");
+      return feedTitle(activity, "commented on a", checkInLink, " in the ", goalLink(goal), "goal");
     }
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
     const { mentionedPersonLookup } = useRichEditorHandlers();
     const { comment } = content(activity);
-    const commentContent = comment?.content ? JSON.parse(comment.content)["message"] : "";
+    const commentContent = parseCommentContent(comment?.content);
+
+    if (!commentContent) {
+      return null;
+    }
 
     return <Summary content={commentContent} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
   },

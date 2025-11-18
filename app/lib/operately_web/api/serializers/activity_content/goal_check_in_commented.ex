@@ -3,7 +3,6 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.GoalChe
 
   def serialize(content, level: :essential) do
     %{
-      goal_id: OperatelyWeb.Paths.goal_id(content["goal"]),
       goal: Serializer.serialize(content["goal"], level: :essential),
       update: Serializer.serialize(content["goal_check_in"], level: :essential),
       comment: Serializer.serialize(content["comment"]),

@@ -38,6 +38,20 @@ export function splitComments(
   return { before, after };
 }
 
+export function parseCommentContent(content: string | null | undefined) {
+  if (!content || content.trim() === "") {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(content);
+    return parsed?.message;
+  } catch (error) {
+    console.error("Failed to parse comment content:", error);
+    return null;
+  }
+}
+
 /**
  * Parses backend Comment objects to the format expected by TurboUI CommentSection
  *
