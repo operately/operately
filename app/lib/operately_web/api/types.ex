@@ -1882,9 +1882,8 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_project_retrospective_commented do
-    field? :project_id, :string, null: true
-    field? :project, :project, null: true
-    field? :comment, :comment, null: true
+    field :project, :project, null: false
+    field :comment, :comment, null: true
   end
 
   object :update_content_project_start_time_changed do

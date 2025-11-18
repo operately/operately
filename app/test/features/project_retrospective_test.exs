@@ -77,5 +77,6 @@ defmodule Operately.Features.ProjectRetrospectiveTest do
     |> Steps.leave_comment("This is a comment.")
     |> Steps.delete_comment()
     |> Steps.assert_comment_deleted()
+    |> Steps.assert_retrospective_comment_visible_on_feed_after_deletion()
   end
 end

@@ -3,7 +3,6 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.Project
 
   def serialize(content, level: :essential) do
     %{
-      project_id: OperatelyWeb.Paths.project_id(content["project"]),
       project: Serializer.serialize(content["project"], level: :essential),
       comment: Serializer.serialize(content["comment"]),
     }
