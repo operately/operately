@@ -127,6 +127,18 @@ defmodule Operately.Support.Features.ProjectRetrospectiveSteps do
     |> UI.refute_has(testid: "comment-#{ctx.comment.id}")
   end
 
+  step :assert_retrospective_comment_visible_on_feed_after_deletion, ctx do
+    author = ctx.champion
+
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
+    |> UI.assert_feed_item(author, "commented on Retrospective")
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> UI.assert_feed_item(author, "commented on Retrospective in the #{ctx.project.name} project")
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_feed_item(author, "commented on Retrospective in the #{ctx.project.name} project")
+  end
+
   defp fill_rich_text(ctx, testid, content) do
     ctx
     |> UI.find(UI.query(testid: testid), fn el ->

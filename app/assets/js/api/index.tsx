@@ -635,9 +635,8 @@ export interface ActivityContentProjectResuming {
 }
 
 export interface ActivityContentProjectRetrospectiveCommented {
-  projectId?: string | null;
-  project?: Project | null;
-  comment?: Comment | null;
+  project: Project;
+  comment: Comment | null;
 }
 
 export interface ActivityContentProjectReviewAcknowledged {

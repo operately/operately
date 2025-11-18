@@ -8,6 +8,7 @@ import { usePaths } from "@/routes/paths";
 import { Link, Summary } from "turboui";
 import { feedTitle, projectLink } from "./../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { parseCommentContent } from "@/models/comments";
 
 const ProjectRetrospectiveCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -15,7 +16,7 @@ const ProjectRetrospectiveCommented: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity): string {
-    return paths.projectRetrospectivePath(content(activity).projectId!);
+    return paths.projectRetrospectivePath(content(activity).project.id);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -32,9 +33,9 @@ const ProjectRetrospectiveCommented: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const paths = usePaths();
-    const project = content(activity).project!;
+    const { project}  = content(activity);
 
-    const retrospectivePath = paths.projectRetrospectivePath(project.id!);
+    const retrospectivePath = paths.projectRetrospectivePath(project.id);
     const retrospectiveLink = <Link to={retrospectivePath}>Retrospective</Link>;
 
     if (page === "project") {
@@ -46,9 +47,12 @@ const ProjectRetrospectiveCommented: ActivityHandler = {
 
   FeedItemContent({ activity }: { activity: Activity }) {
     const { comment } = content(activity);
-    const commentContent = comment?.content ? JSON.parse(comment.content)["message"] : "";
-
     const { mentionedPersonLookup } = useRichEditorHandlers();
+    const commentContent = parseCommentContent(comment?.content);
+
+    if (!commentContent) {
+      return null;
+    }
 
     return <Summary content={commentContent} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
   },
@@ -70,7 +74,7 @@ const ProjectRetrospectiveCommented: ActivityHandler = {
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
-    return content(activity).project!.name!;
+    return content(activity).project.name;
   },
 };
 
