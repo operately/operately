@@ -51,6 +51,8 @@ defmodule Operately.Features.ResourceHubFileTest do
       |> Steps.visit_file_page()
       |> leave_one_comment()
       |> delete_comment_on_resource()
+      |> Steps.assert_file_commented_on_space_feed()
+      |> Steps.assert_file_commented_on_company_feed()
     end
 
     feature "file navigation works", ctx do

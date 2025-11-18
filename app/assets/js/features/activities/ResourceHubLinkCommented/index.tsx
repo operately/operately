@@ -4,10 +4,10 @@ import type { ActivityContentResourceHubLinkCommented } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { assertPresent } from "@/utils/assertions";
 import { feedTitle, linkLink, spaceLink } from "../feedItemLinks";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { parseCommentContent } from "@/models/comments";
 
 const ResourceHubLinkCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -15,10 +15,13 @@ const ResourceHubLinkCommented: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity): string {
-    const data = content(activity);
-    assertPresent(data.link?.id, "link.id must be present in activity");
+    const { link, space } = content(activity);
 
-    return paths.resourceHubLinkPath(data.link.id);
+    if (link) {
+      return paths.resourceHubLinkPath(link.id);
+    }
+
+    return paths.resourceHubPath(space.id);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -35,9 +38,12 @@ const ResourceHubLinkCommented: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
+    const space = spaceLink(data.space);
+    let link: any = "a link"
 
-    const link = linkLink(data.link!);
-    const space = spaceLink(data.space!);
+    if (data.link) {
+      link = linkLink(data.link);
+    }
 
     if (page === "space") {
       return feedTitle(activity, "commented on", link);
@@ -48,8 +54,12 @@ const ResourceHubLinkCommented: ActivityHandler = {
 
   FeedItemContent({ activity }: { activity: Activity }) {
     const { mentionedPersonLookup } = useRichEditorHandlers();
-    const comment = content(activity).comment!;
-    const commentContent = JSON.parse(comment.content!)["message"];
+    const comment = content(activity).comment;
+    const commentContent = parseCommentContent(comment?.content);
+
+    if (!commentContent) {
+      return null;
+    }
 
     return <Summary content={commentContent} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
   },
@@ -68,13 +78,12 @@ const ResourceHubLinkCommented: ActivityHandler = {
 
   NotificationTitle({ activity }: { activity: Activity }) {
     const data = content(activity);
-    assertPresent(data.link?.name, "link.name must be present in activity");
 
-    return "Re: " + data.link.name;
+    return "Re: " + data.link?.name || "a link";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
-    return content(activity).link!.name!;
+    return content(activity).link?.name || "a link";
   },
 };
 
