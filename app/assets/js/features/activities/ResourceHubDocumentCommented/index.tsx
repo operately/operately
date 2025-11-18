@@ -8,6 +8,7 @@ import type { ActivityHandler } from "../interfaces";
 import { documentLink, feedTitle, spaceLink } from "../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { Summary } from "turboui";
+import { parseCommentContent } from "@/models/comments";
 
 const ResourceHubDocumentCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -15,7 +16,12 @@ const ResourceHubDocumentCommented: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity): string {
-    return paths.resourceHubDocumentPath(content(activity).document!.id!);
+    const { document, space } = content(activity);
+
+    if (!document) {
+      return paths.resourceHubPath(space.id);
+    }
+    return paths.resourceHubDocumentPath(document.id);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -32,9 +38,12 @@ const ResourceHubDocumentCommented: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
+    const space = spaceLink(data.space);
+    let document: any = "a document";
 
-    const document = documentLink(data.document!);
-    const space = spaceLink(data.space!);
+    if (data.document) {
+      document = documentLink(data.document);
+    }
 
     if (page === "space") {
       return feedTitle(activity, "commented on", document);
@@ -45,9 +54,12 @@ const ResourceHubDocumentCommented: ActivityHandler = {
 
   FeedItemContent({ activity }: { activity: Activity }) {
     const { comment } = content(activity);
-    const commentContent = comment?.content ? JSON.parse(comment?.content)["message"] : "";
-
+    const commentContent = parseCommentContent(comment?.content);
     const { mentionedPersonLookup } = useRichEditorHandlers({ scope: People.NoneSearchScope });
+
+    if (!commentContent) {
+      return null;
+    }
 
     return <Summary content={commentContent} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
   },
@@ -65,11 +77,11 @@ const ResourceHubDocumentCommented: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return "Re: " + content(activity).document!.name!;
+    return "Re: " + content(activity).document?.name || "a document";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
-    return content(activity).document!.name!;
+    return content(activity).document?.name || "a document";
   },
 };
 

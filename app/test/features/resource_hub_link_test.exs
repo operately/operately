@@ -161,6 +161,8 @@ defmodule Operately.Features.ResourceHubLinkTest do
       |> Steps.visit_link_page()
       |> leave_one_comment()
       |> delete_comment_on_resource()
+      |> Steps.assert_link_commented_on_space_feed(@link.title)
+      |> Steps.assert_link_commented_on_company_feed(@link.title)
     end
   end
 

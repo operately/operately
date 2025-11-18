@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import { emptyContent, IconX, SubscribersSelector } from "turboui";
 import { findFileSize, resizeImage, uploadFile } from "@/models/blobs";
-import { ResourceHub, ResourceHubFile, ResourceHubFolder, createResourceHubFile } from "@/models/resourceHubs";
+import { ResourceHub, ResourceHubFolder, createResourceHubFile } from "@/models/resourceHubs";
 
 import Forms from "@/components/Forms";
 import Modal from "@/components/Modal";
@@ -141,7 +141,7 @@ function FileForm({ index }) {
   );
 }
 
-function FileDetails({ file }: { file: ResourceHubFile }) {
+function FileDetails({ file }: { file: File }) {
   return (
     <div className="flex gap-4 items-center text-sm">
       <div>
@@ -149,7 +149,7 @@ function FileDetails({ file }: { file: ResourceHubFile }) {
       </div>
       <div>&middot;</div>
       <div>
-        <b>Size:</b> {findFileSize(file.size!)}
+        <b>Size:</b> {findFileSize(file.size)}
       </div>
     </div>
   );
