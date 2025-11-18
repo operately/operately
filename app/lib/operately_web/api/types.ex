@@ -1636,9 +1636,7 @@ defmodule OperatelyWeb.Api.Types do
   )
 
   object :activity_content_goal_discussion_creation do
-    field? :company_id, :string, null: true
-    field? :goal_id, :string, null: true
-    field? :goal, :goal, null: true
+    field :goal, :goal, null: false
   end
 
   enum(:milestone_status, values: Operately.Projects.Milestone.valid_status())
