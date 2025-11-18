@@ -5,10 +5,10 @@ import type { ActivityContentResourceHubFileCommented } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { assertPresent } from "@/utils/assertions";
 import { feedTitle, fileLink, spaceLink } from "../feedItemLinks";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { parseCommentContent } from "@/models/comments";
 
 const ResourceHubFileCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -16,10 +16,13 @@ const ResourceHubFileCommented: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity): string {
-    const data = content(activity);
-    assertPresent(data.file?.id, "file must be present in activity");
+    const { file, space } = content(activity);
 
-    return paths.resourceHubFilePath(data.file.id);
+    if (file) {
+      return paths.resourceHubFilePath(file.id);
+    }
+
+    return paths.resourceHubPath(space.id);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -36,12 +39,12 @@ const ResourceHubFileCommented: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
-
-    assertPresent(data.file, "file must be present in activity");
-    assertPresent(data.space, "space must be present in activity");
-
-    const file = fileLink(data.file);
     const space = spaceLink(data.space);
+    let file: any = "a file";
+
+    if (data.file) {
+      file = fileLink(data.file);
+    }
 
     if (page === "space") {
       return feedTitle(activity, "commented on", file);
@@ -51,11 +54,13 @@ const ResourceHubFileCommented: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
-    const data = content(activity);
-    assertPresent(data.comment?.content, "comment must be present in activity");
-
+    const { comment } = content(activity);
     const { mentionedPersonLookup } = useRichEditorHandlers({ scope: People.NoneSearchScope });
-    const commentContent = JSON.parse(data.comment.content)["message"];
+    const commentContent = parseCommentContent(comment?.content);
+
+    if (!commentContent) {
+      return null;
+    }
 
     return <Summary content={commentContent} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
   },
@@ -73,11 +78,11 @@ const ResourceHubFileCommented: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return "Re: " + content(activity).file!.name!;
+    return "Re: " + (content(activity).file?.name || "a file");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
-    return content(activity).file!.name!;
+    return content(activity).file?.name || "a file";
   },
 };
 

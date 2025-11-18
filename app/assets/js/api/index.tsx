@@ -696,9 +696,9 @@ export interface ActivityContentProjectTimelineEdited {
 }
 
 export interface ActivityContentResourceHubDocumentCommented {
-  space?: Space | null;
-  document?: ResourceHubDocument | null;
-  comment?: Comment | null;
+  space: Space;
+  document: ResourceHubDocument | null;
+  comment: Comment | null;
 }
 
 export interface ActivityContentResourceHubDocumentCreated {
@@ -721,9 +721,9 @@ export interface ActivityContentResourceHubDocumentEdited {
 }
 
 export interface ActivityContentResourceHubFileCommented {
-  space?: Space | null;
-  file?: ResourceHubFile | null;
-  comment?: Comment | null;
+  space: Space;
+  file: ResourceHubFile | null;
+  comment: Comment | null;
 }
 
 export interface ActivityContentResourceHubFileCreated {
@@ -772,9 +772,9 @@ export interface ActivityContentResourceHubFolderRenamed {
 }
 
 export interface ActivityContentResourceHubLinkCommented {
-  space?: Space | null;
-  link?: ResourceHubLink | null;
-  comment?: Comment | null;
+  space: Space;
+  link: ResourceHubLink | null;
+  comment: Comment | null;
 }
 
 export interface ActivityContentResourceHubLinkCreated {
@@ -1554,7 +1554,7 @@ export interface ResourceHubDocument {
 }
 
 export interface ResourceHubFile {
-  id?: string | null;
+  id: string;
   author?: Person | null;
   resourceHubId?: string | null;
   resourceHub?: ResourceHub | null;
@@ -1589,7 +1589,7 @@ export interface ResourceHubFolder {
 }
 
 export interface ResourceHubLink {
-  id?: string | null;
+  id: string;
   author?: Person | null;
   resourceHubId?: string | null;
   resourceHub?: ResourceHub | null;

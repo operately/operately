@@ -111,6 +111,8 @@ defmodule Operately.Features.ResourceHubDocumentTest do
     |> Steps.assert_document_content(@document)
     |> leave_one_comment()
     |> delete_comment_on_resource()
+    |> Steps.assert_document_commented_on_space_feed(@document.name)
+    |> Steps.assert_document_commented_on_company_feed(@document.name)
   end
 
   feature "document navigation works", ctx do
