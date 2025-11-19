@@ -8,6 +8,7 @@ export type ChecklistItemState = Checklist.ChecklistItem & {
 export interface State {
   items: ChecklistItemState[];
   togglable: boolean;
+  disabled: boolean;
 
   addActive: boolean;
 
@@ -130,6 +131,7 @@ export function useChecklistState(props: Checklist.InternalProps): State {
   return {
     items,
     togglable: props.togglable ?? true,
+    disabled: props.disabled ?? false,
     addActive,
     addItem,
     deleteItem,
