@@ -4,8 +4,7 @@ import { PieChart } from "../PieChart";
 import { ExpandIcon } from "./ExpandIcon";
 
 import { DangerButton, PrimaryButton, SecondaryButton } from "../Button";
-import { IconGripVertical } from "../icons";
-import { DragAndDropProvider, useDraggable, useDraggingAnimation, useDropZone } from "../utils/DragAndDrop";
+import { useSortableList, useSortableItem, DropIndicator, DragHandle } from "../utils/PragmaticDragAndDrop";
 
 import { useForm } from "react-hook-form";
 import classNames from "../utils/classnames";
@@ -75,21 +74,23 @@ export namespace GoalTargetList {
 export function GoalTargetList(props: GoalTargetList.Props) {
   const state = useGoalTargetListState(props);
 
-  return (
-    <DragAndDropProvider onDrop={state.reorder}>
-      <TargetList state={state} />
-    </DragAndDropProvider>
-  );
+  return <TargetList state={state} />;
 }
 
 function TargetList({ state }: { state: State }) {
-  const { ref } = useDropZone({ id: "targets", dependencies: [state.targets] });
+  const sorted = React.useMemo(() => {
+    return [...state.targets].sort((a, b) => a.index - b.index);
+  }, [state.targets]);
+
+  useSortableList(sorted, (itemId, newIndex) => {
+    state.reorder(itemId, newIndex);
+  });
 
   return (
-    <div ref={ref}>
+    <div>
       {state.targets.length > 0 && <TargetListHeader />}
 
-      {state.targets.map((target) => (
+      {sorted.map((target) => (
         <TargetCard key={target.id} state={state} target={target} />
       ))}
 
@@ -368,11 +369,9 @@ function InlineModal({ index, children }: { index: number; children: React.React
 }
 
 function TargetView({ state, target }: { state: State; target: TargetState }) {
-  const { itemStyle } = useDraggingAnimation("targets", state.targets);
-
-  const { ref, isDragging } = useDraggable({
-    id: target.id!,
-    zoneId: "targets",
+  const { ref, dragHandleRef, isDragging, closestEdge } = useSortableItem({
+    itemId: target.id!,
+    index: target.index,
   });
 
   const toggleExpand = (e: React.MouseEvent) => {
@@ -380,11 +379,8 @@ function TargetView({ state, target }: { state: State; target: TargetState }) {
     state.toggleExpand(target.id!);
   };
 
-  const undraggedStyle = itemStyle(target.id!);
-  const draggedStyle = { background: "var(--color-surface-base)" };
-
   const outerClass = classNames("max-w-full py-2 px-px border-b border-stroke-base flex-1", {
-    "border-t": target.index === 0 || isDragging,
+    "border-t": target.index === 0,
   });
 
   const innerClass = classNames("grid gap-2 items-start cursor-pointer", {
@@ -392,23 +388,20 @@ function TargetView({ state, target }: { state: State; target: TargetState }) {
     "grid-cols-[1fr_auto_14px]": !target.updateButtonVisible,
   });
 
-  const dragGripClass = classNames(
-    "mr-1 mt-[14px] text-content-subtle opacity-0 group-hover:opacity-100 transition-all",
-    {
-      "cursor-grab": !isDragging,
-      "cursor-grabbing": isDragging,
-      "opacity-100": isDragging,
-    },
-  );
+  const groupClass = classNames("group relative flex items-start w-[calc(100% + 16px)] -ml-[16px]", {
+    "opacity-40": isDragging,
+  });
 
   return (
     <div
-      className="group flex items-start w-[calc(100% + 16px)] -ml-[16px]"
-      ref={ref}
-      style={isDragging ? draggedStyle : undraggedStyle}
+      className={groupClass}
+      ref={ref as React.RefObject<HTMLDivElement>}
       data-test-id={createTestId("target", target.name)}
     >
-      <IconGripVertical size={16} className={dragGripClass} />
+      {closestEdge && <DropIndicator edge={closestEdge} />}
+      <div ref={dragHandleRef as React.RefObject<HTMLDivElement>}>
+        <DragHandle isDragging={isDragging} className="mr-1 mt-[14px]" />
+      </div>
 
       <div className={outerClass}>
         <div onClick={toggleExpand} className={innerClass}>
