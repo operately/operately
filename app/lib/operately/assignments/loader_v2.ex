@@ -209,7 +209,12 @@ defmodule Operately.Assignments.LoaderV2 do
       where: p.next_check_in_scheduled_at <= ^DateTime.utc_now(),
       where: p.status == "active",
       where: champion.id == ^person.id,
-      where: is_nil(p.deleted_at)
+      where: is_nil(p.deleted_at),
+      where:
+        fragment(
+          "(p0.timeframe->'contextual_start_date'->>'date' <= ? OR p0.timeframe->'contextual_start_date'->>'date' IS NULL)",
+          ^to_string(Date.utc_today())
+        )
     )
   end
 

@@ -483,6 +483,26 @@ defmodule Operately.Support.Features.ReviewSteps do
     end
   end
 
+  step :given_there_is_a_project_with_future_start_date, ctx do
+    future_start_date = Date.add(Date.utc_today(), 7)
+
+    ctx
+    |> Factory.add_project(:future_project, :product_space,
+      champion: :me,
+      reviewer: :my_manager,
+      name: "Future Project",
+      timeframe: %{
+        contextual_start_date: Operately.ContextualDates.ContextualDate.create_day_date(future_start_date),
+        contextual_end_date: Operately.ContextualDates.ContextualDate.create_day_date(Date.add(Date.utc_today(), 30))
+      }
+    )
+    |> Factory.set_project_next_check_in_date(:future_project, past_date())
+  end
+
+  step :assert_future_project_is_not_listed, ctx do
+    ctx |> UI.refute_text("Future Project")
+  end
+
   #
   # Helpers
   #

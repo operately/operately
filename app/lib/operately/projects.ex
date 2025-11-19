@@ -388,11 +388,21 @@ defmodule Operately.Projects do
         project.status == "closed" -> false
         project.status == "paused" -> false
         project.deleted_at != nil -> false
+        not project_started?(project) -> false
         check_in_missed_by > 3 -> true
         true -> false
       end
     else
       true
+    end
+  end
+
+  defp project_started?(project) do
+    case project.timeframe do
+      nil -> true
+      %{contextual_start_date: nil} -> true
+      %{contextual_start_date: %{date: start_date}} -> Date.compare(start_date, Date.utc_today()) != :gt
+      _ -> true
     end
   end
 
