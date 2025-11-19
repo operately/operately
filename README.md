@@ -6,8 +6,6 @@
   <a href="https://discord.gg/2ngnragJYV">Discord</a>
   ·
   <a href="https://operately.com">Website</a>
-  ·
-  <a href="https://github.com/operately/operately/issues">Issues</a>
 </p>
 
 <p align="center">
