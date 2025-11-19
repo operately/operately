@@ -9,5 +9,5 @@
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(@cta_url, "View task") %>
+  <%= cta_button(@cta_url, "View Comment") %>
 <% end %>

@@ -149,6 +149,12 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "project-discussions", comment_thread_id(discussion)])
   end
 
+  def project_discussion_path(company = %Company{}, discussion, comment = %Comment{}) do
+    discussion_with_comment = comment_thread_id(discussion) <> "#" <> comment_id(comment)
+
+    create_path([company_id(company), "project-discussions", discussion_with_comment])
+  end
+
   def project_check_in_path(company = %Company{}, check_in) do
     create_path([company_id(company), "project-check-ins", project_check_in_id(check_in)])
   end
@@ -180,6 +186,12 @@ defmodule OperatelyWeb.Paths do
 
   def project_milestone_path(company = %Company{}, milestone = %Milestone{}) do
     create_path([company_id(company), "milestones", milestone_id(milestone)])
+  end
+
+  def project_milestone_path(company = %Company{}, milestone = %Milestone{}, comment = %Comment{}) do
+    milestone_with_comment = milestone_id(milestone) <> "#" <> comment_id(comment)
+
+    create_path([company_id(company), "milestones", milestone_with_comment])
   end
 
   def project_task_path(company = %Company{}, task) do
