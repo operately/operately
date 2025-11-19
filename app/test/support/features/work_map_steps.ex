@@ -84,6 +84,24 @@ defmodule Operately.Support.Features.WorkMapSteps do
     |> Map.put(:target2, target2)
   end
 
+  step :given_project_with_future_start_date_exists, ctx do
+    future_start_date = Date.add(Date.utc_today(), 7)
+    overdue_check_in = Date.utc_today() |> Date.add(-10) |> Operately.Time.as_datetime()
+
+    ctx
+    |> Factory.setup()
+    |> Factory.add_space(:space)
+    |> Factory.add_project(:future_project, :space,
+      name: "Future Project",
+      timeframe: %{
+        contextual_start_date: Operately.ContextualDates.ContextualDate.create_day_date(future_start_date),
+        contextual_end_date: Operately.ContextualDates.ContextualDate.create_day_date(Date.add(Date.utc_today(), 30))
+      }
+    )
+    |> Factory.set_project_next_check_in_date(:future_project, overdue_check_in)
+    |> Factory.log_in_person(:creator)
+  end
+
   step :visit_company_work_map, ctx do
     UI.visit(ctx, Paths.work_map_path(ctx.company))
   end
@@ -285,5 +303,12 @@ defmodule Operately.Support.Features.WorkMapSteps do
     ctx
     |> UI.assert_text(ctx.target2.name)
     |> UI.refute_text(ctx.target1.name)
+  end
+
+  step :assert_project_status_is_pending, ctx do
+    ctx
+    |> UI.assert_text("Future Project")
+    |> UI.assert_text("Pending")
+    |> UI.refute_text("Outdated")
   end
 end
