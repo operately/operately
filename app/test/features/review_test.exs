@@ -118,6 +118,14 @@ defmodule Operately.Features.ReviewTest do
       |> Steps.assert_the_acknowledged_project_is_no_longer_displayed()
       |> Steps.assert_the_acknowledged_goal_is_no_longer_displayed()
     end
+
+    feature "projects with future start dates do not appear in review page", ctx do
+      ctx
+      |> Steps.given_there_is_a_project_with_future_start_date()
+      |> Steps.visit_review_page()
+      |> Steps.assert_future_project_is_not_listed()
+      |> Steps.assert_zero_state_message()
+    end
   end
 
   describe "navbar review counter" do
