@@ -1,8 +1,7 @@
 import React from "react";
 
 import { PrimaryButton, SecondaryButton } from "../Button";
-import { IconGripVertical } from "../icons";
-import { useSortableList, useSortableItem, DropIndicator } from "../utils/PragmaticDragAndDrop";
+import { useSortableList, useSortableItem, DropIndicator, DragHandle } from "../utils/PragmaticDragAndDrop";
 
 import { useForm } from "react-hook-form";
 import classNames from "../utils/classnames";
@@ -346,16 +345,6 @@ function ChecklistItemView({ state, item }: { state: State; item: ChecklistItemS
     }
   };
 
-  const dragGripClass = classNames(
-    "absolute -left-5 mt-0.5 text-content-subtle opacity-0 group-hover:opacity-100 transition-all",
-    {
-      "cursor-grab": !isDragging && state.togglable,
-      "cursor-grabbing": isDragging && state.togglable,
-      "opacity-100": isDragging && state.togglable,
-      hidden: !state.togglable,
-    },
-  );
-
   const groupClass = classNames("group relative flex items-start gap-2", {
     "hover:bg-surface-highlight transition-colors": state.togglable,
     "opacity-40": isDragging,
@@ -369,7 +358,7 @@ function ChecklistItemView({ state, item }: { state: State; item: ChecklistItemS
     >
       {closestEdge && <DropIndicator edge={closestEdge} />}
       <div ref={dragHandleRef as React.RefObject<HTMLDivElement>}>
-        <IconGripVertical size={16} className={dragGripClass} />
+        <DragHandle isDragging={isDragging} disabled={!state.togglable} className="absolute -left-5 mt-0.5" />
       </div>
       <Checkbox
         checked={item.completed}

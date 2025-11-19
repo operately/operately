@@ -29,7 +29,7 @@ export interface State {
   deleteTarget: (id: string) => void;
   cancelDelete: (id: string) => void;
 
-  reorder: (item: any, targetId: string, indexInDropZone: number) => boolean;
+  reorder: (itemId: string, newIndex: number) => void;
 }
 
 export function useGoalTargetListState(props: GoalTargetList.Props): State {
@@ -120,15 +120,13 @@ export function useGoalTargetListState(props: GoalTargetList.Props): State {
       updateTargetState(id, (target) => ({ ...target, mode: "view" as const }));
     },
 
-    reorder: (_: any, targetId: string, indexInDropZone: number) => {
-      const current = targetsRef.current.find((target) => target.id === targetId);
-      if (!current || current.index === indexInDropZone) {
-        return false;
+    reorder: (itemId: string, newIndex: number) => {
+      const current = targetsRef.current.find((target) => target.id === itemId);
+      if (!current || current.index === newIndex) {
+        return;
       }
 
-      props.updateTargetIndex(targetId, indexInDropZone);
-
-      return true;
+      props.updateTargetIndex(itemId, newIndex);
     },
   };
 
