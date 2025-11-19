@@ -88,15 +88,45 @@ defmodule Operately.ProjectsTest do
       four_days_ago = DateTime.utc_now() |> DateTime.add(-4, :day)
       last_week = DateTime.utc_now() |> DateTime.add(-7, :day)
 
-      refute Projects.outdated?(%{deleted_at: nil, status: "active", next_check_in_scheduled_at: four_days_from_now})
-      refute Projects.outdated?(%{deleted_at: nil, status: "active", next_check_in_scheduled_at: tomorrow})
-      refute Projects.outdated?(%{deleted_at: nil, status: "active", next_check_in_scheduled_at: yesterday})
-      assert Projects.outdated?(%{deleted_at: nil, status: "active", next_check_in_scheduled_at: four_days_ago})
-      assert Projects.outdated?(%{deleted_at: nil, status: "active", next_check_in_scheduled_at: last_week})
+      refute Projects.outdated?(%{deleted_at: nil, status: "active", next_check_in_scheduled_at: four_days_from_now, timeframe: nil})
+      refute Projects.outdated?(%{deleted_at: nil, status: "active", next_check_in_scheduled_at: tomorrow, timeframe: nil})
+      refute Projects.outdated?(%{deleted_at: nil, status: "active", next_check_in_scheduled_at: yesterday, timeframe: nil})
+      assert Projects.outdated?(%{deleted_at: nil, status: "active", next_check_in_scheduled_at: four_days_ago, timeframe: nil})
+      assert Projects.outdated?(%{deleted_at: nil, status: "active", next_check_in_scheduled_at: last_week, timeframe: nil})
 
-      refute Projects.outdated?(%{deleted_at: nil, status: "closed", next_check_in_scheduled_at: last_week})
-      refute Projects.outdated?(%{deleted_at: nil, status: "paused", next_check_in_scheduled_at: last_week})
-      refute Projects.outdated?(%{deleted_at: yesterday, status: "active", next_check_in_scheduled_at: last_week})
+      refute Projects.outdated?(%{deleted_at: nil, status: "closed", next_check_in_scheduled_at: last_week, timeframe: nil})
+      refute Projects.outdated?(%{deleted_at: nil, status: "paused", next_check_in_scheduled_at: last_week, timeframe: nil})
+      refute Projects.outdated?(%{deleted_at: yesterday, status: "active", next_check_in_scheduled_at: last_week, timeframe: nil})
+    end
+
+    test "outdated?/1 returns false if the project has not started yet" do
+      last_week = DateTime.utc_now() |> DateTime.add(-7, :day)
+      future_start = Date.utc_today() |> Date.add(7)
+      past_start = Date.utc_today() |> Date.add(-7)
+
+      # Project with future start date should not be outdated even with overdue check-in
+      refute Projects.outdated?(%{
+        deleted_at: nil,
+        status: "active",
+        next_check_in_scheduled_at: last_week,
+        timeframe: %{contextual_start_date: %{date: future_start}}
+      })
+
+      # Project with past start date should be outdated with overdue check-in
+      assert Projects.outdated?(%{
+        deleted_at: nil,
+        status: "active",
+        next_check_in_scheduled_at: last_week,
+        timeframe: %{contextual_start_date: %{date: past_start}}
+      })
+
+      # Project with nil start date should be outdated with overdue check-in
+      assert Projects.outdated?(%{
+        deleted_at: nil,
+        status: "active",
+        next_check_in_scheduled_at: last_week,
+        timeframe: %{contextual_start_date: nil}
+      })
     end
   end
 
