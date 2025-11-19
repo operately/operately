@@ -47,6 +47,7 @@ export namespace Checklist {
     sectionTitle?: string;
     sectionTitleBottomMargin?: string;
     togglable?: boolean;
+    disabled?: boolean;
   }
 
   export interface InternalProps {
@@ -54,6 +55,7 @@ export namespace Checklist {
 
     showEditButton?: boolean;
     togglable?: boolean;
+    disabled?: boolean;
 
     addActive?: boolean;
     onAddActiveChange?: (active: boolean) => void;
@@ -75,6 +77,7 @@ export function Checklist(props: Checklist.Props) {
   const sectionTitle = props.sectionTitle || "Checklist";
   const sectionTitlBottomMargin = props.sectionTitleBottomMargin || "mb-3";
   const togglable = props.togglable ?? true;
+  const disabled = props.disabled ?? false;
 
   return (
     <div>
@@ -104,6 +107,7 @@ export function Checklist(props: Checklist.Props) {
           items={props.items}
           showEditButton={props.canEdit}
           togglable={togglable}
+          disabled={disabled}
           addActive={addActive}
           onAddActiveChange={setAddActive}
           addItem={props.addItem}
@@ -170,7 +174,7 @@ function ChecklistItemList({ state }: { state: State }) {
   }, [state.items]);
 
   useSortableList(sorted, (itemId, newIndex) => {
-    if (state.togglable) {
+    if (state.togglable && !state.disabled) {
       state.reorder(itemId, newIndex);
     }
   });
@@ -336,7 +340,7 @@ function ChecklistItemView({ state, item }: { state: State; item: ChecklistItemS
   const { ref, dragHandleRef, isDragging, closestEdge } = useSortableItem({
     itemId: item.id,
     index: item.index,
-    disabled: !state.togglable,
+    disabled: !state.togglable || state.disabled,
   });
 
   const handleCheckboxChange = () => {
@@ -358,7 +362,7 @@ function ChecklistItemView({ state, item }: { state: State; item: ChecklistItemS
     >
       {closestEdge && <DropIndicator edge={closestEdge} />}
       <div ref={dragHandleRef as React.RefObject<HTMLDivElement>}>
-        <DragHandle isDragging={isDragging} disabled={!state.togglable} className="absolute -left-5 mt-0.5" />
+        <DragHandle isDragging={isDragging} disabled={!state.togglable || state.disabled} className="absolute -left-5 mt-0.5" />
       </div>
       <Checkbox
         checked={item.completed}

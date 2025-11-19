@@ -327,6 +327,7 @@ function Checks(props: Props) {
       updateItemIndex={updateItemIndex}
       sectionTitle={props.mode === "view" ? "Checklist" : "Update Checklist"}
       togglable={props.mode !== "view"}
+      disabled={true}
     />
   );
 }
