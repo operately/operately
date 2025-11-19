@@ -66,6 +66,45 @@ defmodule Operately.Assignments.LoaderV2Test do
       assignments = LoaderV2.load(ctx.champion, ctx.company)
       assert assignments == []
     end
+
+    test "when the project has not started yet, does not return as assignment", ctx do
+      future_start_date = days_from_now(7)
+
+      ctx =
+        Factory.add_project(ctx, :future_project, :space,
+          champion: :champion,
+          reviewer: :reviewer,
+          timeframe: %{
+            contextual_start_date: ContextualDate.create_day_date(future_start_date),
+            contextual_end_date: ContextualDate.create_day_date(days_from_now(30))
+          }
+        )
+
+      ctx = set_next_check_in_date(ctx, :future_project, days_ago(3))
+
+      assignments = LoaderV2.load(ctx.champion, ctx.company)
+      assert assignments == []
+    end
+
+    test "when the project started today, returns as assignment", ctx do
+      ctx =
+        Factory.add_project(ctx, :today_project, :space,
+          champion: :champion,
+          reviewer: :reviewer,
+          timeframe: %{
+            contextual_start_date: ContextualDate.create_day_date(today()),
+            contextual_end_date: ContextualDate.create_day_date(days_from_now(30))
+          }
+        )
+
+      ctx = set_next_check_in_date(ctx, :today_project, days_ago(3))
+
+      assignments = LoaderV2.load(ctx.champion, ctx.company)
+      assert length(assignments) == 1
+
+      assignment = hd(assignments)
+      assert assignment.resource_id == Paths.project_id(ctx.today_project)
+    end
   end
 
   describe "project check-in acknowledgements" do

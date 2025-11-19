@@ -78,6 +78,40 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
       assert p.role == "owner"
     end
 
+    test "ignores pending check-ins of projects that have not started yet", ctx do
+      future_start_date = Date.add(Date.utc_today(), 7)
+      past_start_date = Date.add(Date.utc_today(), -7)
+
+      # Project with future start date
+      create_project_with_timeframe(ctx, past_date(), %{
+        name: "Future Project",
+        timeframe: %{
+          contextual_start_date: ContextualDate.create_day_date(future_start_date),
+          contextual_end_date: ContextualDate.create_day_date(Date.add(Date.utc_today(), 30))
+        }
+      })
+
+      # Project that has already started
+      started_project = create_project_with_timeframe(ctx, past_date(), %{
+        name: "Started Project",
+        timeframe: %{
+          contextual_start_date: ContextualDate.create_day_date(past_start_date),
+          contextual_end_date: ContextualDate.create_day_date(Date.add(Date.utc_today(), 30))
+        }
+      })
+
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
+
+      assert Repo.aggregate(Project, :count, :id) == 2
+      assert length(assignments) == 1
+
+      [p] = assignments
+
+      assert p.resource_id == Paths.project_id(started_project)
+      assert p.name == "Started Project - Check-in"
+      assert p.type == "check_in"
+    end
+
     test "get pending goal check-ins", ctx do
       today_goal = create_goal(ctx.person, ctx.company, DateTime.utc_now(), %{name: "today"})
       due_goal = create_goal(ctx.person, ctx.company, past_date(), %{name: "3 days ago"})
@@ -668,6 +702,23 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
       |> Repo.update()
 
     project
+  end
+
+  defp create_project_with_timeframe(ctx, date, attrs) do
+    timeframe = Map.get(attrs, :timeframe)
+    attrs_without_timeframe = Map.delete(attrs, :timeframe)
+
+    project = create_project(ctx, date, attrs_without_timeframe)
+
+    if timeframe do
+      {:ok, project} =
+        Project.changeset(project, %{timeframe: timeframe})
+        |> Repo.update()
+
+      project
+    else
+      project
+    end
   end
 
   defp close_project(project) do

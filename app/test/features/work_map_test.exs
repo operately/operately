@@ -149,5 +149,12 @@ defmodule Operately.Features.WorkMapTest do
       |> Steps.assert_work_map_item_hidden(:company_child_project1)
       |> Steps.assert_work_map_item_hidden(:company_child_project2)
     end
+
+    feature "Projects with future start dates show as Pending, not Outdated", ctx do
+      ctx
+      |> Steps.given_project_with_future_start_date_exists()
+      |> Steps.visit_company_work_map()
+      |> Steps.assert_project_status_is_pending()
+    end
   end
 end
