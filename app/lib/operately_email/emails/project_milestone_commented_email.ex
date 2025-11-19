@@ -9,7 +9,7 @@ defmodule OperatelyEmail.Emails.ProjectMilestoneCommentedEmail do
     milestone = Projects.get_milestone!(activity.content["milestone_id"])
     comment = Updates.get_comment!(activity.content["comment_id"])
     action = activity.content["comment_action"]
-    link = OperatelyWeb.Paths.project_milestone_path(company, milestone) |> OperatelyWeb.Paths.to_url()
+    link = OperatelyWeb.Paths.project_milestone_path(company, milestone, comment) |> OperatelyWeb.Paths.to_url()
 
     company
     |> new()
@@ -21,6 +21,7 @@ defmodule OperatelyEmail.Emails.ProjectMilestoneCommentedEmail do
     |> assign(:content, comment.content["message"])
     |> assign(:milestone, milestone)
     |> assign(:action_text, action_text(milestone, action))
+    |> assign(:button_text, button_text(action))
     |> assign(:link, link)
     |> render("project_milestone_commented")
   end
@@ -31,6 +32,13 @@ defmodule OperatelyEmail.Emails.ProjectMilestoneCommentedEmail do
       "complete" -> "completed the #{milestone.title} milestone"
       "reopen" -> "re-opened the #{milestone.title} milestone"
       _ -> raise "Unknown action: #{action}"
+    end
+  end
+
+  def button_text(action) do
+    case action do
+      "none" -> "View Comment"
+      _ -> "View Milestone"
     end
   end
 

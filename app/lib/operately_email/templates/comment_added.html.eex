@@ -10,5 +10,5 @@
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(@link, "View Message") %>
+  <%= cta_button(@link, "View Comment") %>
 <% end %>

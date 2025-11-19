@@ -19,7 +19,7 @@ defmodule OperatelyEmail.Emails.ProjectCheckInCommentedEmail do
     |> assign(:project, project)
     |> assign(:check_in, check_in)
     |> assign(:comment, comment)
-    |> assign(:cta_text, "View Check-In")
+    |> assign(:cta_text, "View Comment")
     |> assign(:cta_url, link)
     |> render("project_check_in_commented")
   end
