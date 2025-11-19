@@ -1,7 +1,7 @@
 <h1 align="center">Operately</h1>
 
 <p align="center">
-  Open source startup operating system
+  Open source company operating system
   <br />
   <a href="https://discord.gg/2ngnragJYV">Discord</a>
   ·
