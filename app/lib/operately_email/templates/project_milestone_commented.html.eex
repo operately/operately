@@ -11,5 +11,5 @@
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(@link, "View Milestone") %>
+  <%= cta_button(@link, @button_text) %>
 <% end %>
