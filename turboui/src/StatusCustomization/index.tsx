@@ -1,0 +1,282 @@
+import React from "react";
+import * as Popover from "@radix-ui/react-popover";
+import classNames from "../utils/classnames";
+import { Modal } from "../Modal";
+import { PrimaryButton, SecondaryButton } from "../Button";
+import { IconPlus, IconTrash } from "../icons";
+import { StatusSelectorV2 } from "../StatusSelectorV2";
+
+type StatusColorName = StatusSelectorV2.StatusColorName;
+type StatusIconName = StatusSelectorV2.StatusIconName;
+type StatusAppearance = "gray" | "blue" | "green" | "red";
+
+export interface StatusCustomizationStatus {
+  id: string;
+  label: string;
+  color: StatusColorName;
+  icon: StatusIconName;
+  value?: string;
+}
+
+export interface StatusCustomizationModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  statuses: ReadonlyArray<StatusCustomizationStatus>;
+  onSave: (nextStatuses: StatusCustomizationStatus[]) => void;
+  title?: string;
+  description?: string;
+}
+
+const STATUS_APPEARANCES: Record<
+  StatusAppearance,
+  { label: string; description: string; color: StatusColorName; icon: StatusIconName; swatchClassName: string }
+> = {
+  gray: {
+    label: "Not started (gray)",
+    description: "Use for backlog or paused work",
+    color: "dimmed",
+    icon: "circleDashed",
+    swatchClassName: "bg-gray-400 dark:bg-gray-500",
+  },
+  blue: {
+    label: "In progress (blue)",
+    description: "Active work underway",
+    color: "brand",
+    icon: "circleDot",
+    swatchClassName: "bg-brand-1",
+  },
+  green: {
+    label: "Done (green)",
+    description: "Completed or approved",
+    color: "success",
+    icon: "circleCheck",
+    swatchClassName: "bg-emerald-500",
+  },
+  red: {
+    label: "Canceled (red)",
+    description: "Blocked or intentionally stopped",
+    color: "danger",
+    icon: "circleX",
+    swatchClassName: "bg-rose-500",
+  },
+};
+
+const APPEARANCE_ORDER = Object.keys(STATUS_APPEARANCES) as StatusAppearance[];
+
+const generateId = () =>
+  typeof crypto !== "undefined" && "randomUUID" in crypto
+    ? crypto.randomUUID()
+    : `status-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
+
+const getAppearanceFromStatus = (status?: Partial<StatusCustomizationStatus>): StatusAppearance => {
+  if (!status) return "gray";
+  const found = APPEARANCE_ORDER.find((appearance) => {
+    const preset = STATUS_APPEARANCES[appearance];
+    return status.color === preset.color && status.icon === preset.icon;
+  });
+  return found ?? "gray";
+};
+
+const buildStatus = (status?: Partial<StatusCustomizationStatus>): StatusCustomizationStatus => {
+  const appearance = getAppearanceFromStatus(status);
+  const preset = STATUS_APPEARANCES[appearance];
+  return {
+    id: status?.id ?? generateId(),
+    value: status?.value,
+    label: status?.label ?? "",
+    color: preset.color,
+    icon: preset.icon,
+  };
+};
+
+const useDraftStatuses = (source: ReadonlyArray<StatusCustomizationStatus>, isOpen: boolean) => {
+  const createDraft = React.useCallback(
+    () => (source.length > 0 ? source : [buildStatus()]).map((status) => buildStatus(status)),
+    [source],
+  );
+
+  const [drafts, setDrafts] = React.useState<StatusCustomizationStatus[]>(createDraft);
+
+  React.useEffect(() => {
+    if (isOpen) {
+      setDrafts(createDraft());
+    }
+  }, [createDraft, isOpen]);
+
+  return [drafts, setDrafts] as const;
+};
+
+export function StatusCustomizationModal({
+  isOpen,
+  onClose,
+  statuses,
+  onSave,
+  title = "Customize statuses",
+  description = "Add, edit, or remove task statuses. Click the icon to change the color and appearance.",
+}: StatusCustomizationModalProps) {
+  const [draftStatuses, setDraftStatuses] = useDraftStatuses(statuses, isOpen);
+  const [showValidation, setShowValidation] = React.useState(false);
+
+  React.useEffect(() => {
+    if (isOpen) {
+      setShowValidation(false);
+    }
+  }, [isOpen]);
+
+  const updateStatus = (id: string, updates: Partial<StatusCustomizationStatus>) => {
+    setDraftStatuses((prev) => prev.map((status) => (status.id === id ? { ...status, ...updates } : status)));
+  };
+
+  const removeStatus = (id: string) => {
+    setDraftStatuses((prev) => (prev.length <= 1 ? prev : prev.filter((status) => status.id !== id)));
+  };
+
+  const addStatus = () => {
+    setDraftStatuses((prev) => [...prev, buildStatus()]);
+  };
+
+  const sanitizedStatuses = draftStatuses.map((status) => ({ ...status, label: status.label.trim() }));
+  const hasEmptyLabel = sanitizedStatuses.some((status) => status.label.length === 0);
+
+  const handleSave = () => {
+    if (hasEmptyLabel) {
+      setShowValidation(true);
+      return;
+    }
+    onSave(sanitizedStatuses);
+  };
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} title={title} size="large" contentPadding="p-0">
+      <div className="p-6 space-y-4">
+        <p className="text-sm text-content-dimmed">{description}</p>
+
+        <div className="space-y-3">
+          {draftStatuses.map((status, index) => {
+            const isLabelInvalid = showValidation && sanitizedStatuses[index]?.label.length === 0;
+            return (
+              <div
+                key={status.id}
+                className="flex items-center gap-2"
+              >
+                <AppearancePicker
+                  value={getAppearanceFromStatus(status)}
+                  onChange={(appearance) => {
+                    const preset = STATUS_APPEARANCES[appearance];
+                    updateStatus(status.id, { color: preset.color, icon: preset.icon });
+                  }}
+                />
+                <input
+                  value={status.label}
+                  onChange={(event) => updateStatus(status.id, { label: event.target.value })}
+                  placeholder="Status label"
+                  className={classNames(
+                    "flex-1 rounded-md border px-3 py-2 text-sm text-content-base transition focus:outline-none focus:ring-2 focus:ring-brand-1",
+                    isLabelInvalid ? "border-rose-300 focus:ring-rose-400" : "border-stroke-base",
+                  )}
+                />
+                <button
+                  type="button"
+                  onClick={() => removeStatus(status.id)}
+                  className={classNames(
+                    "p-1 rounded transition",
+                    draftStatuses.length <= 1
+                      ? "text-content-subtle cursor-not-allowed opacity-50"
+                      : "text-content-dimmed hover:text-red-500 hover:bg-red-50",
+                  )}
+                  aria-label="Remove status"
+                  disabled={draftStatuses.length <= 1}
+                >
+                  <IconTrash size={16} />
+                </button>
+              </div>
+            );
+          })}
+        </div>
+
+        <button
+          type="button"
+          onClick={addStatus}
+          className="w-full rounded-lg border border-dashed border-surface-outline py-2 text-sm font-medium text-content-dimmed transition hover:text-brand-1 hover:border-brand-1/50 flex items-center justify-center gap-2"
+        >
+          <IconPlus size={14} />
+          Add status
+        </button>
+      </div>
+
+      <div className="flex flex-col gap-4 px-6 py-4 border-t border-surface-outline">
+        <div className="flex flex-col sm:flex-row gap-3 sm:justify-end">
+          <SecondaryButton type="button" onClick={onClose}>
+            Cancel
+          </SecondaryButton>
+          <PrimaryButton type="button" onClick={handleSave}>
+            Save changes
+          </PrimaryButton>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+type AppearancePickerProps = {
+  value: StatusAppearance;
+  onChange: (appearance: StatusAppearance) => void;
+};
+
+function AppearancePicker({ value, onChange }: AppearancePickerProps) {
+  const [isOpen, setIsOpen] = React.useState(false);
+  const currentPreset = STATUS_APPEARANCES[value];
+  const CurrentIcon = StatusSelectorV2.STATUS_ICON_COMPONENTS[currentPreset.icon];
+  const iconClass = StatusSelectorV2.STATUS_COLOR_MAP[currentPreset.color].iconClass || "text-content-base";
+
+  const handleChange = (appearance: StatusAppearance) => {
+    onChange(appearance);
+    setIsOpen(false);
+  };
+
+  return (
+    <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
+      <Popover.Trigger asChild>
+        <button
+          type="button"
+          className="flex items-center justify-center p-1 rounded-md hover:bg-surface-dimmed transition"
+          aria-label="Select status color and icon"
+        >
+          <CurrentIcon size={16} className={iconClass} />
+        </button>
+      </Popover.Trigger>
+      <Popover.Portal>
+        <Popover.Content
+          className="rounded-lg border border-surface-outline bg-surface-base shadow-xl p-3 w-72 z-50"
+          sideOffset={8}
+          align="start"
+        >
+          <div className="flex flex-col gap-2">
+            {APPEARANCE_ORDER.map((appearance) => {
+              const preset = STATUS_APPEARANCES[appearance];
+              const IconComponent = StatusSelectorV2.STATUS_ICON_COMPONENTS[preset.icon];
+              const presetIconClass = StatusSelectorV2.STATUS_COLOR_MAP[preset.color].iconClass || "text-content-base";
+              const isActive = appearance === value;
+              return (
+                <button
+                  key={appearance}
+                  type="button"
+                  onClick={() => handleChange(appearance)}
+                  className={classNames(
+                    "flex items-center gap-3 rounded-md px-3 py-2 text-left transition",
+                    isActive
+                      ? "bg-surface-dimmed text-content-base"
+                      : "hover:bg-surface-dimmed text-content-base",
+                  )}
+                >
+                  <IconComponent size={16} className={presetIconClass} />
+                  <span className="text-xs">{preset.description}</span>
+                </button>
+              );
+            })}
+          </div>
+        </Popover.Content>
+      </Popover.Portal>
+    </Popover.Root>
+  );
+}
