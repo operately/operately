@@ -21,4 +21,7 @@ export interface ActivityHandler {
   // Comments
   commentCount(activity: Activity): number;
   hasComments(activity: Activity): boolean;
+
+  // Visibility
+  hidden?(activity: Activity): boolean;
 }
