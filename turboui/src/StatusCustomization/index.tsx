@@ -5,6 +5,7 @@ import { Modal } from "../Modal";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { IconPlus, IconTrash } from "../icons";
 import { StatusSelectorV2 } from "../StatusSelectorV2";
+import { useSortableList, useSortableItem, DropIndicator, DragHandle } from "../utils/PragmaticDragAndDrop";
 
 type StatusColorName = StatusSelectorV2.StatusColorName;
 type StatusIconName = StatusSelectorV2.StatusIconName;
@@ -15,6 +16,7 @@ export interface StatusCustomizationStatus {
   label: string;
   color: StatusColorName;
   icon: StatusIconName;
+  index: number;
   value?: string;
 }
 
@@ -77,7 +79,7 @@ const getAppearanceFromStatus = (status?: Partial<StatusCustomizationStatus>): S
   return found ?? "gray";
 };
 
-const buildStatus = (status?: Partial<StatusCustomizationStatus>): StatusCustomizationStatus => {
+const buildStatus = (status?: Partial<StatusCustomizationStatus>, index?: number): StatusCustomizationStatus => {
   const appearance = getAppearanceFromStatus(status);
   const preset = STATUS_APPEARANCES[appearance];
   return {
@@ -86,12 +88,13 @@ const buildStatus = (status?: Partial<StatusCustomizationStatus>): StatusCustomi
     label: status?.label ?? "",
     color: preset.color,
     icon: preset.icon,
+    index: status?.index ?? index ?? 0,
   };
 };
 
 const useDraftStatuses = (source: ReadonlyArray<StatusCustomizationStatus>, isOpen: boolean) => {
   const createDraft = React.useCallback(
-    () => (source.length > 0 ? source : [buildStatus()]).map((status) => buildStatus(status)),
+    () => (source.length > 0 ? source : [buildStatus(undefined, 0)]).map((status, index) => buildStatus(status, index)),
     [source],
   );
 
@@ -132,8 +135,25 @@ export function StatusCustomizationModal({
   };
 
   const addStatus = () => {
-    setDraftStatuses((prev) => [...prev, buildStatus()]);
+    setDraftStatuses((prev) => [...prev, buildStatus(undefined, prev.length)]);
   };
+
+  const handleReorder = (itemId: string, newIndex: number) => {
+    setDraftStatuses((prev) => {
+      const oldIndex = prev.findIndex((s) => s.id === itemId);
+      if (oldIndex === -1) return prev;
+
+      const reordered = [...prev];
+      const [moved] = reordered.splice(oldIndex, 1);
+      if (!moved) return prev;
+
+      reordered.splice(newIndex, 0, moved);
+
+      return reordered.map((status, index) => ({ ...status, index }));
+    });
+  };
+
+  useSortableList(draftStatuses, handleReorder);
 
   const sanitizedStatuses = draftStatuses.map((status) => ({ ...status, label: status.label.trim() }));
   const hasEmptyLabel = sanitizedStatuses.some((status) => status.label.length === 0);
@@ -155,41 +175,14 @@ export function StatusCustomizationModal({
           {draftStatuses.map((status, index) => {
             const isLabelInvalid = showValidation && sanitizedStatuses[index]?.label.length === 0;
             return (
-              <div
+              <StatusRow
                 key={status.id}
-                className="flex items-center gap-2"
-              >
-                <AppearancePicker
-                  value={getAppearanceFromStatus(status)}
-                  onChange={(appearance) => {
-                    const preset = STATUS_APPEARANCES[appearance];
-                    updateStatus(status.id, { color: preset.color, icon: preset.icon });
-                  }}
-                />
-                <input
-                  value={status.label}
-                  onChange={(event) => updateStatus(status.id, { label: event.target.value })}
-                  placeholder="Status label"
-                  className={classNames(
-                    "flex-1 rounded-md border px-3 py-2 text-sm text-content-base transition focus:outline-none focus:ring-2 focus:ring-brand-1",
-                    isLabelInvalid ? "border-rose-300 focus:ring-rose-400" : "border-stroke-base",
-                  )}
-                />
-                <button
-                  type="button"
-                  onClick={() => removeStatus(status.id)}
-                  className={classNames(
-                    "p-1 rounded transition",
-                    draftStatuses.length <= 1
-                      ? "text-content-subtle cursor-not-allowed opacity-50"
-                      : "text-content-dimmed hover:text-red-500 hover:bg-red-50",
-                  )}
-                  aria-label="Remove status"
-                  disabled={draftStatuses.length <= 1}
-                >
-                  <IconTrash size={16} />
-                </button>
-              </div>
+                status={status}
+                isLabelInvalid={isLabelInvalid}
+                onUpdate={updateStatus}
+                onRemove={removeStatus}
+                canRemove={draftStatuses.length > 1}
+              />
             );
           })}
         </div>
@@ -215,6 +208,66 @@ export function StatusCustomizationModal({
         </div>
       </div>
     </Modal>
+  );
+}
+
+type StatusRowProps = {
+  status: StatusCustomizationStatus;
+  isLabelInvalid: boolean;
+  onUpdate: (id: string, updates: Partial<StatusCustomizationStatus>) => void;
+  onRemove: (id: string) => void;
+  canRemove: boolean;
+};
+
+function StatusRow({ status, isLabelInvalid, onUpdate, onRemove, canRemove }: StatusRowProps) {
+  const { ref, dragHandleRef, isDragging, closestEdge } = useSortableItem({
+    itemId: status.id,
+    index: status.index,
+  });
+
+  return (
+    <div className="relative">
+      {closestEdge === "top" && <DropIndicator edge="top" />}
+      <div
+        ref={ref as React.RefObject<HTMLDivElement>}
+        className={classNames("flex items-center gap-2 group", isDragging && "opacity-50")}
+      >
+        <div ref={dragHandleRef as React.RefObject<HTMLDivElement>} className="flex items-center">
+          <DragHandle isDragging={isDragging} className="opacity-100" />
+        </div>
+        <AppearancePicker
+          value={getAppearanceFromStatus(status)}
+          onChange={(appearance) => {
+            const preset = STATUS_APPEARANCES[appearance];
+            onUpdate(status.id, { color: preset.color, icon: preset.icon });
+          }}
+        />
+        <input
+          value={status.label}
+          onChange={(event) => onUpdate(status.id, { label: event.target.value })}
+          placeholder="Status label"
+          className={classNames(
+            "flex-1 rounded-md border px-3 py-2 text-sm text-content-base transition focus:outline-none focus:ring-2 focus:ring-brand-1",
+            isLabelInvalid ? "border-rose-300 focus:ring-rose-400" : "border-stroke-base",
+          )}
+        />
+        <button
+          type="button"
+          onClick={() => onRemove(status.id)}
+          className={classNames(
+            "p-1 rounded transition",
+            !canRemove
+              ? "text-content-subtle cursor-not-allowed opacity-50"
+              : "text-content-dimmed hover:text-red-500 hover:bg-red-50",
+          )}
+          aria-label="Remove status"
+          disabled={!canRemove}
+        >
+          <IconTrash size={16} />
+        </button>
+      </div>
+      {closestEdge === "bottom" && <DropIndicator edge="bottom" />}
+    </div>
   );
 }
 
@@ -264,9 +317,7 @@ function AppearancePicker({ value, onChange }: AppearancePickerProps) {
                   onClick={() => handleChange(appearance)}
                   className={classNames(
                     "flex items-center gap-3 rounded-md px-3 py-2 text-left transition",
-                    isActive
-                      ? "bg-surface-dimmed text-content-base"
-                      : "hover:bg-surface-dimmed text-content-base",
+                    isActive ? "bg-surface-dimmed text-content-base" : "hover:bg-surface-dimmed text-content-base",
                   )}
                 >
                   <IconComponent size={16} className={presetIconClass} />
