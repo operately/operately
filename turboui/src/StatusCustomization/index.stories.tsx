@@ -45,33 +45,47 @@ const StatusPreview = ({ statuses }: { statuses: StatusCustomizationStatus[] }) 
   }, [options, activeStatus]);
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="text-sm text-content-dimmed">Live preview</div>
-      <div className="flex flex-wrap gap-2">
-        {options.map((option) => {
-          const IconComponent = StatusSelectorV2.STATUS_ICON_COMPONENTS[option.icon];
-          const colorClass = StatusSelectorV2.STATUS_COLOR_MAP[option.color].iconClass || "text-content-base";
-          return (
-            <span
-              key={option.value}
-              className="inline-flex items-center gap-2 rounded-full border border-surface-outline px-3 py-1 text-xs text-content-base bg-surface-base"
-            >
-              <IconComponent size={14} className={colorClass} />
-              {option.label}
-            </span>
-          );
-        })}
-      </div>
-      {options.length > 0 && (
-        <div className="mt-2">
-          <StatusSelectorV2
-            statusOptions={options}
-            status={activeStatus}
-            onChange={setActiveStatus}
-            showFullBadge
-          />
+    <div className="rounded-lg border border-surface-outline bg-surface-base p-6 shadow-sm">
+      <div className="flex flex-col gap-4">
+        <div>
+          <h3 className="text-sm font-semibold text-content-base mb-1">Live Preview</h3>
+          <p className="text-xs text-content-dimmed">
+            This shows how your custom statuses will appear in the application. Click "Customize statuses" below to
+            add, remove, edit, or reorder them.
+          </p>
         </div>
-      )}
+
+        <div>
+          <div className="text-xs font-medium text-content-dimmed mb-2">Status badges</div>
+          <div className="flex flex-wrap gap-2">
+            {options.map((option) => {
+              const IconComponent = StatusSelectorV2.STATUS_ICON_COMPONENTS[option.icon];
+              const colorClass = StatusSelectorV2.STATUS_COLOR_MAP[option.color].iconClass || "text-content-base";
+              return (
+                <span
+                  key={option.value}
+                  className="inline-flex items-center gap-2 rounded-full border border-surface-outline px-3 py-1 text-xs text-content-base bg-surface-base"
+                >
+                  <IconComponent size={14} className={colorClass} />
+                  {option.label}
+                </span>
+              );
+            })}
+          </div>
+        </div>
+
+        {options.length > 0 && (
+          <div>
+            <div className="text-xs font-medium text-content-dimmed mb-2">Status selector</div>
+            <StatusSelectorV2
+              statusOptions={options}
+              status={activeStatus}
+              onChange={setActiveStatus}
+              showFullBadge
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
