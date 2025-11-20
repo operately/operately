@@ -23,11 +23,11 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const engineeringStatuses = [
-  { value: "backlog", label: "Backlog", icon: "circleDashed", color: "dimmed" },
-  { value: "ready_for_dev", label: "Ready for development", icon: "circleDashed", color: "dimmed" },
-  { value: "in_progress", label: "In progress", icon: "circleDot", color: "brand" },
-  { value: "code_review", label: "Code review", icon: "circleDot", color: "brand" },
-  { value: "qa", label: "In QA", icon: "circleDot", color: "brand" },
+  { value: "backlog", label: "Backlog", icon: "circleDashed", color: "dimmed", index: 0 },
+  { value: "ready_for_dev", label: "Ready for development", icon: "circleDashed", color: "dimmed", index: 1 },
+  { value: "in_progress", label: "In progress", icon: "circleDot", color: "brand", index: 2 },
+  { value: "code_review", label: "Code review", icon: "circleDot", color: "brand", index: 3 },
+  { value: "qa", label: "In QA", icon: "circleDot", color: "brand", index: 4 },
   {
     value: "shipped",
     label: "Shipped",
@@ -35,6 +35,7 @@ const engineeringStatuses = [
     buttonIcon: "check",
     color: "success",
     buttonVariant: "success",
+    index: 5,
   },
   {
     value: "canceled",
@@ -42,14 +43,15 @@ const engineeringStatuses = [
     icon: "circleX",
     color: "dimmed",
     buttonVariant: "muted",
+    index: 6,
   },
 ] as const satisfies ReadonlyArray<StatusSelectorV2.StatusOption>;
 
 const marketingStatuses = [
-  { value: "brief", label: "Creative brief", icon: "circleDashed", color: "dimmed" },
-  { value: "drafting", label: "Drafting content", icon: "circleDot", color: "brand" },
-  { value: "approvals", label: "Stakeholder review", icon: "circleDot", color: "brand" },
-  { value: "scheduled", label: "Scheduled", icon: "circleDot", color: "brand" },
+  { value: "brief", label: "Creative brief", icon: "circleDashed", color: "dimmed", index: 0 },
+  { value: "drafting", label: "Drafting content", icon: "circleDot", color: "brand", index: 1 },
+  { value: "approvals", label: "Stakeholder review", icon: "circleDot", color: "brand", index: 2 },
+  { value: "scheduled", label: "Scheduled", icon: "circleDot", color: "brand", index: 3 },
   {
     value: "launched",
     label: "Launched",
@@ -57,6 +59,7 @@ const marketingStatuses = [
     buttonIcon: "check",
     color: "success",
     buttonVariant: "success",
+    index: 4,
   },
   {
     value: "archived",
@@ -64,14 +67,15 @@ const marketingStatuses = [
     icon: "circleX",
     color: "dimmed",
     buttonVariant: "muted",
+    index: 5,
   },
 ] as const satisfies ReadonlyArray<StatusSelectorV2.StatusOption>;
 
 const supportStatuses = [
-  { value: "new", label: "New ticket", icon: "circleDashed", color: "dimmed" },
-  { value: "triage", label: "Triage", icon: "circleDot", color: "brand" },
-  { value: "waiting_customer", label: "Waiting on customer", icon: "circleDashed", color: "dimmed" },
-  { value: "escalated", label: "Escalated", icon: "circleDot", color: "brand" },
+  { value: "new", label: "New ticket", icon: "circleDashed", color: "dimmed", index: 0 },
+  { value: "triage", label: "Triage", icon: "circleDot", color: "brand", index: 1 },
+  { value: "waiting_customer", label: "Waiting on customer", icon: "circleDashed", color: "dimmed", index: 2 },
+  { value: "escalated", label: "Escalated", icon: "circleDot", color: "brand", index: 3 },
   {
     value: "resolved",
     label: "Resolved",
@@ -79,6 +83,7 @@ const supportStatuses = [
     buttonIcon: "check",
     color: "success",
     buttonVariant: "success",
+    index: 4,
   },
   {
     value: "closed",
@@ -86,6 +91,7 @@ const supportStatuses = [
     icon: "circleX",
     color: "dimmed",
     buttonVariant: "muted",
+    index: 5,
   },
 ] as const satisfies ReadonlyArray<StatusSelectorV2.StatusOption>;
 

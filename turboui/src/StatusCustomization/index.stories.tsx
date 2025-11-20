@@ -16,11 +16,11 @@ export default meta;
 type Story = StoryObj<typeof StatusCustomizationModal>;
 
 const DEFAULT_STATUSES: StatusCustomizationStatus[] = [
-  { id: "pending", value: "pending", label: "Not started", color: "dimmed", icon: "circleDashed" },
-  { id: "progress", value: "in_progress", label: "In progress", color: "brand", icon: "circleDot" },
-  { id: "qa", value: "qa", label: "QA", color: "brand", icon: "circleDot" },
-  { id: "done", value: "done", label: "Done", color: "success", icon: "circleCheck" },
-  { id: "canceled", value: "canceled", label: "Canceled", color: "danger", icon: "circleX" },
+  { id: "pending", value: "pending", label: "Not started", color: "dimmed", icon: "circleDashed", index: 0 },
+  { id: "progress", value: "in_progress", label: "In progress", color: "brand", icon: "circleDot", index: 1 },
+  { id: "qa", value: "qa", label: "QA", color: "brand", icon: "circleDot", index: 2 },
+  { id: "done", value: "done", label: "Done", color: "success", icon: "circleCheck", index: 3 },
+  { id: "canceled", value: "canceled", label: "Canceled", color: "danger", icon: "circleX", index: 4 },
 ];
 
 const StatusPreview = ({ statuses }: { statuses: StatusCustomizationStatus[] }) => {
@@ -31,6 +31,7 @@ const StatusPreview = ({ statuses }: { statuses: StatusCustomizationStatus[] }) 
         label: status.label,
         icon: status.icon,
         color: status.color,
+        index: status.index,
       })),
     [statuses],
   );
