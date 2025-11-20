@@ -250,10 +250,10 @@ export namespace StatusSelectorV2 {
   export type StatusIconName = keyof typeof STATUS_ICON_COMPONENTS;
 
   export const STATUS_COLOR_MAP = {
-    neutral: { iconClass: "", buttonColorClass: "" },
     dimmed: { iconClass: "text-content-dimmed", buttonColorClass: "text-content-dimmed" },
     brand: { iconClass: "text-brand-1", buttonColorClass: "text-brand-1" },
     success: { iconClass: "text-callout-success-content", buttonColorClass: "text-callout-success-content" },
+    danger: { iconClass: "text-callout-error-content", buttonColorClass: "text-callout-error-content" },
   } as const;
 
   export type StatusColorName = keyof typeof STATUS_COLOR_MAP;
