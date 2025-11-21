@@ -3,6 +3,7 @@ FROM elixir:1.18.0-alpine
 RUN apk update && apk add --no-cache \
   bash git openssh nodejs npm inotify-tools \
   chromium chromium-chromedriver postgresql-client \
-  make gcc musl-dev build-base htop
+  make gcc musl-dev build-base htop ca-certificates \
+  && update-ca-certificates
 
 CMD ["sleep", "infinity"]

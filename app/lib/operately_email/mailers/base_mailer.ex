@@ -37,7 +37,8 @@ defmodule OperatelyEmail.Mailers.BaseMailer do
   defp prod_config do
     cond do
       System.get_env("SENDGRID_API_KEY", "") != "" -> prod_sendgrid_config()
-      System.get_env("SMTP_PROVIDER", "") == "aws-ses" -> aws_ses_smtp_config()
+      System.get_env("SMTP_PROVIDER", "") == "aws-ses" -> smtp_config_tls()
+      System.get_env("SMTP_PROVIDER", "") == "mailjet" -> smtp_config_tls()
       System.get_env("SMTP_SERVER", "") != "" -> smtp_config()
       true -> raise "No valid email configuration found"
     end
@@ -57,7 +58,7 @@ defmodule OperatelyEmail.Mailers.BaseMailer do
     ]
   end
 
-  defp aws_ses_smtp_config() do
+  defp smtp_config_tls() do
     [
       adapter: Swoosh.Adapters.SMTP,
       relay: System.get_env("SMTP_SERVER"),
@@ -66,10 +67,7 @@ defmodule OperatelyEmail.Mailers.BaseMailer do
       password: System.get_env("SMTP_PASSWORD"),
       ssl: System.get_env("SMTP_SSL", "false") == "true",
       tls: :always,
-      tls_options: [
-        verify: :verify_none,
-        versions: [:"tlsv1.2"]
-      ],
+      tls_options: tls_options(),
       auth: :always,
       retries: 2
     ]
@@ -80,5 +78,49 @@ defmodule OperatelyEmail.Mailers.BaseMailer do
       adapter: Swoosh.Adapters.Sendgrid,
       api_key: System.get_env("SENDGRID_API_KEY")
     ]
+  end
+
+  defp tls_options do
+    [
+      verify: :verify_peer,
+      depth: 3,
+      versions: [:"tlsv1.2"]
+    ]
+    |> maybe_add_hostname_verification()
+    |> add_certificate_options()
+  end
+
+  defp maybe_add_hostname_verification(options) do
+    case System.get_env("SMTP_SERVER") do
+      host when host not in [nil, ""] ->
+        options ++
+          [
+            server_name_indication: String.to_charlist(host),
+            customize_hostname_check: [
+              match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
+            ]
+          ]
+
+      _ ->
+        options
+    end
+  end
+
+  defp add_certificate_options(options) do
+    cert_option =
+      case System.get_env("SMTP_CACERTFILE") || default_cacertfile() do
+        nil -> [cacerts: :public_key.cacerts_get()]
+        cacertfile -> [cacertfile: cacertfile]
+      end
+
+    options ++ cert_option
+  end
+
+  defp default_cacertfile do
+    [
+      "/etc/ssl/certs/ca-certificates.crt",
+      "/etc/ssl/cert.pem"
+    ]
+    |> Enum.find(fn path -> File.exists?(path) end)
   end
 end
