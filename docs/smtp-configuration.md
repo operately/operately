@@ -148,6 +148,30 @@ SMTP_SSL=false
 2. Generate SMTP credentials in your account settings
 3. Use your login email and the generated SMTP password
 
+### Mailjet
+
+Mailjet is another popular transactional email provider. It supports SMTP with STARTTLS on ports 587 and 2525.
+
+```bash
+# Environment variables for Mailjet
+SMTP_PROVIDER=mailjet
+SMTP_SERVER=in-v3.mailjet.com
+SMTP_PORT=587
+SMTP_USERNAME=your-mailjet-api-key
+SMTP_PASSWORD=your-mailjet-secret-key
+SMTP_SSL=false
+```
+
+**Setup steps:**
+1. Sign up for Mailjet and create an API key and secret
+2. Verify your sending domain or email address in the Mailjet dashboard
+3. Use the API key as `SMTP_USERNAME` and the secret key as `SMTP_PASSWORD`
+4. Set `SMTP_PROVIDER=mailjet` to enable optimized TLS 1.2 configuration
+5. Optionally use port `2525` instead of `587` if your environment blocks 587
+
+**Important Notes:**
+- Mailjet requires TLS; with the configuration above (`SMTP_SSL=false` and port 587), STARTTLS will be used automatically
+
 ## Development and Testing
 
 ### MailHog (Local Development)
