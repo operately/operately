@@ -81,25 +81,39 @@ defmodule OperatelyEmail.Mailers.BaseMailer do
   end
 
   defp tls_options do
-    smtp_server = System.get_env("SMTP_SERVER")
-
-    base_options = [
+    [
       verify: :verify_peer,
       depth: 3,
-      versions: [:"tlsv1.2"],
-      server_name_indication: String.to_charlist(smtp_server),
-      customize_hostname_check: [
-        match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
-      ]
+      versions: [:"tlsv1.2"]
     ]
+    |> maybe_add_hostname_verification()
+    |> add_certificate_options()
+  end
 
-    case System.get_env("SMTP_CACERTFILE") || default_cacertfile() do
-      nil ->
-        base_options ++ [cacerts: :public_key.cacerts_get()]
+  defp maybe_add_hostname_verification(options) do
+    case System.get_env("SMTP_SERVER") do
+      host when host not in [nil, ""] ->
+        options ++
+          [
+            server_name_indication: String.to_charlist(host),
+            customize_hostname_check: [
+              match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
+            ]
+          ]
 
-      cacertfile ->
-        base_options ++ [cacertfile: cacertfile]
+      _ ->
+        options
     end
+  end
+
+  defp add_certificate_options(options) do
+    cert_option =
+      case System.get_env("SMTP_CACERTFILE") || default_cacertfile() do
+        nil -> [cacerts: :public_key.cacerts_get()]
+        cacertfile -> [cacertfile: cacertfile]
+      end
+
+    options ++ cert_option
   end
 
   defp default_cacertfile do
