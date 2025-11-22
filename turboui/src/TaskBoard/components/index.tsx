@@ -3,7 +3,7 @@ import { PrimaryButton, SecondaryButton } from "../../Button";
 import { DragAndDropProvider } from "../../utils/DragAndDrop";
 import { reorderTasks } from "../utils/taskReorderingUtils";
 import * as Types from "../types";
-import { IconPlus } from "../../icons";
+import { IconPlus, IconSettings } from "../../icons";
 import TaskCreationModal from "./TaskCreationModal";
 import MilestoneCreationModal from "./MilestoneCreationModal";
 import { TaskList } from "./TaskList";
@@ -12,6 +12,7 @@ import { TaskFilter, FilterBadges } from "./TaskFilter";
 import { useFilteredTasks } from "../hooks";
 import { InlineTaskCreator } from "./InlineTaskCreator";
 import { useInlineTaskCreator } from "../hooks/useInlineTaskCreator";
+import { Menu, MenuActionItem } from "../../Menu";
 
 export namespace TaskBoard {
   export type Person = Types.Person;
@@ -281,6 +282,25 @@ function StickyActionBar({
 
         {/* Filter badges */}
         {onFiltersChange && <FilterBadges filters={filters} onFiltersChange={onFiltersChange} />}
+      </div>
+
+      <div className="flex items-center">
+        <Menu
+          customTrigger={
+            <button
+              className="p-1.5 text-content-dimmed hover:text-content-base hover:bg-surface-dimmed rounded-full transition"
+              aria-label="Settings"
+            >
+              <IconSettings size={20} />
+            </button>
+          }
+          size="small"
+          align="end"
+        >
+          <MenuActionItem icon={IconSettings} onClick={() => console.log("Manage statuses clicked")}>
+            Manage statuses
+          </MenuActionItem>
+        </Menu>
       </div>
     </header>
   );

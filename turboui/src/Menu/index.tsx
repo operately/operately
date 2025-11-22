@@ -15,6 +15,7 @@ interface MenuProps extends TestableElement {
   size?: Size;
   onOpenChange?: (open: boolean) => void;
   showArrow?: boolean;
+  align?: "start" | "center" | "end";
 }
 
 interface MenuItemProps extends TestableElement {
@@ -45,7 +46,7 @@ export function Menu(props: MenuProps) {
       <Trigger {...props} />
 
       <DropdownMenu.Portal>
-        <DropdownMenu.Content className={menuContentClass} style={menuContentStyle(props.size)}>
+        <DropdownMenu.Content className={menuContentClass} style={menuContentStyle(props.size)} align={props.align}>
           {props.showArrow && <DropdownMenu.Arrow className="fill-surface-base" />}
           {props.headerContent && (
             <div className="px-3 py-2 border-b border-surface-outline">{props.headerContent}</div>
