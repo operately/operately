@@ -1,5 +1,7 @@
 import { DateField } from "../DateField";
 import { PersonField } from "../PersonField";
+import { StatusCustomizationStatus } from "../StatusCustomization";
+export type { StatusCustomizationStatus };
 
 /**
  * TaskBoard component types
@@ -168,4 +170,8 @@ export interface TaskBoardProps {
   // Filter functionality
   filters?: FilterCondition[];
   onFiltersChange?: (filters: FilterCondition[]) => void;
+
+  // Status customization
+  statuses: StatusCustomizationStatus[];
+  onManageStatusesClick: (statuses: StatusCustomizationStatus[]) => void;
 }

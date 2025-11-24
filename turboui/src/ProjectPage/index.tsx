@@ -139,6 +139,8 @@ export namespace ProjectPage {
     assigneePersonSearch: PersonField.SearchData;
     filters?: TaskBoardTypes.FilterCondition[];
     onFiltersChange?: (filters: TaskBoardTypes.FilterCondition[]) => void;
+    statuses?: TaskBoardTypes.StatusCustomizationStatus[];
+    onManageStatusesClick: (statuses: TaskBoardTypes.StatusCustomizationStatus[]) => void;
 
     contributors: Person[];
     checkIns: CheckIn[];
@@ -159,6 +161,8 @@ export namespace ProjectPage {
   }
 
   export interface State extends Props {
+    statuses: TaskBoardTypes.StatusCustomizationStatus[];
+
     isMoveModalOpen: boolean;
     openMoveModal: () => void;
     closeMoveModal: () => void;
@@ -175,6 +179,7 @@ function useProjectPageState(props: ProjectPage.Props): ProjectPage.State {
 
   return {
     ...props,
+    statuses: props.statuses && props.statuses.length > 0 ? props.statuses : DEFAULT_STATUSES,
 
     isMoveModalOpen,
     openMoveModal: () => setIsMoveModalOpen(true),
@@ -228,6 +233,8 @@ export function ProjectPage(props: ProjectPage.Props) {
               assigneePersonSearch={state.assigneePersonSearch}
               filters={state.filters}
               onFiltersChange={state.onFiltersChange}
+              statuses={state.statuses}
+              onManageStatusesClick={state.onManageStatusesClick}
             />
           </div>
         )}
@@ -250,3 +257,38 @@ function Activity(props: ProjectPage.State) {
     </div>
   );
 }
+
+const DEFAULT_STATUSES: TaskBoardTypes.StatusCustomizationStatus[] = [
+  {
+    id: "pending",
+    label: "Not started",
+    color: "dimmed",
+    icon: "circleDashed",
+    index: 0,
+    value: "pending",
+  },
+  {
+    id: "in_progress",
+    label: "In progress",
+    color: "brand",
+    icon: "circleDot",
+    index: 1,
+    value: "in_progress",
+  },
+  {
+    id: "done",
+    label: "Done",
+    color: "success",
+    icon: "circleCheck",
+    index: 2,
+    value: "done",
+  },
+  {
+    id: "canceled",
+    label: "Canceled",
+    color: "dimmed",
+    icon: "circleX",
+    index: 3,
+    value: "canceled",
+  },
+];
