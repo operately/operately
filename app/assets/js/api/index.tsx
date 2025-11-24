@@ -1399,6 +1399,7 @@ export interface Project {
   notifications?: Notification[] | null;
   subscriptionList?: SubscriptionList | null;
   milestonesOrderingState?: string[] | null;
+  taskStatuses?: ProjectTaskStatus[] | null;
 }
 
 export interface ProjectCheckIn {
@@ -1512,7 +1513,7 @@ export interface ProjectReviewRequest {
   author?: Person | null;
 }
 
-export interface ProjectTaskStatusInput {
+export interface ProjectTaskStatus {
   id: string;
   label: string;
   color: string;
@@ -4114,7 +4115,7 @@ export interface ProjectsUpdateStartDateResult {
 
 export interface ProjectsUpdateTaskStatusesInput {
   projectId: Id;
-  taskStatuses: ProjectTaskStatusInput[];
+  taskStatuses: ProjectTaskStatus[];
 }
 
 export interface ProjectsUpdateTaskStatusesResult {

@@ -3,7 +3,7 @@ import { PrimaryButton, SecondaryButton } from "../../Button";
 import { DragAndDropProvider } from "../../utils/DragAndDrop";
 import { reorderTasks } from "../utils/taskReorderingUtils";
 import * as Types from "../types";
-import { IconPlus } from "../../icons";
+import { IconPlus, IconSettings } from "../../icons";
 import TaskCreationModal from "./TaskCreationModal";
 import MilestoneCreationModal from "./MilestoneCreationModal";
 import { TaskList } from "./TaskList";
@@ -12,6 +12,8 @@ import { TaskFilter, FilterBadges } from "./TaskFilter";
 import { useFilteredTasks } from "../hooks";
 import { InlineTaskCreator } from "./InlineTaskCreator";
 import { useInlineTaskCreator } from "../hooks/useInlineTaskCreator";
+import { Menu, MenuActionItem } from "../../Menu";
+import { StatusCustomizationModal, type StatusCustomizationStatus } from "../../StatusCustomization";
 
 export namespace TaskBoard {
   export type Person = Types.Person;
@@ -23,6 +25,8 @@ export namespace TaskBoard {
   export type Task = Types.Task;
 
   export type NewTaskPayload = Types.NewTaskPayload;
+
+  export type StatusCustomizationStatus = Types.StatusCustomizationStatus;
 }
 
 export function TaskBoard({
@@ -40,12 +44,16 @@ export function TaskBoard({
   assigneePersonSearch,
   filters = [],
   onFiltersChange,
+  onManageStatusesClick,
+  statuses = [],
 }: Types.TaskBoardProps) {
   const [internalTasks, setInternalTasks] = useState<Types.Task[]>(externalTasks);
   const [internalMilestones, setInternalMilestones] = useState<Types.Milestone[]>(externalMilestones);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
   const [activeTaskMilestoneId, setActiveTaskMilestoneId] = useState<string | undefined>();
+  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+  const [statusModalStatuses, setStatusModalStatuses] = useState<StatusCustomizationStatus[]>(statuses);
   const {
     open: noMilestoneCreatorOpen,
     openCreator: openNoMilestoneCreator,
@@ -62,6 +70,10 @@ export function TaskBoard({
   useEffect(() => {
     setInternalMilestones(externalMilestones);
   }, [externalMilestones]);
+
+  useEffect(() => {
+    setStatusModalStatuses(statuses);
+  }, [statuses]);
 
   // Apply filters to tasks and track hidden tasks
   const { filteredTasks, hiddenTasksByMilestone, hiddenTasks, showHiddenTasksToggle } = useFilteredTasks(
@@ -83,7 +95,22 @@ export function TaskBoard({
     [internalTasks],
   );
 
-  // Hotkey handled by useInlineTaskCreator
+  const openStatusModal = useCallback(() => {
+    setIsStatusModalOpen(true);
+  }, []);
+
+  const closeStatusModal = useCallback(() => {
+    setIsStatusModalOpen(false);
+  }, []);
+
+  const handleSaveStatuses = useCallback(
+    (nextStatuses: StatusCustomizationStatus[]) => {
+      setStatusModalStatuses(nextStatuses);
+      setIsStatusModalOpen(false);
+      onManageStatusesClick(nextStatuses);
+    },
+    [onManageStatusesClick],
+  );
 
   const handleTaskReorder = useCallback(
     (dropZoneId: string, draggedId: string, indexInDropZone: number) => {
@@ -148,6 +175,7 @@ export function TaskBoard({
         onFiltersChange={onFiltersChange}
         filters={filters}
         internalTasks={internalTasks}
+        openStatusModal={openStatusModal}
       />
 
       <div
@@ -238,6 +266,13 @@ export function TaskBoard({
           </DragAndDropProvider>
         </div>
       </div>
+
+      <StatusCustomizationModal
+        isOpen={isStatusModalOpen}
+        onClose={closeStatusModal}
+        statuses={statusModalStatuses}
+        onSave={handleSaveStatuses}
+      />
     </div>
   );
 }
@@ -249,6 +284,7 @@ interface ActionBarProps {
   onFiltersChange?: (filters: Types.FilterCondition[]) => void;
   filters: Types.FilterCondition[];
   internalTasks: Types.Task[];
+  openStatusModal: () => void;
 }
 
 function StickyActionBar({
@@ -258,6 +294,7 @@ function StickyActionBar({
   onFiltersChange,
   filters,
   internalTasks,
+  openStatusModal,
 }: ActionBarProps) {
   return (
     <header className="sticky top-0 z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between py-6 bg-surface-base px-4 lg:px-0">
@@ -282,6 +319,23 @@ function StickyActionBar({
         {/* Filter badges */}
         {onFiltersChange && <FilterBadges filters={filters} onFiltersChange={onFiltersChange} />}
       </div>
+
+      <Menu
+        customTrigger={
+          <button
+            className="p-1.5 -mb-2 text-content-dimmed hover:text-content-base hover:bg-surface-dimmed rounded-full transition"
+            aria-label="Settings"
+          >
+            <IconSettings size={20} />
+          </button>
+        }
+        size="small"
+        align="end"
+      >
+        <MenuActionItem icon={IconSettings} onClick={openStatusModal}>
+          Manage statuses
+        </MenuActionItem>
+      </Menu>
     </header>
   );
 }

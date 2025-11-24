@@ -208,6 +208,8 @@ function Page() {
     transformResult: transformPerson,
   });
 
+  const { statuses, handleSaveStatuses } = Projects.useTaskStatuses(project.id, project.taskStatuses, refresh);
+
   const deleteProject = async () => {
     return Api.projects
       .delete({ projectId: project.id })
@@ -297,6 +299,8 @@ function Page() {
     newDiscussionLink: paths.projectDiscussionNewPath(project.id),
     currentUser: currentUser ? People.parsePersonForTurboUi(paths, currentUser) : null,
     assigneePersonSearch: assigneePersonSearch,
+    statuses,
+    onManageStatusesClick: handleSaveStatuses,
 
     richTextHandlers: richEditorHandlers,
 

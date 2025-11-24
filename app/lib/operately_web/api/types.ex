@@ -474,6 +474,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :notifications, list_of(:notification), null: true
     field? :subscription_list, :subscription_list, null: true
     field? :milestones_ordering_state, list_of(:string), null: true
+    field? :task_statuses, list_of(:project_task_status), null: true
   end
 
   object :project_children_count do
@@ -1915,7 +1916,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :index, :integer, null: true
   end
 
-  object :project_task_status_input do
+  object :project_task_status do
     field :id, :string, null: false
     field :label, :string, null: false
     field :color, :string, null: false
