@@ -1512,6 +1512,15 @@ export interface ProjectReviewRequest {
   author?: Person | null;
 }
 
+export interface ProjectTaskStatusInput {
+  id: string;
+  label: string;
+  color: string;
+  index: number;
+  value: string;
+  hidden: boolean;
+}
+
 export interface Reaction {
   id: string;
   emoji: string;
@@ -4103,6 +4112,15 @@ export interface ProjectsUpdateStartDateResult {
   success: boolean | null;
 }
 
+export interface ProjectsUpdateTaskStatusesInput {
+  projectId: Id;
+  taskStatuses: ProjectTaskStatusInput[];
+}
+
+export interface ProjectsUpdateTaskStatusesResult {
+  success: boolean | null;
+}
+
 export interface PublishDiscussionInput {
   id?: Id | null;
 }
@@ -5066,6 +5084,10 @@ class ApiNamespaceProjects {
 
   async updateStartDate(input: ProjectsUpdateStartDateInput): Promise<ProjectsUpdateStartDateResult> {
     return this.client.post("/projects/update_start_date", input);
+  }
+
+  async updateTaskStatuses(input: ProjectsUpdateTaskStatusesInput): Promise<ProjectsUpdateTaskStatusesResult> {
+    return this.client.post("/projects/update_task_statuses", input);
   }
 }
 
@@ -7692,6 +7714,13 @@ export default {
     useUpdateReviewer: () =>
       useMutation<ProjectsUpdateReviewerInput, ProjectsUpdateReviewerResult>((input) =>
         defaultApiClient.apiNamespaceProjects.updateReviewer(input),
+      ),
+
+    updateTaskStatuses: (input: ProjectsUpdateTaskStatusesInput) =>
+      defaultApiClient.apiNamespaceProjects.updateTaskStatuses(input),
+    useUpdateTaskStatuses: () =>
+      useMutation<ProjectsUpdateTaskStatusesInput, ProjectsUpdateTaskStatusesResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.updateTaskStatuses(input),
       ),
 
     updateMilestone: (input: ProjectsUpdateMilestoneInput) =>
