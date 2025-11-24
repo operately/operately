@@ -642,6 +642,46 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     end
   end
 
+  describe "update task statuses" do
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:projects, :update_task_statuses], %{})
+    end
+
+    test "it requires a project_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:projects, :update_task_statuses], %{
+        task_statuses: [
+          %{id: "todo", label: "Todo", color: "gray", index: 0, value: "todo", hidden: false}
+        ]
+      })
+
+      assert res.message == "Missing required fields: project_id"
+    end
+
+    test "it updates task statuses for the project", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      statuses = [
+        %{id: "todo", label: "Todo", color: "gray", index: 0, value: "todo", hidden: false},
+        %{id: "in_progress", label: "In progress", color: "blue", index: 1, value: "in_progress", hidden: false},
+        %{id: "done", label: "Done", color: "green", index: 2, value: "done", hidden: false}
+      ]
+
+      assert {200, res} = mutation(ctx.conn, [:projects, :update_task_statuses], %{
+        project_id: Paths.project_id(ctx.project),
+        task_statuses: statuses
+      })
+
+      assert res.success == true
+
+      project = Repo.reload(ctx.project)
+
+      assert length(project.task_statuses) == 3
+      assert Enum.map(project.task_statuses, & &1.label) == ["Todo", "In progress", "Done"]
+    end
+  end
+
   describe "update champion" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:projects, :update_champion], %{})

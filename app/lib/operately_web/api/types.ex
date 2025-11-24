@@ -1915,6 +1915,15 @@ defmodule OperatelyWeb.Api.Types do
     field? :index, :integer, null: true
   end
 
+  object :project_task_status_input do
+    field :id, :string, null: false
+    field :label, :string, null: false
+    field :color, :string, null: false
+    field :index, :integer, null: false
+    field :value, :string, null: false
+    field :hidden, :boolean, null: false
+  end
+
   object :add_member_input do
     field? :id, :id, null: true
     field? :access_level, :integer, null: true

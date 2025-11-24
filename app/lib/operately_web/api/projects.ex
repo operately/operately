@@ -146,6 +146,29 @@ defmodule OperatelyWeb.Api.Projects do
     end
   end
 
+  defmodule UpdateTaskStatuses do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :project_id, :id, null: false
+      field :task_statuses, list_of(:project_task_status_input), null: false
+    end
+
+    outputs do
+      field :success, :boolean, null: true
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_project(inputs.project_id)
+      |> Steps.check_permissions(:can_edit_task)
+      |> Steps.update_task_statuses(inputs.task_statuses)
+      |> Steps.commit()
+      |> Steps.respond(fn _ -> %{success: true} end)
+    end
+  end
+
   defmodule UpdateChampion do
     use TurboConnect.Mutation
 
@@ -571,6 +594,12 @@ defmodule OperatelyWeb.Api.Projects do
               }
             })
         end
+      end)
+    end
+
+    def update_task_statuses(multi, task_statuses) do
+      Ecto.Multi.update(multi, :updated_project, fn %{project: project} ->
+        Operately.Projects.Project.changeset(project, %{task_statuses: task_statuses})
       end)
     end
 

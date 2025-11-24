@@ -37,18 +37,20 @@ defmodule Operately.Projects.Project do
     field :private, :boolean, default: false
 
     embeds_one :timeframe, Operately.ContextualDates.Timeframe, on_replace: :delete
-    # Deprecated:
-    # It should be removed once we are sure that all the migrations have run
-    field :started_at, :utc_datetime
-    field :deadline, :utc_datetime
+    embeds_many :task_statuses, Operately.Projects.TaskStatus, on_replace: :delete
 
     belongs_to :last_check_in, CheckIn, foreign_key: :last_check_in_id
     field :last_check_in_status, Ecto.Enum, values: CheckIn.valid_status()
     field :next_check_in_scheduled_at, :utc_datetime
 
     field :health, Ecto.Enum, values: [:on_track, :at_risk, :off_track, :paused, :unknown], default: :on_track
-    # Deprecated, use next_check_in_scheduled_at instead
+
+    #
+    # Deprecated, use next_check_in_scheduled_at instead next_update_scheduled_at
+    # started_at and deadline should be removed once we are sure that all the migrations have run
     field :next_update_scheduled_at, :utc_datetime
+    field :started_at, :utc_datetime
+    field :deadline, :utc_datetime
 
     has_one :retrospective, Operately.Projects.Retrospective, foreign_key: :project_id
     field :status, :string, default: "active"
@@ -99,6 +101,7 @@ defmodule Operately.Projects.Project do
       :subscription_list_id
     ])
     |> cast_embed(:timeframe)
+    |> cast_embed(:task_statuses)
     |> validate_required([
       :name,
       :company_id,
