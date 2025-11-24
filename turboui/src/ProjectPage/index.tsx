@@ -69,6 +69,7 @@ export namespace ProjectPage {
   export type NewResourcePayload = ResourceManager.NewResourcePayload;
   export type UpdateResourcePayload = ResourceManager.Resource;
   export type NewTaskPayload = TaskBoardTypes.NewTaskPayload;
+  export type TaskStatus = TaskBoard.StatusCustomizationStatus;
 
   export interface Props {
     workmapLink: string;
@@ -286,7 +287,7 @@ const DEFAULT_STATUSES: TaskBoardTypes.StatusCustomizationStatus[] = [
   {
     id: "canceled",
     label: "Canceled",
-    color: "dimmed",
+    color: "danger",
     icon: "circleX",
     index: 3,
     value: "canceled",

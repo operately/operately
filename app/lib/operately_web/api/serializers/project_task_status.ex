@@ -1,5 +1,5 @@
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.TaskStatus do
-  def serialize(task_status, KJlevel: :essential) do
+  def serialize(task_status, level: :essential) do
     %{
       id: task_status.id,
       label: task_status.label,
