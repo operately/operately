@@ -1312,6 +1312,7 @@ export interface Milestone {
   permissions?: ProjectPermissions | null;
   subscriptionList?: SubscriptionList | null;
   space?: Space | null;
+  availableStatuses?: ProjectTaskStatus[] | null;
 }
 
 export interface MilestoneComment {
@@ -2371,6 +2372,7 @@ export interface GetMilestoneInput {
   includePermissions?: boolean;
   includeSpace?: boolean;
   includeSubscriptionList?: boolean;
+  includeAvailableStatuses?: boolean;
 }
 
 export interface GetMilestoneResult {

@@ -52,6 +52,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includePermissions: true,
           includeComments: true,
           includeSubscriptionList: true,
+          includeAvailableStatuses: true,
         }).then((d) => d.milestone),
         tasks: Api.project_milestones.listTasks({ milestoneId: params.id }).then((d) => d.tasks),
         childrenCount: Api.projects.countChildren({ id: params.id, useMilestoneId: true }).then((d) => d.childrenCount),

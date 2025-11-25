@@ -1663,6 +1663,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :permissions, :project_permissions, null: true
     field? :subscription_list, :subscription_list, null: true
     field? :space, :space, null: true
+    field? :available_statuses, list_of(:project_task_status), null: true
   end
 
   object :activity_content_goal_check_in_edit do
