@@ -2,7 +2,7 @@ import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { StatusCustomizationModal } from "./index";
 import { PrimaryButton } from "../Button";
-import { StatusSelectorV2 } from "../StatusSelectorV2";
+import { StatusSelector } from "../StatusSelector";
 
 
 const meta = {
@@ -16,7 +16,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof StatusCustomizationModal>;
 
-const DEFAULT_STATUSES: StatusSelectorV2.StatusOption[] = [
+const DEFAULT_STATUSES: StatusSelector.StatusOption[] = [
   { id: "pending", value: "pending", label: "Not started", color: "dimmed", icon: "circleDashed", index: 0 },
   { id: "progress", value: "in_progress", label: "In progress", color: "brand", icon: "circleDot", index: 1 },
   { id: "qa", value: "qa", label: "QA", color: "brand", icon: "circleDot", index: 2 },
@@ -24,7 +24,7 @@ const DEFAULT_STATUSES: StatusSelectorV2.StatusOption[] = [
   { id: "canceled", value: "canceled", label: "Canceled", color: "danger", icon: "circleX", index: 4 },
 ];
 
-const StatusPreview = ({ statuses }: { statuses: StatusSelectorV2.StatusOption[] }) => {
+const StatusPreview = ({ statuses }: { statuses: StatusSelector.StatusOption[] }) => {
   const options = React.useMemo(
     () =>
       statuses.map((status) => ({
@@ -61,8 +61,8 @@ const StatusPreview = ({ statuses }: { statuses: StatusSelectorV2.StatusOption[]
           <div className="text-xs font-medium text-content-dimmed mb-2">Status badges</div>
           <div className="flex flex-wrap gap-2">
             {options.map((option) => {
-              const IconComponent = StatusSelectorV2.STATUS_ICON_COMPONENTS[option.icon];
-              const colorClass = StatusSelectorV2.STATUS_COLOR_MAP[option.color].iconClass || "text-content-base";
+              const IconComponent = StatusSelector.STATUS_ICON_COMPONENTS[option.icon];
+              const colorClass = StatusSelector.STATUS_COLOR_MAP[option.color].iconClass || "text-content-base";
               return (
                 <span
                   key={option.value}
@@ -79,7 +79,7 @@ const StatusPreview = ({ statuses }: { statuses: StatusSelectorV2.StatusOption[]
         {options.length > 0 && (
           <div>
             <div className="text-xs font-medium text-content-dimmed mb-2">Status selector</div>
-            <StatusSelectorV2
+            <StatusSelector
               statusOptions={options}
               status={activeStatus}
               onChange={setActiveStatus}
@@ -92,7 +92,7 @@ const StatusPreview = ({ statuses }: { statuses: StatusSelectorV2.StatusOption[]
   );
 };
 
-const Playground = ({ initialStatuses }: { initialStatuses: StatusSelectorV2.StatusOption[] }) => {
+const Playground = ({ initialStatuses }: { initialStatuses: StatusSelector.StatusOption[] }) => {
   const [workflowStatuses, setWorkflowStatuses] = React.useState(initialStatuses);
   const [isModalOpen, setModalOpen] = React.useState(true);
 

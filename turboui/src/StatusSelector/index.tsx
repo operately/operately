@@ -11,7 +11,7 @@ import {
   IconCircleXCustom,
 } from "../icons";
 
-const BUTTON_SIZE_CONFIG: Record<StatusSelectorV2.Size, { textSize: string; padding: string; iconSize: number }> = {
+const BUTTON_SIZE_CONFIG: Record<StatusSelector.Size, { textSize: string; padding: string; iconSize: number }> = {
   xs: { textSize: "text-xs", padding: "px-1.5 py-0.5", iconSize: 10 },
   sm: { textSize: "text-xs", padding: "px-2 py-1", iconSize: 12 },
   md: { textSize: "text-sm", padding: "px-2.5 py-1.5", iconSize: 14 },
@@ -20,7 +20,7 @@ const BUTTON_SIZE_CONFIG: Record<StatusSelectorV2.Size, { textSize: string; padd
   "2xl": { textSize: "text-lg", padding: "px-4 py-2.5", iconSize: 20 },
 };
 
-const SIZE_CONFIG: Record<StatusSelectorV2.Size, { iconSize: number; containerSize: string }> = {
+const SIZE_CONFIG: Record<StatusSelector.Size, { iconSize: number; containerSize: string }> = {
   xs: { iconSize: 12, containerSize: "w-3 h-3" },
   sm: { iconSize: 14, containerSize: "w-3.5 h-3.5" },
   md: { iconSize: 16, containerSize: "w-4 h-4" },
@@ -29,23 +29,23 @@ const SIZE_CONFIG: Record<StatusSelectorV2.Size, { iconSize: number; containerSi
   "2xl": { iconSize: 28, containerSize: "w-7 h-7" },
 };
 
-type ButtonVariantKey = StatusSelectorV2.StatusButtonVariant | undefined;
+type ButtonVariantKey = StatusSelector.StatusButtonVariant | undefined;
 
 function buildButtonClassNames(variant: ButtonVariantKey, readonly: boolean) {
   const variantKey = variant ?? "default";
-  const variantClasses = StatusSelectorV2.STATUS_BUTTON_VARIANTS[variantKey];
+  const variantClasses = StatusSelector.STATUS_BUTTON_VARIANTS[variantKey];
   return readonly ? variantClasses.readonly : variantClasses.interactive;
 }
 
-type StatusButtonProps<T extends StatusSelectorV2.StatusOption> = {
+type StatusButtonProps<T extends StatusSelector.StatusOption> = {
   option: T;
-  size: StatusSelectorV2.Size;
+  size: StatusSelector.Size;
   readonly: boolean;
 };
 
-function StatusButton<T extends StatusSelectorV2.StatusOption>({ option, size, readonly }: StatusButtonProps<T>) {
+function StatusButton<T extends StatusSelector.StatusOption>({ option, size, readonly }: StatusButtonProps<T>) {
   const { textSize, padding, iconSize } = BUTTON_SIZE_CONFIG[size];
-  const colorClasses = StatusSelectorV2.STATUS_COLOR_MAP[option.color];
+  const colorClasses = StatusSelector.STATUS_COLOR_MAP[option.color];
   const buttonClassName = classNames(
     "inline-flex items-center gap-1.5 rounded-full border font-medium transition-all duration-100 whitespace-nowrap",
     textSize,
@@ -54,7 +54,7 @@ function StatusButton<T extends StatusSelectorV2.StatusOption>({ option, size, r
     colorClasses.buttonColorClass,
   );
 
-  const IconComponent = StatusSelectorV2.STATUS_ICON_COMPONENTS[option.buttonIcon ?? option.icon];
+  const IconComponent = StatusSelector.STATUS_ICON_COMPONENTS[option.buttonIcon ?? option.icon];
 
   return (
     <div className={buttonClassName}>
@@ -70,14 +70,14 @@ function StatusButton<T extends StatusSelectorV2.StatusOption>({ option, size, r
   );
 }
 
-export function StatusSelectorV2<T extends StatusSelectorV2.StatusOption = StatusSelectorV2.StatusOption>({
+export function StatusSelector<T extends StatusSelector.StatusOption = StatusSelector.StatusOption>({
   statusOptions,
   status,
   onChange,
   size = "md",
   readonly = false,
   showFullBadge = false,
-}: StatusSelectorV2.Props<T>) {
+}: StatusSelector.Props<T>) {
   if (statusOptions.length === 0) return null;
 
   const { iconSize, containerSize } = SIZE_CONFIG[size];
@@ -154,8 +154,8 @@ export function StatusSelectorV2<T extends StatusSelectorV2.StatusOption = Statu
     setSearchTerm("");
   };
 
-  const ActiveIcon = StatusSelectorV2.STATUS_ICON_COMPONENTS[currentOption.icon];
-  const activeColorClasses = StatusSelectorV2.STATUS_COLOR_MAP[currentOption.color];
+  const ActiveIcon = StatusSelector.STATUS_ICON_COMPONENTS[currentOption.icon];
+  const activeColorClasses = StatusSelector.STATUS_COLOR_MAP[currentOption.color];
   const activeIconClass = classNames("flex items-center self-center", activeColorClasses.iconClass);
 
   if (readonly) {
@@ -205,8 +205,8 @@ export function StatusSelectorV2<T extends StatusSelectorV2.StatusOption = Statu
               {filteredStatusOptions.map((option, index) => {
                 const isCurrentStatus = option.value === currentOption.value;
                 const isSelected = index === selectedIndex;
-                const OptionIcon = StatusSelectorV2.STATUS_ICON_COMPONENTS[option.icon];
-                const optionColor = StatusSelectorV2.STATUS_COLOR_MAP[option.color];
+                const OptionIcon = StatusSelector.STATUS_ICON_COMPONENTS[option.icon];
+                const optionColor = StatusSelector.STATUS_COLOR_MAP[option.color];
 
                 return (
                   <div
@@ -237,7 +237,7 @@ export function StatusSelectorV2<T extends StatusSelectorV2.StatusOption = Statu
     </Popover.Root>
   );
 }
-export namespace StatusSelectorV2 {
+export namespace StatusSelector {
   type StatusIconComponent = ComponentType<{ size?: number; className?: string }>;
 
   export const STATUS_ICON_COMPONENTS = {

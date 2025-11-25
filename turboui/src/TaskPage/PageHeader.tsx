@@ -1,6 +1,6 @@
 import React from "react";
 import { TaskPage } from ".";
-import { StatusSelectorV2 } from "../StatusSelectorV2";
+import { StatusSelector } from "../StatusSelector";
 import { TextField } from "../TextField";
 import { TaskCheckbox } from "./TaskCheckbox";
 
@@ -28,7 +28,7 @@ export function PageHeader(props: TaskPage.State) {
 
           {/* On md+, place status inline right after the title */}
           <span className="hidden md:inline align-baseline">
-            <StatusSelectorV2
+            <StatusSelector
               statusOptions={props.statusOptions ?? []}
               status={props.status}
               onChange={props.onStatusChange}

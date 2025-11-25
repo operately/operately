@@ -12,7 +12,7 @@ import { sortTasks } from "../utils/sortTasks";
 import { InlineTaskCreator } from "./InlineTaskCreator";
 import { useInlineTaskCreator } from "../hooks/useInlineTaskCreator";
 import { SecondaryButton } from "../../Button";
-import { StatusSelectorV2 } from "../../StatusSelectorV2";
+import { StatusSelector } from "../../StatusSelector";
 import classNames from "../../utils/classnames";
 import { createTestId } from "../../TestableElement";
 
@@ -26,7 +26,7 @@ export interface MilestoneCardProps {
   onTaskStatusChange: (taskId: string, status: string) => void;
   onMilestoneUpdate?: (milestoneId: string, updates: Types.UpdateMilestonePayload) => void;
   assigneePersonSearch?: PersonField.SearchData;
-  statusOptions: StatusSelectorV2.StatusOption[];
+  statusOptions: StatusSelector.StatusOption[];
   availableMilestones?: Types.Milestone[];
 
   /**

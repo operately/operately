@@ -4,18 +4,18 @@ import classNames from "../utils/classnames";
 import { Modal } from "../Modal";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { IconPlus, IconTrash } from "../icons";
-import { StatusSelectorV2 } from "../StatusSelectorV2";
+import { StatusSelector } from "../StatusSelector";
 import { useSortableList, useSortableItem, DropIndicator, DragHandle } from "../utils/PragmaticDragAndDrop";
 
-type StatusColorName = StatusSelectorV2.StatusColorName;
-type StatusIconName = StatusSelectorV2.StatusIconName;
+type StatusColorName = StatusSelector.StatusColorName;
+type StatusIconName = StatusSelector.StatusIconName;
 type StatusAppearance = "gray" | "blue" | "green" | "red";
 
 export interface StatusCustomizationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  statuses: ReadonlyArray<StatusSelectorV2.StatusOption>;
-  onSave: (nextStatuses: StatusSelectorV2.StatusOption[]) => void;
+  statuses: ReadonlyArray<StatusSelector.StatusOption>;
+  onSave: (nextStatuses: StatusSelector.StatusOption[]) => void;
   title?: string;
 }
 
@@ -55,13 +55,13 @@ const STATUS_APPEARANCES: Record<
 
 const APPEARANCE_ORDER = Object.keys(STATUS_APPEARANCES) as StatusAppearance[];
 
-const useDraftStatuses = (source: ReadonlyArray<StatusSelectorV2.StatusOption>, isOpen: boolean) => {
+const useDraftStatuses = (source: ReadonlyArray<StatusSelector.StatusOption>, isOpen: boolean) => {
   const createDraft = React.useCallback(
     () => (source.length > 0 ? source : [buildStatus(undefined, 0)]).map((status, index) => buildStatus(status, index)),
     [source],
   );
 
-  const [drafts, setDrafts] = React.useState<StatusSelectorV2.StatusOption[]>(createDraft);
+  const [drafts, setDrafts] = React.useState<StatusSelector.StatusOption[]>(createDraft);
 
   React.useEffect(() => {
     if (isOpen) {
@@ -82,7 +82,7 @@ export function StatusCustomizationModal({
   const [draftStatuses, setDraftStatuses] = useDraftStatuses(statuses, isOpen);
   const { sanitizedStatuses, showValidation, handleSave } = useStatusSaving(draftStatuses, onSave, isOpen);
 
-  const updateStatus = (id: string, updates: Partial<StatusSelectorV2.StatusOption>) => {
+  const updateStatus = (id: string, updates: Partial<StatusSelector.StatusOption>) => {
     setDraftStatuses((prev) =>
       prev.map((status) => {
         if (status.id !== id) return status;
@@ -181,9 +181,9 @@ export function StatusCustomizationModal({
 }
 
 type StatusRowProps = {
-  status: StatusSelectorV2.StatusOption;
+  status: StatusSelector.StatusOption;
   isLabelInvalid: boolean;
-  onUpdate: (id: string, updates: Partial<StatusSelectorV2.StatusOption>) => void;
+  onUpdate: (id: string, updates: Partial<StatusSelector.StatusOption>) => void;
   onRemove: (id: string) => void;
   canRemove: boolean;
 };
@@ -248,8 +248,8 @@ type AppearancePickerProps = {
 function AppearancePicker({ value, onChange }: AppearancePickerProps) {
   const [isOpen, setIsOpen] = React.useState(false);
   const currentPreset = STATUS_APPEARANCES[value];
-  const CurrentIcon = StatusSelectorV2.STATUS_ICON_COMPONENTS[currentPreset.icon];
-  const iconClass = StatusSelectorV2.STATUS_COLOR_MAP[currentPreset.color].iconClass || "text-content-base";
+  const CurrentIcon = StatusSelector.STATUS_ICON_COMPONENTS[currentPreset.icon];
+  const iconClass = StatusSelector.STATUS_COLOR_MAP[currentPreset.color].iconClass || "text-content-base";
 
   const handleChange = (appearance: StatusAppearance) => {
     onChange(appearance);
@@ -276,8 +276,8 @@ function AppearancePicker({ value, onChange }: AppearancePickerProps) {
           <div className="flex flex-col gap-2">
             {APPEARANCE_ORDER.map((appearance) => {
               const preset = STATUS_APPEARANCES[appearance];
-              const IconComponent = StatusSelectorV2.STATUS_ICON_COMPONENTS[preset.icon];
-              const presetIconClass = StatusSelectorV2.STATUS_COLOR_MAP[preset.color].iconClass || "text-content-base";
+              const IconComponent = StatusSelector.STATUS_ICON_COMPONENTS[preset.icon];
+              const presetIconClass = StatusSelector.STATUS_COLOR_MAP[preset.color].iconClass || "text-content-base";
               const isActive = appearance === value;
               return (
                 <button
@@ -302,8 +302,8 @@ function AppearancePicker({ value, onChange }: AppearancePickerProps) {
 }
 
 const useStatusSaving = (
-  draftStatuses: ReadonlyArray<StatusSelectorV2.StatusOption>,
-  onSave: (nextStatuses: StatusSelectorV2.StatusOption[]) => void,
+  draftStatuses: ReadonlyArray<StatusSelector.StatusOption>,
+  onSave: (nextStatuses: StatusSelector.StatusOption[]) => void,
   isOpen: boolean,
 ) => {
   const [showValidation, setShowValidation] = React.useState(false);
@@ -345,7 +345,7 @@ const generateId = () =>
     ? crypto.randomUUID()
     : `status-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
 
-const getAppearanceFromStatus = (status?: Partial<StatusSelectorV2.StatusOption>): StatusAppearance => {
+const getAppearanceFromStatus = (status?: Partial<StatusSelector.StatusOption>): StatusAppearance => {
   if (!status) return "gray";
   const found = APPEARANCE_ORDER.find((appearance) => {
     const preset = STATUS_APPEARANCES[appearance];
@@ -355,9 +355,9 @@ const getAppearanceFromStatus = (status?: Partial<StatusSelectorV2.StatusOption>
 };
 
 const buildStatus = (
-  status?: Partial<StatusSelectorV2.StatusOption>,
+  status?: Partial<StatusSelector.StatusOption>,
   index?: number,
-): StatusSelectorV2.StatusOption => {
+): StatusSelector.StatusOption => {
   const appearance = getAppearanceFromStatus(status);
   const preset = STATUS_APPEARANCES[appearance];
 

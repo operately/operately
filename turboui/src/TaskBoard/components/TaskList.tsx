@@ -5,7 +5,7 @@ import { IconChevronDown, IconChevronRight } from "../../icons";
 import { PersonField } from "../../PersonField";
 import * as Types from "../types";
 import { DateField } from "../../DateField";
-import { StatusSelectorV2 } from "../../StatusSelectorV2";
+import { StatusSelector } from "../../StatusSelector";
 
 // Using TaskWithIndex from our shared types
 import { TaskWithIndex } from "../types";
@@ -17,7 +17,7 @@ export interface TaskListProps {
   onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
   onTaskStatusChange: (taskId: string, status: string) => void;
   assigneePersonSearch?: PersonField.SearchData;
-  statusOptions: StatusSelectorV2.StatusOption[];
+  statusOptions: StatusSelector.StatusOption[];
   /** Whether to show the hidden tasks toggle (ghost row) */
   showHiddenTasksToggle?: boolean;
   /** Optional inline row to render below active tasks (e.g., inline creator) */

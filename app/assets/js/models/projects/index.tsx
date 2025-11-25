@@ -1,7 +1,7 @@
 import * as api from "@/api";
 import { assertPresent } from "@/utils/assertions";
 import * as Time from "@/utils/time";
-import { StatusSelectorV2 } from "turboui";
+import { StatusSelector } from "turboui";
 
 export { useProjectMilestoneOrdering } from "./useProjectMilestoneOrdering";
 export { useTaskStatuses } from "./useTaskStatuses";
@@ -61,7 +61,7 @@ export function useContributorSearchFn(project: Project) {
 
 export function mapProjectTaskStatusColorToUi(
   color: string | null | undefined,
-): Pick<StatusSelectorV2.StatusOption, "color" | "icon"> {
+): Pick<StatusSelector.StatusOption, "color" | "icon"> {
   switch (color) {
     case "blue":
       return { color: "brand", icon: "circleDot" };
@@ -75,7 +75,7 @@ export function mapProjectTaskStatusColorToUi(
   }
 }
 
-export function mapProjectTaskStatusesToUi(backend: api.ProjectTaskStatus[] | null | undefined): StatusSelectorV2.StatusOption[] {
+export function mapProjectTaskStatusesToUi(backend: api.ProjectTaskStatus[] | null | undefined): StatusSelector.StatusOption[] {
   if (!backend || backend.length === 0) return [];
 
   return backend

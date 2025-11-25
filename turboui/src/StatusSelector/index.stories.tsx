@@ -1,23 +1,23 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { Page } from "../Page";
-import { StatusSelectorV2 } from "./index";
+import { StatusSelector } from "./index";
 
 /**
- * StatusSelectorV2 is a component that allows users to select and display status values:
+ * StatusSelector is a component that allows users to select and display status values:
  * - Supports custom status workflows (engineering, marketing, support, etc.)
  * - Shows status with icon and label
  * - Can be configured as read-only or editable
  * - Offers multiple size variants: sm, md, lg
  * - Supports full badge display mode
  */
-const meta: Meta<typeof StatusSelectorV2> = {
-  title: "Components/StatusSelectorV2",
-  component: StatusSelectorV2,
+const meta: Meta<typeof StatusSelector> = {
+  title: "Components/StatusSelector",
+  component: StatusSelector,
   parameters: {
     layout: "fullscreen",
   },
-} satisfies Meta<typeof StatusSelectorV2>;
+} satisfies Meta<typeof StatusSelector>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -54,7 +54,7 @@ const engineeringStatuses = [
     buttonVariant: "muted",
     index: 6,
   },
-] as const satisfies ReadonlyArray<StatusSelectorV2.StatusOption>;
+] as const satisfies ReadonlyArray<StatusSelector.StatusOption>;
 
 const marketingStatuses = [
   { id: "brief", value: "brief", label: "Creative brief", icon: "circleDashed", color: "dimmed", index: 0 },
@@ -80,7 +80,7 @@ const marketingStatuses = [
     buttonVariant: "muted",
     index: 5,
   },
-] as const satisfies ReadonlyArray<StatusSelectorV2.StatusOption>;
+] as const satisfies ReadonlyArray<StatusSelector.StatusOption>;
 
 const supportStatuses = [
   { id: "new", value: "new", label: "New ticket", icon: "circleDashed", color: "dimmed", index: 0 },
@@ -113,21 +113,21 @@ const supportStatuses = [
     buttonVariant: "muted",
     index: 5,
   },
-] as const satisfies ReadonlyArray<StatusSelectorV2.StatusOption>;
+] as const satisfies ReadonlyArray<StatusSelector.StatusOption>;
 
 const Component = (
-  args: { statusOptions: ReadonlyArray<StatusSelectorV2.StatusOption> } & Partial<
-    Omit<React.ComponentProps<typeof StatusSelectorV2>, "statusOptions" | "status" | "onChange">
-  > & { status?: StatusSelectorV2.StatusOption["value"] },
+  args: { statusOptions: ReadonlyArray<StatusSelector.StatusOption> } & Partial<
+    Omit<React.ComponentProps<typeof StatusSelector>, "statusOptions" | "status" | "onChange">
+  > & { status?: StatusSelector.StatusOption["value"] },
 ) => {
-  const [status, setStatus] = React.useState<StatusSelectorV2.StatusOption["value"]>(args.status || "");
-  return <StatusSelectorV2 {...args} statusOptions={args.statusOptions} status={status} onChange={setStatus} />;
+  const [status, setStatus] = React.useState<StatusSelector.StatusOption["value"]>(args.status || "");
+  return <StatusSelector {...args} statusOptions={args.statusOptions} status={status} onChange={setStatus} />;
 };
 
 export const AllStates: Story = {
   render: () => {
     return (
-      <Page title="StatusSelectorV2 All States" size="medium">
+      <Page title="StatusSelector All States" size="medium">
         <div className="space-y-12 p-12">
           <div>
             <h2 className="text-lg font-bold mb-8">Display Modes</h2>
@@ -189,7 +189,7 @@ export const AllStates: Story = {
             <div className="grid grid-cols-3 gap-8">
               <div>
                 <h3 className="text-sm font-bold mb-2">Read-Only - Icon Only</h3>
-                <StatusSelectorV2
+                <StatusSelector
                   statusOptions={engineeringStatuses}
                   status="in_progress"
                   onChange={() => undefined}
@@ -199,7 +199,7 @@ export const AllStates: Story = {
 
               <div>
                 <h3 className="text-sm font-bold mb-2">Read-Only - Full Badge</h3>
-                <StatusSelectorV2
+                <StatusSelector
                   statusOptions={engineeringStatuses}
                   status="in_progress"
                   onChange={() => undefined}
@@ -210,7 +210,7 @@ export const AllStates: Story = {
 
               <div>
                 <h3 className="text-sm font-bold mb-2">Read-Only - Success</h3>
-                <StatusSelectorV2
+                <StatusSelector
                   statusOptions={engineeringStatuses}
                   status="shipped"
                   onChange={() => undefined}

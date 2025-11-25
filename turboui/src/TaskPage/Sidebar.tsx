@@ -8,7 +8,7 @@ import FormattedTime from "../FormattedTime";
 import { MilestoneField } from "../MilestoneField";
 import { PersonField } from "../PersonField";
 import { durationHumanized, isOverdue } from "../utils/time";
-import { StatusSelectorV2 } from "../StatusSelectorV2";
+import { StatusSelector } from "../StatusSelector";
 import { SidebarNotificationSection, SidebarSection } from "../SidebarSection";
 
 export function Sidebar(props: TaskPage.State) {
@@ -119,7 +119,7 @@ function AssigneeMobile(props: TaskPage.State) {
 function StatusMobile(props: TaskPage.State) {
   return (
     <SidebarSection title="Status">
-      <StatusSelectorV2
+      <StatusSelector
         statusOptions={props.statusOptions ?? []}
         status={props.status}
         onChange={props.onStatusChange}
