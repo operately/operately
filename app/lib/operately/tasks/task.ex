@@ -125,12 +125,13 @@ defmodule Operately.Tasks.Task do
 
   def preload_available_statuses(task = %__MODULE__{}) do
     task =
-      if Ecto.assoc_loaded?(task, :project) do
-        task
-      else
+      if Ecto.assoc_loaded?(task.project) do
         Operately.Repo.preload(task, :project)
+      else
+        task
       end
-    statuses = task.project.task_statuses || []
+
+    statuses = if task.project, do: task.project.task_statuses || [], else: []
 
     Map.put(task, :available_statuses, statuses)
   end
