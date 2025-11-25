@@ -1780,6 +1780,7 @@ export interface Task {
   permissions?: ProjectPermissions | null;
   commentsCount?: number | null;
   subscriptionList?: SubscriptionList | null;
+  availableStatuses?: ProjectTaskStatus[] | null;
 }
 
 export interface Timeframe {
@@ -2616,6 +2617,7 @@ export interface GetTaskInput {
   includeSpace?: boolean;
   includePermissions?: boolean;
   includeSubscriptionList?: boolean;
+  includeAvailableStatuses?: boolean;
 }
 
 export interface GetTaskResult {
