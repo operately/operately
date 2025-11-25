@@ -8,7 +8,7 @@ import FormattedTime from "../FormattedTime";
 import { MilestoneField } from "../MilestoneField";
 import { PersonField } from "../PersonField";
 import { durationHumanized, isOverdue } from "../utils/time";
-import { StatusSelector } from "../TaskBoard/components/StatusSelector";
+import { StatusSelector } from "../StatusSelector";
 import { SidebarNotificationSection, SidebarSection } from "../SidebarSection";
 
 export function Sidebar(props: TaskPage.State) {
@@ -120,6 +120,7 @@ function StatusMobile(props: TaskPage.State) {
   return (
     <SidebarSection title="Status">
       <StatusSelector
+        statusOptions={props.statusOptions ?? []}
         status={props.status}
         onChange={props.onStatusChange}
         size="sm"

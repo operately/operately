@@ -10,7 +10,6 @@ import { calculateMilestoneStats } from "../../TaskBoard/components/MilestoneCar
 import { TaskFilter } from "../../TaskBoard";
 import { FilterBadges } from "../../TaskBoard/components/TaskFilter";
 import TaskList from "../../TaskBoard/components/TaskList";
-import { sortTasks } from "../../TaskBoard/utils/sortTasks";
 import { InlineTaskCreator } from "../../TaskBoard/components/InlineTaskCreator";
 import { useInlineTaskCreator } from "../../TaskBoard/hooks/useInlineTaskCreator";
 
@@ -26,8 +25,15 @@ export function TasksSection({
   onTaskStatusChange,
   assigneePersonSearch,
   setIsTaskModalOpen,
+  statusOptions,
 }: MilestonePage.State) {
-  const { open: creatorOpen, openCreator, closeCreator, creatorRef, hoverBind } = useInlineTaskCreator({
+  const {
+    open: creatorOpen,
+    openCreator,
+    closeCreator,
+    creatorRef,
+    hoverBind,
+  } = useInlineTaskCreator({
     requireHover: false,
   });
   const stats = calculateMilestoneStats(tasks);
@@ -58,11 +64,10 @@ export function TasksSection({
   // Filter tasks based on current filters
   const baseFilteredTasks = applyFilters(tasks, filters || []);
 
-  // Separate visible tasks from hidden (completed) tasks
-  const { visibleTasks, hiddenTasks } = React.useMemo(
-    () => splitTasks(milestone, baseFilteredTasks),
-    [milestone, baseFilteredTasks],
-  );
+  const hasHiddenTasks = baseFilteredTasks.some((task) => {
+    const statusOption = statusOptions.find((opt) => opt.value === task.status);
+    return statusOption?.hidden === true;
+  });
 
   const handleTaskReorder = React.useCallback(
     (dropZoneId: string, draggedId: string, indexInDropZone: number) => {
@@ -97,12 +102,7 @@ export function TasksSection({
             </div>
             <h2 className="font-bold">Tasks</h2>
           </div>
-          <SecondaryButton
-            size="xs"
-            icon={IconPlus}
-            onClick={openCreator}
-            testId="tasks-section-add-task"
-          >
+          <SecondaryButton size="xs" icon={IconPlus} onClick={openCreator} testId="tasks-section-add-task">
             <span className="sr-only">Add task</span>
           </SecondaryButton>
         </div>
@@ -117,7 +117,7 @@ export function TasksSection({
 
         {/* Task list content */}
         <div className="bg-surface-base rounded-b-lg overflow-hidden">
-          {visibleTasks.length === 0 && hiddenTasks.length === 0 ? (
+          {baseFilteredTasks.length === 0 ? (
             /* Empty state with inline creation */
             <div className="px-4 py-6">
               {creatorOpen ? (
@@ -147,14 +147,14 @@ export function TasksSection({
             /* Task list with drag and drop */
             <DragAndDropProvider onDrop={handleTaskReorder}>
               <TaskList
-                tasks={visibleTasks}
-                hiddenTasks={hiddenTasks}
-                showHiddenTasksToggle={hiddenTasks.length > 0}
+                tasks={baseFilteredTasks}
+                showHiddenTasksToggle={hasHiddenTasks}
                 milestoneId={milestone.id}
                 onTaskAssigneeChange={onTaskAssigneeChange}
                 onTaskDueDateChange={onTaskDueDateChange}
                 onTaskStatusChange={onTaskStatusChange}
                 assigneePersonSearch={assigneePersonSearch}
+                statusOptions={statusOptions}
                 inlineCreateRow={
                   creatorOpen ? (
                     <InlineTaskCreator
@@ -193,12 +193,3 @@ function calculateCompletionPercentage(stats: {
   // Calculate percentage based only on active tasks
   return (stats.done / activeTasks) * 100;
 }
-
-const splitTasks = (milestone: Types.Milestone, originalTasks: Types.Task[]) => {
-  const visibleTasks = originalTasks.filter((task) => task.status === "pending" || task.status === "in_progress");
-  const sortedVisbleTasks = sortTasks(visibleTasks, milestone);
-
-  const hiddenTasks = originalTasks.filter((task) => task.status === "done" || task.status === "canceled");
-
-  return { visibleTasks: sortedVisbleTasks, hiddenTasks };
-};

@@ -474,6 +474,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :notifications, list_of(:notification), null: true
     field? :subscription_list, :subscription_list, null: true
     field? :milestones_ordering_state, list_of(:string), null: true
+    field? :task_statuses, list_of(:project_task_status), null: true
   end
 
   object :project_children_count do
@@ -1132,28 +1133,33 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :project_permissions do
-    field? :can_view, :boolean, null: true
-    field? :can_create_milestone, :boolean, null: true
-    field? :can_delete_milestone, :boolean, null: true
-    field? :can_edit_contributors, :boolean, null: true
-    field? :can_edit_milestone, :boolean, null: true
-    field? :can_edit_description, :boolean, null: true
-    field? :can_edit_timeline, :boolean, null: true
-    field? :can_edit_resources, :boolean, null: true
-    field? :can_edit_goal, :boolean, null: true
-    field? :can_edit_name, :boolean, null: true
-    field? :can_edit_space, :boolean, null: true
-    field? :can_edit_retrospective, :boolean, null: true
-    field? :can_edit_permissions, :boolean, null: true
-    field? :can_close, :boolean, null: true
-    field? :can_pause, :boolean, null: true
-    field? :can_check_in, :boolean, null: true
-    field? :can_acknowledge_check_in, :boolean, null: true
-    field? :can_comment_on_check_in, :boolean, null: true
-    field? :can_comment_on_retrospective, :boolean, null: true
-    field? :can_comment_on_milestone, :boolean, null: true
-    field? :can_comment, :boolean
-    field? :can_delete, :boolean
+    field :can_view, :boolean, null: false
+    field :can_comment_on_milestone, :boolean, null: false
+    field :can_comment_on_check_in, :boolean, null: false
+    field :can_comment_on_retrospective, :boolean, null: false
+    field :can_comment_on_task, :boolean, null: false
+    field :can_create_milestone, :boolean, null: false
+    field :can_complete_milestone, :boolean, null: false
+    field :can_reopen_milestone, :boolean, null: false
+    field :can_delete_milestone, :boolean, null: false
+    field :can_edit_contributors, :boolean, null: false
+    field :can_edit_milestone, :boolean, null: false
+    field :can_edit_description, :boolean, null: false
+    field :can_edit_timeline, :boolean, null: false
+    field :can_edit_resources, :boolean, null: false
+    field :can_edit_goal, :boolean, null: false
+    field :can_edit_name, :boolean, null: false
+    field :can_edit_space, :boolean, null: false
+    field :can_edit_retrospective, :boolean, null: false
+    field :can_edit_permissions, :boolean, null: false
+    field :can_close, :boolean, null: false
+    field :can_pause, :boolean, null: false
+    field :can_check_in, :boolean, null: false
+    field :can_edit_task, :boolean, null: false
+    field :can_edit_statuses, :boolean, null: false
+    field :can_acknowledge_check_in, :boolean, null: false
+    field :can_comment, :boolean, null: false
+    field :can_delete, :boolean, null: false
   end
 
   object :space_permissions do
@@ -1213,6 +1219,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :permissions, :project_permissions, null: true
     field? :comments_count, :integer, null: true
     field? :subscription_list, :subscription_list, null: true
+    field? :available_statuses, list_of(:project_task_status), null: true
   end
 
   object :activity_content_discussion_editing do
@@ -1656,6 +1663,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :permissions, :project_permissions, null: true
     field? :subscription_list, :subscription_list, null: true
     field? :space, :space, null: true
+    field? :available_statuses, list_of(:project_task_status), null: true
   end
 
   object :activity_content_goal_check_in_edit do
@@ -1915,7 +1923,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :index, :integer, null: true
   end
 
-  object :project_task_status_input do
+  object :project_task_status do
     field :id, :string, null: false
     field :label, :string, null: false
     field :color, :string, null: false

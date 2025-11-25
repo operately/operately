@@ -49,11 +49,9 @@ export function parseTaskForTurboUi(paths: Paths, task: BackendTask): TaskBoard.
 }
 
 export function parseTaskStatus(status: string | null | undefined): Status {
-  const validStatuses: Status[] = ["pending", "in_progress", "done", "canceled"];
-
-  if (status && validStatuses.includes(status as Status)) {
-    return status as Status;
+  if (!status) {
+    return "pending" as Status;
   }
 
-  return "pending";
+  return status as Status;
 }
