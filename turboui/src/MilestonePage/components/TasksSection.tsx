@@ -64,6 +64,11 @@ export function TasksSection({
   // Filter tasks based on current filters
   const baseFilteredTasks = applyFilters(tasks, filters || []);
 
+  const hasHiddenTasks = baseFilteredTasks.some((task) => {
+    const statusOption = statusOptions.find((opt) => opt.value === task.status);
+    return statusOption?.hidden === true;
+  });
+
   const handleTaskReorder = React.useCallback(
     (dropZoneId: string, draggedId: string, indexInDropZone: number) => {
       if (onTaskReorder) {
@@ -143,9 +148,7 @@ export function TasksSection({
             <DragAndDropProvider onDrop={handleTaskReorder}>
               <TaskList
                 tasks={baseFilteredTasks}
-                showHiddenTasksToggle={baseFilteredTasks.some(
-                  (task) => task.status === "done" || task.status === "canceled",
-                )}
+                showHiddenTasksToggle={hasHiddenTasks}
                 milestoneId={milestone.id}
                 onTaskAssigneeChange={onTaskAssigneeChange}
                 onTaskDueDateChange={onTaskDueDateChange}
