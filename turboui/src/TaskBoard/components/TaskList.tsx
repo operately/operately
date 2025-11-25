@@ -12,7 +12,6 @@ import { TaskWithIndex } from "../types";
 
 export interface TaskListProps {
   tasks: Types.Task[];
-  hiddenTasks?: Types.Task[];
   milestoneId: string;
   onTaskAssigneeChange: (taskId: string, assignee: Types.Person | null) => void;
   onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
@@ -32,7 +31,6 @@ export interface TaskListProps {
  */
 export function TaskList({
   tasks,
-  hiddenTasks = [],
   showHiddenTasksToggle = false,
   milestoneId,
   onTaskAssigneeChange,
@@ -44,14 +42,33 @@ export function TaskList({
 }: TaskListProps) {
   const [hiddenTasksExpanded, setHiddenTasksExpanded] = useState(false);
 
+  // Separate tasks into visible and hidden based on status.hidden property
+  const { visibleTasks, hiddenTasks } = useMemo(() => {
+    const visible: Types.Task[] = [];
+    const hidden: Types.Task[] = [];
+
+    tasks.forEach((task) => {
+      const statusOption = statusOptions.find((opt) => opt.value === task.status);
+      const isHidden = statusOption?.hidden === true;
+
+      if (isHidden) {
+        hidden.push(task);
+      } else {
+        visible.push(task);
+      }
+    });
+
+    return { visibleTasks: visible, hiddenTasks: hidden };
+  }, [tasks, statusOptions]);
+
   // Add drag and drop index to each task (including expanded hidden tasks if needed)
   const allVisibleTasks = useMemo(() => {
-    let allTasks = [...tasks];
+    let allTasks = [...visibleTasks];
     if (hiddenTasksExpanded) {
-      allTasks = [...tasks, ...hiddenTasks];
+      allTasks = [...visibleTasks, ...hiddenTasks];
     }
     return allTasks;
-  }, [tasks, hiddenTasks, hiddenTasksExpanded]);
+  }, [visibleTasks, hiddenTasks, hiddenTasksExpanded]);
 
   const tasksWithIndex = useMemo(() => {
     return allVisibleTasks.map((task, index) => ({ ...task, index }));
@@ -92,7 +109,7 @@ export function TaskList({
             onTaskStatusChange={onTaskStatusChange}
             assigneePersonSearch={assigneePersonSearch}
             statusOptions={statusOptions}
-            draggingDisabled={task.index >= tasks.length}
+            draggingDisabled={task.index >= visibleTasks.length}
           />
         ))}
       </ul>
@@ -101,7 +118,7 @@ export function TaskList({
       {inlineCreateRow}
 
       {/* Empty state message when no visible tasks but there are hidden tasks */}
-      {tasks.length === 0 && totalHiddenCount > 0 && showHiddenTasksToggle && (
+      {visibleTasks.length === 0 && totalHiddenCount > 0 && showHiddenTasksToggle && (
         <div className="py-3 px-4 text-center text-content-subtle text-sm bg-surface-base">
           Click + or press c to add a task, or drag a task here.
         </div>
@@ -137,7 +154,7 @@ export function TaskList({
             }}
           >
             <TaskItem
-              task={{ ...task, index: tasks.length + index } as TaskWithIndex}
+              task={{ ...task, index: visibleTasks.length + index } as TaskWithIndex}
               milestoneId={milestoneId}
               itemStyle={() => ({})}
               onTaskAssigneeChange={onTaskAssigneeChange}

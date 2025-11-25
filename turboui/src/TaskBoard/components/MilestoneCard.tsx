@@ -19,7 +19,6 @@ import { createTestId } from "../../TestableElement";
 export interface MilestoneCardProps {
   milestone: Types.Milestone;
   tasks: Types.Task[];
-  hiddenTasks?: Types.Task[];
   showHiddenTasksToggle?: boolean;
   onTaskCreate: (task: Types.NewTaskPayload) => void;
   onTaskAssigneeChange: (taskId: string, assignee: Types.Person | null) => void;
@@ -43,7 +42,6 @@ export interface MilestoneCardProps {
 export function MilestoneCard({
   milestone,
   tasks,
-  hiddenTasks = [],
   showHiddenTasksToggle = false,
   onTaskCreate,
   onTaskAssigneeChange,
@@ -163,10 +161,9 @@ export function MilestoneCard({
         </div>
 
         {/* Tasks in this milestone - show empty state when no tasks at all */}
-        {(sortedTasks && sortedTasks.length > 0) || (hiddenTasks && hiddenTasks.length > 0) ? (
+        {sortedTasks && sortedTasks.length > 0 ? (
           <TaskList
             tasks={sortedTasks}
-            hiddenTasks={hiddenTasks}
             showHiddenTasksToggle={showHiddenTasksToggle}
             milestoneId={milestone.id}
             onTaskAssigneeChange={onTaskAssigneeChange}

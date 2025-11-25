@@ -77,8 +77,8 @@ export function TaskBoard({
     setStatusModalStatuses(statuses);
   }, [statuses]);
 
-  // Apply filters to tasks and track hidden tasks
-  const { filteredTasks, hiddenTasksByMilestone, hiddenTasks, showHiddenTasksToggle } = useFilteredTasks(
+  // Apply filters to tasks
+  const { filteredTasks, hiddenTasks, showHiddenTasksToggle } = useFilteredTasks(
     internalTasks,
     internalMilestones,
     filters,
@@ -202,7 +202,6 @@ export function TaskBoard({
                     key={milestoneData.milestone.id}
                     milestone={milestoneData.milestone}
                     tasks={groupedTasks[milestoneData.milestone.id] || []}
-                    hiddenTasks={hiddenTasksByMilestone[milestoneData.milestone.id] || []}
                     showHiddenTasksToggle={showHiddenTasksToggle}
                     stats={milestoneData.stats}
                     onTaskCreate={onTaskCreate}
@@ -239,7 +238,6 @@ export function TaskBoard({
                     {/* Tasks with no milestone */}
                     <TaskList
                       tasks={groupedTasks["no_milestone"] || []}
-                      hiddenTasks={hiddenTasksByMilestone["no_milestone"] || []}
                       showHiddenTasksToggle={showHiddenTasksToggle}
                       milestoneId="no-milestone"
                       onTaskAssigneeChange={onTaskAssigneeChange}

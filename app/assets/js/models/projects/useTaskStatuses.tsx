@@ -21,7 +21,7 @@ export function useTaskStatuses(
         color: mapUiColorToBackend(status.color),
         index,
         value: status.value ?? status.id,
-        hidden: false,
+        hidden: status.hidden ?? false,
       }));
 
       try {
@@ -94,6 +94,7 @@ function mapBackendStatusesToUi(backend: ProjectTaskStatus[] | null | undefined)
         index: status.index,
         color,
         icon,
+        hidden: status.hidden,
       };
     });
 }

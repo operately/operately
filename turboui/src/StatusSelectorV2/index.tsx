@@ -287,6 +287,7 @@ export namespace StatusSelectorV2 {
     color: StatusColorName;
     index: number;
     value: string;
+    hidden?: boolean;
     buttonVariant?: StatusButtonVariant;
     buttonIcon?: StatusIconName;
     legacy?: boolean;
