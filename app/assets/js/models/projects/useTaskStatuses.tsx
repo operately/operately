@@ -1,8 +1,8 @@
 import * as React from "react";
-import Api from "@/api";
-import type { ProjectTaskStatus } from "@/api";
+import Api, { type ProjectTaskStatus } from "@/api";
 import { showErrorToast } from "turboui";
 import type { ProjectPage } from "turboui";
+import { mapProjectTaskStatusesToUi } from ".";
 
 type TaskStatus = ProjectPage.TaskStatus;
 
@@ -11,7 +11,15 @@ export function useTaskStatuses(
   backendStatuses: ProjectTaskStatus[] | null | undefined,
   refresh?: () => void,
 ) {
-  const statuses = React.useMemo(() => mapBackendStatusesToUi(backendStatuses), [backendStatuses]);
+  const statuses = React.useMemo(
+    () =>
+      mapProjectTaskStatusesToUi(backendStatuses).map((status) => ({
+        ...status,
+        color: status.color as TaskStatus["color"],
+        icon: status.icon as TaskStatus["icon"],
+      })),
+    [backendStatuses],
+  );
 
   const handleSaveStatuses = React.useCallback(
     async (nextStatuses: TaskStatus[]) => {
@@ -49,21 +57,6 @@ export function useTaskStatuses(
     handleSaveStatuses,
   };
 }
-
-function mapBackendColorToUi(color: string | null | undefined): Pick<TaskStatus, "color" | "icon"> {
-  switch (color) {
-    case "blue":
-      return { color: "brand", icon: "circleDot" };
-    case "green":
-      return { color: "success", icon: "circleCheck" };
-    case "red":
-      return { color: "danger", icon: "circleX" };
-    case "gray":
-    default:
-      return { color: "dimmed", icon: "circleDashed" };
-  }
-}
-
 function mapUiColorToBackend(color: TaskStatus["color"]): string {
   switch (color) {
     case "brand":
@@ -76,25 +69,4 @@ function mapUiColorToBackend(color: TaskStatus["color"]): string {
     default:
       return "gray";
   }
-}
-
-function mapBackendStatusesToUi(backend: ProjectTaskStatus[] | null | undefined): TaskStatus[] {
-  if (!backend || backend.length === 0) return [];
-
-  return backend
-    .slice()
-    .sort((a, b) => a.index - b.index)
-    .map((status) => {
-      const { color, icon } = mapBackendColorToUi(status.color);
-
-      return {
-        id: status.id,
-        label: status.label,
-        value: status.value,
-        index: status.index,
-        color,
-        icon,
-        hidden: status.hidden,
-      };
-    });
 }

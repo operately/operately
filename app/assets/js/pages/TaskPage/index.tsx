@@ -25,6 +25,7 @@ import { useComments } from "./useComments";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useMilestones } from "@/models/milestones/useMilestones";
 import { useSubscription } from "@/models/subscriptions";
+import { StatusSelectorV2 } from "turboui";
 
 type LoaderResult = {
   data: {
@@ -186,6 +187,11 @@ function Page() {
     onRefresh: refreshPageData,
   });
 
+  const statusOptions = useMemo<StatusSelectorV2.StatusOption[]>(
+    () => Projects.mapProjectTaskStatusesToUi(task.availableStatuses),
+    [task.availableStatuses],
+  );
+
   const props: TaskPage.Props = {
     projectName,
     projectLink: paths.projectPath(task.project.id),
@@ -222,6 +228,7 @@ function Page() {
     onDescriptionChange: setDescription,
     status,
     onStatusChange: setStatus,
+    statusOptions,
     dueDate: dueDate || undefined,
     onDueDateChange: setDueDate,
     assignee,
