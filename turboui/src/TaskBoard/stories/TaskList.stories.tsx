@@ -22,11 +22,9 @@ const meta: Meta<typeof TaskList> = {
       // Create a wrapper component with state for the story
       const TaskListWithReordering = ({
         initialTasks,
-        hiddenTasks,
         showHiddenTasksToggle,
       }: {
         initialTasks: Types.Task[];
-        hiddenTasks?: Types.Task[];
         showHiddenTasksToggle?: boolean;
         onTaskAssigneeChange?: (taskId: string, assignee: Types.Person | null) => void;
         onTaskDueDateChange?: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
@@ -54,13 +52,13 @@ const meta: Meta<typeof TaskList> = {
           <DragAndDropProvider onDrop={handleDrop}>
             <TaskList
               tasks={tasks}
-              hiddenTasks={hiddenTasks}
               showHiddenTasksToggle={showHiddenTasksToggle}
               milestoneId="milestone-1"
               onTaskAssigneeChange={() => {}}
               onTaskDueDateChange={() => {}}
               onTaskStatusChange={() => {}}
               assigneePersonSearch={assigneePersonSearch}
+              statusOptions={DEFAULT_STATUS_OPTIONS}
             />
           </DragAndDropProvider>
         );
@@ -73,7 +71,6 @@ const meta: Meta<typeof TaskList> = {
         <div className="m-4 w-[500px]">
           <TaskListWithReordering
             initialTasks={args.tasks || []}
-            hiddenTasks={args.hiddenTasks}
             showHiddenTasksToggle={args.showHiddenTasksToggle}
             onTaskAssigneeChange={args.onTaskAssigneeChange || (() => {})}
             onTaskDueDateChange={args.onTaskDueDateChange || (() => {})}
@@ -97,6 +94,45 @@ const mockPeople: Types.Person[] = [
   { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" },
   { id: "user-3", fullName: "Charlie Brown", avatarUrl: "https://i.pravatar.cc/150?u=charlie" },
   { id: "user-4", fullName: "Diana Prince", avatarUrl: null },
+];
+
+// Default status options used in stories. "Done" is marked as hidden so
+// completed tasks participate in the hidden-tasks behavior.
+const DEFAULT_STATUS_OPTIONS: Types.StatusOption[] = [
+  {
+    id: "pending",
+    value: "pending",
+    label: "Pending",
+    icon: "circleDashed",
+    color: "dimmed",
+    index: 0,
+  },
+  {
+    id: "in_progress",
+    value: "in_progress",
+    label: "In progress",
+    icon: "circleDot",
+    color: "brand",
+    index: 1,
+  },
+  {
+    id: "done",
+    value: "done",
+    label: "Done",
+    icon: "circleCheck",
+    color: "success",
+    hidden: true,
+    index: 2,
+  },
+  {
+    id: "canceled",
+    value: "canceled",
+    label: "Canceled",
+    icon: "circleX",
+    color: "dimmed",
+    hidden: true,
+    index: 3,
+  },
 ];
 
 
@@ -168,6 +204,7 @@ export const MultipleTasksList: Story = {
         onTaskDueDateChange={() => {}}
         onTaskStatusChange={() => {}}
         assigneePersonSearch={{ people: [], onSearch: async () => {} }}
+        statusOptions={DEFAULT_STATUS_OPTIONS}
       />
     );
   },
@@ -269,8 +306,6 @@ export const TaskListWithHiddenCompletedTasks: Story = {
         hasComments: true,
         commentCount: 2,
       },
-    ],
-    hiddenTasks: [
       {
         id: "task-hidden-1",
         title: "Set up project repository",
@@ -306,13 +341,13 @@ export const TaskListWithHiddenCompletedTasks: Story = {
     return (
       <TaskList
         tasks={args.tasks}
-        hiddenTasks={args.hiddenTasks}
         showHiddenTasksToggle={args.showHiddenTasksToggle}
         milestoneId={args.milestoneId}
         onTaskAssigneeChange={() => {}}
         onTaskDueDateChange={() => {}}
         onTaskStatusChange={() => {}}
         assigneePersonSearch={{ people: [], onSearch: async () => {} }}
+        statusOptions={DEFAULT_STATUS_OPTIONS}
       />
     );
   },

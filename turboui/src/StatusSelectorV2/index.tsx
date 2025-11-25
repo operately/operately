@@ -148,9 +148,10 @@ export function StatusSelectorV2<T extends StatusSelectorV2.StatusOption = Statu
     }
   };
 
-  const handleItemClick = (newStatus: T["value"]) => {
-    onChange(newStatus);
+  const handleItemClick = (value: string) => {
+    onChange(value);
     setIsOpen(false);
+    setSearchTerm("");
   };
 
   const ActiveIcon = StatusSelectorV2.STATUS_ICON_COMPONENTS[currentOption.icon];
@@ -280,11 +281,13 @@ export namespace StatusSelectorV2 {
   export type Size = "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
 
   export interface StatusOption {
-    value: string;
+    id: string;
     label: string;
     icon: StatusIconName;
     color: StatusColorName;
     index: number;
+    value: string;
+    hidden?: boolean;
     buttonVariant?: StatusButtonVariant;
     buttonIcon?: StatusIconName;
     legacy?: boolean;
@@ -292,8 +295,8 @@ export namespace StatusSelectorV2 {
 
   export interface Props<T extends StatusOption = StatusOption> {
     statusOptions: ReadonlyArray<T>;
-    status: T["value"];
-    onChange: (nextStatus: T["value"]) => void;
+    status: string;
+    onChange: (nextStatus: string) => void;
     size?: Size;
     readonly?: boolean;
     showFullBadge?: boolean;

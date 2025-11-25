@@ -69,6 +69,7 @@ export namespace ProjectPage {
   export type NewResourcePayload = ResourceManager.NewResourcePayload;
   export type UpdateResourcePayload = ResourceManager.Resource;
   export type NewTaskPayload = TaskBoardTypes.NewTaskPayload;
+  export type TaskStatus = TaskBoard.StatusCustomizationStatus;
 
   export interface Props {
     workmapLink: string;
@@ -140,6 +141,10 @@ export namespace ProjectPage {
     filters?: TaskBoardTypes.FilterCondition[];
     onFiltersChange?: (filters: TaskBoardTypes.FilterCondition[]) => void;
 
+    statuses?: TaskBoardTypes.StatusOption[];
+    canManageStatuses?: boolean;
+    onSaveCustomStatuses: (statuses: TaskBoardTypes.StatusOption[]) => void;
+
     contributors: Person[];
     checkIns: CheckIn[];
     discussions: Discussion[];
@@ -159,6 +164,9 @@ export namespace ProjectPage {
   }
 
   export interface State extends Props {
+    statuses: TaskBoardTypes.StatusOption[];
+    canManageStatuses: boolean;
+
     isMoveModalOpen: boolean;
     openMoveModal: () => void;
     closeMoveModal: () => void;
@@ -175,6 +183,8 @@ function useProjectPageState(props: ProjectPage.Props): ProjectPage.State {
 
   return {
     ...props,
+    statuses: props.statuses && props.statuses.length > 0 ? props.statuses : DEFAULT_STATUSES,
+    canManageStatuses: props.canManageStatuses ?? false,
 
     isMoveModalOpen,
     openMoveModal: () => setIsMoveModalOpen(true),
@@ -228,6 +238,9 @@ export function ProjectPage(props: ProjectPage.Props) {
               assigneePersonSearch={state.assigneePersonSearch}
               filters={state.filters}
               onFiltersChange={state.onFiltersChange}
+              statuses={state.statuses}
+              canManageStatuses={state.canManageStatuses}
+              onSaveCustomStatuses={state.onSaveCustomStatuses}
             />
           </div>
         )}
@@ -250,3 +263,38 @@ function Activity(props: ProjectPage.State) {
     </div>
   );
 }
+
+const DEFAULT_STATUSES: TaskBoardTypes.StatusOption[] = [
+  {
+    id: "pending",
+    label: "Not started",
+    color: "dimmed",
+    icon: "circleDashed",
+    index: 0,
+    value: "pending",
+  },
+  {
+    id: "in_progress",
+    label: "In progress",
+    color: "brand",
+    icon: "circleDot",
+    index: 1,
+    value: "in_progress",
+  },
+  {
+    id: "done",
+    label: "Done",
+    color: "success",
+    icon: "circleCheck",
+    index: 2,
+    value: "done",
+  },
+  {
+    id: "canceled",
+    label: "Canceled",
+    color: "danger",
+    icon: "circleX",
+    index: 3,
+    value: "canceled",
+  },
+];

@@ -41,6 +41,12 @@ interface SubMenuProps {
 }
 
 export function Menu(props: MenuProps) {
+  const hasVisibleChildren = useHasVisibleChildren(props.children);
+
+  if (!hasVisibleChildren) {
+    return null;
+  }
+
   return (
     <DropdownMenu.Root onOpenChange={props.onOpenChange} modal={false}>
       <Trigger {...props} />
@@ -95,7 +101,6 @@ export function SubMenu({ label, icon, children, hidden }: SubMenuProps) {
   );
 }
 
-
 export function MenuLinkItem(props: MenuLinkItemProps) {
   const navigate = useNavigate();
 
@@ -112,7 +117,6 @@ export function MenuLinkItem(props: MenuLinkItemProps) {
   );
 }
 
-
 export function MenuActionItem(props: MenuActionItemProps) {
   if (props.hidden) return null;
 
@@ -123,6 +127,18 @@ export function MenuActionItem(props: MenuActionItemProps) {
       </div>
     </DropdownMenu.Item>
   );
+}
+
+function useHasVisibleChildren(children: React.ReactNode): boolean {
+  return React.useMemo(() => {
+    let hasVisible = false;
+    React.Children.forEach(children, (child) => {
+      if (React.isValidElement(child) && child.props.hidden !== true) {
+        hasVisible = true;
+      }
+    });
+    return hasVisible;
+  }, [children]);
 }
 
 //

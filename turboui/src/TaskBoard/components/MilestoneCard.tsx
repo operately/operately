@@ -12,13 +12,13 @@ import { sortTasks } from "../utils/sortTasks";
 import { InlineTaskCreator } from "./InlineTaskCreator";
 import { useInlineTaskCreator } from "../hooks/useInlineTaskCreator";
 import { SecondaryButton } from "../../Button";
+import { StatusSelectorV2 } from "../../StatusSelectorV2";
 import classNames from "../../utils/classnames";
 import { createTestId } from "../../TestableElement";
 
 export interface MilestoneCardProps {
   milestone: Types.Milestone;
   tasks: Types.Task[];
-  hiddenTasks?: Types.Task[];
   showHiddenTasksToggle?: boolean;
   onTaskCreate: (task: Types.NewTaskPayload) => void;
   onTaskAssigneeChange: (taskId: string, assignee: Types.Person | null) => void;
@@ -26,6 +26,7 @@ export interface MilestoneCardProps {
   onTaskStatusChange: (taskId: string, status: string) => void;
   onMilestoneUpdate?: (milestoneId: string, updates: Types.UpdateMilestonePayload) => void;
   assigneePersonSearch?: PersonField.SearchData;
+  statusOptions: StatusSelectorV2.StatusOption[];
   availableMilestones?: Types.Milestone[];
 
   /**
@@ -41,7 +42,6 @@ export interface MilestoneCardProps {
 export function MilestoneCard({
   milestone,
   tasks,
-  hiddenTasks = [],
   showHiddenTasksToggle = false,
   onTaskCreate,
   onTaskAssigneeChange,
@@ -49,6 +49,7 @@ export function MilestoneCard({
   onTaskStatusChange,
   onMilestoneUpdate,
   assigneePersonSearch,
+  statusOptions,
   stats,
   availableMilestones = [],
 }: MilestoneCardProps) {
@@ -160,16 +161,16 @@ export function MilestoneCard({
         </div>
 
         {/* Tasks in this milestone - show empty state when no tasks at all */}
-        {(sortedTasks && sortedTasks.length > 0) || (hiddenTasks && hiddenTasks.length > 0) ? (
+        {sortedTasks && sortedTasks.length > 0 ? (
           <TaskList
             tasks={sortedTasks}
-            hiddenTasks={hiddenTasks}
             showHiddenTasksToggle={showHiddenTasksToggle}
             milestoneId={milestone.id}
             onTaskAssigneeChange={onTaskAssigneeChange}
             onTaskDueDateChange={onTaskDueDateChange}
             onTaskStatusChange={onTaskStatusChange}
             assigneePersonSearch={assigneePersonSearch}
+            statusOptions={statusOptions}
             inlineCreateRow={
               creatorOpen ? (
                 <InlineTaskCreator
