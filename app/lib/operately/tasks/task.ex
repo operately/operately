@@ -16,6 +16,7 @@ defmodule Operately.Tasks.Task do
           milestone_id: Ecto.UUID.t() | nil,
           project_id: Ecto.UUID.t() | nil,
           permissions: map() | nil,
+          available_statuses: list() | nil,
           inserted_at: NaiveDateTime.t() | nil,
           updated_at: NaiveDateTime.t() | nil
         }
@@ -50,6 +51,7 @@ defmodule Operately.Tasks.Task do
     # populated with after load hooks
     field :permissions, :any, virtual: true
     field :comments_count, :integer, virtual: true
+    field :available_statuses, {:array, :map}, virtual: true
 
     timestamps()
     requester_access_level()
@@ -119,5 +121,18 @@ defmodule Operately.Tasks.Task do
   def set_permissions(task = %__MODULE__{}) do
     perms = Operately.Projects.Permissions.calculate(task.request_info.access_level)
     Map.put(task, :permissions, perms)
+  end
+
+  def preload_available_statuses(task = %__MODULE__{}) do
+    task =
+      if Ecto.assoc_loaded?(task.project) do
+        Operately.Repo.preload(task, :project)
+      else
+        task
+      end
+
+    statuses = if task.project, do: task.project.task_statuses || [], else: []
+
+    Map.put(task, :available_statuses, statuses)
   end
 end
