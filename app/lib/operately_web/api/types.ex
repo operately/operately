@@ -1133,28 +1133,33 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :project_permissions do
-    field? :can_view, :boolean, null: true
-    field? :can_create_milestone, :boolean, null: true
-    field? :can_delete_milestone, :boolean, null: true
-    field? :can_edit_contributors, :boolean, null: true
-    field? :can_edit_milestone, :boolean, null: true
-    field? :can_edit_description, :boolean, null: true
-    field? :can_edit_timeline, :boolean, null: true
-    field? :can_edit_resources, :boolean, null: true
-    field? :can_edit_goal, :boolean, null: true
-    field? :can_edit_name, :boolean, null: true
-    field? :can_edit_space, :boolean, null: true
-    field? :can_edit_retrospective, :boolean, null: true
-    field? :can_edit_permissions, :boolean, null: true
-    field? :can_close, :boolean, null: true
-    field? :can_pause, :boolean, null: true
-    field? :can_check_in, :boolean, null: true
-    field? :can_acknowledge_check_in, :boolean, null: true
-    field? :can_comment_on_check_in, :boolean, null: true
-    field? :can_comment_on_retrospective, :boolean, null: true
-    field? :can_comment_on_milestone, :boolean, null: true
-    field? :can_comment, :boolean
-    field? :can_delete, :boolean
+    field :can_view, :boolean, null: false
+    field :can_comment_on_milestone, :boolean, null: false
+    field :can_comment_on_check_in, :boolean, null: false
+    field :can_comment_on_retrospective, :boolean, null: false
+    field :can_comment_on_task, :boolean, null: false
+    field :can_create_milestone, :boolean, null: false
+    field :can_complete_milestone, :boolean, null: false
+    field :can_reopen_milestone, :boolean, null: false
+    field :can_delete_milestone, :boolean, null: false
+    field :can_edit_contributors, :boolean, null: false
+    field :can_edit_milestone, :boolean, null: false
+    field :can_edit_description, :boolean, null: false
+    field :can_edit_timeline, :boolean, null: false
+    field :can_edit_resources, :boolean, null: false
+    field :can_edit_goal, :boolean, null: false
+    field :can_edit_name, :boolean, null: false
+    field :can_edit_space, :boolean, null: false
+    field :can_edit_retrospective, :boolean, null: false
+    field :can_edit_permissions, :boolean, null: false
+    field :can_close, :boolean, null: false
+    field :can_pause, :boolean, null: false
+    field :can_check_in, :boolean, null: false
+    field :can_edit_task, :boolean, null: false
+    field :can_edit_statuses, :boolean, null: false
+    field :can_acknowledge_check_in, :boolean, null: false
+    field :can_comment, :boolean, null: false
+    field :can_delete, :boolean, null: false
   end
 
   object :space_permissions do
