@@ -10,7 +10,6 @@ import { calculateMilestoneStats } from "../../TaskBoard/components/MilestoneCar
 import { TaskFilter } from "../../TaskBoard";
 import { FilterBadges } from "../../TaskBoard/components/TaskFilter";
 import TaskList from "../../TaskBoard/components/TaskList";
-import { sortTasks } from "../../TaskBoard/utils/sortTasks";
 import { InlineTaskCreator } from "../../TaskBoard/components/InlineTaskCreator";
 import { useInlineTaskCreator } from "../../TaskBoard/hooks/useInlineTaskCreator";
 
@@ -57,12 +56,6 @@ export function TasksSection({
 
   // Filter tasks based on current filters
   const baseFilteredTasks = applyFilters(tasks, filters || []);
-
-  // Separate visible tasks from hidden (completed) tasks
-  const { visibleTasks, hiddenTasks } = React.useMemo(
-    () => splitTasks(milestone, baseFilteredTasks),
-    [milestone, baseFilteredTasks],
-  );
 
   const handleTaskReorder = React.useCallback(
     (dropZoneId: string, draggedId: string, indexInDropZone: number) => {
@@ -117,7 +110,7 @@ export function TasksSection({
 
         {/* Task list content */}
         <div className="bg-surface-base rounded-b-lg overflow-hidden">
-          {visibleTasks.length === 0 && hiddenTasks.length === 0 ? (
+          {baseFilteredTasks.length === 0 ? (
             /* Empty state with inline creation */
             <div className="px-4 py-6">
               {creatorOpen ? (
@@ -147,14 +140,16 @@ export function TasksSection({
             /* Task list with drag and drop */
             <DragAndDropProvider onDrop={handleTaskReorder}>
               <TaskList
-                tasks={visibleTasks}
-                hiddenTasks={hiddenTasks}
-                showHiddenTasksToggle={hiddenTasks.length > 0}
+                tasks={baseFilteredTasks}
+                showHiddenTasksToggle={baseFilteredTasks.some(
+                  (task) => task.status === "done" || task.status === "canceled",
+                )}
                 milestoneId={milestone.id}
                 onTaskAssigneeChange={onTaskAssigneeChange}
                 onTaskDueDateChange={onTaskDueDateChange}
                 onTaskStatusChange={onTaskStatusChange}
                 assigneePersonSearch={assigneePersonSearch}
+                statusOptions={DEFAULT_STATUS_OPTIONS}
                 inlineCreateRow={
                   creatorOpen ? (
                     <InlineTaskCreator
@@ -194,11 +189,41 @@ function calculateCompletionPercentage(stats: {
   return (stats.done / activeTasks) * 100;
 }
 
-const splitTasks = (milestone: Types.Milestone, originalTasks: Types.Task[]) => {
-  const visibleTasks = originalTasks.filter((task) => task.status === "pending" || task.status === "in_progress");
-  const sortedVisbleTasks = sortTasks(visibleTasks, milestone);
-
-  const hiddenTasks = originalTasks.filter((task) => task.status === "done" || task.status === "canceled");
-
-  return { visibleTasks: sortedVisbleTasks, hiddenTasks };
-};
+// Default status options for milestone tasks. Completed and canceled statuses
+// are marked as hidden so they appear in the hidden section of TaskList.
+const DEFAULT_STATUS_OPTIONS: Types.StatusOption[] = [
+  {
+    id: "pending",
+    value: "pending",
+    label: "Pending",
+    icon: "circleDashed",
+    color: "dimmed",
+    index: 0,
+  },
+  {
+    id: "in_progress",
+    value: "in_progress",
+    label: "In progress",
+    icon: "circleDot",
+    color: "brand",
+    index: 1,
+  },
+  {
+    id: "done",
+    value: "done",
+    label: "Done",
+    icon: "circleCheck",
+    color: "success",
+    hidden: true,
+    index: 2,
+  },
+  {
+    id: "canceled",
+    value: "canceled",
+    label: "Canceled",
+    icon: "circleX",
+    color: "dimmed",
+    hidden: true,
+    index: 3,
+  },
+];

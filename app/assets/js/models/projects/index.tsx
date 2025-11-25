@@ -1,7 +1,10 @@
 import * as api from "@/api";
 import { assertPresent } from "@/utils/assertions";
 import * as Time from "@/utils/time";
+import { StatusSelectorV2 } from "turboui";
+
 export { useProjectMilestoneOrdering } from "./useProjectMilestoneOrdering";
+export { useTaskStatuses } from "./useTaskStatuses";
 
 export type Project = api.Project;
 export type ProjectContributor = api.ProjectContributor;
@@ -54,4 +57,41 @@ export function useContributorSearchFn(project: Project) {
 
     return res.people!.map((p) => p!);
   };
+}
+
+export function mapProjectTaskStatusColorToUi(
+  color: string | null | undefined,
+): Pick<StatusSelectorV2.StatusOption, "color" | "icon"> {
+  switch (color) {
+    case "blue":
+      return { color: "brand", icon: "circleDot" };
+    case "green":
+      return { color: "success", icon: "circleCheck" };
+    case "red":
+      return { color: "danger", icon: "circleX" };
+    case "gray":
+    default:
+      return { color: "dimmed", icon: "circleDashed" };
+  }
+}
+
+export function mapProjectTaskStatusesToUi(backend: api.ProjectTaskStatus[] | null | undefined): StatusSelectorV2.StatusOption[] {
+  if (!backend || backend.length === 0) return [];
+
+  return backend
+    .slice()
+    .sort((a, b) => (a.index ?? 0) - (b.index ?? 0))
+    .map((status, index) => {
+      const { color, icon } = mapProjectTaskStatusColorToUi(status.color);
+
+      return {
+        id: status.id ?? `status-${index}`,
+        label: status.label ?? "",
+        value: status.value ?? status.id ?? "",
+        index: status.index ?? index,
+        hidden: status.hidden ?? false,
+        color,
+        icon,
+      };
+    });
 }

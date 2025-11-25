@@ -25,6 +25,7 @@ import { useComments } from "./useComments";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useMilestones } from "@/models/milestones/useMilestones";
 import { useSubscription } from "@/models/subscriptions";
+import { StatusSelectorV2 } from "turboui";
 
 type LoaderResult = {
   data: {
@@ -51,6 +52,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeSpace: true,
           includePermissions: true,
           includeSubscriptionList: true,
+          includeAvailableStatuses: true,
         }).then((d) => d.task!),
         childrenCount: Api.projects.countChildren({ id: params.id, useTaskId: true }).then((d) => d.childrenCount),
         activities: Api.getActivities({
@@ -67,7 +69,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
 }
 
 function pageCacheKey(id: string): string {
-  return `v7-TaskV2Page.task-${id}`;
+  return `v8-TaskV2Page.task-${id}`;
 }
 
 export default { name: "TaskPage", loader, Page } as PageModule;
@@ -185,6 +187,11 @@ function Page() {
     onRefresh: refreshPageData,
   });
 
+  const statusOptions = useMemo<StatusSelectorV2.StatusOption[]>(
+    () => Projects.mapProjectTaskStatusesToUi(task.availableStatuses),
+    [task.availableStatuses],
+  );
+
   const props: TaskPage.Props = {
     projectName,
     projectLink: paths.projectPath(task.project.id),
@@ -221,6 +228,7 @@ function Page() {
     onDescriptionChange: setDescription,
     status,
     onStatusChange: setStatus,
+    statusOptions,
     dueDate: dueDate || undefined,
     onDueDateChange: setDueDate,
     assignee,
