@@ -49,9 +49,8 @@ export function TaskList({
 
     tasks.forEach((task) => {
       const statusOption = statusOptions.find((opt) => opt.value === task.status);
-      const isHidden = statusOption?.hidden === true;
 
-      if (isHidden) {
+      if (statusOption?.hidden) {
         hidden.push(task);
       } else {
         visible.push(task);
@@ -61,27 +60,29 @@ export function TaskList({
     return { visibleTasks: visible, hiddenTasks: hidden };
   }, [tasks, statusOptions]);
 
-  // Add drag and drop index to each task (including expanded hidden tasks if needed)
-  const allVisibleTasks = useMemo(() => {
-    let allTasks = [...visibleTasks];
-    if (hiddenTasksExpanded) {
-      allTasks = [...visibleTasks, ...hiddenTasks];
-    }
-    return allTasks;
-  }, [visibleTasks, hiddenTasks, hiddenTasksExpanded]);
+  // Add drag and drop index to each task.
+  // Visible tasks always occupy the first slots; hidden tasks (when expanded) follow after them.
+  const visibleTasksWithIndex = useMemo(() => {
+    return visibleTasks.map((task, index) => ({ ...task, index }));
+  }, [visibleTasks]);
 
-  const tasksWithIndex = useMemo(() => {
-    return allVisibleTasks.map((task, index) => ({ ...task, index }));
-  }, [allVisibleTasks]);
+  const hiddenTasksWithIndex = useMemo(() => {
+    if (!hiddenTasksExpanded) return [] as TaskWithIndex[];
+    return hiddenTasks.map((task, index) => ({ ...task, index: visibleTasks.length + index }));
+  }, [hiddenTasksExpanded, hiddenTasks, visibleTasks.length]);
+
+  const allTasksWithIndex = useMemo(() => {
+    return [...visibleTasksWithIndex, ...hiddenTasksWithIndex];
+  }, [visibleTasksWithIndex, hiddenTasksWithIndex]);
 
   // Set up drop zone for this list of tasks
   const { ref } = useDropZone({
     id: milestoneId,
-    dependencies: [tasksWithIndex],
+    dependencies: [allTasksWithIndex],
   });
 
   // Get the animation styles for the container and items
-  const { containerStyle, itemStyle } = useDraggingAnimation(milestoneId, tasksWithIndex);
+  const { containerStyle, itemStyle } = useDraggingAnimation(milestoneId, allTasksWithIndex);
 
   // Count hidden tasks for the ghost row
   const totalHiddenCount = hiddenTasks.length;
@@ -98,7 +99,7 @@ export function TaskList({
     <>
       <ul ref={ref as React.RefObject<HTMLUListElement>} style={containerStyle}>
         {/* Regular visible tasks */}
-        {tasksWithIndex.map((task) => (
+        {visibleTasksWithIndex.map((task) => (
           <TaskItem
             key={task.id}
             task={task}
@@ -109,7 +110,7 @@ export function TaskList({
             onTaskStatusChange={onTaskStatusChange}
             assigneePersonSearch={assigneePersonSearch}
             statusOptions={statusOptions}
-            draggingDisabled={task.index >= visibleTasks.length}
+            draggingDisabled={false}
           />
         ))}
       </ul>
@@ -145,7 +146,7 @@ export function TaskList({
 
       {/* Hidden tasks that are expanded with animation */}
       {hiddenTasksExpanded &&
-        hiddenTasks.map((task, index) => (
+        hiddenTasksWithIndex.map((task, index) => (
           <ul
             key={`hidden-${task.id}`}
             className="animate-fadeIn"
@@ -154,7 +155,7 @@ export function TaskList({
             }}
           >
             <TaskItem
-              task={{ ...task, index: visibleTasks.length + index } as TaskWithIndex}
+              task={task}
               milestoneId={milestoneId}
               itemStyle={() => ({})}
               onTaskAssigneeChange={onTaskAssigneeChange}
