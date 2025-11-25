@@ -6,6 +6,14 @@ import { mockTasks, mockMilestones } from "../tests/mockData";
 import { Page } from "../../Page";
 import { usePersonFieldSearch } from "../../utils/storybook/usePersonFieldSearch";
 
+const DEFAULT_STATUSES: Types.StatusCustomizationStatus[] = [
+  { id: "pending", value: "pending", label: "Not started", color: "dimmed", icon: "circleDashed", index: 0 },
+  { id: "progress", value: "in_progress", label: "In progress", color: "brand", icon: "circleDot", index: 1 },
+  { id: "qa", value: "qa", label: "QA", color: "brand", icon: "circleDot", index: 2 },
+  { id: "done", value: "done", label: "Done", color: "success", icon: "circleCheck", index: 3 },
+  { id: "canceled", value: "canceled", label: "Canceled", color: "danger", icon: "circleX", index: 4 },
+];
+
 /**
  * TaskBoard is a comprehensive task management component designed for teams.
  */
@@ -58,6 +66,7 @@ export const Default: Story = {
       ...Object.values(mockMilestones),
     ]);
     const [filters, setFilters] = useState<Types.FilterCondition[]>([]);
+    const [statuses, setStatuses] = useState<Types.StatusCustomizationStatus[]>(DEFAULT_STATUSES);
 
     const handleMilestoneSearch = async (query: string) => {
       const allMilestones = Object.values(mockMilestones);
@@ -124,6 +133,12 @@ export const Default: Story = {
         assigneePersonSearch={assigneePersonSearch}
         filters={filters}
         onFiltersChange={setFilters}
+        statuses={statuses}
+        onSaveCustomStatuses={(nextStatuses) => {
+          console.log('Statuses updated:', nextStatuses);
+          setStatuses(nextStatuses);
+        }}
+        canManageStatuses={true}
       />
     );
   },
