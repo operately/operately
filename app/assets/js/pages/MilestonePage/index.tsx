@@ -159,6 +159,11 @@ function Page() {
     onRefresh: refresh,
   });
 
+  const statusOptions = React.useMemo(
+    () => Projects.mapProjectTaskStatusesToUi(milestone.availableStatuses),
+    [milestone.availableStatuses],
+  );
+
   const props: MilestonePage.Props = {
     workmapLink,
     space: parseSpaceForTurboUI(paths, milestone.space),
@@ -201,6 +206,7 @@ function Page() {
 
     // Tasks
     tasks,
+    statusOptions,
     onTaskCreate: createTask,
     onTaskReorder: updateTaskMilestone,
     onTaskStatusChange: updateTaskStatus,

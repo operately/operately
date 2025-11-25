@@ -25,8 +25,15 @@ export function TasksSection({
   onTaskStatusChange,
   assigneePersonSearch,
   setIsTaskModalOpen,
+  statusOptions,
 }: MilestonePage.State) {
-  const { open: creatorOpen, openCreator, closeCreator, creatorRef, hoverBind } = useInlineTaskCreator({
+  const {
+    open: creatorOpen,
+    openCreator,
+    closeCreator,
+    creatorRef,
+    hoverBind,
+  } = useInlineTaskCreator({
     requireHover: false,
   });
   const stats = calculateMilestoneStats(tasks);
@@ -90,12 +97,7 @@ export function TasksSection({
             </div>
             <h2 className="font-bold">Tasks</h2>
           </div>
-          <SecondaryButton
-            size="xs"
-            icon={IconPlus}
-            onClick={openCreator}
-            testId="tasks-section-add-task"
-          >
+          <SecondaryButton size="xs" icon={IconPlus} onClick={openCreator} testId="tasks-section-add-task">
             <span className="sr-only">Add task</span>
           </SecondaryButton>
         </div>
@@ -149,7 +151,7 @@ export function TasksSection({
                 onTaskDueDateChange={onTaskDueDateChange}
                 onTaskStatusChange={onTaskStatusChange}
                 assigneePersonSearch={assigneePersonSearch}
-                statusOptions={DEFAULT_STATUS_OPTIONS}
+                statusOptions={statusOptions}
                 inlineCreateRow={
                   creatorOpen ? (
                     <InlineTaskCreator
@@ -188,42 +190,3 @@ function calculateCompletionPercentage(stats: {
   // Calculate percentage based only on active tasks
   return (stats.done / activeTasks) * 100;
 }
-
-// Default status options for milestone tasks. Completed and canceled statuses
-// are marked as hidden so they appear in the hidden section of TaskList.
-const DEFAULT_STATUS_OPTIONS: Types.StatusOption[] = [
-  {
-    id: "pending",
-    value: "pending",
-    label: "Pending",
-    icon: "circleDashed",
-    color: "dimmed",
-    index: 0,
-  },
-  {
-    id: "in_progress",
-    value: "in_progress",
-    label: "In progress",
-    icon: "circleDot",
-    color: "brand",
-    index: 1,
-  },
-  {
-    id: "done",
-    value: "done",
-    label: "Done",
-    icon: "circleCheck",
-    color: "success",
-    hidden: true,
-    index: 2,
-  },
-  {
-    id: "canceled",
-    value: "canceled",
-    label: "Canceled",
-    icon: "circleX",
-    color: "dimmed",
-    hidden: true,
-    index: 3,
-  },
-];
