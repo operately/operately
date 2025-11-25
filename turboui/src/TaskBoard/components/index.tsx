@@ -44,8 +44,9 @@ export function TaskBoard({
   assigneePersonSearch,
   filters = [],
   onFiltersChange,
-  onManageStatusesClick,
+  onSaveCustomStatuses,
   statuses = [],
+  canManageStatuses,
 }: Types.TaskBoardProps) {
   const [internalTasks, setInternalTasks] = useState<Types.Task[]>(externalTasks);
   const [internalMilestones, setInternalMilestones] = useState<Types.Milestone[]>(externalMilestones);
@@ -107,9 +108,9 @@ export function TaskBoard({
     (nextStatuses: StatusCustomizationStatus[]) => {
       setStatusModalStatuses(nextStatuses);
       setIsStatusModalOpen(false);
-      onManageStatusesClick(nextStatuses);
+      onSaveCustomStatuses(nextStatuses);
     },
-    [onManageStatusesClick],
+    [onSaveCustomStatuses],
   );
 
   const handleTaskReorder = useCallback(
@@ -176,6 +177,7 @@ export function TaskBoard({
         filters={filters}
         internalTasks={internalTasks}
         openStatusModal={openStatusModal}
+        canManageStatuses={canManageStatuses}
       />
 
       <div
@@ -285,6 +287,7 @@ interface ActionBarProps {
   filters: Types.FilterCondition[];
   internalTasks: Types.Task[];
   openStatusModal: () => void;
+  canManageStatuses: boolean;
 }
 
 function StickyActionBar({
@@ -295,6 +298,7 @@ function StickyActionBar({
   filters,
   internalTasks,
   openStatusModal,
+  canManageStatuses,
 }: ActionBarProps) {
   return (
     <header className="sticky top-0 z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between py-6 bg-surface-base px-4 lg:px-0">
@@ -332,7 +336,7 @@ function StickyActionBar({
         size="small"
         align="end"
       >
-        <MenuActionItem icon={IconSettings} onClick={openStatusModal}>
+        <MenuActionItem icon={IconSettings} onClick={openStatusModal} hidden={!canManageStatuses}>
           Manage statuses
         </MenuActionItem>
       </Menu>

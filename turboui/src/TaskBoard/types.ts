@@ -173,5 +173,6 @@ export interface TaskBoardProps {
 
   // Status customization
   statuses: StatusCustomizationStatus[];
-  onManageStatusesClick: (statuses: StatusCustomizationStatus[]) => void;
+  onSaveCustomStatuses: (statuses: StatusCustomizationStatus[]) => void;
+  canManageStatuses: boolean;
 }

@@ -140,8 +140,10 @@ export namespace ProjectPage {
     assigneePersonSearch: PersonField.SearchData;
     filters?: TaskBoardTypes.FilterCondition[];
     onFiltersChange?: (filters: TaskBoardTypes.FilterCondition[]) => void;
+
     statuses?: TaskBoardTypes.StatusCustomizationStatus[];
-    onManageStatusesClick: (statuses: TaskBoardTypes.StatusCustomizationStatus[]) => void;
+    canManageStatuses?: boolean;
+    onSaveCustomStatuses: (statuses: TaskBoardTypes.StatusCustomizationStatus[]) => void;
 
     contributors: Person[];
     checkIns: CheckIn[];
@@ -163,6 +165,7 @@ export namespace ProjectPage {
 
   export interface State extends Props {
     statuses: TaskBoardTypes.StatusCustomizationStatus[];
+    canManageStatuses: boolean;
 
     isMoveModalOpen: boolean;
     openMoveModal: () => void;
@@ -181,6 +184,7 @@ function useProjectPageState(props: ProjectPage.Props): ProjectPage.State {
   return {
     ...props,
     statuses: props.statuses && props.statuses.length > 0 ? props.statuses : DEFAULT_STATUSES,
+    canManageStatuses: props.canManageStatuses ?? false,
 
     isMoveModalOpen,
     openMoveModal: () => setIsMoveModalOpen(true),
@@ -235,7 +239,8 @@ export function ProjectPage(props: ProjectPage.Props) {
               filters={state.filters}
               onFiltersChange={state.onFiltersChange}
               statuses={state.statuses}
-              onManageStatusesClick={state.onManageStatusesClick}
+              canManageStatuses={state.canManageStatuses}
+              onSaveCustomStatuses={state.onSaveCustomStatuses}
             />
           </div>
         )}

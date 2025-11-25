@@ -299,8 +299,10 @@ function Page() {
     newDiscussionLink: paths.projectDiscussionNewPath(project.id),
     currentUser: currentUser ? People.parsePersonForTurboUi(paths, currentUser) : null,
     assigneePersonSearch: assigneePersonSearch,
+
     statuses,
-    onManageStatusesClick: handleSaveStatuses,
+    onSaveCustomStatuses: handleSaveStatuses,
+    canManageStatuses: project.permissions.canEditStatuses,
 
     richTextHandlers: richEditorHandlers,
 
