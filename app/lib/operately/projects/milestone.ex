@@ -35,6 +35,7 @@ defmodule Operately.Projects.Milestone do
     # populated with after load hooks
     field :permissions, :any, virtual: true
     field :comments_count, :integer, virtual: true
+    field :available_statuses, {:array, :map}, virtual: true
 
     timestamps()
     soft_delete()
@@ -138,5 +139,18 @@ defmodule Operately.Projects.Milestone do
 
       Map.put(milestone, :comments, comments)
     end
+  end
+
+  def preload_available_statuses(milestone = %__MODULE__{}) do
+    milestone =
+      if Ecto.assoc_loaded?(milestone.project) do
+        Operately.Repo.preload(milestone, :project)
+      else
+        milestone
+      end
+
+    statuses = if milestone.project, do: milestone.project.task_statuses || [], else: []
+
+    Map.put(milestone, :available_statuses, statuses)
   end
 end
