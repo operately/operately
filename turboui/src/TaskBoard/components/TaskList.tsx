@@ -5,6 +5,7 @@ import { IconChevronDown, IconChevronRight } from "../../icons";
 import { PersonField } from "../../PersonField";
 import * as Types from "../types";
 import { DateField } from "../../DateField";
+import { StatusSelectorV2 } from "../../StatusSelectorV2";
 
 // Using TaskWithIndex from our shared types
 import { TaskWithIndex } from "../types";
@@ -17,6 +18,7 @@ export interface TaskListProps {
   onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
   onTaskStatusChange: (taskId: string, status: string) => void;
   assigneePersonSearch?: PersonField.SearchData;
+  statusOptions: StatusSelectorV2.StatusOption[];
   /** Whether to show the hidden tasks toggle (ghost row) */
   showHiddenTasksToggle?: boolean;
   /** Optional inline row to render below active tasks (e.g., inline creator) */
@@ -37,6 +39,7 @@ export function TaskList({
   onTaskDueDateChange,
   onTaskStatusChange,
   assigneePersonSearch,
+  statusOptions,
   inlineCreateRow,
 }: TaskListProps) {
   const [hiddenTasksExpanded, setHiddenTasksExpanded] = useState(false);
@@ -78,16 +81,18 @@ export function TaskList({
     <>
       <ul ref={ref as React.RefObject<HTMLUListElement>} style={containerStyle}>
         {/* Regular visible tasks */}
-        {tasks.map((task, index) => (
+        {tasksWithIndex.map((task) => (
           <TaskItem
             key={task.id}
-            task={{ ...task, index } as TaskWithIndex}
+            task={task}
             milestoneId={milestoneId}
             itemStyle={itemStyle}
             onTaskAssigneeChange={onTaskAssigneeChange}
             onTaskDueDateChange={onTaskDueDateChange}
             onTaskStatusChange={onTaskStatusChange}
             assigneePersonSearch={assigneePersonSearch}
+            statusOptions={statusOptions}
+            draggingDisabled={task.index >= tasks.length}
           />
         ))}
       </ul>
@@ -139,7 +144,8 @@ export function TaskList({
               onTaskDueDateChange={onTaskDueDateChange}
               onTaskStatusChange={onTaskStatusChange}
               assigneePersonSearch={assigneePersonSearch}
-              draggingDisabled
+              statusOptions={statusOptions}
+              draggingDisabled={true}
             />
           </ul>
         ))}

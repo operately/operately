@@ -141,9 +141,9 @@ export namespace ProjectPage {
     filters?: TaskBoardTypes.FilterCondition[];
     onFiltersChange?: (filters: TaskBoardTypes.FilterCondition[]) => void;
 
-    statuses?: TaskBoardTypes.StatusCustomizationStatus[];
+    statuses?: TaskBoardTypes.StatusOption[];
     canManageStatuses?: boolean;
-    onSaveCustomStatuses: (statuses: TaskBoardTypes.StatusCustomizationStatus[]) => void;
+    onSaveCustomStatuses: (statuses: TaskBoardTypes.StatusOption[]) => void;
 
     contributors: Person[];
     checkIns: CheckIn[];
@@ -164,7 +164,7 @@ export namespace ProjectPage {
   }
 
   export interface State extends Props {
-    statuses: TaskBoardTypes.StatusCustomizationStatus[];
+    statuses: TaskBoardTypes.StatusOption[];
     canManageStatuses: boolean;
 
     isMoveModalOpen: boolean;
@@ -264,7 +264,7 @@ function Activity(props: ProjectPage.State) {
   );
 }
 
-const DEFAULT_STATUSES: TaskBoardTypes.StatusCustomizationStatus[] = [
+const DEFAULT_STATUSES: TaskBoardTypes.StatusOption[] = [
   {
     id: "pending",
     label: "Not started",

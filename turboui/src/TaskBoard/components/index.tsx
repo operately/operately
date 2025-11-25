@@ -13,7 +13,8 @@ import { useFilteredTasks } from "../hooks";
 import { InlineTaskCreator } from "./InlineTaskCreator";
 import { useInlineTaskCreator } from "../hooks/useInlineTaskCreator";
 import { Menu, MenuActionItem } from "../../Menu";
-import { StatusCustomizationModal, type StatusCustomizationStatus } from "../../StatusCustomization";
+import { StatusCustomizationModal } from "../../StatusCustomization";
+import { StatusSelectorV2 } from "../../StatusSelectorV2";
 
 export namespace TaskBoard {
   export type Person = Types.Person;
@@ -26,7 +27,7 @@ export namespace TaskBoard {
 
   export type NewTaskPayload = Types.NewTaskPayload;
 
-  export type StatusCustomizationStatus = Types.StatusCustomizationStatus;
+  export type StatusCustomizationStatus = StatusSelectorV2.StatusOption;
 }
 
 export function TaskBoard({
@@ -54,7 +55,7 @@ export function TaskBoard({
   const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
   const [activeTaskMilestoneId, setActiveTaskMilestoneId] = useState<string | undefined>();
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
-  const [statusModalStatuses, setStatusModalStatuses] = useState<StatusCustomizationStatus[]>(statuses);
+  const [statusModalStatuses, setStatusModalStatuses] = useState<StatusSelectorV2.StatusOption[]>(statuses);
   const {
     open: noMilestoneCreatorOpen,
     openCreator: openNoMilestoneCreator,
@@ -105,7 +106,7 @@ export function TaskBoard({
   }, []);
 
   const handleSaveStatuses = useCallback(
-    (nextStatuses: StatusCustomizationStatus[]) => {
+    (nextStatuses: StatusSelectorV2.StatusOption[]) => {
       setStatusModalStatuses(nextStatuses);
       setIsStatusModalOpen(false);
       onSaveCustomStatuses(nextStatuses);
@@ -210,6 +211,7 @@ export function TaskBoard({
                     onTaskStatusChange={onTaskStatusChange}
                     onMilestoneUpdate={onMilestoneUpdate}
                     assigneePersonSearch={assigneePersonSearch}
+                    statusOptions={statuses}
                     availableMilestones={milestones.map((m) => m.milestone)}
                   />
                 ))}
@@ -244,6 +246,7 @@ export function TaskBoard({
                       onTaskDueDateChange={onTaskDueDateChange}
                       onTaskStatusChange={onTaskStatusChange}
                       assigneePersonSearch={assigneePersonSearch}
+                      statusOptions={statuses}
                       inlineCreateRow={
                         noMilestoneCreatorOpen ? (
                           <InlineTaskCreator

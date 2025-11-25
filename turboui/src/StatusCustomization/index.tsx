@@ -11,20 +11,11 @@ type StatusColorName = StatusSelectorV2.StatusColorName;
 type StatusIconName = StatusSelectorV2.StatusIconName;
 type StatusAppearance = "gray" | "blue" | "green" | "red";
 
-export interface StatusCustomizationStatus {
-  id: string;
-  label: string;
-  color: StatusColorName;
-  icon: StatusIconName;
-  index: number;
-  value?: string;
-}
-
 export interface StatusCustomizationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  statuses: ReadonlyArray<StatusCustomizationStatus>;
-  onSave: (nextStatuses: StatusCustomizationStatus[]) => void;
+  statuses: ReadonlyArray<StatusSelectorV2.StatusOption>;
+  onSave: (nextStatuses: StatusSelectorV2.StatusOption[]) => void;
   title?: string;
   description?: string;
 }
@@ -70,7 +61,7 @@ const generateId = () =>
     ? crypto.randomUUID()
     : `status-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
 
-const getAppearanceFromStatus = (status?: Partial<StatusCustomizationStatus>): StatusAppearance => {
+const getAppearanceFromStatus = (status?: Partial<StatusSelectorV2.StatusOption>): StatusAppearance => {
   if (!status) return "gray";
   const found = APPEARANCE_ORDER.find((appearance) => {
     const preset = STATUS_APPEARANCES[appearance];
@@ -79,12 +70,12 @@ const getAppearanceFromStatus = (status?: Partial<StatusCustomizationStatus>): S
   return found ?? "gray";
 };
 
-const buildStatus = (status?: Partial<StatusCustomizationStatus>, index?: number): StatusCustomizationStatus => {
+const buildStatus = (status?: Partial<StatusSelectorV2.StatusOption>, index?: number): StatusSelectorV2.StatusOption => {
   const appearance = getAppearanceFromStatus(status);
   const preset = STATUS_APPEARANCES[appearance];
   return {
     id: status?.id ?? generateId(),
-    value: status?.value,
+    value: status?.value ?? "",
     label: status?.label ?? "",
     color: preset.color,
     icon: preset.icon,
@@ -92,13 +83,13 @@ const buildStatus = (status?: Partial<StatusCustomizationStatus>, index?: number
   };
 };
 
-const useDraftStatuses = (source: ReadonlyArray<StatusCustomizationStatus>, isOpen: boolean) => {
+const useDraftStatuses = (source: ReadonlyArray<StatusSelectorV2.StatusOption>, isOpen: boolean) => {
   const createDraft = React.useCallback(
     () => (source.length > 0 ? source : [buildStatus(undefined, 0)]).map((status, index) => buildStatus(status, index)),
     [source],
   );
 
-  const [drafts, setDrafts] = React.useState<StatusCustomizationStatus[]>(createDraft);
+  const [drafts, setDrafts] = React.useState<StatusSelectorV2.StatusOption[]>(createDraft);
 
   React.useEffect(() => {
     if (isOpen) {
@@ -126,8 +117,21 @@ export function StatusCustomizationModal({
     }
   }, [isOpen]);
 
-  const updateStatus = (id: string, updates: Partial<StatusCustomizationStatus>) => {
-    setDraftStatuses((prev) => prev.map((status) => (status.id === id ? { ...status, ...updates } : status)));
+  const updateStatus = (id: string, updates: Partial<StatusSelectorV2.StatusOption>) => {
+    setDraftStatuses((prev) =>
+      prev.map((status) => {
+        if (status.id !== id) return status;
+
+        const updatedStatus = { ...status, ...updates };
+
+        // Auto-generate value from label if label is being updated and value is empty
+        if (updates.label !== undefined && (!status.value || status.value === "")) {
+          updatedStatus.value = generateStatusValueFromLabel(updates.label);
+        }
+
+        return updatedStatus;
+      }),
+    );
   };
 
   const removeStatus = (id: string) => {
@@ -212,9 +216,9 @@ export function StatusCustomizationModal({
 }
 
 type StatusRowProps = {
-  status: StatusCustomizationStatus;
+  status: StatusSelectorV2.StatusOption;
   isLabelInvalid: boolean;
-  onUpdate: (id: string, updates: Partial<StatusCustomizationStatus>) => void;
+  onUpdate: (id: string, updates: Partial<StatusSelectorV2.StatusOption>) => void;
   onRemove: (id: string) => void;
   canRemove: boolean;
 };
@@ -330,4 +334,12 @@ function AppearancePicker({ value, onChange }: AppearancePickerProps) {
       </Popover.Portal>
     </Popover.Root>
   );
+}
+
+/**
+ * Generates a status value from a label by converting to lowercase and replacing spaces with underscores.
+ * @returns The generated value (e.g., "In Progress" -> "in_progress")
+ */
+function generateStatusValueFromLabel(label: string): string {
+  return label.toLowerCase().replace(/\s+/g, "_");
 }
