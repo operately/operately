@@ -6,7 +6,7 @@ import { mockTasks, mockMilestones } from "../tests/mockData";
 import { Page } from "../../Page";
 import { usePersonFieldSearch } from "../../utils/storybook/usePersonFieldSearch";
 
-const DEFAULT_STATUSES: Types.StatusCustomizationStatus[] = [
+const DEFAULT_STATUSES: Types.StatusOption[] = [
   { id: "pending", value: "pending", label: "Not started", color: "dimmed", icon: "circleDashed", index: 0 },
   { id: "progress", value: "in_progress", label: "In progress", color: "brand", icon: "circleDot", index: 1 },
   { id: "qa", value: "qa", label: "QA", color: "brand", icon: "circleDot", index: 2 },
@@ -66,7 +66,7 @@ export const Default: Story = {
       ...Object.values(mockMilestones),
     ]);
     const [filters, setFilters] = useState<Types.FilterCondition[]>([]);
-    const [statuses, setStatuses] = useState<Types.StatusCustomizationStatus[]>(DEFAULT_STATUSES);
+    const [statuses, setStatuses] = useState<Types.StatusOption[]>(DEFAULT_STATUSES);
 
     const handleMilestoneSearch = async (query: string) => {
       const allMilestones = Object.values(mockMilestones);

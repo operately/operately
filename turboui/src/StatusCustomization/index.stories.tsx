@@ -1,8 +1,9 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { StatusCustomizationModal, type StatusCustomizationStatus } from "./index";
+import { StatusCustomizationModal } from "./index";
 import { PrimaryButton } from "../Button";
 import { StatusSelectorV2 } from "../StatusSelectorV2";
+
 
 const meta = {
   title: "Components/StatusCustomizationModal",
@@ -15,7 +16,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof StatusCustomizationModal>;
 
-const DEFAULT_STATUSES: StatusCustomizationStatus[] = [
+const DEFAULT_STATUSES: StatusSelectorV2.StatusOption[] = [
   { id: "pending", value: "pending", label: "Not started", color: "dimmed", icon: "circleDashed", index: 0 },
   { id: "progress", value: "in_progress", label: "In progress", color: "brand", icon: "circleDot", index: 1 },
   { id: "qa", value: "qa", label: "QA", color: "brand", icon: "circleDot", index: 2 },
@@ -23,10 +24,11 @@ const DEFAULT_STATUSES: StatusCustomizationStatus[] = [
   { id: "canceled", value: "canceled", label: "Canceled", color: "danger", icon: "circleX", index: 4 },
 ];
 
-const StatusPreview = ({ statuses }: { statuses: StatusCustomizationStatus[] }) => {
+const StatusPreview = ({ statuses }: { statuses: StatusSelectorV2.StatusOption[] }) => {
   const options = React.useMemo(
     () =>
       statuses.map((status) => ({
+        id: status.id,
         value: status.value ?? status.id,
         label: status.label,
         icon: status.icon,
@@ -90,7 +92,7 @@ const StatusPreview = ({ statuses }: { statuses: StatusCustomizationStatus[] }) 
   );
 };
 
-const Playground = ({ initialStatuses }: { initialStatuses: StatusCustomizationStatus[] }) => {
+const Playground = ({ initialStatuses }: { initialStatuses: StatusSelectorV2.StatusOption[] }) => {
   const [workflowStatuses, setWorkflowStatuses] = React.useState(initialStatuses);
   const [isModalOpen, setModalOpen] = React.useState(true);
 
