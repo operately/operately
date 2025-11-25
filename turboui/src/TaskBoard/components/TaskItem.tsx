@@ -5,7 +5,7 @@ import { BlackLink } from "../../Link";
 import { PersonField } from "../../PersonField";
 import { useDraggable } from "../../utils/DragAndDrop";
 import classNames from "../../utils/classnames";
-import { StatusSelector } from "./StatusSelector";
+import { StatusSelectorV2 } from "../../StatusSelectorV2";
 import { createTestId } from "../../TestableElement";
 
 // Using shared types
@@ -19,6 +19,7 @@ interface TaskItemProps {
   onTaskAssigneeChange: (taskId: string, assignee: Person | null) => void;
   onTaskStatusChange: (taskId: string, status: string) => void;
   assigneePersonSearch?: PersonField.SearchData;
+  statusOptions: StatusSelectorV2.StatusOption[];
   draggingDisabled?: boolean;
 }
 
@@ -30,6 +31,7 @@ export function TaskItem({
   onTaskAssigneeChange,
   onTaskStatusChange,
   assigneePersonSearch,
+  statusOptions,
   draggingDisabled,
 }: TaskItemProps) {
   const [currentAssignee, setCurrentAssignee] = useState<Person | null>(task.assignees?.[0] || null);
@@ -86,7 +88,8 @@ export function TaskItem({
           <div className="flex items-center gap-1.5 flex-1 min-w-0">
             {/* Status icon */}
             <div className="flex-shrink-0 flex items-center h-6">
-              <StatusSelector
+              <StatusSelectorV2
+                statusOptions={statusOptions}
                 status={currentStatus || "pending"}
                 onChange={handleStatusChange}
                 size="md"

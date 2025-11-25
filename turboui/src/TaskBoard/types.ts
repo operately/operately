@@ -1,5 +1,8 @@
 import { DateField } from "../DateField";
 import { PersonField } from "../PersonField";
+import { StatusSelectorV2 } from "../StatusSelectorV2";
+
+export type StatusOption = StatusSelectorV2.StatusOption;
 
 /**
  * TaskBoard component types
@@ -168,4 +171,9 @@ export interface TaskBoardProps {
   // Filter functionality
   filters?: FilterCondition[];
   onFiltersChange?: (filters: FilterCondition[]) => void;
+
+  // Status customization
+  statuses: StatusSelectorV2.StatusOption[];
+  onSaveCustomStatuses: (statuses: StatusSelectorV2.StatusOption[]) => void;
+  canManageStatuses: boolean;
 }

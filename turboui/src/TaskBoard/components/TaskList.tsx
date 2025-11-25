@@ -5,18 +5,19 @@ import { IconChevronDown, IconChevronRight } from "../../icons";
 import { PersonField } from "../../PersonField";
 import * as Types from "../types";
 import { DateField } from "../../DateField";
+import { StatusSelectorV2 } from "../../StatusSelectorV2";
 
 // Using TaskWithIndex from our shared types
 import { TaskWithIndex } from "../types";
 
 export interface TaskListProps {
   tasks: Types.Task[];
-  hiddenTasks?: Types.Task[];
   milestoneId: string;
   onTaskAssigneeChange: (taskId: string, assignee: Types.Person | null) => void;
   onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
   onTaskStatusChange: (taskId: string, status: string) => void;
   assigneePersonSearch?: PersonField.SearchData;
+  statusOptions: StatusSelectorV2.StatusOption[];
   /** Whether to show the hidden tasks toggle (ghost row) */
   showHiddenTasksToggle?: boolean;
   /** Optional inline row to render below active tasks (e.g., inline creator) */
@@ -30,25 +31,44 @@ export interface TaskListProps {
  */
 export function TaskList({
   tasks,
-  hiddenTasks = [],
   showHiddenTasksToggle = false,
   milestoneId,
   onTaskAssigneeChange,
   onTaskDueDateChange,
   onTaskStatusChange,
   assigneePersonSearch,
+  statusOptions,
   inlineCreateRow,
 }: TaskListProps) {
   const [hiddenTasksExpanded, setHiddenTasksExpanded] = useState(false);
 
+  // Separate tasks into visible and hidden based on status.hidden property
+  const { visibleTasks, hiddenTasks } = useMemo(() => {
+    const visible: Types.Task[] = [];
+    const hidden: Types.Task[] = [];
+
+    tasks.forEach((task) => {
+      const statusOption = statusOptions.find((opt) => opt.value === task.status);
+      const isHidden = statusOption?.hidden === true;
+
+      if (isHidden) {
+        hidden.push(task);
+      } else {
+        visible.push(task);
+      }
+    });
+
+    return { visibleTasks: visible, hiddenTasks: hidden };
+  }, [tasks, statusOptions]);
+
   // Add drag and drop index to each task (including expanded hidden tasks if needed)
   const allVisibleTasks = useMemo(() => {
-    let allTasks = [...tasks];
+    let allTasks = [...visibleTasks];
     if (hiddenTasksExpanded) {
-      allTasks = [...tasks, ...hiddenTasks];
+      allTasks = [...visibleTasks, ...hiddenTasks];
     }
     return allTasks;
-  }, [tasks, hiddenTasks, hiddenTasksExpanded]);
+  }, [visibleTasks, hiddenTasks, hiddenTasksExpanded]);
 
   const tasksWithIndex = useMemo(() => {
     return allVisibleTasks.map((task, index) => ({ ...task, index }));
@@ -78,16 +98,18 @@ export function TaskList({
     <>
       <ul ref={ref as React.RefObject<HTMLUListElement>} style={containerStyle}>
         {/* Regular visible tasks */}
-        {tasks.map((task, index) => (
+        {tasksWithIndex.map((task) => (
           <TaskItem
             key={task.id}
-            task={{ ...task, index } as TaskWithIndex}
+            task={task}
             milestoneId={milestoneId}
             itemStyle={itemStyle}
             onTaskAssigneeChange={onTaskAssigneeChange}
             onTaskDueDateChange={onTaskDueDateChange}
             onTaskStatusChange={onTaskStatusChange}
             assigneePersonSearch={assigneePersonSearch}
+            statusOptions={statusOptions}
+            draggingDisabled={task.index >= visibleTasks.length}
           />
         ))}
       </ul>
@@ -96,7 +118,7 @@ export function TaskList({
       {inlineCreateRow}
 
       {/* Empty state message when no visible tasks but there are hidden tasks */}
-      {tasks.length === 0 && totalHiddenCount > 0 && showHiddenTasksToggle && (
+      {visibleTasks.length === 0 && totalHiddenCount > 0 && showHiddenTasksToggle && (
         <div className="py-3 px-4 text-center text-content-subtle text-sm bg-surface-base">
           Click + or press c to add a task, or drag a task here.
         </div>
@@ -132,14 +154,15 @@ export function TaskList({
             }}
           >
             <TaskItem
-              task={{ ...task, index: tasks.length + index } as TaskWithIndex}
+              task={{ ...task, index: visibleTasks.length + index } as TaskWithIndex}
               milestoneId={milestoneId}
               itemStyle={() => ({})}
               onTaskAssigneeChange={onTaskAssigneeChange}
               onTaskDueDateChange={onTaskDueDateChange}
               onTaskStatusChange={onTaskStatusChange}
               assigneePersonSearch={assigneePersonSearch}
-              draggingDisabled
+              statusOptions={statusOptions}
+              draggingDisabled={true}
             />
           </ul>
         ))}

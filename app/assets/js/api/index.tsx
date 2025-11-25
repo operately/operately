@@ -1399,6 +1399,7 @@ export interface Project {
   notifications?: Notification[] | null;
   subscriptionList?: SubscriptionList | null;
   milestonesOrderingState?: string[] | null;
+  taskStatuses?: ProjectTaskStatus[] | null;
 }
 
 export interface ProjectCheckIn {
@@ -1465,28 +1466,33 @@ export interface ProjectKeyResource {
 }
 
 export interface ProjectPermissions {
-  canView?: boolean | null;
-  canCreateMilestone?: boolean | null;
-  canDeleteMilestone?: boolean | null;
-  canEditContributors?: boolean | null;
-  canEditMilestone?: boolean | null;
-  canEditDescription?: boolean | null;
-  canEditTimeline?: boolean | null;
-  canEditResources?: boolean | null;
-  canEditGoal?: boolean | null;
-  canEditName?: boolean | null;
-  canEditSpace?: boolean | null;
-  canEditRetrospective?: boolean | null;
-  canEditPermissions?: boolean | null;
-  canClose?: boolean | null;
-  canPause?: boolean | null;
-  canCheckIn?: boolean | null;
-  canAcknowledgeCheckIn?: boolean | null;
-  canCommentOnCheckIn?: boolean | null;
-  canCommentOnRetrospective?: boolean | null;
-  canCommentOnMilestone?: boolean | null;
-  canComment?: boolean;
-  canDelete?: boolean;
+  canView: boolean;
+  canCommentOnMilestone: boolean;
+  canCommentOnCheckIn: boolean;
+  canCommentOnRetrospective: boolean;
+  canCommentOnTask: boolean;
+  canCreateMilestone: boolean;
+  canCompleteMilestone: boolean;
+  canReopenMilestone: boolean;
+  canDeleteMilestone: boolean;
+  canEditContributors: boolean;
+  canEditMilestone: boolean;
+  canEditDescription: boolean;
+  canEditTimeline: boolean;
+  canEditResources: boolean;
+  canEditGoal: boolean;
+  canEditName: boolean;
+  canEditSpace: boolean;
+  canEditRetrospective: boolean;
+  canEditPermissions: boolean;
+  canClose: boolean;
+  canPause: boolean;
+  canCheckIn: boolean;
+  canEditTask: boolean;
+  canEditStatuses: boolean;
+  canAcknowledgeCheckIn: boolean;
+  canComment: boolean;
+  canDelete: boolean;
 }
 
 export interface ProjectRetrospective {
@@ -1512,7 +1518,7 @@ export interface ProjectReviewRequest {
   author?: Person | null;
 }
 
-export interface ProjectTaskStatusInput {
+export interface ProjectTaskStatus {
   id: string;
   label: string;
   color: string;
@@ -4114,7 +4120,7 @@ export interface ProjectsUpdateStartDateResult {
 
 export interface ProjectsUpdateTaskStatusesInput {
   projectId: Id;
-  taskStatuses: ProjectTaskStatusInput[];
+  taskStatuses: ProjectTaskStatus[];
 }
 
 export interface ProjectsUpdateTaskStatusesResult {
