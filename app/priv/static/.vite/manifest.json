@@ -1,22 +1,22 @@
 {
-  "_vendor-Bbj0aRzQ.css": {
-    "file": "assets/vendor-Bbj0aRzQ.css",
-    "src": "_vendor-Bbj0aRzQ.css"
-  },
-  "_vendor-CoB4ANSi.js": {
-    "file": "assets/vendor-CoB4ANSi.js",
+  "_vendor-BLRK8Jjw.js": {
+    "file": "assets/vendor-BLRK8Jjw.js",
     "name": "vendor",
     "css": [
       "assets/vendor-Bbj0aRzQ.css"
     ]
   },
+  "_vendor-Bbj0aRzQ.css": {
+    "file": "assets/vendor-Bbj0aRzQ.css",
+    "src": "_vendor-Bbj0aRzQ.css"
+  },
   "assets/js/app.tsx": {
-    "file": "assets/app-CxIe5iwI.js",
+    "file": "assets/app-C0Vk0lAR.js",
     "name": "app",
     "src": "assets/js/app.tsx",
     "isEntry": true,
     "imports": [
-      "_vendor-CoB4ANSi.js"
+      "_vendor-BLRK8Jjw.js"
     ]
   }
 }

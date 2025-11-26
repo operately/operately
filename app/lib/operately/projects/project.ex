@@ -102,6 +102,7 @@ defmodule Operately.Projects.Project do
     ])
     |> cast_embed(:timeframe)
     |> cast_embed(:task_statuses)
+    |> put_default_task_statuses()
     |> validate_required([
       :name,
       :company_id,
@@ -109,6 +110,15 @@ defmodule Operately.Projects.Project do
       :creator_id,
       :subscription_list_id
     ])
+  end
+
+  defp put_default_task_statuses(changeset) do
+    # Only set defaults if task_statuses is empty or not provided
+    case Ecto.Changeset.get_field(changeset, :task_statuses) do
+      [] -> Ecto.Changeset.put_embed(changeset, :task_statuses, Operately.Projects.TaskStatus.default_task_statuses())
+      nil -> Ecto.Changeset.put_embed(changeset, :task_statuses, Operately.Projects.TaskStatus.default_task_statuses())
+      _ -> changeset
+    end
   end
 
   @impl WorkMapItem
