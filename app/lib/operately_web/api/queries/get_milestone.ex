@@ -12,6 +12,7 @@ defmodule OperatelyWeb.Api.Queries.GetMilestone do
     field? :include_permissions, :boolean, null: false
     field? :include_space, :boolean, null: false
     field? :include_subscription_list, :boolean, null: false
+    field? :include_available_statuses, :boolean, null: false
   end
 
   outputs do
@@ -58,6 +59,7 @@ defmodule OperatelyWeb.Api.Queries.GetMilestone do
     Inputs.parse_includes(inputs, [
       include_permissions: &Milestone.set_permissions/1,
       include_comments: Milestone.load_comment_notifications(person),
+      include_available_statuses: &Milestone.preload_available_statuses/1,
     ])
   end
 end

@@ -151,7 +151,7 @@ defmodule OperatelyWeb.Api.Projects do
 
     inputs do
       field :project_id, :id, null: false
-      field :task_statuses, list_of(:project_task_status_input), null: false
+      field :task_statuses, list_of(:project_task_status), null: false
     end
 
     outputs do
@@ -162,7 +162,7 @@ defmodule OperatelyWeb.Api.Projects do
       conn
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.project_id)
-      |> Steps.check_permissions(:can_edit_task)
+      |> Steps.check_permissions(:can_edit_statuses)
       |> Steps.update_task_statuses(inputs.task_statuses)
       |> Steps.commit()
       |> Steps.respond(fn _ -> %{success: true} end)
