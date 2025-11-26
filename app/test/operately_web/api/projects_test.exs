@@ -652,7 +652,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
 
       assert {400, res} = mutation(ctx.conn, [:projects, :update_task_statuses], %{
         task_statuses: [
-          %{id: "todo", label: "Todo", color: "gray", index: 0, value: "todo", hidden: false}
+          %{id: "todo", label: "Todo", color: "gray", index: 0, value: "todo", closed: false}
         ]
       })
 
@@ -663,9 +663,9 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       statuses = [
-        %{id: "todo", label: "Todo", color: "gray", index: 0, value: "todo", hidden: false},
-        %{id: "in_progress", label: "In progress", color: "blue", index: 1, value: "in_progress", hidden: false},
-        %{id: "done", label: "Done", color: "green", index: 2, value: "done", hidden: false}
+        %{id: "todo", label: "Todo", color: "gray", index: 0, value: "todo", closed: false},
+        %{id: "in_progress", label: "In progress", color: "blue", index: 1, value: "in_progress", closed: false},
+        %{id: "done", label: "Done", color: "green", index: 2, value: "done", closed: false}
       ]
 
       assert {200, res} = mutation(ctx.conn, [:projects, :update_task_statuses], %{
