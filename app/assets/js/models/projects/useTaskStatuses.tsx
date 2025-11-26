@@ -29,7 +29,7 @@ export function useTaskStatuses(
         color: mapUiColorToBackend(status.color),
         index,
         value: status.value ?? status.id,
-        hidden: status.hidden ?? false,
+        closed: status.closed ?? false,
       }));
 
       try {

@@ -1525,7 +1525,7 @@ export interface ProjectTaskStatus {
   color: string;
   index: number;
   value: string;
-  hidden: boolean;
+  closed: boolean;
 }
 
 export interface Reaction {

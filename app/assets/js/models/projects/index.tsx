@@ -89,7 +89,7 @@ export function mapProjectTaskStatusesToUi(backend: api.ProjectTaskStatus[] | nu
         label: status.label ?? "",
         value: status.value ?? status.id ?? "",
         index: status.index ?? index,
-        hidden: status.hidden ?? false,
+        closed: status.closed ?? false,
         color,
         icon,
       };

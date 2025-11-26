@@ -66,7 +66,7 @@ export function TasksSection({
 
   const hasHiddenTasks = baseFilteredTasks.some((task) => {
     const statusOption = statusOptions.find((opt) => opt.value === task.status);
-    return statusOption?.hidden === true;
+    return statusOption?.closed === true;
   });
 
   const handleTaskReorder = React.useCallback(

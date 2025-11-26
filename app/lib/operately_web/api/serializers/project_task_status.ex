@@ -6,7 +6,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.TaskStatus do
       color: Atom.to_string(task_status.color),
       index: task_status.index,
       value: task_status.value,
-      hidden: task_status.hidden
+      closed: task_status.closed
     }
   end
 end

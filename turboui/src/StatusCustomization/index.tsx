@@ -102,7 +102,7 @@ export function StatusCustomizationModal({
         // Update hidden property when color/icon changes (appearance change)
         if (updates.color !== undefined || updates.icon !== undefined) {
           const newAppearance = getAppearanceFromStatus(updatedStatus);
-          updatedStatus.hidden = newAppearance === "green" || newAppearance === "red";
+          updatedStatus.closed = newAppearance === "green" || newAppearance === "red";
         }
 
         return updatedStatus;
@@ -368,6 +368,6 @@ const buildStatus = (
     color: preset.color,
     icon: preset.icon,
     index: status?.index ?? index ?? 0,
-    hidden: status?.hidden ?? (appearance === "green" || appearance === "red"),
+    closed: status?.closed ?? (appearance === "green" || appearance === "red"),
   };
 };

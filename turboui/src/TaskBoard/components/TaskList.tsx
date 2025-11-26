@@ -50,7 +50,7 @@ export function TaskList({
     tasks.forEach((task) => {
       const statusOption = statusOptions.find((opt) => opt.value === task.status);
 
-      if (statusOption?.hidden) {
+      if (statusOption?.closed) {
         hidden.push(task);
       } else {
         visible.push(task);

@@ -1929,7 +1929,7 @@ defmodule OperatelyWeb.Api.Types do
     field :color, :string, null: false
     field :index, :integer, null: false
     field :value, :string, null: false
-    field :hidden, :boolean, null: false
+    field :closed, :boolean, null: false
   end
 
   object :add_member_input do
