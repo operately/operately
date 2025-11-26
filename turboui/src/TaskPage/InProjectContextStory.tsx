@@ -21,6 +21,15 @@ import {
 } from "./mockData";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { useMockSubscriptions } from "../utils/storybook/subscriptions";
+import { StatusSelector } from "../StatusSelector";
+
+const DEFAULT_STATUS_OPTIONS: StatusSelector.StatusOption[] = [
+  { id: "pending", value: "pending", label: "Not started", color: "dimmed", icon: "circleDashed", index: 0 },
+  { id: "in_progress", value: "in_progress", label: "In progress", color: "brand", icon: "circleDot", index: 1 },
+  { id: "review", value: "review", label: "In review", color: "brand", icon: "circleDot", index: 2 },
+  { id: "done", value: "done", label: "Done", color: "success", icon: "circleCheck", index: 3 },
+  { id: "canceled", value: "canceled", label: "Canceled", color: "dimmed", icon: "circleX", index: 4 },
+];
 
 const people = genPeople(5);
 
@@ -206,6 +215,7 @@ export function InProjectContextStory() {
               milestones={milestones}
               onMilestoneSearch={handleMilestoneSearch}
               richTextHandlers={createMockRichEditorHandlers()}
+              statusOptions={DEFAULT_STATUS_OPTIONS}
               // Permissions
               canEdit={true}
               // Timeline data

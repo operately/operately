@@ -78,7 +78,7 @@ export function TaskBoard({
   }, [statuses]);
 
   // Apply filters to tasks
-  const { filteredTasks, hiddenTasks, showHiddenTasksToggle } = useFilteredTasks(
+  const { filteredTasks, showHiddenTasksToggle } = useFilteredTasks(
     internalTasks,
     internalMilestones,
     filters,
@@ -89,7 +89,7 @@ export function TaskBoard({
     () => getMilestonesWithStats(internalMilestones, internalTasks),
     [internalMilestones, internalTasks],
   );
-  const showNoTasksMsg = milestones.length === 0 && hiddenTasks.length === 0 && filteredTasks.length === 0;
+  const showNoTasksMsg = milestones.length === 0 && filteredTasks.length === 0;
 
   // Check if there are any tasks without milestones in the original task list (memoized)
   const hasTasksWithoutMilestone = useMemo(

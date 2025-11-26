@@ -250,7 +250,8 @@ defmodule Operately.Support.Features.ReviewSteps do
   step :mark_task_as_completed, ctx do
     ctx
     |> UI.visit(Paths.project_task_path(ctx.company, ctx.task))
-    |> UI.click(testid: "task-quick-complete")
+    |> UI.click_button("Not started")
+    |> UI.click_text("Done")
     |> UI.sleep(300)
   end
 

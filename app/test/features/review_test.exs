@@ -32,14 +32,14 @@ defmodule Operately.Features.ReviewTest do
       |> Steps.assert_all_catch_up()
     end
 
-    # feature "viewing and completing due tasks", ctx do
-    #   ctx
-    #   |> Steps.given_there_are_due_tasks()
-    #   |> Steps.visit_review_page()
-    #   |> Steps.assert_due_task_is_listed()
-    #   |> Steps.when_task_is_marked_as_completed()
-    #   |> Steps.assert_completed_task_is_no_longer_displayed()
-    # end
+    feature "viewing and completing due tasks", ctx do
+      ctx
+      |> Steps.given_there_are_due_tasks()
+      |> Steps.visit_review_page()
+      |> Steps.assert_due_task_is_listed()
+      |> Steps.when_task_is_marked_as_completed()
+      |> Steps.assert_completed_task_is_no_longer_displayed()
+    end
 
     feature "viewing and submitting due goal updates", ctx do
       ctx
@@ -169,19 +169,19 @@ defmodule Operately.Features.ReviewTest do
       |> Steps.assert_the_review_item_count(is: 1)
     end
 
-    # feature "changing task status updates counter", ctx do
-    #   ctx
-    #   |> Steps.given_there_are_due_project_check_ins()
-    #   |> Steps.given_there_are_due_tasks()
-    #   |> Steps.visit_review_page()
-    #   |> Steps.assert_the_review_item_count(is: 2)
-    #   |> Steps.mark_task_as_completed()
-    #   |> Steps.assert_the_review_item_count(is: 1)
-    #   |> Steps.mark_task_as_not_started()
-    #   |> Steps.assert_the_review_item_count(is: 2)
-    #   |> Steps.mark_task_as_canceled()
-    #   |> Steps.assert_the_review_item_count(is: 1)
-    # end
+    feature "changing task status updates counter", ctx do
+      ctx
+      |> Steps.given_there_are_due_project_check_ins()
+      |> Steps.given_there_are_due_tasks()
+      |> Steps.visit_review_page()
+      |> Steps.assert_the_review_item_count(is: 2)
+      |> Steps.mark_task_as_completed()
+      |> Steps.assert_the_review_item_count(is: 1)
+      |> Steps.mark_task_as_not_started()
+      |> Steps.assert_the_review_item_count(is: 2)
+      |> Steps.mark_task_as_canceled()
+      |> Steps.assert_the_review_item_count(is: 1)
+    end
 
     feature "creating and deleting milestones updates counter", ctx do
       today = DateTime.utc_now()
