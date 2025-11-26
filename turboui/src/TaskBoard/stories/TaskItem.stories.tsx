@@ -76,7 +76,7 @@ const DEFAULT_STATUS_OPTIONS: Types.StatusOption[] = [
     label: "Done",
     icon: "circleCheck",
     color: "success",
-    hidden: true,
+    closed: true,
     index: 2,
   },
   {
@@ -85,7 +85,7 @@ const DEFAULT_STATUS_OPTIONS: Types.StatusOption[] = [
     label: "Canceled",
     icon: "circleX",
     color: "dimmed",
-    hidden: true,
+    closed: true,
     index: 3,
   },
 ];
