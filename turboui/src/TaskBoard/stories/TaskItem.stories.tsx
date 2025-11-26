@@ -52,6 +52,44 @@ const mockPeople: Types.Person[] = [
   { id: "user-4", fullName: "Diana Prince", avatarUrl: null },
 ];
 
+// Default status options used in TaskItem stories.
+const DEFAULT_STATUS_OPTIONS: Types.StatusOption[] = [
+  {
+    id: "pending",
+    value: "pending",
+    label: "Pending",
+    icon: "circleDashed",
+    color: "dimmed",
+    index: 0,
+  },
+  {
+    id: "in_progress",
+    value: "in_progress",
+    label: "In progress",
+    icon: "circleDot",
+    color: "brand",
+    index: 1,
+  },
+  {
+    id: "done",
+    value: "done",
+    label: "Done",
+    icon: "circleCheck",
+    color: "success",
+    closed: true,
+    index: 2,
+  },
+  {
+    id: "canceled",
+    value: "canceled",
+    label: "Canceled",
+    icon: "circleX",
+    color: "dimmed",
+    closed: true,
+    index: 3,
+  },
+];
+
 /**
  * Basic task with just a title and status (pending)
  */
@@ -91,6 +129,7 @@ export const BasicTask: Story = {
         console.log('Task status updated:', taskId, status);
       }}
       assigneePersonSearch={assigneePersonSearch}
+      statusOptions={DEFAULT_STATUS_OPTIONS}
     />;
   },
 };

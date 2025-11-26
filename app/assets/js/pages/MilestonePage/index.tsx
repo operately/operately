@@ -52,6 +52,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includePermissions: true,
           includeComments: true,
           includeSubscriptionList: true,
+          includeAvailableStatuses: true,
         }).then((d) => d.milestone),
         tasks: Api.project_milestones.listTasks({ milestoneId: params.id }).then((d) => d.tasks),
         childrenCount: Api.projects.countChildren({ id: params.id, useMilestoneId: true }).then((d) => d.childrenCount),
@@ -158,6 +159,11 @@ function Page() {
     onRefresh: refresh,
   });
 
+  const statusOptions = React.useMemo(
+    () => Projects.mapProjectTaskStatusesToUi(milestone.availableStatuses),
+    [milestone.availableStatuses],
+  );
+
   const props: MilestonePage.Props = {
     workmapLink,
     space: parseSpaceForTurboUI(paths, milestone.space),
@@ -200,6 +206,7 @@ function Page() {
 
     // Tasks
     tasks,
+    statusOptions,
     onTaskCreate: createTask,
     onTaskReorder: updateTaskMilestone,
     onTaskStatusChange: updateTaskStatus,
