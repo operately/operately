@@ -72,6 +72,7 @@ export namespace MilestonePage {
 
     // Tasks for this milestone
     tasks: Types.Task[];
+    statusOptions?: Types.StatusOption[];
 
     // Optional callbacks
     onTaskCreate?: (task: Types.NewTaskPayload) => void;
@@ -109,6 +110,7 @@ export namespace MilestonePage {
   }
 
   export interface State extends Props {
+    statusOptions: Types.StatusOption[];
     isTaskModalOpen: boolean;
     setIsTaskModalOpen: (open: boolean) => void;
     isDeleteModalOpen: boolean;
@@ -124,6 +126,7 @@ function useMilestonePageState(props: MilestonePage.Props): MilestonePage.State 
 
   return {
     ...props,
+    statusOptions: props.statusOptions || DEFAULT_STATUS_OPTIONS,
     isTaskModalOpen,
     setIsTaskModalOpen,
     isDeleteModalOpen,
@@ -331,3 +334,41 @@ function TimelineSection(props: MilestonePage.State) {
     </div>
   );
 }
+
+// Default status options for milestone tasks.
+const DEFAULT_STATUS_OPTIONS: Types.StatusOption[] = [
+  {
+    id: "pending",
+    value: "pending",
+    label: "Pending",
+    icon: "circleDashed",
+    color: "dimmed",
+    index: 0,
+  },
+  {
+    id: "in_progress",
+    value: "in_progress",
+    label: "In progress",
+    icon: "circleDot",
+    color: "brand",
+    index: 1,
+  },
+  {
+    id: "done",
+    value: "done",
+    label: "Done",
+    icon: "circleCheck",
+    color: "success",
+    closed: true,
+    index: 2,
+  },
+  {
+    id: "canceled",
+    value: "canceled",
+    label: "Canceled",
+    icon: "circleX",
+    color: "dimmed",
+    closed: true,
+    index: 3,
+  },
+];

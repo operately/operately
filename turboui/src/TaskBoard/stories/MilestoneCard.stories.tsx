@@ -98,7 +98,6 @@ const meta: Meta<typeof MilestoneCard> = {
             <MilestoneCard
               milestone={milestone} 
               tasks={tasks}
-              hiddenTasks={context.args.hiddenTasks || []}
               showHiddenTasksToggle={context.args.showHiddenTasksToggle ?? true}
               onTaskCreate={handleTaskCreate}
               onTaskAssigneeChange={(taskId, assignee) => {
@@ -112,6 +111,7 @@ const meta: Meta<typeof MilestoneCard> = {
               }}
               onMilestoneUpdate={handleMilestoneUpdate}
               assigneePersonSearch={assigneePersonSearch}
+              statusOptions={DEFAULT_STATUS_OPTIONS}
               availableMilestones={[milestone]}
             />
           </DragAndDropProvider>
@@ -143,6 +143,44 @@ const sampleMilestone: Types.Milestone = {
   commentCount: 3,
   status: "pending",
 };
+
+// Default status options used in MilestoneCard stories.
+const DEFAULT_STATUS_OPTIONS: Types.StatusOption[] = [
+  {
+    id: "pending",
+    value: "pending",
+    label: "Pending",
+    icon: "circleDashed",
+    color: "dimmed",
+    index: 0,
+  },
+  {
+    id: "in_progress",
+    value: "in_progress",
+    label: "In progress",
+    icon: "circleDot",
+    color: "brand",
+    index: 1,
+  },
+  {
+    id: "done",
+    value: "done",
+    label: "Done",
+    icon: "circleCheck",
+    color: "success",
+    closed: true,
+    index: 2,
+  },
+  {
+    id: "canceled",
+    value: "canceled",
+    label: "Canceled",
+    icon: "circleX",
+    color: "dimmed",
+    closed: true,
+    index: 3,
+  },
+];
 
 const longTitleOne =
   "Coordinate cross-functional launch strategy across marketing, sales, support, and product to keep messaging aligned through release";
@@ -357,9 +395,8 @@ export const MilestoneWithHiddenCompletedTasks: Story = {
         hasComments: true,
         commentCount: 1,
       },
-    ],
-    // Hidden completed tasks that can be revealed
-    hiddenTasks: [
+      // Previously hidden completed / canceled tasks - now part of the main
+      // tasks array; visibility is controlled via statusOptions.hidden
       {
         id: "task-done-1",
         title: "Implement core functionality",
