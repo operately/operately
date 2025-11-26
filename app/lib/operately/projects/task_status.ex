@@ -12,7 +12,7 @@ defmodule Operately.Projects.TaskStatus do
     field :color, Ecto.Enum, values: @valid_colors
     field :index, :integer
     field :value, :string
-    field :hidden, :boolean, default: false
+    field :closed, :boolean, default: false
   end
 
   def changeset(task_status, attrs) do

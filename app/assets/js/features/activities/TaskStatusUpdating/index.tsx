@@ -5,7 +5,6 @@ import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import { feedTitle, projectLink, taskLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
-import { StatusSelector } from "turboui";
 
 const TaskStatusUpdating: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -47,9 +46,7 @@ const TaskStatusUpdating: ActivityHandler = {
 
     return (
       <>
-        Previously, the task was{" "}
-        <StatusSelector status={oldStatus as StatusSelector.Status} size="xs" onChange={() => {}} readonly showFullBadge />. Now it's{" "}
-        <StatusSelector status={newStatus as StatusSelector.Status} size="xs" onChange={() => {}} readonly showFullBadge />.
+        Previously, the task was {oldStatus}. Now it's {newStatus}.
       </>
     );
   },

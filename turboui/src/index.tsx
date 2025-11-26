@@ -47,7 +47,7 @@ export { SpaceField } from "./SpaceField";
 export { SwitchToggle } from "./SwitchToggle";
 export { Tabs, useTabs } from "./Tabs";
 export { TaskBoard } from "./TaskBoard";
-export { StatusSelector } from "./TaskBoard/components/StatusSelector";
+export { StatusSelector } from "./StatusSelector";
 export { TaskPage } from "./TaskPage";
 export { TextField } from "./TextField";
 export { showErrorToast, showInfoToast, showSuccessToast, ToasterBar } from "./Toasts";
