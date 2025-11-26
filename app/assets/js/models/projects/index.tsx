@@ -59,7 +59,7 @@ export function useContributorSearchFn(project: Project) {
   };
 }
 
-export function mapProjectTaskStatusColorToUi(
+function mapProjectTaskStatusColorToUi(
   color: string | null | undefined,
 ): Pick<StatusSelector.StatusOption, "color" | "icon"> {
   switch (color) {
