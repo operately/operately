@@ -60,6 +60,36 @@ defmodule Operately.ProjectsTest do
       assert nil != Operately.Access.get_context!(project_id: project.id)
     end
 
+    test "create_project/2 creates project with default task statuses", ctx do
+      project_attrs = %Operately.Operations.ProjectCreation{
+        name: "project with defaults",
+        company_id: ctx.company.id,
+        group_id: ctx.group.id,
+        champion_id: ctx.champion.id,
+        reviewer_id: ctx.reviewer.id,
+        creator_id: ctx.champion.id,
+        company_access_level: Binding.view_access(),
+        space_access_level: Binding.comment_access(),
+      }
+
+      assert {:ok, %Project{} = project} = Projects.create_project(project_attrs)
+
+      # Verify project has 4 default task statuses
+      assert length(project.task_statuses) == 4
+
+      # Verify the default statuses are present
+      statuses_by_value = Enum.group_by(project.task_statuses, & &1.value)
+      assert Map.has_key?(statuses_by_value, "pending")
+      assert Map.has_key?(statuses_by_value, "in_progress")
+      assert Map.has_key?(statuses_by_value, "done")
+      assert Map.has_key?(statuses_by_value, "canceled")
+
+      # Verify specific properties
+      pending = hd(statuses_by_value["pending"])
+      assert pending.label == "Not started"
+      assert pending.color == :gray
+    end
+
     test "update_project/2 with valid data updates the project", ctx do
       update_attrs = %{name: "some updated name"}
 
