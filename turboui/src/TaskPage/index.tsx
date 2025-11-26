@@ -66,7 +66,7 @@ export namespace TaskPage {
     status: Status;
     onStatusChange: (newStatus: Status) => void;
 
-    statusOptions?: StatusOption[];
+    statusOptions: StatusOption[];
 
     dueDate?: DateField.ContextualDate;
     onDueDateChange: (newDate: DateField.ContextualDate | null) => void;

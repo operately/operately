@@ -15,14 +15,7 @@ export function useFilteredTasks(tasks: Task[], milestones: Milestone[], filters
     const showHiddenTasksToggle = !hasAnyFilters;
     const closedMilestoneIds = milestones.filter((m) => m.status === "done").map((m) => m.id);
 
-    let tasksToFilter = tasks.filter((task) => !includesId(closedMilestoneIds, task.milestone?.id));
-    let hiddenTasks: Task[] = [];
-
-    // If no filters are applied, hide completed/canceled tasks by default
-    if (!hasAnyFilters) {
-      hiddenTasks = tasksToFilter.filter((task) => task.status === "done" || task.status === "canceled");
-      tasksToFilter = tasksToFilter.filter((task) => task.status !== "done" && task.status !== "canceled");
-    }
+    const tasksToFilter = tasks.filter((task) => !includesId(closedMilestoneIds, task.milestone?.id));
 
     const filtered = applyFilters(tasksToFilter, filters);
 
@@ -31,22 +24,9 @@ export function useFilteredTasks(tasks: Task[], milestones: Milestone[], filters
       no_milestone: [],
     };
 
-    hiddenTasks.forEach((task) => {
-      if (task.milestone) {
-        const milestoneId = task.milestone.id;
-        if (!hiddenByMilestone[milestoneId]) {
-          hiddenByMilestone[milestoneId] = [];
-        }
-        hiddenByMilestone[milestoneId]!.push(task);
-      } else {
-        hiddenByMilestone["no_milestone"]!.push(task);
-      }
-    });
-
     return {
       filteredTasks: filtered,
       hiddenTasksByMilestone: hiddenByMilestone,
-      hiddenTasks,
       showHiddenTasksToggle,
     };
   }, [tasks, milestones, filters, hasAnyFilters]);
