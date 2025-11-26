@@ -25,6 +25,14 @@ const meta: Meta<typeof MilestonePage> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+const DEFAULT_STATUS_OPTIONS: Types.StatusOption[] = [
+  { id: "pending", value: "pending", label: "Not started", color: "dimmed", icon: "circleDashed", index: 0 },
+  { id: "in_progress", value: "in_progress", label: "In progress", color: "brand", icon: "circleDot", index: 1 },
+  { id: "verification", value: "verification", label: "Verification", color: "brand", icon: "circleDot", index: 2 },
+  { id: "done", value: "done", label: "Done", color: "success", icon: "circleCheck", index: 3 },
+  { id: "canceled", value: "canceled", label: "Canceled", color: "dimmed", icon: "circleX", index: 4 },
+];
+
 
 // Create a sample milestone with various properties
 const sampleMilestone: Types.Milestone = {
@@ -258,6 +266,7 @@ export const Default: Story = {
           return true;
         }}
         richTextHandlers={createMockRichEditorHandlers()}
+        statusOptions={DEFAULT_STATUS_OPTIONS}
       />
     );
   },
@@ -365,6 +374,7 @@ export const EmptyMilestone: Story = {
           return true;
         }}
         richTextHandlers={createMockRichEditorHandlers()}
+        statusOptions={DEFAULT_STATUS_OPTIONS}
       />
     );
   },
@@ -568,6 +578,7 @@ export const CompletedMilestone: Story = {
           return true;
         }}
         richTextHandlers={createMockRichEditorHandlers()}
+        statusOptions={DEFAULT_STATUS_OPTIONS}
       />
     );
   },

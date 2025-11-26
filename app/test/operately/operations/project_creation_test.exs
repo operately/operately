@@ -43,6 +43,39 @@ defmodule Operately.Operations.ProjectCreationTest do
     {:ok, company: company, space: space, creator: creator, reviewer: reviewer, champion: champion, project_attrs: project_attrs}
   end
 
+  test "ProjectCreation operation creates project with default task statuses", ctx do
+    {:ok, project} = Operately.Operations.ProjectCreation.run(ctx.project_attrs)
+
+    # Verify project has 4 default task statuses
+    assert length(project.task_statuses) == 4
+
+    # Verify the default statuses are present
+    statuses_by_value = Enum.group_by(project.task_statuses, & &1.value)
+    assert Map.has_key?(statuses_by_value, "pending")
+    assert Map.has_key?(statuses_by_value, "in_progress")
+    assert Map.has_key?(statuses_by_value, "done")
+    assert Map.has_key?(statuses_by_value, "canceled")
+
+    # Verify specific properties of default statuses
+    pending = hd(statuses_by_value["pending"])
+    assert pending.label == "Not started"
+    assert pending.color == :gray
+
+    in_progress = hd(statuses_by_value["in_progress"])
+    assert in_progress.label == "In progress"
+    assert in_progress.color == :blue
+
+    done = hd(statuses_by_value["done"])
+    assert done.label == "Done"
+    assert done.color == :green
+    assert done.closed == true
+
+    canceled = hd(statuses_by_value["canceled"])
+    assert canceled.label == "Canceled"
+    assert canceled.color == :red
+    assert canceled.closed == true
+  end
+
   test "ProjectCreation operation creates project", ctx do
     {:ok, project} = Operately.Operations.ProjectCreation.run(ctx.project_attrs)
 
