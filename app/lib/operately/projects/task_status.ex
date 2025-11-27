@@ -6,6 +6,15 @@ defmodule Operately.Projects.TaskStatus do
 
   @valid_colors [:gray, :blue, :green, :red]
 
+  @type t :: %__MODULE__{
+          id: String.t() | nil,
+          label: String.t() | nil,
+          color: unquote(@valid_colors),
+          index: integer() | nil,
+          value: String.t() | nil,
+          closed: boolean() | nil
+        }
+
   embedded_schema do
     field :id, :string
     field :label, :string
