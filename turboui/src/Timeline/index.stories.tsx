@@ -83,8 +83,26 @@ const mockStatusChange: TimelineItem = {
     type: "task_status_updating",
     author: mockUser,
     insertedAt: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
-    fromStatus: "todo",
-    toStatus: "in_progress",
+    fromStatus: {
+      id: "todo",
+      value: "todo",
+      label: "Todo",
+      color: "gray",
+      icon: "circleDashed",
+      index: 0,
+      closed: false,
+    },
+    toStatus: {
+      id: "in_progress",
+      value: "in_progress",
+      label: "In progress",
+      color: "blue",
+      icon: "circleDot",
+      index: 1,
+      closed: false,
+    },
+    taskName: "Implement status selector",
+    page: "task",
   } as TaskActivity,
 };
 
