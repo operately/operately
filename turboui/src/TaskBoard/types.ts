@@ -13,14 +13,8 @@ export type StatusOption = StatusSelector.StatusOption;
 
 /**
  * Task status types
- * Using 'done' for backward compatibility with existing code
  */
-export type Status =
-  | "pending"
-  | "todo" // legacy
-  | "in_progress"
-  | "done"
-  | "canceled";
+export type Status = StatusSelector.StatusOption;
 
 /**
  * Person interface for task assignees
@@ -66,7 +60,7 @@ export interface NewTaskPayload {
 export interface Task {
   id: string;
   title: string;
-  status: Status;
+  status: Status | null;
   description: string | null;
   link: string;
   assignees?: Person[];
@@ -162,7 +156,7 @@ export interface TaskBoardProps {
   onMilestoneCreate?: (milestone: NewMilestonePayload) => void;
   onTaskAssigneeChange: (taskId: string, assignee: Person | null) => void;
   onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
-  onTaskStatusChange: (taskId: string, status: string) => void;
+  onTaskStatusChange: (taskId: string, status: Status | null) => void;
   onTaskMilestoneChange?: (taskId: string, milestoneId: string | null, index: number) => void;
   onMilestoneUpdate?: (milestoneId: string, updates: Partial<Milestone>) => void;
   onMilestoneSearch: (query: string) => Promise<void>;

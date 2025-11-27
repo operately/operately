@@ -131,7 +131,7 @@ export namespace ProjectPage {
     onTaskCreate: (task: NewTaskPayload) => void;
     onTaskAssigneeChange: (taskId: string, assignee: TaskBoardTypes.Person | null) => void;
     onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
-    onTaskStatusChange: (taskId: string, status: string) => void;
+    onTaskStatusChange: (taskId: string, status: TaskBoardTypes.Status | null) => void;
     onTaskMilestoneChange?: (taskId: string, milestoneId: string, index: number) => void;
     onMilestoneCreate: (milestone: NewMilestonePayload) => void;
     onMilestoneUpdate: (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => void;

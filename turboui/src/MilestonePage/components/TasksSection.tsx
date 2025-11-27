@@ -44,7 +44,13 @@ export function TasksSection({
       return filters.every((filter) => {
         switch (filter.type) {
           case "status":
-            return filter.operator === "is" ? task.status === filter.value : task.status !== filter.value;
+            if (filter.operator === "is") {
+              if (!task.status || !filter.value) return false;
+              return task.status.value === (filter.value as Types.Status).value;
+            } else {
+              if (!task.status || !filter.value) return true;
+              return task.status.value !== (filter.value as Types.Status).value;
+            }
           case "assignee":
             const hasAssignee = task.assignees?.some((assignee) => assignee.id === filter.value?.id);
             return filter.operator === "is" ? hasAssignee : !hasAssignee;
@@ -64,10 +70,7 @@ export function TasksSection({
   // Filter tasks based on current filters
   const baseFilteredTasks = applyFilters(tasks, filters || []);
 
-  const hasHiddenTasks = baseFilteredTasks.some((task) => {
-    const statusOption = statusOptions.find((opt) => opt.value === task.status);
-    return statusOption?.closed === true;
-  });
+  const hasHiddenTasks = baseFilteredTasks.some((task) => task.status?.closed === true);
 
   const handleTaskReorder = React.useCallback(
     (dropZoneId: string, draggedId: string, indexInDropZone: number) => {

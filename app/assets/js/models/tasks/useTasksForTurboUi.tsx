@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import Api from "@/api";
+import Api, { type ProjectTaskStatus } from "@/api";
 import * as Milestones from "../milestones";
 import * as Tasks from "./index";
 
@@ -95,7 +95,7 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
       title: task.title,
       description: "",
       link: "#",
-      status: "pending" as TaskBoard.Status,
+      status: null,
       assignees: task.assignee ? [{ id: task.assignee, fullName: "Loading...", avatarUrl: "" }] : [],
       dueDate: task.dueDate || null,
       milestone: task.milestone,
@@ -206,22 +206,27 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
       });
   };
 
-  const updateTaskStatus = async (taskId: string, status: string) => {
+  const updateTaskStatus = async (taskId: string, status: TaskBoard.Status | null) => {
     const snapshot = createSnapshot();
+    const backendStatus: ProjectTaskStatus | null = Tasks.serializeTaskStatus(status);
 
     // Optimistic update
-    setTasks(prev => prev.map(t => {
-      if (compareIds(t.id, taskId)) {
-        return { ...t, status: status as TaskBoard.Status };
-      }
-      return t;
-    }));
+    setTasks((prev) =>
+      prev.map((t) => {
+        if (compareIds(t.id, taskId)) {
+          return { ...t, status };
+        }
+        return t;
+      }),
+    );
 
     try {
-      const response = await Api.project_tasks.updateStatus({ taskId, status });
+      const response = await Api.project_tasks.updateStatus({ taskId, status: backendStatus });
 
       const updatedTask = Tasks.parseTaskForTurboUi(paths, response.task);
-      setTasks(prev => prev.map(t => compareIds(t.id, taskId) ? {...t, status: updatedTask.status} : t));
+      setTasks((prev) =>
+        prev.map((t) => (compareIds(t.id, taskId) ? { ...t, status: updatedTask.status } : t)),
+      );
 
       updateMilestonesFromServer(response.updatedMilestone, null);
 

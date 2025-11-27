@@ -60,4 +60,20 @@ defmodule Operately.Projects.TaskStatus do
       }
     ]
   end
+
+  @doc """
+  Returns the default task status for a task.
+  """
+  def default_task_status do
+    %__MODULE__{
+      id: Ecto.UUID.generate(),
+      label: "Not started",
+      color: :gray,
+      value: "pending",
+      index: 0,
+      closed: false
+    }
+  end
+
+  def valid_colors, do: @valid_colors
 end
