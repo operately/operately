@@ -47,15 +47,13 @@ export function MobileSidebar(props: TaskPage.State) {
 }
 
 function DueDate(props: TaskPage.State) {
-  const isCompleted = props.status === "done" || props.status === "canceled";
-
   return (
     <SidebarSection title="Due date">
       <DateField
         date={props.dueDate ?? null}
         onDateSelect={props.onDueDateChange}
         readonly={!props.canEdit}
-        showOverdueWarning={!isCompleted}
+        showOverdueWarning={!props.status?.closed}
         placeholder="Set due date"
         testId="task-due-date"
         calendarOnly
@@ -82,15 +80,13 @@ function Assignees(props: TaskPage.State) {
 }
 
 function DueDateMobile(props: TaskPage.State) {
-  const isCompleted = props.status === "done" || props.status === "canceled";
-
   return (
     <SidebarSection title="Due date">
       <DateField
         date={props.dueDate ?? null}
         onDateSelect={props.onDueDateChange}
         readonly={!props.canEdit}
-        showOverdueWarning={!isCompleted}
+        showOverdueWarning={!props.status?.closed}
         placeholder="Set due date"
         calendarOnly
         size="small"
@@ -117,11 +113,15 @@ function AssigneeMobile(props: TaskPage.State) {
 }
 
 function StatusMobile(props: TaskPage.State) {
+  const status = props.status ?? props.statusOptions?.[0] ?? null;
+
+  if (!status) return null;
+
   return (
     <SidebarSection title="Status">
       <StatusSelector
         statusOptions={props.statusOptions ?? []}
-        status={props.status}
+        status={status}
         onChange={props.onStatusChange}
         size="sm"
         readonly={!props.canEdit}
@@ -215,7 +215,7 @@ function Actions(props: TaskPage.State) {
 function OverdueWarning(props: TaskPage.State) {
   if (!props.dueDate || !props.dueDate.date) return null;
   if (!isOverdue(props.dueDate.date)) return null;
-  if (props.status === "done" || props.status === "canceled") return null; // Don't show overdue for completed tasks
+  if (props.status?.closed) return null; // Don't show overdue for completed tasks
 
   const duration = durationHumanized(props.dueDate.date, new Date());
 

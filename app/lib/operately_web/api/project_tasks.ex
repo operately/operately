@@ -35,7 +35,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
 
     inputs do
       field :task_id, :id, null: false
-      field :status, :string, null: false
+      field :status, :project_task_status, null: true
     end
 
     outputs do
