@@ -29,10 +29,9 @@ const TaskStatusUpdating: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: string }) {
     const { project, task, newStatus, name } = content(activity);
-    const status = newStatus.replace(/_/g, " ");
     const taskName = task ? taskLink(task) : `the "${name}" task`
 
-    const message = ["marked", taskName, "as", status]
+    const message = ["marked", taskName, "as", newStatus.label]
 
     if (page === "project") {
       return feedTitle(activity, ...message);
@@ -46,7 +45,7 @@ const TaskStatusUpdating: ActivityHandler = {
 
     return (
       <>
-        Previously, the task was {oldStatus}. Now it's {newStatus}.
+        Previously, the task was {oldStatus.label}. Now it's {newStatus.label}.
       </>
     );
   },
@@ -65,9 +64,8 @@ const TaskStatusUpdating: ActivityHandler = {
 
   NotificationTitle(props: { activity: Activity }) {
     const { newStatus, name } = content(props.activity);
-    const statusText = newStatus === "done" ? "completed" : `marked as ${newStatus}`;
 
-    return `Task "${name}" was ${statusText}`;
+    return `Task "${name}" was marked as ${newStatus.label}`;
   },
 
   NotificationLocation(props: { activity: Activity }) {

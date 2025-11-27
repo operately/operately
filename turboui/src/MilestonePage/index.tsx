@@ -40,6 +40,8 @@ export namespace MilestonePage {
     profileLink: string;
   };
 
+  export type Status = "pending" | "done";
+
   export interface Props {
     // Navigation info
     workmapLink: string;
@@ -63,8 +65,8 @@ export namespace MilestonePage {
     onMilestoneTitleChange: (name: string) => Promise<boolean>;
     dueDate: DateField.ContextualDate | null;
     onDueDateChange: (newDate: DateField.ContextualDate | null) => void;
-    status: Types.Status;
-    onStatusChange: (status: Types.Status) => void;
+    status: Status;
+    onStatusChange: (status: Status) => void;
     description: any;
     onDescriptionChange: (newDescription: any) => Promise<boolean>;
 
@@ -79,7 +81,7 @@ export namespace MilestonePage {
     onTaskReorder?: (taskId: string, milestoneId: string | null, index: number) => void;
     onTaskAssigneeChange: (taskId: string, assignee: Person | null) => void;
     onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
-    onTaskStatusChange: (taskId: string, status: string) => void;
+    onTaskStatusChange: (taskId: string, status: Types.Status | null) => void;
 
     assigneePersonSearch: PersonField.SearchData;
 

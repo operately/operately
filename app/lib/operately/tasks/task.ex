@@ -10,6 +10,7 @@ defmodule Operately.Tasks.Task do
           description: map() | nil,
           due_date: %Operately.ContextualDates.ContextualDate{} | nil,
           status: String.t(),
+          task_status: Operately.Projects.TaskStatus.t() | nil,
           closed_at: NaiveDateTime.t() | nil,
           reopened_at: NaiveDateTime.t() | nil,
           creator_id: Ecto.UUID.t() | nil,
@@ -44,9 +45,12 @@ defmodule Operately.Tasks.Task do
     field :deprecated_due_date, :naive_datetime
     embeds_one :due_date, Operately.ContextualDates.ContextualDate, on_replace: :update
 
-    field :status, :string, default: "todo"
+    embeds_one :task_status, Operately.Projects.TaskStatus, on_replace: :update
     field :closed_at, :naive_datetime
     field :reopened_at, :naive_datetime
+
+    # Deprecated: use task_status embed instead
+    field :status, :string, default: "todo"
 
     # populated with after load hooks
     field :permissions, :any, virtual: true
@@ -79,6 +83,8 @@ defmodule Operately.Tasks.Task do
       :subscription_list_id
     ])
     |> cast_embed(:due_date)
+    |> cast_embed(:task_status)
+    |> put_default_task_status()
     |> validate_required([:name, :description, :creator_id, :project_id, :subscription_list_id])
   end
 
@@ -134,5 +140,12 @@ defmodule Operately.Tasks.Task do
     statuses = if task.project, do: task.project.task_statuses || [], else: []
 
     Map.put(task, :available_statuses, statuses)
+  end
+
+  defp put_default_task_status(changeset) do
+    case Ecto.Changeset.get_field(changeset, :task_status) do
+      nil -> Ecto.Changeset.put_embed(changeset, :task_status, Operately.Projects.TaskStatus.default_task_status())
+      _ -> changeset
+    end
   end
 end

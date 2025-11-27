@@ -1,6 +1,6 @@
 defmodule OperatelyWeb.Api.ProjectTasksTest do
   alias Operately.Support.RichText
-  alias Operately.Projects.Contributor
+  alias Operately.Projects.{Contributor, TaskStatus}
 
   use OperatelyWeb.TurboCase
   use Operately.Support.Notifications
@@ -165,6 +165,29 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert task.name == "Implement feature X"
       assert task.milestone_id == ctx.milestone.id
       assert task.creator_id == ctx.creator.id
+    end
+
+    test "it sets default task_status when creating a task", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = mutation(ctx.conn, [:project_tasks, :create], %{
+        project_id: Paths.project_id(ctx.project),
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        name: "Task with default status",
+        assignee_id: nil,
+        due_date: nil
+      })
+
+      {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.task.id)
+      task = Operately.Tasks.Task.get!(:system, id: id)
+      default_status = TaskStatus.default_task_status()
+
+      assert task.task_status.value == default_status.value
+      assert task.task_status.label == default_status.label
+      assert task.task_status.color == default_status.color
+      assert task.task_status.index == default_status.index
+      assert task.task_status.closed == default_status.closed
+      assert task.task_status.id
     end
 
     test "it creates a task with assignee", ctx do

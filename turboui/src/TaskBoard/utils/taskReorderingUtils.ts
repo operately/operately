@@ -152,7 +152,7 @@ export const reorderTasksAcrossMilestones = (
         const helperTask: Types.Task = {
           id: `task-helper-${originalMilestoneId}-${Date.now()}`,
           title: `Helper task for ${originalMilestone.name}`,
-          status: "pending",
+          status: null,
           description: null,
           dueDate: null,
           link: "#",

@@ -87,10 +87,9 @@ export function StatusSelector<T extends StatusSelector.StatusOption = StatusSel
   const inputRef = React.useRef<HTMLInputElement>(null);
   const itemRefs = React.useRef<(HTMLDivElement | null)[]>([]);
 
-  const currentOption = React.useMemo(
-    () => statusOptions.find((option) => option.value === status) ?? statusOptions[0]!,
-    [status, statusOptions],
-  );
+  const currentOption = React.useMemo(() => {
+    return status ?? statusOptions[0]!;
+  }, [status, statusOptions]);
 
   const filteredStatusOptions = React.useMemo(() => {
     const normalizedQuery = searchTerm.trim().toLowerCase();
@@ -136,7 +135,7 @@ export function StatusSelector<T extends StatusSelector.StatusOption = StatusSel
         {
           const selectedOption = filteredStatusOptions[selectedIndex];
           if (selectedOption) {
-            onChange(selectedOption.value);
+            onChange(selectedOption as T);
             setIsOpen(false);
           }
         }
@@ -148,8 +147,8 @@ export function StatusSelector<T extends StatusSelector.StatusOption = StatusSel
     }
   };
 
-  const handleItemClick = (value: string) => {
-    onChange(value);
+  const handleItemClick = (option: T) => {
+    onChange(option);
     setIsOpen(false);
     setSearchTerm("");
   };
@@ -216,7 +215,7 @@ export function StatusSelector<T extends StatusSelector.StatusOption = StatusSel
                       "bg-surface-dimmed": isSelected,
                       "hover:bg-surface-dimmed": !isSelected,
                     })}
-                    onClick={() => handleItemClick(option.value)}
+                    onClick={() => handleItemClick(option as T)}
                     onMouseEnter={() => setSelectedIndex(index)}
                   >
                     <div className="flex items-center gap-1.5 truncate">
@@ -251,10 +250,10 @@ export namespace StatusSelector {
   export type StatusIconName = keyof typeof STATUS_ICON_COMPONENTS;
 
   export const STATUS_COLOR_MAP = {
-    dimmed: { iconClass: "text-content-dimmed", buttonColorClass: "text-content-dimmed" },
-    brand: { iconClass: "text-brand-1", buttonColorClass: "text-brand-1" },
-    success: { iconClass: "text-callout-success-content", buttonColorClass: "text-callout-success-content" },
-    danger: { iconClass: "text-callout-error-content", buttonColorClass: "text-callout-error-content" },
+    gray: { iconClass: "text-content-dimmed", buttonColorClass: "text-content-dimmed" },
+    blue: { iconClass: "text-brand-1", buttonColorClass: "text-brand-1" },
+    green: { iconClass: "text-callout-success-content", buttonColorClass: "text-callout-success-content" },
+    red: { iconClass: "text-callout-error-content", buttonColorClass: "text-callout-error-content" },
   } as const;
 
   export type StatusColorName = keyof typeof STATUS_COLOR_MAP;
@@ -295,8 +294,8 @@ export namespace StatusSelector {
 
   export interface Props<T extends StatusOption = StatusOption> {
     statusOptions: ReadonlyArray<T>;
-    status: string;
-    onChange: (nextStatus: string) => void;
+    status: T;
+    onChange: (nextStatus: T) => void;
     size?: Size;
     readonly?: boolean;
     showFullBadge?: boolean;
