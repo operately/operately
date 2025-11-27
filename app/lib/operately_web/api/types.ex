@@ -867,8 +867,8 @@ defmodule OperatelyWeb.Api.Types do
   object :activity_content_task_status_updating do
     field :project, :project
     field :task, :task
-    field :old_status, :string
-    field :new_status, :string
+    field :old_status, :project_task_status
+    field :new_status, :project_task_status
     field :name, :string
   end
 
@@ -1209,7 +1209,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :due_date, :contextual_date, null: true
     field? :size, :string, null: true
     field? :priority, :string, null: true
-    field? :status, :string, null: true
+    field? :status, :project_task_status, null: true
     field? :milestone, :milestone, null: true
     field? :project, :project, null: true
     field? :description, :string, null: true
@@ -1923,10 +1923,12 @@ defmodule OperatelyWeb.Api.Types do
     field? :index, :integer, null: true
   end
 
+  enum(:project_task_status_color, values: Operately.Projects.TaskStatus.valid_colors())
+
   object :project_task_status do
     field :id, :string, null: false
     field :label, :string, null: false
-    field :color, :string, null: false
+    field :color, :project_task_status_color, null: false
     field :index, :integer, null: false
     field :value, :string, null: false
     field :closed, :boolean, null: false

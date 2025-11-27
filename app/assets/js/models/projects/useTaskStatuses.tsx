@@ -2,7 +2,7 @@ import * as React from "react";
 import Api, { type ProjectTaskStatus } from "@/api";
 import { showErrorToast } from "turboui";
 import type { ProjectPage } from "turboui";
-import { mapProjectTaskStatusesToUi } from ".";
+import * as Tasks from "@/models/tasks";
 
 type TaskStatus = ProjectPage.TaskStatus;
 
@@ -13,7 +13,7 @@ export function useTaskStatuses(
 ) {
   const statuses = React.useMemo(
     () =>
-      mapProjectTaskStatusesToUi(backendStatuses).map((status) => ({
+      Tasks.parseTaskStatusesForTurboUi(backendStatuses).map((status) => ({
         ...status,
         color: status.color as TaskStatus["color"],
         icon: status.icon as TaskStatus["icon"],
@@ -23,14 +23,7 @@ export function useTaskStatuses(
 
   const handleSaveStatuses = React.useCallback(
     async (nextStatuses: TaskStatus[]) => {
-      const taskStatuses: ProjectTaskStatus[] = nextStatuses.map((status, index) => ({
-        id: status.id,
-        label: status.label,
-        color: mapUiColorToBackend(status.color),
-        index,
-        value: status.value ?? status.id,
-        closed: status.closed ?? false,
-      }));
+      const taskStatuses = Tasks.serializeTaskStatuses(nextStatuses);
 
       try {
         const res = await Api.projects.updateTaskStatuses({
@@ -56,17 +49,4 @@ export function useTaskStatuses(
     statuses,
     handleSaveStatuses,
   };
-}
-function mapUiColorToBackend(color: TaskStatus["color"]): string {
-  switch (color) {
-    case "brand":
-      return "blue";
-    case "success":
-      return "green";
-    case "danger":
-      return "red";
-    case "dimmed":
-    default:
-      return "gray";
-  }
 }

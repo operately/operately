@@ -6,6 +6,15 @@ defmodule Operately.Projects.TaskStatus do
 
   @valid_colors [:gray, :blue, :green, :red]
 
+  @type t :: %__MODULE__{
+          id: String.t() | nil,
+          label: String.t() | nil,
+          color: unquote(@valid_colors),
+          index: integer() | nil,
+          value: String.t() | nil,
+          closed: boolean() | nil
+        }
+
   embedded_schema do
     field :id, :string
     field :label, :string
@@ -60,4 +69,20 @@ defmodule Operately.Projects.TaskStatus do
       }
     ]
   end
+
+  @doc """
+  Returns the default task status for a task.
+  """
+  def default_task_status do
+    %__MODULE__{
+      id: Ecto.UUID.generate(),
+      label: "Not started",
+      color: :gray,
+      value: "pending",
+      index: 0,
+      closed: false
+    }
+  end
+
+  def valid_colors, do: @valid_colors
 end

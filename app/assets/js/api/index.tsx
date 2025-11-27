@@ -922,8 +922,8 @@ export interface ActivityContentTaskStatusChange {
 export interface ActivityContentTaskStatusUpdating {
   project: Project;
   task: Task;
-  oldStatus: string;
-  newStatus: string;
+  oldStatus: ProjectTaskStatus;
+  newStatus: ProjectTaskStatus;
   name: string;
 }
 
@@ -1522,7 +1522,7 @@ export interface ProjectReviewRequest {
 export interface ProjectTaskStatus {
   id: string;
   label: string;
-  color: string;
+  color: ProjectTaskStatusColor;
   index: number;
   value: string;
   closed: boolean;
@@ -1771,7 +1771,7 @@ export interface Task {
   dueDate?: ContextualDate | null;
   size?: string | null;
   priority?: string | null;
-  status?: string | null;
+  status?: ProjectTaskStatus | null;
   milestone?: Milestone | null;
   project?: Project | null;
   description?: string | null;
@@ -2049,6 +2049,8 @@ export type MilestoneCommentAction = "none" | "complete" | "reopen";
 export type MilestoneStatus = "pending" | "done";
 
 export type ProjectCheckInStatus = "on_track" | "caution" | "off_track";
+
+export type ProjectTaskStatusColor = "gray" | "blue" | "green" | "red";
 
 export type ReactionEntityType =
   | "project_check_in"
@@ -4039,7 +4041,7 @@ export interface ProjectTasksUpdateNameResult {
 
 export interface ProjectTasksUpdateStatusInput {
   taskId: Id;
-  status: string;
+  status: ProjectTaskStatus | null;
 }
 
 export interface ProjectTasksUpdateStatusResult {

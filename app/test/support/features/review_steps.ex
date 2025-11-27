@@ -196,7 +196,7 @@ defmodule Operately.Support.Features.ReviewSteps do
     ctx
     |> UI.click(testid: UI.testid(["assignment", Paths.task_id(ctx.task)]))
     |> UI.click_text("Not started")
-    |> UI.click_text("Done")
+    |> UI.click(testid: "status-option-done")
     |> UI.sleep(500)
   end
 
@@ -251,7 +251,7 @@ defmodule Operately.Support.Features.ReviewSteps do
     ctx
     |> UI.visit(Paths.project_task_path(ctx.company, ctx.task))
     |> UI.click_button("Not started")
-    |> UI.click_text("Done")
+    |> UI.click(testid: "status-option-done")
     |> UI.sleep(300)
   end
 
@@ -259,7 +259,7 @@ defmodule Operately.Support.Features.ReviewSteps do
     ctx
     |> UI.visit(Paths.project_task_path(ctx.company, ctx.task))
     |> UI.click_button("Done")
-    |> UI.click_text("Not started")
+    |> UI.click(testid: "status-option-pending")
     |> UI.sleep(300)
   end
 
@@ -267,7 +267,7 @@ defmodule Operately.Support.Features.ReviewSteps do
     ctx
     |> UI.visit(Paths.project_task_path(ctx.company, ctx.task))
     |> UI.click_button("Not started")
-    |> UI.click_text("Canceled")
+    |> UI.click(testid: "status-option-canceled")
     |> UI.sleep(300)
   end
 
