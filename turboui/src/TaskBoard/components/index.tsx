@@ -375,17 +375,17 @@ const getMilestonesWithStats = (allMilestones: Types.Milestone[] | undefined, or
           hasTasks = true;
           stats.total++;
 
-          switch (task.status) {
-            case "pending":
+          switch (task.status?.color) {
+            case "gray":
               stats.pending++;
               break;
-            case "in_progress":
+            case "blue":
               stats.inProgress++;
               break;
-            case "done":
+            case "green":
               stats.done++;
               break;
-            case "canceled":
+            case "red":
               stats.canceled++;
               break;
           }

@@ -4,7 +4,7 @@ import { StatusSelector } from "../StatusSelector";
 import { TextField } from "../TextField";
 // import { TaskCheckbox } from "./TaskCheckbox";
 
-export function PageHeader(props: TaskPage.State) {
+export function PageHeader({statusOptions, ...props}: TaskPage.State) {
   return (
     <div className="mt-4">
       <div className="flex-1">
@@ -28,16 +28,18 @@ export function PageHeader(props: TaskPage.State) {
           </div>
 
           {/* On md+, place status inline right after the title */}
-          <span className="hidden md:inline align-baseline">
-            <StatusSelector
-              statusOptions={props.statusOptions ?? []}
-              status={props.status}
-              onChange={props.onStatusChange}
-              size="md"
-              readonly={!props.canEdit}
-              showFullBadge={true}
-            />
-          </span>
+          {statusOptions?.length > 0 && (
+            <span className="hidden md:inline align-baseline">
+              <StatusSelector
+                statusOptions={statusOptions}
+                status={props.status ?? statusOptions[0]!}
+                onChange={(nextStatus) => props.onStatusChange(nextStatus)}
+                size="md"
+                readonly={!props.canEdit}
+                showFullBadge={true}
+              />
+            </span>
+          )}
         </div>
       </div>
     </div>

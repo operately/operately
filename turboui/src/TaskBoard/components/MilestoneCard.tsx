@@ -23,7 +23,7 @@ export interface MilestoneCardProps {
   onTaskCreate: (task: Types.NewTaskPayload) => void;
   onTaskAssigneeChange: (taskId: string, assignee: Types.Person | null) => void;
   onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
-  onTaskStatusChange: (taskId: string, status: string) => void;
+  onTaskStatusChange: (taskId: string, status: Types.Status | null) => void;
   onMilestoneUpdate?: (milestoneId: string, updates: Types.UpdateMilestonePayload) => void;
   assigneePersonSearch?: PersonField.SearchData;
   statusOptions: StatusSelector.StatusOption[];
@@ -248,17 +248,17 @@ export const calculateMilestoneStats = (tasks: Types.Task[]) => {
 
     stats.total++;
 
-    switch (task.status) {
-      case "pending":
+    switch (task.status?.color) {
+      case "gray":
         stats.pending++;
         break;
-      case "in_progress":
+      case "blue":
         stats.inProgress++;
         break;
-      case "done":
+      case "green":
         stats.done++;
         break;
-      case "canceled":
+      case "red":
         stats.canceled++;
         break;
     }

@@ -23,25 +23,25 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const engineeringStatuses = [
-  { id: "backlog", value: "backlog", label: "Backlog", icon: "circleDashed", color: "dimmed", index: 0 },
+  { id: "backlog", value: "backlog", label: "Backlog", icon: "circleDashed", color: "gray", index: 0 },
   {
     id: "ready_for_dev",
     value: "ready_for_dev",
     label: "Ready for development",
     icon: "circleDashed",
-    color: "dimmed",
+    color: "gray",
     index: 1,
   },
-  { id: "in_progress", value: "in_progress", label: "In progress", icon: "circleDot", color: "brand", index: 2 },
-  { id: "code_review", value: "code_review", label: "Code review", icon: "circleDot", color: "brand", index: 3 },
-  { id: "qa", value: "qa", label: "In QA", icon: "circleDot", color: "brand", index: 4 },
+  { id: "in_progress", value: "in_progress", label: "In progress", icon: "circleDot", color: "blue", index: 2 },
+  { id: "code_review", value: "code_review", label: "Code review", icon: "circleDot", color: "blue", index: 3 },
+  { id: "qa", value: "qa", label: "In QA", icon: "circleDot", color: "blue", index: 4 },
   {
     id: "shipped",
     value: "shipped",
     label: "Shipped",
     icon: "circleCheck",
     buttonIcon: "check",
-    color: "success",
+    color: "green",
     buttonVariant: "success",
     index: 5,
   },
@@ -50,24 +50,24 @@ const engineeringStatuses = [
     value: "canceled",
     label: "Canceled",
     icon: "circleX",
-    color: "dimmed",
+    color: "red",
     buttonVariant: "muted",
     index: 6,
   },
 ] as const satisfies ReadonlyArray<StatusSelector.StatusOption>;
 
 const marketingStatuses = [
-  { id: "brief", value: "brief", label: "Creative brief", icon: "circleDashed", color: "dimmed", index: 0 },
-  { id: "drafting", value: "drafting", label: "Drafting content", icon: "circleDot", color: "brand", index: 1 },
-  { id: "approvals", value: "approvals", label: "Stakeholder review", icon: "circleDot", color: "brand", index: 2 },
-  { id: "scheduled", value: "scheduled", label: "Scheduled", icon: "circleDot", color: "brand", index: 3 },
+  { id: "brief", value: "brief", label: "Creative brief", icon: "circleDashed", color: "gray", index: 0 },
+  { id: "drafting", value: "drafting", label: "Drafting content", icon: "circleDot", color: "blue", index: 1 },
+  { id: "approvals", value: "approvals", label: "Stakeholder review", icon: "circleDot", color: "blue", index: 2 },
+  { id: "scheduled", value: "scheduled", label: "Scheduled", icon: "circleDot", color: "blue", index: 3 },
   {
     id: "launched",
     value: "launched",
     label: "Launched",
     icon: "circleCheck",
     buttonIcon: "check",
-    color: "success",
+    color: "green",
     buttonVariant: "success",
     index: 4,
   },
@@ -76,31 +76,31 @@ const marketingStatuses = [
     value: "archived",
     label: "Archived",
     icon: "circleX",
-    color: "dimmed",
+    color: "red",
     buttonVariant: "muted",
     index: 5,
   },
 ] as const satisfies ReadonlyArray<StatusSelector.StatusOption>;
 
 const supportStatuses = [
-  { id: "new", value: "new", label: "New ticket", icon: "circleDashed", color: "dimmed", index: 0 },
-  { id: "triage", value: "triage", label: "Triage", icon: "circleDot", color: "brand", index: 1 },
+  { id: "new", value: "new", label: "New ticket", icon: "circleDashed", color: "gray", index: 0 },
+  { id: "triage", value: "triage", label: "Triage", icon: "circleDot", color: "blue", index: 1 },
   {
     id: "waiting_customer",
     value: "waiting_customer",
     label: "Waiting on customer",
     icon: "circleDashed",
-    color: "dimmed",
+    color: "gray",
     index: 2,
   },
-  { id: "escalated", value: "escalated", label: "Escalated", icon: "circleDot", color: "brand", index: 3 },
+  { id: "escalated", value: "escalated", label: "Escalated", icon: "circleDot", color: "blue", index: 3 },
   {
     id: "resolved",
     value: "resolved",
     label: "Resolved",
     icon: "circleCheck",
     buttonIcon: "check",
-    color: "success",
+    color: "green",
     buttonVariant: "success",
     index: 4,
   },
@@ -109,19 +109,45 @@ const supportStatuses = [
     value: "closed",
     label: "Closed",
     icon: "circleX",
-    color: "dimmed",
+    color: "red",
     buttonVariant: "muted",
     index: 5,
   },
 ] as const satisfies ReadonlyArray<StatusSelector.StatusOption>;
+
+const ENGINEERING_IN_PROGRESS_STATUS = engineeringStatuses.find((s) => s.value === "in_progress")!;
+const ENGINEERING_SHIPPED_STATUS = engineeringStatuses.find((s) => s.value === "shipped")!;
 
 const Component = (
   args: { statusOptions: ReadonlyArray<StatusSelector.StatusOption> } & Partial<
     Omit<React.ComponentProps<typeof StatusSelector>, "statusOptions" | "status" | "onChange">
   > & { status?: StatusSelector.StatusOption["value"] },
 ) => {
-  const [status, setStatus] = React.useState<StatusSelector.StatusOption["value"]>(args.status || "");
-  return <StatusSelector {...args} statusOptions={args.statusOptions} status={status} onChange={setStatus} />;
+  const [status, setStatus] = React.useState<StatusSelector.StatusOption | null>(() => {
+    if (!args.status) return args.statusOptions[0] ?? null;
+    return args.statusOptions.find((option) => option.value === args.status) ?? args.statusOptions[0] ?? null;
+  });
+
+  React.useEffect(() => {
+    if (!args.status) {
+      setStatus((prev) => prev ?? args.statusOptions[0] ?? null);
+      return;
+    }
+
+    const next = args.statusOptions.find((option) => option.value === args.status) ?? args.statusOptions[0] ?? null;
+    setStatus(next);
+  }, [args.status, args.statusOptions]);
+
+  const currentStatus = status ?? args.statusOptions[0]!;
+
+  return (
+    <StatusSelector
+      {...args}
+      statusOptions={args.statusOptions}
+      status={currentStatus}
+      onChange={setStatus}
+    />
+  );
 };
 
 export const AllStates: Story = {
@@ -191,7 +217,7 @@ export const AllStates: Story = {
                 <h3 className="text-sm font-bold mb-2">Read-Only - Icon Only</h3>
                 <StatusSelector
                   statusOptions={engineeringStatuses}
-                  status="in_progress"
+                  status={ENGINEERING_IN_PROGRESS_STATUS}
                   onChange={() => undefined}
                   readonly
                 />
@@ -201,7 +227,7 @@ export const AllStates: Story = {
                 <h3 className="text-sm font-bold mb-2">Read-Only - Full Badge</h3>
                 <StatusSelector
                   statusOptions={engineeringStatuses}
-                  status="in_progress"
+                  status={ENGINEERING_IN_PROGRESS_STATUS}
                   onChange={() => undefined}
                   showFullBadge
                   readonly
@@ -212,7 +238,7 @@ export const AllStates: Story = {
                 <h3 className="text-sm font-bold mb-2">Read-Only - Success</h3>
                 <StatusSelector
                   statusOptions={engineeringStatuses}
-                  status="shipped"
+                  status={ENGINEERING_SHIPPED_STATUS}
                   onChange={() => undefined}
                   showFullBadge
                   readonly

@@ -15,6 +15,47 @@ export const mockPeople: Record<string, Types.Person> = {
   emily: generatedPeople[3]!,
 };
 
+// Shared status options for tasks
+export const PENDING_STATUS: Types.Status = {
+  id: "pending",
+  value: "pending",
+  label: "Not started",
+  color: "gray",
+  icon: "circleDashed",
+  index: 0,
+  closed: false,
+};
+
+export const IN_PROGRESS_STATUS: Types.Status = {
+  id: "in_progress",
+  value: "in_progress",
+  label: "In progress",
+  color: "blue",
+  icon: "circleDot",
+  index: 1,
+  closed: false,
+};
+
+export const DONE_STATUS: Types.Status = {
+  id: "done",
+  value: "done",
+  label: "Done",
+  color: "green",
+  icon: "circleCheck",
+  index: 2,
+  closed: true,
+};
+
+export const CANCELED_STATUS: Types.Status = {
+  id: "canceled",
+  value: "canceled",
+  label: "Canceled",
+  color: "red",
+  icon: "circleX",
+  index: 3,
+  closed: true,
+};
+
 // Mock milestones
 export const mockMilestones: Record<string, Types.Milestone> = {
   q2Release: {
@@ -95,7 +136,7 @@ export const mockTasks: Types.Task[] = [
   {
     id: "task-1",
     title: "Implement user authentication",
-    status: "pending",
+    status: PENDING_STATUS,
     description: "Create login/signup flows with OAuth integration",
     link: "#",
     assignees: [mockPeople.john!],
@@ -109,7 +150,7 @@ export const mockTasks: Types.Task[] = [
   {
     id: "task-2",
     title: "Fix navigation bug on mobile",
-    status: "in_progress",
+    status: IN_PROGRESS_STATUS,
     description: "Fix responsive navigation issues on mobile devices",
     link: "#",
     assignees: [mockPeople.bob!],
@@ -122,7 +163,7 @@ export const mockTasks: Types.Task[] = [
   {
     id: "task-3",
     title: "Update documentation for API v2",
-    status: "in_progress",
+    status: IN_PROGRESS_STATUS,
     description: "Update API documentation for version 2 release",
     link: "#",
     assignees: [mockPeople.emily!],
@@ -135,7 +176,7 @@ export const mockTasks: Types.Task[] = [
   {
     id: "task-4",
     title: "Design marketing landing page",
-    status: "done",
+    status: DONE_STATUS,
     description: null,
     link: "#",
     milestone: mockMilestones.productLaunch!,
@@ -147,7 +188,7 @@ export const mockTasks: Types.Task[] = [
   {
     id: "task-5",
     title: "Research competitor pricing strategies",
-    status: "pending",
+    status: PENDING_STATUS,
     description: null,
     link: "#",
     milestone: mockMilestones.marketExpansion!,
@@ -159,7 +200,7 @@ export const mockTasks: Types.Task[] = [
   {
     id: "task-6",
     title: "Implement dark mode toggle",
-    status: "pending",
+    status: PENDING_STATUS,
     description: "Implement a dark mode toggle for the application",
     link: "#",
     assignees: [mockPeople.emily!],
@@ -172,7 +213,7 @@ export const mockTasks: Types.Task[] = [
   {
     id: "task-7",
     title: "Optimize database queries",
-    status: "in_progress",
+    status: IN_PROGRESS_STATUS,
     description: "Optimize database queries for improved performance",
     link: "#",
     assignees: [mockPeople.john!],
@@ -186,7 +227,7 @@ export const mockTasks: Types.Task[] = [
   {
     id: "task-8",
     title: "Set up CI/CD pipeline",
-    status: "done",
+    status: DONE_STATUS,
     description: "Set up automated CI/CD pipeline for deployment",
     link: "#",
     assignees: [mockPeople.emily!],
@@ -199,7 +240,7 @@ export const mockTasks: Types.Task[] = [
   {
     id: "task-9",
     title: "Add analytics dashboard",
-    status: "pending",
+    status: PENDING_STATUS,
     description: null,
     link: "#",
     milestone: mockMilestones.productLaunch!,
@@ -211,7 +252,7 @@ export const mockTasks: Types.Task[] = [
   {
     id: "task-10",
     title: "Implement social login options",
-    status: "in_progress",
+    status: IN_PROGRESS_STATUS,
     description: "Add Google, Facebook, and GitHub login options",
     link: "#",
     assignees: [mockPeople.jane!],
@@ -225,7 +266,7 @@ export const mockTasks: Types.Task[] = [
   {
     id: "task-11",
     title: "Redesign user profile page",
-    status: "done",
+    status: DONE_STATUS,
     description: "Redesign the user profile page with modern UI",
     link: "#",
     assignees: [mockPeople.bob!],
@@ -239,7 +280,7 @@ export const mockTasks: Types.Task[] = [
   {
     id: "task-12",
     title: "Create A/B testing framework",
-    status: "canceled",
+    status: CANCELED_STATUS,
     description: null,
     link: "#",
     milestone: mockMilestones.productLaunch!,
@@ -251,7 +292,7 @@ export const mockTasks: Types.Task[] = [
   {
     id: "task-13",
     title: "Optimize image loading",
-    status: "in_progress",
+    status: IN_PROGRESS_STATUS,
     description: "Optimize image loading performance and lazy loading",
     link: "#",
     assignees: [mockPeople.bob!],
@@ -264,7 +305,7 @@ export const mockTasks: Types.Task[] = [
   {
     id: "task-14",
     title: "Setup internationalization",
-    status: "pending",
+    status: PENDING_STATUS,
     description: "Setup i18n framework for multi-language support",
     link: "#",
     assignees: [mockPeople.jane!],
@@ -278,7 +319,7 @@ export const mockTasks: Types.Task[] = [
   {
     id: "task-15",
     title: "Implement payment gateway integration",
-    status: "done",
+    status: DONE_STATUS,
     description: "Integrate Stripe and PayPal payment gateways",
     link: "#",
     assignees: [mockPeople.john!],
@@ -292,7 +333,7 @@ export const mockTasks: Types.Task[] = [
   {
     id: "task-16",
     title: "Create automated email campaigns",
-    status: "pending",
+    status: PENDING_STATUS,
     description: "Create automated email marketing campaigns",
     link: "#",
     assignees: [mockPeople.emily!],
@@ -305,7 +346,7 @@ export const mockTasks: Types.Task[] = [
   {
     id: "task-17",
     title: "Research new features for next quarter",
-    status: "pending",
+    status: PENDING_STATUS,
     description: "Research and plan new features for Q3",
     link: "#",
     assignees: [mockPeople.bob!],
@@ -318,7 +359,7 @@ export const mockTasks: Types.Task[] = [
   {
     id: "task-18",
     title: "This task demonstrates a minimal milestone",
-    status: "pending",
+    status: PENDING_STATUS,
     description: null,
     link: "#",
     assignees: [],
@@ -331,7 +372,7 @@ export const mockTasks: Types.Task[] = [
   {
     id: "task-10",
     title: longTitleOne,
-    status: "in_progress",
+    status: IN_PROGRESS_STATUS,
     description: "Weekly syncs ensure every team stays on track",
     link: "#",
     assignees: [mockPeople.jane!],
@@ -345,7 +386,7 @@ export const mockTasks: Types.Task[] = [
   {
     id: "task-11",
     title: longTitleTwo,
-    status: "pending",
+    status: PENDING_STATUS,
     description: "Outline responsibilities for each team once the launch ships",
     link: "#",
     assignees: [mockPeople.emily!],

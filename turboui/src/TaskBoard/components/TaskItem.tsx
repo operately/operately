@@ -9,7 +9,7 @@ import { StatusSelector } from "../../StatusSelector";
 import { createTestId } from "../../TestableElement";
 
 // Using shared types
-import { Person, TaskWithIndex } from "../types";
+import { Person, TaskWithIndex, Status } from "../types";
 
 interface TaskItemProps {
   task: TaskWithIndex;
@@ -17,7 +17,7 @@ interface TaskItemProps {
   itemStyle: (id: string) => React.CSSProperties;
   onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
   onTaskAssigneeChange: (taskId: string, assignee: Person | null) => void;
-  onTaskStatusChange: (taskId: string, status: string) => void;
+  onTaskStatusChange: (taskId: string, status: Status | null) => void;
   assigneePersonSearch?: PersonField.SearchData;
   statusOptions: StatusSelector.StatusOption[];
   draggingDisabled?: boolean;
@@ -36,7 +36,7 @@ export function TaskItem({
 }: TaskItemProps) {
   const [currentAssignee, setCurrentAssignee] = useState<Person | null>(task.assignees?.[0] || null);
   const [currentDueDate, setCurrentDueDate] = useState<DateField.ContextualDate | null>(task.dueDate || null);
-  const [currentStatus, setCurrentStatus] = useState<TaskWithIndex["status"]>(task.status || "pending");
+  const [currentStatus, setCurrentStatus] = useState<StatusSelector.StatusOption | null>(task.status ?? statusOptions[0] ?? null);
 
   // Set up draggable behavior
   const { ref, isDragging } = useDraggable({ id: task.id, zoneId: milestoneId, disabled: draggingDisabled });
@@ -66,7 +66,7 @@ export function TaskItem({
   );
 
   const handleStatusChange = useCallback(
-    (newStatus: TaskWithIndex["status"]) => {
+    (newStatus: StatusSelector.StatusOption) => {
       setCurrentStatus(newStatus);
 
       if (onTaskStatusChange && task.id) {
@@ -88,13 +88,15 @@ export function TaskItem({
           <div className="flex items-center gap-1.5 flex-1 min-w-0">
             {/* Status icon */}
             <div className="flex-shrink-0 flex items-center h-6">
-              <StatusSelector
-                statusOptions={statusOptions}
-                status={currentStatus || "pending"}
-                onChange={handleStatusChange}
-                size="md"
-                readonly={!onTaskStatusChange}
-              />
+              {currentStatus && (
+                <StatusSelector
+                  statusOptions={statusOptions}
+                  status={currentStatus}
+                  onChange={handleStatusChange}
+                  size="md"
+                  readonly={!onTaskStatusChange}
+                />
+              )}
             </div>
 
             {/* Task title with inline meta indicators */}
@@ -137,7 +139,7 @@ export function TaskItem({
               onDateSelect={handleDueDateChange}
               variant="inline"
               hideCalendarIcon={!!currentDueDate}
-              showOverdueWarning={task.status !== "done" && task.status !== "canceled"}
+              showOverdueWarning={!task.status?.closed}
               placeholder={currentDueDate ? "Set due date" : ""}
               readonly={!onTaskDueDateChange}
               size={currentDueDate ? "small" : "lg"}
@@ -158,7 +160,7 @@ export function TaskItem({
               onDateSelect={handleDueDateChange}
               variant="inline"
               hideCalendarIcon={true}
-              showOverdueWarning={task.status !== "done" && task.status !== "canceled"}
+              showOverdueWarning={!task.status?.closed}
               placeholder={currentDueDate ? "" : "Set due date"}
               readonly={!onTaskDueDateChange}
               size="small"
