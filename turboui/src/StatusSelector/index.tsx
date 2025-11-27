@@ -10,6 +10,7 @@ import {
   IconCircleDot,
   IconCircleXCustom,
 } from "../icons";
+import { createTestId } from "../TestableElement";
 
 const BUTTON_SIZE_CONFIG: Record<StatusSelector.Size, { textSize: string; padding: string; iconSize: number }> = {
   xs: { textSize: "text-xs", padding: "px-1.5 py-0.5", iconSize: 10 },
@@ -211,6 +212,7 @@ export function StatusSelector<T extends StatusSelector.StatusOption = StatusSel
                   <div
                     key={option.value}
                     ref={(el) => (itemRefs.current[index] = el)}
+                    data-test-id={createTestId("status-option", option.value)}
                     className={classNames("flex items-center gap-2 px-1.5 py-1 rounded cursor-pointer", {
                       "bg-surface-dimmed": isSelected,
                       "hover:bg-surface-dimmed": !isSelected,

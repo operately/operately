@@ -33,7 +33,7 @@ export function PageHeader({statusOptions, ...props}: TaskPage.State) {
               <StatusSelector
                 statusOptions={statusOptions}
                 status={props.status ?? statusOptions[0]!}
-                onChange={(nextStatus) => props.onStatusChange(nextStatus.value as any)}
+                onChange={(nextStatus) => props.onStatusChange(nextStatus)}
                 size="md"
                 readonly={!props.canEdit}
                 showFullBadge={true}
