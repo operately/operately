@@ -72,8 +72,8 @@ function SidebarStatus({
   onStatusChange,
   canEdit,
 }: {
-  status: Types.Status;
-  onStatusChange: (status: Types.Status) => void;
+  status: MilestonePage.Status;
+  onStatusChange: (status: MilestonePage.Status) => void;
   canEdit: boolean;
 }) {
   const isCompleted = status === "done";

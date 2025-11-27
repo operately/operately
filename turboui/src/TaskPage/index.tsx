@@ -63,7 +63,7 @@ export namespace TaskPage {
     description: any;
     onDescriptionChange: (newDescription: any) => Promise<boolean>;
 
-    status: Status;
+    status: Status | null;
     onStatusChange: (newStatus: Status) => void;
 
     statusOptions: StatusOption[];

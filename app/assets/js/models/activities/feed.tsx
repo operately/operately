@@ -22,7 +22,7 @@ import {
 import { parseContextualDate } from "../contextualDates";
 import { parseMilestoneForTurboUi } from "../milestones";
 import { parsePersonForTurboUi } from "../people";
-import { parseTaskStatus } from "../tasks";
+import * as Tasks from "../tasks";
 
 export const TASK_ACTIVITY_TYPES = [
   "task_adding",
@@ -251,8 +251,8 @@ function parseTaskStatusUpdatingActivity(
     type: "task_status_updating",
     author,
     insertedAt: activity.insertedAt,
-    fromStatus: parseTaskStatus(content.oldStatus),
-    toStatus: parseTaskStatus(content.newStatus),
+    fromStatus: Tasks.parseTaskStatusForTurboUi(content.oldStatus),
+    toStatus: Tasks.parseTaskStatusForTurboUi(content.newStatus),
     taskName: content.name || "",
     page: pageContext,
   };

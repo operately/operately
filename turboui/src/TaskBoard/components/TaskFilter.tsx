@@ -21,14 +21,34 @@ import * as Types from "../types";
 import { AvatarWithName } from "../../Avatar";
 import { PrimaryButton, SecondaryButton } from "../../Button";
 
-// Status configuration matching StatusSelector
-const taskStatusConfig: Record<Types.Status, { label: string; icon: React.ReactNode; color?: string }> = {
-  pending: { label: "Not started", icon: <IconCircleDashed size={14} />, color: "text-content-dimmed" },
-  todo: { label: "Not started", icon: <IconCircleDashed size={14} />, color: "text-content-dimmed" },
-  in_progress: { label: "In progress", icon: <IconCircleDot size={14} />, color: "text-brand-1" },
-  done: { label: "Done", icon: <IconCircleCheckCustom size={14} />, color: "text-success" },
-  canceled: { label: "Canceled", icon: <IconCircleXCustom size={14} />, color: "text-content-dimmed" },
-};
+// Status configuration helper matching StatusSelector semantics
+function getStatusConfig(status: Types.Status | null | undefined): {
+  label: string;
+  icon: React.ReactNode;
+  color?: string;
+} {
+  if (!status) {
+    return {
+      label: "Unknown status",
+      icon: <IconCircleDashed size={14} />,
+      color: "text-content-dimmed",
+    };
+  }
+
+  const label = status.label || status.value || "Unknown status";
+
+  switch (status.color) {
+    case "blue":
+      return { label, icon: <IconCircleDot size={14} />, color: "text-brand-1" };
+    case "green":
+      return { label, icon: <IconCircleCheckCustom size={14} />, color: "text-success" };
+    case "red":
+      return { label, icon: <IconCircleXCustom size={14} />, color: "text-content-error" };
+    case "gray":
+    default:
+      return { label, icon: <IconCircleDashed size={14} />, color: "text-content-dimmed" };
+  }
+}
 
 interface FilterOption {
   type: Types.FilterType;
@@ -107,6 +127,24 @@ export function TaskFilter({ filters, onFiltersChange, tasks }: TaskFilterProps)
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const hoveredOptionRef = useRef<HTMLButtonElement>(null);
+
+  // Get unique statuses from tasks for status filter (memoized)
+  const availableStatuses = useMemo(() => {
+    const seen = new Set<string>();
+    const result: Types.Status[] = [];
+
+    tasks.forEach((task) => {
+      if (!task.status) return;
+
+      const key = task.status.id ?? task.status.value;
+      if (!seen.has(key)) {
+        seen.add(key);
+        result.push(task.status);
+      }
+    });
+
+    return result;
+  }, [tasks]);
 
   // Get unique people from tasks for assignee/creator filters (memoized)
   const availablePeople = useMemo(() => {
@@ -190,12 +228,13 @@ export function TaskFilter({ filters, onFiltersChange, tasks }: TaskFilterProps)
   };
 
   const handleStatusSelect = (status: Types.Status) => {
+    const config = getStatusConfig(status);
     const newFilter: Types.FilterCondition = {
       id: `filter-${Date.now()}`,
       type: "status",
       operator: "is",
       value: status,
-      label: `Status is ${taskStatusConfig[status].label}`,
+      label: `Status is ${config.label}`,
     };
 
     onFiltersChange([...filters, newFilter]);
@@ -403,16 +442,21 @@ export function TaskFilter({ filters, onFiltersChange, tasks }: TaskFilterProps)
             setHoveredOption(null);
           }}
         >
-          {Object.entries(taskStatusConfig).map(([status, config]) => (
-            <button
-              key={status}
-              className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-left rounded hover:bg-surface-accent"
-              onClick={() => handleStatusSelect(status as Types.Status)}
-            >
-              <span className={config.color}>{config.icon}</span>
-              <span>{config.label}</span>
-            </button>
-          ))}
+          {availableStatuses.map((status) => {
+            const config = getStatusConfig(status);
+            const key = status.id ?? status.value;
+
+            return (
+              <button
+                key={key}
+                className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-left rounded hover:bg-surface-accent"
+                onClick={() => handleStatusSelect(status)}
+              >
+                <span className={config.color}>{config.icon}</span>
+                <span>{config.label}</span>
+              </button>
+            );
+          })}
         </FilterSubmenu>
 
         <FilterSubmenu
@@ -588,7 +632,7 @@ export function FilterBadges({
           let newLabel: string;
 
           if (f.type === "status") {
-            const statusConfig = taskStatusConfig[f.value as Types.Status];
+            const statusConfig = getStatusConfig(f.value as Types.Status);
             newLabel = `Status ${operatorLabel} ${statusConfig.label}`;
           } else {
             newLabel = `${filterOption?.label || f.type} ${operatorLabel}`;
@@ -618,7 +662,7 @@ export function FilterBadges({
 
   const getFilterValueLabel = (filter: Types.FilterCondition): string => {
     if (filter.type === "status") {
-      const statusConfig = taskStatusConfig[filter.value as Types.Status];
+      const statusConfig = getStatusConfig(filter.value as Types.Status);
       return statusConfig.label;
     }
     if (filter.type === "assignee" || filter.type === "creator") {
@@ -635,7 +679,7 @@ export function FilterBadges({
 
   const getFilterValueIcon = (filter: Types.FilterCondition): React.ReactNode => {
     if (filter.type === "status") {
-      const statusConfig = taskStatusConfig[filter.value as Types.Status];
+      const statusConfig = getStatusConfig(filter.value as Types.Status);
       return <span className={statusConfig.color}>{statusConfig.icon}</span>;
     }
     if (filter.type === "milestone") {

@@ -55,18 +55,18 @@ const meta: Meta<typeof MilestoneCard> = {
         const handleTaskCreate = (newTask: Types.NewTaskPayload) => {
           // Skip if milestone is not loaded
           if (!milestone) return;
-          
+
           console.log(`Creating new task for ${milestone.name}:`, newTask);
-          
+
           // Create a new task with an ID
           const taskWithId: Types.Task = {
             id: `task-${Date.now()}`, // Generate a unique ID
-            status: "pending" as const,
+            status: PENDING_STATUS,
             description: "",
             link: "#",
-            ...newTask
+            ...newTask,
           };
-          
+
           // Add the task to the list
           setTasks([...tasks, taskWithId]);
         };
@@ -151,7 +151,7 @@ const DEFAULT_STATUS_OPTIONS: Types.StatusOption[] = [
     value: "pending",
     label: "Pending",
     icon: "circleDashed",
-    color: "dimmed",
+    color: "gray",
     index: 0,
   },
   {
@@ -159,7 +159,7 @@ const DEFAULT_STATUS_OPTIONS: Types.StatusOption[] = [
     value: "in_progress",
     label: "In progress",
     icon: "circleDot",
-    color: "brand",
+    color: "blue",
     index: 1,
   },
   {
@@ -167,7 +167,7 @@ const DEFAULT_STATUS_OPTIONS: Types.StatusOption[] = [
     value: "done",
     label: "Done",
     icon: "circleCheck",
-    color: "success",
+    color: "green",
     closed: true,
     index: 2,
   },
@@ -176,11 +176,15 @@ const DEFAULT_STATUS_OPTIONS: Types.StatusOption[] = [
     value: "canceled",
     label: "Canceled",
     icon: "circleX",
-    color: "dimmed",
+    color: "red",
     closed: true,
     index: 3,
   },
 ];
+const PENDING_STATUS = DEFAULT_STATUS_OPTIONS[0]!;
+const IN_PROGRESS_STATUS = DEFAULT_STATUS_OPTIONS[1]!;
+const DONE_STATUS = DEFAULT_STATUS_OPTIONS[2]!;
+const CANCELED_STATUS = DEFAULT_STATUS_OPTIONS[3]!;
 
 const longTitleOne =
   "Coordinate cross-functional launch strategy across marketing, sales, support, and product to keep messaging aligned through release";
@@ -192,7 +196,7 @@ const sampleTasks: Types.Task[] = [
   {
     id: "task-1",
     title: "Implement login functionality",
-    status: "pending" as Types.Status,
+    status: PENDING_STATUS,
     description: "Implement user authentication and login flow",
     milestone: sampleMilestone,
     link: "#",
@@ -202,7 +206,7 @@ const sampleTasks: Types.Task[] = [
   {
     id: "task-2",
     title: "Design user profile page",
-    status: "in_progress" as Types.Status,
+    status: IN_PROGRESS_STATUS,
     description: "Create wireframes and design mockups for user profile",
     assignees: [
       { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
@@ -215,7 +219,7 @@ const sampleTasks: Types.Task[] = [
   {
     id: "task-3",
     title: "Fix navigation bug in sidebar",
-    status: "done" as Types.Status,
+    status: DONE_STATUS,
     description: "Resolve sidebar navigation issues and improve UX",
     assignees: [
       { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" },
@@ -229,7 +233,7 @@ const sampleTasks: Types.Task[] = [
   {
     id: "task-4",
     title: "Task without due date or assignee - hover to set",
-    status: "pending" as Types.Status,
+    status: PENDING_STATUS,
     description: null,
     link: "#",
     milestone: sampleMilestone,
@@ -239,7 +243,7 @@ const sampleTasks: Types.Task[] = [
   {
     id: "task-5",
     title: longTitleOne,
-    status: "in_progress" as Types.Status,
+    status: IN_PROGRESS_STATUS,
     description: null,
     milestone: sampleMilestone,
     link: "#",
@@ -250,7 +254,7 @@ const sampleTasks: Types.Task[] = [
   {
     id: "task-6",
     title: longTitleTwo,
-    status: "pending" as Types.Status,
+    status: PENDING_STATUS,
     description: "Ensure every team knows their responsibilities after release",
     milestone: sampleMilestone,
     link: "#",
@@ -284,13 +288,13 @@ export const MilestoneWithProgress: Story = {
       {
         id: "task-4",
         title: "Write documentation",
-        status: "done" as Types.Status,
+        status: DONE_STATUS,
         milestone: sampleMilestone,
       },
       {
         id: "task-5",
         title: "Deploy to production",
-        status: "done" as Types.Status,
+        status: DONE_STATUS,
         milestone: sampleMilestone,
       },
     ],
@@ -329,7 +333,7 @@ export const MilestoneWithoutDueDate: Story = {
       {
         id: "task-research-1",
         title: "Market research analysis",
-        status: "in_progress" as Types.Status,
+        status: IN_PROGRESS_STATUS,
         assignees: [
           { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
         ],
@@ -338,7 +342,7 @@ export const MilestoneWithoutDueDate: Story = {
       {
         id: "task-research-2", 
         title: "Competitor analysis",
-        status: "pending" as Types.Status,
+        status: PENDING_STATUS,
         hasComments: false,
       },
     ],
@@ -376,7 +380,7 @@ export const MilestoneWithHiddenCompletedTasks: Story = {
       {
         id: "task-pending-1",
         title: "Final testing phase",
-        status: "pending" as Types.Status,
+        status: PENDING_STATUS,
         milestone: sampleMilestone,
         assignees: [
           { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
@@ -387,7 +391,7 @@ export const MilestoneWithHiddenCompletedTasks: Story = {
       {
         id: "task-in-progress-1",
         title: "User acceptance testing",
-        status: "in_progress" as Types.Status,
+        status: IN_PROGRESS_STATUS,
         milestone: sampleMilestone,
         assignees: [
           { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" },
@@ -400,7 +404,7 @@ export const MilestoneWithHiddenCompletedTasks: Story = {
       {
         id: "task-done-1",
         title: "Implement core functionality",
-        status: "done" as Types.Status,
+        status: DONE_STATUS,
         milestone: sampleMilestone,
         assignees: [
           { id: "user-3", fullName: "Charlie Brown", avatarUrl: "https://i.pravatar.cc/150?u=charlie" },
@@ -413,7 +417,7 @@ export const MilestoneWithHiddenCompletedTasks: Story = {
       {
         id: "task-done-2",
         title: "Set up CI/CD pipeline",
-        status: "done" as Types.Status,
+        status: DONE_STATUS,
         milestone: sampleMilestone,
         assignees: [
           { id: "user-4", fullName: "Diana Prince", avatarUrl: null },
@@ -423,7 +427,7 @@ export const MilestoneWithHiddenCompletedTasks: Story = {
       {
         id: "task-done-3",
         title: "Create user documentation",
-        status: "done" as Types.Status,
+        status: DONE_STATUS,
         milestone: sampleMilestone,
         assignees: [
           { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
@@ -433,7 +437,7 @@ export const MilestoneWithHiddenCompletedTasks: Story = {
       {
         id: "task-canceled-1",
         title: "Old approach that was scrapped",
-        status: "canceled" as Types.Status,
+        status: CANCELED_STATUS,
         milestone: sampleMilestone,
         hasComments: true,
         commentCount: 2,

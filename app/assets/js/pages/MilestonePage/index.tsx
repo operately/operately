@@ -160,7 +160,7 @@ function Page() {
   });
 
   const statusOptions = React.useMemo(
-    () => Projects.mapProjectTaskStatusesToUi(milestone.availableStatuses),
+    () => Tasks.parseTaskStatusesForTurboUi(milestone.availableStatuses),
     [milestone.availableStatuses],
   );
 

@@ -1,8 +1,40 @@
 import { genPeople } from "../utils/storybook/genPeople";
 import { asRichTextWithList } from "../utils/storybook/richContent";
+import type { StatusOption } from "../TaskBoard/types";
 
 // Generate mock people for stories
 export const mockPeople = genPeople(4);
+
+// Shared status options for timeline task activities
+const PENDING_STATUS: StatusOption = {
+  id: "pending",
+  value: "pending",
+  label: "Not started",
+  icon: "circleDashed",
+  color: "gray",
+  index: 0,
+  closed: false,
+};
+
+const IN_PROGRESS_STATUS: StatusOption = {
+  id: "in_progress",
+  value: "in_progress",
+  label: "In progress",
+  icon: "circleDot",
+  color: "blue",
+  index: 1,
+  closed: false,
+};
+
+const DONE_STATUS: StatusOption = {
+  id: "done",
+  value: "done",
+  label: "Done",
+  icon: "circleCheck",
+  color: "green",
+  index: 2,
+  closed: true,
+};
 
 // Mock timeline items shared across stories
 export const createMockTimelineItems = (): any[] => [
@@ -33,12 +65,12 @@ export const createMockTimelineItems = (): any[] => [
       type: "task_status_updating" as const,
       author: mockPeople[0],
       insertedAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(), // 4 days ago
-      fromStatus: "pending" as const,
-      toStatus: "done" as const,
+      fromStatus: PENDING_STATUS,
+      toStatus: DONE_STATUS,
       task: {
         id: "task-1",
         title: "Implement user authentication",
-        status: "done" as const,
+        status: DONE_STATUS,
       },
     },
   },
@@ -49,12 +81,12 @@ export const createMockTimelineItems = (): any[] => [
       type: "task_status_updating" as const,
       author: mockPeople[2],
       insertedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
-      fromStatus: "pending" as const,
-      toStatus: "done" as const,
+      fromStatus: PENDING_STATUS,
+      toStatus: DONE_STATUS,
       task: {
         id: "task-4",
         title: "Add support for dark mode",
-        status: "done" as const,
+        status: DONE_STATUS,
       },
     },
   },
@@ -100,12 +132,12 @@ export const createMockTimelineItems = (): any[] => [
       type: "task_status_updating" as const,
       author: mockPeople[0],
       insertedAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), // 6 hours ago
-      fromStatus: "in_progress" as const,
-      toStatus: "done" as const,
+      fromStatus: IN_PROGRESS_STATUS,
+      toStatus: DONE_STATUS,
       task: {
         id: "task-6",
         title: "Create presentation for stakeholders",
-        status: "done" as const,
+        status: DONE_STATUS,
       },
     },
   },
