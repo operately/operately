@@ -15,7 +15,7 @@ export interface TaskListProps {
   milestoneId: string;
   onTaskAssigneeChange: (taskId: string, assignee: Types.Person | null) => void;
   onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
-  onTaskStatusChange: (taskId: string, status: string) => void;
+  onTaskStatusChange: (taskId: string, status: Types.Status | null) => void;
   assigneePersonSearch?: PersonField.SearchData;
   statusOptions: StatusSelector.StatusOption[];
   /** Whether to show the hidden tasks toggle (ghost row) */
@@ -48,9 +48,7 @@ export function TaskList({
     const hidden: Types.Task[] = [];
 
     tasks.forEach((task) => {
-      const statusOption = statusOptions.find((opt) => opt.value === task.status);
-
-      if (statusOption?.closed) {
+      if (task.status?.closed) {
         hidden.push(task);
       } else {
         visible.push(task);
@@ -58,7 +56,7 @@ export function TaskList({
     });
 
     return { visibleTasks: visible, hiddenTasks: hidden };
-  }, [tasks, statusOptions]);
+  }, [tasks]);
 
   // Add drag and drop index to each task.
   // Visible tasks always occupy the first slots; hidden tasks (when expanded) follow after them.

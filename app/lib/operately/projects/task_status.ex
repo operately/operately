@@ -74,4 +74,6 @@ defmodule Operately.Projects.TaskStatus do
       closed: false
     }
   end
+
+  def valid_colors, do: @valid_colors
 end
