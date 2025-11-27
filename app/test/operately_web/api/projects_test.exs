@@ -659,6 +659,17 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert res.message == "Missing required fields: project_id"
     end
 
+    test "it requires at least one task status", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:projects, :update_task_statuses], %{
+        project_id: Paths.project_id(ctx.project),
+        task_statuses: []
+      })
+
+      assert res.message == "At least one task status is required"
+    end
+
     test "it updates task statuses for the project", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
