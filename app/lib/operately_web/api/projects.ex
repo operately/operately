@@ -598,9 +598,17 @@ defmodule OperatelyWeb.Api.Projects do
     end
 
     def update_task_statuses(multi, task_statuses) do
-      Ecto.Multi.update(multi, :updated_project, fn %{project: project} ->
-        Operately.Projects.Project.changeset(project, %{task_statuses: task_statuses})
-      end)
+      case task_statuses do
+        [] ->
+          Ecto.Multi.run(multi, :validate_task_statuses, fn _repo, _changes ->
+            {:error, "At least one task status is required"}
+          end)
+
+        _ ->
+          Ecto.Multi.update(multi, :updated_project, fn %{project: project} ->
+            Operately.Projects.Project.changeset(project, %{task_statuses: task_statuses})
+          end)
+      end
     end
 
     def update_project_start_date(multi, new_start_date) do
@@ -918,6 +926,9 @@ defmodule OperatelyWeb.Api.Projects do
           {:error, :forbidden}
 
         {:error, :validate_milestone, message, _changes} ->
+          {:error, :bad_request, message}
+
+        {:error, :validate_task_statuses, message, _changes} ->
           {:error, :bad_request, message}
 
         {:error, _failed_operation, reason, _changes} ->
