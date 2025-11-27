@@ -2,7 +2,7 @@ import { Task as BackendTask, ProjectTaskStatus } from "@/api";
 import { parseContextualDate } from "../contextualDates";
 import { Paths } from "@/routes/paths";
 import { parseMilestoneForTurboUi } from "../milestones";
-import { parseContent, richContentToString } from "turboui/RichContent";
+import { parseContent, richContentToString } from "turboui";
 import { StatusSelector, TaskBoard } from "turboui";
 
 export type { Task, EditMilestoneOrderingStateInput } from "@/api";
