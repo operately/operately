@@ -24,11 +24,11 @@ import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 import { StatusSelector } from "../StatusSelector";
 
 const DEFAULT_STATUS_OPTIONS: StatusSelector.StatusOption[] = [
-  { id: "pending", value: "pending", label: "Not started", color: "dimmed", icon: "circleDashed", index: 0 },
-  { id: "in_progress", value: "in_progress", label: "In progress", color: "brand", icon: "circleDot", index: 1 },
-  { id: "review", value: "review", label: "In review", color: "brand", icon: "circleDot", index: 2 },
-  { id: "done", value: "done", label: "Done", color: "success", icon: "circleCheck", index: 3 },
-  { id: "canceled", value: "canceled", label: "Canceled", color: "dimmed", icon: "circleX", index: 4 },
+  { id: "pending", value: "pending", label: "Not started", color: "gray", icon: "circleDashed", index: 0 },
+  { id: "in_progress", value: "in_progress", label: "In progress", color: "blue", icon: "circleDot", index: 1 },
+  { id: "review", value: "review", label: "In review", color: "blue", icon: "circleDot", index: 2 },
+  { id: "done", value: "done", label: "Done", color: "green", icon: "circleCheck", index: 3 },
+  { id: "canceled", value: "canceled", label: "Canceled", color: "red", icon: "circleX", index: 4 },
 ];
 
 const people = genPeople(5);
@@ -48,7 +48,7 @@ export function InProjectContextStory() {
       "We need to implement a complete user authentication flow for the mobile app including login, social auth, and password reset functionality.",
     ),
   );
-  const [taskStatus, setTaskStatus] = useState<TaskBoardTypes.Status>("in_progress");
+  const [taskStatus, setTaskStatus] = useState<TaskBoardTypes.Status | null>(DEFAULT_STATUS_OPTIONS[1] ?? null);
   const [taskDueDate, setTaskDueDate] = useState<DateField.ContextualDate | undefined>(
     createContextualDate(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), "day"),
   );

@@ -17,11 +17,11 @@ export default meta;
 type Story = StoryObj<typeof StatusCustomizationModal>;
 
 const DEFAULT_STATUSES: StatusSelector.StatusOption[] = [
-  { id: "pending", value: "pending", label: "Not started", color: "dimmed", icon: "circleDashed", index: 0 },
-  { id: "progress", value: "in_progress", label: "In progress", color: "brand", icon: "circleDot", index: 1 },
-  { id: "qa", value: "qa", label: "QA", color: "brand", icon: "circleDot", index: 2 },
-  { id: "done", value: "done", label: "Done", color: "success", icon: "circleCheck", index: 3 },
-  { id: "canceled", value: "canceled", label: "Canceled", color: "danger", icon: "circleX", index: 4 },
+  { id: "pending", value: "pending", label: "Not started", color: "gray", icon: "circleDashed", index: 0 },
+  { id: "progress", value: "in_progress", label: "In progress", color: "blue", icon: "circleDot", index: 1 },
+  { id: "qa", value: "qa", label: "QA", color: "blue", icon: "circleDot", index: 2 },
+  { id: "done", value: "done", label: "Done", color: "green", icon: "circleCheck", index: 3 },
+  { id: "canceled", value: "canceled", label: "Canceled", color: "red", icon: "circleX", index: 4 },
 ];
 
 const StatusPreview = ({ statuses }: { statuses: StatusSelector.StatusOption[] }) => {
@@ -38,11 +38,19 @@ const StatusPreview = ({ statuses }: { statuses: StatusSelector.StatusOption[] }
     [statuses],
   );
 
-  const [activeStatus, setActiveStatus] = React.useState(options[0]?.value ?? "");
+  const [activeStatus, setActiveStatus] = React.useState<StatusSelector.StatusOption | null>(
+    () => options[0] ?? null,
+  );
 
   React.useEffect(() => {
-    if (!options.some((option) => option.value === activeStatus)) {
-      setActiveStatus(options[0]?.value ?? "");
+    if (!activeStatus) {
+      setActiveStatus(options[0] ?? null);
+      return;
+    }
+
+    const stillExists = options.find((option) => option.value === activeStatus.value) ?? options[0] ?? null;
+    if (stillExists !== activeStatus) {
+      setActiveStatus(stillExists);
     }
   }, [options, activeStatus]);
 
@@ -81,7 +89,7 @@ const StatusPreview = ({ statuses }: { statuses: StatusSelector.StatusOption[] }
             <div className="text-xs font-medium text-content-dimmed mb-2">Status selector</div>
             <StatusSelector
               statusOptions={options}
-              status={activeStatus}
+              status={activeStatus ?? options[0]!}
               onChange={setActiveStatus}
               showFullBadge
             />

@@ -26,13 +26,16 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const DEFAULT_STATUS_OPTIONS: Types.StatusOption[] = [
-  { id: "pending", value: "pending", label: "Not started", color: "dimmed", icon: "circleDashed", index: 0 },
-  { id: "in_progress", value: "in_progress", label: "In progress", color: "brand", icon: "circleDot", index: 1 },
-  { id: "verification", value: "verification", label: "Verification", color: "brand", icon: "circleDot", index: 2 },
-  { id: "done", value: "done", label: "Done", color: "success", icon: "circleCheck", index: 3 },
-  { id: "canceled", value: "canceled", label: "Canceled", color: "dimmed", icon: "circleX", index: 4 },
+  { id: "pending", value: "pending", label: "Not started", color: "gray", icon: "circleDashed", index: 0 },
+  { id: "in_progress", value: "in_progress", label: "In progress", color: "blue", icon: "circleDot", index: 1 },
+  { id: "verification", value: "verification", label: "Verification", color: "blue", icon: "circleDot", index: 2 },
+  { id: "done", value: "done", label: "Done", color: "green", icon: "circleCheck", index: 3 },
+  { id: "canceled", value: "canceled", label: "Canceled", color: "red", icon: "circleX", index: 4 },
 ];
 
+const PENDING_STATUS = DEFAULT_STATUS_OPTIONS[0]!;
+const IN_PROGRESS_STATUS = DEFAULT_STATUS_OPTIONS[1]!;
+const DONE_STATUS = DEFAULT_STATUS_OPTIONS[3]!;
 
 // Create a sample milestone with various properties
 const sampleMilestone: Types.Milestone = {
@@ -56,7 +59,7 @@ const createSampleTasks = (): Types.Task[] => [
   {
     id: "task-1",
     title: "Implement user authentication",
-    status: "done",
+    status: DONE_STATUS,
     link: "#",
     milestone: sampleMilestone,
     assignees: [mockPeople[0]!],
@@ -68,7 +71,7 @@ const createSampleTasks = (): Types.Task[] => [
   {
     id: "task-2",
     title: "Design user profile page",
-    status: "in_progress",
+    status: IN_PROGRESS_STATUS,
     link: "#",
     milestone: sampleMilestone,
     assignees: [mockPeople[1]!],
@@ -79,7 +82,7 @@ const createSampleTasks = (): Types.Task[] => [
   {
     id: "task-3",
     title: "Fix navigation bug in sidebar",
-    status: "pending",
+    status: PENDING_STATUS,
     link: "#",
     milestone: sampleMilestone,
     description: null,
@@ -88,7 +91,7 @@ const createSampleTasks = (): Types.Task[] => [
   {
     id: "task-4",
     title: "Add support for dark mode",
-    status: "pending",
+    status: PENDING_STATUS,
     link: "#",
     milestone: sampleMilestone,
     assignees: [mockPeople[2]!],
@@ -98,7 +101,7 @@ const createSampleTasks = (): Types.Task[] => [
   {
     id: "task-5",
     title: "Write documentation",
-    status: "done",
+    status: DONE_STATUS,
     link: "#",
     milestone: sampleMilestone,
     hasDescription: true,
@@ -108,7 +111,7 @@ const createSampleTasks = (): Types.Task[] => [
   {
     id: "task-6",
     title: "Create presentation for stakeholders",
-    status: "in_progress",
+    status: IN_PROGRESS_STATUS,
     link: "#",
     milestone: sampleMilestone,
     dueDate: createContextualDate(new Date(new Date().setDate(new Date().getDate() + 2)), "day"),
@@ -119,7 +122,7 @@ const createSampleTasks = (): Types.Task[] => [
   {
     id: "task-7",
     title: longTitleOne,
-    status: "pending",
+    status: PENDING_STATUS,
     link: "#",
     milestone: sampleMilestone,
     assignees: [mockPeople[0]!],
@@ -130,7 +133,7 @@ const createSampleTasks = (): Types.Task[] => [
   {
     id: "task-8",
     title: longTitleTwo,
-    status: "in_progress",
+    status: IN_PROGRESS_STATUS,
     link: "#",
     milestone: sampleMilestone,
     assignees: [mockPeople[2]!],
@@ -165,7 +168,7 @@ export const Default: Story = {
       // Create the new task with the generated ID
       const newTask: Types.Task = {
         id: taskId,
-        status: "pending",
+        status: PENDING_STATUS,
         description: "",
         link: "#",
         ...newTaskData,
@@ -406,7 +409,7 @@ export const CompletedMilestone: Story = {
       {
         id: "task-completed-1",
         title: "Implement OAuth integration",
-        status: "done",
+        status: DONE_STATUS,
         link: "#",
         milestone: milestone,
         assignees: [mockPeople[0]!],
@@ -418,7 +421,7 @@ export const CompletedMilestone: Story = {
       {
         id: "task-completed-2",
         title: "Redesign dashboard UI",
-        status: "done",
+        status: DONE_STATUS,
         link: "#",
         milestone: milestone,
         assignees: [mockPeople[1]!, mockPeople[2]!],
@@ -429,7 +432,7 @@ export const CompletedMilestone: Story = {
       {
         id: "task-completed-3",
         title: "Fix performance issues in data loading",
-        status: "done",
+        status: DONE_STATUS,
         link: "#",
         milestone: milestone,
         assignees: [mockPeople[0]!],
@@ -439,7 +442,7 @@ export const CompletedMilestone: Story = {
       {
         id: "task-completed-4",
         title: "Update API documentation",
-        status: "done",
+        status: DONE_STATUS,
         link: "#",
         milestone: milestone,
         assignees: [mockPeople[2]!],
@@ -452,7 +455,7 @@ export const CompletedMilestone: Story = {
       {
         id: "task-completed-5",
         title: "Deploy to production",
-        status: "done",
+        status: DONE_STATUS,
         link: "#",
         milestone: milestone,
         assignees: [mockPeople[1]!],
@@ -480,10 +483,15 @@ export const CompletedMilestone: Story = {
           type: "task_status_updating" as const,
           author: mockPeople[0]!,
           insertedAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(), // 8 days ago
-          fromStatus: "in_progress" as const,
-          toStatus: "done" as const,
+          fromStatus: IN_PROGRESS_STATUS,
+          toStatus: DONE_STATUS,
           taskName: "Implement OAuth integration",
           page: "milestone" as const,
+          task: {
+            id: "task-completed-1",
+            title: "Implement OAuth integration",
+            status: DONE_STATUS,
+          },
         },
       },
       {
@@ -493,10 +501,15 @@ export const CompletedMilestone: Story = {
           type: "task_status_updating" as const,
           author: mockPeople[1]!,
           insertedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days ago
-          fromStatus: "in_progress" as const,
-          toStatus: "done" as const,
+          fromStatus: IN_PROGRESS_STATUS,
+          toStatus: DONE_STATUS,
           taskName: "Redesign dashboard UI",
           page: "milestone" as const,
+          task: {
+            id: "task-completed-2",
+            title: "Redesign dashboard UI",
+            status: DONE_STATUS,
+          },
         },
       },
       {

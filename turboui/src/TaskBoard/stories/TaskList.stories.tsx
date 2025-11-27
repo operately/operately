@@ -23,12 +23,15 @@ const meta: Meta<typeof TaskList> = {
       const TaskListWithReordering = ({
         initialTasks,
         showHiddenTasksToggle,
+        onTaskAssigneeChange,
+        onTaskDueDateChange,
+        onTaskStatusChange,
       }: {
         initialTasks: Types.Task[];
         showHiddenTasksToggle?: boolean;
         onTaskAssigneeChange?: (taskId: string, assignee: Types.Person | null) => void;
         onTaskDueDateChange?: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
-        onTaskStatusChange?: (taskId: string, status: string) => void;
+        onTaskStatusChange?: (taskId: string, status: Types.Status | null) => void;
       }) => {
         const [tasks, setTasks] = useState<Types.Task[]>([]);
         const assigneePersonSearch = usePersonFieldSearch(mockPeople);
@@ -54,9 +57,9 @@ const meta: Meta<typeof TaskList> = {
               tasks={tasks}
               showHiddenTasksToggle={showHiddenTasksToggle}
               milestoneId="milestone-1"
-              onTaskAssigneeChange={() => {}}
-              onTaskDueDateChange={() => {}}
-              onTaskStatusChange={() => {}}
+              onTaskAssigneeChange={onTaskAssigneeChange || (() => {})}
+              onTaskDueDateChange={onTaskDueDateChange || (() => {})}
+              onTaskStatusChange={onTaskStatusChange || (() => {})}
               assigneePersonSearch={assigneePersonSearch}
               statusOptions={DEFAULT_STATUS_OPTIONS}
             />
@@ -104,7 +107,7 @@ const DEFAULT_STATUS_OPTIONS: Types.StatusOption[] = [
     value: "pending",
     label: "Pending",
     icon: "circleDashed",
-    color: "dimmed",
+    color: "gray",
     index: 0,
   },
   {
@@ -112,7 +115,7 @@ const DEFAULT_STATUS_OPTIONS: Types.StatusOption[] = [
     value: "in_progress",
     label: "In progress",
     icon: "circleDot",
-    color: "brand",
+    color: "blue",
     index: 1,
   },
   {
@@ -120,7 +123,7 @@ const DEFAULT_STATUS_OPTIONS: Types.StatusOption[] = [
     value: "done",
     label: "Done",
     icon: "circleCheck",
-    color: "success",
+    color: "green",
     closed: true,
     index: 2,
   },
@@ -129,11 +132,13 @@ const DEFAULT_STATUS_OPTIONS: Types.StatusOption[] = [
     value: "canceled",
     label: "Canceled",
     icon: "circleX",
-    color: "dimmed",
+    color: "red",
     closed: true,
     index: 3,
   },
 ];
+
+const [PENDING_STATUS, IN_PROGRESS_STATUS, DONE_STATUS, CANCELED_STATUS] = DEFAULT_STATUS_OPTIONS;
 
 
 const longTitleOne =
@@ -150,7 +155,7 @@ export const MultipleTasksList: Story = {
       {
         id: "task-1",
         title: "Implement user authentication",
-        status: "pending" as Types.Status,
+        status: PENDING_STATUS,
         hasDescription: true,
         hasComments: true,
         commentCount: 3,
@@ -158,34 +163,34 @@ export const MultipleTasksList: Story = {
       {
         id: "task-2",
         title: "Design dashboard layout",
-        status: "in_progress" as Types.Status,
+        status: IN_PROGRESS_STATUS,
         dueDate: new Date(new Date().setDate(new Date().getDate() + 5)), // Due in 5 days
         assignees: [{ id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" }],
       },
       {
         id: "task-3",
         title: "Write API documentation",
-        status: "in_progress" as Types.Status,
+        status: IN_PROGRESS_STATUS,
         hasComments: true,
         commentCount: 1,
       },
       {
         id: "task-4",
         title: "Optimize database queries",
-        status: "done" as Types.Status,
+        status: DONE_STATUS,
         hasDescription: true,
       },
       {
         id: "task-5",
         title: longTitleOne,
-        status: "pending" as Types.Status,
+        status: PENDING_STATUS,
         hasComments: true,
         commentCount: 5,
       },
       {
         id: "task-6",
         title: longTitleTwo,
-        status: "in_progress" as Types.Status,
+        status: IN_PROGRESS_STATUS,
         hasDescription: true,
         hasComments: false,
       },
@@ -219,7 +224,7 @@ export const SingleTaskList: Story = {
       {
         id: "task-5",
         title: "Submit quarterly report",
-        status: "pending" as Types.Status,
+        status: PENDING_STATUS,
         dueDate: new Date(new Date().setDate(new Date().getDate() + 3)), // Due in 3 days
         hasDescription: true,
         hasComments: true,
@@ -257,18 +262,18 @@ export const MixedStatusTaskList: Story = {
       {
         id: "task-6",
         title: "Send client proposal",
-        status: "pending" as Types.Status,
+        status: PENDING_STATUS,
         dueDate: new Date(new Date().setDate(new Date().getDate() - 2)), // 2 days ago (overdue)
       },
       {
         id: "task-7",
         title: "Setup development environment",
-        status: "done" as Types.Status,
+        status: DONE_STATUS,
       },
       {
         id: "task-8",
         title: "Complete user authentication system",
-        status: "in_progress" as Types.Status,
+        status: IN_PROGRESS_STATUS,
         hasDescription: true,
         hasComments: true,
         commentCount: 5,
@@ -293,7 +298,7 @@ export const TaskListWithHiddenCompletedTasks: Story = {
       {
         id: "task-visible-1",
         title: "Review user feedback",
-        status: "pending" as Types.Status,
+        status: PENDING_STATUS,
         assignees: [{ id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" }],
         dueDate: new Date(new Date().setDate(new Date().getDate() + 1)), // Due tomorrow
         hasDescription: true,
@@ -301,7 +306,7 @@ export const TaskListWithHiddenCompletedTasks: Story = {
       {
         id: "task-visible-2",
         title: "Update documentation",
-        status: "in_progress" as Types.Status,
+        status: IN_PROGRESS_STATUS,
         assignees: [{ id: "user-3", fullName: "Charlie Brown", avatarUrl: "https://i.pravatar.cc/150?u=charlie" }],
         hasComments: true,
         commentCount: 2,
@@ -309,7 +314,7 @@ export const TaskListWithHiddenCompletedTasks: Story = {
       {
         id: "task-hidden-1",
         title: "Set up project repository",
-        status: "done" as Types.Status,
+        status: DONE_STATUS,
         assignees: [{ id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" }],
         dueDate: new Date(new Date().setDate(new Date().getDate() - 3)), // 3 days ago
         hasDescription: true,
@@ -319,14 +324,14 @@ export const TaskListWithHiddenCompletedTasks: Story = {
       {
         id: "task-hidden-2",
         title: "Configure CI/CD pipeline",
-        status: "done" as Types.Status,
+        status: DONE_STATUS,
         assignees: [{ id: "user-4", fullName: "Diana Prince", avatarUrl: null }],
         dueDate: new Date(new Date().setDate(new Date().getDate() - 5)), // 5 days ago
       },
       {
         id: "task-hidden-3",
         title: "Old approach that was canceled",
-        status: "canceled" as Types.Status,
+        status: CANCELED_STATUS,
         hasComments: true,
         commentCount: 3,
       },

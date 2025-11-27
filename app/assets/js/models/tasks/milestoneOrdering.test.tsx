@@ -117,7 +117,7 @@ describe("buildMilestonesOrderingState", () => {
 const createTask = (id: string, milestoneId: string | null): TaskBoard.Task => ({
     id,
     title: `Task ${id}`,
-    status: "todo" as const,
+    status: null,
     description: null,
     link: "",
     assignees: [],

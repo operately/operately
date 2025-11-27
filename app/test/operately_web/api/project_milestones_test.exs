@@ -80,7 +80,7 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
       # Verify task details are included
       task1 = Enum.find(res.tasks, &(&1.id == Paths.task_id(ctx.task1)))
       assert task1.name == ctx.task1.name
-      assert task1.status == ctx.task1.status
+      assert task1.status.value == ctx.task1.task_status.value
       assert task1.milestone.id == Paths.milestone_id(ctx.milestone)
     end
 
