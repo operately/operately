@@ -15,8 +15,9 @@ import {
   IconActivity,
   IconCircleCheck,
   IconClockPlay,
+  IconCircleXCustom,
 } from "../icons";
-import { TaskActivityProps, TaskActivity } from "./types";
+import { TaskActivityProps, TaskActivity, TaskStatus } from "./types";
 import { DateField } from "../DateField";
 import { capitalizeFirstLetter } from "../utils/strings";
 
@@ -88,14 +89,19 @@ function ActivityIcon({ activity }: { activity: TaskActivity }) {
   }
 }
 
-function getStatusIcon(status: string) {
-  switch (status) {
-    case "not_started":
+function getStatusIcon(status: TaskStatus | null) {
+  if (!status) {
+    return <IconCircle size={12} className="text-gray-500" />;
+  }
+  switch (status.color) {
+    case "gray":
       return <IconCircle size={12} className="text-gray-500" />;
-    case "in_progress":
+    case "blue":
       return <IconClockPlay size={12} className="text-blue-500" />;
-    case "done":
+    case "green":
       return <IconCircleCheck size={12} className="text-green-500" />;
+    case "red":
+      return <IconCircleXCustom size={12} className="text-red-500" />;
     default:
       return <IconCircle size={12} className="text-gray-500" />;
   }
@@ -233,15 +239,14 @@ function formatTaskName(activity: TaskActivity): string {
   }
 }
 
-function formatStatus(status: string): string {
-  switch (status) {
-    case "not_started":
-      return "Not Started";
-    case "in_progress":
-      return "In Progress";
-    case "done":
-      return "Done";
-    default:
-      return capitalizeFirstLetter(status);
+function formatStatus(status: TaskStatus | null): string {
+  if (!status) {
+    return "";
   }
+
+  if (status.label) {
+    return status.label;
+  }
+
+  return capitalizeFirstLetter(status.value);
 }

@@ -7,11 +7,11 @@ import { Page } from "../../Page";
 import { usePersonFieldSearch } from "../../utils/storybook/usePersonFieldSearch";
 
 const DEFAULT_STATUSES: Types.StatusOption[] = [
-  { id: "pending", value: "pending", label: "Not started", color: "dimmed", icon: "circleDashed", index: 0 },
-  { id: "progress", value: "in_progress", label: "In progress", color: "brand", icon: "circleDot", index: 1 },
-  { id: "qa", value: "qa", label: "QA", color: "brand", icon: "circleDot", index: 2 },
-  { id: "done", value: "done", label: "Done", color: "success", icon: "circleCheck", index: 3 },
-  { id: "canceled", value: "canceled", label: "Canceled", color: "danger", icon: "circleX", index: 4 },
+  { id: "pending", value: "pending", label: "Not started", color: "gray", icon: "circleDashed", index: 0 },
+  { id: "progress", value: "in_progress", label: "In progress", color: "blue", icon: "circleDot", index: 1 },
+  { id: "qa", value: "qa", label: "QA", color: "blue", icon: "circleDot", index: 2 },
+  { id: "done", value: "done", label: "Done", color: "green", icon: "circleCheck", index: 3 },
+  { id: "canceled", value: "canceled", label: "Canceled", color: "red", icon: "circleX", index: 4 },
 ];
 
 /**

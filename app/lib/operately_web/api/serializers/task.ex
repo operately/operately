@@ -13,7 +13,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Tasks.Task do
       description: task.description && Jason.encode!(task.description),
       priority: task.priority,
       size: task.size,
-      status: task.status,
+      status: OperatelyWeb.Api.Serializer.serialize(task.task_status),
       due_date: OperatelyWeb.Api.Serializer.serialize(task.due_date),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(task.inserted_at),
       updated_at: OperatelyWeb.Api.Serializer.serialize(task.updated_at),

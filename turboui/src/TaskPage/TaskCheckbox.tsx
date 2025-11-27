@@ -10,7 +10,7 @@ interface TaskCheckboxProps {
 }
 
 export function TaskCheckbox({ status, canEdit, onComplete }: TaskCheckboxProps) {
-  const isDone = status === "done";
+  const isDone = status.closed && status.color === "green";
   const canToggleToDone = canEdit && !isDone;
 
   const handleClick = () => {

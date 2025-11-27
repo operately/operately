@@ -100,7 +100,7 @@ function Page() {
 
   const [name, setName] = usePageField({
     value: ({ task }) => task.name,
-    update: (v) => Api.project_tasks.updateName({ taskId: task.id!, name: v }),
+    update: (v) => Api.project_tasks.updateName({ taskId: task.id, name: v }),
     onError: (e: string) => showErrorToast(e, "Failed to update task name."),
     validations: [(v) => (v.trim() === "" ? "Task name cannot be empty" : null)],
     refreshPageData,
@@ -108,21 +108,21 @@ function Page() {
 
   const [description, setDescription] = usePageField({
     value: ({ task }) => task.description && JSON.parse(task.description),
-    update: (v) => Api.project_tasks.updateDescription({ taskId: task.id!, description: JSON.stringify(v) }),
+    update: (v) => Api.project_tasks.updateDescription({ taskId: task.id, description: JSON.stringify(v) }),
     onError: () => showErrorToast("Error", "Failed to update task description."),
     refreshPageData,
   });
 
   const [status, setStatus] = usePageField({
     value: ({ task }) => Tasks.parseTaskForTurboUi(paths, task).status,
-    update: (v) => Api.project_tasks.updateStatus({ taskId: task.id!, status: v }),
+    update: (v) => Api.project_tasks.updateStatus({ taskId: task.id, status: Tasks.serializeTaskStatus(v) }),
     onError: () => showErrorToast("Error", "Failed to update task status."),
     refreshPageData,
   });
 
   const [dueDate, setDueDate] = usePageField({
     value: ({ task }) => parseContextualDate(task.dueDate),
-    update: (v) => Api.project_tasks.updateDueDate({ taskId: task.id!, dueDate: serializeContextualDate(v) }),
+    update: (v) => Api.project_tasks.updateDueDate({ taskId: task.id, dueDate: serializeContextualDate(v) }),
     onError: () => showErrorToast("Error", "Failed to update due date."),
     refreshPageData,
   });
@@ -188,7 +188,7 @@ function Page() {
   });
 
   const statusOptions = useMemo<StatusSelector.StatusOption[]>(
-    () => Projects.mapProjectTaskStatusesToUi(task.availableStatuses),
+    () => Tasks.parseTaskStatusesForTurboUi(task.availableStatuses),
     [task.availableStatuses],
   );
 

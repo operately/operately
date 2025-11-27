@@ -2,8 +2,11 @@ import { DateField } from "../DateField";
 import { Person, Comment } from "../CommentSection/types";
 import { Status } from "../TaskBoard/types";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
+import { StatusOption } from "../TaskBoard/types";
 
 export type { Comment } from "../CommentSection/types";
+
+export type TaskStatus = StatusOption;
 
 export type ActivityPageContext = "task" | "milestone";
 
@@ -38,8 +41,8 @@ export interface TaskStatusChangeActivity {
   type: "task_status_updating";
   author: Person;
   insertedAt: string;
-  fromStatus: Status;
-  toStatus: Status;
+  fromStatus: Status | null;
+  toStatus: Status | null;
   taskName: string;
   page: ActivityPageContext;
   task?: Task;
