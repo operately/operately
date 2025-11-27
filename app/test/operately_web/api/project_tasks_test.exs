@@ -394,6 +394,33 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
   end
 
   describe "update task status" do
+    @done_status %{
+      id: "done",
+      label: "Done",
+      color: "green",
+      index: 0,
+      value: "done",
+      closed: true
+    }
+
+    @canceled_status %{
+      id: "canceled",
+      label: "Canceled",
+      color: "green",
+      index: 1,
+      value: "canceled",
+      closed: true
+    }
+
+    @in_progress_status %{
+      id: "in_progress",
+      label: "In progress",
+      color: "green",
+      index: 2,
+      value: "in_progress",
+      closed: false
+    }
+
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:project_tasks, :update_status], %{})
     end
@@ -401,7 +428,9 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     test "it requires a task_id", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:project_tasks, :update_status], %{status: "done"})
+      assert {400, res} =
+               mutation(ctx.conn, [:project_tasks, :update_status], %{status: @done_status})
+
       assert res.message == "Missing required fields: task_id"
     end
 
@@ -417,10 +446,11 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_status], %{
         task_id: Paths.task_id(ctx.task),
-        status: "done"
+        status: @done_status
       })
 
-      assert res.task.status == "done"
+      assert res.task.status.value == "done"
+      assert res.task.status.closed == true
 
       updated_task = Operately.Repo.reload(ctx.task)
       assert updated_task.status == "done"
@@ -433,7 +463,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_status], %{
         task_id: Paths.task_id(ctx.task),
-        status: "done"
+        status: @done_status
       })
 
       after_count = count_activities(ctx.project.id, "task_status_updating")
@@ -451,7 +481,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_status], %{
         task_id: Paths.task_id(ctx.task),
-        status: "done"
+        status: @done_status
       })
 
       # Check that task is now in the milestone's ordering state
@@ -471,7 +501,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_status], %{
         task_id: Paths.task_id(ctx.task),
-        status: "canceled"
+        status: @canceled_status
       })
 
       # Check that task is now in the milestone's ordering state
@@ -491,7 +521,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_status], %{
         task_id: Paths.task_id(ctx.task),
-        status: "in_progress"
+        status: @in_progress_status
       })
 
       # Check that task is added from the milestone's ordering state

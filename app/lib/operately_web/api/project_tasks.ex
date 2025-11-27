@@ -51,14 +51,17 @@ defmodule OperatelyWeb.Api.ProjectTasks do
       |> Steps.update_task_status(inputs.status)
       |> MilestoneSync.sync_after_status_update()
       |> Steps.save_activity(:task_status_updating, fn changes ->
+        old_status = changes.task.task_status && Map.from_struct(changes.task.task_status)
+        new_status = changes.updated_task.task_status && Map.from_struct(changes.updated_task.task_status)
+
         %{
           company_id: changes.project.company_id,
           space_id: changes.project.group_id,
           project_id: changes.project.id,
           milestone_id: changes.task.milestone_id,
           task_id: changes.task.id,
-          old_status: changes.task.status,
-          new_status: changes.updated_task.status,
+          old_status: old_status,
+          new_status: new_status,
           name: changes.task.name
         }
       end)
@@ -518,7 +521,10 @@ defmodule OperatelyWeb.Api.ProjectTasks do
 
     def update_task_status(multi, new_status) do
       Ecto.Multi.update(multi, :updated_task, fn %{task: task} ->
-        Operately.Tasks.Task.changeset(task, %{status: new_status})
+        Operately.Tasks.Task.changeset(task, %{
+          task_status: new_status,
+          status: new_status.value,
+        })
       end)
     end
 
