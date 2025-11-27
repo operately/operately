@@ -17,12 +17,14 @@ defmodule Operately.Data.Change088PopulateTaskStatusFromDeprecatedStatusTest do
     pending = insert_task(ctx.project.id, "pending")
     in_progress = insert_task(ctx.project.id, "in_progress")
     completed = insert_task(ctx.project.id, "completed")
+    open = insert_task(ctx.project.id, "open")
 
     Change088PopulateTaskStatusFromDeprecatedStatus.run()
 
     assert_task_status(pending.id, "pending", %{label: "Pending", color: :gray, index: 2, closed: false})
     assert_task_status(in_progress.id, "in_progress", %{label: "In progress", color: :blue, index: 3, closed: false})
-    assert_task_status(completed.id, "completed", %{label: "Completed", color: :green, index: 5, closed: true})
+    assert_task_status(completed.id, "completed", %{label: "Completed", color: :green, index: 6, closed: true})
+    assert_task_status(open.id, "open", %{label: "Open", color: :blue, index: 4, closed: false})
   end
 
   test "does not overwrite tasks that already have task_status", ctx do

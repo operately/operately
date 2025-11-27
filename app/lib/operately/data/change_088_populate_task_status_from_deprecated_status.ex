@@ -51,9 +51,10 @@ defmodule Operately.Data.Change088PopulateTaskStatusFromDeprecatedStatus do
       "todo" => %{label: "Todo", color: :gray, index: 1, closed: false},
       "pending" => %{label: "Pending", color: :gray, index: 2, closed: false},
       "in_progress" => %{label: "In progress", color: :blue, index: 3, closed: false},
-      "done" => %{label: "Done", color: :green, index: 4, closed: true},
-      "completed" => %{label: "Completed", color: :green, index: 5, closed: true},
-      "canceled" => %{label: "Canceled", color: :red, index: 6, closed: true}
+      "open" => %{label: "Open", color: :blue, index: 4, closed: false},
+      "done" => %{label: "Done", color: :green, index: 5, closed: true},
+      "completed" => %{label: "Completed", color: :green, index: 6, closed: true},
+      "canceled" => %{label: "Canceled", color: :red, index: 7, closed: true},
     }
     |> Map.get(value, default_attributes(value))
     |> Map.put(:value, value)
