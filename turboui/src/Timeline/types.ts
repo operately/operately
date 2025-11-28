@@ -2,11 +2,10 @@ import { DateField } from "../DateField";
 import { Person, Comment } from "../CommentSection/types";
 import { Status } from "../TaskBoard/types";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
-import { StatusOption } from "../TaskBoard/types";
 
 export type { Comment } from "../CommentSection/types";
 
-export type TaskStatus = StatusOption;
+export type TaskStatus = Status;
 
 export type ActivityPageContext = "task" | "milestone";
 
