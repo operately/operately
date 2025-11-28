@@ -275,6 +275,13 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> UI.sleep(300)
   end
 
+  step :change_task_status_from_header_selector, ctx, status_value do
+    ctx
+    |> UI.click_text("Not started")
+    |> UI.click(testid: UI.testid(["status-option", status_value]))
+    |> UI.sleep(300)
+  end
+
   #
   # Assertions
   #
@@ -291,6 +298,20 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     assert task.task_status != nil
     assert task.task_status.closed == true
     assert task.task_status.color == :green
+  end
+
+   step :assert_task_status_in_header, ctx, label do
+    ctx
+    |> UI.assert_text(label)
+  end
+
+  step :assert_task_status_value, ctx, value do
+    task = Operately.Repo.get!(Task, ctx.task.id)
+
+    assert task.task_status != nil
+    assert task.task_status.value == value
+
+    ctx
   end
 
   step :assert_header_checkbox_hidden, ctx do
