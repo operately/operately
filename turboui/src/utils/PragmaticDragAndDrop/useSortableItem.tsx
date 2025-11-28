@@ -7,6 +7,7 @@ import type { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/types";
 interface UseSortableItemProps {
   itemId: string;
   index: number;
+  containerId?: string;
   disabled?: boolean;
 }
 
@@ -41,7 +42,12 @@ interface UseSortableItemReturn {
  *   </div>
  * );
  */
-export function useSortableItem({ itemId, index, disabled = false }: UseSortableItemProps): UseSortableItemReturn {
+export function useSortableItem({
+  itemId,
+  index,
+  containerId,
+  disabled = false,
+}: UseSortableItemProps): UseSortableItemReturn {
   const ref = useRef<HTMLElement>(null);
   const dragHandleRef = useRef<HTMLElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -75,7 +81,7 @@ export function useSortableItem({ itemId, index, disabled = false }: UseSortable
       draggable({
         element,
         dragHandle: dragHandle || undefined,
-        getInitialData: () => ({ itemId, index }),
+        getInitialData: () => ({ itemId, index, containerId }),
         onDragStart: () => setIsDragging(true),
         onDrop: () => setIsDragging(false),
       }),
@@ -83,7 +89,7 @@ export function useSortableItem({ itemId, index, disabled = false }: UseSortable
         element,
         getData: ({ input }) => {
           return attachClosestEdge(
-            { itemId, index },
+            { itemId, index, containerId },
             {
               element,
               input,
@@ -116,7 +122,7 @@ export function useSortableItem({ itemId, index, disabled = false }: UseSortable
         },
       }),
     );
-  }, [itemId, index, disabled]);
+  }, [itemId, index, containerId, disabled]);
 
   return {
     ref,
