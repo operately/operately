@@ -71,7 +71,7 @@ defmodule Operately.Data.Change089UpdateTaskStatusUpdatingActivities do
   end
 
   defp status_attributes(status) do
-    value = status || "pending"
+    value = status
 
     %{
       "not_started" => %{label: "Not started", color: :gray, index: 0, closed: false},
