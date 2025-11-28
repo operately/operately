@@ -15,7 +15,7 @@ import { ProjectPage } from "./index";
 import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 import { usePersonFieldSearch } from "../utils/storybook/usePersonFieldSearch";
 
-const DEFAULT_STATUSES: TaskBoardTypes.StatusOption[] = [
+const DEFAULT_STATUSES: TaskBoardTypes.Status[] = [
   { id: "pending", value: "pending", label: "Not started", color: "gray", icon: "circleDashed", index: 0 },
   { id: "progress", value: "in_progress", label: "In progress", color: "blue", icon: "circleDot", index: 1 },
   { id: "qa", value: "qa", label: "QA", color: "blue", icon: "circleDot", index: 2 },
@@ -250,7 +250,7 @@ export const Default: Story = {
     ];
     const { milestones, setMilestones, reorderMilestones } = useMockMilestoneOrdering({ initialMilestones });
     const [filters, setFilters] = useState<TaskBoardTypes.FilterCondition[]>([]);
-    const [statuses, setStatuses] = useState<TaskBoardTypes.StatusOption[]>(DEFAULT_STATUSES);
+    const [statuses, setStatuses] = useState<TaskBoardTypes.Status[]>(DEFAULT_STATUSES);
     const [parentGoal, setParentGoal] = useState<ProjectPage.ParentGoal | null>({
       id: "1",
       name: "Improve Customer Experience",
@@ -518,7 +518,7 @@ export const EmptyTasks: Story = {
     const [tasks, setTasks] = useState([...mockEmptyTasks]);
     const { milestones, setMilestones, reorderMilestones } = useMockMilestoneOrdering({ initialMilestones: [] });
     const [filters, setFilters] = useState<TaskBoardTypes.FilterCondition[]>([]);
-    const [statuses, setStatuses] = useState<TaskBoardTypes.StatusOption[]>(DEFAULT_STATUSES);
+    const [statuses, setStatuses] = useState<TaskBoardTypes.Status[]>(DEFAULT_STATUSES);
     const [reviewer, setReviewer] = useState<ProjectPage.Person | null>(people[3] || null);
     const [startedAt, setStartedAt] = useState<DateField.ContextualDate | null>(() => {
       const startDate = new Date(2025, 3, 1); // April 1, 2025
@@ -658,7 +658,7 @@ export const EmptyProject: Story = {
     const championSearch = usePersonFieldSearch(people);
     const reviewerSearch = usePersonFieldSearch(people);
     const [milestones, setMilestones] = useState<TaskBoardTypes.Milestone[]>([]);
-    const [statuses, setStatuses] = useState<TaskBoardTypes.StatusOption[]>(DEFAULT_STATUSES);
+    const [statuses, setStatuses] = useState<TaskBoardTypes.Status[]>(DEFAULT_STATUSES);
     const [startedAt, setStartedAt] = useState<DateField.ContextualDate | null>(null);
     const [dueAt, setDueAt] = useState<DateField.ContextualDate | null>(null);
     const [resources, setResources] = useState<ResourceManager.Resource[]>([]);
@@ -786,7 +786,7 @@ export const EmptyProjectReadOnly: Story = {
     const reviewerSearch = usePersonFieldSearch(people);
     const [tasks] = useState<TaskBoardTypes.Task[]>([]);
     const [milestones] = useState<TaskBoardTypes.Milestone[]>([]);
-    const [statuses] = useState<TaskBoardTypes.StatusOption[]>(DEFAULT_STATUSES);
+    const [statuses] = useState<TaskBoardTypes.Status[]>(DEFAULT_STATUSES);
     const startedAt = null; // No start date for empty read-only project
     const dueAt = null; // No due date for empty read-only project
     const [space, setSpace] = useState(defaultSpace);
@@ -870,7 +870,7 @@ export const PausedProject: Story = {
     const [tasks, setTasks] = useState([...mockTasks]);
     const [milestones, setMilestones] = useState<TaskBoardTypes.Milestone[]>(Object.values(mockMilestones));
     const [filters, setFilters] = useState<TaskBoardTypes.FilterCondition[]>([]);
-    const [statuses, setStatuses] = useState<TaskBoardTypes.StatusOption[]>(DEFAULT_STATUSES);
+    const [statuses, setStatuses] = useState<TaskBoardTypes.Status[]>(DEFAULT_STATUSES);
     const [parentGoal, setParentGoal] = useState<ProjectPage.ParentGoal | null>({
       id: "1",
       name: "Improve Customer Experience",

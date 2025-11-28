@@ -25,7 +25,7 @@ const meta: Meta<typeof MilestonePage> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const DEFAULT_STATUS_OPTIONS: Types.StatusOption[] = [
+const DEFAULT_STATUS_OPTIONS: Types.Status[] = [
   { id: "pending", value: "pending", label: "Not started", color: "gray", icon: "circleDashed", index: 0 },
   { id: "in_progress", value: "in_progress", label: "In progress", color: "blue", icon: "circleDot", index: 1 },
   { id: "verification", value: "verification", label: "Verification", color: "blue", icon: "circleDot", index: 2 },
