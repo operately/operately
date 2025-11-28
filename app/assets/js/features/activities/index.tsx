@@ -129,6 +129,7 @@ export const DISPLAYED_IN_FEED = [
   "project_discussion_submitted",
   "task_adding",
   "task_name_updating",
+  "task_status_updating",
   "task_deleting",
   "task_description_change",
   "task_due_date_updating",
