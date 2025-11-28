@@ -1,5 +1,5 @@
 import React from "react";
-import { Status, StatusOption } from "../TaskBoard/types";
+import { Status } from "../TaskBoard/types";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
 import { PersonField } from "../PersonField";
 import { TimelineItem, TimelineFilters } from "../Timeline/types";
@@ -66,7 +66,7 @@ export namespace TaskPage {
     status: Status | null;
     onStatusChange: (newStatus: Status) => void;
 
-    statusOptions: StatusOption[];
+    statusOptions: Status[];
 
     dueDate?: DateField.ContextualDate;
     onDueDateChange: (newDate: DateField.ContextualDate | null) => void;

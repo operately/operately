@@ -145,7 +145,7 @@ const sampleMilestone: Types.Milestone = {
 };
 
 // Default status options used in MilestoneCard stories.
-const DEFAULT_STATUS_OPTIONS: Types.StatusOption[] = [
+const DEFAULT_STATUS_OPTIONS: Types.Status[] = [
   {
     id: "pending",
     value: "pending",

@@ -74,7 +74,7 @@ export namespace MilestonePage {
 
     // Tasks for this milestone
     tasks: Types.Task[];
-    statusOptions: Types.StatusOption[];
+    statusOptions: Types.Status[];
 
     // Optional callbacks
     onTaskCreate?: (task: Types.NewTaskPayload) => void;

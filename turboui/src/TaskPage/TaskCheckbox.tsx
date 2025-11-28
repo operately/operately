@@ -4,13 +4,13 @@ import { IconCheck } from "../icons";
 import { Status } from "../TaskBoard/types";
 
 interface TaskCheckboxProps {
-  status: Status;
+  status: Status | null;
   canEdit: boolean;
   onComplete: () => void;
 }
 
 export function TaskCheckbox({ status, canEdit, onComplete }: TaskCheckboxProps) {
-  const isDone = status.closed && status.color === "green";
+  const isDone = status?.closed && status?.color === "green";
   const canToggleToDone = canEdit && !isDone;
 
   const handleClick = () => {

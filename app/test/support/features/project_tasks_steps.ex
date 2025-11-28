@@ -48,6 +48,28 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> Factory.add_comment(:comment, :task)
   end
 
+  step :given_project_has_no_completed_status, ctx do
+    project = Operately.Repo.get!(Operately.Projects.Project, ctx.project.id)
+
+    filtered_statuses =
+      project.task_statuses
+      |> Enum.reject(fn status -> status.color == :green end)
+      |> Enum.map(fn status ->
+        %{
+          id: status.id,
+          label: status.label,
+          color: Atom.to_string(status.color),
+          value: status.value,
+          index: status.index,
+          closed: status.closed
+        }
+      end)
+
+    {:ok, project} = Projects.update_project(project, %{task_statuses: filtered_statuses})
+
+    Map.put(ctx, :project, project)
+  end
+
   step :visit_project_page, ctx do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
@@ -247,9 +269,34 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> UI.assert_page(Paths.project_path(ctx.company, ctx.project))
   end
 
+  step :complete_task_from_header_checkbox, ctx do
+    ctx
+    |> UI.click(testid: "task-quick-complete")
+    |> UI.sleep(300)
+  end
+
   #
   # Assertions
   #
+
+  step :assert_task_marked_completed, ctx do
+    ctx
+    |> UI.assert_text("Done")
+    |> UI.sleep(300)
+    |> UI.visit(Paths.project_task_path(ctx.company, ctx.task))
+    |> UI.assert_text("Done")
+
+    task = Operately.Repo.get!(Task, ctx.task.id)
+
+    assert task.task_status != nil
+    assert task.task_status.closed == true
+    assert task.task_status.color == :green
+  end
+
+  step :assert_header_checkbox_hidden, ctx do
+    ctx
+    |> UI.refute_has(testid: "task-quick-complete")
+  end
 
   step :assert_form_fields_are_empty, ctx do
     UI.find(ctx, UI.query(testid: "add-task-form"), fn el ->

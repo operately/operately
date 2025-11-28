@@ -2,8 +2,6 @@ import { DateField } from "../DateField";
 import { PersonField } from "../PersonField";
 import { StatusSelector } from "../StatusSelector";
 
-export type StatusOption = StatusSelector.StatusOption;
-
 /**
  * TaskBoard component types
  *

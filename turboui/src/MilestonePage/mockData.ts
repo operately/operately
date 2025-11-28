@@ -1,12 +1,12 @@
 import { genPeople } from "../utils/storybook/genPeople";
 import { asRichTextWithList } from "../utils/storybook/richContent";
-import type { StatusOption } from "../TaskBoard/types";
+import type { Status } from "../TaskBoard/types";
 
 // Generate mock people for stories
 export const mockPeople = genPeople(4);
 
 // Shared status options for timeline task activities
-const PENDING_STATUS: StatusOption = {
+const PENDING_STATUS: Status = {
   id: "pending",
   value: "pending",
   label: "Not started",
@@ -16,7 +16,7 @@ const PENDING_STATUS: StatusOption = {
   closed: false,
 };
 
-const IN_PROGRESS_STATUS: StatusOption = {
+const IN_PROGRESS_STATUS: Status = {
   id: "in_progress",
   value: "in_progress",
   label: "In progress",
@@ -26,7 +26,7 @@ const IN_PROGRESS_STATUS: StatusOption = {
   closed: false,
 };
 
-const DONE_STATUS: StatusOption = {
+const DONE_STATUS: Status = {
   id: "done",
   value: "done",
   label: "Done",

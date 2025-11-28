@@ -141,9 +141,9 @@ export namespace ProjectPage {
     filters?: TaskBoardTypes.FilterCondition[];
     onFiltersChange?: (filters: TaskBoardTypes.FilterCondition[]) => void;
 
-    statuses: TaskBoardTypes.StatusOption[];
+    statuses: TaskBoardTypes.Status[];
     canManageStatuses?: boolean;
-    onSaveCustomStatuses: (statuses: TaskBoardTypes.StatusOption[]) => void;
+    onSaveCustomStatuses: (statuses: TaskBoardTypes.Status[]) => void;
 
     contributors: Person[];
     checkIns: CheckIn[];

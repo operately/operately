@@ -53,7 +53,7 @@ const mockPeople: Types.Person[] = [
 ];
 
 // Default status options used in TaskItem stories.
-const DEFAULT_STATUS_OPTIONS: Types.StatusOption[] = [
+const DEFAULT_STATUS_OPTIONS: Types.Status[] = [
   {
     id: "pending",
     value: "pending",
