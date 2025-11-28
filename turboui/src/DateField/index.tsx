@@ -40,7 +40,7 @@ export namespace DateField {
     variant?: "inline" | "form-field";
     hideCalendarIcon?: boolean;
     useStartOfPeriod?: boolean;
-    size?: "std" | "small" | "lg";
+    size?: "std" | "small" | "xs" | "lg";
     error?: boolean;
     calendarOnly?: boolean;
     ariaLabel?: string;
@@ -218,7 +218,7 @@ interface DatePickerTriggerProps extends TestableElement {
   showOverdueMessage: boolean;
   variant: "inline" | "form-field";
   hideCalendarIcon: boolean;
-  size: "std" | "small" | "lg";
+  size: "std" | "small" | "xs" | "lg";
   error: boolean;
   ariaLabel?: string;
   className?: string;
@@ -245,12 +245,14 @@ function DatePickerTrigger({
   const fieldSize = match(size)
     .with("std", () => `border ${error ? "border-red-500" : "border-surface-outline"} rounded-lg w-full px-2 py-1.5`)
     .with("small", () => `border ${error ? "border-red-500" : "border-surface-outline"} rounded-lg w-full px-1.5 py-1`)
+    .with("xs", () => `border ${error ? "border-red-500" : "border-surface-outline"} rounded-lg w-full px-1 py-[2px]`)
     .with("lg", () => `border ${error ? "border-red-500" : "border-surface-outline"} rounded-lg w-full px-2.5 py-2`)
     .exhaustive();
 
   const elementSize = match(size)
     .with("std", () => "text-sm gap-1.5")
     .with("small", () => "text-xs gap-1")
+    .with("xs", () => "text-[10px] gap-0.5")
     .with("lg", () => "text-base gap-2")
     .exhaustive();
 
@@ -296,6 +298,7 @@ function DatePickerTrigger({
             <IconCalendarEvent
               size={match(size)
                 .with("small", () => 12)
+                .with("xs", () => 11)
                 .with("std", () => 16)
                 .with("lg", () => 18)
                 .exhaustive()}

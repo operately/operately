@@ -6,6 +6,7 @@ interface DragHandleProps {
   isDragging: boolean;
   disabled?: boolean;
   className?: string;
+  size?: number;
 }
 
 /**
@@ -27,7 +28,7 @@ interface DragHandleProps {
  *   </div>
  * );
  */
-export function DragHandle({ isDragging, disabled = false, className }: DragHandleProps) {
+export function DragHandle({ isDragging, disabled = false, className, size = 16 }: DragHandleProps) {
   const dragGripClass = classNames(
     "text-content-subtle opacity-0 group-hover:opacity-100 transition-all",
     {
@@ -39,5 +40,5 @@ export function DragHandle({ isDragging, disabled = false, className }: DragHand
     className,
   );
 
-  return <IconGripVertical size={16} className={dragGripClass} />;
+  return <IconGripVertical size={size} className={dragGripClass} />;
 }
