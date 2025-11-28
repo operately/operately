@@ -389,6 +389,24 @@ defmodule Operately.Features.ProjectTasksTest do
   end
 
   @tag login_as: :champion
+  feature "complete task from header checkbox", ctx do
+    ctx
+    |> Steps.given_task_exists()
+    |> Steps.visit_task_page()
+    |> Steps.complete_task_from_header_checkbox()
+    |> Steps.assert_task_marked_completed()
+  end
+
+  @tag login_as: :champion
+  feature "header checkbox is hidden when there is no green status", ctx do
+    ctx
+    |> Steps.given_task_exists()
+    |> Steps.given_project_has_no_completed_status()
+    |> Steps.visit_task_page()
+    |> Steps.assert_header_checkbox_hidden()
+  end
+
+  @tag login_as: :champion
   feature "post comment to task", ctx do
     ctx = Steps.given_task_exists(ctx)
 

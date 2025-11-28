@@ -101,7 +101,7 @@ const mockPeople: Types.Person[] = [
 
 // Default status options used in stories. "Done" is marked as hidden so
 // completed tasks participate in the hidden-tasks behavior.
-const DEFAULT_STATUS_OPTIONS: Types.StatusOption[] = [
+const DEFAULT_STATUS_OPTIONS: Types.Status[] = [
   {
     id: "pending",
     value: "pending",
