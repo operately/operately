@@ -407,6 +407,17 @@ defmodule Operately.Features.ProjectTasksTest do
   end
 
   @tag login_as: :champion
+  feature "change task status from header selector", ctx do
+    ctx
+    |> Steps.given_task_exists()
+    |> Steps.visit_task_page()
+    |> Steps.assert_task_status_in_header("Not started")
+    |> Steps.change_task_status_from_header_selector("in_progress")
+    |> Steps.assert_task_status_in_header("In progress")
+    |> Steps.assert_task_status_value("in_progress")
+  end
+
+  @tag login_as: :champion
   feature "post comment to task", ctx do
     ctx = Steps.given_task_exists(ctx)
 
