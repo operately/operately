@@ -47,11 +47,11 @@ export function Column({
   return (
     <div
       ref={columnRef}
-      className="relative flex flex-col gap-2 bg-transparent min-h-[240px] w-[320px] flex-shrink-0"
+      className="relative flex flex-col gap-2 bg-transparent h-full w-[320px] flex-shrink-0"
       data-test-id={`kanban-column-${status}`}
     >
       {!isFirst && (
-        <div className="absolute top-4 bottom-4 -ml-[6px] w-px bg-surface-outline/30 border-r border-dashed border-surface-outline/60 pointer-events-none" />
+        <div className="absolute top-4 bottom-4 -ml-[6px] w-px min-h-full bg-surface-outline/30 border-r border-dashed border-surface-outline/60 pointer-events-none" />
       )}
       <div className="flex items-center justify-between text-xs font-semibold text-content-dimmed uppercase tracking-wide px-1">
         <span>{title}</span>
