@@ -106,6 +106,7 @@ defmodule OperatelyWeb.Api do
     mutation(:delete, OperatelyWeb.Api.ProjectTasks.Delete)
     mutation(:update_name, OperatelyWeb.Api.ProjectTasks.UpdateName)
     mutation(:update_status, OperatelyWeb.Api.ProjectTasks.UpdateStatus)
+    mutation(:update_kanban, OperatelyWeb.Api.ProjectTasks.UpdateKanban)
     mutation(:update_due_date, OperatelyWeb.Api.ProjectTasks.UpdateDueDate)
     mutation(:update_assignee, OperatelyWeb.Api.ProjectTasks.UpdateAssignee)
     mutation(:update_milestone, OperatelyWeb.Api.ProjectTasks.UpdateMilestone)

@@ -1,7 +1,6 @@
 defmodule OperatelyWeb.Api.Queries.GetTaskTest do
   use OperatelyWeb.TurboCase
 
-  import OperatelyWeb.Api.Serializer
   import Operately.PeopleFixtures
   import Operately.GroupsFixtures
   import Operately.ProjectsFixtures
@@ -37,7 +36,7 @@ defmodule OperatelyWeb.Api.Queries.GetTaskTest do
       task = create_task(ctx, company_access: Binding.view_access())
 
       assert {200, res} = query(ctx.conn, :get_task, %{id: Paths.task_id(task)})
-      assert res.task == serialize(task, level: :full)
+      assert res.task == Serializer.serialize(task, level: :full)
     end
 
     test "space members have no access", ctx do
@@ -53,7 +52,7 @@ defmodule OperatelyWeb.Api.Queries.GetTaskTest do
       task = create_task(ctx, space_access: Binding.view_access())
 
       assert {200, res} = query(ctx.conn, :get_task, %{id: Paths.task_id(task)})
-      assert res.task == serialize(task, level: :full)
+      assert res.task == Serializer.serialize(task, level: :full)
     end
 
     test "champions have access", ctx do
@@ -65,7 +64,7 @@ defmodule OperatelyWeb.Api.Queries.GetTaskTest do
       conn = log_in_account(ctx.conn, account)
 
       assert {200, res} = query(conn, :get_task, %{id: Paths.task_id(task)})
-      assert res.task == serialize(task, level: :full)
+      assert res.task == Serializer.serialize(task, level: :full)
 
       # another user's request
       assert {404, res} = query(ctx.conn, :get_task, %{id: Paths.task_id(task)})
@@ -81,7 +80,7 @@ defmodule OperatelyWeb.Api.Queries.GetTaskTest do
       conn = log_in_account(ctx.conn, account)
 
       assert {200, res} = query(conn, :get_task, %{id: Paths.task_id(task)})
-      assert res.task == serialize(task, level: :full)
+      assert res.task == Serializer.serialize(task, level: :full)
 
       # another user's request
       assert {404, res} = query(ctx.conn, :get_task, %{id: Paths.task_id(task)})
@@ -102,7 +101,7 @@ defmodule OperatelyWeb.Api.Queries.GetTaskTest do
       task = create_task(ctx, company_access: Binding.view_access())
 
       assert {200, res} = query(ctx.conn, :get_task, %{id: Paths.task_id(task)})
-      assert res.task == serialize(task, level: :full)
+      assert res.task == Serializer.serialize(task, level: :full)
     end
 
     test "include_assignees", ctx do
@@ -110,7 +109,7 @@ defmodule OperatelyWeb.Api.Queries.GetTaskTest do
       assignee_fixture(task_id: task.id, person_id: ctx.person.id)
 
       assert {200, res} = query(ctx.conn, :get_task, %{id: Paths.task_id(task), include_assignees: true})
-      assert res.task.assignees == [serialize(ctx.person)]
+      assert res.task.assignees == [Serializer.serialize(ctx.person)]
 
       assert {200, res} = query(ctx.conn, :get_task, %{id: Paths.task_id(task)})
       refute res.task.assignees
@@ -118,11 +117,11 @@ defmodule OperatelyWeb.Api.Queries.GetTaskTest do
 
     test "include_milestone", ctx do
       task = create_task(ctx, company_access: Binding.view_access())
-      milestone = Repo.preload(task, [milestone: :project]).milestone
+      milestone = Repo.preload(task, milestone: :project).milestone
 
       assert {200, res} = query(ctx.conn, :get_task, %{id: Paths.task_id(task), include_milestone: true})
       m = %{res.task.milestone | status: to_string(res.task.milestone.status)}
-      assert m == serialize(milestone)
+      assert m == serialize_milestone(milestone)
 
       assert {200, res} = query(ctx.conn, :get_task, %{id: Paths.task_id(task)})
       refute res.task.milestone
@@ -133,7 +132,7 @@ defmodule OperatelyWeb.Api.Queries.GetTaskTest do
       project = Repo.preload(task, :project).project
 
       assert {200, res} = query(ctx.conn, :get_task, %{id: Paths.task_id(task), include_project: true})
-      assert res.task.project == serialize(project)
+      assert res.task.project == Serializer.serialize(project)
 
       assert {200, res} = query(ctx.conn, :get_task, %{id: Paths.task_id(task)})
       refute res.task.project
@@ -165,5 +164,12 @@ defmodule OperatelyWeb.Api.Queries.GetTaskTest do
       id: ctx.person.id,
       access_level: Binding.edit_access(),
     }])
+  end
+
+  defp serialize_milestone(milestone) do
+    milestone
+    |> Serializer.serialize(level: :essential)
+    |> Jason.encode!()
+    |> Jason.decode!(keys: :atoms)
   end
 end
