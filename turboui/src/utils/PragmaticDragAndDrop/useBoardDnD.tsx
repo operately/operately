@@ -8,9 +8,19 @@ function isNumber(value: unknown): value is number {
   return typeof value === "number" && !Number.isNaN(value);
 }
 
+function hasClientY(input: unknown): input is { clientY: number } {
+  return (
+    typeof input === "object" &&
+    input !== null &&
+    "clientY" in input &&
+    typeof (input as { clientY: unknown }).clientY === "number"
+  );
+}
+
 const EDGE_ZONE_MIN_PX = 16;
 const EDGE_ZONE_MAX_PX = 64;
 const EDGE_ZONE_RATIO = 0.1;
+const ITEM_EDGE_SWITCH_THRESHOLD = 0.48;
 
 export function useBoardDnD(onBoardMove: OnBoardMove) {
   const [draggedItemId, setDraggedItemId] = useState<string | null>(null);
@@ -46,7 +56,17 @@ export function useBoardDnD(onBoardMove: OnBoardMove) {
     const targetIndex = isNumber(target.data.index) ? target.data.index : sourceLocation.index;
     let destinationIndex = targetIndex;
 
-    const closestEdge = extractClosestEdge(target.data);
+    let closestEdge = extractClosestEdge(target.data);
+
+    const input = location.current.input;
+    if (hasClientY(input)) {
+      const rect = target.element.getBoundingClientRect();
+      if (rect.height > 0) {
+        const relativeY = (input.clientY - rect.top) / rect.height;
+        closestEdge = relativeY > ITEM_EDGE_SWITCH_THRESHOLD ? "bottom" : "top";
+      }
+    }
+
     if (closestEdge === "bottom") {
       destinationIndex += 1;
     }
