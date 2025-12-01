@@ -45,6 +45,17 @@ const SIX_STATUSES: Types.Status[] = [
   { id: "done", value: "done", label: "Done", color: "green", icon: "circleCheck", index: 4, closed: true },
   { id: "canceled", value: "canceled", label: "Canceled", color: "red", icon: "circleX", index: 5, closed: true },
 ];
+const WIDE_STATUSES: Types.Status[] = [
+  { id: "backlog", value: "backlog", label: "Backlog", color: "gray", icon: "circleDashed", index: 0 },
+  { id: "ready", value: "ready", label: "Ready", color: "blue", icon: "circleDot", index: 1 },
+  { id: "blocked", value: "blocked", label: "Blocked", color: "red", icon: "circleX", index: 2 },
+  { id: "pending", value: "pending", label: "Pending", color: "gray", icon: "circleDashed", index: 3 },
+  { id: "in_progress", value: "in_progress", label: "In progress", color: "blue", icon: "circleDot", index: 4 },
+  { id: "review", value: "review", label: "Review", color: "gray", icon: "circleDot", index: 5 },
+  { id: "qa", value: "qa", label: "QA", color: "blue", icon: "circleDot", index: 6 },
+  { id: "done", value: "done", label: "Done", color: "green", icon: "circleCheck", index: 7, closed: true },
+  { id: "canceled", value: "canceled", label: "Canceled", color: "red", icon: "circleX", index: 8, closed: true },
+];
 
 const milestoneMap: Record<string, Types.Milestone> = Object.values(mockMilestones).reduce(
   (acc, milestone) => ({ ...acc, [milestone.id]: milestone }),
@@ -74,6 +85,19 @@ const buildKanbanStateFromTasks = (tasks: Types.Task[], statuses: Types.Status[]
   });
 
   return state;
+};
+
+const spreadTasksAcrossStatuses = (tasks: Types.Task[], statuses: Types.Status[]): Types.Task[] => {
+  if (statuses.length === 0) return tasks;
+
+  return tasks.map((task, index) => {
+    const status = statuses[index % statuses.length] ?? task.status ?? null;
+
+    return {
+      ...task,
+      status,
+    };
+  });
 };
 
 const updateTasksAfterMove = (
@@ -223,6 +247,46 @@ export const SixStatusBoard: Story = {
         onTaskKanbanChange={(event) => {
           setKanbanState(event.updatedKanbanStateByMilestone);
           setTasks((prev) => updateTasksAfterMove(prev, event.taskId, event.to, SIX_STATUSES));
+        }}
+      />
+    );
+  },
+};
+
+export const AutoScrollEdgeColumns: Story = {
+  render: () => {
+    const wideTasks = spreadTasksAcrossStatuses(mockTasks, WIDE_STATUSES);
+    const [tasks, setTasks] = useState<Types.Task[]>(wideTasks);
+    const [kanbanState, setKanbanState] = useState<Record<string, MilestoneKanbanState>>(
+      buildKanbanStateFromTasks(wideTasks, WIDE_STATUSES),
+    );
+    const assigneeSearch = usePersonFieldSearch(Object.values(mockPeople));
+    const milestones = useMemo(
+      () =>
+        [mockMilestones.q2Release, mockMilestones.productLaunch, mockMilestones.marketExpansion].filter(
+          Boolean,
+        ) as Types.Milestone[],
+      [],
+    );
+
+    return (
+      <KanbanBoard
+        milestones={milestones}
+        tasks={tasks}
+        statuses={WIDE_STATUSES}
+        kanbanStateByMilestone={kanbanState}
+        assigneePersonSearch={assigneeSearch}
+        onTaskAssigneeChange={(taskId, assignee) =>
+          setTasks((prev) =>
+            prev.map((task) => (task.id === taskId ? { ...task, assignees: assignee ? [assignee] : [] } : task)),
+          )
+        }
+        onTaskDueDateChange={(taskId, dueDate) =>
+          setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, dueDate } : task)))
+        }
+        onTaskKanbanChange={(event) => {
+          setKanbanState(event.updatedKanbanStateByMilestone);
+          setTasks((prev) => updateTasksAfterMove(prev, event.taskId, event.to, WIDE_STATUSES));
         }}
       />
     );
