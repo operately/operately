@@ -5,7 +5,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Tasks.KanbanState do
 
   def serialize(%{state: state}, _opts) when is_map(state) do
     Enum.into(state, %{}, fn {status, ids} ->
-      {to_string(status), normalize_ids(ids)}
+      {status, normalize_ids(ids)}
     end)
   end
 

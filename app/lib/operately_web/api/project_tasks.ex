@@ -855,7 +855,6 @@ defmodule OperatelyWeb.Api.ProjectTasks do
 
       statuses =
         case allowed_statuses do
-          nil -> Map.keys(normalized)
           [] -> Map.keys(normalized)
           allowed -> allowed
         end
