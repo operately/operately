@@ -531,6 +531,81 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     end
   end
 
+  describe "update task kanban" do
+    @in_progress_status %{
+      id: "in_progress",
+      label: "In progress",
+      color: "blue",
+      index: 1,
+      value: "in_progress",
+      closed: false
+    }
+
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:project_tasks, :update_kanban], %{})
+    end
+
+    test "it updates status and kanban state for a milestone", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      kanban_state = %{
+        pending: [],
+        in_progress: [Paths.task_id(ctx.task)],
+        done: [],
+        canceled: []
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_kanban], %{
+        task_id: Paths.task_id(ctx.task),
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        status: @in_progress_status,
+        milestone_kanban_state: Jason.encode!(kanban_state)
+      })
+
+      assert res.task.status.value == "in_progress"
+
+      milestone = Repo.reload(ctx.milestone)
+      assert milestone.tasks_kanban_state["in_progress"] == kanban_state.in_progress
+    end
+
+    test "it rejects mismatched milestone ids", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_milestone(:other_milestone, :project)
+        |> Factory.log_in_person(:creator)
+
+      assert {400, res} = mutation(ctx.conn, [:project_tasks, :update_kanban], %{
+        task_id: Paths.task_id(ctx.task),
+        milestone_id: Paths.milestone_id(ctx.other_milestone),
+        status: @in_progress_status,
+        milestone_kanban_state: Jason.encode!(%{pending: [], in_progress: [], done: [], canceled: []})
+      })
+
+      assert res.message == "Task milestone mismatch"
+    end
+
+    test "it rejects invalid statuses in kanban state", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      invalid_kanban_state = %{
+        pending: [],
+        in_progress: [Paths.task_id(ctx.task)],
+        done: [],
+        canceled: [],
+        blocked: [Paths.task_id(ctx.task)]
+      }
+
+      assert {400, res} = mutation(ctx.conn, [:project_tasks, :update_kanban], %{
+        task_id: Paths.task_id(ctx.task),
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        status: @in_progress_status,
+        milestone_kanban_state: Jason.encode!(invalid_kanban_state)
+      })
+
+      assert res.message == "Invalid status blocked"
+    end
+  end
+
   describe "update task due date" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:project_tasks, :update_due_date], %{})
