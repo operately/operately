@@ -3,8 +3,8 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 
-import { DragHandle, DropIndicator, useBoardDnD, useSortableItem } from ".";
-import classNames from "../classnames";
+import { DragHandle, DropIndicator, useBoardDnD, useSortableItem } from "../";
+import classNames from "../../classnames";
 
 interface ExampleTask {
   id: string;
