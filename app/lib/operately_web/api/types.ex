@@ -1658,7 +1658,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :description, :string, null: true
     field? :comments, list_of(:milestone_comment), null: true
     field? :comments_count, :integer, null: true
-    field? :tasks_kanban_state, :string, null: true
+    field? :tasks_kanban_state, :json, null: true
     field? :tasks_ordering_state, list_of(:string), null: true
     field? :permissions, :project_permissions, null: true
     field? :subscription_list, :subscription_list, null: true

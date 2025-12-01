@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
 
   alias Operately.Repo
   alias OperatelyWeb.Api.Serializer
+  alias Operately.Tasks.KanbanState
   alias Operately.Tasks.MilestoneSync
 
   defmodule List do
@@ -71,6 +72,57 @@ defmodule OperatelyWeb.Api.ProjectTasks do
         %{
           task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full),
           updated_milestone: OperatelyWeb.Api.Serializer.serialize(changes.updated_milestone)
+        }
+      end)
+    end
+  end
+
+  defmodule UpdateKanban do
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
+
+    inputs do
+      field :task_id, :id, null: false
+      field :milestone_id, :id, null: true
+      field :status, :project_task_status, null: false
+      field :milestone_kanban_state, :json, null: false
+    end
+
+    outputs do
+      field :task, :task
+      field :updated_milestone, :milestone, null: true
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_task(inputs.task_id, [:assigned_people, :milestone])
+      |> Steps.check_task_permissions(:can_edit_task)
+      |> Steps.validate_kanban_milestone(inputs.milestone_id)
+      |> Steps.update_task_status(inputs.status)
+      |> Steps.update_milestone_kanban_state(inputs.milestone_kanban_state)
+      |> Steps.save_activity(:task_status_updating, fn changes ->
+        old_status = changes.task.task_status && Map.from_struct(changes.task.task_status)
+        new_status = changes.updated_task.task_status && Map.from_struct(changes.updated_task.task_status)
+
+        %{
+          company_id: changes.project.company_id,
+          space_id: changes.project.group_id,
+          project_id: changes.project.id,
+          milestone_id: changes.task.milestone_id,
+          task_id: changes.task.id,
+          old_status: old_status,
+          new_status: new_status,
+          name: changes.task.name
+        }
+      end)
+      |> Steps.commit()
+      |> Steps.broadcast_review_count_update()
+      |> Steps.respond(fn changes ->
+        %{
+          task: Serializer.serialize(changes.updated_task, level: :full),
+          updated_milestone:
+            Serializer.serialize(changes.kanban_updated_milestone || changes.updated_milestone)
         }
       end)
     end
@@ -618,6 +670,28 @@ defmodule OperatelyWeb.Api.ProjectTasks do
       end)
     end
 
+    def validate_kanban_milestone(multi, milestone_id) do
+      Ecto.Multi.run(multi, :validate_kanban_milestone, fn _repo, %{task: task} ->
+        decoded =
+          case milestone_id do
+            nil -> {:ok, nil}
+            _ -> decode_id(milestone_id, :allow_nil)
+          end
+
+        case decoded do
+          {:ok, decoded_id} ->
+            if task.milestone_id == decoded_id do
+              {:ok, task.milestone}
+            else
+              {:error, {:bad_request, "Task milestone mismatch"}}
+            end
+
+          {:error, reason} ->
+            {:error, {:bad_request, reason}}
+        end
+      end)
+    end
+
     def update_task_milestone_if_changed(multi, new_milestone_id) do
       Ecto.Multi.run(multi, :updated_task, fn _repo, %{task: task, validate_milestone: milestone} ->
         # Check if milestone_id is different from current task.milestone_id
@@ -627,6 +701,24 @@ defmodule OperatelyWeb.Api.ProjectTasks do
         else
           # No change needed, return the existing task
           {:ok, task}
+        end
+      end)
+    end
+
+    def update_milestone_kanban_state(multi, kanban_state) do
+      Ecto.Multi.run(multi, :kanban_updated_milestone, fn _repo, %{task: task, project: project} ->
+        case task.milestone do
+          nil ->
+            {:ok, nil}
+
+          milestone ->
+            allowed_statuses = Operately.Projects.Project.task_status_values(project)
+
+            with {:ok, decoded_state} <- decode_kanban_state(kanban_state, allowed_statuses) do
+              next_state = KanbanState.load(decoded_state, allowed_statuses)
+
+              Operately.Projects.update_milestone(milestone, %{tasks_kanban_state: next_state})
+            end
         end
       end)
     end
@@ -755,6 +847,39 @@ defmodule OperatelyWeb.Api.ProjectTasks do
     end
     defp broadcast(_), do: :ok
 
+    defp decode_kanban_state(state, allowed_statuses) when is_map(state) do
+      normalized =
+        Enum.into(state, %{}, fn {key, value} ->
+          {to_string(key), value || []}
+        end)
+
+      statuses =
+        case allowed_statuses do
+          nil -> Map.keys(normalized)
+          [] -> Map.keys(normalized)
+          allowed -> allowed
+        end
+
+      with :ok <- validate_statuses(normalized, statuses) do
+        {:ok,
+         Enum.reduce(statuses, %{}, fn status, acc ->
+           Map.put(acc, status, Map.get(normalized, status, []))
+         end)}
+      end
+    end
+
+    defp decode_kanban_state(_state, _allowed_statuses), do: {:ok, %{}}
+
+    defp validate_statuses(_state, []), do: :ok
+    defp validate_statuses(state, allowed_statuses) do
+      allowed = MapSet.new(Enum.map(allowed_statuses, &to_string/1))
+
+      case Enum.find(Map.keys(state), fn status -> not MapSet.member?(allowed, status) end) do
+        nil -> :ok
+        invalid -> {:error, {:bad_request, "Invalid status #{invalid}"}}
+      end
+    end
+
     defp handle_error(reason) do
       case reason do
         {:error, _failed_operation, {:not_found, message}, _changes} ->
@@ -765,6 +890,9 @@ defmodule OperatelyWeb.Api.ProjectTasks do
 
         {:error, _failed_operation, :forbidden, _changes} ->
           {:error, :forbidden}
+
+        {:error, _failed_operation, {:bad_request, message}, _changes} ->
+          {:error, :bad_request, message}
 
         {:error, :validate_milestone, message, _changes} ->
           {:error, :bad_request, message}
