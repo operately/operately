@@ -175,6 +175,8 @@ defmodule OperatelyWeb.Api.Queries.GetMilestoneTest do
 
     milestone_fixture(%{ project_id: project.id })
     |> Serializer.serialize(level: :essential)
+    |> Jason.encode!()
+    |> Jason.decode!(keys: :atoms)
   end
 
   defp add_person_to_space(ctx) do

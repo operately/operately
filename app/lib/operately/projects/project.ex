@@ -121,6 +121,14 @@ defmodule Operately.Projects.Project do
     end
   end
 
+  def task_status_values(project = %__MODULE__{}) do
+    project.task_statuses
+    |> Elixir.List.wrap()
+    |> Enum.map(& &1.value)
+    |> Enum.filter(& &1)
+    |> Enum.map(&to_string/1)
+  end
+
   @impl WorkMapItem
   def status(project = %__MODULE__{}) do
     cond do
