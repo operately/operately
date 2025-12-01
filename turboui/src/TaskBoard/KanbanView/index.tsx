@@ -5,13 +5,11 @@ import { MilestoneKanban } from "./MilestoneKanban";
 import type { KanbanBoardProps, KanbanStatus, MilestoneKanbanState } from "./types";
 import type { TaskBoard } from "../components";
 
-const NO_MILESTONE_ID = "no_milestone";
-
 export function KanbanBoard({
-  milestones,
+  milestone,
   tasks,
   statuses,
-  kanbanStateByMilestone,
+  kanbanState: kanbanStateProp,
   onTaskKanbanChange,
   onTaskAssigneeChange,
   onTaskDueDateChange,
@@ -19,17 +17,12 @@ export function KanbanBoard({
   assigneePersonSearch,
 }: KanbanBoardProps) {
   const statusKeys = useMemo(() => statuses.map((status) => status.value), [statuses]);
-  const [internalTasks, setInternalTasks] = useState<TaskBoard.Task[]>(tasks);
-  const [kanbanState, setKanbanState] = useState<Record<string, MilestoneKanbanState>>(
-    normalizeKanbanState(kanbanStateByMilestone, milestones, statusKeys),
-  );
-  const [noMilestoneState, setNoMilestoneState] = useState<MilestoneKanbanState>(deriveNoMilestoneState(tasks, statusKeys));
+  const tasksForMilestone = useMemo(() => filterTasksForMilestone(tasks, milestone), [milestone, tasks]);
+  const [internalTasks, setInternalTasks] = useState<TaskBoard.Task[]>(tasksForMilestone);
+  const [kanbanState, setKanbanState] = useState<MilestoneKanbanState>(normalizeKanbanState(kanbanStateProp, statusKeys));
 
-  useEffect(() => setInternalTasks(tasks), [tasks]);
-  useEffect(() => {
-    setKanbanState(normalizeKanbanState(kanbanStateByMilestone, milestones, statusKeys));
-  }, [kanbanStateByMilestone, milestones, statusKeys]);
-  useEffect(() => setNoMilestoneState(deriveNoMilestoneState(tasks, statusKeys)), [tasks, statusKeys]);
+  useEffect(() => setInternalTasks(tasksForMilestone), [tasksForMilestone]);
+  useEffect(() => setKanbanState(normalizeKanbanState(kanbanStateProp, statusKeys)), [kanbanStateProp, statusKeys]);
 
   const taskById = useMemo(() => {
     const map = new Map<string, TaskBoard.Task>();
@@ -40,190 +33,69 @@ export function KanbanBoard({
   const { draggedItemId } = useBoardDnD(
     useCallback(
       (move) => {
-        const source = parseContainer(move.source.containerId);
-        const destination = parseContainer(move.destination.containerId);
-        if (!source || !destination) return;
+        const sourceStatus = parseStatus(move.source.containerId, statusKeys);
+        const destinationStatus = parseStatus(move.destination.containerId, statusKeys);
+        if (!sourceStatus || !destinationStatus) return;
 
-        const nextKanbanState = applyKanbanMove(kanbanState, move.itemId, source, destination, move.destination.index, statusKeys);
-        const nextNoMilestoneState = applyNoMilestoneMove(
-          noMilestoneState,
-          move.itemId,
-          source,
-          destination,
-          move.destination.index,
-          statusKeys,
-        );
+        const nextKanbanState = applyKanbanMove(kanbanState, move.itemId, destinationStatus, move.destination.index, statusKeys);
 
         setKanbanState(nextKanbanState);
-        setNoMilestoneState(nextNoMilestoneState);
         setInternalTasks((previous) =>
-          previous.map((task) =>
-            task.id === move.itemId
-              ? updateTaskForMove(task, destination.milestoneId, destination.status, milestones, statuses)
-              : task,
-          ),
+          previous.map((task) => (task.id === move.itemId ? updateTaskForMove(task, destinationStatus, statuses) : task)),
         );
 
         onTaskKanbanChange?.({
+          milestoneId: milestone?.id ?? null,
           taskId: move.itemId,
-          from: { milestoneId: source.milestoneId, status: source.status, index: move.source.index },
-          to: { milestoneId: destination.milestoneId, status: destination.status, index: move.destination.index },
-          updatedKanbanStateByMilestone: nextKanbanState,
+          from: { status: sourceStatus, index: move.source.index },
+          to: { status: destinationStatus, index: move.destination.index },
+          updatedKanbanState: nextKanbanState,
         });
       },
-      [kanbanState, milestones, noMilestoneState, onTaskKanbanChange, statusKeys, statuses],
+      [kanbanState, milestone?.id, onTaskKanbanChange, statusKeys, statuses],
     ),
   );
 
-  const milestoneOrder = useMemo(() => milestones || [], [milestones]);
-  const hasNoMilestoneLane = internalTasks.some((task) => !task.milestone);
-
   return (
     <div className="space-y-4" data-test-id="kanban-board">
-      {milestoneOrder.map((milestone) => (
-        <MilestoneKanban
-          key={milestone.id}
-          milestone={milestone}
-          columns={buildColumnsForMilestone(milestone.id, kanbanState, internalTasks, taskById, statusKeys)}
-          draggedItemId={draggedItemId}
-          statuses={statuses}
-          onTaskAssigneeChange={onTaskAssigneeChange}
-          onTaskDueDateChange={onTaskDueDateChange}
-          onMilestoneUpdate={onMilestoneUpdate}
-          assigneePersonSearch={assigneePersonSearch}
-        />
-      ))}
-
-      {hasNoMilestoneLane && (
-        <MilestoneKanban
-          milestone={null}
-          columns={buildColumnsForNoMilestone(noMilestoneState, internalTasks, taskById, statusKeys)}
-          draggedItemId={draggedItemId}
-          statuses={statuses}
-          onTaskAssigneeChange={onTaskAssigneeChange}
-          onTaskDueDateChange={onTaskDueDateChange}
-          assigneePersonSearch={assigneePersonSearch}
-        />
-      )}
+      <MilestoneKanban
+        milestone={milestone}
+        columns={buildColumns(kanbanState, internalTasks, taskById, statusKeys)}
+        draggedItemId={draggedItemId}
+        statuses={statuses}
+        onTaskAssigneeChange={onTaskAssigneeChange}
+        onTaskDueDateChange={onTaskDueDateChange}
+        onMilestoneUpdate={onMilestoneUpdate}
+        assigneePersonSearch={assigneePersonSearch}
+      />
     </div>
   );
 }
 
-function normalizeKanbanState(
-  state: Record<string, MilestoneKanbanState>,
-  milestones: TaskBoard.Milestone[],
-  statusKeys: KanbanStatus[],
-): Record<string, MilestoneKanbanState> {
-  const result: Record<string, MilestoneKanbanState> = {};
-
-  milestones?.forEach((milestone) => {
-    result[milestone.id] = cloneState(state?.[milestone.id], statusKeys);
-  });
-
-  Object.entries(state || {}).forEach(([milestoneId, value]) => {
-    result[milestoneId] = cloneState(value, statusKeys);
-  });
-
-  return result;
+function normalizeKanbanState(state: MilestoneKanbanState | undefined, statusKeys: KanbanStatus[]): MilestoneKanbanState {
+  return cloneState(state, statusKeys);
 }
 
-function deriveNoMilestoneState(tasks: TaskBoard.Task[], statusKeys: KanbanStatus[]): MilestoneKanbanState {
-  const state = cloneState(undefined, statusKeys);
-
-  tasks.forEach((task) => {
-    if (task.milestone) return;
-
-    const status = statusFromTask(task, statusKeys);
-    state[status]?.push(task.id);
-  });
-
-  return state;
+function filterTasksForMilestone(tasks: TaskBoard.Task[], milestone: TaskBoard.Milestone | null): TaskBoard.Task[] {
+  if (!milestone) return tasks.filter((task) => !task.milestone && !task._isHelperTask);
+  return tasks.filter((task) => task.milestone?.id === milestone.id && !task._isHelperTask);
 }
 
-function statusFromTask(task: TaskBoard.Task, statusKeys: KanbanStatus[]): KanbanStatus {
-  const value = task.status?.value || task.status?.id;
-
-  if (value && statusKeys.includes(value)) return value;
-
-  // Fallback to first known status or a generic bucket
-  return statusKeys[0] || "unassigned";
-}
-
-function cloneState(state: MilestoneKanbanState | undefined, statusKeys: KanbanStatus[]): MilestoneKanbanState {
-  return statusKeys.reduce<MilestoneKanbanState>((acc, key) => {
-    acc[key] = [...(state?.[key] || [])];
-    return acc;
-  }, {});
-}
-
-function parseContainer(containerId: string): { milestoneId: string | null; status: KanbanStatus } | null {
-  const [milestoneId, status] = containerId.split(":");
-
-  if (!milestoneId || !status) {
-    return null;
-  }
-
-  return {
-    milestoneId: milestoneId === NO_MILESTONE_ID ? null : milestoneId,
-    status,
-  };
+function parseStatus(containerId: string, statusKeys: KanbanStatus[]): KanbanStatus | null {
+  if (statusKeys.includes(containerId)) return containerId;
+  return null;
 }
 
 function applyKanbanMove(
-  current: Record<string, MilestoneKanbanState>,
+  current: MilestoneKanbanState,
   taskId: string,
-  source: { milestoneId: string | null; status: KanbanStatus },
-  destination: { milestoneId: string | null; status: KanbanStatus },
-  destinationIndex: number,
-  statusKeys: KanbanStatus[],
-): Record<string, MilestoneKanbanState> {
-  let next = normalizeKanbanState(current, [], statusKeys);
-
-  if (source.milestoneId) {
-    next[source.milestoneId] = removeFromState(
-      next[source.milestoneId] || cloneState(undefined, statusKeys),
-      taskId,
-      source.status,
-    );
-  }
-
-  if (destination.milestoneId) {
-    const base = next[destination.milestoneId] || cloneState(undefined, statusKeys);
-    const withoutTask = removeFromAllColumns(base, taskId);
-    const updated = insertIntoColumn(withoutTask, taskId, destination.status, destinationIndex);
-    next[destination.milestoneId] = updated;
-  }
-
-  return next;
-}
-
-function applyNoMilestoneMove(
-  state: MilestoneKanbanState,
-  taskId: string,
-  source: { milestoneId: string | null; status: KanbanStatus },
-  destination: { milestoneId: string | null; status: KanbanStatus },
+  destinationStatus: KanbanStatus,
   destinationIndex: number,
   statusKeys: KanbanStatus[],
 ): MilestoneKanbanState {
-  let next = cloneState(state, statusKeys);
-
-  if (!source.milestoneId) {
-    next = removeFromState(next, taskId, source.status);
-  }
-
-  if (!destination.milestoneId) {
-    next = insertIntoColumn(next, taskId, destination.status, destinationIndex);
-  }
-
-  return next;
-}
-
-function removeFromState(state: MilestoneKanbanState, taskId: string, status: KanbanStatus): MilestoneKanbanState {
-  const updatedList = (state[status] || []).filter((id) => id !== taskId);
-  return {
-    ...state,
-    [status]: updatedList,
-  };
+  const base = cloneState(current, statusKeys);
+  const withoutTask = removeFromAllColumns(base, taskId);
+  return insertIntoColumn(withoutTask, taskId, destinationStatus, destinationIndex);
 }
 
 function removeFromAllColumns(state: MilestoneKanbanState, taskId: string): MilestoneKanbanState {
@@ -252,30 +124,7 @@ function insertIntoColumn(
   };
 }
 
-function buildColumnsForMilestone(
-  milestoneId: string,
-  kanbanState: Record<string, MilestoneKanbanState>,
-  tasks: TaskBoard.Task[],
-  taskById: Map<string, TaskBoard.Task>,
-  statusKeys: KanbanStatus[],
-): Record<KanbanStatus, TaskBoard.Task[]> {
-  const state = kanbanState[milestoneId] || cloneState(undefined, statusKeys);
-  const tasksForMilestone = tasks.filter((task) => task.milestone?.id === milestoneId && !task._isHelperTask);
-
-  return buildColumnsFromState(state, tasksForMilestone, taskById, statusKeys);
-}
-
-function buildColumnsForNoMilestone(
-  state: MilestoneKanbanState,
-  tasks: TaskBoard.Task[],
-  taskById: Map<string, TaskBoard.Task>,
-  statusKeys: KanbanStatus[],
-): Record<KanbanStatus, TaskBoard.Task[]> {
-  const tasksWithoutMilestone = tasks.filter((task) => !task.milestone && !task._isHelperTask);
-  return buildColumnsFromState(state, tasksWithoutMilestone, taskById, statusKeys);
-}
-
-function buildColumnsFromState(
+function buildColumns(
   state: MilestoneKanbanState,
   tasks: TaskBoard.Task[],
   taskById: Map<string, TaskBoard.Task>,
@@ -301,14 +150,26 @@ function buildColumnsFromState(
   return result;
 }
 
+function statusFromTask(task: TaskBoard.Task, statusKeys: KanbanStatus[]): KanbanStatus {
+  const value = task.status?.value || task.status?.id;
+
+  if (value && statusKeys.includes(value)) return value;
+
+  return statusKeys[0] || "unassigned";
+}
+
+function cloneState(state: MilestoneKanbanState | undefined, statusKeys: KanbanStatus[]): MilestoneKanbanState {
+  return statusKeys.reduce<MilestoneKanbanState>((acc, key) => {
+    acc[key] = [...(state?.[key] || [])];
+    return acc;
+  }, {});
+}
+
 function updateTaskForMove(
   task: TaskBoard.Task,
-  milestoneId: string | null,
   status: KanbanStatus,
-  milestones: TaskBoard.Milestone[],
   statuses: StatusSelector.StatusOption[],
 ): TaskBoard.Task {
-  const milestone = milestoneId ? milestones.find((m) => m.id === milestoneId) || null : null;
   const statusMeta = statuses.find((option) => option.value === status) || {
     id: status,
     value: status,
@@ -335,7 +196,6 @@ function updateTaskForMove(
 
   return {
     ...task,
-    milestone,
     status: nextStatus,
   };
 }
