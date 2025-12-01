@@ -27,9 +27,9 @@ defmodule Operately.Tasks.KanbanStateTest do
   test "add" do
     s = KanbanState.initialize()
 
-    task1 = %{id: Ecto.UUID.generate(), name: "Task 1"}
-    task2 = %{id: Ecto.UUID.generate(), name: "Task 2"}
-    task3 = %{id: Ecto.UUID.generate(), name: "Task 3"}
+    task1 = %Operately.Tasks.Task{id: Ecto.UUID.generate(), name: "Task 1"}
+    task2 = %Operately.Tasks.Task{id: Ecto.UUID.generate(), name: "Task 2"}
+    task3 = %Operately.Tasks.Task{id: Ecto.UUID.generate(), name: "Task 3"}
 
     s = KanbanState.add(s, task1, "pending", 0)
     assert s["pending"] == [OperatelyWeb.Paths.task_id(task1)]
@@ -44,9 +44,9 @@ defmodule Operately.Tasks.KanbanStateTest do
   test "remove" do
     s = KanbanState.initialize()
 
-    task1 = %{id: Ecto.UUID.generate(), name: "Task 1"}
-    task2 = %{id: Ecto.UUID.generate(), name: "Task 2"}
-    task3 = %{id: Ecto.UUID.generate(), name: "Task 3"}
+    task1 = %Operately.Tasks.Task{id: Ecto.UUID.generate(), name: "Task 1"}
+    task2 = %Operately.Tasks.Task{id: Ecto.UUID.generate(), name: "Task 2"}
+    task3 = %Operately.Tasks.Task{id: Ecto.UUID.generate(), name: "Task 3"}
 
     s = KanbanState.add(s, task1, "pending", 0)
     s = KanbanState.add(s, task2, "pending", 0)
@@ -64,9 +64,9 @@ defmodule Operately.Tasks.KanbanStateTest do
   end
 
   test "move moves task between columns and clamps index" do
-    task1 = %{id: Ecto.UUID.generate(), name: "Task 1"}
-    task2 = %{id: Ecto.UUID.generate(), name: "Task 2"}
-    task3 = %{id: Ecto.UUID.generate(), name: "Task 3"}
+    task1 = %Operately.Tasks.Task{id: Ecto.UUID.generate(), name: "Task 1"}
+    task2 = %Operately.Tasks.Task{id: Ecto.UUID.generate(), name: "Task 2"}
+    task3 = %Operately.Tasks.Task{id: Ecto.UUID.generate(), name: "Task 3"}
 
     id1 = OperatelyWeb.Paths.task_id(task1)
     id2 = OperatelyWeb.Paths.task_id(task2)
