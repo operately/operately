@@ -8,6 +8,7 @@ import type { TaskBoardProps } from "../types";
 import { Column } from "./Column";
 import type { KanbanStatus } from "./types";
 import { StatusSelector } from "../../StatusSelector";
+import { useHorizontalAutoScroll } from "../../utils/PragmaticDragAndDrop";
 
 interface MilestoneKanbanProps {
   milestone: TaskBoard.Milestone | null;
@@ -31,6 +32,7 @@ export function MilestoneKanban({
   assigneePersonSearch,
 }: MilestoneKanbanProps) {
   const testId = useMemo(() => (milestone ? createTestId("milestone", milestone.id) : "kanban-no-milestone"), [milestone]);
+  const scrollContainerRef = useHorizontalAutoScroll();
 
   const handleMilestoneDueDateChange = (newDueDate: DateField.ContextualDate | null) => {
     if (milestone && onMilestoneUpdate) {
@@ -82,7 +84,7 @@ export function MilestoneKanban({
         </div>
       </header>
 
-      <div className="p-3 overflow-x-auto">
+      <div ref={scrollContainerRef} className="p-3 overflow-x-auto">
         <div className="flex gap-3 min-w-max">
           {statuses.map((status, index) => (
             <Column
