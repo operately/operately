@@ -343,18 +343,19 @@ export interface MilestoneKanbanState {
 }
 
 export interface KanbanBoardProps {
-  milestones: TaskBoard.Milestone[];
+  milestone: TaskBoard.Milestone | null;
   tasks: TaskBoard.Task[];
 
-  // Map of milestone id -> kanban state (matching serialized tasks_kanban_state)
-  kanbanStateByMilestone: Record<string, MilestoneKanbanState>;
+  // Kanban state for the single milestone (matching serialized tasks_kanban_state)
+  kanbanState: MilestoneKanbanState;
 
   // Called whenever a drag/drop completes
   onTaskKanbanChange?: (event: {
+    milestoneId: string | null;
     taskId: string;
-    from: { milestoneId: string | null; status: KanbanStatus; index: number };
-    to: { milestoneId: string | null; status: KanbanStatus; index: number };
-    updatedKanbanStateByMilestone: Record<string, MilestoneKanbanState>;
+    from: { status: KanbanStatus; index: number };
+    to: { status: KanbanStatus; index: number };
+    updatedKanbanState: MilestoneKanbanState;
   }) => void | Promise<void>;
 
   // Existing TaskBoard callbacks reused
@@ -368,13 +369,10 @@ export interface KanbanBoardProps {
 
 **Behavior:**
 
-- For each milestone:
-  - Render a header consistent with `MilestoneCard`.
-  - Below the header, render four columns side-by-side: Pending, In progress, Completed, Canceled.
-- For the "No milestone" swimlane:
-  - Reuse the existing "No milestone" header from TaskBoard.
-  - Render the same four status columns for tasks without `milestone`.
-  - This swimlane’s ordering is computed locally; no `tasks_kanban_state` persistence yet.
+- Render exactly one milestone lane (or a "No milestone" lane when `milestone` is `null`):
+  - Header consistent with `MilestoneCard`.
+  - Columns for the provided statuses (default 4: Pending, In progress, Completed, Canceled).
+  - Tasks are filtered to the provided milestone (or to tasks without a milestone when `milestone` is `null`).
 
 - Each card:
   - Represents a `TaskBoard.Task`, displayed similarly to the existing list rows but **without** the `StatusSelector`.
@@ -382,7 +380,7 @@ export interface KanbanBoardProps {
 
     ```ts
     itemId = task.id;
-    containerId = `${milestoneId ?? "no_milestone"}:${status}`;
+    containerId = status;
     index = position within the column;
     ```
 
@@ -390,10 +388,10 @@ export interface KanbanBoardProps {
   - Use the new `useBoardDnD` hook at the board level.
   - On drop:
     - Compute the `from` and `to` descriptors.
-    - Locally update `kanbanStateByMilestone` in an immutable/pure way:
-      - Remove `taskId` from `from.containerId` list.
-      - Insert `taskId` into the `to.containerId` list at `to.index`.
-    - Invoke `onTaskKanbanChange` with both the `from`/`to` metadata and the updated map.
+    - Locally update the single `kanbanState` in an immutable/pure way:
+      - Remove `taskId` from the source list.
+      - Insert `taskId` into the destination list at `to.index`.
+    - Invoke `onTaskKanbanChange` with both the `from`/`to` metadata and the updated state.
     - The Kanban component itself does **not** talk to the API.
 
 **Stories:**
@@ -402,11 +400,14 @@ export interface KanbanBoardProps {
   - Single milestone with several tasks across all four statuses.
   - All callbacks wired to local state, `console.log` for `onTaskKanbanChange`.
 
-- Story 2: "Multiple milestones + No milestone lane"
-  - Several milestones, each with tasks across statuses.
-  - Some tasks without milestones, shown under the "No milestone" swimlane.
+- Story 2: "Six status board"
+  - Single milestone with a custom six-status set.
+  - Demonstrates flexible column counts.
 
-- Story 3: "Empty states"
+- Story 3: "Wide statuses / auto-scroll"
+  - Single milestone with many columns to exercise horizontal auto-scroll.
+
+- Story 4: "Empty states"
   - No tasks at all, and a milestone with no tasks.
 
 **Result:**
@@ -416,9 +417,9 @@ export interface KanbanBoardProps {
 
 ### PR 4 – Backend mutation and Kanban state enhancements
 
-**Goal:** Provide a backend mutation that updates both:
-- `task.status` and `task.milestone_id`; and
-- The affected milestones' `tasks_kanban_state`.
+**Goal:** Provide a backend mutation that updates task status and the milestone’s `tasks_kanban_state`.
+
+> Note: the Kanban UI now shows a single milestone at a time, so tasks are not dragged between milestones. We no longer change `task.milestone_id` from the Kanban interaction; the mutation should reflect this simplified flow.
 
 **Data model changes:**
 

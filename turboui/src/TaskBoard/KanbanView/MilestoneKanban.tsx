@@ -41,7 +41,10 @@ export function MilestoneKanban({
   };
 
   return (
-    <section className="border-t border-surface-outline bg-surface-base first:border-t-0 first:rounded-lg" data-test-id={testId}>
+    <section
+      className="border-t border-surface-outline bg-surface-base first:border-t-0 first:rounded-lg min-h-[80vh]"
+      data-test-id={testId}
+    >
       <header className="flex items-center justify-between gap-3 px-4 pt-3">
         <div className="flex items-center gap-2 flex-1 min-w-0">
           {milestone ? (
@@ -84,14 +87,14 @@ export function MilestoneKanban({
         </div>
       </header>
 
-      <div ref={scrollContainerRef} className="p-3 overflow-x-auto">
-        <div className="flex gap-3 min-w-max">
+      <div ref={scrollContainerRef} className="p-3 overflow-x-auto h-[80vh]">
+        <div className="flex gap-3 min-w-max h-full items-stretch">
           {statuses.map((status, index) => (
             <Column
               key={status.value}
               title={status.label}
               status={status.value}
-              containerId={`${milestone?.id ?? "no_milestone"}:${status.value}`}
+              containerId={status.value}
               tasks={columns[status.value] || []}
               draggedItemId={draggedItemId}
               onTaskAssigneeChange={onTaskAssigneeChange}
