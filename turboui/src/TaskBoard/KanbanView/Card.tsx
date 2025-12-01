@@ -16,6 +16,7 @@ interface CardProps {
   onTaskAssigneeChange?: TaskBoardProps["onTaskAssigneeChange"];
   onTaskDueDateChange?: TaskBoardProps["onTaskDueDateChange"];
   assigneePersonSearch?: TaskBoardProps["assigneePersonSearch"];
+  showDropIndicator?: boolean;
 }
 
 export function Card({
@@ -26,6 +27,7 @@ export function Card({
   onTaskAssigneeChange,
   onTaskDueDateChange,
   assigneePersonSearch,
+  showDropIndicator = true,
 }: CardProps) {
   const [currentAssignee, setCurrentAssignee] = useState<TaskBoard.Person | null>(task.assignees?.[0] || null);
   const [currentDueDate, setCurrentDueDate] = useState<DateField.ContextualDate | null>(task.dueDate || null);
@@ -66,7 +68,7 @@ export function Card({
         "opacity-60": draggedItemId === task.id,
       })}
     >
-      {closestEdge && <DropIndicator edge={closestEdge} />}
+      {showDropIndicator && closestEdge && <DropIndicator edge={closestEdge} />}
       <div className="flex items-center gap-2">
         <div ref={dragHandleRef as React.RefObject<HTMLDivElement>} className="pt-0.5 flex-shrink-0">
           <DragHandle isDragging={isDragging} size={12} />

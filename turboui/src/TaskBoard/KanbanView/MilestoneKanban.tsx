@@ -9,11 +9,14 @@ import { Column } from "./Column";
 import type { KanbanStatus } from "./types";
 import { StatusSelector } from "../../StatusSelector";
 import { useHorizontalAutoScroll } from "../../utils/PragmaticDragAndDrop";
+import type { BoardLocation } from "../../utils/PragmaticDragAndDrop";
 
 interface MilestoneKanbanProps {
   milestone: TaskBoard.Milestone | null;
   columns: Record<KanbanStatus, TaskBoard.Task[]>;
   draggedItemId: string | null;
+  targetLocation: BoardLocation | null;
+  placeholderHeight: number | null;
   statuses: StatusSelector.StatusOption[];
   onTaskAssigneeChange?: TaskBoardProps["onTaskAssigneeChange"];
   onTaskDueDateChange?: TaskBoardProps["onTaskDueDateChange"];
@@ -25,6 +28,8 @@ export function MilestoneKanban({
   milestone,
   columns,
   draggedItemId,
+  targetLocation,
+  placeholderHeight,
   statuses,
   onTaskAssigneeChange,
   onTaskDueDateChange,
@@ -97,6 +102,8 @@ export function MilestoneKanban({
               containerId={status.value}
               tasks={columns[status.value] || []}
               draggedItemId={draggedItemId}
+              targetLocation={targetLocation}
+              placeholderHeight={placeholderHeight}
               onTaskAssigneeChange={onTaskAssigneeChange}
               onTaskDueDateChange={onTaskDueDateChange}
               assigneePersonSearch={assigneePersonSearch}
