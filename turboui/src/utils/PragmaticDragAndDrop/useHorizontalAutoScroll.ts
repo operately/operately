@@ -70,7 +70,12 @@ export function useHorizontalAutoScroll() {
     const cleanup = monitorForElements({
       canMonitor: ({ source }) => typeof source.data.containerId === "string" && typeof source.data.itemId === "string",
       onDrag: ({ location }) => {
-        const { clientX, clientY } = location.current.input;
+        const input = location.current.input;
+        if (!input) {
+          stopScrolling();
+          return;
+        }
+        const { clientX, clientY } = input;
         const rect = scrollElement.getBoundingClientRect();
         const maxScrollLeft = scrollElement.scrollWidth - scrollElement.clientWidth;
         const hasOverflow = maxScrollLeft > 0;
