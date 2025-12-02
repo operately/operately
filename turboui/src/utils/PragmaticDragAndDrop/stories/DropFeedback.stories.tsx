@@ -100,7 +100,7 @@ function LineIndicatorBoard() {
 
 function PlaceholderBoard() {
   const { columns, handleMove } = useBoardState();
-  const { draggedItemId, targetLocation, draggedItemDimensions } = useBoardDnD(handleMove);
+  const { draggedItemId, destination, draggedItemDimensions } = useBoardDnD(handleMove);
 
   return (
     <div className="p-6 space-y-4">
@@ -116,7 +116,7 @@ function PlaceholderBoard() {
             containerId={column.id}
             itemIds={columns[column.id] || []}
             draggedItemId={draggedItemId}
-            targetLocation={targetLocation}
+            targetLocation={destination}
             placeholderHeight={draggedItemDimensions?.height ?? null}
           />
         ))}

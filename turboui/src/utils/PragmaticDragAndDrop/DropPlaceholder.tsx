@@ -26,6 +26,7 @@ export function DropPlaceholder({ containerId, index, height, className }: DropP
       getData: () => ({
         containerId,
         index,
+        isPlaceholder: true,
       }),
     });
   }, [containerId, index]);
