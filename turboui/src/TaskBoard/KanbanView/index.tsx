@@ -30,7 +30,7 @@ export function KanbanBoard({
     return map;
   }, [internalTasks]);
 
-  const { draggedItemId, targetLocation, draggedItemDimensions } = useBoardDnD(
+  const { draggedItemId, destination, draggedItemDimensions } = useBoardDnD(
     useCallback(
       (move) => {
         const sourceStatus = parseStatus(move.source.containerId, statusKeys);
@@ -62,7 +62,7 @@ export function KanbanBoard({
         milestone={milestone}
         columns={buildColumns(kanbanState, internalTasks, taskById, statusKeys)}
         draggedItemId={draggedItemId}
-        targetLocation={targetLocation}
+        targetLocation={destination}
         placeholderHeight={draggedItemDimensions?.height ?? null}
         statuses={statuses}
         onTaskAssigneeChange={onTaskAssigneeChange}
