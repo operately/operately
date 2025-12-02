@@ -61,14 +61,28 @@ export function Card({
     [onTaskDueDateChange, task.id],
   );
 
+  const isDimmed = draggedItemId === task.id;
+  const dropIndicatorEdge = showDropIndicator ? closestEdge : null;
+  const shouldShowDescriptionIndicator = Boolean(task.hasDescription);
+  const shouldShowCommentsIndicator = Boolean(task.hasComments);
+  const shouldShowCommentCount = task.commentCount !== undefined;
+  const dateFieldClassName = classNames({
+    "[&>span]:text-transparent": !currentDueDate,
+    "group-hover:[&>span]:text-content-dimmed": !currentDueDate,
+    "group-focus-within:[&>span]:text-content-dimmed": !currentDueDate,
+  });
+
   return (
     <div
       ref={ref as React.RefObject<HTMLDivElement>}
-      className={classNames("relative rounded-md border border-surface-subtle bg-surface-base px-4 py-2 shadow-xs group w-full", {
-        "opacity-60": draggedItemId === task.id,
-      })}
+      className={classNames(
+        "relative rounded-md border border-surface-subtle bg-surface-base px-4 py-2 shadow-xs group w-full",
+        {
+          "opacity-60": isDimmed,
+        },
+      )}
     >
-      {showDropIndicator && closestEdge && <DropIndicator edge={closestEdge} />}
+      {dropIndicatorEdge && <DropIndicator edge={dropIndicatorEdge} />}
       <div className="flex items-start">
         <div
           ref={dragHandleRef as React.RefObject<HTMLDivElement>}
@@ -91,16 +105,16 @@ export function Card({
 
           <div className="flex items-center justify-between gap-2 text-[11px] text-content-dimmed leading-none">
             <div className="flex items-center gap-2">
-              {task.hasDescription && (
+              {shouldShowDescriptionIndicator && (
                 <span className="inline-flex items-center gap-1" data-test-id="description-indicator">
                   <IconFileText size={12} />
                 </span>
               )}
 
-              {task.hasComments && (
+              {shouldShowCommentsIndicator && (
                 <span className="inline-flex items-center gap-1" data-test-id="comments-indicator">
                   <IconMessageCircle size={12} />
-                  {task.commentCount !== undefined && <span>{task.commentCount}</span>}
+                  {shouldShowCommentCount && <span>{task.commentCount}</span>}
                 </span>
               )}
             </div>
@@ -116,15 +130,7 @@ export function Card({
                 readonly={!onTaskDueDateChange}
                 size="small"
                 calendarOnly
-                className={
-                  currentDueDate
-                    ? ""
-                    : [
-                        "[&>span]:text-transparent",
-                        "group-hover:[&>span]:text-content-dimmed",
-                        "group-focus-within:[&>span]:text-content-dimmed",
-                      ].join(" ")
-                }
+                className={dateFieldClassName}
               />
 
               <PersonField
