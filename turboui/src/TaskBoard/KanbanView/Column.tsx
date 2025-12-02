@@ -44,6 +44,14 @@ export function Column({
     containerId,
   });
 
+  const isColumnEmpty = visibleTasks.length === 0;
+  const isDraggingOverThisColumn = Boolean(
+    draggedItemId && targetLocation && targetLocation.containerId === containerId,
+  );
+  const shouldCenterEmptyState = isColumnEmpty && placeholderIndex === null && !isDraggingOverThisColumn;
+  const shouldShowEmptyPlaceholder = isColumnEmpty && !isDraggingOverThisColumn;
+  const shouldShowDropIndicator = placeholderIndex === null;
+
   useEffect(() => {
     const element = columnRef.current;
     if (!element) return;
@@ -70,7 +78,11 @@ export function Column({
         <span>{title}</span>
       </div>
 
-      <div className={classNames("space-y-2 flex-1", { "flex items-center": visibleTasks.length === 0 && placeholderIndex === null })}>
+      <div
+        className={classNames("space-y-2 flex-1", {
+          "flex items-center": shouldCenterEmptyState,
+        })}
+      >
         {visibleTasks.length > 0 ? (
           visibleTasks.map((task, index) => (
             <React.Fragment key={task.id}>
@@ -85,19 +97,21 @@ export function Column({
                 onTaskAssigneeChange={onTaskAssigneeChange}
                 onTaskDueDateChange={onTaskDueDateChange}
                 assigneePersonSearch={assigneePersonSearch}
-                showDropIndicator={placeholderIndex === null}
+                showDropIndicator={shouldShowDropIndicator}
               />
             </React.Fragment>
           ))
         ) : (
-          <div
-            className={[
-              "w-full text-center text-xs text-content-subtle py-4 bg-surface-base rounded-md",
-              "border border-dashed border-surface-outline max-w-[220px] mx-auto",
-            ].join(" ")}
-          >
-            Drop tasks here
-          </div>
+          shouldShowEmptyPlaceholder && (
+            <div
+              className={classNames(
+                "w-full text-center text-xs text-content-subtle py-4 bg-surface-base rounded-md",
+                "border border-dashed border-surface-outline max-w-[220px] mx-auto",
+              )}
+            >
+              Drop tasks here
+            </div>
+          )
         )}
 
         {placeholderIndex !== null && placeholderIndex === visibleTasks.length && (
