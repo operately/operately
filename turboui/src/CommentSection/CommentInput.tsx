@@ -67,6 +67,7 @@ function CommentInputActive({
     placeholder: "Write a comment here...",
     handlers: richTextHandlers,
     autoFocus: true,
+    className: "min-h-[200px] px-4 py-3",
   });
 
   const handlePost = async () => {
@@ -101,7 +102,7 @@ function CommentInputActive({
       <Avatar person={currentUser} size="normal" />
       <div className="flex-1">
         <div className="border border-surface-outline rounded-lg overflow-hidden">
-          <Editor editor={editor} hideBorder />
+          <Editor editor={editor} hideBorder padding="p-0" />
 
           <div className="flex justify-between items-center m-4">
             <div className="flex items-center gap-2">
