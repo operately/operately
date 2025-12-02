@@ -69,63 +69,67 @@ export function Card({
       })}
     >
       {showDropIndicator && closestEdge && <DropIndicator edge={closestEdge} />}
-      <div className="flex items-center gap-2">
+      <div className="flex items-start gap-2">
         <div ref={dragHandleRef as React.RefObject<HTMLDivElement>} className="pt-0.5 flex-shrink-0">
           <DragHandle isDragging={isDragging} size={12} />
         </div>
 
-        <div className="flex-1 min-w-0 flex items-center gap-2">
+        <div className="flex-1 min-w-0 flex flex-col gap-2">
           <BlackLink
             to={task.link}
-            className="flex-1 text-[13px] font-semibold text-content-base hover:text-link-hover transition-colors truncate leading-snug"
+            className="block text-[13px] font-semibold text-content-base hover:text-link-hover transition-colors leading-snug break-words"
             underline="hover"
             title={task.title}
           >
             {task.title}
           </BlackLink>
 
-          <div className="flex items-center gap-2 text-[11px] text-content-dimmed leading-none flex-shrink-0">
-            {task.hasDescription && (
-              <span className="inline-flex items-center gap-1" data-test-id="description-indicator">
-                <IconFileText size={12} />
-              </span>
-            )}
+          <div className="flex items-center justify-between gap-2 text-[11px] text-content-dimmed leading-none">
+            <div className="flex items-center gap-2">
+              {task.hasDescription && (
+                <span className="inline-flex items-center gap-1" data-test-id="description-indicator">
+                  <IconFileText size={12} />
+                </span>
+              )}
 
-            {task.hasComments && (
-              <span className="inline-flex items-center gap-1" data-test-id="comments-indicator">
-                <IconMessageCircle size={12} />
-                {task.commentCount !== undefined && <span>{task.commentCount}</span>}
-              </span>
-            )}
+              {task.hasComments && (
+                <span className="inline-flex items-center gap-1" data-test-id="comments-indicator">
+                  <IconMessageCircle size={12} />
+                  {task.commentCount !== undefined && <span>{task.commentCount}</span>}
+                </span>
+              )}
+            </div>
 
-            <DateField
-              date={currentDueDate}
-              onDateSelect={handleDueDateChange}
-              variant="inline"
-              hideCalendarIcon={true}
-              showOverdueWarning={!task.status?.closed}
-              placeholder={currentDueDate ? "" : "Set due date"}
-              readonly={!onTaskDueDateChange}
-              size="small"
-              calendarOnly
-              className={
-                currentDueDate
-                  ? ""
-                  : [
-                      "[&>span]:text-transparent",
-                      "group-hover:[&>span]:text-content-dimmed",
-                      "group-focus-within:[&>span]:text-content-dimmed",
-                    ].join(" ")
-              }
-            />
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <DateField
+                date={currentDueDate}
+                onDateSelect={handleDueDateChange}
+                variant="inline"
+                hideCalendarIcon={true}
+                showOverdueWarning={!task.status?.closed}
+                placeholder={currentDueDate ? "" : "Set due date"}
+                readonly={!onTaskDueDateChange}
+                size="small"
+                calendarOnly
+                className={
+                  currentDueDate
+                    ? ""
+                    : [
+                        "[&>span]:text-transparent",
+                        "group-hover:[&>span]:text-content-dimmed",
+                        "group-focus-within:[&>span]:text-content-dimmed",
+                      ].join(" ")
+                }
+              />
 
-            <PersonField
-              person={currentAssignee}
-              setPerson={handleAssigneeChange}
-              avatarSize={22}
-              avatarOnly={true}
-              {...(assigneePersonSearch ? { searchData: assigneePersonSearch } : { readonly: true as const })}
-            />
+              <PersonField
+                person={currentAssignee}
+                setPerson={handleAssigneeChange}
+                avatarSize={22}
+                avatarOnly={true}
+                {...(assigneePersonSearch ? { searchData: assigneePersonSearch } : { readonly: true as const })}
+              />
+            </div>
           </div>
         </div>
       </div>
