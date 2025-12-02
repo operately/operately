@@ -5,6 +5,8 @@ import { Card } from "./Card";
 import type { KanbanStatus } from "./types";
 import type { TaskBoard } from "../components";
 import type { TaskBoardProps } from "../types";
+import { DropPlaceholder, projectItemsWithPlaceholder } from "../../utils/PragmaticDragAndDrop";
+import type { BoardLocation } from "../../utils/PragmaticDragAndDrop";
 
 interface ColumnProps {
   title: string;
@@ -16,6 +18,8 @@ interface ColumnProps {
   onTaskDueDateChange?: TaskBoardProps["onTaskDueDateChange"];
   assigneePersonSearch?: TaskBoardProps["assigneePersonSearch"];
   isFirst?: boolean;
+  targetLocation: BoardLocation | null;
+  placeholderHeight: number | null;
 }
 
 export function Column({
@@ -28,8 +32,17 @@ export function Column({
   onTaskDueDateChange,
   assigneePersonSearch,
   isFirst = false,
+  targetLocation,
+  placeholderHeight,
 }: ColumnProps) {
   const columnRef = useRef<HTMLDivElement>(null);
+  const { items: visibleTasks, placeholderIndex } = projectItemsWithPlaceholder({
+    items: tasks,
+    getId: (task) => task.id,
+    draggedItemId,
+    targetLocation,
+    containerId,
+  });
 
   useEffect(() => {
     const element = columnRef.current;
@@ -39,10 +52,10 @@ export function Column({
       element,
       getData: () => ({
         containerId,
-        index: tasks.length,
+        index: visibleTasks.length,
       }),
     });
-  }, [containerId, tasks.length]);
+  }, [containerId, visibleTasks.length]);
 
   return (
     <div
@@ -57,19 +70,24 @@ export function Column({
         <span>{title}</span>
       </div>
 
-      <div className={classNames("space-y-2 flex-1", { "flex items-center": tasks.length === 0 })}>
-        {tasks.length > 0 ? (
-          tasks.map((task, index) => (
-            <Card
-              key={task.id}
-              task={task}
-              containerId={containerId}
-              index={index}
-              draggedItemId={draggedItemId}
-              onTaskAssigneeChange={onTaskAssigneeChange}
-              onTaskDueDateChange={onTaskDueDateChange}
-              assigneePersonSearch={assigneePersonSearch}
-            />
+      <div className={classNames("space-y-2 flex-1", { "flex items-center": visibleTasks.length === 0 && placeholderIndex === null })}>
+        {visibleTasks.length > 0 ? (
+          visibleTasks.map((task, index) => (
+            <React.Fragment key={task.id}>
+              {placeholderIndex === index && (
+                <DropPlaceholder containerId={containerId} index={index} height={placeholderHeight} />
+              )}
+              <Card
+                task={task}
+                containerId={containerId}
+                index={index}
+                draggedItemId={draggedItemId}
+                onTaskAssigneeChange={onTaskAssigneeChange}
+                onTaskDueDateChange={onTaskDueDateChange}
+                assigneePersonSearch={assigneePersonSearch}
+                showDropIndicator={placeholderIndex === null}
+              />
+            </React.Fragment>
           ))
         ) : (
           <div
@@ -80,6 +98,10 @@ export function Column({
           >
             Drop tasks here
           </div>
+        )}
+
+        {placeholderIndex !== null && placeholderIndex === visibleTasks.length && (
+          <DropPlaceholder containerId={containerId} index={visibleTasks.length} height={placeholderHeight} />
         )}
       </div>
     </div>

@@ -3,5 +3,7 @@ export { useSortableItem } from "./useSortableItem";
 export { useBoardDnD } from "./useBoardDnD";
 export { useHorizontalAutoScroll } from "./useHorizontalAutoScroll";
 export { DropIndicator } from "./DropIndicator";
+export { DropPlaceholder } from "./DropPlaceholder";
 export { DragHandle } from "./DragHandle";
+export { projectItemsWithPlaceholder } from "./placeholder";
 export type { DraggableItem, OnReorderFunction, BoardMove, BoardLocation, OnBoardMove } from "./types";
