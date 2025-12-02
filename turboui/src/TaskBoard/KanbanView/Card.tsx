@@ -64,14 +64,19 @@ export function Card({
   return (
     <div
       ref={ref as React.RefObject<HTMLDivElement>}
-      className={classNames("relative rounded-md border border-surface-subtle bg-surface-base p-2 shadow-xs group w-full", {
+      className={classNames("relative rounded-md border border-surface-subtle bg-surface-base px-4 py-2 shadow-xs group w-full", {
         "opacity-60": draggedItemId === task.id,
       })}
     >
       {showDropIndicator && closestEdge && <DropIndicator edge={closestEdge} />}
-      <div className="flex items-start gap-2">
-        <div ref={dragHandleRef as React.RefObject<HTMLDivElement>} className="pt-0.5 flex-shrink-0">
-          <DragHandle isDragging={isDragging} size={12} />
+      <div className="flex items-start">
+        <div
+          ref={dragHandleRef as React.RefObject<HTMLDivElement>}
+          className="pt-0.5 flex-shrink-0 overflow-hidden w-0 opacity-0 transition-all duration-300 ease-out group-hover:w-4 group-hover:opacity-100 group-hover:mr-1 group-hover:-ml-2"
+        >
+          <div className="w-4 flex items-center justify-center">
+            <DragHandle isDragging={isDragging} size={12} />
+          </div>
         </div>
 
         <div className="flex-1 min-w-0 flex flex-col gap-2">
