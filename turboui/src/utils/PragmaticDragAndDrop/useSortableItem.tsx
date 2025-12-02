@@ -95,9 +95,12 @@ export function useSortableItem({
               const clone = element.cloneNode(true) as HTMLElement;
 
               // Apply tilt and any other styles
-              clone.style.transform = "rotate(5deg)";
+              clone.style.transform = "rotate(3deg)";
               clone.style.width = `${element.offsetWidth}px`;
               clone.style.height = `${element.offsetHeight}px`;
+              clone.style.border = "1px solid rgba(0, 0, 0, 0.2)";
+              clone.style.borderRadius = "6px";
+              clone.style.backgroundColor = window.getComputedStyle(element).backgroundColor;
 
               container.appendChild(clone);
 
