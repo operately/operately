@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine";
 import { attachClosestEdge, extractClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge";
+import { setCustomNativeDragPreview } from "@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview";
+import { preserveOffsetOnSource } from "@atlaskit/pragmatic-drag-and-drop/element/preserve-offset-on-source";
 import type { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/types";
 
 interface UseSortableItemProps {
@@ -82,6 +84,28 @@ export function useSortableItem({
         element,
         dragHandle: dragHandle || undefined,
         getInitialData: () => ({ itemId, index, containerId }),
+        onGenerateDragPreview: ({ nativeSetDragImage, location, source }) => {
+          setCustomNativeDragPreview({
+            nativeSetDragImage,
+            getOffset: preserveOffsetOnSource({
+              element: source.element,
+              input: location.current.input,
+            }),
+            render: ({ container }) => {
+              const clone = element.cloneNode(true) as HTMLElement;
+
+              // Apply tilt and any other styles
+              clone.style.transform = "rotate(5deg)";
+              clone.style.width = `${element.offsetWidth}px`;
+              clone.style.height = `${element.offsetHeight}px`;
+
+              container.appendChild(clone);
+
+              // Return cleanup function
+              return () => container.removeChild(clone);
+            },
+          });
+        },
         onDragStart: () => setIsDragging(true),
         onDrop: () => setIsDragging(false),
       }),
