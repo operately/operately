@@ -391,6 +391,93 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert ordering_state_after == ordering_state_before ++ [res.task.id]
     end
+
+    test "it validates status when provided", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      # Pick a status from the project
+      status_struct = List.first(ctx.project.task_statuses)
+      status = Map.from_struct(status_struct) |> Map.put(:color, Atom.to_string(status_struct.color))
+
+      assert {200, res} = mutation(ctx.conn, [:project_tasks, :create], %{
+        project_id: Paths.project_id(ctx.project),
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        name: "Task with status",
+        assignee_id: nil,
+        due_date: nil,
+        status: status
+      })
+
+      assert res.task.status.id == status.id
+    end
+
+    test "it rejects invalid status", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      invalid_status = %{
+        id: "invalid",
+        label: "Invalid",
+        color: "red",
+        index: 99,
+        value: "invalid",
+        closed: false
+      }
+
+      assert {400, res} = mutation(ctx.conn, [:project_tasks, :create], %{
+        project_id: Paths.project_id(ctx.project),
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        name: "Task with invalid status",
+        assignee_id: nil,
+        due_date: nil,
+        status: invalid_status
+      })
+
+      assert res.message == "Invalid status"
+    end
+
+    test "it selects default status with priority: gray -> blue -> any", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      gray = %{id: "gray", label: "Gray", color: "gray", index: 0, value: "gray_status", closed: false}
+      blue = %{id: "blue", label: "Blue", color: "blue", index: 1, value: "blue_status", closed: false}
+      green = %{id: "green", label: "Green", color: "green", index: 2, value: "green_status", closed: false}
+
+      # Case 1: Gray exists
+      {:ok, project} = Operately.Projects.update_project(ctx.project, %{task_statuses: [green, blue, gray]})
+
+      assert {200, res} = mutation(ctx.conn, [:project_tasks, :create], %{
+        project_id: Paths.project_id(project),
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        name: "Task 1",
+        assignee_id: nil,
+        due_date: nil,
+      })
+      assert res.task.status.value == "gray_status"
+
+      # Case 2: No Gray, but Blue exists
+      {:ok, project} = Operately.Projects.update_project(project, %{task_statuses: [green, blue]})
+
+      assert {200, res} = mutation(ctx.conn, [:project_tasks, :create], %{
+        project_id: Paths.project_id(project),
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        name: "Task 2",
+        assignee_id: nil,
+        due_date: nil,
+      })
+      assert res.task.status.value == "blue_status"
+
+      # Case 3: Neither Gray nor Blue
+      {:ok, project} = Operately.Projects.update_project(project, %{task_statuses: [green]})
+
+      assert {200, res} = mutation(ctx.conn, [:project_tasks, :create], %{
+        project_id: Paths.project_id(project),
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        name: "Task 3",
+        assignee_id: nil,
+        due_date: nil,
+      })
+      assert res.task.status.value == "green_status"
+    end
   end
 
   describe "update task status" do
