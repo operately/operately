@@ -96,7 +96,7 @@ export function Card({
         <div className="flex-1 min-w-0 flex flex-col gap-2">
           <BlackLink
             to={task.link}
-            className="block text-[13px] font-semibold text-content-base hover:text-link-hover transition-colors leading-snug break-words"
+            className="block text-[13px] text-content-base hover:text-link-hover transition-colors leading-snug break-words"
             underline="hover"
             title={task.title}
           >
