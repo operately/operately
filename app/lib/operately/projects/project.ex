@@ -129,6 +129,14 @@ defmodule Operately.Projects.Project do
     |> Enum.map(&to_string/1)
   end
 
+  def get_default_task_status(project = %__MODULE__{}) do
+    statuses = project.task_statuses
+
+    Enum.find(statuses, fn s -> s.color == :gray end) ||
+      Enum.find(statuses, fn s -> s.color == :blue end) ||
+      List.first(statuses)
+  end
+
   @impl WorkMapItem
   def status(project = %__MODULE__{}) do
     cond do
