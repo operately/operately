@@ -4,7 +4,7 @@ import { DateField } from "../../DateField";
 import { BlackLink } from "../../Link";
 import { PersonField } from "../../PersonField";
 import classNames from "../../utils/classnames";
-import { DragHandle, DropIndicator, useSortableItem } from "../../utils/PragmaticDragAndDrop";
+import { DropIndicator, useSortableItem } from "../../utils/PragmaticDragAndDrop";
 import type { TaskBoard } from "../components";
 import type { TaskBoardProps } from "../types";
 
@@ -31,7 +31,7 @@ export function Card({
 }: CardProps) {
   const [currentAssignee, setCurrentAssignee] = useState<TaskBoard.Person | null>(task.assignees?.[0] || null);
   const [currentDueDate, setCurrentDueDate] = useState<DateField.ContextualDate | null>(task.dueDate || null);
-  const { ref, dragHandleRef, isDragging, closestEdge } = useSortableItem({
+  const { ref, isDragging, closestEdge } = useSortableItem({
     itemId: task.id,
     index,
     containerId,
@@ -72,36 +72,34 @@ export function Card({
     "group-focus-within:[&>span]:text-content-dimmed": !currentDueDate,
   });
 
+  const stopDragFromInteractive = (event: React.MouseEvent) => {
+    event.stopPropagation();
+  };
+
   return (
     <div
       ref={ref as React.RefObject<HTMLDivElement>}
       className={classNames(
-        "relative rounded-md border border-surface-subtle bg-surface-base px-4 py-2 shadow-xs group w-full",
+        "relative rounded-md border border-surface-subtle bg-surface-base px-4 py-2 shadow-xs group w-full cursor-grab",
         {
           "opacity-60": isDimmed,
+          "cursor-grabbing": isDragging,
         },
       )}
     >
       {dropIndicatorEdge && <DropIndicator edge={dropIndicatorEdge} />}
       <div className="flex items-start">
-        <div
-          ref={dragHandleRef as React.RefObject<HTMLDivElement>}
-          className="pt-0.5 flex-shrink-0 overflow-hidden w-0 opacity-0 transition-all duration-300 ease-out group-hover:w-4 group-hover:opacity-100 group-hover:mr-1 group-hover:-ml-2"
-        >
-          <div className="w-4 flex items-center justify-center">
-            <DragHandle isDragging={isDragging} size={12} />
-          </div>
-        </div>
-
         <div className="flex-1 min-w-0 flex flex-col gap-2">
-          <BlackLink
-            to={task.link}
-            className="block text-[13px] text-content-base hover:text-link-hover transition-colors leading-snug break-words"
-            underline="hover"
-            title={task.title}
-          >
-            {task.title}
-          </BlackLink>
+          <div onMouseDown={stopDragFromInteractive}>
+            <BlackLink
+              to={task.link}
+              className="block text-[13px] text-content-base hover:text-link-hover transition-colors leading-snug break-words"
+              underline="hover"
+              title={task.title}
+            >
+              {task.title}
+            </BlackLink>
+          </div>
 
           <div className="flex items-center justify-between gap-2 text-[11px] text-content-dimmed leading-none">
             <div className="flex items-center gap-2">
@@ -120,26 +118,30 @@ export function Card({
             </div>
 
             <div className="flex items-center gap-2 flex-shrink-0">
-              <DateField
-                date={currentDueDate}
-                onDateSelect={handleDueDateChange}
-                variant="inline"
-                hideCalendarIcon={true}
-                showOverdueWarning={!task.status?.closed}
-                placeholder={currentDueDate ? "" : "Set due date"}
-                readonly={!onTaskDueDateChange}
-                size="small"
-                calendarOnly
-                className={dateFieldClassName}
-              />
+              <div onMouseDown={stopDragFromInteractive}>
+                <DateField
+                  date={currentDueDate}
+                  onDateSelect={handleDueDateChange}
+                  variant="inline"
+                  hideCalendarIcon={true}
+                  showOverdueWarning={!task.status?.closed}
+                  placeholder={currentDueDate ? "" : "Set due date"}
+                  readonly={!onTaskDueDateChange}
+                  size="small"
+                  calendarOnly
+                  className={dateFieldClassName}
+                />
+              </div>
 
-              <PersonField
-                person={currentAssignee}
-                setPerson={handleAssigneeChange}
-                avatarSize={22}
-                avatarOnly={true}
-                {...(assigneePersonSearch ? { searchData: assigneePersonSearch } : { readonly: true as const })}
-              />
+              <div onMouseDown={stopDragFromInteractive}>
+                <PersonField
+                  person={currentAssignee}
+                  setPerson={handleAssigneeChange}
+                  avatarSize={22}
+                  avatarOnly={true}
+                  {...(assigneePersonSearch ? { searchData: assigneePersonSearch } : { readonly: true as const })}
+                />
+              </div>
             </div>
           </div>
         </div>

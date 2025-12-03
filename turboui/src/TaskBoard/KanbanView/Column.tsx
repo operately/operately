@@ -122,7 +122,7 @@ export function Column({
             : shouldShowEmptyPlaceholder && (
                 <div
                   className={classNames(
-                    "w-full text-center text-xs text-content-subtle py-4 bg-surface-base rounded-md",
+                    "w-full text-center text-xs text-content-subtle py-4 bg-surface-dimmed rounded-md",
                     "border border-dashed border-surface-outline max-w-[220px] mx-auto",
                   )}
                 >
