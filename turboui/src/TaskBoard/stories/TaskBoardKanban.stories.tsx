@@ -143,6 +143,29 @@ export const BasicKanban: Story = {
         statuses={BASE_STATUSES}
         kanbanState={kanbanState}
         assigneePersonSearch={assigneeSearch}
+        onTaskCreate={(payload) => {
+          const newTask: Types.Task = {
+            id: `task-${Date.now()}`,
+            title: payload.title,
+            status: payload.status || null,
+            description: null,
+            link: "#",
+            assignees: [],
+            milestone: payload.milestone,
+            dueDate: payload.dueDate,
+            hasDescription: false,
+            hasComments: false,
+            commentCount: 0,
+          };
+          setTasks((prev) => [...prev, newTask]);
+          setKanbanState((prev) => {
+            const statusValue = payload.status?.value || BASE_STATUSES[0]?.value || "pending";
+            return {
+              ...prev,
+              [statusValue]: [...(prev[statusValue] || []), newTask.id],
+            };
+          });
+        }}
         onTaskAssigneeChange={(taskId, assignee) =>
           setTasks((prev) =>
             prev.map((task) => (task.id === taskId ? { ...task, assignees: assignee ? [assignee] : [] } : task)),
@@ -179,6 +202,29 @@ export const SixStatusBoard: Story = {
         statuses={SIX_STATUSES}
         kanbanState={kanbanState}
         assigneePersonSearch={assigneeSearch}
+        onTaskCreate={(payload) => {
+          const newTask: Types.Task = {
+            id: `task-${Date.now()}`,
+            title: payload.title,
+            status: payload.status || null,
+            description: null,
+            link: "#",
+            assignees: [],
+            milestone: payload.milestone,
+            dueDate: payload.dueDate,
+            hasDescription: false,
+            hasComments: false,
+            commentCount: 0,
+          };
+          setTasks((prev) => [...prev, newTask]);
+          setKanbanState((prev) => {
+            const statusValue = payload.status?.value || SIX_STATUSES[0]?.value || "pending";
+            return {
+              ...prev,
+              [statusValue]: [...(prev[statusValue] || []), newTask.id],
+            };
+          });
+        }}
         onTaskAssigneeChange={(taskId, assignee) =>
           setTasks((prev) =>
             prev.map((task) => (task.id === taskId ? { ...task, assignees: assignee ? [assignee] : [] } : task)),
@@ -215,6 +261,29 @@ export const AutoScrollEdgeColumns: Story = {
         statuses={WIDE_STATUSES}
         kanbanState={kanbanState}
         assigneePersonSearch={assigneeSearch}
+        onTaskCreate={(payload) => {
+          const newTask: Types.Task = {
+            id: `task-${Date.now()}`,
+            title: payload.title,
+            status: payload.status || null,
+            description: null,
+            link: "#",
+            assignees: [],
+            milestone: payload.milestone,
+            dueDate: payload.dueDate,
+            hasDescription: false,
+            hasComments: false,
+            commentCount: 0,
+          };
+          setTasks((prev) => [...prev, newTask]);
+          setKanbanState((prev) => {
+            const statusValue = payload.status?.value || WIDE_STATUSES[0]?.value || "pending";
+            return {
+              ...prev,
+              [statusValue]: [...(prev[statusValue] || []), newTask.id],
+            };
+          });
+        }}
         onTaskAssigneeChange={(taskId, assignee) =>
           setTasks((prev) =>
             prev.map((task) => (task.id === taskId ? { ...task, assignees: assignee ? [assignee] : [] } : task)),
@@ -237,12 +306,48 @@ export const EmptyStates: Story = {
     const milestone = mockMilestones.emptyMilestone;
     if (!milestone) return <div>Missing mock milestone data</div>;
 
+    const [tasks, setTasks] = useState<Types.Task[]>([]);
+    const [kanbanState, setKanbanState] = useState<MilestoneKanbanState>(emptyKanbanState(BASE_STATUSES));
+    const assigneeSearch = usePersonFieldSearch(Object.values(mockPeople));
+
     return (
       <KanbanBoard
         milestone={milestone}
-        tasks={[]}
+        tasks={tasks}
         statuses={BASE_STATUSES}
-        kanbanState={emptyKanbanState(BASE_STATUSES)}
+        kanbanState={kanbanState}
+        assigneePersonSearch={assigneeSearch}
+        onTaskCreate={(payload) => {
+          const newTask: Types.Task = {
+            id: `task-${Date.now()}`,
+            title: payload.title,
+            status: payload.status || null,
+            description: null,
+            link: "#",
+            assignees: [],
+            milestone: payload.milestone,
+            dueDate: payload.dueDate,
+            hasDescription: false,
+            hasComments: false,
+            commentCount: 0,
+          };
+          setTasks((prev) => [...prev, newTask]);
+          setKanbanState((prev) => {
+            const statusValue = payload.status?.value || BASE_STATUSES[0]?.value || "pending";
+            return {
+              ...prev,
+              [statusValue]: [...(prev[statusValue] || []), newTask.id],
+            };
+          });
+        }}
+        onTaskAssigneeChange={(taskId, assignee) =>
+          setTasks((prev) =>
+            prev.map((task) => (task.id === taskId ? { ...task, assignees: assignee ? [assignee] : [] } : task)),
+          )
+        }
+        onTaskDueDateChange={(taskId, dueDate) =>
+          setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, dueDate } : task)))
+        }
       />
     );
   },

@@ -22,6 +22,7 @@ interface MilestoneKanbanProps {
   onTaskDueDateChange?: TaskBoardProps["onTaskDueDateChange"];
   onMilestoneUpdate?: TaskBoardProps["onMilestoneUpdate"];
   assigneePersonSearch?: TaskBoardProps["assigneePersonSearch"];
+  onTaskCreate?: TaskBoardProps["onTaskCreate"];
 }
 
 export function MilestoneKanban({
@@ -35,14 +36,32 @@ export function MilestoneKanban({
   onTaskDueDateChange,
   onMilestoneUpdate,
   assigneePersonSearch,
+  onTaskCreate,
 }: MilestoneKanbanProps) {
-  const testId = useMemo(() => (milestone ? createTestId("milestone", milestone.id) : "kanban-no-milestone"), [milestone]);
+  const testId = useMemo(
+    () => (milestone ? createTestId("milestone", milestone.id) : "kanban-no-milestone"),
+    [milestone],
+  );
   const scrollContainerRef = useHorizontalAutoScroll();
 
   const handleMilestoneDueDateChange = (newDueDate: DateField.ContextualDate | null) => {
     if (milestone && onMilestoneUpdate) {
       onMilestoneUpdate(milestone.id, { name: milestone.name, dueDate: newDueDate || null });
     }
+  };
+
+  const handleTaskCreate = (title: string, statusValue: string) => {
+    if (!onTaskCreate) return;
+
+    const status = statuses.find((s) => s.value === statusValue);
+
+    onTaskCreate({
+      title,
+      milestone,
+      dueDate: null,
+      assignee: null,
+      status: status,
+    });
   };
 
   return (
@@ -92,9 +111,9 @@ export function MilestoneKanban({
         </div>
       </header>
 
-      <div ref={scrollContainerRef} className="p-3 overflow-x-auto h-[80vh]">
-        <div className="flex gap-3 min-w-max h-full items-stretch">
-          {statuses.map((status, index) => (
+      <div ref={scrollContainerRef} className="px-3 pt-3 pb-6 overflow-x-auto h-[80vh]">
+        <div className="flex gap-3 min-w-max items-start">
+          {statuses.map((status) => (
             <Column
               key={status.value}
               title={status.label}
@@ -107,7 +126,7 @@ export function MilestoneKanban({
               onTaskAssigneeChange={onTaskAssigneeChange}
               onTaskDueDateChange={onTaskDueDateChange}
               assigneePersonSearch={assigneePersonSearch}
-              isFirst={index === 0}
+              onCreateTask={onTaskCreate ? (title) => handleTaskCreate(title, status.value) : undefined}
             />
           ))}
         </div>
