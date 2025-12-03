@@ -15,11 +15,14 @@ export function KanbanBoard({
   onTaskDueDateChange,
   onMilestoneUpdate,
   assigneePersonSearch,
+  onTaskCreate,
 }: KanbanBoardProps) {
   const statusKeys = useMemo(() => statuses.map((status) => status.value), [statuses]);
   const tasksForMilestone = useMemo(() => filterTasksForMilestone(tasks, milestone), [milestone, tasks]);
   const [internalTasks, setInternalTasks] = useState<TaskBoard.Task[]>(tasksForMilestone);
-  const [kanbanState, setKanbanState] = useState<MilestoneKanbanState>(normalizeKanbanState(kanbanStateProp, statusKeys));
+  const [kanbanState, setKanbanState] = useState<MilestoneKanbanState>(
+    normalizeKanbanState(kanbanStateProp, statusKeys),
+  );
 
   useEffect(() => setInternalTasks(tasksForMilestone), [tasksForMilestone]);
   useEffect(() => setKanbanState(normalizeKanbanState(kanbanStateProp, statusKeys)), [kanbanStateProp, statusKeys]);
@@ -37,11 +40,19 @@ export function KanbanBoard({
         const destinationStatus = parseStatus(move.destination.containerId, statusKeys);
         if (!sourceStatus || !destinationStatus) return;
 
-        const nextKanbanState = applyKanbanMove(kanbanState, move.itemId, destinationStatus, move.destination.index, statusKeys);
+        const nextKanbanState = applyKanbanMove(
+          kanbanState,
+          move.itemId,
+          destinationStatus,
+          move.destination.index,
+          statusKeys,
+        );
 
         setKanbanState(nextKanbanState);
         setInternalTasks((previous) =>
-          previous.map((task) => (task.id === move.itemId ? updateTaskForMove(task, destinationStatus, statuses) : task)),
+          previous.map((task) =>
+            task.id === move.itemId ? updateTaskForMove(task, destinationStatus, statuses) : task,
+          ),
         );
 
         onTaskKanbanChange?.({
@@ -69,12 +80,16 @@ export function KanbanBoard({
         onTaskDueDateChange={onTaskDueDateChange}
         onMilestoneUpdate={onMilestoneUpdate}
         assigneePersonSearch={assigneePersonSearch}
+        onTaskCreate={onTaskCreate}
       />
     </div>
   );
 }
 
-function normalizeKanbanState(state: MilestoneKanbanState | undefined, statusKeys: KanbanStatus[]): MilestoneKanbanState {
+function normalizeKanbanState(
+  state: MilestoneKanbanState | undefined,
+  statusKeys: KanbanStatus[],
+): MilestoneKanbanState {
   return cloneState(state, statusKeys);
 }
 
