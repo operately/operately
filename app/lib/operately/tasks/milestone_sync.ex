@@ -6,8 +6,8 @@ defmodule Operately.Tasks.MilestoneSync do
   import Ecto.Query, only: [from: 2]
   alias Ecto.Multi
   alias Operately.Repo
-  alias Operately.Tasks.{Task, OrderingState}
-  alias Operately.Projects.Milestone
+  alias Operately.Tasks.{KanbanState, OrderingState, Task}
+  alias Operately.Projects.{Milestone, Project}
 
   @doc """
   Handles milestone sync after task creation
@@ -20,7 +20,13 @@ defmodule Operately.Tasks.MilestoneSync do
         ordering_state = OrderingState.load(milestone.tasks_ordering_state)
         updated_ordering = OrderingState.add_task(ordering_state, task)
 
-        update_milestone_ordering(milestone, updated_ordering)
+        kanban_state =
+          milestone.tasks_kanban_state
+          |> KanbanState.load(kanban_statuses_from_changes(changes, task))
+
+        updated_kanban_state = append_task_to_kanban_state(kanban_state, task)
+
+        update_milestone_ordering(milestone, updated_ordering, %{tasks_kanban_state: updated_kanban_state})
       end)
     end)
     |> Multi.run(:updated_milestone, &extract_milestone_from_sync/2)
@@ -161,8 +167,9 @@ defmodule Operately.Tasks.MilestoneSync do
     end
   end
 
-  defp update_milestone_ordering(milestone, new_ordering_state) do
-    changeset = Milestone.changeset(milestone, %{tasks_ordering_state: new_ordering_state})
+  defp update_milestone_ordering(milestone, new_ordering_state, additional_attrs \\ %{}) do
+    attrs = Map.put(additional_attrs, :tasks_ordering_state, new_ordering_state)
+    changeset = Milestone.changeset(milestone, attrs)
     Repo.update(changeset)
   end
 
@@ -216,6 +223,39 @@ defmodule Operately.Tasks.MilestoneSync do
   defp get_updated_task_from_changes(changes) do
     Map.get(changes, :updated_task) || get_task_from_changes(changes)
   end
+
+  defp kanban_statuses_from_changes(changes, task) do
+    statuses =
+      case Map.get(changes, :project) do
+        %Project{} = project -> Project.task_status_values(project)
+        _ -> KanbanState.default_statuses()
+      end
+
+    case task_status_value(task) do
+      nil -> statuses
+      status -> statuses ++ [status]
+    end
+  end
+
+  defp append_task_to_kanban_state(kanban_state, task) do
+    case task_status_value(task) do
+      nil ->
+        kanban_state
+
+      status ->
+        column_index =
+          kanban_state
+          |> Map.get(status, [])
+          |> length()
+
+        KanbanState.add(kanban_state, task, status, column_index)
+    end
+  end
+
+  defp task_status_value(%{task_status: %{value: value}}) when not is_nil(value), do: to_string(value)
+  defp task_status_value(%{status: status}) when is_binary(status), do: status
+  defp task_status_value(%{status: status}) when is_atom(status), do: Atom.to_string(status)
+  defp task_status_value(_), do: nil
 
   defp extract_milestone_from_sync(_repo, changes) do
     milestone = case changes do
