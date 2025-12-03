@@ -392,6 +392,67 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert ordering_state_after == ordering_state_before ++ [res.task.id]
     end
 
+    test "it appends the task to the milestone kanban state using the project's default status when none is provided", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      kanban_state = %{
+        "pending" => [Paths.task_id(ctx.task)],
+        "in_progress" => [],
+        "done" => [],
+        "canceled" => []
+      }
+
+      {:ok, _} = Operately.Projects.update_milestone(ctx.milestone, %{tasks_kanban_state: kanban_state})
+
+      assert {200, res} = mutation(ctx.conn, [:project_tasks, :create], %{
+        project_id: Paths.project_id(ctx.project),
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        name: "Task for kanban test",
+        assignee_id: nil,
+        due_date: nil
+      })
+
+      pending_column = kanban_state["pending"] ++ [res.task.id]
+      milestone_after = Operately.Projects.get_milestone!(ctx.milestone.id)
+
+      assert milestone_after.tasks_kanban_state["pending"] == pending_column
+      assert res.updated_milestone.tasks_kanban_state[:pending] == pending_column
+    end
+
+    test "it appends the task to the specified status column in the milestone kanban state", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      status_struct =
+        Enum.find(ctx.project.task_statuses, &(&1.value == "in_progress")) ||
+          List.first(ctx.project.task_statuses)
+
+      status = Map.from_struct(status_struct) |> Map.put(:color, Atom.to_string(status_struct.color))
+
+      kanban_state = %{
+        "pending" => [],
+        "in_progress" => [Paths.task_id(ctx.task)],
+        "done" => [],
+        "canceled" => []
+      }
+
+      {:ok, _} = Operately.Projects.update_milestone(ctx.milestone, %{tasks_kanban_state: kanban_state})
+
+      assert {200, res} = mutation(ctx.conn, [:project_tasks, :create], %{
+        project_id: Paths.project_id(ctx.project),
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        name: "Task for kanban status test",
+        assignee_id: nil,
+        due_date: nil,
+        status: status
+      })
+
+      in_progress_column = kanban_state["in_progress"] ++ [res.task.id]
+      milestone_after = Operately.Projects.get_milestone!(ctx.milestone.id)
+
+      assert milestone_after.tasks_kanban_state["in_progress"] == in_progress_column
+      assert res.updated_milestone.tasks_kanban_state[:in_progress] == in_progress_column
+    end
+
     test "it validates status when provided", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
