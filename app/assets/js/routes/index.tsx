@@ -163,6 +163,7 @@ export function createAppRoutes() {
         pageRoute("project-discussions/:id/edit", pages.ProjectDiscussionEditPage),
 
         pageRoute("milestones/:id", pages.MilestonePage),
+        pageRoute("milestones/:id/kanban", pages.MilestoneKanbanPage),
 
         pageRoute("*", pages.NotFoundPage),
       ],
