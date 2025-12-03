@@ -95,7 +95,7 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
       title: task.title,
       description: "",
       link: "#",
-      status: null,
+      status: task.status ?? null,
       assignees: task.assignee ? [{ id: task.assignee, fullName: "Loading...", avatarUrl: "" }] : [],
       dueDate: task.dueDate || null,
       milestone: task.milestone,
@@ -117,13 +117,21 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
     }
 
     try {
-      const res = await Api.project_tasks.create({
+      const backendStatus: ProjectTaskStatus | null = Tasks.serializeTaskStatus(task.status ?? null);
+
+      const input: any = {
         name: task.title,
         assigneeId: task.assignee,
         dueDate: serializeContextualDate(task.dueDate),
         milestoneId: task.milestone?.id || null,
         projectId: projectId,
-      });
+      };
+
+      if (backendStatus !== null) {
+        input.status = backendStatus;
+      }
+
+      const res = await Api.project_tasks.create(input);
 
       // Replace temporary task with real task
       const realTask = Tasks.parseTaskForTurboUi(paths, res.task);

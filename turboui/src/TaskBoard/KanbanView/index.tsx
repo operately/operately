@@ -68,7 +68,10 @@ export function KanbanBoard({
   );
 
   return (
-    <div className="space-y-4" data-test-id="kanban-board">
+    <div
+      className="flex flex-col flex-1 bg-surface-base border border-surface-outline rounded-md overflow-hidden"
+      data-test-id="kanban-board"
+    >
       <MilestoneKanban
         milestone={milestone}
         columns={buildColumns(kanbanState, internalTasks, taskById, statusKeys)}

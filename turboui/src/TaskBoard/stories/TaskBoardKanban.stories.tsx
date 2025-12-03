@@ -12,7 +12,6 @@ import {
   DONE_STATUS,
   CANCELED_STATUS,
 } from "../tests/mockData";
-import { Page } from "../../Page";
 import { usePersonFieldSearch } from "../../utils/storybook/usePersonFieldSearch";
 
 type Story = StoryObj<typeof meta>;
@@ -26,9 +25,7 @@ const meta: Meta<typeof KanbanBoard> = {
   decorators: [
     (StoryComponent) => (
       <div className="min-h-[800px] py-[4.5rem] px-2 bg-surface-base">
-        <Page title="Tasks (Kanban)" size="fullwidth">
-          <StoryComponent />
-        </Page>
+        <StoryComponent />
       </div>
     ),
   ],

@@ -41,6 +41,7 @@ import InviteTeamPage from "./InviteTeamPage";
 import JoinPage from "./JoinPage";
 import LobbyPage from "./LobbyPage";
 import LoginPage from "./LoginPage";
+import MilestoneKanbanPage from "./MilestoneKanbanPage";
 import MilestonePage from "./MilestonePage";
 import NewCompanyPage from "./NewCompanyPage";
 import NotFoundPage from "./NotFoundPage";
@@ -136,6 +137,7 @@ export default {
   JoinPage,
   LobbyPage,
   LoginPage,
+  MilestoneKanbanPage,
   MilestonePage,
   NewCompanyPage,
   NotFoundPage,
