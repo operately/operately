@@ -121,8 +121,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
       |> Steps.respond(fn changes ->
         %{
           task: Serializer.serialize(changes.updated_task, level: :full),
-          updated_milestone:
-            Serializer.serialize(changes.kanban_updated_milestone || changes.updated_milestone)
+          updated_milestone: Serializer.serialize(changes.kanban_updated_milestone || changes.updated_milestone)
         }
       end)
     end
@@ -398,6 +397,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
       field :name, :string, null: false
       field :assignee_id, :id, null: true
       field :due_date, :contextual_date, null: true
+      field? :status, :project_task_status, null: false
     end
 
     outputs do
@@ -575,7 +575,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
       Ecto.Multi.update(multi, :updated_task, fn %{task: task} ->
         Operately.Tasks.Task.changeset(task, %{
           task_status: new_status,
-          status: new_status.value,
+          status: new_status.value
         })
       end)
     end
@@ -637,8 +637,10 @@ defmodule OperatelyWeb.Api.ProjectTasks do
         case milestone_id do
           nil ->
             {:ok, nil}
+
           _ ->
             milestone = Operately.Projects.get_milestone!(milestone_id)
+
             if milestone.project_id == project.id do
               {:ok, milestone}
             else
@@ -655,8 +657,10 @@ defmodule OperatelyWeb.Api.ProjectTasks do
           case new_milestone_id do
             nil ->
               {:ok, nil}
+
             _ ->
               milestone = Operately.Projects.get_milestone!(new_milestone_id)
+
               if milestone.project_id == project.id do
                 {:ok, milestone}
               else
@@ -725,25 +729,31 @@ defmodule OperatelyWeb.Api.ProjectTasks do
 
     def create_task(multi, inputs) do
       multi
-      |> Notifications.SubscriptionList.insert(%{ send_to_everyone: false, subscription_parent_type: :project_task })
+      |> Notifications.SubscriptionList.insert(%{send_to_everyone: false, subscription_parent_type: :project_task})
       |> Ecto.Multi.run(:new_task, fn _repo, changes ->
-        Operately.Tasks.Task.changeset(%{
-          name: inputs.name,
-          description: %{},
-          milestone_id: inputs.milestone_id,
-          project_id: inputs.project_id,
-          creator_id: changes.me.id,
-          due_date: inputs.due_date,
-          subscription_list_id: changes.subscription_list.id,
-        })
-        |> Repo.insert()
+        with {:ok, status} <- validate_or_get_default_status(changes.project, inputs[:status]) do
+          Operately.Tasks.Task.changeset(%{
+            name: inputs.name,
+            description: %{},
+            milestone_id: inputs.milestone_id,
+            project_id: inputs.project_id,
+            creator_id: changes.me.id,
+            due_date: inputs.due_date,
+            subscription_list_id: changes.subscription_list.id,
+            task_status: status,
+            status: status.value
+          })
+          |> Repo.insert()
+        end
       end)
       |> Notifications.SubscriptionList.update(:new_task)
       |> Ecto.Multi.run(:assignee, fn _repo, %{new_task: new_task} ->
         case inputs.assignee_id do
-          nil -> {:ok, nil}
+          nil ->
+            {:ok, nil}
+
           assignee_id ->
-            Operately.Tasks.Assignee.changeset(%{ task_id: new_task.id, person_id: assignee_id })
+            Operately.Tasks.Assignee.changeset(%{task_id: new_task.id, person_id: assignee_id})
             |> Repo.insert()
         end
       end)
@@ -769,11 +779,14 @@ defmodule OperatelyWeb.Api.ProjectTasks do
           access_group = Operately.Access.get_group!(person_id: assignee_id)
 
           Ecto.Multi.new()
-          |> Ecto.Multi.insert(:contributor, Contributor.changeset( %{
-            project_id: project.id,
-            person_id: assignee_id,
-            responsibility: "contributor",
-          }))
+          |> Ecto.Multi.insert(
+            :contributor,
+            Contributor.changeset(%{
+              project_id: project.id,
+              person_id: assignee_id,
+              responsibility: "contributor"
+            })
+          )
           |> Ecto.Multi.run(:context, fn _, _ ->
             {:ok, Operately.Access.get_context!(project_id: project.id)}
           end)
@@ -811,6 +824,18 @@ defmodule OperatelyWeb.Api.ProjectTasks do
       end)
     end
 
+    defp validate_or_get_default_status(project, nil) do
+      {:ok, Map.from_struct(Operately.Projects.Project.get_default_task_status(project))}
+    end
+
+    defp validate_or_get_default_status(project, status) do
+      if Enum.any?(project.task_statuses, fn s -> s.id == status.id end) do
+        {:ok, status}
+      else
+        {:error, {:bad_request, "Invalid status"}}
+      end
+    end
+
     def commit(multi) do
       Operately.Repo.transaction(multi)
     end
@@ -834,7 +859,8 @@ defmodule OperatelyWeb.Api.ProjectTasks do
           broadcast(changes[:task])
           broadcast(changes[:updated_task])
 
-        _result -> :ok
+        _result ->
+          :ok
       end
 
       result
@@ -845,6 +871,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
         OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: person.id)
       end)
     end
+
     defp broadcast(_), do: :ok
 
     defp decode_kanban_state(state, allowed_statuses) when is_map(state) do
@@ -870,6 +897,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
     defp decode_kanban_state(_state, _allowed_statuses), do: {:ok, %{}}
 
     defp validate_statuses(_state, []), do: :ok
+
     defp validate_statuses(state, allowed_statuses) do
       allowed = MapSet.new(Enum.map(allowed_statuses, &to_string/1))
 
