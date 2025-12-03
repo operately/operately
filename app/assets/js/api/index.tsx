@@ -1307,7 +1307,7 @@ export interface Milestone {
   description?: string | null;
   comments?: MilestoneComment[] | null;
   commentsCount?: number | null;
-  tasksKanbanState?: string | null;
+  tasksKanbanState?: Json | null;
   tasksOrderingState?: string[] | null;
   permissions?: ProjectPermissions | null;
   subscriptionList?: SubscriptionList | null;
@@ -3967,6 +3967,7 @@ export interface ProjectTasksCreateInput {
   name: string;
   assigneeId: Id | null;
   dueDate: ContextualDate | null;
+  status?: ProjectTaskStatus;
 }
 
 export interface ProjectTasksCreateResult {
@@ -4008,6 +4009,18 @@ export interface ProjectTasksUpdateDueDateInput {
 
 export interface ProjectTasksUpdateDueDateResult {
   task: Task;
+}
+
+export interface ProjectTasksUpdateKanbanInput {
+  taskId: Id;
+  milestoneId: Id | null;
+  status: ProjectTaskStatus;
+  milestoneKanbanState: Json;
+}
+
+export interface ProjectTasksUpdateKanbanResult {
+  task: Task;
+  updatedMilestone: Milestone | null;
 }
 
 export interface ProjectTasksUpdateMilestoneInput {
@@ -4996,6 +5009,10 @@ class ApiNamespaceProjectTasks {
 
   async updateDueDate(input: ProjectTasksUpdateDueDateInput): Promise<ProjectTasksUpdateDueDateResult> {
     return this.client.post("/project_tasks/update_due_date", input);
+  }
+
+  async updateKanban(input: ProjectTasksUpdateKanbanInput): Promise<ProjectTasksUpdateKanbanResult> {
+    return this.client.post("/project_tasks/update_kanban", input);
   }
 
   async updateMilestone(input: ProjectTasksUpdateMilestoneInput): Promise<ProjectTasksUpdateMilestoneResult> {
@@ -7612,6 +7629,13 @@ export default {
     useUpdateMilestoneAndOrdering: () =>
       useMutation<ProjectTasksUpdateMilestoneAndOrderingInput, ProjectTasksUpdateMilestoneAndOrderingResult>((input) =>
         defaultApiClient.apiNamespaceProjectTasks.updateMilestoneAndOrdering(input),
+      ),
+
+    updateKanban: (input: ProjectTasksUpdateKanbanInput) =>
+      defaultApiClient.apiNamespaceProjectTasks.updateKanban(input),
+    useUpdateKanban: () =>
+      useMutation<ProjectTasksUpdateKanbanInput, ProjectTasksUpdateKanbanResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTasks.updateKanban(input),
       ),
 
     updateAssignee: (input: ProjectTasksUpdateAssigneeInput) =>
