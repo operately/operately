@@ -50,6 +50,7 @@ export interface NewTaskPayload {
   milestone: Milestone | null;
   dueDate: DateField.ContextualDate | null;
   assignee: string | null;
+  status?: Status;
 }
 
 /**
