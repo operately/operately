@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { IconFileText, IconMessageCircle } from "../../icons";
+import { IconFileText, IconMessageCircle, IconPlus } from "../../icons";
 import { DateField } from "../../DateField";
 import { BlackLink } from "../../Link";
 import { createTestId } from "../../TestableElement";
@@ -23,6 +23,8 @@ interface MilestoneKanbanProps {
   onMilestoneUpdate?: TaskBoardProps["onMilestoneUpdate"];
   assigneePersonSearch?: TaskBoardProps["assigneePersonSearch"];
   onTaskCreate?: TaskBoardProps["onTaskCreate"];
+  canManageStatuses?: boolean;
+  onAddStatusClick?: () => void;
 }
 
 export function MilestoneKanban({
@@ -37,6 +39,8 @@ export function MilestoneKanban({
   onMilestoneUpdate,
   assigneePersonSearch,
   onTaskCreate,
+  canManageStatuses,
+  onAddStatusClick,
 }: MilestoneKanbanProps) {
   const testId = useMemo(
     () => (milestone ? createTestId("milestone", milestone.id) : "kanban-no-milestone"),
@@ -126,6 +130,19 @@ export function MilestoneKanban({
               onCreateTask={onTaskCreate ? (title) => handleTaskCreate(title, status.value) : undefined}
             />
           ))}
+
+          {canManageStatuses && (
+            <button
+              type="button"
+              onClick={onAddStatusClick}
+              className="flex flex-col items-center justify-start gap-2 px-3 py-2 rounded-md border border-dashed border-surface-outline text-content-dimmed hover:border-brand-1/60 hover:text-brand-1 transition min-w-[120px] h-full"
+            >
+              <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-surface-dimmed">
+                <IconPlus size={16} />
+              </span>
+              <span className="text-xs font-medium mt-1">Add status</span>
+            </button>
+          )}
         </div>
       </div>
     </section>

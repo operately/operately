@@ -6,7 +6,7 @@ import * as Tasks from "@/models/tasks";
 import * as People from "@/models/people";
 import { useMilestoneKanbanState } from "@/models/tasks/useMilestoneKanbanState";
 
-import { MilestoneKanbanPage as UiMilestoneKanbanPage } from "turboui";
+import { MilestoneKanbanPage as UiMilestoneKanbanPage, showErrorToast } from "turboui";
 import { usePaths } from "@/routes/paths";
 import { PageCache } from "@/routes/PageCache";
 import { fetchAll } from "@/utils/async";
@@ -55,10 +55,6 @@ function Page() {
   assertPresent(milestone.project, "Milestone must have a project");
   assertPresent(milestone.space, "Milestone must have a space");
   assertPresent(milestone.permissions, "Milestone must have permissions");
-  const statusOptions = React.useMemo(
-    () => Tasks.parseTaskStatusesForTurboUi(milestone.availableStatuses),
-    [milestone.availableStatuses],
-  );
 
   const { tasks, createTask, updateTaskAssignee, updateTaskDueDate } = Tasks.useTasksForTurboUi({
     backendTasks,
@@ -67,6 +63,7 @@ function Page() {
     milestones: [],
     refresh,
   });
+  const { statuses, handleStatusesChange } = useMilestoneTaskStatuses(milestone, refresh);
 
   const transformPerson = React.useCallback((p) => People.parsePersonForTurboUi(paths, p)!, [paths]);
 
@@ -77,7 +74,7 @@ function Page() {
 
   const { kanbanState, handleTaskKanbanChange } = useMilestoneKanbanState({
     initialRawState: milestone.tasksKanbanState,
-    statuses: statusOptions,
+    statuses,
     milestoneId: milestone.id,
     tasks,
     onSuccess: async () => {
@@ -94,7 +91,7 @@ function Page() {
 
     milestone: Milestones.parseMilestoneForTurboUi(paths, milestone),
     tasks,
-    statuses: statusOptions,
+    statuses,
     kanbanState,
 
     assigneePersonSearch: assigneeSearch,
@@ -102,9 +99,51 @@ function Page() {
     onTaskAssigneeChange: updateTaskAssignee,
     onTaskDueDateChange: updateTaskDueDate,
     onMilestoneUpdate: undefined,
+    canManageStatuses: milestone.permissions.canEditStatuses,
+    onStatusesChange: handleStatusesChange,
     onTaskKanbanChange: handleTaskKanbanChange,
   };
 
   return <UiMilestoneKanbanPage key={milestone.id!} {...props} />;
 }
 
+function useMilestoneTaskStatuses(milestone: Milestones.Milestone, refresh?: () => void) {
+  assertPresent(milestone.project, "Milestone must have a project");
+  const [statuses, setStatuses] = React.useState(() => Tasks.parseTaskStatusesForTurboUi(milestone.availableStatuses));
+
+  React.useEffect(() => {
+    setStatuses(Tasks.parseTaskStatusesForTurboUi(milestone.availableStatuses));
+  }, [milestone.availableStatuses]);
+
+  const handleStatusesChange = React.useCallback(
+    async (nextStatuses: typeof statuses) => {
+      const previousStatuses = statuses;
+      setStatuses(nextStatuses);
+
+      try {
+        const backendStatuses = Tasks.serializeTaskStatuses(nextStatuses);
+        const res = await Api.projects.updateTaskStatuses({
+          projectId: milestone.project!.id,
+          taskStatuses: backendStatuses,
+        });
+
+        if (res.success === false) {
+          setStatuses(previousStatuses);
+          showErrorToast("Error", "Failed to update task statuses");
+          return;
+        }
+
+        if (refresh) {
+          await refresh();
+        }
+      } catch (error) {
+        console.error("Failed to update task statuses", error);
+        setStatuses(previousStatuses);
+        showErrorToast("Error", "Failed to update task statuses");
+      }
+    },
+    [milestone.project.id, refresh, statuses],
+  );
+
+  return { statuses, handleStatusesChange };
+}

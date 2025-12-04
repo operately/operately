@@ -349,3 +349,76 @@ export const EmptyStates: Story = {
     );
   },
 };
+
+export const WithStatusManagement: Story = {
+  render: () => {
+    const milestone = mockMilestones.q2Release;
+    if (!milestone) return <div>Missing mock milestone data</div>;
+
+    const initialTasks = filterTasksByMilestone(mockTasks, milestone);
+    const [statuses, setStatuses] = useState<Types.Status[]>(BASE_STATUSES);
+    const [tasks, setTasks] = useState<Types.Task[]>(initialTasks);
+    const [kanbanState, setKanbanState] = useState<MilestoneKanbanState>(
+      buildKanbanStateFromTasks(initialTasks, statuses),
+    );
+    const assigneeSearch = usePersonFieldSearch(Object.values(mockPeople));
+
+    return (
+      <KanbanBoard
+        milestone={milestone}
+        tasks={tasks}
+        statuses={statuses}
+        kanbanState={kanbanState}
+        assigneePersonSearch={assigneeSearch}
+        canManageStatuses
+        onStatusesChange={(nextStatuses) => {
+          setStatuses(nextStatuses);
+          setKanbanState((prev) => {
+            const base = emptyKanbanState(nextStatuses);
+            (Object.keys(base) as KanbanStatus[]).forEach((status) => {
+              if (prev[status]) {
+                base[status] = prev[status];
+              }
+            });
+            return base;
+          });
+        }}
+        onTaskCreate={(payload) => {
+          const newTask: Types.Task = {
+            id: `task-${Date.now()}`,
+            title: payload.title,
+            status: payload.status || null,
+            description: null,
+            link: "#",
+            assignees: [],
+            milestone: payload.milestone,
+            dueDate: payload.dueDate,
+            hasDescription: false,
+            hasComments: false,
+            commentCount: 0,
+          };
+          setTasks((prev) => [...prev, newTask]);
+          setKanbanState((prev) => {
+            const statusValue = payload.status?.value || statuses[0]?.value || "pending";
+            return {
+              ...prev,
+              [statusValue]: [...(prev[statusValue] || []), newTask.id],
+            };
+          });
+        }}
+        onTaskAssigneeChange={(taskId, assignee) =>
+          setTasks((prev) =>
+            prev.map((task) => (task.id === taskId ? { ...task, assignees: assignee ? [assignee] : [] } : task)),
+          )
+        }
+        onTaskDueDateChange={(taskId, dueDate) =>
+          setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, dueDate } : task)))
+        }
+        onTaskKanbanChange={(event) => {
+          setKanbanState(event.updatedKanbanState);
+          setTasks((prev) => updateTasksAfterMove(prev, event.taskId, event.to.status, statuses));
+        }}
+      />
+    );
+  },
+};

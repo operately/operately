@@ -11,6 +11,8 @@ export interface KanbanBoardProps {
   tasks: TaskBoard.Task[];
   statuses: StatusSelector.StatusOption[];
   kanbanState: MilestoneKanbanState;
+  canManageStatuses?: boolean;
+  onStatusesChange?: (statuses: StatusSelector.StatusOption[]) => void;
   onTaskKanbanChange?: (event: {
     milestoneId: string | null;
     taskId: string;
