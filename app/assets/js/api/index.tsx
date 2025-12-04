@@ -2794,7 +2794,7 @@ export interface ProjectTasksListInput {
 }
 
 export interface ProjectTasksListResult {
-  tasks: Task[] | null;
+  tasks: Task[];
 }
 
 export interface ProjectsCountChildrenInput {
