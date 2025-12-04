@@ -14,7 +14,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
     end
 
     outputs do
-      field :tasks, list_of(:task), null: true
+      field :tasks, list_of(:task), null: false
     end
 
     def call(conn, inputs) do
