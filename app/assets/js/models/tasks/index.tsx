@@ -8,6 +8,7 @@ import { StatusSelector, TaskBoard } from "turboui";
 export type { Task, EditMilestoneOrderingStateInput } from "@/api";
 export { useTasksForTurboUi } from "./useTasksForTurboUi";
 export { useTaskAssigneeSearch } from "./useTaskAssigneeSearch";
+export { useMilestoneKanbanState } from "./useMilestoneKanbanState";
 
 export { getTask, getTasks, useGetTasks } from "@/api";
 
