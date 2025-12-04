@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { StatusSelector } from "../../StatusSelector";
 import { useBoardDnD } from "../../utils/PragmaticDragAndDrop";
 import { MilestoneKanban } from "./MilestoneKanban";
+import { AddStatusModal } from "./AddStatusModal";
 import type { KanbanBoardProps, KanbanStatus, MilestoneKanbanState } from "./types";
 import type { TaskBoard } from "../components";
 
@@ -16,6 +17,8 @@ export function KanbanBoard({
   onMilestoneUpdate,
   assigneePersonSearch,
   onTaskCreate,
+  canManageStatuses,
+  onStatusesChange,
 }: KanbanBoardProps) {
   const statusKeys = useMemo(() => statuses.map((status) => status.value), [statuses]);
   const tasksForMilestone = useMemo(() => filterTasksForMilestone(tasks, milestone), [milestone, tasks]);
@@ -23,6 +26,8 @@ export function KanbanBoard({
   const [kanbanState, setKanbanState] = useState<MilestoneKanbanState>(
     normalizeKanbanState(kanbanStateProp, statusKeys),
   );
+
+  const [isAddStatusModalOpen, setIsAddStatusModalOpen] = useState(false);
 
   useEffect(() => setInternalTasks(tasksForMilestone), [tasksForMilestone]);
   useEffect(() => setKanbanState(normalizeKanbanState(kanbanStateProp, statusKeys)), [kanbanStateProp, statusKeys]);
@@ -84,7 +89,18 @@ export function KanbanBoard({
         onMilestoneUpdate={onMilestoneUpdate}
         assigneePersonSearch={assigneePersonSearch}
         onTaskCreate={onTaskCreate}
+        canManageStatuses={canManageStatuses}
+        onAddStatusClick={canManageStatuses ? () => setIsAddStatusModalOpen(true) : undefined}
       />
+
+      {canManageStatuses && onStatusesChange && (
+        <AddStatusModal
+          isOpen={isAddStatusModalOpen}
+          onClose={() => setIsAddStatusModalOpen(false)}
+          existingStatuses={statuses}
+          onStatusCreated={(status) => onStatusesChange([...statuses, status])}
+        />
+      )}
     </div>
   );
 }

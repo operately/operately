@@ -19,6 +19,9 @@ export namespace MilestoneKanbanPage {
     statuses: Types.Status[];
     kanbanState: MilestoneKanbanState;
 
+    canManageStatuses?: boolean;
+    onStatusesChange?: (statuses: Types.Status[]) => void;
+
     // Callbacks
     assigneePersonSearch: PersonField.SearchData;
     onTaskKanbanChange?: KanbanBoardProps["onTaskKanbanChange"];
@@ -44,6 +47,8 @@ export function MilestoneKanbanPage(props: MilestoneKanbanPage.Props) {
           onTaskDueDateChange={props.onTaskDueDateChange}
           onMilestoneUpdate={props.onMilestoneUpdate}
           assigneePersonSearch={props.assigneePersonSearch}
+          canManageStatuses={props.canManageStatuses ?? false}
+          onStatusesChange={props.onStatusesChange}
         />
       </div>
     </PageNew>
