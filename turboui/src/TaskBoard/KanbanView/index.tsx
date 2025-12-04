@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { StatusSelector } from "../../StatusSelector";
-import { useBoardDnD } from "../../utils/PragmaticDragAndDrop";
+import { useBoardDnD, useSortableList } from "../../utils/PragmaticDragAndDrop";
 import { MilestoneKanban } from "./MilestoneKanban";
 import { AddStatusModal } from "./AddStatusModal";
 import type { KanbanBoardProps, KanbanStatus, MilestoneKanbanState } from "./types";
@@ -20,7 +20,13 @@ export function KanbanBoard({
   canManageStatuses,
   onStatusesChange,
 }: KanbanBoardProps) {
-  const statusKeys = useMemo(() => statuses.map((status) => status.value), [statuses]);
+  const [orderedStatuses, setOrderedStatuses] = useState<StatusSelector.StatusOption[]>(() => sortStatuses(statuses));
+
+  useEffect(() => {
+    setOrderedStatuses(sortStatuses(statuses));
+  }, [statuses]);
+
+  const statusKeys = useMemo(() => orderedStatuses.map((status) => status.value), [orderedStatuses]);
   const tasksForMilestone = useMemo(() => filterTasksForMilestone(tasks, milestone), [milestone, tasks]);
   const [internalTasks, setInternalTasks] = useState<TaskBoard.Task[]>(tasksForMilestone);
   const [kanbanState, setKanbanState] = useState<MilestoneKanbanState>(
@@ -37,6 +43,34 @@ export function KanbanBoard({
     internalTasks.forEach((task) => map.set(task.id, task));
     return map;
   }, [internalTasks]);
+
+  const canReorderStatuses = Boolean(canManageStatuses && onStatusesChange);
+
+  useSortableList(
+    orderedStatuses.map((status, index) => ({ id: status.value, index })),
+    useCallback(
+      (itemId, newIndex) => {
+        if (!canReorderStatuses) return;
+
+        setOrderedStatuses((previous) => {
+          const oldIndex = previous.findIndex((status) => status.value === itemId);
+          if (oldIndex === -1 || oldIndex === newIndex) return previous;
+
+          const next = [...previous];
+          const [moved] = next.splice(oldIndex, 1);
+          if (!moved) return previous;
+
+          next.splice(newIndex, 0, moved);
+
+          const reindexed = next.map((status, index) => ({ ...status, index }));
+          onStatusesChange?.(reindexed as StatusSelector.StatusOption[]);
+
+          return reindexed;
+        });
+      },
+      [canReorderStatuses, onStatusesChange],
+    ),
+  );
 
   const { draggedItemId, destination, draggedItemDimensions } = useBoardDnD(
     useCallback(
@@ -68,7 +102,7 @@ export function KanbanBoard({
           updatedKanbanState: nextKanbanState,
         });
       },
-      [kanbanState, milestone?.id, onTaskKanbanChange, statusKeys, statuses],
+      [kanbanState, milestone?.id, onTaskKanbanChange, statusKeys, orderedStatuses],
     ),
   );
 
@@ -83,7 +117,7 @@ export function KanbanBoard({
         draggedItemId={draggedItemId}
         targetLocation={destination}
         placeholderHeight={draggedItemDimensions?.height ?? null}
-        statuses={statuses}
+        statuses={orderedStatuses}
         onTaskAssigneeChange={onTaskAssigneeChange}
         onTaskDueDateChange={onTaskDueDateChange}
         onMilestoneUpdate={onMilestoneUpdate}
@@ -97,8 +131,8 @@ export function KanbanBoard({
         <AddStatusModal
           isOpen={isAddStatusModalOpen}
           onClose={() => setIsAddStatusModalOpen(false)}
-          existingStatuses={statuses}
-          onStatusCreated={(status) => onStatusesChange([...statuses, status])}
+          existingStatuses={orderedStatuses}
+          onStatusCreated={(status) => onStatusesChange(sortStatuses([...orderedStatuses, status]))}
         />
       )}
     </div>
@@ -234,4 +268,14 @@ function updateTaskForMove(
     ...task,
     status: nextStatus,
   };
+}
+
+function sortStatuses(statuses: StatusSelector.StatusOption[]): StatusSelector.StatusOption[] {
+  return [...statuses].sort((a, b) => {
+    const aIndex = typeof a.index === "number" ? a.index : 0;
+    const bIndex = typeof b.index === "number" ? b.index : 0;
+
+    if (aIndex !== bIndex) return aIndex - bIndex;
+    return a.value.localeCompare(b.value);
+  });
 }

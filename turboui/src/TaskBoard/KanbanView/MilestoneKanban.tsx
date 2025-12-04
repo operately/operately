@@ -1,4 +1,6 @@
 import React, { useMemo } from "react";
+import type { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/types";
+
 import { IconFileText, IconMessageCircle, IconPlus } from "../../icons";
 import { DateField } from "../../DateField";
 import { BlackLink } from "../../Link";
@@ -8,8 +10,9 @@ import type { TaskBoardProps } from "../types";
 import { Column } from "./Column";
 import type { KanbanStatus } from "./types";
 import { StatusSelector } from "../../StatusSelector";
-import { useHorizontalAutoScroll } from "../../utils/PragmaticDragAndDrop";
+import { useHorizontalAutoScroll, useSortableItem, DropIndicator } from "../../utils/PragmaticDragAndDrop";
 import type { BoardLocation } from "../../utils/PragmaticDragAndDrop";
+import classNames from "../../utils/classnames";
 
 interface MilestoneKanbanProps {
   milestone: TaskBoard.Milestone | null;
@@ -114,21 +117,31 @@ export function MilestoneKanban({
 
       <div ref={scrollContainerRef} className="px-3 pt-3 pb-6 overflow-x-auto h-[80vh]">
         <div className="flex gap-3 min-w-max items-start">
-          {statuses.map((status) => (
-            <Column
+          {statuses.map((status, index) => (
+            <SortableStatusColumn
               key={status.value}
-              title={status.label}
-              status={status.value}
-              containerId={status.value}
-              tasks={columns[status.value] || []}
-              draggedItemId={draggedItemId}
-              targetLocation={targetLocation}
-              placeholderHeight={placeholderHeight}
-              onTaskAssigneeChange={onTaskAssigneeChange}
-              onTaskDueDateChange={onTaskDueDateChange}
-              assigneePersonSearch={assigneePersonSearch}
-              onCreateTask={onTaskCreate ? (title) => handleTaskCreate(title, status.value) : undefined}
-            />
+              status={status}
+              index={index}
+              canReorder={Boolean(canManageStatuses)}
+            >
+              {(dragHandleRef) => (
+                <Column
+                  title={status.label}
+                  status={status.value}
+                  containerId={status.value}
+                  tasks={columns[status.value] || []}
+                  draggedItemId={draggedItemId}
+                  targetLocation={targetLocation}
+                  placeholderHeight={placeholderHeight}
+                  onTaskAssigneeChange={onTaskAssigneeChange}
+                  onTaskDueDateChange={onTaskDueDateChange}
+                  assigneePersonSearch={assigneePersonSearch}
+                  onCreateTask={onTaskCreate ? (title) => handleTaskCreate(title, status.value) : undefined}
+                  dragHandleRef={dragHandleRef}
+                  isStatusDraggable={Boolean(canManageStatuses)}
+                />
+              )}
+            </SortableStatusColumn>
           ))}
 
           {canManageStatuses && (
@@ -146,5 +159,33 @@ export function MilestoneKanban({
         </div>
       </div>
     </section>
+  );
+}
+
+interface SortableStatusColumnProps {
+  status: StatusSelector.StatusOption;
+  index: number;
+  canReorder: boolean;
+  children: (dragHandleRef: React.RefObject<HTMLDivElement>) => React.ReactNode;
+}
+
+function SortableStatusColumn({ status, index, canReorder, children }: SortableStatusColumnProps) {
+  const { ref, dragHandleRef, isDragging, closestEdge } = useSortableItem({
+    itemId: status.value,
+    index,
+    containerId: "status-columns",
+    scope: "status-columns",
+    disabled: !canReorder,
+    allowedEdges: ["left", "right"],
+  });
+
+  return (
+    <div
+      ref={ref as React.RefObject<HTMLDivElement>}
+      className={classNames("relative flex-shrink-0", isDragging && "z-10")}
+    >
+      {closestEdge && <DropIndicator edge={closestEdge as Edge} />}
+      {children(dragHandleRef as React.RefObject<HTMLDivElement>)}
+    </div>
   );
 }
