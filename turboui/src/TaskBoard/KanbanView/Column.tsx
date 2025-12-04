@@ -20,6 +20,8 @@ interface ColumnProps {
   targetLocation: BoardLocation | null;
   placeholderHeight: number | null;
   onCreateTask?: (title: string) => void;
+  dragHandleRef?: React.RefObject<HTMLDivElement>;
+  isStatusDraggable?: boolean;
 }
 
 export function Column({
@@ -34,6 +36,8 @@ export function Column({
   targetLocation,
   placeholderHeight,
   onCreateTask,
+  dragHandleRef,
+  isStatusDraggable,
 }: ColumnProps) {
   const columnRef = useRef<HTMLDivElement>(null);
   const [isCreating, setIsCreating] = React.useState(false);
@@ -91,7 +95,13 @@ export function Column({
       className="relative flex flex-col gap-2 bg-surface-dimmed min-h-[75vh] w-[320px] flex-shrink-0 p-3 rounded-lg"
       data-test-id={`kanban-column-${status}`}
     >
-      <div className="flex items-center justify-between text-xs font-semibold text-content-dimmed uppercase tracking-wide px-1">
+      <div
+        ref={dragHandleRef}
+        className={classNames(
+          "flex items-center justify-between text-xs font-semibold text-content-dimmed uppercase tracking-wide px-1",
+          isStatusDraggable && "cursor-grab active:cursor-grabbing",
+        )}
+      >
         <span>{title}</span>
       </div>
 

@@ -11,6 +11,8 @@ interface UseSortableItemProps {
   index: number;
   containerId?: string;
   disabled?: boolean;
+  scope?: string;
+  allowedEdges?: Edge[];
 }
 
 interface UseSortableItemReturn {
@@ -49,6 +51,8 @@ export function useSortableItem({
   index,
   containerId,
   disabled = false,
+  scope,
+  allowedEdges = ["top", "bottom"],
 }: UseSortableItemProps): UseSortableItemReturn {
   const ref = useRef<HTMLElement>(null);
   const dragHandleRef = useRef<HTMLElement>(null);
@@ -83,7 +87,7 @@ export function useSortableItem({
       draggable({
         element,
         dragHandle: dragHandle || undefined,
-        getInitialData: () => ({ itemId, index, containerId }),
+        getInitialData: () => ({ itemId, index, containerId, scope }),
         onGenerateDragPreview: ({ nativeSetDragImage, location, source }) => {
           setCustomNativeDragPreview({
             nativeSetDragImage,
@@ -116,20 +120,34 @@ export function useSortableItem({
         element,
         getData: ({ input }) => {
           return attachClosestEdge(
-            { itemId, index, containerId },
+            { itemId, index, containerId, scope },
             {
               element,
               input,
-              allowedEdges: ["top", "bottom"],
+              allowedEdges,
             },
           );
         },
         onDragEnter: (args) => {
+          const sourceScope = args.source.data.scope as string | undefined;
+          if (scope) {
+            if (sourceScope !== scope) return;
+          } else if (typeof sourceScope === "string") {
+            // This target is unscoped (e.g. task cards), ignore scoped drags (e.g. status columns)
+            return;
+          }
           const edge = extractClosestEdge(args.self.data);
           closestEdgeRef.current = edge;
           setClosestEdge(edge);
         },
         onDrag: (args) => {
+          const sourceScope = args.source.data.scope as string | undefined;
+          if (scope) {
+            if (sourceScope !== scope) return;
+          } else if (typeof sourceScope === "string") {
+            // This target is unscoped (e.g. task cards), ignore scoped drags (e.g. status columns)
+            return;
+          }
           const edge = extractClosestEdge(args.self.data);
           updateEdgeWithDelay(edge);
         },
