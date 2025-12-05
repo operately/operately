@@ -42,7 +42,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
       has_open_invitation: data.has_open_invitation,
       permissions: OperatelyWeb.Api.Serializer.serialize(data.permissions),
       invitation: data.invitation && OperatelyWeb.Api.Serializer.serialize(data.invitation),
-      agent_def: data.agent_def && OperatelyWeb.Api.Serializer.serialize(data.agent_def, level: :full)
+      agent_def: data.agent_def && OperatelyWeb.Api.Serializer.serialize(data.agent_def, level: :full),
+      notify_about_assignments: data.notify_about_assignments
     }
   end
 

@@ -5,6 +5,7 @@ import { SecondaryButton, PrimaryButton } from "../Button";
 import { Menu, MenuActionItem } from "../Menu";
 import { Textfield } from "../forms/Textfield";
 import { PersonField } from "../PersonField";
+import { SwitchToggle } from "../SwitchToggle";
 import { IconPencil } from "../icons";
 
 export namespace ProfileEditPage {
@@ -30,12 +31,14 @@ export namespace ProfileEditPage {
     title: string;
     timezone: string;
     manager: Person | null;
+    notifyAboutAssignments: boolean;
 
     // Form handlers
     onFullNameChange: (value: string) => void;
     onTitleChange: (value: string) => void;
     onTimezoneChange: (value: string) => void;
     onManagerChange: (person: Person | null) => void;
+    onNotifyAboutAssignmentsChange: (value: boolean) => void;
     onSubmit: () => Promise<void>;
     onCancel?: () => void;
 
@@ -134,6 +137,23 @@ export function ProfileEditPage(props: ProfileEditPage.Props) {
                 testId="manager"
                 variant="form-field"
                 emptyStateMessage="Select manager"
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="font-bold text-sm mb-1">Assignments email</div>
+                <div className="text-xs text-content-dimmed max-w-md">
+                  Receive a daily email with your upcoming check-ins, reviews, and other work that needs your attention.
+                </div>
+              </div>
+
+              <SwitchToggle
+                label="Send assignments email"
+                value={props.notifyAboutAssignments}
+                setValue={props.onNotifyAboutAssignmentsChange}
+                testId={props.notifyAboutAssignments ? "disable-assignments-email-toggle" : "enable-assignments-email-toggle"}
+                labelHidden
               />
             </div>
           </div>
