@@ -1,5 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { StatusSelector } from "../../StatusSelector";
+import { Menu, MenuActionItem } from "../../Menu";
+import { IconPencil, IconDots } from "../../icons";
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import classNames from "../../utils/classnames";
 import { Card } from "./Card";
@@ -22,6 +24,8 @@ interface ColumnProps {
   dragHandleRef?: React.RefObject<HTMLDivElement>;
   isStatusDraggable?: boolean;
   allStatuses: StatusSelector.StatusOption[];
+  canManageStatuses?: boolean;
+  onEditStatus?: (status: StatusSelector.StatusOption) => void;
 }
 
 export function Column({
@@ -37,6 +41,8 @@ export function Column({
   dragHandleRef,
   isStatusDraggable,
   allStatuses,
+  canManageStatuses,
+  onEditStatus,
 }: ColumnProps) {
   const columnRef = useRef<HTMLDivElement>(null);
   const [isCreating, setIsCreating] = React.useState(false);
@@ -108,6 +114,8 @@ export function Column({
           <StatusSelector status={status} statusOptions={allStatuses} onChange={() => {}} readonly={true} size="sm" />
           <span>{title}</span>
         </div>
+
+        <ColumnMenu status={status} canManageStatuses={canManageStatuses} onEditStatus={onEditStatus} />
       </div>
 
       <div className="flex-1 flex flex-col">
@@ -192,6 +200,38 @@ export function Column({
           )
         )}
       </div>
+    </div>
+  );
+}
+
+interface ColumnMenuProps {
+  status: StatusSelector.StatusOption;
+  canManageStatuses?: boolean;
+  onEditStatus?: (status: StatusSelector.StatusOption) => void;
+}
+
+function ColumnMenu({ status, canManageStatuses, onEditStatus }: ColumnMenuProps) {
+  if (!canManageStatuses) return null;
+
+  return (
+    <div className="flex items-center">
+      <Menu
+        align="end"
+        size="tiny"
+        customTrigger={
+          <button className="block p-1 text-content-dimmed hover:text-content-base hover:bg-surface-dimmed rounded-full data-[state=open]:bg-surface-dimmed">
+            <IconDots size={16} />
+          </button>
+        }
+      >
+        <MenuActionItem
+          onClick={() => onEditStatus && onEditStatus(status)}
+          icon={IconPencil}
+          testId={createTestId("edit-status", status.value)}
+        >
+          Edit
+        </MenuActionItem>
+      </Menu>
     </div>
   );
 }
