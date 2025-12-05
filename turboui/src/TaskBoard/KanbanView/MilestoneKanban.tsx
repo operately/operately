@@ -28,6 +28,7 @@ interface MilestoneKanbanProps {
   onTaskCreate?: TaskBoardProps["onTaskCreate"];
   canManageStatuses?: boolean;
   onAddStatusClick?: () => void;
+  onEditStatus?: (status: StatusSelector.StatusOption) => void;
 }
 
 export function MilestoneKanban({
@@ -44,6 +45,7 @@ export function MilestoneKanban({
   onTaskCreate,
   canManageStatuses,
   onAddStatusClick,
+  onEditStatus,
 }: MilestoneKanbanProps) {
   const testId = useMemo(
     () => (milestone ? createTestId("milestone", milestone.id) : "kanban-no-milestone"),
@@ -138,6 +140,8 @@ export function MilestoneKanban({
                   dragHandleRef={dragHandleRef}
                   isStatusDraggable={Boolean(canManageStatuses)}
                   allStatuses={statuses}
+                  canManageStatuses={canManageStatuses}
+                  onEditStatus={onEditStatus}
                 />
               )}
             </SortableStatusColumn>
