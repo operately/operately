@@ -1,6 +1,16 @@
 import { UploadFileFn } from "../useEditor";
 
-export function AddBlobsEditorCommand({ files, pos, view, uploadFile }: { files: File[] | FileList; pos: number; view: any; uploadFile: UploadFileFn }) {
+export function AddBlobsEditorCommand({
+  files,
+  pos,
+  view,
+  uploadFile,
+}: {
+  files: File[] | FileList;
+  pos: number;
+  view: any;
+  uploadFile: UploadFileFn;
+}) {
   if (!view.editable) return false;
 
   Array.from(files).forEach(async (file) => {

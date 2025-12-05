@@ -42,6 +42,7 @@ interface UseEditorProps {
   content?: any;
   onSave?: (data: OnSaveData) => void;
   onBlur?: (data: OnBlurData) => void;
+  onUpdate?: (data: { json: any; html: string }) => void;
   onUploadStatusChange?: (uploading: boolean) => void;
   className?: string;
   editable?: boolean;
@@ -150,6 +151,13 @@ export function useEditor(props: UseEditorProps): EditorState {
       setSubmittable(!isUploading);
 
       setEmpty(editor.state.doc.childCount === 1 && editor.state.doc.firstChild?.childCount === 0);
+
+      if (props.onUpdate) {
+        props.onUpdate({
+          json: editor.getJSON(),
+          html: editor.getHTML(),
+        });
+      }
     },
   });
 

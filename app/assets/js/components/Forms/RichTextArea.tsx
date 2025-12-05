@@ -77,6 +77,9 @@ function Editor(props: RichTextAreaProps & { error: boolean }) {
     onBlur: () => {
       setValue(editor.editor.getJSON());
     },
+    onUpdate: ({ json }) => {
+      setValue(json);
+    },
     onUploadStatusChange: (status) => {
       if (status) {
         form.actions.setState("uploading");
