@@ -17,6 +17,7 @@ interface CardProps {
   onTaskDueDateChange?: TaskBoardProps["onTaskDueDateChange"];
   assigneePersonSearch?: TaskBoardProps["assigneePersonSearch"];
   showDropIndicator?: boolean;
+  onTaskClick?: (taskId: string) => void;
 }
 
 export function Card({
@@ -28,6 +29,7 @@ export function Card({
   onTaskDueDateChange,
   assigneePersonSearch,
   showDropIndicator = true,
+  onTaskClick,
 }: CardProps) {
   const [currentAssignee, setCurrentAssignee] = useState<TaskBoard.Person | null>(task.assignees?.[0] || null);
   const [currentDueDate, setCurrentDueDate] = useState<DateField.ContextualDate | null>(task.dueDate || null);
@@ -91,14 +93,24 @@ export function Card({
       <div className="flex items-start">
         <div className="flex-1 min-w-0 flex flex-col gap-2">
           <div onMouseDown={stopDragFromInteractive}>
-            <BlackLink
-              to={task.link}
-              className="block text-[13px] text-content-base hover:text-link-hover transition-colors leading-snug break-words"
-              underline="hover"
-              title={task.title}
-            >
-              {task.title}
-            </BlackLink>
+            {onTaskClick ? (
+              <button
+                onClick={() => onTaskClick(task.id)}
+                className="block text-[13px] text-content-base hover:text-link-hover transition-colors leading-snug break-words text-left w-full"
+                title={task.title}
+              >
+                {task.title}
+              </button>
+            ) : (
+              <BlackLink
+                to={task.link}
+                className="block text-[13px] text-content-base hover:text-link-hover transition-colors leading-snug break-words"
+                underline="hover"
+                title={task.title}
+              >
+                {task.title}
+              </BlackLink>
+            )}
           </div>
 
           <div className="flex items-center justify-between gap-2 text-[11px] text-content-dimmed leading-none">

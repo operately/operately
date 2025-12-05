@@ -20,6 +20,7 @@ export function KanbanBoard({
   onTaskCreate,
   canManageStatuses,
   onStatusesChange,
+  onTaskClick,
 }: KanbanBoardProps) {
   const [orderedStatuses, setOrderedStatuses] = useState<StatusSelector.StatusOption[]>(() => sortStatuses(statuses));
 
@@ -127,6 +128,7 @@ export function KanbanBoard({
         assigneePersonSearch={assigneePersonSearch}
         onTaskCreate={onTaskCreate}
         canManageStatuses={canManageStatuses}
+        onTaskClick={onTaskClick}
         onAddStatusClick={
           canManageStatuses
             ? () => {

@@ -27,6 +27,7 @@ interface Props {
   canManageStatuses?: boolean;
   onEditStatus?: (status: StatusSelector.StatusOption) => void;
   onDeleteStatus?: (status: StatusSelector.StatusOption) => void;
+  onTaskClick?: (taskId: string) => void;
 }
 
 export function Column({
@@ -45,6 +46,7 @@ export function Column({
   canManageStatuses,
   onEditStatus,
   onDeleteStatus,
+  onTaskClick,
 }: Props) {
   const columnRef = useRef<HTMLDivElement>(null);
   const [isCreating, setIsCreating] = React.useState(false);
@@ -146,6 +148,7 @@ export function Column({
                     onTaskDueDateChange={onTaskDueDateChange}
                     assigneePersonSearch={assigneePersonSearch}
                     showDropIndicator={shouldShowDropIndicator}
+                    onTaskClick={onTaskClick}
                   />
                 </React.Fragment>
               ))
