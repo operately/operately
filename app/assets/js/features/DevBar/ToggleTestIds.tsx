@@ -5,7 +5,10 @@ export function ToggleTestIds() {
   const status = show ? "ON" : "OFF";
   const color = show ? "text-green-500" : "text-white-1";
 
-  const toggle = () => setShow(!show);
+  const toggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShow(!show);
+  }
   const className = color + " cursor-pointer";
 
   React.useEffect(() => {
