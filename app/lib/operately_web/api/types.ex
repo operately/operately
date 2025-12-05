@@ -1499,7 +1499,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :timezone, :string, null: true
     field? :send_daily_summary, :boolean, null: true
     field? :notify_on_mention, :boolean, null: true
-    field? :notify_about_assignments, :boolean, null: true
+    field? :notify_about_assignments, :boolean, null: false
     field? :suspended, :boolean, null: true
     field? :company, :company, null: true
     field? :manager, :person, null: true
