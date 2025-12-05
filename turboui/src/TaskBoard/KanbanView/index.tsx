@@ -34,6 +34,7 @@ export function KanbanBoard({
   );
 
   const [isAddStatusModalOpen, setIsAddStatusModalOpen] = useState(false);
+  const [editingStatus, setEditingStatus] = useState<StatusSelector.StatusOption | undefined>();
 
   useEffect(() => setInternalTasks(tasksForMilestone), [tasksForMilestone]);
   useEffect(() => setKanbanState(normalizeKanbanState(kanbanStateProp, statusKeys)), [kanbanStateProp, statusKeys]);
@@ -124,15 +125,38 @@ export function KanbanBoard({
         assigneePersonSearch={assigneePersonSearch}
         onTaskCreate={onTaskCreate}
         canManageStatuses={canManageStatuses}
-        onAddStatusClick={canManageStatuses ? () => setIsAddStatusModalOpen(true) : undefined}
+        onAddStatusClick={
+          canManageStatuses
+            ? () => {
+                setEditingStatus(undefined);
+                setIsAddStatusModalOpen(true);
+              }
+            : undefined
+        }
+        onEditStatus={
+          canManageStatuses
+            ? (status) => {
+                setEditingStatus(status);
+                setIsAddStatusModalOpen(true);
+              }
+            : undefined
+        }
       />
 
       {canManageStatuses && onStatusesChange && (
         <AddStatusModal
           isOpen={isAddStatusModalOpen}
-          onClose={() => setIsAddStatusModalOpen(false)}
+          onClose={() => {
+            setIsAddStatusModalOpen(false);
+            setEditingStatus(undefined);
+          }}
           existingStatuses={orderedStatuses}
+          statusToEdit={editingStatus}
           onStatusCreated={(status) => onStatusesChange(sortStatuses([...orderedStatuses, status]))}
+          onStatusUpdated={(updatedStatus) => {
+            const nextStatuses = orderedStatuses.map((s) => (s.id === updatedStatus.id ? updatedStatus : s));
+            onStatusesChange(sortStatuses(nextStatuses));
+          }}
         />
       )}
     </div>

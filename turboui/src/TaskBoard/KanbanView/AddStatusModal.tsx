@@ -4,25 +4,49 @@ import { Modal } from "../../Modal";
 import { PrimaryButton, SecondaryButton } from "../../Button";
 import { IconPlus } from "../../icons";
 import { StatusSelector } from "../../StatusSelector";
-import { StatusAppearance, StatusAppearancePicker, STATUS_APPEARANCES } from "../../StatusCustomization/StatusAppearancePicker";
+import {
+  StatusAppearance,
+  StatusAppearancePicker,
+  STATUS_APPEARANCES,
+} from "../../StatusCustomization/StatusAppearancePicker";
 
-interface AddStatusModalProps {
+interface Props {
   isOpen: boolean;
   onClose: () => void;
   existingStatuses: StatusSelector.StatusOption[];
+  statusToEdit?: StatusSelector.StatusOption;
   onStatusCreated: (status: StatusSelector.StatusOption) => void;
+  onStatusUpdated: (status: StatusSelector.StatusOption) => void;
 }
 
-export function AddStatusModal({ isOpen, onClose, existingStatuses, onStatusCreated }: AddStatusModalProps) {
+export function AddStatusModal({
+  isOpen,
+  onClose,
+  existingStatuses,
+  statusToEdit,
+  onStatusCreated,
+  onStatusUpdated,
+}: Props) {
   const [label, setLabel] = React.useState("");
   const [appearance, setAppearance] = React.useState<StatusAppearance>("gray");
 
   React.useEffect(() => {
     if (isOpen) {
-      setLabel("");
-      setAppearance("gray");
+      if (statusToEdit) {
+        setLabel(statusToEdit.label);
+        setAppearance(
+          (Object.keys(STATUS_APPEARANCES).find(
+            (key) =>
+              STATUS_APPEARANCES[key as StatusAppearance].color === statusToEdit.color &&
+              STATUS_APPEARANCES[key as StatusAppearance].icon === statusToEdit.icon,
+          ) as StatusAppearance) || "gray",
+        );
+      } else {
+        setLabel("");
+        setAppearance("gray");
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, statusToEdit]);
 
   const handleSubmit = React.useCallback(
     (event: React.FormEvent) => {
@@ -48,24 +72,37 @@ export function AddStatusModal({ isOpen, onClose, existingStatuses, onStatusCrea
 
       const preset = STATUS_APPEARANCES[appearance];
 
-      const status: StatusSelector.StatusOption = {
-        id: generateId(),
-        label: trimmedLabel,
-        value,
-        color: preset.color,
-        icon: preset.icon,
-        index: nextIndex,
-        closed: appearance === "green" || appearance === "red",
-      };
-
-      onStatusCreated(status);
+      if (statusToEdit) {
+        const updatedStatus: StatusSelector.StatusOption = {
+          ...statusToEdit,
+          label: trimmedLabel,
+          // Keep value stable to avoid breaking kanban state mapping.
+          color: preset.color,
+          icon: preset.icon,
+          closed: appearance === "green" || appearance === "red",
+        };
+        onStatusUpdated(updatedStatus);
+      } else {
+        const status: StatusSelector.StatusOption = {
+          id: generateId(),
+          label: trimmedLabel,
+          value,
+          color: preset.color,
+          icon: preset.icon,
+          index: nextIndex,
+          closed: appearance === "green" || appearance === "red",
+        };
+        onStatusCreated(status);
+      }
       onClose();
     },
-    [appearance, existingStatuses, label, onClose, onStatusCreated],
+    [appearance, existingStatuses, label, onClose, onStatusCreated, onStatusUpdated, statusToEdit],
   );
 
+  const isEditing = Boolean(statusToEdit);
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Add status" size="small">
+    <Modal isOpen={isOpen} onClose={onClose} title={isEditing ? "Edit status" : "Add status"} size="small">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
           <label className="block text-sm font-medium text-content-base">Name</label>
@@ -87,8 +124,8 @@ export function AddStatusModal({ isOpen, onClose, existingStatuses, onStatusCrea
           <SecondaryButton type="button" onClick={onClose}>
             Cancel
           </SecondaryButton>
-          <PrimaryButton type="submit" icon={IconPlus} disabled={label.trim().length === 0}>
-            Add status
+          <PrimaryButton type="submit" icon={!isEditing && IconPlus} disabled={label.trim().length === 0}>
+            {isEditing ? "Save changes" : "Add status"}
           </PrimaryButton>
         </div>
       </form>
