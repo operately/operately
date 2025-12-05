@@ -1,17 +1,16 @@
 import React, { useEffect, useRef } from "react";
+import { StatusSelector } from "../../StatusSelector";
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import classNames from "../../utils/classnames";
 import { Card } from "./Card";
-import type { KanbanStatus } from "./types";
 import type { TaskBoard } from "../components";
 import type { TaskBoardProps } from "../types";
 import { DropPlaceholder, projectItemsWithPlaceholder } from "../../utils/PragmaticDragAndDrop";
 import type { BoardLocation } from "../../utils/PragmaticDragAndDrop";
+import { createTestId } from "../../TestableElement";
 
 interface ColumnProps {
-  title: string;
-  status: KanbanStatus;
-  containerId: string;
+  status: StatusSelector.StatusOption;
   tasks: TaskBoard.Task[];
   draggedItemId: string | null;
   onTaskAssigneeChange?: TaskBoardProps["onTaskAssigneeChange"];
@@ -22,12 +21,11 @@ interface ColumnProps {
   onCreateTask?: (title: string) => void;
   dragHandleRef?: React.RefObject<HTMLDivElement>;
   isStatusDraggable?: boolean;
+  allStatuses: StatusSelector.StatusOption[];
 }
 
 export function Column({
-  title,
   status,
-  containerId,
   tasks,
   draggedItemId,
   onTaskAssigneeChange,
@@ -38,10 +36,14 @@ export function Column({
   onCreateTask,
   dragHandleRef,
   isStatusDraggable,
+  allStatuses,
 }: ColumnProps) {
   const columnRef = useRef<HTMLDivElement>(null);
   const [isCreating, setIsCreating] = React.useState(false);
   const [newTaskTitle, setNewTaskTitle] = React.useState("");
+
+  const containerId = status.value;
+  const title = status.label;
 
   const { items: visibleTasks, placeholderIndex } = projectItemsWithPlaceholder({
     items: tasks,
@@ -93,7 +95,7 @@ export function Column({
     <div
       ref={columnRef}
       className="relative flex flex-col gap-2 bg-surface-dimmed min-h-[75vh] w-[320px] flex-shrink-0 p-3 rounded-lg"
-      data-test-id={`kanban-column-${status}`}
+      data-test-id={createTestId("kanban-column", status.value)}
     >
       <div
         ref={dragHandleRef}
@@ -102,7 +104,10 @@ export function Column({
           isStatusDraggable && "cursor-grab active:cursor-grabbing",
         )}
       >
-        <span>{title}</span>
+        <div className="flex items-center gap-1.5">
+          <StatusSelector status={status} statusOptions={allStatuses} onChange={() => {}} readonly={true} size="sm" />
+          <span>{title}</span>
+        </div>
       </div>
 
       <div className="flex-1 flex flex-col">
@@ -179,7 +184,7 @@ export function Column({
             <button
               className="flex items-center gap-1.5 text-xs text-content-dimmed hover:text-content-base px-2 py-1.5 rounded hover:bg-surface-highlight transition-colors w-full text-left mt-2"
               onClick={() => setIsCreating(true)}
-              data-test-id={`add-task-button-${status}`}
+              data-test-id={createTestId("add-task-button", status.value)}
             >
               <span className="text-lg leading-none">+</span>
               Add new task
