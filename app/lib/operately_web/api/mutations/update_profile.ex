@@ -2,7 +2,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProfile do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  @updatable_fields_for_oneself [:full_name, :title, :timezone, :manager_id, :theme]
+  @updatable_fields_for_oneself [:full_name, :title, :timezone, :manager_id, :theme, :notify_about_assignments]
   @updatable_fields_for_others [:full_name, :title, :timezone, :manager_id]
 
   inputs do
@@ -12,6 +12,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProfile do
     field? :timezone, :string, null: true
     field? :manager_id, :string, null: true
     field? :theme, :string, null: true
+    field? :notify_about_assignments, :boolean, null: false
   end
 
   outputs do

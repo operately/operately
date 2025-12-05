@@ -1344,7 +1344,7 @@ export interface Person {
   timezone?: string | null;
   sendDailySummary?: boolean | null;
   notifyOnMention?: boolean | null;
-  notifyAboutAssignments?: boolean | null;
+  notifyAboutAssignments?: boolean;
   suspended?: boolean | null;
   company?: Company | null;
   manager?: Person | null;
@@ -4297,6 +4297,7 @@ export interface UpdateProfileInput {
   timezone?: string | null;
   managerId?: string | null;
   theme?: string | null;
+  notifyAboutAssignments?: boolean;
 }
 
 export interface UpdateProfileResult {

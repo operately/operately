@@ -115,4 +115,16 @@ defmodule Operately.Features.ProfileTest do
     |> Steps.assert_item_visible(name: ctx.project.name)
     |> Steps.assert_item_visible(name: ctx.goal.name)
   end
+
+  feature "assignments email toggle controls cron emails", ctx do
+    ctx
+    |> Steps.visit_profile_edit_page()
+    |> Steps.assert_assignments_email_enabled()
+    |> Steps.assert_person_in_assignments_cron()
+    |> Steps.disable_assignments_email()
+    |> Steps.assert_person_not_in_assignments_cron()
+    |> Steps.visit_profile_edit_page()
+    |> Steps.enable_assignments_email()
+    |> Steps.assert_person_in_assignments_cron()
+  end
 end

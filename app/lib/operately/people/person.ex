@@ -24,7 +24,7 @@ defmodule Operately.People.Person do
 
     field :send_daily_summary, :boolean
     field :notify_on_mention, :boolean
-    field :notify_about_assignments, :boolean
+    field :notify_about_assignments, :boolean, default: true
 
     field :theme, :string
 

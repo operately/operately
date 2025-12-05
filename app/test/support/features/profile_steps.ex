@@ -40,6 +40,10 @@ defmodule Operately.Support.Features.ProfileSteps do
     UI.visit(ctx, Paths.profile_path(ctx.company, ctx.person))
   end
 
+  step :visit_profile_edit_page, ctx do
+    UI.visit(ctx, Paths.profile_path(ctx.company, ctx.person) <> "/profile/edit")
+  end
+
   step :assert_contact_email_visible, ctx do
     UI.assert_text(ctx, ctx.person.email)
   end
@@ -167,6 +171,43 @@ defmodule Operately.Support.Features.ProfileSteps do
 
   step :click_paused_tab, ctx do
     UI.click(ctx, testid: "tab-paused")
+  end
+
+  step :assert_assignments_email_enabled, ctx do
+    ctx
+    |> UI.assert_has(testid: "disable-assignments-email-toggle")
+  end
+
+  step :disable_assignments_email, ctx do
+    ctx
+    |> UI.click(testid: "disable-assignments-email-toggle")
+    |> UI.sleep(100)
+    |> UI.click(testid: "submit")
+    |> UI.assert_page(Paths.account_path(ctx.company))
+  end
+
+  step :enable_assignments_email, ctx do
+    ctx
+    |> UI.click(testid: "enable-assignments-email-toggle")
+    |> UI.sleep(100)
+    |> UI.click(testid: "submit")
+    |> UI.assert_page(Paths.account_path(ctx.company))
+  end
+
+  step :assert_person_not_in_assignments_cron, ctx do
+    people = OperatelyEmail.Assignments.Cron.people_who_want_assignment_emails()
+
+    refute Enum.any?(people, fn person -> person.id == ctx.person.id end)
+
+    ctx
+  end
+
+  step :assert_person_in_assignments_cron, ctx do
+    people = OperatelyEmail.Assignments.Cron.people_who_want_assignment_emails()
+
+    assert Enum.any?(people, fn person -> person.id == ctx.person.id end)
+
+    ctx
   end
 
   step :assert_assinged_goals_and_projects_visible, ctx do
