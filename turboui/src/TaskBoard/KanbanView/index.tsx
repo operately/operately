@@ -3,6 +3,7 @@ import { StatusSelector } from "../../StatusSelector";
 import { useBoardDnD, useSortableList } from "../../utils/PragmaticDragAndDrop";
 import { MilestoneKanban } from "./MilestoneKanban";
 import { AddStatusModal } from "./AddStatusModal";
+import { DeleteStatusModal } from "./DeleteStatusModal";
 import type { KanbanBoardProps, KanbanStatus, MilestoneKanbanState } from "./types";
 import type { TaskBoard } from "../components";
 
@@ -35,6 +36,7 @@ export function KanbanBoard({
 
   const [isAddStatusModalOpen, setIsAddStatusModalOpen] = useState(false);
   const [editingStatus, setEditingStatus] = useState<StatusSelector.StatusOption | undefined>();
+  const [deletingStatus, setDeletingStatus] = useState<StatusSelector.StatusOption | undefined>();
 
   useEffect(() => setInternalTasks(tasksForMilestone), [tasksForMilestone]);
   useEffect(() => setKanbanState(normalizeKanbanState(kanbanStateProp, statusKeys)), [kanbanStateProp, statusKeys]);
@@ -141,9 +143,16 @@ export function KanbanBoard({
               }
             : undefined
         }
+        onDeleteStatus={
+          canManageStatuses
+            ? (status) => {
+                setDeletingStatus(status);
+              }
+            : undefined
+        }
       />
 
-      {canManageStatuses && onStatusesChange && (
+      {onStatusesChange && (
         <AddStatusModal
           isOpen={isAddStatusModalOpen}
           onClose={() => {
@@ -156,6 +165,20 @@ export function KanbanBoard({
           onStatusUpdated={(updatedStatus) => {
             const nextStatuses = orderedStatuses.map((s) => (s.id === updatedStatus.id ? updatedStatus : s));
             onStatusesChange(sortStatuses(nextStatuses));
+          }}
+        />
+      )}
+
+      {onStatusesChange && deletingStatus && (
+        <DeleteStatusModal
+          isOpen={Boolean(deletingStatus)}
+          onClose={() => setDeletingStatus(undefined)}
+          status={deletingStatus}
+          hasTasks={(kanbanState[deletingStatus.value]?.length || 0) > 0}
+          onConfirm={() => {
+            const nextStatuses = orderedStatuses.filter((s) => s.id !== deletingStatus.id);
+            onStatusesChange(sortStatuses(nextStatuses));
+            setDeletingStatus(undefined);
           }}
         />
       )}
