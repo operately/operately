@@ -126,9 +126,7 @@ export function MilestoneKanban({
             >
               {(dragHandleRef) => (
                 <Column
-                  title={status.label}
-                  status={status.value}
-                  containerId={status.value}
+                  status={status}
                   tasks={columns[status.value] || []}
                   draggedItemId={draggedItemId}
                   targetLocation={targetLocation}
@@ -139,6 +137,7 @@ export function MilestoneKanban({
                   onCreateTask={onTaskCreate ? (title) => handleTaskCreate(title, status.value) : undefined}
                   dragHandleRef={dragHandleRef}
                   isStatusDraggable={Boolean(canManageStatuses)}
+                  allStatuses={statuses}
                 />
               )}
             </SortableStatusColumn>
@@ -148,12 +147,12 @@ export function MilestoneKanban({
             <button
               type="button"
               onClick={onAddStatusClick}
-              className="flex flex-col items-center justify-start gap-2 px-3 py-2 rounded-md border border-dashed border-surface-outline text-content-dimmed hover:border-brand-1/60 hover:text-brand-1 transition min-w-[120px] h-full"
+              className="flex flex-col items-center justify-start gap-1.5 px-2 py-2 rounded-md border border-dashed border-surface-outline text-content-dimmed hover:border-brand-1/60 hover:text-brand-1 transition min-w-[100px] h-full"
             >
-              <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-surface-dimmed">
-                <IconPlus size={16} />
+              <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-surface-dimmed">
+                <IconPlus size={14} />
               </span>
-              <span className="text-xs font-medium mt-1">Add status</span>
+              <span className="text-xs font-medium mt-0.5">Add status</span>
             </button>
           )}
         </div>
