@@ -169,14 +169,20 @@ export function TaskPage(props: TaskPage.Props) {
         <div className="p-4 max-w-6xl mx-auto">
           <PageHeader {...state} />
           <MobileSidebar {...state} />
-          <div className="sm:grid sm:grid-cols-12 mt-6">
-            <Overview {...state} />
-            <Sidebar {...state} />
-          </div>
+          <TaskPageContent state={state} />
         </div>
       </div>
 
       <DeleteModal {...state} />
     </ProjectPageLayout>
+  );
+}
+
+export function TaskPageContent({ state }: { state: TaskPage.State }) {
+  return (
+    <div className="sm:grid sm:grid-cols-12 mt-6">
+      <Overview {...state} />
+      <Sidebar {...state} />
+    </div>
   );
 }

@@ -25,4 +25,5 @@ export interface KanbanBoardProps {
   onTaskDueDateChange?: TaskBoardProps["onTaskDueDateChange"];
   onMilestoneUpdate?: TaskBoardProps["onMilestoneUpdate"];
   assigneePersonSearch?: TaskBoardProps["assigneePersonSearch"];
+  onTaskClick?: (taskId: string) => void;
 }

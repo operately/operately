@@ -4,9 +4,10 @@ import Api from "@/api";
 import * as Milestones from "@/models/milestones";
 import * as Tasks from "@/models/tasks";
 import * as People from "@/models/people";
-import { useMilestoneKanbanState } from "@/models/tasks/useMilestoneKanbanState";
+import { useMilestoneKanbanState, useTaskSlideIn } from "@/models/tasks";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 
-import { MilestoneKanbanPage as UiMilestoneKanbanPage, showErrorToast } from "turboui";
+import { MilestoneKanbanPage, showErrorToast } from "turboui";
 import { usePaths } from "@/routes/paths";
 import { PageCache } from "@/routes/PageCache";
 import { fetchAll } from "@/utils/async";
@@ -48,6 +49,7 @@ function pageCacheKey(id: string): string {
 
 function Page() {
   const paths = usePaths();
+  const currentUser = useMe();
   const pageData = PageCache.useData(loader);
   const { data, refresh } = pageData;
   const { milestone, tasks: backendTasks } = data;
@@ -86,7 +88,21 @@ function Page() {
     },
   });
 
-  const props: UiMilestoneKanbanPage.Props = {
+  // Task slide-in state
+  const [selectedTaskId, setSelectedTaskId] = React.useState<string | null>(null);
+  const { taskSlideInProps } = useTaskSlideIn({
+    taskId: selectedTaskId,
+    isOpen: selectedTaskId !== null,
+    onClose: () => setSelectedTaskId(null),
+    paths,
+    currentUser: People.parsePersonForTurboUi(paths, currentUser)!,
+  });
+
+  const handleTaskClick = React.useCallback((taskId: string) => {
+    setSelectedTaskId(taskId);
+  }, []);
+
+  const props: MilestoneKanbanPage.Props = {
     projectName: milestone.project.name ?? "",
 
     milestone: Milestones.parseMilestoneForTurboUi(paths, milestone),
@@ -102,9 +118,13 @@ function Page() {
     canManageStatuses: milestone.permissions.canEditStatuses,
     onStatusesChange: handleStatusesChange,
     onTaskKanbanChange: handleTaskKanbanChange,
+    onTaskClick: handleTaskClick,
+
+    // Task slide-in
+    taskSlideInProps,
   };
 
-  return <UiMilestoneKanbanPage key={milestone.id!} {...props} />;
+  return <MilestoneKanbanPage key={milestone.id!} {...props} />;
 }
 
 function useMilestoneTaskStatuses(milestone: Milestones.Milestone, refresh?: () => void) {

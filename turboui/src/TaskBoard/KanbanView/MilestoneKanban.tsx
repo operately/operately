@@ -30,6 +30,7 @@ interface MilestoneKanbanProps {
   onAddStatusClick?: () => void;
   onEditStatus?: (status: StatusSelector.StatusOption) => void;
   onDeleteStatus?: (status: StatusSelector.StatusOption) => void;
+  onTaskClick?: (taskId: string) => void;
 }
 
 export function MilestoneKanban({
@@ -48,6 +49,7 @@ export function MilestoneKanban({
   onAddStatusClick,
   onEditStatus,
   onDeleteStatus,
+  onTaskClick,
 }: MilestoneKanbanProps) {
   const testId = useMemo(
     () => (milestone ? createTestId("milestone", milestone.id) : "kanban-no-milestone"),
@@ -145,6 +147,7 @@ export function MilestoneKanban({
                   canManageStatuses={canManageStatuses}
                   onEditStatus={onEditStatus}
                   onDeleteStatus={onDeleteStatus}
+                  onTaskClick={onTaskClick}
                 />
               )}
             </SortableStatusColumn>
