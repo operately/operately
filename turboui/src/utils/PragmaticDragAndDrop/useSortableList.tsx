@@ -31,7 +31,13 @@ export function useSortableList<T extends DraggableItem>(items: T[], onReorder: 
       onDrop: ({ source, location }) => {
         setDraggedItemId(null);
 
-        const target = location.current.dropTargets[0];
+        const dropTargets = location.current.dropTargets;
+        const target = dropTargets.find((candidate) => {
+          const targetId = candidate.data.itemId as string | undefined;
+          if (typeof targetId !== "string") return false;
+          return items.some((item) => item.id === targetId);
+        });
+
         if (!target) return;
 
         const sourceId = source.data.itemId as string;
@@ -46,9 +52,12 @@ export function useSortableList<T extends DraggableItem>(items: T[], onReorder: 
 
         const closestEdge = extractClosestEdge(target.data);
 
-        // Calculate the new index based on the drop edge
+        // Calculate the new index based on the drop edge.
+        // Treat "top"/"left" as inserting before the target, and other edges as after.
+        const isBefore = closestEdge === "top" || closestEdge === "left";
+
         let newIndex: number;
-        if (closestEdge === "top") {
+        if (isBefore) {
           newIndex = targetIndex;
         } else {
           newIndex = targetIndex + 1;

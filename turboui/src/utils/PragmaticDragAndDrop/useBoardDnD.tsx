@@ -49,6 +49,12 @@ export function useBoardDnD(onBoardMove: OnBoardMove) {
   useEffect(() => {
     return monitorForElements({
       onDragStart: ({ source, location }) => {
+        const scope = source.data.scope as string | undefined;
+        if (typeof scope === "string") {
+          // Ignore drags that belong to other drag scopes, such as status column sorting
+          return;
+        }
+
         const itemId = source.data.itemId as string;
         const containerId = source.data.containerId as string | undefined;
         const index = source.data.index;
@@ -169,13 +175,17 @@ function computeDestination({
 
   const dropTargets = location.current.dropTargets;
   const itemTarget = dropTargets.find(
-    (candidate) => typeof candidate.data.itemId === "string" && typeof candidate.data.containerId === "string",
+    (candidate) =>
+      typeof candidate.data.itemId === "string" &&
+      typeof candidate.data.containerId === "string" &&
+      typeof candidate.data.scope !== "string",
   );
   const containerTarget = dropTargets.find(
     (candidate) =>
       typeof candidate.data.containerId === "string" &&
       typeof candidate.data.itemId !== "string" &&
-      !candidate.data.isPlaceholder,
+      !candidate.data.isPlaceholder &&
+      typeof candidate.data.scope !== "string",
   );
 
   if (itemTarget) {
