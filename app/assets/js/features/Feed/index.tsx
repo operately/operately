@@ -8,7 +8,7 @@ import { DivLink } from "turboui";
 
 import Api from "@/api";
 import FormattedTime from "@/components/FormattedTime";
-import ActivityHandler, { DISPLAYED_IN_FEED } from "@/features/activities";
+import ActivityHandler, { DISPLAYED_IN_FEED, filterVisibleActivities } from "@/features/activities";
 import classNames from "classnames";
 import { Avatar } from "turboui";
 
@@ -42,10 +42,12 @@ const FEED_PROP_DEFAULTS = {
 export function Feed(props: FeedProps) {
   props = { ...FEED_PROP_DEFAULTS, ...props };
 
+  const visibleItems = filterVisibleActivities(props.items);
+
   return (
     <ErrorBoundary fallback={<div>Ooops, something went wrong while loading the feed</div>}>
       <div className="w-full" data-test-id={props.testId}>
-        {Activities.groupByDate(props.items).map((group, index) => (
+        {Activities.groupByDate(visibleItems).map((group, index) => (
           <ActivityGroup
             key={index}
             group={group}
