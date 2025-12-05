@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { StatusSelector } from "../../StatusSelector";
 import { Menu, MenuActionItem } from "../../Menu";
-import { IconPencil, IconDots } from "../../icons";
+import { IconPencil, IconDots, IconTrash } from "../../icons";
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import classNames from "../../utils/classnames";
 import { Card } from "./Card";
@@ -11,7 +11,7 @@ import { DropPlaceholder, projectItemsWithPlaceholder } from "../../utils/Pragma
 import type { BoardLocation } from "../../utils/PragmaticDragAndDrop";
 import { createTestId } from "../../TestableElement";
 
-interface ColumnProps {
+interface Props {
   status: StatusSelector.StatusOption;
   tasks: TaskBoard.Task[];
   draggedItemId: string | null;
@@ -26,6 +26,7 @@ interface ColumnProps {
   allStatuses: StatusSelector.StatusOption[];
   canManageStatuses?: boolean;
   onEditStatus?: (status: StatusSelector.StatusOption) => void;
+  onDeleteStatus?: (status: StatusSelector.StatusOption) => void;
 }
 
 export function Column({
@@ -43,7 +44,8 @@ export function Column({
   allStatuses,
   canManageStatuses,
   onEditStatus,
-}: ColumnProps) {
+  onDeleteStatus,
+}: Props) {
   const columnRef = useRef<HTMLDivElement>(null);
   const [isCreating, setIsCreating] = React.useState(false);
   const [newTaskTitle, setNewTaskTitle] = React.useState("");
@@ -115,7 +117,12 @@ export function Column({
           <span>{title}</span>
         </div>
 
-        <ColumnMenu status={status} canManageStatuses={canManageStatuses} onEditStatus={onEditStatus} />
+        <ColumnMenu
+          status={status}
+          canManageStatuses={canManageStatuses}
+          onEditStatus={onEditStatus}
+          onDeleteStatus={onDeleteStatus}
+        />
       </div>
 
       <div className="flex-1 flex flex-col">
@@ -204,13 +211,14 @@ export function Column({
   );
 }
 
-interface ColumnMenuProps {
+interface MenuProps {
   status: StatusSelector.StatusOption;
   canManageStatuses?: boolean;
   onEditStatus?: (status: StatusSelector.StatusOption) => void;
+  onDeleteStatus?: (status: StatusSelector.StatusOption) => void;
 }
 
-function ColumnMenu({ status, canManageStatuses, onEditStatus }: ColumnMenuProps) {
+function ColumnMenu({ status, canManageStatuses, onEditStatus, onDeleteStatus }: MenuProps) {
   if (!canManageStatuses) return null;
 
   return (
@@ -230,6 +238,14 @@ function ColumnMenu({ status, canManageStatuses, onEditStatus }: ColumnMenuProps
           testId={createTestId("edit-status", status.value)}
         >
           Edit
+        </MenuActionItem>
+        <MenuActionItem
+          onClick={() => onDeleteStatus && onDeleteStatus(status)}
+          icon={IconTrash}
+          danger
+          testId={createTestId("delete-status", status.value)}
+        >
+          Delete
         </MenuActionItem>
       </Menu>
     </div>
