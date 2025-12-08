@@ -13,6 +13,8 @@ import { fetchAll } from "@/utils/async";
 import { assertPresent } from "@/utils/assertions";
 import { PageModule } from "@/routes/types";
 import { useMilestoneTaskStatuses } from "./useMilestoneTaskStatuses";
+import { useMilestones } from "@/models/milestones/useMilestones";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 export default { name: "MilestoneKanbanPage", loader, Page } as PageModule;
 
@@ -63,6 +65,9 @@ function Page() {
     createTask,
     updateTaskAssignee,
     updateTaskDueDate,
+    updateTaskStatus,
+    updateTaskDescription,
+    updateTaskMilestone,
   } = Tasks.useTasksForTurboUi({
     backendTasks,
     projectId: milestone.project.id,
@@ -94,6 +99,19 @@ function Page() {
     projectId: milestone.project.id,
     transformResult: transformPerson,
   });
+  const { milestones, search: searchMilestones } = useMilestones(milestone.project.id);
+  const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: milestone.project.id } });
+
+  const handleTaskMilestoneChange = React.useCallback(
+    (taskId: string, milestone: MilestoneKanbanPage.Milestone | null) => {
+      // We can't control index in new milestone, so we default to index 1000. The backend will normalize ordering.
+      const indexInMilestone = 1000;
+      const milestoneId = milestone?.id ?? "no-milestone";
+
+      return updateTaskMilestone(taskId, milestoneId, indexInMilestone);
+    },
+    [updateTaskMilestone],
+  );
 
   const props: MilestoneKanbanPage.Props = {
     projectName: milestone.project.name ?? "",
@@ -113,6 +131,13 @@ function Page() {
     onTaskCreate: createTask,
     onTaskAssigneeChange: updateTaskAssignee,
     onTaskDueDateChange: updateTaskDueDate,
+    onTaskStatusChange: updateTaskStatus,
+    onTaskMilestoneChange: handleTaskMilestoneChange,
+    milestones: milestones,
+    onMilestoneSearch: searchMilestones,
+    onTaskDescriptionChange: updateTaskDescription,
+    richTextHandlers: richEditorHandlers,
+
     canManageStatuses: milestone.permissions.canEditStatuses,
     onStatusesChange: handleStatusesChange,
     onTaskKanbanChange: handleTaskKanbanChange,

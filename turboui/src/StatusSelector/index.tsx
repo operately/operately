@@ -182,7 +182,7 @@ export function StatusSelector<T extends StatusSelector.StatusOption = StatusSel
 
       <Popover.Portal>
         <Popover.Content
-          className="bg-surface-base shadow rounded border border-stroke-base p-0.5"
+          className="bg-surface-base shadow rounded border border-stroke-base p-0.5 z-50"
           style={{ width: 220 }}
           sideOffset={4}
           alignOffset={2}
