@@ -89,6 +89,12 @@ function Page() {
   const props: UiMilestoneKanbanPage.Props = {
     projectName: milestone.project.name ?? "",
 
+    navigation: [
+      { to: paths.spacePath(milestone.space.id), label: milestone.space.name },
+      { to: paths.spaceWorkMapPath(milestone.space.id, "projects" as const), label: "Projects" },
+      { to: paths.projectPath(milestone.project.id), label: milestone.project.name },
+    ],
+
     milestone: Milestones.parseMilestoneForTurboUi(paths, milestone),
     tasks,
     statuses,
@@ -98,7 +104,6 @@ function Page() {
     onTaskCreate: createTask,
     onTaskAssigneeChange: updateTaskAssignee,
     onTaskDueDateChange: updateTaskDueDate,
-    onMilestoneUpdate: undefined,
     canManageStatuses: milestone.permissions.canEditStatuses,
     onStatusesChange: handleStatusesChange,
     onTaskKanbanChange: handleTaskKanbanChange,
