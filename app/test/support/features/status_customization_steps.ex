@@ -30,6 +30,12 @@ defmodule Operately.Support.Features.StatusCustomizationSteps do
     |> UI.assert_has(testid: "tasks-board")
   end
 
+  step :visit_milestone_kanban, ctx do
+    ctx
+    |> UI.visit(Paths.project_milestone_kanban_path(ctx.company, ctx.milestone))
+    |> UI.assert_text(ctx.milestone.title)
+  end
+
   step :open_manage_statuses, ctx do
     ctx
     |> UI.click(css: "button[aria-label=\"Settings\"]")
@@ -54,6 +60,10 @@ defmodule Operately.Support.Features.StatusCustomizationSteps do
 
   step :remove_last_status, ctx do
     UI.click(ctx, testid: "remove-status-4")
+  end
+
+  step :remove_status_at_index, ctx, index: index do
+    UI.click(ctx, testid: "remove-status-#{index}")
   end
 
   step :save_status_changes, ctx do
@@ -87,7 +97,9 @@ defmodule Operately.Support.Features.StatusCustomizationSteps do
     new_value = Keyword.fetch!(opts, :new_value)
 
     ctx
-    |> UI.click_text(current_label)
+    |> UI.find(UI.query(testid: "task-header"), fn el ->
+      UI.click_text(el, current_label)
+    end)
     |> UI.click(testid: UI.testid(["status-option", new_value]))
     |> UI.sleep(400)
   end
@@ -129,6 +141,21 @@ defmodule Operately.Support.Features.StatusCustomizationSteps do
 
   step :assert_task_status_visible, ctx, label: label do
     ctx |> UI.assert_text(label)
+  end
+
+  step :assert_kanban_column_visible, ctx, status: status_value do
+    ctx |> UI.assert_has(testid: "kanban-column-#{status_value}")
+  end
+
+  step :refute_kanban_column_visible, ctx, status: status_value do
+    ctx |> UI.refute_has(testid: "kanban-column-#{status_value}")
+  end
+
+  step :assert_task_in_kanban_column, ctx, task: task_name, column: status_value do
+    ctx
+    |> UI.find(UI.query(testid: "kanban-column-#{status_value}"), fn el ->
+      UI.assert_text(el, task_name)
+    end)
   end
 
   defp color_description(:gray), do: "Use for backlog or paused work"

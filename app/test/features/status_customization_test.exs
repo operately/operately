@@ -85,4 +85,30 @@ defmodule Operately.Features.StatusCustomizationTest do
     |> Steps.assert_status_option_absent(value: custom_status.value)
     |> Steps.close_status_selector()
   end
+
+  feature "unknown status column appears in kanban when status is deleted", ctx do
+    task_name = "Refactor Kanban"
+
+    ctx
+    |> Steps.given_task_exists(name: task_name)
+    |> Steps.visit_project_tasks()
+    |> Steps.open_task_from_tasks_board()
+    |> Steps.change_task_status_on_task_page(current_label: "Not started", new_value: "in-progress")
+    |> Steps.visit_milestone_kanban()
+    |> Steps.refute_kanban_column_visible(status: "unknown-status")
+    |> Steps.assert_task_in_kanban_column(task: task_name, column: "in-progress")
+    |> Steps.visit_project_tasks()
+    |> Steps.open_manage_statuses()
+    |> Steps.remove_status_at_index(index: 1)
+    |> Steps.save_status_changes()
+    |> Steps.visit_milestone_kanban()
+    |> Steps.assert_kanban_column_visible(status: "unknown-status")
+    |> Steps.assert_task_in_kanban_column(task: task_name, column: "unknown-status")
+    |> Steps.visit_project_tasks()
+    |> Steps.open_task_from_tasks_board()
+    |> Steps.change_task_status_on_task_page(current_label: "In progress", new_value: "done")
+    |> Steps.visit_milestone_kanban()
+    |> Steps.refute_kanban_column_visible(status: "unknown-status")
+    |> Steps.assert_task_in_kanban_column(task: task_name, column: "done")
+  end
 end
