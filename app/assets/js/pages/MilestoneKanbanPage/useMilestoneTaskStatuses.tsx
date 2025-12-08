@@ -51,49 +51,61 @@ export function useMilestoneTaskStatuses(
     [milestone.project.id, refresh, baseStatuses],
   );
 
-  const { tasks, statuses } = React.useMemo(() => {
-    const knownStatusValues = new Set(baseStatuses.map((s) => s.value));
-
-    const hasOrphanTasks = baseTasks.some((task) => {
-      const statusValue = task.status?.value || task.status?.id;
-      // Treat tasks with no status OR with a status that no longer exists
-      // in the current statuses list as "unknown".
-      return !statusValue || !knownStatusValues.has(statusValue);
-    });
-
-    if (!hasOrphanTasks) {
-      return { tasks: baseTasks, statuses: baseStatuses };
-    }
-
-    const unknownStatus = {
-      id: "unknown-status",
-      value: "unknown-status",
-      label: "Unknown status",
-      color: "gray",
-      icon: "circleDot",
-      index: -1,
-    } as (typeof baseStatuses)[number];
-
-    const nextStatuses = baseStatuses.some((s) => s.value === "unknown-status")
-      ? baseStatuses
-      : [unknownStatus, ...baseStatuses];
-
-    const nextTasks = baseTasks.map((task) => {
-      const statusValue = task.status?.value || task.status?.id;
-      if (statusValue && knownStatusValues.has(statusValue)) return task;
-
-      return {
-        ...task,
-        status: {
-          ...(task.status || {}),
-          ...unknownStatus,
-          value: "unknown-status",
-        },
-      };
-    });
-
-    return { tasks: nextTasks, statuses: nextStatuses };
-  }, [baseTasks, baseStatuses]);
+  const { tasks, statuses } = React.useMemo(
+    () => normalizeTasksAndStatuses(baseTasks, baseStatuses),
+    [baseTasks, baseStatuses],
+  );
 
   return { tasks, statuses, handleStatusesChange };
+}
+
+// 
+// Helpers
+// 
+
+function normalizeTasksAndStatuses(
+  tasks: MilestoneKanbanPage.Task[],
+  statuses: MilestoneKanbanPage.StatusOption[],
+) {
+  const knownStatusValues = new Set(statuses.map((s) => s.value));
+
+  if (!hasOrphanedTasks(tasks, knownStatusValues)) {
+    return { tasks, statuses };
+  }
+
+  const unknownStatus: MilestoneKanbanPage.StatusOption = {
+    id: "unknown-status",
+    value: "unknown-status",
+    label: "Unknown status",
+    color: "gray",
+    icon: "circleDot",
+    index: -1,
+  };
+
+  const nextStatuses = statuses.some((s) => s.value === "unknown-status")
+    ? statuses
+    : [unknownStatus, ...statuses];
+
+  const nextTasks = tasks.map((task) => {
+    const statusValue = task.status?.value || task.status?.id;
+    if (statusValue && knownStatusValues.has(statusValue)) return task;
+
+    return {
+      ...task,
+      status: {
+        ...(task.status || {}),
+        ...unknownStatus,
+        value: "unknown-status",
+      },
+    };
+  });
+
+  return { tasks: nextTasks, statuses: nextStatuses };
+}
+
+function hasOrphanedTasks(tasks: MilestoneKanbanPage.Task[], knownStatusValues: Set<string>): boolean {
+  return tasks.some((task) => {
+    const statusValue = task.status?.value || task.status?.id;
+    return !statusValue || !knownStatusValues.has(statusValue);
+  });
 }
