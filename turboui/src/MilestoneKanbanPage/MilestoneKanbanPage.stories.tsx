@@ -100,6 +100,11 @@ export const Default: Story = {
       <div className="min-h-[800px] py-[4.5rem] px-2 bg-surface-base">
         <MilestoneKanbanPage
           projectName="Demo Project"
+          navigation={[
+            { to: "/spaces/demo-space", label: "Demo Space" },
+            { to: "/spaces/demo-space/work-map/projects", label: "Projects" },
+            { to: "/projects/demo-project", label: "Demo Project" },
+          ]}
           milestone={milestone}
           tasks={tasks}
           statuses={STATUSES}
@@ -164,6 +169,11 @@ export const WithStatusManagement: Story = {
       <div className="min-h-[800px] py-[4.5rem] px-2 bg-surface-base">
         <MilestoneKanbanPage
           projectName="Demo Project"
+          navigation={[
+            { to: "/spaces/demo-space", label: "Demo Space" },
+            { to: "/spaces/demo-space/work-map/projects", label: "Projects" },
+            { to: "/projects/demo-project", label: "Demo Project" },
+          ]}
           milestone={milestone}
           tasks={tasks}
           statuses={statuses}

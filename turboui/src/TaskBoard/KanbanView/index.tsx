@@ -15,11 +15,11 @@ export function KanbanBoard({
   onTaskKanbanChange,
   onTaskAssigneeChange,
   onTaskDueDateChange,
-  onMilestoneUpdate,
   assigneePersonSearch,
   onTaskCreate,
   canManageStatuses,
   onStatusesChange,
+  unstyled,
 }: KanbanBoardProps) {
   const [orderedStatuses, setOrderedStatuses] = useState<StatusSelector.StatusOption[]>(() => sortStatuses(statuses));
 
@@ -109,11 +109,12 @@ export function KanbanBoard({
     ),
   );
 
+  const containerClassName = unstyled
+    ? "flex flex-col flex-1 overflow-hidden"
+    : "flex flex-col flex-1 bg-surface-base border border-surface-outline rounded-md overflow-hidden";
+
   return (
-    <div
-      className="flex flex-col flex-1 bg-surface-base border border-surface-outline rounded-md overflow-hidden"
-      data-test-id="kanban-board"
-    >
+    <div className={containerClassName} data-test-id="kanban-board">
       <MilestoneKanban
         milestone={milestone}
         columns={buildColumns(kanbanState, internalTasks, taskById, statusKeys)}
@@ -123,7 +124,6 @@ export function KanbanBoard({
         statuses={orderedStatuses}
         onTaskAssigneeChange={onTaskAssigneeChange}
         onTaskDueDateChange={onTaskDueDateChange}
-        onMilestoneUpdate={onMilestoneUpdate}
         assigneePersonSearch={assigneePersonSearch}
         onTaskCreate={onTaskCreate}
         canManageStatuses={canManageStatuses}

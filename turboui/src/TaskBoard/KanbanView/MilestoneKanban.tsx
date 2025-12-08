@@ -1,9 +1,7 @@
 import React, { useMemo } from "react";
 import type { Edge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/types";
 
-import { IconFileText, IconMessageCircle, IconPlus } from "../../icons";
-import { DateField } from "../../DateField";
-import { BlackLink } from "../../Link";
+import { IconPlus } from "../../icons";
 import { createTestId } from "../../TestableElement";
 import type { TaskBoard } from "../components";
 import type { TaskBoardProps } from "../types";
@@ -23,7 +21,6 @@ interface MilestoneKanbanProps {
   statuses: StatusSelector.StatusOption[];
   onTaskAssigneeChange?: TaskBoardProps["onTaskAssigneeChange"];
   onTaskDueDateChange?: TaskBoardProps["onTaskDueDateChange"];
-  onMilestoneUpdate?: TaskBoardProps["onMilestoneUpdate"];
   assigneePersonSearch?: TaskBoardProps["assigneePersonSearch"];
   onTaskCreate?: TaskBoardProps["onTaskCreate"];
   canManageStatuses?: boolean;
@@ -41,7 +38,6 @@ export function MilestoneKanban({
   statuses,
   onTaskAssigneeChange,
   onTaskDueDateChange,
-  onMilestoneUpdate,
   assigneePersonSearch,
   onTaskCreate,
   canManageStatuses,
@@ -54,12 +50,6 @@ export function MilestoneKanban({
     [milestone],
   );
   const scrollContainerRef = useHorizontalAutoScroll();
-
-  const handleMilestoneDueDateChange = (newDueDate: DateField.ContextualDate | null) => {
-    if (milestone && onMilestoneUpdate) {
-      onMilestoneUpdate(milestone.id, { name: milestone.name, dueDate: newDueDate || null });
-    }
-  };
 
   const handleTaskCreate = (title: string, statusValue: string) => {
     if (!onTaskCreate) return;
@@ -77,48 +67,6 @@ export function MilestoneKanban({
 
   return (
     <section className="bg-surface-base min-h-[80vh]" data-test-id={testId}>
-      <header className="flex items-center justify-between gap-3 px-4 pt-3">
-        <div className="flex items-center gap-2 flex-1 min-w-0">
-          {milestone ? (
-            <BlackLink
-              to={milestone.link || "#"}
-              className="truncate text-sm font-semibold text-content-base hover:text-link-hover transition-colors"
-              underline="hover"
-              title={milestone.name}
-            >
-              {milestone.name}
-            </BlackLink>
-          ) : (
-            <span className="text-sm font-semibold text-content-base">No milestone</span>
-          )}
-
-          {milestone?.hasDescription && (
-            <span className="inline-flex items-center gap-1 text-content-dimmed" data-test-id="description-indicator">
-              <IconFileText size={12} />
-            </span>
-          )}
-
-          {milestone?.hasComments && (
-            <span className="inline-flex items-center gap-1 text-content-dimmed" data-test-id="comments-indicator">
-              <IconMessageCircle size={12} />
-              {milestone.commentCount !== undefined && <span>{milestone.commentCount}</span>}
-            </span>
-          )}
-        </div>
-
-        <div className="flex items-center gap-2">
-          <DateField
-            date={milestone?.dueDate || null}
-            onDateSelect={handleMilestoneDueDateChange}
-            variant="inline"
-            showOverdueWarning={true}
-            placeholder="Set due date"
-            readonly={!milestone || !onMilestoneUpdate}
-            size="small"
-          />
-        </div>
-      </header>
-
       <div ref={scrollContainerRef} className="px-3 pt-3 pb-6 overflow-x-auto h-[80vh]">
         <div className="flex gap-3 min-w-max items-start">
           {statuses.map((status, index) => (

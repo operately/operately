@@ -102,7 +102,7 @@ export function Column({
   return (
     <div
       ref={columnRef}
-      className="relative flex flex-col gap-2 bg-surface-dimmed min-h-[75vh] w-[320px] flex-shrink-0 p-3 rounded-lg"
+      className="relative flex flex-col gap-2 bg-surface-dimmed min-h-[78vh] w-[320px] flex-shrink-0 p-3 rounded-lg"
       data-test-id={createTestId("kanban-column", status.value)}
     >
       <div

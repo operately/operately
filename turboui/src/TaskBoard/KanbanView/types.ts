@@ -23,6 +23,6 @@ export interface KanbanBoardProps {
   onTaskCreate?: TaskBoardProps["onTaskCreate"];
   onTaskAssigneeChange?: TaskBoardProps["onTaskAssigneeChange"];
   onTaskDueDateChange?: TaskBoardProps["onTaskDueDateChange"];
-  onMilestoneUpdate?: TaskBoardProps["onMilestoneUpdate"];
   assigneePersonSearch?: TaskBoardProps["assigneePersonSearch"];
+  unstyled?: boolean;
 }
