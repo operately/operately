@@ -8,7 +8,13 @@ export type StatusAppearance = "gray" | "blue" | "green" | "red";
 
 export const STATUS_APPEARANCES: Record<
   StatusAppearance,
-  { label: string; description: string; color: StatusSelector.StatusColorName; icon: StatusSelector.StatusIconName; swatchClassName: string }
+  {
+    label: string;
+    description: string;
+    color: StatusSelector.StatusColorName;
+    icon: StatusSelector.StatusIconName;
+    swatchClassName: string;
+  }
 > = {
   gray: {
     label: "Not started (gray)",
@@ -45,9 +51,10 @@ export const APPEARANCE_ORDER = Object.keys(STATUS_APPEARANCES) as StatusAppeara
 export type StatusAppearancePickerProps = {
   value: StatusAppearance;
   onChange: (appearance: StatusAppearance) => void;
+  testId?: string;
 };
 
-export function StatusAppearancePicker({ value, onChange }: StatusAppearancePickerProps) {
+export function StatusAppearancePicker({ value, onChange, testId }: StatusAppearancePickerProps) {
   const [isOpen, setIsOpen] = React.useState(false);
   const currentPreset = STATUS_APPEARANCES[value];
   const CurrentIcon = StatusSelector.STATUS_ICON_COMPONENTS[currentPreset.icon];
@@ -65,6 +72,7 @@ export function StatusAppearancePicker({ value, onChange }: StatusAppearancePick
           type="button"
           className="flex items-center justify-center p-1 rounded-md hover:bg-surface-dimmed transition"
           aria-label="Select status color and icon"
+          data-test-id={testId}
         >
           <CurrentIcon size={16} className={iconClass} />
         </button>
