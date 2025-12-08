@@ -51,6 +51,9 @@ export function MilestoneKanban({
   );
   const scrollContainerRef = useHorizontalAutoScroll();
 
+  const unknownStatus = statuses.find((status) => status.value === "unknown-status");
+  const regularStatuses = statuses.filter((status) => status.value !== "unknown-status");
+
   const handleTaskCreate = (title: string, statusValue: string) => {
     if (!onTaskCreate) return;
 
@@ -69,7 +72,29 @@ export function MilestoneKanban({
     <section className="bg-surface-base min-h-[80vh]" data-test-id={testId}>
       <div ref={scrollContainerRef} className="px-3 pt-3 pb-6 overflow-x-auto h-[80vh]">
         <div className="flex gap-3 min-w-max items-start">
-          {statuses.map((status, index) => (
+          {unknownStatus && (
+            <Column
+              status={unknownStatus}
+              tasks={columns[unknownStatus.value] || []}
+              draggedItemId={draggedItemId}
+              targetLocation={targetLocation}
+              placeholderHeight={placeholderHeight}
+              onTaskAssigneeChange={onTaskAssigneeChange}
+              onTaskDueDateChange={onTaskDueDateChange}
+              assigneePersonSearch={assigneePersonSearch}
+              onCreateTask={undefined}
+              dragHandleRef={undefined}
+              isStatusDraggable={false}
+              allStatuses={statuses}
+              canManageStatuses={false}
+              onEditStatus={undefined}
+              onDeleteStatus={undefined}
+              hideStatusIcon
+              disableDnD
+            />
+          )}
+
+          {regularStatuses.map((status, index) => (
             <SortableStatusColumn
               key={status.value}
               status={status}
