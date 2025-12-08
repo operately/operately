@@ -16,12 +16,17 @@ export function KanbanBoard({
   onTaskKanbanChange,
   onTaskAssigneeChange,
   onTaskDueDateChange,
+  onTaskMilestoneChange,
+  onTaskNameChange,
+  onTaskStatusChange,
+  onMilestoneSearch,
   assigneePersonSearch,
   onTaskCreate,
   canManageStatuses,
   onStatusesChange,
   unstyled,
-}: KanbanBoardProps) {
+  milestones,
+}: KanbanBoardProps & { onTaskStatusChange?: (taskId: string, status: any) => void }) {
   const [orderedStatuses, setOrderedStatuses] = useState<StatusSelector.StatusOption[]>(() => sortStatuses(statuses));
 
   useEffect(() => {
@@ -162,9 +167,13 @@ export function KanbanBoard({
         task={taskToInspect}
         onAssigneeChange={onTaskAssigneeChange}
         onDueDateChange={onTaskDueDateChange}
+        onMilestoneChange={onTaskMilestoneChange}
+        onNameChange={onTaskNameChange}
+        onStatusChange={onTaskStatusChange}
         assigneePersonSearch={assigneePersonSearch}
         statuses={orderedStatuses}
-        onStatusChange={undefined}
+        milestones={milestones}
+        onMilestoneSearch={onMilestoneSearch}
       />
 
       {onStatusesChange && (

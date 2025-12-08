@@ -16,7 +16,7 @@ interface CardProps {
   onTaskDueDateChange?: TaskBoardProps["onTaskDueDateChange"];
   assigneePersonSearch?: TaskBoardProps["assigneePersonSearch"];
   showDropIndicator?: boolean;
-  onTaskClick: (taskId: string) => void;
+  onTaskClick?: (taskId: string) => void;
 }
 
 export function Card({
@@ -97,7 +97,7 @@ export function Card({
               title={task.title}
               onClick={(e) => {
                 e.preventDefault();
-                onTaskClick(task.id);
+                onTaskClick?.(task.id);
               }}
             >
               {task.title}

@@ -1,6 +1,6 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { SlideIn } from "../../SlideIn";
-import { Task } from "../types";
+import { Task, Milestone } from "../types";
 import { DateField } from "../../DateField";
 import { PersonField } from "../../PersonField";
 import { MilestoneField } from "../../MilestoneField";
@@ -15,9 +15,13 @@ interface TaskSlideInProps {
   task: Task | null;
   onAssigneeChange?: (taskId: string, assignee: any) => void;
   onDueDateChange?: (taskId: string, dueDate: any) => void;
+  onMilestoneChange?: (taskId: string, milestone: Milestone | null) => void;
+  onNameChange?: (taskId: string, name: string) => void;
+  onStatusChange?: (taskId: string, status: any) => void;
   assigneePersonSearch?: any;
   statuses: StatusSelector.StatusOption[];
-  onStatusChange?: (taskId: string, status: any) => void;
+  milestones?: Milestone[];
+  onMilestoneSearch?: (query: string) => Promise<void>;
 }
 
 export function TaskSlideIn({
@@ -26,10 +30,16 @@ export function TaskSlideIn({
   task,
   onAssigneeChange,
   onDueDateChange,
+  onMilestoneChange,
+  onNameChange,
+  onStatusChange,
   assigneePersonSearch,
   statuses,
-  onStatusChange,
+  milestones = [],
+  onMilestoneSearch,
 }: TaskSlideInProps) {
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editedName, setEditedName] = useState("");
   const descriptionContent = useMemo(() => {
     if (!task?.description) return null;
     try {
@@ -62,9 +72,45 @@ export function TaskSlideIn({
       <div className="flex flex-col gap-8 px-6 py-6">
         {/* Title */}
         <div className="w-full border-b border-surface-outline pb-4">
-          <BlackLink to={task.link} underline="hover" className="text-2xl font-bold text-content-accent leading-tight">
-            {task.title}
-          </BlackLink>
+          {isEditingName ? (
+            <input
+              type="text"
+              value={editedName}
+              onChange={(e) => setEditedName(e.target.value)}
+              onBlur={() => {
+                if (editedName.trim() && editedName !== task.title) {
+                  onNameChange?.(task.id, editedName.trim());
+                }
+                setIsEditingName(false);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  if (editedName.trim() && editedName !== task.title) {
+                    onNameChange?.(task.id, editedName.trim());
+                  }
+                  setIsEditingName(false);
+                } else if (e.key === "Escape") {
+                  setIsEditingName(false);
+                }
+              }}
+              autoFocus
+              className="w-full text-2xl font-bold text-content-accent leading-tight bg-transparent border-none outline-none focus:ring-0"
+            />
+          ) : (
+            <div
+              onClick={() => {
+                if (onNameChange) {
+                  setEditedName(task.title);
+                  setIsEditingName(true);
+                }
+              }}
+              className={onNameChange ? "cursor-text" : ""}
+            >
+              <BlackLink to={task.link} underline="hover" className="text-2xl font-bold text-content-accent leading-tight">
+                {task.title}
+              </BlackLink>
+            </div>
+          )}
         </div>
 
         {/* Fields Grid */}
@@ -98,17 +144,15 @@ export function TaskSlideIn({
             />
           </Field>
 
-          {task.milestone && (
-            <Field label="Milestone">
-              <MilestoneField
-                milestone={task.milestone}
-                setMilestone={() => {}}
-                readonly={true}
-                milestones={[]}
-                onSearch={async () => {}}
-              />
-            </Field>
-          )}
+          <Field label="Milestone">
+            <MilestoneField
+              milestone={task.milestone}
+              setMilestone={(m) => onMilestoneChange?.(task.id, m as Milestone | null)}
+              readonly={!onMilestoneChange}
+              milestones={milestones}
+              onSearch={onMilestoneSearch ?? (async () => {})}
+            />
+          </Field>
         </div>
 
         {/* Description */}
