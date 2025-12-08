@@ -28,7 +28,7 @@ interface Props {
   onEditStatus?: (status: StatusSelector.StatusOption) => void;
   onDeleteStatus?: (status: StatusSelector.StatusOption) => void;
   hideStatusIcon?: boolean;
-  disableDnDIndicators?: boolean;
+  disableDnD?: boolean;
 }
 
 export function Column({
@@ -48,7 +48,7 @@ export function Column({
   onEditStatus,
   onDeleteStatus,
   hideStatusIcon,
-  disableDnDIndicators,
+  disableDnD,
 }: Props) {
   const columnRef = useRef<HTMLDivElement>(null);
   const [isCreating, setIsCreating] = React.useState(false);
@@ -71,11 +71,13 @@ export function Column({
   );
   const shouldCenterEmptyState = isColumnEmpty && placeholderIndex === null && !isDraggingOverThisColumn && !isCreating;
   const shouldShowEmptyPlaceholder =
-    isColumnEmpty && !isDraggingOverThisColumn && !isCreating && !disableDnDIndicators;
-  const effectivePlaceholderIndex = disableDnDIndicators ? null : placeholderIndex;
-  const shouldShowDropIndicator = !disableDnDIndicators && placeholderIndex === null;
+    isColumnEmpty && !isDraggingOverThisColumn && !isCreating && !disableDnD;
+  const effectivePlaceholderIndex = disableDnD ? null : placeholderIndex;
+  const shouldShowDropIndicator = !disableDnD && placeholderIndex === null;
 
   useEffect(() => {
+    if (disableDnD) return;
+
     const element = columnRef.current;
     if (!element) return;
 
@@ -86,7 +88,7 @@ export function Column({
         index: visibleTasks.length,
       }),
     });
-  }, [containerId, visibleTasks.length]);
+  }, [disableDnD, containerId, visibleTasks.length]);
 
   const handleCreateTask = () => {
     if (newTaskTitle.trim() && onCreateTask) {
@@ -107,7 +109,7 @@ export function Column({
 
   return (
     <div
-      ref={columnRef}
+      ref={!disableDnD ? columnRef : null}
       className="relative flex flex-col gap-2 bg-surface-dimmed min-h-[78vh] w-[320px] flex-shrink-0 p-3 rounded-lg"
       data-test-id={createTestId("kanban-column", status.value)}
     >
@@ -174,7 +176,7 @@ export function Column({
                 </div>
               )}
 
-          {!disableDnDIndicators &&
+          {!disableDnD &&
             placeholderIndex !== null &&
             placeholderIndex === visibleTasks.length && (
               <DropPlaceholder containerId={containerId} index={visibleTasks.length} height={placeholderHeight} />
