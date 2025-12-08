@@ -43,6 +43,10 @@ export namespace MilestoneKanbanPage {
     // Milestone search
     milestones: Types.Milestone[];
     onMilestoneSearch: (query: string) => Promise<void>;
+
+    // Description editing
+    onTaskDescriptionChange?: (taskId: string, description: any) => Promise<boolean>;
+    richTextHandlers?: KanbanBoardProps["richTextHandlers"];
   }
 }
 
@@ -65,6 +69,8 @@ export function MilestoneKanbanPage(props: MilestoneKanbanPage.Props) {
           onTaskMilestoneChange={props.onTaskMilestoneChange}
           milestones={props.milestones}
           onMilestoneSearch={props.onMilestoneSearch}
+          onTaskDescriptionChange={props.onTaskDescriptionChange}
+          richTextHandlers={props.richTextHandlers}
           assigneePersonSearch={props.assigneePersonSearch}
           canManageStatuses={props.canManageStatuses ?? false}
           onStatusesChange={props.onStatusesChange}

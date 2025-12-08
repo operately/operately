@@ -14,6 +14,7 @@ import { assertPresent } from "@/utils/assertions";
 import { PageModule } from "@/routes/types";
 import { useMilestoneTaskStatuses } from "./useMilestoneTaskStatuses";
 import { useMilestones } from "@/models/milestones/useMilestones";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 export default { name: "MilestoneKanbanPage", loader, Page } as PageModule;
 
@@ -65,6 +66,7 @@ function Page() {
     updateTaskAssignee,
     updateTaskDueDate,
     updateTaskStatus,
+    updateTaskDescription,
     updateTaskMilestone,
   } = Tasks.useTasksForTurboUi({
     backendTasks,
@@ -98,6 +100,7 @@ function Page() {
     transformResult: transformPerson,
   });
   const { milestones, search: searchMilestones } = useMilestones(milestone.project.id);
+  const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: milestone.project.id } });
 
   const handleTaskMilestoneChange = React.useCallback(
     (taskId: string, milestone: MilestoneKanbanPage.Milestone | null) => {
@@ -132,6 +135,8 @@ function Page() {
     onTaskMilestoneChange: handleTaskMilestoneChange,
     milestones: milestones,
     onMilestoneSearch: searchMilestones,
+    onTaskDescriptionChange: updateTaskDescription,
+    richTextHandlers: richEditorHandlers,
 
     canManageStatuses: milestone.permissions.canEditStatuses,
     onStatusesChange: handleStatusesChange,

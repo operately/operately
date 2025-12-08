@@ -19,6 +19,7 @@ export function KanbanBoard({
   onTaskMilestoneChange,
   onTaskNameChange,
   onTaskStatusChange,
+  onTaskDescriptionChange,
   onMilestoneSearch,
   assigneePersonSearch,
   onTaskCreate,
@@ -26,6 +27,7 @@ export function KanbanBoard({
   onStatusesChange,
   unstyled,
   milestones,
+  richTextHandlers,
 }: KanbanBoardProps) {
   const [orderedStatuses, setOrderedStatuses] = useState<StatusSelector.StatusOption[]>(() => sortStatuses(statuses));
 
@@ -170,10 +172,12 @@ export function KanbanBoard({
         onMilestoneChange={onTaskMilestoneChange}
         onNameChange={onTaskNameChange}
         onStatusChange={onTaskStatusChange}
+        onDescriptionChange={onTaskDescriptionChange}
         assigneePersonSearch={assigneePersonSearch}
         statuses={orderedStatuses}
         milestones={milestones}
         onMilestoneSearch={onMilestoneSearch}
+        richTextHandlers={richTextHandlers}
       />
 
       {onStatusesChange && (

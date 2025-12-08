@@ -1,6 +1,7 @@
 import type { StatusSelector } from "../../StatusSelector";
 import type { TaskBoard } from "../components";
 import type { TaskBoardProps } from "../types";
+import type { RichEditorHandlers } from "../../RichEditor/useEditor";
 
 export type KanbanStatus = string;
 
@@ -30,5 +31,6 @@ export interface KanbanBoardProps {
   milestones?: TaskBoard.Milestone[];
   onMilestoneSearch?: (query: string) => Promise<void>;
   assigneePersonSearch?: TaskBoardProps["assigneePersonSearch"];
+  richTextHandlers?: RichEditorHandlers;
   unstyled?: boolean;
 }
