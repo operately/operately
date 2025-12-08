@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { StatusSelector } from "../../StatusSelector";
 import { useBoardDnD, useSortableList } from "../../utils/PragmaticDragAndDrop";
 import { MilestoneKanban } from "./MilestoneKanban";
+import { TaskSlideIn } from "./TaskSlideIn";
 import { AddStatusModal } from "./AddStatusModal";
 import { DeleteStatusModal } from "./DeleteStatusModal";
 import type { KanbanBoardProps, KanbanStatus, MilestoneKanbanState } from "./types";
@@ -38,11 +39,18 @@ export function KanbanBoard({
   const [editingStatus, setEditingStatus] = useState<StatusSelector.StatusOption | undefined>();
   const [deletingStatus, setDeletingStatus] = useState<StatusSelector.StatusOption | undefined>();
 
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+
   const taskById = useMemo(() => {
     const map = new Map<string, TaskBoard.Task>();
     tasks.forEach((task) => map.set(task.id, task));
     return map;
   }, [tasks]);
+
+  const taskToInspect = useMemo(() => {
+    if (!selectedTaskId) return null;
+    return taskById.get(selectedTaskId) || null;
+  }, [selectedTaskId, taskById]);
 
   const canReorderStatuses = Boolean(canManageStatuses && onStatusesChange);
 
@@ -145,6 +153,18 @@ export function KanbanBoard({
               }
             : undefined
         }
+        onTaskClick={setSelectedTaskId}
+      />
+
+      <TaskSlideIn
+        isOpen={Boolean(selectedTaskId)}
+        onClose={() => setSelectedTaskId(null)}
+        task={taskToInspect}
+        onAssigneeChange={onTaskAssigneeChange}
+        onDueDateChange={onTaskDueDateChange}
+        assigneePersonSearch={assigneePersonSearch}
+        statuses={orderedStatuses}
+        onStatusChange={undefined}
       />
 
       {onStatusesChange && (

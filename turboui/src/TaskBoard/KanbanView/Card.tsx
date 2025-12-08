@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { IconFileText, IconMessageCircle } from "../../icons";
 import { DateField } from "../../DateField";
-import { BlackLink } from "../../Link";
 import { PersonField } from "../../PersonField";
 import classNames from "../../utils/classnames";
 import { DropIndicator, useSortableItem } from "../../utils/PragmaticDragAndDrop";
@@ -17,6 +16,7 @@ interface CardProps {
   onTaskDueDateChange?: TaskBoardProps["onTaskDueDateChange"];
   assigneePersonSearch?: TaskBoardProps["assigneePersonSearch"];
   showDropIndicator?: boolean;
+  onTaskClick: (taskId: string) => void;
 }
 
 export function Card({
@@ -28,6 +28,7 @@ export function Card({
   onTaskDueDateChange,
   assigneePersonSearch,
   showDropIndicator = true,
+  onTaskClick,
 }: CardProps) {
   const [currentAssignee, setCurrentAssignee] = useState<TaskBoard.Person | null>(task.assignees?.[0] || null);
   const [currentDueDate, setCurrentDueDate] = useState<DateField.ContextualDate | null>(task.dueDate || null);
@@ -91,14 +92,16 @@ export function Card({
       <div className="flex items-start">
         <div className="flex-1 min-w-0 flex flex-col gap-2">
           <div onMouseDown={stopDragFromInteractive}>
-            <BlackLink
-              to={task.link}
-              className="block text-[13px] text-content-base hover:text-link-hover transition-colors leading-snug break-words"
-              underline="hover"
+            <div
+              className="block text-[13px] text-content-base hover:text-link-hover transition-colors leading-snug break-words cursor-pointer hover:underline"
               title={task.title}
+              onClick={(e) => {
+                e.preventDefault();
+                onTaskClick(task.id);
+              }}
             >
               {task.title}
-            </BlackLink>
+            </div>
           </div>
 
           <div className="flex items-center justify-between gap-2 text-[11px] text-content-dimmed leading-none">
