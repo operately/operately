@@ -26,7 +26,7 @@ export function KanbanBoard({
   onStatusesChange,
   unstyled,
   milestones,
-}: KanbanBoardProps & { onTaskStatusChange?: (taskId: string, status: any) => void }) {
+}: KanbanBoardProps) {
   const [orderedStatuses, setOrderedStatuses] = useState<StatusSelector.StatusOption[]>(() => sortStatuses(statuses));
 
   useEffect(() => {

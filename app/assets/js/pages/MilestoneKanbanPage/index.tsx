@@ -63,6 +63,7 @@ function Page() {
     createTask,
     updateTaskAssignee,
     updateTaskDueDate,
+    updateTaskStatus,
   } = Tasks.useTasksForTurboUi({
     backendTasks,
     projectId: milestone.project.id,
@@ -113,6 +114,7 @@ function Page() {
     onTaskCreate: createTask,
     onTaskAssigneeChange: updateTaskAssignee,
     onTaskDueDateChange: updateTaskDueDate,
+    onTaskStatusChange: updateTaskStatus,
     canManageStatuses: milestone.permissions.canEditStatuses,
     onStatusesChange: handleStatusesChange,
     onTaskKanbanChange: handleTaskKanbanChange,

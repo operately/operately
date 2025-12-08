@@ -15,7 +15,7 @@ interface TaskSlideInProps {
   task: Task | null;
   onAssigneeChange?: (taskId: string, assignee: any) => void;
   onDueDateChange?: (taskId: string, dueDate: any) => void;
-  onMilestoneChange?: (taskId: string, milestone: Milestone | null) => void;
+  onMilestoneChange: (taskId: string, milestone: Milestone | null) => void;
   onNameChange?: (taskId: string, name: string) => void;
   onStatusChange?: (taskId: string, status: any) => void;
   assigneePersonSearch?: any;

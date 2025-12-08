@@ -37,6 +37,7 @@ export namespace MilestoneKanbanPage {
     onTaskCreate?: (task: Types.NewTaskPayload) => void;
     onTaskAssigneeChange: (taskId: string, assignee: Types.Person | null) => void;
     onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
+    onTaskStatusChange?: (taskId: string, status: Types.Status | null) => void;
   }
 }
 
@@ -55,6 +56,7 @@ export function MilestoneKanbanPage(props: MilestoneKanbanPage.Props) {
           onTaskCreate={props.onTaskCreate}
           onTaskAssigneeChange={props.onTaskAssigneeChange}
           onTaskDueDateChange={props.onTaskDueDateChange}
+          onTaskStatusChange={props.onTaskStatusChange}
           assigneePersonSearch={props.assigneePersonSearch}
           canManageStatuses={props.canManageStatuses ?? false}
           onStatusesChange={props.onStatusesChange}
