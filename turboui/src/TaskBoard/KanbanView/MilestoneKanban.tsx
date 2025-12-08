@@ -90,7 +90,7 @@ export function MilestoneKanban({
               onEditStatus={undefined}
               onDeleteStatus={undefined}
               hideStatusIcon
-              disableDnDIndicators
+              disableDnD
             />
           )}
 

@@ -79,6 +79,9 @@ export function KanbanBoard({
         const destinationStatus = parseStatus(move.destination.containerId, statusKeys);
         if (!sourceStatus || !destinationStatus) return;
 
+        // Treat drops onto the synthetic Unknown Status column as cancelled
+        if (destinationStatus === "unknown-status") return;
+
         const nextKanbanState = applyKanbanMove(
           kanbanState,
           move.itemId,
