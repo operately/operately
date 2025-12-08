@@ -6,6 +6,9 @@ import { PageNew } from "../Page";
 import { KanbanBoard } from "../TaskBoard";
 import * as Types from "../TaskBoard/types";
 import type { KanbanBoardProps, MilestoneKanbanState } from "../TaskBoard/KanbanView/types";
+import { Navigation } from "../Page/Navigation";
+import { IconMilestone, IconChevronRight } from "../icons";
+import { BlackLink } from "../Link";
 
 export namespace MilestoneKanbanPage {
   export type Milestone = Types.Milestone;
@@ -13,8 +16,10 @@ export namespace MilestoneKanbanPage {
   export interface Props {
     projectName: string;
 
+    navigation: Navigation.Item[];
+
     // Kanban data
-    milestone: Milestone | null;
+    milestone: Milestone;
     tasks: Types.Task[];
     statuses: Types.Status[];
     kanbanState: MilestoneKanbanState;
@@ -28,13 +33,17 @@ export namespace MilestoneKanbanPage {
     onTaskCreate?: (task: Types.NewTaskPayload) => void;
     onTaskAssigneeChange: (taskId: string, assignee: Types.Person | null) => void;
     onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
-    onMilestoneUpdate?: (milestoneId: string, updates: Types.UpdateMilestonePayload) => void;
   }
 }
 
 export function MilestoneKanbanPage(props: MilestoneKanbanPage.Props) {
   return (
     <PageNew title={props.projectName} size="fullwidth">
+      <MilestoneKanbanPageHeader
+        milestone={props.milestone}
+        navigation={props.navigation}
+      />
+
       <div className="flex-1 overflow-auto px-2 py-4">
         <KanbanBoard
           milestone={props.milestone}
@@ -45,12 +54,62 @@ export function MilestoneKanbanPage(props: MilestoneKanbanPage.Props) {
           onTaskCreate={props.onTaskCreate}
           onTaskAssigneeChange={props.onTaskAssigneeChange}
           onTaskDueDateChange={props.onTaskDueDateChange}
-          onMilestoneUpdate={props.onMilestoneUpdate}
           assigneePersonSearch={props.assigneePersonSearch}
           canManageStatuses={props.canManageStatuses ?? false}
           onStatusesChange={props.onStatusesChange}
+          unstyled
         />
       </div>
     </PageNew>
+  );
+}
+
+interface MilestoneKanbanPageHeaderProps {
+  milestone: MilestoneKanbanPage.Milestone;
+  navigation: Navigation.Item[];
+}
+
+function MilestoneKanbanPageHeader({ milestone, navigation }: MilestoneKanbanPageHeaderProps) {
+  const title = milestone.name;
+
+  return (
+    <header className="mt-4 px-4 border-b border-surface-outline pb-3 flex items-center gap-3">
+      <IconMilestone size={38} className="rounded-lg bg-blue-50 dark:bg-blue-900" />
+
+      <div className="min-w-0 flex-1">
+        <Breadcrumbs navigation={navigation} />
+
+        <div className="flex items-center gap-2 mt-1">
+          {milestone.link ? (
+            <BlackLink
+              to={milestone.link}
+              className="text-sm sm:text-base font-semibold text-content-accent truncate hover:text-link-hover"
+              underline="hover"
+            >
+              {title}
+            </BlackLink>
+          ) : (
+            <h1 className="text-sm sm:text-base font-semibold text-content-accent truncate">{title}</h1>
+          )}
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function Breadcrumbs({ navigation }: { navigation: Navigation.Item[] }) {
+  return (
+    <div>
+      <nav className="flex items-center space-x-0.5 mt-1">
+        {navigation.map((item, index) => (
+          <React.Fragment key={index}>
+            <BlackLink to={item.to} className="text-xs text-content-dimmed leading-snug" underline="hover">
+              {item.label}
+            </BlackLink>
+            {index < navigation.length - 1 && <IconChevronRight size={10} className="text-content-dimmed" />}
+          </React.Fragment>
+        ))}
+      </nav>
+    </div>
   );
 }
