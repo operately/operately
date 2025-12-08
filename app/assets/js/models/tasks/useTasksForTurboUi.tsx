@@ -362,5 +362,5 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
     }
   };
 
-  return { tasks, createTask, updateTaskDueDate, updateTaskAssignee, updateTaskStatus, updateTaskMilestone, deleteTask };
+  return { tasks, setTasks, createTask, updateTaskDueDate, updateTaskAssignee, updateTaskStatus, updateTaskMilestone, deleteTask };
 }

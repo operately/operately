@@ -6,12 +6,13 @@ import * as Tasks from "@/models/tasks";
 import * as People from "@/models/people";
 import { useMilestoneKanbanState } from "@/models/tasks/useMilestoneKanbanState";
 
-import { MilestoneKanbanPage as UiMilestoneKanbanPage, showErrorToast } from "turboui";
+import { MilestoneKanbanPage } from "turboui";
 import { usePaths } from "@/routes/paths";
 import { PageCache } from "@/routes/PageCache";
 import { fetchAll } from "@/utils/async";
 import { assertPresent } from "@/utils/assertions";
 import { PageModule } from "@/routes/types";
+import { useMilestoneTaskStatuses } from "./useMilestoneTaskStatuses";
 
 export default { name: "MilestoneKanbanPage", loader, Page } as PageModule;
 
@@ -56,27 +57,28 @@ function Page() {
   assertPresent(milestone.space, "Milestone must have a space");
   assertPresent(milestone.permissions, "Milestone must have permissions");
 
-  const { tasks, createTask, updateTaskAssignee, updateTaskDueDate } = Tasks.useTasksForTurboUi({
+  const {
+    tasks: baseTasks,
+    setTasks: setBaseTasks,
+    createTask,
+    updateTaskAssignee,
+    updateTaskDueDate,
+  } = Tasks.useTasksForTurboUi({
     backendTasks,
     projectId: milestone.project.id,
     cacheKey: pageCacheKey(milestone.id),
     milestones: [],
     refresh,
   });
-  const { statuses, handleStatusesChange } = useMilestoneTaskStatuses(milestone, refresh);
 
-  const transformPerson = React.useCallback((p) => People.parsePersonForTurboUi(paths, p)!, [paths]);
-
-  const assigneeSearch = Tasks.useTaskAssigneeSearch({
-    projectId: milestone.project.id,
-    transformResult: transformPerson,
-  });
+  const { tasks, statuses, handleStatusesChange } = useMilestoneTaskStatuses(milestone, baseTasks, refresh);
 
   const { kanbanState, handleTaskKanbanChange } = useMilestoneKanbanState({
     initialRawState: milestone.tasksKanbanState,
     statuses,
     milestoneId: milestone.id,
     tasks,
+    setTasks: setBaseTasks,
     onSuccess: async () => {
       PageCache.invalidate(pageCacheKey(milestone.id));
 
@@ -86,7 +88,14 @@ function Page() {
     },
   });
 
-  const props: UiMilestoneKanbanPage.Props = {
+  const transformPerson = React.useCallback((p) => People.parsePersonForTurboUi(paths, p)!, [paths]);
+
+  const assigneeSearch = Tasks.useTaskAssigneeSearch({
+    projectId: milestone.project.id,
+    transformResult: transformPerson,
+  });
+
+  const props: MilestoneKanbanPage.Props = {
     projectName: milestone.project.name ?? "",
 
     navigation: [
@@ -109,46 +118,5 @@ function Page() {
     onTaskKanbanChange: handleTaskKanbanChange,
   };
 
-  return <UiMilestoneKanbanPage key={milestone.id!} {...props} />;
-}
-
-function useMilestoneTaskStatuses(milestone: Milestones.Milestone, refresh?: () => void) {
-  assertPresent(milestone.project, "Milestone must have a project");
-  const [statuses, setStatuses] = React.useState(() => Tasks.parseTaskStatusesForTurboUi(milestone.availableStatuses));
-
-  React.useEffect(() => {
-    setStatuses(Tasks.parseTaskStatusesForTurboUi(milestone.availableStatuses));
-  }, [milestone.availableStatuses]);
-
-  const handleStatusesChange = React.useCallback(
-    async (nextStatuses: typeof statuses) => {
-      const previousStatuses = statuses;
-      setStatuses(nextStatuses);
-
-      try {
-        const backendStatuses = Tasks.serializeTaskStatuses(nextStatuses);
-        const res = await Api.projects.updateTaskStatuses({
-          projectId: milestone.project!.id,
-          taskStatuses: backendStatuses,
-        });
-
-        if (res.success === false) {
-          setStatuses(previousStatuses);
-          showErrorToast("Error", "Failed to update task statuses");
-          return;
-        }
-
-        if (refresh) {
-          await refresh();
-        }
-      } catch (error) {
-        console.error("Failed to update task statuses", error);
-        setStatuses(previousStatuses);
-        showErrorToast("Error", "Failed to update task statuses");
-      }
-    },
-    [milestone.project.id, refresh, statuses],
-  );
-
-  return { statuses, handleStatusesChange };
+  return <MilestoneKanbanPage key={milestone.id!} {...props} />;
 }

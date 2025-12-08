@@ -28,24 +28,21 @@ export function KanbanBoard({
   }, [statuses]);
 
   const statusKeys = useMemo(() => orderedStatuses.map((status) => status.value), [orderedStatuses]);
-  const tasksForMilestone = useMemo(() => filterTasksForMilestone(tasks, milestone), [milestone, tasks]);
-  const [internalTasks, setInternalTasks] = useState<TaskBoard.Task[]>(tasksForMilestone);
   const [kanbanState, setKanbanState] = useState<MilestoneKanbanState>(
     normalizeKanbanState(kanbanStateProp, statusKeys),
   );
+
+  useEffect(() => setKanbanState(normalizeKanbanState(kanbanStateProp, statusKeys)), [kanbanStateProp, statusKeys]);
 
   const [isAddStatusModalOpen, setIsAddStatusModalOpen] = useState(false);
   const [editingStatus, setEditingStatus] = useState<StatusSelector.StatusOption | undefined>();
   const [deletingStatus, setDeletingStatus] = useState<StatusSelector.StatusOption | undefined>();
 
-  useEffect(() => setInternalTasks(tasksForMilestone), [tasksForMilestone]);
-  useEffect(() => setKanbanState(normalizeKanbanState(kanbanStateProp, statusKeys)), [kanbanStateProp, statusKeys]);
-
   const taskById = useMemo(() => {
     const map = new Map<string, TaskBoard.Task>();
-    internalTasks.forEach((task) => map.set(task.id, task));
+    tasks.forEach((task) => map.set(task.id, task));
     return map;
-  }, [internalTasks]);
+  }, [tasks]);
 
   const canReorderStatuses = Boolean(canManageStatuses && onStatusesChange);
 
@@ -82,6 +79,9 @@ export function KanbanBoard({
         const destinationStatus = parseStatus(move.destination.containerId, statusKeys);
         if (!sourceStatus || !destinationStatus) return;
 
+        // Treat drops onto the synthetic Unknown Status column as cancelled
+        if (destinationStatus === "unknown-status") return;
+
         const nextKanbanState = applyKanbanMove(
           kanbanState,
           move.itemId,
@@ -91,11 +91,6 @@ export function KanbanBoard({
         );
 
         setKanbanState(nextKanbanState);
-        setInternalTasks((previous) =>
-          previous.map((task) =>
-            task.id === move.itemId ? updateTaskForMove(task, destinationStatus, statuses) : task,
-          ),
-        );
 
         onTaskKanbanChange?.({
           milestoneId: milestone?.id ?? null,
@@ -117,7 +112,7 @@ export function KanbanBoard({
     <div className={containerClassName} data-test-id="kanban-board">
       <MilestoneKanban
         milestone={milestone}
-        columns={buildColumns(kanbanState, internalTasks, taskById, statusKeys)}
+        columns={buildColumns(kanbanState, tasks, taskById, statusKeys)}
         draggedItemId={draggedItemId}
         targetLocation={destination}
         placeholderHeight={draggedItemDimensions?.height ?? null}
@@ -191,11 +186,6 @@ function normalizeKanbanState(
   statusKeys: KanbanStatus[],
 ): MilestoneKanbanState {
   return cloneState(state, statusKeys);
-}
-
-function filterTasksForMilestone(tasks: TaskBoard.Task[], milestone: TaskBoard.Milestone | null): TaskBoard.Task[] {
-  if (!milestone) return tasks.filter((task) => !task.milestone && !task._isHelperTask);
-  return tasks.filter((task) => task.milestone?.id === milestone.id && !task._isHelperTask);
 }
 
 function parseStatus(containerId: string, statusKeys: KanbanStatus[]): KanbanStatus | null {
@@ -280,41 +270,6 @@ function cloneState(state: MilestoneKanbanState | undefined, statusKeys: KanbanS
     acc[key] = [...(state?.[key] || [])];
     return acc;
   }, {});
-}
-
-function updateTaskForMove(
-  task: TaskBoard.Task,
-  status: KanbanStatus,
-  statuses: StatusSelector.StatusOption[],
-): TaskBoard.Task {
-  const statusMeta = statuses.find((option) => option.value === status) || {
-    id: status,
-    value: status,
-    label: status,
-    color: "gray" as StatusSelector.StatusColorName,
-    icon: "circleDot" as StatusSelector.StatusIconName,
-    index: statuses.length,
-  };
-
-  const nextStatus: StatusSelector.StatusOption =
-    task.status && (task.status.value === status || task.status.id === status)
-      ? task.status
-      : {
-          ...statusMeta,
-          ...task.status,
-          id: task.status?.id ?? statusMeta.id,
-          value: status,
-          label: task.status?.label ?? statusMeta.label,
-          color: task.status?.color ?? statusMeta.color,
-          icon: (task.status?.icon as StatusSelector.StatusIconName | undefined) ?? statusMeta.icon,
-          closed: typeof task.status?.closed === "boolean" ? task.status.closed : statusMeta.closed,
-          index: typeof task.status?.index === "number" ? task.status.index : statusMeta.index,
-        };
-
-  return {
-    ...task,
-    status: nextStatus,
-  };
 }
 
 function sortStatuses(statuses: StatusSelector.StatusOption[]): StatusSelector.StatusOption[] {
