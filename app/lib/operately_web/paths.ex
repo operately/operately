@@ -188,6 +188,10 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "milestones", milestone_id(milestone)])
   end
 
+  def project_milestone_kanban_path(company = %Company{}, milestone = %Milestone{}) do
+    create_path([company_id(company), "milestones", milestone_id(milestone), "kanban"])
+  end
+
   def project_milestone_path(company = %Company{}, milestone = %Milestone{}, comment = %Comment{}) do
     milestone_with_comment = milestone_id(milestone) <> "#" <> comment_id(comment)
 

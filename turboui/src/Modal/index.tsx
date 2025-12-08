@@ -43,6 +43,11 @@ export interface ModalProps {
    * Padding to apply to the content container
    */
   contentPadding?: string;
+
+  /**
+   * Test ID for the modal
+   */
+  testId?: string;
 }
 
 export function Modal({
@@ -54,6 +59,7 @@ export function Modal({
   closeOnBackdropClick = true,
   contentClassName = "",
   contentPadding = "p-6",
+  testId,
 }: ModalProps) {
   const [mounted, setMounted] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -107,6 +113,7 @@ export function Modal({
       onClick={handleBackdropClick}
       aria-modal="true"
       role="dialog"
+      data-test-id={testId}
     >
       <div
         ref={modalRef}
