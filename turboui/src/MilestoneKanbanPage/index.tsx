@@ -13,6 +13,10 @@ import { BlackLink } from "../Link";
 export namespace MilestoneKanbanPage {
   export type Milestone = Types.Milestone;
 
+  export type Task = Types.Task;
+
+  export type StatusOption = Types.Status;
+
   export interface Props {
     projectName: string;
 
@@ -39,10 +43,7 @@ export namespace MilestoneKanbanPage {
 export function MilestoneKanbanPage(props: MilestoneKanbanPage.Props) {
   return (
     <PageNew title={props.projectName} size="fullwidth">
-      <MilestoneKanbanPageHeader
-        milestone={props.milestone}
-        navigation={props.navigation}
-      />
+      <MilestoneKanbanPageHeader milestone={props.milestone} navigation={props.navigation} />
 
       <div className="flex-1 overflow-auto px-2 py-4">
         <KanbanBoard

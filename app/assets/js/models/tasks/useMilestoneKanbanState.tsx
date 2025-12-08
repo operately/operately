@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import Api, { type ProjectTaskStatus } from "@/api";
-import { TaskBoard, showErrorToast, StatusSelector } from "turboui";
+import { MilestoneKanbanPage, showErrorToast } from "turboui";
 
 import { compareIds, includesId } from "@/routes/paths";
 import { serializeTaskStatus } from "./index";
@@ -16,9 +16,10 @@ interface TaskKanbanChangeEvent {
 
 interface UseMilestoneKanbanStateOptions {
   initialRawState: unknown;
-  statuses: StatusSelector.StatusOption[];
+  statuses: MilestoneKanbanPage.StatusOption[];
   milestoneId: string;
-  tasks: TaskBoard.Task[];
+  tasks: MilestoneKanbanPage.Task[];
+  setTasks?: React.Dispatch<React.SetStateAction<MilestoneKanbanPage.Task[]>>;
   onSuccess?: () => Promise<void> | void;
 }
 
@@ -27,13 +28,22 @@ export function useMilestoneKanbanState({
   statuses,
   milestoneId,
   tasks,
+  setTasks,
   onSuccess,
 }: UseMilestoneKanbanStateOptions) {
   const [kanbanState, setKanbanState] = React.useState<MilestoneKanbanState>(() =>
     parseMilestoneKanbanState(initialRawState, statuses, tasks),
   );
+  
+  // Track if we have a pending optimistic update to prevent refresh from overwriting it
+  const hasOptimisticUpdateRef = React.useRef(false);
 
   React.useEffect(() => {
+    // Don't overwrite kanban state if we have a pending optimistic update
+    if (hasOptimisticUpdateRef.current) {
+      hasOptimisticUpdateRef.current = false;
+      return;
+    }
     setKanbanState(parseMilestoneKanbanState(initialRawState, statuses, tasks));
   }, [initialRawState, statuses, tasks]);
 
@@ -41,7 +51,18 @@ export function useMilestoneKanbanState({
     async (event: TaskKanbanChangeEvent) => {
       const previousState = kanbanState;
 
+      // Filter out the synthetic "unknown-status" before sending to backend
       const statusOption = statuses.find((s) => s.value === event.to.status) ?? null;
+      
+      // If moving to "unknown-status", this is invalid for the backend.
+      // This shouldn't happen in normal usage since unknown-status column
+      // doesn't accept drops, but guard against it anyway.
+      if (statusOption?.value === "unknown-status") {
+        console.error("Cannot move task to unknown-status");
+        showErrorToast("Error", "Cannot move task to unknown status");
+        return;
+      }
+
       const backendStatus: ProjectTaskStatus | null = serializeTaskStatus(statusOption);
 
       if (!backendStatus) {
@@ -50,8 +71,28 @@ export function useMilestoneKanbanState({
         return;
       }
 
-      // Optimistic update
+      // Optimistic updates
+      hasOptimisticUpdateRef.current = true;
       setKanbanState(event.updatedKanbanState);
+      
+      // Update task status locally (without API call) so it matches the kanban state
+      // The API call below will update both status and kanban state on the backend
+      if (setTasks && statusOption) {
+        setTasks((prevTasks) =>
+          prevTasks.map((task) =>
+            task.id === event.taskId
+              ? {
+                  ...task,
+                  status: {
+                    ...task.status,
+                    ...statusOption,
+                    value: statusOption.value,
+                  },
+                }
+              : task,
+          ),
+        );
+      }
 
       try {
         await Api.project_tasks.updateKanban({
@@ -70,7 +111,7 @@ export function useMilestoneKanbanState({
         setKanbanState(previousState);
       }
     },
-    [kanbanState, milestoneId, onSuccess, statuses],
+    [kanbanState, milestoneId, onSuccess, setTasks, statuses],
   );
 
   return { kanbanState, handleTaskKanbanChange };
@@ -80,8 +121,8 @@ type MilestoneKanbanState = Record<string, string[]>;
 
 function parseMilestoneKanbanState(
   raw: unknown,
-  statuses: StatusSelector.StatusOption[],
-  tasks?: TaskBoard.Task[],
+  statuses: MilestoneKanbanPage.StatusOption[],
+  tasks?: MilestoneKanbanPage.Task[],
 ): MilestoneKanbanState {
   let parsed: any = {};
 
@@ -122,7 +163,9 @@ function parseMilestoneKanbanState(
     const ids = parsedState[status] || [];
     ids.forEach((rawId) => {
       const match = tasks.find((task) => compareIds(task.id, rawId));
-      if (match && !includesId(presentTaskIds, match.id)) {
+      // Only treat the task as "present" in this column if its
+      // resolved kanban status still matches this status key.
+      if (match && resolveTaskKanbanStatus(match, statusKeys) === status && !includesId(presentTaskIds, match.id)) {
         presentTaskIds.push(match.id);
       }
     });
@@ -133,7 +176,10 @@ function parseMilestoneKanbanState(
   statusKeys.forEach((status) => {
     const orderedTasks = (parsedState[status] || [])
       .map((rawId) => tasks.find((task) => compareIds(task.id, rawId)))
-      .filter((task): task is TaskBoard.Task => Boolean(task));
+      .filter((task): task is MilestoneKanbanPage.Task => Boolean(task))
+      // Drop tasks whose resolved kanban status no longer matches this
+      // column; they will be re-assigned via the fallback logic below.
+      .filter((task) => resolveTaskKanbanStatus(task, statusKeys) === status);
 
     const orderedIds = orderedTasks.map((task) => task.id);
 
@@ -151,7 +197,7 @@ function toCamelCaseStatusKey(key: string): string {
   return key.replace(/_([a-z])/g, (_match, group: string) => group.toUpperCase());
 }
 
-function resolveTaskKanbanStatus(task: TaskBoard.Task, statusKeys: string[]): string {
+function resolveTaskKanbanStatus(task: MilestoneKanbanPage.Task, statusKeys: string[]): string {
   const value = (task.status as any)?.value || (task.status as any)?.id;
 
   if (value && statusKeys.includes(value)) return value;
@@ -160,5 +206,7 @@ function resolveTaskKanbanStatus(task: TaskBoard.Task, statusKeys: string[]): st
 }
 
 function serializeMilestoneKanbanState(state: MilestoneKanbanState): string {
-  return JSON.stringify(state);
+  // Filter out the synthetic "unknown-status" column before sending to backend
+  const { "unknown-status": _, ...backendState } = state;
+  return JSON.stringify(backendState);
 }

@@ -27,6 +27,8 @@ interface Props {
   canManageStatuses?: boolean;
   onEditStatus?: (status: StatusSelector.StatusOption) => void;
   onDeleteStatus?: (status: StatusSelector.StatusOption) => void;
+  hideStatusIcon?: boolean;
+  disableDnDIndicators?: boolean;
 }
 
 export function Column({
@@ -45,6 +47,8 @@ export function Column({
   canManageStatuses,
   onEditStatus,
   onDeleteStatus,
+  hideStatusIcon,
+  disableDnDIndicators,
 }: Props) {
   const columnRef = useRef<HTMLDivElement>(null);
   const [isCreating, setIsCreating] = React.useState(false);
@@ -66,8 +70,10 @@ export function Column({
     draggedItemId && targetLocation && targetLocation.containerId === containerId,
   );
   const shouldCenterEmptyState = isColumnEmpty && placeholderIndex === null && !isDraggingOverThisColumn && !isCreating;
-  const shouldShowEmptyPlaceholder = isColumnEmpty && !isDraggingOverThisColumn && !isCreating;
-  const shouldShowDropIndicator = placeholderIndex === null;
+  const shouldShowEmptyPlaceholder =
+    isColumnEmpty && !isDraggingOverThisColumn && !isCreating && !disableDnDIndicators;
+  const effectivePlaceholderIndex = disableDnDIndicators ? null : placeholderIndex;
+  const shouldShowDropIndicator = !disableDnDIndicators && placeholderIndex === null;
 
   useEffect(() => {
     const element = columnRef.current;
@@ -108,12 +114,20 @@ export function Column({
       <div
         ref={dragHandleRef}
         className={classNames(
-          "flex items-center justify-between text-xs font-semibold text-content-dimmed uppercase tracking-wide px-1",
+          "flex items-center justify-between text-xs font-semibold text-content-dimmed uppercase tracking-wide px-1 min-h-[24px]",
           isStatusDraggable && "cursor-grab active:cursor-grabbing",
         )}
       >
         <div className="flex items-center gap-1.5">
-          <StatusSelector status={status} statusOptions={allStatuses} onChange={() => {}} readonly={true} size="sm" />
+          {!hideStatusIcon && (
+            <StatusSelector
+              status={status}
+              statusOptions={allStatuses}
+              onChange={() => {}}
+              readonly={true}
+              size="sm"
+            />
+          )}
           <span>{title}</span>
         </div>
 
@@ -134,7 +148,7 @@ export function Column({
           {visibleTasks.length > 0
             ? visibleTasks.map((task, index) => (
                 <React.Fragment key={task.id}>
-                  {placeholderIndex === index && (
+                  {effectivePlaceholderIndex === index && (
                     <DropPlaceholder containerId={containerId} index={index} height={placeholderHeight} />
                   )}
                   <Card
@@ -160,9 +174,11 @@ export function Column({
                 </div>
               )}
 
-          {placeholderIndex !== null && placeholderIndex === visibleTasks.length && (
-            <DropPlaceholder containerId={containerId} index={visibleTasks.length} height={placeholderHeight} />
-          )}
+          {!disableDnDIndicators &&
+            placeholderIndex !== null &&
+            placeholderIndex === visibleTasks.length && (
+              <DropPlaceholder containerId={containerId} index={visibleTasks.length} height={placeholderHeight} />
+            )}
         </div>
 
         {isCreating ? (
