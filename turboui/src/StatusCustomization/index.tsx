@@ -11,6 +11,7 @@ import {
   STATUS_APPEARANCES,
   APPEARANCE_ORDER,
 } from "./StatusAppearancePicker";
+import { createTestId } from "../TestableElement";
 
 export interface StatusCustomizationModalProps {
   isOpen: boolean;
@@ -101,9 +102,18 @@ export function StatusCustomizationModal({
   useSortableList(draftStatuses, handleReorder);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={title} size="large" contentPadding="p-0">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={title}
+      size="large"
+      contentPadding="p-0"
+      testId="status-customization-modal"
+    >
       <div className="p-6 space-y-4">
-        <p className="text-sm text-content-dimmed">Add, edit, or remove task statuses. Click the icon to change the color and appearance.</p>
+        <p className="text-sm text-content-dimmed">
+          Add, edit, or remove task statuses. Click the icon to change the color and appearance.
+        </p>
 
         <div className="space-y-3">
           {draftStatuses.map((status, index) => {
@@ -116,6 +126,7 @@ export function StatusCustomizationModal({
                 onUpdate={updateStatus}
                 onRemove={removeStatus}
                 canRemove={draftStatuses.length > 1}
+                index={index}
               />
             );
           })}
@@ -125,6 +136,7 @@ export function StatusCustomizationModal({
           type="button"
           onClick={addStatus}
           className="w-full rounded-lg border border-dashed border-surface-outline py-2 text-sm font-medium text-content-dimmed transition hover:text-brand-1 hover:border-brand-1/50 flex items-center justify-center gap-2"
+          data-test-id="add-status-button"
         >
           <IconPlus size={14} />
           Add status
@@ -151,9 +163,10 @@ type StatusRowProps = {
   onUpdate: (id: string, updates: Partial<StatusSelector.StatusOption>) => void;
   onRemove: (id: string) => void;
   canRemove: boolean;
+  index: number;
 };
 
-function StatusRow({ status, isLabelInvalid, onUpdate, onRemove, canRemove }: StatusRowProps) {
+function StatusRow({ status, isLabelInvalid, onUpdate, onRemove, canRemove, index }: StatusRowProps) {
   const { ref, dragHandleRef, isDragging, closestEdge } = useSortableItem({
     itemId: status.id,
     index: status.index,
@@ -175,6 +188,7 @@ function StatusRow({ status, isLabelInvalid, onUpdate, onRemove, canRemove }: St
             const preset = STATUS_APPEARANCES[appearance];
             onUpdate(status.id, { color: preset.color, icon: preset.icon });
           }}
+          testId={createTestId("status-color-picker", index.toString())}
         />
         <input
           value={status.label}
@@ -184,6 +198,7 @@ function StatusRow({ status, isLabelInvalid, onUpdate, onRemove, canRemove }: St
             "flex-1 rounded-md border px-3 py-2 text-sm text-content-base transition focus:outline-none focus:ring-2 focus:ring-brand-1",
             isLabelInvalid ? "border-rose-300 focus:ring-rose-400" : "border-stroke-base",
           )}
+          data-test-id={createTestId("status-label-input", index.toString())}
         />
         <button
           type="button"
@@ -196,6 +211,7 @@ function StatusRow({ status, isLabelInvalid, onUpdate, onRemove, canRemove }: St
           )}
           aria-label="Remove status"
           disabled={!canRemove}
+          data-test-id={createTestId("remove-status", index.toString())}
         >
           <IconTrash size={16} />
         </button>
@@ -258,10 +274,7 @@ const getAppearanceFromStatus = (status?: Partial<StatusSelector.StatusOption>):
   return found ?? "gray";
 };
 
-const buildStatus = (
-  status?: Partial<StatusSelector.StatusOption>,
-  index?: number,
-): StatusSelector.StatusOption => {
+const buildStatus = (status?: Partial<StatusSelector.StatusOption>, index?: number): StatusSelector.StatusOption => {
   const appearance = getAppearanceFromStatus(status);
   const preset = STATUS_APPEARANCES[appearance];
 
