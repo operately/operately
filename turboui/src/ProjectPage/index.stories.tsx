@@ -273,11 +273,11 @@ export const Default: Story = {
         status: PENDING_STATUS,
         description: "",
         link: "#",
-        ...newTaskData,
         type: "project",
+        ...newTaskData,
       };
       console.log("Task created:", newTask);
-      setTasks((prev) => [...prev, newTask]);
+      setTasks([...tasks, newTask]);
     };
 
     const handleMilestoneCreate = (newMilestoneData: ProjectPage.NewMilestonePayload) => {
@@ -540,8 +540,8 @@ export const EmptyTasks: Story = {
         status: PENDING_STATUS,
         description: "",
         link: "#",
-        ...newTaskData,
         type: "project",
+        ...newTaskData,
       };
       console.log("Task created:", newTask);
       setTasks([...tasks, newTask]);
