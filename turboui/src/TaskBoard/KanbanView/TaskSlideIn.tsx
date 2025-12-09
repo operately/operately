@@ -9,7 +9,7 @@ import RichContent, { countCharacters, isContentEmpty, shortenContent } from "..
 import { Editor, useEditor } from "../../RichEditor";
 import type { RichEditorHandlers } from "../../RichEditor/useEditor";
 import { DangerButton, PrimaryButton, SecondaryButton } from "../../Button";
-import { IconExternalLink, IconTrash, IconX } from "../../icons";
+import { IconExternalLink, IconTrash } from "../../icons";
 import { BlackLink } from "../../Link";
 
 interface TaskSlideInProps {
@@ -64,17 +64,6 @@ export function TaskSlideIn({
       onClose={onClose}
       width="650px"
       testId="task-slide-in"
-      header={
-        <>
-          <button
-            onClick={onClose}
-            className="absolute top-3 right-3 text-content-dimmed hover:text-content-base rounded-full hover:bg-surface-highlight transition-colors"
-            title="Close"
-          >
-            <IconX size={20} />
-          </button>
-        </>
-      }
     >
       <div className="relative flex min-h-full flex-col gap-8 px-6 py-6">
         <TitleSection task={task} onNameChange={onNameChange} />
