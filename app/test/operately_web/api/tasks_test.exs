@@ -17,20 +17,20 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
   describe "list tasks" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, [:project_tasks, :list], %{})
+      assert {401, _} = query(ctx.conn, [:tasks, :list], %{})
     end
 
     test "it requires a project_id", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = query(ctx.conn, [:project_tasks, :list], %{})
+      assert {400, res} = query(ctx.conn, [:tasks, :list], %{})
       assert res.message == "Missing required fields: project_id"
     end
 
     test "it returns not found for non-existent project", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {404, _} = query(ctx.conn, [:project_tasks, :list], %{
+      assert {404, _} = query(ctx.conn, [:tasks, :list], %{
         project_id: Ecto.UUID.generate()
       })
     end
@@ -42,7 +42,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         |> Factory.add_company_member(:member)
         |> Factory.log_in_person(:member)
 
-      assert {404, _} = query(ctx.conn, [:project_tasks, :list], %{
+      assert {404, _} = query(ctx.conn, [:tasks, :list], %{
         project_id: Paths.project_id(ctx.project)
       })
     end
@@ -50,7 +50,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     test "it returns tasks for project creator", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {200, res} = query(ctx.conn, [:project_tasks, :list], %{
+      assert {200, res} = query(ctx.conn, [:tasks, :list], %{
         project_id: Paths.project_id(ctx.project)
       })
 
@@ -67,7 +67,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         |> Factory.add_space_member(:space_member, :engineering)
         |> Factory.log_in_person(:space_member)
 
-      assert {200, res} = query(ctx.conn, [:project_tasks, :list], %{
+      assert {200, res} = query(ctx.conn, [:tasks, :list], %{
         project_id: Paths.project_id(ctx.project)
       })
 
@@ -81,7 +81,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         |> Factory.add_project(:empty_project, :engineering)
         |> Factory.log_in_person(:creator)
 
-      assert {200, res} = query(ctx.conn, [:project_tasks, :list], %{
+      assert {200, res} = query(ctx.conn, [:tasks, :list], %{
         project_id: Paths.project_id(ctx.empty_project)
       })
 
@@ -95,7 +95,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         |> Factory.add_project_task(:task3, :milestone)
         |> Factory.log_in_person(:creator)
 
-      assert {200, res} = query(ctx.conn, [:project_tasks, :list], %{
+      assert {200, res} = query(ctx.conn, [:tasks, :list], %{
         project_id: Paths.project_id(ctx.project)
       })
 
@@ -115,7 +115,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         |> Factory.add_project_task(:task2, :milestone)
         |> Factory.log_in_person(:creator)
 
-      assert {200, res} = query(ctx.conn, [:project_tasks, :list], %{
+      assert {200, res} = query(ctx.conn, [:tasks, :list], %{
         project_id: Paths.project_id(ctx.project)
       })
 
@@ -129,27 +129,27 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
   describe "create task" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, [:project_tasks, :create], %{})
+      assert {401, _} = mutation(ctx.conn, [:tasks, :create], %{})
     end
 
     test "it requires a project_id", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:project_tasks, :create], %{name: "New Task", milestone_id: nil, assignee_id: nil, due_date: nil})
+      assert {400, res} = mutation(ctx.conn, [:tasks, :create], %{name: "New Task", milestone_id: nil, assignee_id: nil, due_date: nil})
       assert res.message == "Missing required fields: project_id"
     end
 
     test "it requires a name", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:project_tasks, :create], %{project_id: Paths.project_id(ctx.project), milestone_id: Paths.milestone_id(ctx.milestone), assignee_id: nil, due_date: nil})
+      assert {400, res} = mutation(ctx.conn, [:tasks, :create], %{project_id: Paths.project_id(ctx.project), milestone_id: Paths.milestone_id(ctx.milestone), assignee_id: nil, due_date: nil})
       assert res.message == "Missing required fields: name"
     end
 
     test "it creates a task", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {200, res} = mutation(ctx.conn, [:project_tasks, :create], %{
+      assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
         project_id: Paths.project_id(ctx.project),
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Implement feature X",
@@ -170,7 +170,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     test "it sets default task_status when creating a task", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {200, res} = mutation(ctx.conn, [:project_tasks, :create], %{
+      assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
         project_id: Paths.project_id(ctx.project),
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task with default status",
@@ -193,7 +193,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     test "it creates a task with assignee", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {200, res} = mutation(ctx.conn, [:project_tasks, :create], %{
+      assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
         project_id: Paths.project_id(ctx.project),
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task with assignee",
@@ -217,7 +217,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       refute Operately.Repo.get_by(Contributor, project_id: ctx.project.id, person_id: ctx.space_member.id)
 
-      assert {200, _} = mutation(ctx.conn, [:project_tasks, :create], %{
+      assert {200, _} = mutation(ctx.conn, [:tasks, :create], %{
         project_id: Paths.project_id(ctx.project),
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task with assignee",
@@ -245,7 +245,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       project = Operately.Repo.preload(ctx.project, :subscription_list)
       assert {:error, :not_found} = Operately.Notifications.Subscription.get(:system, subscription_list_id: project.subscription_list_id, person_id: ctx.space_member.id)
 
-      assert {200, _} = mutation(ctx.conn, [:project_tasks, :create], %{
+      assert {200, _} = mutation(ctx.conn, [:tasks, :create], %{
         project_id: Paths.project_id(ctx.project),
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task with assignee",
@@ -268,7 +268,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         value: "Jun 1, 2026"
       }
 
-      assert {200, res} = mutation(ctx.conn, [:project_tasks, :create], %{
+      assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
         project_id: Paths.project_id(ctx.project),
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task with due date",
@@ -284,7 +284,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       before_count = count_activities(ctx.project.id, "task_adding")
 
-      assert {200, _} = mutation(ctx.conn, [:project_tasks, :create], %{
+      assert {200, _} = mutation(ctx.conn, [:tasks, :create], %{
         project_id: Paths.project_id(ctx.project),
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Activity test task",
@@ -303,7 +303,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         |> Factory.add_company_member(:member)
         |> Factory.log_in_person(:member)
 
-      assert {403, _} = mutation(ctx.conn, [:project_tasks, :create], %{
+      assert {403, _} = mutation(ctx.conn, [:tasks, :create], %{
         project_id: Paths.project_id(ctx.project),
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Forbidden task",
@@ -315,7 +315,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     test "it returns not found for non-existent project", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {404, _} = mutation(ctx.conn, [:project_tasks, :create], %{
+      assert {404, _} = mutation(ctx.conn, [:tasks, :create], %{
         project_id: Ecto.UUID.generate(),
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task for missing milestone",
@@ -327,7 +327,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     test "it creates task without milestone_id", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {200, res} = mutation(ctx.conn, [:project_tasks, :create], %{
+      assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
         project_id: Paths.project_id(ctx.project),
         milestone_id: nil,
         name: "Task without milestone",
@@ -352,7 +352,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         |> Factory.log_in_person(:creator)
         |> Factory.add_project(:project2, :engineering)
 
-      assert {400, res} = mutation(ctx.conn, [:project_tasks, :create], %{
+      assert {400, res} = mutation(ctx.conn, [:tasks, :create], %{
         project_id: Paths.project_id(ctx.project2),
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task without milestone",
@@ -370,7 +370,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       milestone_before = Operately.Projects.get_milestone!(ctx.milestone.id)
       ordering_state_before = milestone_before.tasks_ordering_state
 
-      assert {200, res} = mutation(ctx.conn, [:project_tasks, :create], %{
+      assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
         project_id: Paths.project_id(ctx.project),
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task for ordering test",
@@ -404,7 +404,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       {:ok, _} = Operately.Projects.update_milestone(ctx.milestone, %{tasks_kanban_state: kanban_state})
 
-      assert {200, res} = mutation(ctx.conn, [:project_tasks, :create], %{
+      assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
         project_id: Paths.project_id(ctx.project),
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task for kanban test",
@@ -437,7 +437,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       {:ok, _} = Operately.Projects.update_milestone(ctx.milestone, %{tasks_kanban_state: kanban_state})
 
-      assert {200, res} = mutation(ctx.conn, [:project_tasks, :create], %{
+      assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
         project_id: Paths.project_id(ctx.project),
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task for kanban status test",
@@ -460,7 +460,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       status_struct = List.first(ctx.project.task_statuses)
       status = Map.from_struct(status_struct) |> Map.put(:color, Atom.to_string(status_struct.color))
 
-      assert {200, res} = mutation(ctx.conn, [:project_tasks, :create], %{
+      assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
         project_id: Paths.project_id(ctx.project),
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task with status",
@@ -484,7 +484,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         closed: false
       }
 
-      assert {400, res} = mutation(ctx.conn, [:project_tasks, :create], %{
+      assert {400, res} = mutation(ctx.conn, [:tasks, :create], %{
         project_id: Paths.project_id(ctx.project),
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task with invalid status",
@@ -506,7 +506,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       # Case 1: Gray exists
       {:ok, project} = Operately.Projects.update_project(ctx.project, %{task_statuses: [green, blue, gray]})
 
-      assert {200, res} = mutation(ctx.conn, [:project_tasks, :create], %{
+      assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
         project_id: Paths.project_id(project),
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task 1",
@@ -518,7 +518,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       # Case 2: No Gray, but Blue exists
       {:ok, project} = Operately.Projects.update_project(project, %{task_statuses: [green, blue]})
 
-      assert {200, res} = mutation(ctx.conn, [:project_tasks, :create], %{
+      assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
         project_id: Paths.project_id(project),
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task 2",
@@ -530,7 +530,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       # Case 3: Neither Gray nor Blue
       {:ok, project} = Operately.Projects.update_project(project, %{task_statuses: [green]})
 
-      assert {200, res} = mutation(ctx.conn, [:project_tasks, :create], %{
+      assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
         project_id: Paths.project_id(project),
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task 3",
@@ -570,14 +570,14 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     }
 
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, [:project_tasks, :update_status], %{})
+      assert {401, _} = mutation(ctx.conn, [:tasks, :update_status], %{})
     end
 
     test "it requires a task_id", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
       assert {400, res} =
-               mutation(ctx.conn, [:project_tasks, :update_status], %{status: @done_status})
+               mutation(ctx.conn, [:tasks, :update_status], %{status: @done_status})
 
       assert res.message == "Missing required fields: task_id"
     end
@@ -585,14 +585,14 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     test "it requires a status", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:project_tasks, :update_status], %{task_id: Paths.task_id(ctx.task)})
+      assert {400, res} = mutation(ctx.conn, [:tasks, :update_status], %{task_id: Paths.task_id(ctx.task)})
       assert res.message == "Missing required fields: status"
     end
 
     test "it updates a task status", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_status], %{
+      assert {200, res} = mutation(ctx.conn, [:tasks, :update_status], %{
         task_id: Paths.task_id(ctx.task),
         status: @done_status
       })
@@ -609,7 +609,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       before_count = count_activities(ctx.project.id, "task_status_updating")
 
-      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_status], %{
+      assert {200, _} = mutation(ctx.conn, [:tasks, :update_status], %{
         task_id: Paths.task_id(ctx.task),
         status: @done_status
       })
@@ -627,7 +627,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert Paths.task_id(ctx.task) in milestone.tasks_ordering_state
 
-      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_status], %{
+      assert {200, res} = mutation(ctx.conn, [:tasks, :update_status], %{
         task_id: Paths.task_id(ctx.task),
         status: @done_status
       })
@@ -647,7 +647,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert Paths.task_id(ctx.task) in milestone.tasks_ordering_state
 
-      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_status], %{
+      assert {200, res} = mutation(ctx.conn, [:tasks, :update_status], %{
         task_id: Paths.task_id(ctx.task),
         status: @canceled_status
       })
@@ -667,7 +667,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       milestone = Repo.reload(ctx.milestone)
       refute Paths.task_id(ctx.task) in milestone.tasks_ordering_state
 
-      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_status], %{
+      assert {200, res} = mutation(ctx.conn, [:tasks, :update_status], %{
         task_id: Paths.task_id(ctx.task),
         status: @in_progress_status
       })
@@ -690,7 +690,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     }
 
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, [:project_tasks, :update_kanban], %{})
+      assert {401, _} = mutation(ctx.conn, [:tasks, :update_kanban], %{})
     end
 
     test "it updates status and kanban state for a milestone", ctx do
@@ -703,7 +703,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         canceled: []
       }
 
-      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_kanban], %{
+      assert {200, res} = mutation(ctx.conn, [:tasks, :update_kanban], %{
         task_id: Paths.task_id(ctx.task),
         milestone_id: Paths.milestone_id(ctx.milestone),
         status: @in_progress_status,
@@ -722,7 +722,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         |> Factory.add_project_milestone(:other_milestone, :project)
         |> Factory.log_in_person(:creator)
 
-      assert {400, res} = mutation(ctx.conn, [:project_tasks, :update_kanban], %{
+      assert {400, res} = mutation(ctx.conn, [:tasks, :update_kanban], %{
         task_id: Paths.task_id(ctx.task),
         milestone_id: Paths.milestone_id(ctx.other_milestone),
         status: @in_progress_status,
@@ -743,7 +743,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         blocked: [Paths.task_id(ctx.task)]
       }
 
-      assert {400, res} = mutation(ctx.conn, [:project_tasks, :update_kanban], %{
+      assert {400, res} = mutation(ctx.conn, [:tasks, :update_kanban], %{
         task_id: Paths.task_id(ctx.task),
         milestone_id: Paths.milestone_id(ctx.milestone),
         status: @in_progress_status,
@@ -756,13 +756,13 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
   describe "update task due date" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, [:project_tasks, :update_due_date], %{})
+      assert {401, _} = mutation(ctx.conn, [:tasks, :update_due_date], %{})
     end
 
     test "it requires a task_id", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:project_tasks, :update_due_date], %{
+      assert {400, res} = mutation(ctx.conn, [:tasks, :update_due_date], %{
         due_date: %{date: "2026-01-01", date_type: "day"}
       })
       assert res.message == "Missing required fields: task_id"
@@ -777,7 +777,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         value: "Jun 1, 2026"
       }
 
-      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_due_date], %{
+      assert {200, res} = mutation(ctx.conn, [:tasks, :update_due_date], %{
         task_id: Paths.task_id(ctx.task),
         due_date: due_date
       })
@@ -822,7 +822,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       }
 
       # Then remove it
-      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_due_date], %{
+      assert {200, res} = mutation(ctx.conn, [:tasks, :update_due_date], %{
         task_id: Paths.task_id(ctx.task),
         due_date: nil
       })
@@ -844,7 +844,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         value: "Jun 1, 2026"
       }
 
-      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_due_date], %{
+      assert {200, _} = mutation(ctx.conn, [:tasks, :update_due_date], %{
         task_id: Paths.task_id(ctx.task),
         due_date: due_date
       })
@@ -860,7 +860,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert notifications_count(action: action) == 0
 
-      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_due_date], %{
+      assert {200, _} = mutation(ctx.conn, [:tasks, :update_due_date], %{
         task_id: Paths.task_id(ctx.task),
         due_date: %{ date: "2026-06-01", date_type: "day", value: "Jun 1, 2026" }
       })
@@ -876,13 +876,13 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
   describe "update task assignee" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, [:project_tasks, :update_assignee], %{})
+      assert {401, _} = mutation(ctx.conn, [:tasks, :update_assignee], %{})
     end
 
     test "it requires a task_id", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:project_tasks, :update_assignee], %{
+      assert {400, res} = mutation(ctx.conn, [:tasks, :update_assignee], %{
         assignee_id: Paths.person_id(ctx.creator)
       })
       assert res.message == "Missing required fields: task_id"
@@ -891,7 +891,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     test "it assigns a person to a task", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_assignee], %{
+      assert {200, res} = mutation(ctx.conn, [:tasks, :update_assignee], %{
         task_id: Paths.task_id(ctx.task),
         assignee_id: Paths.person_id(ctx.creator)
       })
@@ -922,7 +922,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert length(task.assigned_people) == 1
 
       # Then remove assignee
-      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_assignee], %{
+      assert {200, res} = mutation(ctx.conn, [:tasks, :update_assignee], %{
         task_id: Paths.task_id(ctx.task),
         assignee_id: nil
       })
@@ -941,7 +941,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       before_count = count_activities(ctx.project.id, "task_assignee_updating")
 
-      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_assignee], %{
+      assert {200, _} = mutation(ctx.conn, [:tasks, :update_assignee], %{
         task_id: Paths.task_id(ctx.task),
         assignee_id: Paths.person_id(ctx.creator)
       })
@@ -958,7 +958,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       refute Operately.Repo.get_by(Contributor, project_id: ctx.project.id, person_id: ctx.space_member.id)
 
-      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_assignee], %{
+      assert {200, _} = mutation(ctx.conn, [:tasks, :update_assignee], %{
         task_id: Paths.task_id(ctx.task),
         assignee_id: Paths.person_id(ctx.space_member)
       })
@@ -983,7 +983,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       project = Operately.Repo.preload(ctx.project, :subscription_list)
       assert {:error, :not_found} = Operately.Notifications.Subscription.get(:system, subscription_list_id: project.subscription_list_id, person_id: ctx.space_member.id)
 
-      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_assignee], %{
+      assert {200, _} = mutation(ctx.conn, [:tasks, :update_assignee], %{
         task_id: Paths.task_id(ctx.task),
         assignee_id: Paths.person_id(ctx.space_member)
       })
@@ -997,13 +997,13 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
   describe "update task milestone" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, [:project_tasks, :update_milestone_and_ordering], %{})
+      assert {401, _} = mutation(ctx.conn, [:tasks, :update_milestone_and_ordering], %{})
     end
 
     test "it requires a task_id", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:project_tasks, :update_milestone_and_ordering], %{
+      assert {400, res} = mutation(ctx.conn, [:tasks, :update_milestone_and_ordering], %{
         milestone_id: Paths.milestone_id(ctx.milestone),
         milestones_ordering_state: []
       })
@@ -1018,7 +1018,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         |> Factory.log_in_person(:creator)
 
       # Moving task from milestone to milestone2, updating ordering for both
-      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_milestone_and_ordering], %{
+      assert {200, _} = mutation(ctx.conn, [:tasks, :update_milestone_and_ordering], %{
         task_id: Paths.task_id(ctx.task),
         milestone_id: Paths.milestone_id(ctx.milestone2),
         milestones_ordering_state: [
@@ -1050,7 +1050,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         |> Factory.add_project_task(:task2, :milestone)
         |> Factory.log_in_person(:creator)
 
-      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_milestone_and_ordering], %{
+      assert {200, _} = mutation(ctx.conn, [:tasks, :update_milestone_and_ordering], %{
         task_id: Paths.task_id(ctx.task),
         milestone_id: nil,
         milestones_ordering_state: [
@@ -1077,7 +1077,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       before_count = count_activities(ctx.project.id, "task_milestone_updating")
 
-      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_milestone_and_ordering], %{
+      assert {200, _} = mutation(ctx.conn, [:tasks, :update_milestone_and_ordering], %{
         task_id: Paths.task_id(ctx.task),
         milestone_id: Paths.milestone_id(ctx.milestone2),
         milestones_ordering_state: [
@@ -1105,7 +1105,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       before_count = count_activities(ctx.project.id, "task_milestone_updating")
 
       # Task stays in same milestone, only ordering changes
-      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_milestone_and_ordering], %{
+      assert {200, _} = mutation(ctx.conn, [:tasks, :update_milestone_and_ordering], %{
         task_id: Paths.task_id(ctx.task),
         milestone_id: Paths.milestone_id(ctx.milestone),  # Same milestone
         milestones_ordering_state: [
@@ -1127,7 +1127,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         |> Factory.add_project_milestone(:milestone2, :project2)
         |> Factory.log_in_person(:creator)
 
-      assert {400, res} = mutation(ctx.conn, [:project_tasks, :update_milestone_and_ordering], %{
+      assert {400, res} = mutation(ctx.conn, [:tasks, :update_milestone_and_ordering], %{
         task_id: Paths.task_id(ctx.task),
         milestone_id: Paths.milestone_id(ctx.milestone2),
         milestones_ordering_state: [
@@ -1149,7 +1149,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         |> Factory.log_in_person(:creator)
 
       # Task stays in same milestone, but ordering changes
-      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_milestone_and_ordering], %{
+      assert {200, _} = mutation(ctx.conn, [:tasks, :update_milestone_and_ordering], %{
         task_id: Paths.task_id(ctx.task),
         milestone_id: Paths.milestone_id(ctx.milestone),  # Same milestone
         milestones_ordering_state: [
@@ -1178,7 +1178,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         |> Factory.log_in_person(:creator)
 
       # Task moves from milestone to milestone2, affecting both ordering states
-      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_milestone_and_ordering], %{
+      assert {200, _} = mutation(ctx.conn, [:tasks, :update_milestone_and_ordering], %{
         task_id: Paths.task_id(ctx.task),
         milestone_id: Paths.milestone_id(ctx.milestone2),
         milestones_ordering_state: [
@@ -1214,7 +1214,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         |> Factory.log_in_person(:creator)
 
       # Move task to another milestone and include all tasks in the ordering state
-      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_milestone_and_ordering], %{
+      assert {200, res} = mutation(ctx.conn, [:tasks, :update_milestone_and_ordering], %{
         task_id: Paths.task_id(ctx.task),
         milestone_id: Paths.milestone_id(ctx.milestone2),
         milestones_ordering_state: [
@@ -1256,7 +1256,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         |> Factory.log_in_person(:creator)
 
       # Try to include a task from milestone2 in milestone's ordering state
-      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_milestone_and_ordering], %{
+      assert {200, res} = mutation(ctx.conn, [:tasks, :update_milestone_and_ordering], %{
         task_id: Paths.task_id(ctx.task),
         milestone_id: Paths.milestone_id(ctx.milestone),  # Same milestone
         milestones_ordering_state: [
@@ -1283,13 +1283,13 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
   describe "update milestone" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, [:project_tasks, :update_milestone], %{})
+      assert {401, _} = mutation(ctx.conn, [:tasks, :update_milestone], %{})
     end
 
     test "it requires a task_id", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:project_tasks, :update_milestone], %{
+      assert {400, res} = mutation(ctx.conn, [:tasks, :update_milestone], %{
         milestone_id: Paths.milestone_id(ctx.milestone)
       })
       assert res.message == "Missing required fields: task_id"
@@ -1301,7 +1301,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         |> Factory.add_project_milestone(:milestone2, :project)
         |> Factory.log_in_person(:creator)
 
-      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_milestone], %{
+      assert {200, res} = mutation(ctx.conn, [:tasks, :update_milestone], %{
         task_id: Paths.task_id(ctx.task),
         milestone_id: Paths.milestone_id(ctx.milestone2)
       })
@@ -1317,7 +1317,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     test "it can remove a milestone", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_milestone], %{
+      assert {200, res} = mutation(ctx.conn, [:tasks, :update_milestone], %{
         task_id: Paths.task_id(ctx.task),
         milestone_id: nil
       })
@@ -1338,7 +1338,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       before_count = count_activities(ctx.project.id, "task_milestone_updating")
 
-      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_milestone], %{
+      assert {200, _} = mutation(ctx.conn, [:tasks, :update_milestone], %{
         task_id: Paths.task_id(ctx.task),
         milestone_id: Paths.milestone_id(ctx.milestone2)
       })
@@ -1354,7 +1354,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         |> Factory.add_project_milestone(:milestone2, :project2)
         |> Factory.log_in_person(:creator)
 
-      assert {400, res} = mutation(ctx.conn, [:project_tasks, :update_milestone], %{
+      assert {400, res} = mutation(ctx.conn, [:tasks, :update_milestone], %{
         task_id: Paths.task_id(ctx.task),
         milestone_id: Paths.milestone_id(ctx.milestone2)
       })
@@ -1365,13 +1365,13 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
   describe "update task description" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, [:project_tasks, :update_description], %{})
+      assert {401, _} = mutation(ctx.conn, [:tasks, :update_description], %{})
     end
 
     test "it requires a task_id", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:project_tasks, :update_description], %{
+      assert {400, res} = mutation(ctx.conn, [:tasks, :update_description], %{
         description: RichText.rich_text("New task description", :as_string)
       })
       assert res.message == "Missing required fields: task_id"
@@ -1380,7 +1380,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     test "it requires a description", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:project_tasks, :update_description], %{
+      assert {400, res} = mutation(ctx.conn, [:tasks, :update_description], %{
         task_id: Paths.task_id(ctx.task)
       })
       assert res.message == "Missing required fields: description"
@@ -1390,7 +1390,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       ctx = Factory.log_in_person(ctx, :creator)
       description = RichText.rich_text("Updated task description", :as_string)
 
-      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_description], %{
+      assert {200, res} = mutation(ctx.conn, [:tasks, :update_description], %{
         task_id: Paths.task_id(ctx.task),
         description: description
       })
@@ -1411,7 +1411,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       before_count = count_activities("task_description_change")
       description = RichText.rich_text("Another description update", :as_string)
 
-      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_description], %{
+      assert {200, _} = mutation(ctx.conn, [:tasks, :update_description], %{
         task_id: Paths.task_id(ctx.task),
         description: description
       })
@@ -1424,7 +1424,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       ctx = Factory.log_in_person(ctx, :creator)
       description = RichText.rich_text("Description for non-existent task", :as_string)
 
-      assert {404, _} = mutation(ctx.conn, [:project_tasks, :update_description], %{
+      assert {404, _} = mutation(ctx.conn, [:tasks, :update_description], %{
         task_id: Ecto.UUID.generate(),
         description: description
       })
@@ -1439,7 +1439,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       description = RichText.rich_text("Forbidden description update", :as_string)
 
-      assert {403, _} = mutation(ctx.conn, [:project_tasks, :update_description], %{
+      assert {403, _} = mutation(ctx.conn, [:tasks, :update_description], %{
         task_id: Paths.task_id(ctx.task),
         description: description
       })
@@ -1448,13 +1448,13 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
   describe "update task name" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, [:project_tasks, :update_name], %{})
+      assert {401, _} = mutation(ctx.conn, [:tasks, :update_name], %{})
     end
 
     test "it requires a task_id", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:project_tasks, :update_name], %{
+      assert {400, res} = mutation(ctx.conn, [:tasks, :update_name], %{
         name: "Updated Task Name"
       })
       assert res.message == "Missing required fields: task_id"
@@ -1463,7 +1463,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     test "it requires a name", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:project_tasks, :update_name], %{
+      assert {400, res} = mutation(ctx.conn, [:tasks, :update_name], %{
         task_id: Paths.task_id(ctx.task)
       })
       assert res.message == "Missing required fields: name"
@@ -1472,7 +1472,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     test "it updates a task name", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_name], %{
+      assert {200, res} = mutation(ctx.conn, [:tasks, :update_name], %{
         task_id: Paths.task_id(ctx.task),
         name: "Updated Task Name"
       })
@@ -1490,7 +1490,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       before_count = count_activities(ctx.project.id, "task_name_updating")
 
-      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_name], %{
+      assert {200, _} = mutation(ctx.conn, [:tasks, :update_name], %{
         task_id: Paths.task_id(ctx.task),
         name: "Activity Test Name"
       })
@@ -1502,7 +1502,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     test "it returns not found for non-existent task", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {404, _} = mutation(ctx.conn, [:project_tasks, :update_name], %{
+      assert {404, _} = mutation(ctx.conn, [:tasks, :update_name], %{
         task_id: Ecto.UUID.generate(),
         name: "Name for non-existent task"
       })
@@ -1515,7 +1515,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         |> Factory.add_company_member(:member)
         |> Factory.log_in_person(:member)
 
-      assert {403, _} = mutation(ctx.conn, [:project_tasks, :update_name], %{
+      assert {403, _} = mutation(ctx.conn, [:tasks, :update_name], %{
         task_id: Paths.task_id(ctx.task),
         name: "Forbidden name update"
       })
@@ -1524,13 +1524,13 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
   describe "delete task" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, [:project_tasks, :delete], %{})
+      assert {401, _} = mutation(ctx.conn, [:tasks, :delete], %{})
     end
 
     test "it requires a task_id", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:project_tasks, :delete], %{})
+      assert {400, res} = mutation(ctx.conn, [:tasks, :delete], %{})
       assert res.message == "Missing required fields: task_id"
     end
 
@@ -1542,7 +1542,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       {:ok, decoded_id} = OperatelyWeb.Api.Helpers.decode_id(task_id)
       assert Operately.Repo.get(Operately.Tasks.Task, decoded_id) != nil
 
-      assert {200, res} = mutation(ctx.conn, [:project_tasks, :delete], %{
+      assert {200, res} = mutation(ctx.conn, [:tasks, :delete], %{
         task_id: task_id
       })
 
@@ -1555,7 +1555,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     test "it returns not found for non-existent task", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {404, _} = mutation(ctx.conn, [:project_tasks, :delete], %{
+      assert {404, _} = mutation(ctx.conn, [:tasks, :delete], %{
         task_id: Ecto.UUID.generate()
       })
     end
@@ -1567,7 +1567,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         |> Factory.add_company_member(:member)
         |> Factory.log_in_person(:member)
 
-      assert {403, _} = mutation(ctx.conn, [:project_tasks, :delete], %{
+      assert {403, _} = mutation(ctx.conn, [:tasks, :delete], %{
         task_id: Paths.task_id(ctx.task)
       })
     end
@@ -1577,7 +1577,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       before_count = count_activities(ctx.project.id, "task_deleting")
 
-      assert {200, _} = mutation(ctx.conn, [:project_tasks, :delete], %{
+      assert {200, _} = mutation(ctx.conn, [:tasks, :delete], %{
         task_id: Paths.task_id(ctx.task)
       })
 
@@ -1599,7 +1599,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert task_id in milestone.tasks_ordering_state
 
-      assert {200, res} = mutation(ctx.conn, [:project_tasks, :delete], %{
+      assert {200, res} = mutation(ctx.conn, [:tasks, :delete], %{
         task_id: task_id
       })
 
