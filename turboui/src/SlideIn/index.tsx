@@ -11,22 +11,21 @@ export interface SlideInProps {
   width?: string;
   closeOnBackdropClick?: boolean;
   contentClassName?: string;
-  showHeader?: boolean;
   header?: React.ReactNode;
   testId?: string;
+  showCloseButton?: boolean;
 }
 
 export function SlideIn({
   isOpen,
   onClose,
-  title,
   children,
   width = "60%",
   closeOnBackdropClick = true,
   contentClassName = "",
-  showHeader = true,
   header,
   testId,
+  showCloseButton = true,
 }: SlideInProps) {
   const [shouldRender, setShouldRender] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -96,27 +95,25 @@ export function SlideIn({
     >
       <div
         ref={slideInRef}
-        className={`bg-surface-base shadow-2xl h-full overflow-auto flex flex-col ${
+        className={`relative bg-surface-base shadow-2xl h-full overflow-auto flex flex-col ${
           isAnimating ? "translate-x-0" : "translate-x-full"
         } transition-transform duration-300 ease-in-out ${contentClassName}`}
         style={{ width }}
         onClick={(e) => e.stopPropagation()}
       >
-        {header ? (
-          header
-        ) : showHeader ? (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-surface-outline flex-shrink-0 bg-surface-base sticky top-0 z-10">
-            {title && <h2 className="text-lg font-semibold text-content-accent">{title}</h2>}
-            <button
-              onClick={onClose}
-              className="text-content-subtle hover:text-content-base transition-colors p-1 rounded-full hover:bg-surface-highlight ml-auto"
-              aria-label="Close"
-              data-test-id="slide-in-close-button"
-            >
-              <IconX size={20} />
-            </button>
-          </div>
-        ) : null}
+        {header && header}
+
+        {showCloseButton && (
+          <button
+            onClick={onClose}
+            className="absolute top-3 right-3 z-10 cursor-pointer text-content-dimmed hover:text-content-base rounded-full hover:bg-surface-highlight transition-colors"
+            aria-label="Close"
+            data-test-id="slide-in-close-button"
+            title="Close"
+          >
+            <IconX size={18} />
+          </button>
+        )}
 
         <div className="flex-1 overflow-auto">{children}</div>
       </div>
