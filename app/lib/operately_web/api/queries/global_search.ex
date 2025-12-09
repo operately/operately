@@ -153,7 +153,7 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearch do
         limit: @limit
       )
 
-    from(t in Task, join: r in subquery(limited_tasks), on: t.id == r.id, preload: [:project, :group], order_by: [asc: r.search_rank, asc: t.id], select: t)
+    from(t in Task, join: r in subquery(limited_tasks), on: t.id == r.id, preload: [:project, :project_space], order_by: [asc: r.search_rank, asc: t.id], select: t)
     |> Repo.all()
   end
 

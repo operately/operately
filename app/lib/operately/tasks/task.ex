@@ -26,9 +26,10 @@ defmodule Operately.Tasks.Task do
     belongs_to :creator, Operately.People.Person
     belongs_to :milestone, Operately.Projects.Milestone
     belongs_to :project, Operately.Projects.Project
+    belongs_to :space, Operately.Groups.Group
     belongs_to :subscription_list, Operately.Notifications.SubscriptionList, foreign_key: :subscription_list_id
 
-    has_one :group, through: [:project, :group]
+    has_one :project_space, through: [:project, :group]
     has_one :company, through: [:creator, :company]
     has_one :access_context, through: [:project, :access_context]
 
@@ -80,12 +81,14 @@ defmodule Operately.Tasks.Task do
       :reopened_at,
       :milestone_id,
       :project_id,
+      :space_id,
       :subscription_list_id
     ])
     |> cast_embed(:due_date)
     |> cast_embed(:task_status)
     |> put_default_task_status()
-    |> validate_required([:name, :description, :creator_id, :project_id, :subscription_list_id])
+    |> validate_required([:name, :description, :creator_id, :subscription_list_id])
+    |> validate_project_or_group()
   end
 
   #
@@ -146,6 +149,26 @@ defmodule Operately.Tasks.Task do
     case Ecto.Changeset.get_field(changeset, :task_status) do
       nil -> Ecto.Changeset.put_embed(changeset, :task_status, Operately.Projects.TaskStatus.default_task_status())
       _ -> changeset
+    end
+  end
+
+  defp validate_project_or_group(changeset) do
+    project_id = Ecto.Changeset.get_field(changeset, :project_id)
+    space_id = Ecto.Changeset.get_field(changeset, :space_id)
+
+    case {project_id, space_id} do
+      {nil, nil} ->
+        changeset
+        |> Ecto.Changeset.add_error(:project_id, "either project_id or space_id must be present")
+        |> Ecto.Changeset.add_error(:space_id, "either project_id or space_id must be present")
+
+      {nil, _} -> changeset
+      {_, nil} -> changeset
+
+      {_, _} ->
+        changeset
+        |> Ecto.Changeset.add_error(:project_id, "cannot have both project_id and space_id")
+        |> Ecto.Changeset.add_error(:space_id, "cannot have both project_id and space_id")
     end
   end
 end
