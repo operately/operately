@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { MilestoneKanbanPage } from "./index";
+import { SpaceKanbanPage } from "./index";
 import * as Types from "../TaskBoard/types";
 import {
   mockMilestones,
@@ -17,9 +17,9 @@ import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 
 import type { KanbanState, KanbanStatus } from "../TaskBoard/KanbanView/types";
 
-const meta: Meta<typeof MilestoneKanbanPage> = {
-  title: "Pages/MilestoneKanbanPage",
-  component: MilestoneKanbanPage,
+const meta: Meta<typeof SpaceKanbanPage> = {
+  title: "Pages/SpaceKanbanPage",
+  component: SpaceKanbanPage,
   parameters: {
     layout: "fullscreen",
   },
@@ -30,6 +30,12 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const STATUSES: Types.Status[] = [PENDING_STATUS, IN_PROGRESS_STATUS, DONE_STATUS, CANCELED_STATUS];
+
+const space = {
+  id: "12345",
+  name: "Demo Space",
+  link: "#",
+}
 
 const emptyKanbanState = (statuses: Types.Status[]): KanbanState =>
   statuses.reduce<KanbanState>((acc, status) => {
@@ -97,7 +103,7 @@ export const Default: Story = {
     const milestone = mockMilestones.q2Release;
     if (!milestone) return <div>Missing mock milestone data</div>;
 
-    const initialTasks = filterTasksByMilestone(mockTasks("project"), milestone);
+    const initialTasks = filterTasksByMilestone(mockTasks("space"), milestone);
     const [tasks, setTasks] = useState<Types.Task[]>(initialTasks);
     const [kanbanState, setKanbanState] = useState<KanbanState>(
       buildKanbanStateFromTasks(initialTasks, STATUSES),
@@ -106,14 +112,11 @@ export const Default: Story = {
 
     return (
       <div className="min-h-[800px] py-[4.5rem] px-2 bg-surface-base">
-        <MilestoneKanbanPage
-          projectName="Demo Project"
+        <SpaceKanbanPage
+          space={space}
           navigation={[
             { to: "/spaces/demo-space", label: "Demo Space" },
-            { to: "/spaces/demo-space/work-map/projects", label: "Projects" },
-            { to: "/projects/demo-project", label: "Demo Project" },
           ]}
-          milestone={milestone}
           tasks={tasks}
           statuses={STATUSES}
           kanbanState={kanbanState}
@@ -135,7 +138,7 @@ export const Default: Story = {
               hasDescription: false,
               hasComments: false,
               commentCount: 0,
-              type: "project"
+              type: "space"
             };
 
             setTasks((prev) => [...prev, newTask]);
@@ -161,9 +164,7 @@ export const Default: Story = {
             setKanbanState((prev) => {
               const next = { ...prev };
 
-              const fromStatus = (Object.keys(next) as KanbanStatus[]).find((key) =>
-                next[key]?.includes(taskId),
-              );
+              const fromStatus = (Object.keys(next) as KanbanStatus[]).find((key) => next[key]?.includes(taskId));
 
               const toStatus = (status?.value ?? status?.id ?? STATUSES[0]?.value ?? "pending") as KanbanStatus;
 
@@ -182,13 +183,6 @@ export const Default: Story = {
               return next;
             });
           }}
-          onTaskMilestoneChange={(taskId, milestoneValue) =>
-            setTasks((prev) =>
-              prev.map((task) => (task.id === taskId ? { ...task, milestone: milestoneValue } : task)),
-            )
-          }
-          milestones={Object.values(mockMilestones)}
-          onMilestoneSearch={async () => {}}
           onTaskDescriptionChange={async (taskId, description) => {
             setTasks((prev) =>
               prev.map((task) =>
@@ -219,7 +213,7 @@ export const WithStatusManagement: Story = {
     const milestone = mockMilestones.q2Release;
     if (!milestone) return <div>Missing mock milestone data</div>;
 
-    const initialTasks = filterTasksByMilestone(mockTasks("project"), milestone);
+    const initialTasks = filterTasksByMilestone(mockTasks("space"), milestone);
     const [statuses, setStatuses] = useState<Types.Status[]>(STATUSES);
     const [tasks, setTasks] = useState<Types.Task[]>(initialTasks);
     const [kanbanState, setKanbanState] = useState<KanbanState>(
@@ -229,20 +223,17 @@ export const WithStatusManagement: Story = {
 
     return (
       <div className="min-h-[800px] py-[4.5rem] px-2 bg-surface-base">
-        <MilestoneKanbanPage
-          projectName="Demo Project"
+        <SpaceKanbanPage
+          space={space}
           navigation={[
             { to: "/spaces/demo-space", label: "Demo Space" },
-            { to: "/spaces/demo-space/work-map/projects", label: "Projects" },
-            { to: "/projects/demo-project", label: "Demo Project" },
           ]}
-          milestone={milestone}
           tasks={tasks}
           statuses={statuses}
           kanbanState={kanbanState}
           assigneePersonSearch={assigneeSearch}
-          richTextHandlers={createMockRichEditorHandlers()}
           canManageStatuses
+          richTextHandlers={createMockRichEditorHandlers()}
           onTaskNameChange={(taskId, name) =>
             setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, title: name } : task)))
           }
@@ -271,7 +262,7 @@ export const WithStatusManagement: Story = {
               hasDescription: false,
               hasComments: false,
               commentCount: 0,
-              type: "project"
+              type: "space"
             };
 
             setTasks((prev) => [...prev, newTask]);
@@ -297,9 +288,7 @@ export const WithStatusManagement: Story = {
             setKanbanState((prev) => {
               const next = { ...prev };
 
-              const fromStatus = (Object.keys(next) as KanbanStatus[]).find((key) =>
-                next[key]?.includes(taskId),
-              );
+              const fromStatus = (Object.keys(next) as KanbanStatus[]).find((key) => next[key]?.includes(taskId));
 
               const toStatus = (status?.value ?? status?.id ?? statuses[0]?.value ?? "pending") as KanbanStatus;
 
@@ -318,13 +307,6 @@ export const WithStatusManagement: Story = {
               return next;
             });
           }}
-          onTaskMilestoneChange={(taskId, milestoneValue) =>
-            setTasks((prev) =>
-              prev.map((task) => (task.id === taskId ? { ...task, milestone: milestoneValue } : task)),
-            )
-          }
-          milestones={Object.values(mockMilestones)}
-          onMilestoneSearch={async () => {}}
           onTaskDescriptionChange={async (taskId, description) => {
             setTasks((prev) =>
               prev.map((task) =>
