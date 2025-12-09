@@ -268,16 +268,16 @@ export const Default: Story = {
 
     const handleTaskCreate = (newTaskData: TaskBoardTypes.NewTaskPayload) => {
       const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-      const newTask: TaskBoardTypes.Task = {
+      const newTask = {
         id: taskId,
         status: PENDING_STATUS,
         description: "",
         link: "#",
-        ...newTaskData,
         type: "project",
+        ...newTaskData,
       };
       console.log("Task created:", newTask);
-      setTasks((prev) => [...prev, newTask]);
+      setTasks([...tasks, newTask]);
     };
 
     const handleMilestoneCreate = (newMilestoneData: ProjectPage.NewMilestonePayload) => {
@@ -535,13 +535,13 @@ export const EmptyTasks: Story = {
 
     const handleTaskCreate = (newTaskData: TaskBoardTypes.NewTaskPayload) => {
       const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-      const newTask: TaskBoardTypes.Task = {
+      const newTask = {
         id: taskId,
         status: PENDING_STATUS,
         description: "",
         link: "#",
-        ...newTaskData,
         type: "project",
+        ...newTaskData,
       };
       console.log("Task created:", newTask);
       setTasks([...tasks, newTask]);
@@ -893,13 +893,12 @@ export const PausedProject: Story = {
 
     const handleTaskCreate = (newTaskData: TaskBoardTypes.NewTaskPayload) => {
       const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-      const newTask: TaskBoardTypes.Task = {
+      const newTask = {
         id: taskId,
         status: PENDING_STATUS,
         description: "",
         link: "#",
         ...newTaskData,
-        type: "project"
       };
       console.log("Task created:", newTask);
       setTasks([...tasks, newTask]);
