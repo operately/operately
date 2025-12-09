@@ -60,12 +60,7 @@ export function TaskSlideIn({
   if (!task) return null;
 
   return (
-    <SlideIn
-      isOpen={isOpen}
-      onClose={onClose}
-      width="650px"
-      testId="task-slide-in"
-    >
+    <SlideIn isOpen={isOpen} onClose={onClose} width="650px" testId="task-slide-in">
       <div className="relative flex min-h-full flex-col gap-8 px-6 py-6">
         <TitleSection task={task} onNameChange={onNameChange} />
 
@@ -102,16 +97,18 @@ export function TaskSlideIn({
             />
           </Field>
 
-          <Field label="Milestone" testId={createTestId("task-field-milestone", task.id)}>
-            <MilestoneField
-              milestone={task.milestone}
-              setMilestone={(m) => onMilestoneChange?.(task.id, m as Milestone | null)}
-              readonly={!onMilestoneChange}
-              milestones={milestones}
-              onSearch={onMilestoneSearch ?? (async () => {})}
-              testId={createTestId("task-milestone", task.id)}
-            />
-          </Field>
+          {task.type === "project" && (
+            <Field label="Milestone" testId={createTestId("task-field-milestone", task.id)}>
+              <MilestoneField
+                milestone={task.milestone}
+                setMilestone={(m) => onMilestoneChange?.(task.id, m as Milestone | null)}
+                readonly={!onMilestoneChange}
+                milestones={milestones}
+                onSearch={onMilestoneSearch ?? (async () => {})}
+                testId={createTestId("task-milestone", task.id)}
+              />
+            </Field>
+          )}
         </div>
 
         <DescriptionSection
@@ -184,18 +181,10 @@ function TaskDeleteSection({ task, isOpen, onDelete }: TaskDeleteSectionProps) {
             <div className="text-sm font-semibold text-content-accent">Delete this task?</div>
             <div className="text-xs text-content-dimmed">This action cannot be undone.</div>
           </div>
-          <SecondaryButton
-            size="xs"
-            onClick={handleCancelDelete}
-            testId={createTestId("task-delete-cancel", task.id)}
-          >
+          <SecondaryButton size="xs" onClick={handleCancelDelete} testId={createTestId("task-delete-cancel", task.id)}>
             Cancel
           </SecondaryButton>
-          <DangerButton
-            size="xs"
-            onClick={handleConfirmDelete}
-            testId={createTestId("task-delete-confirm", task.id)}
-          >
+          <DangerButton size="xs" onClick={handleConfirmDelete} testId={createTestId("task-delete-confirm", task.id)}>
             Confirm
           </DangerButton>
         </div>
@@ -234,6 +223,8 @@ interface TitleSectionProps {
 function TitleSection({ task, onNameChange }: TitleSectionProps) {
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState("");
+
+  const displayLink = !isEditingName && task.type === "project" && task.link;
 
   const handleStartEditing = () => {
     if (!onNameChange) return;
@@ -285,7 +276,7 @@ function TitleSection({ task, onNameChange }: TitleSectionProps) {
             {task.title}
           </span>
 
-          {!isEditingName && task.link && (
+          {displayLink && (
             <BlackLink to={task.link} underline="hover" className="-mt-6 text-content-dimmed hover:text-content-base">
               <IconExternalLink size={14} />
             </BlackLink>

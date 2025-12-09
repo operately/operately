@@ -23,14 +23,15 @@ interface Attrs {
   milestones: TaskBoard.Milestone[];
   setMilestones?: React.Dispatch<React.SetStateAction<TaskBoard.Milestone[]>>;
   refresh?: () => Promise<void>;
+  type: "project" | "space";
 }
 
-export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, milestones, setMilestones, refresh }: Attrs) {
+export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, milestones, setMilestones, refresh, type }: Attrs) {
   const paths = usePaths();
-  const [tasks, setTasks] = React.useState(Tasks.parseTasksForTurboUi(paths, backendTasks));
+  const [tasks, setTasks] = React.useState(Tasks.parseTasksForTurboUi(paths, backendTasks, type));
 
   React.useEffect(() => {
-    setTasks(Tasks.parseTasksForTurboUi(paths, backendTasks));
+    setTasks(Tasks.parseTasksForTurboUi(paths, backendTasks, type));
   }, [backendTasks, paths]);
 
   const createSnapshot = React.useCallback(
@@ -105,6 +106,7 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
       assignees: task.assignee ? [{ id: task.assignee, fullName: "Loading...", avatarUrl: "" }] : [],
       dueDate: task.dueDate || null,
       milestone: task.milestone,
+      type,
     };
 
     setTasks((prev) => [...prev, optimisticTask]);
@@ -142,7 +144,7 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
       const res = await Api.tasks.create(input);
 
       // Replace temporary task with real task
-      const realTask = Tasks.parseTaskForTurboUi(paths, res.task);
+      const realTask = Tasks.parseTaskForTurboUi(paths, res.task, type);
       setTasks((prev) => prev.map((t) => (t.id === tempId ? realTask : t)));
 
       updateMilestonesFromServer(res.updatedMilestone, null);
@@ -242,7 +244,7 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
     try {
       const response = await Api.tasks.updateStatus({ taskId, status: backendStatus });
 
-      const updatedTask = Tasks.parseTaskForTurboUi(paths, response.task);
+      const updatedTask = Tasks.parseTaskForTurboUi(paths, response.task, type);
       setTasks((prev) => prev.map((t) => (compareIds(t.id, taskId) ? { ...t, status: updatedTask.status } : t)));
 
       updateMilestonesFromServer(response.updatedMilestone, null);

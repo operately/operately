@@ -14,7 +14,7 @@ import {
 } from "../TaskBoard/tests/mockData";
 import { usePersonFieldSearch } from "../utils/storybook/usePersonFieldSearch";
 
-import type { MilestoneKanbanState, KanbanStatus } from "../TaskBoard/KanbanView/types";
+import type { KanbanState, KanbanStatus } from "../TaskBoard/KanbanView/types";
 
 const meta: Meta<typeof MilestoneKanbanPage> = {
   title: "Pages/MilestoneKanbanPage",
@@ -30,11 +30,11 @@ type Story = StoryObj<typeof meta>;
 
 const STATUSES: Types.Status[] = [PENDING_STATUS, IN_PROGRESS_STATUS, DONE_STATUS, CANCELED_STATUS];
 
-const emptyKanbanState = (statuses: Types.Status[]): MilestoneKanbanState =>
-  statuses.reduce<MilestoneKanbanState>((acc, status) => {
+const emptyKanbanState = (statuses: Types.Status[]): KanbanState =>
+  statuses.reduce<KanbanState>((acc, status) => {
     acc[status.value] = [];
     return acc;
-  }, {} as MilestoneKanbanState);
+  }, {} as KanbanState);
 
 const toKanbanStatus = (task: Types.Task, statuses: Types.Status[]): KanbanStatus => {
   const value = task.status?.value || task.status?.id;
@@ -42,7 +42,7 @@ const toKanbanStatus = (task: Types.Task, statuses: Types.Status[]): KanbanStatu
   return (match?.value ?? statuses[0]?.value ?? "unassigned") as KanbanStatus;
 };
 
-const buildKanbanStateFromTasks = (tasks: Types.Task[], statuses: Types.Status[]): MilestoneKanbanState => {
+const buildKanbanStateFromTasks = (tasks: Types.Task[], statuses: Types.Status[]): KanbanState => {
   const state = emptyKanbanState(statuses);
   tasks.forEach((task) => {
     const status = toKanbanStatus(task, statuses);
@@ -81,11 +81,11 @@ const updateTasksAfterMove = (
   });
 };
 
-const removeTaskFromKanbanState = (state: MilestoneKanbanState, taskId: string): MilestoneKanbanState => {
-  return (Object.keys(state) as KanbanStatus[]).reduce<MilestoneKanbanState>((acc, status) => {
+const removeTaskFromKanbanState = (state: KanbanState, taskId: string): KanbanState => {
+  return (Object.keys(state) as KanbanStatus[]).reduce<KanbanState>((acc, status) => {
     acc[status] = state[status]?.filter((id) => id !== taskId) || [];
     return acc;
-  }, {} as MilestoneKanbanState);
+  }, {} as KanbanState);
 };
 
 const filterTasksByMilestone = (tasks: Types.Task[], milestone: Types.Milestone | null) =>
@@ -96,9 +96,9 @@ export const Default: Story = {
     const milestone = mockMilestones.q2Release;
     if (!milestone) return <div>Missing mock milestone data</div>;
 
-    const initialTasks = filterTasksByMilestone(mockTasks, milestone);
+    const initialTasks = filterTasksByMilestone(mockTasks("project"), milestone);
     const [tasks, setTasks] = useState<Types.Task[]>(initialTasks);
-    const [kanbanState, setKanbanState] = useState<MilestoneKanbanState>(
+    const [kanbanState, setKanbanState] = useState<KanbanState>(
       buildKanbanStateFromTasks(initialTasks, STATUSES),
     );
     const assigneeSearch = usePersonFieldSearch(Object.values(mockPeople));
@@ -133,6 +133,7 @@ export const Default: Story = {
               hasDescription: false,
               hasComments: false,
               commentCount: 0,
+              type: "project"
             };
 
             setTasks((prev) => [...prev, newTask]);
@@ -216,10 +217,10 @@ export const WithStatusManagement: Story = {
     const milestone = mockMilestones.q2Release;
     if (!milestone) return <div>Missing mock milestone data</div>;
 
-    const initialTasks = filterTasksByMilestone(mockTasks, milestone);
+    const initialTasks = filterTasksByMilestone(mockTasks("project"), milestone);
     const [statuses, setStatuses] = useState<Types.Status[]>(STATUSES);
     const [tasks, setTasks] = useState<Types.Task[]>(initialTasks);
-    const [kanbanState, setKanbanState] = useState<MilestoneKanbanState>(
+    const [kanbanState, setKanbanState] = useState<KanbanState>(
       buildKanbanStateFromTasks(initialTasks, statuses),
     );
     const assigneeSearch = usePersonFieldSearch(Object.values(mockPeople));
@@ -267,6 +268,7 @@ export const WithStatusManagement: Story = {
               hasDescription: false,
               hasComments: false,
               commentCount: 0,
+              type: "project"
             };
 
             setTasks((prev) => [...prev, newTask]);

@@ -58,7 +58,7 @@ export const Default: Story = {
     const assigneePersonSearch = usePersonFieldSearch(mockPeople);
     
     // Create state for tasks and task creation
-    const [tasks, setTasks] = useState([...mockTasks]);
+    const [tasks, setTasks] = useState([...mockTasks("project")]);
     const [milestones, setMilestones] = useState<Types.Milestone[]>([
       ...Object.values(mockMilestones),
     ]);

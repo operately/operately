@@ -157,6 +157,7 @@ export const reorderTasksAcrossMilestones = (
           dueDate: null,
           link: "#",
           milestone: originalMilestone,
+          type: "project",
           _isHelperTask: true,
         };
         

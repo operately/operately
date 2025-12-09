@@ -5,7 +5,7 @@ import { PersonField } from "../PersonField";
 import { PageNew } from "../Page";
 import { KanbanBoard } from "../TaskBoard";
 import * as Types from "../TaskBoard/types";
-import type { KanbanBoardProps, MilestoneKanbanState } from "../TaskBoard/KanbanView/types";
+import type { KanbanBoardProps, KanbanState } from "../TaskBoard/KanbanView/types";
 import { Navigation } from "../Page/Navigation";
 import { IconMilestone, IconChevronRight } from "../icons";
 import { BlackLink } from "../Link";
@@ -27,7 +27,7 @@ export namespace MilestoneKanbanPage {
     milestone: Milestone;
     tasks: Types.Task[];
     statuses: Types.Status[];
-    kanbanState: MilestoneKanbanState;
+    kanbanState: KanbanState;
 
     canManageStatuses?: boolean;
     onStatusesChange?: (statuses: Types.Status[]) => void;

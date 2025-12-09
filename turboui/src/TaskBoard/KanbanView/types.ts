@@ -5,13 +5,13 @@ import type { RichEditorHandlers } from "../../RichEditor/useEditor";
 
 export type KanbanStatus = string;
 
-export type MilestoneKanbanState = Record<KanbanStatus, string[]>;
+export type KanbanState = Record<KanbanStatus, string[]>;
 
 export interface KanbanBoardProps {
-  milestone: TaskBoard.Milestone;
+  milestone?: TaskBoard.Milestone;
   tasks: TaskBoard.Task[];
   statuses: StatusSelector.StatusOption[];
-  kanbanState: MilestoneKanbanState;
+  kanbanState: KanbanState;
   canManageStatuses?: boolean;
   onStatusesChange?: (statuses: StatusSelector.StatusOption[]) => void;
   onTaskKanbanChange?: (event: {
@@ -19,7 +19,7 @@ export interface KanbanBoardProps {
     taskId: string;
     from: { status: KanbanStatus; index: number };
     to: { status: KanbanStatus; index: number };
-    updatedKanbanState: MilestoneKanbanState;
+    updatedKanbanState: KanbanState;
   }) => void | Promise<void>;
   onTaskCreate?: TaskBoardProps["onTaskCreate"];
   onTaskAssigneeChange?: TaskBoardProps["onTaskAssigneeChange"];
