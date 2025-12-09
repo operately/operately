@@ -81,6 +81,13 @@ const updateTasksAfterMove = (
   });
 };
 
+const removeTaskFromKanbanState = (state: MilestoneKanbanState, taskId: string): MilestoneKanbanState => {
+  return (Object.keys(state) as KanbanStatus[]).reduce<MilestoneKanbanState>((acc, status) => {
+    acc[status] = state[status]?.filter((id) => id !== taskId) || [];
+    return acc;
+  }, {} as MilestoneKanbanState);
+};
+
 const filterTasksByMilestone = (tasks: Types.Task[], milestone: Types.Milestone | null) =>
   tasks.filter((task) => !task._isHelperTask && (milestone ? task.milestone?.id === milestone.id : !task.milestone));
 
@@ -189,6 +196,10 @@ export const Default: Story = {
             );
 
             return true;
+          }}
+          onTaskDelete={(taskId) => {
+            setTasks((prev) => prev.filter((task) => task.id !== taskId));
+            setKanbanState((prev) => removeTaskFromKanbanState(prev, taskId));
           }}
           onTaskKanbanChange={(event) => {
             setKanbanState(event.updatedKanbanState);
@@ -319,6 +330,10 @@ export const WithStatusManagement: Story = {
             );
 
             return true;
+          }}
+          onTaskDelete={(taskId) => {
+            setTasks((prev) => prev.filter((task) => task.id !== taskId));
+            setKanbanState((prev) => removeTaskFromKanbanState(prev, taskId));
           }}
           onTaskKanbanChange={(event) => {
             setKanbanState(event.updatedKanbanState);
