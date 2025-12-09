@@ -20,6 +20,7 @@ export function KanbanBoard({
   onTaskNameChange,
   onTaskStatusChange,
   onTaskDescriptionChange,
+  onTaskDelete,
   onMilestoneSearch,
   assigneePersonSearch,
   onTaskCreate,
@@ -173,6 +174,7 @@ export function KanbanBoard({
         onNameChange={onTaskNameChange}
         onStatusChange={onTaskStatusChange}
         onDescriptionChange={onTaskDescriptionChange}
+        onDelete={onTaskDelete}
         assigneePersonSearch={assigneePersonSearch}
         statuses={orderedStatuses}
         milestones={milestones}

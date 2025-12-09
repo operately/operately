@@ -28,6 +28,7 @@ export interface KanbanBoardProps {
   onTaskMilestoneChange?: (taskId: string, milestone: TaskBoard.Milestone | null) => void;
   onTaskDescriptionChange?: (taskId: string, description: any) => Promise<boolean>;
   onTaskNameChange?: (taskId: string, name: string) => void;
+  onTaskDelete?: (taskId: string) => void | Promise<void>;
   milestones?: TaskBoard.Milestone[];
   onMilestoneSearch?: (query: string) => Promise<void>;
   assigneePersonSearch?: TaskBoardProps["assigneePersonSearch"];

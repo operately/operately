@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from "react";
+import React, { useMemo, useState, useCallback, useEffect } from "react";
 import { SlideIn } from "../../SlideIn";
 import { Task, Milestone } from "../types";
 import { DateField } from "../../DateField";
@@ -8,8 +8,8 @@ import { StatusSelector } from "../../StatusSelector";
 import RichContent, { countCharacters, isContentEmpty, shortenContent } from "../../RichContent";
 import { Editor, useEditor } from "../../RichEditor";
 import type { RichEditorHandlers } from "../../RichEditor/useEditor";
-import { PrimaryButton, SecondaryButton } from "../../Button";
-import { IconExternalLink, IconX } from "../../icons";
+import { DangerButton, PrimaryButton, SecondaryButton } from "../../Button";
+import { IconExternalLink, IconTrash, IconX } from "../../icons";
 import { BlackLink } from "../../Link";
 
 interface TaskSlideInProps {
@@ -22,6 +22,7 @@ interface TaskSlideInProps {
   onNameChange?: (taskId: string, name: string) => void;
   onStatusChange?: (taskId: string, status: any) => void;
   onDescriptionChange?: (taskId: string, description: any) => Promise<boolean>;
+  onDelete?: (taskId: string) => void | Promise<void>;
   assigneePersonSearch?: any;
   statuses: StatusSelector.StatusOption[];
   milestones?: Milestone[];
@@ -39,6 +40,7 @@ export function TaskSlideIn({
   onNameChange,
   onStatusChange,
   onDescriptionChange,
+  onDelete,
   assigneePersonSearch,
   statuses,
   milestones = [],
@@ -74,7 +76,7 @@ export function TaskSlideIn({
         </>
       }
     >
-      <div className="flex flex-col gap-8 px-6 py-6">
+      <div className="relative flex min-h-full flex-col gap-8 px-6 py-6">
         <TitleSection task={task} onNameChange={onNameChange} />
 
         <div className="grid grid-cols-2 gap-x-8 gap-y-6">
@@ -124,8 +126,75 @@ export function TaskSlideIn({
           onDescriptionChange={onDescriptionChange}
           richTextHandlers={richTextHandlers}
         />
+
+        <TaskDeleteSection task={task} isOpen={isOpen} onDelete={onDelete} />
       </div>
     </SlideIn>
+  );
+}
+
+interface TaskDeleteSectionProps {
+  task: Task;
+  isOpen: boolean;
+  onDelete?: (taskId: string) => void | Promise<void>;
+}
+
+function TaskDeleteSection({ task, isOpen, onDelete }: TaskDeleteSectionProps) {
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
+
+  useEffect(() => {
+    setIsConfirmingDelete(false);
+  }, [task.id, isOpen]);
+
+  if (!onDelete) return null;
+
+  const handleDeleteClick = () => {
+    setIsConfirmingDelete(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      await onDelete(task.id);
+    } finally {
+      setIsConfirmingDelete(false);
+    }
+  };
+
+  const handleCancelDelete = () => setIsConfirmingDelete(false);
+
+  const spacerClassName = isConfirmingDelete ? "h-24" : "h-16";
+
+  return (
+    <>
+      <div className={spacerClassName} />
+
+      {!isConfirmingDelete && (
+        <button
+          type="button"
+          onClick={handleDeleteClick}
+          className="absolute bottom-4 right-4 p-2 rounded-full border border-surface-outline bg-surface-base text-red-600 hover:text-red-700 dark:text-red-400 hover:bg-surface-highlight transition-colors shadow-sm"
+          aria-label="Delete task"
+          title="Delete task"
+        >
+          <IconTrash size={18} />
+        </button>
+      )}
+
+      {isConfirmingDelete && (
+        <div className="absolute bottom-4 left-4 right-4 flex items-center gap-3 rounded-md border border-surface-outline bg-surface-base shadow-sm px-4 py-3">
+          <div className="flex-1 leading-tight">
+            <div className="text-sm font-semibold text-content-accent">Delete this task?</div>
+            <div className="text-xs text-content-dimmed">This action cannot be undone.</div>
+          </div>
+          <SecondaryButton size="xs" onClick={handleCancelDelete}>
+            Cancel
+          </SecondaryButton>
+          <DangerButton size="xs" onClick={handleConfirmDelete}>
+            Confirm
+          </DangerButton>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -265,7 +334,7 @@ function DescriptionSection({ taskId, description, onDescriptionChange, richText
           ) : undefined
         }
       >
-        <div className="text-sm text-content-accent">
+        <div className="text-sm text-content-accent max-h-[calc(100vh-320px)] overflow-auto pr-1 pb-1">
           <RichContent content={expandedDescription} mentionedPersonLookup={richTextHandlers.mentionedPersonLookup} />
 
           {length > PREVIEW_CHARACTER_LIMIT && (
@@ -350,7 +419,7 @@ function DescriptionEdit({
 
   return (
     <Field label="Description">
-      <div className="w-full">
+      <div className="w-full max-h-[calc(100vh-300px)] overflow-auto pr-1 pb-1">
         <Editor editor={editor} />
 
         <div className="flex gap-2 mt-2 justify-end">
