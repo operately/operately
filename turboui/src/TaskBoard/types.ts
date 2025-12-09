@@ -70,6 +70,7 @@ export interface Task {
   hasComments?: boolean;
   commentCount?: number;
   comments?: any[];
+  type: "project" | "space";
   _isHelperTask?: boolean;
 }
 

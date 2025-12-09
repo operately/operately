@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { KanbanBoard } from "..";
-import type { KanbanStatus, MilestoneKanbanState } from "../KanbanView/types";
+import type { KanbanStatus, KanbanState } from "../KanbanView/types";
 import * as Types from "../types";
 import {
   mockMilestones,
@@ -54,8 +54,8 @@ const WIDE_STATUSES: Types.Status[] = [
   { id: "canceled", value: "canceled", label: "Canceled", color: "red", icon: "circleX", index: 8, closed: true },
 ];
 
-const emptyKanbanState = (statuses: Types.Status[]): MilestoneKanbanState =>
-  statuses.reduce<MilestoneKanbanState>((acc, status) => {
+const emptyKanbanState = (statuses: Types.Status[]): KanbanState =>
+  statuses.reduce<KanbanState>((acc, status) => {
     acc[status.value] = [];
     return acc;
   }, {});
@@ -126,11 +126,9 @@ export const BasicKanban: Story = {
     const milestone = mockMilestones.q2Release;
     if (!milestone) return <div>Missing mock milestone data</div>;
 
-    const initialTasks = filterTasksByMilestone(mockTasks, milestone);
+    const initialTasks = filterTasksByMilestone(mockTasks("project"), milestone);
     const [tasks, setTasks] = useState<Types.Task[]>(initialTasks);
-    const [kanbanState, setKanbanState] = useState<MilestoneKanbanState>(
-      buildKanbanStateFromTasks(initialTasks, BASE_STATUSES),
-    );
+    const [kanbanState, setKanbanState] = useState<KanbanState>(buildKanbanStateFromTasks(initialTasks, BASE_STATUSES));
     const assigneeSearch = usePersonFieldSearch(Object.values(mockPeople));
 
     return (
@@ -153,6 +151,7 @@ export const BasicKanban: Story = {
             hasDescription: false,
             hasComments: false,
             commentCount: 0,
+            type: "project",
           };
           setTasks((prev) => [...prev, newTask]);
           setKanbanState((prev) => {
@@ -185,11 +184,12 @@ export const SixStatusBoard: Story = {
     const milestone = mockMilestones.productLaunch;
     if (!milestone) return <div>Missing mock milestone data</div>;
 
-    const seededTasks = spreadTasksAcrossStatuses(filterTasksByMilestone(mockTasks, milestone), SIX_STATUSES);
-    const [tasks, setTasks] = useState<Types.Task[]>(seededTasks);
-    const [kanbanState, setKanbanState] = useState<MilestoneKanbanState>(
-      buildKanbanStateFromTasks(seededTasks, SIX_STATUSES),
+    const seededTasks = spreadTasksAcrossStatuses(
+      filterTasksByMilestone(mockTasks("project"), milestone),
+      SIX_STATUSES,
     );
+    const [tasks, setTasks] = useState<Types.Task[]>(seededTasks);
+    const [kanbanState, setKanbanState] = useState<KanbanState>(buildKanbanStateFromTasks(seededTasks, SIX_STATUSES));
     const assigneeSearch = usePersonFieldSearch(Object.values(mockPeople));
 
     return (
@@ -212,6 +212,7 @@ export const SixStatusBoard: Story = {
             hasDescription: false,
             hasComments: false,
             commentCount: 0,
+            type: "project",
           };
           setTasks((prev) => [...prev, newTask]);
           setKanbanState((prev) => {
@@ -244,11 +245,9 @@ export const AutoScrollEdgeColumns: Story = {
     const milestone = mockMilestones.q2Release;
     if (!milestone) return <div>Missing mock milestone data</div>;
 
-    const wideTasks = spreadTasksAcrossStatuses(filterTasksByMilestone(mockTasks, milestone), WIDE_STATUSES);
+    const wideTasks = spreadTasksAcrossStatuses(filterTasksByMilestone(mockTasks("project"), milestone), WIDE_STATUSES);
     const [tasks, setTasks] = useState<Types.Task[]>(wideTasks);
-    const [kanbanState, setKanbanState] = useState<MilestoneKanbanState>(
-      buildKanbanStateFromTasks(wideTasks, WIDE_STATUSES),
-    );
+    const [kanbanState, setKanbanState] = useState<KanbanState>(buildKanbanStateFromTasks(wideTasks, WIDE_STATUSES));
     const assigneeSearch = usePersonFieldSearch(Object.values(mockPeople));
 
     return (
@@ -271,6 +270,7 @@ export const AutoScrollEdgeColumns: Story = {
             hasDescription: false,
             hasComments: false,
             commentCount: 0,
+            type: "project",
           };
           setTasks((prev) => [...prev, newTask]);
           setKanbanState((prev) => {
@@ -304,7 +304,7 @@ export const EmptyStates: Story = {
     if (!milestone) return <div>Missing mock milestone data</div>;
 
     const [tasks, setTasks] = useState<Types.Task[]>([]);
-    const [kanbanState, setKanbanState] = useState<MilestoneKanbanState>(emptyKanbanState(BASE_STATUSES));
+    const [kanbanState, setKanbanState] = useState<KanbanState>(emptyKanbanState(BASE_STATUSES));
     const assigneeSearch = usePersonFieldSearch(Object.values(mockPeople));
 
     return (
@@ -327,6 +327,7 @@ export const EmptyStates: Story = {
             hasDescription: false,
             hasComments: false,
             commentCount: 0,
+            type: "project",
           };
           setTasks((prev) => [...prev, newTask]);
           setKanbanState((prev) => {
@@ -355,12 +356,10 @@ export const WithStatusManagement: Story = {
     const milestone = mockMilestones.q2Release;
     if (!milestone) return <div>Missing mock milestone data</div>;
 
-    const initialTasks = filterTasksByMilestone(mockTasks, milestone);
+    const initialTasks = filterTasksByMilestone(mockTasks("project"), milestone);
     const [statuses, setStatuses] = useState<Types.Status[]>(BASE_STATUSES);
     const [tasks, setTasks] = useState<Types.Task[]>(initialTasks);
-    const [kanbanState, setKanbanState] = useState<MilestoneKanbanState>(
-      buildKanbanStateFromTasks(initialTasks, statuses),
-    );
+    const [kanbanState, setKanbanState] = useState<KanbanState>(buildKanbanStateFromTasks(initialTasks, statuses));
     const assigneeSearch = usePersonFieldSearch(Object.values(mockPeople));
 
     return (
@@ -396,6 +395,7 @@ export const WithStatusManagement: Story = {
             hasDescription: false,
             hasComments: false,
             commentCount: 0,
+            type: "project",
           };
           setTasks((prev) => [...prev, newTask]);
           setKanbanState((prev) => {

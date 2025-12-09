@@ -127,7 +127,7 @@ export function KanbanBoard({
   return (
     <div className={containerClassName} data-test-id="kanban-board">
       <Kanban
-        milestone={milestone}
+        milestone={milestone || null}
         columns={buildColumns(kanbanState, tasks, taskById, statusKeys)}
         draggedItemId={draggedItemId}
         targetLocation={destination}

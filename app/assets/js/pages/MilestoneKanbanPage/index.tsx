@@ -75,6 +75,7 @@ function Page() {
     cacheKey: pageCacheKey(milestone.id),
     milestones: [],
     refresh,
+    type: "project",
   });
 
   const { tasks, statuses, handleStatusesChange } = useMilestoneTaskStatuses(milestone, baseTasks, refresh);

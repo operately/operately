@@ -8,7 +8,7 @@ export type KanbanStatus = string;
 export type KanbanState = Record<KanbanStatus, string[]>;
 
 export interface KanbanBoardProps {
-  milestone: TaskBoard.Milestone;
+  milestone?: TaskBoard.Milestone;
   tasks: TaskBoard.Task[];
   statuses: StatusSelector.StatusOption[];
   kanbanState: KanbanState;

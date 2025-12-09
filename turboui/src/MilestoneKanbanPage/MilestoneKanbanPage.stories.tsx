@@ -96,7 +96,7 @@ export const Default: Story = {
     const milestone = mockMilestones.q2Release;
     if (!milestone) return <div>Missing mock milestone data</div>;
 
-    const initialTasks = filterTasksByMilestone(mockTasks, milestone);
+    const initialTasks = filterTasksByMilestone(mockTasks("project"), milestone);
     const [tasks, setTasks] = useState<Types.Task[]>(initialTasks);
     const [kanbanState, setKanbanState] = useState<KanbanState>(
       buildKanbanStateFromTasks(initialTasks, STATUSES),
@@ -133,6 +133,7 @@ export const Default: Story = {
               hasDescription: false,
               hasComments: false,
               commentCount: 0,
+              type: "project"
             };
 
             setTasks((prev) => [...prev, newTask]);
@@ -216,7 +217,7 @@ export const WithStatusManagement: Story = {
     const milestone = mockMilestones.q2Release;
     if (!milestone) return <div>Missing mock milestone data</div>;
 
-    const initialTasks = filterTasksByMilestone(mockTasks, milestone);
+    const initialTasks = filterTasksByMilestone(mockTasks("project"), milestone);
     const [statuses, setStatuses] = useState<Types.Status[]>(STATUSES);
     const [tasks, setTasks] = useState<Types.Task[]>(initialTasks);
     const [kanbanState, setKanbanState] = useState<KanbanState>(
@@ -267,6 +268,7 @@ export const WithStatusManagement: Story = {
               hasDescription: false,
               hasComments: false,
               commentCount: 0,
+              type: "project"
             };
 
             setTasks((prev) => [...prev, newTask]);
