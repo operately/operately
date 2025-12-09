@@ -33,50 +33,56 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
     setTasks(Tasks.parseTasksForTurboUi(paths, backendTasks));
   }, [backendTasks, paths]);
 
-  const createSnapshot = React.useCallback((): TasksSnapshot => ({
-    tasks: [...tasks],
-    milestones: setMilestones ? [...milestones] : undefined,
-  }), [tasks, milestones, setMilestones]);
+  const createSnapshot = React.useCallback(
+    (): TasksSnapshot => ({
+      tasks: [...tasks],
+      milestones: setMilestones ? [...milestones] : undefined,
+    }),
+    [tasks, milestones, setMilestones],
+  );
 
-  const restoreSnapshot = React.useCallback((snapshot: TasksSnapshot) => {
-    setTasks(snapshot.tasks);
-    if (setMilestones && snapshot.milestones) {
-      setMilestones(snapshot.milestones);
-    }
-  }, [setMilestones]);
-
-  const updateMilestonesFromServer = React.useCallback((
-    updatedMilestone: Milestones.Milestone | null,
-    updatedMilestones: Milestones.Milestone[] | null
-  ) => {
-    if (!setMilestones) return;
-
-    setMilestones(prev => {
-      let newMilestones = [...prev];
-
-      // Handle single milestone update
-      if (updatedMilestone) {
-        const index = newMilestones.findIndex(m => compareIds(m.id, updatedMilestone.id));
-        if (index >= 0) {
-          newMilestones[index] = Milestones.parseMilestoneForTurboUi(paths, updatedMilestone);
-        }
+  const restoreSnapshot = React.useCallback(
+    (snapshot: TasksSnapshot) => {
+      setTasks(snapshot.tasks);
+      if (setMilestones && snapshot.milestones) {
+        setMilestones(snapshot.milestones);
       }
+    },
+    [setMilestones],
+  );
 
-      // Handle multiple milestones update (takes precedence)
-      if (updatedMilestones && updatedMilestones.length > 0) {
-        const parsedMilestones = Milestones.parseMilestonesForTurboUi(paths, updatedMilestones).orderedMilestones;
+  const updateMilestonesFromServer = React.useCallback(
+    (updatedMilestone: Milestones.Milestone | null, updatedMilestones: Milestones.Milestone[] | null) => {
+      if (!setMilestones) return;
 
-        parsedMilestones.forEach(updatedMilestone => {
-          const index = newMilestones.findIndex(m => compareIds(m.id, updatedMilestone.id));
+      setMilestones((prev) => {
+        let newMilestones = [...prev];
+
+        // Handle single milestone update
+        if (updatedMilestone) {
+          const index = newMilestones.findIndex((m) => compareIds(m.id, updatedMilestone.id));
           if (index >= 0) {
-            newMilestones[index] = updatedMilestone;
+            newMilestones[index] = Milestones.parseMilestoneForTurboUi(paths, updatedMilestone);
           }
-        });
-      }
+        }
 
-      return newMilestones;
-    });
-  }, [setMilestones]);
+        // Handle multiple milestones update (takes precedence)
+        if (updatedMilestones && updatedMilestones.length > 0) {
+          const parsedMilestones = Milestones.parseMilestonesForTurboUi(paths, updatedMilestones).orderedMilestones;
+
+          parsedMilestones.forEach((updatedMilestone) => {
+            const index = newMilestones.findIndex((m) => compareIds(m.id, updatedMilestone.id));
+            if (index >= 0) {
+              newMilestones[index] = updatedMilestone;
+            }
+          });
+        }
+
+        return newMilestones;
+      });
+    },
+    [setMilestones],
+  );
 
   const invalidateAndRefresh = React.useCallback(async () => {
     PageCache.invalidate(cacheKey);
@@ -101,19 +107,21 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
       milestone: task.milestone,
     };
 
-    setTasks(prev => [...prev, optimisticTask]);
+    setTasks((prev) => [...prev, optimisticTask]);
 
     // Update milestone ordering if task has a milestone
     if (task.milestone && setMilestones) {
-      setMilestones(prev => prev.map(m => {
-        if (compareIds(m.id, task.milestone!.id)) {
-          return {
-            ...m,
-            tasksOrderingState: m.tasksOrderingState ? [...m.tasksOrderingState, tempId] : [tempId]
-          };
-        }
-        return m;
-      }));
+      setMilestones((prev) =>
+        prev.map((m) => {
+          if (compareIds(m.id, task.milestone!.id)) {
+            return {
+              ...m,
+              tasksOrderingState: m.tasksOrderingState ? [...m.tasksOrderingState, tempId] : [tempId],
+            };
+          }
+          return m;
+        }),
+      );
     }
 
     try {
@@ -135,27 +143,30 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
 
       // Replace temporary task with real task
       const realTask = Tasks.parseTaskForTurboUi(paths, res.task);
-      setTasks(prev => prev.map(t => t.id === tempId ? realTask : t));
+      setTasks((prev) => prev.map((t) => (t.id === tempId ? realTask : t)));
 
       updateMilestonesFromServer(res.updatedMilestone, null);
 
       // Replace temp ID in milestone ordering
       if (task.milestone && setMilestones) {
-        setMilestones(prev => prev.map(m => {
-          if (compareIds(m.id, task.milestone!.id)) {
-            return {
-              ...m,
-              tasksOrderingState: m.tasksOrderingState ? m.tasksOrderingState.map(id => id === tempId ? realTask.id : id) : [],
-            };
-          }
-          return m;
-        }));
+        setMilestones((prev) =>
+          prev.map((m) => {
+            if (compareIds(m.id, task.milestone!.id)) {
+              return {
+                ...m,
+                tasksOrderingState: m.tasksOrderingState
+                  ? m.tasksOrderingState.map((id) => (id === tempId ? realTask.id : id))
+                  : [],
+              };
+            }
+            return m;
+          }),
+        );
       }
 
       await invalidateAndRefresh();
 
       return { success: true };
-
     } catch (e) {
       console.error("Failed to create task", e);
       showErrorToast("Error", "Failed to create task");
@@ -232,16 +243,13 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
       const response = await Api.project_tasks.updateStatus({ taskId, status: backendStatus });
 
       const updatedTask = Tasks.parseTaskForTurboUi(paths, response.task);
-      setTasks((prev) =>
-        prev.map((t) => (compareIds(t.id, taskId) ? { ...t, status: updatedTask.status } : t)),
-      );
+      setTasks((prev) => prev.map((t) => (compareIds(t.id, taskId) ? { ...t, status: updatedTask.status } : t)));
 
       updateMilestonesFromServer(response.updatedMilestone, null);
 
       await invalidateAndRefresh();
 
       return { success: true };
-
     } catch (e) {
       console.error("Failed to update task status", e);
       showErrorToast("Error", "Failed to update task status");
@@ -271,7 +279,7 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
       );
 
       // Optimistic update - update task milestone
-      setTasks(prev => {
+      setTasks((prev) => {
         const foundMilestone = milestones.find((m) => compareIds(m.id, normalizedMilestoneId)) || null;
         return prev.map((t) => {
           if (compareIds(t.id, taskId)) {
@@ -283,7 +291,7 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
 
       // Optimistic update - update milestones ordering
       if (setMilestones && milestonesOrderingState.length > 0) {
-        setMilestones(prevMilestones => {
+        setMilestones((prevMilestones) => {
           return prevMilestones.map((milestone) => {
             const orderingUpdate = milestonesOrderingState.find((update) =>
               compareIds(update.milestoneId, milestone.id),
@@ -311,7 +319,6 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
       await invalidateAndRefresh();
 
       return { success: true };
-
     } catch (e) {
       console.error("Failed to update task milestone", e);
       showErrorToast("Error", "Failed to update task milestone");
@@ -322,7 +329,7 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
 
   const deleteTask = async (taskId: string) => {
     const snapshot = createSnapshot();
-    const taskToDelete = tasks.find(t => compareIds(t.id, taskId));
+    const taskToDelete = tasks.find((t) => compareIds(t.id, taskId));
 
     if (!taskToDelete) {
       console.error("Task not found", taskId);
@@ -331,19 +338,23 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
     }
 
     // Optimistic update - remove task
-    setTasks(prev => prev.filter(t => !compareIds(t.id, taskId)));
+    setTasks((prev) => prev.filter((t) => !compareIds(t.id, taskId)));
 
     // Optimistic update - remove from milestone ordering
     if (taskToDelete.milestone && setMilestones) {
-      setMilestones(prev => prev.map(m => {
-        if (compareIds(m.id, taskToDelete.milestone!.id)) {
-          return {
-            ...m,
-            tasksOrderingState: m.tasksOrderingState ? m.tasksOrderingState.filter(id => !compareIds(id, taskId)) : []
-          };
-        }
-        return m;
-      }));
+      setMilestones((prev) =>
+        prev.map((m) => {
+          if (compareIds(m.id, taskToDelete.milestone!.id)) {
+            return {
+              ...m,
+              tasksOrderingState: m.tasksOrderingState
+                ? m.tasksOrderingState.filter((id) => !compareIds(id, taskId))
+                : [],
+            };
+          }
+          return m;
+        }),
+      );
     }
 
     try {
@@ -362,5 +373,14 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
     }
   };
 
-  return { tasks, setTasks, createTask, updateTaskDueDate, updateTaskAssignee, updateTaskStatus, updateTaskMilestone, deleteTask };
+  return {
+    tasks,
+    setTasks,
+    createTask,
+    updateTaskDueDate,
+    updateTaskAssignee,
+    updateTaskStatus,
+    updateTaskMilestone,
+    deleteTask,
+  };
 }

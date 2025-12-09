@@ -110,6 +110,9 @@ export const Default: Story = {
           statuses={STATUSES}
           kanbanState={kanbanState}
           assigneePersonSearch={assigneeSearch}
+          onTaskNameChange={(taskId, name) =>
+            setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, title: name } : task)))
+          }
           onTaskCreate={(payload) => {
             const newTask: Types.Task = {
               id: `task-${Date.now()}`,
@@ -142,6 +145,51 @@ export const Default: Story = {
           onTaskDueDateChange={(taskId, dueDate) =>
             setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, dueDate } : task)))
           }
+          onTaskStatusChange={(taskId, status) => {
+            setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, status } : task)));
+
+            setKanbanState((prev) => {
+              const next = { ...prev };
+
+              const fromStatus = (Object.keys(next) as KanbanStatus[]).find((key) =>
+                next[key]?.includes(taskId),
+              );
+
+              const toStatus = (status?.value ?? status?.id ?? STATUSES[0]?.value ?? "pending") as KanbanStatus;
+
+              if (fromStatus && next[fromStatus]) {
+                next[fromStatus] = next[fromStatus].filter((id) => id !== taskId);
+              }
+
+              if (!next[toStatus]) {
+                next[toStatus] = [];
+              }
+
+              if (!next[toStatus].includes(taskId)) {
+                next[toStatus] = [...next[toStatus], taskId];
+              }
+
+              return next;
+            });
+          }}
+          onTaskMilestoneChange={(taskId, milestoneValue) =>
+            setTasks((prev) =>
+              prev.map((task) => (task.id === taskId ? { ...task, milestone: milestoneValue } : task)),
+            )
+          }
+          milestones={Object.values(mockMilestones)}
+          onMilestoneSearch={async () => {}}
+          onTaskDescriptionChange={async (taskId, description) => {
+            setTasks((prev) =>
+              prev.map((task) =>
+                task.id === taskId
+                  ? { ...task, description, hasDescription: Boolean(description) }
+                  : task,
+              ),
+            );
+
+            return true;
+          }}
           onTaskKanbanChange={(event) => {
             setKanbanState(event.updatedKanbanState);
             setTasks((prev) => updateTasksAfterMove(prev, event.taskId, event.to.status, STATUSES));
@@ -180,6 +228,9 @@ export const WithStatusManagement: Story = {
           kanbanState={kanbanState}
           assigneePersonSearch={assigneeSearch}
           canManageStatuses
+          onTaskNameChange={(taskId, name) =>
+            setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, title: name } : task)))
+          }
           onStatusesChange={(nextStatuses) => {
             setStatuses(nextStatuses);
             setKanbanState((prev) => {
@@ -224,6 +275,51 @@ export const WithStatusManagement: Story = {
           onTaskDueDateChange={(taskId, dueDate) =>
             setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, dueDate } : task)))
           }
+          onTaskStatusChange={(taskId, status) => {
+            setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, status } : task)));
+
+            setKanbanState((prev) => {
+              const next = { ...prev };
+
+              const fromStatus = (Object.keys(next) as KanbanStatus[]).find((key) =>
+                next[key]?.includes(taskId),
+              );
+
+              const toStatus = (status?.value ?? status?.id ?? statuses[0]?.value ?? "pending") as KanbanStatus;
+
+              if (fromStatus && next[fromStatus]) {
+                next[fromStatus] = next[fromStatus].filter((id) => id !== taskId);
+              }
+
+              if (!next[toStatus]) {
+                next[toStatus] = [];
+              }
+
+              if (!next[toStatus].includes(taskId)) {
+                next[toStatus] = [...next[toStatus], taskId];
+              }
+
+              return next;
+            });
+          }}
+          onTaskMilestoneChange={(taskId, milestoneValue) =>
+            setTasks((prev) =>
+              prev.map((task) => (task.id === taskId ? { ...task, milestone: milestoneValue } : task)),
+            )
+          }
+          milestones={Object.values(mockMilestones)}
+          onMilestoneSearch={async () => {}}
+          onTaskDescriptionChange={async (taskId, description) => {
+            setTasks((prev) =>
+              prev.map((task) =>
+                task.id === taskId
+                  ? { ...task, description, hasDescription: Boolean(description) }
+                  : task,
+              ),
+            );
+
+            return true;
+          }}
           onTaskKanbanChange={(event) => {
             setKanbanState(event.updatedKanbanState);
             setTasks((prev) => updateTasksAfterMove(prev, event.taskId, event.to.status, statuses));
