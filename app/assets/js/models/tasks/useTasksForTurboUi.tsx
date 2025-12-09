@@ -139,7 +139,7 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
         input.status = backendStatus;
       }
 
-      const res = await Api.project_tasks.create(input);
+      const res = await Api.tasks.create(input);
 
       // Replace temporary task with real task
       const realTask = Tasks.parseTaskForTurboUi(paths, res.task);
@@ -176,7 +176,7 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
   };
 
   const updateTaskDueDate = async (taskId: string, dueDate: DateField.ContextualDate | null) => {
-    return Api.project_tasks
+    return Api.tasks
       .updateDueDate({ taskId, dueDate: serializeContextualDate(dueDate) })
       .then(() => {
         invalidateAndRefresh();
@@ -201,7 +201,7 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
   };
 
   const updateTaskAssignee = async (taskId: string, assignee: TaskBoard.Person | null) => {
-    return Api.project_tasks
+    return Api.tasks
       .updateAssignee({ taskId, assigneeId: assignee?.id || null })
       .then(() => {
         invalidateAndRefresh();
@@ -240,7 +240,7 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
     );
 
     try {
-      const response = await Api.project_tasks.updateStatus({ taskId, status: backendStatus });
+      const response = await Api.tasks.updateStatus({ taskId, status: backendStatus });
 
       const updatedTask = Tasks.parseTaskForTurboUi(paths, response.task);
       setTasks((prev) => prev.map((t) => (compareIds(t.id, taskId) ? { ...t, status: updatedTask.status } : t)));
@@ -308,7 +308,7 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
         });
       }
 
-      const res = await Api.project_tasks.updateMilestoneAndOrdering({
+      const res = await Api.tasks.updateMilestoneAndOrdering({
         taskId,
         milestoneId: normalizedMilestoneId,
         milestonesOrderingState,
@@ -358,7 +358,7 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
     }
 
     try {
-      const response = await Api.project_tasks.delete({ taskId });
+      const response = await Api.tasks.delete({ taskId });
 
       updateMilestonesFromServer(response.updatedMilestone, null);
 
