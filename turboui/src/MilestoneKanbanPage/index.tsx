@@ -33,8 +33,9 @@ export namespace MilestoneKanbanPage {
 
     // Callbacks
     assigneePersonSearch: PersonField.SearchData;
-    onTaskKanbanChange?: KanbanBoardProps["onTaskKanbanChange"];
+    onTaskKanbanChange: KanbanBoardProps["onTaskKanbanChange"];
     onTaskCreate: (task: Types.NewTaskPayload) => void;
+    onTaskNameChange: (taskId: string, name: string) => void;
     onTaskAssigneeChange: (taskId: string, assignee: Types.Person | null) => void;
     onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
     onTaskStatusChange: (taskId: string, status: Types.Status | null) => void;
@@ -63,6 +64,7 @@ export function MilestoneKanbanPage(props: MilestoneKanbanPage.Props) {
           kanbanState={props.kanbanState}
           onTaskKanbanChange={props.onTaskKanbanChange}
           onTaskCreate={props.onTaskCreate}
+          onTaskNameChange={props.onTaskNameChange}
           onTaskAssigneeChange={props.onTaskAssigneeChange}
           onTaskDueDateChange={props.onTaskDueDateChange}
           onTaskStatusChange={props.onTaskStatusChange}

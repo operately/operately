@@ -124,7 +124,6 @@ export function TaskSlideIn({
           )}
         </div>
 
-        {/* Fields Grid */}
         <div className="grid grid-cols-2 gap-x-8 gap-y-6">
           <Field label="Status">
             <StatusSelector
@@ -166,7 +165,6 @@ export function TaskSlideIn({
           </Field>
         </div>
 
-        {/* Description */}
         <DescriptionSection
           taskId={task.id}
           description={descriptionContent}

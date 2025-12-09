@@ -373,33 +373,6 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
     }
   };
 
-  const updateTaskDescription = async (taskId: string, description: any) => {
-    const snapshot = createSnapshot();
-
-    // Optimistic update
-    setTasks((prev) =>
-      prev.map((t) => {
-        if (compareIds(t.id, taskId)) {
-          return { ...t, description: description ? JSON.stringify(description) : null } as any;
-        }
-        return t;
-      }),
-    );
-
-    try {
-      await Api.project_tasks.updateDescription({ taskId, description: JSON.stringify(description) });
-
-      await invalidateAndRefresh();
-
-      return true;
-    } catch (e) {
-      console.error("Failed to update task description", e);
-      showErrorToast("Error", "Failed to update task description");
-      restoreSnapshot(snapshot);
-      return false;
-    }
-  };
-
   return {
     tasks,
     setTasks,
@@ -408,7 +381,6 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
     updateTaskAssignee,
     updateTaskStatus,
     updateTaskMilestone,
-    updateTaskDescription,
     deleteTask,
   };
 }

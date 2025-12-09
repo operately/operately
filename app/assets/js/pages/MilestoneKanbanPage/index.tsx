@@ -6,7 +6,7 @@ import * as Tasks from "@/models/tasks";
 import * as People from "@/models/people";
 import { useMilestoneKanbanState } from "@/models/tasks/useMilestoneKanbanState";
 
-import { MilestoneKanbanPage } from "turboui";
+import { MilestoneKanbanPage, showErrorToast } from "turboui";
 import { usePaths } from "@/routes/paths";
 import { PageCache } from "@/routes/PageCache";
 import { fetchAll } from "@/utils/async";
@@ -66,7 +66,6 @@ function Page() {
     updateTaskAssignee,
     updateTaskDueDate,
     updateTaskStatus,
-    updateTaskDescription,
     updateTaskMilestone,
   } = Tasks.useTasksForTurboUi({
     backendTasks,
@@ -102,6 +101,19 @@ function Page() {
   const { milestones, search: searchMilestones } = useMilestones(milestone.project.id);
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: milestone.project.id } });
 
+  const handleTaskNameChange = usePageField<string>({
+    update: (taskId, v) => Api.project_tasks.updateName({ taskId, name: v }),
+    onError: (e: string) => showErrorToast(e, "Failed to update task name."),
+    validations: [(v) => (v.trim() === "" ? "Task name cannot be empty" : null)],
+    refreshPageData: refresh,
+  });
+
+  const handleTaskDescriptionChange = usePageField<any>({
+    update: (taskId, v) => Api.project_tasks.updateDescription({ taskId, description: JSON.stringify(v) }),
+    onError: () => showErrorToast("Error", "Failed to update task description."),
+    refreshPageData: refresh,
+  });
+
   const handleTaskMilestoneChange = React.useCallback(
     (taskId: string, milestone: MilestoneKanbanPage.Milestone | null) => {
       // We can't control index in new milestone, so we default to index 1000. The backend will normalize ordering.
@@ -129,13 +141,14 @@ function Page() {
 
     assigneePersonSearch: assigneeSearch,
     onTaskCreate: createTask,
+    onTaskNameChange: handleTaskNameChange,
     onTaskAssigneeChange: updateTaskAssignee,
     onTaskDueDateChange: updateTaskDueDate,
     onTaskStatusChange: updateTaskStatus,
     onTaskMilestoneChange: handleTaskMilestoneChange,
     milestones: milestones,
     onMilestoneSearch: searchMilestones,
-    onTaskDescriptionChange: updateTaskDescription,
+    onTaskDescriptionChange: handleTaskDescriptionChange,
     richTextHandlers: richEditorHandlers,
 
     canManageStatuses: milestone.permissions.canEditStatuses,
@@ -144,4 +157,60 @@ function Page() {
   };
 
   return <MilestoneKanbanPage key={milestone.id!} {...props} />;
+}
+
+interface usePageFieldProps<T> {
+  update: (taskId: string, newValue: T) => Promise<any>;
+  onError: (error: any) => void;
+  validations?: ((newValue: T) => string | null)[];
+  refreshPageData?: () => Promise<void>;
+}
+
+function usePageField<T>({
+  update,
+  onError,
+  validations,
+  refreshPageData,
+}: usePageFieldProps<T>): (taskId: string, v: T) => Promise<boolean> {
+  const pageData = PageCache.useData(loader);
+  const { data } = pageData;
+
+  return React.useCallback(
+    async (taskId: string, newVal: T): Promise<boolean> => {
+      if (validations) {
+        for (const validation of validations) {
+          const error = validation(newVal);
+          if (error) {
+            onError?.(error);
+            return false;
+          }
+        }
+      }
+
+      const errorHandler = (error: any) => {
+        onError?.(error);
+      };
+
+      try {
+        const res = await update(taskId, newVal);
+
+        if (res === false || (typeof res === "object" && (res as any)?.success === false)) {
+          errorHandler("Update failed");
+          return false;
+        }
+
+        PageCache.invalidate(pageCacheKey(data.milestone.id!));
+
+        if (refreshPageData) {
+          await refreshPageData();
+        }
+
+        return true;
+      } catch (err) {
+        errorHandler(err);
+        return false;
+      }
+    },
+    [update, onError, validations, refreshPageData, data.milestone.id],
+  );
 }
