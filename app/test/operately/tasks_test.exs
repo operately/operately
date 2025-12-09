@@ -26,7 +26,6 @@ defmodule Operately.TasksTest do
     milestone = milestone_fixture(%{project_id: project.id})
 
     task = task_fixture(%{
-      space_id: space.id,
       creator_id: person.id,
       milestone_id: milestone.id,
       project_id: project.id,
