@@ -59,7 +59,7 @@ export function useMilestoneKanbanState({
       applyOptimisticTaskStatusUpdate(event.taskId, statusOption, setTasks);
 
       try {
-        await Api.project_tasks.updateKanban({
+        await Api.tasks.updateKanban({
           taskId: event.taskId,
           milestoneId,
           status: backendStatus,

@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.ProjectTasks do
+defmodule OperatelyWeb.Api.Tasks do
   alias __MODULE__.SharedMultiSteps, as: Steps
 
   alias Operately.Repo

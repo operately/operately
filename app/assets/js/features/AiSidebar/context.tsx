@@ -1,5 +1,5 @@
 import React from "react";
-import { Conversations } from "turboui/dist/Conversations";
+import { Conversations } from "turboui";
 
 interface AiSidebarContext {
   conversationContext: Conversations.ContextAttachment | null;
