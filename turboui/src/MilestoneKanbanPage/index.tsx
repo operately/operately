@@ -9,6 +9,7 @@ import type { KanbanBoardProps, MilestoneKanbanState } from "../TaskBoard/Kanban
 import { Navigation } from "../Page/Navigation";
 import { IconMilestone, IconChevronRight } from "../icons";
 import { BlackLink } from "../Link";
+import { createTestId } from "../TestableElement";
 
 export namespace MilestoneKanbanPage {
   export type Milestone = Types.Milestone;
@@ -54,7 +55,11 @@ export namespace MilestoneKanbanPage {
 
 export function MilestoneKanbanPage(props: MilestoneKanbanPage.Props) {
   return (
-    <PageNew title={props.projectName} size="fullwidth">
+    <PageNew
+      title={props.projectName}
+      size="fullwidth"
+      testId={createTestId("milestone-kanban-page", props.milestone.id)}
+    >
       <MilestoneKanbanPageHeader milestone={props.milestone} navigation={props.navigation} />
 
       <div className="flex-1 overflow-auto px-2 py-4">

@@ -11,6 +11,7 @@ import type { RichEditorHandlers } from "../../RichEditor/useEditor";
 import { DangerButton, PrimaryButton, SecondaryButton } from "../../Button";
 import { IconExternalLink, IconTrash } from "../../icons";
 import { BlackLink } from "../../Link";
+import { createTestId } from "../../TestableElement";
 
 interface TaskSlideInProps {
   isOpen: boolean;
@@ -69,7 +70,7 @@ export function TaskSlideIn({
         <TitleSection task={task} onNameChange={onNameChange} />
 
         <div className="grid grid-cols-2 gap-x-8 gap-y-6">
-          <Field label="Status">
+          <Field label="Status" testId={createTestId("task-field-status", task.id)}>
             <StatusSelector
               status={task.status ?? statuses[0]!}
               statusOptions={statuses}
@@ -77,34 +78,38 @@ export function TaskSlideIn({
               readonly={!onStatusChange}
               size="sm"
               showFullBadge={true}
+              testId={createTestId("task-status", task.id)}
             />
           </Field>
 
-          <Field label="Assignee">
+          <Field label="Assignee" testId={createTestId("task-field-assignee", task.id)}>
             <PersonField
               person={task.assignees?.[0] || null}
               setPerson={(p) => onAssigneeChange?.(task.id, p)}
               searchData={assigneePersonSearch}
               readonly={!onAssigneeChange}
+              testId={createTestId("task-assignee", task.id)}
             />
           </Field>
 
-          <Field label="Due Date">
+          <Field label="Due Date" testId={createTestId("task-field-due-date", task.id)}>
             <DateField
               date={task.dueDate}
               onDateSelect={(d) => onDueDateChange?.(task.id, d)}
               showOverdueWarning={!task.status?.closed}
               readonly={!onDueDateChange}
+              testId={createTestId("task-due-date", task.id)}
             />
           </Field>
 
-          <Field label="Milestone">
+          <Field label="Milestone" testId={createTestId("task-field-milestone", task.id)}>
             <MilestoneField
               milestone={task.milestone}
               setMilestone={(m) => onMilestoneChange?.(task.id, m as Milestone | null)}
               readonly={!onMilestoneChange}
               milestones={milestones}
               onSearch={onMilestoneSearch ?? (async () => {})}
+              testId={createTestId("task-milestone", task.id)}
             />
           </Field>
         </div>
@@ -164,21 +169,33 @@ function TaskDeleteSection({ task, isOpen, onDelete }: TaskDeleteSectionProps) {
           className="absolute bottom-4 right-4 p-2 rounded-full border border-surface-outline bg-surface-base text-red-600 hover:text-red-700 dark:text-red-400 hover:bg-surface-highlight transition-colors shadow-sm"
           aria-label="Delete task"
           title="Delete task"
+          data-test-id={createTestId("task-delete", task.id)}
         >
           <IconTrash size={18} />
         </button>
       )}
 
       {isConfirmingDelete && (
-        <div className="absolute bottom-4 left-4 right-4 flex items-center gap-3 rounded-md border border-surface-outline bg-surface-base shadow-sm px-4 py-3">
+        <div
+          className="absolute bottom-4 left-4 right-4 flex items-center gap-3 rounded-md border border-surface-outline bg-surface-base shadow-sm px-4 py-3"
+          data-test-id={createTestId("task-delete-confirmation", task.id)}
+        >
           <div className="flex-1 leading-tight">
             <div className="text-sm font-semibold text-content-accent">Delete this task?</div>
             <div className="text-xs text-content-dimmed">This action cannot be undone.</div>
           </div>
-          <SecondaryButton size="xs" onClick={handleCancelDelete}>
+          <SecondaryButton
+            size="xs"
+            onClick={handleCancelDelete}
+            testId={createTestId("task-delete-cancel", task.id)}
+          >
             Cancel
           </SecondaryButton>
-          <DangerButton size="xs" onClick={handleConfirmDelete}>
+          <DangerButton
+            size="xs"
+            onClick={handleConfirmDelete}
+            testId={createTestId("task-delete-confirm", task.id)}
+          >
             Confirm
           </DangerButton>
         </div>
@@ -191,13 +208,15 @@ function Field({
   label,
   children,
   headerAction,
+  testId,
 }: {
   label: string;
   children: React.ReactNode;
   headerAction?: React.ReactNode;
+  testId?: string;
 }) {
   return (
-    <div className="flex flex-col gap-1.5 group">
+    <div className="flex flex-col gap-1.5 group" data-test-id={testId}>
       <div className="flex items-center justify-between">
         <label className="text-xs font-semibold text-content-dimmed uppercase tracking-wider">{label}</label>
         {headerAction && <div className="opacity-0 group-hover:opacity-100 transition-opacity">{headerAction}</div>}
@@ -255,9 +274,13 @@ function TitleSection({ task, onNameChange }: TitleSectionProps) {
           onKeyDown={handleKeyDown}
           autoFocus
           className="w-full text-2xl font-bold text-content-accent leading-tight bg-transparent border-none outline-none focus:ring-0"
+          data-test-id={createTestId("task-title-input", task.id)}
         />
       ) : (
-        <div className={onNameChange ? "cursor-text flex items-center gap-2" : "flex items-center gap-2"}>
+        <div
+          className={onNameChange ? "cursor-text flex items-center gap-2" : "flex items-center gap-2"}
+          data-test-id={createTestId("task-title-display", task.id)}
+        >
           <span onClick={handleStartEditing} className="text-2xl font-bold text-content-accent leading-tight">
             {task.title}
           </span>
@@ -299,11 +322,12 @@ function DescriptionSection({ taskId, description, onDescriptionChange, richText
     if (!onDescriptionChange) return null;
 
     return (
-      <Field label="Description">
+      <Field label="Description" testId={createTestId("task-field-description", taskId)}>
         <button
           type="button"
           onClick={startEdit}
           className="w-full text-left text-sm text-content-dimmed hover:text-content-base transition-colors py-2"
+          data-test-id={createTestId("task-description-add", taskId)}
         >
           Add description...
         </button>
@@ -317,13 +341,17 @@ function DescriptionSection({ taskId, description, onDescriptionChange, richText
         label="Description"
         headerAction={
           onDescriptionChange ? (
-            <SecondaryButton size="xxs" onClick={startEdit}>
+            <SecondaryButton size="xxs" onClick={startEdit} testId={createTestId("task-description-edit", taskId)}>
               Edit
             </SecondaryButton>
           ) : undefined
         }
+        testId={createTestId("task-field-description", taskId)}
       >
-        <div className="text-sm text-content-accent max-h-[calc(100vh-320px)] overflow-auto pr-1 pb-1">
+        <div
+          className="text-sm text-content-accent max-h-[calc(100vh-320px)] overflow-auto pr-1 pb-1"
+          data-test-id={createTestId("task-description", taskId)}
+        >
           <RichContent content={expandedDescription} mentionedPersonLookup={richTextHandlers.mentionedPersonLookup} />
 
           {length > PREVIEW_CHARACTER_LIMIT && (
@@ -407,15 +435,18 @@ function DescriptionEdit({
   }, [editor, onDescriptionChange, onDone, taskId, description]);
 
   return (
-    <Field label="Description">
-      <div className="w-full max-h-[calc(100vh-300px)] overflow-auto pr-1 pb-1">
+    <Field label="Description" testId={createTestId("task-field-description", taskId)}>
+      <div
+        className="w-full max-h-[calc(100vh-300px)] overflow-auto pr-1 pb-1"
+        data-test-id={createTestId("task-description-editor", taskId)}
+      >
         <Editor editor={editor} />
 
         <div className="flex gap-2 mt-2 justify-end">
-          <PrimaryButton size="xs" onClick={save}>
+          <PrimaryButton size="xs" onClick={save} testId={createTestId("task-description-save", taskId)}>
             Save
           </PrimaryButton>
-          <SecondaryButton size="xs" onClick={onCancel}>
+          <SecondaryButton size="xs" onClick={onCancel} testId={createTestId("task-description-cancel", taskId)}>
             Cancel
           </SecondaryButton>
         </div>

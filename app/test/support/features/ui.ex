@@ -394,7 +394,7 @@ defmodule Operately.Support.Features.UI do
 
       cond do
         not has_element -> session
-        attempts == [] -> raise "Element matching '#{query}' was found on the page"
+        attempts == [] -> raise "Element matching '#{inspect(query)}' was found on the page"
         true -> refute_has(state, query, attempts: attempts).session
       end
     end)

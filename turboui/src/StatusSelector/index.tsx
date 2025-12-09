@@ -78,6 +78,7 @@ export function StatusSelector<T extends StatusSelector.StatusOption = StatusSel
   size = "md",
   readonly = false,
   showFullBadge = false,
+  testId,
 }: StatusSelector.Props<T>) {
   if (statusOptions.length === 0) return null;
 
@@ -159,18 +160,22 @@ export function StatusSelector<T extends StatusSelector.StatusOption = StatusSel
   const activeIconClass = classNames("flex items-center self-center", activeColorClasses.iconClass);
 
   if (readonly) {
-    return showFullBadge ? (
-      <StatusButton option={currentOption} size={size} readonly={true} />
-    ) : (
-      <div className={`inline-flex items-center justify-center h-6 ${containerSize}`}>
-        <ActiveIcon size={iconSize} className={activeIconClass} />
+    return (
+      <div data-test-id={testId}>
+        {showFullBadge ? (
+          <StatusButton option={currentOption} size={size} readonly={true} />
+        ) : (
+          <div className={`inline-flex items-center justify-center h-6 ${containerSize}`}>
+            <ActiveIcon size={iconSize} className={activeIconClass} />
+          </div>
+        )}
       </div>
     );
   }
 
   return (
     <Popover.Root open={isOpen} onOpenChange={handleOpenChange}>
-      <Popover.Trigger className="cursor-pointer">
+      <Popover.Trigger className="cursor-pointer" data-test-id={testId}>
         {showFullBadge ? (
           <StatusButton option={currentOption} size={size} readonly={false} />
         ) : (
@@ -301,5 +306,6 @@ export namespace StatusSelector {
     size?: Size;
     readonly?: boolean;
     showFullBadge?: boolean;
+    testId?: string;
   }
 }
