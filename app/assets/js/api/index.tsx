@@ -1777,7 +1777,7 @@ export interface Task {
   description?: string | null;
   assignees?: Person[] | null;
   creator?: Person | null;
-  space?: Space | null;
+  projectSpace?: Space | null;
   permissions?: ProjectPermissions | null;
   commentsCount?: number | null;
   subscriptionList?: SubscriptionList | null;
@@ -2618,7 +2618,7 @@ export interface GetTaskInput {
   includeMilestone?: boolean;
   includeProject?: boolean;
   includeCreator?: boolean;
-  includeSpace?: boolean;
+  includeProjectSpace?: boolean;
   includePermissions?: boolean;
   includeSubscriptionList?: boolean;
   includeAvailableStatuses?: boolean;
