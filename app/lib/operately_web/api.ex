@@ -99,19 +99,19 @@ defmodule OperatelyWeb.Api do
     mutation(:delete, OperatelyWeb.Api.ProjectMilestones.Delete)
   end
 
-  namespace(:project_tasks) do
-    query(:list, OperatelyWeb.Api.ProjectTasks.List)
+  namespace(:tasks) do
+    query(:list, OperatelyWeb.Api.Tasks.List)
 
-    mutation(:create, OperatelyWeb.Api.ProjectTasks.Create)
-    mutation(:delete, OperatelyWeb.Api.ProjectTasks.Delete)
-    mutation(:update_name, OperatelyWeb.Api.ProjectTasks.UpdateName)
-    mutation(:update_status, OperatelyWeb.Api.ProjectTasks.UpdateStatus)
-    mutation(:update_kanban, OperatelyWeb.Api.ProjectTasks.UpdateKanban)
-    mutation(:update_due_date, OperatelyWeb.Api.ProjectTasks.UpdateDueDate)
-    mutation(:update_assignee, OperatelyWeb.Api.ProjectTasks.UpdateAssignee)
-    mutation(:update_milestone, OperatelyWeb.Api.ProjectTasks.UpdateMilestone)
-    mutation(:update_milestone_and_ordering, OperatelyWeb.Api.ProjectTasks.UpdateMilestoneAndOrdering)
-    mutation(:update_description, OperatelyWeb.Api.ProjectTasks.UpdateDescription)
+    mutation(:create, OperatelyWeb.Api.Tasks.Create)
+    mutation(:delete, OperatelyWeb.Api.Tasks.Delete)
+    mutation(:update_name, OperatelyWeb.Api.Tasks.UpdateName)
+    mutation(:update_status, OperatelyWeb.Api.Tasks.UpdateStatus)
+    mutation(:update_kanban, OperatelyWeb.Api.Tasks.UpdateKanban)
+    mutation(:update_due_date, OperatelyWeb.Api.Tasks.UpdateDueDate)
+    mutation(:update_assignee, OperatelyWeb.Api.Tasks.UpdateAssignee)
+    mutation(:update_milestone, OperatelyWeb.Api.Tasks.UpdateMilestone)
+    mutation(:update_milestone_and_ordering, OperatelyWeb.Api.Tasks.UpdateMilestoneAndOrdering)
+    mutation(:update_description, OperatelyWeb.Api.Tasks.UpdateDescription)
   end
 
   namespace(:project_discussions) do
