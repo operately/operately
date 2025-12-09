@@ -30,13 +30,19 @@ export function DeleteStatusModal({ isOpen, onClose, status, hasTasks, isLastSta
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Delete Status">
+    <Modal isOpen={isOpen} onClose={onClose} title="Delete Status" testId={"delete-status-modal"}>
       <div className="space-y-4">
         <div className="text-content-base">{message}</div>
 
         <div className="flex justify-end gap-3 pt-2">
-          <SecondaryButton onClick={onClose}>Cancel</SecondaryButton>
-          {canDelete && <DangerButton onClick={onConfirm}>Delete Status</DangerButton>}
+          <SecondaryButton onClick={onClose} testId="delete-status-cancel">
+            Cancel
+          </SecondaryButton>
+          {canDelete && (
+            <DangerButton onClick={onConfirm} testId="delete-status-confirm">
+              Delete Status
+            </DangerButton>
+          )}
         </div>
       </div>
     </Modal>

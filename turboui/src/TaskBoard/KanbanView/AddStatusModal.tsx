@@ -9,6 +9,7 @@ import {
   StatusAppearancePicker,
   STATUS_APPEARANCES,
 } from "../../StatusCustomization/StatusAppearancePicker";
+import { createTestId } from "../../TestableElement";
 
 interface Props {
   isOpen: boolean;
@@ -102,12 +103,22 @@ export function AddStatusModal({
   const isEditing = Boolean(statusToEdit);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={isEditing ? "Edit status" : "Add status"} size="small">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={isEditing ? "Edit status" : "Add status"}
+      size="small"
+      testId={createTestId("status-modal", isEditing ? "edit" : "add")}
+    >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
           <label className="block text-sm font-medium text-content-base">Name</label>
           <div className="flex items-center gap-2">
-            <StatusAppearancePicker value={appearance} onChange={setAppearance} />
+            <StatusAppearancePicker
+              value={appearance}
+              onChange={setAppearance}
+              testId={"status-appearance-trigger"}
+            />
             <div className="flex-1 flex items-center gap-2 rounded-lg border border-surface-outline bg-surface-base px-3 py-1.5">
               <input
                 type="text"
@@ -115,16 +126,22 @@ export function AddStatusModal({
                 onChange={(event) => setLabel(event.target.value)}
                 placeholder="Status name"
                 className="flex-1 bg-transparent border-none outline-none text-sm text-content-base placeholder:text-content-dimmed"
+                data-test-id={"status-name-input"}
               />
             </div>
           </div>
         </div>
 
         <div className="flex justify-end gap-3 pt-2">
-          <SecondaryButton type="button" onClick={onClose}>
+          <SecondaryButton type="button" onClick={onClose} testId={"status-cancel"}>
             Cancel
           </SecondaryButton>
-          <PrimaryButton type="submit" icon={!isEditing && IconPlus} disabled={label.trim().length === 0}>
+          <PrimaryButton
+            type="submit"
+            icon={!isEditing && IconPlus}
+            disabled={label.trim().length === 0}
+            testId={"status-save"}
+          >
             {isEditing ? "Save changes" : "Add status"}
           </PrimaryButton>
         </div>
