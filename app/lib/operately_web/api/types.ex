@@ -1215,7 +1215,6 @@ defmodule OperatelyWeb.Api.Types do
     field? :description, :string, null: true
     field? :assignees, list_of(:person), null: true
     field? :creator, :person, null: true
-    field? :space, :space, null: true
     field? :project_space, :space, null: true
     field? :permissions, :project_permissions, null: true
     field? :comments_count, :integer, null: true

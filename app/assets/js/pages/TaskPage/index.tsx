@@ -49,7 +49,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeMilestone: true,
           includeAssignees: true,
           includeCreator: true,
-          includeSpace: true,
+          includeProjectSpace: true,
           includePermissions: true,
           includeSubscriptionList: true,
           includeAvailableStatuses: true,
@@ -84,10 +84,10 @@ function Page() {
   const { task, childrenCount, activities } = data;
 
   assertPresent(task.project, "Task must have a project");
-  assertPresent(task.space, "Task must have a space");
+  assertPresent(task.projectSpace, "Task must have a space");
   assertPresent(task.permissions, "Task must have permissions");
 
-  const workmapLink = paths.spaceWorkMapPath(task.space.id, "projects" as const);
+  const workmapLink = paths.spaceWorkMapPath(task.projectSpace.id, "projects" as const);
 
   const [projectName, setProjectName] = usePageField({
     value: ({ task }) => task.project!.name,
@@ -141,13 +141,16 @@ function Page() {
     refreshPageData,
   });
 
-  const { comments, handleAddComment, handleEditComment, handleDeleteComment, handleAddReaction, handleRemoveReaction } = useComments(
-    task,
-    data.comments,
-    () => {
-      PageCache.invalidate(pageCacheKey(task.id));
-    },
-  );
+  const {
+    comments,
+    handleAddComment,
+    handleEditComment,
+    handleDeleteComment,
+    handleAddReaction,
+    handleRemoveReaction,
+  } = useComments(task, data.comments, () => {
+    PageCache.invalidate(pageCacheKey(task.id));
+  });
 
   const timelineItems = useMemo(() => prepareTimelineItems(paths, activities, comments), [paths, activities, comments]);
 
@@ -167,10 +170,7 @@ function Page() {
   };
 
   // Transform function must be memoized to prevent infinite loop in the hook
-  const transformPerson = useCallback(
-    (p) => People.parsePersonForTurboUi(paths, p)!,
-    [paths]
-  );
+  const transformPerson = useCallback((p) => People.parsePersonForTurboUi(paths, p)!, [paths]);
 
   const assigneePersonSearch = Tasks.useTaskAssigneeSearch({
     projectId: task.project.id,
@@ -197,7 +197,7 @@ function Page() {
     projectLink: paths.projectPath(task.project.id),
     projectStatus: task.project.status,
     workmapLink,
-    space: parseSpaceForTurboUI(paths, task.space),
+    space: parseSpaceForTurboUI(paths, task.projectSpace),
     childrenCount,
 
     canEdit: Boolean(task.permissions.canEditTimeline),
@@ -331,7 +331,6 @@ function usePageField<T>({
 
   return [state, updateState];
 }
-
 
 function prepareTimelineItems(paths: Paths, activities: Activities.Activity[], comments: Comments.Comment[]) {
   const parsedActivities = parseActivitiesForTurboUi(paths, activities, "task").map((activity) => ({

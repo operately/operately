@@ -85,7 +85,7 @@ function prepareTasks(paths: Paths, result: Api.GlobalSearchResult): GlobalSearc
       name: task.name!,
       link: paths.taskPath(task.id!),
       project: task.project ?? null,
-      space: task.space ?? null,
+      space: task.projectSpace ?? null,
     })) || []
   );
 }
