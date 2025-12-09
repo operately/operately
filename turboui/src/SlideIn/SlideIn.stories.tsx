@@ -16,14 +16,14 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 // Helper component to demonstrate the slide-in
-function SlideInDemo({ width = "60%", showHeader = true, title = "Slide-in Panel" }) {
+function SlideInDemo({ width = "60%" }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div className="p-8">
       <PrimaryButton onClick={() => setIsOpen(true)}>Open Slide-in</PrimaryButton>
 
-      <SlideIn isOpen={isOpen} onClose={() => setIsOpen(false)} width={width} showHeader={showHeader} title={title}>
+      <SlideIn isOpen={isOpen} onClose={() => setIsOpen(false)} width={width}>
         <div className="p-6 space-y-4">
           <h3 className="text-xl font-bold">Content Area</h3>
           <p className="text-content-dimmed">
@@ -62,11 +62,6 @@ export const WideWidth: Story = {
   args: {} as any,
 };
 
-export const NoHeader: Story = {
-  render: () => <SlideInDemo showHeader={false} />,
-  args: {} as any,
-};
-
 export const CustomHeader: Story = {
   render: () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -89,6 +84,7 @@ export const CustomHeader: Story = {
               </button>
             </div>
           }
+          showCloseButton={false}
         >
           <div className="p-6">
             <p>This slide-in has a custom header with gradient background.</p>
@@ -109,6 +105,7 @@ export const LongContent: Story = {
         <PrimaryButton onClick={() => setIsOpen(true)}>Open with Long Content</PrimaryButton>
 
         <SlideIn isOpen={isOpen} onClose={() => setIsOpen(false)} title="Long Scrollable Content">
+          {/* Long content with default close button and no custom header */}
           <div className="p-6 space-y-4">
             {Array.from({ length: 50 }, (_, i) => (
               <div key={i} className="p-4 bg-surface-highlight rounded border border-surface-outline">
@@ -138,8 +135,12 @@ export const NoBackdropClose: Story = {
         <SlideIn
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
-          title="Cannot Close by Clicking Outside"
           closeOnBackdropClick={false}
+          header={
+            <div className="flex items-center justify-between px-6 py-4 border-b border-surface-outline bg-surface-base sticky top-0 z-10">
+              <h2 className="text-lg font-semibold text-content-accent">Cannot Close by Clicking Outside</h2>
+            </div>
+          }
         >
           <div className="p-6">
             <p className="text-content-dimmed mb-4">
