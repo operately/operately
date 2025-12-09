@@ -204,7 +204,8 @@ export function KanbanBoard({
           isOpen={Boolean(deletingStatus)}
           onClose={() => setDeletingStatus(undefined)}
           status={deletingStatus}
-          hasTasks={(kanbanState[deletingStatus.value]?.length || 0) > 0}
+          hasTasks={tasks.some((task) => statusFromTask(task, statusKeys) === deletingStatus.value)}
+          isLastStatus={orderedStatuses.length === 1}
           onConfirm={() => {
             const nextStatuses = orderedStatuses.filter((s) => s.id !== deletingStatus.id);
             onStatusesChange(sortStatuses(nextStatuses));
