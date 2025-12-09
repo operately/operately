@@ -120,6 +120,7 @@ export function Column({
           "flex items-center justify-between text-xs font-semibold text-content-dimmed uppercase tracking-wide px-1 min-h-[24px]",
           isStatusDraggable && "cursor-grab active:cursor-grabbing",
         )}
+        data-test-id={createTestId("kanban-column-header", status.value)}
       >
         <div className="flex items-center gap-1.5">
           {!hideStatusIcon && (
@@ -187,11 +188,13 @@ export function Column({
               value={newTaskTitle}
               onChange={(e) => setNewTaskTitle(e.target.value)}
               onKeyDown={handleKeyDown}
+              data-test-id={createTestId("new-task-title", status.value)}
             />
             <div className="flex items-center gap-2">
               <button
                 className="px-2 py-1 text-xs font-medium text-white bg-accent-blue rounded hover:bg-accent-blue-dimmed"
                 onClick={handleCreateTask}
+                data-test-id={createTestId("new-task-submit", status.value)}
               >
                 Add
               </button>
@@ -201,6 +204,7 @@ export function Column({
                   setIsCreating(false);
                   setNewTaskTitle("");
                 }}
+                data-test-id={createTestId("new-task-cancel", status.value)}
               >
                 Cancel
               </button>
@@ -239,7 +243,10 @@ function ColumnMenu({ status, canManageStatuses, onEditStatus, onDeleteStatus }:
         align="end"
         size="tiny"
         customTrigger={
-          <button className="block p-1 text-content-dimmed hover:text-content-base hover:bg-surface-dimmed rounded-full data-[state=open]:bg-surface-dimmed">
+          <button
+            className="block p-1 text-content-dimmed hover:text-content-base hover:bg-surface-dimmed rounded-full data-[state=open]:bg-surface-dimmed"
+            data-test-id={createTestId("status-menu-trigger", status.value)}
+          >
             <IconDots size={16} />
           </button>
         }

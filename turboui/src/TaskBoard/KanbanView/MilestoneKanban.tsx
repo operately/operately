@@ -132,6 +132,7 @@ export function MilestoneKanban({
               type="button"
               onClick={onAddStatusClick}
               className="flex flex-col items-center justify-start gap-1.5 px-2 py-2 rounded-md border border-dashed border-surface-outline text-content-dimmed hover:border-brand-1/60 hover:text-brand-1 transition min-w-[100px] h-full"
+              data-test-id={"add-status"}
             >
               <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-surface-dimmed">
                 <IconPlus size={14} />

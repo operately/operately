@@ -6,6 +6,7 @@ import classNames from "../../utils/classnames";
 import { DropIndicator, useSortableItem } from "../../utils/PragmaticDragAndDrop";
 import type { TaskBoard } from "../components";
 import type { TaskBoardProps } from "../types";
+import { createTestId } from "../../TestableElement";
 
 interface CardProps {
   task: TaskBoard.Task;
@@ -87,6 +88,7 @@ export function Card({
           "cursor-grabbing": isDragging,
         },
       )}
+      data-test-id={createTestId("kanban-card", task.id)}
     >
       {dropIndicatorEdge && <DropIndicator edge={dropIndicatorEdge} />}
       <div className="flex items-start">
@@ -99,6 +101,7 @@ export function Card({
                 e.preventDefault();
                 onTaskClick?.(task.id);
               }}
+              data-test-id={createTestId("kanban-card-title", task.id)}
             >
               {task.title}
             </div>
@@ -133,6 +136,7 @@ export function Card({
                   size="small"
                   calendarOnly
                   className={dateFieldClassName}
+                  testId={createTestId("kanban-card-due-date", task.id)}
                 />
               </div>
 
@@ -143,7 +147,13 @@ export function Card({
                   avatarSize={22}
                   avatarOnly={true}
                   {...(assigneePersonSearch ? { searchData: assigneePersonSearch } : { readonly: true as const })}
+                  testId={createTestId("kanban-card-assignee", task.id)}
                 />
+                {currentAssignee && (
+                  <span className="sr-only" data-test-id={createTestId("kanban-card-assignee-name", task.id)}>
+                    {currentAssignee.fullName}
+                  </span>
+                )}
               </div>
             </div>
           </div>

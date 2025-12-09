@@ -3,6 +3,7 @@ import * as Popover from "@radix-ui/react-popover";
 
 import classNames from "../utils/classnames";
 import { StatusSelector } from "../StatusSelector";
+import { createTestId } from "../TestableElement";
 
 export type StatusAppearance = "gray" | "blue" | "green" | "red";
 
@@ -98,6 +99,7 @@ export function StatusAppearancePicker({ value, onChange, testId }: StatusAppear
                     "flex items-center gap-3 rounded-md px-3 py-2 text-left transition",
                     isActive ? "bg-surface-dimmed text-content-base" : "hover:bg-surface-dimmed text-content-base",
                   )}
+                  data-test-id={createTestId("status-appearance-option", appearance)}
                 >
                   <IconComponent size={16} className={presetIconClass} />
                   <span className="text-xs">{preset.description}</span>
