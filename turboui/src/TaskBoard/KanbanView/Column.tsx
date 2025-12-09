@@ -29,6 +29,7 @@ interface Props {
   onDeleteStatus?: (status: StatusSelector.StatusOption) => void;
   hideStatusIcon?: boolean;
   disableDnD?: boolean;
+  onTaskClick?: (taskId: string) => void;
 }
 
 export function Column({
@@ -49,6 +50,7 @@ export function Column({
   onDeleteStatus,
   hideStatusIcon,
   disableDnD,
+  onTaskClick,
 }: Props) {
   const columnRef = useRef<HTMLDivElement>(null);
   const [isCreating, setIsCreating] = React.useState(false);
@@ -70,8 +72,7 @@ export function Column({
     draggedItemId && targetLocation && targetLocation.containerId === containerId,
   );
   const shouldCenterEmptyState = isColumnEmpty && placeholderIndex === null && !isDraggingOverThisColumn && !isCreating;
-  const shouldShowEmptyPlaceholder =
-    isColumnEmpty && !isDraggingOverThisColumn && !isCreating && !disableDnD;
+  const shouldShowEmptyPlaceholder = isColumnEmpty && !isDraggingOverThisColumn && !isCreating && !disableDnD;
   const effectivePlaceholderIndex = disableDnD ? null : placeholderIndex;
   const shouldShowDropIndicator = !disableDnD && placeholderIndex === null;
 
@@ -122,13 +123,7 @@ export function Column({
       >
         <div className="flex items-center gap-1.5">
           {!hideStatusIcon && (
-            <StatusSelector
-              status={status}
-              statusOptions={allStatuses}
-              onChange={() => {}}
-              readonly={true}
-              size="sm"
-            />
+            <StatusSelector status={status} statusOptions={allStatuses} onChange={() => {}} readonly={true} size="sm" />
           )}
           <span>{title}</span>
         </div>
@@ -162,6 +157,7 @@ export function Column({
                     onTaskDueDateChange={onTaskDueDateChange}
                     assigneePersonSearch={assigneePersonSearch}
                     showDropIndicator={shouldShowDropIndicator}
+                    onTaskClick={onTaskClick}
                   />
                 </React.Fragment>
               ))
@@ -176,11 +172,9 @@ export function Column({
                 </div>
               )}
 
-          {!disableDnD &&
-            placeholderIndex !== null &&
-            placeholderIndex === visibleTasks.length && (
-              <DropPlaceholder containerId={containerId} index={visibleTasks.length} height={placeholderHeight} />
-            )}
+          {!disableDnD && placeholderIndex !== null && placeholderIndex === visibleTasks.length && (
+            <DropPlaceholder containerId={containerId} index={visibleTasks.length} height={placeholderHeight} />
+          )}
         </div>
 
         {isCreating ? (
