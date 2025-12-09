@@ -64,6 +64,7 @@ const meta: Meta<typeof MilestoneCard> = {
             status: PENDING_STATUS,
             description: "",
             link: "#",
+            type: "project",
             ...newTask,
           };
 
@@ -202,6 +203,7 @@ const sampleTasks: Types.Task[] = [
     link: "#",
     dueDate: createContextualDate(new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), "day"),
     hasDescription: true,
+    type: "project",
   },
   {
     id: "task-2",
@@ -215,6 +217,7 @@ const sampleTasks: Types.Task[] = [
     link: "#",
     dueDate: createContextualDate(new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), "day"), // 2 days ago (overdue)
     hasDescription: true,
+    type: "project",
   },
   {
     id: "task-3",
@@ -229,6 +232,7 @@ const sampleTasks: Types.Task[] = [
     commentCount: 2,
     milestone: sampleMilestone,
     dueDate: createContextualDate(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), "day"), // 7 days from now
+    type: "project",
   },
   {
     id: "task-4",
@@ -239,6 +243,7 @@ const sampleTasks: Types.Task[] = [
     milestone: sampleMilestone,
     dueDate: null,
     hasComments: false,
+    type: "project",
   },
   {
     id: "task-5",
@@ -250,6 +255,7 @@ const sampleTasks: Types.Task[] = [
     dueDate: createContextualDate(new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), "day"),
     hasComments: true,
     commentCount: 6,
+    type: "project",
   },
   {
     id: "task-6",
@@ -260,6 +266,7 @@ const sampleTasks: Types.Task[] = [
     link: "#",
     dueDate: null,
     hasDescription: true,
+    type: "project",
   },
 ];
 

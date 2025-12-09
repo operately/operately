@@ -1,5 +1,6 @@
 import { TaskPage } from "./index";
 import { TaskActivity } from "../Timeline";
+import type { Status } from "../TaskBoard/types";
 import type { TimelineItem as TimelineItemType } from "../Timeline/types";
 import { Person as TimelinePerson } from "../CommentSection/types";
 import { createContextualDate } from "../DateField/mockData";
@@ -83,6 +84,34 @@ export const mockMilestones: TaskPage.Milestone[] = [
     link: "/projects/mobile-app/milestones/docs",
   },
 ];
+
+// Status helpers for task activity mocks
+const STATUS_NOT_STARTED: Status = {
+  id: "not_started",
+  value: "not_started",
+  label: "Not started",
+  color: "gray",
+  icon: "circleDashed",
+  index: 0,
+};
+
+const STATUS_IN_PROGRESS: Status = {
+  id: "in_progress",
+  value: "in_progress",
+  label: "In progress",
+  color: "blue",
+  icon: "circleDot",
+  index: 1,
+};
+
+const STATUS_DONE: Status = {
+  id: "done",
+  value: "done",
+  label: "Done",
+  color: "green",
+  icon: "circleCheck",
+  index: 2,
+};
 
 // Rich editor people need a title field and proper types
 export const richEditorPeople = timelinePeople.map(p => ({
@@ -168,13 +197,22 @@ export function createActiveTaskTimeline(): TimelineItemType[] {
       30 * 60 * 1000,
     ), // 30 min ago
     createTaskActivity("task_status_updating", alice, 2 * 60 * 60 * 1000, {
-      fromStatus: "not_started",
-      toStatus: "in_progress",
+      fromStatus: STATUS_NOT_STARTED,
+      toStatus: STATUS_IN_PROGRESS,
+      taskName: "Implement user authentication flow",
+      page: "task",
     }), // 2 hours ago
-    createTaskActivity("task_assignee_updating", alice, 3 * 60 * 60 * 1000, { assignee: bob, action: "assigned" }), // 3 hours ago
+    createTaskActivity("task_assignee_updating", alice, 3 * 60 * 60 * 1000, {
+      assignee: bob,
+      action: "assigned",
+      taskName: "Implement user authentication flow",
+      page: "task",
+    }), // 3 hours ago
     createTaskActivity("task_milestone_updating", alice, 4 * 60 * 60 * 1000, {
-      milestone: { id: "milestone-1", title: "Beta Release", status: "pending" },
+      milestone: { id: "milestone-1", name: "Beta Release", dueDate: createContextualDate("2024-02-15", "day"), status: "pending" },
       action: "attached",
+      taskName: "Implement user authentication flow",
+      page: "task",
     }),
     createComment(alice, "This is a critical feature for the beta release. Let's prioritize it.", 6.5 * 60 * 60 * 1000),
     createTaskActivity("task_adding", alice, 24 * 60 * 60 * 1000), // 1 day ago
@@ -183,18 +221,34 @@ export function createActiveTaskTimeline(): TimelineItemType[] {
 
 export function createMinimalTaskTimeline(): TimelineItemType[] {
   return [
-    createTaskActivity("task_adding", alice, 2 * 60 * 60 * 1000), // 2 hours ago
+    createTaskActivity("task_adding", alice, 2 * 60 * 60 * 1000, {
+      taskName: "Review API documentation",
+      page: "task",
+    }), // 2 hours ago
   ];
 }
 
 export function createCompletedTaskTimeline(): TimelineItemType[] {
   return [
     createComment(alice, "Great work everyone! This turned out really well.", 30 * 60 * 1000),
-    createTaskActivity("task_status_updating", bob, 60 * 60 * 1000, { fromStatus: "in_progress", toStatus: "done" }),
+    createTaskActivity("task_status_updating", bob, 60 * 60 * 1000, {
+      fromStatus: STATUS_IN_PROGRESS,
+      toStatus: STATUS_DONE,
+      taskName: "Set up CI/CD pipeline",
+      page: "task",
+    }),
     createComment(bob, "All tests are passing and the feature is ready for release!", 2 * 60 * 60 * 1000),
     createComment(charlie, "The design looks perfect. Nice work on the animations!", 4 * 60 * 60 * 1000),
-    createTaskActivity("task_assignee_updating", alice, 2 * 24 * 60 * 60 * 1000, { assignee: bob, action: "assigned" }),
-    createTaskActivity("task_adding", alice, 3 * 24 * 60 * 60 * 1000),
+    createTaskActivity("task_assignee_updating", alice, 2 * 24 * 60 * 60 * 1000, {
+      assignee: bob,
+      action: "assigned",
+      taskName: "Set up CI/CD pipeline",
+      page: "task",
+    }),
+    createTaskActivity("task_adding", alice, 3 * 24 * 60 * 60 * 1000, {
+      taskName: "Set up CI/CD pipeline",
+      page: "task",
+    }),
   ];
 }
 
@@ -203,10 +257,20 @@ export function createOverdueTaskTimeline(): TimelineItemType[] {
     createComment(alice, "This is overdue. Can we get an update on the progress?", 60 * 60 * 1000),
     createTaskActivity("task_due_date_updating", alice, 3 * 24 * 60 * 60 * 1000, {
       fromDueDate: null,
-      toDueDate: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+      toDueDate: createContextualDate(new Date(Date.now() - 24 * 60 * 60 * 1000), "day"),
+      taskName: "Fix critical security vulnerability",
+      page: "task",
     }),
-    createTaskActivity("task_assignee_updating", alice, 5 * 24 * 60 * 60 * 1000, { assignee: charlie, action: "assigned" }),
-    createTaskActivity("task_adding", alice, 7 * 24 * 60 * 60 * 1000),
+    createTaskActivity("task_assignee_updating", alice, 5 * 24 * 60 * 60 * 1000, {
+      assignee: charlie,
+      action: "assigned",
+      taskName: "Fix critical security vulnerability",
+      page: "task",
+    }),
+    createTaskActivity("task_adding", alice, 7 * 24 * 60 * 60 * 1000, {
+      taskName: "Fix critical security vulnerability",
+      page: "task",
+    }),
   ];
 }
 
@@ -227,9 +291,26 @@ export function createLongContentTimeline(): TimelineItemType[] {
       "I've implemented all the requirements from the spec. The authentication flow now supports both email/password and social login.",
       4 * 60 * 60 * 1000,
     ),
-    createTaskActivity("task_description_change", alice, 6 * 60 * 60 * 1000, { hasContent: true }),
-    createTaskActivity("task_status_updating", bob, 8 * 60 * 60 * 1000, { fromStatus: "todo", toStatus: "in_progress" }),
-    createTaskActivity("task_assignee_updating", alice, 12 * 60 * 60 * 1000, { assignee: bob, action: "assigned" }),
-    createTaskActivity("task_adding", alice, 24 * 60 * 60 * 1000),
+    createTaskActivity("task_description_change", alice, 6 * 60 * 60 * 1000, {
+      hasContent: true,
+      taskName: "Long content task",
+      page: "task",
+    }),
+    createTaskActivity("task_status_updating", bob, 8 * 60 * 60 * 1000, {
+      fromStatus: STATUS_NOT_STARTED,
+      toStatus: STATUS_IN_PROGRESS,
+      taskName: "Long content task",
+      page: "task",
+    }),
+    createTaskActivity("task_assignee_updating", alice, 12 * 60 * 60 * 1000, {
+      assignee: bob,
+      action: "assigned",
+      taskName: "Long content task",
+      page: "task",
+    }),
+    createTaskActivity("task_adding", alice, 24 * 60 * 60 * 1000, {
+      taskName: "Long content task",
+      page: "task",
+    }),
   ];
 }

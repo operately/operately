@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { StatusSelector } from "../../StatusSelector";
 import { useBoardDnD, useSortableList } from "../../utils/PragmaticDragAndDrop";
-import { MilestoneKanban } from "./MilestoneKanban";
+import { Kanban } from "./Kanban";
 import { TaskSlideIn } from "./TaskSlideIn";
 import { AddStatusModal } from "./AddStatusModal";
 import { DeleteStatusModal } from "./DeleteStatusModal";
-import type { KanbanBoardProps, KanbanStatus, MilestoneKanbanState } from "./types";
+import type { KanbanBoardProps, KanbanStatus, KanbanState } from "./types";
 import type { TaskBoard } from "../components";
 
 export function KanbanBoard({
@@ -37,7 +37,7 @@ export function KanbanBoard({
   }, [statuses]);
 
   const statusKeys = useMemo(() => orderedStatuses.map((status) => status.value), [orderedStatuses]);
-  const [kanbanState, setKanbanState] = useState<MilestoneKanbanState>(
+  const [kanbanState, setKanbanState] = useState<KanbanState>(
     normalizeKanbanState(kanbanStateProp, statusKeys),
   );
 
@@ -126,8 +126,8 @@ export function KanbanBoard({
 
   return (
     <div className={containerClassName} data-test-id="kanban-board">
-      <MilestoneKanban
-        milestone={milestone}
+      <Kanban
+        milestone={milestone || null}
         columns={buildColumns(kanbanState, tasks, taskById, statusKeys)}
         draggedItemId={draggedItemId}
         targetLocation={destination}
@@ -218,9 +218,9 @@ export function KanbanBoard({
 }
 
 function normalizeKanbanState(
-  state: MilestoneKanbanState | undefined,
+  state: KanbanState | undefined,
   statusKeys: KanbanStatus[],
-): MilestoneKanbanState {
+): KanbanState {
   return cloneState(state, statusKeys);
 }
 
@@ -230,19 +230,19 @@ function parseStatus(containerId: string, statusKeys: KanbanStatus[]): KanbanSta
 }
 
 function applyKanbanMove(
-  current: MilestoneKanbanState,
+  current: KanbanState,
   taskId: string,
   destinationStatus: KanbanStatus,
   destinationIndex: number,
   statusKeys: KanbanStatus[],
-): MilestoneKanbanState {
+): KanbanState {
   const base = cloneState(current, statusKeys);
   const withoutTask = removeFromAllColumns(base, taskId);
   return insertIntoColumn(withoutTask, taskId, destinationStatus, destinationIndex);
 }
 
-function removeFromAllColumns(state: MilestoneKanbanState, taskId: string): MilestoneKanbanState {
-  const next: MilestoneKanbanState = {};
+function removeFromAllColumns(state: KanbanState, taskId: string): KanbanState {
+  const next: KanbanState = {};
 
   Object.keys(state).forEach((key) => {
     next[key] = state[key]?.filter((id) => id !== taskId) || [];
@@ -252,11 +252,11 @@ function removeFromAllColumns(state: MilestoneKanbanState, taskId: string): Mile
 }
 
 function insertIntoColumn(
-  state: MilestoneKanbanState,
+  state: KanbanState,
   taskId: string,
   status: KanbanStatus,
   destinationIndex: number,
-): MilestoneKanbanState {
+): KanbanState {
   const list = [...(state[status] || [])];
   const boundedIndex = Math.max(0, Math.min(destinationIndex, list.length));
   list.splice(boundedIndex, 0, taskId);
@@ -268,7 +268,7 @@ function insertIntoColumn(
 }
 
 function buildColumns(
-  state: MilestoneKanbanState,
+  state: KanbanState,
   tasks: TaskBoard.Task[],
   taskById: Map<string, TaskBoard.Task>,
   statusKeys: KanbanStatus[],
@@ -301,8 +301,8 @@ function statusFromTask(task: TaskBoard.Task, statusKeys: KanbanStatus[]): Kanba
   return statusKeys[0] || "unassigned";
 }
 
-function cloneState(state: MilestoneKanbanState | undefined, statusKeys: KanbanStatus[]): MilestoneKanbanState {
-  return statusKeys.reduce<MilestoneKanbanState>((acc, key) => {
+function cloneState(state: KanbanState | undefined, statusKeys: KanbanStatus[]): KanbanState {
+  return statusKeys.reduce<KanbanState>((acc, key) => {
     acc[key] = [...(state?.[key] || [])];
     return acc;
   }, {});

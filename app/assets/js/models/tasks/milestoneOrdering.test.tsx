@@ -134,6 +134,7 @@ const createTask = (id: string, milestoneId: string | null): TaskBoard.Task => (
     hasComments: false,
     commentCount: 0,
     comments: undefined,
+    type: "project",
     _isHelperTask: false,
   });
 

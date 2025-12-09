@@ -216,7 +216,7 @@ export const Default: Story = {
   render: () => {
     const championSearch = usePersonFieldSearch(people);
     const reviewerSearch = usePersonFieldSearch(people);
-    const [tasks, setTasks] = useState([...mockTasks]);
+    const [tasks, setTasks] = useState([...mockTasks("project")]);
     // Use dynamic, short-horizon milestones to encourage manageable scopes
     const initialMilestones: TaskBoardTypes.Milestone[] = [
       {
@@ -268,15 +268,16 @@ export const Default: Story = {
 
     const handleTaskCreate = (newTaskData: TaskBoardTypes.NewTaskPayload) => {
       const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-      const newTask = {
+      const newTask: TaskBoardTypes.Task = {
         id: taskId,
         status: PENDING_STATUS,
         description: "",
         link: "#",
         ...newTaskData,
+        type: "project",
       };
       console.log("Task created:", newTask);
-      setTasks([...tasks, newTask]);
+      setTasks((prev) => [...prev, newTask]);
     };
 
     const handleMilestoneCreate = (newMilestoneData: ProjectPage.NewMilestonePayload) => {
@@ -422,7 +423,7 @@ export const ReadOnly: Story = {
   render: () => {
     const championSearch = usePersonFieldSearch(people);
     const reviewerSearch = usePersonFieldSearch(people);
-    const [tasks] = useState([...mockTasks]);
+    const [tasks] = useState([...mockTasks("project")]);
     const [milestones] = useState<TaskBoardTypes.Milestone[]>(Object.values(mockMilestones));
     const [reviewer, setReviewer] = useState<ProjectPage.Person | null>(people[1] || null); // Set reviewer for read-only story
     const startedAt = createContextualDate(new Date(2025, 1, 1), "day"); // February 1, 2025
@@ -534,12 +535,13 @@ export const EmptyTasks: Story = {
 
     const handleTaskCreate = (newTaskData: TaskBoardTypes.NewTaskPayload) => {
       const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-      const newTask = {
+      const newTask: TaskBoardTypes.Task = {
         id: taskId,
         status: PENDING_STATUS,
         description: "",
         link: "#",
         ...newTaskData,
+        type: "project",
       };
       console.log("Task created:", newTask);
       setTasks([...tasks, newTask]);
@@ -867,7 +869,7 @@ export const PausedProject: Story = {
   render: () => {
     const championSearch = usePersonFieldSearch(people);
     const reviewerSearch = usePersonFieldSearch(people);
-    const [tasks, setTasks] = useState([...mockTasks]);
+    const [tasks, setTasks] = useState([...mockTasks("project")]);
     const [milestones, setMilestones] = useState<TaskBoardTypes.Milestone[]>(Object.values(mockMilestones));
     const [filters, setFilters] = useState<TaskBoardTypes.FilterCondition[]>([]);
     const [statuses, setStatuses] = useState<TaskBoardTypes.Status[]>(DEFAULT_STATUSES);
@@ -891,12 +893,13 @@ export const PausedProject: Story = {
 
     const handleTaskCreate = (newTaskData: TaskBoardTypes.NewTaskPayload) => {
       const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-      const newTask = {
+      const newTask: TaskBoardTypes.Task = {
         id: taskId,
         status: PENDING_STATUS,
         description: "",
         link: "#",
         ...newTaskData,
+        type: "project"
       };
       console.log("Task created:", newTask);
       setTasks([...tasks, newTask]);
@@ -1037,7 +1040,7 @@ export const ClosedProject: Story = {
   render: () => {
     const championSearch = usePersonFieldSearch(people);
     const reviewerSearch = usePersonFieldSearch(people);
-    const [tasks] = useState([...mockTasks]);
+    const [tasks] = useState([...mockTasks("project")]);
     // All milestones completed for closed project
     const completedMilestones = Object.values(mockMilestones).map((milestone) => ({
       ...milestone,

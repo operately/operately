@@ -24,7 +24,7 @@ export const Default: Story = {
         <TaskFilter
           filters={filters}
           onFiltersChange={setFilters}
-          tasks={mockTasks}
+          tasks={mockTasks("project")}
         />
       </div>
     );
@@ -55,7 +55,7 @@ export const WithActiveFilters: Story = {
         <TaskFilter
           filters={filters}
           onFiltersChange={setFilters}
-          tasks={mockTasks}
+          tasks={mockTasks("project")}
         />
       </div>
     );

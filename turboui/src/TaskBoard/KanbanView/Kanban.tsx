@@ -12,7 +12,7 @@ import { useHorizontalAutoScroll, useSortableItem, DropIndicator } from "../../u
 import type { BoardLocation } from "../../utils/PragmaticDragAndDrop";
 import classNames from "../../utils/classnames";
 
-interface MilestoneKanbanProps {
+interface Props {
   milestone: TaskBoard.Milestone | null;
   columns: Record<KanbanStatus, TaskBoard.Task[]>;
   draggedItemId: string | null;
@@ -30,7 +30,7 @@ interface MilestoneKanbanProps {
   onTaskClick: (taskId: string) => void;
 }
 
-export function MilestoneKanban({
+export function Kanban({
   milestone,
   columns,
   draggedItemId,
@@ -46,7 +46,7 @@ export function MilestoneKanban({
   onEditStatus,
   onDeleteStatus,
   onTaskClick,
-}: MilestoneKanbanProps) {
+}: Props) {
   const testId = useMemo(
     () => (milestone ? createTestId("milestone", milestone.id) : "kanban-no-milestone"),
     [milestone],

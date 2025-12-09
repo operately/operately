@@ -66,7 +66,8 @@ const createSampleTasks = (): Types.Task[] => [
     hasComments: true,
     commentCount: 2,
     description: null,
-    dueDate: null
+    dueDate: null,
+    type: "project"
   },
   {
     id: "task-2",
@@ -77,7 +78,8 @@ const createSampleTasks = (): Types.Task[] => [
     assignees: [mockPeople[1]!],
     hasDescription: true,
     description: null,
-    dueDate: null
+    dueDate: null,
+    type: "project"
   },
   {
     id: "task-3",
@@ -86,7 +88,8 @@ const createSampleTasks = (): Types.Task[] => [
     link: "#",
     milestone: sampleMilestone,
     description: null,
-    dueDate: null
+    dueDate: null,
+    type: "project"
   },
   {
     id: "task-4",
@@ -97,6 +100,7 @@ const createSampleTasks = (): Types.Task[] => [
     assignees: [mockPeople[2]!],
     dueDate: createContextualDate(new Date(new Date().setDate(new Date().getDate() + 5)), "day"),
     description: null,
+    type: "project"
   },
   {
     id: "task-5",
@@ -106,7 +110,8 @@ const createSampleTasks = (): Types.Task[] => [
     milestone: sampleMilestone,
     hasDescription: true,
     description: null,
-    dueDate: null
+    dueDate: null,
+    type: "project"
   },
   {
     id: "task-6",
@@ -118,6 +123,7 @@ const createSampleTasks = (): Types.Task[] => [
     hasComments: true,
     commentCount: 1,
     description: null,
+    type: "project"
   },
   {
     id: "task-7",
@@ -129,6 +135,7 @@ const createSampleTasks = (): Types.Task[] => [
     description: null,
     dueDate: null,
     hasComments: false,
+    type: "project"
   },
   {
     id: "task-8",
@@ -142,6 +149,7 @@ const createSampleTasks = (): Types.Task[] => [
     hasDescription: true,
     hasComments: true,
     commentCount: 4,
+    type: "project"
   },
 ];
 
@@ -171,6 +179,7 @@ export const Default: Story = {
         status: PENDING_STATUS,
         description: "",
         link: "#",
+        type: "project",
         ...newTaskData,
       };
 
@@ -417,6 +426,7 @@ export const CompletedMilestone: Story = {
         commentCount: 5,
         description: null,
         dueDate: createContextualDate(new Date(Date.now() - 8 * 24 * 60 * 60 * 1000), "day"), // 8 days ago
+        type: "project"
       },
       {
         id: "task-completed-2",
@@ -428,6 +438,7 @@ export const CompletedMilestone: Story = {
         hasDescription: true,
         description: null,
         dueDate: createContextualDate(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), "day"), // 7 days ago
+        type: "project"
       },
       {
         id: "task-completed-3",
@@ -438,6 +449,7 @@ export const CompletedMilestone: Story = {
         assignees: [mockPeople[0]!],
         description: null,
         dueDate: createContextualDate(new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), "day"), // 6 days ago
+        type: "project"
       },
       {
         id: "task-completed-4",
@@ -451,6 +463,7 @@ export const CompletedMilestone: Story = {
         commentCount: 2,
         description: null,
         dueDate: createContextualDate(new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), "day"), // 6 days ago
+        type: "project"
       },
       {
         id: "task-completed-5",
@@ -461,6 +474,7 @@ export const CompletedMilestone: Story = {
         assignees: [mockPeople[1]!],
         description: null,
         dueDate: createContextualDate(new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), "day"), // 5 days ago
+        type: "project"
       },
     ]);
 

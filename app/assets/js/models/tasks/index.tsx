@@ -19,11 +19,11 @@ export { getTask, getTasks, useGetTasks } from "@/api";
  * @param tasks - Array of backend Task objects
  * @returns Array of TurboUI Task objects
  */
-export function parseTasksForTurboUi(paths: Paths, tasks: BackendTask[]): TaskBoard.Task[] {
-  return tasks.map((task) => parseTaskForTurboUi(paths, task));
+export function parseTasksForTurboUi(paths: Paths, tasks: BackendTask[], type: "project" | "space"): TaskBoard.Task[] {
+  return tasks.map((task) => parseTaskForTurboUi(paths, task, type));
 }
 
-export function parseTaskForTurboUi(paths: Paths, task: BackendTask): TaskBoard.Task {
+export function parseTaskForTurboUi(paths: Paths, task: BackendTask, type: "project" | "space"): TaskBoard.Task {
   const description = parseContent(task.description || "{}");
   const commentCount = task.commentsCount || 0;
   const hasComments = commentCount > 0;
@@ -41,6 +41,7 @@ export function parseTaskForTurboUi(paths: Paths, task: BackendTask): TaskBoard.
     hasComments,
     commentCount,
     comments: undefined,
+    type,
   };
 }
 
