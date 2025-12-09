@@ -9,6 +9,7 @@ import { useMilestoneKanbanState } from "@/models/tasks/useMilestoneKanbanState"
 import { MilestoneKanbanPage, showErrorToast } from "turboui";
 import { usePaths } from "@/routes/paths";
 import { PageCache } from "@/routes/PageCache";
+import { projectPageCacheKey } from "../ProjectPage";
 import { fetchAll } from "@/utils/async";
 import { assertPresent } from "@/utils/assertions";
 import { PageModule } from "@/routes/types";
@@ -67,6 +68,7 @@ function Page() {
     updateTaskDueDate,
     updateTaskStatus,
     updateTaskMilestone,
+    deleteTask,
   } = Tasks.useTasksForTurboUi({
     backendTasks,
     projectId: milestone.project.id,
@@ -143,6 +145,19 @@ function Page() {
     [updateTaskMilestone],
   );
 
+  const handleTaskDelete = React.useCallback(
+    async (taskId: string) => {
+      const result = await deleteTask(taskId);
+
+      if (!result?.success) return;
+
+      if (milestone.project?.id) {
+        PageCache.invalidate(projectPageCacheKey(milestone.project.id));
+      }
+    },
+    [deleteTask, milestone.project?.id],
+  );
+
   const props: MilestoneKanbanPage.Props = {
     projectName: milestone.project.name ?? "",
 
@@ -164,6 +179,7 @@ function Page() {
     onTaskDueDateChange: updateTaskDueDate,
     onTaskStatusChange: updateTaskStatus,
     onTaskMilestoneChange: handleTaskMilestoneChange,
+    onTaskDelete: handleTaskDelete,
     milestones: milestones,
     onMilestoneSearch: searchMilestones,
     onTaskDescriptionChange: handleTaskDescriptionChange,
