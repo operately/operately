@@ -105,7 +105,6 @@ function Page() {
     update: (taskId, v) => Api.project_tasks.updateName({ taskId, name: v }),
     onError: (e: string) => showErrorToast(e, "Failed to update task name."),
     validations: [(v) => (v.trim() === "" ? "Task name cannot be empty" : null)],
-    refreshPageData: refresh,
     onOptimisticUpdade: (taskId, v) => {
       setBaseTasks((prev) =>
         prev.map((t) => {
@@ -121,7 +120,6 @@ function Page() {
   const handleTaskDescriptionChange = usePageField<any>({
     update: (taskId, v) => Api.project_tasks.updateDescription({ taskId, description: JSON.stringify(v) }),
     onError: () => showErrorToast("Error", "Failed to update task description."),
-    refreshPageData: refresh,
     onOptimisticUpdade: (taskId, v) => {
       setBaseTasks((prev) =>
         prev.map((t) => {

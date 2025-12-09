@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback, useEffect } from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import { SlideIn } from "../../SlideIn";
 import { Task, Milestone } from "../types";
 import { DateField } from "../../DateField";
@@ -157,13 +157,6 @@ interface TitleSectionProps {
 function TitleSection({ task, onNameChange }: TitleSectionProps) {
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState("");
-  const [displayTitle, setDisplayTitle] = useState(task.title);
-
-  useEffect(() => {
-    if (!isEditingName) {
-      setDisplayTitle(task.title);
-    }
-  }, [task.title, isEditingName]);
 
   const handleStartEditing = () => {
     if (!onNameChange) return;
@@ -175,7 +168,6 @@ function TitleSection({ task, onNameChange }: TitleSectionProps) {
     const trimmed = editedName.trim();
 
     if (trimmed && trimmed !== task.title) {
-      setDisplayTitle(trimmed);
       onNameChange?.(task.id, trimmed);
     }
 
@@ -209,7 +201,7 @@ function TitleSection({ task, onNameChange }: TitleSectionProps) {
       ) : (
         <div className={onNameChange ? "cursor-text flex items-center gap-2" : "flex items-center gap-2"}>
           <span onClick={handleStartEditing} className="text-2xl font-bold text-content-accent leading-tight">
-            {displayTitle}
+            {task.title}
           </span>
 
           {!isEditingName && task.link && (
@@ -344,12 +336,17 @@ function DescriptionEdit({
       return;
     }
 
+    const previous = description;
+
+    onDone(content);
+
     const success = await onDescriptionChange(taskId, content);
 
-    if (success) {
-      onDone(content);
+    // If the update fails, revert to previous value
+    if (!success) {
+      onDone(previous);
     }
-  }, [editor, onDescriptionChange, onDone, taskId]);
+  }, [editor, onDescriptionChange, onDone, taskId, description]);
 
   return (
     <Field label="Description">
