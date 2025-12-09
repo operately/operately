@@ -43,21 +43,7 @@ type Story = StoryObj<typeof meta>;
 function Component(props: Partial<TaskPage.Props>) {
   const [name, setName] = React.useState(props.name || "");
   const [description, setDescription] = React.useState(props.description || null);
-
-  // Normalize incoming status prop (which the stories provide as a string)
-  // into a full StatusSelector.StatusOption for TaskPage/StatusSelector.
-  const initialStatusOption = React.useMemo(() => {
-    const baseOptions = props.statusOptions ?? DEFAULT_STATUS_OPTIONS;
-
-    if (props.status && typeof (props.status as any) === "object") {
-      return props.status as any;
-    }
-
-    const key = (props.status as any) || "pending";
-    return baseOptions.find((s) => s.value === key || s.id === key) ?? baseOptions[0];
-  }, [props.status, props.statusOptions]);
-
-  const [status, setStatus] = React.useState<typeof initialStatusOption | null>(initialStatusOption);
+  const [status, setStatus] = React.useState(props.status || "pending");
   const [dueDate, setDueDate] = React.useState<DateField.ContextualDate | undefined>(props.dueDate);
   const [assignee, setAssignee] = React.useState(props.assignee || null);
   const [milestone, setMilestone] = React.useState<TaskPage.Milestone | null>(props.milestone || null);
@@ -123,7 +109,7 @@ function Component(props: Partial<TaskPage.Props>) {
     status: status as any,
     onStatusChange: (newStatus) => {
       console.log("Updating task status:", newStatus);
-      setStatus(newStatus as any);
+      setStatus(newStatus);
     },
 
     dueDate: dueDate,
