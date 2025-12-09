@@ -106,12 +106,32 @@ function Page() {
     onError: (e: string) => showErrorToast(e, "Failed to update task name."),
     validations: [(v) => (v.trim() === "" ? "Task name cannot be empty" : null)],
     refreshPageData: refresh,
+    onOptimisticUpdade: (taskId, v) => {
+      setBaseTasks((prev) =>
+        prev.map((t) => {
+          if (t.id === taskId) {
+            return { ...t, title: v };
+          }
+          return t;
+        }),
+      );
+    },
   });
 
   const handleTaskDescriptionChange = usePageField<any>({
     update: (taskId, v) => Api.project_tasks.updateDescription({ taskId, description: JSON.stringify(v) }),
     onError: () => showErrorToast("Error", "Failed to update task description."),
     refreshPageData: refresh,
+    onOptimisticUpdade: (taskId, v) => {
+      setBaseTasks((prev) =>
+        prev.map((t) => {
+          if (t.id === taskId) {
+            return { ...t, description: v ? JSON.stringify(v) : "" };
+          }
+          return t;
+        }),
+      );
+    },
   });
 
   const handleTaskMilestoneChange = React.useCallback(
@@ -164,6 +184,7 @@ interface usePageFieldProps<T> {
   onError: (error: any) => void;
   validations?: ((newValue: T) => string | null)[];
   refreshPageData?: () => Promise<void>;
+  onOptimisticUpdade?: (taskId: string, newValue: T) => void;
 }
 
 function usePageField<T>({
@@ -171,6 +192,7 @@ function usePageField<T>({
   onError,
   validations,
   refreshPageData,
+  onOptimisticUpdade,
 }: usePageFieldProps<T>): (taskId: string, v: T) => Promise<boolean> {
   const pageData = PageCache.useData(loader);
   const { data } = pageData;
@@ -190,6 +212,10 @@ function usePageField<T>({
       const errorHandler = (error: any) => {
         onError?.(error);
       };
+
+      if (onOptimisticUpdade) {
+        onOptimisticUpdade(taskId, newVal);
+      }
 
       try {
         const res = await update(taskId, newVal);
@@ -211,6 +237,6 @@ function usePageField<T>({
         return false;
       }
     },
-    [update, onError, validations, refreshPageData, data.milestone.id],
+    [update, onError, validations, refreshPageData, onOptimisticUpdade, data.milestone.id],
   );
 }

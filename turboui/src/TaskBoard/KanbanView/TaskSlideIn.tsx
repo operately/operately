@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from "react";
+import React, { useMemo, useState, useCallback, useEffect } from "react";
 import { SlideIn } from "../../SlideIn";
 import { Task, Milestone } from "../types";
 import { DateField } from "../../DateField";
@@ -9,7 +9,7 @@ import RichContent, { countCharacters, isContentEmpty, shortenContent } from "..
 import { Editor, useEditor } from "../../RichEditor";
 import type { RichEditorHandlers } from "../../RichEditor/useEditor";
 import { PrimaryButton, SecondaryButton } from "../../Button";
-import { IconX } from "../../icons";
+import { IconExternalLink, IconX } from "../../icons";
 import { BlackLink } from "../../Link";
 
 interface TaskSlideInProps {
@@ -45,8 +45,6 @@ export function TaskSlideIn({
   onMilestoneSearch,
   richTextHandlers,
 }: TaskSlideInProps) {
-  const [isEditingName, setIsEditingName] = useState(false);
-  const [editedName, setEditedName] = useState("");
   const descriptionContent = useMemo(() => {
     if (!task?.description) return null;
     try {
@@ -77,52 +75,7 @@ export function TaskSlideIn({
       }
     >
       <div className="flex flex-col gap-8 px-6 py-6">
-        {/* Title */}
-        <div className="w-full border-b border-surface-outline pb-4">
-          {isEditingName ? (
-            <input
-              type="text"
-              value={editedName}
-              onChange={(e) => setEditedName(e.target.value)}
-              onBlur={() => {
-                if (editedName.trim() && editedName !== task.title) {
-                  onNameChange?.(task.id, editedName.trim());
-                }
-                setIsEditingName(false);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  if (editedName.trim() && editedName !== task.title) {
-                    onNameChange?.(task.id, editedName.trim());
-                  }
-                  setIsEditingName(false);
-                } else if (e.key === "Escape") {
-                  setIsEditingName(false);
-                }
-              }}
-              autoFocus
-              className="w-full text-2xl font-bold text-content-accent leading-tight bg-transparent border-none outline-none focus:ring-0"
-            />
-          ) : (
-            <div
-              onClick={() => {
-                if (onNameChange) {
-                  setEditedName(task.title);
-                  setIsEditingName(true);
-                }
-              }}
-              className={onNameChange ? "cursor-text" : ""}
-            >
-              <BlackLink
-                to={task.link}
-                underline="hover"
-                className="text-2xl font-bold text-content-accent leading-tight"
-              >
-                {task.title}
-              </BlackLink>
-            </div>
-          )}
-        </div>
+        <TitleSection task={task} onNameChange={onNameChange} />
 
         <div className="grid grid-cols-2 gap-x-8 gap-y-6">
           <Field label="Status">
@@ -192,6 +145,80 @@ function Field({
         {headerAction && <div className="opacity-0 group-hover:opacity-100 transition-opacity">{headerAction}</div>}
       </div>
       <div className="min-h-[32px] flex items-center">{children}</div>
+    </div>
+  );
+}
+
+interface TitleSectionProps {
+  task: Task;
+  onNameChange?: (taskId: string, name: string) => void;
+}
+
+function TitleSection({ task, onNameChange }: TitleSectionProps) {
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editedName, setEditedName] = useState("");
+  const [displayTitle, setDisplayTitle] = useState(task.title);
+
+  useEffect(() => {
+    if (!isEditingName) {
+      setDisplayTitle(task.title);
+    }
+  }, [task.title, isEditingName]);
+
+  const handleStartEditing = () => {
+    if (!onNameChange) return;
+    setEditedName(task.title);
+    setIsEditingName(true);
+  };
+
+  const handleCommitChange = () => {
+    const trimmed = editedName.trim();
+
+    if (trimmed && trimmed !== task.title) {
+      setDisplayTitle(trimmed);
+      onNameChange?.(task.id, trimmed);
+    }
+
+    setIsEditingName(false);
+  };
+
+  const handleBlur: React.FocusEventHandler<HTMLInputElement> = () => {
+    handleCommitChange();
+  };
+
+  const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
+    if (e.key === "Enter") {
+      handleCommitChange();
+    } else if (e.key === "Escape") {
+      setIsEditingName(false);
+    }
+  };
+
+  return (
+    <div className="w-full border-b border-surface-outline pb-4">
+      {isEditingName ? (
+        <input
+          type="text"
+          value={editedName}
+          onChange={(e) => setEditedName(e.target.value)}
+          onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
+          autoFocus
+          className="w-full text-2xl font-bold text-content-accent leading-tight bg-transparent border-none outline-none focus:ring-0"
+        />
+      ) : (
+        <div className={onNameChange ? "cursor-text flex items-center gap-2" : "flex items-center gap-2"}>
+          <span onClick={handleStartEditing} className="text-2xl font-bold text-content-accent leading-tight">
+            {displayTitle}
+          </span>
+
+          {!isEditingName && task.link && (
+            <BlackLink to={task.link} underline="hover" className="-mt-6 text-content-dimmed hover:text-content-base">
+              <IconExternalLink size={14} />
+            </BlackLink>
+          )}
+        </div>
+      )}
     </div>
   );
 }
