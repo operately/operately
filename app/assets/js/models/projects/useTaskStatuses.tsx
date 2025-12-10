@@ -1,28 +1,28 @@
 import * as React from "react";
-import Api, { type ProjectTaskStatus } from "@/api";
+import Api, { type TaskStatus } from "@/api";
 import { showErrorToast } from "turboui";
 import type { ProjectPage } from "turboui";
 import * as Tasks from "@/models/tasks";
 
-type TaskStatus = ProjectPage.TaskStatus;
+type Status = ProjectPage.TaskStatus;
 
 export function useTaskStatuses(
   projectId: string,
-  backendStatuses: ProjectTaskStatus[] | null | undefined,
+  backendStatuses: TaskStatus[] | null | undefined,
   refresh?: () => void,
 ) {
   const statuses = React.useMemo(
     () =>
       Tasks.parseTaskStatusesForTurboUi(backendStatuses).map((status) => ({
         ...status,
-        color: status.color as TaskStatus["color"],
-        icon: status.icon as TaskStatus["icon"],
+        color: status.color as Status["color"],
+        icon: status.icon as Status["icon"],
       })),
     [backendStatuses],
   );
 
   const handleSaveStatuses = React.useCallback(
-    async (nextStatuses: TaskStatus[]) => {
+    async (nextStatuses: Status[]) => {
       const taskStatuses = Tasks.serializeTaskStatuses(nextStatuses);
 
       try {

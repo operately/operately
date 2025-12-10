@@ -7,7 +7,7 @@ defmodule Operately.Data.Change087PopulateDefaultTaskStatuses do
   import Ecto.Query, only: [from: 2]
 
   alias Operately.Repo
-  alias Operately.Projects.TaskStatus
+  alias Operately.Tasks.Status
   alias __MODULE__.Project
 
   def run do
@@ -26,7 +26,7 @@ defmodule Operately.Data.Change087PopulateDefaultTaskStatuses do
   end
 
   defp populate_task_statuses(projects) do
-    default_statuses = TaskStatus.default_task_statuses()
+    default_statuses = Status.default_task_statuses()
 
     Enum.each(projects, fn project ->
       # Convert TaskStatus structs to maps for embedding

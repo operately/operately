@@ -119,4 +119,77 @@ defmodule OperatelyWeb.Api.SpacesTest do
       assert Paths.person_id(ctx.creator) in ids
     end
   end
+
+  describe "update task statuses" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+    end
+
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:spaces, :update_task_statuses], %{})
+    end
+
+    test "it requires a space_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:spaces, :update_task_statuses], %{
+        task_statuses: [
+          %{id: "todo", label: "Todo", color: "gray", index: 0, value: "todo", closed: false}
+        ]
+      })
+
+      assert res.message == "Missing required fields: space_id"
+    end
+
+    test "it requires at least one task status", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:spaces, :update_task_statuses], %{
+        space_id: Paths.space_id(ctx.space),
+        task_statuses: []
+      })
+
+      assert res.message == "At least one task status is required"
+    end
+
+    test "it updates task statuses for the space", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      statuses = [
+        %{id: "todo", label: "Todo", color: "gray", index: 0, value: "todo", closed: false},
+        %{id: "in_progress", label: "In progress", color: "blue", index: 1, value: "in_progress", closed: false},
+        %{id: "done", label: "Done", color: "green", index: 2, value: "done", closed: false}
+      ]
+
+      assert {200, res} = mutation(ctx.conn, [:spaces, :update_task_statuses], %{
+        space_id: Paths.space_id(ctx.space),
+        task_statuses: statuses
+      })
+
+      assert res.success == true
+
+      space = Repo.reload(ctx.space)
+
+      assert length(space.task_statuses) == 3
+      assert Enum.map(space.task_statuses, & &1.label) == ["Todo", "In progress", "Done"]
+    end
+
+    test "it returns forbidden when the person cannot edit the space", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:outsider)
+        |> Factory.log_in_person(:outsider)
+
+      statuses = [
+        %{id: "todo", label: "Todo", color: "gray", index: 0, value: "todo", closed: false}
+      ]
+
+      assert {403, _res} = mutation(ctx.conn, [:spaces, :update_task_statuses], %{
+        space_id: Paths.space_id(ctx.space),
+        task_statuses: statuses
+      })
+    end
+  end
 end

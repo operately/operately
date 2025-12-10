@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import Api, { type ProjectTaskStatus } from "@/api";
+import Api, { type TaskStatus } from "@/api";
 import { MilestoneKanbanPage, showErrorToast } from "turboui";
 
 import { compareIds, includesId } from "@/routes/paths";
@@ -89,7 +89,7 @@ type MilestoneKanbanState = Record<string, string[]>;
 
 function validateStatusForBackend(
   statusOption: MilestoneKanbanPage.StatusOption | null,
-): ProjectTaskStatus | null {
+): TaskStatus | null {
   if (statusOption?.value === "unknown-status") {
     console.error("Cannot move task to unknown-status");
     showErrorToast("Error", "Cannot move task to unknown status");

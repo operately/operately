@@ -151,7 +151,7 @@ defmodule OperatelyWeb.Api.Projects do
 
     inputs do
       field :project_id, :id, null: false
-      field :task_statuses, list_of(:project_task_status), null: false
+      field :task_statuses, list_of(:task_status), null: false
     end
 
     outputs do
