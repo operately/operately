@@ -112,14 +112,16 @@ defmodule Operately.Projects.Project do
     ])
   end
 
-  defp put_default_task_statuses(changeset) do
-    # Only set defaults if task_statuses is empty or not provided
+  defp put_default_task_statuses(%Ecto.Changeset{data: %__MODULE__{id: nil}} = changeset) do
+    # Only set defaults for new projects, and only if task_statuses is empty or not provided
     case Ecto.Changeset.get_field(changeset, :task_statuses) do
       [] -> Ecto.Changeset.put_embed(changeset, :task_statuses, Operately.Tasks.Status.default_task_statuses())
       nil -> Ecto.Changeset.put_embed(changeset, :task_statuses, Operately.Tasks.Status.default_task_statuses())
       _ -> changeset
     end
   end
+
+  defp put_default_task_statuses(changeset), do: changeset
 
   def task_status_values(project = %__MODULE__{}) do
     project.task_statuses
