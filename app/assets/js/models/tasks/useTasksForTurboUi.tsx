@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import Api, { type ProjectTaskStatus } from "@/api";
+import Api, { type TaskStatus } from "@/api";
 import * as Milestones from "../milestones";
 import * as Tasks from "./index";
 
@@ -127,7 +127,7 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
     }
 
     try {
-      const backendStatus: ProjectTaskStatus | null = Tasks.serializeTaskStatus(task.status ?? null);
+      const backendStatus: TaskStatus | null = Tasks.serializeTaskStatus(task.status ?? null);
 
       const input: any = {
         name: task.title,
@@ -229,7 +229,7 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
 
   const updateTaskStatus = async (taskId: string, status: TaskBoard.Status | null) => {
     const snapshot = createSnapshot();
-    const backendStatus: ProjectTaskStatus | null = Tasks.serializeTaskStatus(status);
+    const backendStatus: TaskStatus | null = Tasks.serializeTaskStatus(status);
 
     // Optimistic update
     setTasks((prev) =>

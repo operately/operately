@@ -90,6 +90,30 @@ defmodule Operately.ProjectsTest do
       assert pending.color == :gray
     end
 
+    test "update_project/2 does not overwrite custom task statuses", ctx do
+      custom_statuses = [
+        %{
+          id: "custom_todo",
+          label: "Custom Todo",
+          color: :gray,
+          index: 0,
+          value: "custom_todo",
+          closed: false
+        }
+      ]
+
+      assert {:ok, %Project{} = project_with_custom_statuses} =
+               Projects.update_project(ctx.project, %{task_statuses: custom_statuses})
+
+      assert Enum.map(project_with_custom_statuses.task_statuses, & &1.id) == ["custom_todo"]
+
+      assert {:ok, %Project{} = updated_project} =
+               Projects.update_project(project_with_custom_statuses, %{name: "some updated name"})
+
+      assert updated_project.name == "some updated name"
+      assert Enum.map(updated_project.task_statuses, & &1.id) == ["custom_todo"]
+    end
+
     test "update_project/2 with valid data updates the project", ctx do
       update_attrs = %{name: "some updated name"}
 

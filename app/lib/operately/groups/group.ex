@@ -9,11 +9,13 @@ defmodule Operately.Groups.Group do
 
     has_many :memberships, Operately.Groups.Member, foreign_key: :group_id
     has_many :members, through: [:memberships, :person]
-    has_many :tasks, Operately.Tasks.Task, foreign_key: :space_id
     has_one :access_context, Operately.Access.Context, foreign_key: :group_id
 
     field :name, :string
     field :mission, :string
+
+    has_many :tasks, Operately.Tasks.Task, foreign_key: :space_id
+    embeds_many :task_statuses, Operately.Tasks.Status, on_replace: :delete
 
     # populated by after load hooks
     field :is_member, :boolean, virtual: true
@@ -35,8 +37,21 @@ defmodule Operately.Groups.Group do
   def changeset(group, attrs) do
     group
     |> cast(attrs, [:company_id, :name, :mission, :deleted_at])
+    |> cast_embed(:task_statuses)
+    |> put_default_task_statuses()
     |> validate_required([:company_id, :name, :mission])
   end
+
+  defp put_default_task_statuses(%Ecto.Changeset{data: %__MODULE__{id: nil}} = changeset) do
+    # Only set defaults for new spaces, and only if task_statuses is empty or not provided
+    case Ecto.Changeset.get_field(changeset, :task_statuses) do
+      [] -> Ecto.Changeset.put_embed(changeset, :task_statuses, Operately.Tasks.Status.default_task_statuses())
+      nil -> Ecto.Changeset.put_embed(changeset, :task_statuses, Operately.Tasks.Status.default_task_statuses())
+      _ -> changeset
+    end
+  end
+
+  defp put_default_task_statuses(changeset), do: changeset
 
   #
   # Scopes
