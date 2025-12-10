@@ -303,7 +303,7 @@ function TitleSection({ task, onNameChange }: TitleSectionProps) {
         </div>
       ) : (
         <div
-          className={onNameChange ? "cursor-text flex items-center gap-2" : "flex items-center gap-2"}
+          className={onNameChange ? "cursor-text" : undefined}
           data-test-id={createTestId("task-title-display", task.id)}
         >
           <span onClick={handleStartEditing} className="text-2xl font-bold text-content-accent leading-tight">
@@ -311,7 +311,11 @@ function TitleSection({ task, onNameChange }: TitleSectionProps) {
           </span>
 
           {displayLink && (
-            <BlackLink to={task.link} underline="hover" className="-mt-6 text-content-dimmed hover:text-content-base">
+            <BlackLink
+              to={task.link}
+              underline="hover"
+              className="ml-2 -mt-1 inline-block align-text-top text-content-dimmed hover:text-content-base"
+            >
               <IconExternalLink size={14} />
             </BlackLink>
           )}
