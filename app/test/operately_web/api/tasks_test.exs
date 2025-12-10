@@ -1,6 +1,6 @@
 defmodule OperatelyWeb.Api.ProjectTasksTest do
   alias Operately.Support.RichText
-  alias Operately.Projects.{Contributor, TaskStatus}
+  alias Operately.Projects.Contributor
 
   use OperatelyWeb.TurboCase
   use Operately.Support.Notifications
@@ -180,7 +180,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.task.id)
       task = Operately.Tasks.Task.get!(:system, id: id)
-      default_status = TaskStatus.default_task_status()
+      default_status = Operately.Tasks.Status.default_task_status()
 
       assert task.task_status.value == default_status.value
       assert task.task_status.label == default_status.label
