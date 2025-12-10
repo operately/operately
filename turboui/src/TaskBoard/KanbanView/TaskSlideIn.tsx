@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback, useEffect } from "react";
+import React, { useMemo, useState, useCallback, useEffect, useRef } from "react";
 import { SlideIn } from "../../SlideIn";
 import { Task, Milestone } from "../types";
 import { DateField } from "../../DateField";
@@ -223,6 +223,7 @@ interface TitleSectionProps {
 function TitleSection({ task, onNameChange }: TitleSectionProps) {
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState("");
+  const titleInputRef = useRef<HTMLTextAreaElement | null>(null);
 
   const displayLink = !isEditingName && task.type === "project" && task.link;
 
@@ -242,31 +243,64 @@ function TitleSection({ task, onNameChange }: TitleSectionProps) {
     setIsEditingName(false);
   };
 
-  const handleBlur: React.FocusEventHandler<HTMLInputElement> = () => {
+  const handleBlur: React.FocusEventHandler<HTMLTextAreaElement> = () => {
     handleCommitChange();
   };
 
-  const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
+  const handleKeyDown: React.KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
     if (e.key === "Enter") {
+      e.preventDefault();
       handleCommitChange();
     } else if (e.key === "Escape") {
       setIsEditingName(false);
     }
   };
 
+  // Auto-resize to fit content whenever the text changes in edit mode
+  useEffect(() => {
+    if (!isEditingName) return;
+
+    const el = titleInputRef.current;
+    if (!el) return;
+
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }, [isEditingName, editedName]);
+
+  // When switching from read to edit mode, move caret to the end once
+  useEffect(() => {
+    if (!isEditingName) return;
+
+    const el = titleInputRef.current;
+    if (!el) return;
+
+    if (document.activeElement === el) {
+      const length = el.value.length;
+      try {
+        el.setSelectionRange(length, length);
+      } catch {
+        // Ignore if setSelectionRange is not supported
+      }
+    }
+  }, [isEditingName]);
+
   return (
     <div className="w-full border-b border-surface-outline pb-4">
       {isEditingName ? (
-        <input
-          type="text"
-          value={editedName}
-          onChange={(e) => setEditedName(e.target.value)}
-          onBlur={handleBlur}
-          onKeyDown={handleKeyDown}
-          autoFocus
-          className="w-full text-2xl font-bold text-content-accent leading-tight bg-transparent border-none outline-none focus:ring-0"
-          data-test-id={createTestId("task-title-input", task.id)}
-        />
+        <div className="flex items-center gap-2">
+          <textarea
+            ref={titleInputRef}
+            value={editedName}
+            onChange={(e) => setEditedName(e.target.value)}
+            onBlur={handleBlur}
+            onKeyDown={handleKeyDown}
+            autoFocus
+            rows={1}
+            wrap="soft"
+            className="w-full text-2xl font-bold text-content-accent leading-tight bg-transparent border-none outline-none focus:ring-0 resize-none overflow-hidden break-words p-0"
+            data-test-id={createTestId("task-title-input", task.id)}
+          />
+        </div>
       ) : (
         <div
           className={onNameChange ? "cursor-text flex items-center gap-2" : "flex items-center gap-2"}
