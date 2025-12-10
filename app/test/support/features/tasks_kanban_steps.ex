@@ -267,7 +267,7 @@ defmodule Operately.Support.Features.TasksKanbanSteps do
 
   def single_status(label) do
     [
-      %Operately.Projects.TaskStatus{
+      %Operately.Tasks.Status{
         id: Ecto.UUID.generate(),
         label: label,
         color: :gray,

@@ -37,7 +37,7 @@ defmodule Operately.Projects.Project do
     field :private, :boolean, default: false
 
     embeds_one :timeframe, Operately.ContextualDates.Timeframe, on_replace: :delete
-    embeds_many :task_statuses, Operately.Projects.TaskStatus, on_replace: :delete
+    embeds_many :task_statuses, Operately.Tasks.Status, on_replace: :delete
 
     belongs_to :last_check_in, CheckIn, foreign_key: :last_check_in_id
     field :last_check_in_status, Ecto.Enum, values: CheckIn.valid_status()
@@ -112,14 +112,16 @@ defmodule Operately.Projects.Project do
     ])
   end
 
-  defp put_default_task_statuses(changeset) do
-    # Only set defaults if task_statuses is empty or not provided
+  defp put_default_task_statuses(%Ecto.Changeset{data: %__MODULE__{id: nil}} = changeset) do
+    # Only set defaults for new projects, and only if task_statuses is empty or not provided
     case Ecto.Changeset.get_field(changeset, :task_statuses) do
-      [] -> Ecto.Changeset.put_embed(changeset, :task_statuses, Operately.Projects.TaskStatus.default_task_statuses())
-      nil -> Ecto.Changeset.put_embed(changeset, :task_statuses, Operately.Projects.TaskStatus.default_task_statuses())
+      [] -> Ecto.Changeset.put_embed(changeset, :task_statuses, Operately.Tasks.Status.default_task_statuses())
+      nil -> Ecto.Changeset.put_embed(changeset, :task_statuses, Operately.Tasks.Status.default_task_statuses())
       _ -> changeset
     end
   end
+
+  defp put_default_task_statuses(changeset), do: changeset
 
   def task_status_values(project = %__MODULE__{}) do
     project.task_statuses
