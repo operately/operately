@@ -922,8 +922,8 @@ export interface ActivityContentTaskStatusChange {
 export interface ActivityContentTaskStatusUpdating {
   project: Project;
   task: Task;
-  oldStatus: ProjectTaskStatus;
-  newStatus: ProjectTaskStatus;
+  oldStatus: TaskStatus;
+  newStatus: TaskStatus;
   name: string;
 }
 
@@ -1312,7 +1312,7 @@ export interface Milestone {
   permissions?: ProjectPermissions | null;
   subscriptionList?: SubscriptionList | null;
   space?: Space | null;
-  availableStatuses?: ProjectTaskStatus[] | null;
+  availableStatuses?: TaskStatus[] | null;
 }
 
 export interface MilestoneComment {
@@ -1400,7 +1400,7 @@ export interface Project {
   notifications?: Notification[] | null;
   subscriptionList?: SubscriptionList | null;
   milestonesOrderingState?: string[] | null;
-  taskStatuses?: ProjectTaskStatus[] | null;
+  taskStatuses?: TaskStatus[] | null;
 }
 
 export interface ProjectCheckIn {
@@ -1517,15 +1517,6 @@ export interface ProjectReviewRequest {
   reviewId?: string | null;
   content?: string | null;
   author?: Person | null;
-}
-
-export interface ProjectTaskStatus {
-  id: string;
-  label: string;
-  color: ProjectTaskStatusColor;
-  index: number;
-  value: string;
-  closed: boolean;
 }
 
 export interface Reaction {
@@ -1771,7 +1762,7 @@ export interface Task {
   dueDate?: ContextualDate | null;
   size?: string | null;
   priority?: string | null;
-  status?: ProjectTaskStatus | null;
+  status?: TaskStatus | null;
   milestone?: Milestone | null;
   project?: Project | null;
   description?: string | null;
@@ -1781,7 +1772,16 @@ export interface Task {
   permissions?: ProjectPermissions | null;
   commentsCount?: number | null;
   subscriptionList?: SubscriptionList | null;
-  availableStatuses?: ProjectTaskStatus[] | null;
+  availableStatuses?: TaskStatus[] | null;
+}
+
+export interface TaskStatus {
+  id: string;
+  label: string;
+  color: ProjectTaskStatusColor;
+  index: number;
+  value: string;
+  closed: boolean;
 }
 
 export interface Timeframe {
@@ -4038,7 +4038,7 @@ export interface ProjectsUpdateStartDateResult {
 
 export interface ProjectsUpdateTaskStatusesInput {
   projectId: Id;
-  taskStatuses: ProjectTaskStatus[];
+  taskStatuses: TaskStatus[];
 }
 
 export interface ProjectsUpdateTaskStatusesResult {
@@ -4176,6 +4176,15 @@ export interface ResumeProjectResult {
   project?: Project | null;
 }
 
+export interface SpacesUpdateTaskStatusesInput {
+  spaceId: Id;
+  taskStatuses: TaskStatus[];
+}
+
+export interface SpacesUpdateTaskStatusesResult {
+  success: boolean | null;
+}
+
 export interface SubscribeToNotificationsInput {
   id: Id;
   type: SubscriptionParentType;
@@ -4189,7 +4198,7 @@ export interface TasksCreateInput {
   name: string;
   assigneeId: Id | null;
   dueDate: ContextualDate | null;
-  status?: ProjectTaskStatus;
+  status?: TaskStatus;
 }
 
 export interface TasksCreateResult {
@@ -4236,7 +4245,7 @@ export interface TasksUpdateDueDateResult {
 export interface TasksUpdateKanbanInput {
   taskId: Id;
   milestoneId: Id | null;
-  status: ProjectTaskStatus;
+  status: TaskStatus;
   milestoneKanbanState: Json;
 }
 
@@ -4276,7 +4285,7 @@ export interface TasksUpdateNameResult {
 
 export interface TasksUpdateStatusInput {
   taskId: Id;
-  status: ProjectTaskStatus | null;
+  status: TaskStatus | null;
 }
 
 export interface TasksUpdateStatusResult {
@@ -4962,6 +4971,10 @@ class ApiNamespaceSpaces {
 
   async search(input: SpacesSearchInput): Promise<SpacesSearchResult> {
     return this.client.get("/spaces/search", input);
+  }
+
+  async updateTaskStatuses(input: SpacesUpdateTaskStatusesInput): Promise<SpacesUpdateTaskStatusesResult> {
+    return this.client.post("/spaces/update_task_statuses", input);
   }
 }
 
@@ -7563,6 +7576,13 @@ export default {
     listMembers: (input: SpacesListMembersInput) => defaultApiClient.apiNamespaceSpaces.listMembers(input),
     useListMembers: (input: SpacesListMembersInput) =>
       useQuery<SpacesListMembersResult>(() => defaultApiClient.apiNamespaceSpaces.listMembers(input)),
+
+    updateTaskStatuses: (input: SpacesUpdateTaskStatusesInput) =>
+      defaultApiClient.apiNamespaceSpaces.updateTaskStatuses(input),
+    useUpdateTaskStatuses: () =>
+      useMutation<SpacesUpdateTaskStatusesInput, SpacesUpdateTaskStatusesResult>((input) =>
+        defaultApiClient.apiNamespaceSpaces.updateTaskStatuses(input),
+      ),
   },
 
   project_discussions: {

@@ -81,7 +81,7 @@ defmodule Operately.Data.Change088PopulateTaskStatusFromDeprecatedStatus do
 
     schema "tasks" do
       field :status, :string
-      embeds_one :task_status, Operately.Projects.TaskStatus, on_replace: :update
+      embeds_one :task_status, Operately.Tasks.Status, on_replace: :update
 
       timestamps()
     end

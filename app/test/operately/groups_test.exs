@@ -42,6 +42,24 @@ defmodule Operately.GroupsTest do
       assert group.name == "some name"
     end
 
+    test "create_group/1 creates group with default task statuses", ctx do
+      valid_attrs = %{name: "space with defaults", mission: "some mission", company_id: ctx.company.id}
+
+      assert {:ok, %Group{} = group} = Groups.create_group(ctx.creator, valid_attrs)
+
+      assert length(group.task_statuses) == 4
+
+      statuses_by_value = Enum.group_by(group.task_statuses, & &1.value)
+      assert Map.has_key?(statuses_by_value, "pending")
+      assert Map.has_key?(statuses_by_value, "in_progress")
+      assert Map.has_key?(statuses_by_value, "done")
+      assert Map.has_key?(statuses_by_value, "canceled")
+
+      pending = hd(statuses_by_value["pending"])
+      assert pending.label == "Not started"
+      assert pending.color == :gray
+    end
+
     test "create_group/1 with invalid data returns error changeset", ctx do
       assert {:error, :group, %Ecto.Changeset{}, _} = Groups.create_group(ctx.creator, @invalid_attrs)
     end
@@ -51,6 +69,30 @@ defmodule Operately.GroupsTest do
 
       assert {:ok, %Group{} = group} = Groups.update_group(ctx.group, update_attrs)
       assert group.name == "some updated name"
+    end
+
+    test "update_group/2 does not overwrite custom task statuses", ctx do
+      custom_statuses = [
+        %{
+          id: "custom_todo",
+          label: "Custom Todo",
+          color: :gray,
+          index: 0,
+          value: "custom_todo",
+          closed: false
+        }
+      ]
+
+      assert {:ok, %Group{} = group_with_custom_statuses} =
+               Groups.update_group(ctx.group, %{task_statuses: custom_statuses})
+
+      assert Enum.map(group_with_custom_statuses.task_statuses, & &1.id) == ["custom_todo"]
+
+      assert {:ok, %Group{} = updated_group} =
+               Groups.update_group(group_with_custom_statuses, %{name: "some updated name"})
+
+      assert updated_group.name == "some updated name"
+      assert Enum.map(updated_group.task_statuses, & &1.id) == ["custom_todo"]
     end
 
     test "update_group/2 with invalid data returns error changeset", ctx do

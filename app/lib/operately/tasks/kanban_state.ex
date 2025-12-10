@@ -1,5 +1,5 @@
 defmodule Operately.Tasks.KanbanState do
-  alias Operately.Projects.TaskStatus
+  alias Operately.Tasks.Status
   alias Operately.Tasks.Task
 
   defstruct state: %{}
@@ -28,7 +28,7 @@ defmodule Operately.Tasks.KanbanState do
   end
 
   def default_statuses do
-    TaskStatus.default_task_statuses()
+    Status.default_task_statuses()
     |> Enum.map(fn status -> status.value || status.id end)
     |> Enum.filter(& &1)
     |> normalize_statuses()

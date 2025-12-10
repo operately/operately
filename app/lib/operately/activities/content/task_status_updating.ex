@@ -8,8 +8,8 @@ defmodule Operately.Activities.Content.TaskStatusUpdating do
     belongs_to :milestone, Operately.Projects.Milestone
     belongs_to :task, Operately.Tasks.Task
 
-    embeds_one :old_status, Operately.Projects.TaskStatus
-    embeds_one :new_status, Operately.Projects.TaskStatus
+    embeds_one :old_status, Operately.Tasks.Status
+    embeds_one :new_status, Operately.Tasks.Status
 
     field :name, :string
   end
