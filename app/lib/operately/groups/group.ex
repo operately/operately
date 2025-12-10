@@ -9,11 +9,12 @@ defmodule Operately.Groups.Group do
 
     has_many :memberships, Operately.Groups.Member, foreign_key: :group_id
     has_many :members, through: [:memberships, :person]
-    has_many :tasks, Operately.Tasks.Task, foreign_key: :space_id
     has_one :access_context, Operately.Access.Context, foreign_key: :group_id
 
     field :name, :string
     field :mission, :string
+
+    has_many :tasks, Operately.Tasks.Task, foreign_key: :space_id
 
     # populated by after load hooks
     field :is_member, :boolean, virtual: true

@@ -1923,7 +1923,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :index, :integer, null: true
   end
 
-  enum(:project_task_status_color, values: Operately.Projects.TaskStatus.valid_colors())
+  enum(:project_task_status_color, values: Operately.Tasks.Status.valid_colors())
 
   object :project_task_status do
     field :id, :string, null: false

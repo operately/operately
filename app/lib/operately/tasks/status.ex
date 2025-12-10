@@ -1,4 +1,4 @@
-defmodule Operately.Projects.TaskStatus do
+defmodule Operately.Tasks.Status do
   use Ecto.Schema
   import Ecto.Changeset
 

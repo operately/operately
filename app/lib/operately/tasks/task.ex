@@ -10,7 +10,7 @@ defmodule Operately.Tasks.Task do
           description: map() | nil,
           due_date: %Operately.ContextualDates.ContextualDate{} | nil,
           status: String.t(),
-          task_status: Operately.Projects.TaskStatus.t() | nil,
+          task_status: Operately.Tasks.Status.t() | nil,
           closed_at: NaiveDateTime.t() | nil,
           reopened_at: NaiveDateTime.t() | nil,
           creator_id: Ecto.UUID.t() | nil,
@@ -46,7 +46,7 @@ defmodule Operately.Tasks.Task do
     field :deprecated_due_date, :naive_datetime
     embeds_one :due_date, Operately.ContextualDates.ContextualDate, on_replace: :update
 
-    embeds_one :task_status, Operately.Projects.TaskStatus, on_replace: :update
+    embeds_one :task_status, Operately.Tasks.Status, on_replace: :update
     field :closed_at, :naive_datetime
     field :reopened_at, :naive_datetime
 
@@ -147,7 +147,7 @@ defmodule Operately.Tasks.Task do
 
   defp put_default_task_status(changeset) do
     case Ecto.Changeset.get_field(changeset, :task_status) do
-      nil -> Ecto.Changeset.put_embed(changeset, :task_status, Operately.Projects.TaskStatus.default_task_status())
+      nil -> Ecto.Changeset.put_embed(changeset, :task_status, Operately.Tasks.Status.default_task_status())
       _ -> changeset
     end
   end
