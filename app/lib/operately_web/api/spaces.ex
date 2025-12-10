@@ -1,5 +1,9 @@
 defmodule OperatelyWeb.Api.Spaces do
+  alias __MODULE__.SharedMultiSteps, as: Steps
+
   alias Operately.Groups.Group, as: Space
+  alias Operately.Groups
+  alias Operately.Groups.Permissions
   alias OperatelyWeb.Api.Serializer
 
   defmodule Search do
@@ -90,6 +94,112 @@ defmodule OperatelyWeb.Api.Spaces do
 
     defp maybe_ignore_ids(query, ids) do
       from(p in query, where: p.id not in ^ids)
+    end
+  end
+
+  defmodule UpdateTaskStatuses do
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
+
+    inputs do
+      field :space_id, :id, null: false
+      field :task_statuses, list_of(:task_status), null: false
+    end
+
+    outputs do
+      field :success, :boolean, null: true
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_space(inputs.space_id)
+      |> Steps.check_permissions(:can_edit_statuses)
+      |> Steps.update_task_statuses(inputs.task_statuses)
+      |> Steps.commit()
+      |> Steps.respond(fn _ -> %{success: true} end)
+    end
+  end
+
+  defmodule SharedMultiSteps do
+    alias Ecto.Multi
+    alias Operately.Repo
+
+    def start_transaction(conn) do
+      Multi.new()
+      |> Multi.put(:conn, conn)
+      |> Multi.run(:me, fn _repo, %{conn: conn} ->
+        {:ok, conn.assigns.current_person}
+      end)
+    end
+
+    def find_space(multi, space_id) do
+      Multi.run(multi, :space, fn _repo, _changes ->
+        case Repo.get(Space, space_id) do
+          nil -> {:error, {:not_found, "Space not found"}}
+          space -> {:ok, space}
+        end
+      end)
+    end
+
+    def check_permissions(multi, permission) do
+      Multi.run(multi, :permissions, fn _repo, %{me: me, space: space} ->
+        access_level = Groups.get_access_level(space.id, me.id)
+        Permissions.check(access_level, permission)
+      end)
+    end
+
+    def update_task_statuses(multi, task_statuses) do
+      case task_statuses do
+        [] ->
+          Multi.run(multi, :validate_task_statuses, fn _repo, _changes ->
+            {:error, "At least one task status is required"}
+          end)
+
+        _ ->
+          Multi.update(multi, :updated_space, fn %{space: space} ->
+            Space.changeset(space, %{task_statuses: task_statuses})
+          end)
+      end
+    end
+
+    def commit(multi) do
+      Repo.transaction(multi)
+    end
+
+    def respond(result, ok_callback, error_callback \\ &handle_error/1) do
+      case result do
+        {:ok, changes} ->
+          {:ok, ok_callback.(changes)}
+
+        {:error, _, :idempotent, changes} ->
+          {:ok, ok_callback.(changes)}
+
+        e ->
+          error_callback.(e)
+      end
+    end
+
+    defp handle_error(reason) do
+      case reason do
+        {:error, _failed_operation, {:not_found, message}, _changes} ->
+          {:error, :not_found, message}
+
+        {:error, _failed_operation, :not_found, _changes} ->
+          {:error, :not_found}
+
+        {:error, _failed_operation, :forbidden, _changes} ->
+          {:error, :forbidden}
+
+        {:error, :validate_task_statuses, message, _changes} ->
+          {:error, :bad_request, message}
+
+        {:error, _failed_operation, _reason, _changes} ->
+          {:error, :internal_server_error}
+
+        _ ->
+          {:error, :internal_server_error}
+      end
     end
   end
 end
