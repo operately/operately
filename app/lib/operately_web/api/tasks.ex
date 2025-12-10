@@ -36,7 +36,7 @@ defmodule OperatelyWeb.Api.Tasks do
 
     inputs do
       field :task_id, :id, null: false
-      field :status, :project_task_status, null: true
+      field :status, :task_status, null: true
     end
 
     outputs do
@@ -84,7 +84,7 @@ defmodule OperatelyWeb.Api.Tasks do
     inputs do
       field :task_id, :id, null: false
       field :milestone_id, :id, null: true
-      field :status, :project_task_status, null: false
+      field :status, :task_status, null: false
       field :milestone_kanban_state, :json, null: false
     end
 
@@ -397,7 +397,7 @@ defmodule OperatelyWeb.Api.Tasks do
       field :name, :string, null: false
       field :assignee_id, :id, null: true
       field :due_date, :contextual_date, null: true
-      field? :status, :project_task_status, null: false
+      field? :status, :task_status, null: false
     end
 
     outputs do

@@ -474,7 +474,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :notifications, list_of(:notification), null: true
     field? :subscription_list, :subscription_list, null: true
     field? :milestones_ordering_state, list_of(:string), null: true
-    field? :task_statuses, list_of(:project_task_status), null: true
+    field? :task_statuses, list_of(:task_status), null: true
   end
 
   object :project_children_count do
@@ -867,8 +867,8 @@ defmodule OperatelyWeb.Api.Types do
   object :activity_content_task_status_updating do
     field :project, :project
     field :task, :task
-    field :old_status, :project_task_status
-    field :new_status, :project_task_status
+    field :old_status, :task_status
+    field :new_status, :task_status
     field :name, :string
   end
 
@@ -1209,7 +1209,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :due_date, :contextual_date, null: true
     field? :size, :string, null: true
     field? :priority, :string, null: true
-    field? :status, :project_task_status, null: true
+    field? :status, :task_status, null: true
     field? :milestone, :milestone, null: true
     field? :project, :project, null: true
     field? :description, :string, null: true
@@ -1219,7 +1219,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :permissions, :project_permissions, null: true
     field? :comments_count, :integer, null: true
     field? :subscription_list, :subscription_list, null: true
-    field? :available_statuses, list_of(:project_task_status), null: true
+    field? :available_statuses, list_of(:task_status), null: true
   end
 
   object :activity_content_discussion_editing do
@@ -1663,7 +1663,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :permissions, :project_permissions, null: true
     field? :subscription_list, :subscription_list, null: true
     field? :space, :space, null: true
-    field? :available_statuses, list_of(:project_task_status), null: true
+    field? :available_statuses, list_of(:task_status), null: true
   end
 
   object :activity_content_goal_check_in_edit do
@@ -1925,7 +1925,7 @@ defmodule OperatelyWeb.Api.Types do
 
   enum(:project_task_status_color, values: Operately.Tasks.Status.valid_colors())
 
-  object :project_task_status do
+  object :task_status do
     field :id, :string, null: false
     field :label, :string, null: false
     field :color, :project_task_status_color, null: false

@@ -1,4 +1,4 @@
-import { Task as BackendTask, ProjectTaskStatus } from "@/api";
+import { Task as BackendTask, TaskStatus } from "@/api";
 import { parseContextualDate } from "../contextualDates";
 import { Paths } from "@/routes/paths";
 import { parseMilestoneForTurboUi } from "../milestones";
@@ -45,18 +45,18 @@ export function parseTaskForTurboUi(paths: Paths, task: BackendTask, type: "proj
   };
 }
 
-export function serializeTaskStatuses(statuses: StatusSelector.StatusOption[] | null | undefined): ProjectTaskStatus[] {
+export function serializeTaskStatuses(statuses: StatusSelector.StatusOption[] | null | undefined): TaskStatus[] {
   if (!statuses || statuses.length === 0) return [];
 
   return statuses
     .map((status) => serializeTaskStatus(status))
-    .filter((status): status is ProjectTaskStatus => status !== null);
+    .filter((status): status is TaskStatus => status !== null);
 }
 
 /**
  * Serializes a TurboUI StatusSelector.StatusOption to a backend ProjectTaskStatus
  */
-export function serializeTaskStatus(status: StatusSelector.StatusOption | null | undefined): ProjectTaskStatus | null {
+export function serializeTaskStatus(status: StatusSelector.StatusOption | null | undefined): TaskStatus | null {
   if (!status) return null;
 
   return {
@@ -70,7 +70,7 @@ export function serializeTaskStatus(status: StatusSelector.StatusOption | null |
 }
 
 export function parseTaskStatusesForTurboUi(
-  backend: ProjectTaskStatus[] | null | undefined,
+  backend: TaskStatus[] | null | undefined,
 ): StatusSelector.StatusOption[] {
   if (!backend || backend.length === 0) return [];
 
@@ -82,7 +82,7 @@ export function parseTaskStatusesForTurboUi(
 }
 
 export function parseTaskStatusForTurboUi(
-  status: ProjectTaskStatus | null | undefined,
+  status: TaskStatus | null | undefined,
 ): StatusSelector.StatusOption | null {
   if (!status) return null;
 
