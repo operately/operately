@@ -46,11 +46,12 @@ defmodule OperatelyWeb.Api.Queries.GetComments do
 
   defp load(id, :project_task, person) do
     from(c in Comment,
-      join: task in Operately.Tasks.Task, on: c.entity_id == task.id, as: :task,
+      join: task in Operately.Tasks.Task, on: c.entity_id == task.id,
+      join: project in assoc(task, :project), as: :project,
       where: task.id == ^id and c.entity_type == :project_task
     )
     |> preload_resources()
-    |> filter_by_view_access(person.id, named_binding: :task)
+    |> filter_by_view_access(person.id, named_binding: :project)
     |> Repo.all()
     |> load_notifications(person, action: "project_task_commented")
   end
