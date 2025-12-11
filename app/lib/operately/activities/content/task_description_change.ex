@@ -20,10 +20,8 @@ defmodule Operately.Activities.Content.TaskDescriptionChange do
     |> validate_required([
       :company_id,
       :space_id,
-      :project_id,
       :task_id,
       :task_name,
-      :project_name,
       :has_description,
       :description
     ])
