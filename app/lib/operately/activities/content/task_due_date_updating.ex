@@ -18,7 +18,7 @@ defmodule Operately.Activities.Content.TaskDueDateUpdating do
     |> cast(attrs, [:company_id, :space_id, :project_id, :milestone_id, :task_id, :task_name])
     |> cast_embed(:old_due_date)
     |> cast_embed(:new_due_date)
-    |> validate_required([:company_id, :space_id, :project_id, :task_id, :task_name])
+    |> validate_required([:company_id, :space_id, :task_id, :task_name])
   end
 
   def build(params) do

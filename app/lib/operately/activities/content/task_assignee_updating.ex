@@ -14,7 +14,7 @@ defmodule Operately.Activities.Content.TaskAssigneeUpdating do
   def changeset(attrs) do
     %__MODULE__{}
     |> cast(attrs, [:company_id, :space_id, :project_id, :milestone_id, :task_id, :old_assignee_id, :new_assignee_id])
-    |> validate_required([:company_id, :space_id, :project_id, :task_id])
+    |> validate_required([:company_id, :space_id, :task_id])
   end
 
   def build(params) do

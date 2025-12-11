@@ -577,7 +577,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       assert {400, res} =
-               mutation(ctx.conn, [:tasks, :update_status], %{status: @done_status})
+               mutation(ctx.conn, [:tasks, :update_status], %{status: @done_status, type: "project"})
 
       assert res.message == "Missing required fields: task_id"
     end
@@ -585,8 +585,19 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     test "it requires a status", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:tasks, :update_status], %{task_id: Paths.task_id(ctx.task)})
+      assert {400, res} = mutation(ctx.conn, [:tasks, :update_status], %{task_id: Paths.task_id(ctx.task), type: "project"})
       assert res.message == "Missing required fields: status"
+    end
+
+    test "it requires a type", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:tasks, :update_status], %{
+        task_id: Paths.task_id(ctx.task),
+        status: @done_status
+      })
+
+      assert res.message == "Missing required fields: type"
     end
 
     test "it updates a task status", ctx do
@@ -594,7 +605,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :update_status], %{
         task_id: Paths.task_id(ctx.task),
-        status: @done_status
+        status: @done_status,
+        type: "project"
       })
 
       assert res.task.status.value == "done"
@@ -611,7 +623,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, _} = mutation(ctx.conn, [:tasks, :update_status], %{
         task_id: Paths.task_id(ctx.task),
-        status: @done_status
+        status: @done_status,
+        type: "project"
       })
 
       after_count = count_activities(ctx.project.id, "task_status_updating")
@@ -629,7 +642,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :update_status], %{
         task_id: Paths.task_id(ctx.task),
-        status: @done_status
+        status: @done_status,
+        type: "project"
       })
 
       # Check that task is now in the milestone's ordering state
@@ -649,7 +663,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :update_status], %{
         task_id: Paths.task_id(ctx.task),
-        status: @canceled_status
+        status: @canceled_status,
+        type: "project"
       })
 
       # Check that task is now in the milestone's ordering state
@@ -669,13 +684,33 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :update_status], %{
         task_id: Paths.task_id(ctx.task),
-        status: @in_progress_status
+        status: @in_progress_status,
+        type: "project"
       })
 
       # Check that task is added from the milestone's ordering state
       milestone = Repo.reload(ctx.milestone)
       assert Paths.task_id(ctx.task) in milestone.tasks_ordering_state
       assert Paths.task_id(ctx.task) in res.updated_milestone.tasks_ordering_state
+    end
+
+    test "it updates a space task status", ctx do
+      ctx =
+        ctx
+        |> Factory.create_space_task(:space_task, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = mutation(ctx.conn, [:tasks, :update_status], %{
+        task_id: Paths.task_id(ctx.space_task),
+        status: @done_status,
+        type: "space"
+      })
+
+      assert res.task.status.value == "done"
+      assert res.task.status.closed == true
+
+      updated_task = Operately.Repo.reload(ctx.space_task)
+      assert updated_task.status == "done"
     end
   end
 
@@ -763,9 +798,20 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       assert {400, res} = mutation(ctx.conn, [:tasks, :update_due_date], %{
-        due_date: %{date: "2026-01-01", date_type: "day"}
+        due_date: %{date: "2026-01-01", date_type: "day"},
+        type: "project"
       })
       assert res.message == "Missing required fields: task_id"
+    end
+
+    test "it requires a type", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:tasks, :update_due_date], %{
+        task_id: Paths.task_id(ctx.task),
+        due_date: %{date: "2026-01-01", date_type: "day"}
+      })
+      assert res.message == "Missing required fields: type"
     end
 
     test "it updates a task due date", ctx do
@@ -779,7 +825,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :update_due_date], %{
         task_id: Paths.task_id(ctx.task),
-        due_date: due_date
+        due_date: due_date,
+        type: "project"
       })
 
       assert res.task.due_date == due_date
@@ -824,7 +871,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       # Then remove it
       assert {200, res} = mutation(ctx.conn, [:tasks, :update_due_date], %{
         task_id: Paths.task_id(ctx.task),
-        due_date: nil
+        due_date: nil,
+        type: "project"
       })
 
       assert res.task.due_date == nil
@@ -846,7 +894,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, _} = mutation(ctx.conn, [:tasks, :update_due_date], %{
         task_id: Paths.task_id(ctx.task),
-        due_date: due_date
+        due_date: due_date,
+        type: "project"
       })
 
       after_count = count_activities(ctx.project.id, "task_due_date_updating")
@@ -862,7 +911,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, _} = mutation(ctx.conn, [:tasks, :update_due_date], %{
         task_id: Paths.task_id(ctx.task),
-        due_date: %{ date: "2026-06-01", date_type: "day", value: "Jun 1, 2026" }
+        due_date: %{ date: "2026-06-01", date_type: "day", value: "Jun 1, 2026" },
+        type: "project"
       })
 
       assert notifications_count(action: action) == 1
@@ -871,6 +921,40 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       notification = fetch_notification(activity.id)
 
       assert notification.person_id == ctx.new_champion.id
+    end
+
+    test "it updates a space task due date", ctx do
+      ctx =
+        ctx
+        |> Factory.create_space_task(:space_task, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      due_date = %{
+        date: "2026-06-01",
+        date_type: "day",
+        value: "Jun 1, 2026"
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:tasks, :update_due_date], %{
+        task_id: Paths.task_id(ctx.space_task),
+        due_date: due_date,
+        type: "space"
+      })
+
+      assert res.task.due_date == due_date
+
+      updated_task = Operately.Repo.reload(ctx.space_task)
+      # Convert struct to map for comparison
+      normalized_due_date = %{
+        "date" => updated_task.due_date.date |> Date.to_iso8601(),
+        "date_type" => updated_task.due_date.date_type |> Atom.to_string(),
+        "value" => updated_task.due_date.value
+      }
+      assert normalized_due_date == %{
+        "date" => due_date.date,
+        "date_type" => due_date.date_type,
+        "value" => due_date.value
+      }
     end
   end
 
@@ -883,9 +967,20 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       assert {400, res} = mutation(ctx.conn, [:tasks, :update_assignee], %{
-        assignee_id: Paths.person_id(ctx.creator)
+        assignee_id: Paths.person_id(ctx.creator),
+        type: "project"
       })
       assert res.message == "Missing required fields: task_id"
+    end
+
+    test "it requires a type", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:tasks, :update_assignee], %{
+        task_id: Paths.task_id(ctx.task),
+        assignee_id: Paths.person_id(ctx.creator)
+      })
+      assert res.message == "Missing required fields: type"
     end
 
     test "it assigns a person to a task", ctx do
@@ -893,7 +988,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :update_assignee], %{
         task_id: Paths.task_id(ctx.task),
-        assignee_id: Paths.person_id(ctx.creator)
+        assignee_id: Paths.person_id(ctx.creator),
+        type: "project"
       })
 
       # Verify response
@@ -924,7 +1020,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       # Then remove assignee
       assert {200, res} = mutation(ctx.conn, [:tasks, :update_assignee], %{
         task_id: Paths.task_id(ctx.task),
-        assignee_id: nil
+        assignee_id: nil,
+        type: "project"
       })
 
       # Verify response
@@ -943,7 +1040,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, _} = mutation(ctx.conn, [:tasks, :update_assignee], %{
         task_id: Paths.task_id(ctx.task),
-        assignee_id: Paths.person_id(ctx.creator)
+        assignee_id: Paths.person_id(ctx.creator),
+        type: "project"
       })
 
       after_count = count_activities(ctx.project.id, "task_assignee_updating")
@@ -960,7 +1058,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, _} = mutation(ctx.conn, [:tasks, :update_assignee], %{
         task_id: Paths.task_id(ctx.task),
-        assignee_id: Paths.person_id(ctx.space_member)
+        assignee_id: Paths.person_id(ctx.space_member),
+        type: "project"
       })
 
       contributor = Operately.Repo.get_by(Contributor, project_id: ctx.project.id, person_id: ctx.space_member.id)
@@ -985,13 +1084,37 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, _} = mutation(ctx.conn, [:tasks, :update_assignee], %{
         task_id: Paths.task_id(ctx.task),
-        assignee_id: Paths.person_id(ctx.space_member)
+        assignee_id: Paths.person_id(ctx.space_member),
+        type: "project"
       })
 
       # Verify subscription was created
       assert {:ok, subscription} = Operately.Notifications.Subscription.get(:system, subscription_list_id: project.subscription_list_id, person_id: ctx.space_member.id)
       assert subscription.type == :invited
       assert subscription.canceled == false
+    end
+
+    test "it assigns a person to a space task", ctx do
+      ctx =
+        ctx
+        |> Factory.create_space_task(:space_task, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = mutation(ctx.conn, [:tasks, :update_assignee], %{
+        task_id: Paths.task_id(ctx.space_task),
+        assignee_id: Paths.person_id(ctx.creator),
+        type: "space"
+      })
+
+      # Verify response
+      assert length(res.task.assignees) == 1
+      assert hd(res.task.assignees).id == Paths.person_id(ctx.creator)
+
+      # Verify database update
+      updated_task = Operately.Repo.reload(ctx.space_task)
+      updated_task = Operately.Repo.preload(updated_task, :assigned_people)
+      assert length(updated_task.assigned_people) == 1
+      assert hd(updated_task.assigned_people).id == ctx.creator.id
     end
   end
 
@@ -1372,7 +1495,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       assert {400, res} = mutation(ctx.conn, [:tasks, :update_description], %{
-        description: RichText.rich_text("New task description", :as_string)
+        description: RichText.rich_text("New task description", :as_string),
+        type: "project"
       })
       assert res.message == "Missing required fields: task_id"
     end
@@ -1381,9 +1505,20 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       assert {400, res} = mutation(ctx.conn, [:tasks, :update_description], %{
-        task_id: Paths.task_id(ctx.task)
+        task_id: Paths.task_id(ctx.task),
+        type: "project"
       })
       assert res.message == "Missing required fields: description"
+    end
+
+    test "it requires a type", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:tasks, :update_description], %{
+        task_id: Paths.task_id(ctx.task),
+        description: RichText.rich_text("New description", :as_string)
+      })
+      assert res.message == "Missing required fields: type"
     end
 
     test "it updates a task description", ctx do
@@ -1392,7 +1527,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :update_description], %{
         task_id: Paths.task_id(ctx.task),
-        description: description
+        description: description,
+        type: "project"
       })
 
       # Check response
@@ -1413,7 +1549,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, _} = mutation(ctx.conn, [:tasks, :update_description], %{
         task_id: Paths.task_id(ctx.task),
-        description: description
+        description: description,
+        type: "project"
       })
 
       after_count = count_activities("task_description_change")
@@ -1426,7 +1563,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {404, _} = mutation(ctx.conn, [:tasks, :update_description], %{
         task_id: Ecto.UUID.generate(),
-        description: description
+        description: description,
+        type: "project"
       })
     end
 
@@ -1441,8 +1579,33 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {403, _} = mutation(ctx.conn, [:tasks, :update_description], %{
         task_id: Paths.task_id(ctx.task),
-        description: description
+        description: description,
+        type: "project"
       })
+    end
+
+    test "it updates a space task description", ctx do
+      ctx =
+        ctx
+        |> Factory.create_space_task(:space_task, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      description = RichText.rich_text("Updated space task description", :as_string)
+
+      assert {200, res} = mutation(ctx.conn, [:tasks, :update_description], %{
+        task_id: Paths.task_id(ctx.space_task),
+        description: description,
+        type: "space"
+      })
+
+      # Check response
+      assert res.task.description == description
+
+      # Check database
+      description_map = Jason.decode!(description)
+      updated_task = Operately.Repo.reload(ctx.space_task)
+
+      assert updated_task.description == description_map
     end
   end
 
@@ -1455,7 +1618,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       assert {400, res} = mutation(ctx.conn, [:tasks, :update_name], %{
-        name: "Updated Task Name"
+        name: "Updated Task Name",
+        type: "project"
       })
       assert res.message == "Missing required fields: task_id"
     end
@@ -1464,9 +1628,20 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       assert {400, res} = mutation(ctx.conn, [:tasks, :update_name], %{
-        task_id: Paths.task_id(ctx.task)
+        task_id: Paths.task_id(ctx.task),
+        type: "project"
       })
       assert res.message == "Missing required fields: name"
+    end
+
+    test "it requires a type", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:tasks, :update_name], %{
+        task_id: Paths.task_id(ctx.task),
+        name: "New Name"
+      })
+      assert res.message == "Missing required fields: type"
     end
 
     test "it updates a task name", ctx do
@@ -1474,7 +1649,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :update_name], %{
         task_id: Paths.task_id(ctx.task),
-        name: "Updated Task Name"
+        name: "Updated Task Name",
+        type: "project"
       })
 
       # Check response
@@ -1492,7 +1668,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, _} = mutation(ctx.conn, [:tasks, :update_name], %{
         task_id: Paths.task_id(ctx.task),
-        name: "Activity Test Name"
+        name: "Activity Test Name",
+        type: "project"
       })
 
       after_count = count_activities(ctx.project.id, "task_name_updating")
@@ -1504,7 +1681,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {404, _} = mutation(ctx.conn, [:tasks, :update_name], %{
         task_id: Ecto.UUID.generate(),
-        name: "Name for non-existent task"
+        name: "Name for non-existent task",
+        type: "project"
       })
     end
 
@@ -1517,8 +1695,29 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {403, _} = mutation(ctx.conn, [:tasks, :update_name], %{
         task_id: Paths.task_id(ctx.task),
-        name: "Forbidden name update"
+        name: "Forbidden name update",
+        type: "project"
       })
+    end
+
+    test "it updates a space task name", ctx do
+      ctx =
+        ctx
+        |> Factory.create_space_task(:space_task, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = mutation(ctx.conn, [:tasks, :update_name], %{
+        task_id: Paths.task_id(ctx.space_task),
+        name: "Updated Space Task Name",
+        type: "space"
+      })
+
+      # Check response
+      assert res.task.name == "Updated Space Task Name"
+
+      # Check database
+      updated_task = Operately.Repo.reload(ctx.space_task)
+      assert updated_task.name == "Updated Space Task Name"
     end
   end
 
@@ -1530,8 +1729,19 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     test "it requires a task_id", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:tasks, :delete], %{})
+      assert {400, res} = mutation(ctx.conn, [:tasks, :delete], %{
+        type: "project"
+      })
       assert res.message == "Missing required fields: task_id"
+    end
+
+    test "it requires a type", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:tasks, :delete], %{
+        task_id: Paths.task_id(ctx.task)
+      })
+      assert res.message == "Missing required fields: type"
     end
 
     test "it deletes a task", ctx do
@@ -1543,7 +1753,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert Operately.Repo.get(Operately.Tasks.Task, decoded_id) != nil
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :delete], %{
-        task_id: task_id
+        task_id: task_id,
+        type: "project"
       })
 
       assert res.success == true
@@ -1556,7 +1767,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       assert {404, _} = mutation(ctx.conn, [:tasks, :delete], %{
-        task_id: Ecto.UUID.generate()
+        task_id: Ecto.UUID.generate(),
+        type: "project"
       })
     end
 
@@ -1568,7 +1780,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         |> Factory.log_in_person(:member)
 
       assert {403, _} = mutation(ctx.conn, [:tasks, :delete], %{
-        task_id: Paths.task_id(ctx.task)
+        task_id: Paths.task_id(ctx.task),
+        type: "project"
       })
     end
 
@@ -1578,7 +1791,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       before_count = count_activities(ctx.project.id, "task_deleting")
 
       assert {200, _} = mutation(ctx.conn, [:tasks, :delete], %{
-        task_id: Paths.task_id(ctx.task)
+        task_id: Paths.task_id(ctx.task),
+        type: "project"
       })
 
       after_count = count_activities(ctx.project.id, "task_deleting")
@@ -1600,7 +1814,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert task_id in milestone.tasks_ordering_state
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :delete], %{
-        task_id: task_id
+        task_id: task_id,
+        type: "project"
       })
 
       # Verify the task is deleted
@@ -1615,6 +1830,28 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       # Verify the response matches what's in the database
       assert res.updated_milestone.tasks_ordering_state == milestone_after.tasks_ordering_state
+    end
+
+    test "it deletes a space task", ctx do
+      ctx =
+        ctx
+        |> Factory.create_space_task(:space_task, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      # Verify task exists
+      task_id = Paths.task_id(ctx.space_task)
+      {:ok, decoded_id} = OperatelyWeb.Api.Helpers.decode_id(task_id)
+      assert Operately.Repo.get(Operately.Tasks.Task, decoded_id) != nil
+
+      assert {200, res} = mutation(ctx.conn, [:tasks, :delete], %{
+        task_id: task_id,
+        type: "space"
+      })
+
+      assert res.success == true
+
+      # Verify task no longer exists
+      assert Operately.Repo.get(Operately.Tasks.Task, decoded_id) == nil
     end
   end
 

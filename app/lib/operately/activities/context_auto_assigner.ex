@@ -48,12 +48,6 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "discussion_editing",
     "discussion_comment_submitted",
     "message_archiving",
-
-    "task_assignee_assignment",
-    "task_name_editing",
-    "task_priority_change",
-    "task_reopening",
-    "task_size_change",
   ]
 
   @project_actions [
@@ -89,13 +83,6 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "project_milestone_creation",
     "project_milestone_updating",
     "project_description_changed",
-    "task_name_updating",
-    "task_status_updating",
-    "task_due_date_updating",
-    "task_assignee_updating",
-    "task_milestone_updating",
-    "task_deleting",
-    "task_description_change",
     "project_task_commented",
     "milestone_title_updating",
     "milestone_due_date_updating",
@@ -105,9 +92,18 @@ defmodule Operately.Activities.ContextAutoAssigner do
 
   @task_actions [
     "task_adding",
-    "task_closing",
-    "task_status_change",
-    "task_update",
+    "task_assignee_assignment",
+    "task_assignee_updating",
+    "task_deleting",
+    "task_description_change",
+    "task_due_date_updating",
+    "task_milestone_updating",
+    "task_name_editing",
+    "task_name_updating",
+    "task_priority_change",
+    "task_reopening",
+    "task_size_change",
+    "task_status_updating",
   ]
 
   @resource_hub_actions [
@@ -147,7 +143,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
       activity.action in @space_actions -> fetch_space_context(activity)
       activity.action in Operately.Goals.goal_actions() -> fetch_goal_context(activity.content)
       activity.action in @project_actions -> fetch_project_context(activity.content.project_id)
-      activity.action in @task_actions -> fetch_task_project_context(activity.content.task_id)
+      activity.action in @task_actions -> fetch_project_or_space_context(activity.content)
       activity.action in @resource_hub_actions-> fetch_resource_hub_context(activity.content.space_id)
       activity.action == "comment_added" -> fetch_comment_added_context(activity)
       true ->
@@ -183,20 +179,26 @@ defmodule Operately.Activities.ContextAutoAssigner do
     |> Repo.one()
   end
 
+  defp fetch_project_or_space_context(content) do
+    cond do
+      Map.get(content, :project_id) != nil ->
+        fetch_project_context(content.project_id)
+
+      Map.get(content, :space_id) != nil ->
+        from(c in Context,
+          where: c.group_id == ^content.space_id,
+          select: c.id
+        )
+        |> Repo.one()
+
+      true ->
+        raise "Activity content must have either project_id or space_id"
+    end
+  end
+
   defp fetch_project_context(project_id) do
     from(c in Context,
       where: c.project_id == ^project_id,
-      select: c.id
-    )
-    |> Repo.one()
-  end
-
-  defp fetch_task_project_context(task_id) do
-    from(c in Context,
-      join: p in assoc(c, :project),
-      join: m in assoc(p, :milestones),
-      join: t in assoc(m, :tasks),
-      where: t.id == ^task_id,
       select: c.id
     )
     |> Repo.one()

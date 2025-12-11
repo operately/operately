@@ -140,7 +140,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "task_assignee_assignment",
         author_id: ctx.author.id,
-        content: %{space_id: ctx.group.id, company_id: "-", task_id: "-", person_id: "-"}
+        content: %{space_id: ctx.group.id, company_id: "-", task_id: "-", person_id: "-", project_id: nil}
       }
 
       create_activity(attrs)
@@ -171,7 +171,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "task_name_editing",
         author_id: ctx.author.id,
-        content: %{space_id: ctx.group.id, company_id: "-", task_id: "-", old_name: "-", new_name: "-"}
+        content: %{space_id: ctx.group.id, company_id: "-", task_id: "-", old_name: "-", new_name: "-", project_id: nil}
       }
 
       create_activity(attrs)
@@ -182,7 +182,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "task_priority_change",
         author_id: ctx.author.id,
-        content: %{space_id: ctx.group.id, company_id: "-", task_id: "-", old_priority: "-", new_priority: "-"}
+        content: %{space_id: ctx.group.id, company_id: "-", task_id: "-", old_priority: "-", new_priority: "-", project_id: nil}
       }
 
       create_activity(attrs)
@@ -193,7 +193,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "task_reopening",
         author_id: ctx.author.id,
-        content: %{space_id: ctx.group.id, company_id: "-", task_id: "-"}
+        content: %{space_id: ctx.group.id, company_id: "-", task_id: "-", project_id: nil}
       }
 
       create_activity(attrs)
@@ -204,7 +204,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "task_size_change",
         author_id: ctx.author.id,
-        content: %{space_id: ctx.group.id, company_id: "-", task_id: "-", old_size: "-", new_size: "-"}
+        content: %{space_id: ctx.group.id, company_id: "-", task_id: "-", old_size: "-", new_size: "-", project_id: nil}
       }
 
       create_activity(attrs)
@@ -600,39 +600,6 @@ defmodule Operately.AccessActivityContextAssignerTest do
         action: "task_adding",
         author_id: ctx.author.id,
         content: %{task_id: ctx.task.id, company_id: ctx.company.id, space_id: ctx.group.id, project_id: ctx.project.id, milestone_id: ctx.milestone.id, name: "-"}
-      }
-
-      create_activity(attrs)
-      |> assert_context_assigned(ctx.project.access_context.id)
-    end
-
-    test "task_closing action", ctx do
-      attrs = %{
-        action: "task_closing",
-        author_id: ctx.author.id,
-        content: %{task_id: ctx.task.id, company_id: ctx.company.id}
-      }
-
-      create_activity(attrs)
-      |> assert_context_assigned(ctx.project.access_context.id)
-    end
-
-    test "task_status_change action", ctx do
-      attrs = %{
-        action: "task_status_change",
-        author_id: ctx.author.id,
-        content: %{task_id: ctx.task.id, company_id: ctx.company.id, old_status: "-", new_status: "-"}
-      }
-
-      create_activity(attrs)
-      |> assert_context_assigned(ctx.project.access_context.id)
-    end
-
-    test "task_update action", ctx do
-      attrs = %{
-        action: "task_update",
-        author_id: ctx.author.id,
-        content: %{task_id: ctx.task.id, company_id: ctx.company.id, old_name: "-", new_name: "-"}
       }
 
       create_activity(attrs)

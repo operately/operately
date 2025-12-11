@@ -179,7 +179,7 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
 
   const updateTaskDueDate = async (taskId: string, dueDate: DateField.ContextualDate | null) => {
     return Api.tasks
-      .updateDueDate({ taskId, dueDate: serializeContextualDate(dueDate) })
+      .updateDueDate({ taskId, dueDate: serializeContextualDate(dueDate), type })
       .then(() => {
         invalidateAndRefresh();
 
@@ -204,7 +204,7 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
 
   const updateTaskAssignee = async (taskId: string, assignee: TaskBoard.Person | null) => {
     return Api.tasks
-      .updateAssignee({ taskId, assigneeId: assignee?.id || null })
+      .updateAssignee({ taskId, assigneeId: assignee?.id || null, type })
       .then(() => {
         invalidateAndRefresh();
 
@@ -242,7 +242,7 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
     );
 
     try {
-      const response = await Api.tasks.updateStatus({ taskId, status: backendStatus });
+      const response = await Api.tasks.updateStatus({ taskId, status: backendStatus, type });
 
       const updatedTask = Tasks.parseTaskForTurboUi(paths, response.task, type);
       setTasks((prev) => prev.map((t) => (compareIds(t.id, taskId) ? { ...t, status: updatedTask.status } : t)));
@@ -360,7 +360,7 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
     }
 
     try {
-      const response = await Api.tasks.delete({ taskId });
+      const response = await Api.tasks.delete({ taskId, type });
 
       updateMilestonesFromServer(response.updatedMilestone, null);
 
