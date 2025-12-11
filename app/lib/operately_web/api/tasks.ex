@@ -150,6 +150,7 @@ defmodule OperatelyWeb.Api.Tasks do
     inputs do
       field :task_id, :id, null: false
       field :description, :json, null: false
+      field :type, :task_type, null: false
     end
 
     outputs do
@@ -159,26 +160,42 @@ defmodule OperatelyWeb.Api.Tasks do
     def call(conn, inputs) do
       conn
       |> Steps.start_transaction()
-      |> Steps.find_task(inputs.task_id)
+      |> Steps.find_task(inputs.task_id, inputs.type)
       |> Steps.check_task_permissions(:can_edit_task)
       |> Steps.update_task_description(inputs.description)
-      |> Steps.save_activity(:task_description_change, fn changes ->
-        %{
-          company_id: changes.project.company_id,
-          space_id: changes.project.group_id,
-          project_id: changes.project.id,
-          milestone_id: changes.task.milestone_id,
-          task_id: changes.task.id,
-          project_name: changes.project.name,
-          task_name: changes.task.name,
-          has_description: Operately.RichContent.empty?(inputs.description),
-          description: inputs.description
-        }
-      end)
+      |> Steps.save_activity(:task_description_change, &build_activity_content(inputs, &1))
       |> Steps.commit()
       |> Steps.respond(fn changes ->
         %{task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full)}
       end)
+    end
+
+    defp build_activity_content(inputs, changes) do
+      base = %{
+        milestone_id: changes.task.milestone_id,
+        task_id: changes.task.id,
+        task_name: changes.task.name,
+        has_description: Operately.RichContent.empty?(inputs.description),
+        description: inputs.description
+      }
+
+      cond do
+        Map.has_key?(changes, :project) and changes.project ->
+          Map.merge(%{
+            company_id: changes.project.company_id,
+            space_id: changes.project.group_id,
+            project_id: changes.project.id,
+            project_name: changes.project.name
+          }, base)
+
+        Map.has_key?(changes, :space) and changes.space ->
+          Map.merge(%{
+            company_id: changes.space.company_id,
+            space_id: changes.space.id,
+            project_id: nil,
+            project_name: nil
+          }, base)
+      end
     end
   end
 

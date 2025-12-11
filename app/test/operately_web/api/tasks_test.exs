@@ -1407,7 +1407,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       assert {400, res} = mutation(ctx.conn, [:tasks, :update_description], %{
-        description: RichText.rich_text("New task description", :as_string)
+        description: RichText.rich_text("New task description", :as_string),
+        type: "project"
       })
       assert res.message == "Missing required fields: task_id"
     end
@@ -1416,9 +1417,20 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       assert {400, res} = mutation(ctx.conn, [:tasks, :update_description], %{
-        task_id: Paths.task_id(ctx.task)
+        task_id: Paths.task_id(ctx.task),
+        type: "project"
       })
       assert res.message == "Missing required fields: description"
+    end
+
+    test "it requires a type", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:tasks, :update_description], %{
+        task_id: Paths.task_id(ctx.task),
+        description: RichText.rich_text("New description", :as_string)
+      })
+      assert res.message == "Missing required fields: type"
     end
 
     test "it updates a task description", ctx do
@@ -1427,7 +1439,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :update_description], %{
         task_id: Paths.task_id(ctx.task),
-        description: description
+        description: description,
+        type: "project"
       })
 
       # Check response
@@ -1448,7 +1461,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, _} = mutation(ctx.conn, [:tasks, :update_description], %{
         task_id: Paths.task_id(ctx.task),
-        description: description
+        description: description,
+        type: "project"
       })
 
       after_count = count_activities("task_description_change")
@@ -1461,7 +1475,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {404, _} = mutation(ctx.conn, [:tasks, :update_description], %{
         task_id: Ecto.UUID.generate(),
-        description: description
+        description: description,
+        type: "project"
       })
     end
 
@@ -1476,8 +1491,33 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {403, _} = mutation(ctx.conn, [:tasks, :update_description], %{
         task_id: Paths.task_id(ctx.task),
-        description: description
+        description: description,
+        type: "project"
       })
+    end
+
+    test "it updates a space task description", ctx do
+      ctx =
+        ctx
+        |> Factory.create_space_task(:space_task, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      description = RichText.rich_text("Updated space task description", :as_string)
+
+      assert {200, res} = mutation(ctx.conn, [:tasks, :update_description], %{
+        task_id: Paths.task_id(ctx.space_task),
+        description: description,
+        type: "space"
+      })
+
+      # Check response
+      assert res.task.description == description
+
+      # Check database
+      description_map = Jason.decode!(description)
+      updated_task = Operately.Repo.reload(ctx.space_task)
+
+      assert updated_task.description == description_map
     end
   end
 
