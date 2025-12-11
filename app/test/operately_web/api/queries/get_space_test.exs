@@ -42,18 +42,19 @@ defmodule OperatelyWeb.Api.Queries.GetSpaceTest do
     test "members has access to space they are part of", ctx do
       space = group_fixture(ctx.creator, company_id: ctx.company.id) |> Repo.preload(:company)
       add_person_to_space(ctx, space)
-      space = Groups.Group.load_is_member(space, ctx.person)
+      space = Repo.get!(Groups.Group, space.id) |> Repo.preload(:company) |> Groups.Group.load_is_member(ctx.person)
 
       assert {200, res} = query(ctx.conn, :get_space, %{id: Paths.space_id(space)})
       assert res.space == Serializer.serialize(space, level: :full)
     end
 
     test "member has access to space they are NOT part of", ctx do
-      space =
-        group_fixture(ctx.creator, [
-          company_id: ctx.company.id,
-          company_permissions: Binding.view_access(),
-        ])
+      space = group_fixture(ctx.creator, [
+        company_id: ctx.company.id,
+        company_permissions: Binding.view_access(),
+      ])
+
+      space = Repo.get!(Groups.Group, space.id)
         |> Repo.preload(:company)
         |> Groups.Group.load_is_member(ctx.person)
         |> Serializer.serialize(level: :full)
@@ -73,7 +74,8 @@ defmodule OperatelyWeb.Api.Queries.GetSpaceTest do
     end
 
     test "get_space", ctx do
-      space = group_fixture(ctx.person, company_id: ctx.company.id) |> Repo.preload(:company) |> Groups.Group.load_is_member(ctx.person)
+      space = group_fixture(ctx.person, company_id: ctx.company.id)
+      space = Repo.get!(Groups.Group, space.id) |> Repo.preload(:company) |> Groups.Group.load_is_member(ctx.person)
 
       assert {200, res} = query(ctx.conn, :get_space, %{id: Paths.space_id(space)})
       assert res.space == Serializer.serialize(space, level: :full)
@@ -84,7 +86,8 @@ defmodule OperatelyWeb.Api.Queries.GetSpaceTest do
       space = group_fixture(creator, [
         company_id: ctx.company.id,
         company_permissions: Binding.view_access(),
-      ]) |> Repo.preload(:company) |> Groups.Group.load_is_member(ctx.person)
+      ])
+      space = Repo.get!(Groups.Group, space.id) |> Repo.preload(:company) |> Groups.Group.load_is_member(ctx.person)
 
       assert {200, res} = query(ctx.conn, :get_space, %{id: Paths.space_id(space)})
       assert res.space == Serializer.serialize(space, level: :full)

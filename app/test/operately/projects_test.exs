@@ -197,6 +197,7 @@ defmodule Operately.ProjectsTest do
       Operately.Repo.delete_all(Milestone)
 
       milestone = milestone_fixture(%{project_id: ctx.project.id})
+      milestone = Projects.get_milestone!(milestone.id)
 
       {:ok, milestone: milestone}
     end

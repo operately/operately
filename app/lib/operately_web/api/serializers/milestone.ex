@@ -9,7 +9,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Milestone do
       description: milestone.description && Jason.encode!(milestone.description),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(milestone.inserted_at),
       completed_at: OperatelyWeb.Api.Serializer.serialize(milestone.completed_at),
-      tasks_kanban_state: OperatelyWeb.Api.Serializer.serialize(%Operately.Tasks.KanbanState{state: milestone.tasks_kanban_state}),
+      tasks_kanban_state: milestone.tasks_kanban_state || %{},
       tasks_ordering_state: OperatelyWeb.Api.Serializer.serialize(milestone.tasks_ordering_state),
       comments: OperatelyWeb.Api.Serializer.serialize(milestone.comments),
       comments_count: milestone.comments_count,

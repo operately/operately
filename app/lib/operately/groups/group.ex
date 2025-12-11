@@ -16,7 +16,7 @@ defmodule Operately.Groups.Group do
 
     has_many :tasks, Operately.Tasks.Task, foreign_key: :space_id
     embeds_many :task_statuses, Operately.Tasks.Status, on_replace: :delete
-    field :tasks_kanban_state, :map, default: Operately.Tasks.KanbanState.initialize()
+    field :tasks_kanban_state, Operately.Tasks.KanbanState.Type, default: Operately.Tasks.KanbanState.initialize()
 
     # populated by after load hooks
     field :is_member, :boolean, virtual: true

@@ -19,7 +19,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Groups.Group do
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(space.potential_subscribers),
       notifications: OperatelyWeb.Api.Serializer.serialize(space.notifications),
       task_statuses: OperatelyWeb.Api.Serializer.serialize(space.task_statuses),
-      tasks_kanban_state: OperatelyWeb.Api.Serializer.serialize(%Operately.Tasks.KanbanState{state: space.tasks_kanban_state}),
+      tasks_kanban_state: space.tasks_kanban_state || %{},
     })
   end
 end
