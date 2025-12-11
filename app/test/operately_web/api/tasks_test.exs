@@ -1729,8 +1729,19 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     test "it requires a task_id", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:tasks, :delete], %{})
+      assert {400, res} = mutation(ctx.conn, [:tasks, :delete], %{
+        type: "project"
+      })
       assert res.message == "Missing required fields: task_id"
+    end
+
+    test "it requires a type", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:tasks, :delete], %{
+        task_id: Paths.task_id(ctx.task)
+      })
+      assert res.message == "Missing required fields: type"
     end
 
     test "it deletes a task", ctx do
@@ -1742,7 +1753,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert Operately.Repo.get(Operately.Tasks.Task, decoded_id) != nil
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :delete], %{
-        task_id: task_id
+        task_id: task_id,
+        type: "project"
       })
 
       assert res.success == true
@@ -1755,7 +1767,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       assert {404, _} = mutation(ctx.conn, [:tasks, :delete], %{
-        task_id: Ecto.UUID.generate()
+        task_id: Ecto.UUID.generate(),
+        type: "project"
       })
     end
 
@@ -1767,7 +1780,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         |> Factory.log_in_person(:member)
 
       assert {403, _} = mutation(ctx.conn, [:tasks, :delete], %{
-        task_id: Paths.task_id(ctx.task)
+        task_id: Paths.task_id(ctx.task),
+        type: "project"
       })
     end
 
@@ -1777,7 +1791,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       before_count = count_activities(ctx.project.id, "task_deleting")
 
       assert {200, _} = mutation(ctx.conn, [:tasks, :delete], %{
-        task_id: Paths.task_id(ctx.task)
+        task_id: Paths.task_id(ctx.task),
+        type: "project"
       })
 
       after_count = count_activities(ctx.project.id, "task_deleting")
@@ -1799,7 +1814,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert task_id in milestone.tasks_ordering_state
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :delete], %{
-        task_id: task_id
+        task_id: task_id,
+        type: "project"
       })
 
       # Verify the task is deleted
@@ -1814,6 +1830,28 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       # Verify the response matches what's in the database
       assert res.updated_milestone.tasks_ordering_state == milestone_after.tasks_ordering_state
+    end
+
+    test "it deletes a space task", ctx do
+      ctx =
+        ctx
+        |> Factory.create_space_task(:space_task, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      # Verify task exists
+      task_id = Paths.task_id(ctx.space_task)
+      {:ok, decoded_id} = OperatelyWeb.Api.Helpers.decode_id(task_id)
+      assert Operately.Repo.get(Operately.Tasks.Task, decoded_id) != nil
+
+      assert {200, res} = mutation(ctx.conn, [:tasks, :delete], %{
+        task_id: task_id,
+        type: "space"
+      })
+
+      assert res.success == true
+
+      # Verify task no longer exists
+      assert Operately.Repo.get(Operately.Tasks.Task, decoded_id) == nil
     end
   end
 
