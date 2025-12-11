@@ -798,9 +798,20 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       assert {400, res} = mutation(ctx.conn, [:tasks, :update_due_date], %{
-        due_date: %{date: "2026-01-01", date_type: "day"}
+        due_date: %{date: "2026-01-01", date_type: "day"},
+        type: "project"
       })
       assert res.message == "Missing required fields: task_id"
+    end
+
+    test "it requires a type", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:tasks, :update_due_date], %{
+        task_id: Paths.task_id(ctx.task),
+        due_date: %{date: "2026-01-01", date_type: "day"}
+      })
+      assert res.message == "Missing required fields: type"
     end
 
     test "it updates a task due date", ctx do
@@ -814,7 +825,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :update_due_date], %{
         task_id: Paths.task_id(ctx.task),
-        due_date: due_date
+        due_date: due_date,
+        type: "project"
       })
 
       assert res.task.due_date == due_date
@@ -859,7 +871,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       # Then remove it
       assert {200, res} = mutation(ctx.conn, [:tasks, :update_due_date], %{
         task_id: Paths.task_id(ctx.task),
-        due_date: nil
+        due_date: nil,
+        type: "project"
       })
 
       assert res.task.due_date == nil
@@ -881,7 +894,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, _} = mutation(ctx.conn, [:tasks, :update_due_date], %{
         task_id: Paths.task_id(ctx.task),
-        due_date: due_date
+        due_date: due_date,
+        type: "project"
       })
 
       after_count = count_activities(ctx.project.id, "task_due_date_updating")
@@ -897,7 +911,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, _} = mutation(ctx.conn, [:tasks, :update_due_date], %{
         task_id: Paths.task_id(ctx.task),
-        due_date: %{ date: "2026-06-01", date_type: "day", value: "Jun 1, 2026" }
+        due_date: %{ date: "2026-06-01", date_type: "day", value: "Jun 1, 2026" },
+        type: "project"
       })
 
       assert notifications_count(action: action) == 1
@@ -906,6 +921,40 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       notification = fetch_notification(activity.id)
 
       assert notification.person_id == ctx.new_champion.id
+    end
+
+    test "it updates a space task due date", ctx do
+      ctx =
+        ctx
+        |> Factory.create_space_task(:space_task, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      due_date = %{
+        date: "2026-06-01",
+        date_type: "day",
+        value: "Jun 1, 2026"
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:tasks, :update_due_date], %{
+        task_id: Paths.task_id(ctx.space_task),
+        due_date: due_date,
+        type: "space"
+      })
+
+      assert res.task.due_date == due_date
+
+      updated_task = Operately.Repo.reload(ctx.space_task)
+      # Convert struct to map for comparison
+      normalized_due_date = %{
+        "date" => updated_task.due_date.date |> Date.to_iso8601(),
+        "date_type" => updated_task.due_date.date_type |> Atom.to_string(),
+        "value" => updated_task.due_date.value
+      }
+      assert normalized_due_date == %{
+        "date" => due_date.date,
+        "date_type" => due_date.date_type,
+        "value" => due_date.value
+      }
     end
   end
 
