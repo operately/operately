@@ -1530,7 +1530,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       assert {400, res} = mutation(ctx.conn, [:tasks, :update_name], %{
-        name: "Updated Task Name"
+        name: "Updated Task Name",
+        type: "project"
       })
       assert res.message == "Missing required fields: task_id"
     end
@@ -1539,9 +1540,20 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       assert {400, res} = mutation(ctx.conn, [:tasks, :update_name], %{
-        task_id: Paths.task_id(ctx.task)
+        task_id: Paths.task_id(ctx.task),
+        type: "project"
       })
       assert res.message == "Missing required fields: name"
+    end
+
+    test "it requires a type", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:tasks, :update_name], %{
+        task_id: Paths.task_id(ctx.task),
+        name: "New Name"
+      })
+      assert res.message == "Missing required fields: type"
     end
 
     test "it updates a task name", ctx do
@@ -1549,7 +1561,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :update_name], %{
         task_id: Paths.task_id(ctx.task),
-        name: "Updated Task Name"
+        name: "Updated Task Name",
+        type: "project"
       })
 
       # Check response
@@ -1567,7 +1580,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, _} = mutation(ctx.conn, [:tasks, :update_name], %{
         task_id: Paths.task_id(ctx.task),
-        name: "Activity Test Name"
+        name: "Activity Test Name",
+        type: "project"
       })
 
       after_count = count_activities(ctx.project.id, "task_name_updating")
@@ -1579,7 +1593,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {404, _} = mutation(ctx.conn, [:tasks, :update_name], %{
         task_id: Ecto.UUID.generate(),
-        name: "Name for non-existent task"
+        name: "Name for non-existent task",
+        type: "project"
       })
     end
 
@@ -1592,8 +1607,29 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {403, _} = mutation(ctx.conn, [:tasks, :update_name], %{
         task_id: Paths.task_id(ctx.task),
-        name: "Forbidden name update"
+        name: "Forbidden name update",
+        type: "project"
       })
+    end
+
+    test "it updates a space task name", ctx do
+      ctx =
+        ctx
+        |> Factory.create_space_task(:space_task, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = mutation(ctx.conn, [:tasks, :update_name], %{
+        task_id: Paths.task_id(ctx.space_task),
+        name: "Updated Space Task Name",
+        type: "space"
+      })
+
+      # Check response
+      assert res.task.name == "Updated Space Task Name"
+
+      # Check database
+      updated_task = Operately.Repo.reload(ctx.space_task)
+      assert updated_task.name == "Updated Space Task Name"
     end
   end
 

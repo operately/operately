@@ -206,6 +206,7 @@ defmodule OperatelyWeb.Api.Tasks do
     inputs do
       field :task_id, :id, null: false
       field :name, :string, null: false
+      field :type, :task_type, null: false
     end
 
     outputs do
@@ -215,24 +216,39 @@ defmodule OperatelyWeb.Api.Tasks do
     def call(conn, inputs) do
       conn
       |> Steps.start_transaction()
-      |> Steps.find_task(inputs.task_id)
+      |> Steps.find_task(inputs.task_id, inputs.type)
       |> Steps.check_task_permissions(:can_edit_task)
       |> Steps.update_task_name(inputs.name)
-      |> Steps.save_activity(:task_name_updating, fn changes ->
-        %{
-          company_id: changes.project.company_id,
-          space_id: changes.project.group_id,
-          project_id: changes.project.id,
-          milestone_id: changes.task.milestone_id,
-          task_id: changes.task.id,
-          old_name: changes.task.name,
-          new_name: changes.updated_task.name
-        }
-      end)
+      |> Steps.save_activity(:task_name_updating, &build_activity_content/1)
       |> Steps.commit()
       |> Steps.respond(fn changes ->
         %{task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full)}
       end)
+    end
+
+    defp build_activity_content(changes) do
+      base = %{
+        milestone_id: changes.task.milestone_id,
+        task_id: changes.task.id,
+        old_name: changes.task.name,
+        new_name: changes.updated_task.name
+      }
+
+      cond do
+        Map.has_key?(changes, :project) and changes.project ->
+          Map.merge(%{
+            company_id: changes.project.company_id,
+            space_id: changes.project.group_id,
+            project_id: changes.project.id
+          }, base)
+
+        Map.has_key?(changes, :space) and changes.space ->
+          Map.merge(%{
+            company_id: changes.space.company_id,
+            space_id: changes.space.id,
+            project_id: nil
+          }, base)
+      end
     end
   end
 
