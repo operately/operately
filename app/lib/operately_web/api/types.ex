@@ -1201,6 +1201,8 @@ defmodule OperatelyWeb.Api.Types do
     field? :person, :person, null: true
   end
 
+  enum(:task_type, values: [:space, :project])
+
   object :task do
     field :id, :string
     field :name, :string
@@ -1220,6 +1222,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :comments_count, :integer, null: true
     field? :subscription_list, :subscription_list, null: true
     field? :available_statuses, list_of(:task_status), null: true
+    field :type, :task_type, null: false
   end
 
   object :activity_content_discussion_editing do

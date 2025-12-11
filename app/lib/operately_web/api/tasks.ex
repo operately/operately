@@ -37,6 +37,7 @@ defmodule OperatelyWeb.Api.Tasks do
     inputs do
       field :task_id, :id, null: false
       field :status, :task_status, null: true
+      field :type, :task_type, null: false
     end
 
     outputs do
@@ -47,25 +48,11 @@ defmodule OperatelyWeb.Api.Tasks do
     def call(conn, inputs) do
       conn
       |> Steps.start_transaction()
-      |> Steps.find_task(inputs.task_id, [:assigned_people])
+      |> Steps.find_task(inputs.task_id, inputs.type, [:assigned_people])
       |> Steps.check_task_permissions(:can_edit_task)
       |> Steps.update_task_status(inputs.status)
       |> MilestoneSync.sync_after_status_update()
-      |> Steps.save_activity(:task_status_updating, fn changes ->
-        old_status = changes.task.task_status && Map.from_struct(changes.task.task_status)
-        new_status = changes.updated_task.task_status && Map.from_struct(changes.updated_task.task_status)
-
-        %{
-          company_id: changes.project.company_id,
-          space_id: changes.project.group_id,
-          project_id: changes.project.id,
-          milestone_id: changes.task.milestone_id,
-          task_id: changes.task.id,
-          old_status: old_status,
-          new_status: new_status,
-          name: changes.task.name
-        }
-      end)
+      |> Steps.save_activity(:task_status_updating, &build_activity_content/1)
       |> Steps.commit()
       |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn changes ->
@@ -74,6 +61,35 @@ defmodule OperatelyWeb.Api.Tasks do
           updated_milestone: OperatelyWeb.Api.Serializer.serialize(changes.updated_milestone)
         }
       end)
+    end
+
+    defp build_activity_content(changes) do
+      old_status = changes.task.task_status && Map.from_struct(changes.task.task_status)
+      new_status = changes.updated_task.task_status && Map.from_struct(changes.updated_task.task_status)
+
+      base = %{
+        milestone_id: changes.task.milestone_id,
+        task_id: changes.task.id,
+        old_status: old_status,
+        new_status: new_status,
+        name: changes.task.name
+      }
+
+      cond do
+        Map.has_key?(changes, :project) and changes.project ->
+          Map.merge(%{
+            company_id: changes.project.company_id,
+            space_id: changes.project.group_id,
+            project_id: changes.project.id
+          }, base)
+
+        Map.has_key?(changes, :space) and changes.space ->
+          Map.merge(%{
+            company_id: changes.space.company_id,
+            space_id: changes.space.id,
+            project_id: nil
+          }, base)
+      end
     end
   end
 
@@ -501,17 +517,18 @@ defmodule OperatelyWeb.Api.Tasks do
       end)
     end
 
-    def find_task(multi, task_id, preloads \\ []) do
-      Ecto.Multi.run(multi, :task, fn _repo, %{me: me} ->
-        preloads = [:project] ++ preloads
+    def find_task(multi, task_id, type, preloads \\ []) when type in [:space, :project] do
+      multi
+      |> Ecto.Multi.run(:task, fn _repo, %{me: me} ->
+        preloads = [type] ++ preloads
 
         case Operately.Tasks.Task.get(me, id: task_id, opts: [preload: preloads]) do
           {:ok, task} -> {:ok, task}
           {:error, _} -> {:error, {:not_found, "Task not found"}}
         end
       end)
-      |> Ecto.Multi.run(:project, fn _repo, %{task: task} ->
-        {:ok, task.project}
+      |> Ecto.Multi.run(type, fn _repo, %{task: task} ->
+        {:ok, Map.get(task, type)}
       end)
     end
 
@@ -554,8 +571,17 @@ defmodule OperatelyWeb.Api.Tasks do
     end
 
     def check_permissions(multi, permission) do
-      Ecto.Multi.run(multi, :permissions, fn _repo, %{project: project} ->
-        Operately.Projects.Permissions.check(project.request_info.access_level, permission)
+      Ecto.Multi.run(multi, :permissions, fn _repo, changes ->
+        cond do
+          Map.has_key?(changes, :project) and Ecto.assoc_loaded?(changes.project) ->
+            Operately.Projects.Permissions.check(changes.project.request_info.access_level, permission)
+
+          Map.has_key?(changes, :space) and Ecto.assoc_loaded?(changes.space) ->
+            Operately.Groups.Permissions.check(changes.space.request_info.access_level, permission)
+
+          true ->
+            {:error, :forbidden}
+        end
       end)
     end
 
