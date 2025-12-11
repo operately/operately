@@ -2752,7 +2752,8 @@ export interface ListSpaceToolsResult {
 }
 
 export interface ListTaskAssignablePeopleInput {
-  projectId: Id;
+  id: Id;
+  type: TaskType;
   query?: string | null;
   ignoredIds?: Id[] | null;
 }
