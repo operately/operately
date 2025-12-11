@@ -1692,23 +1692,26 @@ export interface Space {
   accessLevels?: AccessLevels | null;
   potentialSubscribers?: Subscriber[] | null;
   notifications?: Notification[] | null;
+  taskStatuses?: TaskStatus[] | null;
+  tasksKanbanState?: Json | null;
 }
 
 export interface SpacePermissions {
-  canCreateGoal?: boolean | null;
-  canCreateProject?: boolean | null;
-  canCommentOnDiscussions?: boolean | null;
-  canEdit?: boolean | null;
-  canEditDiscussions?: boolean | null;
-  canEditMembersPermissions?: boolean | null;
-  canEditPermissions?: boolean | null;
-  canJoin?: boolean | null;
-  canPostDiscussions?: boolean | null;
-  canRemoveMember?: boolean | null;
-  canView?: boolean | null;
-  canViewMessage?: boolean | null;
-  canAddMembers?: boolean | null;
-  canDelete?: boolean | null;
+  canCreateGoal: boolean;
+  canCreateProject: boolean;
+  canCommentOnDiscussions: boolean;
+  canEdit: boolean;
+  canEditDiscussions: boolean;
+  canEditMembersPermissions: boolean;
+  canEditPermissions: boolean;
+  canEditStatuses: boolean;
+  canJoin: boolean;
+  canPostDiscussions: boolean;
+  canRemoveMember: boolean;
+  canView: boolean;
+  canViewMessage: boolean;
+  canAddMembers: boolean;
+  canDelete: boolean;
 }
 
 export interface SpaceSetupInput {
