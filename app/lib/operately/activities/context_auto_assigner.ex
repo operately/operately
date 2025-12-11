@@ -92,16 +92,18 @@ defmodule Operately.Activities.ContextAutoAssigner do
 
   @task_actions [
     "task_adding",
-    "task_closing",
-    "task_status_change",
-    "task_update",
-    "task_name_updating",
-    "task_status_updating",
-    "task_due_date_updating",
+    "task_assignee_assignment",
     "task_assignee_updating",
-    "task_milestone_updating",
     "task_deleting",
     "task_description_change",
+    "task_due_date_updating",
+    "task_milestone_updating",
+    "task_name_editing",
+    "task_name_updating",
+    "task_priority_change",
+    "task_reopening",
+    "task_size_change",
+    "task_status_updating",
   ]
 
   @resource_hub_actions [
