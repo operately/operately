@@ -19,7 +19,7 @@ defmodule Operately.Activities.Content.TaskStatusUpdating do
     |> cast(attrs, [:company_id, :space_id, :project_id, :milestone_id, :task_id, :name])
     |> cast_embed(:old_status, required: true)
     |> cast_embed(:new_status, required: true)
-    |> validate_required([:company_id, :space_id, :project_id, :task_id, :name])
+    |> validate_required([:company_id, :space_id, :task_id, :name])
   end
 
   def build(params) do

@@ -105,7 +105,7 @@ function Page() {
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: milestone.project.id } });
 
   const handleTaskNameChange = usePageField<string>({
-    update: (taskId, v) => Api.tasks.updateName({ taskId, name: v }),
+    update: (taskId, v) => Api.tasks.updateName({ taskId, name: v, type: "project" }),
     onError: (e: string) => showErrorToast(e, "Failed to update task name."),
     validations: [(v) => (v.trim() === "" ? "Task name cannot be empty" : null)],
     onOptimisticUpdade: (taskId, v) => {
@@ -121,7 +121,7 @@ function Page() {
   });
 
   const handleTaskDescriptionChange = usePageField<any>({
-    update: (taskId, v) => Api.tasks.updateDescription({ taskId, description: JSON.stringify(v) }),
+    update: (taskId, v) => Api.tasks.updateDescription({ taskId, description: JSON.stringify(v), type: "project" }),
     onError: () => showErrorToast("Error", "Failed to update task description."),
     onOptimisticUpdade: (taskId, v) => {
       setBaseTasks((prev) =>

@@ -24,6 +24,91 @@ defmodule OperatelyWeb.Api.SpacesTest do
     end
   end
 
+  describe "list tasks" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:engineering)
+      |> Factory.create_space_task(:task, :engineering)
+    end
+
+    test "it requires authentication", ctx do
+      assert {401, _} = query(ctx.conn, [:spaces, :list_tasks], %{})
+    end
+
+    test "it requires a space_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = query(ctx.conn, [:spaces, :list_tasks], %{})
+      assert res.message == "Missing required fields: space_id"
+    end
+
+    test "it returns not found for non-existent space", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {404, _} = query(ctx.conn, [:spaces, :list_tasks], %{
+        space_id: Ecto.UUID.generate()
+      })
+    end
+
+    test "it returns tasks for space creator", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = query(ctx.conn, [:spaces, :list_tasks], %{
+        space_id: Paths.space_id(ctx.engineering)
+      })
+
+      assert length(res.tasks) == 1
+      assert hd(res.tasks).id == Paths.task_id(ctx.task)
+      assert hd(res.tasks).name == ctx.task.name
+    end
+
+    test "it returns tasks for space members with view access", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:space_member, :engineering, permissions: :view_access)
+        |> Factory.log_in_person(:space_member)
+
+      assert {200, res} = query(ctx.conn, [:spaces, :list_tasks], %{
+        space_id: Paths.space_id(ctx.engineering)
+      })
+
+      assert length(res.tasks) == 1
+      assert hd(res.tasks).id == Paths.task_id(ctx.task)
+    end
+
+    test "it returns empty list when space has no tasks", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space(:empty_space)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = query(ctx.conn, [:spaces, :list_tasks], %{
+        space_id: Paths.space_id(ctx.empty_space)
+      })
+
+      assert res.tasks == []
+    end
+
+    test "it returns multiple tasks when space has multiple tasks", ctx do
+      ctx =
+        ctx
+        |> Factory.create_space_task(:task2, :engineering)
+        |> Factory.create_space_task(:task3, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = query(ctx.conn, [:spaces, :list_tasks], %{
+        space_id: Paths.space_id(ctx.engineering)
+      })
+
+      assert length(res.tasks) == 3
+      task_ids = Enum.map(res.tasks, & &1.id)
+      assert Paths.task_id(ctx.task) in task_ids
+      assert Paths.task_id(ctx.task2) in task_ids
+      assert Paths.task_id(ctx.task3) in task_ids
+    end
+  end
+
   describe "list members" do
     setup ctx do
       ctx |> Factory.add_space(:space)

@@ -1773,6 +1773,7 @@ export interface Task {
   commentsCount?: number | null;
   subscriptionList?: SubscriptionList | null;
   availableStatuses?: TaskStatus[] | null;
+  type: TaskType;
 }
 
 export interface TaskStatus {
@@ -2097,6 +2098,8 @@ export type SubscriptionParentType =
 export type SuccessStatus = "achieved" | "missed";
 
 export type TaskStatusTypes = "pending" | "todo" | "in_progress" | "done" | "canceled";
+
+export type TaskType = "space" | "project";
 
 export type WorkMapItemPrivacy = "public" | "internal" | "confidential" | "secret";
 
@@ -2866,6 +2869,14 @@ export interface SpacesListMembersInput {
 
 export interface SpacesListMembersResult {
   people: Person[] | null;
+}
+
+export interface SpacesListTasksInput {
+  spaceId: Id;
+}
+
+export interface SpacesListTasksResult {
+  tasks: Task[];
 }
 
 export interface SpacesSearchInput {
@@ -4208,6 +4219,7 @@ export interface TasksCreateResult {
 
 export interface TasksDeleteInput {
   taskId: Id;
+  type: TaskType;
 }
 
 export interface TasksDeleteResult {
@@ -4218,6 +4230,7 @@ export interface TasksDeleteResult {
 export interface TasksUpdateAssigneeInput {
   taskId: Id;
   assigneeId: Id | null;
+  type: TaskType;
 }
 
 export interface TasksUpdateAssigneeResult {
@@ -4227,6 +4240,7 @@ export interface TasksUpdateAssigneeResult {
 export interface TasksUpdateDescriptionInput {
   taskId: Id;
   description: Json;
+  type: TaskType;
 }
 
 export interface TasksUpdateDescriptionResult {
@@ -4236,6 +4250,7 @@ export interface TasksUpdateDescriptionResult {
 export interface TasksUpdateDueDateInput {
   taskId: Id;
   dueDate: ContextualDate | null;
+  type: TaskType;
 }
 
 export interface TasksUpdateDueDateResult {
@@ -4277,6 +4292,7 @@ export interface TasksUpdateMilestoneAndOrderingResult {
 export interface TasksUpdateNameInput {
   taskId: Id;
   name: string;
+  type: TaskType;
 }
 
 export interface TasksUpdateNameResult {
@@ -4286,6 +4302,7 @@ export interface TasksUpdateNameResult {
 export interface TasksUpdateStatusInput {
   taskId: Id;
   status: TaskStatus | null;
+  type: TaskType;
 }
 
 export interface TasksUpdateStatusResult {
@@ -4967,6 +4984,10 @@ class ApiNamespaceSpaces {
 
   async listMembers(input: SpacesListMembersInput): Promise<SpacesListMembersResult> {
     return this.client.get("/spaces/list_members", input);
+  }
+
+  async listTasks(input: SpacesListTasksInput): Promise<SpacesListTasksResult> {
+    return this.client.get("/spaces/list_tasks", input);
   }
 
   async search(input: SpacesSearchInput): Promise<SpacesSearchResult> {
@@ -7576,6 +7597,10 @@ export default {
     listMembers: (input: SpacesListMembersInput) => defaultApiClient.apiNamespaceSpaces.listMembers(input),
     useListMembers: (input: SpacesListMembersInput) =>
       useQuery<SpacesListMembersResult>(() => defaultApiClient.apiNamespaceSpaces.listMembers(input)),
+
+    listTasks: (input: SpacesListTasksInput) => defaultApiClient.apiNamespaceSpaces.listTasks(input),
+    useListTasks: (input: SpacesListTasksInput) =>
+      useQuery<SpacesListTasksResult>(() => defaultApiClient.apiNamespaceSpaces.listTasks(input)),
 
     updateTaskStatuses: (input: SpacesUpdateTaskStatusesInput) =>
       defaultApiClient.apiNamespaceSpaces.updateTaskStatuses(input),

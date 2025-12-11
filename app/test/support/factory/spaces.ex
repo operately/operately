@@ -24,4 +24,18 @@ defmodule Operately.Support.Factory.Spaces do
     Map.put(ctx, testid, person)
   end
 
+  def create_space_task(ctx, testid, space_name, opts \\ []) do
+    space = Map.fetch!(ctx, space_name)
+
+    attrs = Enum.into(opts, %{
+      creator_id: ctx.creator.id,
+      space_id: space.id,
+      name: Keyword.get(opts, :name, "Task #{testid}")
+    })
+
+    task = Operately.TasksFixtures.task_fixture(attrs)
+
+    Map.put(ctx, testid, task)
+  end
+
 end
