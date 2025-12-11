@@ -33,6 +33,7 @@ defmodule Operately.Support.Factory do
   # spaces
   defdelegate add_space(ctx, testid, opts \\ []), to: Factory.Spaces
   defdelegate add_space_member(ctx, testid, space_name, opts \\ []), to: Factory.Spaces
+  defdelegate create_space_task(ctx, testid, space_name, opts \\ []), to: Factory.Spaces
 
   # goals
   defdelegate add_goal(ctx, testid, space_name, opts \\ []), to: Factory.Goals

@@ -97,6 +97,31 @@ defmodule OperatelyWeb.Api.Spaces do
     end
   end
 
+  defmodule ListTasks do
+    use TurboConnect.Query
+    use OperatelyWeb.Api.Helpers
+
+    inputs do
+      field :space_id, :id, null: false
+    end
+
+    outputs do
+      field :tasks, list_of(:task), null: false
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_space(inputs.space_id)
+      |> Steps.check_permissions(:can_view)
+      |> Steps.get_tasks()
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        %{tasks: Serializer.serialize(changes.tasks, level: :full)}
+      end)
+    end
+  end
+
   defmodule UpdateTaskStatuses do
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
@@ -124,6 +149,7 @@ defmodule OperatelyWeb.Api.Spaces do
   defmodule SharedMultiSteps do
     alias Ecto.Multi
     alias Operately.Repo
+    import Ecto.Query, only: [from: 2]
 
     def start_transaction(conn) do
       Multi.new()
@@ -161,6 +187,20 @@ defmodule OperatelyWeb.Api.Spaces do
             Space.changeset(space, %{task_statuses: task_statuses})
           end)
       end
+    end
+
+    def get_tasks(multi) do
+      Multi.run(multi, :tasks, fn _repo, %{space: space} ->
+        tasks =
+          from(t in Operately.Tasks.Task,
+            where: t.space_id == ^space.id,
+            preload: [:assigned_people]
+          )
+          |> Repo.all()
+          |> Operately.Tasks.Task.load_comments_count()
+
+        {:ok, tasks}
+      end)
     end
 
     def commit(multi) do
