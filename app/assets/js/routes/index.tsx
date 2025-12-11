@@ -107,6 +107,7 @@ export function createAppRoutes() {
         pageRoute("spaces/:id/edit/general-access", pages.SpaceEditGeneralAccessPage),
         pageRoute("spaces/:id/add-members", pages.SpaceAddMembersPage),
         pageRoute("spaces/:id/work-map", pages.SpaceWorkMapPage),
+        pageRoute("spaces/:id/kanban", pages.SpaceKanbanPage),
 
         pageRoute("resource-hubs/:id", pages.ResourceHubPage),
         pageRoute("resource-hubs/:id/drafts", pages.ResourceHubDraftsPage),

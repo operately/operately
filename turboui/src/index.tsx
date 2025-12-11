@@ -56,6 +56,7 @@ export { Tooltip } from "./Tooltip";
 export { Timeline } from "./Timeline";
 export { Reactions } from "./Reactions";
 export { SubscribersSelector, CurrentSubscriptions } from "./Subscriptions";
+export { SpaceKanbanPage } from "./SpaceKanbanPage";
 
 export { Summary } from "./RichContent";
 export { Editor, useEditor } from "./RichEditor";

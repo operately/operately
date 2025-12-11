@@ -90,6 +90,7 @@ import SpaceAddPage from "./SpaceAddPage";
 import SpaceDiscussionsPage from "./SpaceDiscussionsPage";
 import SpaceEditGeneralAccessPage from "./SpaceEditGeneralAccessPage";
 import SpaceEditPage from "./SpaceEditPage";
+import SpaceKanbanPage from "./SpaceKanbanPage";
 import SpacePage from "./SpacePage";
 import SpaceWorkMapPage from "./SpaceWorkMapPage";
 import TaskPage from "./TaskPage";
@@ -186,6 +187,7 @@ export default {
   SpaceDiscussionsPage,
   SpaceEditGeneralAccessPage,
   SpaceEditPage,
+  SpaceKanbanPage,
   SpacePage,
   SpaceWorkMapPage,
   TaskPage,
