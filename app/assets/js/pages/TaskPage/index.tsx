@@ -173,7 +173,8 @@ function Page() {
   const transformPerson = useCallback((p) => People.parsePersonForTurboUi(paths, p)!, [paths]);
 
   const assigneePersonSearch = Tasks.useTaskAssigneeSearch({
-    projectId: task.project.id,
+    id: task.project.id,
+    type: "project",
     transformResult: transformPerson,
   });
   const { milestones, search: searchMilestones } = useMilestones(task.project.id);

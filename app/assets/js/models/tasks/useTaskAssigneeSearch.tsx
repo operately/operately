@@ -3,7 +3,8 @@ import * as Api from "@/api";
 import { Person } from "@/api";
 
 interface UseTaskAssigneeSearchParams<T> {
-  projectId: string;
+  id: string;
+  type: "project" | "space";
   ignoredIds?: (string | null | undefined)[];
   transformResult?: (person: Person) => T;
 }
@@ -24,7 +25,8 @@ export function useTaskAssigneeSearch<T>(hookParams: UseTaskAssigneeSearchParams
       const trimmedQuery = query.trim();
 
       const result = await Api.listTaskAssignablePeople({
-        projectId: hookParams.projectId,
+        id: hookParams.id,
+        type: hookParams.type,
         ignoredIds,
         query: trimmedQuery === "" ? undefined : trimmedQuery,
       });
@@ -35,7 +37,7 @@ export function useTaskAssigneeSearch<T>(hookParams: UseTaskAssigneeSearchParams
         .map((person) => transform(person)) as T[];
       setPeople(transformedPeople);
     },
-    [hookParams.projectId, hookParams.ignoredIds, hookParams.transformResult],
+    [hookParams.id, hookParams.type, hookParams.ignoredIds, hookParams.transformResult],
   );
 
   // Load initial people on mount
