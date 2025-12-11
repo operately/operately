@@ -8,6 +8,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Groups.Permissions do
       can_edit_discussions: permissions.can_edit_discussions,
       can_edit_members_permissions: permissions.can_edit_members_permissions,
       can_edit_permissions: permissions.can_edit_permissions,
+      can_edit_statuses: permissions.can_edit_statuses,
       can_join: permissions.can_join,
       can_post_discussions: permissions.can_post_discussions,
       can_remove_member: permissions.can_remove_member,

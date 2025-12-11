@@ -24,7 +24,7 @@ defmodule Operately.Tasks.KanbanState do
   def initialize(statuses) when is_list(statuses) do
     statuses
     |> normalize_statuses()
-    |> Enum.into(%{}, fn status -> {status, []} end)
+    |> Enum.into(%{}, fn status -> {String.to_atom(status), []} end)
   end
 
   def default_statuses do

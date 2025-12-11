@@ -16,6 +16,7 @@ defmodule Operately.Groups.Group do
 
     has_many :tasks, Operately.Tasks.Task, foreign_key: :space_id
     embeds_many :task_statuses, Operately.Tasks.Status, on_replace: :delete
+    field :tasks_kanban_state, :map, default: Operately.Tasks.KanbanState.initialize()
 
     # populated by after load hooks
     field :is_member, :boolean, virtual: true
@@ -36,7 +37,7 @@ defmodule Operately.Groups.Group do
 
   def changeset(group, attrs) do
     group
-    |> cast(attrs, [:company_id, :name, :mission, :deleted_at])
+    |> cast(attrs, [:company_id, :name, :mission, :deleted_at, :tasks_kanban_state])
     |> cast_embed(:task_statuses)
     |> put_default_task_statuses()
     |> validate_required([:company_id, :name, :mission])
