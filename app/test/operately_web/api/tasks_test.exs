@@ -967,9 +967,20 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       assert {400, res} = mutation(ctx.conn, [:tasks, :update_assignee], %{
-        assignee_id: Paths.person_id(ctx.creator)
+        assignee_id: Paths.person_id(ctx.creator),
+        type: "project"
       })
       assert res.message == "Missing required fields: task_id"
+    end
+
+    test "it requires a type", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:tasks, :update_assignee], %{
+        task_id: Paths.task_id(ctx.task),
+        assignee_id: Paths.person_id(ctx.creator)
+      })
+      assert res.message == "Missing required fields: type"
     end
 
     test "it assigns a person to a task", ctx do
@@ -977,7 +988,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :update_assignee], %{
         task_id: Paths.task_id(ctx.task),
-        assignee_id: Paths.person_id(ctx.creator)
+        assignee_id: Paths.person_id(ctx.creator),
+        type: "project"
       })
 
       # Verify response
@@ -1008,7 +1020,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       # Then remove assignee
       assert {200, res} = mutation(ctx.conn, [:tasks, :update_assignee], %{
         task_id: Paths.task_id(ctx.task),
-        assignee_id: nil
+        assignee_id: nil,
+        type: "project"
       })
 
       # Verify response
@@ -1027,7 +1040,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, _} = mutation(ctx.conn, [:tasks, :update_assignee], %{
         task_id: Paths.task_id(ctx.task),
-        assignee_id: Paths.person_id(ctx.creator)
+        assignee_id: Paths.person_id(ctx.creator),
+        type: "project"
       })
 
       after_count = count_activities(ctx.project.id, "task_assignee_updating")
@@ -1044,7 +1058,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, _} = mutation(ctx.conn, [:tasks, :update_assignee], %{
         task_id: Paths.task_id(ctx.task),
-        assignee_id: Paths.person_id(ctx.space_member)
+        assignee_id: Paths.person_id(ctx.space_member),
+        type: "project"
       })
 
       contributor = Operately.Repo.get_by(Contributor, project_id: ctx.project.id, person_id: ctx.space_member.id)
@@ -1069,13 +1084,37 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, _} = mutation(ctx.conn, [:tasks, :update_assignee], %{
         task_id: Paths.task_id(ctx.task),
-        assignee_id: Paths.person_id(ctx.space_member)
+        assignee_id: Paths.person_id(ctx.space_member),
+        type: "project"
       })
 
       # Verify subscription was created
       assert {:ok, subscription} = Operately.Notifications.Subscription.get(:system, subscription_list_id: project.subscription_list_id, person_id: ctx.space_member.id)
       assert subscription.type == :invited
       assert subscription.canceled == false
+    end
+
+    test "it assigns a person to a space task", ctx do
+      ctx =
+        ctx
+        |> Factory.create_space_task(:space_task, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = mutation(ctx.conn, [:tasks, :update_assignee], %{
+        task_id: Paths.task_id(ctx.space_task),
+        assignee_id: Paths.person_id(ctx.creator),
+        type: "space"
+      })
+
+      # Verify response
+      assert length(res.task.assignees) == 1
+      assert hd(res.task.assignees).id == Paths.person_id(ctx.creator)
+
+      # Verify database update
+      updated_task = Operately.Repo.reload(ctx.space_task)
+      updated_task = Operately.Repo.preload(updated_task, :assigned_people)
+      assert length(updated_task.assigned_people) == 1
+      assert hd(updated_task.assigned_people).id == ctx.creator.id
     end
   end
 

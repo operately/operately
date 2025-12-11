@@ -313,6 +313,7 @@ defmodule OperatelyWeb.Api.Tasks do
     inputs do
       field :task_id, :id, null: false
       field :assignee_id, :id, null: true
+      field :type, :task_type, null: false
     end
 
     outputs do
@@ -322,25 +323,40 @@ defmodule OperatelyWeb.Api.Tasks do
     def call(conn, inputs) do
       conn
       |> Steps.start_transaction()
-      |> Steps.find_task(inputs.task_id, [:assigned_people])
+      |> Steps.find_task(inputs.task_id, inputs.type, [:assigned_people])
       |> Steps.check_task_permissions(:can_edit_task)
       |> Steps.update_task_assignee(inputs.assignee_id)
-      |> Steps.save_activity(:task_assignee_updating, fn changes ->
-        %{
-          company_id: changes.project.company_id,
-          space_id: changes.project.group_id,
-          project_id: changes.project.id,
-          milestone_id: changes.task.milestone_id,
-          task_id: changes.task.id,
-          old_assignee_id: get_old_assignee_id(changes.task),
-          new_assignee_id: inputs.assignee_id
-        }
-      end)
+      |> Steps.save_activity(:task_assignee_updating, &build_activity_content(inputs, &1))
       |> Steps.commit()
       |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn changes ->
         %{task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full)}
       end)
+    end
+
+    defp build_activity_content(inputs, changes) do
+      base = %{
+        milestone_id: changes.task.milestone_id,
+        task_id: changes.task.id,
+        old_assignee_id: get_old_assignee_id(changes.task),
+        new_assignee_id: inputs.assignee_id
+      }
+
+      cond do
+        Map.has_key?(changes, :project) and changes.project ->
+          Map.merge(%{
+            company_id: changes.project.company_id,
+            space_id: changes.project.group_id,
+            project_id: changes.project.id
+          }, base)
+
+        Map.has_key?(changes, :space) and changes.space ->
+          Map.merge(%{
+            company_id: changes.space.company_id,
+            space_id: changes.space.id,
+            project_id: nil
+          }, base)
+      end
     end
 
     defp get_old_assignee_id(task) do
@@ -843,8 +859,18 @@ defmodule OperatelyWeb.Api.Tasks do
     defp maybe_add_assignee_contributor(multi, nil), do: multi
 
     defp maybe_add_assignee_contributor(multi, assignee_id) do
-      Ecto.Multi.run(multi, :assignee_contributor, fn _repo, %{project: project} ->
-        ensure_project_contributor(project, assignee_id)
+      Ecto.Multi.run(multi, :assignee_contributor, fn _repo, changes ->
+        cond do
+          Map.has_key?(changes, :project) and changes.project ->
+            ensure_project_contributor(changes.project, assignee_id)
+
+          Map.has_key?(changes, :space) and changes.space ->
+            # Space tasks don't need contributor management
+            {:ok, :skipped}
+
+          true ->
+            {:ok, :skipped}
+        end
       end)
     end
 
