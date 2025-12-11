@@ -27,7 +27,7 @@ defmodule Operately.Projects.Milestone do
     field :completed_at, :naive_datetime
 
     field :description, :map
-    field :tasks_kanban_state, :map, default: Operately.Tasks.KanbanState.initialize()
+    field :tasks_kanban_state, Operately.Tasks.KanbanState.Type, default: Operately.Tasks.KanbanState.initialize()
     field :tasks_ordering_state, {:array, :string}, default: Operately.Tasks.OrderingState.initialize()
 
     has_many :comments, Operately.Comments.MilestoneComment

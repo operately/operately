@@ -4,6 +4,53 @@ defmodule Operately.Tasks.KanbanState do
 
   defstruct state: %{}
 
+  defmodule Type do
+    @moduledoc """
+    Custom Ecto type for kanban state maps that normalizes keys to atoms.
+    This ensures consistency with JSON decoding behavior in the API layer.
+    """
+
+    use Ecto.Type
+
+    def type, do: :map
+
+    def cast(value) when is_map(value) do
+      {:ok, normalize_keys(value)}
+    end
+
+    def cast(_), do: :error
+
+    def load(value) when is_map(value) do
+      {:ok, normalize_keys(value)}
+    end
+
+    def load(_), do: :error
+
+    def dump(value) when is_map(value) do
+      {:ok, normalize_keys_for_db(value)}
+    end
+
+    def dump(_), do: :error
+
+    defp normalize_keys(map) do
+      Enum.into(map, %{}, fn {key, value} ->
+        key_string = to_string(key)
+        atom_key = try do
+          String.to_existing_atom(key_string)
+        rescue
+          ArgumentError -> String.to_atom(key_string)
+        end
+        {atom_key, value}
+      end)
+    end
+
+    defp normalize_keys_for_db(map) do
+      Enum.into(map, %{}, fn {key, value} ->
+        {to_string(key), value}
+      end)
+    end
+  end
+
   def load(state, statuses \\ default_statuses())
 
   def load(nil, statuses), do: initialize(statuses)
