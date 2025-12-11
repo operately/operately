@@ -1,6 +1,6 @@
 defmodule Operately.Tasks.Task do
   use Operately.Schema
-  use Operately.Repo.Getter
+  import Operately.Repo.RequestInfo, only: [request_info: 0]
 
   @type t :: %__MODULE__{
           id: Ecto.UUID.t() | nil,
@@ -16,7 +16,9 @@ defmodule Operately.Tasks.Task do
           creator_id: Ecto.UUID.t() | nil,
           milestone_id: Ecto.UUID.t() | nil,
           project_id: Ecto.UUID.t() | nil,
+          space_id: Ecto.UUID.t() | nil,
           permissions: map() | nil,
+          comments_count: integer() | nil,
           available_statuses: list() | nil,
           inserted_at: NaiveDateTime.t() | nil,
           updated_at: NaiveDateTime.t() | nil
@@ -31,7 +33,6 @@ defmodule Operately.Tasks.Task do
 
     has_one :project_space, through: [:project, :group]
     has_one :company, through: [:creator, :company]
-    has_one :access_context, through: [:project, :access_context]
 
     has_many :assignees, Operately.Tasks.Assignee
     has_many :assigned_people, through: [:assignees, :person]
@@ -89,6 +90,18 @@ defmodule Operately.Tasks.Task do
     |> put_default_task_status()
     |> validate_required([:name, :description, :creator_id, :subscription_list_id])
     |> validate_project_or_group()
+  end
+
+  def get(requester, args) do
+    __MODULE__.Getter.get(__MODULE__, requester, args)
+  end
+
+  def get!(requester, args) do
+    case get(requester, args) do
+      {:ok, resource} -> resource
+      {:error, :not_found} -> raise Ecto.NoResultsError, queryable: __MODULE__
+      {:error, reason} -> raise "Failed to get #{__MODULE__}: #{inspect(reason)}"
+    end
   end
 
   #
@@ -169,6 +182,71 @@ defmodule Operately.Tasks.Task do
         changeset
         |> Ecto.Changeset.add_error(:project_id, "cannot have both project_id and space_id")
         |> Ecto.Changeset.add_error(:space_id, "cannot have both project_id and space_id")
+    end
+  end
+
+  defmodule Getter do
+    import Ecto.Query
+    alias Operately.Access.Binding
+    alias Operately.Repo.Getter, as: BaseGetter
+
+    def get(module, requester, args) do
+      args = BaseGetter.GetterArgs.parse(args)
+
+      query = from(r in module, as: :resource, preload: ^args.preload)
+      query = BaseGetter.add_where_clauses(query, args.field_matchers)
+
+      case requester do
+        :system ->
+          BaseGetter.get_for_system(query, :system, args)
+
+        %{} ->
+          query =
+            build_base_query(query, requester.id)
+            |> group_by([resource: r], r.id)
+            |> select([resource: r, binding: b], {r, max(b.access_level)})
+
+          case BaseGetter.load(query, args) do
+            {:ok, {resource, access_level}} ->
+              BaseGetter.process_resource(resource, requester, access_level, args)
+
+            {:error, :not_found} ->
+              {:error, :not_found}
+          end
+
+        requester_id when is_binary(requester_id) ->
+          query =
+            build_base_query(query, requester_id)
+            |> group_by([resource: r, person: p], [r.id, p.id])
+            |> select([resource: r, binding: b, person: p], {r, max(b.access_level), p})
+
+          case BaseGetter.load(query, args) do
+            {:ok, {resource, access_level, requester}} ->
+              BaseGetter.process_resource(resource, requester, access_level, args)
+
+            {:error, :not_found} ->
+              {:error, :not_found}
+          end
+
+        _ ->
+          {:error, :invalid_requester}
+      end
+    end
+
+    defp build_base_query(query, requester_id) do
+      from([resource: r] in query,
+        left_join: proj in assoc(r, :project),
+        left_join: sp in assoc(r, :space),
+        join: c in Operately.Access.Context,
+        on: c.project_id == proj.id or c.group_id == sp.id,
+        join: b in assoc(c, :bindings), as: :binding,
+        join: g in assoc(b, :group),
+        join: m in assoc(g, :memberships),
+        join: p in assoc(m, :person), as: :person,
+        where: m.person_id == ^requester_id,
+        where: is_nil(p.suspended_at),
+        where: b.access_level >= ^Binding.view_access()
+      )
     end
   end
 end

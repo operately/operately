@@ -218,31 +218,31 @@ defmodule Operately.Repo.Getter do
     )
   end
 
-  defp load(query, args) do
+  def load(query, args) do
     Operately.Repo.one(query, with_deleted: args.with_deleted) |> to_tuple()
   end
 
-  defp add_where_clauses(query, field_matchers) do
+  def add_where_clauses(query, field_matchers) do
     Enum.reduce(field_matchers, query, fn {name, value}, query ->
       where(query, [resource: r], field(r, ^name) == ^value)
     end)
   end
 
-  defp process_resource(resource, requester, access_level, args) do
+  def process_resource(resource, requester, access_level, args) do
     resource = RequestInfo.populate_request_info(resource, requester, access_level)
     resource = run_after_load_hooks(resource, args.after_load)
 
     {:ok, resource}
   end
 
-  defp run_after_load_hooks(resource, hooks) do
+  def run_after_load_hooks(resource, hooks) do
     Enum.reduce(hooks, resource, fn hook, resource ->
       hook.(resource)
     end)
   end
 
-  defp to_tuple(nil), do: {:error, :not_found}
-  defp to_tuple(resource), do: {:ok, resource}
+  def to_tuple(nil), do: {:error, :not_found}
+  def to_tuple(resource), do: {:ok, resource}
 
   defmodule GetterArgs do
     defstruct [
