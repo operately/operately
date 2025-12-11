@@ -205,7 +205,8 @@ function Page() {
   });
 
   const assigneePersonSearch = Tasks.useTaskAssigneeSearch({
-    projectId: project.id,
+    id: project.id,
+    type: "project",
     transformResult: transformPerson,
   });
 

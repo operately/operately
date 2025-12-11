@@ -148,7 +148,8 @@ function Page() {
   );
 
   const assigneeSearch = Tasks.useTaskAssigneeSearch({
-    projectId: milestone.project.id,
+    id: milestone.project.id,
+    type: "project",
     transformResult: transformPerson,
   });
 

@@ -8,9 +8,11 @@ defmodule OperatelyWeb.Api.Queries.ListTaskAssignablePeople do
   alias Operately.People.Person
   alias Operately.Access.Binding
   alias OperatelyWeb.Api.Serializer
+  alias Operately.Groups.Group
 
   inputs do
-    field :project_id, :id, null: false
+    field :id, :id, null: false
+    field :type, :task_type, null: false
     field? :query, :string, null: true
     field? :ignored_ids, list_of(:id), null: true
   end
@@ -22,7 +24,7 @@ defmodule OperatelyWeb.Api.Queries.ListTaskAssignablePeople do
   def call(conn, inputs) do
     me = me(conn)
 
-    with {:ok, access_context} <- load_access_context(me, inputs.project_id),
+    with {:ok, access_context} <- load_access_context(me, inputs),
          {:ok, people} <- load_people(access_context.id, inputs) do
       {:ok, %{people: Serializer.serialize(people, level: :essential)}}
     else
@@ -30,12 +32,21 @@ defmodule OperatelyWeb.Api.Queries.ListTaskAssignablePeople do
     end
   end
 
-  defp load_access_context(me, project_id) do
-    case Operately.Projects.Project.get(me, id: project_id, opts: [preload: [:access_context]]) do
+  defp load_access_context(me, %{id: id, type: :project}) do
+    case Operately.Projects.Project.get(me, id: id, opts: [preload: [:access_context]]) do
       {:ok, project} -> {:ok, project.access_context}
       {:error, _} -> {:error, :not_found}
     end
   end
+
+  defp load_access_context(me, %{id: id, type: :space}) do
+    case Group.get(me, id: id, opts: [preload: [:access_context]]) do
+      {:ok, space} -> {:ok, space.access_context}
+      {:error, _} -> {:error, :not_found}
+    end
+  end
+
+  defp load_access_context(_me, _inputs), do: {:error, :not_found}
 
   defp load_people(access_context_id, inputs) do
     people =
