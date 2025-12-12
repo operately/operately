@@ -21,6 +21,7 @@ interface Props {
   addingEnabled?: boolean;
   addItem?: WorkMap.AddNewItemFn;
   spaceSearch?: SpaceField.SearchSpaceFn;
+  hideCompanyAccess?: boolean;
 }
 
 export function ItemNameCell({
@@ -32,6 +33,7 @@ export function ItemNameCell({
   canAddChildren,
   addItem,
   spaceSearch,
+  hideCompanyAccess,
 }: Props) {
   return (
     <td className="py-2 px-2 md:px-4 relative" data-test-id={createTestId("work-item", item.name)}>
@@ -42,7 +44,9 @@ export function ItemNameCell({
         <Name item={item} />
         <PrivacyIndicatorWrapper item={item} />
 
-        {canAddChildren && <AddButton item={item} addItem={addItem!} spaceSearch={spaceSearch!} />}
+        {canAddChildren && (
+          <AddButton item={item} addItem={addItem!} spaceSearch={spaceSearch!} hideCompanyAccess={hideCompanyAccess} />
+        )}
       </div>
     </td>
   );
@@ -163,10 +167,12 @@ function AddButton({
   item,
   addItem,
   spaceSearch,
+  hideCompanyAccess,
 }: {
   item: WorkMap.Item;
   addItem: WorkMap.AddNewItemFn;
   spaceSearch: SpaceField.SearchSpaceFn;
+  hideCompanyAccess?: boolean;
 }) {
   if (item.type !== "goal") return null;
 
@@ -187,6 +193,7 @@ function AddButton({
         spaceSearch={spaceSearch}
         save={addItem}
         space={item.space}
+        hideCompanyAccess={Boolean(hideCompanyAccess)}
       />
     </div>
   );

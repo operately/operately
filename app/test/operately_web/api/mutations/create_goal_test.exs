@@ -160,6 +160,22 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalTest do
       assert {200, res} = request(ctx.conn, ctx, space_id: Paths.space_id(space))
       assert_goal_created(res)
     end
+
+    test "forces company access level to no_access when space is private", ctx do
+      private_space = group_fixture(ctx.company_creator, %{company_id: ctx.company.id, company_permissions: Binding.no_access()})
+
+      assert {200, res} = request(ctx.conn, ctx,
+               space_id: Paths.space_id(private_space),
+               company_access_level: Binding.full_access()
+             )
+
+      {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.goal.id)
+      context = Operately.Access.get_context!(goal_id: id)
+      company_group = Operately.Access.get_group!(company_id: ctx.company.id, tag: :standard)
+      binding = Operately.Access.get_binding!(context_id: context.id, group_id: company_group.id)
+
+      assert binding.access_level == Binding.no_access()
+    end
   end
 
   #

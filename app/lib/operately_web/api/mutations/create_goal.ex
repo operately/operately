@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoal do
   use OperatelyWeb.Api.Helpers
 
   alias Operately.Groups.{Group, Permissions}
+  alias Operately.Access.Binding
   alias Operately.Operations.GoalCreation
 
   inputs do
@@ -27,10 +28,11 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoal do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:space, fn ctx -> Group.get(ctx.me, id: inputs.space_id) end)
+    |> run(:inputs, fn ctx -> {:ok, sanitize_company_access_level(ctx.space, inputs)} end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.request_info.access_level, :can_create_goal) end)
     |> run(:champion_validation, fn ctx -> validate_champion_permissions(ctx.me, inputs) end)
     |> run(:reviewer_validation, fn ctx -> validate_reviewer_permissions(ctx.me, inputs) end)
-    |> run(:operation, fn ctx -> GoalCreation.run(ctx.me, inputs) end)
+    |> run(:operation, fn ctx -> GoalCreation.run(ctx.me, ctx.inputs) end)
     |> run(:serialized, fn ctx -> {:ok, %{goal: Serializer.serialize(ctx.operation, level: :essential)}} end)
     |> respond()
   end
@@ -60,6 +62,16 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoal do
       inputs[:reviewer_id] == nil -> {:ok, nil}
       me.id == inputs.reviewer_id -> {:ok, nil}
       true -> Group.get(inputs.reviewer_id, id: inputs.space_id)
+    end
+  end
+
+  defp sanitize_company_access_level(space, inputs) do
+    space = Operately.Groups.Group.preload_access_levels(space)
+
+    if space.access_levels.company == Binding.no_access() do
+      Map.put(inputs, :company_access_level, Binding.no_access())
+    else
+      inputs
     end
   end
 end

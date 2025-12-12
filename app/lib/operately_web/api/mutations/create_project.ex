@@ -4,6 +4,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateProject do
 
   alias Operately.Groups
   alias Operately.Groups.Permissions
+  alias Operately.Access.Binding
   alias Operately.Operations.ProjectCreation
 
   inputs do
@@ -28,8 +29,9 @@ defmodule OperatelyWeb.Api.Mutations.CreateProject do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:attrs, fn ctx -> decode_inputs(ctx.me, inputs) end)
     |> run(:space, fn ctx -> Groups.get_group_with_access_level(ctx.attrs.group_id, ctx.me.id) end)
+    |> run(:enforced_attrs, fn ctx -> {:ok, sanitize_company_access_level(ctx.space, ctx.attrs)} end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.requester_access_level, :can_create_project) end)
-    |> run(:operation, fn ctx -> ProjectCreation.run(ctx.attrs) end)
+    |> run(:operation, fn ctx -> ProjectCreation.run(ctx.enforced_attrs) end)
     |> run(:serialized, fn ctx -> {:ok, %{project: Serializer.serialize(ctx.operation, level: :essential)}} end)
     |> respond()
   end
@@ -66,5 +68,15 @@ defmodule OperatelyWeb.Api.Mutations.CreateProject do
       company_access_level: inputs.company_access_level,
       space_access_level: inputs.space_access_level,
     }}
+  end
+
+  defp sanitize_company_access_level(space, attrs) do
+    space = Operately.Groups.Group.preload_access_levels(space)
+
+    if space.access_levels.company == Binding.no_access() do
+      Map.put(attrs, :company_access_level, Binding.no_access())
+    else
+      attrs
+    end
   end
 end
