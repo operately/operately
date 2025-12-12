@@ -45,7 +45,7 @@ defmodule OperatelyWeb.Api.Queries.GetSpaceTest do
       space = Groups.Group.load_is_member(space, ctx.person)
 
       assert {200, res} = query(ctx.conn, :get_space, %{id: Paths.space_id(space)})
-      assert res.space == Serializer.serialize(space, level: :full)
+      assert res.space == serialize_space(space)
     end
 
     test "member has access to space they are NOT part of", ctx do
@@ -56,7 +56,7 @@ defmodule OperatelyWeb.Api.Queries.GetSpaceTest do
         ])
         |> Repo.preload(:company)
         |> Groups.Group.load_is_member(ctx.person)
-        |> Serializer.serialize(level: :full)
+        |> serialize_space()
 
       assert {200, res} = query(ctx.conn, :get_space, %{id: space.id})
       assert res.space == space
@@ -73,43 +73,27 @@ defmodule OperatelyWeb.Api.Queries.GetSpaceTest do
     end
 
     test "get_space", ctx do
-      space = group_fixture(ctx.person, company_id: ctx.company.id)
+      space =
+        group_fixture(ctx.person, company_id: ctx.company.id)
+        |> Repo.preload(:company)
+        |> Groups.Group.load_is_member(ctx.person)
 
       assert {200, res} = query(ctx.conn, :get_space, %{id: Paths.space_id(space)})
-      assert res.space == %{
-        id: Paths.space_id(space),
-        name: space.name,
-        mission: space.mission,
-        is_company_space: ctx.company.company_space_id == space.id,
-        is_member: true,
-        members: nil,
-        access_levels: nil,
-        potential_subscribers: nil,
-        notifications: [],
-        permissions: nil,
-      }
+      assert res.space == serialize_space(space)
     end
 
     test "get_space when not a member", ctx do
       creator = person_fixture(company_id: ctx.company.id)
-      space = group_fixture(creator, [
-        company_id: ctx.company.id,
-        company_permissions: Binding.view_access(),
-      ])
+      space =
+        group_fixture(creator, [
+          company_id: ctx.company.id,
+          company_permissions: Binding.view_access(),
+        ])
+        |> Repo.preload(:company)
+        |> Groups.Group.load_is_member(ctx.person)
 
       assert {200, res} = query(ctx.conn, :get_space, %{id: Paths.space_id(space)})
-      assert res.space == %{
-        id: Paths.space_id(space),
-        name: space.name,
-        mission: space.mission,
-        is_company_space: ctx.company.company_space_id == space.id,
-        is_member: false,
-        members: nil,
-        access_levels: nil,
-        potential_subscribers: nil,
-        notifications: [],
-        permissions: nil,
-      }
+      assert res.space == serialize_space(space)
     end
 
     test "include_unread_notifications", ctx do
@@ -201,5 +185,12 @@ defmodule OperatelyWeb.Api.Queries.GetSpaceTest do
       id: ctx.person.id,
       access_level: Binding.view_access(),
     }])
+  end
+
+  defp serialize_space(space) do
+    space
+    |> Serializer.serialize(level: :full)
+    |> Jason.encode!()
+    |> Jason.decode!(keys: :atoms)
   end
 end
