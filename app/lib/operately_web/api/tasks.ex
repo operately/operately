@@ -102,6 +102,7 @@ defmodule OperatelyWeb.Api.Tasks do
       field :milestone_id, :id, null: true
       field :status, :task_status, null: false
       field :milestone_kanban_state, :json, null: false
+      field :type, :task_type, null: false
     end
 
     outputs do
@@ -110,36 +111,55 @@ defmodule OperatelyWeb.Api.Tasks do
     end
 
     def call(conn, inputs) do
+      preloads = if inputs.type == :project, do: [:assigned_people, :milestone], else: [:assigned_people]
+
       conn
       |> Steps.start_transaction()
-      |> Steps.find_task(inputs.task_id, :project, [:assigned_people, :milestone])
+      |> Steps.find_task(inputs.task_id, inputs.type, preloads)
       |> Steps.check_task_permissions(:can_edit_task)
-      |> Steps.validate_kanban_milestone(inputs.milestone_id)
+      |> Steps.validate_kanban_milestone(inputs.milestone_id, inputs.type)
       |> Steps.update_task_status(inputs.status)
-      |> Steps.update_milestone_kanban_state(inputs.milestone_kanban_state)
-      |> Steps.save_activity(:task_status_updating, fn changes ->
-        old_status = changes.task.task_status && Map.from_struct(changes.task.task_status)
-        new_status = changes.updated_task.task_status && Map.from_struct(changes.updated_task.task_status)
-
-        %{
-          company_id: changes.project.company_id,
-          space_id: changes.project.group_id,
-          project_id: changes.project.id,
-          milestone_id: changes.task.milestone_id,
-          task_id: changes.task.id,
-          old_status: old_status,
-          new_status: new_status,
-          name: changes.task.name
-        }
-      end)
+      |> Steps.update_kanban_state(inputs.milestone_kanban_state, inputs.type)
+      |> Steps.save_activity(:task_status_updating, &build_kanban_activity_content/1)
       |> Steps.commit()
       |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn changes ->
+        milestone = Map.get(changes, :kanban_updated_milestone) || Map.get(changes, :updated_milestone)
+
         %{
           task: Serializer.serialize(changes.updated_task, level: :full),
-          updated_milestone: Serializer.serialize(changes.kanban_updated_milestone || changes.updated_milestone)
+          updated_milestone: if(milestone, do: Serializer.serialize(milestone), else: nil)
         }
       end)
+    end
+
+    defp build_kanban_activity_content(changes) do
+      old_status = changes.task.task_status && Map.from_struct(changes.task.task_status)
+      new_status = changes.updated_task.task_status && Map.from_struct(changes.updated_task.task_status)
+
+      base = %{
+        milestone_id: changes.task.milestone_id,
+        task_id: changes.task.id,
+        old_status: old_status,
+        new_status: new_status,
+        name: changes.task.name
+      }
+
+      cond do
+        Map.has_key?(changes, :project) and changes.project ->
+          Map.merge(%{
+            company_id: changes.project.company_id,
+            space_id: changes.project.group_id,
+            project_id: changes.project.id
+          }, base)
+
+        Map.has_key?(changes, :space) and changes.space ->
+          Map.merge(%{
+            company_id: changes.space.company_id,
+            space_id: changes.space.id,
+            project_id: nil
+          }, base)
+      end
     end
   end
 
@@ -821,24 +841,29 @@ defmodule OperatelyWeb.Api.Tasks do
       end)
     end
 
-    def validate_kanban_milestone(multi, milestone_id) do
+    def validate_kanban_milestone(multi, milestone_id, type) do
       Ecto.Multi.run(multi, :validate_kanban_milestone, fn _repo, %{task: task} ->
-        decoded =
-          case milestone_id do
-            nil -> {:ok, nil}
-            _ -> decode_id(milestone_id, :allow_nil)
-          end
-
-        case decoded do
-          {:ok, decoded_id} ->
-            if task.milestone_id == decoded_id do
-              {:ok, task.milestone}
-            else
-              {:error, {:bad_request, "Task milestone mismatch"}}
+        # Space tasks don't have milestones, so skip validation
+        if type == :space do
+          {:ok, nil}
+        else
+          decoded =
+            case milestone_id do
+              nil -> {:ok, nil}
+              _ -> decode_id(milestone_id, :allow_nil)
             end
 
-          {:error, reason} ->
-            {:error, {:bad_request, reason}}
+          case decoded do
+            {:ok, decoded_id} ->
+              if task.milestone_id == decoded_id do
+                {:ok, task.milestone}
+              else
+                {:error, {:bad_request, "Task milestone mismatch"}}
+              end
+
+            {:error, reason} ->
+              {:error, {:bad_request, reason}}
+          end
         end
       end)
     end
@@ -856,6 +881,13 @@ defmodule OperatelyWeb.Api.Tasks do
       end)
     end
 
+    def update_kanban_state(multi, kanban_state, type) do
+      case type do
+        :project -> update_milestone_kanban_state(multi, kanban_state)
+        :space -> update_space_kanban_state(multi, kanban_state)
+      end
+    end
+
     def update_milestone_kanban_state(multi, kanban_state) do
       Ecto.Multi.run(multi, :kanban_updated_milestone, fn _repo, %{task: task, project: project} ->
         case task.milestone do
@@ -870,6 +902,18 @@ defmodule OperatelyWeb.Api.Tasks do
 
               Operately.Projects.update_milestone(milestone, %{tasks_kanban_state: next_state})
             end
+        end
+      end)
+    end
+
+    def update_space_kanban_state(multi, kanban_state) do
+      Ecto.Multi.run(multi, :kanban_updated_milestone, fn _repo, %{space: space} ->
+        allowed_statuses = Operately.Groups.Group.task_status_values(space)
+
+        with {:ok, decoded_state} <- decode_kanban_state(kanban_state, allowed_statuses) do
+          next_state = KanbanState.load(decoded_state, allowed_statuses)
+          Operately.Groups.update_group(space, %{tasks_kanban_state: next_state})
+          {:ok, nil}
         end
       end)
     end
