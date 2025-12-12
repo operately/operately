@@ -11,6 +11,7 @@ export function Page() {
   const paths = usePaths();
 
   const { workMap, space } = useLoadedData().data;
+  const hideCompanyAccessInQuickAdd = Boolean(space.privateSpace);
 
   const [items, addItem] = useWorkMapItems(workMap);
   const spaceSearch = useSpaceSearch();
@@ -24,6 +25,7 @@ export function Page() {
       spaceSearch={spaceSearch}
       columnOptions={{ hideSpace: true }}
       navigation={[{ to: paths.spacePath(space.id), label: space.name }]}
+      hideCompanyAccessInQuickAdd={hideCompanyAccessInQuickAdd}
       addItemDefaultSpace={{
         id: space.id,
         name: space.name,

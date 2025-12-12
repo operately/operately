@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
+import { expect, userEvent, within } from "@storybook/test";
 import { AddItemModal } from "../components/AddItemModal";
 
 const meta: Meta<typeof AddItemModal> = {
@@ -36,6 +37,24 @@ type Story = StoryObj<typeof meta>;
  * Default AddItemModal showing the modal open
  */
 export const Default: Story = {};
+
+export const HideCompanyAccess: Story = {
+  args: {
+    hideCompanyAccess: true,
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+
+    await step("Open privacy settings", async () => {
+      await userEvent.click(canvas.getByTestId("privacy-field"));
+    });
+
+    await step("Verify company access controls are hidden", async () => {
+      expect(canvas.queryByText("Company Members")).toBeNull();
+      expect(canvas.queryByTestId("privacy-field-company-select")).toBeNull();
+    });
+  },
+};
 
 function Component() {
   const [isOpen, setIsOpen] = React.useState(true);

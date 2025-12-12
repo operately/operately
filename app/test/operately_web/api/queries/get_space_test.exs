@@ -148,6 +148,30 @@ defmodule OperatelyWeb.Api.Queries.GetSpaceTest do
       assert res.space.access_levels.company == Binding.comment_access()
     end
 
+    test "private_space is nil when include_access_levels is not set", ctx do
+      space = group_fixture(ctx.person, company_id: ctx.company.id, company_permissions: Binding.no_access())
+
+      assert {200, res} = query(ctx.conn, :get_space, %{id: Paths.space_id(space)})
+
+      assert is_nil(res.space.private_space)
+    end
+
+    test "private_space is false when include_access_levels is true and company access is not no_access", ctx do
+      space = group_fixture(ctx.person, company_id: ctx.company.id, company_permissions: Binding.view_access())
+
+      assert {200, res} = query(ctx.conn, :get_space, %{id: Paths.space_id(space), include_access_levels: true})
+
+      refute res.space.private_space
+    end
+
+    test "private_space is true when include_access_levels is true and company access is no_access", ctx do
+      space = group_fixture(ctx.person, company_id: ctx.company.id, company_permissions: Binding.no_access())
+
+      assert {200, res} = query(ctx.conn, :get_space, %{id: Paths.space_id(space), include_access_levels: true})
+
+      assert res.space.private_space
+    end
+
     test "include_potential_subscribers", ctx do
       ctx = Factory.add_company_member(ctx, :creator)
         |> Factory.log_in_person(:creator)
