@@ -4269,6 +4269,7 @@ export interface TasksUpdateKanbanInput {
   milestoneId: Id | null;
   status: TaskStatus;
   milestoneKanbanState: Json;
+  type: TaskType;
 }
 
 export interface TasksUpdateKanbanResult {

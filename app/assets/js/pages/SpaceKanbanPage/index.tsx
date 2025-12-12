@@ -61,6 +61,7 @@ function Page() {
 
   const {
     tasks,
+    setTasks,
     createTask,
     updateTaskName,
     updateTaskDueDate,
@@ -75,10 +76,20 @@ function Page() {
     refresh: pageData.refresh,
   });
 
-  const kanbanState = React.useMemo(
-    () => Tasks.parseKanbanState(space.tasksKanbanState, statuses as any, tasks as any),
-    [statuses, tasks, space.tasksKanbanState],
-  );
+  const { kanbanState, handleTaskKanbanChange } = Tasks.useKanbanState({
+    initialRawState: space.tasksKanbanState,
+    statuses,
+    spaceId: space.id,
+    type: "space",
+    tasks,
+    setTasks,
+    onSuccess: async () => {
+      PageCache.invalidate(pageCacheKey(space.id));
+      if (pageData.refresh) {
+        await pageData.refresh();
+      }
+    },
+  });
 
   const handleStatusesChange = React.useCallback(
     async (newStatuses: SpaceKanbanPage.StatusOption[]) => {
@@ -105,7 +116,7 @@ function Page() {
     canManageStatuses: !!space.permissions?.canEditStatuses,
     assigneePersonSearch: assigneeSearch,
 
-    onTaskKanbanChange: () => {},
+    onTaskKanbanChange: handleTaskKanbanChange,
     onTaskCreate: createTask,
     onTaskNameChange: updateTaskName,
     onTaskAssigneeChange: updateTaskAssignee,
