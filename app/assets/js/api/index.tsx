@@ -1473,6 +1473,7 @@ export interface ProjectPermissions {
   canCommentOnRetrospective: boolean;
   canCommentOnTask: boolean;
   canCreateMilestone: boolean;
+  canCreateTask: boolean;
   canCompleteMilestone: boolean;
   canReopenMilestone: boolean;
   canDeleteMilestone: boolean;
