@@ -47,10 +47,7 @@ function Page() {
 
   assertPresent(space, "Space must be present");
 
-  const tasks = React.useMemo(() => Tasks.parseTasksForTurboUi(paths, backendTasks, "space"), [paths, backendTasks]);
-
   const transformPerson = React.useCallback((p: People.Person) => People.parsePersonForTurboUi(paths, p)!, [paths]);
-
   const assigneeSearch = Tasks.useTaskAssigneeSearch({
     id: space.id,
     type: "space",
@@ -62,9 +59,37 @@ function Page() {
     [space.taskStatuses],
   );
 
+  const {
+    tasks,
+    createTask,
+    updateTaskName,
+    updateTaskDueDate,
+    updateTaskAssignee,
+    updateTaskStatus,
+    deleteTask,
+    updateTaskDescription,
+  } = Tasks.useSpaceTasksForTurboUi({
+    backendTasks,
+    spaceId: space.id,
+    cacheKey: pageCacheKey(space.id),
+    refresh: pageData.refresh,
+  });
+
   const kanbanState = React.useMemo(
     () => Tasks.parseKanbanState(space.tasksKanbanState, statuses as any, tasks as any),
-    [statuses, tasks],
+    [statuses, tasks, space.tasksKanbanState],
+  );
+
+  const handleStatusesChange = React.useCallback(
+    async (newStatuses: SpaceKanbanPage.StatusOption[]) => {
+      const serialized = Tasks.serializeTaskStatuses(newStatuses);
+      await Api.spaces.updateTaskStatuses({ spaceId: space.id, taskStatuses: serialized });
+      PageCache.invalidate(pageCacheKey(space.id));
+      if (pageData.refresh) {
+        await pageData.refresh();
+      }
+    },
+    [space.id, pageData],
   );
 
   const props: SpaceKanbanPage.Props = {
@@ -80,18 +105,17 @@ function Page() {
     canManageStatuses: !!space.permissions?.canEditStatuses,
     assigneePersonSearch: assigneeSearch,
 
-    // Placeholder callbacks
     onTaskKanbanChange: () => {},
-    onTaskCreate: () => {},
-    onTaskNameChange: () => {},
-    onTaskAssigneeChange: () => {},
-    onTaskDueDateChange: () => {},
-    onTaskStatusChange: () => {},
-    onTaskDelete: () => {},
-    onTaskDescriptionChange: async () => false,
+    onTaskCreate: createTask,
+    onTaskNameChange: updateTaskName,
+    onTaskAssigneeChange: updateTaskAssignee,
+    onTaskDueDateChange: updateTaskDueDate,
+    onTaskStatusChange: updateTaskStatus,
+    onTaskDelete: deleteTask,
+    onTaskDescriptionChange: updateTaskDescription,
     richTextHandlers: undefined,
 
-    onStatusesChange: () => {},
+    onStatusesChange: handleStatusesChange,
   };
 
   return <SpaceKanbanPage key={space.id} {...props} />;
