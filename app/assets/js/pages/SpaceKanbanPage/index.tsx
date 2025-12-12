@@ -76,10 +76,11 @@ function Page() {
     refresh: pageData.refresh,
   });
 
-  const { kanbanState, handleTaskKanbanChange } = Tasks.useSpaceKanbanState({
+  const { kanbanState, handleTaskKanbanChange } = Tasks.useKanbanState({
     initialRawState: space.tasksKanbanState,
     statuses,
     spaceId: space.id,
+    type: "space",
     tasks,
     setTasks,
     onSuccess: async () => {

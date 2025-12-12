@@ -9,8 +9,7 @@ export type { Task, EditMilestoneOrderingStateInput } from "@/api";
 export { useTasksForTurboUi } from "./useTasksForTurboUi";
 export { useSpaceTasksForTurboUi } from "./useSpaceTasksForTurboUi";
 export { useTaskAssigneeSearch } from "./useTaskAssigneeSearch";
-export { useMilestoneKanbanState } from "./useMilestoneKanbanState";
-export { useSpaceKanbanState } from "./useSpaceKanbanState";
+export { useKanbanState } from "./useKanbanState";
 export { parseKanbanState, type KanbanState } from "./parseKanbanState"
 
 export { getTask, getTasks, useGetTasks } from "@/api";

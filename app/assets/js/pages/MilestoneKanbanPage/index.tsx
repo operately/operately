@@ -4,7 +4,6 @@ import Api from "@/api";
 import * as Milestones from "@/models/milestones";
 import * as Tasks from "@/models/tasks";
 import * as People from "@/models/people";
-import { useMilestoneKanbanState } from "@/models/tasks/useMilestoneKanbanState";
 
 import { MilestoneKanbanPage, showErrorToast } from "turboui";
 import { usePaths } from "@/routes/paths";
@@ -80,10 +79,11 @@ function Page() {
 
   const { tasks, statuses, handleStatusesChange } = useMilestoneTaskStatuses(milestone, baseTasks, refresh);
 
-  const { kanbanState, handleTaskKanbanChange } = useMilestoneKanbanState({
+  const { kanbanState, handleTaskKanbanChange } = Tasks.useKanbanState({
     initialRawState: milestone.tasksKanbanState,
     statuses,
     milestoneId: milestone.id,
+    type: "milestone",
     tasks,
     setTasks: setBaseTasks,
     onSuccess: async () => {

@@ -1,41 +1,46 @@
 import * as React from "react";
 
 import Api, { type TaskStatus } from "@/api";
-import { MilestoneKanbanPage, showErrorToast } from "turboui";
+import { MilestoneKanbanPage, SpaceKanbanPage, showErrorToast } from "turboui";
 
 import { serializeTaskStatus } from "./index";
 import { parseKanbanState, type KanbanState } from "./parseKanbanState";
 
 interface TaskKanbanChangeEvent {
-  milestoneId: string | null;
   taskId: string;
   from: { status: string; index: number };
   to: { status: string; index: number };
   updatedKanbanState: KanbanState;
 }
 
-interface UseMilestoneKanbanStateOptions {
+type StatusOption = MilestoneKanbanPage.StatusOption | SpaceKanbanPage.StatusOption;
+type Task = MilestoneKanbanPage.Task | SpaceKanbanPage.Task;
+
+interface BaseKanbanStateOptions {
   initialRawState: unknown;
-  statuses: MilestoneKanbanPage.StatusOption[];
-  milestoneId: string;
-  tasks: MilestoneKanbanPage.Task[];
-  setTasks?: React.Dispatch<React.SetStateAction<MilestoneKanbanPage.Task[]>>;
+  statuses: StatusOption[];
+  tasks: Task[];
+  setTasks?: React.Dispatch<React.SetStateAction<Task[]>>;
   onSuccess?: () => Promise<void> | void;
 }
 
-export function useMilestoneKanbanState({
-  initialRawState,
-  statuses,
-  milestoneId,
-  tasks,
-  setTasks,
-  onSuccess,
-}: UseMilestoneKanbanStateOptions) {
+type UseKanbanStateOptions =
+  | (BaseKanbanStateOptions & {
+      type: "milestone";
+      milestoneId: string;
+    })
+  | (BaseKanbanStateOptions & {
+      type: "space";
+      spaceId: string;
+    });
+
+export function useKanbanState(options: UseKanbanStateOptions) {
+  const { initialRawState, statuses, tasks, type, setTasks, onSuccess } = options;
+
   const [kanbanState, setKanbanState] = React.useState<KanbanState>(() =>
     parseKanbanState(initialRawState, statuses, tasks),
   );
-  
-  // Prevents refresh from overwriting optimistic updates before backend confirms them
+
   const hasOptimisticUpdateRef = React.useRef(false);
 
   React.useEffect(() => {
@@ -61,10 +66,10 @@ export function useMilestoneKanbanState({
       try {
         await Api.tasks.updateKanban({
           taskId: event.taskId,
-          milestoneId,
+          milestoneId: type === "milestone" ? options.milestoneId : null,
           status: backendStatus,
           milestoneKanbanState: serializeKanbanState(event.updatedKanbanState),
-          type: "project",
+          type: type === "milestone" ? "project" : "space",
         });
 
         if (onSuccess) {
@@ -76,19 +81,13 @@ export function useMilestoneKanbanState({
         setKanbanState(previousState);
       }
     },
-    [kanbanState, milestoneId, onSuccess, setTasks, statuses],
+    [kanbanState, type, options, onSuccess, setTasks, statuses],
   );
 
   return { kanbanState, handleTaskKanbanChange };
 }
 
-// 
-// Helpers
-// 
-
-function validateStatusForBackend(
-  statusOption: MilestoneKanbanPage.StatusOption | null,
-): TaskStatus | null {
+function validateStatusForBackend(statusOption: StatusOption | null): TaskStatus | null {
   if (statusOption?.value === "unknown-status") {
     console.error("Cannot move task to unknown-status");
     showErrorToast("Error", "Cannot move task to unknown status");
@@ -107,8 +106,8 @@ function validateStatusForBackend(
 
 function applyOptimisticTaskStatusUpdate(
   taskId: string,
-  statusOption: MilestoneKanbanPage.StatusOption | null,
-  setTasks?: React.Dispatch<React.SetStateAction<MilestoneKanbanPage.Task[]>>,
+  statusOption: StatusOption | null,
+  setTasks?: React.Dispatch<React.SetStateAction<Task[]>>,
 ) {
   if (!setTasks || !statusOption) return;
 
