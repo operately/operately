@@ -605,6 +605,8 @@ defmodule OperatelyWeb.Api.Types do
     field? :access_levels, :access_levels, null: true
     field? :potential_subscribers, list_of(:subscriber), null: true
     field? :notifications, list_of(:notification), null: true
+    field? :task_statuses, list_of(:task_status), null: true
+    field? :tasks_kanban_state, :json, null: true
   end
 
   object :panel do
@@ -1163,20 +1165,21 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :space_permissions do
-    field? :can_create_goal, :boolean, null: true
-    field? :can_create_project, :boolean, null: true
-    field? :can_comment_on_discussions, :boolean, null: true
-    field? :can_edit, :boolean, null: true
-    field? :can_edit_discussions, :boolean, null: true
-    field? :can_edit_members_permissions, :boolean, null: true
-    field? :can_edit_permissions, :boolean, null: true
-    field? :can_join, :boolean, null: true
-    field? :can_post_discussions, :boolean, null: true
-    field? :can_remove_member, :boolean, null: true
-    field? :can_view, :boolean, null: true
-    field? :can_view_message, :boolean, null: true
-    field? :can_add_members, :boolean, null: true
-    field? :can_delete, :boolean, null: true
+    field :can_create_goal, :boolean, null: false
+    field :can_create_project, :boolean, null: false
+    field :can_comment_on_discussions, :boolean, null: false
+    field :can_edit, :boolean, null: false
+    field :can_edit_discussions, :boolean, null: false
+    field :can_edit_members_permissions, :boolean, null: false
+    field :can_edit_permissions, :boolean, null: false
+    field :can_edit_statuses, :boolean, null: false
+    field :can_join, :boolean, null: false
+    field :can_post_discussions, :boolean, null: false
+    field :can_remove_member, :boolean, null: false
+    field :can_view, :boolean, null: false
+    field :can_view_message, :boolean, null: false
+    field :can_add_members, :boolean, null: false
+    field :can_delete, :boolean, null: false
   end
 
   union(:activity_data_union,
