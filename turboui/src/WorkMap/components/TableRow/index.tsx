@@ -27,6 +27,7 @@ interface Props {
   addItem?: WorkMap.AddNewItemFn;
   addingEnabled?: boolean;
   spaceSearch?: SpaceField.SearchSpaceFn;
+  hideCompanyAccessInQuickAdd?: boolean;
   isExpanded: IsItemExpandedFn;
   setItemExpanded: SetItemExpandedFn;
   profileUser?: WorkMap.Person;
@@ -55,6 +56,7 @@ export function TableRow(props: Props) {
           canAddChildren={Boolean(props.addingEnabled) && tab !== "completed"}
           spaceSearch={props.spaceSearch}
           addItem={props.addItem}
+          hideCompanyAccess={props.hideCompanyAccessInQuickAdd}
         />
         <StatusCell status={item.status} hide={columnOptions?.hideStatus} />
         <ProgressCell

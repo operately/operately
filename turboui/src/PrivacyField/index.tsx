@@ -31,6 +31,8 @@ export namespace PrivacyField {
     emptyStateText?: string;
     emptyStateReadonlyText?: string;
 
+    hideCompanyAccess?: boolean;
+
     testId?: string;
   }
 
@@ -59,6 +61,7 @@ function usePrivacyFieldState(props: PrivacyField.Props): PrivacyField.State {
     textSize: props.textSize || "text-sm",
     emptyStateText: props.emptyStateText || "Set privacy",
     emptyStateReadonlyText: props.emptyStateReadonlyText || "No privacy set",
+    hideCompanyAccess: props.hideCompanyAccess || false,
     testId: props.testId || "privacy-field",
   };
 }
@@ -213,26 +216,28 @@ function AccessLevelOptions(props: PrivacyField.State) {
 
   return (
     <div>
-      <div className="py-2">
-        <div className="flex items-center gap-2 justify-between">
-          <div className="flex items-center gap-2">
-            <IconBuilding size={18} className="-mt-[1px]" />
-            <label className="text-sm">Company Members</label>
-          </div>
+      {!props.hideCompanyAccess && (
+        <div className="py-2">
+          <div className="flex items-center gap-2 justify-between">
+            <div className="flex items-center gap-2">
+              <IconBuilding size={18} className="-mt-[1px]" />
+              <label className="text-sm">Company Members</label>
+            </div>
 
-          <div className="w-40">
-            <SelectBox
-              testId={createTestId(props.testId, "company-select")}
-              value={props.accessLevels.company}
-              onChange={setCompanyLevel}
-              options={visibleCompanyAccessLevels.map((level) => ({
-                value: level,
-                label: LEVEL_NAME[level],
-              }))}
-            />
+            <div className="w-40">
+              <SelectBox
+                testId={createTestId(props.testId, "company-select")}
+                value={props.accessLevels.company}
+                onChange={setCompanyLevel}
+                options={visibleCompanyAccessLevels.map((level) => ({
+                  value: level,
+                  label: LEVEL_NAME[level],
+                }))}
+              />
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <div className="py-2">
         <div className="flex items-center gap-2 justify-between">

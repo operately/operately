@@ -22,6 +22,7 @@ interface Props {
   type?: WorkMap.WorkMapType;
   viewer?: WorkMap.Person;
   profileUser?: WorkMap.Person;
+  hideCompanyAccessInQuickAdd?: boolean;
 }
 
 export function WorkMapTable({
@@ -35,6 +36,7 @@ export function WorkMapTable({
   type = "company",
   viewer,
   profileUser,
+  hideCompanyAccessInQuickAdd = false,
 }: Props) {
   const emptyWorkMap = items.length === 0;
   const showIndentation = React.useMemo(() => items.some((item) => item.children.length > 0), [items]);
@@ -88,6 +90,7 @@ export function WorkMapTable({
           spaceSearch={spaceSearch!}
           addItem={addItem!}
           addItemDefaultSpace={addItemDefaultSpace!}
+          hideCompanyAccess={hideCompanyAccessInQuickAdd}
         />
       ) : (
         <table className="min-w-full divide-y divide-surface-outline">
@@ -105,6 +108,7 @@ export function WorkMapTable({
                 addItem={addItem}
                 addingEnabled={addingEnabled}
                 spaceSearch={spaceSearch}
+                hideCompanyAccessInQuickAdd={hideCompanyAccessInQuickAdd}
                 isExpanded={getItemExpanded}
                 setItemExpanded={setItemExpanded}
                 profileUser={profileUser}
@@ -117,6 +121,7 @@ export function WorkMapTable({
                 spaceSearch={spaceSearch!}
                 addItem={addItem!}
                 addItemDefaultSpace={addItemDefaultSpace!}
+                hideCompanyAccess={hideCompanyAccessInQuickAdd}
               />
             )}
           </tbody>
@@ -217,11 +222,13 @@ function AddNewRow({
   spaceSearch,
   addItem,
   addItemDefaultSpace,
+  hideCompanyAccess,
 }: {
   addingEnabled: boolean;
   spaceSearch: SpaceField.SearchSpaceFn;
   addItem: WorkMap.AddNewItemFn;
   addItemDefaultSpace: SpaceField.Space;
+  hideCompanyAccess: boolean;
 }) {
   if (!addingEnabled) return null;
 
@@ -248,6 +255,7 @@ function AddNewRow({
           spaceSearch={spaceSearch}
           save={addItem}
           space={addItemDefaultSpace}
+          hideCompanyAccess={hideCompanyAccess}
         />
       </td>
     </tr>

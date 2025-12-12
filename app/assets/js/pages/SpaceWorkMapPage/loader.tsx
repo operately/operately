@@ -20,7 +20,7 @@ export async function loader({ params, refreshCache = false }): Promise<LoaderRe
     fetchFn: () =>
       fetchAll({
         workMap: getWorkMap({ spaceId: params.id }).then((d) => d.workMap),
-        space: getSpace({ id: params.id }),
+        space: getSpace({ id: params.id, includeAccessLevels: true }),
         company: getCompany({ id: params.companyId }).then((d) => d.company!),
       }),
   });

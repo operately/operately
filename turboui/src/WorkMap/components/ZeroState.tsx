@@ -10,6 +10,7 @@ interface ZeroStateProps {
   spaceSearch: SpaceField.SearchSpaceFn;
   addItem: WorkMap.AddNewItemFn;
   addItemDefaultSpace: SpaceField.Space;
+  hideCompanyAccess?: boolean;
 }
 
 export function ZeroState(props: ZeroStateProps) {
@@ -32,7 +33,7 @@ function ZeroStateCannotAdd() {
   );
 }
 
-export function ZeroStateCanAdd({ spaceSearch, addItem, addItemDefaultSpace }: ZeroStateProps) {
+export function ZeroStateCanAdd({ spaceSearch, addItem, addItemDefaultSpace, hideCompanyAccess }: ZeroStateProps) {
   const [modalState, setModalState] = React.useState<{
     isOpen: boolean;
     type: AddItemModal.ItemType;
@@ -83,6 +84,7 @@ export function ZeroStateCanAdd({ spaceSearch, addItem, addItemDefaultSpace }: Z
         space={addItemDefaultSpace}
         initialItemType={modalState.type}
         hideTypeSelector={true}
+        hideCompanyAccess={Boolean(hideCompanyAccess)}
       />
     </div>
   );

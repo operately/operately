@@ -26,6 +26,7 @@ export namespace AddItemModal {
     save: (props: SaveProps) => Promise<{ id: string }>;
     initialItemType?: ItemType;
     hideTypeSelector?: boolean;
+    hideCompanyAccess?: boolean;
   }
 
   export type ItemType = "goal" | "project";
@@ -117,6 +118,7 @@ export function AddItemModal(props: AddItemModal.Props) {
               resourceType={state.itemType}
               variant="form-field"
               label="Privacy"
+              hideCompanyAccess={Boolean(props.hideCompanyAccess)}
             />
           </div>
 
@@ -149,7 +151,7 @@ function useAddItemModalState(props: AddItemModal.Props) {
   const [createMore, setCreateMore] = React.useState(false);
 
   const [accessLevels, setAccessLevels] = React.useState<PrivacyField.AccessLevels>({
-    company: "edit",
+    company: props.hideCompanyAccess ? "no_access" : "edit",
     space: "edit",
   });
 
@@ -158,8 +160,21 @@ function useAddItemModalState(props: AddItemModal.Props) {
   React.useEffect(() => {
     if (props.isOpen) {
       setItemType(props.initialItemType || "goal");
+
+      if (props.hideCompanyAccess) {
+        setAccessLevels((levels) => {
+          if (levels.company === "no_access") return levels;
+          return { ...levels, company: "no_access" };
+        });
+      }
     }
-  }, [props.isOpen, props.initialItemType]);
+  }, [props.isOpen, props.initialItemType, props.hideCompanyAccess]);
+
+  React.useEffect(() => {
+    if (!props.hideCompanyAccess) return;
+    if (accessLevels.company === "no_access") return;
+    setAccessLevels((levels) => ({ ...levels, company: "no_access" }));
+  }, [props.hideCompanyAccess, accessLevels.company]);
 
   const validate = (): boolean => {
     let ok = true;
@@ -193,7 +208,7 @@ function useAddItemModalState(props: AddItemModal.Props) {
         name: name.trim(),
         type: itemType,
         space: space!,
-        accessLevels,
+        accessLevels: props.hideCompanyAccess ? { ...accessLevels, company: "no_access" } : accessLevels,
         parentId: props.parentGoal ? props.parentGoal.id : null,
       });
 
