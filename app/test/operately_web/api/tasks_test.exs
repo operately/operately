@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
   alias Operately.Projects.Contributor
   alias Operately.Access.Binding
 
+  import Ecto.Query, only: [from: 2]
   use OperatelyWeb.TurboCase
   use Operately.Support.Notifications
 
@@ -1025,7 +1026,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     end
   end
 
-  describe "update task kanban" do
+  describe "update project task kanban" do
     @in_progress_status %{
       id: "in_progress",
       label: "In progress",
@@ -1053,7 +1054,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         task_id: Paths.task_id(ctx.task),
         milestone_id: Paths.milestone_id(ctx.milestone),
         status: @in_progress_status,
-        milestone_kanban_state: Jason.encode!(kanban_state)
+        milestone_kanban_state: Jason.encode!(kanban_state),
+        type: "project"
       })
 
       assert res.task.status.value == "in_progress"
@@ -1072,7 +1074,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         task_id: Paths.task_id(ctx.task),
         milestone_id: Paths.milestone_id(ctx.other_milestone),
         status: @in_progress_status,
-        milestone_kanban_state: Jason.encode!(%{pending: [], in_progress: [], done: [], canceled: []})
+        milestone_kanban_state: Jason.encode!(%{pending: [], in_progress: [], done: [], canceled: []}),
+        type: "project"
       })
 
       assert res.message == "Task milestone mismatch"
@@ -1093,10 +1096,143 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         task_id: Paths.task_id(ctx.task),
         milestone_id: Paths.milestone_id(ctx.milestone),
         status: @in_progress_status,
-        milestone_kanban_state: Jason.encode!(invalid_kanban_state)
+        milestone_kanban_state: Jason.encode!(invalid_kanban_state),
+        type: "project"
       })
 
       assert res.message == "Invalid status blocked"
+    end
+  end
+
+  describe "update space task kanban" do
+    @in_progress_status %{
+      id: "in_progress",
+      label: "In progress",
+      color: "blue",
+      index: 1,
+      value: "in_progress",
+      closed: false
+    }
+
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:tasks, :update_kanban], %{})
+    end
+
+    test "it updates status and kanban state for a space", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      ctx = Factory.create_space_task(ctx, :space_task, :engineering)
+
+      kanban_state = %{
+        pending: [],
+        in_progress: [Paths.task_id(ctx.space_task)],
+        done: [],
+        canceled: []
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:tasks, :update_kanban], %{
+        task_id: Paths.task_id(ctx.space_task),
+        milestone_id: nil,
+        status: @in_progress_status,
+        milestone_kanban_state: Jason.encode!(kanban_state),
+        type: "space"
+      })
+
+      assert res.task.status.value == "in_progress"
+      assert res.updated_milestone == nil
+
+      space = Repo.reload(ctx.engineering)
+      assert space.tasks_kanban_state["in_progress"] == kanban_state.in_progress
+    end
+
+    test "it handles multiple tasks in kanban state", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      ctx = Factory.create_space_task(ctx, :space_task, :engineering)
+
+      {200, res2} = mutation(ctx.conn, [:tasks, :create], %{
+        id: Paths.space_id(ctx.engineering),
+        type: "space",
+        name: "Task 2",
+        assignee_id: nil,
+        due_date: nil
+      })
+
+      {200, res3} = mutation(ctx.conn, [:tasks, :create], %{
+        id: Paths.space_id(ctx.engineering),
+        type: "space",
+        name: "Task 3",
+        assignee_id: nil,
+        due_date: nil
+      })
+
+      kanban_state = %{
+        pending: [res2.task.id],
+        in_progress: [Paths.task_id(ctx.space_task), res3.task.id],
+        done: [],
+        canceled: []
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:tasks, :update_kanban], %{
+        task_id: Paths.task_id(ctx.space_task),
+        milestone_id: nil,
+        status: @in_progress_status,
+        milestone_kanban_state: Jason.encode!(kanban_state),
+        type: "space"
+      })
+
+      assert res.task.status.value == "in_progress"
+
+      space = Repo.reload(ctx.engineering)
+      assert space.tasks_kanban_state["pending"] == kanban_state.pending
+      assert space.tasks_kanban_state["in_progress"] == kanban_state.in_progress
+    end
+
+    test "it rejects invalid statuses in space kanban state", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      ctx = Factory.create_space_task(ctx, :space_task, :engineering)
+
+      invalid_kanban_state = %{
+        pending: [],
+        in_progress: [Paths.task_id(ctx.space_task)],
+        done: [],
+        canceled: [],
+        invalid_status: [Paths.task_id(ctx.space_task)]
+      }
+
+      assert {400, res} = mutation(ctx.conn, [:tasks, :update_kanban], %{
+        task_id: Paths.task_id(ctx.space_task),
+        milestone_id: nil,
+        status: @in_progress_status,
+        milestone_kanban_state: Jason.encode!(invalid_kanban_state),
+        type: "space"
+      })
+
+      assert res.message == "Invalid status invalid_status"
+    end
+
+    test "it creates an activity when space task status is updated", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      ctx = Factory.create_space_task(ctx, :space_task, :engineering)
+
+      kanban_state = %{
+        pending: [],
+        in_progress: [Paths.task_id(ctx.space_task)],
+        done: [],
+        canceled: []
+      }
+
+      assert {200, _res} = mutation(ctx.conn, [:tasks, :update_kanban], %{
+        task_id: Paths.task_id(ctx.space_task),
+        milestone_id: nil,
+        status: @in_progress_status,
+        milestone_kanban_state: Jason.encode!(kanban_state),
+        type: "space"
+      })
+
+      activity = from(a in Operately.Activities.Activity, where: a.action == "task_status_updating") |> Repo.one()
+      assert activity != nil
+      assert activity.content["space_id"] == ctx.engineering.id
+      assert activity.content["project_id"] == nil
+      assert activity.content["task_id"] == ctx.space_task.id
     end
   end
 
