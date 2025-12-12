@@ -22,12 +22,15 @@ defmodule Operately.Activities.Notifications.TaskAdding do
         _ -> nil
       end
 
-    task.assignees
-    |> Enum.map(& &1.person_id)
-    |> Enum.concat([champion_id])
-    |> Enum.filter(& &1)
-    |> Enum.uniq()
-    |> Enum.reject(&(&1 == activity.author_id))
+    recipients =
+      task.assignees
+      |> Enum.map(& &1.person_id)
+      |> Enum.concat([champion_id])
+      |> Enum.filter(& &1)
+      |> Enum.uniq()
+      |> Enum.reject(&(&1 == activity.author_id))
+
+    recipients
     |> Enum.map(fn person_id ->
       %{
         person_id: person_id,

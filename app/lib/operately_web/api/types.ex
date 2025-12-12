@@ -1141,6 +1141,7 @@ defmodule OperatelyWeb.Api.Types do
     field :can_comment_on_retrospective, :boolean, null: false
     field :can_comment_on_task, :boolean, null: false
     field :can_create_milestone, :boolean, null: false
+    field :can_create_task, :boolean, null: false
     field :can_complete_milestone, :boolean, null: false
     field :can_reopen_milestone, :boolean, null: false
     field :can_delete_milestone, :boolean, null: false

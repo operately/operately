@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import Api, { type TaskStatus } from "@/api";
+import Api, { type TaskStatus, type TasksCreateInput } from "@/api";
 import * as Milestones from "../milestones";
 import * as Tasks from "./index";
 
@@ -129,12 +129,13 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
     try {
       const backendStatus: TaskStatus | null = Tasks.serializeTaskStatus(task.status ?? null);
 
-      const input: any = {
+      const input: TasksCreateInput = {
         name: task.title,
         assigneeId: task.assignee,
         dueDate: serializeContextualDate(task.dueDate),
         milestoneId: task.milestone?.id || null,
-        projectId: projectId,
+        id: projectId,
+        type,
       };
 
       if (backendStatus !== null) {
@@ -147,7 +148,7 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
       const realTask = Tasks.parseTaskForTurboUi(paths, res.task, type);
       setTasks((prev) => prev.map((t) => (t.id === tempId ? realTask : t)));
 
-      updateMilestonesFromServer(res.updatedMilestone, null);
+      updateMilestonesFromServer(res.updatedMilestone ?? null, null);
 
       // Replace temp ID in milestone ordering
       if (task.milestone && setMilestones) {
@@ -247,7 +248,7 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
       const updatedTask = Tasks.parseTaskForTurboUi(paths, response.task, type);
       setTasks((prev) => prev.map((t) => (compareIds(t.id, taskId) ? { ...t, status: updatedTask.status } : t)));
 
-      updateMilestonesFromServer(response.updatedMilestone, null);
+      updateMilestonesFromServer(response.updatedMilestone ?? null, null);
 
       await invalidateAndRefresh();
 
@@ -362,7 +363,7 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
     try {
       const response = await Api.tasks.delete({ taskId, type });
 
-      updateMilestonesFromServer(response.updatedMilestone, null);
+      updateMilestonesFromServer(response.updatedMilestone ?? null, null);
 
       await invalidateAndRefresh();
 

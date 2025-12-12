@@ -472,9 +472,12 @@ defmodule OperatelyWeb.Api.Tasks do
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
+    alias Operately.Tasks.{MilestoneSync, SpaceSync}
+
     inputs do
-      field :project_id, :id, null: false
-      field :milestone_id, :id, null: true
+      field :type, :task_type, null: false
+      field :id, :id, null: false
+      field? :milestone_id, :id, null: true
       field :name, :string, null: false
       field :assignee_id, :id, null: true
       field :due_date, :contextual_date, null: true
@@ -483,14 +486,15 @@ defmodule OperatelyWeb.Api.Tasks do
 
     outputs do
       field :task, :task, null: false
-      field :updated_milestone, :milestone, null: true
+      field? :updated_milestone, :milestone, null: false
+      field? :updated_space, :space, null: false
     end
 
-    def call(conn, inputs) do
+    def call(conn, inputs = %{type: :project}) do
       conn
       |> Steps.start_transaction()
-      |> Steps.find_project(inputs.project_id)
-      |> Steps.check_permissions(:can_edit_timeline)
+      |> Steps.find_project(inputs.id)
+      |> Steps.check_permissions(:can_create_task)
       |> Steps.validate_milestone_belongs_to_project(inputs.milestone_id)
       |> Steps.create_task(inputs)
       |> MilestoneSync.sync_after_task_create(inputs.milestone_id)
@@ -509,7 +513,34 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.respond(fn changes ->
         %{
           task: OperatelyWeb.Api.Serializer.serialize(changes.task, level: :full),
-          updated_milestone: changes[:updated_milestone] && OperatelyWeb.Api.Serializer.serialize(changes.updated_milestone)
+          updated_milestone: changes[:updated_milestone] && OperatelyWeb.Api.Serializer.serialize(changes.updated_milestone),
+        }
+      end)
+    end
+
+    def call(conn, inputs = %{type: :space}) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_space(inputs.id)
+      |> Steps.check_permissions(:can_create_task)
+      |> Steps.create_task(inputs)
+      |> SpaceSync.sync_after_task_create(inputs.id)
+      |> Steps.save_activity(:task_adding, fn changes ->
+        %{
+          company_id: changes.space.company_id,
+          space_id: changes.space.id,
+          project_id: nil,
+          milestone_id: nil,
+          task_id: changes.task.id,
+          name: changes.task.name
+        }
+      end)
+      |> Steps.commit()
+      |> Steps.broadcast_review_count_update()
+      |> Steps.respond(fn changes ->
+        %{
+          task: OperatelyWeb.Api.Serializer.serialize(changes.task, level: :full),
+          updated_space: changes[:updated_space] && OperatelyWeb.Api.Serializer.serialize(changes.updated_space)
         }
       end)
     end
@@ -594,6 +625,15 @@ defmodule OperatelyWeb.Api.Tasks do
         case Operately.Projects.Project.get(me, id: project_id, opts: [preload: [:access_context]]) do
           {:ok, project} -> {:ok, project}
           {:error, _} -> {:error, {:not_found, "Project not found"}}
+        end
+      end)
+    end
+
+    def find_space(multi, space_id) do
+      Ecto.Multi.run(multi, :space, fn _repo, %{me: me} ->
+        case Operately.Groups.Group.get(me, id: space_id, opts: [preload: [:access_context]]) do
+          {:ok, space} -> {:ok, space}
+          {:error, _} -> {:error, {:not_found, "Space not found"}}
         end
       end)
     end
@@ -838,12 +878,17 @@ defmodule OperatelyWeb.Api.Tasks do
       multi
       |> Notifications.SubscriptionList.insert(%{send_to_everyone: false, subscription_parent_type: :project_task})
       |> Ecto.Multi.run(:new_task, fn _repo, changes ->
-        with {:ok, status} <- validate_or_get_default_status(changes.project, inputs[:status]) do
+        context = get_context_from_changes(changes)
+        {project_id, space_id} = get_ids_from_context(changes)
+        milestone_id = if space_id, do: nil, else: inputs.milestone_id
+
+        with {:ok, status} <- validate_or_get_default_status(context, inputs[:status]) do
           Operately.Tasks.Task.changeset(%{
             name: inputs.name,
             description: %{},
-            milestone_id: inputs.milestone_id,
-            project_id: inputs.project_id,
+            milestone_id: milestone_id,
+            project_id: project_id,
+            space_id: space_id,
             creator_id: changes.me.id,
             due_date: inputs.due_date,
             subscription_list_id: changes.subscription_list.id,
@@ -865,11 +910,18 @@ defmodule OperatelyWeb.Api.Tasks do
         end
       end)
       |> maybe_add_assignee_contributor(inputs.assignee_id)
-      |> Ecto.Multi.run(:task, fn _repo, %{new_task: new_task, validate_milestone: milestone} ->
-        task = Repo.preload(new_task, :assigned_people) |> Map.put(:milestone, milestone)
-
+      |> Ecto.Multi.run(:task, fn _repo, changes ->
+        task = Repo.preload(changes.new_task, :assigned_people)
+        task = maybe_attach_milestone(task, changes)
         {:ok, task}
       end)
+    end
+
+    defp maybe_attach_milestone(task, changes) do
+      case Map.get(changes, :validate_milestone) do
+        nil -> task
+        milestone -> Map.put(task, :milestone, milestone)
+      end
     end
 
     defp maybe_add_assignee_contributor(multi, nil), do: multi
@@ -941,12 +993,34 @@ defmodule OperatelyWeb.Api.Tasks do
       end)
     end
 
-    defp validate_or_get_default_status(project, nil) do
-      {:ok, Map.from_struct(Operately.Projects.Project.get_default_task_status(project))}
+    defp get_context_from_changes(changes) do
+      cond do
+        Map.has_key?(changes, :project) -> changes.project
+        Map.has_key?(changes, :space) -> changes.space
+        true -> nil
+      end
     end
 
-    defp validate_or_get_default_status(project, status) do
-      if Enum.any?(project.task_statuses, fn s -> s.id == status.id end) do
+    defp get_ids_from_context(changes) do
+      cond do
+        Map.has_key?(changes, :project) -> {changes.project.id, nil}
+        Map.has_key?(changes, :space) -> {nil, changes.space.id}
+        true -> {nil, nil}
+      end
+    end
+
+    defp validate_or_get_default_status(context, nil) when not is_nil(context) do
+      default_status =
+        case context do
+          %Operately.Projects.Project{} -> Operately.Projects.Project.get_default_task_status(context)
+          %Operately.Groups.Group{} -> Operately.Groups.Group.get_default_task_status(context)
+        end
+
+      {:ok, Map.from_struct(default_status)}
+    end
+
+    defp validate_or_get_default_status(context, status) when not is_nil(context) do
+      if Enum.any?(context.task_statuses, fn s -> s.id == status.id end) do
         {:ok, status}
       else
         {:error, {:bad_request, "Invalid status"}}

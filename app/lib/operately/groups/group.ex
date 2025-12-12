@@ -54,6 +54,22 @@ defmodule Operately.Groups.Group do
 
   defp put_default_task_statuses(changeset), do: changeset
 
+  def task_status_values(space = %__MODULE__{}) do
+    space.task_statuses
+    |> Elixir.List.wrap()
+    |> Enum.map(& &1.value)
+    |> Enum.filter(& &1)
+    |> Enum.map(&to_string/1)
+  end
+
+  def get_default_task_status(space = %__MODULE__{}) do
+    statuses = space.task_statuses
+
+    Enum.find(statuses, fn s -> s.color == :gray end) ||
+      Enum.find(statuses, fn s -> s.color == :blue end) ||
+      List.first(statuses)
+  end
+
   #
   # Scopes
   #

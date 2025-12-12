@@ -1,6 +1,7 @@
 defmodule OperatelyWeb.Api.ProjectTasksTest do
   alias Operately.Support.RichText
   alias Operately.Projects.Contributor
+  alias Operately.Access.Binding
 
   use OperatelyWeb.TurboCase
   use Operately.Support.Notifications
@@ -132,25 +133,33 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert {401, _} = mutation(ctx.conn, [:tasks, :create], %{})
     end
 
-    test "it requires a project_id", ctx do
+    test "it requires an id", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:tasks, :create], %{name: "New Task", milestone_id: nil, assignee_id: nil, due_date: nil})
-      assert res.message == "Missing required fields: project_id"
+      assert {400, res} = mutation(ctx.conn, [:tasks, :create], %{name: "New Task", type: "project", milestone_id: nil, assignee_id: nil, due_date: nil})
+      assert res.message == "Missing required fields: id"
+    end
+
+    test "it requires a type", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:tasks, :create], %{id: Paths.project_id(ctx.project), name: "New Task", milestone_id: nil, assignee_id: nil, due_date: nil})
+      assert res.message == "Missing required fields: type"
     end
 
     test "it requires a name", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:tasks, :create], %{project_id: Paths.project_id(ctx.project), milestone_id: Paths.milestone_id(ctx.milestone), assignee_id: nil, due_date: nil})
+      assert {400, res} = mutation(ctx.conn, [:tasks, :create], %{id: Paths.project_id(ctx.project), type: "project", milestone_id: Paths.milestone_id(ctx.milestone), assignee_id: nil, due_date: nil})
       assert res.message == "Missing required fields: name"
     end
 
-    test "it creates a task", ctx do
+    test "it creates a project task", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
-        project_id: Paths.project_id(ctx.project),
+        id: Paths.project_id(ctx.project),
+        type: "project",
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Implement feature X",
         assignee_id: nil,
@@ -171,7 +180,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
-        project_id: Paths.project_id(ctx.project),
+        id: Paths.project_id(ctx.project),
+        type: "project",
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task with default status",
         assignee_id: nil,
@@ -194,7 +204,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
-        project_id: Paths.project_id(ctx.project),
+        id: Paths.project_id(ctx.project),
+        type: "project",
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task with assignee",
         assignee_id: Paths.person_id(ctx.creator),
@@ -218,7 +229,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       refute Operately.Repo.get_by(Contributor, project_id: ctx.project.id, person_id: ctx.space_member.id)
 
       assert {200, _} = mutation(ctx.conn, [:tasks, :create], %{
-        project_id: Paths.project_id(ctx.project),
+        id: Paths.project_id(ctx.project),
+        type: "project",
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task with assignee",
         assignee_id: Paths.person_id(ctx.space_member),
@@ -246,7 +258,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert {:error, :not_found} = Operately.Notifications.Subscription.get(:system, subscription_list_id: project.subscription_list_id, person_id: ctx.space_member.id)
 
       assert {200, _} = mutation(ctx.conn, [:tasks, :create], %{
-        project_id: Paths.project_id(ctx.project),
+        id: Paths.project_id(ctx.project),
+        type: "project",
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task with assignee",
         assignee_id: Paths.person_id(ctx.space_member),
@@ -269,7 +282,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       }
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
-        project_id: Paths.project_id(ctx.project),
+        id: Paths.project_id(ctx.project),
+        type: "project",
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task with due date",
         assignee_id: nil,
@@ -285,7 +299,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       before_count = count_activities(ctx.project.id, "task_adding")
 
       assert {200, _} = mutation(ctx.conn, [:tasks, :create], %{
-        project_id: Paths.project_id(ctx.project),
+        id: Paths.project_id(ctx.project),
+        type: "project",
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Activity test task",
         assignee_id: nil,
@@ -304,7 +319,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         |> Factory.log_in_person(:member)
 
       assert {403, _} = mutation(ctx.conn, [:tasks, :create], %{
-        project_id: Paths.project_id(ctx.project),
+        id: Paths.project_id(ctx.project),
+        type: "project",
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Forbidden task",
         assignee_id: nil,
@@ -316,7 +332,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       assert {404, _} = mutation(ctx.conn, [:tasks, :create], %{
-        project_id: Ecto.UUID.generate(),
+        id: Ecto.UUID.generate(),
+        type: "project",
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task for missing milestone",
         assignee_id: nil,
@@ -328,7 +345,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
-        project_id: Paths.project_id(ctx.project),
+        id: Paths.project_id(ctx.project),
+        type: "project",
         milestone_id: nil,
         name: "Task without milestone",
         assignee_id: nil,
@@ -353,7 +371,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         |> Factory.add_project(:project2, :engineering)
 
       assert {400, res} = mutation(ctx.conn, [:tasks, :create], %{
-        project_id: Paths.project_id(ctx.project2),
+        id: Paths.project_id(ctx.project2),
+        type: "project",
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task without milestone",
         assignee_id: nil,
@@ -371,7 +390,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       ordering_state_before = milestone_before.tasks_ordering_state
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
-        project_id: Paths.project_id(ctx.project),
+        id: Paths.project_id(ctx.project),
+        type: "project",
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task for ordering test",
         assignee_id: nil,
@@ -405,7 +425,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       {:ok, _} = Operately.Projects.update_milestone(ctx.milestone, %{tasks_kanban_state: kanban_state})
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
-        project_id: Paths.project_id(ctx.project),
+        id: Paths.project_id(ctx.project),
+        type: "project",
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task for kanban test",
         assignee_id: nil,
@@ -438,7 +459,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       {:ok, _} = Operately.Projects.update_milestone(ctx.milestone, %{tasks_kanban_state: kanban_state})
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
-        project_id: Paths.project_id(ctx.project),
+        id: Paths.project_id(ctx.project),
+        type: "project",
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task for kanban status test",
         assignee_id: nil,
@@ -461,7 +483,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       status = Map.from_struct(status_struct) |> Map.put(:color, Atom.to_string(status_struct.color))
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
-        project_id: Paths.project_id(ctx.project),
+        id: Paths.project_id(ctx.project),
+        type: "project",
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task with status",
         assignee_id: nil,
@@ -485,7 +508,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       }
 
       assert {400, res} = mutation(ctx.conn, [:tasks, :create], %{
-        project_id: Paths.project_id(ctx.project),
+        id: Paths.project_id(ctx.project),
+        type: "project",
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task with invalid status",
         assignee_id: nil,
@@ -507,7 +531,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       {:ok, project} = Operately.Projects.update_project(ctx.project, %{task_statuses: [green, blue, gray]})
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
-        project_id: Paths.project_id(project),
+        id: Paths.project_id(project),
+        type: "project",
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task 1",
         assignee_id: nil,
@@ -519,7 +544,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       {:ok, project} = Operately.Projects.update_project(project, %{task_statuses: [green, blue]})
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
-        project_id: Paths.project_id(project),
+        id: Paths.project_id(project),
+        type: "project",
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task 2",
         assignee_id: nil,
@@ -531,13 +557,298 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       {:ok, project} = Operately.Projects.update_project(project, %{task_statuses: [green]})
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
-        project_id: Paths.project_id(project),
+        id: Paths.project_id(project),
+        type: "project",
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task 3",
         assignee_id: nil,
         due_date: nil,
       })
       assert res.task.status.value == "green_status"
+    end
+  end
+
+  describe "create space task" do
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:tasks, :create], %{})
+    end
+
+    test "it returns forbidden for non-space members", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space(:comment_only_space, [company_permissions: Binding.comment_access()])
+        |> Factory.add_company_member(:member)
+        |> Factory.log_in_person(:member)
+
+      assert {403, _} = mutation(ctx.conn, [:tasks, :create], %{
+        id: Paths.space_id(ctx.comment_only_space),
+        type: "space",
+        milestone_id: nil,
+        name: "Forbidden task",
+        assignee_id: nil,
+        due_date: nil
+      })
+    end
+
+    test "it requires an id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:tasks, :create], %{name: "New Task", type: "space", assignee_id: nil, due_date: nil})
+      assert res.message == "Missing required fields: id"
+    end
+
+    test "it requires a type", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:tasks, :create], %{id: Paths.space_id(ctx.engineering), name: "New Task", assignee_id: nil, due_date: nil})
+      assert res.message == "Missing required fields: type"
+    end
+
+    test "it requires a name", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:tasks, :create], %{id: Paths.space_id(ctx.engineering), type: "space", assignee_id: nil, due_date: nil})
+      assert res.message == "Missing required fields: name"
+    end
+
+    test "it creates a space task", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
+        id: Paths.space_id(ctx.engineering),
+        type: "space",
+        milestone_id: nil,
+        name: "Space task",
+        assignee_id: nil,
+        due_date: nil
+      })
+
+      assert res.task.name == "Space task"
+      assert res.task.milestone == nil
+
+      {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.task.id)
+      task = Operately.Tasks.Task.get!(:system, id: id)
+
+      assert task.name == "Space task"
+      assert task.space_id == ctx.engineering.id
+      assert task.project_id == nil
+      assert task.milestone_id == nil
+      assert task.creator_id == ctx.creator.id
+    end
+
+    test "it sets default task_status when creating a space task", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
+        id: Paths.space_id(ctx.engineering),
+        type: "space",
+        milestone_id: nil,
+        name: "Task with default status",
+        assignee_id: nil,
+        due_date: nil
+      })
+
+      {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.task.id)
+      task = Operately.Tasks.Task.get!(:system, id: id)
+      default_status = Operately.Tasks.Status.default_task_status()
+
+      assert task.task_status.value == default_status.value
+      assert task.task_status.label == default_status.label
+      assert task.task_status.color == default_status.color
+      assert task.task_status.index == default_status.index
+      assert task.task_status.closed == default_status.closed
+      assert task.task_status.id
+    end
+
+    test "it creates a space task with assignee", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
+        id: Paths.space_id(ctx.engineering),
+        type: "space",
+        milestone_id: nil,
+        name: "Task with assignee",
+        assignee_id: Paths.person_id(ctx.creator),
+        due_date: nil
+      })
+      assert res.task.name == "Task with assignee"
+
+      {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.task.id)
+      task = Operately.Tasks.Task.get!(:system, id: id, opts: [preload: [:assigned_people]])
+      assert length(task.assigned_people) == 1
+      assert hd(task.assigned_people).id == ctx.creator.id
+    end
+
+    test "it does not add contributor when creating space task with assignee", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:space_member, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, _} = mutation(ctx.conn, [:tasks, :create], %{
+        id: Paths.space_id(ctx.engineering),
+        type: "space",
+        milestone_id: nil,
+        name: "Task with assignee",
+        assignee_id: Paths.person_id(ctx.space_member),
+        due_date: nil
+      })
+
+      refute Operately.Repo.get_by(Contributor, person_id: ctx.space_member.id)
+    end
+
+    test "it creates a space task with due date", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      due_date = %{
+        date: "2026-06-01",
+        date_type: "day",
+        value: "Jun 1, 2026"
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
+        id: Paths.space_id(ctx.engineering),
+        type: "space",
+        milestone_id: nil,
+        name: "Task with due date",
+        assignee_id: nil,
+        due_date: due_date
+      })
+      assert res.task.name == "Task with due date"
+      assert res.task.due_date == due_date
+    end
+
+    test "it creates an activity for space task", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      before_count = count_space_activities(ctx.engineering.id, "task_adding")
+
+      assert {200, _} = mutation(ctx.conn, [:tasks, :create], %{
+        id: Paths.space_id(ctx.engineering),
+        type: "space",
+        milestone_id: nil,
+        name: "Activity test task",
+        assignee_id: nil,
+        due_date: nil
+      })
+
+      after_count = count_space_activities(ctx.engineering.id, "task_adding")
+      assert after_count == before_count + 1
+    end
+
+    test "it returns not found for non-existent space", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {404, _} = mutation(ctx.conn, [:tasks, :create], %{
+        id: Ecto.UUID.generate(),
+        type: "space",
+        milestone_id: nil,
+        name: "Task for missing space",
+        assignee_id: nil,
+        due_date: nil
+      })
+    end
+
+    test "it ignores milestone_id for space tasks", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
+        id: Paths.space_id(ctx.engineering),
+        type: "space",
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        name: "Task with ignored milestone",
+        assignee_id: nil,
+        due_date: nil
+      })
+
+      {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.task.id)
+      task = Operately.Tasks.Task.get!(:system, id: id)
+
+      assert task.milestone_id == nil
+      assert res.task.milestone == nil
+    end
+
+    test "it adds the task to the space kanban state and returns the updated space", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      space_before = Operately.Groups.get_group!(ctx.engineering.id)
+      kanban_state_before = space_before.tasks_kanban_state
+
+      assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
+        id: Paths.space_id(ctx.engineering),
+        type: "space",
+        milestone_id: nil,
+        name: "Task for kanban test",
+        assignee_id: nil,
+        due_date: nil
+      })
+
+      assert res.updated_space
+      assert res.updated_space.id == Paths.space_id(ctx.engineering)
+
+      space_after = Operately.Groups.get_group!(ctx.engineering.id)
+      kanban_state_after = space_after.tasks_kanban_state
+
+      refute kanban_state_before == kanban_state_after
+      assert Map.has_key?(kanban_state_after, "pending")
+      assert res.task.id in kanban_state_after["pending"]
+    end
+
+    test "it uses default status when none provided for space task", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
+        id: Paths.space_id(ctx.engineering),
+        type: "space",
+        milestone_id: nil,
+        name: "Task with default status",
+        assignee_id: nil,
+        due_date: nil
+      })
+
+      default_status = Operately.Tasks.Status.default_task_status()
+      assert res.task.status.value == default_status.value
+    end
+
+    test "it rejects invalid status for space task", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      invalid_status = %{
+        id: "invalid",
+        label: "Invalid",
+        color: "red",
+        index: 99,
+        value: "invalid_status",
+        closed: false
+      }
+
+      assert {400, res} = mutation(ctx.conn, [:tasks, :create], %{
+        id: Paths.space_id(ctx.engineering),
+        type: "space",
+        milestone_id: nil,
+        name: "Task with invalid status",
+        assignee_id: nil,
+        due_date: nil,
+        status: invalid_status
+      })
+
+      assert res.message == "Invalid status"
+    end
+
+    test "it returns updated_space but not updated_milestone for space tasks", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
+        id: Paths.space_id(ctx.engineering),
+        type: "space",
+        milestone_id: nil,
+        name: "Space task response test",
+        assignee_id: nil,
+        due_date: nil
+      })
+
+      assert res.updated_space
+      assert Map.has_key?(res, :updated_milestone) == false
     end
   end
 
@@ -1864,6 +2175,13 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
   defp count_activities(project_id, action) do
     from(a in Operately.Activities.Activity,
       where: a.action == ^action and a.content["project_id"] == ^project_id
+    )
+    |> Repo.aggregate(:count)
+  end
+
+  defp count_space_activities(space_id, action) do
+    from(a in Operately.Activities.Activity,
+      where: a.action == ^action and a.content["space_id"] == ^space_id
     )
     |> Repo.aggregate(:count)
   end
