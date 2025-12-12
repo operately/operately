@@ -4208,8 +4208,9 @@ export interface SubscribeToNotificationsInput {
 export interface SubscribeToNotificationsResult {}
 
 export interface TasksCreateInput {
-  projectId: Id;
-  milestoneId: Id | null;
+  type: TaskType;
+  id: Id;
+  milestoneId?: Id | null;
   name: string;
   assigneeId: Id | null;
   dueDate: ContextualDate | null;
@@ -4218,7 +4219,8 @@ export interface TasksCreateInput {
 
 export interface TasksCreateResult {
   task: Task;
-  updatedMilestone: Milestone | null;
+  updatedMilestone?: Milestone;
+  updatedSpace?: Space;
 }
 
 export interface TasksDeleteInput {

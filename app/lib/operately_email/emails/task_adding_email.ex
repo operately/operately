@@ -11,17 +11,25 @@ defmodule OperatelyEmail.Emails.TaskAddingEmail do
     {:ok, task} =
       Task.get(:system,
         id: activity.content["task_id"],
-        opts: [preload: [:project]]
+        opts: [preload: [:project, :space]]
       )
 
     company
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: task.project.name, who: author, action: "added the task \"#{task.name}\"")
+    |> subject(where: find_where_name(task), who: author, action: "added the task \"#{task.name}\"")
     |> assign(:author, author)
     |> assign(:task_name, task.name)
     |> assign(:cta_url, Paths.project_task_path(company, task) |> Paths.to_url())
     |> render("task_adding")
+  end
+
+  defp find_where_name(task) do
+    case task do
+        %{project: %{name: name}} -> name
+        %{space: %{name: name}} -> name
+        _ -> "Unknown"
+      end
   end
 end
