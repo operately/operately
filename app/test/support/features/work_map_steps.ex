@@ -1,5 +1,6 @@
 defmodule Operately.Support.Features.WorkMapSteps do
   use Operately.FeatureCase
+  alias Operately.Access.Binding
 
   step :setup_company_work_map, ctx do
     ctx
@@ -26,6 +27,20 @@ defmodule Operately.Support.Features.WorkMapSteps do
     |> Factory.add_project(:space_paused_project, :space, name: "Space Paused Project")
     |> Factory.pause_project(:space_paused_project)
     |> Factory.add_project(:space_ongoing_project, :space, name: "Space Ongoing Project")
+    |> Factory.log_in_person(:creator)
+  end
+
+  step :setup_empty_space_work_map, ctx do
+    ctx
+    |> Factory.setup()
+    |> Factory.add_space(:space, name: "Space", company_permissions: Binding.view_access())
+    |> Factory.log_in_person(:creator)
+  end
+
+  step :setup_empty_private_space_work_map, ctx do
+    ctx
+    |> Factory.setup()
+    |> Factory.add_space(:space, name: "Private Space", company_permissions: Binding.no_access())
     |> Factory.log_in_person(:creator)
   end
 
@@ -108,6 +123,18 @@ defmodule Operately.Support.Features.WorkMapSteps do
 
   step :visit_space_work_map, ctx, space_name do
     UI.visit(ctx, Paths.space_work_map_path(ctx.company, ctx[space_name]))
+  end
+
+  step :open_zero_state_add_goal, ctx do
+    UI.click(ctx, testid: "add-goal")
+  end
+
+  step :open_zero_state_add_project, ctx do
+    UI.click(ctx, testid: "add-project")
+  end
+
+  step :open_quick_add_privacy_settings, ctx do
+    UI.click(ctx, testid: "privacy-field")
   end
 
   step :go_to_goals_tab, ctx do
@@ -271,6 +298,14 @@ defmodule Operately.Support.Features.WorkMapSteps do
     ctx
     |> UI.refute_text(ctx.space_closed_project.name)
     |> UI.refute_text(ctx.space_closed_goal.name)
+  end
+
+  step :assert_company_members_permissions_visible, ctx do
+    UI.assert_text(ctx, "Company Members")
+  end
+
+  step :refute_company_members_permissions_visible, ctx do
+    UI.refute_text(ctx, "Company Members")
   end
 
   #
