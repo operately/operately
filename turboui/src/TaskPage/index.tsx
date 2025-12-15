@@ -108,6 +108,48 @@ export namespace TaskPage {
     timelineFilters?: TimelineFilters;
   }
 
+  export type ContentProps = Pick<
+    Props,
+    | "milestone"
+    | "onMilestoneChange"
+    | "milestones"
+    | "onMilestoneSearch"
+    | "name"
+    | "onNameChange"
+    | "description"
+    | "onDescriptionChange"
+    | "status"
+    | "onStatusChange"
+    | "statusOptions"
+    | "dueDate"
+    | "onDueDateChange"
+    | "assignee"
+    | "onAssigneeChange"
+    | "createdAt"
+    | "createdBy"
+    | "subscriptions"
+    | "onDelete"
+    | "onArchive"
+    | "assigneePersonSearch"
+    | "richTextHandlers"
+    | "canEdit"
+    | "timelineItems"
+    | "currentUser"
+    | "canComment"
+    | "onAddComment"
+    | "onEditComment"
+    | "onDeleteComment"
+    | "onAddReaction"
+    | "onRemoveReaction"
+    | "timelineFilters"
+  >;
+
+  export interface ContentState extends ContentProps {
+    isDeleteModalOpen: boolean;
+    openDeleteModal: () => void;
+    closeDeleteModal: () => void;
+  }
+
   export interface State extends Props {
     isDeleteModalOpen: boolean;
     openDeleteModal: () => void;
@@ -115,20 +157,55 @@ export namespace TaskPage {
   }
 }
 
-function useTaskPageState(props: TaskPage.Props): TaskPage.State {
+function useTaskPageState(props: TaskPage.Props): TaskPage.ContentState {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
 
-  return {
-    ...props,
-
+  const deleteModalState = {
     isDeleteModalOpen,
     openDeleteModal: () => setIsDeleteModalOpen(true),
     closeDeleteModal: () => setIsDeleteModalOpen(false),
   };
+
+  return {
+    milestone: props.milestone,
+    onMilestoneChange: props.onMilestoneChange,
+    milestones: props.milestones,
+    onMilestoneSearch: props.onMilestoneSearch,
+    name: props.name,
+    onNameChange: props.onNameChange,
+    description: props.description,
+    onDescriptionChange: props.onDescriptionChange,
+    status: props.status,
+    onStatusChange: props.onStatusChange,
+    statusOptions: props.statusOptions,
+    dueDate: props.dueDate,
+    onDueDateChange: props.onDueDateChange,
+    assignee: props.assignee,
+    onAssigneeChange: props.onAssigneeChange,
+    createdAt: props.createdAt,
+    createdBy: props.createdBy,
+    subscriptions: props.subscriptions,
+    onDelete: props.onDelete,
+    onArchive: props.onArchive,
+    assigneePersonSearch: props.assigneePersonSearch,
+    richTextHandlers: props.richTextHandlers,
+    canEdit: props.canEdit,
+    timelineItems: props.timelineItems,
+    currentUser: props.currentUser,
+    canComment: props.canComment,
+    onAddComment: props.onAddComment,
+    onEditComment: props.onEditComment,
+    onDeleteComment: props.onDeleteComment,
+    onAddReaction: props.onAddReaction,
+    onRemoveReaction: props.onRemoveReaction,
+    timelineFilters: props.timelineFilters,
+
+    ...deleteModalState,
+  };
 }
 
 export function TaskPage(props: TaskPage.Props) {
-  const state = useTaskPageState(props);
+  const contentState = useTaskPageState(props);
 
   const tabs = useTabs(
     "tasks",
@@ -138,45 +215,53 @@ export function TaskPage(props: TaskPage.Props) {
         id: "tasks",
         label: "Tasks",
         icon: <IconListCheck size={14} />,
-        count: state.childrenCount.tasksCount,
+        count: props.childrenCount.tasksCount,
       },
       {
         id: "check-ins",
         label: "Check-ins",
         icon: <IconMessage size={14} />,
-        count: state.childrenCount.checkInsCount,
+        count: props.childrenCount.checkInsCount,
       },
       {
         id: "discussions",
         label: "Discussions",
         icon: <IconMessages size={14} />,
-        count: state.childrenCount.discussionsCount,
+        count: props.childrenCount.discussionsCount,
       },
       { id: "activity", label: "Activity", icon: <IconLogs size={14} /> },
     ],
-    { urlPath: state.projectLink },
+    { urlPath: props.projectLink },
   );
 
   return (
     <ProjectPageLayout
-      {...state}
-      title={[state.projectName]}
+      {...props}
+      title={[props.projectName]}
       testId="project-page"
       tabs={tabs}
-      status={state.projectStatus}
+      status={props.projectStatus}
     >
       <div className="flex-1 overflow-auto">
         <div className="p-4 max-w-6xl mx-auto">
-          <PageHeader {...state} />
-          <MobileSidebar {...state} />
-          <div className="sm:grid sm:grid-cols-12 mt-6">
-            <Overview {...state} />
-            <Sidebar {...state} />
-          </div>
+          <TaskContent {...contentState} />
         </div>
       </div>
-
-      <DeleteModal {...state} />
     </ProjectPageLayout>
+  );
+}
+
+export function TaskContent(props: TaskPage.ContentState) {
+  return (
+    <>
+      <PageHeader {...props} />
+      <MobileSidebar {...props} />
+      <div className="sm:grid sm:grid-cols-12 mt-6">
+        <Overview {...props} />
+        <Sidebar {...props} />
+      </div>
+
+      <DeleteModal {...props} />
+    </>
   );
 }

@@ -5,7 +5,7 @@ import { TextField } from "../TextField";
 import { TaskCheckbox } from "./TaskCheckbox";
 import { findCompletedStatus } from "../TaskBoard/utils/status";
 
-export function PageHeader({ statusOptions, ...props }: TaskPage.State) {
+export function PageHeader({ statusOptions, ...props }: TaskPage.ContentState) {
   const completedStatus = findCompletedStatus(statusOptions || []);
 
   return (

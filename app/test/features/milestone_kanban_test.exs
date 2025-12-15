@@ -1,8 +1,8 @@
-defmodule Operately.Features.TasksKanbanTest do
+defmodule Operately.Features.MilestoneKanbanTest do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.ProjectSteps
-  alias Operately.Support.Features.TasksKanbanSteps, as: Steps
+  alias Operately.Support.Features.MilestoneKanbanSteps, as: Steps
   alias Operately.Support.Time
   alias Operately.Support.Factory
 

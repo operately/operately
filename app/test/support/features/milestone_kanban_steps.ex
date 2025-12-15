@@ -1,4 +1,4 @@
-defmodule Operately.Support.Features.TasksKanbanSteps do
+defmodule Operately.Support.Features.MilestoneKanbanSteps do
   use Operately.FeatureCase
 
   alias Operately.Repo

@@ -5,7 +5,7 @@ import { Kanban } from "./Kanban";
 import { TaskSlideIn } from "./TaskSlideIn";
 import { AddStatusModal } from "./AddStatusModal";
 import { DeleteStatusModal } from "./DeleteStatusModal";
-import type { KanbanBoardProps, KanbanStatus, KanbanState } from "./types";
+import type { KanbanBoardProps, KanbanStatus, KanbanState, TaskSlideInContext } from "./types";
 import type { TaskBoard } from "../components";
 
 export function KanbanBoard({
@@ -16,19 +16,20 @@ export function KanbanBoard({
   onTaskKanbanChange,
   onTaskAssigneeChange,
   onTaskDueDateChange,
-  onTaskMilestoneChange,
-  onTaskNameChange,
   onTaskStatusChange,
+  onTaskMilestoneChange,
   onTaskDescriptionChange,
+  onTaskNameChange,
   onTaskDelete,
+  milestones,
   onMilestoneSearch,
   assigneePersonSearch,
+  richTextHandlers,
   onTaskCreate,
   canManageStatuses,
   onStatusesChange,
   unstyled,
-  milestones,
-  richTextHandlers,
+  getTaskPageProps,
 }: KanbanBoardProps) {
   const [orderedStatuses, setOrderedStatuses] = useState<StatusSelector.StatusOption[]>(() => sortStatuses(statuses));
 
@@ -55,10 +56,44 @@ export function KanbanBoard({
     return map;
   }, [tasks]);
 
-  const taskToInspect = useMemo(() => {
-    if (!selectedTaskId) return null;
-    return taskById.get(selectedTaskId) || null;
-  }, [selectedTaskId, taskById]);
+  const taskSlideInContext: TaskSlideInContext = useMemo(
+    () => ({
+      milestone,
+      tasks,
+      statuses,
+      onTaskAssigneeChange,
+      onTaskDueDateChange,
+      onTaskStatusChange,
+      onTaskMilestoneChange,
+      onTaskCreate,
+      onTaskDelete,
+      onTaskNameChange,
+      onTaskDescriptionChange,
+      milestones,
+      onMilestoneSearch,
+      assigneePersonSearch,
+      richTextHandlers,
+    }),
+    [
+      milestone,
+      tasks,
+      statuses,
+      onTaskAssigneeChange,
+      onTaskDueDateChange,
+      onTaskStatusChange,
+      onTaskMilestoneChange,
+      onTaskCreate,
+      onTaskDelete,
+      onTaskNameChange,
+      onTaskDescriptionChange,
+      milestones,
+      onMilestoneSearch,
+      assigneePersonSearch,
+      richTextHandlers,
+    ],
+  );
+
+  const taskPageProps = selectedTaskId ? getTaskPageProps(selectedTaskId, taskSlideInContext) : null;
 
   const canReorderStatuses = Boolean(canManageStatuses && onStatusesChange);
 
@@ -167,19 +202,7 @@ export function KanbanBoard({
       <TaskSlideIn
         isOpen={Boolean(selectedTaskId)}
         onClose={() => setSelectedTaskId(null)}
-        task={taskToInspect}
-        onAssigneeChange={onTaskAssigneeChange}
-        onDueDateChange={onTaskDueDateChange}
-        onMilestoneChange={onTaskMilestoneChange}
-        onNameChange={onTaskNameChange}
-        onStatusChange={onTaskStatusChange}
-        onDescriptionChange={onTaskDescriptionChange}
-        onDelete={onTaskDelete}
-        assigneePersonSearch={assigneePersonSearch}
-        statuses={orderedStatuses}
-        milestones={milestones}
-        onMilestoneSearch={onMilestoneSearch}
-        richTextHandlers={richTextHandlers}
+        taskPageProps={taskPageProps}
       />
 
       {onStatusesChange && (
