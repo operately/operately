@@ -6,7 +6,7 @@ import { TaskContent } from "../../TaskPage";
 interface TaskSlideInProps {
   isOpen: boolean;
   onClose: () => void;
-  taskPageProps: TaskPage.Props | null;
+  taskPageProps: TaskPage.ContentProps | null;
 }
 
 export function TaskSlideIn({

@@ -50,7 +50,7 @@ export namespace SpaceKanbanPage {
     richTextHandlers?: KanbanBoardProps["richTextHandlers"];
 
     // Task slide-in
-    getTaskPageProps?: KanbanBoardProps["getTaskPageProps"];
+    getTaskPageProps: KanbanBoardProps["getTaskPageProps"];
   }
 }
 
