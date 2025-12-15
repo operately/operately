@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import { MilestoneKanbanPage } from "./index";
 import * as Types from "../TaskBoard/types";
+import { TaskPage } from "../TaskPage";
 import {
   mockMilestones,
   mockPeople,
@@ -14,8 +15,19 @@ import {
 } from "../TaskBoard/tests/mockData";
 import { usePersonFieldSearch } from "../utils/storybook/usePersonFieldSearch";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 
-import type { KanbanState, KanbanStatus } from "../TaskBoard/KanbanView/types";
+import type { KanbanState, KanbanStatus, TaskSlideInContext } from "../TaskBoard/KanbanView/types";
+
+const normalizeRichText = (value: unknown) => {
+  if (typeof value !== "string") return value;
+
+  try {
+    return JSON.parse(value);
+  } catch {
+    return value;
+  }
+};
 
 const meta: Meta<typeof MilestoneKanbanPage> = {
   title: "Pages/MilestoneKanbanPage",
@@ -92,17 +104,94 @@ const removeTaskFromKanbanState = (state: KanbanState, taskId: string): KanbanSt
 const filterTasksByMilestone = (tasks: Types.Task[], milestone: Types.Milestone | null) =>
   tasks.filter((task) => !task._isHelperTask && (milestone ? task.milestone?.id === milestone.id : !task.milestone));
 
+const toTaskPagePerson = (person: Types.Person): TaskPage.Person => ({
+  id: person.id,
+  fullName: person.fullName,
+  avatarUrl: person.avatarUrl,
+  profileLink: "#",
+});
+
+const toTaskPageMilestone = (milestone: Types.Milestone): TaskPage.Milestone => ({
+  id: milestone.id,
+  name: milestone.name,
+  dueDate: milestone.dueDate ?? null,
+  status: milestone.status,
+  link: milestone.link,
+});
+
+const buildTaskPageProps = (
+  taskId: string,
+  ctx: TaskSlideInContext,
+  subscriptions: TaskPage.Props["subscriptions"],
+): TaskPage.ContentProps | null => {
+  const task = ctx.tasks.find((t) => t.id === taskId);
+  if (!task) return null;
+
+  const assignee = task.assignees?.[0] ? toTaskPagePerson(task.assignees[0]) : null;
+  const milestone = task.milestone ? toTaskPageMilestone(task.milestone) : null;
+
+  return {
+    milestone,
+    onMilestoneChange: (next) => ctx.onTaskMilestoneChange?.(taskId, next),
+    milestones: (ctx.milestones ?? []).map(toTaskPageMilestone),
+    onMilestoneSearch: ctx.onMilestoneSearch ?? (async () => {}),
+    hideMilestone: false,
+
+    name: task.title,
+    onNameChange: async (newName) => {
+      ctx.onTaskNameChange?.(taskId, newName);
+      return true;
+    },
+    description: task.description,
+    onDescriptionChange: async (newDescription) => {
+      if (!ctx.onTaskDescriptionChange) return false;
+      return ctx.onTaskDescriptionChange(taskId, newDescription);
+    },
+    status: task.status,
+    onStatusChange: (newStatus) => ctx.onTaskStatusChange?.(taskId, newStatus),
+    statusOptions: ctx.statuses as Types.Status[],
+    dueDate: task.dueDate ?? undefined,
+    onDueDateChange: (newDueDate) => ctx.onTaskDueDateChange?.(taskId, newDueDate),
+    assignee,
+    onAssigneeChange: (newAssignee) => ctx.onTaskAssigneeChange?.(taskId, newAssignee),
+
+    createdAt: new Date(),
+    createdBy: toTaskPagePerson(Object.values(mockPeople)[0]!),
+    subscriptions,
+    onDelete: async () => {
+      await ctx.onTaskDelete?.(taskId);
+    },
+    onArchive: undefined,
+    assigneePersonSearch: ctx.assigneePersonSearch!,
+    richTextHandlers: ctx.richTextHandlers!,
+    canEdit: true,
+    timelineItems: [],
+    currentUser: undefined,
+    canComment: false,
+    onAddComment: () => {},
+    onEditComment: () => {},
+    onDeleteComment: () => {},
+    onAddReaction: undefined,
+    onRemoveReaction: undefined,
+    timelineFilters: undefined,
+  };
+};
+
 export const Default: Story = {
   render: () => {
     const milestone = mockMilestones.q2Release;
     if (!milestone) return <div>Missing mock milestone data</div>;
 
-    const initialTasks = filterTasksByMilestone(mockTasks("project"), milestone);
+    const initialTasks = filterTasksByMilestone(mockTasks("project"), milestone).map((task) => ({
+      ...task,
+      description: normalizeRichText(task.description),
+    }));
     const [tasks, setTasks] = useState<Types.Task[]>(initialTasks);
     const [kanbanState, setKanbanState] = useState<KanbanState>(
       buildKanbanStateFromTasks(initialTasks, STATUSES),
     );
     const assigneeSearch = usePersonFieldSearch(Object.values(mockPeople));
+    const subscriptions = useMockSubscriptions({ entityType: "project_task" });
 
     return (
       <div className="min-h-[800px] py-[4.5rem] px-2 bg-surface-base">
@@ -117,7 +206,7 @@ export const Default: Story = {
           tasks={tasks}
           statuses={STATUSES}
           kanbanState={kanbanState}
-          getTaskPageProps={(_taskId, _ctx) => null}
+          getTaskPageProps={(taskId, ctx) => buildTaskPageProps(taskId, ctx, subscriptions)}
           assigneePersonSearch={assigneeSearch}
           richTextHandlers={createMockRichEditorHandlers()}
           onTaskNameChange={(taskId, name) =>
@@ -194,7 +283,11 @@ export const Default: Story = {
             setTasks((prev) =>
               prev.map((task) =>
                 task.id === taskId
-                  ? { ...task, description, hasDescription: Boolean(description) }
+                  ? {
+                      ...task,
+                      description: normalizeRichText(description),
+                      hasDescription: Boolean(description),
+                    }
                   : task,
               ),
             );
@@ -220,13 +313,17 @@ export const WithStatusManagement: Story = {
     const milestone = mockMilestones.q2Release;
     if (!milestone) return <div>Missing mock milestone data</div>;
 
-    const initialTasks = filterTasksByMilestone(mockTasks("project"), milestone);
+    const initialTasks = filterTasksByMilestone(mockTasks("project"), milestone).map((task) => ({
+      ...task,
+      description: normalizeRichText(task.description),
+    }));
     const [statuses, setStatuses] = useState<Types.Status[]>(STATUSES);
     const [tasks, setTasks] = useState<Types.Task[]>(initialTasks);
     const [kanbanState, setKanbanState] = useState<KanbanState>(
       buildKanbanStateFromTasks(initialTasks, statuses),
     );
     const assigneeSearch = usePersonFieldSearch(Object.values(mockPeople));
+    const subscriptions = useMockSubscriptions({ entityType: "project_task" });
 
     return (
       <div className="min-h-[800px] py-[4.5rem] px-2 bg-surface-base">
@@ -241,7 +338,7 @@ export const WithStatusManagement: Story = {
           tasks={tasks}
           statuses={statuses}
           kanbanState={kanbanState}
-          getTaskPageProps={(_taskId, _ctx) => null}
+          getTaskPageProps={(taskId, ctx) => buildTaskPageProps(taskId, ctx, subscriptions)}
           assigneePersonSearch={assigneeSearch}
           richTextHandlers={createMockRichEditorHandlers()}
           canManageStatuses
@@ -331,7 +428,11 @@ export const WithStatusManagement: Story = {
             setTasks((prev) =>
               prev.map((task) =>
                 task.id === taskId
-                  ? { ...task, description, hasDescription: Boolean(description) }
+                  ? {
+                      ...task,
+                      description: normalizeRichText(description),
+                      hasDescription: Boolean(description),
+                    }
                   : task,
               ),
             );
