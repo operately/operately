@@ -77,7 +77,7 @@ export namespace TaskPage {
 
     // Metadata (read-only)
     createdAt: Date;
-    createdBy: Person;
+    createdBy: Person | null;
     closedAt: Date | null;
 
     // Subscriptions
