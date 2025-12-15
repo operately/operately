@@ -16,12 +16,15 @@ export function useTaskSlideInModel(opts: {
   currentUser: ApiPerson | null;
   tasks: TaskBoard.Task[];
 
+  canEdit: boolean;
+  hideMilestone?: boolean;
+
   onTaskAssigneeChange: (taskId: string, assignee: TaskBoard.Person | null) => any;
   onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => any;
   onTaskStatusChange: (taskId: string, newStatus: TaskBoard.Status | null) => any;
   onTaskDescriptionChange: (taskId: string, content: any) => Promise<boolean>;
 }) {
-  const { backendTasks, paths, currentUser, tasks } = opts;
+  const { backendTasks, paths, currentUser, tasks, canEdit, hideMilestone } = opts;
 
   const parsedCurrentUser = currentUser ? (People.parsePersonForTurboUi(paths, currentUser) ?? undefined) : undefined;
 
@@ -223,31 +226,10 @@ export function useTaskSlideInModel(opts: {
         activeTaskId === taskId ? sortTimelineItems([...fetchedTimelineItems, ...appended]) : [];
       const currentTimelineIsLoading = activeTaskId === taskId ? isTimelineLoading : true;
 
-      return {
-        milestone: task.milestone
-          ? {
-              id: task.milestone.id,
-              name: task.milestone.name,
-              dueDate: task.milestone.dueDate ?? null,
-              status: task.milestone.status,
-              link: task.milestone.link,
-            }
-          : null,
-        onMilestoneChange: (m) => {
-          const mapped = m
-            ? {
-                id: m.id,
-                name: m.name,
-                dueDate: m.dueDate,
-                status: m.status,
-                link: m.link,
-              }
-            : null;
+      const milestoneProps = buildMilestoneProps({ hideMilestone, taskId, ctx, taskMilestone: task.milestone });
 
-          ctx.onTaskMilestoneChange?.(taskId, mapped);
-        },
-        milestones: (ctx.milestones ?? []).map((m) => ({ ...m, dueDate: m.dueDate ?? null })),
-        onMilestoneSearch: ctx.onMilestoneSearch,
+      return {
+        ...milestoneProps,
 
         name: task.title,
         onNameChange: (newName) => {
@@ -280,7 +262,7 @@ export function useTaskSlideInModel(opts: {
         assigneePersonSearch: ctx.assigneePersonSearch,
         richTextHandlers: ctx.richTextHandlers,
 
-        canEdit: true,
+        canEdit,
 
         currentUser: parsedCurrentUser,
         timelineItems: currentTimelineItems,
@@ -292,7 +274,17 @@ export function useTaskSlideInModel(opts: {
         onDeleteComment: () => {},
       };
     },
-    [activeTaskId, appendedByTaskId, backendTasks, fetchedTimelineItems, isTimelineLoading, parsedCurrentUser, paths],
+    [
+      activeTaskId,
+      appendedByTaskId,
+      backendTasks,
+      canEdit,
+      fetchedTimelineItems,
+      hideMilestone,
+      isTimelineLoading,
+      parsedCurrentUser,
+      paths,
+    ],
   );
 
   return React.useMemo(
@@ -340,4 +332,44 @@ function sortTimelineItems(items: TaskPage.TimelineItemType[]) {
   });
 
   return sorted;
+}
+
+type MilestoneProps = Pick<
+  TaskPage.ContentProps,
+  "milestone" | "onMilestoneChange" | "milestones" | "onMilestoneSearch" | "hideMilestone"
+>;
+
+function buildMilestoneProps(opts: {
+  hideMilestone?: boolean;
+  taskId: string;
+  ctx: any;
+  taskMilestone: TaskBoard.Milestone | null;
+}): MilestoneProps {
+  if (opts.hideMilestone) {
+    return {
+      milestone: null,
+      onMilestoneChange: () => {},
+      milestones: [],
+      onMilestoneSearch: async () => {},
+      hideMilestone: true,
+    };
+  }
+
+  return {
+    milestone: opts.taskMilestone ? toTaskPageMilestone(opts.taskMilestone) : null,
+    onMilestoneChange: (m) => opts.ctx.onTaskMilestoneChange?.(opts.taskId, m),
+    milestones: (opts.ctx.milestones ?? []).map((m: any) => ({ ...m, dueDate: m.dueDate ?? null })),
+    onMilestoneSearch: opts.ctx.onMilestoneSearch,
+    hideMilestone: false,
+  };
+}
+
+function toTaskPageMilestone(milestone: TaskBoard.Milestone): TaskPage.Milestone {
+  return {
+    id: milestone.id,
+    name: milestone.name,
+    dueDate: milestone.dueDate ?? null,
+    status: milestone.status,
+    link: milestone.link,
+  };
 }

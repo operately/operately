@@ -11,8 +11,9 @@ import { PageModule } from "@/routes/types";
 import { fetchAll } from "@/utils/async";
 import { assertPresent } from "@/utils/assertions";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 
-import { SpaceKanbanPage, TaskPage } from "turboui";
+import { SpaceKanbanPage } from "turboui";
 
 export default { name: "SpaceKanbanPage", loader, Page } as PageModule;
 
@@ -45,6 +46,7 @@ function Page() {
   const pageData = PageCache.useData(loader);
   const { data } = pageData;
   const { space, tasks: backendTasks } = data;
+  const currentUser = useMe();
 
   assertPresent(space, "Space must be present");
 
@@ -106,7 +108,18 @@ function Page() {
     [space.id, pageData],
   );
 
-  const { getTaskPageProps } = useTaskSlideInProps({ backendTasks, paths, space });
+  const slideInModel = Tasks.useTaskSlideInModel({
+    backendTasks,
+    paths,
+    currentUser,
+    tasks,
+    canEdit: Boolean(space.permissions?.canEdit),
+    hideMilestone: true,
+    onTaskAssigneeChange: updateTaskAssignee,
+    onTaskDueDateChange: updateTaskDueDate,
+    onTaskStatusChange: updateTaskStatus,
+    onTaskDescriptionChange: updateTaskDescription,
+  });
 
   const props: SpaceKanbanPage.Props = {
     space: {
@@ -124,131 +137,17 @@ function Page() {
     onTaskKanbanChange: handleTaskKanbanChange,
     onTaskCreate: createTask,
     onTaskNameChange: updateTaskName,
-    onTaskAssigneeChange: updateTaskAssignee,
-    onTaskDueDateChange: updateTaskDueDate,
-    onTaskStatusChange: updateTaskStatus,
+    onTaskAssigneeChange: slideInModel.onTaskAssigneeChange,
+    onTaskDueDateChange: slideInModel.onTaskDueDateChange,
+    onTaskStatusChange: slideInModel.onTaskStatusChange,
     onTaskDelete: deleteTask,
-    onTaskDescriptionChange: updateTaskDescription,
+    onTaskDescriptionChange: slideInModel.onTaskDescriptionChange,
     richTextHandlers: richEditorHandlers,
 
-    getTaskPageProps,
+    getTaskPageProps: slideInModel.getTaskPageProps,
 
     onStatusesChange: handleStatusesChange,
   };
 
   return <SpaceKanbanPage key={space.id} {...props} />;
-}
-
-function useTaskSlideInProps(opts: {
-  backendTasks: Tasks.Task[];
-  paths: ReturnType<typeof usePaths>;
-  space: Spaces.Space;
-}) {
-  const { backendTasks, paths, space } = opts;
-
-  const getTaskPageProps = React.useCallback(
-    (taskId: string, ctx: any): TaskPage.ContentProps | null => {
-      const task = ctx.tasks.find((t) => t.id === taskId);
-      if (!task) return null;
-
-      const backendTask = backendTasks.find((t) => t.id === taskId) ?? null;
-
-      const description = (() => {
-        if (!task.description) return null;
-        try {
-          return JSON.parse(task.description);
-        } catch {
-          return null;
-        }
-      })();
-
-      const assignee = (() => {
-        const first = task.assignees?.[0];
-        if (!first) return null;
-        return {
-          id: first.id,
-          fullName: first.fullName,
-          avatarUrl: first.avatarUrl,
-          profileLink: paths.profilePath(first.id),
-        };
-      })();
-
-      const createdBy = (() => {
-        const creator = backendTask?.creator;
-        if (creator) {
-          const parsed = People.parsePersonForTurboUi(paths, creator);
-          if (parsed) {
-            return {
-              id: parsed.id,
-              fullName: parsed.fullName,
-              avatarUrl: parsed.avatarUrl,
-              profileLink: parsed.profileLink,
-            };
-          }
-        }
-
-        return {
-          id: "unknown",
-          fullName: "Unknown",
-          avatarUrl: null,
-          profileLink: "#",
-        };
-      })();
-
-      return {
-        milestone: null,
-        onMilestoneChange: () => {},
-        milestones: [],
-        onMilestoneSearch: async () => {},
-        hideMilestone: true,
-
-        name: task.title,
-        onNameChange: async (newName) => {
-          const res = ctx.onTaskNameChange?.(taskId, newName);
-          return Boolean(await Promise.resolve(res ?? true));
-        },
-
-        description,
-        onDescriptionChange: async (newDescription) => {
-          return await (ctx.onTaskDescriptionChange?.(taskId, newDescription) ?? Promise.resolve(false));
-        },
-
-        status: task.status,
-        onStatusChange: (newStatus) => {
-          ctx.onTaskStatusChange?.(taskId, newStatus);
-        },
-
-        statusOptions: ctx.statuses,
-        dueDate: task.dueDate || undefined,
-        onDueDateChange: (newDate) => {
-          ctx.onTaskDueDateChange?.(taskId, newDate);
-        },
-
-        assignee,
-        onAssigneeChange: (newAssignee) => {
-          ctx.onTaskAssigneeChange?.(taskId, newAssignee);
-        },
-
-        createdAt: new Date(backendTask?.insertedAt ?? Date.now()),
-        createdBy,
-        subscriptions: { isSubscribed: false, onToggle: () => {}, hidden: true, entityType: "project_task" },
-
-        onDelete: async () => {
-          await ctx.onTaskDelete?.(taskId);
-        },
-
-        assigneePersonSearch: ctx.assigneePersonSearch,
-        richTextHandlers: ctx.richTextHandlers,
-
-        canEdit: Boolean(space.permissions?.canEdit),
-
-        onAddComment: () => {},
-        onEditComment: () => {},
-        onDeleteComment: () => {},
-      };
-    },
-    [backendTasks, paths, space.id, space.name, space.permissions?.canEdit],
-  );
-
-  return React.useMemo(() => ({ getTaskPageProps }), [getTaskPageProps]);
 }

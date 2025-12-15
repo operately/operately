@@ -167,6 +167,7 @@ function Page() {
     paths,
     currentUser,
     tasks,
+    canEdit: milestone.permissions.canEditTask,
     onTaskAssigneeChange: updateTaskAssignee,
     onTaskDueDateChange: updateTaskDueDate,
     onTaskStatusChange: updateTaskStatus,
