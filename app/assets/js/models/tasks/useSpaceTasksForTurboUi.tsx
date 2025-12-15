@@ -220,7 +220,18 @@ export function useSpaceTasksForTurboUi({ backendTasks, spaceId, cacheKey, refre
 
   const updateTaskDescription = async (taskId: string, description: any) => {
     try {
-      await Api.tasks.updateDescription({ taskId, description, type: "space" });
+      const serializedDescription = description ? JSON.stringify(description) : "";
+
+      setTasks((prev) =>
+        prev.map((t) => {
+          if (t.id === taskId) {
+            return { ...t, description: serializedDescription ?? "" };
+          }
+          return t;
+        }),
+      );
+
+      await Api.tasks.updateDescription({ taskId, description: serializedDescription, type: "space" });
       await invalidateAndRefresh();
 
       return true;
