@@ -10,8 +10,9 @@ import { usePaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { fetchAll } from "@/utils/async";
 import { assertPresent } from "@/utils/assertions";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
-import { SpaceKanbanPage } from "turboui";
+import { SpaceKanbanPage, TaskPage } from "turboui";
 
 export default { name: "SpaceKanbanPage", loader, Page } as PageModule;
 
@@ -76,6 +77,8 @@ function Page() {
     refresh: pageData.refresh,
   });
 
+  const richEditorHandlers = useRichEditorHandlers({ scope: { type: "space", id: space.id } });
+
   const { kanbanState, handleTaskKanbanChange } = Tasks.useKanbanState({
     initialRawState: space.tasksKanbanState,
     statuses,
@@ -103,6 +106,8 @@ function Page() {
     [space.id, pageData],
   );
 
+  const { getTaskPageProps } = useTaskSlideInProps({ backendTasks, paths, space });
+
   const props: SpaceKanbanPage.Props = {
     space: {
       id: space.id,
@@ -124,10 +129,125 @@ function Page() {
     onTaskStatusChange: updateTaskStatus,
     onTaskDelete: deleteTask,
     onTaskDescriptionChange: updateTaskDescription,
-    richTextHandlers: undefined,
+    richTextHandlers: richEditorHandlers,
+
+    getTaskPageProps,
 
     onStatusesChange: handleStatusesChange,
   };
 
   return <SpaceKanbanPage key={space.id} {...props} />;
+}
+
+function useTaskSlideInProps(opts: {
+  backendTasks: Tasks.Task[];
+  paths: ReturnType<typeof usePaths>;
+  space: Spaces.Space;
+}) {
+  const { backendTasks, paths, space } = opts;
+
+  const getTaskPageProps = React.useCallback(
+    (taskId: string, ctx: any): TaskPage.ContentProps | null => {
+      const task = ctx.tasks.find((t) => t.id === taskId);
+      if (!task) return null;
+
+      const backendTask = backendTasks.find((t) => t.id === taskId) ?? null;
+
+      const description = (() => {
+        if (!task.description) return null;
+        try {
+          return JSON.parse(task.description);
+        } catch {
+          return null;
+        }
+      })();
+
+      const assignee = (() => {
+        const first = task.assignees?.[0];
+        if (!first) return null;
+        return {
+          id: first.id,
+          fullName: first.fullName,
+          avatarUrl: first.avatarUrl,
+          profileLink: paths.profilePath(first.id),
+        };
+      })();
+
+      const createdBy = (() => {
+        const creator = backendTask?.creator;
+        if (creator) {
+          const parsed = People.parsePersonForTurboUi(paths, creator);
+          if (parsed) {
+            return {
+              id: parsed.id,
+              fullName: parsed.fullName,
+              avatarUrl: parsed.avatarUrl,
+              profileLink: parsed.profileLink,
+            };
+          }
+        }
+
+        return {
+          id: "unknown",
+          fullName: "Unknown",
+          avatarUrl: null,
+          profileLink: "#",
+        };
+      })();
+
+      return {
+        milestone: null,
+        onMilestoneChange: () => {},
+        milestones: [],
+        onMilestoneSearch: async () => {},
+
+        name: task.title,
+        onNameChange: async (newName) => {
+          const res = ctx.onTaskNameChange?.(taskId, newName);
+          return Boolean(await Promise.resolve(res ?? true));
+        },
+
+        description,
+        onDescriptionChange: async (newDescription) => {
+          return await (ctx.onTaskDescriptionChange?.(taskId, newDescription) ?? Promise.resolve(false));
+        },
+
+        status: task.status,
+        onStatusChange: (newStatus) => {
+          ctx.onTaskStatusChange?.(taskId, newStatus);
+        },
+
+        statusOptions: ctx.statuses,
+        dueDate: task.dueDate || undefined,
+        onDueDateChange: (newDate) => {
+          ctx.onTaskDueDateChange?.(taskId, newDate);
+        },
+
+        assignee,
+        onAssigneeChange: (newAssignee) => {
+          ctx.onTaskAssigneeChange?.(taskId, newAssignee);
+        },
+
+        createdAt: new Date(backendTask?.insertedAt ?? Date.now()),
+        createdBy,
+        subscriptions: { isSubscribed: false, onToggle: () => {}, hidden: true, entityType: "project_task" },
+
+        onDelete: async () => {
+          await ctx.onTaskDelete?.(taskId);
+        },
+
+        assigneePersonSearch: ctx.assigneePersonSearch,
+        richTextHandlers: ctx.richTextHandlers,
+
+        canEdit: Boolean(space.permissions?.canEdit),
+
+        onAddComment: () => {},
+        onEditComment: () => {},
+        onDeleteComment: () => {},
+      };
+    },
+    [backendTasks, paths, space.id, space.name, space.permissions?.canEdit],
+  );
+
+  return React.useMemo(() => ({ getTaskPageProps }), [getTaskPageProps]);
 }

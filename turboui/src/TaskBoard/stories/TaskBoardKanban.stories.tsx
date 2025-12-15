@@ -137,6 +137,7 @@ export const BasicKanban: Story = {
         tasks={tasks}
         statuses={BASE_STATUSES}
         kanbanState={kanbanState}
+        getTaskPageProps={(_taskId, _ctx) => null}
         assigneePersonSearch={assigneeSearch}
         onTaskCreate={(payload) => {
           const newTask: Types.Task = {
@@ -198,6 +199,7 @@ export const SixStatusBoard: Story = {
         tasks={tasks}
         statuses={SIX_STATUSES}
         kanbanState={kanbanState}
+        getTaskPageProps={(_taskId, _ctx) => null}
         assigneePersonSearch={assigneeSearch}
         onTaskCreate={(payload) => {
           const newTask: Types.Task = {
@@ -256,6 +258,7 @@ export const AutoScrollEdgeColumns: Story = {
         tasks={tasks}
         statuses={WIDE_STATUSES}
         kanbanState={kanbanState}
+        getTaskPageProps={(_taskId, _ctx) => null}
         assigneePersonSearch={assigneeSearch}
         onTaskCreate={(payload) => {
           const newTask: Types.Task = {
@@ -313,6 +316,7 @@ export const EmptyStates: Story = {
         tasks={tasks}
         statuses={BASE_STATUSES}
         kanbanState={kanbanState}
+        getTaskPageProps={(_taskId, _ctx) => null}
         assigneePersonSearch={assigneeSearch}
         onTaskCreate={(payload) => {
           const newTask: Types.Task = {
@@ -368,6 +372,7 @@ export const WithStatusManagement: Story = {
         tasks={tasks}
         statuses={statuses}
         kanbanState={kanbanState}
+        getTaskPageProps={(_taskId, _ctx) => null}
         assigneePersonSearch={assigneeSearch}
         canManageStatuses
         onStatusesChange={(nextStatuses) => {
