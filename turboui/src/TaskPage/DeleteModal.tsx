@@ -4,7 +4,7 @@ import { DangerButton, SecondaryButton } from "../Button";
 import { WarningCallout } from "../Callouts";
 import Modal from "../Modal";
 
-export function DeleteModal(props: TaskPage.State) {
+export function DeleteModal(props: TaskPage.ContentState) {
   const title = "Delete Task";
 
   return (
@@ -14,7 +14,7 @@ export function DeleteModal(props: TaskPage.State) {
   );
 }
 
-function DeleteForm(props: TaskPage.State) {
+function DeleteForm(props: TaskPage.ContentState) {
   const [isDeleting, setIsDeleting] = React.useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {

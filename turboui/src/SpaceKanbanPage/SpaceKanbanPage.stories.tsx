@@ -120,6 +120,7 @@ export const Default: Story = {
           tasks={tasks}
           statuses={STATUSES}
           kanbanState={kanbanState}
+          getTaskPageProps={(_taskId, _ctx) => null}
           assigneePersonSearch={assigneeSearch}
           richTextHandlers={createMockRichEditorHandlers()}
           onTaskNameChange={(taskId, name) =>
@@ -231,6 +232,7 @@ export const WithStatusManagement: Story = {
           tasks={tasks}
           statuses={statuses}
           kanbanState={kanbanState}
+          getTaskPageProps={(_taskId, _ctx) => null}
           assigneePersonSearch={assigneeSearch}
           canManageStatuses
           richTextHandlers={createMockRichEditorHandlers()}
