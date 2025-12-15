@@ -55,6 +55,7 @@ export namespace TaskPage {
     onMilestoneChange: (milestone: Milestone | null) => void;
     milestones: Milestone[];
     onMilestoneSearch: (query: string) => Promise<void>;
+    hideMilestone?: boolean;
 
     // Core task data
     name: string;
@@ -114,6 +115,7 @@ export namespace TaskPage {
     | "onMilestoneChange"
     | "milestones"
     | "onMilestoneSearch"
+    | "hideMilestone"
     | "name"
     | "onNameChange"
     | "description"

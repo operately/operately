@@ -133,6 +133,8 @@ function StatusMobile(props: TaskPage.ContentState) {
 }
 
 function Milestone(props: TaskPage.ContentState) {
+  if (props.hideMilestone) return null;
+
   return (
     <SidebarSection title="Milestone">
       <MilestoneField

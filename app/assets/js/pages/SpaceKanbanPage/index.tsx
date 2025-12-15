@@ -200,6 +200,7 @@ function useTaskSlideInProps(opts: {
         onMilestoneChange: () => {},
         milestones: [],
         onMilestoneSearch: async () => {},
+        hideMilestone: true,
 
         name: task.title,
         onNameChange: async (newName) => {
