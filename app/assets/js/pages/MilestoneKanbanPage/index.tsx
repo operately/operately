@@ -5,7 +5,7 @@ import * as Milestones from "@/models/milestones";
 import * as Tasks from "@/models/tasks";
 import * as People from "@/models/people";
 
-import { MilestoneKanbanPage, showErrorToast, TaskPage } from "turboui";
+import { MilestoneKanbanPage, showErrorToast } from "turboui";
 import { usePaths } from "@/routes/paths";
 import { PageCache } from "@/routes/PageCache";
 import { projectPageCacheKey } from "../ProjectPage";
@@ -162,7 +162,16 @@ function Page() {
     [deleteTask, milestone.project?.id],
   );
 
-  const { getTaskPageProps } = useTaskSlideInProps({ backendTasks, paths, milestone, currentUser });
+  const slideInModel = Tasks.useTaskSlideInModel({
+    backendTasks,
+    paths,
+    currentUser,
+    tasks,
+    onTaskAssigneeChange: updateTaskAssignee,
+    onTaskDueDateChange: updateTaskDueDate,
+    onTaskStatusChange: updateTaskStatus,
+    onTaskDescriptionChange: handleTaskDescriptionChange,
+  });
 
   const props: MilestoneKanbanPage.Props = {
     projectName: milestone.project.name ?? "",
@@ -181,21 +190,21 @@ function Page() {
     assigneePersonSearch: assigneeSearch,
     onTaskCreate: createTask,
     onTaskNameChange: handleTaskNameChange,
-    onTaskAssigneeChange: updateTaskAssignee,
-    onTaskDueDateChange: updateTaskDueDate,
-    onTaskStatusChange: updateTaskStatus,
+    onTaskAssigneeChange: slideInModel.onTaskAssigneeChange,
+    onTaskDueDateChange: slideInModel.onTaskDueDateChange,
+    onTaskStatusChange: slideInModel.onTaskStatusChange,
     onTaskMilestoneChange: handleTaskMilestoneChange,
     onTaskDelete: handleTaskDelete,
     milestones: milestones,
     onMilestoneSearch: searchMilestones,
-    onTaskDescriptionChange: handleTaskDescriptionChange,
+    onTaskDescriptionChange: slideInModel.onTaskDescriptionChange,
     richTextHandlers: richEditorHandlers,
 
     canManageStatuses: milestone.permissions.canEditStatuses,
     onStatusesChange: handleStatusesChange,
     onTaskKanbanChange: handleTaskKanbanChange,
 
-    getTaskPageProps,
+    getTaskPageProps: slideInModel.getTaskPageProps,
   };
 
   return <MilestoneKanbanPage key={milestone.id!} {...props} />;
@@ -261,126 +270,4 @@ function usePageField<T>({
     },
     [update, onError, validations, refreshPageData, onOptimisticUpdade, data.milestone.id],
   );
-}
-
-function useTaskSlideInProps(opts: {
-  backendTasks: Tasks.Task[];
-  paths: ReturnType<typeof usePaths>;
-  milestone: Milestones.Milestone;
-  currentUser: ReturnType<typeof useMe>;
-}) {
-  const { backendTasks, paths, milestone, currentUser } = opts;
-
-  const [activeTaskId, setActiveTaskId] = React.useState<string | null>(null);
-  const lastSeenTaskIdRef = React.useRef<string | null>(null);
-
-  const { timelineItems, isLoading: isTimelineLoading } = Tasks.useTaskTimelineItems({ taskId: activeTaskId, paths });
-
-  const getTaskPageProps = React.useCallback(
-    (taskId: string, ctx: any): TaskPage.ContentProps | null => {
-      const task = ctx.tasks.find((t) => t.id === taskId);
-      if (!task) return null;
-
-      if (lastSeenTaskIdRef.current !== taskId) {
-        lastSeenTaskIdRef.current = taskId;
-        setTimeout(() => setActiveTaskId(taskId), 0);
-      }
-
-      const backendTask = backendTasks.find((t) => t.id === taskId) ?? null;
-
-      const description = (() => {
-        if (!task.description) return null;
-        try {
-          return JSON.parse(task.description);
-        } catch {
-          return null;
-        }
-      })();
-
-      const assignee = (() => {
-        const first = task.assignees?.[0];
-        if (!first) return null;
-
-        return People.parsePersonForTurboUi(paths, first);
-      })();
-
-      const createdBy = backendTask?.creator ? People.parsePersonForTurboUi(paths, backendTask.creator) : null;
-
-      const parsedCurrentUser = People.parsePersonForTurboUi(paths, currentUser) ?? undefined;
-
-      const currentTimelineItems = activeTaskId === taskId ? timelineItems : [];
-      const currentTimelineIsLoading = activeTaskId === taskId ? isTimelineLoading : true;
-
-      return {
-        milestone: task.milestone
-          ? {
-              id: task.milestone.id,
-              name: task.milestone.name,
-              dueDate: task.milestone.dueDate ?? null,
-              status: task.milestone.status,
-              link: task.milestone.link,
-            }
-          : null,
-        onMilestoneChange: (m) => {
-          const mapped = m
-            ? {
-                id: m.id,
-                name: m.name,
-                dueDate: m.dueDate,
-                status: m.status,
-                link: m.link,
-              }
-            : null;
-
-          ctx.onTaskMilestoneChange?.(taskId, mapped);
-        },
-        milestones: (ctx.milestones ?? []).map((m) => ({ ...m, dueDate: m.dueDate ?? null })),
-        onMilestoneSearch: ctx.onMilestoneSearch,
-
-        name: task.title,
-        onNameChange: (newName) => {
-          const res = ctx.onTaskNameChange?.(taskId, newName);
-          return Promise.resolve(res ?? true);
-        },
-
-        description,
-        onDescriptionChange: (newDescription) => ctx.onTaskDescriptionChange?.(taskId, newDescription) ?? Promise.resolve(false),
-
-        status: task.status,
-        onStatusChange: (newStatus) => ctx.onTaskStatusChange?.(taskId, newStatus),
-
-        statusOptions: ctx.statuses,
-        dueDate: task.dueDate || undefined,
-        onDueDateChange: (newDate) => ctx.onTaskDueDateChange?.(taskId, newDate),
-
-        assignee,
-        onAssigneeChange: (newAssignee) => ctx.onTaskAssigneeChange?.(taskId, newAssignee),
-
-        createdAt: new Date(backendTask?.insertedAt ?? Date.now()),
-        createdBy,
-        subscriptions: { isSubscribed: false, onToggle: () => {}, hidden: true, entityType: "project_task" },
-
-        onDelete: async () => {
-          await ctx.onTaskDelete?.(taskId);
-        },
-
-        assigneePersonSearch: ctx.assigneePersonSearch,
-        richTextHandlers: ctx.richTextHandlers,
-
-        canEdit: true,
-
-        currentUser: parsedCurrentUser,
-        timelineItems: currentTimelineItems,
-        timelineIsLoading: currentTimelineIsLoading,
-        canComment: false,
-
-        onAddComment: () => {},
-        onEditComment: () => {},
-        onDeleteComment: () => {},
-      };
-    },
-    [backendTasks, milestone.project, milestone.space, paths, currentUser, activeTaskId, timelineItems, isTimelineLoading],
-  );
-
-  return React.useMemo(() => ({ getTaskPageProps }), [getTaskPageProps]);
 }
