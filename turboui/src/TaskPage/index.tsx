@@ -99,6 +99,7 @@ export namespace TaskPage {
 
     // Timeline/Activity feed
     timelineItems?: TimelineItem[];
+    timelineIsLoading?: boolean;
     currentUser?: TimelinePerson;
     canComment?: boolean;
     onAddComment: (content: any) => void;
@@ -136,6 +137,7 @@ export namespace TaskPage {
     | "richTextHandlers"
     | "canEdit"
     | "timelineItems"
+    | "timelineIsLoading"
     | "currentUser"
     | "canComment"
     | "onAddComment"
@@ -193,6 +195,7 @@ function useTaskPageState(props: TaskPage.Props): TaskPage.ContentState {
     richTextHandlers: props.richTextHandlers,
     canEdit: props.canEdit,
     timelineItems: props.timelineItems,
+    timelineIsLoading: props.timelineIsLoading,
     currentUser: props.currentUser,
     canComment: props.canComment,
     onAddComment: props.onAddComment,

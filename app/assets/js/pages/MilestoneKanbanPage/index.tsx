@@ -15,6 +15,7 @@ import { PageModule } from "@/routes/types";
 import { useMilestoneTaskStatuses } from "./useMilestoneTaskStatuses";
 import { useMilestones } from "@/models/milestones/useMilestones";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 
 export default { name: "MilestoneKanbanPage", loader, Page } as PageModule;
 
@@ -54,6 +55,7 @@ function Page() {
   const pageData = PageCache.useData(loader);
   const { data, refresh } = pageData;
   const { milestone, tasks: backendTasks } = data;
+  const currentUser = useMe();
 
   assertPresent(milestone.project, "Milestone must have a project");
   assertPresent(milestone.space, "Milestone must have a space");
@@ -160,7 +162,7 @@ function Page() {
     [deleteTask, milestone.project?.id],
   );
 
-  const { getTaskPageProps } = useTaskSlideInProps({ backendTasks, paths, milestone });
+  const { getTaskPageProps } = useTaskSlideInProps({ backendTasks, paths, milestone, currentUser });
 
   const props: MilestoneKanbanPage.Props = {
     projectName: milestone.project.name ?? "",
@@ -265,13 +267,24 @@ function useTaskSlideInProps(opts: {
   backendTasks: Tasks.Task[];
   paths: ReturnType<typeof usePaths>;
   milestone: Milestones.Milestone;
+  currentUser: ReturnType<typeof useMe>;
 }) {
-  const { backendTasks, paths, milestone } = opts;
+  const { backendTasks, paths, milestone, currentUser } = opts;
+
+  const [activeTaskId, setActiveTaskId] = React.useState<string | null>(null);
+  const lastSeenTaskIdRef = React.useRef<string | null>(null);
+
+  const { timelineItems, isLoading: isTimelineLoading } = Tasks.useTaskTimelineItems({ taskId: activeTaskId, paths });
 
   const getTaskPageProps = React.useCallback(
     (taskId: string, ctx: any): TaskPage.ContentProps | null => {
       const task = ctx.tasks.find((t) => t.id === taskId);
       if (!task) return null;
+
+      if (lastSeenTaskIdRef.current !== taskId) {
+        lastSeenTaskIdRef.current = taskId;
+        setTimeout(() => setActiveTaskId(taskId), 0);
+      }
 
       const backendTask = backendTasks.find((t) => t.id === taskId) ?? null;
 
@@ -287,35 +300,16 @@ function useTaskSlideInProps(opts: {
       const assignee = (() => {
         const first = task.assignees?.[0];
         if (!first) return null;
-        return {
-          id: first.id,
-          fullName: first.fullName,
-          avatarUrl: first.avatarUrl,
-          profileLink: paths.profilePath(first.id),
-        };
+
+        return People.parsePersonForTurboUi(paths, first);
       })();
 
-      const createdBy = (() => {
-        const creator = backendTask?.creator;
-        if (creator) {
-          const parsed = People.parsePersonForTurboUi(paths, creator);
-          if (parsed) {
-            return {
-              id: parsed.id,
-              fullName: parsed.fullName,
-              avatarUrl: parsed.avatarUrl,
-              profileLink: parsed.profileLink,
-            };
-          }
-        }
+      const createdBy = backendTask?.creator ? People.parsePersonForTurboUi(paths, backendTask.creator) : null;
 
-        return {
-          id: "unknown",
-          fullName: "Unknown",
-          avatarUrl: null,
-          profileLink: "#",
-        };
-      })();
+      const parsedCurrentUser = People.parsePersonForTurboUi(paths, currentUser) ?? undefined;
+
+      const currentTimelineItems = activeTaskId === taskId ? timelineItems : [];
+      const currentTimelineIsLoading = activeTaskId === taskId ? isTimelineLoading : true;
 
       return {
         milestone: task.milestone
@@ -375,12 +369,17 @@ function useTaskSlideInProps(opts: {
 
         canEdit: true,
 
+        currentUser: parsedCurrentUser,
+        timelineItems: currentTimelineItems,
+        timelineIsLoading: currentTimelineIsLoading,
+        canComment: false,
+
         onAddComment: () => {},
         onEditComment: () => {},
         onDeleteComment: () => {},
       };
     },
-    [backendTasks, milestone.project, milestone.space, paths],
+    [backendTasks, milestone.project, milestone.space, paths, currentUser, activeTaskId, timelineItems, isTimelineLoading],
   );
 
   return React.useMemo(() => ({ getTaskPageProps }), [getTaskPageProps]);
