@@ -3,7 +3,7 @@ import { TaskPage } from ".";
 import { Timeline } from "../Timeline";
 import { PageDescription } from "../PageDescription";
 
-export function Overview(props: TaskPage.State) {
+export function Overview(props: TaskPage.ContentState) {
   return (
     <div className="space-y-12 sm:col-span-8 sm:pr-8">
       <PageDescription
@@ -17,7 +17,7 @@ export function Overview(props: TaskPage.State) {
   );
 }
 
-function ActivitySection(props: TaskPage.State) {
+function ActivitySection(props: TaskPage.ContentState) {
   if (props.timelineItems && props.currentUser) {
     return (
       <div data-test-id="task-activity-section">
