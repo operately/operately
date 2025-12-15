@@ -11,7 +11,7 @@ import { durationHumanized, isOverdue } from "../utils/time";
 import { StatusSelector } from "../StatusSelector";
 import { SidebarNotificationSection, SidebarSection } from "../SidebarSection";
 
-export function Sidebar(props: TaskPage.State) {
+export function Sidebar(props: TaskPage.ContentState) {
   return (
     <div className="sm:col-span-4 space-y-6 hidden sm:block sm:pl-8" data-test-id="task-sidebar"> 
       <DueDate {...props} />
@@ -25,7 +25,7 @@ export function Sidebar(props: TaskPage.State) {
 }
 
 // Compact, mobile-only subset of sidebar content
-export function MobileSidebar(props: TaskPage.State) {
+export function MobileSidebar(props: TaskPage.ContentState) {
   return (
     <div className="sm:hidden block mt-4">
       <div className="grid grid-cols-[auto_auto_1fr] gap-4 items-start">
@@ -46,7 +46,7 @@ export function MobileSidebar(props: TaskPage.State) {
   );
 }
 
-function DueDate(props: TaskPage.State) {
+function DueDate(props: TaskPage.ContentState) {
   return (
     <SidebarSection title="Due date">
       <DateField
@@ -63,7 +63,7 @@ function DueDate(props: TaskPage.State) {
   );
 }
 
-function Assignees(props: TaskPage.State) {
+function Assignees(props: TaskPage.ContentState) {
   return (
     <SidebarSection title="Assignee">
       <PersonField
@@ -79,7 +79,7 @@ function Assignees(props: TaskPage.State) {
   );
 }
 
-function DueDateMobile(props: TaskPage.State) {
+function DueDateMobile(props: TaskPage.ContentState) {
   return (
     <SidebarSection title="Due date">
       <DateField
@@ -95,7 +95,7 @@ function DueDateMobile(props: TaskPage.State) {
   );
 }
 
-function AssigneeMobile(props: TaskPage.State) {
+function AssigneeMobile(props: TaskPage.ContentState) {
   return (
     <SidebarSection title="Assignee">
       <PersonField
@@ -112,7 +112,7 @@ function AssigneeMobile(props: TaskPage.State) {
   );
 }
 
-function StatusMobile(props: TaskPage.State) {
+function StatusMobile(props: TaskPage.ContentState) {
   const status = props.status ?? props.statusOptions?.[0] ?? null;
 
   if (!status) return null;
@@ -126,12 +126,13 @@ function StatusMobile(props: TaskPage.State) {
         size="sm"
         readonly={!props.canEdit}
         showFullBadge={true}
+        testId="task-status"
       />
     </SidebarSection>
   );
 }
 
-function Milestone(props: TaskPage.State) {
+function Milestone(props: TaskPage.ContentState) {
   return (
     <SidebarSection title="Milestone">
       <MilestoneField
@@ -147,7 +148,7 @@ function Milestone(props: TaskPage.State) {
   );
 }
 
-function CreatedBy(props: TaskPage.State) {
+function CreatedBy(props: TaskPage.ContentState) {
   return (
     <SidebarSection title="Created">
       <div className="space-y-2 text-sm">
@@ -161,11 +162,11 @@ function CreatedBy(props: TaskPage.State) {
   );
 }
 
-function Subscription(props: TaskPage.State) {
+function Subscription(props: TaskPage.ContentState) {
   return <SidebarNotificationSection {...props.subscriptions} />;
 }
 
-function Actions(props: TaskPage.State) {
+function Actions(props: TaskPage.ContentState) {
   const actions = [
     {
       label: "Copy URL",
@@ -212,7 +213,7 @@ function Actions(props: TaskPage.State) {
   );
 }
 
-function OverdueWarning(props: TaskPage.State) {
+function OverdueWarning(props: TaskPage.ContentState) {
   if (!props.dueDate || !props.dueDate.date) return null;
   if (!isOverdue(props.dueDate.date)) return null;
   if (props.status?.closed) return null; // Don't show overdue for completed tasks
