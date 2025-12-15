@@ -126,6 +126,7 @@ function StatusMobile(props: TaskPage.ContentState) {
         size="sm"
         readonly={!props.canEdit}
         showFullBadge={true}
+        testId="task-status"
       />
     </SidebarSection>
   );

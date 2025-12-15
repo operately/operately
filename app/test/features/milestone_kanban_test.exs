@@ -26,7 +26,6 @@ defmodule Operately.Features.MilestoneKanbanTest do
 
   @tag login_as: :champion
   feature "add, use, and delete a custom status from the kanban", ctx do
-    [primary_status | _rest] = ctx.status_values
     qa_label = "QA Ready"
     qa_value = Steps.status_value_from_label(qa_label)
 
@@ -35,11 +34,11 @@ defmodule Operately.Features.MilestoneKanbanTest do
     |> Steps.add_status(label: qa_label, appearance: "blue")
     |> Steps.assert_status_column(value: qa_value)
     |> Steps.open_task_slide_in(:task)
-    |> Steps.change_task_status(task_key: :task, status_value: qa_value)
+    |> Steps.change_task_status(prev_status: "Not started", next_status: qa_label)
     |> Steps.close_task_slide_in(:task)
     |> Steps.assert_task_in_status(task_key: :task, status_value: qa_value)
     |> Steps.open_task_slide_in(:task)
-    |> Steps.change_task_status(task_key: :task, status_value: primary_status)
+    |> Steps.change_task_status(prev_status: qa_label, next_status: "Done")
     |> Steps.close_task_slide_in(:task)
     |> Steps.delete_status(value: qa_value)
     |> Steps.assert_status_absent(value: qa_value)
@@ -77,16 +76,16 @@ defmodule Operately.Features.MilestoneKanbanTest do
     ctx
     |> Steps.visit_kanban_page()
     |> Steps.open_task_slide_in(:second_task)
-    |> Steps.change_task_status(task_key: :second_task, status_value: new_status)
-    |> Steps.change_task_assignee(task_key: :second_task, assignee_name: ctx.teammate.full_name)
-    |> Steps.change_task_due_date(task_key: :second_task, date: due_date)
-    |> Steps.add_task_description(task_key: :second_task, content: "Updated description for kanban flow.")
+    |> Steps.change_task_status(prev_status: "Not started", next_status: new_status)
+    |> Steps.change_task_assignee(assignee_name: ctx.teammate.full_name)
+    |> Steps.change_task_due_date(date: due_date)
+    |> Steps.add_task_description(content: "Updated description for kanban flow.")
     |> Steps.close_task_slide_in(:second_task)
     |> Steps.assert_task_in_status(task_key: :second_task, status_value: new_status)
     |> Steps.assert_card_due_date(task_key: :second_task, label: due_label)
     |> Steps.assert_card_assignee(task_key: :second_task, assignee_name: ctx.teammate.full_name)
     |> Steps.open_task_slide_in(:second_task)
-    |> Steps.assert_description(task_key: :second_task, content: "Updated description for kanban flow.")
+    |> Steps.assert_description(content: "Updated description for kanban flow.")
   end
 
   @tag login_as: :champion
@@ -97,8 +96,8 @@ defmodule Operately.Features.MilestoneKanbanTest do
     ctx
     |> Steps.visit_kanban_page()
     |> Steps.open_task_slide_in(:second_task)
-    |> Steps.change_task_status(task_key: :second_task, status_value: new_status)
-    |> Steps.change_task_milestone(task_key: :second_task, milestone_title: ctx.another_milestone.title)
+    |> Steps.change_task_status(prev_status: "Not started", next_status: new_status)
+    |> Steps.change_task_milestone(milestone_title: ctx.another_milestone.title)
     |> Steps.close_task_slide_in(:second_task)
     |> Steps.assert_task_absent_in_status(task_key: :second_task, status_value: new_status)
     |> Steps.visit_kanban_page_for(:another_milestone)
@@ -113,8 +112,8 @@ defmodule Operately.Features.MilestoneKanbanTest do
     ctx
     |> Steps.visit_kanban_page()
     |> Steps.open_task_slide_in(:second_task)
-    |> Steps.change_task_status(task_key: :second_task, status_value: new_status)
-    |> Steps.delete_task(task_key: :second_task)
+    |> Steps.change_task_status(prev_status: "Not started", next_status: new_status)
+    |> Steps.delete_task()
     |> Steps.assert_task_removed(task_key: :second_task, status_value: new_status)
   end
 

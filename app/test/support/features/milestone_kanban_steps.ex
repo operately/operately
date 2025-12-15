@@ -148,35 +148,34 @@ defmodule Operately.Support.Features.MilestoneKanbanSteps do
   end
 
   step :change_task_status, ctx, opts do
-    task = Map.fetch!(ctx, Keyword.fetch!(opts, :task_key))
-    status_value = Keyword.fetch!(opts, :status_value)
+    prev_status = Keyword.fetch!(opts, :prev_status)
+    next_status = Keyword.fetch!(opts, :next_status)
 
     ctx
-    |> UI.click(testid: UI.testid(["task-status", Paths.task_id(task)]))
+    |> UI.find(UI.query(testid: "task-header"), fn el ->
+      UI.click_text(el, prev_status)
+    end)
     |> UI.sleep(150)
-    |> UI.click(testid: UI.testid(["status-option", status_value]))
+    |> UI.click(testid: UI.testid(["status-option", next_status]))
     |> UI.sleep(300)
   end
 
   step :change_task_assignee, ctx, opts do
-    task = Map.fetch!(ctx, Keyword.fetch!(opts, :task_key))
     assignee = Keyword.fetch!(opts, :assignee_name)
-    testid = UI.testid(["task-assignee", Paths.task_id(task)])
 
     ctx
-    |> UI.click(testid: testid)
+    |> UI.click(testid: "assignee")
     |> UI.send_keys(assignee)
     |> UI.sleep(200)
-    |> UI.click(testid: UI.testid([testid, "search-result", assignee]))
+    |> UI.click(testid: UI.testid(["assignee-search-result", assignee]))
     |> UI.sleep(300)
   end
 
   step :change_task_due_date, ctx, opts do
-    task = Map.fetch!(ctx, Keyword.fetch!(opts, :task_key))
     date = Keyword.fetch!(opts, :date)
 
     ctx
-    |> UI.select_day_in_date_field(testid: UI.testid(["task-due-date", Paths.task_id(task)]), date: date)
+    |> UI.select_day_in_date_field(testid: "task-due-date", date: date)
     |> UI.sleep(300)
   end
 
@@ -198,49 +197,36 @@ defmodule Operately.Support.Features.MilestoneKanbanSteps do
   end
 
   step :add_task_description, ctx, opts do
-    task = Map.fetch!(ctx, Keyword.fetch!(opts, :task_key))
     content = Keyword.fetch!(opts, :content)
-    testid = UI.testid(["task-description-editor", Paths.task_id(task)])
-
-    ctx =
-      try do
-        UI.click(ctx, testid: UI.testid(["task-description-add", Paths.task_id(task)]))
-      rescue
-        _ -> UI.click(ctx, testid: UI.testid(["task-description-edit", Paths.task_id(task)]))
-      end
 
     ctx
-    |> UI.fill_rich_text(testid: testid, with: content)
-    |> UI.click(testid: UI.testid(["task-description-save", Paths.task_id(task)]))
+    |> UI.click_text("Add notes about this task...")
+    |> UI.fill_rich_text(content)
+    |> UI.click_button("Save")
     |> UI.sleep(300)
   end
 
   step :assert_description, ctx, opts do
-    task = Map.fetch!(ctx, Keyword.fetch!(opts, :task_key))
     content = Keyword.fetch!(opts, :content)
 
     ctx
-    |> UI.assert_text(content, testid: UI.testid(["task-description", Paths.task_id(task)]))
+    |> UI.assert_text(content, testid: "task-slide-in")
   end
 
   step :change_task_milestone, ctx, opts do
-    task = Map.fetch!(ctx, Keyword.fetch!(opts, :task_key))
     milestone_title = Keyword.fetch!(opts, :milestone_title)
-    testid = UI.testid(["task-milestone", Paths.task_id(task)])
 
     ctx
-    |> UI.click(testid: testid)
-    |> UI.click(testid: UI.testid([testid, "change-milestone"]))
-    |> UI.click(testid: UI.testid([testid, "search-result", milestone_title]))
+    |> UI.click(testid: "milestone-field")
+    |> UI.click(testid: "milestone-field-change-milestone")
+    |> UI.click(testid: UI.testid(["milestone-field-search-result", milestone_title]))
     |> UI.sleep(300)
   end
 
-  step :delete_task, ctx, opts do
-    task = Map.fetch!(ctx, Keyword.fetch!(opts, :task_key))
-
+  step :delete_task, ctx do
     ctx
-    |> UI.click(testid: UI.testid(["task-delete", Paths.task_id(task)]))
-    |> UI.click(testid: UI.testid(["task-delete-confirm", Paths.task_id(task)]))
+    |> UI.click(testid: "delete-task")
+    |> UI.click_button("Delete Forever")
     |> UI.sleep(400)
   end
 
