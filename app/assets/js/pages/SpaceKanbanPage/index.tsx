@@ -106,9 +106,49 @@ function Page() {
     [space.id, pageData],
   );
 
+  const { getTaskPageProps } = useTaskSlideInProps({ backendTasks, paths, space });
+
+  const props: SpaceKanbanPage.Props = {
+    space: {
+      id: space.id,
+      name: space.name ?? "",
+      link: paths.spacePath(space.id),
+    },
+    navigation: [{ to: paths.spacePath(space.id), label: space.name ?? "" }],
+    tasks,
+    statuses,
+    kanbanState,
+    canManageStatuses: !!space.permissions?.canEditStatuses,
+    assigneePersonSearch: assigneeSearch,
+
+    onTaskKanbanChange: handleTaskKanbanChange,
+    onTaskCreate: createTask,
+    onTaskNameChange: updateTaskName,
+    onTaskAssigneeChange: updateTaskAssignee,
+    onTaskDueDateChange: updateTaskDueDate,
+    onTaskStatusChange: updateTaskStatus,
+    onTaskDelete: deleteTask,
+    onTaskDescriptionChange: updateTaskDescription,
+    richTextHandlers: richEditorHandlers,
+
+    getTaskPageProps,
+
+    onStatusesChange: handleStatusesChange,
+  };
+
+  return <SpaceKanbanPage key={space.id} {...props} />;
+}
+
+function useTaskSlideInProps(opts: {
+  backendTasks: Tasks.Task[];
+  paths: ReturnType<typeof usePaths>;
+  space: Spaces.Space;
+}) {
+  const { backendTasks, paths, space } = opts;
+
   const getTaskPageProps = React.useCallback(
-    (taskId: string): TaskPage.Props | null => {
-      const task = tasks.find((t) => t.id === taskId);
+    (taskId: string, ctx: any): TaskPage.ContentProps | null => {
+      const task = ctx.tasks.find((t) => t.id === taskId);
       if (!task) return null;
 
       const backendTask = backendTasks.find((t) => t.id === taskId) ?? null;
@@ -156,17 +196,6 @@ function Page() {
       })();
 
       return {
-        projectName: "",
-        projectLink: "#",
-        workmapLink: paths.spaceWorkMapPath(space.id, "projects" as const),
-        projectStatus: "",
-        childrenCount: { tasksCount: 0, discussionsCount: 0, checkInsCount: 0 },
-        space: {
-          id: space.id,
-          name: space.name ?? "",
-          link: paths.spacePath(space.id),
-        },
-
         milestone: null,
         onMilestoneChange: () => {},
         milestones: [],
@@ -174,97 +203,51 @@ function Page() {
 
         name: task.title,
         onNameChange: async (newName) => {
-          const res = await updateTaskName(taskId, newName);
-          return Boolean(res?.success);
+          const res = ctx.onTaskNameChange?.(taskId, newName);
+          return Boolean(await Promise.resolve(res ?? true));
         },
 
         description,
         onDescriptionChange: async (newDescription) => {
-          return await updateTaskDescription(taskId, newDescription);
+          return await (ctx.onTaskDescriptionChange?.(taskId, newDescription) ?? Promise.resolve(false));
         },
 
         status: task.status,
         onStatusChange: (newStatus) => {
-          updateTaskStatus(taskId, newStatus);
+          ctx.onTaskStatusChange?.(taskId, newStatus);
         },
 
-        statusOptions: statuses,
+        statusOptions: ctx.statuses,
         dueDate: task.dueDate || undefined,
         onDueDateChange: (newDate) => {
-          updateTaskDueDate(taskId, newDate);
+          ctx.onTaskDueDateChange?.(taskId, newDate);
         },
 
         assignee,
         onAssigneeChange: (newAssignee) => {
-          updateTaskAssignee(taskId, newAssignee ? { id: newAssignee.id, fullName: newAssignee.fullName, avatarUrl: newAssignee.avatarUrl } : null);
+          ctx.onTaskAssigneeChange?.(taskId, newAssignee);
         },
 
         createdAt: new Date(backendTask?.insertedAt ?? Date.now()),
         createdBy,
-        closedAt: null,
         subscriptions: { isSubscribed: false, onToggle: () => {}, hidden: true, entityType: "project_task" },
 
         onDelete: async () => {
-          await deleteTask(taskId);
+          await ctx.onTaskDelete?.(taskId);
         },
 
-        assigneePersonSearch: assigneeSearch,
-        richTextHandlers: richEditorHandlers,
+        assigneePersonSearch: ctx.assigneePersonSearch,
+        richTextHandlers: ctx.richTextHandlers,
 
         canEdit: Boolean(space.permissions?.canEdit),
-        updateProjectName: async () => true,
 
         onAddComment: () => {},
         onEditComment: () => {},
         onDeleteComment: () => {},
       };
     },
-    [
-      assigneeSearch,
-      backendTasks,
-      deleteTask,
-      paths,
-      richEditorHandlers,
-      space.id,
-      space.name,
-      space.permissions?.canEdit,
-      statuses,
-      tasks,
-      updateTaskAssignee,
-      updateTaskDescription,
-      updateTaskDueDate,
-      updateTaskName,
-      updateTaskStatus,
-    ],
+    [backendTasks, paths, space.id, space.name, space.permissions?.canEdit],
   );
 
-  const props: SpaceKanbanPage.Props = {
-    space: {
-      id: space.id,
-      name: space.name ?? "",
-      link: paths.spacePath(space.id),
-    },
-    navigation: [{ to: paths.spacePath(space.id), label: space.name ?? "" }],
-    tasks,
-    statuses,
-    kanbanState,
-    canManageStatuses: !!space.permissions?.canEditStatuses,
-    assigneePersonSearch: assigneeSearch,
-
-    onTaskKanbanChange: handleTaskKanbanChange,
-    onTaskCreate: createTask,
-    onTaskNameChange: updateTaskName,
-    onTaskAssigneeChange: updateTaskAssignee,
-    onTaskDueDateChange: updateTaskDueDate,
-    onTaskStatusChange: updateTaskStatus,
-    onTaskDelete: deleteTask,
-    onTaskDescriptionChange: updateTaskDescription,
-    richTextHandlers: richEditorHandlers,
-
-    getTaskPageProps,
-
-    onStatusesChange: handleStatusesChange,
-  };
-
-  return <SpaceKanbanPage key={space.id} {...props} />;
+  return React.useMemo(() => ({ getTaskPageProps }), [getTaskPageProps]);
 }

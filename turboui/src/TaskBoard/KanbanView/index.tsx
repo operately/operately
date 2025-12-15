@@ -5,7 +5,7 @@ import { Kanban } from "./Kanban";
 import { TaskSlideIn } from "./TaskSlideIn";
 import { AddStatusModal } from "./AddStatusModal";
 import { DeleteStatusModal } from "./DeleteStatusModal";
-import type { KanbanBoardProps, KanbanStatus, KanbanState } from "./types";
+import type { KanbanBoardProps, KanbanStatus, KanbanState, TaskSlideInContext } from "./types";
 import type { TaskBoard } from "../components";
 
 export function KanbanBoard({
@@ -16,7 +16,15 @@ export function KanbanBoard({
   onTaskKanbanChange,
   onTaskAssigneeChange,
   onTaskDueDateChange,
+  onTaskStatusChange,
+  onTaskMilestoneChange,
+  onTaskDescriptionChange,
+  onTaskNameChange,
+  onTaskDelete,
+  milestones,
+  onMilestoneSearch,
   assigneePersonSearch,
+  richTextHandlers,
   onTaskCreate,
   canManageStatuses,
   onStatusesChange,
@@ -48,10 +56,44 @@ export function KanbanBoard({
     return map;
   }, [tasks]);
 
-  const taskPageProps = useMemo(() => {
-    if (!selectedTaskId) return null;
-    return getTaskPageProps?.(selectedTaskId) ?? null;
-  }, [getTaskPageProps, selectedTaskId]);
+  const taskSlideInContext: TaskSlideInContext = useMemo(
+    () => ({
+      milestone,
+      tasks,
+      statuses,
+      onTaskAssigneeChange,
+      onTaskDueDateChange,
+      onTaskStatusChange,
+      onTaskMilestoneChange,
+      onTaskCreate,
+      onTaskDelete,
+      onTaskNameChange,
+      onTaskDescriptionChange,
+      milestones,
+      onMilestoneSearch,
+      assigneePersonSearch,
+      richTextHandlers,
+    }),
+    [
+      milestone,
+      tasks,
+      statuses,
+      onTaskAssigneeChange,
+      onTaskDueDateChange,
+      onTaskStatusChange,
+      onTaskMilestoneChange,
+      onTaskCreate,
+      onTaskDelete,
+      onTaskNameChange,
+      onTaskDescriptionChange,
+      milestones,
+      onMilestoneSearch,
+      assigneePersonSearch,
+      richTextHandlers,
+    ],
+  );
+
+  const taskPageProps = selectedTaskId ? getTaskPageProps(selectedTaskId, taskSlideInContext) : null;
 
   const canReorderStatuses = Boolean(canManageStatuses && onStatusesChange);
 
