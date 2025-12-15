@@ -151,6 +151,8 @@ function Milestone(props: TaskPage.ContentState) {
 }
 
 function CreatedBy(props: TaskPage.ContentState) {
+  if (!props.createdBy) return null;
+
   return (
     <SidebarSection title="Created">
       <div className="space-y-2 text-sm">

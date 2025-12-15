@@ -9,10 +9,10 @@ import * as Activities from "@/models/activities";
 import * as Comments from "@/models/comments";
 import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
 import { parseMilestoneForTurboUi } from "@/models/milestones";
-import { parseActivitiesForTurboUi, TASK_ACTIVITY_TYPES } from "@/models/activities/feed";
+import { TASK_ACTIVITY_TYPES } from "@/models/activities/feed";
 import * as Time from "@/utils/time";
 
-import { Paths, usePaths } from "../../routes/paths";
+import { usePaths } from "../../routes/paths";
 import { showErrorToast, TaskPage } from "turboui";
 import { PageModule } from "../../routes/types";
 import { PageCache } from "@/routes/PageCache";
@@ -152,7 +152,7 @@ function Page() {
     PageCache.invalidate(pageCacheKey(task.id));
   });
 
-  const timelineItems = useMemo(() => prepareTimelineItems(paths, activities, comments), [paths, activities, comments]);
+  const timelineItems = useMemo(() => Tasks.prepareTaskTimelineItems(paths, activities, comments), [paths, activities, comments]);
 
   const handleDelete = async () => {
     try {
@@ -331,35 +331,4 @@ function usePageField<T>({
   };
 
   return [state, updateState];
-}
-
-function prepareTimelineItems(paths: Paths, activities: Activities.Activity[], comments: Comments.Comment[]) {
-  const parsedActivities = parseActivitiesForTurboUi(paths, activities, "task").map((activity) => ({
-    type: "task-activity",
-    value: activity,
-  }));
-  const parsedComments = Comments.parseCommentsForTurboUi(paths, comments).map((comment) => ({
-    type: "comment",
-    value: comment,
-  }));
-
-  const timelineItems = [...parsedActivities, ...parsedComments] as TaskPage.TimelineItemType[];
-
-  timelineItems.sort((a, b) => {
-    // Special handling for temporary comments - always show them last
-    const aIsTemp = a.value.id.startsWith("temp-");
-    const bIsTemp = b.value.id.startsWith("temp-");
-
-    // If one is temporary and the other isn't, prioritize the non-temporary one
-    if (aIsTemp && !bIsTemp) return 1;
-    if (!aIsTemp && bIsTemp) return -1;
-
-    // Otherwise use standard date comparison
-    const aInsertedAt = a.type === "acknowledgment" ? a.insertedAt : a.value.insertedAt;
-    const bInsertedAt = b.type === "acknowledgment" ? b.insertedAt : b.value.insertedAt;
-
-    return aInsertedAt.localeCompare(bInsertedAt);
-  });
-
-  return timelineItems;
 }

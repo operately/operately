@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { TimelineItem } from "./TimelineItem";
 import { CommentInput } from "../CommentSection/CommentInput";
 import * as Types from "./types";
+import { TimelineSkeleton } from "./TimelineSkeleton";
 
 export namespace Timeline {
   export type MilestoneActivity = Types.MilestoneActivity
@@ -12,6 +13,7 @@ export namespace Timeline {
 }
 
 export function Timeline({
+  isLoading,
   items,
   currentUser,
   canComment,
@@ -24,6 +26,10 @@ export function Timeline({
   richTextHandlers,
   filters,
 }: Timeline.Props) {
+  if (isLoading) {
+    return <TimelineSkeleton />;
+  }
+
   const filteredItems = useMemo(() => {
     if (!filters) return items;
 

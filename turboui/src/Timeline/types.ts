@@ -158,6 +158,7 @@ export type TimelineItem =
 
 // Timeline component props
 export interface TimelineProps {
+  isLoading?: boolean;
   items: TimelineItem[];
   currentUser: Person;
   canComment: boolean;

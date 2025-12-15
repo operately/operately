@@ -240,6 +240,14 @@ export const EmptyTimeline: Story = {
   args: createMockProps([]),
 };
 
+export const Loading: Story = {
+  args: {
+    ...createMockProps([]),
+    isLoading: true,
+    canComment: false,
+  },
+};
+
 export const ReadOnly: Story = {
   args: {
     ...createMockProps([mockComment, mockTaskAssignment, mockStatusChange]),

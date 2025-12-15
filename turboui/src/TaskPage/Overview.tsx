@@ -25,6 +25,7 @@ function ActivitySection(props: TaskPage.ContentState) {
         <Timeline
           items={props.timelineItems}
           currentUser={props.currentUser}
+          isLoading={props.timelineIsLoading}
           canComment={props.canComment ?? true}
           commentParentType="task"
           onAddComment={props.onAddComment}
