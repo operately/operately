@@ -108,7 +108,7 @@ function Page() {
     [space.id, pageData],
   );
 
-  const slideInModel = Tasks.useTaskSlideInModel({
+  const slideInModel = Tasks.useTaskSlideInProps({
     backendTasks,
     paths,
     currentUser,

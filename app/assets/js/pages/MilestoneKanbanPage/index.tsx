@@ -162,7 +162,7 @@ function Page() {
     [deleteTask, milestone.project?.id],
   );
 
-  const slideInModel = Tasks.useTaskSlideInModel({
+  const slideInModel = Tasks.useTaskSlideInProps({
     backendTasks,
     paths,
     currentUser,

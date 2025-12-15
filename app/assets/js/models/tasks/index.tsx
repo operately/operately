@@ -12,7 +12,7 @@ export { useTaskAssigneeSearch } from "./useTaskAssigneeSearch";
 export { useKanbanState } from "./useKanbanState";
 export { parseKanbanState, type KanbanState } from "./parseKanbanState"
 export { useTaskTimelineItems } from "./useTaskTimelineItems";
-export { useTaskSlideInModel } from "./useTaskSlideInModel";
+export { useTaskSlideInProps } from "./useTaskSlideInProps";
 export { prepareTaskTimelineItems } from "./prepareTaskTimelineItems";
 
 export { getTask, getTasks, useGetTasks } from "@/api";

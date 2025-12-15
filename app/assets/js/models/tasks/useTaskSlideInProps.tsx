@@ -10,7 +10,7 @@ import type { Person as ApiPerson, Task as BackendTask } from "@/api";
 
 type TimelinePerson = NonNullable<TaskPage.ContentProps["currentUser"]>;
 
-export function useTaskSlideInModel(opts: {
+export function useTaskSlideInProps(opts: {
   backendTasks: BackendTask[];
   paths: Paths;
   currentUser: ApiPerson | null;
