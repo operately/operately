@@ -48,6 +48,9 @@ export namespace SpaceKanbanPage {
     // Description editing
     onTaskDescriptionChange?: (taskId: string, description: any) => Promise<boolean>;
     richTextHandlers?: KanbanBoardProps["richTextHandlers"];
+
+    // Task slide-in
+    getTaskPageProps?: KanbanBoardProps["getTaskPageProps"];
   }
 }
 
@@ -73,6 +76,7 @@ export function SpaceKanbanPage(props: SpaceKanbanPage.Props) {
           onTaskDescriptionChange={props.onTaskDescriptionChange}
           richTextHandlers={props.richTextHandlers}
           assigneePersonSearch={props.assigneePersonSearch}
+          getTaskPageProps={props.getTaskPageProps}
           canManageStatuses={props.canManageStatuses ?? false}
           onStatusesChange={props.onStatusesChange}
           unstyled

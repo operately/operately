@@ -5,7 +5,7 @@ import * as Milestones from "@/models/milestones";
 import * as Tasks from "@/models/tasks";
 import * as People from "@/models/people";
 
-import { MilestoneKanbanPage, showErrorToast } from "turboui";
+import { MilestoneKanbanPage, showErrorToast, TaskPage } from "turboui";
 import { usePaths } from "@/routes/paths";
 import { PageCache } from "@/routes/PageCache";
 import { projectPageCacheKey } from "../ProjectPage";
@@ -160,6 +160,151 @@ function Page() {
     [deleteTask, milestone.project?.id],
   );
 
+  const getTaskPageProps = React.useCallback(
+    (taskId: string): TaskPage.Props | null => {
+      const task = tasks.find((t) => t.id === taskId);
+      if (!task) return null;
+
+      const backendTask = backendTasks.find((t) => t.id === taskId) ?? null;
+
+      const description = (() => {
+        if (!task.description) return null;
+        try {
+          return JSON.parse(task.description);
+        } catch {
+          return null;
+        }
+      })();
+
+      const assignee = (() => {
+        const first = task.assignees?.[0];
+        if (!first) return null;
+        return {
+          id: first.id,
+          fullName: first.fullName,
+          avatarUrl: first.avatarUrl,
+          profileLink: paths.profilePath(first.id),
+        };
+      })();
+
+      const createdBy = (() => {
+        const creator = backendTask?.creator;
+        if (creator) {
+          const parsed = People.parsePersonForTurboUi(paths, creator);
+          if (parsed) {
+            return {
+              id: parsed.id,
+              fullName: parsed.fullName,
+              avatarUrl: parsed.avatarUrl,
+              profileLink: parsed.profileLink,
+            };
+          }
+        }
+
+        return {
+          id: "unknown",
+          fullName: "Unknown",
+          avatarUrl: null,
+          profileLink: "#",
+        };
+      })();
+
+      return {
+        projectName: milestone.project?.name ?? "",
+        projectLink: paths.projectPath(milestone.project!.id),
+        workmapLink: paths.spaceWorkMapPath(milestone.space!.id, "projects" as const),
+        projectStatus: milestone.project?.status ?? "",
+        childrenCount: { tasksCount: 0, discussionsCount: 0, checkInsCount: 0 },
+        space: {
+          id: milestone.space!.id,
+          name: milestone.space!.name ?? "",
+          link: paths.spacePath(milestone.space!.id),
+        },
+
+        milestone: task.milestone
+          ? {
+              id: task.milestone.id,
+              name: task.milestone.name,
+              dueDate: task.milestone.dueDate ?? null,
+              status: task.milestone.status,
+              link: task.milestone.link,
+            }
+          : null,
+        onMilestoneChange: (m) => {
+          const mapped = m
+            ? {
+                id: m.id,
+                name: m.name,
+                dueDate: m.dueDate,
+                status: m.status,
+                link: m.link,
+              }
+            : null;
+
+          handleTaskMilestoneChange(taskId, mapped);
+        },
+        milestones,
+        onMilestoneSearch: searchMilestones,
+
+        name: task.title,
+        onNameChange: (newName) => handleTaskNameChange(taskId, newName),
+
+        description,
+        onDescriptionChange: (newDescription) => handleTaskDescriptionChange(taskId, newDescription),
+
+        status: task.status,
+        onStatusChange: (newStatus) => updateTaskStatus(taskId, newStatus),
+
+        statusOptions: statuses,
+        dueDate: task.dueDate || undefined,
+        onDueDateChange: (newDate) => updateTaskDueDate(taskId, newDate),
+
+        assignee,
+        onAssigneeChange: (newAssignee) => {
+          updateTaskAssignee(taskId, newAssignee ? { id: newAssignee.id, fullName: newAssignee.fullName, avatarUrl: newAssignee.avatarUrl } : null);
+        },
+
+        createdAt: new Date(backendTask?.insertedAt ?? Date.now()),
+        createdBy,
+        closedAt: null,
+        subscriptions: { isSubscribed: false, onToggle: () => {}, hidden: true, entityType: "project_task" },
+
+        onDelete: async () => {
+          await handleTaskDelete(taskId);
+        },
+
+        assigneePersonSearch: assigneeSearch,
+        richTextHandlers: richEditorHandlers,
+
+        canEdit: true,
+        updateProjectName: async () => true,
+
+        onAddComment: () => {},
+        onEditComment: () => {},
+        onDeleteComment: () => {},
+      };
+    },
+    [
+      assigneeSearch,
+      backendTasks,
+      handleTaskDelete,
+      handleTaskDescriptionChange,
+      handleTaskMilestoneChange,
+      handleTaskNameChange,
+      milestone.project,
+      milestone.space,
+      milestones,
+      paths,
+      richEditorHandlers,
+      searchMilestones,
+      statuses,
+      tasks,
+      updateTaskAssignee,
+      updateTaskDueDate,
+      updateTaskStatus,
+    ],
+  );
+
   const props: MilestoneKanbanPage.Props = {
     projectName: milestone.project.name ?? "",
 
@@ -190,6 +335,8 @@ function Page() {
     canManageStatuses: milestone.permissions.canEditStatuses,
     onStatusesChange: handleStatusesChange,
     onTaskKanbanChange: handleTaskKanbanChange,
+
+    getTaskPageProps,
   };
 
   return <MilestoneKanbanPage key={milestone.id!} {...props} />;
