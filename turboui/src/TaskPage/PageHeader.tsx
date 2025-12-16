@@ -11,29 +11,27 @@ export function PageHeader({ statusOptions, ...props }: TaskPage.ContentState) {
   return (
     <div className="mt-4">
       <div className="flex-1">
-        <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-3" data-test-id="task-header">
-          <div className="flex items-start md:items-center gap-3">
-            {completedStatus && (
-              <TaskCheckbox
-                status={props.status}
-                canEdit={props.canEdit}
-                onComplete={() => props.onStatusChange(completedStatus)}
-              />
-            )}
-
-            <TextField
-              className="inline align-baseline font-semibold leading-tight text-xl sm:text-2xl md:text-3xl break-words min-w-0"
-              text={props.name}
-              onChange={props.onNameChange}
-              readonly={!props.canEdit}
-              trimBeforeSave
-              testId="task-name"
+        <div className="flex items-start gap-3" data-test-id="task-header">
+          {completedStatus && (
+            <TaskCheckbox
+              status={props.status}
+              canEdit={props.canEdit}
+              onComplete={() => props.onStatusChange(completedStatus)}
             />
-          </div>
+          )}
 
-          {/* On md+, place status inline right after the title */}
+          <TextField
+            className="font-semibold leading-tight text-xl sm:text-2xl md:text-3xl break-words"
+            text={props.name}
+            onChange={props.onNameChange}
+            readonly={!props.canEdit}
+            trimBeforeSave
+            testId="task-name"
+            multiline
+          />
+
           {statusOptions?.length > 0 && (
-            <span className="hidden md:inline align-baseline">
+            <div className="shrink-0 mt-1">
               <StatusSelector
                 statusOptions={statusOptions}
                 status={props.status ?? statusOptions[0]!}
@@ -42,7 +40,7 @@ export function PageHeader({ statusOptions, ...props }: TaskPage.ContentState) {
                 readonly={!props.canEdit}
                 showFullBadge={true}
               />
-            </span>
+            </div>
           )}
         </div>
       </div>
