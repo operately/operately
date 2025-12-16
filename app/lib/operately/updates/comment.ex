@@ -19,6 +19,7 @@ defmodule Operately.Updates.Comment do
       :resource_hub_file,
       :resource_hub_link,
       :project_task,
+      :space_task,
     ]
 
     field :content, :map

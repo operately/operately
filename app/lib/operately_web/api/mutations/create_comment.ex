@@ -62,6 +62,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateComment do
       :resource_hub_file -> File.get(person, id: id, opts: [preload: [:resource_hub, :node]])
       :resource_hub_link -> Link.get(person, id: id, opts: [preload: [:resource_hub, :node]])
       :project_task -> Task.get(person, id: id, opts: [preload: :project])
+      :space_task -> Task.get(person, id: id, opts: [preload: :space])
     end
   end
 
@@ -76,6 +77,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateComment do
       :resource_hub_file -> ResourceHubs.Permissions.check(parent.request_info.access_level, :can_comment_on_file)
       :resource_hub_link -> ResourceHubs.Permissions.check(parent.request_info.access_level, :can_comment_on_link)
       :project_task -> Projects.Permissions.check(parent.request_info.access_level, :can_comment_on_task)
+      :space_task -> Groups.Permissions.check(parent.request_info.access_level, :can_comment_on_tasks)
     end
   end
 
