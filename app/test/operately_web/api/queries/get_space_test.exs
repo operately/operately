@@ -96,6 +96,20 @@ defmodule OperatelyWeb.Api.Queries.GetSpaceTest do
       assert res.space == serialize_space(space)
     end
 
+    test "include_permissions", ctx do
+      space =
+        group_fixture(ctx.person, company_id: ctx.company.id)
+        |> Repo.preload(:company)
+        |> Groups.Group.load_is_member(ctx.person)
+
+      assert {200, res} = query(ctx.conn, :get_space, %{id: Paths.space_id(space)})
+      assert res.space.permissions == nil
+
+      assert {200, res} = query(ctx.conn, :get_space, %{id: Paths.space_id(space), include_permissions: true})
+
+      assert res.space.permissions == Map.from_struct(Operately.Groups.Permissions.calculate_permissions(Binding.full_access()))
+    end
+
     test "include_unread_notifications", ctx do
       space = group_fixture(ctx.person, [company_id: ctx.company.id])
       a = activity_fixture(author_id: ctx.company_creator.id, action: "space_members_added", content: %{space_id: space.id})

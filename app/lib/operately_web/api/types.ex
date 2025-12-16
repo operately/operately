@@ -1176,7 +1176,10 @@ defmodule OperatelyWeb.Api.Types do
   object :space_permissions do
     field :can_create_goal, :boolean, null: false
     field :can_create_project, :boolean, null: false
+    field :can_create_resource_hub, :boolean, null: false
+    field :can_create_task, :boolean, null: false
     field :can_comment_on_discussions, :boolean, null: false
+    field :can_comment_on_tasks, :boolean, null: false
     field :can_edit, :boolean, null: false
     field :can_edit_discussions, :boolean, null: false
     field :can_edit_members_permissions, :boolean, null: false
