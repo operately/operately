@@ -368,6 +368,7 @@ defmodule OperatelyWeb.Api.Types do
     :message,
     :milestone,
     :project_task,
+    :space_task,
     :resource_hub_document,
     :resource_hub_file,
     :resource_hub_link,
@@ -427,6 +428,12 @@ defmodule OperatelyWeb.Api.Types do
 
   object :activity_content_project_task_commented do
     field :project, :project, null: false
+    field :task, :task, null: true
+    field :comment, :comment, null: true
+  end
+
+  object :activity_content_space_task_commented do
+    field :space, :space, null: false
     field :task, :task, null: true
     field :comment, :comment, null: true
   end
@@ -673,6 +680,7 @@ defmodule OperatelyWeb.Api.Types do
       :activity_content_project_reviewer_updating,
       :activity_content_project_review_submitted,
       :activity_content_project_timeline_edited,
+      :activity_content_space_task_commented,
       :activity_content_space_joining,
       :activity_content_task_adding,
       :activity_content_task_assignee_assignment,
@@ -1780,6 +1788,7 @@ defmodule OperatelyWeb.Api.Types do
       :resource_hub_document,
       :resource_hub_file,
       :resource_hub_link,
+      :space_task,
       :project_task,
       :milestone
     ]

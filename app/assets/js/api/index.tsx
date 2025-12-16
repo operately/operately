@@ -818,6 +818,12 @@ export interface ActivityContentSpaceMembersAdded {
   members?: Person[] | null;
 }
 
+export interface ActivityContentSpaceTaskCommented {
+  space: Space;
+  task: Task | null;
+  comment: Comment | null;
+}
+
 export interface ActivityContentTaskAdding {
   company: Company;
   space: Space;
@@ -1976,6 +1982,7 @@ export type ActivityContent =
   | ActivityContentProjectReviewerUpdating
   | ActivityContentProjectReviewSubmitted
   | ActivityContentProjectTimelineEdited
+  | ActivityContentSpaceTaskCommented
   | ActivityContentSpaceJoining
   | ActivityContentTaskAdding
   | ActivityContentTaskAssigneeAssignment
@@ -2030,6 +2037,7 @@ export type CommentParentType =
   | "resource_hub_document"
   | "resource_hub_file"
   | "resource_hub_link"
+  | "space_task"
   | "project_task"
   | "milestone";
 
@@ -2076,6 +2084,7 @@ export type ReactionParentType =
   | "message"
   | "milestone"
   | "project_task"
+  | "space_task"
   | "resource_hub_document"
   | "resource_hub_file"
   | "resource_hub_link";

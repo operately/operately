@@ -16,6 +16,7 @@ defmodule Operately.Updates.Reaction do
         :project_check_in,
         :comment_thread,
         :project_retrospective,
+        :space_task,
         :resource_hub_document,
         :resource_hub_file,
         :resource_hub_link

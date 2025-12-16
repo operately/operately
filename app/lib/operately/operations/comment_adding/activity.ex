@@ -99,6 +99,17 @@ defmodule Operately.Operations.CommentAdding.Activity do
     end)
   end
 
+  def insert(multi, creator, action = :space_task_commented, entity) do
+    Activities.insert_sync(multi, creator.id, action, fn changes ->
+      %{
+        company_id: creator.company_id,
+        space_id: entity.space.id,
+        task_id: entity.id,
+        comment_id: changes.comment.id
+      }
+    end)
+  end
+
   def insert(multi, creator, action = :comment_added, %Operately.Comments.CommentThread{} = entity) do
     activity = Operately.Repo.preload(entity, :activity).activity
 
