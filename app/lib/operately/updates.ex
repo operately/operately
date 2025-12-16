@@ -106,6 +106,16 @@ defmodule Operately.Updates do
           where: comment.id == ^id
         )
 
+      :space_task ->
+        from(comment in Comment,
+          as: :comment,
+          join: task in Operately.Tasks.Task,
+          on: task.id == comment.entity_id,
+          join: space in assoc(task, :space),
+          as: :resource,
+          where: comment.id == ^id
+        )
+
       :comment_thread ->
         from(c in Comment,
           as: :comment,

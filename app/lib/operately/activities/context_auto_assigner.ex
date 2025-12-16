@@ -48,6 +48,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "discussion_editing",
     "discussion_comment_submitted",
     "message_archiving",
+    "space_task_commented",
   ]
 
   @project_actions [

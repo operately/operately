@@ -6,6 +6,7 @@ defmodule Operately.Groups.Permissions do
     :can_create_project,
     :can_create_resource_hub,
     :can_create_task,
+    :can_comment_on_tasks,
     :can_comment_on_discussions,
     :can_edit,
     :can_edit_discussions,
@@ -27,6 +28,7 @@ defmodule Operately.Groups.Permissions do
       can_create_project: can_create_project(access_level),
       can_create_resource_hub: can_create_resource_hub(access_level),
       can_create_task: can_create_task(access_level),
+      can_comment_on_tasks: can_comment_on_tasks(access_level),
       can_comment_on_discussions: can_comment_on_discussions(access_level),
       can_edit: can_edit(access_level),
       can_edit_discussions: can_edit_discussions(access_level),
@@ -47,6 +49,7 @@ defmodule Operately.Groups.Permissions do
   def can_create_project(access_level), do: access_level >= Binding.edit_access()
   def can_create_resource_hub(access_level), do: access_level >= Binding.edit_access()
   def can_create_task(access_level), do: access_level >= Binding.edit_access()
+  def can_comment_on_tasks(access_level), do: access_level >= Binding.comment_access()
   def can_comment_on_discussions(access_level), do: access_level >= Binding.comment_access()
   def can_edit(access_level), do: access_level >= Binding.edit_access()
   def can_edit_discussions(access_level), do: access_level >= Binding.edit_access()
