@@ -168,6 +168,7 @@ function Page() {
     currentUser,
     tasks,
     canEdit: milestone.permissions.canEditTask,
+    canComment: milestone.permissions.canComment,
     onTaskAssigneeChange: updateTaskAssignee,
     onTaskDueDateChange: updateTaskDueDate,
     onTaskStatusChange: updateTaskStatus,
