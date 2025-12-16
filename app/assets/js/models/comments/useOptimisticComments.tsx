@@ -9,8 +9,9 @@ export function useOptimisticComments(opts: {
   taskId: string | null;
   parentType: Comments.CommentParentType;
   initialComments: Comments.Comment[];
+  onAfterMutation?: () => void;
 }) {
-  const { taskId, parentType, initialComments } = opts;
+  const { taskId, parentType, initialComments, onAfterMutation } = opts;
 
   const me = useMe();
 
@@ -21,8 +22,8 @@ export function useOptimisticComments(opts: {
   }, [initialComments]);
 
   const addComment = React.useCallback(
-    async (targetTaskId: string, content: any) => {
-      if (!taskId || targetTaskId !== taskId || !me) {
+    async (content: any) => {
+      if (!taskId || !me) {
         showErrorToast("Error", "Failed to add comment.");
         return;
       }
@@ -40,7 +41,7 @@ export function useOptimisticComments(opts: {
 
       try {
         const res = await Api.createComment({
-          entityId: targetTaskId,
+          entityId: taskId,
           entityType: "project_task",
           content: JSON.stringify(content),
         });
@@ -55,20 +56,22 @@ export function useOptimisticComments(opts: {
         }
 
         setComments((prev) => prev.map((c) => (c.id === tempId ? { ...c, id: realId, insertedAt: realInsertedAt ?? c.insertedAt } : c)));
+
+        onAfterMutation?.();
       } catch {
         setComments((prev) => prev.filter((c) => c.id !== tempId));
         showErrorToast("Error", "Failed to add comment.");
       }
     },
-    [me, taskId],
+    [me, onAfterMutation, taskId],
   );
 
   const editComment = React.useCallback(
-    async (targetTaskId: string, commentId: string, content: any) => {
+    async (commentId: string, content: any) => {
       const nextContent = JSON.stringify({ message: content });
       const prevComment = comments.find((c) => c.id === commentId) ?? null;
 
-      if (!taskId || targetTaskId !== taskId || !prevComment) {
+      if (!taskId || !prevComment) {
         showErrorToast("Error", "Failed to edit comment.");
         return;
       }
@@ -81,19 +84,21 @@ export function useOptimisticComments(opts: {
           parentType,
           content: JSON.stringify(content),
         });
+
+        onAfterMutation?.();
       } catch {
         setComments((prev) => prev.map((c) => (c.id === commentId ? prevComment : c)));
         showErrorToast("Error", "Failed to edit comment.");
       }
     },
-    [comments, parentType, taskId],
+    [comments, onAfterMutation, parentType, taskId],
   );
 
   const deleteComment = React.useCallback(
-    async (targetTaskId: string, commentId: string) => {
+    async (commentId: string) => {
       const prevComment = comments.find((c) => c.id === commentId) ?? null;
 
-      if (!taskId || targetTaskId !== taskId || !prevComment) {
+      if (!taskId || !prevComment) {
         showErrorToast("Error", "Failed to delete comment.");
         return;
       }
@@ -105,17 +110,19 @@ export function useOptimisticComments(opts: {
           commentId,
           parentType,
         });
+
+        onAfterMutation?.();
       } catch {
         setComments((prev) => [prevComment, ...prev]);
         showErrorToast("Error", "Failed to delete comment.");
       }
     },
-    [comments, parentType, taskId],
+    [comments, onAfterMutation, parentType, taskId],
   );
 
   const addReaction = React.useCallback(
-    async (targetTaskId: string, commentId: string, emoji: string) => {
-      if (!taskId || targetTaskId !== taskId || !me) {
+    async (commentId: string, emoji: string) => {
+      if (!taskId || !me) {
         showErrorToast("Error", "Failed to add reaction.");
         return;
       }
@@ -172,6 +179,8 @@ export function useOptimisticComments(opts: {
             };
           }),
         );
+
+        onAfterMutation?.();
       } catch {
         setComments((prev) =>
           prev.map((c) =>
@@ -186,12 +195,12 @@ export function useOptimisticComments(opts: {
         showErrorToast("Error", "Failed to add reaction.");
       }
     },
-    [comments, me, taskId],
+    [comments, me, onAfterMutation, taskId],
   );
 
   const removeReaction = React.useCallback(
-    async (targetTaskId: string, _commentId: string, reactionId: string) => {
-      if (!taskId || targetTaskId !== taskId) {
+    async (_commentId: string, reactionId: string) => {
+      if (!taskId) {
         showErrorToast("Error", "Failed to remove reaction.");
         return;
       }
@@ -211,6 +220,8 @@ export function useOptimisticComments(opts: {
 
       try {
         await Api.removeReaction({ reactionId });
+
+        onAfterMutation?.();
       } catch {
         if (removedReaction) {
           setComments((prev) =>
@@ -224,7 +235,7 @@ export function useOptimisticComments(opts: {
         showErrorToast("Error", "Failed to remove reaction.");
       }
     },
-    [taskId],
+    [onAfterMutation, taskId],
   );
 
   return {
