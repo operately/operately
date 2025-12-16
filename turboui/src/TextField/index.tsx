@@ -15,7 +15,8 @@ export namespace TextField {
     label?: string;
     error?: string;
     autofocus?: boolean;
-    inputRef?: React.Ref<HTMLInputElement>;
+    inputRef?: React.Ref<HTMLInputElement | HTMLTextAreaElement>;
+    multiline?: boolean;
   }
 
   export interface State {
@@ -87,24 +88,27 @@ export function TextField(props: TextField.Props) {
   if (props.variant === "form-field") {
     return <FormFieldTextField {...state} inputRef={props.inputRef} />;
   } else {
-    return <InlineTextField {...state} inputRef={props.inputRef} />;
+    return <InlineTextField {...state} inputRef={props.inputRef} multiline={!!props.multiline} />;
   }
 }
 
-function assignRef(ref: React.Ref<HTMLInputElement> | undefined, value: HTMLInputElement | null) {
+function assignRef(
+  ref: React.Ref<HTMLInputElement | HTMLTextAreaElement> | undefined,
+  value: HTMLInputElement | HTMLTextAreaElement | null,
+) {
   if (!ref) return;
   if (typeof ref === "function") {
     ref(value);
   } else {
     try {
-      (ref as React.MutableRefObject<HTMLInputElement | null>).current = value;
+      (ref as React.MutableRefObject<HTMLInputElement | HTMLTextAreaElement | null>).current = value;
     } catch {
       // ignore assignment errors for read-only refs
     }
   }
 }
 
-function FormFieldTextField(state: TextField.State & { inputRef?: React.Ref<HTMLInputElement> }) {
+function FormFieldTextField(state: TextField.State & { inputRef?: React.Ref<HTMLInputElement | HTMLTextAreaElement> }) {
   const localRef = useRef<HTMLInputElement | null>(null);
 
   const setRef = (node: HTMLInputElement | null) => {
@@ -166,24 +170,16 @@ function FormFieldTextField(state: TextField.State & { inputRef?: React.Ref<HTML
   );
 }
 
-function InlineTextField(state: TextField.State & { inputRef?: React.Ref<HTMLInputElement> }) {
+function InlineTextField(
+  state: TextField.State & { inputRef?: React.Ref<HTMLInputElement | HTMLTextAreaElement>; multiline: boolean },
+) {
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const hiddenSpanRef = useRef<HTMLSpanElement | null>(null);
 
-  useEffect(() => assignRef(state.inputRef, inputRef.current), [state.inputRef]);
-
   useEffect(() => {
-    if (state.isEditing && inputRef.current) {
-      inputRef.current.focus();
-      adjustInputWidth();
-    }
-  }, [state.isEditing]);
-
-  useEffect(() => {
-    if (state.isEditing) {
-      adjustInputWidth();
-    }
-  }, [state.currentText, state.isEditing]);
+    assignRef(state.inputRef, state.multiline ? textareaRef.current : inputRef.current);
+  }, [state.inputRef, state.multiline]);
 
   const adjustInputWidth = () => {
     if (hiddenSpanRef.current && inputRef.current) {
@@ -196,22 +192,70 @@ function InlineTextField(state: TextField.State & { inputRef?: React.Ref<HTMLInp
     }
   };
 
+  const autoResizeTextarea = () => {
+    const el = textareaRef.current;
+    if (!el) return;
+
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  };
+
+  useEffect(() => {
+    if (!state.isEditing) return;
+
+    if (state.multiline) {
+      if (!textareaRef.current) return;
+      textareaRef.current.focus();
+      autoResizeTextarea();
+    } else {
+      if (!inputRef.current) return;
+      inputRef.current.focus();
+      adjustInputWidth();
+    }
+  }, [state.isEditing, state.multiline]);
+
+  useEffect(() => {
+    if (!state.isEditing) return;
+    if (!state.multiline) return;
+
+    autoResizeTextarea();
+  }, [state.currentText, state.isEditing, state.multiline]);
+
+  useEffect(() => {
+    if (!state.isEditing) return;
+    if (!state.multiline) return;
+
+    const el = textareaRef.current;
+    if (!el) return;
+
+    if (document.activeElement === el) {
+      const length = el.value.length;
+      try {
+        el.setSelectionRange(length, length);
+      } catch {
+        // Ignore if setSelectionRange is not supported
+      }
+    }
+  }, [state.isEditing, state.multiline]);
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Escape") {
       state.cancel();
     } else if (e.key === "Enter") {
+      if (state.multiline) {
+        e.preventDefault();
+      }
       state.save();
     }
   };
 
   const outerClass = classNames(
-    "cursor-text relative inline-block",
+    state.multiline ? "cursor-text relative block w-full" : "cursor-text relative inline-block",
     {
-      "hover:bg-surface-dimmed": !state.isEditing && !state.readonly,
-      "bg-surface-dimmed": state.isEditing,
-      "rounded px-1 py-0.5 -mx-1 -my-0.5": true,
+      "hover:bg-surface-dimmed": !state.isEditing && !state.readonly && !state.multiline,
+      "bg-surface-dimmed": state.isEditing && !state.multiline,
+      "rounded px-1 py-0.5 -mx-1 -my-0.5": !state.multiline,
     },
-    state.className,
   );
 
   const startEditing = () => {
@@ -220,8 +264,10 @@ function InlineTextField(state: TextField.State & { inputRef?: React.Ref<HTMLInp
     }
   };
 
+  const wrapperClass = state.multiline ? "min-w-0" : state.className;
+
   return (
-    <div className={state.className}>
+    <div className={wrapperClass}>
       {state.label && <label className="font-bold text-sm mb-1 block text-left">{state.label}</label>}
       <div className={outerClass} onClick={startEditing} data-test-id={state.testId}>
         <span
@@ -238,33 +284,58 @@ function InlineTextField(state: TextField.State & { inputRef?: React.Ref<HTMLInp
         </span>
 
         {state.isEditing ? (
-          <input
-            data-test-id={createTestId(state.testId, "input")}
-            ref={inputRef}
-            type="text"
-            value={state.currentText}
-            onChange={(e) => state.setCurrentText(e.target.value)}
-            onBlur={state.save}
-            onKeyDown={handleKeyDown}
-            className={"ring-0 focus:ring-0 " + state.className}
-            placeholder={state.placeholder}
-            readOnly={state.readonly}
-            style={{
-              border: "none",
-              background: "none",
-              outline: "none",
-              padding: 0,
-              margin: 0,
-              font: "inherit",
-              minWidth: "50px",
-              maxWidth: "100%",
-              boxSizing: "border-box",
-            }}
-          />
+          state.multiline ? (
+            <textarea
+              data-test-id={createTestId(state.testId, "input")}
+              ref={textareaRef}
+              value={state.currentText}
+              onChange={(e) => state.setCurrentText(e.target.value)}
+              onBlur={state.save}
+              onKeyDown={handleKeyDown}
+              autoFocus
+              rows={1}
+              wrap="soft"
+              className={
+                state.className +
+                " w-full bg-transparent border-none outline-none focus:ring-0 resize-none overflow-hidden break-words p-0 m-0 align-top"
+              }
+              placeholder={state.placeholder}
+              readOnly={state.readonly}
+              style={{ display: "block" }}
+            />
+          ) : (
+            <input
+              data-test-id={createTestId(state.testId, "input")}
+              ref={inputRef}
+              type="text"
+              value={state.currentText}
+              onChange={(e) => state.setCurrentText(e.target.value)}
+              onBlur={state.save}
+              onKeyDown={handleKeyDown}
+              className={"ring-0 focus:ring-0 " + state.className}
+              placeholder={state.placeholder}
+              readOnly={state.readonly}
+              style={{
+                border: "none",
+                background: "none",
+                outline: "none",
+                padding: 0,
+                margin: 0,
+                font: "inherit",
+                minWidth: "50px",
+                maxWidth: "100%",
+                boxSizing: "border-box",
+              }}
+            />
+          )
         ) : (
           <span
             className={state.className}
-            style={{ color: !state.currentText && state.placeholder ? "var(--color-content-subtle)" : undefined }}
+            style={{
+              color: !state.currentText && state.placeholder ? "var(--color-content-subtle)" : undefined,
+              whiteSpace: state.multiline ? "pre-wrap" : undefined,
+              overflowWrap: state.multiline ? "anywhere" : undefined,
+            }}
           >
             {state.currentText || state.placeholder || " "}
           </span>
