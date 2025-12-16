@@ -26,7 +26,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
   end
 
   outputs do
-    field? :reaction, :reaction, null: true
+    field :reaction, :reaction, null: false
   end
 
   def call(conn, inputs) do

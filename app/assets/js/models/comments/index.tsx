@@ -14,6 +14,7 @@ export { useCreateComment, useEditComment, useGetComments, getComments } from "@
 export { useReloadCommentsSignal } from "@/signals";
 export { useEditComment as useEditCommentHandler } from "./useEditComment";
 export { useDeleteComment as useDeleteCommentHandler } from "./useDeleteComment";
+export { useOptimisticComments } from "./useOptimisticComments";
 
 export type ItemType = "comment" | "acknowledgement" | "milestone-completed" | "milestone-reopened";
 
