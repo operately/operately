@@ -3,7 +3,10 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Groups.Permissions do
     %{
       can_create_goal: permissions.can_create_goal,
       can_create_project: permissions.can_create_project,
+      can_create_resource_hub: permissions.can_create_resource_hub,
+      can_create_task: permissions.can_create_task,
       can_comment_on_discussions: permissions.can_comment_on_discussions,
+      can_comment_on_tasks: permissions.can_comment_on_tasks,
       can_edit: permissions.can_edit,
       can_edit_discussions: permissions.can_edit_discussions,
       can_edit_members_permissions: permissions.can_edit_members_permissions,

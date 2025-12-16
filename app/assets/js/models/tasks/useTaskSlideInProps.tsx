@@ -1,11 +1,12 @@
 import * as React from "react";
 
 import { DateField, TaskBoard, TaskPage } from "turboui";
-
+import { useOptimisticComments } from "@/models/comments/useOptimisticComments";
 import * as People from "@/models/people";
 import { Paths } from "@/routes/paths";
 
 import { useTaskTimelineItems } from "./useTaskTimelineItems";
+import { prepareTaskTimelineItems } from "./prepareTaskTimelineItems";
 import type { Person as ApiPerson, Task as BackendTask } from "@/api";
 
 type TimelinePerson = NonNullable<TaskPage.ContentProps["currentUser"]>;
@@ -16,7 +17,10 @@ export function useTaskSlideInProps(opts: {
   currentUser: ApiPerson | null;
   tasks: TaskBoard.Task[];
 
+  commentEntityType: "project_task" | "space_task";
+
   canEdit: boolean;
+  canComment: boolean;
   hideMilestone?: boolean;
 
   onTaskAssigneeChange: (taskId: string, assignee: TaskBoard.Person | null) => any;
@@ -24,16 +28,22 @@ export function useTaskSlideInProps(opts: {
   onTaskStatusChange: (taskId: string, newStatus: TaskBoard.Status | null) => any;
   onTaskDescriptionChange: (taskId: string, content: any) => Promise<boolean>;
 }) {
-  const { backendTasks, paths, currentUser, tasks, canEdit, hideMilestone } = opts;
+  const { backendTasks, paths, currentUser, tasks, canEdit, canComment, hideMilestone, commentEntityType } = opts;
 
   const parsedCurrentUser = currentUser ? (People.parsePersonForTurboUi(paths, currentUser) ?? undefined) : undefined;
 
   const [activeTaskId, setActiveTaskId] = React.useState<string | null>(null);
   const lastSeenTaskIdRef = React.useRef<string | null>(null);
 
-  const { timelineItems: fetchedTimelineItems, isLoading: isTimelineLoading } = useTaskTimelineItems({
+  const { activities, comments: fetchedComments, isLoading: isTimelineLoading } = useTaskTimelineItems(
+    activeTaskId,
+    commentEntityType,
+  );
+
+  const { comments, addComment, editComment, deleteComment, addReaction, removeReaction } = useOptimisticComments({
     taskId: activeTaskId,
-    paths,
+    parentType: commentEntityType,
+    initialComments: fetchedComments,
   });
 
   const [appendedByTaskId, setAppendedByTaskId] = React.useState<Record<string, TaskPage.TimelineItemType[]>>({});
@@ -222,6 +232,7 @@ export function useTaskSlideInProps(opts: {
       const createdBy = backendTask?.creator ? People.parsePersonForTurboUi(paths, backendTask.creator) : null;
 
       const appended = activeTaskId === taskId ? (appendedByTaskId[taskId] ?? []) : [];
+      const fetchedTimelineItems = activeTaskId === taskId ? prepareTaskTimelineItems(paths, activities, comments) : [];
       const currentTimelineItems =
         activeTaskId === taskId ? sortTimelineItems([...fetchedTimelineItems, ...appended]) : [];
       const currentTimelineIsLoading = activeTaskId === taskId ? isTimelineLoading : true;
@@ -267,23 +278,47 @@ export function useTaskSlideInProps(opts: {
         currentUser: parsedCurrentUser,
         timelineItems: currentTimelineItems,
         timelineIsLoading: currentTimelineIsLoading,
-        canComment: false,
+        canComment: canComment,
 
-        onAddComment: () => {},
-        onEditComment: () => {},
-        onDeleteComment: () => {},
+        onAddComment: (content) => {
+          if (activeTaskId !== taskId) return;
+          addComment(content);
+        },
+        onEditComment: (commentId, content) => {
+          if (activeTaskId !== taskId) return;
+          editComment(commentId, content);
+        },
+        onDeleteComment: (commentId) => {
+          if (activeTaskId !== taskId) return;
+          deleteComment(commentId);
+        },
+        onAddReaction: (commentId, emoji) => {
+          if (activeTaskId !== taskId) return;
+          addReaction(commentId, emoji);
+        },
+        onRemoveReaction: (commentId, reactionId) => {
+          if (activeTaskId !== taskId) return;
+          removeReaction(commentId, reactionId);
+        },
       };
     },
     [
       activeTaskId,
       appendedByTaskId,
       backendTasks,
+      canComment,
       canEdit,
-      fetchedTimelineItems,
+      addComment,
+      addReaction,
+      deleteComment,
+      editComment,
       hideMilestone,
       isTimelineLoading,
+      removeReaction,
       parsedCurrentUser,
       paths,
+      activities,
+      comments,
     ],
   );
 

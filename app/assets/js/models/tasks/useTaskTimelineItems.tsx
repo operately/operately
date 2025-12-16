@@ -4,13 +4,8 @@ import Api from "@/api";
 import { TASK_ACTIVITY_TYPES } from "@/models/activities/feed";
 import * as Activities from "@/models/activities";
 import * as Comments from "@/models/comments";
-import { Paths } from "@/routes/paths";
 
-import { prepareTaskTimelineItems } from "./prepareTaskTimelineItems";
-
-export function useTaskTimelineItems(opts: { taskId: string | null; paths: Paths }) {
-  const { taskId, paths } = opts;
-
+export function useTaskTimelineItems(taskId: string | null, commentEntityType: Comments.CommentParentType) {
   const [activities, setActivities] = React.useState<Activities.Activity[]>([]);
   const [comments, setComments] = React.useState<Comments.Comment[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -34,7 +29,7 @@ export function useTaskTimelineItems(opts: { taskId: string | null; paths: Paths
       }).then((d) => d.activities ?? []),
       Api.getComments({
         entityId: taskId,
-        entityType: "project_task",
+        entityType: commentEntityType,
       }).then((d) => d.comments ?? []),
     ])
       .then(([nextActivities, nextComments]) => {
@@ -55,9 +50,7 @@ export function useTaskTimelineItems(opts: { taskId: string | null; paths: Paths
     return () => {
       canceled = true;
     };
-  }, [taskId]);
+  }, [taskId, commentEntityType]);
 
-  const timelineItems = React.useMemo(() => prepareTaskTimelineItems(paths, activities, comments), [paths, activities, comments]);
-
-  return { timelineItems, isLoading };
+  return { activities, comments, isLoading };
 }
