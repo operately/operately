@@ -301,7 +301,7 @@ function InlineTextField(
               }
               placeholder={state.placeholder}
               readOnly={state.readonly}
-              style={{ display: "block" }}
+              style={{ display: "block", minWidth: "500px" }}
             />
           ) : (
             <input
