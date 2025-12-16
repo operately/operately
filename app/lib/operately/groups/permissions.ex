@@ -51,7 +51,6 @@ defmodule Operately.Groups.Permissions do
   def can_create_task(access_level), do: access_level >= Binding.edit_access()
   def can_comment_on_tasks(access_level), do: access_level >= Binding.comment_access()
   def can_comment_on_discussions(access_level), do: access_level >= Binding.comment_access()
-  def can_comment_on_tasks(access_level), do: access_level >= Binding.comment_access()
   def can_edit(access_level), do: access_level >= Binding.edit_access()
   def can_edit_discussions(access_level), do: access_level >= Binding.edit_access()
   def can_edit_members_permissions(access_level), do: access_level >= Binding.full_access()

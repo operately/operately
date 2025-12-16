@@ -42,7 +42,7 @@ export function useOptimisticComments(opts: {
       try {
         const res = await Api.createComment({
           entityId: taskId,
-          entityType: "project_task",
+          entityType: parentType,
           content: JSON.stringify(content),
         });
 
@@ -63,7 +63,7 @@ export function useOptimisticComments(opts: {
         showErrorToast("Error", "Failed to add comment.");
       }
     },
-    [me, onAfterMutation, taskId],
+    [parentType, me, onAfterMutation, taskId],
   );
 
   const editComment = React.useCallback(

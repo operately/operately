@@ -167,6 +167,7 @@ function Page() {
     paths,
     currentUser,
     tasks,
+    commentEntityType: "project_task",
     canEdit: milestone.permissions.canEditTask,
     canComment: milestone.permissions.canComment,
     onTaskAssigneeChange: updateTaskAssignee,

@@ -17,6 +17,8 @@ export function useTaskSlideInProps(opts: {
   currentUser: ApiPerson | null;
   tasks: TaskBoard.Task[];
 
+  commentEntityType: "project_task" | "space_task";
+
   canEdit: boolean;
   canComment: boolean;
   hideMilestone?: boolean;
@@ -26,18 +28,21 @@ export function useTaskSlideInProps(opts: {
   onTaskStatusChange: (taskId: string, newStatus: TaskBoard.Status | null) => any;
   onTaskDescriptionChange: (taskId: string, content: any) => Promise<boolean>;
 }) {
-  const { backendTasks, paths, currentUser, tasks, canEdit, canComment, hideMilestone } = opts;
+  const { backendTasks, paths, currentUser, tasks, canEdit, canComment, hideMilestone, commentEntityType } = opts;
 
   const parsedCurrentUser = currentUser ? (People.parsePersonForTurboUi(paths, currentUser) ?? undefined) : undefined;
 
   const [activeTaskId, setActiveTaskId] = React.useState<string | null>(null);
   const lastSeenTaskIdRef = React.useRef<string | null>(null);
 
-  const { activities, comments: fetchedComments, isLoading: isTimelineLoading } = useTaskTimelineItems(activeTaskId);
+  const { activities, comments: fetchedComments, isLoading: isTimelineLoading } = useTaskTimelineItems(
+    activeTaskId,
+    commentEntityType,
+  );
 
   const { comments, addComment, editComment, deleteComment, addReaction, removeReaction } = useOptimisticComments({
     taskId: activeTaskId,
-    parentType: "project_task",
+    parentType: commentEntityType,
     initialComments: fetchedComments,
   });
 

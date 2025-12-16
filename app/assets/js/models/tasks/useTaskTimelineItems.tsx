@@ -5,7 +5,7 @@ import { TASK_ACTIVITY_TYPES } from "@/models/activities/feed";
 import * as Activities from "@/models/activities";
 import * as Comments from "@/models/comments";
 
-export function useTaskTimelineItems(taskId: string | null ) {
+export function useTaskTimelineItems(taskId: string | null, commentEntityType: Comments.CommentParentType) {
   const [activities, setActivities] = React.useState<Activities.Activity[]>([]);
   const [comments, setComments] = React.useState<Comments.Comment[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -29,7 +29,7 @@ export function useTaskTimelineItems(taskId: string | null ) {
       }).then((d) => d.activities ?? []),
       Api.getComments({
         entityId: taskId,
-        entityType: "project_task",
+        entityType: commentEntityType,
       }).then((d) => d.comments ?? []),
     ])
       .then(([nextActivities, nextComments]) => {
@@ -50,7 +50,7 @@ export function useTaskTimelineItems(taskId: string | null ) {
     return () => {
       canceled = true;
     };
-  }, [taskId]);
+  }, [taskId, commentEntityType]);
 
   return { activities, comments, isLoading };
 }

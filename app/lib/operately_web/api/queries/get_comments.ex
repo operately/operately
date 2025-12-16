@@ -56,6 +56,18 @@ defmodule OperatelyWeb.Api.Queries.GetComments do
     |> load_notifications(person, action: "project_task_commented")
   end
 
+  defp load(id, :space_task, person) do
+    from(c in Comment,
+      join: task in Operately.Tasks.Task, on: c.entity_id == task.id,
+      join: space in assoc(task, :space), as: :space,
+      where: task.id == ^id and c.entity_type == :space_task
+    )
+    |> preload_resources()
+    |> filter_by_view_access(person.id, named_binding: :space)
+    |> Repo.all()
+    |> load_notifications(person, action: "space_task_commented")
+  end
+
   defp load(id, :goal_update, person) do
     from(c in Comment, join: u in Operately.Goals.Update, on: c.entity_id == u.id, as: :update, where: u.id == ^id)
     |> preload_resources()
