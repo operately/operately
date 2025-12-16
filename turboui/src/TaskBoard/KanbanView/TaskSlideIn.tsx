@@ -27,7 +27,7 @@ export function TaskSlideIn({
 
   return (
     <SlideIn isOpen={isOpen} onClose={onClose} width="70%" testId="task-slide-in">
-      <div className="py-4 px-6">
+      <div className="pt-4 pb-20 px-6">
         <TaskContent {...state} />
       </div>
     </SlideIn>

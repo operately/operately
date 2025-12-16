@@ -1706,7 +1706,10 @@ export interface Space {
 export interface SpacePermissions {
   canCreateGoal: boolean;
   canCreateProject: boolean;
+  canCreateResourceHub: boolean;
+  canCreateTask: boolean;
   canCommentOnDiscussions: boolean;
+  canCommentOnTasks: boolean;
   canEdit: boolean;
   canEditDiscussions: boolean;
   canEditMembersPermissions: boolean;
