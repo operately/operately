@@ -368,6 +368,7 @@ defmodule OperatelyWeb.Api.Types do
     :message,
     :milestone,
     :project_task,
+    :space_task,
     :resource_hub_document,
     :resource_hub_file,
     :resource_hub_link,
