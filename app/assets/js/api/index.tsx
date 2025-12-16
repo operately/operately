@@ -3011,7 +3011,7 @@ export interface AddReactionInput {
 }
 
 export interface AddReactionResult {
-  reaction?: Reaction | null;
+  reaction: Reaction;
 }
 
 export interface AddSpaceMembersInput {

@@ -21,7 +21,6 @@ import { assertPresent } from "@/utils/assertions";
 import { projectPageCacheKey } from "../ProjectPage";
 import { parseSpaceForTurboUI } from "@/models/spaces";
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { useComments } from "./useComments";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useMilestones } from "@/models/milestones/useMilestones";
 import { useSubscription } from "@/models/subscriptions";
@@ -143,13 +142,18 @@ function Page() {
 
   const {
     comments,
-    handleAddComment,
-    handleEditComment,
-    handleDeleteComment,
-    handleAddReaction,
-    handleRemoveReaction,
-  } = useComments(task, data.comments, () => {
-    PageCache.invalidate(pageCacheKey(task.id));
+    addComment,
+    editComment,
+    deleteComment,
+    addReaction,
+    removeReaction,
+  } = Comments.useOptimisticComments({
+    taskId: task.id,
+    parentType: "project_task",
+    initialComments: data.comments,
+    onAfterMutation: () => {
+      PageCache.invalidate(pageCacheKey(task.id));
+    },
   });
 
   const timelineItems = useMemo(() => Tasks.prepareTaskTimelineItems(paths, activities, comments), [paths, activities, comments]);
@@ -209,11 +213,11 @@ function Page() {
     // Timeline/Comments
     currentUser: People.parsePersonForTurboUi(paths, currentUser)!,
     timelineItems,
-    onAddComment: handleAddComment,
-    onEditComment: handleEditComment,
-    onDeleteComment: handleDeleteComment,
-    onAddReaction: handleAddReaction,
-    onRemoveReaction: handleRemoveReaction,
+    onAddComment: addComment,
+    onEditComment: editComment,
+    onDeleteComment: deleteComment,
+    onAddReaction: addReaction,
+    onRemoveReaction: removeReaction,
     canComment: Boolean(task.permissions.canComment),
 
     // Milestone selection
