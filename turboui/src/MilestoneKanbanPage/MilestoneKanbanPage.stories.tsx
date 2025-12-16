@@ -16,6 +16,9 @@ import {
 import { usePersonFieldSearch } from "../utils/storybook/usePersonFieldSearch";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { useMockSubscriptions } from "../utils/storybook/subscriptions";
+import type { TimelineItem as TimelineItemType } from "../Timeline/types";
+import { Reactions } from "../Reactions";
+import { createActiveTaskTimeline, createComment, currentUser as mockCurrentUser } from "../TaskPage/mockData";
 
 import type { KanbanState, KanbanStatus, TaskSlideInContext } from "../TaskBoard/KanbanView/types";
 
@@ -119,10 +122,29 @@ const toTaskPageMilestone = (milestone: Types.Milestone): TaskPage.Milestone => 
   link: milestone.link,
 });
 
+const commentCountFromTimeline = (items: TimelineItemType[]) => items.filter((i) => i.type === "comment").length;
+
+const extractCommentMessage = (content: any) => {
+  if (!content) return "";
+  if (typeof content === "string") return content;
+  if (typeof content?.message !== "undefined") return content.message;
+
+  return content;
+};
+
 const buildTaskPageProps = (
   taskId: string,
   ctx: TaskSlideInContext,
   subscriptions: TaskPage.Props["subscriptions"],
+  opts: {
+    timelineItems: TimelineItemType[];
+    currentUser: NonNullable<TaskPage.ContentProps["currentUser"]>;
+    onAddComment: (taskId: string, content: any) => void;
+    onEditComment: (taskId: string, commentId: string, content: any) => void;
+    onDeleteComment: (taskId: string, commentId: string) => void;
+    onAddReaction: (taskId: string, commentId: string, emoji: string) => void;
+    onRemoveReaction: (taskId: string, commentId: string, reactionId: string) => void;
+  },
 ): TaskPage.ContentProps | null => {
   const task = ctx.tasks.find((t) => t.id === taskId);
   if (!task) return null;
@@ -165,14 +187,14 @@ const buildTaskPageProps = (
     assigneePersonSearch: ctx.assigneePersonSearch!,
     richTextHandlers: ctx.richTextHandlers!,
     canEdit: true,
-    timelineItems: [],
-    currentUser: undefined,
-    canComment: false,
-    onAddComment: () => {},
-    onEditComment: () => {},
-    onDeleteComment: () => {},
-    onAddReaction: undefined,
-    onRemoveReaction: undefined,
+    timelineItems: opts.timelineItems,
+    currentUser: opts.currentUser,
+    canComment: true,
+    onAddComment: (content) => opts.onAddComment(taskId, content),
+    onEditComment: (commentId, content) => opts.onEditComment(taskId, commentId, content),
+    onDeleteComment: (commentId) => opts.onDeleteComment(taskId, commentId),
+    onAddReaction: (commentId, emoji) => opts.onAddReaction(taskId, commentId, emoji),
+    onRemoveReaction: (commentId, reactionId) => opts.onRemoveReaction(taskId, commentId, reactionId),
     timelineFilters: undefined,
   };
 };
@@ -187,11 +209,115 @@ export const Default: Story = {
       description: normalizeRichText(task.description),
     }));
     const [tasks, setTasks] = useState<Types.Task[]>(initialTasks);
+    const [timelineByTaskId, setTimelineByTaskId] = useState<Record<string, TimelineItemType[]>>(() => {
+      return initialTasks.reduce<Record<string, TimelineItemType[]>>((acc, task) => {
+        acc[task.id] = createActiveTaskTimeline();
+        return acc;
+      }, {});
+    });
     const [kanbanState, setKanbanState] = useState<KanbanState>(
       buildKanbanStateFromTasks(initialTasks, STATUSES),
     );
     const assigneeSearch = usePersonFieldSearch(Object.values(mockPeople));
     const subscriptions = useMockSubscriptions({ entityType: "project_task" });
+    const currentUser = mockCurrentUser;
+
+    const updateTimeline = React.useCallback(
+      (taskId: string, updater: (prev: TimelineItemType[]) => TimelineItemType[]) => {
+        setTimelineByTaskId((prev) => {
+          const nextItems = updater(prev[taskId] ?? []);
+          setTasks((prevTasks) => {
+            const count = commentCountFromTimeline(nextItems);
+            return prevTasks.map((t) =>
+              t.id === taskId ? { ...t, hasComments: count > 0, commentCount: count } : t,
+            );
+          });
+          return { ...prev, [taskId]: nextItems };
+        });
+      },
+      [setTasks],
+    );
+
+    const onAddComment = React.useCallback(
+      (taskId: string, content: any) => {
+        const message = extractCommentMessage(content);
+        updateTimeline(taskId, (prev) => [...prev, createComment(currentUser, message, 0)]);
+      },
+      [currentUser, updateTimeline],
+    );
+
+    const onEditComment = React.useCallback(
+      (taskId: string, commentId: string, content: any) => {
+        const message = extractCommentMessage(content);
+        updateTimeline(taskId, (prev) =>
+          prev.map((item) => {
+            if (item.type !== "comment") return item;
+            if (item.value.id !== commentId) return item;
+            return {
+              ...item,
+              value: {
+                ...item.value,
+                content: JSON.stringify({ message }),
+              },
+            };
+          }),
+        );
+      },
+      [updateTimeline],
+    );
+
+    const onDeleteComment = React.useCallback(
+      (taskId: string, commentId: string) => {
+        updateTimeline(taskId, (prev) => prev.filter((i) => i.type !== "comment" || i.value.id !== commentId));
+      },
+      [updateTimeline],
+    );
+
+    const onAddReaction = React.useCallback(
+      (taskId: string, commentId: string, emoji: string) => {
+        updateTimeline(taskId, (prev) =>
+          prev.map((item) => {
+            if (item.type !== "comment") return item;
+            if (item.value.id !== commentId) return item;
+
+            const reaction: Reactions.Reaction = {
+              id: `reaction-${Date.now()}-${Math.random()}`,
+              emoji,
+              person: currentUser,
+            };
+
+            return {
+              ...item,
+              value: {
+                ...item.value,
+                reactions: [...(item.value.reactions ?? []), reaction],
+              },
+            };
+          }),
+        );
+      },
+      [currentUser, updateTimeline],
+    );
+
+    const onRemoveReaction = React.useCallback(
+      (taskId: string, commentId: string, reactionId: string) => {
+        updateTimeline(taskId, (prev) =>
+          prev.map((item) => {
+            if (item.type !== "comment") return item;
+            if (item.value.id !== commentId) return item;
+
+            return {
+              ...item,
+              value: {
+                ...item.value,
+                reactions: (item.value.reactions ?? []).filter((r) => r.id !== reactionId),
+              },
+            };
+          }),
+        );
+      },
+      [updateTimeline],
+    );
 
     return (
       <div className="min-h-[800px] py-[4.5rem] px-2 bg-surface-base">
@@ -206,7 +332,17 @@ export const Default: Story = {
           tasks={tasks}
           statuses={STATUSES}
           kanbanState={kanbanState}
-          getTaskPageProps={(taskId, ctx) => buildTaskPageProps(taskId, ctx, subscriptions)}
+          getTaskPageProps={(taskId, ctx) =>
+            buildTaskPageProps(taskId, ctx, subscriptions, {
+              timelineItems: timelineByTaskId[taskId] ?? [],
+              currentUser,
+              onAddComment,
+              onEditComment,
+              onDeleteComment,
+              onAddReaction,
+              onRemoveReaction,
+            })
+          }
           assigneePersonSearch={assigneeSearch}
           richTextHandlers={createMockRichEditorHandlers()}
           onTaskNameChange={(taskId, name) =>
@@ -319,11 +455,115 @@ export const WithStatusManagement: Story = {
     }));
     const [statuses, setStatuses] = useState<Types.Status[]>(STATUSES);
     const [tasks, setTasks] = useState<Types.Task[]>(initialTasks);
+    const [timelineByTaskId, setTimelineByTaskId] = useState<Record<string, TimelineItemType[]>>(() => {
+      return initialTasks.reduce<Record<string, TimelineItemType[]>>((acc, task) => {
+        acc[task.id] = createActiveTaskTimeline();
+        return acc;
+      }, {});
+    });
     const [kanbanState, setKanbanState] = useState<KanbanState>(
       buildKanbanStateFromTasks(initialTasks, statuses),
     );
     const assigneeSearch = usePersonFieldSearch(Object.values(mockPeople));
     const subscriptions = useMockSubscriptions({ entityType: "project_task" });
+    const currentUser = mockCurrentUser;
+
+    const updateTimeline = React.useCallback(
+      (taskId: string, updater: (prev: TimelineItemType[]) => TimelineItemType[]) => {
+        setTimelineByTaskId((prev) => {
+          const nextItems = updater(prev[taskId] ?? []);
+          setTasks((prevTasks) => {
+            const count = commentCountFromTimeline(nextItems);
+            return prevTasks.map((t) =>
+              t.id === taskId ? { ...t, hasComments: count > 0, commentCount: count } : t,
+            );
+          });
+          return { ...prev, [taskId]: nextItems };
+        });
+      },
+      [setTasks],
+    );
+
+    const onAddComment = React.useCallback(
+      (taskId: string, content: any) => {
+        const message = extractCommentMessage(content);
+        updateTimeline(taskId, (prev) => [...prev, createComment(currentUser, message, 0)]);
+      },
+      [currentUser, updateTimeline],
+    );
+
+    const onEditComment = React.useCallback(
+      (taskId: string, commentId: string, content: any) => {
+        const message = extractCommentMessage(content);
+        updateTimeline(taskId, (prev) =>
+          prev.map((item) => {
+            if (item.type !== "comment") return item;
+            if (item.value.id !== commentId) return item;
+            return {
+              ...item,
+              value: {
+                ...item.value,
+                content: JSON.stringify({ message }),
+              },
+            };
+          }),
+        );
+      },
+      [updateTimeline],
+    );
+
+    const onDeleteComment = React.useCallback(
+      (taskId: string, commentId: string) => {
+        updateTimeline(taskId, (prev) => prev.filter((i) => i.type !== "comment" || i.value.id !== commentId));
+      },
+      [updateTimeline],
+    );
+
+    const onAddReaction = React.useCallback(
+      (taskId: string, commentId: string, emoji: string) => {
+        updateTimeline(taskId, (prev) =>
+          prev.map((item) => {
+            if (item.type !== "comment") return item;
+            if (item.value.id !== commentId) return item;
+
+            const reaction: Reactions.Reaction = {
+              id: `reaction-${Date.now()}-${Math.random()}`,
+              emoji,
+              person: currentUser,
+            };
+
+            return {
+              ...item,
+              value: {
+                ...item.value,
+                reactions: [...(item.value.reactions ?? []), reaction],
+              },
+            };
+          }),
+        );
+      },
+      [currentUser, updateTimeline],
+    );
+
+    const onRemoveReaction = React.useCallback(
+      (taskId: string, commentId: string, reactionId: string) => {
+        updateTimeline(taskId, (prev) =>
+          prev.map((item) => {
+            if (item.type !== "comment") return item;
+            if (item.value.id !== commentId) return item;
+
+            return {
+              ...item,
+              value: {
+                ...item.value,
+                reactions: (item.value.reactions ?? []).filter((r) => r.id !== reactionId),
+              },
+            };
+          }),
+        );
+      },
+      [updateTimeline],
+    );
 
     return (
       <div className="min-h-[800px] py-[4.5rem] px-2 bg-surface-base">
@@ -338,7 +578,17 @@ export const WithStatusManagement: Story = {
           tasks={tasks}
           statuses={statuses}
           kanbanState={kanbanState}
-          getTaskPageProps={(taskId, ctx) => buildTaskPageProps(taskId, ctx, subscriptions)}
+          getTaskPageProps={(taskId, ctx) =>
+            buildTaskPageProps(taskId, ctx, subscriptions, {
+              timelineItems: timelineByTaskId[taskId] ?? [],
+              currentUser,
+              onAddComment,
+              onEditComment,
+              onDeleteComment,
+              onAddReaction,
+              onRemoveReaction,
+            })
+          }
           assigneePersonSearch={assigneeSearch}
           richTextHandlers={createMockRichEditorHandlers()}
           canManageStatuses
