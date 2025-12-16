@@ -94,6 +94,35 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
       end
     end
 
+    tabletest @space_table do
+      test "space task - if caller has levels company=#{@test.company}, space=#{@test.space} on the space, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx, @test.company, @test.space)
+
+        task =
+          Operately.TasksFixtures.task_fixture(%{
+            creator_id: ctx.creator.id,
+            space_id: space.id,
+            project_id: nil,
+            milestone_id: nil
+          })
+
+        assert {code, res} =
+                 mutation(ctx.conn, :create_comment, %{
+                   entity_id: Paths.task_id(task),
+                   entity_type: "space_task",
+                   content: RichText.rich_text("Content", :as_string)
+                 })
+
+        assert code == @test.expected
+
+        case @test.expected do
+          200 -> assert count_comments(task.id, :space_task) == 1
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "The requested resource was not found"
+        end
+      end
+    end
+
     tabletest @project_table do
       test "project retrospective - if caller has levels company=#{@test.company}, space=#{@test.space}, project=#{@test.project} on the project, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx)
