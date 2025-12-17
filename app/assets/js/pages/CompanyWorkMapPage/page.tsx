@@ -24,6 +24,7 @@ export function Page() {
       spaceSearch={spaceSearch}
       addingEnabled={true}
       addItemDefaultSpace={company.generalSpace && Spaces.parseSpaceForTurboUI(paths, company.generalSpace)}
+      columnOptions={{ hideProject: true }}
     />
   );
 }

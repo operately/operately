@@ -25,7 +25,7 @@ export function ProjectCell({ item, hide }: Props) {
 
   return (
     <td className="py-2 px-2 md:px-4 hidden lg:table-cell">
-      <div className="max-w-[140px] min-w-[90px] w-fit overflow-hidden text-ellipsis whitespace-nowrap">
+      <div className="min-w-[90px] w-fit overflow-hidden text-ellipsis whitespace-nowrap">
         <BlackLink to={item.projectPath} className={className} underline="hover">
           {item.project.name}
         </BlackLink>

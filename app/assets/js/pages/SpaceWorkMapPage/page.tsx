@@ -23,7 +23,7 @@ export function Page() {
       items={convertToWorkMapItems(paths, items)}
       addItem={addItem}
       spaceSearch={spaceSearch}
-      columnOptions={{ hideSpace: true }}
+      columnOptions={{ hideSpace: true, hideProject: true }}
       navigation={[{ to: paths.spacePath(space.id), label: space.name }]}
       hideCompanyAccessInQuickAdd={hideCompanyAccessInQuickAdd}
       addItemDefaultSpace={{
