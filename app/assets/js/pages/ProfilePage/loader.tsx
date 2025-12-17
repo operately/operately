@@ -32,6 +32,7 @@ export async function loader({ params, refreshCache = false }): Promise<LoaderRe
           championId: personId,
           contributorId: personId,
           includeReviewer: true,
+          includeTasks: true,
         }).then((d) => d.workMap),
         reviewerWorkMap: WorkMap.getFlatWorkMap({
           reviewerId: personId,

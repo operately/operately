@@ -1,6 +1,14 @@
 import React from "react";
 
-import { IconCircleCheck, IconClipboardCheck, IconEye, IconLogs, IconPlayerPause, IconUserCircle } from "../icons";
+import {
+  IconCircleCheck,
+  IconClipboardCheck,
+  IconEye,
+  IconChecklist,
+  IconLogs,
+  IconPlayerPause,
+  IconUserCircle,
+} from "../icons";
 
 import { PageNew } from "../Page";
 import { Tabs, useTabs } from "../Tabs";
@@ -33,24 +41,32 @@ export namespace ProfilePage {
     viewer: Person | null;
   }
 
-  export type TabOptions = "assigned" | "reviewing" | "completed" | "activity" | "about";
+  export type TabOptions = "tasks" | "assigned" | "reviewing" | "paused" | "completed" | "activity" | "about";
 }
 
 export function ProfilePage(props: ProfilePage.Props) {
   const { tabs, items } = useTabsWithItems(props.workMap, props.reviewerWorkMap);
+
+  const workMapColumnOptions = React.useMemo(() => {
+    if (tabs.active === "tasks") {
+      return { hideOwner: true, hideProgress: true };
+    }
+
+    return { hideOwner: true };
+  }, [tabs.active]);
 
   return (
     <PageNew title={props.title} size="fullwidth">
       <PageHeader {...props} />
       <Tabs tabs={tabs} />
 
-      {["assigned", "reviewing", "paused", "completed"].includes(tabs.active) && (
+      {["tasks", "assigned", "reviewing", "paused", "completed"].includes(tabs.active) && (
         <WorkMapTable
           items={items[tabs.active]}
           tab={["completed", "paused"].includes(tabs.active) ? (tabs.active as WorkMap.Filter) : "all"}
           profileUser={props.person}
           viewer={props.viewer || undefined}
-          columnOptions={{ hideOwner: true }}
+          columnOptions={workMapColumnOptions}
         />
       )}
       {tabs.active === "activity" && <ActivityFeed {...props} />}
@@ -60,11 +76,17 @@ export function ProfilePage(props: ProfilePage.Props) {
 }
 
 function useTabsWithItems(workMap: WorkMap.Item[], reviewerWorkMap: WorkMap.Item[]) {
-  const { assigned, reviewing, paused, completed } = React.useMemo(() => {
-    const assignedData = processPersonalItems(workMap);
-    const reviewerData = processPersonalItems(reviewerWorkMap);
+  const { tasks, assigned, reviewing, paused, completed } = React.useMemo(() => {
+    const tasks = workMap.filter((i) => i.type === "task");
+
+    const workMapWithoutTasks = workMap.filter((i) => i.type !== "task");
+    const reviewerWorkMapWithoutTasks = reviewerWorkMap.filter((i) => i.type !== "task");
+
+    const assignedData = processPersonalItems(workMapWithoutTasks);
+    const reviewerData = processPersonalItems(reviewerWorkMapWithoutTasks);
 
     return {
+      tasks: sortItemsByDueDate(tasks.map((t) => ({ ...t, children: [] }))),
       assigned: sortItemsByDueDate(assignedData.ongoingItems),
       reviewing: sortItemsByDueDate(reviewerData.ongoingItems),
       paused: sortItemsByDueDate([...assignedData.pausedItems, ...reviewerData.pausedItems]),
@@ -72,7 +94,8 @@ function useTabsWithItems(workMap: WorkMap.Item[], reviewerWorkMap: WorkMap.Item
     };
   }, [workMap, reviewerWorkMap]);
 
-  const tabs = useTabs("assigned", [
+  const tabs = useTabs("tasks", [
+    { id: "tasks", label: "Tasks", icon: <IconChecklist size={14} />, count: tasks.length },
     { id: "assigned", label: "Assigned", icon: <IconClipboardCheck size={14} />, count: assigned.length },
     { id: "reviewing", label: "Reviewing", icon: <IconEye size={14} />, count: reviewing.length },
     { id: "paused", label: "Paused", icon: <IconPlayerPause size={14} />, count: paused.length },
@@ -83,7 +106,7 @@ function useTabsWithItems(workMap: WorkMap.Item[], reviewerWorkMap: WorkMap.Item
 
   return {
     tabs,
-    items: { assigned, reviewing, paused, completed },
+    items: { tasks, assigned, reviewing, paused, completed },
   };
 }
 
