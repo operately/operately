@@ -3,7 +3,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
   Defines structs for work map items (goals and projects)
   """
 
-  @callback status(item :: any()) :: :on_track | :achieved | :missed | :paused | :caution | :off_track | :pending | :outdated | String.t() | Operately.Tasks.Status.t() | nil
+  @callback status(item :: any()) :: :on_track | :achieved | :missed | :paused | :caution | :off_track | :pending | :outdated | Operately.Tasks.Status.t() | nil
   @callback state(item :: any()) :: :active | :paused | :closed
   @callback next_step(item :: any()) :: String.t()
   @callback progress_percentage(item :: any()) :: float()
