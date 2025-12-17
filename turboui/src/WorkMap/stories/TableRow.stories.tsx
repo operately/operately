@@ -10,13 +10,14 @@ import * as Steps from "../tests/steps";
 
 type TableRowProps = React.ComponentProps<typeof TableRow>;
 
-function StoryTableRow({ isExpanded: _ignoredIsExpanded, setItemExpanded: _ignoredSetItemExpanded, ...rest }: TableRowProps) {
+function StoryTableRow({
+  isExpanded: _ignoredIsExpanded,
+  setItemExpanded: _ignoredSetItemExpanded,
+  ...rest
+}: TableRowProps) {
   const [expandedState, setExpandedState] = React.useState<Record<string, boolean>>({});
 
-  const getItemExpanded = React.useCallback<IsItemExpandedFn>(
-    (id) => expandedState[id] !== false,
-    [expandedState],
-  );
+  const getItemExpanded = React.useCallback<IsItemExpandedFn>((id) => expandedState[id] !== false, [expandedState]);
 
   const updateItemExpanded = React.useCallback<SetItemExpandedFn>((id, valueOrUpdater) => {
     setExpandedState((previousState) => {
@@ -43,7 +44,7 @@ function StoryTableRow({ isExpanded: _ignoredIsExpanded, setItemExpanded: _ignor
     });
   }, []);
 
-  return <TableRow {...rest} isExpanded={getItemExpanded} setItemExpanded={updateItemExpanded} />;
+  return <TableRow {...rest}  isExpanded={getItemExpanded} setItemExpanded={updateItemExpanded} />;
 }
 
 const meta = {
@@ -101,7 +102,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   render: (args) => (
     <>
-      <TableHeader tab={args.tab} />
+      <TableHeader tab={args.tab} columnOptions={args.columnOptions} />
       <tbody>
         <StoryTableRow {...args} />
       </tbody>
@@ -112,6 +113,9 @@ export const Default: Story = {
     level: 0,
     isLast: false,
     tab: "all",
+    columnOptions: {
+      hideProject: true,
+    },
   },
 };
 
@@ -121,7 +125,7 @@ export const Default: Story = {
 export const CompletedGoal: Story = {
   render: (args) => (
     <>
-      <TableHeader tab={args.tab} />
+      <TableHeader tab={args.tab} columnOptions={args.columnOptions} />
       <tbody>
         <StoryTableRow {...args} />
       </tbody>
@@ -132,6 +136,9 @@ export const CompletedGoal: Story = {
     level: 0,
     isLast: false,
     tab: "completed",
+    columnOptions: {
+      hideProject: true,
+    },
   },
   play: async ({ canvasElement, step }) => {
     await Steps.assertItemHasLineThrough(canvasElement, step, "Launch new marketing campaign");
@@ -146,7 +153,7 @@ export const CompletedGoal: Story = {
 export const AchievedGoal: Story = {
   render: (args) => (
     <>
-      <TableHeader tab={args.tab} />
+      <TableHeader tab={args.tab} columnOptions={args.columnOptions} />
       <tbody>
         <StoryTableRow {...args} />
       </tbody>
@@ -157,6 +164,9 @@ export const AchievedGoal: Story = {
     level: 0,
     isLast: false,
     tab: "completed",
+    columnOptions: {
+      hideProject: true,
+    },
   },
   play: async ({ canvasElement, step }) => {
     await Steps.assertItemHasLineThrough(canvasElement, step, "Increase website traffic by 50%");
@@ -171,7 +181,7 @@ export const AchievedGoal: Story = {
 export const MissedGoal: Story = {
   render: (args) => (
     <>
-      <TableHeader tab={args.tab} />
+      <TableHeader tab={args.tab} columnOptions={args.columnOptions} />
       <tbody>
         <StoryTableRow {...args} />
       </tbody>
@@ -182,6 +192,9 @@ export const MissedGoal: Story = {
     level: 0,
     isLast: false,
     tab: "completed",
+    columnOptions: {
+      hideProject: true,
+    },
   },
   play: async ({ canvasElement, step }) => {
     await Steps.assertItemHasLineThrough(canvasElement, step, "Launch mobile app by Q1");
@@ -196,7 +209,7 @@ export const MissedGoal: Story = {
 export const PausedGoal: Story = {
   render: (args) => (
     <>
-      <TableHeader tab={args.tab} />
+      <TableHeader tab={args.tab} columnOptions={args.columnOptions} />
       <tbody>
         <StoryTableRow {...args} />
       </tbody>
@@ -207,6 +220,9 @@ export const PausedGoal: Story = {
     level: 0,
     isLast: false,
     tab: "all",
+    columnOptions: {
+      hideProject: true,
+    },
   },
   play: async ({ canvasElement, step }) => {
     await Steps.refuteItemHasLineThrough(canvasElement, step, "Expand to international markets");
@@ -223,7 +239,7 @@ export const PausedGoal: Story = {
 export const CautionGoal: Story = {
   render: (args) => (
     <>
-      <TableHeader tab={args.tab} />
+      <TableHeader tab={args.tab} columnOptions={args.columnOptions} />
       <tbody>
         <StoryTableRow {...args} />
       </tbody>
@@ -234,6 +250,9 @@ export const CautionGoal: Story = {
     level: 0,
     isLast: false,
     tab: "all",
+    columnOptions: {
+      hideProject: true,
+    },
   },
   play: async ({ canvasElement, step }) => {
     await Steps.refuteItemHasLineThrough(canvasElement, step, "Implement new CRM system");
@@ -250,7 +269,7 @@ export const CautionGoal: Story = {
 export const IssueGoal: Story = {
   render: (args) => (
     <>
-      <TableHeader tab={args.tab} />
+      <TableHeader tab={args.tab} columnOptions={args.columnOptions} />
       <tbody>
         <StoryTableRow {...args} />
       </tbody>
@@ -261,6 +280,9 @@ export const IssueGoal: Story = {
     level: 0,
     isLast: false,
     tab: "all",
+    columnOptions: {
+      hideProject: true,
+    },
   },
   play: async ({ canvasElement, step }) => {
     await Steps.refuteItemHasLineThrough(canvasElement, step, "Migrate legacy systems");
@@ -277,7 +299,7 @@ export const IssueGoal: Story = {
 export const OutdatedGoal: Story = {
   render: (args) => (
     <>
-      <TableHeader tab={args.tab} />
+      <TableHeader tab={args.tab} columnOptions={args.columnOptions} />
       <tbody>
         <StoryTableRow
           {...args}
@@ -295,6 +317,9 @@ export const OutdatedGoal: Story = {
     level: 0,
     isLast: false,
     tab: "all",
+    columnOptions: {
+      hideProject: true,
+    },
   },
   play: async ({ canvasElement, step }) => {
     await Steps.refuteItemHasLineThrough(canvasElement, step, "Update legacy documentation");
@@ -311,7 +336,7 @@ export const OutdatedGoal: Story = {
 export const OnTrackProject: Story = {
   render: (args) => (
     <>
-      <TableHeader tab={args.tab} />
+      <TableHeader tab={args.tab} columnOptions={args.columnOptions} />
       <tbody>
         <StoryTableRow {...args} />
       </tbody>
@@ -322,6 +347,9 @@ export const OnTrackProject: Story = {
     level: 0,
     isLast: false,
     tab: "all",
+    columnOptions: {
+      hideProject: true,
+    },
   },
   play: async ({ canvasElement, step }) => {
     await Steps.refuteItemHasLineThrough(canvasElement, step, "Redesign product dashboard");
@@ -338,7 +366,7 @@ export const OnTrackProject: Story = {
 export const CompletedProject: Story = {
   render: (args) => (
     <>
-      <TableHeader tab={args.tab} />
+      <TableHeader tab={args.tab} columnOptions={args.columnOptions} />
       <tbody>
         <TableRow {...args} />
       </tbody>
@@ -349,6 +377,9 @@ export const CompletedProject: Story = {
     level: 0,
     isLast: false,
     tab: "completed",
+    columnOptions: {
+      hideProject: true,
+    },
   },
   play: async ({ canvasElement, step }) => {
     await Steps.assertItemHasLineThrough(canvasElement, step, "Update documentation");
@@ -363,7 +394,7 @@ export const CompletedProject: Story = {
 export const MultipleRows: Story = {
   render: (args) => (
     <>
-      <TableHeader tab={args.tab} />
+      <TableHeader tab={args.tab} columnOptions={args.columnOptions} />
       <tbody>
         <StoryTableRow
           {...args}
@@ -405,6 +436,9 @@ export const MultipleRows: Story = {
     item: data.mockGoalOnTrack, // These args won't be used directly by the render function
     level: 0, // but are required by the StoryAnnotations type
     isLast: false,
+    columnOptions: {
+      hideProject: true,
+    },
   },
 };
 
@@ -438,7 +472,7 @@ export const PrivacyLevels: Story = {
       <div className="pb-4">
         <h3 className="text-lg font-medium mb-4">Privacy Indicator Variants</h3>
         <table className="w-full border-collapse">
-          <TableHeader tab={args.tab} />
+          <TableHeader tab={args.tab} columnOptions={args.columnOptions} />
           <tbody>
             <StoryTableRow {...args} item={publicItem} isLast={false} />
             <StoryTableRow {...args} item={internalItem} isLast={false} />
@@ -472,6 +506,9 @@ export const PrivacyLevels: Story = {
     tab: "all",
     item: data.mockGoalOnTrack, // This is required by the Story type, but our render function overrides it
     isLast: false, // Also required by the Story type
+    columnOptions: {
+      hideProject: true,
+    },
   },
   parameters: {
     docs: {

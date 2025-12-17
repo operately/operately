@@ -166,17 +166,13 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
         |> where([assignee: a], a.person_id == ^person.id)
         |> Operately.Tasks.Task.scope_company(company_id)
         |> where([task: t], fragment("COALESCE((?->>'closed')::boolean, false) = false", t.task_status))
-        |> preload(^task_preloads())
+        |> preload([:project, :space, :project_space, :company, :assigned_people])
         |> Repo.all()
 
       true ->
         Logger.warning("Invalid person for tasks query: #{inspect(person)}")
         []
     end
-  end
-
-  defp task_preloads do
-    [:project, :space, :project_space, :company, :assigned_people]
   end
 
   defp build_work_map(goals, projects, args) do
