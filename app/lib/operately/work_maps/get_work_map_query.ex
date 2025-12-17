@@ -66,11 +66,13 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     try do
       goals_task = Task.async(fn -> get_goals(person, args) end)
       projects_task = Task.async(fn -> get_projects(person, args) end)
+      tasks_task = Task.async(fn -> get_tasks(person, args) end)
 
       goals = Task.await(goals_task)
       projects = Task.await(projects_task)
+      tasks = Task.await(tasks_task)
 
-      flat_items = build_flat_work_map(goals, projects, args)
+      flat_items = build_flat_work_map(goals, projects, tasks, args)
 
       {:ok, flat_items}
     rescue
@@ -88,12 +90,12 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     end
   end
 
-  defp build_flat_work_map(goals, projects, args) do
+  defp build_flat_work_map(goals, projects, tasks, args) do
     filters = extract_filters(args)
     contributor_id = Map.get(filters, :contributor_id)
 
     items =
-      (goals ++ projects)
+      (goals ++ projects ++ tasks)
       |> Enum.map(fn item ->
         item
         |> WorkMapItem.build_item([], include_assignees?(args) || needs_contributor?(args))
@@ -143,6 +145,40 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     end
   end
 
+  defp get_tasks(person, args) do
+    include_tasks = include_tasks?(args)
+    company_id = args.company_id
+
+    cond do
+      not include_tasks ->
+        []
+
+      is_nil(company_id) ->
+        Logger.warning("WorkMap get_tasks called with nil company_id")
+        []
+
+      match?(:system, person) ->
+        []
+
+      match?(%Operately.People.Person{}, person) ->
+        from(t in Operately.Tasks.Task, as: :task)
+        |> join(:inner, [task: t], a in assoc(t, :assignees), as: :assignee)
+        |> where([assignee: a], a.person_id == ^person.id)
+        |> Operately.Tasks.Task.scope_company(company_id)
+        |> where([task: t], fragment("COALESCE((?->>'closed')::boolean, false) = false", t.task_status))
+        |> preload(^task_preloads())
+        |> Repo.all()
+
+      true ->
+        Logger.warning("Invalid person for tasks query: #{inspect(person)}")
+        []
+    end
+  end
+
+  defp task_preloads do
+    [:project, :space, :project_space, :company, :assigned_people]
+  end
+
   defp build_work_map(goals, projects, args) do
     filters = extract_filters(args)
     contributor_id = Map.get(filters, :contributor_id)
@@ -173,6 +209,8 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   #
 
   defp include_assignees?(args), do: Map.get(args, :include_assignees, false)
+
+  defp include_tasks?(args), do: Map.get(args, :include_tasks, false)
 
   defp include_reviewer?(args), do: Map.get(args, :include_reviewer, false)
 
