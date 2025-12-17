@@ -7,6 +7,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.WorkMaps.WorkMapItem do
       parent_id: item.parent_id,
       name: item.name,
       status: item.status,
+      task_status: OperatelyWeb.Api.Serializer.serialize(item.task_status),
       state: item.state,
       progress: item.progress,
       type: item.type,

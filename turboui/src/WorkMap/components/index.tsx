@@ -8,6 +8,7 @@ import { IconChevronRight } from "../../icons";
 import { BlackLink } from "../../Link";
 import { PageNew } from "../../Page";
 import { SpaceField } from "../../SpaceField";
+import type { StatusSelector } from "../../StatusSelector";
 import { useWorkMapTab } from "../hooks/useWorkMapTab";
 import { AddItemModal } from "./AddItemModal";
 import { WorkMapNavigation } from "./WorkMapNavigation";
@@ -129,6 +130,7 @@ export namespace WorkMap {
     parentId: string | null;
     name: string;
     status: ItemStatus;
+    taskStatus: StatusSelector.StatusOption | null;
     progress: number;
     project: { id: string; name: string } | null;
     projectPath: string | null;

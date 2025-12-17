@@ -59,7 +59,7 @@ export function TableRow(props: Props) {
           addItem={props.addItem}
           hideCompanyAccess={props.hideCompanyAccessInQuickAdd}
         />
-        <StatusCell status={item.status} hide={columnOptions?.hideStatus} />
+        <StatusCell item={item} hide={columnOptions?.hideStatus} />
         <ProgressCell
           progress={item.progress}
           status={item.status}
