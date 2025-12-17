@@ -3,7 +3,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
   Defines structs for work map items (goals and projects)
   """
 
-  @callback status(item :: any()) :: :on_track | :achieved | :missed | :paused | :caution | :off_track | :pending | :outdated
+  @callback status(item :: any()) :: :on_track | :achieved | :missed | :paused | :caution | :off_track | :pending | :outdated | String.t()
   @callback state(item :: any()) :: :active | :paused | :closed
   @callback next_step(item :: any()) :: String.t()
   @callback progress_percentage(item :: any()) :: float()
@@ -11,6 +11,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
   alias Operately.Goals.Goal
   alias Operately.Projects.Project
   alias Operately.Tasks.Task
+  alias Operately.ContextualDates.Timeframe
 
   @typedoc """
   Type that represents a work map item (goal or project)
@@ -101,18 +102,18 @@ defmodule Operately.WorkMaps.WorkMapItem do
       id: task.id,
       parent_id: task.project_id,
       name: task.name,
-      status: task.status,
-      state: :active,
-      progress: 0.0,
+      status: Task.status(task),
+      state: Task.state(task),
+      progress: Task.progress_percentage(task),
       space: task.project_space || task.space,
       owner: owner,
       champion: owner,
       reviewer: nil,
-      next_step: "",
+      next_step: Task.next_step(task),
       is_new: false,
       children: children,
       completed_on: task.closed_at,
-      timeframe: nil,
+      timeframe: build_task_timeframe(task),
       type: :task,
       company: task.company,
       resource: task,
@@ -196,4 +197,9 @@ defmodule Operately.WorkMaps.WorkMapItem do
 
   defp access_level_or_no_access(nil), do: Operately.Access.Binding.no_access()
   defp access_level_or_no_access(binding), do: binding.access_level
+
+  defp build_task_timeframe(%Task{due_date: nil}), do: nil
+  defp build_task_timeframe(%Task{due_date: due_date}) do
+    %Timeframe{contextual_start_date: nil, contextual_end_date: due_date}
+  end
 end

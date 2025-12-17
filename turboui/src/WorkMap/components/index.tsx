@@ -102,9 +102,9 @@ export namespace WorkMap {
     "pending",
     "outdated",
   ] as const;
-  const ALLOWED_TYPES = ["goal", "project"] as const;
+  const ALLOWED_TYPES = ["goal", "project", "task"] as const;
 
-  type ItemStatus = (typeof ALLOWED_STATUSES)[number];
+  type ItemStatus = (typeof ALLOWED_STATUSES)[number] | string;
   type ItemType = (typeof ALLOWED_TYPES)[number];
 
   export interface Person {
