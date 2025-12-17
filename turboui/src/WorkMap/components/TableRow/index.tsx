@@ -8,6 +8,7 @@ import { DueDateCell } from "./DueDateCell";
 import { ItemNameCell } from "./ItemNameCell";
 import { NextStepCell } from "./NextStepCell";
 import { OwnerCell } from "./OwnerCell";
+import { ProjectCell } from "./ProjectCell";
 import { ProgressCell } from "./ProgressCell";
 import { RowContainer } from "./RowContainer";
 import { SpaceCell } from "./SpaceCell";
@@ -72,6 +73,7 @@ export function TableRow(props: Props) {
           hide={columnOptions?.hideDueDate}
         />
         <SpaceCell item={item} hide={columnOptions?.hideSpace} />
+        <ProjectCell item={item} hide={columnOptions?.hideProject} />
         <OwnerCell item={item} hide={columnOptions?.hideOwner} />
         {props.profileUser && <RoleCell item={item} hide={columnOptions?.hideRole} profileUser={props.profileUser} />}
         <NextStepCell

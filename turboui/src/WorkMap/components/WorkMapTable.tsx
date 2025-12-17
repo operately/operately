@@ -165,6 +165,9 @@ export function TableHeader({ tab, columnOptions = {}, viewer, profileUser }: He
         <HeaderCell hide={columnOptions.hideSpace} className="hidden lg:table-cell md:px-4">
           Space
         </HeaderCell>
+        <HeaderCell hide={columnOptions.hideProject} className="hidden lg:table-cell md:px-4">
+          Project
+        </HeaderCell>
         <HeaderCell hide={columnOptions.hideOwner} className="hidden xl:table-cell md:px-4">
           Champion
         </HeaderCell>
