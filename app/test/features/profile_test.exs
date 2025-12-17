@@ -37,6 +37,7 @@ defmodule Operately.Features.ProfileTest do
     |> Steps.given_goals_exist_for_person()
     |> Steps.given_projects_exist_for_person()
     |> Steps.visit_profile_page()
+    |> Steps.click_assigned_tab()
     |> Steps.assert_assinged_goals_and_projects_visible()
     |> Steps.refute_reviewing_goals_and_projects_visible()
   end
