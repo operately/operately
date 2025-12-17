@@ -130,6 +130,8 @@ export namespace WorkMap {
     name: string;
     status: ItemStatus;
     progress: number;
+    project: { id: string; name: string } | null;
+    projectPath: string | null;
     space: Space;
     spacePath: string;
     owner: Person | null;
@@ -159,6 +161,7 @@ export namespace WorkMap {
 
   export interface ColumnOptions {
     hideSpace?: boolean;
+    hideProject?: boolean;
     hideStatus?: boolean;
     hideProgress?: boolean;
     hideDueDate?: boolean;
