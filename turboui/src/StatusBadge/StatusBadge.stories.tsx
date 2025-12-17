@@ -2,6 +2,7 @@ import React from "react";
 import type { Meta, StoryObj } from '@storybook/react';
 import { StatusBadge } from './index';
 import { BadgeStatus } from './types';
+import type { StatusSelector } from "../StatusSelector";
 
 const meta = {
   title: 'Components/StatusBadge',
@@ -197,6 +198,69 @@ export const AllStatuses: Story = {
             ))}
           </div>
         </div>
+      </div>
+    );
+  },
+};
+
+/**
+ * `StatusBadge` can also render a `StatusSelector.StatusOption`.
+ *
+ * This is useful when you have custom status options (e.g. task statuses) and want to display them
+ * in a compact, badge-like format.
+ *
+ * The badge uses the same icon and 4-color system as `StatusSelector` (gray/blue/green/red), but
+ * with styling that matches the existing StatusBadge look.
+ */
+export const StatusOptions: Story = {
+  render: () => {
+    const options: StatusSelector.StatusOption[] = [
+      {
+        id: "status-gray",
+        label: "Not started",
+        icon: "circleDashed",
+        color: "gray",
+        index: 0,
+        value: "pending",
+        closed: false,
+      },
+      {
+        id: "status-blue",
+        label: "In progress",
+        icon: "circleDot",
+        color: "blue",
+        index: 1,
+        value: "in_progress",
+        closed: false,
+      },
+      {
+        id: "status-green",
+        label: "Done",
+        icon: "circleCheck",
+        color: "green",
+        index: 2,
+        value: "done",
+        closed: true,
+      },
+      {
+        id: "status-red",
+        label: "Canceled",
+        icon: "circleX",
+        color: "red",
+        index: 3,
+        value: "canceled",
+        closed: true,
+      },
+    ];
+
+    return (
+      <div className="flex flex-wrap gap-4" style={{ width: '500px' }}>
+        {options.map((option) => (
+          <div key={option.id} className="flex flex-col items-center">
+            <StatusBadge status={option} />
+            <span className="text-xs mt-1 text-gray-500">{option.value}</span>
+          </div>
+        ))}
       </div>
     );
   },
