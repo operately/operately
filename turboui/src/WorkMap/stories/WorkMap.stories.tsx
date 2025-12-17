@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { Page } from "../../Page";
 import WorkMap from "../components";
-import { closedParentWithOngoingChildren, mockItems, mockSingleItem } from "../tests/mockData";
+import { WorkMapTable } from "../components";
+import { closedParentWithOngoingChildren, mockItems, mockSingleItem, mockTasksTabItems } from "../tests/mockData";
 import * as Steps from "../tests/steps";
 
 /**
@@ -67,6 +68,30 @@ export const Default: Story = {
   },
   play: async ({ canvasElement, step }) => {
     await Steps.assertRowsNumber(canvasElement, step, 15);
+  },
+};
+
+/**
+ * Tasks view (as used in ProfilePage)
+ */
+export const TasksTab: Story = {
+  render: () => {
+    return (
+      <div className="py-4">
+        <Page title="Personal Tasks" size="fullwidth">
+          <WorkMapTable
+            items={mockTasksTabItems}
+            tab="all"
+            columnOptions={{ hideOwner: true, hideProgress: true, hideSpace: true }}
+            type="personal"
+          />
+        </Page>
+      </div>
+    );
+  },
+  args: {
+    title: "Personal Tasks",
+    items: [],
   },
 };
 
