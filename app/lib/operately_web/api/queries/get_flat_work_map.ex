@@ -13,6 +13,7 @@ defmodule OperatelyWeb.Api.Queries.GetFlatWorkMap do
     field? :only_completed, :boolean, null: true
     field? :include_assignees, :boolean, null: true
     field? :include_reviewer, :boolean, null: true
+    field? :include_tasks, :boolean, null: true
   end
 
   outputs do
@@ -33,7 +34,8 @@ defmodule OperatelyWeb.Api.Queries.GetFlatWorkMap do
         contributor_id: inputs[:contributor_id],
         only_completed: inputs[:only_completed] || false,
         include_assignees: inputs[:include_assignees] || false,
-        include_reviewer: inputs[:include_reviewer] || false
+        include_reviewer: inputs[:include_reviewer] || false,
+        include_tasks: inputs[:include_tasks] || false
       }, :flat)
 
     {:ok, %{work_map: Serializer.serialize(flat_work_map)}}

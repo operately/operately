@@ -253,4 +253,56 @@ defmodule OperatelyWeb.Api.Queries.GetFlatWorkMapTest do
       refute item.owner_path
     end
   end
+
+  describe "functionality - include_tasks" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_company_member(:assignee)
+      |> Factory.add_company_member(:other_person)
+      |> Factory.add_space_member(:assignee_space_member, :space, person: :assignee)
+      |> Factory.add_space_member(:other_space_member, :space, person: :other_person)
+      |> Factory.add_project(:project, :space)
+      |> Factory.add_project_milestone(:milestone, :project)
+      |> Factory.add_project_task(:open_task, :milestone)
+      |> Factory.add_task_assignee(:open_task_assignee, :open_task, :assignee)
+      |> Factory.create_space_task(:space_task, :space)
+      |> Factory.add_task_assignee(:space_task_assignee, :space_task, :assignee)
+      |> Factory.add_project_task(:closed_task, :milestone)
+      |> Factory.add_task_assignee(:closed_task_assignee, :closed_task, :assignee)
+      |> Factory.add_project_task(:other_assignee_task, :milestone)
+      |> Factory.add_task_assignee(:other_task_assignee, :other_assignee_task, :other_person)
+      |> then(fn ctx ->
+        {:ok, closed_task} = Operately.Tasks.update_task(ctx.closed_task, %{task_status: %{id: Ecto.UUID.generate(), label: "Done", color: :green, index: 0, value: "done", closed: true}})
+        Map.put(ctx, :closed_task, closed_task)
+      end)
+    end
+
+    test "does not include tasks by default", ctx do
+      ctx = Factory.log_in_person(ctx, :assignee)
+
+      assert {200, res} = query(ctx.conn, :get_flat_work_map, %{})
+      refute Enum.any?(res.work_map, fn item -> item.type == "task" end)
+    end
+
+    test "includes only open tasks assigned to the requester when include_tasks is true", ctx do
+      ctx = Factory.log_in_person(ctx, :assignee)
+
+      assert {200, res} = query(ctx.conn, :get_flat_work_map, %{include_tasks: true})
+
+      task_items = Enum.filter(res.work_map, fn item -> item.type == "task" end)
+      assert length(task_items) == 2
+
+      open_task = Enum.find(task_items, fn item -> item.id == Paths.task_id(ctx.open_task) end)
+      assert open_task
+      assert open_task.parent_id == ctx.project.id
+
+      space_task = Enum.find(task_items, fn item -> item.id == Paths.task_id(ctx.space_task) end)
+      assert space_task
+      assert is_nil(space_task.parent_id)
+
+      assert open_task.owner.id == Paths.person_id(ctx.assignee)
+    end
+  end
 end

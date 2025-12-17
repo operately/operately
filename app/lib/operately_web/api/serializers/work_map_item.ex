@@ -31,6 +31,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.WorkMaps.WorkMapItem do
     case item.type do
       :goal -> Paths.goal_id(item.resource)
       :project -> Paths.project_id(item.resource)
+      :task -> Paths.task_id(item.resource)
     end
   end
 
@@ -38,6 +39,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.WorkMaps.WorkMapItem do
     cond do
       item.type == :goal -> Paths.goal_path(item.company, item.resource)
       item.type == :project -> Paths.project_path(item.company, item.resource)
+      item.type == :task -> Paths.project_task_path(item.company, item.resource)
     end
   end
 
