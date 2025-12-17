@@ -38,6 +38,27 @@ function buildButtonClassNames(variant: ButtonVariantKey, readonly: boolean) {
   return readonly ? variantClasses.readonly : variantClasses.interactive;
 }
 
+function NoStatusButton({ size, readonly }: { size: StatusSelector.Size; readonly: boolean }) {
+  const { textSize, padding, iconSize } = BUTTON_SIZE_CONFIG[size];
+
+  const buttonClassName = classNames(
+    "inline-flex items-center gap-1.5 rounded-full border font-medium transition-all duration-100 whitespace-nowrap",
+    textSize,
+    padding,
+    buildButtonClassNames(undefined, readonly),
+    StatusSelector.STATUS_COLOR_MAP.gray.buttonColorClass,
+    "opacity-80",
+  );
+
+  return (
+    <div className={buttonClassName}>
+      <IconCircleDashed size={iconSize} className={classNames("flex-shrink-0", StatusSelector.STATUS_COLOR_MAP.gray.iconClass)} />
+      <span className="flex items-center leading-none">No status</span>
+      {!readonly && <IconChevronDown size={iconSize - 2} className="flex-shrink-0 opacity-60 flex items-center self-center" />}
+    </div>
+  );
+}
+
 type StatusButtonProps<T extends StatusSelector.StatusOption> = {
   option: T;
   size: StatusSelector.Size;
@@ -90,8 +111,8 @@ export function StatusSelector<T extends StatusSelector.StatusOption = StatusSel
   const itemRefs = React.useRef<(HTMLDivElement | null)[]>([]);
 
   const currentOption = React.useMemo(() => {
-    return status ?? statusOptions[0]!;
-  }, [status, statusOptions]);
+    return status ?? null;
+  }, [status]);
 
   const filteredStatusOptions = React.useMemo(() => {
     const normalizedQuery = searchTerm.trim().toLowerCase();
@@ -155,15 +176,21 @@ export function StatusSelector<T extends StatusSelector.StatusOption = StatusSel
     setSearchTerm("");
   };
 
-  const ActiveIcon = StatusSelector.STATUS_ICON_COMPONENTS[currentOption.icon];
-  const activeColorClasses = StatusSelector.STATUS_COLOR_MAP[currentOption.color];
-  const activeIconClass = classNames("flex items-center self-center", activeColorClasses.iconClass);
+  const ActiveIcon = currentOption ? StatusSelector.STATUS_ICON_COMPONENTS[currentOption.icon] : IconCircleDashed;
+  const activeColorClasses = currentOption
+    ? StatusSelector.STATUS_COLOR_MAP[currentOption.color]
+    : StatusSelector.STATUS_COLOR_MAP.gray;
+  const activeIconClass = classNames("flex items-center self-center", activeColorClasses.iconClass, !currentOption && "opacity-60");
 
   if (readonly) {
     return (
       <div data-test-id={testId}>
         {showFullBadge ? (
-          <StatusButton option={currentOption} size={size} readonly={true} />
+          currentOption ? (
+            <StatusButton option={currentOption} size={size} readonly={true} />
+          ) : (
+            <NoStatusButton size={size} readonly={true} />
+          )
         ) : (
           <div className={`inline-flex items-center justify-center h-6 ${containerSize}`}>
             <ActiveIcon size={iconSize} className={activeIconClass} />
@@ -177,7 +204,11 @@ export function StatusSelector<T extends StatusSelector.StatusOption = StatusSel
     <Popover.Root open={isOpen} onOpenChange={handleOpenChange}>
       <Popover.Trigger className="cursor-pointer" data-test-id={testId}>
         {showFullBadge ? (
-          <StatusButton option={currentOption} size={size} readonly={false} />
+          currentOption ? (
+            <StatusButton option={currentOption} size={size} readonly={false} />
+          ) : (
+            <NoStatusButton size={size} readonly={false} />
+          )
         ) : (
           <div className={`inline-flex items-center justify-center h-6 ${containerSize}`}>
             <ActiveIcon size={iconSize} className={activeIconClass} />
@@ -208,7 +239,7 @@ export function StatusSelector<T extends StatusSelector.StatusOption = StatusSel
 
             <div className="overflow-y-auto pt-0.5 pb-0.5" style={{ maxHeight: 210 }}>
               {filteredStatusOptions.map((option, index) => {
-                const isCurrentStatus = option.value === currentOption.value;
+                const isCurrentStatus = Boolean(currentOption && option.value === currentOption.value);
                 const isSelected = index === selectedIndex;
                 const OptionIcon = StatusSelector.STATUS_ICON_COMPONENTS[option.icon];
                 const optionColor = StatusSelector.STATUS_COLOR_MAP[option.color];
@@ -297,11 +328,12 @@ export namespace StatusSelector {
     buttonVariant?: StatusButtonVariant;
     buttonIcon?: StatusIconName;
     legacy?: boolean;
+    isNew?: boolean;
   }
 
   export interface Props<T extends StatusOption = StatusOption> {
     statusOptions: ReadonlyArray<T>;
-    status: T;
+    status: T | null;
     onChange: (nextStatus: T) => void;
     size?: Size;
     readonly?: boolean;
