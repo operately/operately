@@ -4,6 +4,7 @@ import React from "react";
 import { WorkMap } from "turboui";
 import { accessLevelAsNumber } from "../goals";
 import { parseContextualDate } from "../contextualDates";
+import { parseTaskStatusForTurboUi } from "../tasks";
 
 /**
  * Converts an API WorkMapItem to the TurboUI WorkMap.Item type
@@ -23,6 +24,7 @@ function convertToWorkMapItem(paths: Paths, item: WorkMapItem): WorkMap.Item {
       name: item.space.name,
       link: paths.spacePath(item.space.id),
     },
+    taskStatus: parseTaskStatusForTurboUi(item.taskStatus),
     timeframe: convertTimeframe(item.timeframe),
     children: item.children.map((c) => convertToWorkMapItem(paths, c)),
   };
@@ -74,6 +76,7 @@ export function useWorkMapItems(initialItems: WorkMapItem[] = []): [WorkMapItem[
       projectPath: null,
       parentId: props.parentId || null,
       state: "active",
+      taskStatus: null,
       status: "pending",
       progress: 0,
       owner: null,
@@ -117,6 +120,7 @@ export function useWorkMapItems(initialItems: WorkMapItem[] = []): [WorkMapItem[
       projectPath: null,
       parentId: props.parentId || null,
       state: "active",
+      taskStatus: null,
       status: "pending",
       progress: 0,
       owner: null,

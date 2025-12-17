@@ -2,6 +2,7 @@ import { createContextualDate } from "../../DateField/mockData";
 import { PrivacyIndicator } from "../../PrivacyIndicator";
 import { currentMonth, currentQuarter, currentYear } from "../../utils/timeframes";
 import WorkMap from "../components";
+import type { StatusSelector } from "../../StatusSelector";
 
 function genAvatar(id: string) {
   return `https://images.unsplash.com/${id}?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80`;
@@ -49,11 +50,130 @@ function withDefaults(item: any): WorkMap.Item {
     isNew: false,
     completedOn: null,
     nextStep: "",
+    taskStatus: null,
     privacy: "internal" as PrivacyIndicator.PrivacyLevels,
     ...item,
     children: (item.children || []).map(withDefaults),
   };
 }
+
+export const mockTaskStatusOptions = [
+  {
+    id: "status-gray",
+    label: "Not started",
+    icon: "circleDashed",
+    color: "gray",
+    index: 0,
+    value: "pending",
+    closed: false,
+  },
+  {
+    id: "status-blue",
+    label: "In progress",
+    icon: "circleDot",
+    color: "blue",
+    index: 1,
+    value: "in_progress",
+    closed: false,
+  },
+  {
+    id: "status-green",
+    label: "Done",
+    icon: "circleCheck",
+    color: "green",
+    index: 2,
+    value: "done",
+    closed: true,
+  },
+  {
+    id: "status-red",
+    label: "Canceled",
+    icon: "circleX",
+    color: "red",
+    index: 3,
+    value: "canceled",
+    closed: true,
+  },
+] as const satisfies StatusSelector.StatusOption[];
+
+export const mockTasksTabItems: WorkMap.Item[] = (() => {
+  const [notStarted, inProgress, done, canceled] = mockTaskStatusOptions;
+
+  const onboardingProject = { id: "project-onboarding", name: "Improve onboarding" };
+  const marketingProject = { id: "project-marketing", name: "Launch marketing site" };
+
+  return [
+    withDefaults({
+      id: "task-1",
+      parentId: onboardingProject.id,
+      type: "task",
+      name: "Write onboarding docs",
+      status: "pending",
+      taskStatus: notStarted,
+      progress: 0,
+      project: onboardingProject,
+      projectPath: "#",
+      space: { id: "space-product", name: "Product", link: "#" },
+      nextStep: "Draft structure",
+      timeframe: {
+        startDate: createContextualDate("2025-01-10T00:00:00.000Z", "day"),
+        endDate: createContextualDate("2025-01-20T00:00:00.000Z", "day"),
+      },
+    }),
+    withDefaults({
+      id: "task-2",
+      parentId: onboardingProject.id,
+      type: "task",
+      name: "Record walkthrough video",
+      status: "pending",
+      taskStatus: inProgress,
+      progress: 0,
+      project: onboardingProject,
+      projectPath: "#",
+      space: { id: "space-product", name: "Product", link: "#" },
+      nextStep: "Prepare script",
+      isNew: true,
+      timeframe: {
+        startDate: createContextualDate("2025-01-12T00:00:00.000Z", "day"),
+        endDate: createContextualDate("2025-01-28T00:00:00.000Z", "day"),
+      },
+    }),
+    withDefaults({
+      id: "task-3",
+      parentId: marketingProject.id,
+      type: "task",
+      name: "Finalize homepage copy",
+      status: "pending",
+      taskStatus: done,
+      progress: 0,
+      project: marketingProject,
+      projectPath: "#",
+      space: { id: "space-marketing", name: "Marketing", link: "#" },
+      nextStep: "Publish after review",
+      timeframe: {
+        startDate: createContextualDate("2025-02-01T00:00:00.000Z", "day"),
+        endDate: createContextualDate("2025-02-05T00:00:00.000Z", "day"),
+      },
+    }),
+    withDefaults({
+      id: "task-4",
+      parentId: marketingProject.id,
+      type: "task",
+      name: "Remove old landing page",
+      status: "pending",
+      taskStatus: canceled,
+      progress: 0,
+      project: marketingProject,
+      projectPath: "#",
+      space: { id: "space-marketing", name: "Marketing", link: "#" },
+      nextStep: "Confirm redirects",
+      timeframe: {
+        startDate: createContextualDate("2025-02-02T00:00:00.000Z", "day"),
+        endDate: createContextualDate("2025-02-10T00:00:00.000Z", "day"),
+      },
+    }),
+  ];
+})();
 
 export const mockSingleItem: WorkMap.Item = withDefaults({
   id: "goal-standalone",

@@ -3,7 +3,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
   Defines structs for work map items (goals and projects)
   """
 
-  @callback status(item :: any()) :: :on_track | :achieved | :missed | :paused | :caution | :off_track | :pending | :outdated | String.t()
+  @callback status(item :: any()) :: :on_track | :achieved | :missed | :paused | :caution | :off_track | :pending | :outdated | Operately.Tasks.Status.t() | nil
   @callback state(item :: any()) :: :active | :paused | :closed
   @callback next_step(item :: any()) :: String.t()
   @callback progress_percentage(item :: any()) :: float()
@@ -11,6 +11,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
   alias Operately.Goals.Goal
   alias Operately.Projects.Project
   alias Operately.Tasks.Task
+  alias Operately.Tasks.Status
   alias Operately.ContextualDates.Timeframe
 
   @typedoc """
@@ -20,7 +21,8 @@ defmodule Operately.WorkMaps.WorkMapItem do
           id: String.t(),
           parent_id: String.t() | nil,
           name: String.t(),
-          status: String.t(),
+          status: String.t() | nil,
+          task_status: Status.t() | nil,
           state: String.t(),
           progress: float(),
           space: map(),
@@ -45,6 +47,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
     :parent_id,
     :name,
     :status,
+    :task_status,
     :state,
     :progress,
     :space,
@@ -71,6 +74,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
       parent_id: goal.parent_goal_id,
       name: goal.name,
       status: Goal.status(goal),
+      task_status: nil,
       state: Goal.state(goal),
       progress: Goal.progress_percentage(goal),
       space: goal.group,
@@ -104,7 +108,8 @@ defmodule Operately.WorkMaps.WorkMapItem do
       id: task.id,
       parent_id: task.project_id,
       name: task.name,
-      status: Task.status(task),
+      status: nil,
+      task_status: Task.status(task),
       state: Task.state(task),
       progress: Task.progress_percentage(task),
       space: task.project_space || task.space,
@@ -131,6 +136,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
       parent_id: project.goal_id,
       name: project.name,
       status: Project.status(project),
+      task_status: nil,
       state: Project.state(project),
       progress: Project.progress_percentage(project),
       space: project.group,

@@ -122,13 +122,7 @@ defmodule Operately.Tasks.Task do
 
   @impl Operately.WorkMaps.WorkMapItem
   def status(task = %__MODULE__{}) do
-    cond do
-      task.task_status && task.task_status.label ->
-        task.task_status.label
-
-      true ->
-        "Pending"
-    end
+    task.task_status
   end
 
   @impl Operately.WorkMaps.WorkMapItem

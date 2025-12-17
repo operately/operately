@@ -1,6 +1,8 @@
 /**
  * Status values for the StatusBadge component
  */
+import type { StatusSelector } from "../StatusSelector";
+
 export type BadgeStatus = 
   // Progress states
   | 'on_track' 
@@ -13,11 +15,13 @@ export type BadgeStatus =
   | 'missed'
   | string;      // Allow custom status strings
 
+export type StatusBadgeStatus = BadgeStatus | StatusSelector.StatusOption;
+
 /**
  * Props for the StatusBadge component
  */
 export interface StatusBadgeProps {
-  status: BadgeStatus;
+  status: StatusBadgeStatus;
   hideIcon?: boolean; // Option to hide the status icon
   className?: string;
   style?: React.CSSProperties;
