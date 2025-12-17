@@ -48,6 +48,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
     :state,
     :progress,
     :space,
+    :project,
     :owner,
     :champion,
     :reviewer,
@@ -73,6 +74,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
       state: Goal.state(goal),
       progress: Goal.progress_percentage(goal),
       space: goal.group,
+      project: nil,
       owner: goal.champion,
       champion: goal.champion,
       reviewer: goal.reviewer,
@@ -106,6 +108,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
       state: Task.state(task),
       progress: Task.progress_percentage(task),
       space: task.project_space || task.space,
+      project: task.project,
       owner: owner,
       champion: owner,
       reviewer: nil,
@@ -117,7 +120,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
       type: :task,
       company: task.company,
       resource: task,
-      privacy: :internal,
+      privacy: nil,
       assignees: task.assigned_people
     }
   end
@@ -131,6 +134,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
       state: Project.state(project),
       progress: Project.progress_percentage(project),
       space: project.group,
+      project: nil,
       owner: project.champion,
       champion: project.champion,
       reviewer: project.reviewer,

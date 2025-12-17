@@ -52,6 +52,9 @@ export const Default: Story = {
     spaceSearch: mockSpaceSearch,
     addItem: mockAddItem,
     addItemDefaultSpace: mockSpaces[0]!,
+    columnOptions: {
+      hideProject: true,
+    },
   },
 };
 
@@ -63,6 +66,9 @@ export const SingleItem: Story = {
   args: {
     title: "Company Work Map",
     items: [mockSingleItem],
+    columnOptions: {
+      hideProject: true,
+    },
   },
 };
 
@@ -78,6 +84,9 @@ export const Empty: Story = {
     spaceSearch: mockSpaceSearch,
     addItem: mockAddItem,
     addItemDefaultSpace: mockSpaces[0]!,
+    columnOptions: {
+      hideProject: true,
+    },
   },
 };
 
@@ -91,5 +100,8 @@ export const ClosedParentWithOngoingChildren: Story = {
   args: {
     title: "Closed Parent with Ongoing Children",
     items: closedParentWithOngoingChildren,
+    columnOptions: {
+      hideProject: true,
+    },
   },
 };

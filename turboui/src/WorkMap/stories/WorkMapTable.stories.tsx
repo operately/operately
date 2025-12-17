@@ -32,6 +32,9 @@ export const Default: Story = {
   args: {
     items: mockItems,
     tab: "all",
+    columnOptions: {
+      hideProject: true,
+    },
   },
 };
 
@@ -39,6 +42,9 @@ export const GoalsOnly: Story = {
   args: {
     items: onlyGoals,
     tab: "goals",
+    columnOptions: {
+      hideProject: true,
+    },
   },
 };
 
@@ -46,6 +52,9 @@ export const ProjectsOnly: Story = {
   args: {
     items: onlyProjects,
     tab: "projects",
+    columnOptions: {
+      hideProject: true,
+    },
   },
 };
 
@@ -53,6 +62,9 @@ export const CompletedOnly: Story = {
   args: {
     items: onlyCompleted,
     tab: "completed",
+    columnOptions: {
+      hideProject: true,
+    },
   },
 };
 
@@ -61,6 +73,9 @@ export const CollapseGoal: Story = {
   args: {
     items: mockItems,
     tab: "all",
+    columnOptions: {
+      hideProject: true,
+    },
   },
   play: async ({ canvasElement, step }) => {
     const parentGoal = "Reduce onboarding time by 30%";
@@ -84,6 +99,9 @@ export const ToggleGoal: Story = {
   args: {
     items: mockItems,
     tab: "all",
+    columnOptions: {
+      hideProject: true,
+    },
   },
   play: async ({ canvasElement, step }) => {
     const parentGoal = "Acquire the first users of Operately outside Semaphore";
@@ -112,6 +130,9 @@ export const Indentation: Story = {
   args: {
     items: mockItems,
     tab: "all",
+    columnOptions: {
+      hideProject: true,
+    },
   },
   play: async ({ canvasElement, step }) => {
     await Steps.assertIndentation(canvasElement, step, "Improve customer onboarding experience", 0, "0px");
@@ -138,6 +159,7 @@ export const WithRoleColumn: Story = {
     },
     columnOptions: {
       hideOwner: true, // Hide Champion column to show Role instead
+      hideProject: true,
     },
   },
 };
@@ -151,6 +173,7 @@ export const WithMyRoleColumn: Story = {
     viewer: people.alex,
     columnOptions: {
       hideOwner: true, // Hide Champion column to show Role instead
+      hideProject: true,
     },
   },
 };

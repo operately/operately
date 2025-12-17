@@ -13,6 +13,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.WorkMaps.WorkMapItem do
       item_path: item_path(item),
       space: OperatelyWeb.Api.Serializer.serialize(item.space),
       space_path: Paths.space_work_map_path(item.company, item.space),
+      project: item.project && OperatelyWeb.Api.Serializer.serialize(item.project),
+      project_path: item.project && Paths.project_path(item.company, item.project),
       owner: OperatelyWeb.Api.Serializer.serialize(item.owner),
       owner_path: item.owner && Paths.person_path(item.company, item.owner),
       reviewer: OperatelyWeb.Api.Serializer.serialize(item.reviewer),
