@@ -142,12 +142,12 @@ defmodule Operately.Tasks.Task do
 
   @impl Operately.WorkMaps.WorkMapItem
   def next_step(_task = %__MODULE__{}) do
-    nil
+    ""
   end
 
   @impl Operately.WorkMaps.WorkMapItem
   def progress_percentage(_task = %__MODULE__{}) do
-    nil
+    0.0
   end
 
   #
