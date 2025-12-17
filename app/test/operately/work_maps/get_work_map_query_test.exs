@@ -44,6 +44,59 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
     end
   end
 
+  describe "functionality - execute/1 with include_tasks parameter" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
+      |> Factory.add_project_milestone(:milestone, :project)
+      |> Factory.add_company_member(:assignee)
+      |> Factory.add_company_member(:other_person)
+      |> Factory.add_project_task(:open_task, :milestone)
+      |> Factory.add_task_assignee(:open_task_assignee, :open_task, :assignee)
+      |> Factory.add_project_task(:closed_task, :milestone)
+      |> Factory.add_task_assignee(:closed_task_assignee, :closed_task, :assignee)
+      |> Factory.add_project_task(:other_assignee_task, :milestone)
+      |> Factory.add_task_assignee(:other_assignee_task_assignee, :other_assignee_task, :other_person)
+      |> then(fn ctx ->
+        {:ok, closed_task} = Operately.Tasks.update_task(ctx.closed_task, %{task_status: %{id: Ecto.UUID.generate(), label: "Done", color: :green, index: 0, value: "done", closed: true}})
+        Map.put(ctx, :closed_task, closed_task)
+      end)
+    end
+
+    test "does not include tasks by default", ctx do
+      {:ok, work_map} = GetWorkMapQuery.execute(ctx.assignee, %{company_id: ctx.company.id})
+
+      refute Enum.any?(work_map, fn item -> item.type == :task end)
+    end
+
+    test "does not include tasks when include_tasks is false", ctx do
+      {:ok, work_map} = GetWorkMapQuery.execute(ctx.assignee, %{company_id: ctx.company.id, include_tasks: false}, :flat)
+
+      refute Enum.any?(work_map, fn item -> item.type == :task end)
+    end
+
+    test "includes only open tasks assigned to requester when include_tasks is true", ctx do
+      {:ok, work_map} = GetWorkMapQuery.execute(ctx.assignee, %{company_id: ctx.company.id, include_tasks: true}, :flat)
+
+      items_by_id = index_work_map_by_id(work_map)
+
+      assert Map.has_key?(items_by_id, ctx.project.id)
+      assert Map.has_key?(items_by_id, ctx.open_task.id)
+
+      refute Map.has_key?(items_by_id, ctx.closed_task.id)
+      refute Map.has_key?(items_by_id, ctx.other_assignee_task.id)
+
+      project = Map.fetch!(items_by_id, ctx.project.id)
+      assert project.type == :project
+
+      open_task = Map.fetch!(items_by_id, ctx.open_task.id)
+      assert open_task.type == :task
+      assert open_task.parent_id == ctx.project.id
+    end
+  end
+
   describe "functionality - execute/1 with include_assignees parameter" do
     setup ctx do
       ctx
