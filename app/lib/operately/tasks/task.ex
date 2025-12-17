@@ -2,6 +2,8 @@ defmodule Operately.Tasks.Task do
   use Operately.Schema
   import Operately.Repo.RequestInfo, only: [request_info: 0]
 
+  @behaviour Operately.WorkMaps.WorkMapItem
+
   @type t :: %__MODULE__{
           id: Ecto.UUID.t() | nil,
           name: String.t() | nil,
@@ -116,6 +118,36 @@ defmodule Operately.Tasks.Task do
 
   def scope_milestone(query, milestone_id) do
     from t in query, where: t.milestone_id == ^milestone_id
+  end
+
+  @impl Operately.WorkMaps.WorkMapItem
+  def status(task = %__MODULE__{}) do
+    cond do
+      task.task_status && task.task_status.label ->
+        task.task_status.label
+
+      true ->
+        "Pending"
+    end
+  end
+
+  @impl Operately.WorkMaps.WorkMapItem
+  def state(task = %__MODULE__{}) do
+    cond do
+      task.closed_at -> :closed
+      task.task_status && task.task_status.closed -> :closed
+      true -> :active
+    end
+  end
+
+  @impl Operately.WorkMaps.WorkMapItem
+  def next_step(_task = %__MODULE__{}) do
+    nil
+  end
+
+  @impl Operately.WorkMaps.WorkMapItem
+  def progress_percentage(_task = %__MODULE__{}) do
+    nil
   end
 
   #

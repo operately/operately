@@ -2304,6 +2304,7 @@ export interface GetFlatWorkMapInput {
   onlyCompleted?: boolean | null;
   includeAssignees?: boolean | null;
   includeReviewer?: boolean | null;
+  includeTasks?: boolean | null;
 }
 
 export interface GetFlatWorkMapResult {
