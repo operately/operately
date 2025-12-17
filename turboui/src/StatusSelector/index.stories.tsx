@@ -138,16 +138,22 @@ const Component = (
     setStatus(next);
   }, [args.status, args.statusOptions]);
 
-  const currentStatus = status ?? args.statusOptions[0]!;
-
   return (
     <StatusSelector
       {...args}
       statusOptions={args.statusOptions}
-      status={currentStatus}
+      status={status}
       onChange={setStatus}
     />
   );
+};
+
+const NullStatusComponent = (args: {
+  statusOptions: ReadonlyArray<StatusSelector.StatusOption>;
+} & Partial<Omit<React.ComponentProps<typeof StatusSelector>, "statusOptions" | "status" | "onChange">>) => {
+  const [status, setStatus] = React.useState<StatusSelector.StatusOption | null>(null);
+
+  return <StatusSelector {...args} statusOptions={args.statusOptions} status={status} onChange={setStatus} />;
 };
 
 export const AllStates: Story = {
@@ -171,6 +177,11 @@ export const AllStates: Story = {
               <div>
                 <h3 className="text-sm font-bold mb-2">Full Badge - Success</h3>
                 <Component statusOptions={engineeringStatuses} status="shipped" showFullBadge={true} />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-bold mb-2">Full Badge - No Status</h3>
+                <NullStatusComponent statusOptions={engineeringStatuses} showFullBadge />
               </div>
             </div>
           </div>
@@ -229,8 +240,19 @@ export const AllStates: Story = {
                   statusOptions={engineeringStatuses}
                   status={ENGINEERING_IN_PROGRESS_STATUS}
                   onChange={() => undefined}
-                  showFullBadge
                   readonly
+                  showFullBadge
+                />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-bold mb-2">Read-Only - Full Badge - No Status</h3>
+                <StatusSelector
+                  statusOptions={engineeringStatuses}
+                  status={null}
+                  onChange={() => undefined}
+                  readonly
+                  showFullBadge
                 />
               </div>
 
@@ -241,7 +263,6 @@ export const AllStates: Story = {
                   status={ENGINEERING_SHIPPED_STATUS}
                   onChange={() => undefined}
                   showFullBadge
-                  readonly
                 />
               </div>
             </div>
