@@ -11,6 +11,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
   alias Operately.Goals.Goal
   alias Operately.Projects.Project
   alias Operately.Tasks.Task
+  alias Operately.ContextualDates.Timeframe
 
   @typedoc """
   Type that represents a work map item (goal or project)
@@ -112,7 +113,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
       is_new: false,
       children: children,
       completed_on: task.closed_at,
-      timeframe: nil,
+      timeframe: build_task_timeframe(task),
       type: :task,
       company: task.company,
       resource: task,
@@ -196,4 +197,9 @@ defmodule Operately.WorkMaps.WorkMapItem do
 
   defp access_level_or_no_access(nil), do: Operately.Access.Binding.no_access()
   defp access_level_or_no_access(binding), do: binding.access_level
+
+  defp build_task_timeframe(%Task{due_date: nil}), do: nil
+  defp build_task_timeframe(%Task{due_date: due_date}) do
+    %Timeframe{contextual_start_date: nil, contextual_end_date: due_date}
+  end
 end
