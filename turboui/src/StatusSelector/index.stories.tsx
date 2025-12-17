@@ -263,6 +263,7 @@ export const AllStates: Story = {
                   status={ENGINEERING_SHIPPED_STATUS}
                   onChange={() => undefined}
                   showFullBadge
+                  readonly
                 />
               </div>
             </div>

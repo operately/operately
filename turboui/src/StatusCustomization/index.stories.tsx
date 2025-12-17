@@ -120,16 +120,28 @@ const Playground = ({
         </PrimaryButton>
       </div>
 
-      <StatusCustomizationModal
-        isOpen={isModalOpen}
-        onClose={() => setModalOpen(false)}
-        statuses={workflowStatuses}
-        requireReplacement={requireReplacement}
-        onSave={(data) => {
-          setWorkflowStatuses(data.nextStatuses);
-          setModalOpen(false);
-        }}
-      />
+      {requireReplacement ? (
+        <StatusCustomizationModal
+          isOpen={isModalOpen}
+          onClose={() => setModalOpen(false)}
+          statuses={workflowStatuses}
+          requireReplacement={true}
+          onSave={(data) => {
+            setWorkflowStatuses(data.nextStatuses);
+            setModalOpen(false);
+          }}
+        />
+      ) : (
+        <StatusCustomizationModal
+          isOpen={isModalOpen}
+          onClose={() => setModalOpen(false)}
+          statuses={workflowStatuses}
+          onSave={(nextStatuses) => {
+            setWorkflowStatuses(nextStatuses);
+            setModalOpen(false);
+          }}
+        />
+      )}
     </div>
   );
 };

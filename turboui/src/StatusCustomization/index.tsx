@@ -9,26 +9,31 @@ import { StatusRow, applyStatusUpdate } from "./components/StatusRow";
 import { useDraftStatuses, useStatusSaving } from "./hooks";
 import { buildStatus } from "./utils";
 
-export interface StatusCustomizationModalProps {
+type BaseProps = {
   isOpen: boolean;
   onClose: () => void;
   statuses: ReadonlyArray<StatusSelector.StatusOption>;
-  requireReplacement?: boolean;
+  title?: string;
+};
+
+type RequireReplacementProps = BaseProps & {
+  requireReplacement: true;
   onSave: (data: {
     nextStatuses: StatusSelector.StatusOption[];
     deletedStatusReplacements: Record<string, string>;
   }) => void;
-  title?: string;
-}
+};
 
-export function StatusCustomizationModal({
-  isOpen,
-  onClose,
-  statuses,
-  requireReplacement = false,
-  onSave,
-  title = "Customize statuses",
-}: StatusCustomizationModalProps) {
+type NoReplacementProps = BaseProps & {
+  requireReplacement?: false | undefined;
+  onSave: (nextStatuses: StatusSelector.StatusOption[]) => void;
+};
+
+export type StatusCustomizationModalProps = RequireReplacementProps | NoReplacementProps;
+
+export function StatusCustomizationModal(props: StatusCustomizationModalProps) {
+  const { isOpen, onClose, statuses, title = "Customize statuses" } = props;
+
   const [draftStatuses, setDraftStatuses] = useDraftStatuses(statuses, isOpen);
   const [deletedStatuses, setDeletedStatuses] = React.useState<StatusSelector.StatusOption[]>([]);
   const [deletedStatusReplacements, setDeletedStatusReplacements] = React.useState<Record<string, string>>({});
@@ -40,13 +45,12 @@ export function StatusCustomizationModal({
     }
   }, [isOpen]);
 
-  const { sanitizedStatuses, showValidation, handleSave } = useStatusSaving(
+  const { sanitizedStatuses, showValidation, buildSavePayload } = useStatusSaving(
     draftStatuses,
     deletedStatuses,
     deletedStatusReplacements,
-    onSave,
     isOpen,
-    requireReplacement,
+    props.requireReplacement === true,
   );
 
   const fallbackReplacementOption = sanitizedStatuses[0];
@@ -66,7 +70,7 @@ export function StatusCustomizationModal({
       if (prev.length <= 1) return prev;
 
       const status = prev.find((s) => s.id === id);
-      if (requireReplacement && status && !status.isNew) {
+      if (props.requireReplacement === true && status && !status.isNew) {
         setDeletedStatuses((prevDeleted) => [...prevDeleted, status]);
         setDeletedStatusReplacements((prevReplacements) => {
           const next = { ...prevReplacements };
@@ -158,7 +162,7 @@ export function StatusCustomizationModal({
           Add status
         </button>
 
-        {requireReplacement && deletedStatuses.length > 0 && fallbackReplacementOption && (
+        {props.requireReplacement === true && deletedStatuses.length > 0 && fallbackReplacementOption && (
           <div className="pt-4 mt-4 border-t border-surface-outline">
             <h3 className="text-sm font-semibold text-content-base">Deleted statuses</h3>
             <p className="text-xs text-content-dimmed mt-1">
@@ -197,7 +201,19 @@ export function StatusCustomizationModal({
           <SecondaryButton type="button" onClick={onClose}>
             Cancel
           </SecondaryButton>
-          <PrimaryButton type="button" onClick={handleSave}>
+          <PrimaryButton
+            type="button"
+            onClick={() => {
+              const payload = buildSavePayload();
+              if (!payload) return;
+
+              if (props.requireReplacement === true) {
+                props.onSave(payload);
+              } else {
+                props.onSave(payload.nextStatuses);
+              }
+            }}
+          >
             Save changes
           </PrimaryButton>
         </div>

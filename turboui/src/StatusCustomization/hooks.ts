@@ -27,10 +27,6 @@ export function useStatusSaving(
   draftStatuses: ReadonlyArray<StatusSelector.StatusOption>,
   deletedStatuses: ReadonlyArray<StatusSelector.StatusOption>,
   deletedStatusReplacements: Record<string, string>,
-  onSave: (data: {
-    nextStatuses: StatusSelector.StatusOption[];
-    deletedStatusReplacements: Record<string, string>;
-  }) => void,
   isOpen: boolean,
   requireReplacement: boolean = false,
 ) {
@@ -62,10 +58,10 @@ export function useStatusSaving(
     });
   }, [requireReplacement, deletedStatuses, deletedStatusReplacements, nextStatusIds]);
 
-  const handleSave = () => {
+  const buildSavePayload = () => {
     if (hasEmptyLabel || deletedMissingReplacement) {
       setShowValidation(true);
-      return;
+      return null;
     }
 
     const replacementsToSave = requireReplacement
@@ -78,8 +74,8 @@ export function useStatusSaving(
         }, {})
       : {};
 
-    onSave({ nextStatuses: sanitizedStatuses, deletedStatusReplacements: replacementsToSave });
+    return { nextStatuses: sanitizedStatuses, deletedStatusReplacements: replacementsToSave };
   };
 
-  return { sanitizedStatuses, showValidation, handleSave };
+  return { sanitizedStatuses, showValidation, buildSavePayload };
 }
