@@ -100,7 +100,13 @@ const StatusPreview = ({ statuses }: { statuses: StatusSelector.StatusOption[] }
   );
 };
 
-const Playground = ({ initialStatuses }: { initialStatuses: StatusSelector.StatusOption[] }) => {
+const Playground = ({
+  initialStatuses,
+  requireReplacement,
+}: {
+  initialStatuses: StatusSelector.StatusOption[];
+  requireReplacement?: boolean;
+}) => {
   const [workflowStatuses, setWorkflowStatuses] = React.useState(initialStatuses);
   const [isModalOpen, setModalOpen] = React.useState(true);
 
@@ -118,8 +124,9 @@ const Playground = ({ initialStatuses }: { initialStatuses: StatusSelector.Statu
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
         statuses={workflowStatuses}
-        onSave={(next) => {
-          setWorkflowStatuses(next);
+        requireReplacement={requireReplacement}
+        onSave={(data) => {
+          setWorkflowStatuses(data.nextStatuses);
           setModalOpen(false);
         }}
       />
@@ -129,6 +136,10 @@ const Playground = ({ initialStatuses }: { initialStatuses: StatusSelector.Statu
 
 export const Default: Story = {
   render: () => <Playground initialStatuses={DEFAULT_STATUSES} />,
+};
+
+export const RequireReplacement: Story = {
+  render: () => <Playground initialStatuses={DEFAULT_STATUSES} requireReplacement={true} />,
 };
 
 export const EmptyWorkflow: Story = {
