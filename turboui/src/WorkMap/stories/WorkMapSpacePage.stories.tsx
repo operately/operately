@@ -32,7 +32,7 @@ type Story = StoryObj<typeof meta>;
  * Default view of the WorkMap with multiple items in a single space
  */
 export const Default: Story = {
-  render: (args) => <WorkMapPage {...args} columnOptions={{ hideSpace: true }} />,
+  render: (args) => <WorkMapPage {...args} columnOptions={{ hideSpace: true, hideProject: true }} />,
   args: {
     title: "Product Space Work Map",
     items: singleSpaceWorkMap,
@@ -43,7 +43,7 @@ export const Default: Story = {
  * WorkMap with a single item (no children)
  */
 export const SingleItem: Story = {
-  render: (args) => <WorkMapPage {...args} columnOptions={{ hideSpace: true }} />,
+  render: (args) => <WorkMapPage {...args} columnOptions={{ hideSpace: true, hideProject: true }} />,
   args: {
     title: "Space Work Map",
     items: [mockSingleItem],
@@ -54,7 +54,7 @@ export const SingleItem: Story = {
  * WorkMap with no items (empty state)
  */
 export const Empty: Story = {
-  render: (args) => <WorkMapPage {...args} columnOptions={{ hideSpace: true }} />,
+  render: (args) => <WorkMapPage {...args} columnOptions={{ hideSpace: true, hideProject: true }} />,
   args: {
     title: "Empty Space Work Map",
     items: [],
@@ -67,7 +67,7 @@ export const Empty: Story = {
  * because it has ongoing children, even though the parent itself is closed.
  */
 export const ClosedParentWithOngoingChildren: Story = {
-  render: (args) => <WorkMapPage {...args} columnOptions={{ hideSpace: true }} />,
+  render: (args) => <WorkMapPage {...args} columnOptions={{ hideSpace: true, hideProject: true }} />,
   args: {
     title: "Closed Parent with Ongoing Children",
     items: closedParentWithOngoingChildren,

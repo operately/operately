@@ -61,6 +61,9 @@ export const Default: Story = {
     spaceSearch: mockSpaceSearch,
     addItem: mockAddItem,
     addItemDefaultSpace: mockSpaces[0]!,
+    columnOptions: {
+      hideProject: true,
+    },
   },
   play: async ({ canvasElement, step }) => {
     await Steps.assertRowsNumber(canvasElement, step, 15);
@@ -82,6 +85,9 @@ export const SingleItem: Story = {
   args: {
     title: "Company Work Map",
     items: [mockSingleItem],
+    columnOptions: {
+      hideProject: true,
+    },
   },
   play: async ({ canvasElement, step }) => {
     await Steps.assertRowsNumber(canvasElement, step, 1);
@@ -109,6 +115,9 @@ export const Empty: Story = {
     spaceSearch: mockSpaceSearch,
     addItem: mockAddItem,
     addItemDefaultSpace: mockSpaces[0]!,
+    columnOptions: {
+      hideProject: true,
+    },
   },
   play: async ({ canvasElement, step }) => {
     await Steps.assertRowsNumber(canvasElement, step, 1);
@@ -131,6 +140,9 @@ export const GoalsTab: Story = {
   args: {
     title: "Company Work Map",
     items: mockItems,
+    columnOptions: {
+      hideProject: true,
+    },
   },
   play: async ({ canvasElement, step }) => {
     await Steps.assertRowsNumber(canvasElement, step, 14);
@@ -158,6 +170,9 @@ export const ProjectsTab: Story = {
   args: {
     title: "Company Work Map",
     items: mockItems,
+    columnOptions: {
+      hideProject: true,
+    },
   },
   play: async ({ canvasElement, step }) => {
     await Steps.assertRowsNumber(canvasElement, step, 14);
@@ -192,6 +207,9 @@ export const CompletedTab: Story = {
   args: {
     title: "Company Work Map",
     items: mockItems,
+    columnOptions: {
+      hideProject: true,
+    },
   },
   play: async ({ canvasElement, step }) => {
     await Steps.assertRowsNumber(canvasElement, step, 14);
@@ -223,6 +241,9 @@ export const ClosedParentWithOngoingChildren: Story = {
   args: {
     title: "Closed Parent with Ongoing Children",
     items: closedParentWithOngoingChildren,
+    columnOptions: {
+      hideProject: true,
+    },
   },
   play: async ({ canvasElement, step }) => {
     await Steps.selectTab(canvasElement, step, "goals");
