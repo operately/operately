@@ -10,6 +10,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
 
   alias Operately.Goals.Goal
   alias Operately.Projects.Project
+  alias Operately.Tasks.Task
 
   @typedoc """
   Type that represents a work map item (goal or project)
@@ -91,6 +92,33 @@ defmodule Operately.WorkMaps.WorkMapItem do
         item
       end
     end)
+  end
+
+  def build_item(task = %Task{}, children, _include_assignees) do
+    owner = List.first(task.assigned_people || [])
+
+    %__MODULE__{
+      id: task.id,
+      parent_id: task.project_id,
+      name: task.name,
+      status: task.status,
+      state: :active,
+      progress: 0.0,
+      space: task.project_space || task.space,
+      owner: owner,
+      champion: owner,
+      reviewer: nil,
+      next_step: "",
+      is_new: false,
+      children: children,
+      completed_on: task.closed_at,
+      timeframe: nil,
+      type: :task,
+      company: task.company,
+      resource: task,
+      privacy: :internal,
+      assignees: task.assigned_people
+    }
   end
 
   def build_item(project = %Project{}, children, include_assignees) do
