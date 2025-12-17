@@ -2076,6 +2076,8 @@ defmodule OperatelyWeb.Api.Types do
     field :progress, :float, null: false
     field :space, :space, null: false
     field :space_path, :string, null: false
+    field :project, :project, null: true
+    field :project_path, :string, null: true
     field :owner, :person, null: true
     field :owner_path, :string, null: true
     field :reviewer, :person, null: true

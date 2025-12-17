@@ -49,10 +49,10 @@ export function ProfilePage(props: ProfilePage.Props) {
 
   const workMapColumnOptions = React.useMemo(() => {
     if (tabs.active === "tasks") {
-      return { hideOwner: true, hideProgress: true };
+      return { hideOwner: true, hideProgress: true, hideSpace: true };
     }
 
-    return { hideOwner: true };
+    return { hideOwner: true, hideProject: true };
   }, [tabs.active]);
 
   return (
