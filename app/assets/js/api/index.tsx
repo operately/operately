@@ -1918,6 +1918,8 @@ export interface WorkMapItem {
   progress: number;
   space: Space;
   spacePath: string;
+  project: Project | null;
+  projectPath: string | null;
   owner: Person | null;
   ownerPath: string | null;
   reviewer: Person | null;
