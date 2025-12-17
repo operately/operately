@@ -2,7 +2,7 @@ import React from "react";
 import { match } from "ts-pattern";
 import WorkMap from "..";
 import { SecondaryButton } from "../../../Button";
-import { IconChevronDown, IconChevronRight, IconGoal, IconProject } from "../../../icons";
+import { IconChevronDown, IconChevronRight, IconGoal, IconProject, IconTask } from "../../../icons";
 import { BlackLink } from "../../../Link";
 import { PrivacyIndicator } from "../../../PrivacyIndicator";
 import { SpaceField } from "../../../SpaceField";
@@ -99,6 +99,7 @@ function Icon({ item }: { item: WorkMap.Item }) {
   return match(item.type)
     .with("goal", () => <IconGoal size={20} className="mr-2" />)
     .with("project", () => <IconProject size={20} className="mr-2" />)
+    .with("task", () => <IconTask size={20} className="mr-2 " />)
     .run();
 }
 
@@ -150,6 +151,7 @@ function ChevronIcon({ expanded, size }: { expanded: boolean; size: number }) {
 
 function PrivacyIndicatorWrapper({ item }: { item: WorkMap.Item }) {
   if (!item.privacy) return null;
+  if (item.type === "task") return null;
 
   return (
     <PrivacyIndicator
