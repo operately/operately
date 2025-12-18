@@ -84,8 +84,6 @@ function Page() {
   const currentUser = useMe();
 
   const showMilestoneKanbanLink = Boolean(company && Companies.hasFeature(company, "milestone-kanban"));
-  console.log(company);
-  console.log(showMilestoneKanbanLink);
 
   useAiSidebar({
     conversationContext: {

@@ -3,6 +3,7 @@ import { parseMilestonesForTurboUi } from "./index";
 describe("parseMilestonesForTurboUi", () => {
   const paths = {
     projectMilestonePath: (id: string) => `/milestones/${id}`,
+    projectMilestoneKanbanPath: (id: string) => `/milestones/${id}/kanban`,
   } as any;
 
   it("orders milestones according to ordering state", () => {
