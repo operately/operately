@@ -8,7 +8,6 @@ import FormattedTime from "../FormattedTime";
 import { MilestoneField } from "../MilestoneField";
 import { PersonField } from "../PersonField";
 import { durationHumanized, isOverdue } from "../utils/time";
-import { StatusSelector } from "../StatusSelector";
 import { SidebarNotificationSection, SidebarSection } from "../SidebarSection";
 
 export function Sidebar(props: TaskPage.ContentState) {
@@ -29,9 +28,6 @@ export function MobileSidebar(props: TaskPage.ContentState) {
   return (
     <div className="sm:hidden block mt-4">
       <div className="grid grid-cols-[auto_auto_1fr] gap-4 items-start">
-        <div>
-          <StatusMobile {...props} />
-        </div>
         <div>
           <DueDateMobile {...props} />
         </div>
@@ -107,26 +103,6 @@ function AssigneeMobile(props: TaskPage.ContentState) {
         emptyStateReadOnlyMessage="No assignee"
         size="small"
         showTitle={false}
-      />
-    </SidebarSection>
-  );
-}
-
-function StatusMobile(props: TaskPage.ContentState) {
-  const status = props.status ?? props.statusOptions?.[0] ?? null;
-
-  if (!status) return null;
-
-  return (
-    <SidebarSection title="Status">
-      <StatusSelector
-        statusOptions={props.statusOptions ?? []}
-        status={status}
-        onChange={props.onStatusChange}
-        size="sm"
-        readonly={!props.canEdit}
-        showFullBadge={true}
-        testId="task-status"
       />
     </SidebarSection>
   );

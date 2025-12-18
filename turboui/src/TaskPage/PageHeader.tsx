@@ -4,9 +4,11 @@ import { StatusSelector } from "../StatusSelector";
 import { TextField } from "../TextField";
 import { TaskCheckbox } from "./TaskCheckbox";
 import { findCompletedStatus } from "../TaskBoard/utils/status";
+import { useWindowSizeBiggerOrEqualTo } from "../utils/useWindowSizeBreakpoint";
 
 export function PageHeader({ statusOptions, ...props }: TaskPage.ContentState) {
   const completedStatus = findCompletedStatus(statusOptions || []);
+  const isLargeScreen = useWindowSizeBiggerOrEqualTo("sm");
 
   return (
     <div className="mt-4">
@@ -31,12 +33,12 @@ export function PageHeader({ statusOptions, ...props }: TaskPage.ContentState) {
           />
 
           {statusOptions?.length > 0 && (
-            <div className="shrink-0 mt-1">
+            <div className="shrink-0 sm:mt-1">
               <StatusSelector
                 statusOptions={statusOptions}
                 status={props.status ?? statusOptions[0]!}
                 onChange={(nextStatus) => props.onStatusChange(nextStatus)}
-                size="md"
+                size={isLargeScreen ? "md" : "sm"}
                 readonly={!props.canEdit}
                 showFullBadge={true}
               />
