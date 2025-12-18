@@ -35,6 +35,7 @@ export interface Milestone {
   commentCount?: number;
   status: "pending" | "done";
   link?: string;
+  kanbanLink?: string;
   tasksOrderingState?: string[];
   completedAt?: Date | null;
 }
@@ -152,6 +153,7 @@ export interface TaskBoardProps {
   tasks: Task[];
   milestones?: Milestone[];
   searchableMilestones: Milestone[]; // Filtered milestones for task creation modal
+  showMilestoneKanbanLink?: boolean;
   onTaskCreate: (task: NewTaskPayload) => void;
   onMilestoneCreate?: (milestone: NewMilestonePayload) => void;
   onTaskAssigneeChange: (taskId: string, assignee: Person | null) => void;
