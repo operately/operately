@@ -11,23 +11,24 @@ interface ZeroStateProps {
   addItem: WorkMap.AddNewItemFn;
   addItemDefaultSpace: SpaceField.Space;
   hideCompanyAccess?: boolean;
+  zeroStateMessage?: string;
 }
 
 export function ZeroState(props: ZeroStateProps) {
   if (props.addingEnabled) {
     return <ZeroStateCanAdd {...props} />;
   } else {
-    return <ZeroStateCannotAdd />;
+    return <ZeroStateCannotAdd message={props.zeroStateMessage} />;
   }
 }
 
-function ZeroStateCannotAdd() {
+function ZeroStateCannotAdd({ message }: { message?: string }) {
   return (
     <div className="py-12 relative">
       <div className="mx-auto flex max-w-2xl flex-col items-center text-center relative z-10">
         <IconGrowth size={60} className="text-lime-500 my-4" stroke={1} />
         Nothing here yet. <br />
-        Assigned goals and projects will appear here.
+        {message || "Assigned goals and projects will appear here."}
       </div>
     </div>
   );
