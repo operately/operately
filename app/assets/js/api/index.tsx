@@ -4217,6 +4217,7 @@ export interface ResumeProjectResult {
 export interface SpacesUpdateTaskStatusesInput {
   spaceId: Id;
   taskStatuses: TaskStatus[];
+  deletedStatusReplacements?: DeletedStatusReplacement[] | null;
 }
 
 export interface SpacesUpdateTaskStatusesResult {
