@@ -110,12 +110,18 @@ defmodule Operately.Features.SpaceKanbanTest do
     |> Steps.assert_delete_status_blocked()
   end
 
-  feature "cannot delete a status that still contains tasks", ctx do
+  feature "delete a status with tasks by selecting a replacement", ctx do
     primary_status = hd(ctx.status_values)
+    replacement_status = Enum.at(ctx.status_values, 1)
 
     ctx
     |> Steps.visit_kanban_page()
     |> Steps.open_status_delete_modal(primary_status)
-    |> Steps.assert_delete_status_blocked()
+    |> Steps.select_deleted_status_replacement(replacement_value: replacement_status)
+    |> UI.click(testid: "delete-status-confirm")
+    |> Steps.assert_task_in_status(task_key: :task, status_value: replacement_status)
+    |> Steps.assert_status_absent(value: primary_status)
+    |> Steps.visit_kanban_page()
+    |> Steps.assert_task_in_status(task_key: :task, status_value: replacement_status)
   end
 end

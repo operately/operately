@@ -114,7 +114,10 @@ export function KanbanBoard({
           next.splice(newIndex, 0, moved);
 
           const reindexed = next.map((status, index) => ({ ...status, index }));
-          onStatusesChange?.(reindexed as StatusSelector.StatusOption[]);
+          onStatusesChange?.({
+            nextStatuses: reindexed as StatusSelector.StatusOption[],
+            deletedStatusReplacements: {},
+          });
 
           return reindexed;
         });
@@ -214,10 +217,18 @@ export function KanbanBoard({
           }}
           existingStatuses={orderedStatuses}
           statusToEdit={editingStatus}
-          onStatusCreated={(status) => onStatusesChange(sortStatuses([...orderedStatuses, status]))}
+          onStatusCreated={(status) =>
+            onStatusesChange({
+              nextStatuses: sortStatuses([...orderedStatuses, status]),
+              deletedStatusReplacements: {},
+            })
+          }
           onStatusUpdated={(updatedStatus) => {
             const nextStatuses = orderedStatuses.map((s) => (s.id === updatedStatus.id ? updatedStatus : s));
-            onStatusesChange(sortStatuses(nextStatuses));
+            onStatusesChange({
+              nextStatuses: sortStatuses(nextStatuses),
+              deletedStatusReplacements: {},
+            });
           }}
         />
       )}
@@ -227,11 +238,16 @@ export function KanbanBoard({
           isOpen={Boolean(deletingStatus)}
           onClose={() => setDeletingStatus(undefined)}
           status={deletingStatus}
-          hasTasks={tasks.some((task) => statusFromTask(task, statusKeys) === deletingStatus.value)}
           isLastStatus={orderedStatuses.filter((s) => s.value !== "unknown-status").length <= 1}
-          onConfirm={() => {
+          statuses={orderedStatuses}
+          onConfirm={(replacementStatusId) => {
             const nextStatuses = orderedStatuses.filter((s) => s.id !== deletingStatus.id);
-            onStatusesChange(sortStatuses(nextStatuses));
+            onStatusesChange({
+              nextStatuses: sortStatuses(nextStatuses),
+              deletedStatusReplacements: {
+                [deletingStatus.id]: replacementStatusId,
+              },
+            });
             setDeletingStatus(undefined);
           }}
         />
