@@ -109,7 +109,7 @@ export function TasksSection({
             <h2 className="font-bold">Tasks</h2>
           </div>
           <div className="flex items-center gap-4">
-            {showMilestoneKanbanLink && (
+            {showMilestoneKanbanLink && milestone.kanbanLink && (
               <Tooltip content="Open Kanban" size="sm">
                 <BlackLink
                   to={milestone.kanbanLink}

@@ -35,7 +35,7 @@ export interface Milestone {
   commentCount?: number;
   status: "pending" | "done";
   link?: string;
-  kanbanLink: string;
+  kanbanLink?: string;
   tasksOrderingState?: string[];
   completedAt?: Date | null;
 }

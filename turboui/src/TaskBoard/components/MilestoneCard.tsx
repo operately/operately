@@ -158,7 +158,7 @@ export function MilestoneCard({
             </div>
           </div>
           <div className="flex items-center gap-4">
-            {showKanbanLink && (
+            {showKanbanLink && milestone.kanbanLink && (
               <Tooltip content="Open Kanban" size="sm">
                 <BlackLink
                   to={milestone.kanbanLink}

@@ -8,9 +8,9 @@ import * as Types from "../types";
 import { usePersonFieldSearch } from "../../utils/storybook/usePersonFieldSearch";
 
 const sampleMilestones: Types.Milestone[] = [
-  { id: "milestone-1", name: "Sprint 1", dueDate: createContextualDate("2025-06-20", "day"), status: "pending", link: "#" },
-  { id: "milestone-2", name: "Sprint 2", dueDate: createContextualDate("2025-07-03", "day"), status: "pending", link: "#" },
-  { id: "milestone-3", name: "Product Launch", dueDate: createContextualDate("2025-07-15", "day"), status: "pending", link: "#" },
+  { id: "milestone-1", name: "Sprint 1", dueDate: createContextualDate("2025-06-20", "day"), status: "pending", link: "#", kanbanLink: "#" },
+  { id: "milestone-2", name: "Sprint 2", dueDate: createContextualDate("2025-07-03", "day"), status: "pending", link: "#", kanbanLink: "#" },
+  { id: "milestone-3", name: "Product Launch", dueDate: createContextualDate("2025-07-15", "day"), status: "pending", link: "#", kanbanLink: "#" },
 ];
 
 const samplePeople = [
