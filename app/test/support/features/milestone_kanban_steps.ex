@@ -83,15 +83,30 @@ defmodule Operately.Support.Features.MilestoneKanbanSteps do
     |> UI.refute_has(testid: "delete-status-confirm")
   end
 
+  step :select_deleted_status_replacement, ctx, opts do
+    replacement_value = Keyword.fetch!(opts, :replacement_value)
+
+    ctx
+    |> UI.click(css: "[data-test-id^=\"deleted-status-replacement-\"]")
+    |> UI.sleep(150)
+    |> UI.click(testid: UI.testid(["status-option", replacement_value]))
+    |> UI.sleep(150)
+  end
+
   step :close_status_modal, ctx do
     UI.click(ctx, testid: "delete-status-cancel")
   end
 
   step :delete_status, ctx, opts do
     value = Keyword.fetch!(opts, :value)
+    replacement_value =
+      Keyword.get(opts, :replacement_value) ||
+        Enum.find(ctx.status_values, fn v -> v != value end) ||
+        hd(ctx.status_values)
 
     ctx
     |> open_status_delete_modal(value)
+    |> select_deleted_status_replacement(replacement_value: replacement_value)
     |> UI.click(testid: "delete-status-confirm")
     |> UI.sleep(400)
   end
@@ -138,6 +153,7 @@ defmodule Operately.Support.Features.MilestoneKanbanSteps do
     ctx
     |> UI.click(testid: card_title_testid(task))
     |> UI.assert_has(testid: "task-slide-in")
+    |> UI.sleep(200)
   end
 
   step :close_task_slide_in, ctx, _task_key do
