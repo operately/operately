@@ -18,6 +18,7 @@ import { WorkMap, WorkMapTable } from "../WorkMap";
 import { processPersonalItems } from "../WorkMap/utils/itemProcessor";
 import { sortItemsByClosedDate, sortItemsByDueDate } from "../WorkMap/utils/sort";
 import { PersonCard } from "../PersonCard";
+import { match } from "ts-pattern";
 
 export namespace ProfilePage {
   export type Person = PersonCard.Person;
@@ -48,11 +49,15 @@ export function ProfilePage(props: ProfilePage.Props) {
   const { tabs, items } = useTabsWithItems(props.workMap, props.reviewerWorkMap);
 
   const workMapColumnOptions = React.useMemo(() => {
-    if (tabs.active === "tasks") {
-      return { hideOwner: true, hideProgress: true, hideSpace: true };
-    }
+    return match(tabs.active)
+      .with("tasks", () => ({ hideOwner: true, hideProgress: true, hideSpace: true }))
+      .otherwise(() => ({ hideOwner: true, hideProject: true }));
+  }, [tabs.active]);
 
-    return { hideOwner: true, hideProject: true };
+  const zeroStateMessage = React.useMemo(() => {
+    return match(tabs.active)
+      .with("tasks", () => "Assigned tasks will appear here.")
+      .otherwise(() => undefined);
   }, [tabs.active]);
 
   return (
@@ -67,6 +72,7 @@ export function ProfilePage(props: ProfilePage.Props) {
           profileUser={props.person}
           viewer={props.viewer || undefined}
           columnOptions={workMapColumnOptions}
+          zeroStateMessage={zeroStateMessage}
         />
       )}
       {tabs.active === "activity" && <ActivityFeed {...props} />}

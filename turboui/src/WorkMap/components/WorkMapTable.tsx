@@ -23,6 +23,7 @@ interface Props {
   viewer?: WorkMap.Person;
   profileUser?: WorkMap.Person;
   hideCompanyAccessInQuickAdd?: boolean;
+  zeroStateMessage?: string;
 }
 
 export function WorkMapTable({
@@ -37,6 +38,7 @@ export function WorkMapTable({
   viewer,
   profileUser,
   hideCompanyAccessInQuickAdd = false,
+  zeroStateMessage,
 }: Props) {
   const emptyWorkMap = items.length === 0;
   const showIndentation = React.useMemo(() => items.some((item) => item.children.length > 0), [items]);
@@ -91,6 +93,7 @@ export function WorkMapTable({
           addItem={addItem!}
           addItemDefaultSpace={addItemDefaultSpace!}
           hideCompanyAccess={hideCompanyAccessInQuickAdd}
+          zeroStateMessage={zeroStateMessage}
         />
       ) : (
         <table className="min-w-full divide-y divide-surface-outline">

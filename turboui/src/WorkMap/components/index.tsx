@@ -38,6 +38,7 @@ export function WorkMap({
   viewer,
   profileUser,
   hideCompanyAccessInQuickAdd,
+  zeroStateMessage,
 }: WorkMap.Props) {
   const { filteredItems, tabsState, tab } = useWorkMapTab({ rawItems: items, type, opts: { tabOptions } });
 
@@ -67,6 +68,7 @@ export function WorkMap({
           viewer={viewer}
           profileUser={profileUser}
           hideCompanyAccessInQuickAdd={Boolean(hideCompanyAccessInQuickAdd)}
+          zeroStateMessage={zeroStateMessage}
         />
       </div>
     </div>
@@ -192,5 +194,7 @@ export namespace WorkMap {
     navigation?: Navigation.Item[];
 
     hideCompanyAccessInQuickAdd?: boolean;
+
+    zeroStateMessage?: string;
   }
 }
