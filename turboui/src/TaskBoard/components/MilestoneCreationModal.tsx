@@ -58,6 +58,7 @@ export function MilestoneCreationModal({
       hasComments: false,
       status: "pending",
       dueDate,
+      kanbanLink: "",
     };
 
     // Submit the milestone

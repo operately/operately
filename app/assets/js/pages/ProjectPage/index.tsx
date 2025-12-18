@@ -24,6 +24,7 @@ import { parseContextualDate, serializeContextualDate } from "../../models/conte
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useSubscription } from "@/models/subscriptions";
+import * as Companies from "@/models/companies";
 
 export default { name: "ProjectPage", loader, Page } as PageModule;
 export { pageCacheKey as projectPageCacheKey };
@@ -39,6 +40,7 @@ type LoaderResult = {
     discussions: Projects.Discussion[];
     backendTasks: Tasks.Task[];
     childrenCount: Projects.ProjectChildrenCount;
+    company: Companies.Company;
   };
   cacheVersion: number;
 };
@@ -69,6 +71,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
         discussions: Api.project_discussions.list({ projectId: params.id }).then((d) => d.discussions!),
         backendTasks: Api.tasks.list({ projectId: params.id }).then((d) => d.tasks!),
         childrenCount: Api.projects.countChildren({ id: params.id }).then((d) => d.childrenCount),
+        company: Companies.getCompany({ id: params.companyId }).then((d) => d.company!),
       }),
   });
 }
@@ -76,9 +79,13 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
 function Page() {
   const paths = usePaths();
   const { data, refresh } = PageCache.useData(loader);
-  const { project, checkIns, discussions, backendTasks, childrenCount } = data;
+  const { project, checkIns, discussions, backendTasks, childrenCount, company } = data;
   const navigate = useNavigate();
   const currentUser = useMe();
+
+  const showMilestoneKanbanLink = Boolean(company && Companies.hasFeature(company, "milestone-kanban"));
+  console.log(company);
+  console.log(showMilestoneKanbanLink);
 
   useAiSidebar({
     conversationContext: {
@@ -290,6 +297,7 @@ function Page() {
     onTaskMilestoneChange: updateTaskMilestone,
     milestones,
     searchableMilestones: filteredMilestones,
+    showMilestoneKanbanLink,
     onMilestoneSearch: searchMilestones,
     onMilestoneCreate: createMilestone,
     onMilestoneUpdate: updateMilestone,

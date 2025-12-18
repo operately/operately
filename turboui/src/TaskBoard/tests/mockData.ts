@@ -68,6 +68,7 @@ export const mockMilestones: Record<string, Types.Milestone> = {
     commentCount: 5,
     status: "pending",
     link: "#",
+    kanbanLink: "#",
   },
   productLaunch: {
     id: "2",
@@ -78,6 +79,7 @@ export const mockMilestones: Record<string, Types.Milestone> = {
     commentCount: 3,
     status: "pending",
     link: "#",
+    kanbanLink: "#",
   },
   marketExpansion: {
     id: "3",
@@ -87,6 +89,7 @@ export const mockMilestones: Record<string, Types.Milestone> = {
     hasComments: false,
     status: "pending",
     link: "#",
+    kanbanLink: "#",
   },
   completedMilestone1: {
     id: "4",
@@ -97,6 +100,7 @@ export const mockMilestones: Record<string, Types.Milestone> = {
     commentCount: 8,
     status: "done",
     link: "#",
+    kanbanLink: "#",
   },
   completedMilestone2: {
     id: "5",
@@ -106,6 +110,7 @@ export const mockMilestones: Record<string, Types.Milestone> = {
     hasComments: false,
     status: "done",
     link: "#",
+    kanbanLink: "#",
   },
   emptyMilestone: {
     id: "6",
@@ -115,11 +120,13 @@ export const mockMilestones: Record<string, Types.Milestone> = {
     hasComments: false,
     status: "pending",
     link: "#",
+    kanbanLink: "#",
   },
   minimalMilestone: {
     id: "7",
     name: "Minimal Milestone",
     link: "#",
+    kanbanLink: "#",
     dueDate: undefined,
     hasDescription: false,
     hasComments: false,
