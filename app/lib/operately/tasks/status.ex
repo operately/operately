@@ -2,7 +2,7 @@ defmodule Operately.Tasks.Status do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @primary_key false
+  @primary_key {:id, :string, autogenerate: false}
 
   @valid_colors [:gray, :blue, :green, :red]
 
@@ -16,7 +16,6 @@ defmodule Operately.Tasks.Status do
         }
 
   embedded_schema do
-    field :id, :string
     field :label, :string
     field :color, Ecto.Enum, values: @valid_colors
     field :index, :integer
@@ -26,7 +25,7 @@ defmodule Operately.Tasks.Status do
 
   def changeset(task_status, attrs) do
     task_status
-    |> cast(attrs, __schema__(:fields))
+    |> cast(attrs, [:id | __schema__(:fields)])
     |> validate_required([:id, :label, :color, :index])
   end
 

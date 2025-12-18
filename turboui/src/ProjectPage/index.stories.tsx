@@ -386,9 +386,10 @@ export const Default: Story = {
         filters={filters}
         onFiltersChange={setFilters}
         statuses={statuses}
-        onSaveCustomStatuses={(nextStatuses) => {
-          console.log('Statuses updated:', nextStatuses);
-          setStatuses(nextStatuses);
+        onSaveCustomStatuses={(data) => {
+          console.log('Statuses updated:', data.nextStatuses);
+          console.log('Deleted status replacements:', data.deletedStatusReplacements);
+          setStatuses(data.nextStatuses);
         }}
         canManageStatuses={true}
         parentGoal={parentGoal}
@@ -622,9 +623,10 @@ export const EmptyTasks: Story = {
         filters={filters}
         onFiltersChange={setFilters}
         statuses={statuses}
-        onSaveCustomStatuses={(nextStatuses) => {
-          console.log('Statuses updated:', nextStatuses);
-          setStatuses(nextStatuses);
+        onSaveCustomStatuses={(data) => {
+          console.log('Statuses updated:', data.nextStatuses);
+          console.log('Deleted status replacements:', data.deletedStatusReplacements);
+          setStatuses(data.nextStatuses);
         }}
         canManageStatuses={true}
         parentGoal={null}
@@ -749,9 +751,10 @@ export const EmptyProject: Story = {
         filters={[]}
         onFiltersChange={() => {}}
         statuses={statuses}
-        onSaveCustomStatuses={(nextStatuses) => {
-          console.log('Statuses updated:', nextStatuses);
-          setStatuses(nextStatuses);
+        onSaveCustomStatuses={(data) => {
+          console.log('Statuses updated:', data.nextStatuses);
+          console.log('Deleted status replacements:', data.deletedStatusReplacements);
+          setStatuses(data.nextStatuses);
         }}
         canManageStatuses={true}
         parentGoal={null}
@@ -1003,9 +1006,10 @@ export const PausedProject: Story = {
         filters={filters}
         onFiltersChange={setFilters}
         statuses={statuses}
-        onSaveCustomStatuses={(nextStatuses) => {
-          console.log('Statuses updated:', nextStatuses);
-          setStatuses(nextStatuses);
+        onSaveCustomStatuses={(data) => {
+          console.log('Statuses updated:', data.nextStatuses);
+          console.log('Deleted status replacements:', data.deletedStatusReplacements);
+          setStatuses(data.nextStatuses);
         }}
         canManageStatuses={true}
         parentGoal={parentGoal}
