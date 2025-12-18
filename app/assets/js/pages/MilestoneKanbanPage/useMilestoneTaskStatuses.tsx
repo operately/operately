@@ -10,6 +10,7 @@ import { showErrorToast, MilestoneKanbanPage } from "turboui";
 export function useMilestoneTaskStatuses(
   milestone: Milestones.Milestone,
   baseTasks: MilestoneKanbanPage.Task[],
+  setBaseTasks: React.Dispatch<React.SetStateAction<MilestoneKanbanPage.Task[]>>,
   refresh?: () => void,
 ) {
   assertPresent(milestone.project, "Milestone must have a project");
@@ -27,7 +28,34 @@ export function useMilestoneTaskStatuses(
       deletedStatusReplacements: Record<string, string>;
     }) => {
       const previousStatuses = baseStatuses;
+      const previousTasks = baseTasks;
       setBaseStatuses(payload.nextStatuses);
+
+      if (Object.keys(payload.deletedStatusReplacements).length > 0) {
+        const nextStatusesById = new Map(payload.nextStatuses.map((s) => [s.id, s] as const));
+
+        setBaseTasks((prev) =>
+          prev.map((t) => {
+            const currentStatusId = t.status?.id;
+            if (!currentStatusId) return t;
+
+            const replacementStatusId = payload.deletedStatusReplacements[currentStatusId];
+            if (!replacementStatusId) return t;
+
+            const replacementStatus = nextStatusesById.get(replacementStatusId);
+            if (!replacementStatus) return t;
+
+            return {
+              ...t,
+              status: {
+                ...(t.status ?? {}),
+                ...replacementStatus,
+                value: replacementStatus.value,
+              },
+            };
+          }),
+        );
+      }
 
       try {
         const taskStatuses = Tasks.serializeTaskStatuses(payload.nextStatuses);
@@ -45,6 +73,7 @@ export function useMilestoneTaskStatuses(
 
         if (res.success === false) {
           setBaseStatuses(previousStatuses);
+          setBaseTasks(previousTasks);
           showErrorToast("Error", "Failed to update task statuses");
           return;
         }
@@ -55,10 +84,11 @@ export function useMilestoneTaskStatuses(
       } catch (error) {
         console.error("Failed to update task statuses", error);
         setBaseStatuses(previousStatuses);
+        setBaseTasks(previousTasks);
         showErrorToast("Error", "Failed to update task statuses");
       }
     },
-    [milestone.project.id, refresh, baseStatuses],
+    [milestone.project.id, refresh, baseStatuses, baseTasks, setBaseTasks],
   );
 
   const { tasks, statuses } = React.useMemo(

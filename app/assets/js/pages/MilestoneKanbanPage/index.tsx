@@ -79,7 +79,12 @@ function Page() {
     type: "project",
   });
 
-  const { tasks, statuses, handleStatusesChange } = useMilestoneTaskStatuses(milestone, baseTasks, pageData.refresh);
+  const { tasks, statuses, handleStatusesChange } = useMilestoneTaskStatuses(
+    milestone,
+    baseTasks,
+    setBaseTasks,
+    pageData.refresh,
+  );
 
   const { kanbanState, handleTaskKanbanChange } = Tasks.useKanbanState({
     initialRawState: milestone.tasksKanbanState,
