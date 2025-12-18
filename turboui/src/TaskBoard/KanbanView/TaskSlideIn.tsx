@@ -2,6 +2,7 @@ import React from "react";
 import { SlideIn } from "../../SlideIn";
 import { TaskPage } from "../../TaskPage";
 import { TaskContent } from "../../TaskPage";
+import { useWindowSizeBiggerOrEqualTo } from "../../utils/useWindowSizeBreakpoint";
 
 interface TaskSlideInProps {
   isOpen: boolean;
@@ -15,6 +16,7 @@ export function TaskSlideIn({
   taskPageProps,
 }: TaskSlideInProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
+  const isLargeScreen = useWindowSizeBiggerOrEqualTo("sm");
 
   if (!taskPageProps) return null;
 
@@ -26,7 +28,7 @@ export function TaskSlideIn({
   };
 
   return (
-    <SlideIn isOpen={isOpen} onClose={onClose} width="70%" testId="task-slide-in">
+    <SlideIn isOpen={isOpen} onClose={onClose} width={isLargeScreen ? "70%" : "100%"} testId="task-slide-in">
       <div className="pt-4 pb-20 px-6">
         <TaskContent {...state} />
       </div>

@@ -1,6 +1,7 @@
 import React from "react";
 import { Fragment } from "react";
 import { useRenderInterval } from "./useRenderInterval";
+import { useWindowSizeBiggerOrEqualTo } from "../utils/useWindowSizeBreakpoint";
 
 interface RelativeTimeProps {
   time: Date;
@@ -8,6 +9,7 @@ interface RelativeTimeProps {
 
 export default function RelativeTime({ time }: RelativeTimeProps): JSX.Element {
   const lastRender = useRenderInterval(time);
+  const isLargeScreen = useWindowSizeBiggerOrEqualTo("sm");
 
   const diff = +new Date() - +time;
 
@@ -28,9 +30,10 @@ export default function RelativeTime({ time }: RelativeTimeProps): JSX.Element {
   }
 
   if (minutes < 60) {
+    const unit = isLargeScreen ? (minutes === 1 ? "minute" : "minutes") : "min.";
     return (
       <Fragment key={lastRender}>
-        {minutes} {minutes === 1 ? "minute" : "minutes"} ago
+        {minutes} {unit} ago
       </Fragment>
     );
   }
