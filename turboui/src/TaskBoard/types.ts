@@ -168,6 +168,9 @@ export interface TaskBoardProps {
 
   // Status customization
   statuses: StatusSelector.StatusOption[];
-  onSaveCustomStatuses: (statuses: StatusSelector.StatusOption[]) => void;
+  onSaveCustomStatuses: (data: {
+    nextStatuses: StatusSelector.StatusOption[];
+    deletedStatusReplacements: Record<string, string>;
+  }) => void;
   canManageStatuses: boolean;
 }

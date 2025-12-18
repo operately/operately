@@ -1102,6 +1102,11 @@ export interface CreateTargetInput {
   index?: number | null;
 }
 
+export interface DeletedStatusReplacement {
+  deletedStatusId: string;
+  replacementStatusId: string;
+}
+
 export interface Discussion {
   id: string;
   name: string;
@@ -4071,6 +4076,7 @@ export interface ProjectsUpdateStartDateResult {
 export interface ProjectsUpdateTaskStatusesInput {
   projectId: Id;
   taskStatuses: TaskStatus[];
+  deletedStatusReplacements?: DeletedStatusReplacement[] | null;
 }
 
 export interface ProjectsUpdateTaskStatusesResult {

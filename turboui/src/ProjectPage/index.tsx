@@ -143,7 +143,10 @@ export namespace ProjectPage {
 
     statuses: TaskBoardTypes.Status[];
     canManageStatuses?: boolean;
-    onSaveCustomStatuses: (statuses: TaskBoardTypes.Status[]) => void;
+    onSaveCustomStatuses: (data: {
+      nextStatuses: TaskBoardTypes.Status[];
+      deletedStatusReplacements: Record<string, string>;
+    }) => void;
 
     contributors: Person[];
     checkIns: CheckIn[];

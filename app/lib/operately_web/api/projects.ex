@@ -152,6 +152,7 @@ defmodule OperatelyWeb.Api.Projects do
     inputs do
       field :project_id, :id, null: false
       field :task_statuses, list_of(:task_status), null: false
+      field? :deleted_status_replacements, list_of(:deleted_status_replacement), null: true
     end
 
     outputs do
@@ -159,11 +160,15 @@ defmodule OperatelyWeb.Api.Projects do
     end
 
     def call(conn, inputs) do
+      replacements = inputs[:deleted_status_replacements] || []
+
       conn
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.project_id)
       |> Steps.check_permissions(:can_edit_statuses)
+      |> Steps.validate_status_replacements(inputs.task_statuses, replacements)
       |> Steps.update_task_statuses(inputs.task_statuses)
+      |> Steps.replace_deleted_task_statuses(replacements)
       |> Steps.commit()
       |> Steps.respond(fn _ -> %{success: true} end)
     end
@@ -611,6 +616,76 @@ defmodule OperatelyWeb.Api.Projects do
       end
     end
 
+    def validate_status_replacements(multi, _task_statuses, []), do: multi
+
+    def validate_status_replacements(multi, task_statuses, replacements) do
+      Ecto.Multi.run(multi, :validate_replacements, fn _repo, _changes ->
+        new_status_ids = MapSet.new(task_statuses, & &1.id)
+        deleted_status_ids = MapSet.new(replacements, & &1.deleted_status_id)
+
+        invalid_replacements =
+          Enum.filter(replacements, fn r ->
+            replacement_is_deleted = MapSet.member?(deleted_status_ids, r.replacement_status_id)
+            replacement_not_in_new_statuses = not MapSet.member?(new_status_ids, r.replacement_status_id)
+
+            replacement_is_deleted or replacement_not_in_new_statuses
+          end)
+
+        if Enum.empty?(invalid_replacements) do
+          {:ok, :valid}
+        else
+          {:error, "Replacement statuses must be existing statuses that are not being deleted"}
+        end
+      end)
+    end
+
+    def replace_deleted_task_statuses(multi, []), do: multi
+
+    def replace_deleted_task_statuses(multi, replacements) do
+      Ecto.Multi.run(multi, :replace_task_statuses, fn _repo, changes ->
+        project = Map.get(changes, :updated_project, changes.project)
+        replacement_map =
+          Map.new(replacements, fn r -> {r.deleted_status_id, r.replacement_status_id} end)
+
+        deleted_status_ids = Map.keys(replacement_map)
+
+        tasks =
+          from(t in Operately.Tasks.Task,
+            where: t.project_id == ^project.id,
+            where: fragment("?->>'id' = ANY(?)", t.task_status, ^deleted_status_ids)
+          )
+          |> Repo.all()
+
+        new_statuses_by_id = Map.new(project.task_statuses, fn s -> {s.id, s} end)
+
+        results =
+          Enum.map(tasks, fn task ->
+            old_status_id = task.task_status.id
+            new_status_id = Map.get(replacement_map, old_status_id)
+            new_status = Map.get(new_statuses_by_id, new_status_id)
+
+            if new_status do
+              task
+              |> Operately.Tasks.Task.changeset(%{task_status: Map.from_struct(new_status)})
+              |> Repo.update()
+            else
+              {:ok, task}
+            end
+          end)
+
+        errors = Enum.filter(results, fn
+          {:error, _} -> true
+          _ -> false
+        end)
+
+        if Enum.empty?(errors) do
+          {:ok, length(tasks)}
+        else
+          List.first(errors)
+        end
+      end)
+    end
+
     def update_project_start_date(multi, new_start_date) do
       Ecto.Multi.update(multi, :updated_project, fn %{project: project} ->
         cond do
@@ -929,6 +1004,9 @@ defmodule OperatelyWeb.Api.Projects do
           {:error, :bad_request, message}
 
         {:error, :validate_task_statuses, message, _changes} ->
+          {:error, :bad_request, message}
+
+        {:error, :validate_replacements, message, _changes} ->
           {:error, :bad_request, message}
 
         {:error, _failed_operation, reason, _changes} ->

@@ -106,10 +106,10 @@ export function TaskBoard({
   }, []);
 
   const handleSaveStatuses = useCallback(
-    (nextStatuses: StatusSelector.StatusOption[]) => {
-      setStatusModalStatuses(nextStatuses);
+    (data: { nextStatuses: StatusSelector.StatusOption[]; deletedStatusReplacements: Record<string, string> }) => {
+      setStatusModalStatuses(data.nextStatuses);
       setIsStatusModalOpen(false);
-      onSaveCustomStatuses(nextStatuses);
+      onSaveCustomStatuses(data);
     },
     [onSaveCustomStatuses],
   );
@@ -275,6 +275,7 @@ export function TaskBoard({
         onClose={closeStatusModal}
         statuses={statusModalStatuses}
         onSave={handleSaveStatuses}
+        requireReplacement
       />
     </div>
   );

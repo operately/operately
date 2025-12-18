@@ -1953,6 +1953,11 @@ defmodule OperatelyWeb.Api.Types do
     field :closed, :boolean, null: false
   end
 
+  object :deleted_status_replacement do
+    field :deleted_status_id, :string, null: false
+    field :replacement_status_id, :string, null: false
+  end
+
   object :add_member_input do
     field? :id, :id, null: true
     field? :access_level, :integer, null: true

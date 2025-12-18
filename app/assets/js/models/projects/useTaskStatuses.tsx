@@ -6,6 +6,11 @@ import * as Tasks from "@/models/tasks";
 
 type Status = ProjectPage.TaskStatus;
 
+type SaveStatusesPayload = {
+  nextStatuses: Status[];
+  deletedStatusReplacements: Record<string, string>;
+};
+
 export function useTaskStatuses(
   projectId: string,
   backendStatuses: TaskStatus[] | null | undefined,
@@ -22,13 +27,20 @@ export function useTaskStatuses(
   );
 
   const handleSaveStatuses = React.useCallback(
-    async (nextStatuses: Status[]) => {
-      const taskStatuses = Tasks.serializeTaskStatuses(nextStatuses);
+    async (payload: SaveStatusesPayload) => {
+      const taskStatuses = Tasks.serializeTaskStatuses(payload.nextStatuses);
+      const deletedStatusReplacements = Object.entries(payload.deletedStatusReplacements).map(
+        ([deletedStatusId, replacementStatusId]) => ({
+          deletedStatusId,
+          replacementStatusId,
+        }),
+      );
 
       try {
         const res = await Api.projects.updateTaskStatuses({
           projectId,
           taskStatuses,
+          deletedStatusReplacements,
         });
 
         if (res.success === false) {
