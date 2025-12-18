@@ -128,6 +128,7 @@ export namespace ProjectPage {
     tasks: TaskBoardTypes.Task[];
     milestones: Milestone[];
     searchableMilestones: Milestone[]; // Filtered milestones for task creation
+    showMilestoneKanbanLink?: boolean;
     onTaskCreate: (task: NewTaskPayload) => void;
     onTaskAssigneeChange: (taskId: string, assignee: TaskBoardTypes.Person | null) => void;
     onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
@@ -228,6 +229,7 @@ export function ProjectPage(props: ProjectPage.Props) {
               tasks={state.tasks}
               milestones={state.milestones}
               searchableMilestones={state.searchableMilestones}
+              showMilestoneKanbanLink={state.showMilestoneKanbanLink}
               onTaskCreate={state.onTaskCreate}
               onMilestoneCreate={state.onMilestoneCreate}
               onTaskAssigneeChange={state.onTaskAssigneeChange}

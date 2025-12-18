@@ -2,8 +2,10 @@ import React from "react";
 
 import * as Types from "../../TaskBoard/types";
 import { SecondaryButton } from "../../Button";
+import { BlackLink } from "../../Link";
 import { PieChart } from "../../PieChart";
-import { IconPlus } from "../../icons";
+import { IconLayoutKanban, IconPlus } from "../../icons";
+import { Tooltip } from "../../Tooltip";
 import { DragAndDropProvider } from "../../utils/DragAndDrop";
 import { MilestonePage } from "..";
 import { calculateMilestoneStats } from "../../TaskBoard/components/MilestoneCard";
@@ -19,6 +21,7 @@ export function TasksSection({
   onFiltersChange,
   onTaskReorder,
   milestone,
+  showMilestoneKanbanLink,
   onTaskCreate,
   onTaskAssigneeChange,
   onTaskDueDateChange,
@@ -105,9 +108,24 @@ export function TasksSection({
             </div>
             <h2 className="font-bold">Tasks</h2>
           </div>
-          <SecondaryButton size="xs" icon={IconPlus} onClick={openCreator} testId="tasks-section-add-task">
-            <span className="sr-only">Add task</span>
-          </SecondaryButton>
+          <div className="flex items-center gap-4">
+            {showMilestoneKanbanLink && (
+              <Tooltip content="Open Kanban" size="sm">
+                <BlackLink
+                  to={milestone.kanbanLink}
+                  className="flex items-center text-content-dimmed md:hover:text-content-base transition-colors"
+                  underline="hover"
+                >
+                  <IconLayoutKanban size={18} className="text-content-dimmed" />
+                  <span className="sr-only">Open Kanban</span>
+                </BlackLink>
+              </Tooltip>
+            )}
+
+            <SecondaryButton size="xs" icon={IconPlus} onClick={openCreator} testId="tasks-section-add-task">
+              <span className="sr-only">Add task</span>
+            </SecondaryButton>
+          </div>
         </div>
 
         {/* Filter controls */}

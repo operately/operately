@@ -61,6 +61,7 @@ export namespace MilestonePage {
 
     // Milestone
     milestone: Milestone;
+    showMilestoneKanbanLink?: boolean;
     title: string;
     onMilestoneTitleChange: (name: string) => Promise<boolean>;
     dueDate: DateField.ContextualDate | null;
@@ -203,7 +204,12 @@ export function MilestonePage(props: MilestonePage.Props) {
   return (
     <ProjectPageLayout {...layoutProps}>
       <MainContainer>
-        <Header title={title} canEdit={canEdit} status={status} onMilestoneTitleChange={onMilestoneTitleChange} />
+        <Header
+          title={title}
+          canEdit={canEdit}
+          status={status}
+          onMilestoneTitleChange={onMilestoneTitleChange}
+        />
 
         <MobileMeta {...state} />
 

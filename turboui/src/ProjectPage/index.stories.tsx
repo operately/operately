@@ -339,6 +339,7 @@ export const Default: Story = {
         closeLink="#"
         reopenLink="#"
         pauseLink="#"
+        showMilestoneKanbanLink={true}
         projectName="Mobile App Redesign"
         childrenCount={{
           tasksCount: tasks.length,

@@ -204,6 +204,10 @@ export class Paths {
     return this.createCompanyPath(["milestones", milestoneId]);
   }
 
+  projectMilestoneKanbanPath(milestoneId: string) {
+    return this.createCompanyPath(["milestones", milestoneId, "kanban"]);
+  }
+
   projectContributorsPath(projectId: string) {
     return this.createCompanyPath(["projects", projectId, "contributors"]);
   }
