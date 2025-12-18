@@ -14,6 +14,7 @@ import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 
 import { SpaceKanbanPage } from "turboui";
+import { useSpaceTaskStatuses } from "./useSpaceTaskStatuses";
 
 export default { name: "SpaceKanbanPage", loader, Page } as PageModule;
 
@@ -96,65 +97,13 @@ function Page() {
     },
   });
 
-  const handleStatusesChange = React.useCallback(
-    async (payload: {
-      nextStatuses: SpaceKanbanPage.StatusOption[];
-      deletedStatusReplacements: Record<string, string>;
-    }) => {
-      const previousTasks = tasks;
-
-      if (Object.keys(payload.deletedStatusReplacements).length > 0) {
-        const nextStatusesById = new Map(payload.nextStatuses.map((s) => [s.id, s] as const));
-
-        setTasks((prev) =>
-          prev.map((t) => {
-            const currentStatusId = t.status?.id;
-            if (!currentStatusId) return t;
-
-            const replacementStatusId = payload.deletedStatusReplacements[currentStatusId];
-            if (!replacementStatusId) return t;
-
-            const replacementStatus = nextStatusesById.get(replacementStatusId);
-            if (!replacementStatus) return t;
-
-            return {
-              ...t,
-              status: {
-                ...(t.status ?? {}),
-                ...replacementStatus,
-                value: replacementStatus.value,
-              },
-            };
-          }),
-        );
-      }
-
-      const taskStatuses = Tasks.serializeTaskStatuses(payload.nextStatuses);
-      const deletedStatusReplacements = Object.entries(payload.deletedStatusReplacements).map(
-        ([deletedStatusId, replacementStatusId]) => ({
-          deletedStatusId,
-          replacementStatusId,
-        }),
-      );
-
-      try {
-        await Api.spaces.updateTaskStatuses({
-          spaceId: space.id,
-          taskStatuses,
-          deletedStatusReplacements,
-        });
-
-        PageCache.invalidate(pageCacheKey(space.id));
-        if (pageData.refresh) {
-          await pageData.refresh();
-        }
-      } catch (e) {
-        setTasks(previousTasks);
-        throw e;
-      }
-    },
-    [space.id, pageData, setTasks, tasks],
-  );
+  const { handleStatusesChange } = useSpaceTaskStatuses({
+    spaceId: space.id,
+    tasks,
+    setTasks,
+    refresh: pageData.refresh,
+    cacheKey: pageCacheKey(space.id),
+  });
 
   const slideInModel = Tasks.useTaskSlideInProps({
     backendTasks,
