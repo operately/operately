@@ -375,7 +375,8 @@ export const WithStatusManagement: Story = {
         getTaskPageProps={(_taskId, _ctx) => null}
         assigneePersonSearch={assigneeSearch}
         canManageStatuses
-        onStatusesChange={(nextStatuses) => {
+        onStatusesChange={(data) => {
+          const nextStatuses = data.nextStatuses;
           setStatuses(nextStatuses);
           setKanbanState((prev) => {
             const base = emptyKanbanState(nextStatuses);

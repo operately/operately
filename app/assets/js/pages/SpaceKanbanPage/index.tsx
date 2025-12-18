@@ -14,6 +14,7 @@ import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 
 import { SpaceKanbanPage } from "turboui";
+import { useSpaceTaskStatuses } from "./useSpaceTaskStatuses";
 
 export default { name: "SpaceKanbanPage", loader, Page } as PageModule;
 
@@ -96,17 +97,13 @@ function Page() {
     },
   });
 
-  const handleStatusesChange = React.useCallback(
-    async (newStatuses: SpaceKanbanPage.StatusOption[]) => {
-      const serialized = Tasks.serializeTaskStatuses(newStatuses);
-      await Api.spaces.updateTaskStatuses({ spaceId: space.id, taskStatuses: serialized });
-      PageCache.invalidate(pageCacheKey(space.id));
-      if (pageData.refresh) {
-        await pageData.refresh();
-      }
-    },
-    [space.id, pageData],
-  );
+  const { handleStatusesChange } = useSpaceTaskStatuses({
+    spaceId: space.id,
+    tasks,
+    setTasks,
+    refresh: pageData.refresh,
+    cacheKey: pageCacheKey(space.id),
+  });
 
   const slideInModel = Tasks.useTaskSlideInProps({
     backendTasks,
