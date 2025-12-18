@@ -12,14 +12,6 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
     |> UI.assert_has(testid: page_testid(ctx.space))
   end
 
-  step :visit_kanban_page_for, ctx, space_key do
-    space = Map.fetch!(ctx, space_key)
-
-    ctx
-    |> Map.put(:space, space)
-    |> visit_kanban_page()
-  end
-
   step :add_status, ctx, opts do
     label = Keyword.fetch!(opts, :label)
     appearance = Keyword.get(opts, :appearance, "blue")
@@ -83,15 +75,26 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
     |> UI.refute_has(testid: "delete-status-confirm")
   end
 
-  step :close_status_modal, ctx do
-    UI.click(ctx, testid: "delete-status-cancel")
+  step :select_deleted_status_replacement, ctx, opts do
+    replacement_value = Keyword.fetch!(opts, :replacement_value)
+
+    ctx
+    |> UI.click(css: "[data-test-id^=\"deleted-status-replacement-\"]")
+    |> UI.sleep(150)
+    |> UI.click(testid: UI.testid(["status-option", replacement_value]))
+    |> UI.sleep(150)
   end
 
   step :delete_status, ctx, opts do
     value = Keyword.fetch!(opts, :value)
+    replacement_value =
+      Keyword.get(opts, :replacement_value) ||
+        Enum.find(ctx.status_values, fn v -> v != value end) ||
+        hd(ctx.status_values)
 
     ctx
     |> open_status_delete_modal(value)
+    |> select_deleted_status_replacement(replacement_value: replacement_value)
     |> UI.click(testid: "delete-status-confirm")
     |> UI.sleep(400)
   end
@@ -119,16 +122,6 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
     ctx
     |> UI.find([testid: UI.testid(["kanban-column", status_value])], fn ctx ->
       UI.assert_has(ctx, testid: card_testid(task))
-    end)
-  end
-
-  step :assert_task_absent_in_status, ctx, opts do
-    task = Map.fetch!(ctx, Keyword.fetch!(opts, :task_key))
-    status_value = Keyword.fetch!(opts, :status_value)
-
-    ctx
-    |> UI.find([testid: UI.testid(["kanban-column", status_value])], fn ctx ->
-      UI.refute_has(ctx, testid: card_testid(task))
     end)
   end
 
