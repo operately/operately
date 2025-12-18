@@ -66,6 +66,19 @@ defmodule Operately.Support.Features.StatusCustomizationSteps do
     UI.click(ctx, testid: "remove-status-#{index}")
   end
 
+  step :select_replacement_for_deleted_status, ctx, deleted_label: deleted_label, replacement_value: replacement_value do
+    project = reload_project(ctx)
+    deleted_status = Enum.find(project.task_statuses, &(&1.label == deleted_label))
+
+    assert deleted_status, "Expected to find status #{deleted_label} but none matched"
+
+    ctx
+    |> UI.assert_has(testid: "deleted-statuses-section")
+    |> UI.click(testid: "deleted-status-replacement-#{deleted_status.id}")
+    |> UI.click(testid: UI.testid(["status-option", replacement_value]))
+    |> UI.sleep(200)
+  end
+
   step :save_status_changes, ctx do
     ctx
     |> UI.click_button("Save changes")

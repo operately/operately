@@ -37,6 +37,7 @@ defmodule Operately.Features.StatusCustomizationTest do
     |> Steps.save_status_changes()
     |> Steps.open_manage_statuses()
     |> Steps.remove_last_status()
+    |> Steps.select_replacement_for_deleted_status(deleted_label: new_status.label, replacement_value: "pending")
     |> Steps.save_status_changes()
     |> Steps.assert_status_absent(label: new_status.label)
   end
@@ -56,7 +57,7 @@ defmodule Operately.Features.StatusCustomizationTest do
     |> Steps.assert_task_status_color(color: custom_status.color)
   end
 
-  feature "deleted custom statuses persist on existing tasks", ctx do
+  feature "deleted custom statuses move existing tasks to a selected replacement", ctx do
     custom_status = %{label: "Ready for QA", color: :blue, value: Steps.status_value("Ready for QA")}
 
     ctx =
@@ -74,19 +75,20 @@ defmodule Operately.Features.StatusCustomizationTest do
       |> Steps.visit_project_tasks()
       |> Steps.open_manage_statuses()
       |> Steps.remove_last_status()
+      |> Steps.select_replacement_for_deleted_status(deleted_label: custom_status.label, replacement_value: "pending")
       |> Steps.save_status_changes()
       |> Steps.assert_status_absent(label: custom_status.label)
 
     ctx
     |> Steps.open_task_from_tasks_board()
-    |> Steps.assert_task_status(label: custom_status.label)
-    |> Steps.assert_task_status_visible(label: custom_status.label)
-    |> Steps.open_status_selector_on_task_page(label: custom_status.label)
+    |> Steps.assert_task_status(label: "Not started")
+    |> Steps.assert_task_status_visible(label: "Not started")
+    |> Steps.open_status_selector_on_task_page(label: "Not started")
     |> Steps.assert_status_option_absent(value: custom_status.value)
     |> Steps.close_status_selector()
   end
 
-  feature "unknown status column appears in kanban when status is deleted", ctx do
+  feature "deleted statuses move tasks to the replacement column in kanban", ctx do
     task_name = "Refactor Kanban"
 
     ctx
@@ -100,10 +102,11 @@ defmodule Operately.Features.StatusCustomizationTest do
     |> Steps.visit_project_tasks()
     |> Steps.open_manage_statuses()
     |> Steps.remove_status_at_index(index: 1)
+    |> Steps.select_replacement_for_deleted_status(deleted_label: "In progress", replacement_value: "pending")
     |> Steps.save_status_changes()
     |> Steps.visit_milestone_kanban()
-    |> Steps.assert_kanban_column_visible(status: "unknown-status")
-    |> Steps.assert_task_in_kanban_column(task: task_name, column: "unknown-status")
+    |> Steps.refute_kanban_column_visible(status: "unknown-status")
+    |> Steps.assert_task_in_kanban_column(task: task_name, column: "pending")
     |> Steps.visit_project_tasks()
     |> Steps.open_task_from_tasks_board()
     |> Steps.change_task_status_on_task_page(current_label: "In progress", new_value: "done")
