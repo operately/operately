@@ -585,7 +585,8 @@ export const WithStatusManagement: Story = {
           onTaskNameChange={(taskId, name) =>
             setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, title: name } : task)))
           }
-          onStatusesChange={(nextStatuses) => {
+          onStatusesChange={(data) => {
+            const nextStatuses = data.nextStatuses;
             setStatuses(nextStatuses);
             setKanbanState((prev) => {
               const base = emptyKanbanState(nextStatuses);
