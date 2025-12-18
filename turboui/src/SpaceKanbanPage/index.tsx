@@ -33,7 +33,10 @@ export namespace SpaceKanbanPage {
     kanbanState: KanbanState;
 
     canManageStatuses?: boolean;
-    onStatusesChange?: (statuses: Types.Status[]) => void;
+    onStatusesChange?: (data: {
+      nextStatuses: Types.Status[];
+      deletedStatusReplacements: Record<string, string>;
+    }) => void;
 
     // Callbacks
     assigneePersonSearch: PersonField.SearchData;

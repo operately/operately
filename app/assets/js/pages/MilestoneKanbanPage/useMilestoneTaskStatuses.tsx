@@ -22,15 +22,25 @@ export function useMilestoneTaskStatuses(
   }, [milestone.availableStatuses]);
 
   const handleStatusesChange = React.useCallback(
-    async (nextStatuses: MilestoneKanbanPage.StatusOption[]) => {
+    async (payload: {
+      nextStatuses: MilestoneKanbanPage.StatusOption[];
+      deletedStatusReplacements: Record<string, string>;
+    }) => {
       const previousStatuses = baseStatuses;
-      setBaseStatuses(nextStatuses);
+      setBaseStatuses(payload.nextStatuses);
 
       try {
-        const backendStatuses = Tasks.serializeTaskStatuses(nextStatuses);
+        const taskStatuses = Tasks.serializeTaskStatuses(payload.nextStatuses);
+        const deletedStatusReplacements = Object.entries(payload.deletedStatusReplacements).map(
+          ([deletedStatusId, replacementStatusId]) => ({
+            deletedStatusId,
+            replacementStatusId,
+          }),
+        );
         const res = await Api.projects.updateTaskStatuses({
           projectId: milestone.project!.id,
-          taskStatuses: backendStatuses,
+          taskStatuses,
+          deletedStatusReplacements,
         });
 
         if (res.success === false) {

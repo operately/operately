@@ -97,9 +97,23 @@ function Page() {
   });
 
   const handleStatusesChange = React.useCallback(
-    async (newStatuses: SpaceKanbanPage.StatusOption[]) => {
-      const serialized = Tasks.serializeTaskStatuses(newStatuses);
-      await Api.spaces.updateTaskStatuses({ spaceId: space.id, taskStatuses: serialized });
+    async (payload: {
+      nextStatuses: SpaceKanbanPage.StatusOption[];
+      deletedStatusReplacements: Record<string, string>;
+    }) => {
+      const taskStatuses = Tasks.serializeTaskStatuses(payload.nextStatuses);
+      const deletedStatusReplacements = Object.entries(payload.deletedStatusReplacements).map(
+        ([deletedStatusId, replacementStatusId]) => ({
+          deletedStatusId,
+          replacementStatusId,
+        }),
+      );
+
+      await Api.spaces.updateTaskStatuses({
+        spaceId: space.id,
+        taskStatuses,
+        deletedStatusReplacements,
+      });
       PageCache.invalidate(pageCacheKey(space.id));
       if (pageData.refresh) {
         await pageData.refresh();
