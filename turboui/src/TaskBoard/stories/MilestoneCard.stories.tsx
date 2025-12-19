@@ -139,6 +139,7 @@ const sampleMilestone: Types.Milestone = {
   name: "Q2 Release",
   dueDate: createContextualDate(new Date(new Date().setDate(new Date().getDate() + 10)), "day"),
   link: "#",
+  kanbanLink: "#",
   hasDescription: true,
   hasComments: true,
   commentCount: 3,

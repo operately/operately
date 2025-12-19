@@ -228,6 +228,7 @@ export const Default: Story = {
         commentCount: 2,
         status: "done",
         link: "#",
+        kanbanLink: "#",
       },
       {
         id: "m2",
@@ -237,6 +238,7 @@ export const Default: Story = {
         hasComments: false,
         status: "pending",
         link: "#",
+        kanbanLink: "#",
       },
       {
         id: "m3",
@@ -246,6 +248,7 @@ export const Default: Story = {
         hasComments: false,
         status: "pending",
         link: "#",
+        kanbanLink: "#",
       },
     ];
     const { milestones, setMilestones, reorderMilestones } = useMockMilestoneOrdering({ initialMilestones });
@@ -339,6 +342,7 @@ export const Default: Story = {
         closeLink="#"
         reopenLink="#"
         pauseLink="#"
+        showMilestoneKanbanLink={true}
         projectName="Mobile App Redesign"
         childrenCount={{
           tasksCount: tasks.length,

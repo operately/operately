@@ -160,7 +160,10 @@ const buildTaskPageProps = (
 
   return {
     milestone,
-    onMilestoneChange: (next) => ctx.onTaskMilestoneChange?.(taskId, next),
+    onMilestoneChange: (next) => {
+      const resolved = next ? (ctx.milestones ?? []).find((m) => m.id === next.id) ?? null : null;
+      ctx.onTaskMilestoneChange?.(taskId, resolved);
+    },
     milestones: (ctx.milestones ?? []).map(toTaskPageMilestone),
     onMilestoneSearch: ctx.onMilestoneSearch ?? (async () => {}),
     hideMilestone: true,

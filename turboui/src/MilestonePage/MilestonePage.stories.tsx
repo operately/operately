@@ -47,6 +47,7 @@ const sampleMilestone: Types.Milestone = {
   commentCount: 3,
   status: "pending", // Add initial status
   link: "#",
+  kanbanLink: "#",
 };
 
 const longTitleOne =
@@ -300,6 +301,7 @@ export const EmptyMilestone: Story = {
       hasComments: false,
       status: "pending", // Add initial status
       link: "#",
+      kanbanLink: "#",
     });
 
     // Handler for due date changes
@@ -410,6 +412,7 @@ export const CompletedMilestone: Story = {
       commentCount: 8,
       status: "done", // Milestone is completed
       link: "#",
+      kanbanLink: "#",
       completedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
     });
 
