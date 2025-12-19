@@ -3,7 +3,7 @@ import React from "react";
 import type { ActivityContentTaskAssigneeUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
-import { feedTitle, projectLink, taskLink } from "../feedItemLinks";
+import { feedTitle, projectLink, spaceLink, taskLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
 import { AvatarWithName } from "turboui";
 
@@ -13,7 +13,17 @@ const TaskAssigneeUpdating: ActivityHandler = {
   },
 
   pagePath(paths: Paths, activity: Activity) {
-    return paths.projectPath(content(activity).project!.id!);
+    const { project, space, task } = content(activity);
+
+    if (project && task) {
+      return paths.taskPath(task.id);
+    }
+
+    if (project) {
+      return paths.projectPath(project.id, "tasks");
+    }
+
+    return paths.spaceKanbanPath(space.id);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -29,15 +39,24 @@ const TaskAssigneeUpdating: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: string }) {
-    const { project, task, newAssignee, oldAssignee } = content(activity);
-    const assigneeText = newAssignee ? `assigned to ${newAssignee.fullName}` : `unassigned ${oldAssignee.fullName} from`;
+    const { project, space, task, newAssignee, oldAssignee } = content(activity);
+
+    const assigneeText = (() => {
+      if (newAssignee) return `assigned to ${newAssignee.fullName}`;
+      if (oldAssignee) return `unassigned ${oldAssignee.fullName} from`;
+      return "unassigned";
+    })();
+
     const message = `${assigneeText} the task`;
-    const taskName = task ? taskLink(task) : "a task";
+    const taskName = task ? taskLink(task, { spaceId: !project ? space.id : undefined }) : "a task";
+    const location = project ? projectLink(project) : spaceLink(space);
 
     if (page === "project") {
       return feedTitle(activity, message, taskName);
+    } else if (page === "space" && !project) {
+      return feedTitle(activity, message, taskName);
     } else {
-      return feedTitle(activity, message, taskName, "in", projectLink(project));
+      return feedTitle(activity, message, taskName, "in", location);
     }
   },
 
@@ -83,7 +102,13 @@ const TaskAssigneeUpdating: ActivityHandler = {
   },
 
   NotificationLocation(props: { activity: Activity }) {
-    return content(props.activity).project!.name!;
+    const { project, space } = content(props.activity);
+
+    if (project) {
+      return project.name;
+    }
+
+    return space.name;
   },
 };
 

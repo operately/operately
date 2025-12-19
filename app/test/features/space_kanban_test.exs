@@ -251,5 +251,39 @@ defmodule Operately.Features.SpaceKanbanTest do
         long_title: "changed the due date to #{due_label} on #{ctx.task.name} in #{ctx.space.name}"
       )
     end
+
+    feature "changing a task assignee creates an activity", ctx do
+      assignee_name = ctx.teammate.full_name
+
+      ctx
+      |> Steps.visit_kanban_page()
+      |> Steps.open_task_slide_in(:task)
+      |> Steps.change_task_assignee(assignee_name: assignee_name)
+      |> Steps.close_task_slide_in(:task)
+      |> Steps.assert_card_assignee(task_key: :task, assignee_name: assignee_name)
+      |> Steps.assert_activity_in_space_and_company_feeds(
+        title: "assigned to #{assignee_name} the task #{ctx.task.name}",
+        long_title: "assigned to #{assignee_name} the task #{ctx.task.name} in #{ctx.space.name}"
+      )
+    end
+
+    feature "task-assignee-updating activity works after task is deleted", ctx do
+      status_value = hd(ctx.status_values)
+      assignee_name = ctx.teammate.full_name
+
+      ctx
+      |> Steps.visit_kanban_page()
+      |> Steps.open_task_slide_in(:task)
+      |> Steps.change_task_assignee(assignee_name: assignee_name)
+      |> Steps.close_task_slide_in(:task)
+      |> Steps.reload_task(:task)
+      |> Steps.open_task_slide_in(:task)
+      |> Steps.delete_task()
+      |> Steps.assert_task_removed(task_key: :task, status_value: status_value)
+      |> Steps.assert_activity_in_space_and_company_feeds(
+        title: "assigned to #{assignee_name} the task a task",
+        long_title: "assigned to #{assignee_name} the task a task in #{ctx.space.name}"
+      )
+    end
   end
 end
