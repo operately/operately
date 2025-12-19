@@ -841,7 +841,8 @@ export interface ActivityContentTaskAssigneeAssignment {
 }
 
 export interface ActivityContentTaskAssigneeUpdating {
-  project: Project;
+  space: Space;
+  project: Project | null;
   task: Task | null;
   oldAssignee: Person;
   newAssignee: Person;
