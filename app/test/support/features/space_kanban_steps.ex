@@ -48,6 +48,12 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
     |> UI.click(testid: UI.testid(["delete-status", status_value]))
   end
 
+  step :reload_task, ctx, task_key do
+    task = Repo.reload(ctx[task_key])
+
+    Map.put(ctx, task_key, task)
+  end
+
   step :assert_status_column, ctx, opts do
     value = Keyword.fetch!(opts, :value)
 
