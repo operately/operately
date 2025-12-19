@@ -3,7 +3,7 @@ import React from "react";
 import type { ActivityContentTaskStatusUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
-import { feedTitle, projectLink, taskLink } from "../feedItemLinks";
+import { feedTitle, projectLink, spaceLink, taskLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
 
 const TaskStatusUpdating: ActivityHandler = {
@@ -12,7 +12,12 @@ const TaskStatusUpdating: ActivityHandler = {
   },
 
   pagePath(paths: Paths, activity: Activity) {
-    return paths.projectPath(content(activity).project!.id!);
+    const { project, space } = content(activity);
+
+    if (project) {
+      return paths.projectPath(project.id);
+    }
+    return paths.spaceKanbanPath(space.id);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -28,15 +33,18 @@ const TaskStatusUpdating: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: string }) {
-    const { project, task, newStatus, name } = content(activity);
-    const taskName = task ? taskLink(task) : `the "${name}" task`
+    const { project, space, task, newStatus, name } = content(activity);
+    const taskName = task ? taskLink(task) : `the "${name}" task`;
 
-    const message = ["marked", taskName, "as", newStatus.label]
+    const message = ["marked", taskName, "as", newStatus.label];
+    const location = project ? projectLink(project) : spaceLink(space);
 
     if (page === "project") {
       return feedTitle(activity, ...message);
+    } else if (page === "space" && !project) {
+      return feedTitle(activity, ...message);
     } else {
-      return feedTitle(activity, ...message, "in", projectLink(project));
+      return feedTitle(activity, ...message, "in", location);
     }
   },
 
@@ -69,7 +77,12 @@ const TaskStatusUpdating: ActivityHandler = {
   },
 
   NotificationLocation(props: { activity: Activity }) {
-    return content(props.activity).project!.name!;
+    const { project, space } = content(props.activity);
+
+    if (project) {
+      return project.name;
+    }
+    return space.name;
   },
 };
 
