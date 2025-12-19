@@ -891,8 +891,9 @@ export interface ActivityContentTaskNameEditing {
 }
 
 export interface ActivityContentTaskNameUpdating {
-  project: Project;
-  task: Task;
+  space: Space;
+  project: Project | null;
+  task: Task | null;
   oldName: string;
   newName: string;
 }
