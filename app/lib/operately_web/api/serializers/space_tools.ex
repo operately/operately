@@ -5,6 +5,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Groups.SpaceTools do
       goals: OperatelyWeb.Api.Serializer.serialize(space_tools.goals, level: :full),
       messages_boards: OperatelyWeb.Api.Serializer.serialize(space_tools.messages_boards),
       resource_hubs: OperatelyWeb.Api.Serializer.serialize(space_tools.resource_hubs),
+      tasks: OperatelyWeb.Api.Serializer.serialize(space_tools.tasks, level: :full),
     }
   end
 end

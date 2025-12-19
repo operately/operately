@@ -6,6 +6,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
   import Operately.MessagesFixtures
   import Operately.ProjectsFixtures
   import Operately.GoalsFixtures
+  import Operately.TasksFixtures
 
   alias Operately.Access.Binding
 
@@ -137,6 +138,26 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
         end
       end
     end
+
+    tabletest @space_table do
+      test "Tasks - if caller has levels company=#{@test.company}, space=#{@test.space}, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx, @test.company)
+        add_member(ctx, space, ctx.person, @test.space)
+
+        task_fixture(%{creator_id: ctx.creator.id, space_id: space.id, name: "Task 1"})
+        task_fixture(%{creator_id: ctx.creator.id, space_id: space.id, name: "Task 2"})
+
+        assert {200, res} = query(ctx.conn, :list_space_tools, %{space_id: Paths.space_id(space)})
+
+        case @test.expected do
+          :forbidden ->
+            assert length(res.tools.tasks) == 0
+
+          :allowed ->
+            assert length(res.tools.tasks) == 2
+        end
+      end
+    end
   end
 
   describe "list_space_tools functionality" do
@@ -164,6 +185,8 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
       |> Factory.add_folder(:folder1, :hub1)
       |> Factory.add_folder(:folder2, :hub1)
       |> Factory.add_folder(:folder3, :hub2)
+      |> Factory.create_space_task(:task1, :space)
+      |> Factory.create_space_task(:task2, :space)
     end
 
     test "list projects", ctx do
@@ -210,6 +233,14 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
       assert length(hub2.nodes) == 1
     end
 
+    test "list tasks", ctx do
+      assert {200, res} = query(ctx.conn, :list_space_tools, %{space_id: Paths.space_id(ctx.space)})
+
+      assert length(res.tools.tasks) == 2
+      assert Enum.find(res.tools.tasks, &(&1.id == Paths.task_id(ctx.task1)))
+      assert Enum.find(res.tools.tasks, &(&1.id == Paths.task_id(ctx.task2)))
+    end
+
     test "includes paused projects in the list", ctx do
       # Create an additional paused project using the factory
       ctx = ctx
@@ -223,7 +254,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
       assert Enum.find(res.tools.projects, &(&1.id == Paths.project_id(ctx.project1)))
       assert Enum.find(res.tools.projects, &(&1.id == Paths.project_id(ctx.project2)))
       assert Enum.find(res.tools.projects, &(&1.id == Paths.project_id(ctx.project_paused)))
-      
+
       # Verify the paused project has correct state
       paused_project = Enum.find(res.tools.projects, &(&1.id == Paths.project_id(ctx.project_paused)))
       assert paused_project.state == "paused"
