@@ -868,7 +868,8 @@ export interface ActivityContentTaskDescriptionChange {
 }
 
 export interface ActivityContentTaskDueDateUpdating {
-  project: Project;
+  space: Space;
+  project: Project | null;
   task: Task | null;
   taskName: string | null;
   oldDueDate: ContextualDate;

@@ -12,7 +12,11 @@ const TaskStatusUpdating: ActivityHandler = {
   },
 
   pagePath(paths: Paths, activity: Activity) {
-    const { project, space } = content(activity);
+    const { project, space, task } = content(activity);
+
+    if (project && task) {
+      return paths.taskPath(task.id);
+    }
 
     if (project) {
       return paths.projectPath(project.id);

@@ -3,7 +3,7 @@ import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import React from "react";
 import { DateDisplay } from "turboui";
-import { feedTitle, taskLink, projectLink } from "../feedItemLinks";
+import { feedTitle, projectLink, spaceLink, taskLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
 import { parseContextualDate } from "@/models/contextualDates";
 
@@ -13,8 +13,17 @@ const TaskDueDateUpdating: ActivityHandler = {
   },
 
   pagePath(paths: Paths, activity: Activity): string {
-    const data = content(activity);
-    return paths.taskPath(data.task!.id!);
+    const { project, space, task } = content(activity);
+
+    if (project && task) {
+      return paths.taskPath(task.id);
+    }
+
+    if (project) {
+      return paths.projectPath(project.id, "tasks");
+    }
+
+    return paths.spaceKanbanPath(space.id);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -30,35 +39,36 @@ const TaskDueDateUpdating: ActivityHandler = {
   },
 
   FeedItemTitle(props: { activity: Activity; page: string }) {
-    const { taskName, task, project, newDueDate } = content(props.activity);
+    const { taskName, task, project, space, newDueDate } = content(props.activity);
 
     const message = newDueDate ? "changed the due date to " : "cleared the due date";
+    const location = project ? projectLink(project) : spaceLink(space);
 
-    // Get the task element - either a link or plain text
-    let taskElement;
-    if (task) {
-      taskElement = taskLink(task);
-    } else if (taskName) {
-      taskElement = taskName;
-    } else {
-      taskElement = "a task";
-    }
+    const taskElement = (() => {
+      if (task) return taskLink(task, { spaceId: !project ? space.id : undefined });
+      if (taskName) return taskName;
+      return "a task";
+    })();
     
     if (newDueDate) {
       // When showing a date, need to include the DateField component after the message
       const dateField = <DateDisplay date={parseContextualDate(newDueDate)} />;
-      
+
       if (props.page === "project") {
         return feedTitle(props.activity, message, dateField, "on", taskElement);
+      } else if (props.page === "space" && !project) {
+        return feedTitle(props.activity, message, dateField, "on", taskElement);
       } else {
-        return feedTitle(props.activity, message, dateField, "on", taskElement, "in", projectLink(project));
+        return feedTitle(props.activity, message, dateField, "on", taskElement, "in", location);
       }
     } else {
       // For cleared date, no DateField needed
       if (props.page === "project") {
         return feedTitle(props.activity, message, "on", taskElement);
+      } else if (props.page === "space" && !project) {
+        return feedTitle(props.activity, message, "on", taskElement);
       } else {
-        return feedTitle(props.activity, message, "on", taskElement, "in", projectLink(project));
+        return feedTitle(props.activity, message, "on", taskElement, "in", location);
       }
     }
   },
@@ -101,8 +111,13 @@ const TaskDueDateUpdating: ActivityHandler = {
   },
 
   NotificationLocation(props: { activity: Activity }) {
-    const { project } = content(props.activity);
-    return project?.name || null;
+    const { project, space } = content(props.activity);
+
+    if (project) {
+      return project.name;
+    }
+
+    return space.name;
   },
 };
 
