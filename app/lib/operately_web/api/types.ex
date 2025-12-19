@@ -980,10 +980,11 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :space_tools do
-    field? :projects, list_of(:project), null: true
-    field? :goals, list_of(:goal), null: true
-    field? :messages_boards, list_of(:messages_board), null: true
-    field? :resource_hubs, list_of(:resource_hub), null: true
+    field :projects, list_of(:project), null: true
+    field :goals, list_of(:goal), null: true
+    field :messages_boards, list_of(:messages_board), null: true
+    field :resource_hubs, list_of(:resource_hub), null: true
+    field :tasks, list_of(:task), null: true
   end
 
   object :blob_creation_input do

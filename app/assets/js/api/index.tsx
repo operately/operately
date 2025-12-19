@@ -1735,10 +1735,11 @@ export interface SpaceSetupInput {
 }
 
 export interface SpaceTools {
-  projects?: Project[] | null;
-  goals?: Goal[] | null;
-  messagesBoards?: MessagesBoard[] | null;
-  resourceHubs?: ResourceHub[] | null;
+  projects: Project[] | null;
+  goals: Goal[] | null;
+  messagesBoards: MessagesBoard[] | null;
+  resourceHubs: ResourceHub[] | null;
+  tasks: Task[] | null;
 }
 
 export interface Subscriber {
@@ -2769,11 +2770,11 @@ export interface ListResourceHubNodesResult {
 }
 
 export interface ListSpaceToolsInput {
-  spaceId?: Id | null;
+  spaceId: Id;
 }
 
 export interface ListSpaceToolsResult {
-  tools?: SpaceTools | null;
+  tools: SpaceTools;
 }
 
 export interface ListTaskAssignablePeopleInput {
