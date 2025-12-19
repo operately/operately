@@ -102,7 +102,8 @@ export const milestoneLink = (milestone: api.Milestone, milestoneName?: string) 
   return <Link to={path}>{name}</Link>;
 };
 
-export const taskLink = (task: api.Task, { taskName, spaceId }: { taskName?: string; spaceId?: string }) => {
+export const taskLink = (task: api.Task, attrs?: { taskName?: string; spaceId?: string }) => {
+  const { taskName, spaceId } = attrs || {};
   const paths = usePaths();
   const path = spaceId ? paths.spaceKanbanPath(spaceId) : paths.taskPath(task.id);
   const name = taskName || task.name;
