@@ -6,15 +6,16 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceTools do
   alias Operately.Projects.Project
   alias Operately.Messages.{MessagesBoard, Message}
   alias Operately.ResourceHubs.{ResourceHub, Node}
+  alias Operately.Tasks.Task
   alias Operately.Groups.SpaceTools
   alias Operately.Access.Filters
 
   inputs do
-    field? :space_id, :id, null: true
+    field :space_id, :id, null: false
   end
 
   outputs do
-    field? :tools, :space_tools, null: true
+    field :tools, :space_tools, null: false
   end
 
   def call(conn, inputs) do
@@ -23,6 +24,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceTools do
     |> run(:id, fn -> decode_id(inputs.space_id) end)
     |> run(:projects, fn ctx -> load_projects(ctx.id, ctx.me) end)
     |> run(:goals, fn ctx -> load_goals(ctx.id, ctx.me) end)
+    |> run(:tasks, fn ctx -> load_tasks(ctx.id, ctx.me) end)
     |> run(:messages_boards, fn ctx -> load_messages_boards(ctx.id, ctx.me) end)
     |> run(:resource_hubs, fn ctx -> load_resource_hubs(ctx.id, ctx.me) end)
     |> run(:serialized, fn ctx -> serialize(ctx) end)
@@ -67,6 +69,16 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceTools do
       |> Repo.all()
 
     {:ok, goals}
+  end
+
+  defp load_tasks(space_id, me) do
+    tasks =
+      from(t in Task, join: s in assoc(t, :space), as: :space)
+      |> Task.scope_space(space_id)
+      |> Filters.filter_by_view_access(me.id, named_binding: :space)
+      |> Repo.all()
+
+    {:ok, tasks}
   end
 
   defp load_messages_boards(space_id, me) do

@@ -116,6 +116,10 @@ defmodule Operately.Tasks.Task do
     from t in query, join: c in assoc(t, :company), where: c.id == ^company_id
   end
 
+  def scope_space(query, space_id) do
+    from t in query, where: t.space_id == ^space_id
+  end
+
   def scope_milestone(query, milestone_id) do
     from t in query, where: t.milestone_id == ^milestone_id
   end
