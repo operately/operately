@@ -825,11 +825,10 @@ export interface ActivityContentSpaceTaskCommented {
 }
 
 export interface ActivityContentTaskAdding {
-  company: Company;
   space: Space;
-  project: Project;
-  milestone: Milestone;
-  task: Task;
+  project: Project | null;
+  milestone: Milestone | null;
+  task: Task | null;
   taskName: string;
 }
 
