@@ -933,7 +933,8 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_task_assignee_updating do
-    field :project, :project
+    field :space, :space, null: false
+    field :project, :project, null: true
     field :task, :task, null: true
     field :old_assignee, :person
     field :new_assignee, :person
