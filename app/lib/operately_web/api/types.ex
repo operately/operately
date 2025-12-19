@@ -853,8 +853,9 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_task_name_updating do
-    field :project, :project, null: false
-    field :task, :task, null: false
+    field :space, :space, null: false
+    field :project, :project, null: true
+    field :task, :task, null: true
     field :old_name, :string, null: false
     field :new_name, :string, null: false
   end

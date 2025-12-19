@@ -6,6 +6,7 @@ import { Link } from "turboui";
 import * as api from "@/api";
 
 import { usePaths } from "@/routes/paths";
+
 export const feedTitle = (activity: api.Activity, ...rest: (string | JSX.Element)[]) => {
   return (
     <>
@@ -43,7 +44,7 @@ export const goalCheckInLink = (checkIn?: api.GoalProgressUpdate | null) => {
   const path = paths.goalCheckInPath(checkIn.id);
 
   return <Link to={path}>Check-In</Link>;
-}
+};
 
 export const spaceLink = (space: api.Space) => {
   const paths = usePaths();
@@ -101,9 +102,10 @@ export const milestoneLink = (milestone: api.Milestone, milestoneName?: string) 
   return <Link to={path}>{name}</Link>;
 };
 
-export const taskLink = (task: api.Task, taskName?: string) => {
+export const taskLink = (task: api.Task, attrs?: { taskName?: string; spaceId?: string }) => {
+  const { taskName, spaceId } = attrs || {};
   const paths = usePaths();
-  const path = paths.taskPath(task.id);
+  const path = spaceId ? paths.spaceKanbanPath(spaceId) : paths.taskPath(task.id);
   const name = taskName || task.name;
 
   return <Link to={path}>{name}</Link>;
