@@ -82,6 +82,10 @@ const DiscussionCommentSubmitted: ActivityHandler = {
   NotificationLocation({ activity }: { activity: Activity }) {
     return content(activity).space.name;
   },
+
+  hidden(activity: Activity) {
+    return !content(activity).comment;
+  }
 };
 
 function content(activity: Activity): ActivityContentDiscussionCommentSubmitted {
