@@ -1,7 +1,7 @@
 import type { ActivityContentTaskAdding } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
-import { feedTitle, projectLink, taskLink } from "../feedItemLinks";
+import { feedTitle, projectLink, spaceLink, taskLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
 
 const TaskAdding: ActivityHandler = {
@@ -10,7 +10,17 @@ const TaskAdding: ActivityHandler = {
   },
 
   pagePath(paths: Paths, activity: Activity) {
-    return paths.taskPath(content(activity).task!.id!);
+    const { project, space, task } = content(activity);
+
+    if (project && task) {
+      return paths.taskPath(task.id);
+    }
+
+    if (project) {
+      return paths.projectPath(project.id, "tasks");
+    }
+
+    return paths.spaceKanbanPath(space.id);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -26,13 +36,17 @@ const TaskAdding: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: string }) {
-    const { project, taskName, task } = content(activity);
-    const tName = task ? taskLink(task) : `"${taskName}"`;
+    const { project, space, taskName, task } = content(activity);
+
+    const tName = task ? taskLink(task, { spaceId: !project ? space.id : undefined }) : `"${taskName}"`;
+    const location = project ? projectLink(project) : spaceLink(space);
 
     if (page === "project" || page === "task") {
       return feedTitle(activity, "added the task", tName);
+    } else if (page === "space" && !project) {
+      return feedTitle(activity, "added the task", tName);
     } else {
-      return feedTitle(activity, "added the task", tName, "in", projectLink(project));
+      return feedTitle(activity, "added the task", tName, "in", location);
     }
   },
 
@@ -58,7 +72,13 @@ const TaskAdding: ActivityHandler = {
   },
 
   NotificationLocation(props: { activity: Activity }) {
-    return content(props.activity).project!.name!;
+    const { project, space } = content(props.activity);
+
+    if (project) {
+      return project.name;
+    }
+
+    return space.name;
   },
 };
 

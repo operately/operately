@@ -3,7 +3,6 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.TaskAdd
 
   def serialize(content, level: :essential) do
     %{
-      company: Serializer.serialize(content["company"], level: :essential),
       space: Serializer.serialize(content["space"], level: :essential),
       project: Serializer.serialize(content["project"], level: :essential),
       milestone: Serializer.serialize(content["milestone"], level: :essential),
