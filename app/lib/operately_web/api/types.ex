@@ -924,12 +924,11 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_task_adding do
-    field :company, :company
     field :space, :space
-    field :project, :project
-    field :milestone, :milestone
-    field :task, :task
-    field :task_name, :string
+    field :project, :project, null: true
+    field :milestone, :milestone, null: true
+    field :task, :task, null: true
+    field :task_name, :string, null: false
   end
 
   object :activity_content_task_assignee_updating do
