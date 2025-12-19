@@ -856,7 +856,7 @@ export interface ActivityContentTaskClosing {
 export interface ActivityContentTaskDeleting {
   company: Company;
   space: Space;
-  project: Project;
+  project: Project | null;
   taskName: string;
 }
 
