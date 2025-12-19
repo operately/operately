@@ -8,7 +8,7 @@ defmodule OperatelyWeb.Api.Queries.GetCompany do
   require Logger
 
   inputs do
-    field? :id, :company_id, null: true
+    field :id, :company_id, null: false
 
     field? :include_permissions, :boolean, null: true
     field? :include_people, :boolean, null: true
@@ -18,7 +18,7 @@ defmodule OperatelyWeb.Api.Queries.GetCompany do
   end
 
   outputs do
-    field? :company, :company, null: true
+    field :company, :company, null: false
   end
 
   def call(conn, inputs) do

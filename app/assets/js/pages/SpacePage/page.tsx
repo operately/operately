@@ -4,6 +4,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as Spaces from "@/models/spaces";
+import * as Companies from "@/models/companies";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
 import {
@@ -31,10 +32,11 @@ import { match } from "ts-pattern";
 import { useLoadedData, useRefresh } from "./loader";
 
 export function Page() {
-  const { space, tools } = useLoadedData();
+  const { space, tools, company } = useLoadedData();
 
-  assertPresent(space.notifications, "notifications must be present in space");
-  useClearNotificationsOnLoad(space.notifications);
+  const displayTasks = Boolean(company && Companies.hasFeature(company, "space-tasks"));
+
+  useClearNotificationsOnLoad(space.notifications || []);
 
   return (
     <Pages.Page title={space.name!} testId="space-page">
@@ -44,7 +46,7 @@ export function Page() {
           <SpaceHeader space={space} />
           <SpaceMembers space={space} />
           <JoinButton space={space} />
-          <ToolsSection space={space} tools={tools} />
+          <ToolsSection space={space} tools={tools} displayTasks={displayTasks} />
           <SpaceFooter space={space} />
         </Paper.Body>
       </Paper.Root>

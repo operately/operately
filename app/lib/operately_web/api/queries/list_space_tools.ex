@@ -73,7 +73,10 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceTools do
 
   defp load_tasks(space_id, me) do
     tasks =
-      from(t in Task, join: s in assoc(t, :space), as: :space)
+      from(t in Task,
+        join: s in assoc(t, :space), as: :space,
+        preload: [:assigned_people]
+      )
       |> Task.scope_space(space_id)
       |> Filters.filter_by_view_access(me.id, named_binding: :space)
       |> Repo.all()
