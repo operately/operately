@@ -124,4 +124,22 @@ defmodule Operately.Features.SpaceKanbanTest do
     |> Steps.visit_kanban_page()
     |> Steps.assert_task_in_status(task_key: :task, status_value: replacement_status)
   end
+
+  describe "activities" do
+    feature "renaming a task creates an activity", ctx do
+      new_name = "Renamed Task"
+
+      ctx
+      |> Steps.visit_kanban_page()
+      |> Steps.open_task_slide_in(:task)
+      |> Steps.rename_task(name: new_name)
+      |> Steps.close_task_slide_in(:task)
+      |> Steps.visit_kanban_page()
+      |> Steps.assert_task_renamed(title: new_name, old_title: ctx[:task].name)
+      |> Steps.assert_activity_in_space_and_company_feeds(
+        title: "renamed task to #{new_name}",
+        long_title: "renamed task to #{new_name} in #{ctx.space.name}"
+      )
+    end
+  end
 end
