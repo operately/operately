@@ -18,7 +18,7 @@ defmodule OperatelyWeb.Api.Queries.GetCompany do
   end
 
   outputs do
-    field? :company, :company, null: true
+    field :company, :company, null: false
   end
 
   def call(conn, inputs) do

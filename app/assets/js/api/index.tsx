@@ -2276,7 +2276,7 @@ export interface GetCompanyInput {
 }
 
 export interface GetCompanyResult {
-  company?: Company | null;
+  company: Company;
 }
 
 export interface GetDiscussionInput {
