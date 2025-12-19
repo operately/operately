@@ -3,7 +3,7 @@ import React from "react";
 import type { ActivityContentTaskNameUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
-import { feedTitle, projectLink, taskLink } from "../feedItemLinks";
+import { feedTitle, projectLink, spaceLink, taskLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
 
 const TaskNameUpdating: ActivityHandler = {
@@ -12,7 +12,12 @@ const TaskNameUpdating: ActivityHandler = {
   },
 
   pagePath(paths: Paths, activity: Activity) {
-    return paths.projectPath(content(activity).project.id);
+    const { project, space } = content(activity);
+
+    if (project) {
+      return paths.projectPath(project.id);
+    }
+    return paths.spaceKanbanPath(space.id);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -28,23 +33,24 @@ const TaskNameUpdating: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: string }) {
-    const { project, newName, task } = content(activity);
+    const { project, space, newName, task } = content(activity);
+
+    const name = task ? taskLink(task, { taskName: newName, spaceId: !project ? space.id : undefined }) : newName;
+    const location = project ? projectLink(project) : spaceLink(space);
 
     if (page === "project") {
-      return feedTitle(activity, "renamed task to", taskLink(task, newName));
+      return feedTitle(activity, "renamed task to", name);
+    } else if (page === "space" && !project) {
+      return feedTitle(activity, "renamed task to", name);
     } else {
-      return feedTitle(activity, "renamed task to", taskLink(task, newName), "in", projectLink(project));
+      return feedTitle(activity, "renamed task to", name, "in", location);
     }
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {
     const { oldName } = content(activity);
 
-    return (
-      <>
-        Previously, the task was named "{oldName}".
-      </>
-    );
+    return <>Previously, the task was named "{oldName}".</>;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {

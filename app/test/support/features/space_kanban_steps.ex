@@ -4,6 +4,7 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
   alias Operately.Repo
   alias Operately.Tasks.Task
   alias Operately.Support.Features.UI
+  alias Operately.Support.Features.FeedSteps
   alias OperatelyWeb.Paths
 
   step :visit_kanban_page, ctx do
@@ -67,6 +68,27 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
     |> UI.find([testid: UI.testid(["kanban-column-header", value])], fn ctx ->
       UI.assert_text(ctx, label)
     end)
+  end
+
+  step :assert_activity_in_space_and_company_feeds, ctx, opts do
+    title = Keyword.fetch!(opts, :title)
+    long_title = Keyword.fetch!(opts, :long_title)
+
+    ctx
+    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
+    |> UI.find(UI.query(testid: "space-feed"), fn el ->
+      FeedSteps.assert_feed_item_exists(el, %{author: ctx.creator, title: title})
+    end)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.find(UI.query(testid: "company-feed"), fn el ->
+      FeedSteps.assert_feed_item_exists(el, %{author: ctx.creator, title: long_title})
+    end)
+  end
+
+  step :assert_task_renamed, ctx, opts do
+    ctx
+    |> UI.assert_text(opts[:title])
+    |> UI.refute_text(opts[:old_title])
   end
 
   step :assert_delete_status_blocked, ctx do
@@ -138,6 +160,14 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
     |> UI.send_keys([:escape])
     |> UI.sleep(400)
     |> UI.refute_has(testid: "task-slide-in")
+  end
+
+  step :rename_task, ctx, opts do
+    name = Keyword.fetch!(opts, :name)
+
+    ctx
+    |> UI.fill_text_field(testid: "task-name", with: name, submit: true)
+    |> UI.sleep(300)
   end
 
   step :change_task_status, ctx, opts do
