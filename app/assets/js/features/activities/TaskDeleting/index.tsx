@@ -2,7 +2,7 @@ import type { ActivityContentTaskDeleting } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import React from "react";
-import { feedTitle, projectLink } from "../feedItemLinks";
+import { feedTitle, projectLink, spaceLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
 
 const TaskDeleting: ActivityHandler = {
@@ -10,8 +10,14 @@ const TaskDeleting: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(_paths: Paths, _activity: Activity) {
-    throw new Error("Not implemented");
+  pagePath(paths: Paths, activity: Activity) {
+    const { project, space } = content(activity);
+
+    if (project) {
+      return paths.projectPath(project.id, "tasks");
+    }
+
+    return paths.spaceKanbanPath(space.id);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -27,12 +33,15 @@ const TaskDeleting: ActivityHandler = {
   },
 
   FeedItemTitle(props: { activity: Activity; page: string }) {
-    const { taskName, project }  = content(props.activity);
+    const { taskName, project, space } = content(props.activity);
+    const location = project ? projectLink(project) : spaceLink(space);
 
     if (props.page === "project") {
       return feedTitle(props.activity, `deleted task "${taskName}"`);
+    } else if (props.page === "space" && !project) {
+      return feedTitle(props.activity, `deleted task "${taskName}"`);
     } else {
-      return feedTitle(props.activity, `deleted task "${taskName}"`, "on", projectLink(project));
+      return feedTitle(props.activity, `deleted task "${taskName}"`, "in", location);
     }
   },
 
@@ -58,9 +67,12 @@ const TaskDeleting: ActivityHandler = {
   },
 
   NotificationLocation(props: { activity: Activity }) {
-    const { project } = content(props.activity);
+    const { project, space } = content(props.activity);
 
-    return <>Project: {project?.name}</>;
+    if (project) {
+      return <>Project: {project.name}</>;
+    }
+    return <>Space: {space.name}</>;
   },
 };
 
