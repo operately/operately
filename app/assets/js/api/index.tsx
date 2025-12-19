@@ -2267,7 +2267,7 @@ export interface GetCompaniesResult {
 }
 
 export interface GetCompanyInput {
-  id?: CompanyId | null;
+  id: CompanyId;
   includePermissions?: boolean | null;
   includePeople?: boolean | null;
   includeAdmins?: boolean | null;
@@ -2276,7 +2276,7 @@ export interface GetCompanyInput {
 }
 
 export interface GetCompanyResult {
-  company?: Company | null;
+  company: Company;
 }
 
 export interface GetDiscussionInput {
