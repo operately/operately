@@ -1,14 +1,17 @@
 import * as Pages from "@/components/Pages";
 import * as Spaces from "@/models/spaces";
+import * as Companies from "@/models/companies";
 
 interface LoadedData {
   space: Spaces.Space;
+  company: Companies.Company;
   tools: Spaces.SpaceTools;
   loadedAt: Date;
 }
 
 export async function loader({ params }): Promise<LoadedData> {
-  const [space, tools] = await Promise.all([
+  const [company, space, tools] = await Promise.all([
+    Companies.getCompany({ id: params.companyId }).then((data) => data.company),
     Spaces.getSpace({
       id: params.id,
       includeMembers: true,
@@ -20,6 +23,7 @@ export async function loader({ params }): Promise<LoadedData> {
   ]);
 
   return {
+    company,
     space,
     tools,
     loadedAt: new Date(),
