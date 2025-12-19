@@ -927,8 +927,9 @@ export interface ActivityContentTaskStatusChange {
 }
 
 export interface ActivityContentTaskStatusUpdating {
-  project: Project;
-  task: Task;
+  space: Space;
+  project: Project | null;
+  task: Task | null;
   oldStatus: TaskStatus;
   newStatus: TaskStatus;
   name: string;

@@ -176,5 +176,45 @@ defmodule Operately.Features.SpaceKanbanTest do
         long_title: "renamed task to #{new_name} in #{ctx.space.name}"
       )
     end
+
+    feature "changing a task status creates an activity", ctx do
+      [old_status_value, new_status_value | _] = ctx.status_values
+
+      old_status_label = Enum.find(ctx.space.task_statuses, &(&1.value == old_status_value)).label
+      new_status_label = Enum.find(ctx.space.task_statuses, &(&1.value == new_status_value)).label
+
+      ctx
+      |> Steps.visit_kanban_page()
+      |> Steps.open_task_slide_in(:task)
+      |> Steps.change_task_status(prev_status: old_status_label, next_status: new_status_value)
+      |> Steps.close_task_slide_in(:task)
+      |> Steps.assert_task_in_status(task_key: :task, status_value: new_status_value)
+      |> Steps.assert_activity_in_space_and_company_feeds(
+        title: "marked #{ctx.task.name} as #{new_status_label}",
+        long_title: "marked #{ctx.task.name} as #{new_status_label} in #{ctx.space.name}"
+      )
+    end
+
+    feature "task-status-updating activity works after task is deleted", ctx do
+      [old_status_value, new_status_value | _] = ctx.status_values
+
+      old_status_label = Enum.find(ctx.space.task_statuses, &(&1.value == old_status_value)).label
+      new_status_label = Enum.find(ctx.space.task_statuses, &(&1.value == new_status_value)).label
+      task_display = "the \"#{ctx.task.name}\" task"
+
+      ctx
+      |> Steps.visit_kanban_page()
+      |> Steps.open_task_slide_in(:task)
+      |> Steps.change_task_status(prev_status: old_status_label, next_status: new_status_value)
+      |> Steps.close_task_slide_in(:task)
+      |> Steps.reload_task(:task)
+      |> Steps.open_task_slide_in(:task)
+      |> Steps.delete_task()
+      |> Steps.assert_task_removed(task_key: :task, status_value: new_status_value)
+      |> Steps.assert_activity_in_space_and_company_feeds(
+        title: "marked #{task_display} as #{new_status_label}",
+        long_title: "marked #{task_display} as #{new_status_label} in #{ctx.space.name}"
+      )
+    end
   end
 end

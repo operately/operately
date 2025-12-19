@@ -876,11 +876,12 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_task_status_updating do
-    field :project, :project
-    field :task, :task
-    field :old_status, :task_status
-    field :new_status, :task_status
-    field :name, :string
+    field :space, :space, null: false
+    field :project, :project, null: true
+    field :task, :task, null: true
+    field :old_status, :task_status, null: false
+    field :new_status, :task_status, null: false
+    field :name, :string, null: false
   end
 
   object :activity_content_milestone_title_updating do
