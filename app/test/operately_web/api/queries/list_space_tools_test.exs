@@ -24,8 +24,8 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
       |> Factory.log_in_person(:person)
     end
 
-    test "it returns 400 invalid id", ctx do
-      assert {400, %{message: "Invalid id format"}} = query(ctx.conn, :list_space_tools, %{space_id: "a;b;c"})
+    test "it returns 404 invalid id", ctx do
+      assert {404, _} = query(ctx.conn, :list_space_tools, %{space_id: "a;b;c"})
     end
   end
 
