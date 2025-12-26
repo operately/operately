@@ -6,7 +6,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceTools do
   alias Operately.Projects.Project
   alias Operately.Messages.{MessagesBoard, Message}
   alias Operately.ResourceHubs.{ResourceHub, Node}
-  alias Operately.Tasks.Task
+  alias Operately.Groups.Group
   alias Operately.Groups.SpaceTools
   alias Operately.Access.Filters
 
@@ -22,11 +22,8 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceTools do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:id, fn -> decode_id(inputs.space_id) end)
-    |> run(:projects, fn ctx -> load_projects(ctx.id, ctx.me) end)
-    |> run(:goals, fn ctx -> load_goals(ctx.id, ctx.me) end)
-    |> run(:tasks, fn ctx -> load_tasks(ctx.id, ctx.me) end)
-    |> run(:messages_boards, fn ctx -> load_messages_boards(ctx.id, ctx.me) end)
-    |> run(:resource_hubs, fn ctx -> load_resource_hubs(ctx.id, ctx.me) end)
+    |> run(:space, fn ctx -> load_space(ctx.id) end)
+    |> run(:tools_data, fn ctx -> load_tools_data(ctx.space, ctx.me) end)
     |> run(:serialized, fn ctx -> serialize(ctx) end)
     |> respond()
   end
@@ -35,6 +32,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceTools do
     case result do
       {:ok, ctx} -> {:ok, ctx.serialized}
       {:error, :id, _} -> {:error, :bad_request}
+      {:error, :space, :not_found} -> {:error, :not_found}
       {:error, :nodes, _} -> {:error, :not_found}
       {:error, :bad_request, message} -> {:error, :bad_request, message}
       _ -> {:error, :internal_server_error}
@@ -42,9 +40,63 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceTools do
   end
 
   defp serialize(ctx) do
-    space_tools = SpaceTools.build_struct(ctx)
+    space_tools = SpaceTools.build_struct(ctx.space.tools, ctx.tools_data)
 
     {:ok, %{tools: Serializer.serialize(space_tools)}}
+  end
+
+  defp load_space(space_id) do
+    case Repo.get(Group, space_id) do
+      nil -> {:error, :not_found}
+      space -> {:ok, space}
+    end
+  end
+
+  defp load_tools_data(space, me) do
+    projects_task = Task.async(fn -> load_projects(space.id, me) end)
+    goals_task = Task.async(fn -> load_goals(space.id, me) end)
+
+    tasks_task =
+      Task.async(fn ->
+        if space.tools.tasks_enabled do
+          load_tasks(space.id, me)
+        else
+          {:ok, []}
+        end
+      end)
+
+    messages_boards_task =
+      Task.async(fn ->
+        if space.tools.discussions_enabled do
+          load_messages_boards(space.id, me)
+        else
+          {:ok, []}
+        end
+      end)
+
+    resource_hubs_task =
+      Task.async(fn ->
+        if space.tools.resource_hub_enabled do
+          load_resource_hubs(space.id, me)
+        else
+          {:ok, []}
+        end
+      end)
+
+    {:ok, projects} = Task.await(projects_task)
+    {:ok, goals} = Task.await(goals_task)
+    {:ok, tasks} = Task.await(tasks_task)
+    {:ok, messages_boards} = Task.await(messages_boards_task)
+    {:ok, resource_hubs} = Task.await(resource_hubs_task)
+
+    {:ok,
+     %{
+       projects: projects,
+       goals: goals,
+       tasks: tasks,
+       messages_boards: messages_boards,
+       resource_hubs: resource_hubs
+     }}
   end
 
   defp load_projects(space_id, me) do
@@ -73,11 +125,11 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceTools do
 
   defp load_tasks(space_id, me) do
     tasks =
-      from(t in Task,
+      from(t in Operately.Tasks.Task,
         join: s in assoc(t, :space), as: :space,
         preload: [:assigned_people]
       )
-      |> Task.scope_space(space_id)
+      |> Operately.Tasks.Task.scope_space(space_id)
       |> Filters.filter_by_view_access(me.id, named_binding: :space)
       |> Repo.all()
 

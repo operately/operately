@@ -15,6 +15,7 @@ defmodule Operately.Groups.Group do
     field :mission, :string
 
     has_many :tasks, Operately.Tasks.Task, foreign_key: :space_id
+    embeds_one :tools, Operately.Groups.SpaceTools, on_replace: :delete
     embeds_many :task_statuses, Operately.Tasks.Status, on_replace: :delete
     field :tasks_kanban_state, :map, default: Operately.Tasks.KanbanState.initialize()
 
@@ -38,10 +39,21 @@ defmodule Operately.Groups.Group do
   def changeset(group, attrs) do
     group
     |> cast(attrs, [:company_id, :name, :mission, :deleted_at, :tasks_kanban_state])
+    |> cast_embed(:tools)
     |> cast_embed(:task_statuses)
+    |> put_default_tools()
     |> put_default_task_statuses()
     |> validate_required([:company_id, :name, :mission])
   end
+
+  defp put_default_tools(%Ecto.Changeset{data: %__MODULE__{id: nil}} = changeset) do
+    case Ecto.Changeset.get_field(changeset, :tools) do
+      nil -> Ecto.Changeset.put_embed(changeset, :tools, Operately.Groups.SpaceTools.default_settings())
+      _ -> changeset
+    end
+  end
+
+  defp put_default_tools(changeset), do: changeset
 
   defp put_default_task_statuses(%Ecto.Changeset{data: %__MODULE__{id: nil}} = changeset) do
     # Only set defaults for new spaces, and only if task_statuses is empty or not provided
