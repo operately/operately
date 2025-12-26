@@ -2,7 +2,6 @@ defmodule OperatelyWeb.Api.Spaces do
   alias __MODULE__.SharedMultiSteps, as: Steps
 
   alias Operately.Groups.Group, as: Space
-  alias Operately.Groups
   alias Operately.Groups.Permissions
   alias OperatelyWeb.Api.Serializer
 
@@ -151,6 +150,34 @@ defmodule OperatelyWeb.Api.Spaces do
     end
   end
 
+  defmodule UpdateTools do
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
+
+    inputs do
+      field :space_id, :id, null: false
+      field :tools, :update_space_tools_payload, null: false
+    end
+
+    outputs do
+      field :success, :boolean, null: true
+      field :tools, :space_tools, null: true
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_space(inputs.space_id)
+      |> Steps.check_permissions(:can_edit)
+      |> Steps.update_tools(inputs.tools)
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        updated_space = Map.get(changes, :updated_space, changes.space)
+        %{success: true, tools: Serializer.serialize(updated_space.tools, level: :essential)}
+      end)
+    end
+  end
+
   defmodule SharedMultiSteps do
     alias Ecto.Multi
     alias Operately.Repo
@@ -165,18 +192,14 @@ defmodule OperatelyWeb.Api.Spaces do
     end
 
     def find_space(multi, space_id) do
-      Multi.run(multi, :space, fn _repo, _changes ->
-        case Repo.get(Space, space_id) do
-          nil -> {:error, {:not_found, "Space not found"}}
-          space -> {:ok, space}
-        end
+      Multi.run(multi, :space, fn _repo, %{me: me} ->
+        Space.get(me, id: space_id)
       end)
     end
 
     def check_permissions(multi, permission) do
-      Multi.run(multi, :permissions, fn _repo, %{me: me, space: space} ->
-        access_level = Groups.get_access_level(space.id, me.id)
-        Permissions.check(access_level, permission)
+      Multi.run(multi, :permissions, fn _repo, %{space: space} ->
+        Permissions.check(space.request_info.access_level, permission)
       end)
     end
 
@@ -192,6 +215,12 @@ defmodule OperatelyWeb.Api.Spaces do
             Space.changeset(space, %{task_statuses: task_statuses})
           end)
       end
+    end
+
+    def update_tools(multi, tools) do
+      Multi.update(multi, :updated_space, fn %{space: space} ->
+        Space.changeset(space, %{tools: tools})
+      end)
     end
 
     def validate_status_replacements(multi, _task_statuses, []), do: multi
@@ -305,6 +334,9 @@ defmodule OperatelyWeb.Api.Spaces do
 
         {:error, _failed_operation, :forbidden, _changes} ->
           {:error, :forbidden}
+
+        {:error, :updated_space, %Ecto.Changeset{}, _changes} ->
+          {:error, :bad_request, "Invalid tools"}
 
         {:error, :validate_task_statuses, message, _changes} ->
           {:error, :bad_request, message}

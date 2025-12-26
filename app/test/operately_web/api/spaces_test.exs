@@ -3,6 +3,7 @@ defmodule OperatelyWeb.Api.SpacesTest do
 
   alias Operately.People
   alias OperatelyWeb.Paths
+  alias Operately.Access.Binding
 
   setup ctx do
     ctx |> Factory.setup()
@@ -209,7 +210,7 @@ defmodule OperatelyWeb.Api.SpacesTest do
     setup ctx do
       ctx
       |> Factory.setup()
-      |> Factory.add_space(:space)
+      |> Factory.add_space(:space, company_permissions: Binding.view_access())
     end
 
     test "it requires authentication", ctx do
@@ -436,6 +437,75 @@ defmodule OperatelyWeb.Api.SpacesTest do
         space_id: Paths.space_id(ctx.space),
         task_statuses: statuses
       })
+    end
+  end
+
+  describe "update tools" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+    end
+
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:spaces, :update_tools], %{})
+    end
+
+    test "it returns forbidden when the person cannot edit the space", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:space_member, :space, permissions: :view_access)
+        |> Factory.log_in_person(:space_member)
+
+      assert {403, _res} = mutation(ctx.conn, [:spaces, :update_tools], %{
+        space_id: Paths.space_id(ctx.space),
+        tools: %{
+          tasks_enabled: true,
+          discussions_enabled: true,
+          resource_hub_enabled: true
+        }
+      })
+    end
+
+    test "it returns not found when the person cannot view the space", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:outsider)
+        |> Factory.log_in_person(:outsider)
+
+      assert {404, _res} = mutation(ctx.conn, [:spaces, :update_tools], %{
+        space_id: Paths.space_id(ctx.space),
+        tools: %{
+          tasks_enabled: true,
+          discussions_enabled: true,
+          resource_hub_enabled: true
+        }
+      })
+    end
+
+    test "it updates tools for the space", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert ctx.space.tools.tasks_enabled == false
+      assert ctx.space.tools.discussions_enabled == true
+      assert ctx.space.tools.resource_hub_enabled == true
+
+      assert {200, res} = mutation(ctx.conn, [:spaces, :update_tools], %{
+        space_id: Paths.space_id(ctx.space),
+        tools: %{
+          tasks_enabled: true,
+          discussions_enabled: false,
+          resource_hub_enabled: false
+        }
+      })
+
+      assert res.success == true
+
+      space = Repo.reload(ctx.space)
+
+      assert space.tools.tasks_enabled == true
+      assert space.tools.discussions_enabled == false
+      assert space.tools.resource_hub_enabled == false
     end
   end
 end
