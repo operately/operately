@@ -33,19 +33,17 @@ defmodule Operately.Groups.SpaceTools do
     }
   end
 
-  def build_struct(attrs) do
-    defaults = default_settings()
+  def build_struct(nil, attrs) do
+    build_struct(default_settings(), attrs)
+  end
 
-    %__MODULE__{
-      tasks_enabled: Map.get(attrs, :tasks_enabled, defaults.tasks_enabled),
-      discussions_enabled: Map.get(attrs, :discussions_enabled, defaults.discussions_enabled),
-      resource_hub_enabled: Map.get(attrs, :resource_hub_enabled, defaults.resource_hub_enabled),
-
+  def build_struct(%__MODULE__{} = tools, attrs) do
+    %__MODULE__{tools |
       projects: Map.get(attrs, :projects),
       goals: Map.get(attrs, :goals),
       messages_boards: Map.get(attrs, :messages_boards),
       resource_hubs: Map.get(attrs, :resource_hubs),
-      tasks: Map.get(attrs, :tasks),
+      tasks: Map.get(attrs, :tasks)
     }
   end
 end
