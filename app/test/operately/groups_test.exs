@@ -60,6 +60,36 @@ defmodule Operately.GroupsTest do
       assert pending.color == :gray
     end
 
+    test "create_group/1 creates group with default tools", ctx do
+      valid_attrs = %{name: "space with defaults", mission: "some mission", company_id: ctx.company.id}
+
+      assert {:ok, %Group{} = group} = Groups.create_group(ctx.creator, valid_attrs)
+
+      assert group.tools != nil
+      assert group.tools.tasks_enabled == false
+      assert group.tools.discussions_enabled == true
+      assert group.tools.resource_hub_enabled == true
+    end
+
+    test "create_group/1 creates group with custom tools", ctx do
+      valid_attrs = %{
+        name: "space with custom tools",
+        mission: "some mission",
+        company_id: ctx.company.id,
+        tools: %{
+          tasks_enabled: true,
+          discussions_enabled: false,
+          resource_hub_enabled: false
+        }
+      }
+
+      assert {:ok, %Group{} = group} = Groups.create_group(ctx.creator, valid_attrs)
+
+      assert group.tools.tasks_enabled == true
+      assert group.tools.discussions_enabled == false
+      assert group.tools.resource_hub_enabled == false
+    end
+
     test "create_group/1 with invalid data returns error changeset", ctx do
       assert {:error, :group, %Ecto.Changeset{}, _} = Groups.create_group(ctx.creator, @invalid_attrs)
     end
@@ -93,6 +123,30 @@ defmodule Operately.GroupsTest do
 
       assert updated_group.name == "some updated name"
       assert Enum.map(updated_group.task_statuses, & &1.id) == ["custom_todo"]
+    end
+
+    test "update_group/2 can update tools settings", ctx do
+      assert ctx.group.tools.tasks_enabled == false
+
+      assert {:ok, %Group{} = updated_group} =
+               Groups.update_group(ctx.group, %{tools: %{tasks_enabled: true}})
+
+      assert updated_group.tools.tasks_enabled == true
+      assert updated_group.tools.discussions_enabled == true
+      assert updated_group.tools.resource_hub_enabled == true
+    end
+
+    test "update_group/2 does not overwrite tools when updating other fields", ctx do
+      assert {:ok, %Group{} = group_with_tasks} =
+               Groups.update_group(ctx.group, %{tools: %{tasks_enabled: true}})
+
+      assert group_with_tasks.tools.tasks_enabled == true
+
+      assert {:ok, %Group{} = updated_group} =
+               Groups.update_group(group_with_tasks, %{name: "some updated name"})
+
+      assert updated_group.name == "some updated name"
+      assert updated_group.tools.tasks_enabled == true
     end
 
     test "update_group/2 with invalid data returns error changeset", ctx do

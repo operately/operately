@@ -15,6 +15,14 @@ defmodule OperatelyWeb.Api.Queries.GetSpaceTest do
     end
   end
 
+  describe "invalid id" do
+    setup :register_and_log_in_account
+
+    test "it returns 404 invalid id", ctx do
+      assert {404, _} = query(ctx.conn, :get_space, %{id: "a;b;c"})
+    end
+  end
+
   describe "permissions" do
     setup ctx do
       ctx = register_and_log_in_account(ctx)
