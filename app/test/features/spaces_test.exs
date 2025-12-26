@@ -41,6 +41,43 @@ defmodule Operately.Features.SpacesTest do
     |> Steps.assert_space_name_mission_and_privacy_indicator()
   end
 
+  feature "enabling tasks tool makes it visible", ctx do
+    ctx
+    |> Steps.given_a_space_exists()
+    |> Steps.set_space_tools(tasks_enabled: false)
+    |> Steps.visit_space()
+    |> Steps.assert_tool_not_visible("tasks-tool")
+    |> Steps.open_tools_configuration()
+    |> Steps.toggle_tool("task-board")
+    |> Steps.save_tools_configuration()
+    |> Steps.assert_tool_visible("tasks-tool")
+  end
+
+  feature "disabling discussions tool hides it", ctx do
+    ctx
+    |> Steps.given_a_space_exists()
+    |> Steps.set_space_tools(discussions_enabled: true)
+    |> Steps.visit_space()
+    |> Steps.assert_tool_visible("messages-tool")
+    |> Steps.open_tools_configuration()
+    |> Steps.toggle_tool("discussions")
+    |> Steps.save_tools_configuration()
+    |> Steps.assert_tool_not_visible("messages-tool")
+  end
+
+  feature "disabling resource hub hides it", ctx do
+    ctx
+    |> Steps.given_a_space_exists()
+    |> Steps.set_space_tools(resource_hub_enabled: true)
+    |> Steps.given_a_resource_hub_exists()
+    |> Steps.visit_space()
+    |> Steps.assert_tool_visible("team-resources")
+    |> Steps.open_tools_configuration()
+    |> Steps.toggle_tool("documents-and-files")
+    |> Steps.save_tools_configuration()
+    |> Steps.assert_tool_not_visible("team-resources")
+  end
+
   feature "general space does not show delete option", ctx do
     ctx
     |> Steps.visit_general_space()
