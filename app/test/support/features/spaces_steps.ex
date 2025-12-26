@@ -66,7 +66,9 @@ defmodule Operately.Support.Features.SpacesSteps do
 
   step :assert_delete_option_not_visible, ctx do
     ctx
-    |> UI.refute_has(testid: "options-button")
+    |> UI.click(testid: "options-button")
+    |> UI.sleep(250)
+    |> UI.assert_has(testid: "configure-tools")
     |> UI.refute_has(testid: "delete-space")
   end
 
