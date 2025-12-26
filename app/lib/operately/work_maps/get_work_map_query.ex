@@ -166,7 +166,7 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
         |> join(:left, [task: t], p in assoc(t, :project), as: :project)
         |> where([assignee: a], a.person_id == ^person.id)
         |> Operately.Tasks.Task.scope_company(company_id)
-        |> where([project: p], p.status == "active")
+        |> where([project: p], is_nil(p.id) or p.status == "active")
         |> where([task: t], fragment("COALESCE((?->>'closed')::boolean, false) = false", t.task_status))
         |> preload([:project, :space, :project_space, :company, :assigned_people])
         |> Repo.all()

@@ -72,6 +72,7 @@ defmodule Operately.Features.ProjectsTest do
     feature "edit project due date", ctx do
       next_friday = Operately.Support.Time.next_friday()
       formatted_date = Operately.Support.Time.format_month_day(next_friday)
+      formatted_date_in_feed = Operately.Support.Time.format_month_day_maybe_year(next_friday)
 
       ctx
       |> Steps.visit_project_page()
@@ -79,8 +80,8 @@ defmodule Operately.Features.ProjectsTest do
       |> Steps.assert_project_due_date(formatted_date)
       |> Steps.reload_project_page()
       |> Steps.assert_project_due_date(formatted_date)
-      |> Steps.assert_project_due_date_change_visible_in_feed(formatted_date)
-      |> Steps.assert_project_due_date_notification_sent(formatted_date)
+      |> Steps.assert_project_due_date_change_visible_in_feed(formatted_date_in_feed)
+      |> Steps.assert_project_due_date_notification_sent(formatted_date_in_feed)
       |> Steps.assert_project_due_date_set_email_sent()
     end
 
