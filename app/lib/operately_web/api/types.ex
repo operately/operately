@@ -983,6 +983,10 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :space_tools do
+    field :tasks_enabled, :boolean, null: false
+    field :discussions_enabled, :boolean, null: false
+    field :resource_hub_enabled, :boolean, null: false
+
     field :projects, list_of(:project), null: true
     field :goals, list_of(:goal), null: true
     field :messages_boards, list_of(:messages_board), null: true

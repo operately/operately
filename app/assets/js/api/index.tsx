@@ -1738,6 +1738,9 @@ export interface SpaceSetupInput {
 }
 
 export interface SpaceTools {
+  tasksEnabled: boolean;
+  discussionsEnabled: boolean;
+  resourceHubEnabled: boolean;
   projects: Project[] | null;
   goals: Goal[] | null;
   messagesBoards: MessagesBoard[] | null;
