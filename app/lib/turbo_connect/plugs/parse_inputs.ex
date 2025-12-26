@@ -19,6 +19,9 @@ defmodule TurboConnect.Plugs.ParseInputs do
     with {:ok, inputs} <- parse_inputs(specs, params, strict_parsing) do
       Plug.Conn.assign(conn, :turbo_inputs, inputs)
     else
+      {:error, 404, message} ->
+        send_resp(conn, 404, Jason.encode!(%{error: "Not found", message: message})) |> halt()
+
       {:error, 400, message} ->
         send_resp(conn, 400, Jason.encode!(%{error: "Bad request", message: message})) |> halt()
 
@@ -171,7 +174,12 @@ defmodule TurboConnect.Plugs.ParseInputs do
           _ ->
             case decode_with.(value) do
               {:ok, decoded} -> {:ok, decoded}
-              {:error, reason} -> {:error, 400, reason}
+              {:error, reason} ->
+                if type == :id do
+                  {:error, 404, "The requested resource was not found"}
+                else
+                  {:error, 400, reason}
+                end
             end
         end
 
