@@ -117,6 +117,58 @@ defmodule Operately.Features.ProfileTest do
     |> Steps.assert_item_visible(name: ctx.goal.name)
   end
 
+   feature "view tasks assigned to the person", ctx do
+    task_name = "Prepare launch checklist"
+
+    ctx
+    |> Steps.given_task_assigned_to_person(task_name: task_name)
+    |> Steps.visit_profile_page()
+    |> Steps.click_tasks_tab()
+    |> Steps.assert_item_visible(name: task_name)
+  end
+
+  feature "tasks from closed projects are hidden", ctx do
+    active_task_name = "Active project task"
+    closed_task_name = "Closed project task"
+
+    ctx
+    |> Steps.given_task_assigned_to_person(task_key: :active_task, project_key: :active_project, task_name: active_task_name, project_name: "Active Project")
+    |> Steps.given_task_assigned_to_person(task_key: :closed_task, project_key: :closed_project, task_name: closed_task_name, project_name: "Closed Project")
+    |> Steps.given_task_project_is_closed(project_key: :closed_project)
+    |> Steps.visit_profile_page()
+    |> Steps.click_tasks_tab()
+    |> Steps.assert_item_visible(name: active_task_name)
+    |> Steps.refute_item_visible(name: closed_task_name)
+  end
+
+  feature "tasks from paused projects are hidden", ctx do
+    active_task_name = "In-flight task"
+    paused_task_name = "Paused project task"
+
+    ctx
+    |> Steps.given_task_assigned_to_person(task_key: :active_task, project_key: :active_project, task_name: active_task_name, project_name: "Active Project")
+    |> Steps.given_task_assigned_to_person(task_key: :paused_task, project_key: :paused_project, task_name: paused_task_name, project_name: "Paused Project")
+    |> Steps.given_task_project_is_paused(project_key: :paused_project)
+    |> Steps.visit_profile_page()
+    |> Steps.click_tasks_tab()
+    |> Steps.assert_item_visible(name: active_task_name)
+    |> Steps.refute_item_visible(name: paused_task_name)
+  end
+
+  feature "tasks with closed statuses are hidden", ctx do
+    open_task_name = "Task still open"
+    closed_status_task_name = "Completed task"
+
+    ctx
+    |> Steps.given_task_assigned_to_person(task_key: :open_task, project_key: :open_project, task_name: open_task_name, project_name: "Open Project")
+    |> Steps.given_task_assigned_to_person(task_key: :closed_status_task, project_key: :closed_status_project, task_name: closed_status_task_name, project_name: "Closed Status Project")
+    |> Steps.given_task_has_closed_status(task_key: :closed_status_task, project_key: :closed_status_project)
+    |> Steps.visit_profile_page()
+    |> Steps.click_tasks_tab()
+    |> Steps.assert_item_visible(name: open_task_name)
+    |> Steps.refute_item_visible(name: closed_status_task_name)
+  end
+
   feature "assignments email toggle controls cron emails", ctx do
     ctx
     |> Steps.visit_profile_edit_page()
