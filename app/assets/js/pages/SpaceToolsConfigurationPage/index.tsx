@@ -17,7 +17,7 @@ interface LoaderResult {
   tools: Spaces.SpaceTools;
 }
 
-export async function loader({ params }): Promise<LoaderResult> {
+async function loader({ params }): Promise<LoaderResult> {
   const [space, tools] = await Promise.all([
     Spaces.getSpace({ id: params.id }),
     Spaces.listSpaceTools({ spaceId: params.id }).then((data) => data.tools),
@@ -26,7 +26,7 @@ export async function loader({ params }): Promise<LoaderResult> {
   return { space, tools };
 }
 
-export function Page() {
+function Page() {
   const paths = usePaths();
   const navigate = useNavigate();
   const { space, tools: loadedTools } = Pages.useLoadedData() as LoaderResult;
