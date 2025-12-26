@@ -634,73 +634,13 @@ defmodule Operately.Support.Features.UI do
   end
 
   def select_day_in_date_field(ctx, testid: testid, date: date) do
-    is_current_month = date.month == Date.utc_today().month
-    is_last_month = date.month == get_last_month()
-    is_next_month = date.month == get_next_month()
-
-    # Format the day
-    day_number = date.day
-
-    ctx
-    |> click(testid: testid)
-    |> then(fn ctx ->
-      cond do
-        is_current_month ->
-          ctx
-          |> click(testid: "date-field-day-#{day_number}")
-
-        is_last_month ->
-          ctx
-          |> click(css: "[data-testid='date-field-prev-month']")
-          |> click(testid: "date-field-day-#{day_number}")
-
-        is_next_month ->
-          ctx
-          |> click(css: "[data-testid='date-field-next-month']")
-          |> click(testid: "date-field-day-#{day_number}")
-
-        true ->
-          # For dates more than one month away, we need additional navigation
-          ctx
-          |> navigate_to_month(date)
-          |> click(css: "[data-testid='date-field-day-#{day_number}']:not([disabled])")
-      end
-      |> click(testid: "date-field-confirm")
-    end)
+    Operately.Support.Features.UI.DateField.select_day_in_date_field(ctx, testid: testid, date: date)
   end
 
   def clear_date_in_date_field(ctx, testid: testid) do
     ctx
     |> click(testid: testid)
     |> click(testid: "#{testid}-clear")
-  end
-
-  defp navigate_to_month(ctx, date) do
-    target_month = date.month
-    target_year = date.year
-
-    # Limit to prevent infinite loops
-    max_iterations = 24
-    navigate_to_month_recursive(ctx, target_month, target_year, max_iterations)
-  end
-
-  defp navigate_to_month_recursive(ctx, _target_month, _target_year, 0), do: ctx
-
-  defp navigate_to_month_recursive(ctx, target_month, target_year, iterations_left) do
-    current_date = Date.utc_today()
-    current_month = current_date.month
-    current_year = current_date.year
-
-    is_future = target_year > current_year || (target_year == current_year && target_month > current_month)
-
-    updated_ctx =
-      if is_future do
-        click(ctx, testid: "date-field-next-month")
-      else
-        click(ctx, testid: "date-field-prev-month")
-      end
-
-    navigate_to_month_recursive(updated_ctx, target_month, target_year, iterations_left - 1)
   end
 
   def select_date(ctx, testid: testid, date: date) do

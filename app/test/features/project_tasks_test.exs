@@ -318,6 +318,7 @@ defmodule Operately.Features.ProjectTasksTest do
   feature "edit task due date", ctx do
     next_friday = Operately.Support.Time.next_friday()
     formatted_date = Operately.Support.Time.format_month_day(next_friday)
+    formatted_date_in_feed = Operately.Support.Time.format_month_day_maybe_year(next_friday)
     feed_title = "changed the due date of this task from"
 
     ctx
@@ -329,7 +330,7 @@ defmodule Operately.Features.ProjectTasksTest do
     |> Steps.reload_task_page()
     |> Steps.assert_task_due_date(formatted_date)
     |> Steps.assert_change_in_feed(feed_title)
-    |> Steps.assert_task_due_date_change_visible_in_feed(formatted_date)
+    |> Steps.assert_task_due_date_change_visible_in_feed(formatted_date_in_feed)
   end
 
   @tag login_as: :reviewer

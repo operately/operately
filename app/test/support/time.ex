@@ -9,4 +9,12 @@ defmodule Operately.Support.Time do
     month = Calendar.strftime(date, "%b")
     "#{month} #{date.day}"
   end
+
+  def format_month_day_maybe_year(date) do
+    if date.year == Date.utc_today().year do
+      format_month_day(date)
+    else
+      "#{format_month_day(date)}, #{date.year}"
+    end
+  end
 end

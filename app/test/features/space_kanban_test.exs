@@ -220,6 +220,7 @@ defmodule Operately.Features.SpaceKanbanTest do
     feature "changing a task due date creates an activity", ctx do
       due_date = Time.next_friday()
       due_label = Time.format_month_day(due_date)
+      due_label_in_feed = Time.format_month_day_maybe_year(due_date)
 
       ctx
       |> Steps.visit_kanban_page()
@@ -228,15 +229,15 @@ defmodule Operately.Features.SpaceKanbanTest do
       |> Steps.close_task_slide_in(:task)
       |> Steps.assert_card_due_date(task_key: :task, label: due_label)
       |> Steps.assert_activity_in_space_and_company_feeds(
-        title: "changed the due date to #{due_label} on #{ctx.task.name}",
-        long_title: "changed the due date to #{due_label} on #{ctx.task.name} in #{ctx.space.name}"
+        title: "changed the due date to #{due_label_in_feed} on #{ctx.task.name}",
+        long_title: "changed the due date to #{due_label_in_feed} on #{ctx.task.name} in #{ctx.space.name}"
       )
     end
 
     feature "task-due-date-updating activity works after task is deleted", ctx do
       status_value = hd(ctx.status_values)
       due_date = Time.next_friday()
-      due_label = Time.format_month_day(due_date)
+      due_label_in_feed = Time.format_month_day_maybe_year(due_date)
 
       ctx
       |> Steps.visit_kanban_page()
@@ -247,8 +248,8 @@ defmodule Operately.Features.SpaceKanbanTest do
       |> Steps.delete_task()
       |> Steps.assert_task_removed(task_key: :task, status_value: status_value)
       |> Steps.assert_activity_in_space_and_company_feeds(
-        title: "changed the due date to #{due_label} on #{ctx.task.name}",
-        long_title: "changed the due date to #{due_label} on #{ctx.task.name} in #{ctx.space.name}"
+        title: "changed the due date to #{due_label_in_feed} on #{ctx.task.name}",
+        long_title: "changed the due date to #{due_label_in_feed} on #{ctx.task.name} in #{ctx.space.name}"
       )
     end
 
