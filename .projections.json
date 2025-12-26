@@ -4,6 +4,14 @@
     "alternate": "app/test/support/features/{}_steps.ex",
     "template": ["# app/test/{}_test.exs", "defmodule XXX do", "end"]
   },
+  "app/assets/js/pages/*/index.tsx": {
+    "type": "page",
+    "alternate": "turboui/src/{}/index.tsx"
+  },
+  "turboui/src/*/index.tsx": {
+    "type": "page",
+    "alternate": "app/assets/js/pages/{}/index.tsx"
+  },
   "app/test/support/features/*_steps.ex": {
     "type": "test",
     "alternate": "app/test/features/{}_test.exs",
