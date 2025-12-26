@@ -163,8 +163,10 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
       match?(%Operately.People.Person{}, person) ->
         from(t in Operately.Tasks.Task, as: :task)
         |> join(:inner, [task: t], a in assoc(t, :assignees), as: :assignee)
+        |> join(:left, [task: t], p in assoc(t, :project), as: :project)
         |> where([assignee: a], a.person_id == ^person.id)
         |> Operately.Tasks.Task.scope_company(company_id)
+        |> where([project: p], p.status == "active")
         |> where([task: t], fragment("COALESCE((?->>'closed')::boolean, false) = false", t.task_status))
         |> preload([:project, :space, :project_space, :company, :assigned_people])
         |> Repo.all()
