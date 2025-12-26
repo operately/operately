@@ -129,6 +129,7 @@ defmodule OperatelyWeb.Api do
     query(:list_members, OperatelyWeb.Api.Spaces.ListMembers)
     query(:list_tasks, OperatelyWeb.Api.Spaces.ListTasks)
     mutation(:update_task_statuses, OperatelyWeb.Api.Spaces.UpdateTaskStatuses)
+    mutation(:update_tools, OperatelyWeb.Api.Spaces.UpdateTools)
   end
 
   namespace(:invitations) do

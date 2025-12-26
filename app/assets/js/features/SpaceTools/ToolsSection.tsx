@@ -10,10 +10,9 @@ import { Tasks } from "./Tasks";
 interface ToolsSectionPros {
   space: Space;
   tools: SpaceTools;
-  displayTasks?: boolean;
 }
 
-export function ToolsSection({ space, tools, displayTasks }: ToolsSectionPros) {
+export function ToolsSection({ space, tools }: ToolsSectionPros) {
   return (
     <div className="mt-6 py-6">
       <div className="flex justify-center items-start flex-wrap gap-4">
@@ -24,15 +23,15 @@ export function ToolsSection({ space, tools, displayTasks }: ToolsSectionPros) {
           projects={tools.projects ?? []}
         />
 
-        {(tools.messagesBoards ?? []).map((boards) => (
+        {tools.discussionsEnabled && (tools.messagesBoards ?? []).map((boards) => (
           <Discussions space={space} discussions={boards.messages ?? []} key={boards.id} />
         ))}
 
-        {(tools.resourceHubs ?? []).map((hub) => (
+        {tools.resourceHubEnabled && (tools.resourceHubs ?? []).map((hub) => (
           <ResourceHub resourceHub={hub} key={hub.id} />
         ))}
 
-        {displayTasks && <Tasks space={space} tasks={tools.tasks ?? []} />}
+        {tools.tasksEnabled && <Tasks space={space} tasks={tools.tasks ?? []} />}
       </div>
     </div>
   );
