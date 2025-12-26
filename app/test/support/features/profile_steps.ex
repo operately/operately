@@ -119,6 +119,67 @@ defmodule Operately.Support.Features.ProfileSteps do
     Map.merge(ctx, %{projects: [project1, project2], project1: project1, project2: project2})
   end
 
+  step :given_task_assigned_to_person, ctx, opts \\ [] do
+    task_key = Keyword.get(opts, :task_key, :task)
+    project_key = Keyword.get(opts, :project_key, :"#{task_key}_project")
+    task_name = Keyword.get(opts, :task_name, "Task #{task_key}")
+    project_name = Keyword.get(opts, :project_name, "Project #{task_key}")
+
+    ctx =
+      ctx
+      |> Map.put(:creator, ctx.person)
+      |> Factory.add_project(project_key, :space, [
+        name: project_name,
+        champion: :person,
+        reviewer: :manager
+      ])
+
+    ctx =
+      ctx
+      |> Factory.add_project_task(task_key, nil, [
+        name: task_name,
+        project_id: ctx[project_key].id
+      ])
+      |> Factory.add_task_assignee(:"#{task_key}_assignee", task_key, :person)
+
+    ctx
+  end
+
+  step :given_task_project_is_closed, ctx, opts \\ [] do
+    project_key = Keyword.get(opts, :project_key, :task_project)
+
+    ctx
+    |> Map.put(:creator, ctx.person)
+    |> Factory.close_project(project_key)
+  end
+
+  step :given_task_project_is_paused, ctx, opts \\ [] do
+    project_key = Keyword.get(opts, :project_key, :task_project)
+
+    ctx
+    |> Map.put(:creator, ctx.person)
+    |> Factory.pause_project(project_key)
+  end
+
+  step :given_task_has_closed_status, ctx, opts \\ [] do
+    task_key = Keyword.get(opts, :task_key)
+    project_key = Keyword.get(opts, :project_key)
+
+    project = Map.fetch!(ctx, project_key)
+    task = Map.fetch!(ctx, task_key)
+
+    closed_status = Enum.find(project.task_statuses, & &1.closed)
+
+    assert closed_status
+
+    {:ok, task} =
+      Operately.Tasks.update_task(task, %{
+        task_status: status_to_map(closed_status)
+      })
+
+    Map.put(ctx, task_key, task)
+  end
+
   step :given_goal_with_user_as_reviewer_exists, ctx do
     Factory.add_goal(ctx, :goal, :space, [
       name: "Improve support first response time",
@@ -163,6 +224,10 @@ defmodule Operately.Support.Features.ProfileSteps do
 
   step :click_assigned_tab, ctx do
     UI.click(ctx, testid: "tab-assigned")
+  end
+
+  step :click_tasks_tab, ctx do
+    UI.click(ctx, testid: "tab-tasks")
   end
 
   step :click_completed_tab, ctx do
@@ -256,5 +321,16 @@ defmodule Operately.Support.Features.ProfileSteps do
 
   step :refute_item_visible, ctx, name: name do
     UI.refute_text(ctx, name)
+  end
+
+  defp status_to_map(status) do
+    %{
+      id: status.id,
+      label: status.label,
+      color: status.color,
+      index: status.index,
+      value: status.value,
+      closed: status.closed
+    }
   end
 end
