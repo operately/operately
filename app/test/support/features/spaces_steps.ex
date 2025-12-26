@@ -66,7 +66,9 @@ defmodule Operately.Support.Features.SpacesSteps do
 
   step :assert_delete_option_not_visible, ctx do
     ctx
-    |> UI.refute_has(testid: "options-button")
+    |> UI.click(testid: "options-button")
+    |> UI.sleep(250)
+    |> UI.assert_has(testid: "configure-tools")
     |> UI.refute_has(testid: "delete-space")
   end
 
@@ -161,6 +163,39 @@ defmodule Operately.Support.Features.SpacesSteps do
 
   step :given_a_space_exists, ctx do
     ctx |> Factory.add_space(:marketing, name: "Marketing")
+  end
+
+  step :set_space_tools, ctx, opts do
+    ctx |> Factory.set_space_tools(:marketing, opts)
+  end
+
+  step :given_a_resource_hub_exists, ctx do
+    ctx |> Factory.add_resource_hub(:team_resources_hub, :marketing, :creator, name: "Team Resources")
+  end
+
+  step :open_tools_configuration, ctx do
+    ctx
+    |> UI.click(testid: "options-button")
+    |> UI.click(testid: "configure-tools")
+    |> UI.assert_has(testid: "space-tools-configuration-page")
+  end
+
+  step :toggle_tool, ctx, tool_testid do
+    ctx |> UI.click(testid: tool_testid)
+  end
+
+  step :save_tools_configuration, ctx do
+    ctx
+    |> UI.click(testid: "save")
+    |> UI.assert_has(testid: "space-page")
+  end
+
+  step :assert_tool_visible, ctx, tool_testid do
+    ctx |> UI.assert_has(testid: tool_testid)
+  end
+
+  step :assert_tool_not_visible, ctx, tool_testid do
+    ctx |> UI.refute_has(testid: tool_testid)
   end
 
   step :given_the_space_has_several_projects, ctx, names do

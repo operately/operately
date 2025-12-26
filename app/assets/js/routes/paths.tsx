@@ -303,7 +303,11 @@ export class Paths {
   spacePath(spaceId: string) {
     return this.createCompanyPath(["spaces", spaceId]);
   }
-  
+
+  spaceToolsConfigPath(spaceId: string) {
+    return this.createCompanyPath(["spaces", spaceId, "tools-config"]);
+  }
+
   spaceKanbanPath(spaceId: string) {
     return this.createCompanyPath(["spaces", spaceId, "kanban"]);
   }
