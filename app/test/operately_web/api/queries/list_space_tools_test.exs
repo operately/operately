@@ -142,12 +142,14 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
     tabletest @space_table do
       test "Tasks - if caller has levels company=#{@test.company}, space=#{@test.space}, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx, @test.company)
-        add_member(ctx, space, ctx.person, @test.space)
+        ctx = Map.put(ctx, :space, space)
+        ctx = Factory.enable_space_tool(ctx, :space, :tasks)
+        add_member(ctx, ctx.space, ctx.person, @test.space)
 
-        task_fixture(%{creator_id: ctx.creator.id, space_id: space.id, name: "Task 1"})
-        task_fixture(%{creator_id: ctx.creator.id, space_id: space.id, name: "Task 2"})
+        task_fixture(%{creator_id: ctx.creator.id, space_id: ctx.space.id, name: "Task 1"})
+        task_fixture(%{creator_id: ctx.creator.id, space_id: ctx.space.id, name: "Task 2"})
 
-        assert {200, res} = query(ctx.conn, :list_space_tools, %{space_id: Paths.space_id(space)})
+        assert {200, res} = query(ctx.conn, :list_space_tools, %{space_id: Paths.space_id(ctx.space)})
 
         case @test.expected do
           :forbidden ->
@@ -166,6 +168,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
       |> Factory.setup()
       |> Factory.log_in_person(:creator)
       |> Factory.add_space(:space)
+      |> Factory.enable_space_tool(:space, :tasks)
       |> Factory.add_project(:project1, :space)
       |> Factory.add_project(:project2, :space)
       |> Factory.add_goal(:goal1, :space)
@@ -258,6 +261,48 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
       # Verify the paused project has correct state
       paused_project = Enum.find(res.tools.projects, &(&1.id == Paths.project_id(ctx.project_paused)))
       assert paused_project.state == "paused"
+    end
+  end
+
+  describe "tools configuration" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.log_in_person(:creator)
+      |> Factory.add_space(:space)
+    end
+
+    test "when tasks are disabled it returns an empty list", ctx do
+      ctx =
+        ctx
+        |> Factory.disable_space_tool(:space, :tasks)
+        |> Factory.create_space_task(:task1, :space)
+        |> Factory.create_space_task(:task2, :space)
+
+      assert {200, res} = query(ctx.conn, :list_space_tools, %{space_id: Paths.space_id(ctx.space)})
+      assert length(res.tools.tasks) == 0
+    end
+
+    test "when discussions are disabled it returns an empty list", ctx do
+      ctx =
+        ctx
+        |> Factory.disable_space_tool(:space, :discussions)
+        |> Factory.add_messages_board(:board1, :space)
+        |> Factory.add_messages_board(:board2, :space)
+
+      assert {200, res} = query(ctx.conn, :list_space_tools, %{space_id: Paths.space_id(ctx.space)})
+      assert length(res.tools.messages_boards) == 0
+    end
+
+    test "when resource hub is disabled it returns an empty list", ctx do
+      ctx =
+        ctx
+        |> Factory.disable_space_tool(:space, :resource_hub)
+        |> Factory.add_resource_hub(:hub1, :space, :creator)
+        |> Factory.add_resource_hub(:hub2, :space, :creator)
+
+      assert {200, res} = query(ctx.conn, :list_space_tools, %{space_id: Paths.space_id(ctx.space)})
+      assert length(res.tools.resource_hubs) == 0
     end
   end
 
