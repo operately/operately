@@ -982,6 +982,12 @@ defmodule OperatelyWeb.Api.Types do
     field? :contributor, :person, null: true
   end
 
+  object :update_space_tools_payload do
+    field :tasks_enabled, :boolean, null: false
+    field :discussions_enabled, :boolean, null: false
+    field :resource_hub_enabled, :boolean, null: false
+  end
+
   object :space_tools do
     field :tasks_enabled, :boolean, null: false
     field :discussions_enabled, :boolean, null: false

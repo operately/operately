@@ -1912,6 +1912,12 @@ export interface UpdateContentStatusUpdate {
   health?: ProjectHealth | null;
 }
 
+export interface UpdateSpaceToolsPayload {
+  tasksEnabled: boolean;
+  discussionsEnabled: boolean;
+  resourceHubEnabled: boolean;
+}
+
 export interface UpdateTargetInput {
   id?: Id | null;
   name?: string | null;
@@ -4231,6 +4237,16 @@ export interface SpacesUpdateTaskStatusesResult {
   success: boolean | null;
 }
 
+export interface SpacesUpdateToolsInput {
+  spaceId: Id;
+  tools: UpdateSpaceToolsPayload;
+}
+
+export interface SpacesUpdateToolsResult {
+  success: boolean | null;
+  tools: SpaceTools | null;
+}
+
 export interface SubscribeToNotificationsInput {
   id: Id;
   type: SubscriptionParentType;
@@ -5034,6 +5050,10 @@ class ApiNamespaceSpaces {
 
   async updateTaskStatuses(input: SpacesUpdateTaskStatusesInput): Promise<SpacesUpdateTaskStatusesResult> {
     return this.client.post("/spaces/update_task_statuses", input);
+  }
+
+  async updateTools(input: SpacesUpdateToolsInput): Promise<SpacesUpdateToolsResult> {
+    return this.client.post("/spaces/update_tools", input);
   }
 }
 
@@ -7639,6 +7659,12 @@ export default {
     listTasks: (input: SpacesListTasksInput) => defaultApiClient.apiNamespaceSpaces.listTasks(input),
     useListTasks: (input: SpacesListTasksInput) =>
       useQuery<SpacesListTasksResult>(() => defaultApiClient.apiNamespaceSpaces.listTasks(input)),
+
+    updateTools: (input: SpacesUpdateToolsInput) => defaultApiClient.apiNamespaceSpaces.updateTools(input),
+    useUpdateTools: () =>
+      useMutation<SpacesUpdateToolsInput, SpacesUpdateToolsResult>((input) =>
+        defaultApiClient.apiNamespaceSpaces.updateTools(input),
+      ),
 
     updateTaskStatuses: (input: SpacesUpdateTaskStatusesInput) =>
       defaultApiClient.apiNamespaceSpaces.updateTaskStatuses(input),
