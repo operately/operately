@@ -45,6 +45,7 @@ export { ProjectPage } from "./ProjectPage";
 export { ReviewPage } from "./ReviewPage";
 export { SidebarNotificationSection } from "./SidebarSection";
 export { SpaceField } from "./SpaceField";
+export { SpaceToolsConfigurationPage } from "./SpaceToolsConfigurationPage";
 export { SwitchToggle } from "./SwitchToggle";
 export { Tabs, useTabs } from "./Tabs";
 export { TaskBoard } from "./TaskBoard";
