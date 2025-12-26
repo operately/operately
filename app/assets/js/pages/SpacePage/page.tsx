@@ -10,6 +10,7 @@ import {
   AvatarList,
   DangerButton,
   IconPencil,
+  IconSettings,
   IconTrash,
   Modal,
   PrimaryButton,
@@ -209,12 +210,16 @@ function SpaceOptions() {
   }, [isDeleting]);
 
   const editLink = paths.spaceEditPath(space.id!);
+  const toolsConfigLink = paths.spaceToolsConfigPath(space.id!);
 
   return (
     <>
       <PageOptions.Root testId="options-button">
         {space.permissions.canEdit && (
           <PageOptions.Link keepOutsideOnBigScreen icon={IconPencil} to={editLink} title="Edit" testId="edit-space" />
+        )}
+        {space.permissions.canEdit && (
+          <PageOptions.Link icon={IconSettings} to={toolsConfigLink} title="Configure tools" testId="configure-tools" />
         )}
         {space.permissions.canDelete && !space.isCompanySpace && (
           <PageOptions.Action icon={IconTrash} title="Delete" onClick={handleDelete} testId="delete-space" />
