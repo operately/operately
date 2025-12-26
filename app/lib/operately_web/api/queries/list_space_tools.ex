@@ -21,8 +21,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceTools do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:id, fn -> decode_id(inputs.space_id) end)
-    |> run(:space, fn ctx -> load_space(ctx.id) end)
+    |> run(:space, fn -> load_space(inputs.space_id) end)
     |> run(:tools_data, fn ctx -> load_tools_data(ctx.space, ctx.me) end)
     |> run(:serialized, fn ctx -> serialize(ctx) end)
     |> respond()
@@ -31,7 +30,6 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceTools do
   defp respond(result) do
     case result do
       {:ok, ctx} -> {:ok, ctx.serialized}
-      {:error, :id, _} -> {:error, :bad_request}
       {:error, :space, :not_found} -> {:error, :not_found}
       {:error, :nodes, _} -> {:error, :not_found}
       {:error, :bad_request, message} -> {:error, :bad_request, message}

@@ -31,7 +31,6 @@ defmodule OperatelyWeb.Api.Queries.GetSpace do
   defp respond(result) do
     case result do
       {:ok, ctx} -> {:ok, ctx.serialized}
-      {:error, :id, _} -> {:error, :bad_request}
       {:error, :update, _} -> {:error, :not_found}
       {:error, :check_permissions, _} -> {:error, :not_found}
       _ -> {:error, :not_found}
