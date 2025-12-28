@@ -99,9 +99,8 @@ defmodule OperatelyWeb.Api.Tasks do
 
     inputs do
       field :task_id, :id, null: false
-      field :milestone_id, :id, null: true
       field :status, :task_status, null: false
-      field :milestone_kanban_state, :json, null: false
+      field :kanban_state, :json, null: false
       field :type, :task_type, null: false
     end
 
@@ -117,9 +116,8 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.start_transaction()
       |> Steps.find_task(inputs.task_id, inputs.type, preloads)
       |> Steps.check_task_permissions(:can_edit_task)
-      |> Steps.validate_kanban_milestone(inputs.milestone_id, inputs.type)
       |> Steps.update_task_status(inputs.status)
-      |> Steps.update_kanban_state(inputs.milestone_kanban_state, inputs.type)
+      |> Steps.update_kanban_state(inputs.kanban_state, inputs.type)
       |> Steps.save_activity(:task_status_updating, &build_kanban_activity_content/1)
       |> Steps.commit()
       |> Steps.broadcast_review_count_update()
@@ -837,33 +835,6 @@ defmodule OperatelyWeb.Api.Tasks do
         else
           # No change, no validation needed
           {:ok, nil}
-        end
-      end)
-    end
-
-    def validate_kanban_milestone(multi, milestone_id, type) do
-      Ecto.Multi.run(multi, :validate_kanban_milestone, fn _repo, %{task: task} ->
-        # Space tasks don't have milestones, so skip validation
-        if type == :space do
-          {:ok, nil}
-        else
-          decoded =
-            case milestone_id do
-              nil -> {:ok, nil}
-              _ -> decode_id(milestone_id, :allow_nil)
-            end
-
-          case decoded do
-            {:ok, decoded_id} ->
-              if task.milestone_id == decoded_id do
-                {:ok, task.milestone}
-              else
-                {:error, {:bad_request, "Task milestone mismatch"}}
-              end
-
-            {:error, reason} ->
-              {:error, {:bad_request, reason}}
-          end
         end
       end)
     end

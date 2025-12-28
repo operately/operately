@@ -4312,9 +4312,8 @@ export interface TasksUpdateDueDateResult {
 
 export interface TasksUpdateKanbanInput {
   taskId: Id;
-  milestoneId: Id | null;
   status: TaskStatus;
-  milestoneKanbanState: Json;
+  kanbanState: Json;
   type: TaskType;
 }
 

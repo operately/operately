@@ -66,9 +66,8 @@ export function useKanbanState(options: UseKanbanStateOptions) {
       try {
         await Api.tasks.updateKanban({
           taskId: event.taskId,
-          milestoneId: type === "milestone" ? options.milestoneId : null,
           status: backendStatus,
-          milestoneKanbanState: serializeKanbanState(event.updatedKanbanState),
+          kanbanState: serializeKanbanState(event.updatedKanbanState),
           type: type === "milestone" ? "project" : "space",
         });
 
