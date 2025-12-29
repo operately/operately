@@ -1052,9 +1052,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :update_kanban], %{
         task_id: Paths.task_id(ctx.task),
-        milestone_id: Paths.milestone_id(ctx.milestone),
         status: @in_progress_status,
-        milestone_kanban_state: Jason.encode!(kanban_state),
+        kanban_state: Jason.encode!(kanban_state),
         type: "project"
       })
 
@@ -1062,23 +1061,6 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       milestone = Repo.reload(ctx.milestone)
       assert milestone.tasks_kanban_state["in_progress"] == kanban_state.in_progress
-    end
-
-    test "it rejects mismatched milestone ids", ctx do
-      ctx =
-        ctx
-        |> Factory.add_project_milestone(:other_milestone, :project)
-        |> Factory.log_in_person(:creator)
-
-      assert {400, res} = mutation(ctx.conn, [:tasks, :update_kanban], %{
-        task_id: Paths.task_id(ctx.task),
-        milestone_id: Paths.milestone_id(ctx.other_milestone),
-        status: @in_progress_status,
-        milestone_kanban_state: Jason.encode!(%{pending: [], in_progress: [], done: [], canceled: []}),
-        type: "project"
-      })
-
-      assert res.message == "Task milestone mismatch"
     end
 
     test "it rejects invalid statuses in kanban state", ctx do
@@ -1094,9 +1076,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {400, res} = mutation(ctx.conn, [:tasks, :update_kanban], %{
         task_id: Paths.task_id(ctx.task),
-        milestone_id: Paths.milestone_id(ctx.milestone),
         status: @in_progress_status,
-        milestone_kanban_state: Jason.encode!(invalid_kanban_state),
+        kanban_state: Jason.encode!(invalid_kanban_state),
         type: "project"
       })
 
@@ -1131,9 +1112,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :update_kanban], %{
         task_id: Paths.task_id(ctx.space_task),
-        milestone_id: nil,
         status: @in_progress_status,
-        milestone_kanban_state: Jason.encode!(kanban_state),
+        kanban_state: Jason.encode!(kanban_state),
         type: "space"
       })
 
@@ -1173,9 +1153,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, res} = mutation(ctx.conn, [:tasks, :update_kanban], %{
         task_id: Paths.task_id(ctx.space_task),
-        milestone_id: nil,
         status: @in_progress_status,
-        milestone_kanban_state: Jason.encode!(kanban_state),
+        kanban_state: Jason.encode!(kanban_state),
         type: "space"
       })
 
@@ -1200,9 +1179,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {400, res} = mutation(ctx.conn, [:tasks, :update_kanban], %{
         task_id: Paths.task_id(ctx.space_task),
-        milestone_id: nil,
         status: @in_progress_status,
-        milestone_kanban_state: Jason.encode!(invalid_kanban_state),
+        kanban_state: Jason.encode!(invalid_kanban_state),
         type: "space"
       })
 
@@ -1222,9 +1200,8 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert {200, _res} = mutation(ctx.conn, [:tasks, :update_kanban], %{
         task_id: Paths.task_id(ctx.space_task),
-        milestone_id: nil,
         status: @in_progress_status,
-        milestone_kanban_state: Jason.encode!(kanban_state),
+        kanban_state: Jason.encode!(kanban_state),
         type: "space"
       })
 

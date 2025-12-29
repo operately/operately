@@ -106,24 +106,6 @@ defmodule Operately.Tasks.Task do
     end
   end
 
-  #
-  # Scopes
-  #
-
-  import Ecto.Query, only: [from: 2]
-
-  def scope_company(query, company_id) do
-    from t in query, join: c in assoc(t, :company), where: c.id == ^company_id
-  end
-
-  def scope_space(query, space_id) do
-    from t in query, where: t.space_id == ^space_id
-  end
-
-  def scope_milestone(query, milestone_id) do
-    from t in query, where: t.milestone_id == ^milestone_id
-  end
-
   @impl Operately.WorkMaps.WorkMapItem
   def status(task = %__MODULE__{}) do
     task.task_status
@@ -146,6 +128,51 @@ defmodule Operately.Tasks.Task do
   @impl Operately.WorkMaps.WorkMapItem
   def progress_percentage(_task = %__MODULE__{}) do
     0.0
+  end
+
+  defp put_default_task_status(changeset) do
+    case Ecto.Changeset.get_field(changeset, :task_status) do
+      nil -> Ecto.Changeset.put_embed(changeset, :task_status, Operately.Tasks.Status.default_task_status())
+      _ -> changeset
+    end
+  end
+
+  defp validate_project_or_group(changeset) do
+    project_id = Ecto.Changeset.get_field(changeset, :project_id)
+    space_id = Ecto.Changeset.get_field(changeset, :space_id)
+
+    case {project_id, space_id} do
+      {nil, nil} ->
+        changeset
+        |> Ecto.Changeset.add_error(:project_id, "either project_id or space_id must be present")
+        |> Ecto.Changeset.add_error(:space_id, "either project_id or space_id must be present")
+
+      {nil, _} -> changeset
+      {_, nil} -> changeset
+
+      {_, _} ->
+        changeset
+        |> Ecto.Changeset.add_error(:project_id, "cannot have both project_id and space_id")
+        |> Ecto.Changeset.add_error(:space_id, "cannot have both project_id and space_id")
+    end
+  end
+
+  #
+  # Scopes
+  #
+
+  import Ecto.Query, only: [from: 2]
+
+  def scope_company(query, company_id) do
+    from t in query, join: c in assoc(t, :company), where: c.id == ^company_id
+  end
+
+  def scope_space(query, space_id) do
+    from t in query, where: t.space_id == ^space_id
+  end
+
+  def scope_milestone(query, milestone_id) do
+    from t in query, where: t.milestone_id == ^milestone_id
   end
 
   #
@@ -186,33 +213,6 @@ defmodule Operately.Tasks.Task do
     statuses = if task.project, do: task.project.task_statuses || [], else: []
 
     Map.put(task, :available_statuses, statuses)
-  end
-
-  defp put_default_task_status(changeset) do
-    case Ecto.Changeset.get_field(changeset, :task_status) do
-      nil -> Ecto.Changeset.put_embed(changeset, :task_status, Operately.Tasks.Status.default_task_status())
-      _ -> changeset
-    end
-  end
-
-  defp validate_project_or_group(changeset) do
-    project_id = Ecto.Changeset.get_field(changeset, :project_id)
-    space_id = Ecto.Changeset.get_field(changeset, :space_id)
-
-    case {project_id, space_id} do
-      {nil, nil} ->
-        changeset
-        |> Ecto.Changeset.add_error(:project_id, "either project_id or space_id must be present")
-        |> Ecto.Changeset.add_error(:space_id, "either project_id or space_id must be present")
-
-      {nil, _} -> changeset
-      {_, nil} -> changeset
-
-      {_, _} ->
-        changeset
-        |> Ecto.Changeset.add_error(:project_id, "cannot have both project_id and space_id")
-        |> Ecto.Changeset.add_error(:space_id, "cannot have both project_id and space_id")
-    end
   end
 
   defmodule Getter do

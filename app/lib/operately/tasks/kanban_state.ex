@@ -41,41 +41,6 @@ defmodule Operately.Tasks.KanbanState do
     |> Map.update(status, [task_short_id], &List.insert_at(&1, column_index, task_short_id))
   end
 
-  def remove(kanban_state, task = %Task{}, status) do
-    task_short_id = OperatelyWeb.Paths.task_id(task)
-
-    kanban_state
-    |> Map.update(status, [], &List.delete(&1, task_short_id))
-  end
-
-  def move(kanban_state, task = %Task{}, from_status, _from_index, to_status, to_index) do
-    task_short_id = OperatelyWeb.Paths.task_id(task)
-
-    kanban_state
-    |> Map.update(from_status, [], &List.delete(&1, task_short_id))
-    |> insert_at(to_status, task_short_id, to_index)
-  end
-
-  defp insert_at(kanban_state, status, task_short_id, to_index) do
-    kanban_state
-    |> Map.update!(status, fn list ->
-      index = clamp_index(list, to_index)
-      List.insert_at(list, index, task_short_id)
-    end)
-  end
-
-  defp clamp_index(list, index) when is_integer(index) do
-    max = max(length(list), 0)
-
-    cond do
-      index < 0 -> 0
-      index > max -> max
-      true -> index
-    end
-  end
-
-  defp clamp_index(list, _index), do: length(list)
-
   defp normalize_statuses(statuses) do
     statuses
     |> Enum.map(&to_string/1)
