@@ -56,6 +56,7 @@ export const Default: Story = {
   tags: ["autodocs"],
   render: () => {
     const assigneePersonSearch = usePersonFieldSearch(mockPeople);
+    const [displayMode, setDisplayMode] = useState<Types.TaskDisplayMode>("list");
     
     // Create state for tasks and task creation
     const [tasks, setTasks] = useState([...mockTasks("project")]);
@@ -74,14 +75,20 @@ export const Default: Story = {
       setSearchableMilestones(filtered);
     };
 
-    const handleTaskCreate = (newTaskData) => {
+    const handleTaskCreate = (newTaskData: Types.NewTaskPayload) => {
       // Generate a fake UUID for the new task
       const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
       // Create the new task object
-      const newTask = {
+      const newTask: Types.Task = {
         id: taskId,
         ...newTaskData,
+        status: null,
+        description: null,
+        link: "#",
+        milestone: newTaskData.milestone,
+        dueDate: newTaskData.dueDate,
+        type: "project",
       };
 
       console.log("=== Created new task ===\n", JSON.stringify(newTask, null, 2));
@@ -93,12 +100,12 @@ export const Default: Story = {
       console.log("New tasks count:", updatedTasks.length);
     };
 
-    const handleMilestoneCreate = (newMilestoneData) => {
+    const handleMilestoneCreate = (newMilestoneData: Types.NewMilestonePayload) => {
       // Generate a fake UUID for the new milestone
       const milestoneId = `milestone-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
       // Create the new milestone object
-      const newMilestone = {
+      const newMilestone: Types.Milestone = {
         id: milestoneId,
         ...newMilestoneData,
       };
@@ -109,7 +116,7 @@ export const Default: Story = {
       setMilestones((prev) => [...prev, newMilestone]);
     };
 
-    const handleTaskStatusChange = (taskId: string, status: Types.Status) => {
+    const handleTaskStatusChange = (taskId: string, status: Types.Status | null) => {
       setTasks((prevTasks) =>
         prevTasks.map((task) => (task.id === taskId ? { ...task, status } : task))
       );
@@ -140,6 +147,8 @@ export const Default: Story = {
           setStatuses(data.nextStatuses);
         }}
         canManageStatuses={true}
+        displayMode={displayMode}
+        onDisplayModeChange={setDisplayMode}
       />
     );
   },

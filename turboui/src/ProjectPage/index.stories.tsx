@@ -343,7 +343,7 @@ export const Default: Story = {
         reopenLink="#"
         pauseLink="#"
         showMilestoneKanbanLink={true}
-        projectName="Mobile App Redesign"
+        project={{ id: "project-1", name: "Mobile App Redesign" }}
         childrenCount={{
           tasksCount: tasks.length,
           discussionsCount: mockDiscussions.length,
@@ -446,7 +446,7 @@ export const ReadOnly: Story = {
         closeLink="#"
         reopenLink="#"
         pauseLink="#"
-        projectName="Mobile App Redesign"
+        project={{ id: "project-1", name: "Mobile App Redesign" }}
         childrenCount={{
           tasksCount: mockTasks.length,
           discussionsCount: mockDiscussions.length,
@@ -590,7 +590,7 @@ export const EmptyTasks: Story = {
         closeLink="#"
         reopenLink="#"
         pauseLink="#"
-        projectName="Mobile App Redesign"
+        project={{ id: "project-1", name: "Mobile App Redesign" }}
         childrenCount={{
           tasksCount: tasks.length,
           discussionsCount: mockDiscussions.length,
@@ -720,7 +720,7 @@ export const EmptyProject: Story = {
         closeLink="#"
         reopenLink="#"
         pauseLink="#"
-        projectName="New Project"
+        project={{ id: "project-2", name: "New Project" }}
         childrenCount={{
           tasksCount: 0,
           discussionsCount: 0,
@@ -807,7 +807,7 @@ export const EmptyProjectReadOnly: Story = {
         closeLink="#"
         reopenLink="#"
         pauseLink="#"
-        projectName="Mobile App Redesign"
+        project={{ id: "project-1", name: "Mobile App Redesign" }}
         childrenCount={{
           tasksCount: tasks.length,
           discussionsCount: mockDiscussions.length,
@@ -967,7 +967,7 @@ export const PausedProject: Story = {
         closeLink="#"
         reopenLink="#"
         pauseLink="#"
-        projectName="AI Chatbot Prototype"
+        project={{ id: "project-3", name: "AI Chatbot Prototype" }}
         childrenCount={{
           tasksCount: tasks.length,
           discussionsCount: mockDiscussions.length,
@@ -1074,7 +1074,7 @@ export const ClosedProject: Story = {
         closeLink="#"
         reopenLink="#"
         pauseLink="#"
-        projectName="Work Map GA"
+        project={{ id: "project-4", name: "Work Map GA" }}
         childrenCount={{
           tasksCount: tasks.length,
           discussionsCount: mockDiscussions.length,

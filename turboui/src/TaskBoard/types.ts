@@ -149,6 +149,10 @@ export interface FilterCondition {
   label: string;
 }
 
+export type StatusCustomizationStatus = StatusSelector.StatusOption;
+
+export type TaskDisplayMode = "list" | "board";
+
 export interface TaskBoardProps {
   tasks: Task[];
   milestones?: Milestone[];
@@ -175,4 +179,8 @@ export interface TaskBoardProps {
     deletedStatusReplacements: Record<string, string>;
   }) => void;
   canManageStatuses: boolean;
+
+  displayMode: TaskDisplayMode;
+  onDisplayModeChange: (mode: TaskDisplayMode) => void;
+  kanbanEnabled?: boolean;
 }
