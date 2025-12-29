@@ -113,12 +113,12 @@ export function useSpaceTasksForTurboUi({ backendTasks, spaceId, cacheKey, refre
       await Api.tasks.updateName({ taskId, name, type: "space" });
       await invalidateAndRefresh();
 
-      return { success: true };
+      return true;
     } catch (e) {
       console.error("Failed to update task name", e);
       showErrorToast("Error", "Failed to update task name");
       restoreSnapshot(snapshot);
-      return { success: false };
+      return false;
     }
   };
 
@@ -138,12 +138,12 @@ export function useSpaceTasksForTurboUi({ backendTasks, spaceId, cacheKey, refre
       await Api.tasks.updateDueDate({ taskId, dueDate: serializeContextualDate(dueDate), type: "space" });
       await invalidateAndRefresh();
 
-      return { success: true };
+      return true;
     } catch (e) {
       console.error("Failed to update task due date", e);
       showErrorToast("Error", "Failed to update task due date");
       restoreSnapshot(snapshot);
-      return { success: false };
+      return false;
     }
   };
 
@@ -163,12 +163,12 @@ export function useSpaceTasksForTurboUi({ backendTasks, spaceId, cacheKey, refre
       await Api.tasks.updateAssignee({ taskId, assigneeId: assignee?.id || null, type: "space" });
       await invalidateAndRefresh();
 
-      return { success: true };
+      return true;
     } catch (e) {
       console.error("Failed to update task assignee", e);
       showErrorToast("Error", "Failed to update task assignee");
       restoreSnapshot(snapshot);
-      return { success: false };
+      return false;
     }
   };
 
@@ -193,12 +193,12 @@ export function useSpaceTasksForTurboUi({ backendTasks, spaceId, cacheKey, refre
 
       await invalidateAndRefresh();
 
-      return { success: true };
+      return true;
     } catch (e) {
       console.error("Failed to update task status", e);
       showErrorToast("Error", "Failed to update task status");
       restoreSnapshot(snapshot);
-      return { success: false };
+      return false;
     }
   };
 

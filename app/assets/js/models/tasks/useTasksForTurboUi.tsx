@@ -193,13 +193,13 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
           }),
         );
 
-        return { success: true };
+        return true;
       })
       .catch((e) => {
         console.error("Failed to update task due date", e);
         showErrorToast("Error", "Failed to update task due date");
 
-        return { success: false };
+        return false;
       });
   };
 
@@ -218,13 +218,13 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
           }),
         );
 
-        return { success: true };
+        return true;
       })
       .catch((e) => {
         console.error("Failed to update task assignee", e);
         showErrorToast("Error", "Failed to update task assignee");
 
-        return { success: false };
+        return false;
       });
   };
 
@@ -312,12 +312,12 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
 
       await invalidateAndRefresh();
 
-      return { success: true };
+      return true;
     } catch (e) {
       console.error("Failed to update task status", e);
       showErrorToast("Error", "Failed to update task status");
       restoreSnapshot(snapshot);
-      return { success: false };
+      return false;
     }
   };
 
@@ -331,7 +331,7 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
       if (!taskToMove) {
         console.error("Task not found", taskId);
         showErrorToast("Error", "Something went wrong");
-        return { success: false };
+        return false;
       }
 
       const milestonesOrderingState = buildMilestonesOrderingState(
@@ -381,12 +381,12 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
 
       await invalidateAndRefresh();
 
-      return { success: true };
+      return true;
     } catch (e) {
       console.error("Failed to update task milestone", e);
       showErrorToast("Error", "Failed to update task milestone");
       restoreSnapshot(snapshot);
-      return { success: false };
+      return false;
     }
   };
 

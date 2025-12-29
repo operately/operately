@@ -23,10 +23,10 @@ export function useTaskSlideInProps(opts: {
   canComment: boolean;
   hideMilestone?: boolean;
 
-  onTaskNameChange: (taskId: string, newName: string) => any;
-  onTaskAssigneeChange: (taskId: string, assignee: TaskBoard.Person | null) => any;
-  onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => any;
-  onTaskStatusChange: (taskId: string, newStatus: TaskBoard.Status | null) => any;
+  onTaskNameChange: (taskId: string, newName: string) => Promise<boolean> | boolean;
+  onTaskAssigneeChange: (taskId: string, assignee: TaskBoard.Person | null) => Promise<boolean> | boolean;
+  onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => Promise<boolean> | boolean;
+  onTaskStatusChange: (taskId: string, newStatus: TaskBoard.Status | null) => Promise<boolean> | boolean;
   onTaskDescriptionChange: (taskId: string, content: any) => Promise<boolean>;
 }) {
   const { backendTasks, paths, currentUser, tasks, canEdit, canComment, hideMilestone, commentEntityType } = opts;
@@ -72,9 +72,9 @@ export function useTaskSlideInProps(opts: {
       const prevTask = findTask(taskId);
       const prevName = prevTask?.title ?? "";
 
-      const res = await Promise.resolve(opts.onTaskNameChange?.(taskId, newName));
+      const res = await Promise.resolve(opts.onTaskNameChange(taskId, newName));
 
-      if (res === false) return res;
+      if (!res) return false;
 
       if (activeTaskId !== taskId) return res;
       if (!parsedCurrentUser) return res;
@@ -104,7 +104,7 @@ export function useTaskSlideInProps(opts: {
 
       const res = await Promise.resolve(opts.onTaskAssigneeChange(taskId, assignee));
 
-      if (!isSuccessResult(res)) return res;
+      if (!res) return false;
 
       if (activeTaskId !== taskId) return res;
       if (!parsedCurrentUser) return res;
@@ -138,7 +138,7 @@ export function useTaskSlideInProps(opts: {
 
       const res = await Promise.resolve(opts.onTaskDueDateChange(taskId, dueDate));
 
-      if (!isSuccessResult(res)) return res;
+      if (!res) return false;
 
       if (activeTaskId !== taskId) return res;
       if (!parsedCurrentUser) return res;
@@ -169,7 +169,7 @@ export function useTaskSlideInProps(opts: {
 
       const res = await Promise.resolve(opts.onTaskStatusChange(taskId, newStatus));
 
-      if (!isSuccessResult(res)) return res;
+      if (!res) return false;
 
       if (activeTaskId !== taskId) return res;
       if (!parsedCurrentUser) return res;
@@ -373,10 +373,6 @@ function toTimelinePerson(paths: Paths, person: TaskBoard.Person): TimelinePerso
     avatarUrl: person.avatarUrl ?? null,
     profileLink: paths.profilePath(person.id),
   };
-}
-
-function isSuccessResult(res: unknown): res is { success: true } {
-  return typeof res === "object" && res !== null && "success" in res && (res as { success: unknown }).success === true;
 }
 
 function sortTimelineItems(items: TaskPage.TimelineItemType[]) {
