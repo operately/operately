@@ -23,6 +23,36 @@ defmodule OperatelyWeb.Api.Spaces do
     end
   end
 
+  defmodule UpdateKanban do
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
+
+    inputs do
+      field :space_id, :id, null: false
+      field :task_id, :id, null: false
+      field :status, :task_status, null: false
+      field :kanban_state, :json, null: false
+    end
+
+    outputs do
+      field :task, :task
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_space(inputs.space_id)
+      |> Steps.find_task(inputs.task_id)
+      |> Steps.check_task_permissions(:can_edit_task)
+      |> Steps.update_space_kanban_state(inputs.status, inputs.kanban_state)
+      |> Steps.commit()
+      |> Steps.broadcast_review_count_update()
+      |> Steps.respond(fn changes ->
+        %{task: Serializer.serialize(changes.updated_task_with_preloads, level: :full)}
+      end)
+    end
+  end
+
   defmodule ListMembers do
     use TurboConnect.Query
     use OperatelyWeb.Api.Helpers
@@ -197,6 +227,50 @@ defmodule OperatelyWeb.Api.Spaces do
       end)
     end
 
+    def find_task(multi, task_id) do
+      Multi.run(multi, :task, fn _repo, %{me: me} ->
+        case Operately.Tasks.Task.get(me, id: task_id, opts: [preload: [:assigned_people]]) do
+          {:ok, task} -> {:ok, task}
+          {:error, _} -> {:error, {:not_found, "Task not found"}}
+        end
+      end)
+    end
+
+    def check_task_permissions(multi, permission) do
+      Multi.run(multi, :permissions, fn _repo, %{task: task} ->
+        Operately.Projects.Permissions.check(task.request_info.access_level, permission)
+      end)
+    end
+
+    def update_space_kanban_state(multi, status, kanban_state) do
+      Multi.merge(multi, fn %{me: me, space: space, task: task} ->
+        Operately.Operations.KanbanStateUpdating.run(me, %{type: :space, space: space}, task, status, kanban_state)
+      end)
+    end
+
+    def broadcast_review_count_update(result) do
+      case result do
+        {:ok, changes} ->
+          broadcast(changes[:task])
+          broadcast(changes[:updated_task_with_preloads] || changes[:updated_task])
+
+        _result ->
+          :ok
+      end
+
+      result
+    end
+
+    defp broadcast(task = %Operately.Tasks.Task{}) do
+      if Ecto.assoc_loaded?(task.assigned_people) do
+        Enum.each(task.assigned_people, fn person ->
+          OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: person.id)
+        end)
+      end
+    end
+
+    defp broadcast(_), do: :ok
+
     def check_permissions(multi, permission) do
       Multi.run(multi, :permissions, fn _repo, %{space: space} ->
         Permissions.check(space.request_info.access_level, permission)
@@ -326,6 +400,9 @@ defmodule OperatelyWeb.Api.Spaces do
 
     defp handle_error(reason) do
       case reason do
+        {:error, _failed_operation, {:bad_request, message}, _changes} ->
+          {:error, :bad_request, message}
+
         {:error, _failed_operation, {:not_found, message}, _changes} ->
           {:error, :not_found, message}
 

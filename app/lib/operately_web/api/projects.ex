@@ -114,7 +114,7 @@ defmodule OperatelyWeb.Api.Projects do
     end
   end
 
-  defmodule UpdateTasksKanbanState do
+  defmodule UpdateKanban do
     use TurboConnect.Mutation
 
     inputs do
@@ -135,8 +135,9 @@ defmodule OperatelyWeb.Api.Projects do
       |> Steps.find_project(inputs.project_id)
       |> Steps.find_task(inputs.task_id)
       |> Steps.check_task_permissions(:can_edit_task)
-      |> Steps.update_tasks_kanban_state(inputs.status, inputs.kanban_state)
+      |> Steps.update_kanban(inputs.status, inputs.kanban_state)
       |> Steps.commit()
+      |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn changes ->
         %{
           project: Serializer.serialize(changes.updated_project, level: :essential),
@@ -521,9 +522,9 @@ defmodule OperatelyWeb.Api.Projects do
       end)
     end
 
-    def update_tasks_kanban_state(multi, status, kanban_state) do
+    def update_kanban(multi, status, kanban_state) do
       Ecto.Multi.merge(multi, fn %{me: me, project: project, task: task} ->
-        Operately.Operations.ProjectKanbanStateUpdating.run(me, project, task, status, kanban_state)
+        Operately.Operations.KanbanStateUpdating.run(me, %{type: :project, project: project}, task, status, kanban_state)
       end)
     end
 
@@ -1011,17 +1012,38 @@ defmodule OperatelyWeb.Api.Projects do
     end
 
     def broadcast_review_count_update(result) do
-      with {:ok, changes} <- result,
-           project = Operately.Repo.preload(changes.project, :champion),
-           %Operately.People.Person{id: champion_id} <- project.champion
-      do
-        OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: champion_id)
-      else
-        _ -> :ok
+      case result do
+        {:ok, changes} ->
+          broadcast(changes[:task])
+          broadcast(changes[:updated_task_with_preloads] || changes[:updated_task])
+          broadcast(changes[:project])
+
+        _ ->
+          :ok
       end
 
       result
     end
+
+    defp broadcast(project = %Operately.Projects.Project{}) do
+      if Ecto.assoc_loaded?(project.champion) do
+        broadcast(project.champion.id)
+      end
+    end
+
+    defp broadcast(task = %Operately.Tasks.Task{}) do
+      if Ecto.assoc_loaded?(task.assigned_people) do
+        Enum.each(task.assigned_people, fn person ->
+          broadcast(person.id)
+        end)
+      end
+    end
+
+    defp broadcast(person_id) when is_binary(person_id) do
+      OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: person_id)
+    end
+
+    defp broadcast(_), do: :ok
 
     def respond(result, ok_callback, error_callback \\ &handle_error/1) do
       case result do
