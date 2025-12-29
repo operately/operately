@@ -23,6 +23,7 @@ export function useTaskSlideInProps(opts: {
   canComment: boolean;
   hideMilestone?: boolean;
 
+  onTaskNameChange: (taskId: string, newName: string) => any;
   onTaskAssigneeChange: (taskId: string, assignee: TaskBoard.Person | null) => any;
   onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => any;
   onTaskStatusChange: (taskId: string, newStatus: TaskBoard.Status | null) => any;
@@ -65,6 +66,36 @@ export function useTaskSlideInProps(opts: {
   }, []);
 
   const findTask = React.useCallback((taskId: string) => tasks.find((t) => t.id === taskId) ?? null, [tasks]);
+
+  const wrapNameChange = React.useCallback(
+    async (taskId: string, newName: string) => {
+      const prevTask = findTask(taskId);
+      const prevName = prevTask?.title ?? "";
+
+      const res = await Promise.resolve(opts.onTaskNameChange?.(taskId, newName));
+
+      if (res === false) return res;
+
+      if (activeTaskId !== taskId) return res;
+      if (!parsedCurrentUser) return res;
+
+      appendTimelineItem(taskId, {
+        type: "task-activity",
+        value: {
+          id: `temp-task_name_updating-${Date.now()}`,
+          type: "task_name_updating",
+          author: parsedCurrentUser,
+          insertedAt: new Date().toISOString(),
+          fromTitle: prevName,
+          toTitle: newName,
+          page: "task",
+        },
+      });
+
+      return res;
+    },
+    [activeTaskId, appendTimelineItem, findTask, opts, parsedCurrentUser],
+  );
 
   const wrapAssigneeChange = React.useCallback(
     async (taskId: string, assignee: TaskBoard.Person | null) => {
@@ -325,12 +356,13 @@ export function useTaskSlideInProps(opts: {
   return React.useMemo(
     () => ({
       getTaskPageProps,
+      onTaskNameChange: wrapNameChange,
       onTaskAssigneeChange: wrapAssigneeChange,
       onTaskDueDateChange: wrapDueDateChange,
       onTaskStatusChange: wrapStatusChange,
       onTaskDescriptionChange: wrapDescriptionChange,
     }),
-    [getTaskPageProps, wrapAssigneeChange, wrapDescriptionChange, wrapDueDateChange, wrapStatusChange],
+    [getTaskPageProps, wrapAssigneeChange, wrapDescriptionChange, wrapDueDateChange, wrapNameChange, wrapStatusChange],
   );
 }
 
