@@ -114,7 +114,7 @@ defmodule OperatelyWeb.Api.Projects do
     end
   end
 
-  defmodule UpdateTasksKanbanState do
+  defmodule UpdateKanban do
     use TurboConnect.Mutation
 
     inputs do
@@ -135,7 +135,7 @@ defmodule OperatelyWeb.Api.Projects do
       |> Steps.find_project(inputs.project_id)
       |> Steps.find_task(inputs.task_id)
       |> Steps.check_task_permissions(:can_edit_task)
-      |> Steps.update_tasks_kanban_state(inputs.status, inputs.kanban_state)
+      |> Steps.update_kanban(inputs.status, inputs.kanban_state)
       |> Steps.commit()
       |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn changes ->
@@ -522,7 +522,7 @@ defmodule OperatelyWeb.Api.Projects do
       end)
     end
 
-    def update_tasks_kanban_state(multi, status, kanban_state) do
+    def update_kanban(multi, status, kanban_state) do
       Ecto.Multi.merge(multi, fn %{me: me, project: project, task: task} ->
         Operately.Operations.ProjectKanbanStateUpdating.run(me, %{type: :project, project: project}, task, status, kanban_state)
       end)
