@@ -247,7 +247,7 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
 
     def find_milestone(multi, milestone_id) do
       Ecto.Multi.run(multi, :milestone, fn _repo, %{me: me} ->
-        case Operately.Projects.Milestone.get(me, id: milestone_id, opts: [preload: [:project]]) do
+        case Operately.Projects.Milestone.get(me, id: milestone_id, opts: [preload: [project: :champion]]) do
           {:ok, milestone} -> {:ok, milestone}
           {:error, _} -> {:error, {:not_found, "Milestone not found"}}
         end
@@ -436,6 +436,7 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
           broadcast(changes[:task])
           broadcast(changes[:updated_task_with_preloads] || changes[:updated_task])
           broadcast(changes[:milestone])
+          broadcast(changes[:project])
 
         _result ->
           :ok
@@ -445,15 +446,21 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
     end
 
     defp broadcast(milestone = %Operately.Projects.Milestone{}) do
-      if Ecto.assoc_loaded?(milestone.project) and Ecto.assoc_loaded?(milestone.project.champion) do
-        broadcast(milestone.project.champion.id)
+      broadcast(milestone.project)
+    end
+
+    defp broadcast(project = %Operately.Projects.Project{}) do
+      if Ecto.assoc_loaded?(project.champion) and not is_nil(project.champion) do
+        broadcast(project.champion.id)
       end
     end
 
     defp broadcast(task = %Operately.Tasks.Task{}) do
-      Enum.each(task.assigned_people, fn person ->
-        broadcast(person.id)
-      end)
+      if Ecto.assoc_loaded?(task.assigned_people) do
+        Enum.each(task.assigned_people, fn person ->
+          broadcast(person.id)
+        end)
+      end
     end
 
     defp broadcast(person_id) when is_binary(person_id) do

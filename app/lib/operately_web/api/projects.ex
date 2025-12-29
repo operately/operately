@@ -1026,7 +1026,7 @@ defmodule OperatelyWeb.Api.Projects do
     end
 
     defp broadcast(project = %Operately.Projects.Project{}) do
-      if Ecto.assoc_loaded?(project.champion) do
+      if Ecto.assoc_loaded?(project.champion) and not is_nil(project.champion) do
         broadcast(project.champion.id)
       end
     end
