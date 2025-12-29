@@ -217,6 +217,26 @@ defmodule Operately.Features.SpaceKanbanTest do
       )
     end
 
+    feature "task-status-updating activity task link redirects to space kanban page", ctx do
+      [old_status_value, new_status_value | _] = ctx.status_values
+
+      old_status_label = Enum.find(ctx.space.task_statuses, &(&1.value == old_status_value)).label
+      new_status_label = Enum.find(ctx.space.task_statuses, &(&1.value == new_status_value)).label
+
+      ctx
+      |> Steps.visit_kanban_page()
+      |> Steps.open_task_slide_in(:task)
+      |> Steps.change_task_status(prev_status: old_status_label, next_status: new_status_value)
+      |> Steps.close_task_slide_in(:task)
+      |> Steps.assert_task_in_status(task_key: :task, status_value: new_status_value)
+      |> Steps.assert_activity_in_space_and_company_feeds(
+        title: "marked #{ctx.task.name} as #{new_status_label}",
+        long_title: "marked #{ctx.task.name} as #{new_status_label} in #{ctx.space.name}"
+      )
+      |> Steps.click_task_link_in_space_feed(task_name: ctx.task.name)
+      |> Steps.assert_space_kanban_page_open()
+    end
+
     feature "changing a task due date creates an activity", ctx do
       due_date = Time.next_friday()
       due_label = Time.format_month_day(due_date)

@@ -107,6 +107,10 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "spaces", space_id(space), "work-map"])
   end
 
+  def space_kanban_path(company = %Company{}, space = %Group{}) do
+    create_path([company_id(company), "spaces", space_id(space), "kanban"])
+  end
+
   def feed_path(company = %Company{}) do
     create_path([company_id(company), "feed"])
   end
