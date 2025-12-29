@@ -26,6 +26,35 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
     end
   end
 
+  defmodule UpdateKanban do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :milestone_id, :id, null: false
+      field :task_id, :id, null: false
+      field :status, :task_status, null: false
+      field :kanban_state, :json, null: false
+    end
+
+    outputs do
+      field :task, :task
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_milestone(inputs.milestone_id)
+      |> Steps.find_task(inputs.task_id)
+      |> Steps.check_task_permissions(:can_edit_task)
+      |> Steps.update_milestone_kanban_state(inputs.status, inputs.kanban_state)
+      |> Steps.commit()
+      |> Steps.broadcast_review_count_update()
+      |> Steps.respond(fn changes ->
+        %{task: Serializer.serialize(changes.updated_task_with_preloads, level: :full)}
+      end)
+    end
+  end
+
   defmodule UpdateTitle do
     use TurboConnect.Mutation
 
@@ -228,6 +257,28 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
       end)
     end
 
+    def find_task(multi, task_id) do
+      Ecto.Multi.run(multi, :task, fn _repo, %{me: me} ->
+        case Operately.Tasks.Task.get(me, id: task_id, opts: [preload: [:assigned_people]]) do
+          {:ok, task} -> {:ok, task}
+          {:error, _} -> {:error, {:not_found, "Task not found"}}
+        end
+      end)
+    end
+
+    def check_task_permissions(multi, permission) do
+      Ecto.Multi.run(multi, :permissions, fn _repo, %{task: task} ->
+        Operately.Projects.Permissions.check(task.request_info.access_level, permission)
+      end)
+    end
+
+    def update_milestone_kanban_state(multi, status, kanban_state) do
+      Ecto.Multi.merge(multi, fn %{me: me, milestone: milestone, project: project, task: task} ->
+        scope = %{type: :milestone, milestone: milestone, project: project}
+        Operately.Operations.ProjectKanbanStateUpdating.run(me, scope, task, status, kanban_state)
+      end)
+    end
+
     def check_permissions(multi, permission) do
       Ecto.Multi.run(multi, :permissions, fn _repo, %{milestone: milestone} ->
         Operately.Projects.Permissions.check(milestone.request_info.access_level, permission)
@@ -380,17 +431,36 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
     end
 
     def broadcast_review_count_update(result) do
-      with {:ok, changes} <- result,
-           project = Operately.Repo.preload(changes.milestone.project, :champion),
-           %Operately.People.Person{id: champion_id} <- project.champion
-      do
-        OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: champion_id)
-      else
-        _ -> :ok
+      case result do
+        {:ok, changes} ->
+          broadcast(changes[:task])
+          broadcast(changes[:updated_task_with_preloads] || changes[:updated_task])
+          broadcast(changes[:milestone])
+
+        _result ->
+          :ok
       end
 
       result
     end
+
+    defp broadcast(milestone = %Operately.Projects.Milestone{}) do
+      if Ecto.assoc_loaded?(milestone.project) and Ecto.assoc_loaded?(milestone.project.champion) do
+        broadcast(milestone.project.champion.id)
+      end
+    end
+
+    defp broadcast(task = %Operately.Tasks.Task{}) do
+      Enum.each(task.assigned_people, fn person ->
+        broadcast(person.id)
+      end)
+    end
+
+    defp broadcast(person_id) when is_binary(person_id) do
+      OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: person_id)
+    end
+
+    defp broadcast(_), do: :ok
 
     defp milestone_short_ids(project) do
       project

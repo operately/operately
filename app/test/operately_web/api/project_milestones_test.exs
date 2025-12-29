@@ -209,6 +209,207 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
     end
   end
 
+  describe "update kanban" do
+    setup ctx do
+      ctx
+      |> Factory.add_project_task(:task, :milestone)
+    end
+
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:project_milestones, :update_kanban], %{})
+    end
+
+    test "it updates status and kanban state for a milestone", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      status_input =
+        Enum.find(ctx.project.task_statuses || [], fn s -> s.value == "in_progress" end)
+        |> then(fn status ->
+          status
+          |> Map.from_struct()
+          |> Map.put(:color, to_string(status.color))
+        end)
+
+      kanban_state = %{
+        pending: [],
+        in_progress: [Paths.task_id(ctx.task)],
+        done: [],
+        canceled: []
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:project_milestones, :update_kanban], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        task_id: Paths.task_id(ctx.task),
+        status: status_input,
+        kanban_state: Jason.encode!(kanban_state)
+      })
+
+      assert res.task.status.value == "in_progress"
+
+      milestone = Repo.reload(ctx.milestone)
+      assert milestone.tasks_kanban_state["in_progress"] == kanban_state.in_progress
+    end
+
+    test "it rejects invalid statuses in kanban state", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      status_input =
+        Enum.find(ctx.project.task_statuses || [], fn s -> s.value == "in_progress" end)
+        |> then(fn status ->
+          status
+          |> Map.from_struct()
+          |> Map.put(:color, to_string(status.color))
+        end)
+
+      invalid_kanban_state = %{
+        pending: [],
+        in_progress: [Paths.task_id(ctx.task)],
+        done: [],
+        canceled: [],
+        blocked: [Paths.task_id(ctx.task)]
+      }
+
+      assert {400, res} = mutation(ctx.conn, [:project_milestones, :update_kanban], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        task_id: Paths.task_id(ctx.task),
+        status: status_input,
+        kanban_state: Jason.encode!(invalid_kanban_state)
+      })
+
+      assert res.message == "Invalid status blocked"
+    end
+
+    test "it updates milestone tasks_kanban_state and only creates activity when task status changes", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_task(:task, :milestone)
+        |> Factory.log_in_person(:creator)
+
+      status_input =
+        Enum.find(ctx.project.task_statuses || [], fn s -> s.value == "in_progress" end)
+        |> then(fn status ->
+          status
+          |> Map.from_struct()
+          |> Map.put(:color, to_string(status.color))
+        end)
+
+      kanban_state = %{
+        pending: [],
+        in_progress: [Paths.task_id(ctx.task)],
+        done: [],
+        canceled: []
+      }
+
+      before_count = count_task_activities(ctx.task, "task_status_updating")
+
+      assert {200, res1} = mutation(ctx.conn, [:project_milestones, :update_kanban], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        task_id: Paths.task_id(ctx.task),
+        status: status_input,
+        kanban_state: Jason.encode!(kanban_state)
+      })
+
+      assert res1.task.id == Paths.task_id(ctx.task)
+
+      milestone = Repo.reload(ctx.milestone)
+      assert milestone.tasks_kanban_state["in_progress"] == kanban_state.in_progress
+      assert count_task_activities(ctx.task, "task_status_updating") == before_count + 1
+
+      assert {200, _res2} = mutation(ctx.conn, [:project_milestones, :update_kanban], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        task_id: Paths.task_id(ctx.task),
+        status: status_input,
+        kanban_state: Jason.encode!(kanban_state)
+      })
+
+      assert count_task_activities(ctx.task, "task_status_updating") == before_count + 1
+    end
+
+    test "it doesn't create an activity when only the order changes", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_task(:task1, :milestone)
+        |> Factory.add_project_task(:task2, :milestone)
+        |> Factory.log_in_person(:creator)
+
+      status_input =
+        Enum.find(ctx.project.task_statuses || [], fn s -> s.value == "in_progress" end)
+        |> then(fn status ->
+          status
+          |> Map.from_struct()
+          |> Map.put(:color, to_string(status.color))
+        end)
+
+      kanban_state_1 = %{
+        pending: [],
+        in_progress: [Paths.task_id(ctx.task1), Paths.task_id(ctx.task2)],
+        done: [],
+        canceled: []
+      }
+
+      kanban_state_2 = %{
+        pending: [],
+        in_progress: [Paths.task_id(ctx.task2), Paths.task_id(ctx.task1)],
+        done: [],
+        canceled: []
+      }
+
+      before_count = count_task_activities(ctx.task1, "task_status_updating")
+
+      assert {200, _} = mutation(ctx.conn, [:project_milestones, :update_kanban], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        task_id: Paths.task_id(ctx.task1),
+        status: status_input,
+        kanban_state: Jason.encode!(kanban_state_1)
+      })
+
+      assert count_task_activities(ctx.task1, "task_status_updating") == before_count + 1
+
+      assert {200, _} = mutation(ctx.conn, [:project_milestones, :update_kanban], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        task_id: Paths.task_id(ctx.task1),
+        status: status_input,
+        kanban_state: Jason.encode!(kanban_state_2)
+      })
+
+      milestone = Repo.reload(ctx.milestone)
+      assert milestone.tasks_kanban_state["in_progress"] == kanban_state_2.in_progress
+      assert count_task_activities(ctx.task1, "task_status_updating") == before_count + 1
+    end
+
+    test "it doesn't work when the task doesn't belong to the milestone project", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project(:project2, :engineering)
+        |> Factory.add_project_milestone(:milestone2, :project2)
+        |> Factory.add_project_task(:foreign_task, :milestone2)
+        |> Factory.add_project_task(:task, :milestone)
+        |> Factory.log_in_person(:creator)
+
+      status_input =
+        Enum.find(ctx.project.task_statuses || [], fn s -> s.value == "in_progress" end)
+        |> then(fn status ->
+          status
+          |> Map.from_struct()
+          |> Map.put(:color, to_string(status.color))
+        end)
+
+      kanban_state = %{
+        pending: [],
+        in_progress: [Paths.task_id(ctx.foreign_task)],
+        done: [],
+        canceled: []
+      }
+
+      assert {404, _} = mutation(ctx.conn, [:project_milestones, :update_kanban], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        task_id: Paths.task_id(ctx.foreign_task),
+        status: status_input,
+        kanban_state: Jason.encode!(kanban_state)
+      })
+    end
+  end
+
   describe "update title" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:project_milestones, :update_title], %{})
@@ -1219,6 +1420,13 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
   #
 
   import Ecto.Query, only: [from: 2]
+
+  defp count_task_activities(task, action) do
+    from(a in Operately.Activities.Activity,
+      where: a.action == ^action and a.content["task_id"] == ^task.id
+    )
+    |> Repo.aggregate(:count)
+  end
 
   defp count_activities(milestone_id, action) do
     from(a in Operately.Activities.Activity,
