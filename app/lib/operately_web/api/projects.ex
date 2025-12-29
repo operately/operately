@@ -114,6 +114,38 @@ defmodule OperatelyWeb.Api.Projects do
     end
   end
 
+  defmodule UpdateTasksKanbanState do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :project_id, :id, null: false
+      field :task_id, :id, null: false
+      field :status, :task_status, null: false
+      field :kanban_state, :json, null: false
+    end
+
+    outputs do
+      field :project, :project, null: false
+      field :task, :task, null: false
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_project(inputs.project_id)
+      |> Steps.find_task(inputs.task_id)
+      |> Steps.check_task_permissions(:can_edit_task)
+      |> Steps.update_tasks_kanban_state(inputs.status, inputs.kanban_state)
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        %{
+          project: Serializer.serialize(changes.updated_project, level: :essential),
+          task: Serializer.serialize(changes.updated_task_with_preloads, level: :full)
+        }
+      end)
+    end
+  end
+
   defmodule UpdateStartDate do
     use TurboConnect.Mutation
 
@@ -477,6 +509,21 @@ defmodule OperatelyWeb.Api.Projects do
       end)
       |> Ecto.Multi.run(:project, fn _repo, %{task: task} ->
         {:ok, task.project}
+      end)
+    end
+
+    def find_task(multi, task_id) do
+      Ecto.Multi.run(multi, :task, fn _repo, %{me: me} ->
+        case Operately.Tasks.Task.get(me, id: task_id, opts: [preload: [:project]]) do
+          {:ok, task} -> {:ok, task}
+          {:error, _} -> {:error, {:not_found, "Task not found"}}
+        end
+      end)
+    end
+
+    def update_tasks_kanban_state(multi, status, kanban_state) do
+      Ecto.Multi.merge(multi, fn %{me: me, project: project, task: task} ->
+        Operately.Operations.ProjectKanbanStateUpdating.run(me, project, task, status, kanban_state)
       end)
     end
 
@@ -991,6 +1038,9 @@ defmodule OperatelyWeb.Api.Projects do
 
     defp handle_error(reason) do
       case reason do
+        {:error, _failed_operation, {:bad_request, message}, _changes} ->
+          {:error, :bad_request, message}
+
         {:error, _failed_operation, {:not_found, message}, _changes} ->
           {:error, :not_found, message}
 

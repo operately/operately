@@ -4096,6 +4096,18 @@ export interface ProjectsUpdateTaskStatusesResult {
   success: boolean | null;
 }
 
+export interface ProjectsUpdateTasksKanbanStateInput {
+  projectId: Id;
+  taskId: Id;
+  status: TaskStatus;
+  kanbanState: Json;
+}
+
+export interface ProjectsUpdateTasksKanbanStateResult {
+  project: Project;
+  task: Task;
+}
+
 export interface PublishDiscussionInput {
   id?: Id | null;
 }
@@ -5209,6 +5221,12 @@ class ApiNamespaceProjects {
 
   async updateTaskStatuses(input: ProjectsUpdateTaskStatusesInput): Promise<ProjectsUpdateTaskStatusesResult> {
     return this.client.post("/projects/update_task_statuses", input);
+  }
+
+  async updateTasksKanbanState(
+    input: ProjectsUpdateTasksKanbanStateInput,
+  ): Promise<ProjectsUpdateTasksKanbanStateResult> {
+    return this.client.post("/projects/update_tasks_kanban_state", input);
   }
 }
 
@@ -7875,6 +7893,13 @@ export default {
     useDelete: () =>
       useMutation<ProjectsDeleteInput, ProjectsDeleteResult>((input) =>
         defaultApiClient.apiNamespaceProjects.delete(input),
+      ),
+
+    updateTasksKanbanState: (input: ProjectsUpdateTasksKanbanStateInput) =>
+      defaultApiClient.apiNamespaceProjects.updateTasksKanbanState(input),
+    useUpdateTasksKanbanState: () =>
+      useMutation<ProjectsUpdateTasksKanbanStateInput, ProjectsUpdateTasksKanbanStateResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.updateTasksKanbanState(input),
       ),
   },
 
