@@ -84,6 +84,7 @@ function Page() {
   const currentUser = useMe();
 
   const showMilestoneKanbanLink = Boolean(company && Companies.hasFeature(company, "milestone-kanban"));
+  const showProjectKanbanLink = Boolean(company && Companies.hasFeature(company, "project-kanban"));
 
   useAiSidebar({
     conversationContext: {
@@ -246,7 +247,10 @@ function Page() {
     exportMarkdown,
     childrenCount,
 
-    projectName: projectName as string,
+    project: {
+      id: project.id,
+      name: projectName,
+    },
     updateProjectName: (name: string) => {
       setProjectName(name);
       return Promise.resolve(true);
@@ -322,6 +326,8 @@ function Page() {
     activityFeed: <ProjectFeedItems projectId={project.id} />,
 
     subscriptions,
+
+    kanbanEnabled: showProjectKanbanLink,
   };
 
   return <ProjectPage key={project.id!} {...props} />;

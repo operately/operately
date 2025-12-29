@@ -15,6 +15,9 @@ import { useInlineTaskCreator } from "../hooks/useInlineTaskCreator";
 import { Menu, MenuActionItem } from "../../Menu";
 import { StatusCustomizationModal } from "../../StatusCustomization";
 import { StatusSelector } from "../../StatusSelector";
+import { TaskDisplayMenu } from "./TaskDisplayMenu";
+
+export { TaskDisplayMenu };
 
 export namespace TaskBoard {
   export type Person = Types.Person;
@@ -26,8 +29,6 @@ export namespace TaskBoard {
   export type Task = Types.Task;
 
   export type NewTaskPayload = Types.NewTaskPayload;
-
-  export type StatusCustomizationStatus = StatusSelector.StatusOption;
 }
 
 export function TaskBoard({
@@ -49,6 +50,9 @@ export function TaskBoard({
   onSaveCustomStatuses,
   statuses = [],
   canManageStatuses,
+  displayMode = "list",
+  onDisplayModeChange,
+  kanbanEnabled
 }: Types.TaskBoardProps) {
   const [internalTasks, setInternalTasks] = useState<Types.Task[]>(externalTasks);
   const [internalMilestones, setInternalMilestones] = useState<Types.Milestone[]>(externalMilestones);
@@ -79,11 +83,7 @@ export function TaskBoard({
   }, [statuses]);
 
   // Apply filters to tasks
-  const { filteredTasks, showHiddenTasksToggle } = useFilteredTasks(
-    internalTasks,
-    internalMilestones,
-    filters,
-  );
+  const { filteredTasks, showHiddenTasksToggle } = useFilteredTasks(internalTasks, internalMilestones, filters);
 
   const groupedTasks = useMemo(() => groupTasksByMilestone(filteredTasks), [filteredTasks]);
   const milestones = useMemo(
@@ -180,6 +180,9 @@ export function TaskBoard({
         internalTasks={internalTasks}
         openStatusModal={openStatusModal}
         canManageStatuses={canManageStatuses}
+        displayMode={displayMode}
+        onDisplayModeChange={onDisplayModeChange}
+        kanbanEnabled={kanbanEnabled}
       />
 
       <div
@@ -292,6 +295,9 @@ interface ActionBarProps {
   internalTasks: Types.Task[];
   openStatusModal: () => void;
   canManageStatuses: boolean;
+  displayMode: Types.TaskDisplayMode;
+  onDisplayModeChange: (mode: Types.TaskDisplayMode) => void;
+  kanbanEnabled?: boolean;
 }
 
 function StickyActionBar({
@@ -303,6 +309,9 @@ function StickyActionBar({
   internalTasks,
   openStatusModal,
   canManageStatuses,
+  displayMode,
+  onDisplayModeChange,
+  kanbanEnabled,
 }: ActionBarProps) {
   return (
     <header className="sticky top-0 z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between py-6 bg-surface-base px-4 lg:px-0">
@@ -328,22 +337,26 @@ function StickyActionBar({
         {onFiltersChange && <FilterBadges filters={filters} onFiltersChange={onFiltersChange} />}
       </div>
 
-      <Menu
-        customTrigger={
-          <button
-            className="p-1.5 -mb-2 text-content-dimmed hover:text-content-base hover:bg-surface-dimmed rounded-full transition"
-            aria-label="Settings"
-          >
-            <IconSettings size={20} />
-          </button>
-        }
-        size="small"
-        align="end"
-      >
-        <MenuActionItem icon={IconSettings} onClick={openStatusModal} hidden={!canManageStatuses}>
-          Manage statuses
-        </MenuActionItem>
-      </Menu>
+      <div className="flex items-center -mb-2">
+        <Menu
+          customTrigger={
+            <button
+              className="p-1.5 text-content-dimmed hover:text-content-base hover:bg-surface-dimmed rounded-full transition"
+              aria-label="Settings"
+            >
+              <IconSettings size={20} />
+            </button>
+          }
+          size="small"
+          align="end"
+        >
+          <MenuActionItem icon={IconSettings} onClick={openStatusModal} hidden={!canManageStatuses}>
+            Manage statuses
+          </MenuActionItem>
+        </Menu>
+
+        {kanbanEnabled && <TaskDisplayMenu mode={displayMode} onChange={onDisplayModeChange} />}
+      </div>
     </header>
   );
 }

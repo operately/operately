@@ -5,7 +5,7 @@ import { WarningCallout } from "../Callouts";
 import Modal from "../Modal";
 
 export function DeleteModal(props: ProjectPage.State) {
-  const title = "Delete " + props.projectName;
+  const title = "Delete " + props.project.name;
 
   return (
     <Modal isOpen={props.isDeleteModalOpen} onClose={props.closeDeleteModal} size="large" title={title}>
@@ -33,7 +33,7 @@ function DeleteForm(props: ProjectPage.State) {
       <form className="space-y-6" onSubmit={handleSubmit}>
         <WarningCallout
           message="This action cannot be undone"
-          description={`Deleting a project is permanent and cannot be undone. Please confirm that you want to delete the ${props.projectName} project.`}
+          description={`Deleting a project is permanent and cannot be undone. Please confirm that you want to delete the ${props.project.name} project.`}
         />
 
         <div className="flex items-center gap-2">

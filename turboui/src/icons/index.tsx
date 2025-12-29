@@ -157,6 +157,7 @@ import IconVideo from "@tabler/icons-react/dist/esm/icons/IconVideo.mjs";
 import IconWorld from "@tabler/icons-react/dist/esm/icons/IconWorld.mjs";
 import IconX from "@tabler/icons-react/dist/esm/icons/IconX.mjs";
 import IconLayoutKanban from "@tabler/icons-react/dist/esm/icons/IconLayoutKanban.mjs";
+import IconAdjustmentsHorizontal from "@tabler/icons-react/dist/esm/icons/IconAdjustmentsHorizontal.mjs";
 
 import type { IconProps as TablerIconProps } from "@tabler/icons-react";
 
@@ -316,6 +317,7 @@ export {
   IconWorld,
   IconX,
   IconLayoutKanban,
+  IconAdjustmentsHorizontal,
 };
 
 export interface IconProps {
