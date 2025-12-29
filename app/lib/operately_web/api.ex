@@ -86,7 +86,7 @@ defmodule OperatelyWeb.Api do
     mutation(:create_milestone, OperatelyWeb.Api.Projects.CreateMilestone)
     mutation(:update_milestone, OperatelyWeb.Api.Projects.UpdateMilestone)
     mutation(:update_task_statuses, OperatelyWeb.Api.Projects.UpdateTaskStatuses)
-    mutation(:update_tasks_kanban_state, OperatelyWeb.Api.Projects.UpdateTasksKanbanState)
+    mutation(:update_kanban, OperatelyWeb.Api.Projects.UpdateKanban)
     mutation(:delete, OperatelyWeb.Api.Projects.DeleteProject)
   end
 
@@ -94,6 +94,7 @@ defmodule OperatelyWeb.Api do
     query(:list_tasks, OperatelyWeb.Api.ProjectMilestones.ListTasks)
 
     mutation(:update_title, OperatelyWeb.Api.ProjectMilestones.UpdateTitle)
+    mutation(:update_kanban, OperatelyWeb.Api.ProjectMilestones.UpdateKanban)
     mutation(:update_due_date, OperatelyWeb.Api.ProjectMilestones.UpdateDueDate)
     mutation(:update_description, OperatelyWeb.Api.ProjectMilestones.UpdateDescription)
     mutation(:update_ordering, OperatelyWeb.Api.ProjectMilestones.UpdateOrdering)
@@ -107,7 +108,6 @@ defmodule OperatelyWeb.Api do
     mutation(:delete, OperatelyWeb.Api.Tasks.Delete)
     mutation(:update_name, OperatelyWeb.Api.Tasks.UpdateName)
     mutation(:update_status, OperatelyWeb.Api.Tasks.UpdateStatus)
-    mutation(:update_kanban, OperatelyWeb.Api.Tasks.UpdateKanban)
     mutation(:update_due_date, OperatelyWeb.Api.Tasks.UpdateDueDate)
     mutation(:update_assignee, OperatelyWeb.Api.Tasks.UpdateAssignee)
     mutation(:update_milestone, OperatelyWeb.Api.Tasks.UpdateMilestone)
@@ -130,6 +130,7 @@ defmodule OperatelyWeb.Api do
     query(:list_members, OperatelyWeb.Api.Spaces.ListMembers)
     query(:list_tasks, OperatelyWeb.Api.Spaces.ListTasks)
     mutation(:update_task_statuses, OperatelyWeb.Api.Spaces.UpdateTaskStatuses)
+    mutation(:update_kanban, OperatelyWeb.Api.Spaces.UpdateKanban)
     mutation(:update_tools, OperatelyWeb.Api.Spaces.UpdateTools)
   end
 

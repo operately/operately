@@ -3993,6 +3993,17 @@ export interface ProjectMilestonesUpdateDueDateResult {
   milestone: Milestone;
 }
 
+export interface ProjectMilestonesUpdateKanbanInput {
+  milestoneId: Id;
+  taskId: Id;
+  status: TaskStatus;
+  kanbanState: Json;
+}
+
+export interface ProjectMilestonesUpdateKanbanResult {
+  task: Task;
+}
+
 export interface ProjectMilestonesUpdateOrderingInput {
   projectId: Id;
   orderingState: string[];
@@ -4047,6 +4058,18 @@ export interface ProjectsUpdateDueDateResult {
   success: boolean | null;
 }
 
+export interface ProjectsUpdateKanbanInput {
+  projectId: Id;
+  taskId: Id;
+  status: TaskStatus;
+  kanbanState: Json;
+}
+
+export interface ProjectsUpdateKanbanResult {
+  project: Project;
+  task: Task;
+}
+
 export interface ProjectsUpdateMilestoneInput {
   projectId: Id;
   milestoneId: Id;
@@ -4094,18 +4117,6 @@ export interface ProjectsUpdateTaskStatusesInput {
 
 export interface ProjectsUpdateTaskStatusesResult {
   success: boolean | null;
-}
-
-export interface ProjectsUpdateTasksKanbanStateInput {
-  projectId: Id;
-  taskId: Id;
-  status: TaskStatus;
-  kanbanState: Json;
-}
-
-export interface ProjectsUpdateTasksKanbanStateResult {
-  project: Project;
-  task: Task;
 }
 
 export interface PublishDiscussionInput {
@@ -4239,6 +4250,17 @@ export interface ResumeProjectResult {
   project?: Project | null;
 }
 
+export interface SpacesUpdateKanbanInput {
+  spaceId: Id;
+  taskId: Id;
+  status: TaskStatus;
+  kanbanState: Json;
+}
+
+export interface SpacesUpdateKanbanResult {
+  task: Task;
+}
+
 export interface SpacesUpdateTaskStatusesInput {
   spaceId: Id;
   taskStatuses: TaskStatus[];
@@ -4320,18 +4342,6 @@ export interface TasksUpdateDueDateInput {
 
 export interface TasksUpdateDueDateResult {
   task: Task;
-}
-
-export interface TasksUpdateKanbanInput {
-  taskId: Id;
-  status: TaskStatus;
-  kanbanState: Json;
-  type: TaskType;
-}
-
-export interface TasksUpdateKanbanResult {
-  task: Task;
-  updatedMilestone: Milestone | null;
 }
 
 export interface TasksUpdateMilestoneInput {
@@ -5059,6 +5069,10 @@ class ApiNamespaceSpaces {
     return this.client.get("/spaces/search", input);
   }
 
+  async updateKanban(input: SpacesUpdateKanbanInput): Promise<SpacesUpdateKanbanResult> {
+    return this.client.post("/spaces/update_kanban", input);
+  }
+
   async updateTaskStatuses(input: SpacesUpdateTaskStatusesInput): Promise<SpacesUpdateTaskStatusesResult> {
     return this.client.post("/spaces/update_task_statuses", input);
   }
@@ -5115,10 +5129,6 @@ class ApiNamespaceTasks {
     return this.client.post("/tasks/update_due_date", input);
   }
 
-  async updateKanban(input: TasksUpdateKanbanInput): Promise<TasksUpdateKanbanResult> {
-    return this.client.post("/tasks/update_kanban", input);
-  }
-
   async updateMilestone(input: TasksUpdateMilestoneInput): Promise<TasksUpdateMilestoneResult> {
     return this.client.post("/tasks/update_milestone", input);
   }
@@ -5157,6 +5167,10 @@ class ApiNamespaceProjectMilestones {
 
   async updateDueDate(input: ProjectMilestonesUpdateDueDateInput): Promise<ProjectMilestonesUpdateDueDateResult> {
     return this.client.post("/project_milestones/update_due_date", input);
+  }
+
+  async updateKanban(input: ProjectMilestonesUpdateKanbanInput): Promise<ProjectMilestonesUpdateKanbanResult> {
+    return this.client.post("/project_milestones/update_kanban", input);
   }
 
   async updateOrdering(input: ProjectMilestonesUpdateOrderingInput): Promise<ProjectMilestonesUpdateOrderingResult> {
@@ -5203,6 +5217,10 @@ class ApiNamespaceProjects {
     return this.client.post("/projects/update_due_date", input);
   }
 
+  async updateKanban(input: ProjectsUpdateKanbanInput): Promise<ProjectsUpdateKanbanResult> {
+    return this.client.post("/projects/update_kanban", input);
+  }
+
   async updateMilestone(input: ProjectsUpdateMilestoneInput): Promise<ProjectsUpdateMilestoneResult> {
     return this.client.post("/projects/update_milestone", input);
   }
@@ -5221,12 +5239,6 @@ class ApiNamespaceProjects {
 
   async updateTaskStatuses(input: ProjectsUpdateTaskStatusesInput): Promise<ProjectsUpdateTaskStatusesResult> {
     return this.client.post("/projects/update_task_statuses", input);
-  }
-
-  async updateTasksKanbanState(
-    input: ProjectsUpdateTasksKanbanStateInput,
-  ): Promise<ProjectsUpdateTasksKanbanStateResult> {
-    return this.client.post("/projects/update_tasks_kanban_state", input);
   }
 }
 
@@ -7683,6 +7695,12 @@ export default {
         defaultApiClient.apiNamespaceSpaces.updateTools(input),
       ),
 
+    updateKanban: (input: SpacesUpdateKanbanInput) => defaultApiClient.apiNamespaceSpaces.updateKanban(input),
+    useUpdateKanban: () =>
+      useMutation<SpacesUpdateKanbanInput, SpacesUpdateKanbanResult>((input) =>
+        defaultApiClient.apiNamespaceSpaces.updateKanban(input),
+      ),
+
     updateTaskStatuses: (input: SpacesUpdateTaskStatusesInput) =>
       defaultApiClient.apiNamespaceSpaces.updateTaskStatuses(input),
     useUpdateTaskStatuses: () =>
@@ -7716,12 +7734,6 @@ export default {
   tasks: {
     list: (input: TasksListInput) => defaultApiClient.apiNamespaceTasks.list(input),
     useList: (input: TasksListInput) => useQuery<TasksListResult>(() => defaultApiClient.apiNamespaceTasks.list(input)),
-
-    updateKanban: (input: TasksUpdateKanbanInput) => defaultApiClient.apiNamespaceTasks.updateKanban(input),
-    useUpdateKanban: () =>
-      useMutation<TasksUpdateKanbanInput, TasksUpdateKanbanResult>((input) =>
-        defaultApiClient.apiNamespaceTasks.updateKanban(input),
-      ),
 
     updateAssignee: (input: TasksUpdateAssigneeInput) => defaultApiClient.apiNamespaceTasks.updateAssignee(input),
     useUpdateAssignee: () =>
@@ -7802,6 +7814,13 @@ export default {
         defaultApiClient.apiNamespaceProjectMilestones.updateDueDate(input),
       ),
 
+    updateKanban: (input: ProjectMilestonesUpdateKanbanInput) =>
+      defaultApiClient.apiNamespaceProjectMilestones.updateKanban(input),
+    useUpdateKanban: () =>
+      useMutation<ProjectMilestonesUpdateKanbanInput, ProjectMilestonesUpdateKanbanResult>((input) =>
+        defaultApiClient.apiNamespaceProjectMilestones.updateKanban(input),
+      ),
+
     updateTitle: (input: ProjectMilestonesUpdateTitleInput) =>
       defaultApiClient.apiNamespaceProjectMilestones.updateTitle(input),
     useUpdateTitle: () =>
@@ -7863,6 +7882,12 @@ export default {
         defaultApiClient.apiNamespaceProjects.updateStartDate(input),
       ),
 
+    updateKanban: (input: ProjectsUpdateKanbanInput) => defaultApiClient.apiNamespaceProjects.updateKanban(input),
+    useUpdateKanban: () =>
+      useMutation<ProjectsUpdateKanbanInput, ProjectsUpdateKanbanResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.updateKanban(input),
+      ),
+
     updateReviewer: (input: ProjectsUpdateReviewerInput) => defaultApiClient.apiNamespaceProjects.updateReviewer(input),
     useUpdateReviewer: () =>
       useMutation<ProjectsUpdateReviewerInput, ProjectsUpdateReviewerResult>((input) =>
@@ -7893,13 +7918,6 @@ export default {
     useDelete: () =>
       useMutation<ProjectsDeleteInput, ProjectsDeleteResult>((input) =>
         defaultApiClient.apiNamespaceProjects.delete(input),
-      ),
-
-    updateTasksKanbanState: (input: ProjectsUpdateTasksKanbanStateInput) =>
-      defaultApiClient.apiNamespaceProjects.updateTasksKanbanState(input),
-    useUpdateTasksKanbanState: () =>
-      useMutation<ProjectsUpdateTasksKanbanStateInput, ProjectsUpdateTasksKanbanStateResult>((input) =>
-        defaultApiClient.apiNamespaceProjects.updateTasksKanbanState(input),
       ),
   },
 
