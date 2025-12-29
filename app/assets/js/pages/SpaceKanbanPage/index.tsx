@@ -114,6 +114,7 @@ function Page() {
     canEdit: Boolean(space.permissions?.canEdit),
     canComment: Boolean(space.permissions?.canCommentOnTasks),
     hideMilestone: true,
+    onTaskNameChange: updateTaskName,
     onTaskAssigneeChange: updateTaskAssignee,
     onTaskDueDateChange: updateTaskDueDate,
     onTaskStatusChange: updateTaskStatus,
@@ -135,7 +136,7 @@ function Page() {
 
     onTaskKanbanChange: handleTaskKanbanChange,
     onTaskCreate: createTask,
-    onTaskNameChange: updateTaskName,
+    onTaskNameChange: slideInModel.onTaskNameChange,
     onTaskAssigneeChange: slideInModel.onTaskAssigneeChange,
     onTaskDueDateChange: slideInModel.onTaskDueDateChange,
     onTaskStatusChange: slideInModel.onTaskStatusChange,

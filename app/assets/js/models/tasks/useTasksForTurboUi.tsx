@@ -193,13 +193,13 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
           }),
         );
 
-        return { success: true };
+        return true;
       })
       .catch((e) => {
         console.error("Failed to update task due date", e);
         showErrorToast("Error", "Failed to update task due date");
 
-        return { success: false };
+        return false;
       });
   };
 
@@ -218,15 +218,75 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
           }),
         );
 
-        return { success: true };
+        return true;
       })
       .catch((e) => {
         console.error("Failed to update task assignee", e);
         showErrorToast("Error", "Failed to update task assignee");
 
-        return { success: false };
+        return false;
       });
   };
+
+  const updateTaskName = React.useCallback(
+    async (taskId: string, title: string) => {
+      if (title.trim() === "") {
+        showErrorToast("Task name cannot be empty", "Failed to update task name.");
+        return false;
+      }
+
+      const snapshot = createSnapshot();
+
+      setTasks((prev) =>
+        prev.map((t) => {
+          if (compareIds(t.id, taskId)) {
+            return { ...t, title };
+          }
+          return t;
+        }),
+      );
+
+      try {
+        await Api.tasks.updateName({ taskId, name: title, type });
+        await invalidateAndRefresh();
+        return true;
+      } catch (e) {
+        console.error("Failed to update task name", e);
+        showErrorToast("Error", "Failed to update task name.");
+        restoreSnapshot(snapshot);
+        return false;
+      }
+    },
+    [createSnapshot, invalidateAndRefresh, restoreSnapshot, type],
+  );
+
+  const updateTaskDescription = React.useCallback(
+    async (taskId: string, description: any): Promise<boolean> => {
+      const snapshot = createSnapshot();
+      const serialized = description ? JSON.stringify(description) : "";
+
+      setTasks((prev) =>
+        prev.map((t) => {
+          if (compareIds(t.id, taskId)) {
+            return { ...t, description: serialized };
+          }
+          return t;
+        }),
+      );
+
+      try {
+        await Api.tasks.updateDescription({ taskId, description: serialized, type });
+        await invalidateAndRefresh();
+        return true;
+      } catch (e) {
+        console.error("Failed to update task description", e);
+        showErrorToast("Error", "Failed to update task description.");
+        restoreSnapshot(snapshot);
+        return false;
+      }
+    },
+    [createSnapshot, invalidateAndRefresh, restoreSnapshot, type],
+  );
 
   const updateTaskStatus = async (taskId: string, status: TaskBoard.Status | null) => {
     const snapshot = createSnapshot();
@@ -252,12 +312,12 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
 
       await invalidateAndRefresh();
 
-      return { success: true };
+      return true;
     } catch (e) {
       console.error("Failed to update task status", e);
       showErrorToast("Error", "Failed to update task status");
       restoreSnapshot(snapshot);
-      return { success: false };
+      return false;
     }
   };
 
@@ -271,7 +331,7 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
       if (!taskToMove) {
         console.error("Task not found", taskId);
         showErrorToast("Error", "Something went wrong");
-        return { success: false };
+        return false;
       }
 
       const milestonesOrderingState = buildMilestonesOrderingState(
@@ -321,12 +381,12 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
 
       await invalidateAndRefresh();
 
-      return { success: true };
+      return true;
     } catch (e) {
       console.error("Failed to update task milestone", e);
       showErrorToast("Error", "Failed to update task milestone");
       restoreSnapshot(snapshot);
-      return { success: false };
+      return false;
     }
   };
 
@@ -382,6 +442,8 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
     createTask,
     updateTaskDueDate,
     updateTaskAssignee,
+    updateTaskName,
+    updateTaskDescription,
     updateTaskStatus,
     updateTaskMilestone,
     deleteTask,
