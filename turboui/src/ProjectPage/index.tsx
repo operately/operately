@@ -10,7 +10,6 @@ import { ResourceManager } from "../ResourceManager";
 import { BadgeStatus } from "../StatusBadge/types";
 import { PersonField } from "../PersonField";
 import { useTabs } from "../Tabs";
-import { TaskBoard } from "../TaskBoard";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import { CheckIns } from "./CheckIns";
 import { DeleteModal } from "./DeleteModal";
@@ -18,6 +17,7 @@ import { Discussions } from "./Discussions";
 import { Overview } from "./Overview";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
 import { SidebarNotificationSection } from "../SidebarSection";
+import { TasksSection } from "./TasksSection";
 
 export namespace ProjectPage {
   export interface Space {
@@ -69,7 +69,7 @@ export namespace ProjectPage {
   export type NewResourcePayload = ResourceManager.NewResourcePayload;
   export type UpdateResourcePayload = ResourceManager.Resource;
   export type NewTaskPayload = TaskBoardTypes.NewTaskPayload;
-  export type TaskStatus = TaskBoard.StatusCustomizationStatus;
+  export type TaskStatus = TaskBoardTypes.StatusCustomizationStatus;
 
   export interface Props {
     workmapLink: string;
@@ -78,7 +78,10 @@ export namespace ProjectPage {
     pauseLink: string;
     exportMarkdown?: () => void;
 
-    projectName: string;
+    project: {
+      id: string;
+      name: string;
+    };
     newCheckInLink: string;
     newDiscussionLink: string;
 
@@ -165,6 +168,8 @@ export namespace ProjectPage {
 
     moveModalOpen?: boolean;
     subscriptions: SidebarNotificationSection.Props;
+
+    kanbanEnabled?: boolean;
   }
 
   export interface State extends Props {
@@ -220,33 +225,16 @@ export function ProjectPage(props: ProjectPage.Props) {
   ]);
 
   return (
-    <ProjectPageLayout title={[state.projectName]} testId="project-page" tabs={tabs} {...state}>
+    <ProjectPageLayout
+      title={[state.project.name]}
+      projectName={state.project.name}
+      testId="project-page"
+      tabs={tabs}
+      {...state}
+    >
       <div className="flex-1 overflow-auto">
         {tabs.active === "overview" && <Overview {...state} />}
-        {tabs.active === "tasks" && (
-          <div className="flex-1 flex flex-col overflow-hidden pt-1">
-            <TaskBoard
-              tasks={state.tasks}
-              milestones={state.milestones}
-              searchableMilestones={state.searchableMilestones}
-              showMilestoneKanbanLink={state.showMilestoneKanbanLink}
-              onTaskCreate={state.onTaskCreate}
-              onMilestoneCreate={state.onMilestoneCreate}
-              onTaskAssigneeChange={state.onTaskAssigneeChange}
-              onTaskDueDateChange={state.onTaskDueDateChange}
-              onTaskStatusChange={state.onTaskStatusChange}
-              onTaskMilestoneChange={state.onTaskMilestoneChange}
-              onMilestoneUpdate={state.onMilestoneUpdate}
-              onMilestoneSearch={state.onMilestoneSearch}
-              assigneePersonSearch={state.assigneePersonSearch}
-              filters={state.filters}
-              onFiltersChange={state.onFiltersChange}
-              statuses={state.statuses}
-              canManageStatuses={state.canManageStatuses}
-              onSaveCustomStatuses={state.onSaveCustomStatuses}
-            />
-          </div>
-        )}
+        {tabs.active === "tasks" && <TasksSection state={state} />}
         {tabs.active === "check-ins" && <CheckIns {...state} />}
         {tabs.active === "discussions" && <Discussions {...state} />}
         {tabs.active === "activity" && <Activity {...state} />}
