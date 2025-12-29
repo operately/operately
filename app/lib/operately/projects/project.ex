@@ -56,7 +56,9 @@ defmodule Operately.Projects.Project do
     field :status, :string, default: "active"
     field :closed_at, :utc_datetime
     field :success_status, Ecto.Enum, values: [:achieved, :missed]
+
     field :milestones_ordering_state, {:array, :string}, default: Operately.Projects.OrderingState.initialize()
+    field :tasks_kanban_state, :map, default: Operately.Tasks.KanbanState.initialize()
 
     # populated with after load hooks
     field :next_milestone, :any, virtual: true
@@ -98,7 +100,8 @@ defmodule Operately.Projects.Project do
       :started_at,
       :deadline,
       :milestones_ordering_state,
-      :subscription_list_id
+      :subscription_list_id,
+      :tasks_kanban_state
     ])
     |> cast_embed(:timeframe)
     |> cast_embed(:task_statuses)
