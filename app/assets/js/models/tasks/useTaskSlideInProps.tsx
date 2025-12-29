@@ -3,7 +3,7 @@ import * as React from "react";
 import { DateField, TaskBoard, TaskPage } from "turboui";
 import { useOptimisticComments } from "@/models/comments/useOptimisticComments";
 import * as People from "@/models/people";
-import { Paths } from "@/routes/paths";
+import { compareIds, Paths } from "@/routes/paths";
 
 import { useTaskTimelineItems } from "./useTaskTimelineItems";
 import { prepareTaskTimelineItems } from "./prepareTaskTimelineItems";
@@ -65,7 +65,7 @@ export function useTaskSlideInProps(opts: {
     }));
   }, []);
 
-  const findTask = React.useCallback((taskId: string) => tasks.find((t) => t.id === taskId) ?? null, [tasks]);
+  const findTask = React.useCallback((taskId: string) => tasks.find((t) => compareIds(t.id, taskId)) ?? null, [tasks]);
 
   const wrapNameChange = React.useCallback(
     async (taskId: string, newName: string) => {
@@ -223,7 +223,7 @@ export function useTaskSlideInProps(opts: {
 
   const getTaskPageProps = React.useCallback(
     (taskId: string, ctx: any): TaskPage.ContentProps | null => {
-      const task = ctx.tasks.find((t) => t.id === taskId);
+      const task = ctx.tasks.find((t) => compareIds(t.id, taskId));
       if (!task) return null;
 
       if (lastSeenTaskIdRef.current !== taskId) {
