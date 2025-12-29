@@ -1481,7 +1481,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
 
       before_count = count_task_activities(ctx.task, "task_status_updating")
 
-      assert {200, res1} = mutation(ctx.conn, [:projects, :update_tasks_kanban_state], %{
+      assert {200, res1} = mutation(ctx.conn, [:projects, :update_kanban], %{
         project_id: Paths.project_id(ctx.project),
         task_id: Paths.task_id(ctx.task),
         status: status_input,
@@ -1495,7 +1495,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert project.tasks_kanban_state["in_progress"] == kanban_state.in_progress
       assert count_task_activities(ctx.task, "task_status_updating") == before_count + 1
 
-      assert {200, _res2} = mutation(ctx.conn, [:projects, :update_tasks_kanban_state], %{
+      assert {200, _res2} = mutation(ctx.conn, [:projects, :update_kanban], %{
         project_id: Paths.project_id(ctx.project),
         task_id: Paths.task_id(ctx.task),
         status: status_input,
@@ -1536,7 +1536,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
 
       before_count = count_task_activities(ctx.task1, "task_status_updating")
 
-      assert {200, _} = mutation(ctx.conn, [:projects, :update_tasks_kanban_state], %{
+      assert {200, _} = mutation(ctx.conn, [:projects, :update_kanban], %{
         project_id: Paths.project_id(ctx.project),
         task_id: Paths.task_id(ctx.task1),
         status: status_input,
@@ -1545,7 +1545,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
 
       assert count_task_activities(ctx.task1, "task_status_updating") == before_count + 1
 
-      assert {200, _} = mutation(ctx.conn, [:projects, :update_tasks_kanban_state], %{
+      assert {200, _} = mutation(ctx.conn, [:projects, :update_kanban], %{
         project_id: Paths.project_id(ctx.project),
         task_id: Paths.task_id(ctx.task1),
         status: status_input,
@@ -1583,7 +1583,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
 
       assert ctx.foreign_task.project_id != ctx.project.id
 
-      assert {404, _} = mutation(ctx.conn, [:projects, :update_tasks_kanban_state], %{
+      assert {404, _} = mutation(ctx.conn, [:projects, :update_kanban], %{
         project_id: Paths.project_id(ctx.project),
         task_id: Paths.task_id(ctx.foreign_task),
         status: status_input,
@@ -1593,7 +1593,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
 
     test "it requires authentication", ctx do
       status = %{id: Ecto.UUID.generate(), label: "", color: "blue", index: 0, value: "", closed: false}
-      assert {401, _} = mutation(ctx.conn, [:projects, :update_tasks_kanban_state], %{status: status, kanban_state: Jason.encode!(%{})})
+      assert {401, _} = mutation(ctx.conn, [:projects, :update_kanban], %{status: status, kanban_state: Jason.encode!(%{})})
     end
 
     test "it requires a project_id", ctx do
@@ -1610,7 +1610,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
           |> Map.put(:color, to_string(status.color))
         end)
 
-      assert {400, res} = mutation(ctx.conn, [:projects, :update_tasks_kanban_state], %{
+      assert {400, res} = mutation(ctx.conn, [:projects, :update_kanban], %{
         task_id: Paths.task_id(ctx.task),
         status: status_input,
         kanban_state: Jason.encode!(%{})
@@ -1630,7 +1630,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
           |> Map.put(:color, to_string(status.color))
         end)
 
-      assert {400, res} = mutation(ctx.conn, [:projects, :update_tasks_kanban_state], %{
+      assert {400, res} = mutation(ctx.conn, [:projects, :update_kanban], %{
         project_id: Paths.project_id(ctx.project),
         status: status_input,
         kanban_state: Jason.encode!(%{})
@@ -1645,7 +1645,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.add_project_task(:task, :milestone)
         |> Factory.log_in_person(:creator)
 
-      assert {400, res} = mutation(ctx.conn, [:projects, :update_tasks_kanban_state], %{
+      assert {400, res} = mutation(ctx.conn, [:projects, :update_kanban], %{
         project_id: Paths.project_id(ctx.project),
         task_id: Paths.task_id(ctx.task),
         kanban_state: Jason.encode!(%{})
@@ -1668,7 +1668,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
           |> Map.put(:color, to_string(status.color))
         end)
 
-      assert {400, res} = mutation(ctx.conn, [:projects, :update_tasks_kanban_state], %{
+      assert {400, res} = mutation(ctx.conn, [:projects, :update_kanban], %{
         project_id: Paths.project_id(ctx.project),
         task_id: Paths.task_id(ctx.task),
         status: status_input
@@ -1687,7 +1687,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
 
       status = %{id: Ecto.UUID.generate(), label: "", color: "blue", index: 0, value: "", closed: false}
 
-      assert {404, _} = mutation(ctx.conn, [:projects, :update_tasks_kanban_state], %{
+      assert {404, _} = mutation(ctx.conn, [:projects, :update_kanban], %{
         project_id: Paths.project_id(ctx.project),
         task_id: Paths.task_id(ctx.task),
         status: status,
@@ -1703,7 +1703,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
 
       status = %{id: Ecto.UUID.generate(), label: "", color: "blue", index: 0, value: "", closed: false}
 
-      assert {404, _} = mutation(ctx.conn, [:projects, :update_tasks_kanban_state], %{
+      assert {404, _} = mutation(ctx.conn, [:projects, :update_kanban], %{
         project_id: Ecto.UUID.generate(),
         task_id: Paths.task_id(ctx.task),
         status: status,
@@ -1716,7 +1716,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
 
       status = %{id: Ecto.UUID.generate(), label: "", color: "blue", index: 0, value: "", closed: false}
 
-      assert {404, _} = mutation(ctx.conn, [:projects, :update_tasks_kanban_state], %{
+      assert {404, _} = mutation(ctx.conn, [:projects, :update_kanban], %{
         project_id: Paths.project_id(ctx.project),
         task_id: Ecto.UUID.generate(),
         status: status,
@@ -1741,7 +1741,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
           |> Map.put(:color, to_string(status.color))
         end)
 
-      assert {403, _} = mutation(ctx.conn, [:projects, :update_tasks_kanban_state], %{
+      assert {403, _} = mutation(ctx.conn, [:projects, :update_kanban], %{
         project_id: Paths.project_id(ctx.project),
         task_id: Paths.task_id(ctx.task),
         status: status_input,
@@ -1771,7 +1771,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         closed: false
       }
 
-      assert {400, res} = mutation(ctx.conn, [:projects, :update_tasks_kanban_state], %{
+      assert {400, res} = mutation(ctx.conn, [:projects, :update_kanban], %{
         project_id: Paths.project_id(ctx.project),
         task_id: Paths.task_id(ctx.task),
         status: invalid_status,
