@@ -244,7 +244,7 @@ defmodule OperatelyWeb.Api.Spaces do
 
     def update_space_kanban_state(multi, status, kanban_state) do
       Multi.merge(multi, fn %{me: me, space: space, task: task} ->
-        Operately.Operations.ProjectKanbanStateUpdating.run(me, %{type: :space, space: space}, task, status, kanban_state)
+        Operately.Operations.KanbanStateUpdating.run(me, %{type: :space, space: space}, task, status, kanban_state)
       end)
     end
 

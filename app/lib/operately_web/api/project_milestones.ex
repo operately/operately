@@ -275,7 +275,7 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
     def update_milestone_kanban_state(multi, status, kanban_state) do
       Ecto.Multi.merge(multi, fn %{me: me, milestone: milestone, project: project, task: task} ->
         scope = %{type: :milestone, milestone: milestone, project: project}
-        Operately.Operations.ProjectKanbanStateUpdating.run(me, scope, task, status, kanban_state)
+        Operately.Operations.KanbanStateUpdating.run(me, scope, task, status, kanban_state)
       end)
     end
 

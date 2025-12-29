@@ -1,4 +1,4 @@
-defmodule Operately.Operations.ProjectKanbanStateUpdating do
+defmodule Operately.Operations.KanbanStateUpdating do
   alias Ecto.Multi
   alias Operately.Activities
   alias Operately.Repo
