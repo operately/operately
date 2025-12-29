@@ -5,7 +5,7 @@ import * as Milestones from "@/models/milestones";
 import * as Tasks from "@/models/tasks";
 import * as People from "@/models/people";
 
-import { MilestoneKanbanPage, showErrorToast } from "turboui";
+import { MilestoneKanbanPage } from "turboui";
 import { usePaths } from "@/routes/paths";
 import { PageCache } from "@/routes/PageCache";
 import { projectPageCacheKey } from "../ProjectPage";
@@ -65,9 +65,11 @@ function Page() {
     tasks: baseTasks,
     setTasks: setBaseTasks,
     createTask,
+    updateTaskName,
     updateTaskAssignee,
     updateTaskDueDate,
     updateTaskStatus,
+    updateTaskDescription,
     updateTaskMilestone,
     deleteTask,
   } = Tasks.useTasksForTurboUi({
@@ -112,37 +114,6 @@ function Page() {
   const { milestones, search: searchMilestones } = useMilestones(milestone.project.id);
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: milestone.project.id } });
 
-  const handleTaskNameChange = usePageField<string>({
-    update: (taskId, v) => Api.tasks.updateName({ taskId, name: v, type: "project" }),
-    onError: (e: string) => showErrorToast(e, "Failed to update task name."),
-    validations: [(v) => (v.trim() === "" ? "Task name cannot be empty" : null)],
-    onOptimisticUpdade: (taskId, v) => {
-      setBaseTasks((prev) =>
-        prev.map((t) => {
-          if (t.id === taskId) {
-            return { ...t, title: v };
-          }
-          return t;
-        }),
-      );
-    },
-  });
-
-  const handleTaskDescriptionChange = usePageField<any>({
-    update: (taskId, v) => Api.tasks.updateDescription({ taskId, description: JSON.stringify(v), type: "project" }),
-    onError: () => showErrorToast("Error", "Failed to update task description."),
-    onOptimisticUpdade: (taskId, v) => {
-      setBaseTasks((prev) =>
-        prev.map((t) => {
-          if (t.id === taskId) {
-            return { ...t, description: v ? JSON.stringify(v) : "" };
-          }
-          return t;
-        }),
-      );
-    },
-  });
-
   const handleTaskMilestoneChange = React.useCallback(
     (taskId: string, milestone: MilestoneKanbanPage.Milestone | null) => {
       // We can't control index in new milestone, so we default to index 1000. The backend will normalize ordering.
@@ -175,10 +146,11 @@ function Page() {
     commentEntityType: "project_task",
     canEdit: milestone.permissions.canEditTask,
     canComment: milestone.permissions.canComment,
+    onTaskNameChange: updateTaskName,
     onTaskAssigneeChange: updateTaskAssignee,
     onTaskDueDateChange: updateTaskDueDate,
     onTaskStatusChange: updateTaskStatus,
-    onTaskDescriptionChange: handleTaskDescriptionChange,
+    onTaskDescriptionChange: updateTaskDescription,
   });
 
   const props: MilestoneKanbanPage.Props = {
@@ -197,7 +169,7 @@ function Page() {
 
     assigneePersonSearch: assigneeSearch,
     onTaskCreate: createTask,
-    onTaskNameChange: handleTaskNameChange,
+    onTaskNameChange: slideInModel.onTaskNameChange,
     onTaskAssigneeChange: slideInModel.onTaskAssigneeChange,
     onTaskDueDateChange: slideInModel.onTaskDueDateChange,
     onTaskStatusChange: slideInModel.onTaskStatusChange,
@@ -216,66 +188,4 @@ function Page() {
   };
 
   return <MilestoneKanbanPage key={milestone.id!} {...props} />;
-}
-
-interface usePageFieldProps<T> {
-  update: (taskId: string, newValue: T) => Promise<any>;
-  onError: (error: any) => void;
-  validations?: ((newValue: T) => string | null)[];
-  refreshPageData?: () => Promise<void>;
-  onOptimisticUpdade?: (taskId: string, newValue: T) => void;
-}
-
-function usePageField<T>({
-  update,
-  onError,
-  validations,
-  refreshPageData,
-  onOptimisticUpdade,
-}: usePageFieldProps<T>): (taskId: string, v: T) => Promise<boolean> {
-  const pageData = PageCache.useData(loader);
-  const { data } = pageData;
-
-  return React.useCallback(
-    async (taskId: string, newVal: T): Promise<boolean> => {
-      if (validations) {
-        for (const validation of validations) {
-          const error = validation(newVal);
-          if (error) {
-            onError?.(error);
-            return false;
-          }
-        }
-      }
-
-      const errorHandler = (error: any) => {
-        onError?.(error);
-      };
-
-      if (onOptimisticUpdade) {
-        onOptimisticUpdade(taskId, newVal);
-      }
-
-      try {
-        const res = await update(taskId, newVal);
-
-        if (res === false || (typeof res === "object" && (res as any)?.success === false)) {
-          errorHandler("Update failed");
-          return false;
-        }
-
-        PageCache.invalidate(pageCacheKey(data.milestone.id!));
-
-        if (refreshPageData) {
-          await refreshPageData();
-        }
-
-        return true;
-      } catch (err) {
-        errorHandler(err);
-        return false;
-      }
-    },
-    [update, onError, validations, refreshPageData, onOptimisticUpdade, data.milestone.id],
-  );
 }
