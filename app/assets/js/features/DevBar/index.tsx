@@ -12,10 +12,10 @@ export function DevBar() {
 
   if (!isVisible) return;
 
-   const [isExpanded, setIsExpanded] = useStateWithLocalStorage<boolean>("devBar", "isExpanded", true);
+  const [isExpanded, setIsExpanded] = useStateWithLocalStorage<boolean>("devBar", "isExpanded", true);
 
   const className = classNames(
-    "absolute",
+    "fixed",
     "bottom-0 left-0",
     "bg-black text-white-1 text-xs font-mono z-50",
     "hidden lg:block", // hidden on mobile, start showing on large screens
