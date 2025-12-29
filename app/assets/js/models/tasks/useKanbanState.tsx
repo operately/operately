@@ -64,12 +64,21 @@ export function useKanbanState(options: UseKanbanStateOptions) {
       applyOptimisticTaskStatusUpdate(event.taskId, statusOption, setTasks);
 
       try {
-        await Api.tasks.updateKanban({
-          taskId: event.taskId,
-          status: backendStatus,
-          kanbanState: serializeKanbanState(event.updatedKanbanState),
-          type: type === "milestone" ? "project" : "space",
-        });
+        if (type === "milestone") {
+          await Api.project_milestones.updateKanban({
+            milestoneId: options.milestoneId,
+            taskId: event.taskId,
+            status: backendStatus,
+            kanbanState: serializeKanbanState(event.updatedKanbanState),
+          });
+        } else {
+          await Api.spaces.updateKanban({
+            spaceId: options.spaceId,
+            taskId: event.taskId,
+            status: backendStatus,
+            kanbanState: serializeKanbanState(event.updatedKanbanState),
+          });
+        }
 
         if (onSuccess) {
           await onSuccess();
