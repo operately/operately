@@ -91,6 +91,20 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
     end)
   end
 
+  step :click_task_link_in_space_feed, ctx, opts do
+    task_name = Keyword.fetch!(opts, :task_name)
+
+    ctx
+    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
+    |> UI.find(UI.query(testid: "space-feed"), fn el ->
+      UI.click_link(el, task_name)
+    end)
+  end
+
+  step :assert_space_kanban_page_open, ctx do
+    UI.assert_page(ctx, Paths.space_kanban_path(ctx.company, ctx.space))
+  end
+
   step :assert_task_renamed, ctx, opts do
     ctx
     |> UI.assert_text(opts[:title])

@@ -38,7 +38,11 @@ const TaskStatusUpdating: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: string }) {
     const { project, space, task, newStatus, name } = content(activity);
-    const taskName = task ? taskLink(task) : `the "${name}" task`;
+    const taskName = (() => {
+      if (task && project) return taskLink(task);
+      if (task) return taskLink(task, { spaceId: space.id });
+      return `the "${name}" task`;
+    })();
 
     const message = ["marked", taskName, "as", newStatus.label];
     const location = project ? projectLink(project) : spaceLink(space);
