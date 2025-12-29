@@ -26,6 +26,35 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
     end
   end
 
+  defmodule UpdateKanban do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :milestone_id, :id, null: false
+      field :task_id, :id, null: false
+      field :status, :task_status, null: false
+      field :kanban_state, :json, null: false
+    end
+
+    outputs do
+      field :task, :task
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_milestone(inputs.milestone_id)
+      |> Steps.find_task(inputs.task_id)
+      |> Steps.check_task_permissions(:can_edit_task)
+      |> Steps.update_milestone_kanban_state(inputs.status, inputs.kanban_state)
+      |> Steps.commit()
+      |> Steps.broadcast_review_count_update()
+      |> Steps.respond(fn changes ->
+        %{task: Serializer.serialize(changes.updated_task_with_preloads, level: :full)}
+      end)
+    end
+  end
+
   defmodule UpdateTitle do
     use TurboConnect.Mutation
 
@@ -218,13 +247,35 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
 
     def find_milestone(multi, milestone_id) do
       Ecto.Multi.run(multi, :milestone, fn _repo, %{me: me} ->
-        case Operately.Projects.Milestone.get(me, id: milestone_id, opts: [preload: [:project]]) do
+        case Operately.Projects.Milestone.get(me, id: milestone_id, opts: [preload: [project: :champion]]) do
           {:ok, milestone} -> {:ok, milestone}
           {:error, _} -> {:error, {:not_found, "Milestone not found"}}
         end
       end)
       |> Ecto.Multi.run(:project, fn _repo, %{milestone: milestone} ->
         {:ok, milestone.project}
+      end)
+    end
+
+    def find_task(multi, task_id) do
+      Ecto.Multi.run(multi, :task, fn _repo, %{me: me} ->
+        case Operately.Tasks.Task.get(me, id: task_id, opts: [preload: [:assigned_people]]) do
+          {:ok, task} -> {:ok, task}
+          {:error, _} -> {:error, {:not_found, "Task not found"}}
+        end
+      end)
+    end
+
+    def check_task_permissions(multi, permission) do
+      Ecto.Multi.run(multi, :permissions, fn _repo, %{task: task} ->
+        Operately.Projects.Permissions.check(task.request_info.access_level, permission)
+      end)
+    end
+
+    def update_milestone_kanban_state(multi, status, kanban_state) do
+      Ecto.Multi.merge(multi, fn %{me: me, milestone: milestone, project: project, task: task} ->
+        scope = %{type: :milestone, milestone: milestone, project: project}
+        Operately.Operations.KanbanStateUpdating.run(me, scope, task, status, kanban_state)
       end)
     end
 
@@ -380,17 +431,43 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
     end
 
     def broadcast_review_count_update(result) do
-      with {:ok, changes} <- result,
-           project = Operately.Repo.preload(changes.milestone.project, :champion),
-           %Operately.People.Person{id: champion_id} <- project.champion
-      do
-        OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: champion_id)
-      else
-        _ -> :ok
+      case result do
+        {:ok, changes} ->
+          broadcast(changes[:task])
+          broadcast(changes[:updated_task_with_preloads] || changes[:updated_task])
+          broadcast(changes[:milestone])
+          broadcast(changes[:project])
+
+        _result ->
+          :ok
       end
 
       result
     end
+
+    defp broadcast(milestone = %Operately.Projects.Milestone{}) do
+      broadcast(milestone.project)
+    end
+
+    defp broadcast(project = %Operately.Projects.Project{}) do
+      if Ecto.assoc_loaded?(project.champion) and not is_nil(project.champion) do
+        broadcast(project.champion.id)
+      end
+    end
+
+    defp broadcast(task = %Operately.Tasks.Task{}) do
+      if Ecto.assoc_loaded?(task.assigned_people) do
+        Enum.each(task.assigned_people, fn person ->
+          broadcast(person.id)
+        end)
+      end
+    end
+
+    defp broadcast(person_id) when is_binary(person_id) do
+      OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: person_id)
+    end
+
+    defp broadcast(_), do: :ok
 
     defp milestone_short_ids(project) do
       project

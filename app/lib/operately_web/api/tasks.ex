@@ -3,7 +3,6 @@ defmodule OperatelyWeb.Api.Tasks do
 
   alias Operately.Repo
   alias OperatelyWeb.Api.Serializer
-  alias Operately.Tasks.KanbanState
   alias Operately.Tasks.MilestoneSync
 
   defmodule List do
@@ -64,74 +63,6 @@ defmodule OperatelyWeb.Api.Tasks do
     end
 
     defp build_activity_content(changes) do
-      old_status = changes.task.task_status && Map.from_struct(changes.task.task_status)
-      new_status = changes.updated_task.task_status && Map.from_struct(changes.updated_task.task_status)
-
-      base = %{
-        milestone_id: changes.task.milestone_id,
-        task_id: changes.task.id,
-        old_status: old_status,
-        new_status: new_status,
-        name: changes.task.name
-      }
-
-      cond do
-        Map.has_key?(changes, :project) and changes.project ->
-          Map.merge(%{
-            company_id: changes.project.company_id,
-            space_id: changes.project.group_id,
-            project_id: changes.project.id
-          }, base)
-
-        Map.has_key?(changes, :space) and changes.space ->
-          Map.merge(%{
-            company_id: changes.space.company_id,
-            space_id: changes.space.id,
-            project_id: nil
-          }, base)
-      end
-    end
-  end
-
-  defmodule UpdateKanban do
-    use TurboConnect.Mutation
-    use OperatelyWeb.Api.Helpers
-
-    inputs do
-      field :task_id, :id, null: false
-      field :status, :task_status, null: false
-      field :kanban_state, :json, null: false
-      field :type, :task_type, null: false
-    end
-
-    outputs do
-      field :task, :task
-      field :updated_milestone, :milestone, null: true
-    end
-
-    def call(conn, inputs) do
-      preloads = if inputs.type == :project, do: [:assigned_people, :milestone], else: [:assigned_people]
-
-      conn
-      |> Steps.start_transaction()
-      |> Steps.find_task(inputs.task_id, inputs.type, preloads)
-      |> Steps.check_task_permissions(:can_edit_task)
-      |> Steps.update_task_status(inputs.status)
-      |> Steps.update_kanban_state(inputs.kanban_state, inputs.type)
-      |> Steps.save_activity(:task_status_updating, &build_kanban_activity_content/1)
-      |> Steps.commit()
-      |> Steps.broadcast_review_count_update()
-      |> Steps.respond(fn changes ->
-        milestone = Map.get(changes, :kanban_updated_milestone) || Map.get(changes, :updated_milestone)
-
-        %{
-          task: Serializer.serialize(changes.updated_task, level: :full),
-          updated_milestone: if(milestone, do: Serializer.serialize(milestone), else: nil)
-        }
-      end)
-    end
-
-    defp build_kanban_activity_content(changes) do
       old_status = changes.task.task_status && Map.from_struct(changes.task.task_status)
       new_status = changes.updated_task.task_status && Map.from_struct(changes.updated_task.task_status)
 
@@ -852,43 +783,6 @@ defmodule OperatelyWeb.Api.Tasks do
       end)
     end
 
-    def update_kanban_state(multi, kanban_state, type) do
-      case type do
-        :project -> update_milestone_kanban_state(multi, kanban_state)
-        :space -> update_space_kanban_state(multi, kanban_state)
-      end
-    end
-
-    def update_milestone_kanban_state(multi, kanban_state) do
-      Ecto.Multi.run(multi, :kanban_updated_milestone, fn _repo, %{task: task, project: project} ->
-        case task.milestone do
-          nil ->
-            {:ok, nil}
-
-          milestone ->
-            allowed_statuses = Operately.Projects.Project.task_status_values(project)
-
-            with {:ok, decoded_state} <- decode_kanban_state(kanban_state, allowed_statuses) do
-              next_state = KanbanState.load(decoded_state, allowed_statuses)
-
-              Operately.Projects.update_milestone(milestone, %{tasks_kanban_state: next_state})
-            end
-        end
-      end)
-    end
-
-    def update_space_kanban_state(multi, kanban_state) do
-      Ecto.Multi.run(multi, :kanban_updated_milestone, fn _repo, %{space: space} ->
-        allowed_statuses = Operately.Groups.Group.task_status_values(space)
-
-        with {:ok, decoded_state} <- decode_kanban_state(kanban_state, allowed_statuses) do
-          next_state = KanbanState.load(decoded_state, allowed_statuses)
-          Operately.Groups.update_group(space, %{tasks_kanban_state: next_state})
-          {:ok, nil}
-        end
-      end)
-    end
-
     def create_task(multi, inputs) do
       multi
       |> Notifications.SubscriptionList.insert(%{send_to_everyone: false, subscription_parent_type: :project_task})
@@ -1079,39 +973,6 @@ defmodule OperatelyWeb.Api.Tasks do
     end
 
     defp broadcast(_), do: :ok
-
-    defp decode_kanban_state(state, allowed_statuses) when is_map(state) do
-      normalized =
-        Enum.into(state, %{}, fn {key, value} ->
-          {to_string(key), value || []}
-        end)
-
-      statuses =
-        case allowed_statuses do
-          [] -> Map.keys(normalized)
-          allowed -> allowed
-        end
-
-      with :ok <- validate_statuses(normalized, statuses) do
-        {:ok,
-         Enum.reduce(statuses, %{}, fn status, acc ->
-           Map.put(acc, status, Map.get(normalized, status, []))
-         end)}
-      end
-    end
-
-    defp decode_kanban_state(_state, _allowed_statuses), do: {:ok, %{}}
-
-    defp validate_statuses(_state, []), do: :ok
-
-    defp validate_statuses(state, allowed_statuses) do
-      allowed = MapSet.new(Enum.map(allowed_statuses, &to_string/1))
-
-      case Enum.find(Map.keys(state), fn status -> not MapSet.member?(allowed, status) end) do
-        nil -> :ok
-        invalid -> {:error, {:bad_request, "Invalid status #{invalid}"}}
-      end
-    end
 
     defp handle_error(reason) do
       case reason do
