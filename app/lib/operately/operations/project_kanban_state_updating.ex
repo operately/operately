@@ -4,16 +4,12 @@ defmodule Operately.Operations.ProjectKanbanStateUpdating do
   alias Operately.Repo
   alias Operately.Tasks.KanbanState
 
-  def run(author, project, task, status, kanban_state) do
+  def run(author, scope, task, status, kanban_state) do
     Multi.new()
-    |> Multi.run(:validate_task_belongs_to_project, fn _repo, _changes ->
-      if task.project_id == project.id do
-        {:ok, :ok}
-      else
-        {:error, :not_found}
-      end
+    |> Multi.run(:validate_task_parent, fn _repo, _changes ->
+      validate_task_parent(scope, task)
     end)
-    |> Multi.run(:status, fn _repo, _changes -> validate_status(project, status) end)
+    |> Multi.run(:status, fn _repo, _changes -> validate_status(scope, status) end)
     |> Multi.update(:updated_task, fn %{status: status} ->
       Operately.Tasks.Task.changeset(task, %{task_status: status})
     end)
@@ -21,47 +17,131 @@ defmodule Operately.Operations.ProjectKanbanStateUpdating do
       {:ok, Repo.preload(task, :assigned_people)}
     end)
     |> Multi.run(:updated_project, fn _repo, _changes ->
-      allowed_statuses = Operately.Projects.Project.task_status_values(project)
+      allowed_statuses = allowed_statuses(scope)
 
       with {:ok, decoded_state} <- decode_kanban_state(kanban_state, allowed_statuses) do
         next_state = KanbanState.load(decoded_state, allowed_statuses)
-        Operately.Projects.update_project(project, %{tasks_kanban_state: next_state})
+        update_scope_kanban_state(scope, next_state)
       end
     end)
-    |> maybe_save_task_status_activity(author.id, task)
+    |> maybe_save_task_status_activity(author.id, scope, task)
   end
 
-  defp validate_status(project, status) do
-    if is_nil(status) do
-      {:error, {:bad_request, "Invalid status"}}
+  defp validate_task_parent(%{type: :project, project: project}, task) do
+    if task.project_id == project.id do
+      {:ok, :ok}
     else
-      if Enum.any?(project.task_statuses || [], fn s -> s.id == status.id end) do
-        {:ok, status}
-      else
-        {:error, {:bad_request, "Invalid status"}}
-      end
+      {:error, :not_found}
     end
   end
 
-  defp maybe_save_task_status_activity(multi, author_id, original_task) do
+  defp validate_task_parent(%{type: :milestone, project: project}, task) do
+    if task.project_id == project.id do
+      {:ok, :ok}
+    else
+      {:error, :not_found}
+    end
+  end
+
+  defp validate_task_parent(%{type: :space, space: space}, task) do
+    if task.space_id == space.id do
+      {:ok, :ok}
+    else
+      {:error, :not_found}
+    end
+  end
+
+  defp validate_status(_scope, status) when is_nil(status), do: {:error, {:bad_request, "Invalid status"}}
+
+  defp validate_status(scope, status) do
+    statuses = case scope do
+      %{type: :project, project: project} -> project.task_statuses
+      %{type: :milestone, project: project} -> project.task_statuses
+      %{type: :space, space: space} -> space.task_statuses
+    end
+
+    if Enum.any?(statuses || [], fn s -> s.id == status.id end) do
+      {:ok, status}
+    else
+      {:error, {:bad_request, "Invalid status"}}
+    end
+  end
+
+  defp allowed_statuses(%{type: :project, project: project}) do
+    Operately.Projects.Project.task_status_values(project)
+  end
+
+  defp allowed_statuses(%{type: :milestone, project: project}) do
+    Operately.Projects.Project.task_status_values(project)
+  end
+
+  defp allowed_statuses(%{type: :space, space: space}) do
+    Operately.Groups.Group.task_status_values(space)
+  end
+
+  defp update_scope_kanban_state(%{type: :project, project: project}, next_state) do
+    Operately.Projects.update_project(project, %{tasks_kanban_state: next_state})
+  end
+
+  defp update_scope_kanban_state(%{type: :milestone, milestone: milestone}, next_state) do
+    Operately.Projects.update_milestone(milestone, %{tasks_kanban_state: next_state})
+  end
+
+  defp update_scope_kanban_state(%{type: :space, space: space}, next_state) do
+    with {:ok, _group} <- Operately.Groups.update_group(space, %{tasks_kanban_state: next_state}) do
+      {:ok, nil}
+    end
+  end
+
+  defp maybe_save_task_status_activity(multi, author_id, scope, original_task) do
     Multi.merge(multi, fn changes ->
       if task_status_changed?(original_task, changes.updated_task) do
         Activities.insert_sync(Multi.new(), author_id, :task_status_updating, fn _ ->
-          %{
-            company_id: changes.updated_project.company_id,
-            space_id: changes.updated_project.group_id,
-            project_id: changes.updated_project.id,
-            milestone_id: original_task.milestone_id,
-            task_id: original_task.id,
-            old_status: original_task.task_status && Map.from_struct(original_task.task_status),
-            new_status: changes.updated_task.task_status && Map.from_struct(changes.updated_task.task_status),
-            name: original_task.name
-          }
+          build_task_status_activity_content(scope, original_task, changes.updated_task)
         end)
       else
         Multi.new()
       end
     end)
+  end
+
+  defp build_task_status_activity_content(%{type: :project, project: project}, task, updated_task) do
+    %{
+      company_id: project.company_id,
+      space_id: project.group_id,
+      project_id: project.id,
+      milestone_id: task.milestone_id,
+      task_id: task.id,
+      old_status: task.task_status && Map.from_struct(task.task_status),
+      new_status: updated_task.task_status && Map.from_struct(updated_task.task_status),
+      name: task.name
+    }
+  end
+
+  defp build_task_status_activity_content(%{type: :milestone, project: project}, task, updated_task) do
+    %{
+      company_id: project.company_id,
+      space_id: project.group_id,
+      project_id: project.id,
+      milestone_id: task.milestone_id,
+      task_id: task.id,
+      old_status: task.task_status && Map.from_struct(task.task_status),
+      new_status: updated_task.task_status && Map.from_struct(updated_task.task_status),
+      name: task.name
+    }
+  end
+
+  defp build_task_status_activity_content(%{type: :space, space: space}, task, updated_task) do
+    %{
+      company_id: space.company_id,
+      space_id: space.id,
+      project_id: nil,
+      milestone_id: task.milestone_id,
+      task_id: task.id,
+      old_status: task.task_status && Map.from_struct(task.task_status),
+      new_status: updated_task.task_status && Map.from_struct(updated_task.task_status),
+      name: task.name
+    }
   end
 
   defp task_status_changed?(task, updated_task) do
