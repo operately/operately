@@ -15,6 +15,17 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
     tasks: state.tasks,
   });
 
+  const projectDisplayStorageKey = React.useMemo(() => {
+    return normalizeStorageKeyPart(state.project.id);
+  }, [state.project.id]);
+
+  const [taskDisplayMode, setTaskDisplayMode] = useStateWithLocalStorage<TaskBoardTypes.TaskDisplayMode>(
+    "project-task-display",
+    projectDisplayStorageKey,
+    "list",
+  );
+
+  // When creating tasks from the kanban, create them within the selected milestone (if any).
   const onKanbanTaskCreate = React.useCallback(
     (task: TaskBoardTypes.NewTaskPayload) => {
       if (!selectedMilestone) {
@@ -39,14 +50,16 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
     [state.onTaskMilestoneChange],
   );
 
-  const projectDisplayStorageKey = React.useMemo(() => {
-    return normalizeStorageKeyPart(state.project.id);
-  }, [state.project.id]);
+  // Switching to list view clears the milestone filter from the URL.
+  const handleDisplayModeChange = React.useCallback(
+    (mode: TaskBoardTypes.TaskDisplayMode) => {
+      setTaskDisplayMode(mode);
 
-  const [taskDisplayMode, setTaskDisplayMode] = useStateWithLocalStorage<TaskBoardTypes.TaskDisplayMode>(
-    "project-task-display",
-    projectDisplayStorageKey,
-    "list",
+      if (mode === "list") {
+        onMilestoneFilterChange(null);
+      }
+    },
+    [onMilestoneFilterChange, setTaskDisplayMode],
   );
 
   if (taskDisplayMode === "board") {
@@ -64,7 +77,7 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
               onSaveCustomStatuses={state.onSaveCustomStatuses}
               canManageStatuses={state.canManageStatuses}
             />
-            <TaskDisplayMenu mode={taskDisplayMode} onChange={setTaskDisplayMode} />
+            <TaskDisplayMenu mode={taskDisplayMode} onChange={handleDisplayModeChange} />
           </div>
         </div>
 
@@ -116,7 +129,7 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
         canManageStatuses={state.canManageStatuses}
         onSaveCustomStatuses={state.onSaveCustomStatuses}
         displayMode={taskDisplayMode}
-        onDisplayModeChange={setTaskDisplayMode}
+        onDisplayModeChange={handleDisplayModeChange}
         kanbanEnabled={state.kanbanEnabled}
       />
     </div>
