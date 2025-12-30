@@ -1,6 +1,6 @@
 import React from "react";
 
-import { KanbanBoard, TaskBoard, TaskDisplayMenu } from "../TaskBoard";
+import { KanbanBoard, TaskBoard, TasksMenu, TaskDisplayMenu } from "../TaskBoard";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import { useStateWithLocalStorage } from "../utils/useStateWithLocalStorage";
 
@@ -30,11 +30,18 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
   if (taskDisplayMode === "board") {
     return (
       <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="flex items-center justify-between gap-3 m-4 mb-0">
+        <div className="flex items-center justify-between gap-3 m-4 px-1 mb-0">
           <button type="button" className="text-sm font-medium text-content-dimmed hover:text-content-base transition">
             All milestones
           </button>
-          <TaskDisplayMenu mode={taskDisplayMode} onChange={setTaskDisplayMode} />
+          <div className="flex items-center">
+            <TasksMenu
+              statuses={state.statuses}
+              onSaveCustomStatuses={state.onSaveCustomStatuses}
+              canManageStatuses={state.canManageStatuses}
+            />
+            <TaskDisplayMenu mode={taskDisplayMode} onChange={setTaskDisplayMode} />
+          </div>
         </div>
 
         <KanbanBoard
