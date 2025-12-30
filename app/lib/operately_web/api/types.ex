@@ -482,6 +482,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :subscription_list, :subscription_list, null: true
     field? :milestones_ordering_state, list_of(:string), null: true
     field? :task_statuses, list_of(:task_status), null: true
+    field? :tasks_kanban_state, :json, null: true
   end
 
   object :project_children_count do

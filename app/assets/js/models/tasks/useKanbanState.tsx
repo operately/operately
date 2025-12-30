@@ -32,6 +32,10 @@ type UseKanbanStateOptions =
   | (BaseKanbanStateOptions & {
       type: "space";
       spaceId: string;
+    })
+  | (BaseKanbanStateOptions & {
+      type: "project";
+      projectId: string;
     });
 
 export function useKanbanState(options: UseKanbanStateOptions) {
@@ -67,6 +71,13 @@ export function useKanbanState(options: UseKanbanStateOptions) {
         if (type === "milestone") {
           await Api.project_milestones.updateKanban({
             milestoneId: options.milestoneId,
+            taskId: event.taskId,
+            status: backendStatus,
+            kanbanState: serializeKanbanState(event.updatedKanbanState),
+          });
+        } else if (type === "project") {
+          await Api.projects.updateKanban({
+            projectId: options.projectId,
             taskId: event.taskId,
             status: backendStatus,
             kanbanState: serializeKanbanState(event.updatedKanbanState),
