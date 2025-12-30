@@ -3,7 +3,7 @@ import { PrimaryButton, SecondaryButton } from "../../Button";
 import { DragAndDropProvider } from "../../utils/DragAndDrop";
 import { reorderTasks } from "../utils/taskReorderingUtils";
 import * as Types from "../types";
-import { IconPlus, IconSettings } from "../../icons";
+import { IconPlus } from "../../icons";
 import TaskCreationModal from "./TaskCreationModal";
 import MilestoneCreationModal from "./MilestoneCreationModal";
 import { TaskList } from "./TaskList";
@@ -12,12 +12,11 @@ import { TaskFilter, FilterBadges } from "./TaskFilter";
 import { useFilteredTasks } from "../hooks";
 import { InlineTaskCreator } from "./InlineTaskCreator";
 import { useInlineTaskCreator } from "../hooks/useInlineTaskCreator";
-import { Menu, MenuActionItem } from "../../Menu";
-import { StatusCustomizationModal } from "../../StatusCustomization";
-import { StatusSelector } from "../../StatusSelector";
+import { TasksMenu } from "./TasksMenu";
 import { TaskDisplayMenu } from "./TaskDisplayMenu";
+import { StatusSelector } from "../../StatusSelector";
 
-export { TaskDisplayMenu };
+export { TaskDisplayMenu, TasksMenu };
 
 export namespace TaskBoard {
   export type Person = Types.Person;
@@ -56,11 +55,9 @@ export function TaskBoard({
 }: Types.TaskBoardProps) {
   const [internalTasks, setInternalTasks] = useState<Types.Task[]>(externalTasks);
   const [internalMilestones, setInternalMilestones] = useState<Types.Milestone[]>(externalMilestones);
+  const [activeTaskMilestoneId, setActiveTaskMilestoneId] = useState<string | undefined>();
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
-  const [activeTaskMilestoneId, setActiveTaskMilestoneId] = useState<string | undefined>();
-  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
-  const [statusModalStatuses, setStatusModalStatuses] = useState<StatusSelector.StatusOption[]>(statuses);
   const {
     open: noMilestoneCreatorOpen,
     openCreator: openNoMilestoneCreator,
@@ -78,10 +75,6 @@ export function TaskBoard({
     setInternalMilestones(externalMilestones);
   }, [externalMilestones]);
 
-  useEffect(() => {
-    setStatusModalStatuses(statuses);
-  }, [statuses]);
-
   // Apply filters to tasks
   const { filteredTasks, showHiddenTasksToggle } = useFilteredTasks(internalTasks, internalMilestones, filters);
 
@@ -90,29 +83,29 @@ export function TaskBoard({
     () => getMilestonesWithStats(internalMilestones, internalTasks),
     [internalMilestones, internalTasks],
   );
+
+  const openTaskModal = useCallback((milestoneId: string | undefined) => {
+    setActiveTaskMilestoneId(milestoneId);
+    setIsTaskModalOpen(true);
+  }, []);
+
+  const closeTaskModal = useCallback(() => {
+    setIsTaskModalOpen(false);
+  }, []);
+
+  const openMilestoneModal = useCallback(() => {
+    setIsMilestoneModalOpen(true);
+  }, []);
+
+  const closeMilestoneModal = useCallback(() => {
+    setIsMilestoneModalOpen(false);
+  }, []);
   const showNoTasksMsg = milestones.length === 0 && filteredTasks.length === 0;
 
   // Check if there are any tasks without milestones in the original task list (memoized)
   const hasTasksWithoutMilestone = useMemo(
     () => internalTasks.some((task) => !task.milestone && !task._isHelperTask),
     [internalTasks],
-  );
-
-  const openStatusModal = useCallback(() => {
-    setIsStatusModalOpen(true);
-  }, []);
-
-  const closeStatusModal = useCallback(() => {
-    setIsStatusModalOpen(false);
-  }, []);
-
-  const handleSaveStatuses = useCallback(
-    (data: { nextStatuses: StatusSelector.StatusOption[]; deletedStatusReplacements: Record<string, string> }) => {
-      setStatusModalStatuses(data.nextStatuses);
-      setIsStatusModalOpen(false);
-      onSaveCustomStatuses(data);
-    },
-    [onSaveCustomStatuses],
   );
 
   const handleTaskReorder = useCallback(
@@ -146,7 +139,7 @@ export function TaskBoard({
     <div className="flex flex-col flex-1 w-full max-w-6xl mx-auto pb-8">
       <TaskCreationModal
         isOpen={isTaskModalOpen}
-        onClose={() => setIsTaskModalOpen(false)}
+        onClose={closeTaskModal}
         onCreateTask={onTaskCreate}
         milestones={searchableMilestones}
         currentMilestoneId={activeTaskMilestoneId}
@@ -156,7 +149,7 @@ export function TaskBoard({
 
       <MilestoneCreationModal
         isOpen={isMilestoneModalOpen}
-        onClose={() => setIsMilestoneModalOpen(false)}
+        onClose={closeMilestoneModal}
         onCreateMilestone={(attrs) => {
           const newMilestone: Types.Milestone = {
             id:
@@ -172,13 +165,13 @@ export function TaskBoard({
       />
 
       <StickyActionBar
-        setActiveTaskMilestoneId={setActiveTaskMilestoneId}
-        setIsTaskModalOpen={setIsTaskModalOpen}
-        setIsMilestoneModalOpen={setIsMilestoneModalOpen}
+        openTaskModal={openTaskModal}
+        openMilestoneModal={openMilestoneModal}
         onFiltersChange={onFiltersChange}
         filters={filters}
         internalTasks={internalTasks}
-        openStatusModal={openStatusModal}
+        onSaveCustomStatuses={onSaveCustomStatuses}
+        statuses={statuses}
         canManageStatuses={canManageStatuses}
         displayMode={displayMode}
         onDisplayModeChange={onDisplayModeChange}
@@ -258,7 +251,6 @@ export function TaskBoard({
                             onCreate={onTaskCreate}
                             onRequestAdvanced={() => {
                               setActiveTaskMilestoneId("no-milestone");
-                              setIsTaskModalOpen(true);
                             }}
                             onCancel={closeNoMilestoneCreator}
                             autoFocus
@@ -274,26 +266,21 @@ export function TaskBoard({
           </DragAndDropProvider>
         </div>
       </div>
-
-      <StatusCustomizationModal
-        isOpen={isStatusModalOpen}
-        onClose={closeStatusModal}
-        statuses={statusModalStatuses}
-        onSave={handleSaveStatuses}
-        requireReplacement
-      />
     </div>
   );
 }
 
 interface ActionBarProps {
-  setActiveTaskMilestoneId: (id: string | undefined) => void;
-  setIsTaskModalOpen: (open: boolean) => void;
-  setIsMilestoneModalOpen: (open: boolean) => void;
+  openTaskModal: (milestoneId: string | undefined) => void;
+  openMilestoneModal: () => void;
   onFiltersChange?: (filters: Types.FilterCondition[]) => void;
   filters: Types.FilterCondition[];
   internalTasks: Types.Task[];
-  openStatusModal: () => void;
+  onSaveCustomStatuses: (data: {
+    nextStatuses: StatusSelector.StatusOption[];
+    deletedStatusReplacements: Record<string, string>;
+  }) => void;
+  statuses: StatusSelector.StatusOption[];
   canManageStatuses: boolean;
   displayMode: Types.TaskDisplayMode;
   onDisplayModeChange: (mode: Types.TaskDisplayMode) => void;
@@ -301,13 +288,13 @@ interface ActionBarProps {
 }
 
 function StickyActionBar({
-  setActiveTaskMilestoneId,
-  setIsTaskModalOpen,
-  setIsMilestoneModalOpen,
+  openTaskModal,
+  openMilestoneModal,
   onFiltersChange,
   filters,
   internalTasks,
-  openStatusModal,
+  onSaveCustomStatuses,
+  statuses,
   canManageStatuses,
   displayMode,
   onDisplayModeChange,
@@ -319,14 +306,13 @@ function StickyActionBar({
         <PrimaryButton
           size="xs"
           onClick={() => {
-            setActiveTaskMilestoneId(null as unknown as string | undefined);
-            setIsTaskModalOpen(true);
+            openTaskModal(undefined);
           }}
         >
           New task
         </PrimaryButton>
 
-        <SecondaryButton size="xs" onClick={() => setIsMilestoneModalOpen(true)} testId="add-milestone">
+        <SecondaryButton size="xs" onClick={openMilestoneModal} testId="add-milestone">
           New milestone
         </SecondaryButton>
 
@@ -338,22 +324,7 @@ function StickyActionBar({
       </div>
 
       <div className="flex items-center -mb-2">
-        <Menu
-          customTrigger={
-            <button
-              className="p-1.5 text-content-dimmed hover:text-content-base hover:bg-surface-dimmed rounded-full transition"
-              aria-label="Settings"
-            >
-              <IconSettings size={20} />
-            </button>
-          }
-          size="small"
-          align="end"
-        >
-          <MenuActionItem icon={IconSettings} onClick={openStatusModal} hidden={!canManageStatuses}>
-            Manage statuses
-          </MenuActionItem>
-        </Menu>
+        <TasksMenu canManageStatuses={canManageStatuses} statuses={statuses} onSaveCustomStatuses={onSaveCustomStatuses} />
 
         {kanbanEnabled && <TaskDisplayMenu mode={displayMode} onChange={onDisplayModeChange} />}
       </div>

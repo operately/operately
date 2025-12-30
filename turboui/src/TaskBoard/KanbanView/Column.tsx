@@ -55,6 +55,7 @@ export function Column({
   const columnRef = useRef<HTMLDivElement>(null);
   const [isCreating, setIsCreating] = React.useState(false);
   const [newTaskTitle, setNewTaskTitle] = React.useState("");
+  const columnWidth = useKanbanColumnWidth();
 
   const containerId = status.value;
   const title = status.label;
@@ -111,7 +112,8 @@ export function Column({
   return (
     <div
       ref={!disableDnD ? columnRef : null}
-      className="relative flex flex-col gap-2 bg-surface-dimmed min-h-[78vh] w-[320px] flex-shrink-0 p-3 rounded-lg"
+      className="relative flex flex-col gap-2 bg-surface-dimmed min-h-[78vh] flex-shrink-0 p-3 rounded-lg"
+      style={{ width: columnWidth }}
       data-test-id={createTestId("kanban-column", status.value)}
     >
       <div
@@ -269,4 +271,28 @@ function ColumnMenu({ status, canManageStatuses, onEditStatus, onDeleteStatus }:
       </Menu>
     </div>
   );
+}
+
+function useKanbanColumnWidth() {
+  const [pageWidth, setPageWidth] = React.useState<number>(() => {
+    if (typeof window === "undefined") return 0;
+    return window.innerWidth;
+  });
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const handleResize = () => setPageWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  const sidePaddingsPx = 2.5 * 16;
+  const gapsPx = 2.25 * 16;
+
+  const width = (pageWidth - sidePaddingsPx - gapsPx) / 4;
+  return Math.max(290, Math.min(width, 450)); // 290px min, 450px max
 }
