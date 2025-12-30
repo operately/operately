@@ -11,6 +11,7 @@ import { useMockMilestoneOrdering } from "../utils/storybook/milestones";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { asRichText, asRichTextWithList } from "../utils/storybook/richContent";
 import { spaceSearchFn } from "../utils/storybook/spaceSearchFn";
+import { useMockTaskBoardActions } from "../utils/storybook/tasks";
 import { ProjectPage } from "./index";
 import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 import { usePersonFieldSearch } from "../utils/storybook/usePersonFieldSearch";
@@ -22,8 +23,6 @@ const DEFAULT_STATUSES: TaskBoardTypes.Status[] = [
   { id: "done", value: "done", label: "Done", color: "green", icon: "circleCheck", index: 3 },
   { id: "canceled", value: "canceled", label: "Canceled", color: "red", icon: "circleX", index: 4 },
 ];
-
-const PENDING_STATUS = DEFAULT_STATUSES[0]!;
 
 // Date helpers for dynamic, credible timelines
 function addDays(date: Date, days: number): Date {
@@ -269,20 +268,6 @@ export const Default: Story = {
     const [resources, setResources] = useState<ResourceManager.Resource[]>([...mockResources]);
     const [space, setSpace] = useState(defaultSpace);
 
-    const handleTaskCreate = (newTaskData: TaskBoardTypes.NewTaskPayload) => {
-      const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-      const newTask: TaskBoardTypes.Task = {
-        id: taskId,
-        status: PENDING_STATUS,
-        description: "",
-        link: "#",
-        type: "project",
-        ...newTaskData,
-      };
-      console.log("Task created:", newTask);
-      setTasks([...tasks, newTask]);
-    };
-
     const handleMilestoneCreate = (newMilestoneData: ProjectPage.NewMilestonePayload) => {
       const milestoneId = `milestone-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
       const newMilestone = { id: milestoneId, ...newMilestoneData };
@@ -336,6 +321,13 @@ export const Default: Story = {
 
     const subscriptions = useMockSubscriptions({ entityType: "project" });
 
+    const taskActions = useMockTaskBoardActions({
+      tasks,
+      setTasks,
+      statuses,
+      subscriptions,
+    });
+
     return (
       <ProjectPage
         workmapLink="#"
@@ -369,21 +361,21 @@ export const Default: Story = {
         onDescriptionChange={async () => true}
         activityFeed={<div>Activity feed content</div>}
         tasks={tasks}
+        kanbanState={taskActions.kanbanState}
+        onTaskKanbanChange={taskActions.onTaskKanbanChange}
         milestones={milestones}
         searchableMilestones={milestones}
         onMilestoneSearch={async () => {}}
         assigneePersonSearch={usePersonFieldSearch(mockPeople)}
-        onTaskCreate={handleTaskCreate}
+        onTaskCreate={taskActions.onTaskCreate}
+        onTaskNameChange={taskActions.onTaskNameChange}
         onMilestoneCreate={handleMilestoneCreate}
-        onTaskAssigneeChange={(taskId, assignee) => {
-          console.log("Task assignee updated:", taskId, assignee);
-        }}
-        onTaskDueDateChange={(taskId, dueDate) => {
-          console.log("Task due date updated:", taskId, dueDate);
-        }}
-        onTaskStatusChange={(taskId, status) => {
-          console.log("Task status updated:", taskId, status);
-        }}
+        onTaskAssigneeChange={taskActions.onTaskAssigneeChange}
+        onTaskDueDateChange={taskActions.onTaskDueDateChange}
+        onTaskStatusChange={taskActions.onTaskStatusChange}
+        onTaskDelete={taskActions.onTaskDelete}
+        onTaskDescriptionChange={taskActions.onTaskDescriptionChange}
+        getTaskPageProps={taskActions.getTaskPageProps}
         onMilestoneUpdate={handleMilestoneUpdate}
         onMilestoneReorder={reorderMilestones}
         richTextHandlers={createMockRichEditorHandlers()}
@@ -419,6 +411,7 @@ export const Default: Story = {
         onProjectDelete={() => {}}
         canDelete={true}
         subscriptions={subscriptions}
+        kanbanEnabled={true}
       />
     );
   },
@@ -428,7 +421,7 @@ export const ReadOnly: Story = {
   render: () => {
     const championSearch = usePersonFieldSearch(people);
     const reviewerSearch = usePersonFieldSearch(people);
-    const [tasks] = useState([...mockTasks("project")]);
+    const [tasks, setTasks] = useState([...mockTasks("project")]);
     const [milestones] = useState<TaskBoardTypes.Milestone[]>(Object.values(mockMilestones));
     const [reviewer, setReviewer] = useState<ProjectPage.Person | null>(people[1] || null); // Set reviewer for read-only story
     const startedAt = createContextualDate(new Date(2025, 1, 1), "day"); // February 1, 2025
@@ -439,6 +432,13 @@ export const ReadOnly: Story = {
     })();
     const [space, setSpace] = useState(defaultSpace);
     const subscriptions = useMockSubscriptions({ initial: false, entityType: "project" });
+
+    const taskActions = useMockTaskBoardActions({
+      tasks,
+      setTasks,
+      statuses: DEFAULT_STATUSES,
+      subscriptions,
+    });
 
     return (
       <ProjectPage
@@ -468,17 +468,23 @@ export const ReadOnly: Story = {
         onDescriptionChange={async () => true}
         activityFeed={<div>Activity feed content</div>}
         tasks={tasks}
+        kanbanState={taskActions.kanbanState}
+        onTaskKanbanChange={taskActions.onTaskKanbanChange}
         milestones={milestones}
         searchableMilestones={milestones}
         onMilestoneSearch={async () => {}}
         assigneePersonSearch={usePersonFieldSearch(mockPeople)}
-        onTaskStatusChange={() => {}}
-        onTaskCreate={() => {}}
+        onTaskStatusChange={taskActions.onTaskStatusChange}
+        onTaskNameChange={taskActions.onTaskNameChange}
+        onTaskCreate={taskActions.onTaskCreate}
         onMilestoneCreate={() => {}}
-        onTaskAssigneeChange={() => {}}
-        onTaskDueDateChange={() => {}}
+        onTaskAssigneeChange={taskActions.onTaskAssigneeChange}
+        onTaskDueDateChange={taskActions.onTaskDueDateChange}
         onMilestoneUpdate={() => {}}
         onMilestoneReorder={async () => {}}
+        onTaskDelete={taskActions.onTaskDelete}
+        onTaskDescriptionChange={taskActions.onTaskDescriptionChange}
+        getTaskPageProps={taskActions.getTaskPageProps}
         richTextHandlers={createMockRichEditorHandlers()}
         filters={[]}
         onFiltersChange={() => {}}
@@ -512,6 +518,7 @@ export const ReadOnly: Story = {
         onProjectDelete={() => {}}
         canDelete={true}
         subscriptions={subscriptions}
+        kanbanEnabled={true}
       />
     );
   },
@@ -537,20 +544,6 @@ export const EmptyTasks: Story = {
     });
     const [resources, setResources] = useState<ResourceManager.Resource[]>([]);
     const [space, setSpace] = useState(defaultSpace);
-
-    const handleTaskCreate = (newTaskData: TaskBoardTypes.NewTaskPayload) => {
-      const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-      const newTask: TaskBoardTypes.Task = {
-        id: taskId,
-        status: PENDING_STATUS,
-        description: "",
-        link: "#",
-        type: "project",
-        ...newTaskData,
-      };
-      console.log("Task created:", newTask);
-      setTasks([...tasks, newTask]);
-    };
 
     const handleMilestoneCreate = (newMilestoneData: ProjectPage.NewMilestonePayload) => {
       const milestoneId = `milestone-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
@@ -584,6 +577,13 @@ export const EmptyTasks: Story = {
 
     const subscriptions = useMockSubscriptions({ entityType: "project" });
 
+    const taskActions = useMockTaskBoardActions({
+      tasks,
+      setTasks,
+      statuses,
+      subscriptions,
+    });
+
     return (
       <ProjectPage
         workmapLink="#"
@@ -612,17 +612,23 @@ export const EmptyTasks: Story = {
         onDescriptionChange={async () => true}
         activityFeed={<div>Activity feed content</div>}
         tasks={tasks}
+        kanbanState={taskActions.kanbanState}
+        onTaskKanbanChange={taskActions.onTaskKanbanChange}
         milestones={milestones}
         searchableMilestones={milestones}
         onMilestoneSearch={async () => {}}
         assigneePersonSearch={usePersonFieldSearch(mockPeople)}
-        onTaskStatusChange={() => {}}
-        onTaskCreate={handleTaskCreate}
+        onTaskStatusChange={taskActions.onTaskStatusChange}
+        onTaskCreate={taskActions.onTaskCreate}
+        onTaskNameChange={taskActions.onTaskNameChange}
         onMilestoneCreate={handleMilestoneCreate}
-        onTaskAssigneeChange={() => {}}
-        onTaskDueDateChange={() => {}}
+        onTaskAssigneeChange={taskActions.onTaskAssigneeChange}
+        onTaskDueDateChange={taskActions.onTaskDueDateChange}
         onMilestoneUpdate={() => {}}
         onMilestoneReorder={reorderMilestones}
+        onTaskDelete={taskActions.onTaskDelete}
+        onTaskDescriptionChange={taskActions.onTaskDescriptionChange}
+        getTaskPageProps={taskActions.getTaskPageProps}
         richTextHandlers={createMockRichEditorHandlers()}
         filters={filters}
         onFiltersChange={setFilters}
@@ -656,6 +662,7 @@ export const EmptyTasks: Story = {
         onProjectDelete={() => {}}
         canDelete={true}
         subscriptions={subscriptions}
+        kanbanEnabled={true}
       />
     );
   },
@@ -665,6 +672,7 @@ export const EmptyProject: Story = {
   render: () => {
     const championSearch = usePersonFieldSearch(people);
     const reviewerSearch = usePersonFieldSearch(people);
+    const [tasks, setTasks] = useState<TaskBoardTypes.Task[]>([]);
     const [milestones, setMilestones] = useState<TaskBoardTypes.Milestone[]>([]);
     const [statuses, setStatuses] = useState<TaskBoardTypes.Status[]>(DEFAULT_STATUSES);
     const [startedAt, setStartedAt] = useState<DateField.ContextualDate | null>(null);
@@ -714,6 +722,13 @@ export const EmptyProject: Story = {
 
     const subscriptions = useMockSubscriptions({ entityType: "project" });
 
+    const taskActions = useMockTaskBoardActions({
+      tasks,
+      setTasks,
+      statuses,
+      subscriptions,
+    });
+
     return (
       <ProjectPage
         workmapLink="#"
@@ -739,18 +754,24 @@ export const EmptyProject: Story = {
         updateProjectName={async () => true}
         onDescriptionChange={async () => true}
         activityFeed={<div>Activity feed content</div>}
-        tasks={[]}
+        tasks={tasks}
+        kanbanState={taskActions.kanbanState}
+        onTaskKanbanChange={taskActions.onTaskKanbanChange}
         milestones={milestones}
         searchableMilestones={milestones}
         onMilestoneSearch={async () => {}}
         assigneePersonSearch={usePersonFieldSearch(mockPeople)}
-        onTaskStatusChange={() => {}}
-        onTaskCreate={() => {}}
+        onTaskStatusChange={taskActions.onTaskStatusChange}
+        onTaskNameChange={taskActions.onTaskNameChange}
+        onTaskCreate={taskActions.onTaskCreate}
         onMilestoneCreate={handleMilestoneCreate}
-        onTaskAssigneeChange={() => {}}
-        onTaskDueDateChange={() => {}}
+        onTaskAssigneeChange={taskActions.onTaskAssigneeChange}
+        onTaskDueDateChange={taskActions.onTaskDueDateChange}
         onMilestoneUpdate={handleMilestoneUpdate}
         onMilestoneReorder={async () => {}}
+        onTaskDelete={taskActions.onTaskDelete}
+        onTaskDescriptionChange={taskActions.onTaskDescriptionChange}
+        getTaskPageProps={taskActions.getTaskPageProps}
         richTextHandlers={createMockRichEditorHandlers()}
         filters={[]}
         onFiltersChange={() => {}}
@@ -784,6 +805,7 @@ export const EmptyProject: Story = {
         onProjectDelete={() => {}}
         canDelete={true}
         subscriptions={subscriptions}
+        kanbanEnabled={true}
       />
     );
   },
@@ -793,13 +815,20 @@ export const EmptyProjectReadOnly: Story = {
   render: () => {
     const championSearch = usePersonFieldSearch(people);
     const reviewerSearch = usePersonFieldSearch(people);
-    const [tasks] = useState<TaskBoardTypes.Task[]>([]);
+    const [tasks, setTasks] = useState<TaskBoardTypes.Task[]>([]);
     const [milestones] = useState<TaskBoardTypes.Milestone[]>([]);
     const [statuses] = useState<TaskBoardTypes.Status[]>(DEFAULT_STATUSES);
     const startedAt = null; // No start date for empty read-only project
     const dueAt = null; // No due date for empty read-only project
     const [space, setSpace] = useState(defaultSpace);
     const subscriptions = useMockSubscriptions({ entityType: "project" });
+
+    const taskActions = useMockTaskBoardActions({
+      tasks,
+      setTasks,
+      statuses,
+      subscriptions,
+    });
 
     return (
       <ProjectPage
@@ -827,17 +856,23 @@ export const EmptyProjectReadOnly: Story = {
         onDescriptionChange={async () => true}
         activityFeed={<div>Activity feed content</div>}
         tasks={tasks}
+        kanbanState={taskActions.kanbanState}
+        onTaskKanbanChange={taskActions.onTaskKanbanChange}
         milestones={milestones}
         searchableMilestones={milestones}
         onMilestoneSearch={async () => {}}
         assigneePersonSearch={usePersonFieldSearch(mockPeople)}
-        onTaskStatusChange={() => {}}
-        onTaskCreate={() => {}}
+        onTaskStatusChange={taskActions.onTaskStatusChange}
+        onTaskNameChange={taskActions.onTaskNameChange}
+        onTaskCreate={taskActions.onTaskCreate}
         onMilestoneCreate={() => {}}
-        onTaskAssigneeChange={() => {}}
-        onTaskDueDateChange={() => {}}
+        onTaskAssigneeChange={taskActions.onTaskAssigneeChange}
+        onTaskDueDateChange={taskActions.onTaskDueDateChange}
         onMilestoneUpdate={() => {}}
         onMilestoneReorder={async () => {}}
+        onTaskDelete={taskActions.onTaskDelete}
+        onTaskDescriptionChange={taskActions.onTaskDescriptionChange}
+        getTaskPageProps={taskActions.getTaskPageProps}
         richTextHandlers={createMockRichEditorHandlers()}
         filters={[]}
         onFiltersChange={() => {}}
@@ -898,20 +933,6 @@ export const PausedProject: Story = {
     const [resources, setResources] = useState<ResourceManager.Resource[]>([...mockResources]);
     const [space, setSpace] = useState(defaultSpace);
 
-    const handleTaskCreate = (newTaskData: TaskBoardTypes.NewTaskPayload) => {
-      const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-      const newTask: TaskBoardTypes.Task = {
-        id: taskId,
-        status: PENDING_STATUS,
-        description: "",
-        link: "#",
-        ...newTaskData,
-        type: "project"
-      };
-      console.log("Task created:", newTask);
-      setTasks([...tasks, newTask]);
-    };
-
     const handleMilestoneCreate = (newMilestoneData: ProjectPage.NewMilestonePayload) => {
       const milestoneId = `milestone-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
       const newMilestone = { id: milestoneId, ...newMilestoneData };
@@ -961,6 +982,13 @@ export const PausedProject: Story = {
 
     const subscriptions = useMockSubscriptions({ entityType: "project" });
 
+    const taskActions = useMockTaskBoardActions({
+      tasks,
+      setTasks,
+      statuses,
+      subscriptions,
+    });
+
     return (
       <ProjectPage
         workmapLink="#"
@@ -989,21 +1017,21 @@ export const PausedProject: Story = {
         onDescriptionChange={async () => true}
         activityFeed={<div>Activity feed content</div>}
         tasks={tasks}
+        kanbanState={taskActions.kanbanState}
+        onTaskKanbanChange={taskActions.onTaskKanbanChange}
         milestones={milestones}
         searchableMilestones={milestones}
         onMilestoneSearch={async () => {}}
         assigneePersonSearch={usePersonFieldSearch(mockPeople)}
-        onTaskCreate={handleTaskCreate}
+        onTaskCreate={taskActions.onTaskCreate}
+        onTaskNameChange={taskActions.onTaskNameChange}
         onMilestoneCreate={handleMilestoneCreate}
-        onTaskAssigneeChange={(taskId, assignee) => {
-          console.log("Task assignee updated:", taskId, assignee);
-        }}
-        onTaskDueDateChange={(taskId, dueDate) => {
-          console.log("Task due date updated:", taskId, dueDate);
-        }}
-        onTaskStatusChange={(taskId, status) => {
-          console.log("Task status updated:", taskId, status);
-        }}
+        onTaskAssigneeChange={taskActions.onTaskAssigneeChange}
+        onTaskDueDateChange={taskActions.onTaskDueDateChange}
+        onTaskStatusChange={taskActions.onTaskStatusChange}
+        onTaskDelete={taskActions.onTaskDelete}
+        onTaskDescriptionChange={taskActions.onTaskDescriptionChange}
+        getTaskPageProps={taskActions.getTaskPageProps}
         onMilestoneUpdate={handleMilestoneUpdate}
         onMilestoneReorder={async () => {}}
         richTextHandlers={createMockRichEditorHandlers()}
@@ -1048,7 +1076,7 @@ export const ClosedProject: Story = {
   render: () => {
     const championSearch = usePersonFieldSearch(people);
     const reviewerSearch = usePersonFieldSearch(people);
-    const [tasks] = useState([...mockTasks("project")]);
+    const [tasks, setTasks] = useState([...mockTasks("project")]);
     // All milestones completed for closed project
     const completedMilestones = Object.values(mockMilestones).map((milestone) => ({
       ...milestone,
@@ -1067,6 +1095,13 @@ export const ClosedProject: Story = {
     const closedAt = new Date(2025, 5, 26); // June 26, 2025
 
     const subscriptions = useMockSubscriptions({ entityType: "project" });
+
+    const taskActions = useMockTaskBoardActions({
+      tasks,
+      setTasks,
+      statuses: DEFAULT_STATUSES,
+      subscriptions,
+    });
 
     return (
       <ProjectPage
@@ -1097,17 +1132,23 @@ export const ClosedProject: Story = {
         onDescriptionChange={async () => true}
         activityFeed={<div>Activity feed content</div>}
         tasks={tasks}
+        kanbanState={taskActions.kanbanState}
+        onTaskKanbanChange={taskActions.onTaskKanbanChange}
         milestones={milestones}
         searchableMilestones={milestones}
         onMilestoneSearch={async () => {}}
         assigneePersonSearch={usePersonFieldSearch(mockPeople)}
-        onTaskStatusChange={() => {}}
-        onTaskCreate={() => {}}
+        onTaskStatusChange={taskActions.onTaskStatusChange}
+        onTaskNameChange={taskActions.onTaskNameChange}
+        onTaskCreate={taskActions.onTaskCreate}
         onMilestoneCreate={() => {}}
-        onTaskAssigneeChange={() => {}}
-        onTaskDueDateChange={() => {}}
+        onTaskAssigneeChange={taskActions.onTaskAssigneeChange}
+        onTaskDueDateChange={taskActions.onTaskDueDateChange}
         onMilestoneUpdate={() => {}}
         onMilestoneReorder={async () => {}}
+        onTaskDelete={taskActions.onTaskDelete}
+        onTaskDescriptionChange={taskActions.onTaskDescriptionChange}
+        getTaskPageProps={taskActions.getTaskPageProps}
         filters={[]}
         onFiltersChange={() => {}}
         statuses={DEFAULT_STATUSES}
@@ -1137,6 +1178,7 @@ export const ClosedProject: Story = {
         onProjectDelete={() => {}}
         canDelete={true}
         subscriptions={subscriptions}
+        kanbanEnabled={true}
       />
     );
   },

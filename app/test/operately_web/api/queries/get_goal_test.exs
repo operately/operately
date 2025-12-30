@@ -262,8 +262,10 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       # requested, but the goal has no projects
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_projects: true})
       assert length(res.goal.projects) == 2
-      assert Enum.find(res.goal.projects, fn p -> p.id == Paths.project_id(project1) end) == Serializer.serialize(project1, level: :full)
-      assert Enum.find(res.goal.projects, fn p -> p.id == Paths.project_id(project2) end) == Serializer.serialize(project2, level: :full)
+      expected1 = Serializer.serialize(project1, level: :full) |> normalize_serialized_project()
+      expected2 = Serializer.serialize(project2, level: :full) |> normalize_serialized_project()
+      assert Enum.find(res.goal.projects, fn p -> p.id == Paths.project_id(project1) end) == expected1
+      assert Enum.find(res.goal.projects, fn p -> p.id == Paths.project_id(project2) end) == expected2
     end
 
     test "include_reviewer", ctx do
@@ -423,4 +425,17 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       }
     ])
   end
+
+  defp normalize_serialized_project(project) when is_map(project) do
+    Map.update(project, :tasks_kanban_state, %{}, &normalize_tasks_kanban_state/1)
+  end
+
+  defp normalize_tasks_kanban_state(state) when is_map(state) do
+    Enum.into(state, %{}, fn {key, ids} ->
+      {normalize_tasks_kanban_state_key(key), ids}
+    end)
+  end
+
+  defp normalize_tasks_kanban_state_key(key) when is_atom(key), do: key
+  defp normalize_tasks_kanban_state_key(key) when is_binary(key), do: String.to_atom(key)
 end

@@ -163,7 +163,8 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckInTest do
 
     assert check_in.acknowledged_at
     assert check_in.acknowledged_by_id
-    assert res.check_in == Serializer.serialize(check_in, level: :essential)
+    expected = Serializer.serialize(check_in, level: :essential) |> normalize_serialized_check_in()
+    assert res.check_in == expected
   end
 
   #
@@ -203,4 +204,19 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckInTest do
 
     Operately.Repo.aggregate(query, :count)
   end
+
+  defp normalize_serialized_check_in(check_in) when is_map(check_in) do
+    Map.update(check_in, :project, nil, fn project ->
+      Map.update(project, :tasks_kanban_state, %{}, &normalize_tasks_kanban_state/1)
+    end)
+  end
+
+  defp normalize_tasks_kanban_state(state) when is_map(state) do
+    Enum.into(state, %{}, fn {key, ids} ->
+      {normalize_tasks_kanban_state_key(key), ids}
+    end)
+  end
+
+  defp normalize_tasks_kanban_state_key(key) when is_atom(key), do: key
+  defp normalize_tasks_kanban_state_key(key) when is_binary(key), do: String.to_atom(key)
 end
