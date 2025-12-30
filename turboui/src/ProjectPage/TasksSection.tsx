@@ -1,24 +1,18 @@
 import React from "react";
 
 import { KanbanBoard, TaskBoard, TaskDisplayMenu } from "../TaskBoard";
-import type { KanbanState } from "../TaskBoard/KanbanView/types";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import { useStateWithLocalStorage } from "../utils/useStateWithLocalStorage";
 
 import type { ProjectPage } from "./index";
 
 export function TasksSection({ state }: { state: ProjectPage.State }) {
-  const emptyKanbanState = React.useMemo<KanbanState>(() => ({}), []);
-  const handleTaskKanbanChange = React.useCallback(() => {}, []);
-  const handleTaskNameChange = React.useCallback(() => {}, []);
-  const handleTaskDescriptionChange = React.useCallback(async () => true, []);
-  const handleTaskDelete = React.useCallback(async () => {}, []);
-  const handleTaskPageProps = React.useCallback(() => null, []);
-
   const handleTaskMilestoneChange = React.useCallback(
     (taskId: string, milestone: TaskBoardTypes.Milestone | null) => {
-      if (!milestone) return;
-      state.onTaskMilestoneChange?.(taskId, milestone.id, 0);
+      const indexInMilestone = 1000;
+      const milestoneId = milestone?.id ?? "no-milestone";
+
+      state.onTaskMilestoneChange?.(taskId, milestoneId, indexInMilestone);
     },
     [state.onTaskMilestoneChange],
   );
@@ -46,21 +40,21 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
         <KanbanBoard
           tasks={state.tasks}
           statuses={state.statuses}
-          kanbanState={emptyKanbanState}
-          onTaskKanbanChange={handleTaskKanbanChange}
+          kanbanState={state.kanbanState}
+          onTaskKanbanChange={state.onTaskKanbanChange}
           onTaskCreate={state.onTaskCreate}
-          onTaskNameChange={handleTaskNameChange}
+          onTaskNameChange={state.onTaskNameChange}
           onTaskAssigneeChange={state.onTaskAssigneeChange}
           onTaskDueDateChange={state.onTaskDueDateChange}
           onTaskStatusChange={state.onTaskStatusChange}
           onTaskMilestoneChange={handleTaskMilestoneChange}
-          onTaskDelete={handleTaskDelete}
+          onTaskDelete={state.onTaskDelete}
           milestones={state.milestones}
           onMilestoneSearch={state.onMilestoneSearch}
-          onTaskDescriptionChange={handleTaskDescriptionChange}
+          onTaskDescriptionChange={state.onTaskDescriptionChange}
           richTextHandlers={state.richTextHandlers}
           assigneePersonSearch={state.assigneePersonSearch}
-          getTaskPageProps={handleTaskPageProps}
+          getTaskPageProps={state.getTaskPageProps}
           canManageStatuses={state.canManageStatuses}
           onStatusesChange={state.onSaveCustomStatuses}
           unstyled

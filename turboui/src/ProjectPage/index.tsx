@@ -11,6 +11,7 @@ import { BadgeStatus } from "../StatusBadge/types";
 import { PersonField } from "../PersonField";
 import { useTabs } from "../Tabs";
 import * as TaskBoardTypes from "../TaskBoard/types";
+import type { KanbanBoardProps, KanbanState } from "../TaskBoard/KanbanView/types";
 import { CheckIns } from "./CheckIns";
 import { DeleteModal } from "./DeleteModal";
 import { Discussions } from "./Discussions";
@@ -132,11 +133,18 @@ export namespace ProjectPage {
     milestones: Milestone[];
     searchableMilestones: Milestone[]; // Filtered milestones for task creation
     showMilestoneKanbanLink?: boolean;
+
+    // Kanban props
+    kanbanState: KanbanState;
+    onTaskKanbanChange: KanbanBoardProps["onTaskKanbanChange"];
+
     onTaskCreate: (task: NewTaskPayload) => void;
+    onTaskNameChange: (taskId: string, name: string) => void;
     onTaskAssigneeChange: (taskId: string, assignee: TaskBoardTypes.Person | null) => void;
     onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
     onTaskStatusChange: (taskId: string, status: TaskBoardTypes.Status | null) => void;
     onTaskMilestoneChange?: (taskId: string, milestoneId: string, index: number) => void;
+    onTaskDelete: (taskId: string) => void | Promise<{ success: boolean }>;
     onMilestoneCreate: (milestone: NewMilestonePayload) => void;
     onMilestoneUpdate: (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => void;
     onMilestoneReorder: (sourceId: string, destinationIndex: number) => Promise<void>;
@@ -159,6 +167,9 @@ export namespace ProjectPage {
     currentUser?: Person | null;
 
     richTextHandlers: RichEditorHandlers;
+
+    onTaskDescriptionChange: (taskId: string, description: any) => Promise<boolean>;
+    getTaskPageProps: KanbanBoardProps["getTaskPageProps"];
 
     // Resource management
     resources: ResourceManager.Resource[];

@@ -168,16 +168,26 @@ function Page() {
   } = useMilestones(paths, project, refresh);
   const { resources, createResource, updateResource, removeResource } = useResources(project);
 
-  const { tasks, createTask, updateTaskDueDate, updateTaskAssignee, updateTaskStatus, updateTaskMilestone } =
-    Tasks.useTasksForTurboUi({
-      backendTasks,
-      projectId: project.id,
-      cacheKey: pageCacheKey(project.id),
-      milestones,
-      setMilestones,
-      refresh,
-      type: "project",
-    });
+  const {
+    tasks: baseTasks,
+    setTasks,
+    createTask,
+    updateTaskName,
+    updateTaskDueDate,
+    updateTaskAssignee,
+    updateTaskStatus,
+    updateTaskDescription,
+    updateTaskMilestone,
+    deleteTask,
+  } = Tasks.useTasksForTurboUi({
+    backendTasks,
+    projectId: project.id,
+    cacheKey: pageCacheKey(project.id),
+    milestones,
+    setMilestones,
+    refresh,
+    type: "project",
+  });
 
   const subscriptions = useSubscription({
     subscriptionList: project.subscriptionList,
@@ -196,7 +206,10 @@ function Page() {
   const transformPerson = React.useCallback((p) => People.parsePersonForTurboUi(paths, p)!, [paths]);
 
   // ignoredIds must be memoized to prevent infinite loop in the hook
-  const ignoredIds = React.useMemo(() => [champion?.id!, reviewer?.id!], [champion?.id, reviewer?.id]);
+  const ignoredIds = React.useMemo(
+    () => [champion?.id, reviewer?.id].filter((id): id is string => Boolean(id)),
+    [champion?.id, reviewer?.id],
+  );
 
   const championSearch = People.usePersonFieldSearch({
     scope: { type: "space", id: project.space.id },
@@ -217,6 +230,37 @@ function Page() {
   });
 
   const { statuses, handleSaveStatuses } = Projects.useTaskStatuses(project.id, project.taskStatuses, refresh);
+
+  const { kanbanState, handleTaskKanbanChange } = Tasks.useKanbanState({
+    initialRawState: project.tasksKanbanState,
+    statuses,
+    projectId: project.id,
+    type: "project",
+    tasks: baseTasks,
+    setTasks,
+    onSuccess: async () => {
+      PageCache.invalidate(pageCacheKey(project.id));
+
+      if (refresh) {
+        await refresh();
+      }
+    },
+  });
+
+  const slideInModel = Tasks.useTaskSlideInProps({
+    backendTasks,
+    paths,
+    currentUser,
+    tasks: baseTasks,
+    commentEntityType: "project_task",
+    canEdit: Boolean(project.permissions?.canEditTask),
+    canComment: Boolean(project.permissions?.canCommentOnTask),
+    onTaskNameChange: updateTaskName,
+    onTaskAssigneeChange: updateTaskAssignee,
+    onTaskDueDateChange: updateTaskDueDate,
+    onTaskStatusChange: updateTaskStatus,
+    onTaskDescriptionChange: updateTaskDescription,
+  });
 
   const deleteProject = async () => {
     return Api.projects
@@ -291,12 +335,18 @@ function Page() {
     canDelete: project.permissions?.canDelete || false,
     onProjectDelete: deleteProject,
 
-    tasks,
+    tasks: baseTasks,
+    kanbanState,
+    onTaskKanbanChange: handleTaskKanbanChange,
     onTaskCreate: createTask,
-    onTaskDueDateChange: updateTaskDueDate,
-    onTaskAssigneeChange: updateTaskAssignee,
-    onTaskStatusChange: updateTaskStatus,
+    onTaskNameChange: slideInModel.onTaskNameChange,
+    onTaskDueDateChange: slideInModel.onTaskDueDateChange,
+    onTaskAssigneeChange: slideInModel.onTaskAssigneeChange,
+    onTaskStatusChange: slideInModel.onTaskStatusChange,
     onTaskMilestoneChange: updateTaskMilestone,
+    onTaskDelete: deleteTask,
+    onTaskDescriptionChange: slideInModel.onTaskDescriptionChange,
+    getTaskPageProps: slideInModel.getTaskPageProps,
     milestones,
     searchableMilestones: filteredMilestones,
     showMilestoneKanbanLink,
