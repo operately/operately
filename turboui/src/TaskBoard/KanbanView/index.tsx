@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { StatusSelector } from "../../StatusSelector";
 import { useBoardDnD, useSortableList } from "../../utils/PragmaticDragAndDrop";
+import { useSearchParams } from "react-router-dom";
 import { Kanban } from "./Kanban";
 import { TaskSlideIn } from "./TaskSlideIn";
 import { AddStatusModal } from "./AddStatusModal";
@@ -8,29 +9,8 @@ import { DeleteStatusModal } from "./DeleteStatusModal";
 import type { KanbanBoardProps, KanbanStatus, KanbanState, TaskSlideInContext } from "./types";
 import type { TaskBoard } from "../components";
 
-export function KanbanBoard({
-  milestone,
-  tasks,
-  statuses,
-  kanbanState: kanbanStateProp,
-  onTaskKanbanChange,
-  onTaskAssigneeChange,
-  onTaskDueDateChange,
-  onTaskStatusChange,
-  onTaskMilestoneChange,
-  onTaskDescriptionChange,
-  onTaskNameChange,
-  onTaskDelete,
-  milestones,
-  onMilestoneSearch,
-  assigneePersonSearch,
-  richTextHandlers,
-  onTaskCreate,
-  canManageStatuses,
-  onStatusesChange,
-  unstyled,
-  getTaskPageProps,
-}: KanbanBoardProps) {
+export function KanbanBoard(props: KanbanBoardProps) {
+  const { statuses, kanbanState: kanbanStateProp, onStatusesChange, onTaskKanbanChange, milestone } = props;
   const [orderedStatuses, setOrderedStatuses] = useState<StatusSelector.StatusOption[]>(() => sortStatuses(statuses));
 
   useEffect(() => {
@@ -38,9 +18,7 @@ export function KanbanBoard({
   }, [statuses]);
 
   const statusKeys = useMemo(() => orderedStatuses.map((status) => status.value), [orderedStatuses]);
-  const [kanbanState, setKanbanState] = useState<KanbanState>(
-    normalizeKanbanState(kanbanStateProp, statusKeys),
-  );
+  const [kanbanState, setKanbanState] = useState<KanbanState>(normalizeKanbanState(kanbanStateProp, statusKeys));
 
   useEffect(() => setKanbanState(normalizeKanbanState(kanbanStateProp, statusKeys)), [kanbanStateProp, statusKeys]);
 
@@ -48,54 +26,9 @@ export function KanbanBoard({
   const [editingStatus, setEditingStatus] = useState<StatusSelector.StatusOption | undefined>();
   const [deletingStatus, setDeletingStatus] = useState<StatusSelector.StatusOption | undefined>();
 
-  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+  const { selectedTaskId, setSelectedTaskId, taskPageProps, taskById } = useTaskSlideIn(props);
 
-  const taskById = useMemo(() => {
-    const map = new Map<string, TaskBoard.Task>();
-    tasks.forEach((task) => map.set(task.id, task));
-    return map;
-  }, [tasks]);
-
-  const taskSlideInContext: TaskSlideInContext = useMemo(
-    () => ({
-      milestone,
-      tasks,
-      statuses,
-      onTaskAssigneeChange,
-      onTaskDueDateChange,
-      onTaskStatusChange,
-      onTaskMilestoneChange,
-      onTaskCreate,
-      onTaskDelete,
-      onTaskNameChange,
-      onTaskDescriptionChange,
-      milestones,
-      onMilestoneSearch,
-      assigneePersonSearch,
-      richTextHandlers,
-    }),
-    [
-      milestone,
-      tasks,
-      statuses,
-      onTaskAssigneeChange,
-      onTaskDueDateChange,
-      onTaskStatusChange,
-      onTaskMilestoneChange,
-      onTaskCreate,
-      onTaskDelete,
-      onTaskNameChange,
-      onTaskDescriptionChange,
-      milestones,
-      onMilestoneSearch,
-      assigneePersonSearch,
-      richTextHandlers,
-    ],
-  );
-
-  const taskPageProps = selectedTaskId ? getTaskPageProps(selectedTaskId, taskSlideInContext) : null;
-
-  const canReorderStatuses = Boolean(canManageStatuses && onStatusesChange);
+  const canReorderStatuses = Boolean(props.canManageStatuses && props.onStatusesChange);
 
   useSortableList(
     orderedStatuses.map((status, index) => ({ id: status.value, index })),
@@ -158,7 +91,7 @@ export function KanbanBoard({
     ),
   );
 
-  const containerClassName = unstyled
+  const containerClassName = props.unstyled
     ? "flex flex-col flex-1 overflow-hidden"
     : "flex flex-col flex-1 bg-surface-base border border-surface-outline rounded-md overflow-hidden";
 
@@ -166,18 +99,18 @@ export function KanbanBoard({
     <div className={containerClassName} data-test-id="kanban-board">
       <Kanban
         milestone={milestone || null}
-        columns={buildColumns(kanbanState, tasks, taskById, statusKeys)}
+        columns={buildColumns(kanbanState, props.tasks, taskById, statusKeys)}
         draggedItemId={draggedItemId}
         targetLocation={destination}
         placeholderHeight={draggedItemDimensions?.height ?? null}
         statuses={orderedStatuses}
-        onTaskAssigneeChange={onTaskAssigneeChange}
-        onTaskDueDateChange={onTaskDueDateChange}
-        assigneePersonSearch={assigneePersonSearch}
-        onTaskCreate={onTaskCreate}
-        canManageStatuses={canManageStatuses}
+        onTaskAssigneeChange={props.onTaskAssigneeChange}
+        onTaskDueDateChange={props.onTaskDueDateChange}
+        assigneePersonSearch={props.assigneePersonSearch}
+        onTaskCreate={props.onTaskCreate}
+        canManageStatuses={props.canManageStatuses}
         onAddStatusClick={
-          canManageStatuses
+          props.canManageStatuses
             ? () => {
                 setEditingStatus(undefined);
                 setIsAddStatusModalOpen(true);
@@ -185,7 +118,7 @@ export function KanbanBoard({
             : undefined
         }
         onEditStatus={
-          canManageStatuses
+          props.canManageStatuses
             ? (status) => {
                 setEditingStatus(status);
                 setIsAddStatusModalOpen(true);
@@ -193,7 +126,7 @@ export function KanbanBoard({
             : undefined
         }
         onDeleteStatus={
-          canManageStatuses
+          props.canManageStatuses
             ? (status) => {
                 setDeletingStatus(status);
               }
@@ -256,10 +189,7 @@ export function KanbanBoard({
   );
 }
 
-function normalizeKanbanState(
-  state: KanbanState | undefined,
-  statusKeys: KanbanStatus[],
-): KanbanState {
+function normalizeKanbanState(state: KanbanState | undefined, statusKeys: KanbanStatus[]): KanbanState {
   return cloneState(state, statusKeys);
 }
 
@@ -355,4 +285,117 @@ function sortStatuses(statuses: StatusSelector.StatusOption[]): StatusSelector.S
     if (aIndex !== bIndex) return aIndex - bIndex;
     return a.value.localeCompare(b.value);
   });
+}
+
+function useTaskSlideIn({
+  milestone,
+  tasks,
+  statuses,
+  onTaskAssigneeChange,
+  onTaskDueDateChange,
+  onTaskStatusChange,
+  onTaskMilestoneChange,
+  onTaskCreate,
+  onTaskDelete,
+  onTaskNameChange,
+  onTaskDescriptionChange,
+  milestones,
+  onMilestoneSearch,
+  assigneePersonSearch,
+  richTextHandlers,
+  getTaskPageProps,
+}: KanbanBoardProps) {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const taskById = useMemo(() => {
+    const map = new Map<string, TaskBoard.Task>();
+    tasks.forEach((task) => map.set(task.id, task));
+    return map;
+  }, [tasks]);
+
+  const taskIdFromUrl = useMemo(() => {
+    const value = searchParams.get("taskId");
+    return value && value.length > 0 ? value : null;
+  }, [searchParams]);
+
+  const [selectedTaskId, setSelectedTaskIdState] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!taskIdFromUrl) {
+      setSelectedTaskIdState(null);
+      return;
+    }
+
+    if (taskById.has(taskIdFromUrl)) {
+      setSelectedTaskIdState(taskIdFromUrl);
+      return;
+    }
+
+    const next = new URLSearchParams(searchParams);
+    next.delete("taskId");
+    setSearchParams(next, { replace: true });
+    setSelectedTaskIdState(null);
+  }, [taskById, taskIdFromUrl, searchParams, setSearchParams]);
+
+  const setSelectedTaskId = useCallback(
+    (taskId: string | null) => {
+      const next = new URLSearchParams(searchParams);
+
+      if (taskId) {
+        next.set("taskId", taskId);
+      } else {
+        next.delete("taskId");
+      }
+
+      setSearchParams(next, { replace: true });
+      setSelectedTaskIdState(taskId);
+    },
+    [searchParams, setSearchParams],
+  );
+
+  const taskSlideInContext: TaskSlideInContext = useMemo(
+    () => ({
+      milestone: milestone ?? undefined,
+      tasks,
+      statuses,
+      onTaskAssigneeChange,
+      onTaskDueDateChange,
+      onTaskStatusChange,
+      onTaskMilestoneChange,
+      onTaskCreate,
+      onTaskDelete,
+      onTaskNameChange,
+      onTaskDescriptionChange,
+      milestones,
+      onMilestoneSearch,
+      assigneePersonSearch,
+      richTextHandlers,
+    }),
+    [
+      milestone,
+      tasks,
+      statuses,
+      onTaskAssigneeChange,
+      onTaskDueDateChange,
+      onTaskStatusChange,
+      onTaskMilestoneChange,
+      onTaskCreate,
+      onTaskDelete,
+      onTaskNameChange,
+      onTaskDescriptionChange,
+      milestones,
+      onMilestoneSearch,
+      assigneePersonSearch,
+      richTextHandlers,
+    ],
+  );
+
+  const taskPageProps = selectedTaskId ? getTaskPageProps(selectedTaskId, taskSlideInContext) : null;
+
+  return {
+    selectedTaskId,
+    setSelectedTaskId,
+    taskPageProps,
+    taskById,
+  };
 }
