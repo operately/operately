@@ -82,7 +82,7 @@ export function Card({
     <div
       ref={ref as React.RefObject<HTMLDivElement>}
       className={classNames(
-        "relative rounded-md border border-surface-subtle bg-surface-base px-4 py-2 shadow-xs group w-full cursor-grab",
+        "relative rounded-md border border-surface-subtle dark:border-stroke-base bg-surface-base px-4 py-2 shadow-xs group w-full cursor-grab",
         {
           "opacity-60": isDimmed,
           "cursor-grabbing": isDragging,

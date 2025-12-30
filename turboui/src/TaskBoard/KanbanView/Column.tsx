@@ -112,7 +112,7 @@ export function Column({
   return (
     <div
       ref={!disableDnD ? columnRef : null}
-      className="relative flex flex-col gap-2 bg-surface-dimmed min-h-[78vh] flex-shrink-0 p-3 rounded-lg"
+      className="relative flex flex-col gap-2 bg-surface-dimmed min-h-[78vh] flex-shrink-0 p-3 rounded-lg dark:border dark:border-stroke-base"
       style={{ width: columnWidth }}
       data-test-id={createTestId("kanban-column", status.value)}
     >
