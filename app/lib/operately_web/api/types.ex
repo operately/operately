@@ -1710,10 +1710,10 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :company do
-    field? :id, :string, null: true
-    field? :name, :string, null: true
+    field :id, :string, null: false
+    field :name, :string, null: false
     field? :mission, :string, null: true
-    field? :setup_completed, :boolean, null: true
+    field :setup_completed, :boolean, null: false
     field? :trusted_email_domains, list_of(:string), null: true
     field? :enabled_experimental_features, list_of(:string), null: true
     field? :company_space_id, :string, null: true
