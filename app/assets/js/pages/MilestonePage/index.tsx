@@ -23,7 +23,6 @@ import { projectPageCacheKey } from "../ProjectPage";
 import { useComments } from "./useComments";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useSubscription } from "@/models/subscriptions";
-import * as Companies from "@/models/companies";
 
 export default { name: "MilestonePage", loader, Page } as PageModule;
 
@@ -35,7 +34,6 @@ type LoaderResult = {
     tasks: Tasks.Task[];
     childrenCount: Projects.ProjectChildrenCount;
     activities: Activities.Activity[];
-    company: Companies.Company;
   };
   cacheVersion: number;
 };
@@ -63,7 +61,6 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           scopeType: "milestone",
           actions: MILESTONE_ACTIVITY_TYPES,
         }).then((d) => d.activities!),
-        company: Api.getCompany({ id: params.companyId }).then((d) => d.company),
       }),
   });
 }
@@ -80,13 +77,12 @@ function Page() {
 
   const pageData = PageCache.useData(loader);
   const { data, refresh } = pageData;
-  const { milestone, childrenCount, activities, company } = data;
+  const { milestone, childrenCount, activities } = data;
 
   assertPresent(milestone.project, "Milestone must have a project");
   assertPresent(milestone.space, "Milestone must have a space");
   assertPresent(milestone.permissions, "Milestone must have permissions");
 
-  const showMilestoneKanbanLink = Boolean(company && Companies.hasFeature(company, "milestone-kanban"));
   const workmapLink = paths.spaceWorkMapPath(milestone.space.id, "projects" as const);
 
   const [projectName, setProjectName] = usePageField(pageData, {
@@ -188,7 +184,7 @@ function Page() {
 
     // Milestone data
     milestone: parsedMilestone,
-    showMilestoneKanbanLink,
+    showMilestoneKanbanLink: false,
 
     // Timeline/Comments
     currentUser: People.parsePersonForTurboUi(paths, currentUser)!,
