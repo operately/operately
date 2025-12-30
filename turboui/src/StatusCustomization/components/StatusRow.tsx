@@ -43,7 +43,7 @@ export function StatusRow({ status, isLabelInvalid, onUpdate, onRemove, canRemov
           onChange={(event) => onUpdate(status.id, { label: event.target.value })}
           placeholder="Status label"
           className={classNames(
-            "flex-1 rounded-md border px-3 py-2 text-sm text-content-base transition focus:outline-none focus:ring-2 focus:ring-brand-1",
+            "flex-1 rounded-md border px-3 py-2 text-sm bg-surface-base text-content-base transition focus:outline-none focus:ring-2 focus:ring-brand-1",
             isLabelInvalid ? "border-rose-300 focus:ring-rose-400" : "border-stroke-base",
           )}
           data-test-id={createTestId("status-label-input", index.toString())}
