@@ -45,6 +45,14 @@ defmodule OperatelyWeb.Api.Helpers do
     end
   end
 
+  def find_company(conn) do
+    if conn.assigns.current_company do
+      {:ok, conn.assigns.current_company}
+    else
+      {:error, :not_found}
+    end
+  end
+
   def extend_query(query, nil, _), do: query
   def extend_query(query, false, _), do: query
   def extend_query(query, _, fun), do: fun.(query)

@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveCompanyOwner do
   def call(conn, inputs) do
     with(
       {:ok, me} <- find_me(conn),
-      {:ok, company} <- find_company(conn),
+      {:ok, company} <- get_company(conn),
       {:ok, :allowed} <- authorize(company),
       {:ok, _} <- CompanyOwnerRemoving.run(me, inputs.person_id)
     ) do
@@ -29,7 +29,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveCompanyOwner do
     Permissions.check(company.request_info.access_level, :can_manage_owners)
   end
 
-  defp find_company(conn) do
+  defp get_company(conn) do
     Company.get(me(conn), id: me(conn).company_id)
   end
 end

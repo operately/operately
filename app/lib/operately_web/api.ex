@@ -197,6 +197,7 @@ defmodule OperatelyWeb.Api do
   query(:global_search, Q.GlobalSearch)
   query(:list_task_assignable_people, Q.ListTaskAssignablePeople)
 
+  mutation(:delete_company, M.DeleteCompany)
   mutation(:archive_message, M.ArchiveMessage)
   mutation(:restore_company_member, M.RestoreCompanyMember)
   mutation(:add_company, M.AddCompany)

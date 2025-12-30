@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyOwners do
   def call(conn, inputs) do
     with(
       {:ok, me} <- find_me(conn),
-      {:ok, company} <- find_company(conn),
+      {:ok, company} <- get_company(conn),
       {:ok, :allowed} <- authorize(company),
       {:ok, _} <- CompanyOwnersAdding.run(me, inputs.people_ids)
     ) do
@@ -25,7 +25,7 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyOwners do
     end
   end
 
-  defp find_company(conn) do
+  defp get_company(conn) do
     Company.get(me(conn), id: me(conn).company_id)
   end
 
