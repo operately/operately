@@ -7,7 +7,7 @@ import { KanbanBoard } from "../TaskBoard";
 import * as Types from "../TaskBoard/types";
 import type { KanbanBoardProps, KanbanState } from "../TaskBoard/KanbanView/types";
 import { Navigation } from "../Page/Navigation";
-import { IconTent, IconChevronRight } from "../icons";
+import { IconChevronRight, IconLayoutKanban } from "../icons";
 import { BlackLink } from "../Link";
 import { createTestId } from "../TestableElement";
 
@@ -96,7 +96,7 @@ interface SpaceKanbanPageHeaderProps {
 function SpaceKanbanPageHeader({ navigation }: SpaceKanbanPageHeaderProps) {
   return (
     <header className="mt-4 px-4 border-b border-surface-outline pb-3 flex items-center gap-3">
-      <IconTent size={38} className="rounded-lg bg-blue-50 dark:bg-blue-900" />
+      <IconLayoutKanban size={38} className="rounded-lg bg-blue-50 dark:bg-blue-900 p-1" />
 
       <div className="min-w-0 flex-1">
         <Breadcrumbs navigation={navigation} />
