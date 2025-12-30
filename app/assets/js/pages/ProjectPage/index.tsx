@@ -83,7 +83,6 @@ function Page() {
   const navigate = useNavigate();
   const currentUser = useMe();
 
-  const showMilestoneKanbanLink = Boolean(company && Companies.hasFeature(company, "milestone-kanban"));
   const showProjectKanbanLink = Boolean(company && Companies.hasFeature(company, "project-kanban"));
 
   useAiSidebar({
@@ -349,7 +348,7 @@ function Page() {
     getTaskPageProps: slideInModel.getTaskPageProps,
     milestones,
     searchableMilestones: filteredMilestones,
-    showMilestoneKanbanLink,
+    showMilestoneKanbanLink: false,
     onMilestoneSearch: searchMilestones,
     onMilestoneCreate: createMilestone,
     onMilestoneUpdate: updateMilestone,
