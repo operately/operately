@@ -149,10 +149,6 @@ function ManageAccessButton({ space }: { space: Spaces.Space }) {
 
 function SpaceOptions() {
   const { space, tools } = useLoadedData();
-
-  assertPresent(space.permissions, "permissions must be present in space");
-  if (!space.permissions.canDelete || !space.permissions.canEdit) return null;
-
   const navigate = useNavigate();
   const [deleteSpace, { loading: isDeleting }] = Spaces.useDeleteSpace();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -215,13 +211,13 @@ function SpaceOptions() {
   return (
     <>
       <PageOptions.Root testId="options-button">
-        {space.permissions.canEdit && (
+        {space.permissions?.canEdit && (
           <PageOptions.Link keepOutsideOnBigScreen icon={IconPencil} to={editLink} title="Edit" testId="edit-space" />
         )}
-        {space.permissions.canEdit && (
+        {space.permissions?.canEdit && (
           <PageOptions.Link icon={IconSettings} to={toolsConfigLink} title="Configure tools" testId="configure-tools" />
         )}
-        {space.permissions.canDelete && !space.isCompanySpace && (
+        {space.permissions?.canDelete && !space.isCompanySpace && (
           <PageOptions.Action icon={IconTrash} title="Delete" onClick={handleDelete} testId="delete-space" />
         )}
       </PageOptions.Root>
