@@ -119,7 +119,8 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
       project3 = project_fixture(company_id: ctx.company.id, name: "Project 3", creator_id: ctx.person.id, group_id: ctx.company.company_space_id)
 
       assert {200, res} = query(ctx.conn, :get_projects, %{})
-      assert res.projects == serialize([project1, project2, project3], level: :full)
+      expected = serialize([project1, project2, project3], level: :full) |> normalize_serialized_projects()
+      assert res.projects == expected
     end
 
     test "include_champion", ctx do
@@ -128,7 +129,8 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
       project = Map.put(project, :champion, ctx.person)
 
       assert {200, res} = query(ctx.conn, :get_projects, %{include_champion: true})
-      assert res.projects == serialize([project], level: :full)
+      expected = serialize([project], level: :full) |> normalize_serialized_projects()
+      assert res.projects == expected
     end
 
     test "include_reviewer", ctx do
@@ -162,7 +164,8 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
       project = Map.put(project, :goal, goal)
 
       assert {200, res} = query(ctx.conn, :get_projects, %{include_goal: true})
-      assert res.projects == serialize([project], level: :full)
+      expected = serialize([project], level: :full) |> normalize_serialized_projects()
+      assert res.projects == expected
     end
 
     test "if include_milestones is true, but there are no milestones it returns empty list and next_milestone = nil", ctx do
@@ -170,14 +173,16 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
       project = Map.put(project, :milestones, [])
 
       assert {200, res} = query(ctx.conn, :get_projects, %{include_milestones: true})
-      assert res.projects == serialize([project], level: :full)
+      expected = serialize([project], level: :full) |> normalize_serialized_projects()
+      assert res.projects == expected
     end
 
     test "if include_last_check_in is true, but there is no last check in, it returns nil", ctx do
       project = project_fixture(company_id: ctx.company.id, name: "Project 1", creator_id: ctx.person.id, group_id: ctx.company.company_space_id)
 
       assert {200, res} = query(ctx.conn, :get_projects, %{include_last_check_in: true})
-      assert res.projects == serialize([project], level: :full)
+      expected = serialize([project], level: :full) |> normalize_serialized_projects()
+      assert res.projects == expected
     end
 
     test "scope by space_id", ctx do
@@ -186,7 +191,8 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
       _project2 = project_fixture(company_id: ctx.company.id, name: "Project 2", creator_id: ctx.person.id, group_id: ctx.company.company_space_id)
 
       assert {200, res} = query(ctx.conn, :get_projects, %{space_id: Paths.space_id(space)})
-      assert res.projects == serialize([project1], level: :full)
+      expected = serialize([project1], level: :full) |> normalize_serialized_projects()
+      assert res.projects == expected
     end
   end
 
@@ -225,4 +231,19 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
       access_level: Binding.edit_access(),
     }])
   end
+
+  defp normalize_serialized_projects(projects) when is_list(projects) do
+    Enum.map(projects, fn project ->
+      Map.update(project, :tasks_kanban_state, %{}, &normalize_tasks_kanban_state/1)
+    end)
+  end
+
+  defp normalize_tasks_kanban_state(state) when is_map(state) do
+    Enum.into(state, %{}, fn {key, ids} ->
+      {normalize_tasks_kanban_state_key(key), ids}
+    end)
+  end
+
+  defp normalize_tasks_kanban_state_key(key) when is_atom(key), do: key
+  defp normalize_tasks_kanban_state_key(key) when is_binary(key), do: String.to_atom(key)
 end

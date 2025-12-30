@@ -48,7 +48,8 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       p = create_project(ctx, company_access_level: Binding.view_access())
 
       assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(p)})
-      assert res.project == Serializer.serialize(p, level: :full)
+      expected = Serializer.serialize(p, level: :full) |> normalize_serialized_project()
+      assert res.project == expected
     end
 
     test "space members have no access", ctx do
@@ -64,7 +65,8 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       p = create_project(ctx, space_access_level: Binding.view_access())
 
       assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(p)})
-      assert res.project == Serializer.serialize(p, level: :full)
+      expected = Serializer.serialize(p, level: :full) |> normalize_serialized_project()
+      assert res.project == expected
     end
 
     test "champions have access", ctx do
@@ -107,7 +109,8 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       project = create_project(ctx)
 
       assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project)})
-      assert res.project == Serializer.serialize(project, level: :full)
+      expected = Serializer.serialize(project, level: :full) |> normalize_serialized_project()
+      assert res.project == expected
     end
 
     test "returns 400 if id is not provided", ctx do
@@ -405,4 +408,17 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
 
     decoded_id == id
   end
+
+  defp normalize_serialized_project(project) when is_map(project) do
+    Map.update(project, :tasks_kanban_state, %{}, &normalize_tasks_kanban_state/1)
+  end
+
+  defp normalize_tasks_kanban_state(state) when is_map(state) do
+    Enum.into(state, %{}, fn {key, ids} ->
+      {normalize_tasks_kanban_state_key(key), ids}
+    end)
+  end
+
+  defp normalize_tasks_kanban_state_key(key) when is_atom(key), do: key
+  defp normalize_tasks_kanban_state_key(key) when is_binary(key), do: String.to_atom(key)
 end
