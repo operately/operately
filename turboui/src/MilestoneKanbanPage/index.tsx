@@ -44,7 +44,7 @@ export namespace MilestoneKanbanPage {
     onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
     onTaskStatusChange: (taskId: string, status: Types.Status | null) => void;
     onTaskMilestoneChange: (taskId: string, milestone: Types.Milestone | null) => void;
-    onTaskDelete: (taskId: string) => void | Promise<void>;
+    onTaskDelete: (taskId: string) => void | Promise<any>;
 
     // Milestone search
     milestones: Types.Milestone[];
