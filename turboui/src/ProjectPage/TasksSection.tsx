@@ -5,6 +5,7 @@ import { KanbanBoard, TaskBoard, TasksMenu, TaskDisplayMenu } from "../TaskBoard
 import * as TaskBoardTypes from "../TaskBoard/types";
 import { Menu, MenuActionItem } from "../Menu";
 import { useStateWithLocalStorage } from "../utils/useStateWithLocalStorage";
+import { compareIds } from "../utils/ids";
 
 import type { ProjectPage } from "./index";
 
@@ -13,6 +14,20 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
     milestones: state.milestones,
     tasks: state.tasks,
   });
+
+  const onKanbanTaskCreate = React.useCallback(
+    (task: TaskBoardTypes.NewTaskPayload) => {
+      if (!selectedMilestone) {
+        return state.onTaskCreate(task);
+      }
+
+      return state.onTaskCreate({
+        ...task,
+        milestone: selectedMilestone,
+      });
+    },
+    [selectedMilestone, state.onTaskCreate],
+  );
 
   const handleTaskMilestoneChange = React.useCallback(
     (taskId: string, milestone: TaskBoardTypes.Milestone | null) => {
@@ -58,7 +73,7 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
           statuses={state.statuses}
           kanbanState={state.kanbanState}
           onTaskKanbanChange={state.onTaskKanbanChange}
-          onTaskCreate={state.onTaskCreate}
+          onTaskCreate={onKanbanTaskCreate}
           onTaskNameChange={state.onTaskNameChange}
           onTaskAssigneeChange={state.onTaskAssigneeChange}
           onTaskDueDateChange={state.onTaskDueDateChange}
@@ -186,7 +201,7 @@ function useMilestoneFilter({
 
   const filteredTasks = React.useMemo(() => {
     if (!selectedMilestoneId) return tasks;
-    return tasks.filter((task) => task.milestone?.id === selectedMilestoneId);
+    return tasks.filter((task) => compareIds(task.milestone?.id, selectedMilestoneId));
   }, [selectedMilestoneId, tasks]);
 
   const onMilestoneFilterChange = React.useCallback(
