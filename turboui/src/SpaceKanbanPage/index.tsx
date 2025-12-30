@@ -46,7 +46,7 @@ export namespace SpaceKanbanPage {
     onTaskAssigneeChange: (taskId: string, assignee: Types.Person | null) => void;
     onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
     onTaskStatusChange: (taskId: string, status: Types.Status | null) => void;
-    onTaskDelete: (taskId: string) => void | Promise<void>;
+    onTaskDelete: (taskId: string) => void | Promise<any>;
 
     // Description editing
     onTaskDescriptionChange?: (taskId: string, description: any) => Promise<boolean>;

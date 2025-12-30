@@ -1415,6 +1415,7 @@ export interface Project {
   subscriptionList?: SubscriptionList | null;
   milestonesOrderingState?: string[] | null;
   taskStatuses?: TaskStatus[] | null;
+  tasksKanbanState?: Json | null;
 }
 
 export interface ProjectCheckIn {
