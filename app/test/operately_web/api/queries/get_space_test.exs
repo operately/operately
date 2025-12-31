@@ -157,6 +157,22 @@ defmodule OperatelyWeb.Api.Queries.GetSpaceTest do
       end)
     end
 
+    test "only returns human members", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_owner(:creator)
+        |> Factory.log_in_person(:creator)
+        |> Factory.add_space(:space)
+        |> Factory.add_space_member(:human, :space, person_type: :human)
+        |> Factory.add_space_member(:ai, :space, person_type: :ai)
+
+      assert {200, res} = query(ctx.conn, :get_space, %{id: Paths.space_id(ctx.space), include_members: true})
+
+      assert length(res.space.members) == 2 # 1 creator (ctx.person) + 1 added human
+      assert Enum.find(res.space.members, &(&1.id == Paths.person_id(ctx.human)))
+      refute Enum.find(res.space.members, &(&1.id == Paths.person_id(ctx.ai)))
+    end
+
     test "include_access_levels", ctx do
       space = group_fixture(ctx.person, company_id: ctx.company.id, company_permissions: Binding.comment_access(), public_permissions: Binding.view_access())
 

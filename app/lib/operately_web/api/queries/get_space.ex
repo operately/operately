@@ -49,9 +49,11 @@ defmodule OperatelyWeb.Api.Queries.GetSpace do
   end
 
   defp preload(inputs) do
+    members_query = from(m in Operately.People.Person, where: m.type == :human)
+
     Inputs.parse_includes(inputs,
-      include_members: :members,
-      include_potential_subscribers: :members,
+      include_members: [members: members_query],
+      include_potential_subscribers: [members: members_query],
       always_include: :company
     )
   end
