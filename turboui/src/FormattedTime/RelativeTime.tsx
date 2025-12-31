@@ -54,7 +54,7 @@ export default function RelativeTime({ time }: RelativeTimeProps): JSX.Element {
     );
   }
 
-  if (weeks < 4) {
+  if (days < 30) {
     return (
       <Fragment key={lastRender}>
         {weeks} {weeks === 1 ? "week" : "weeks"} ago
