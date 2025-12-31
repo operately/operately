@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useMemo } from "react";
+import React, { useState, useCallback, useLayoutEffect, useMemo } from "react";
 import { PrimaryButton, SecondaryButton } from "../../Button";
 import { DragAndDropProvider } from "../../utils/DragAndDrop";
 import { reorderTasks } from "../utils/taskReorderingUtils";
@@ -66,11 +66,11 @@ export function TaskBoard({
   } = useInlineTaskCreator();
 
   // Keep internal tasks in sync with external tasks
-  useEffect(() => {
+  useLayoutEffect(() => {
     setInternalTasks(externalTasks);
   }, [externalTasks]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setInternalMilestones(externalMilestones);
   }, [externalMilestones]);
 

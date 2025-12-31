@@ -1,5 +1,6 @@
 import { TaskBoard } from "turboui";
-import { buildMilestonesOrderingState } from "./milestoneOrdering";
+
+import { buildMilestonesOrderingState, normalizeMilestonesOrderingState } from "./milestoneOrdering";
 
 describe("buildMilestonesOrderingState", () => {
   test("should handle moving task from one milestone to another", () => {
@@ -8,30 +9,26 @@ describe("buildMilestonesOrderingState", () => {
       createMilestone("milestone-1", ["task-1", "task-2"]),
       createMilestone("milestone-2", ["task-3"]),
     ];
-    
+
     // Create the task being moved
     const task = createTask("task-1", "milestone-1");
+    const tasks = [task, createTask("task-2", "milestone-1"), createTask("task-3", "milestone-2")];
 
-    const result = buildMilestonesOrderingState(
-      milestones,
-      task,
-      "milestone-2",
-      1
-    );
+    const result = buildMilestonesOrderingState(tasks, milestones, task, "milestone-2", 1);
 
     // Should update both source and target milestone ordering states
     expect(result).toHaveLength(2);
-    
+
     // Source milestone should only have task-2
     expect(result[0]).toEqual({
       milestoneId: "milestone-1",
-      orderingState: ["task-2"]
+      orderingState: ["task-2"],
     });
-    
+
     // Target milestone should have task-3 and task-1 (inserted at index 1)
     expect(result[1]).toEqual({
       milestoneId: "milestone-2",
-      orderingState: ["task-3", "task-1"]
+      orderingState: ["task-3", "task-1"],
     });
   });
 
@@ -40,24 +37,20 @@ describe("buildMilestonesOrderingState", () => {
     const milestones = [
       createMilestone("milestone-1", ["task-1", "task-2", "task-3"]),
     ];
-    
+
     // Create the task being moved
     const task = createTask("task-1", "milestone-1");
+    const tasks = [task, createTask("task-2", "milestone-1"), createTask("task-3", "milestone-1")];
 
-    const result = buildMilestonesOrderingState(
-      milestones,
-      task,
-      "milestone-1",
-      2
-    );
+    const result = buildMilestonesOrderingState(tasks, milestones, task, "milestone-1", 2);
 
     // Should update only one milestone
     expect(result).toHaveLength(1);
-    
+
     // Milestone should have task-2, task-3, task-1 (task-1 moved to end)
     expect(result[0]).toEqual({
       milestoneId: "milestone-1",
-      orderingState: ["task-2", "task-3", "task-1"]
+      orderingState: ["task-2", "task-3", "task-1"],
     });
   });
 
@@ -66,24 +59,20 @@ describe("buildMilestonesOrderingState", () => {
     const milestones = [
       createMilestone("milestone-1", ["task-1", "task-2"]),
     ];
-    
+
     // Create the task being moved
     const task = createTask("task-1", "milestone-1");
+    const tasks = [task, createTask("task-2", "milestone-1")];
 
-    const result = buildMilestonesOrderingState(
-      milestones,
-      task,
-      "no-milestone",
-      0
-    );
+    const result = buildMilestonesOrderingState(tasks, milestones, task, null, 0);
 
     // Should only update source milestone
     expect(result).toHaveLength(1);
-    
+
     // Source milestone should only have task-2
     expect(result[0]).toEqual({
       milestoneId: "milestone-1",
-      orderingState: ["task-2"]
+      orderingState: ["task-2"],
     });
   });
 
@@ -92,57 +81,81 @@ describe("buildMilestonesOrderingState", () => {
     const milestones = [
       createMilestone("milestone-1", ["task-2"]),
     ];
-    
+
     // Create the task being moved (with no milestone)
     const task = createTask("task-1", null);
+    const tasks = [task, createTask("task-2", "milestone-1")];
 
-    const result = buildMilestonesOrderingState(
-      milestones,
-      task,
-      "milestone-1",
-      1
-    );
+    const result = buildMilestonesOrderingState(tasks, milestones, task, "milestone-1", 1);
 
     // Should only update target milestone
     expect(result).toHaveLength(1);
-    
+
     // Target milestone should have task-2 and task-1
     expect(result[0]).toEqual({
       milestoneId: "milestone-1",
-      orderingState: ["task-2", "task-1"]
+      orderingState: ["task-2", "task-1"],
     });
+  });
+
+  test("should normalize ordering state to visible tasks only", () => {
+    const milestones = [
+      createMilestone("milestone-1", ["task-3", "task-1"]),
+    ];
+
+    const tasks = [
+      createTask("task-1", "milestone-1"),
+      createTask("task-2", "milestone-1"),
+      createTask("task-3", "milestone-1", { closed: true }),
+    ];
+
+    const normalized = normalizeMilestonesOrderingState(milestones, tasks);
+
+    expect(normalized[0]?.tasksOrderingState).toEqual(["task-1", "task-2"]);
   });
 });
 
-const createTask = (id: string, milestoneId: string | null): TaskBoard.Task => ({
-    id,
-    title: `Task ${id}`,
-    status: null,
-    description: null,
-    link: "",
-    assignees: [],
-    milestone: milestoneId ? { 
-      id: milestoneId, 
-      name: `Milestone ${milestoneId}`,
-      status: "pending" as const, 
-      dueDate: null, 
-      link: "#",
-      tasksOrderingState: []
-    } : null,
-    dueDate: null,
-    hasDescription: false,
-    hasComments: false,
-    commentCount: 0,
-    comments: undefined,
-    type: "project",
-    _isHelperTask: false,
-  });
+const createTask = (id: string, milestoneId: string | null, options: { closed?: boolean } = {}): TaskBoard.Task => ({
+  id,
+  title: `Task ${id}`,
+  status: options.closed ? createStatus(true) : null,
+  description: null,
+  link: "",
+  assignees: [],
+  milestone: milestoneId
+    ? {
+        id: milestoneId,
+        name: `Milestone ${milestoneId}`,
+        status: "pending" as const,
+        dueDate: null,
+        link: "#",
+        tasksOrderingState: [],
+      }
+    : null,
+  dueDate: null,
+  hasDescription: false,
+  hasComments: false,
+  commentCount: 0,
+  comments: undefined,
+  type: "project",
+  _isHelperTask: false,
+});
 
 const createMilestone = (id: string, taskIds: string[]): TaskBoard.Milestone => ({
-    id, 
-    name: `Milestone ${id}`,
-    status: "pending" as const, 
-    dueDate: null, 
-    link: "#",
-    tasksOrderingState: taskIds
-  });
+  id,
+  name: `Milestone ${id}`,
+  status: "pending" as const,
+  dueDate: null,
+  link: "#",
+  tasksOrderingState: taskIds,
+});
+
+const createStatus = (closed: boolean): TaskBoard.Status => ({
+  id: closed ? "done" : "pending",
+  label: closed ? "Done" : "Pending",
+  icon: "circleCheck",
+  color: closed ? "green" : "gray",
+  index: closed ? 1 : 0,
+  value: closed ? "done" : "pending",
+  closed,
+});
