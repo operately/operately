@@ -182,5 +182,4 @@ export interface TaskBoardProps {
 
   displayMode: TaskDisplayMode;
   onDisplayModeChange: (mode: TaskDisplayMode) => void;
-  kanbanEnabled?: boolean;
 }

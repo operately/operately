@@ -179,8 +179,6 @@ export namespace ProjectPage {
 
     moveModalOpen?: boolean;
     subscriptions: SidebarNotificationSection.Props;
-
-    kanbanEnabled?: boolean;
   }
 
   export interface State extends Props {
