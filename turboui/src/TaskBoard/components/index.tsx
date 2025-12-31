@@ -51,7 +51,6 @@ export function TaskBoard({
   canManageStatuses,
   displayMode = "list",
   onDisplayModeChange,
-  kanbanEnabled
 }: Types.TaskBoardProps) {
   const [internalTasks, setInternalTasks] = useState<Types.Task[]>(externalTasks);
   const [internalMilestones, setInternalMilestones] = useState<Types.Milestone[]>(externalMilestones);
@@ -175,7 +174,6 @@ export function TaskBoard({
         canManageStatuses={canManageStatuses}
         displayMode={displayMode}
         onDisplayModeChange={onDisplayModeChange}
-        kanbanEnabled={kanbanEnabled}
       />
 
       <div
@@ -284,7 +282,6 @@ interface ActionBarProps {
   canManageStatuses: boolean;
   displayMode: Types.TaskDisplayMode;
   onDisplayModeChange: (mode: Types.TaskDisplayMode) => void;
-  kanbanEnabled?: boolean;
 }
 
 function StickyActionBar({
@@ -298,7 +295,6 @@ function StickyActionBar({
   canManageStatuses,
   displayMode,
   onDisplayModeChange,
-  kanbanEnabled,
 }: ActionBarProps) {
   return (
     <header className="sticky top-0 z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between py-6 bg-surface-base px-4 lg:px-0">
@@ -324,9 +320,13 @@ function StickyActionBar({
       </div>
 
       <div className="flex items-center -mb-2">
-        <TasksMenu canManageStatuses={canManageStatuses} statuses={statuses} onSaveCustomStatuses={onSaveCustomStatuses} />
+        <TasksMenu
+          canManageStatuses={canManageStatuses}
+          statuses={statuses}
+          onSaveCustomStatuses={onSaveCustomStatuses}
+        />
 
-        {kanbanEnabled && <TaskDisplayMenu mode={displayMode} onChange={onDisplayModeChange} />}
+        <TaskDisplayMenu mode={displayMode} onChange={onDisplayModeChange} />
       </div>
     </header>
   );

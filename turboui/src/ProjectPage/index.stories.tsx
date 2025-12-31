@@ -383,8 +383,8 @@ export const Default: Story = {
         onFiltersChange={setFilters}
         statuses={statuses}
         onSaveCustomStatuses={(data) => {
-          console.log('Statuses updated:', data.nextStatuses);
-          console.log('Deleted status replacements:', data.deletedStatusReplacements);
+          console.log("Statuses updated:", data.nextStatuses);
+          console.log("Deleted status replacements:", data.deletedStatusReplacements);
           setStatuses(data.nextStatuses);
         }}
         canManageStatuses={true}
@@ -411,7 +411,6 @@ export const Default: Story = {
         onProjectDelete={() => {}}
         canDelete={true}
         subscriptions={subscriptions}
-        kanbanEnabled={true}
       />
     );
   },
@@ -518,7 +517,6 @@ export const ReadOnly: Story = {
         onProjectDelete={() => {}}
         canDelete={true}
         subscriptions={subscriptions}
-        kanbanEnabled={true}
       />
     );
   },
@@ -634,8 +632,8 @@ export const EmptyTasks: Story = {
         onFiltersChange={setFilters}
         statuses={statuses}
         onSaveCustomStatuses={(data) => {
-          console.log('Statuses updated:', data.nextStatuses);
-          console.log('Deleted status replacements:', data.deletedStatusReplacements);
+          console.log("Statuses updated:", data.nextStatuses);
+          console.log("Deleted status replacements:", data.deletedStatusReplacements);
           setStatuses(data.nextStatuses);
         }}
         canManageStatuses={true}
@@ -662,7 +660,6 @@ export const EmptyTasks: Story = {
         onProjectDelete={() => {}}
         canDelete={true}
         subscriptions={subscriptions}
-        kanbanEnabled={true}
       />
     );
   },
@@ -777,8 +774,8 @@ export const EmptyProject: Story = {
         onFiltersChange={() => {}}
         statuses={statuses}
         onSaveCustomStatuses={(data) => {
-          console.log('Statuses updated:', data.nextStatuses);
-          console.log('Deleted status replacements:', data.deletedStatusReplacements);
+          console.log("Statuses updated:", data.nextStatuses);
+          console.log("Deleted status replacements:", data.deletedStatusReplacements);
           setStatuses(data.nextStatuses);
         }}
         canManageStatuses={true}
@@ -805,7 +802,6 @@ export const EmptyProject: Story = {
         onProjectDelete={() => {}}
         canDelete={true}
         subscriptions={subscriptions}
-        kanbanEnabled={true}
       />
     );
   },
@@ -1039,8 +1035,8 @@ export const PausedProject: Story = {
         onFiltersChange={setFilters}
         statuses={statuses}
         onSaveCustomStatuses={(data) => {
-          console.log('Statuses updated:', data.nextStatuses);
-          console.log('Deleted status replacements:', data.deletedStatusReplacements);
+          console.log("Statuses updated:", data.nextStatuses);
+          console.log("Deleted status replacements:", data.deletedStatusReplacements);
           setStatuses(data.nextStatuses);
         }}
         canManageStatuses={true}
@@ -1178,7 +1174,6 @@ export const ClosedProject: Story = {
         onProjectDelete={() => {}}
         canDelete={true}
         subscriptions={subscriptions}
-        kanbanEnabled={true}
       />
     );
   },
