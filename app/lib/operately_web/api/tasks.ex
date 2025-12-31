@@ -3,7 +3,6 @@ defmodule OperatelyWeb.Api.Tasks do
 
   alias Operately.Repo
   alias OperatelyWeb.Api.Serializer
-  alias Operately.Tasks.MilestoneSync
 
   defmodule List do
     use TurboConnect.Query
@@ -50,14 +49,13 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.find_task(inputs.task_id, inputs.type, [:assigned_people])
       |> Steps.check_task_permissions(:can_edit_task)
       |> Steps.update_task_status(inputs.status)
-      |> MilestoneSync.sync_after_status_update()
       |> Steps.save_activity(:task_status_updating, &build_activity_content/1)
       |> Steps.commit()
       |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn changes ->
         %{
           task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full),
-          updated_milestone: OperatelyWeb.Api.Serializer.serialize(changes.updated_milestone)
+          updated_milestone: OperatelyWeb.Api.Serializer.serialize(changes[:updated_milestone])
         }
       end)
     end
@@ -336,46 +334,13 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.start_transaction()
       |> Steps.find_task(inputs.task_id, :project)
       |> Steps.check_task_permissions(:can_edit_task)
-      |> Steps.validate_milestone_if_changed(inputs.milestone_id)
-      |> Steps.update_task_milestone_if_changed(inputs.milestone_id)
-      |> MilestoneSync.sync_after_milestone_change(inputs.milestone_id)
-      |> MilestoneSync.sync_manual_ordering(inputs.milestones_ordering_state)
-      |> save_activity_if_milestone_changed(inputs.milestone_id)
+      |> Steps.update_milestone_and_ordering(inputs.milestone_id, inputs.milestones_ordering_state)
       |> Steps.commit()
       |> Steps.respond(fn changes ->
         %{
-            task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full),
-            updated_milestones: OperatelyWeb.Api.Serializer.serialize(collect_all_updated_milestones(changes)),
-          }
-      end)
-    end
-
-    defp collect_all_updated_milestones(changes) do
-      milestone_change_milestones = Map.get(changes, :milestone_change_sync, [])
-      manual_ordering_milestones = Map.get(changes, :milestone_sync_manual, [])
-
-      # Combine and deduplicate by ID
-      (milestone_change_milestones ++ manual_ordering_milestones)
-      |> Enum.filter(fn milestone -> milestone != nil end)
-      |> Enum.uniq_by(& &1.id)
-    end
-
-    defp save_activity_if_milestone_changed(multi, new_milestone_id) do
-      Ecto.Multi.merge(multi, fn changes ->
-        if changes.task.milestone_id != new_milestone_id do
-          Operately.Activities.insert_sync(Ecto.Multi.new(), changes.me.id, :task_milestone_updating, fn _ ->
-            %{
-              company_id: changes.project.company_id,
-              space_id: changes.project.group_id,
-              project_id: changes.project.id,
-              task_id: changes.task.id,
-              old_milestone_id: changes.task.milestone_id,
-              new_milestone_id: new_milestone_id
-            }
-          end)
-        else
-          Ecto.Multi.new()
-        end
+          task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full),
+          updated_milestones: OperatelyWeb.Api.Serializer.serialize(changes.updated_milestones || [])
+        }
       end)
     end
   end
@@ -421,7 +386,7 @@ defmodule OperatelyWeb.Api.Tasks do
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
-    alias Operately.Tasks.{MilestoneSync, SpaceSync}
+    alias Operately.Tasks.SpaceSync
 
     inputs do
       field :type, :task_type, null: false
@@ -446,7 +411,6 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.check_permissions(:can_create_task)
       |> Steps.validate_milestone_belongs_to_project(inputs.milestone_id)
       |> Steps.create_task(inputs)
-      |> MilestoneSync.sync_after_task_create(inputs.milestone_id)
       |> Steps.save_activity(:task_adding, fn changes ->
         %{
           company_id: changes.project.company_id,
@@ -515,14 +479,13 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.find_task(inputs.task_id, inputs.type, [:assigned_people])
       |> Steps.check_task_permissions(:can_edit_task)
       |> Steps.delete_task()
-      |> MilestoneSync.sync_after_task_delete()
       |> Steps.save_activity(:task_deleting, &build_activity_content/1)
       |> Steps.commit()
       |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn changes ->
         %{
           success: true,
-          updated_milestone: OperatelyWeb.Api.Serializer.serialize(changes.updated_milestone)
+          updated_milestone: OperatelyWeb.Api.Serializer.serialize(changes[:updated_milestone])
         }
       end)
     end
@@ -780,6 +743,12 @@ defmodule OperatelyWeb.Api.Tasks do
           # No change needed, return the existing task
           {:ok, task}
         end
+      end)
+    end
+
+    def update_milestone_and_ordering(multi, new_milestone_id, ordering_states) do
+      Ecto.Multi.merge(multi, fn %{me: me, project: project, task: task} ->
+        Operately.Operations.MilestoneOrderingStateUpdating.run(me, project, task, new_milestone_id, ordering_states)
       end)
     end
 
