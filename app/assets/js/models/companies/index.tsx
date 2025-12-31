@@ -19,6 +19,7 @@ export {
   useRemoveCompanyOwner,
   useRemoveCompanyTrustedEmailDomain,
   useRestoreCompanyMember,
+  useDeleteCompany,
 } from "@/api";
 
 // Individual invitations

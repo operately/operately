@@ -10,6 +10,7 @@ import { CompanyAdmins, CompanyOwners } from "./CompanyAdmins";
 import { useLoadedData } from "./loader";
 import { NavigationBackToLobby } from "./NavigationBackToLobby";
 import { OptionsMenuItem } from "./OptionsMenu";
+import { DangerZone } from "./DangerZone";
 
 import { usePaths } from "@/routes/paths";
 import { hasFeature } from "../../models/companies";
@@ -43,6 +44,7 @@ export function Page() {
 
           <AdminsMenu />
           <OwnersMenu />
+          <DangerZone />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
