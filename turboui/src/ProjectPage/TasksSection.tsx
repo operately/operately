@@ -4,6 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { KanbanBoard, TaskBoard, TasksMenu, TaskDisplayMenu } from "../TaskBoard";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import { Menu, MenuActionItem } from "../Menu";
+import { IconFlag } from "../icons";
 import { useStateWithLocalStorage } from "../utils/useStateWithLocalStorage";
 import { compareIds } from "../utils/ids";
 
@@ -130,7 +131,6 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
         onSaveCustomStatuses={state.onSaveCustomStatuses}
         displayMode={taskDisplayMode}
         onDisplayModeChange={handleDisplayModeChange}
-        kanbanEnabled={state.kanbanEnabled}
       />
     </div>
   );
@@ -150,8 +150,9 @@ function MilestoneFilter({
       customTrigger={
         <button
           type="button"
-          className="text-sm font-medium text-content-dimmed hover:text-content-base transition px-2 py-1 -mx-2 rounded-md hover:bg-surface-dimmed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-surface-outline"
+          className="flex items-center gap-1.5 text-sm font-medium text-content-dimmed hover:text-content-base transition px-2 py-1 -mx-2 rounded-md hover:bg-surface-dimmed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-surface-outline"
         >
+          <IconFlag size={18} className="flex-shrink-0 text-accent-1" />
           {selectedMilestone?.name ?? "All milestones"}
         </button>
       }
