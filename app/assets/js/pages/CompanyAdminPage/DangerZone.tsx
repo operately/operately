@@ -88,6 +88,7 @@ function DeleteOrganizationModal({
           </label>
           <input
             type="text"
+            data-test-id="confirm-delete-input"
             className="w-full px-3 py-2 border border-stroke-base rounded focus:outline-none bg-surface-base text-content-accent"
             value={confirmName}
             onChange={(e) => setConfirmName(e.target.value)}
@@ -96,7 +97,12 @@ function DeleteOrganizationModal({
         </div>
 
         <div className="pt-4 flex justify-start gap-2">
-          <DangerButton onClick={handleConfirm} disabled={confirmName !== companyName || loading} loading={loading}>
+          <DangerButton
+            onClick={handleConfirm}
+            disabled={confirmName !== companyName || loading}
+            loading={loading}
+            testId="confirm-delete-button"
+          >
             {loading ? "Deleting..." : "Delete Organization"}
           </DangerButton>
           <SecondaryButton onClick={onClose}>Cancel</SecondaryButton>

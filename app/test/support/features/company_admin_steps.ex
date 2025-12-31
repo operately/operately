@@ -410,4 +410,68 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
 
     ctx
   end
+
+  step :add_second_company_with_resources, ctx do
+    ctx
+    |> UI.visit("/")
+    |> UI.click(testid: "add-company-card")
+    |> UI.fill(testid: "companyname", with: "Company B")
+    |> UI.fill(testid: "title", with: "Founder")
+    |> UI.click(testid: "submit")
+    |> UI.sleep(250)
+    |> UI.click_button("Let's get started")
+    |> UI.click_text("Marketing")
+    |> UI.click_button("Next ->")
+    |> UI.click_button("Finish Setup")
+    |> UI.sleep(250)
+    |> UI.click(testid: "new-dropdown")
+    |> UI.click(testid: "new-dropdown-new-goal")
+    |> UI.fill(testid: "goal-name-input", with: "New Goal")
+    |> UI.click(testid: "space-field")
+    |> UI.click(testid: "space-field-search-result-marketing")
+    |> UI.click_button("Add Goal")
+  end
+
+  step :click_delete_organization, ctx do
+    ctx |> UI.click(testid: "delete-this-organization")
+  end
+
+  step :confirm_delete_organization, ctx do
+    ctx
+    |> UI.fill(testid: "confirm-delete-input", with: ctx.company.name)
+    |> UI.click(testid: "confirm-delete-button")
+  end
+
+  step :assert_redirected_to_lobby, ctx do
+    ctx |> UI.assert_page("/")
+  end
+
+  step :assert_company_is_deleted, ctx do
+    assert {:error, :not_found} = Operately.Companies.Company.get(:system, id: ctx.company.id)
+
+    ctx
+    |> UI.assert_text("Company B")
+    |> UI.refute_text(ctx.company.name)
+  end
+
+  step :assert_other_company_is_intact, ctx do
+    company = Operately.Companies.list_companies() |> hd()
+    goal = Operately.Goals.list_goals() |> hd()
+
+    ctx
+    |> UI.click_text("Company B")
+    |> UI.find(UI.query(testid: "your-operately-spaces-section"), fn el ->
+      UI.click_text(el, "Marketing")
+    end)
+    |> UI.click_text("Goals & Projects")
+    |> UI.click_text("New Goal")
+    |> UI.assert_page(Paths.goal_path(company, goal))
+  end
+
+  step :assert_delete_organization_not_visible, ctx do
+    ctx
+    |> UI.assert_has(testid: "as-an-admin-or-owner-you-can--section")
+    |> UI.refute_has(testid: "danger-zone--section")
+    |> UI.refute_has(testid: "delete-this-organization")
+  end
 end

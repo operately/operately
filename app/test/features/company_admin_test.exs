@@ -152,4 +152,23 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.assert_company_name_is_changed_in_navbar()
     |> Steps.assert_company_feed_shows_the_company_name_change()
   end
+
+  @tag role: :owner
+  feature "Delete organization", ctx do
+    ctx
+    |> Steps.add_second_company_with_resources()
+    |> Steps.when_i_open_the_company_admin_page()
+    |> Steps.click_delete_organization()
+    |> Steps.confirm_delete_organization()
+    |> Steps.assert_redirected_to_lobby()
+    |> Steps.assert_company_is_deleted()
+    |> Steps.assert_other_company_is_intact()
+  end
+
+  @tag role: :admin
+  feature "Admin cannot see delete organization option", ctx do
+    ctx
+    |> Steps.when_i_open_the_company_admin_page()
+    |> Steps.assert_delete_organization_not_visible()
+  end
 end
