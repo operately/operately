@@ -14,7 +14,7 @@ defmodule OperatelyWeb.Api.Mutations.RestoreCompanyMember do
   def call(conn, inputs) do
     with(
       {:ok, me} <- find_me(conn),
-      {:ok, company} <- find_company(conn),
+      {:ok, company} <- get_company(conn),
       {:ok, person} <- find_person(conn, inputs.person_id),
       {:ok, :allowed} <- authorize(company, person),
       {:ok, _} <- execute(me, person)
@@ -35,7 +35,7 @@ defmodule OperatelyWeb.Api.Mutations.RestoreCompanyMember do
     end
   end
 
-  defp find_company(conn) do
+  defp get_company(conn) do
     Company.get(me(conn), id: me(conn).company_id)
   end
 

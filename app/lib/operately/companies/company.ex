@@ -134,6 +134,17 @@ defmodule Operately.Companies.Company do
     Map.put(company, :owners, people)
   end
 
+  def is_owner?(company = %__MODULE__{}, person) do
+    query = from m in Operately.Access.GroupMembership,
+      join: g in assoc(m, :group),
+      join: b in assoc(g, :bindings),
+      join: ctx in assoc(b, :context),
+      where: m.person_id == ^person.id and ctx.company_id == ^company.id and b.access_level == ^Operately.Access.Binding.full_access(),
+      select: count(m.id)
+
+    Operately.Repo.one(query) > 0
+  end
+
   def load_permissions(company) do
     permissions = Operately.Companies.Permissions.calculate(company.request_info.access_level)
     Map.put(company, :permissions, permissions)

@@ -103,6 +103,7 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
 
         cond do
           days < 0 -> [text(" "), text(duration), text(" "), bg_red("overdue.")]
+          days == 0 -> [text(" "), text("due today.")]
           days > 0 -> [text(" "), text(duration), text(" "), text("until the deadline.")]
         end
       end
