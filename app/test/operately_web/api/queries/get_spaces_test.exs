@@ -82,23 +82,44 @@ defmodule OperatelyWeb.Api.Queries.GetSpacesTest do
   end
 
   describe "get_spaces functionality" do
-    setup :register_and_log_in_account
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.log_in_person(:creator)
+    end
 
     test "get_spaces", ctx do
-      s1 = group_fixture(ctx.person, company_id: ctx.company.id, name: "Space 1")
-      s2 = group_fixture(ctx.person, company_id: ctx.company.id, name: "Space 2")
+      ctx =
+        ctx
+        |> Factory.add_space(:space1, name: "Space 1")
+        |> Factory.add_space(:space2, name: "Space 2")
 
       assert {200, res} = query(ctx.conn, :get_spaces, %{})
 
       company_space = Operately.Groups.get_group!(ctx.company.company_space_id)
 
-      [s1, s2, company_space]
+      [ctx.space1, ctx.space2, company_space]
       |> Enum.map(fn s -> Operately.Repo.preload(s, :company) end)
       |> Enum.sort_by(& &1.name)
       |> Enum.with_index()
       |> Enum.each(fn {space, i} ->
         assert Enum.at(res.spaces, i).id == Paths.space_id(space)
       end)
+    end
+
+    test "only returns human members", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space(:space)
+        |> Factory.add_space_member(:human, :space, person_type: :human)
+        |> Factory.add_space_member(:ai, :space, person_type: :ai)
+
+      assert {200, res} = query(ctx.conn, :get_spaces, %{include_members: true})
+
+      assert space_res = Enum.find(res.spaces, &(&1.id == Paths.space_id(ctx.space)))
+      assert length(space_res.members) == 2 # 1 creator (ctx.person) + 1 added human
+      assert Enum.find(space_res.members, &(&1.id == Paths.person_id(ctx.human)))
+      refute Enum.find(space_res.members, &(&1.id == Paths.person_id(ctx.ai)))
     end
   end
 
