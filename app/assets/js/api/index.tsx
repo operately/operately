@@ -1067,10 +1067,10 @@ export interface CommentThread {
 }
 
 export interface Company {
-  id?: string | null;
-  name?: string | null;
+  id: string;
+  name: string;
   mission?: string | null;
-  setupCompleted?: boolean | null;
+  setupCompleted: boolean;
   trustedEmailDomains?: string[] | null;
   enabledExperimentalFeatures?: string[] | null;
   companySpaceId?: string | null;
@@ -3400,6 +3400,12 @@ export interface DeleteCommentResult {
   comment: Comment;
 }
 
+export interface DeleteCompanyInput {}
+
+export interface DeleteCompanyResult {
+  success: boolean;
+}
+
 export interface DeleteGoalInput {
   goalId?: Id | null;
 }
@@ -4776,6 +4782,10 @@ class ApiNamespaceRoot {
     return this.client.post("/delete_comment", input);
   }
 
+  async deleteCompany(input: DeleteCompanyInput): Promise<DeleteCompanyResult> {
+    return this.client.post("/delete_company", input);
+  }
+
   async deleteGoal(input: DeleteGoalInput): Promise<DeleteGoalResult> {
     return this.client.post("/delete_goal", input);
   }
@@ -5804,6 +5814,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.deleteComment(input);
   }
 
+  deleteCompany(input: DeleteCompanyInput): Promise<DeleteCompanyResult> {
+    return this.apiNamespaceRoot.deleteCompany(input);
+  }
+
   deleteGoal(input: DeleteGoalInput): Promise<DeleteGoalResult> {
     return this.apiNamespaceRoot.deleteGoal(input);
   }
@@ -6310,6 +6324,9 @@ export async function createSpace(input: CreateSpaceInput): Promise<CreateSpaceR
 }
 export async function deleteComment(input: DeleteCommentInput): Promise<DeleteCommentResult> {
   return defaultApiClient.deleteComment(input);
+}
+export async function deleteCompany(input: DeleteCompanyInput): Promise<DeleteCompanyResult> {
+  return defaultApiClient.deleteCompany(input);
 }
 export async function deleteGoal(input: DeleteGoalInput): Promise<DeleteGoalResult> {
   return defaultApiClient.deleteGoal(input);
@@ -6954,6 +6971,10 @@ export function useDeleteComment(): UseMutationHookResult<DeleteCommentInput, De
   return useMutation<DeleteCommentInput, DeleteCommentResult>((input) => defaultApiClient.deleteComment(input));
 }
 
+export function useDeleteCompany(): UseMutationHookResult<DeleteCompanyInput, DeleteCompanyResult> {
+  return useMutation<DeleteCompanyInput, DeleteCompanyResult>((input) => defaultApiClient.deleteCompany(input));
+}
+
 export function useDeleteGoal(): UseMutationHookResult<DeleteGoalInput, DeleteGoalResult> {
   return useMutation<DeleteGoalInput, DeleteGoalResult>((input) => defaultApiClient.deleteGoal(input));
 }
@@ -7513,6 +7534,8 @@ export default {
   useCreateSpace,
   deleteComment,
   useDeleteComment,
+  deleteCompany,
+  useDeleteCompany,
   deleteGoal,
   useDeleteGoal,
   deleteResourceHubDocument,

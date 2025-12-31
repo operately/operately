@@ -18,7 +18,7 @@ defmodule OperatelyWeb.Api.Mutations.CompleteCompanySetup do
   def call(conn, inputs) do
     with(
       {:ok, me} <- find_me(conn),
-      {:ok, company} <- find_company(me),
+      {:ok, company} <- get_company(me),
       {:ok, :allowed} <- authorize(company),
       :ok <- ensure_not_completed(company),
       :ok <- validate_spaces(inputs.spaces),
@@ -52,7 +52,7 @@ defmodule OperatelyWeb.Api.Mutations.CompleteCompanySetup do
     end
   end
 
-  def find_company(me) do
+  def get_company(me) do
     Company.get(me, id: me.company_id)
   end
 
