@@ -3,7 +3,7 @@ import classNames from "classnames";
 import * as React from "react";
 import { BlackLink } from "turboui";
 
-export interface OptionsMenuItemProps {
+interface Props {
   icon: any;
   title: string;
   linkTo?: string;
@@ -12,7 +12,7 @@ export interface OptionsMenuItemProps {
   description?: string;
 }
 
-export function OptionsMenuItem({ icon, title, linkTo, onClick, danger, description }: OptionsMenuItemProps) {
+export function OptionsMenuItem({ icon, title, linkTo, onClick, danger, description }: Props) {
   const testId = createTestId(title);
 
   const className = classNames(
