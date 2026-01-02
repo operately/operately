@@ -6,32 +6,33 @@ import { Link } from "../Link";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import classNames from "../utils/classnames";
 import { createTestId } from "../TestableElement";
-import { useDraggable } from "../utils/DragAndDrop";
+import { useSortableItem } from "../utils/PragmaticDragAndDrop";
 
 interface MilestoneItemProps {
   milestone: TaskBoardTypes.Milestone;
+  index: number;
   canEdit: boolean;
   onUpdate?: (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => void;
   isLast?: boolean;
   isDraggable?: boolean;
-  itemStyle?: (id: string) => React.CSSProperties;
 }
 
 export function MilestoneItem({
   milestone,
+  index,
   canEdit,
   onUpdate,
   isLast = false,
   isDraggable = false,
-  itemStyle,
 }: MilestoneItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(milestone.name);
   const [editDueDate, setEditDueDate] = useState<DateField.ContextualDate | null>(milestone.dueDate || null);
 
-  const { ref: draggableRef, isDragging } = useDraggable({
-    id: milestone.id,
-    zoneId: "milestone-list",
+  const { ref: draggableRef, isDragging } = useSortableItem<HTMLDivElement>({
+    itemId: milestone.id,
+    index,
+    containerId: "milestone-list",
     disabled: !isDraggable,
   });
 
@@ -114,7 +115,6 @@ export function MilestoneItem({
   return (
     <div
       ref={draggableRef}
-      style={itemStyle?.(milestone.id)}
       className={classNames(
         "relative",
         "flex items-start gap-3 group",
