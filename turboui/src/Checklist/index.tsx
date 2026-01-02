@@ -1,7 +1,14 @@
 import React from "react";
+import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 
 import { PrimaryButton, SecondaryButton } from "../Button";
-import { useSortableList, useSortableItem, DropIndicator, DragHandle } from "../utils/PragmaticDragAndDrop";
+import {
+  DragHandle,
+  SubtleDropPlaceholder,
+  projectItemsWithPlaceholder,
+  useBoardDnD,
+  useSortableItem,
+} from "../utils/PragmaticDragAndDrop";
 
 import { useForm } from "react-hook-form";
 import classNames from "../utils/classnames";
@@ -169,34 +176,88 @@ function ChecklistInternal(props: Checklist.InternalProps) {
 }
 
 function ChecklistItemList({ state }: { state: State }) {
+  const containerId = React.useId();
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
   const sorted = React.useMemo(() => {
     return [...state.items].sort((a, b) => a.index - b.index);
   }, [state.items]);
 
-  useSortableList(sorted, (itemId, newIndex) => {
+  const { draggedItemId, destination, draggedItemDimensions } = useBoardDnD(({ itemId, destination }) => {
     if (state.togglable && !state.disabled) {
-      state.reorder(itemId, newIndex);
+      state.reorder(itemId, destination.index);
     }
   });
 
+  const { items: projectedItems, placeholderIndex } = React.useMemo(
+    () =>
+      projectItemsWithPlaceholder({
+        items: sorted,
+        getId: (item) => item.id,
+        draggedItemId,
+        targetLocation: destination,
+        containerId,
+      }),
+    [containerId, destination, draggedItemId, sorted],
+  );
+
+  const itemsWithIndex = React.useMemo(() => {
+    return projectedItems.map((item, index) => ({ ...item, index }));
+  }, [projectedItems]);
+
+  React.useEffect(() => {
+    const element = containerRef.current;
+    if (!element) return;
+
+    return dropTargetForElements({
+      element,
+      getData: () => ({
+        containerId,
+        index: itemsWithIndex.length,
+      }),
+    });
+  }, [containerId, itemsWithIndex.length]);
+
+  const placeholderHeight = draggedItemDimensions?.height ?? null;
+
   return (
-    <div className="space-y-0">
-      {sorted.map((item, index) => (
-        <div key={item.id}>
-          {index === 0 && <div className="h-2" />}
-          <ChecklistItemCard state={state} item={item} />
-          <div className="h-2" />
-        </div>
+    <div ref={containerRef} className="space-y-0">
+      {itemsWithIndex.map((item, index) => (
+        <React.Fragment key={item.id}>
+          {placeholderIndex === index && (
+            <SubtleDropPlaceholder containerId={containerId} index={index} height={placeholderHeight} />
+          )}
+          <div>
+            {index === 0 && <div className="h-2" />}
+            <ChecklistItemCard state={state} item={item} containerId={containerId} />
+            <div className="h-2" />
+          </div>
+        </React.Fragment>
       ))}
+      {placeholderIndex !== null && placeholderIndex === itemsWithIndex.length && (
+        <SubtleDropPlaceholder
+          containerId={containerId}
+          index={itemsWithIndex.length}
+          height={placeholderHeight}
+        />
+      )}
 
       {state.addActive && <ChecklistItemAdd state={state} />}
     </div>
   );
 }
 
-function ChecklistItemCard({ state, item }: { state: State; item: ChecklistItemState }) {
+function ChecklistItemCard({
+  state,
+  item,
+  containerId,
+}: {
+  state: State;
+  item: ChecklistItemState;
+  containerId: string;
+}) {
   if (item.mode === "view") {
-    return <ChecklistItemView state={state} item={item} />;
+    return <ChecklistItemView state={state} item={item} containerId={containerId} />;
   }
 
   if (item.mode === "edit") {
@@ -334,12 +395,21 @@ function InlineModal({ index, children }: { index: number; children: React.React
   );
 }
 
-function ChecklistItemView({ state, item }: { state: State; item: ChecklistItemState }) {
+function ChecklistItemView({
+  state,
+  item,
+  containerId,
+}: {
+  state: State;
+  item: ChecklistItemState;
+  containerId: string;
+}) {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
-  const { ref, dragHandleRef, isDragging, closestEdge } = useSortableItem({
+  const { ref, dragHandleRef, isDragging } = useSortableItem({
     itemId: item.id,
     index: item.index,
+    containerId,
     disabled: !state.togglable || state.disabled,
   });
 
@@ -360,7 +430,6 @@ function ChecklistItemView({ state, item }: { state: State; item: ChecklistItemS
       ref={ref as React.RefObject<HTMLDivElement>}
       data-test-id={createTestId("checklist-item", item.name)}
     >
-      {closestEdge && <DropIndicator edge={closestEdge} />}
       <div ref={dragHandleRef as React.RefObject<HTMLDivElement>}>
         <DragHandle isDragging={isDragging} disabled={!state.togglable || state.disabled} className="absolute -left-5 mt-0.5" />
       </div>

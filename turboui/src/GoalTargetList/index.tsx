@@ -1,10 +1,17 @@
 import React from "react";
+import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 
 import { PieChart } from "../PieChart";
 import { ExpandIcon } from "./ExpandIcon";
 
 import { DangerButton, PrimaryButton, SecondaryButton } from "../Button";
-import { useSortableList, useSortableItem, DropIndicator, DragHandle } from "../utils/PragmaticDragAndDrop";
+import {
+  DragHandle,
+  SubtleDropPlaceholder,
+  projectItemsWithPlaceholder,
+  useBoardDnD,
+  useSortableItem,
+} from "../utils/PragmaticDragAndDrop";
 
 import { useForm } from "react-hook-form";
 import classNames from "../utils/classnames";
@@ -78,23 +85,77 @@ export function GoalTargetList(props: GoalTargetList.Props) {
 }
 
 function TargetList({ state }: { state: State }) {
+  const containerId = React.useId();
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
   const sorted = React.useMemo(() => {
     return [...state.targets].sort((a, b) => a.index - b.index);
   }, [state.targets]);
 
-  useSortableList(sorted, (itemId, newIndex) => {
-    state.reorder(itemId, newIndex);
+  const { draggedItemId, destination, draggedItemDimensions } = useBoardDnD(({ itemId, destination }) => {
+    state.reorder(itemId, destination.index);
   });
+
+  const { items: projectedTargets, placeholderIndex } = React.useMemo(
+    () =>
+      projectItemsWithPlaceholder({
+        items: sorted,
+        getId: (target) => target.id,
+        draggedItemId,
+        targetLocation: destination,
+        containerId,
+      }),
+    [containerId, destination, draggedItemId, sorted],
+  );
+
+  const targetsWithIndex = React.useMemo(() => {
+    return projectedTargets.map((target, index) => ({ ...target, index }));
+  }, [projectedTargets]);
+
+  React.useEffect(() => {
+    const element = containerRef.current;
+    if (!element) return;
+
+    return dropTargetForElements({
+      element,
+      getData: () => ({
+        containerId,
+        index: targetsWithIndex.length,
+      }),
+    });
+  }, [containerId, targetsWithIndex.length]);
+
+  const placeholderHeight = draggedItemDimensions?.height ?? null;
 
   return (
     <div>
       {state.targets.length > 0 && <TargetListHeader />}
 
-      {sorted.map((target) => (
-        <TargetCard key={target.id} state={state} target={target} />
-      ))}
+      <div ref={containerRef}>
+        {targetsWithIndex.map((target, index) => (
+          <React.Fragment key={target.id}>
+            {placeholderIndex === index && (
+              <SubtleDropPlaceholder
+                containerId={containerId}
+                index={index}
+                height={placeholderHeight}
+                className="w-[calc(100% + 16px)] -ml-[16px]"
+              />
+            )}
+            <TargetCard state={state} target={target} containerId={containerId} />
+          </React.Fragment>
+        ))}
+        {placeholderIndex !== null && placeholderIndex === targetsWithIndex.length && (
+          <SubtleDropPlaceholder
+            containerId={containerId}
+            index={targetsWithIndex.length}
+            height={placeholderHeight}
+            className="w-[calc(100% + 16px)] -ml-[16px]"
+          />
+        )}
 
-      {state.addActive && <TargetAdd state={state} />}
+        {state.addActive && <TargetAdd state={state} />}
+      </div>
     </div>
   );
 }
@@ -113,9 +174,9 @@ function TargetListHeader() {
   );
 }
 
-function TargetCard({ state, target }: { state: State; target: TargetState }) {
+function TargetCard({ state, target, containerId }: { state: State; target: TargetState; containerId: string }) {
   if (target.mode === "view") {
-    return <TargetView state={state} target={target} />;
+    return <TargetView state={state} target={target} containerId={containerId} />;
   }
 
   if (target.mode === "update") {
@@ -368,10 +429,11 @@ function InlineModal({ index, children }: { index: number; children: React.React
   );
 }
 
-function TargetView({ state, target }: { state: State; target: TargetState }) {
-  const { ref, dragHandleRef, isDragging, closestEdge } = useSortableItem({
+function TargetView({ state, target, containerId }: { state: State; target: TargetState; containerId: string }) {
+  const { ref, dragHandleRef, isDragging } = useSortableItem({
     itemId: target.id!,
     index: target.index,
+    containerId,
   });
 
   const toggleExpand = (e: React.MouseEvent) => {
@@ -398,7 +460,6 @@ function TargetView({ state, target }: { state: State; target: TargetState }) {
       ref={ref as React.RefObject<HTMLDivElement>}
       data-test-id={createTestId("target", target.name)}
     >
-      {closestEdge && <DropIndicator edge={closestEdge} />}
       <div ref={dragHandleRef as React.RefObject<HTMLDivElement>}>
         <DragHandle isDragging={isDragging} className="mr-1 mt-[14px]" />
       </div>
