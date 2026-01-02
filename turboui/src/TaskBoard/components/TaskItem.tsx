@@ -46,7 +46,11 @@ export function TaskItem({
     disabled: draggingDisabled,
   });
 
-  const itemClasses = classNames(isDragging ? "bg-surface-accent" : "");
+  const itemClasses = classNames(isDragging ? "bg-surface-accent" : "", {
+    "cursor-grab": !draggingDisabled && !isDragging,
+    "cursor-grabbing": !draggingDisabled && isDragging,
+    "cursor-default": draggingDisabled,
+  });
 
   const handleAssigneeChange = useCallback(
     (newAssignee: Person | null) => {
@@ -95,7 +99,7 @@ export function TaskItem({
         <div className="flex-1 flex items-center gap-2 min-w-0">
           <div className="flex items-center gap-1.5 flex-1 min-w-0">
             {/* Status icon */}
-            <div className="flex-shrink-0 flex items-center h-6" onMouseDown={stopDragFromInteractive}>
+            <div className="flex-shrink-0 flex items-center h-6 cursor-pointer" onMouseDown={stopDragFromInteractive}>
               {currentStatus && (
                 <StatusSelector
                   statusOptions={statusOptions}
@@ -109,7 +113,7 @@ export function TaskItem({
 
             {/* Task title with inline meta indicators */}
             <div className="flex items-center gap-1.5 flex-1 min-w-0">
-              <div className="flex-1 min-w-0" onMouseDown={stopDragFromInteractive}>
+              <div className="flex-1 min-w-0 cursor-pointer" onMouseDown={stopDragFromInteractive}>
                 <BlackLink
                   to={task.link}
                   className="flex-1 min-w-0 max-w-full text-sm font-medium hover:text-link-hover transition-colors"
@@ -147,7 +151,7 @@ export function TaskItem({
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 ml-3 sm:ml-4">
-          <div className="sm:hidden flex items-center" onMouseDown={stopDragFromInteractive}>
+          <div className="sm:hidden flex items-center cursor-pointer" onMouseDown={stopDragFromInteractive}>
             <DateField
               date={currentDueDate}
               onDateSelect={handleDueDateChange}
@@ -168,7 +172,7 @@ export function TaskItem({
             />
           </div>
 
-          <div className="hidden sm:flex" onMouseDown={stopDragFromInteractive}>
+          <div className="hidden sm:flex cursor-pointer" onMouseDown={stopDragFromInteractive}>
             <DateField
               date={currentDueDate}
               onDateSelect={handleDueDateChange}
@@ -189,7 +193,7 @@ export function TaskItem({
             />
           </div>
 
-          <div className="flex items-center flex-shrink-0 w-6 h-6" onMouseDown={stopDragFromInteractive}>
+          <div className="flex items-center flex-shrink-0 w-6 h-6 cursor-pointer" onMouseDown={stopDragFromInteractive}>
             {assigneePersonSearch ? (
               <PersonField
                 person={currentAssignee}
