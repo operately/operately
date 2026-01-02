@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { GhostButton, PrimaryButton, SecondaryButton } from "../Button";
 import { DateField } from "../DateField";
 import { PieChart } from "../PieChart";
@@ -11,8 +11,10 @@ import { MilestoneItem } from "./MilestoneItem";
 import { OverviewSidebar } from "./OverviewSidebar";
 import { ProjectPage } from "./index";
 import { PageDescription } from "../PageDescription";
-import { DragAndDropProvider, useDropZone, useDraggingAnimation } from "../utils/DragAndDrop";
+import { projectItemsWithPlaceholder, SubtleDropPlaceholder, useBoardDnD } from "../utils/PragmaticDragAndDrop";
+import type { BoardMove } from "../utils/PragmaticDragAndDrop";
 import classNames from "../utils/classnames";
+import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 
 export function Overview(props: ProjectPage.State) {
   return (
@@ -186,60 +188,76 @@ interface MilestoneListProps {
 }
 
 function MilestoneList({ milestones, canEdit, onMilestoneUpdate, onMilestoneReorder }: MilestoneListProps) {
-  const handleDrop = React.useCallback(
-    (_dropZoneId: string, draggedId: string, indexInDropZone: number) => {
-      if (onMilestoneReorder) {
-        onMilestoneReorder(draggedId, indexInDropZone);
-        return true;
-      }
-      return false;
-    },
-    [onMilestoneReorder],
-  );
-
   const isDraggingEnabled = !!(onMilestoneReorder && canEdit);
-
-  return (
-    <DragAndDropProvider onDrop={handleDrop}>
-      <MilestoneListInner
-        milestones={milestones}
-        canEdit={canEdit}
-        onMilestoneUpdate={onMilestoneUpdate}
-        isDraggingEnabled={isDraggingEnabled}
-      />
-    </DragAndDropProvider>
+  const containerId = "milestone-list";
+  const listRef = useRef<HTMLDivElement>(null);
+  const handleMilestoneMove = React.useCallback(
+    (move: BoardMove) => {
+      if (!isDraggingEnabled) return;
+      onMilestoneReorder?.(move.itemId, move.destination.index);
+    },
+    [isDraggingEnabled, onMilestoneReorder],
   );
-}
 
-interface MilestoneListInnerProps {
-  milestones: TaskBoardTypes.Milestone[];
-  canEdit: boolean;
-  onMilestoneUpdate?: (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => void;
-  isDraggingEnabled: boolean;
-}
+  const { draggedItemId, destination, draggedItemDimensions } = useBoardDnD(handleMilestoneMove);
+  const activeDraggedItemId = isDraggingEnabled ? draggedItemId : null;
+  const activeDestination = isDraggingEnabled ? destination : null;
 
-function MilestoneListInner({ milestones, canEdit, onMilestoneUpdate, isDraggingEnabled }: MilestoneListInnerProps) {
-  // Add indices to milestones for proper drop zone calculations
-  const milestonesWithIndex = React.useMemo(() => milestones.map((m, index) => ({ ...m, index })), [milestones]);
+  const { items: projectedMilestones, placeholderIndex } = React.useMemo(
+    () =>
+      projectItemsWithPlaceholder({
+        items: milestones,
+        getId: (milestone) => milestone.id,
+        draggedItemId: activeDraggedItemId,
+        targetLocation: activeDestination,
+        containerId,
+      }),
+    [activeDestination, activeDraggedItemId, containerId, milestones],
+  );
 
-  const { ref: dropZoneRef } = useDropZone({ id: "milestone-list", dependencies: [milestonesWithIndex] });
+  useEffect(() => {
+    if (!isDraggingEnabled) return;
 
-  // Get animation styles for smooth drag-and-drop feedback
-  const { containerStyle, itemStyle } = useDraggingAnimation("milestone-list", milestonesWithIndex);
+    const element = listRef.current;
+    if (!element) return;
+
+    return dropTargetForElements({
+      element,
+      getData: () => ({
+        containerId,
+        index: projectedMilestones.length,
+      }),
+    });
+  }, [containerId, isDraggingEnabled, projectedMilestones.length]);
 
   return (
-    <div ref={dropZoneRef} style={containerStyle} className={classNames("space-y-2", { "-ml-8": isDraggingEnabled })}>
-      {milestones.map((milestone, index) => (
-        <MilestoneItem
-          key={milestone.id}
-          milestone={milestone}
-          canEdit={canEdit}
-          onUpdate={onMilestoneUpdate}
-          isLast={index === milestones.length - 1}
-          isDraggable={isDraggingEnabled}
-          itemStyle={itemStyle}
-        />
+    <div ref={listRef} className={classNames("space-y-2", { "-ml-8": isDraggingEnabled })}>
+      {projectedMilestones.map((milestone, index) => (
+        <React.Fragment key={milestone.id}>
+          {placeholderIndex === index && (
+            <SubtleDropPlaceholder
+              containerId={containerId}
+              index={index}
+              height={draggedItemDimensions?.height ?? null}
+            />
+          )}
+          <MilestoneItem
+            milestone={milestone}
+            index={index}
+            canEdit={canEdit}
+            onUpdate={onMilestoneUpdate}
+            isLast={index === projectedMilestones.length - 1}
+            isDraggable={isDraggingEnabled}
+          />
+        </React.Fragment>
       ))}
+      {placeholderIndex !== null && placeholderIndex === projectedMilestones.length && (
+        <SubtleDropPlaceholder
+          containerId={containerId}
+          index={projectedMilestones.length}
+          height={draggedItemDimensions?.height ?? null}
+        />
+      )}
     </div>
   );
 }
