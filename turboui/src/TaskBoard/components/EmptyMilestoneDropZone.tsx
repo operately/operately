@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
-import { DropPlaceholder } from "../../utils/PragmaticDragAndDrop";
 import type { BoardLocation } from "../../utils/PragmaticDragAndDrop";
+import { TaskBoardDropPlaceholder } from "./TaskBoardDropPlaceholder";
 
 export interface EmptyMilestoneDropZoneProps {
   milestoneId: string;
@@ -44,7 +44,11 @@ export function EmptyMilestoneDropZone({
     <div ref={containerRef} className="py-3 px-4 min-h-[40px] bg-surface-base">
       {shouldShowPlaceholder && (
         <div className="mb-3">
-          <DropPlaceholder containerId={milestoneId} index={placeholderIndex} height={placeholderHeight} />
+          <TaskBoardDropPlaceholder
+            containerId={milestoneId}
+            index={placeholderIndex}
+            height={placeholderHeight}
+          />
         </div>
       )}
       {children ? (
