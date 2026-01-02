@@ -3,7 +3,7 @@ import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element
 
 import classNames from "../classnames";
 
-interface DropPlaceholderProps {
+interface Props {
   containerId: string;
   index: number;
   height?: number | null;
@@ -13,7 +13,7 @@ interface DropPlaceholderProps {
 /**
  * Placeholder block that reserves space for the dragged item.
  */
-export function DropPlaceholder({ containerId, index, height, className }: DropPlaceholderProps) {
+export function DropPlaceholder({ containerId, index, height, className }: Props) {
   const ref = React.useRef<HTMLDivElement>(null);
   const resolvedHeight = height ?? 72;
 
@@ -43,6 +43,17 @@ export function DropPlaceholder({ containerId, index, height, className }: DropP
       )}
       style={{ height: resolvedHeight }}
       aria-hidden="true"
+    />
+  );
+}
+
+export function SubtleDropPlaceholder({ containerId, index, height, className }: Props) {
+  return (
+    <DropPlaceholder
+      containerId={containerId}
+      index={index}
+      height={height}
+      className={classNames("border border-surface-outline/15 bg-surface-highlight/25 shadow-none ring-0", className)}
     />
   );
 }

@@ -1,9 +1,8 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
-import { projectItemsWithPlaceholder } from "../../utils/PragmaticDragAndDrop";
+import { projectItemsWithPlaceholder, SubtleDropPlaceholder } from "../../utils/PragmaticDragAndDrop";
 import type { BoardLocation } from "../../utils/PragmaticDragAndDrop";
 import { TaskItem } from "./TaskItem";
-import { TaskBoardDropPlaceholder } from "./TaskBoardDropPlaceholder";
 import { IconChevronDown, IconChevronRight } from "../../icons";
 import { PersonField } from "../../PersonField";
 import * as Types from "../types";
@@ -124,7 +123,7 @@ export function TaskList({
             <React.Fragment key={task.id}>
               {placeholderIndex === index && (
                 <li>
-                  <TaskBoardDropPlaceholder
+                  <SubtleDropPlaceholder
                     containerId={milestoneId}
                     index={index}
                     height={placeholderHeight}
@@ -145,7 +144,7 @@ export function TaskList({
           ))}
           {placeholderIndex !== null && placeholderIndex === visibleTasksWithIndex.length && (
             <li>
-              <TaskBoardDropPlaceholder
+              <SubtleDropPlaceholder
                 containerId={milestoneId}
                 index={visibleTasksWithIndex.length}
                 height={placeholderHeight}

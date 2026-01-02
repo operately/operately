@@ -15,8 +15,8 @@ interface UseSortableItemProps {
   allowedEdges?: Edge[];
 }
 
-interface UseSortableItemReturn {
-  ref: React.RefObject<HTMLElement>;
+interface UseSortableItemReturn<TElement extends HTMLElement> {
+  ref: React.RefObject<TElement>;
   dragHandleRef: React.RefObject<HTMLElement>;
   isDragging: boolean;
   closestEdge: Edge | null;
@@ -46,15 +46,15 @@ interface UseSortableItemReturn {
  *   </div>
  * );
  */
-export function useSortableItem({
+export function useSortableItem<TElement extends HTMLElement = HTMLElement>({
   itemId,
   index,
   containerId,
   disabled = false,
   scope,
   allowedEdges = ["top", "bottom"],
-}: UseSortableItemProps): UseSortableItemReturn {
-  const ref = useRef<HTMLElement>(null);
+}: UseSortableItemProps): UseSortableItemReturn<TElement> {
+  const ref = useRef<TElement>(null);
   const dragHandleRef = useRef<HTMLElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [closestEdge, setClosestEdge] = useState<Edge | null>(null);
