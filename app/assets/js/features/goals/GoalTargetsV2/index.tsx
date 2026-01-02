@@ -1,6 +1,5 @@
 import React from "react";
 
-import { DragAndDropProvider, useDraggingAnimation, useDropZone } from "@/features/DragAndDrop";
 import { AddTargetButton } from "./AddTargetButton";
 import { DefaultTargetCard } from "./DefaultTargetCard";
 import { EditTargetCard } from "./EditTargetCard";
@@ -23,33 +22,22 @@ export function GoalTargetsField(props: Props) {
       key={String(props.readonly)}
       field={props.field}
     >
-      <DragAndDropWrapper>
-        <Targets {...props} />
-      </DragAndDropWrapper>
+      <Targets {...props} />
 
       <AddTargetButton display={Boolean(!props.readonly && props.editDefinition)} />
     </TargetsContextProvider>
   );
 }
 
-function DragAndDropWrapper({ children }) {
-  const { reorderTargets } = useTargetsContext();
-
-  return <DragAndDropProvider onDrop={reorderTargets}>{children}</DragAndDropProvider>;
-}
-
 function Targets(props: Props) {
   const editDefinition = Boolean(!props.readonly && props.editDefinition);
   const { targets } = useTargetsContext();
 
-  const { ref } = useDropZone({ id: "targets", dependencies: [targets] });
-  const { itemStyle } = useDraggingAnimation("targets", targets);
-
   if (editDefinition) {
     return (
-      <div ref={ref}>
+      <div>
         {targets.map((target, index) => (
-          <EditTargetCard key={target.id} target={target} index={index} style={itemStyle(target.id!)} />
+          <EditTargetCard key={target.id} target={target} index={index} />
         ))}
       </div>
     );
