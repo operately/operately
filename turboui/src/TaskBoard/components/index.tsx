@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useLayoutEffect, useMemo } from "react";
 import { PrimaryButton, SecondaryButton } from "../../Button";
-import { DragAndDropProvider } from "../../utils/DragAndDrop";
+import { useBoardDnD } from "../../utils/PragmaticDragAndDrop";
+import type { BoardMove } from "../../utils/PragmaticDragAndDrop";
 import { reorderTasks } from "../utils/taskReorderingUtils";
 import * as Types from "../types";
 import { IconPlus } from "../../icons";
@@ -107,32 +108,36 @@ export function TaskBoard({
     [internalTasks],
   );
 
-  const handleTaskReorder = useCallback(
-    (dropZoneId: string, draggedId: string, indexInDropZone: number) => {
+  const handleTaskMove = useCallback(
+    (move: BoardMove) => {
+      const dropZoneId = move.destination.containerId;
+      const indexInDropZone = move.destination.index;
+
       if (onTaskMilestoneChange) {
-        onTaskMilestoneChange(draggedId, dropZoneId, indexInDropZone);
-      } else {
-        // Get all milestone objects for the utility function
-        const allMilestones = milestones.map((m) => m.milestone);
-
-        // Use the utility function to handle reordering
-        const updatedTasks = reorderTasks(
-          internalTasks,
-          dropZoneId,
-          draggedId,
-          indexInDropZone,
-          { addHelperTasks: true },
-          allMilestones,
-        );
-
-        // Update state with the reordered tasks
-        setInternalTasks(updatedTasks);
+        onTaskMilestoneChange(move.itemId, dropZoneId, indexInDropZone);
+        return;
       }
 
-      return true; // Successfully handled the reorder
+      // Get all milestone objects for the utility function
+      const allMilestones = milestones.map((m) => m.milestone);
+
+      // Use the utility function to handle reordering
+      const updatedTasks = reorderTasks(
+        internalTasks,
+        dropZoneId,
+        move.itemId,
+        indexInDropZone,
+        { addHelperTasks: true },
+        allMilestones,
+      );
+
+      // Update state with the reordered tasks
+      setInternalTasks(updatedTasks);
     },
-    [internalTasks, milestones, setInternalTasks],
+    [internalTasks, milestones, onTaskMilestoneChange],
   );
+
+  const { draggedItemId, destination, draggedItemDimensions } = useBoardDnD(handleTaskMove);
 
   return (
     <div className="flex flex-col flex-1 w-full max-w-6xl mx-auto pb-8">
@@ -181,87 +186,91 @@ export function TaskBoard({
         data-test-id="tasks-board"
       >
         <div className="flex-1 overflow-auto">
-          <DragAndDropProvider onDrop={handleTaskReorder}>
-            <div className="overflow-x-auto">
-              <ul className="w-full list-none m-0 p-0">
-                {/* If no tasks at all */}
-                {showNoTasksMsg && (
-                  <li className="py-4 text-center text-content-subtle">
-                    No tasks yet — click 'New task' to create the first one.
-                  </li>
-                )}
+          <div className="overflow-x-auto">
+            <ul className="w-full list-none m-0 p-0">
+              {/* If no tasks at all */}
+              {showNoTasksMsg && (
+                <li className="py-4 text-center text-content-subtle">
+                  No tasks yet — click 'New task' to create the first one.
+                </li>
+              )}
 
-                {/* Milestones */}
-                {milestones.map((milestoneData) => (
-                  <MilestoneCard
-                    key={milestoneData.milestone.id}
-                    milestone={milestoneData.milestone}
-                    tasks={groupedTasks[milestoneData.milestone.id] || []}
+              {/* Milestones */}
+              {milestones.map((milestoneData) => (
+                <MilestoneCard
+                  key={milestoneData.milestone.id}
+                  milestone={milestoneData.milestone}
+                  tasks={groupedTasks[milestoneData.milestone.id] || []}
+                  showHiddenTasksToggle={showHiddenTasksToggle}
+                  showKanbanLink={showMilestoneKanbanLink}
+                  stats={milestoneData.stats}
+                  onTaskCreate={onTaskCreate}
+                  onTaskAssigneeChange={onTaskAssigneeChange}
+                  onTaskDueDateChange={onTaskDueDateChange}
+                  onTaskStatusChange={onTaskStatusChange}
+                  onMilestoneUpdate={onMilestoneUpdate}
+                  assigneePersonSearch={assigneePersonSearch}
+                  statusOptions={statuses}
+                  availableMilestones={milestones.map((m) => m.milestone)}
+                  draggedItemId={draggedItemId}
+                  targetLocation={destination}
+                  placeholderHeight={draggedItemDimensions?.height ?? null}
+                />
+              ))}
+
+              {/* Tasks with no milestone */}
+              {hasTasksWithoutMilestone && (
+                <li {...noMilestoneHoverBind}>
+                  {/* No milestone header */}
+                  <div className="flex items-center justify-between px-4 py-3 bg-surface-dimmed border-b border-surface-outline">
+                    <div className="flex items-center gap-2">
+                      {/* No progress pie chart for tasks without milestone */}
+                      <span className="text-sm font-semibold text-content-base">No milestone</span>
+                      {/* No indicators for 'No milestone' header */}
+                    </div>
+                    <SecondaryButton
+                      size="xs"
+                      icon={IconPlus}
+                      onClick={openNoMilestoneCreator}
+                      testId="no-milestone-add-task"
+                    >
+                      <span className="sr-only">Add task</span>
+                    </SecondaryButton>
+                  </div>
+
+                  {/* Tasks with no milestone */}
+                  <TaskList
+                    tasks={groupedTasks["no_milestone"] || []}
                     showHiddenTasksToggle={showHiddenTasksToggle}
-                    showKanbanLink={showMilestoneKanbanLink}
-                    stats={milestoneData.stats}
-                    onTaskCreate={onTaskCreate}
+                    milestoneId="no-milestone"
                     onTaskAssigneeChange={onTaskAssigneeChange}
                     onTaskDueDateChange={onTaskDueDateChange}
                     onTaskStatusChange={onTaskStatusChange}
-                    onMilestoneUpdate={onMilestoneUpdate}
                     assigneePersonSearch={assigneePersonSearch}
                     statusOptions={statuses}
-                    availableMilestones={milestones.map((m) => m.milestone)}
+                    draggedItemId={draggedItemId}
+                    targetLocation={destination}
+                    placeholderHeight={draggedItemDimensions?.height ?? null}
+                    inlineCreateRow={
+                      noMilestoneCreatorOpen ? (
+                        <InlineTaskCreator
+                          ref={noMilestoneCreatorRef}
+                          milestone={null}
+                          onCreate={onTaskCreate}
+                          onRequestAdvanced={() => {
+                            setActiveTaskMilestoneId("no-milestone");
+                          }}
+                          onCancel={closeNoMilestoneCreator}
+                          autoFocus
+                          testId="inline-task-creator-no-milestone"
+                        />
+                      ) : undefined
+                    }
                   />
-                ))}
-
-                {/* Tasks with no milestone */}
-                {hasTasksWithoutMilestone && (
-                  <li {...noMilestoneHoverBind}>
-                    {/* No milestone header */}
-                    <div className="flex items-center justify-between px-4 py-3 bg-surface-dimmed border-b border-surface-outline">
-                      <div className="flex items-center gap-2">
-                        {/* No progress pie chart for tasks without milestone */}
-                        <span className="text-sm font-semibold text-content-base">No milestone</span>
-                        {/* No indicators for 'No milestone' header */}
-                      </div>
-                      <SecondaryButton
-                        size="xs"
-                        icon={IconPlus}
-                        onClick={openNoMilestoneCreator}
-                        testId="no-milestone-add-task"
-                      >
-                        <span className="sr-only">Add task</span>
-                      </SecondaryButton>
-                    </div>
-
-                    {/* Tasks with no milestone */}
-                    <TaskList
-                      tasks={groupedTasks["no_milestone"] || []}
-                      showHiddenTasksToggle={showHiddenTasksToggle}
-                      milestoneId="no-milestone"
-                      onTaskAssigneeChange={onTaskAssigneeChange}
-                      onTaskDueDateChange={onTaskDueDateChange}
-                      onTaskStatusChange={onTaskStatusChange}
-                      assigneePersonSearch={assigneePersonSearch}
-                      statusOptions={statuses}
-                      inlineCreateRow={
-                        noMilestoneCreatorOpen ? (
-                          <InlineTaskCreator
-                            ref={noMilestoneCreatorRef}
-                            milestone={null}
-                            onCreate={onTaskCreate}
-                            onRequestAdvanced={() => {
-                              setActiveTaskMilestoneId("no-milestone");
-                            }}
-                            onCancel={closeNoMilestoneCreator}
-                            autoFocus
-                            testId="inline-task-creator-no-milestone"
-                          />
-                        ) : undefined
-                      }
-                    />
-                  </li>
-                )}
-              </ul>
-            </div>
-          </DragAndDropProvider>
+                </li>
+              )}
+            </ul>
+          </div>
         </div>
       </div>
     </div>
