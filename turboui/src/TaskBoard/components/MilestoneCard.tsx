@@ -16,6 +16,7 @@ import { SecondaryButton } from "../../Button";
 import { StatusSelector } from "../../StatusSelector";
 import classNames from "../../utils/classnames";
 import { createTestId } from "../../TestableElement";
+import type { BoardLocation } from "../../utils/PragmaticDragAndDrop";
 
 export interface MilestoneCardProps {
   milestone: Types.Milestone;
@@ -30,6 +31,9 @@ export interface MilestoneCardProps {
   assigneePersonSearch?: PersonField.SearchData;
   statusOptions: StatusSelector.StatusOption[];
   availableMilestones?: Types.Milestone[];
+  draggedItemId?: string | null;
+  targetLocation?: BoardLocation | null;
+  placeholderHeight?: number | null;
 
   /**
    * Milestone statistics - if not provided, will be calculated from tasks
@@ -55,6 +59,9 @@ export function MilestoneCard({
   statusOptions,
   stats,
   availableMilestones = [],
+  draggedItemId = null,
+  targetLocation = null,
+  placeholderHeight = null,
 }: MilestoneCardProps) {
   const sortedTasks = React.useMemo(() => sortTasks(tasks, milestone), [tasks, milestone.tasksOrderingState]);
 
@@ -189,6 +196,9 @@ export function MilestoneCard({
             onTaskStatusChange={onTaskStatusChange}
             assigneePersonSearch={assigneePersonSearch}
             statusOptions={statusOptions}
+            draggedItemId={draggedItemId}
+            targetLocation={targetLocation}
+            placeholderHeight={placeholderHeight}
             inlineCreateRow={
               creatorOpen ? (
                 <InlineTaskCreator
@@ -204,7 +214,12 @@ export function MilestoneCard({
             }
           />
         ) : (
-          <EmptyMilestoneDropZone milestoneId={milestone.id}>
+          <EmptyMilestoneDropZone
+            milestoneId={milestone.id}
+            draggedItemId={draggedItemId}
+            targetLocation={targetLocation}
+            placeholderHeight={placeholderHeight}
+          >
             {creatorOpen ? (
               <>
                 <InlineTaskCreator
