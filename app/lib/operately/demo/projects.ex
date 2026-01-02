@@ -1,7 +1,7 @@
 defmodule Operately.Demo.Projects do
-  alias Operately.Demo.Resources
+  alias Operately.ContextualDates.{ContextualDate, Timeframe}
+  alias Operately.Demo.{Resources, Tasks}
   alias Operately.Projects.Milestone
-  alias Operately.ContextualDates.ContextualDate
 
   def create_projects(resources, data) do
     Resources.create(resources, data, fn {resources, data, _index} ->
@@ -37,7 +37,7 @@ defmodule Operately.Demo.Projects do
     {:ok, project} = set_description(project, data[:description])
     {:ok, project} = set_project_timeline(champion, project)
 
-    {:ok, _} = create_project_milestones(champion, project, data.milestones)
+    {:ok, _} = create_project_milestones(resources, champion, project, data)
     {:ok, _} = create_project_check_in(champion, project, data.check_in)
 
     add_project_contributors(resources, project, data)
@@ -86,30 +86,83 @@ defmodule Operately.Demo.Projects do
     Date.utc_today() |> Date.add(-1) |> DateTime.new!(~T[00:00:00], "Etc/UTC")
   end
 
-  def create_project_milestones(champion, project, milestones) do
+  def create_project_milestones(resources, champion, project, data) do
+    milestones = data.milestones
+    {start_date, due_date} = project_timeframe(project)
+    milestones_with_dates = Enum.zip(milestones, build_milestone_due_dates(start_date, due_date, milestones))
+
     {:ok, _} =
       Operately.Projects.EditTimelineOperation.run(champion, project, %{
-        project_start_date: ContextualDate.create_day_date(project.started_at),
-        project_due_date: project.deadline && ContextualDate.create_day_date(project.deadline),
+        project_start_date: ContextualDate.create_day_date(start_date),
+        project_due_date: ContextualDate.create_day_date(due_date),
         milestone_updates: [],
         new_milestones:
-          Enum.map(milestones, fn m ->
+          Enum.map(milestones_with_dates, fn {milestone, milestone_due_date} ->
             %{
-              title: m.title,
-              due_date: ContextualDate.create_day_date(yesterday()),
+              title: milestone.title,
+              due_date: ContextualDate.create_day_date(milestone_due_date),
               description: Operately.Demo.RichText.from_string(""),
               tasks_kanban_state: %{}
             }
           end)
       })
 
-    Enum.each(milestones, fn m ->
-      {:ok, milestone} = Milestone.get(:system, project_id: project.id, title: m.title)
-      {:ok, _} = Milestone.set_status(milestone, m.status)
+    milestones_with_dates
+    |> Enum.each(fn {milestone_data, milestone_due_date} ->
+      {:ok, milestone} = Milestone.get(:system, project_id: project.id, title: milestone_data.title)
+      {:ok, _} = Milestone.set_status(milestone, milestone_data.status)
+      create_milestone_tasks(resources, champion, project, milestone, milestone_data, milestone_due_date)
     end)
 
     {:ok, project}
   end
+
+  defp create_milestone_tasks(resources, champion, project, milestone, milestone_data, milestone_due_date) do
+    milestone_data
+    |> Map.get(:tasks, [])
+    |> Enum.each(fn task ->
+      status = Tasks.resolve_task_status(project, task[:status])
+      assignee = Tasks.resolve_assignee(resources, task[:assignee])
+      due_date = milestone_task_due_date(milestone_due_date, task[:due_offset_days])
+      due_date = Tasks.normalize_due_date(due_date, status)
+
+      Tasks.create_task(%{
+        name: task.name,
+        description: task[:description],
+        creator_id: champion.id,
+        milestone_id: milestone.id,
+        project_id: project.id,
+        due_date: Tasks.build_due_date(due_date),
+        task_status: status,
+        status: status.value,
+        priority: task[:priority],
+        size: task[:size]
+      }, assignee && assignee.id)
+    end)
+  end
+
+  defp project_timeframe(project) do
+    start_date = Timeframe.start_date(project.timeframe) || Date.utc_today()
+    end_date = Timeframe.end_date(project.timeframe) || Date.add(start_date, 30)
+
+    {start_date, end_date}
+  end
+
+  defp build_milestone_due_dates(start_date, due_date, milestones) do
+    count = max(length(milestones), 1)
+    range_days = max(Date.diff(due_date, start_date), 1)
+    step = max(div(range_days, count), 1)
+
+    milestones
+    |> Enum.with_index()
+    |> Enum.map(fn {_milestone, index} ->
+      Date.add(start_date, step * (index + 1))
+    end)
+  end
+
+  defp milestone_task_due_date(nil, _offset_days), do: nil
+  defp milestone_task_due_date(_due_date, nil), do: nil
+  defp milestone_task_due_date(due_date, offset_days), do: Date.add(due_date, offset_days)
 
   def add_project_contributors(context, project, data) do
     champion = Resources.get(context, data.champion)
