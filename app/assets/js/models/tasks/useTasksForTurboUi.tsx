@@ -9,7 +9,7 @@ import { PageCache } from "@/routes/PageCache";
 import { serializeContextualDate } from "../contextualDates";
 
 import { DateField, showErrorToast, TaskBoard } from "turboui";
-import { buildMilestonesOrderingState } from "./milestoneOrdering";
+import { buildMilestonesOrderingState, normalizeMilestonesOrderingState } from "./milestoneOrdering";
 
 interface TasksSnapshot {
   tasks: TaskBoard.Task[];
@@ -33,6 +33,15 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
   React.useEffect(() => {
     setTasks(Tasks.parseTasksForTurboUi(paths, backendTasks, type));
   }, [backendTasks, paths]);
+
+  React.useEffect(() => {
+    if (!setMilestones) return;
+
+    const normalized = normalizeMilestonesOrderingState(milestones, tasks);
+    if (normalized !== milestones) {
+      setMilestones(normalized);
+    }
+  }, [milestones, setMilestones, tasks]);
 
   const createSnapshot = React.useCallback(
     (): TasksSnapshot => ({
@@ -335,6 +344,7 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
       }
 
       const milestonesOrderingState = buildMilestonesOrderingState(
+        tasks,
         milestones,
         taskToMove,
         normalizedMilestoneId,

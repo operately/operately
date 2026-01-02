@@ -14,6 +14,7 @@ import { FilterBadges } from "../../TaskBoard/components/TaskFilter";
 import TaskList from "../../TaskBoard/components/TaskList";
 import { InlineTaskCreator } from "../../TaskBoard/components/InlineTaskCreator";
 import { useInlineTaskCreator } from "../../TaskBoard/hooks/useInlineTaskCreator";
+import { sortTasks } from "../../TaskBoard/utils/sortTasks";
 
 export function TasksSection({
   tasks,
@@ -72,6 +73,10 @@ export function TasksSection({
 
   // Filter tasks based on current filters
   const baseFilteredTasks = applyFilters(tasks, filters || []);
+  const orderedTasks = React.useMemo(
+    () => sortTasks(baseFilteredTasks, milestone),
+    [baseFilteredTasks, milestone],
+  );
 
   const hasHiddenTasks = baseFilteredTasks.some((task) => task.status?.closed === true);
 
@@ -168,7 +173,7 @@ export function TasksSection({
             /* Task list with drag and drop */
             <DragAndDropProvider onDrop={handleTaskReorder}>
               <TaskList
-                tasks={baseFilteredTasks}
+                tasks={orderedTasks}
                 showHiddenTasksToggle={hasHiddenTasks}
                 milestoneId={milestone.id}
                 onTaskAssigneeChange={onTaskAssigneeChange}
