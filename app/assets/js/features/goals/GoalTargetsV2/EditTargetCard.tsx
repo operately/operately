@@ -6,8 +6,6 @@ import { IconTrash } from "turboui";
 import classNames from "classnames";
 import { PrimaryButton, SecondaryButton } from "turboui";
 import { PieChart } from "turboui";
-import { useDragAndDropContext, useDraggable } from "@/features/DragAndDrop";
-
 import { Target } from "./types";
 import { ExpandIcon, TargetNumericField, TargetTextField, TargetValue } from "./components";
 import { useTargetsContext } from "./TargetsContext";
@@ -15,21 +13,20 @@ import { useTargetsContext } from "./TargetsContext";
 interface Props {
   index: number;
   target: Target;
-  style: React.CSSProperties;
 }
 
-export function EditTargetCard({ target, index, style }: Props) {
+export function EditTargetCard({ target, index }: Props) {
   const { targetOpen } = useTargetsContext();
   const editing = targetOpen === target.id;
 
-  const { ref, isDragging } = useDraggable({
-    id: target.id!,
-    zoneId: "targets",
-  });
-  const containerClass = useTargetClassName(index, isDragging);
+  const containerClass = classNames(
+    "max-w-full py-2 px-px cursor-pointer",
+    "grid grid-cols-[1fr_auto_14px] items-center gap-x-3",
+    "border-t last:border-b border-stroke-base",
+  );
 
   return (
-    <div ref={ref} style={isDragging ? {} : style} className={containerClass}>
+    <div className={containerClass}>
       <TitleSection target={target} index={index} editing={editing} />
       <DetailsSection target={target} editing={editing} />
       <Actions target={target} editing={editing} />
@@ -109,29 +106,5 @@ function Actions({ editing, target }: { editing: boolean; target: Target }) {
       )}
       <IconTrash className="text-content-dimmed cursor-pointer" size={20} onClick={() => deleteTarget(targetOpen)} />
     </div>
-  );
-}
-
-function useTargetClassName(index: number, isDragging: boolean) {
-  const { targets } = useTargetsContext();
-  const { dropIndex, draggedId } = useDragAndDropContext();
-  const draggedTargetIndex = React.useMemo(() => targets.find((t) => t.id === draggedId)?.index!, [draggedId, targets]);
-
-  const hasBorderBottom = () => {
-    if (isDragging) return false;
-    if (draggedTargetIndex < dropIndex && dropIndex === index) return true;
-    if (draggedTargetIndex >= dropIndex && dropIndex - 1 === index) return true;
-    return false;
-  };
-
-  return classNames(
-    "max-w-full py-2 cursor-pointer",
-    "grid grid-cols-[1fr_auto_14px] items-center gap-x-3",
-    "border-t last:border-b border-stroke-base",
-    {
-      "border-b": hasBorderBottom(),
-      "px-px": !isDragging,
-      "px-2 border bg-surface-base": isDragging,
-    },
   );
 }
