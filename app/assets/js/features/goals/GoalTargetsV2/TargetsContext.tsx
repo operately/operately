@@ -3,7 +3,6 @@ import React from "react";
 import { useFieldValue } from "@/components/Forms/FormContext";
 import { Target, TargetNumericFields, TargetTextFields } from "./types";
 import { useTargetsValidator } from "./targetErrors";
-import { compareIds } from "@/routes/paths";
 
 interface Props {
   children: React.ReactNode;
@@ -15,7 +14,6 @@ interface TargetsContextValue {
   editTextValue: (id: string, value: string, field: TargetTextFields) => void;
   addTarget: () => void;
   deleteTarget: (id: string | undefined) => void;
-  reorderTargets: (_: any, targetId: string, indexInDropZone: number) => void;
   startEdit: (id: string) => void;
   closeEdit: (id: string | undefined) => void;
   resetEdit: (id: string | undefined) => void;
@@ -90,24 +88,12 @@ export function TargetsContextProvider({ children, field }: Props) {
     setTargetOpen(undefined);
   };
 
-  const reorderTargets = (_, targetId: string, indexInDropZone: number) => {
-    const draggedTarget = targets.find((t) => compareIds(t.id, targetId));
-    if (!draggedTarget) return;
-
-    const newTargets = targets.filter((t) => !compareIds(t.id, targetId));
-    newTargets.splice(indexInDropZone, 0, draggedTarget);
-    newTargets.forEach((t, idx) => (t.index = idx));
-
-    setTargets(newTargets);
-  };
-
   const contextValue = React.useMemo(
     () => ({
       editNumericValue,
       editTextValue,
       addTarget,
       deleteTarget,
-      reorderTargets,
       startEdit,
       closeEdit,
       resetEdit,
