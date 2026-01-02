@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { MilestoneCard } from "../components/MilestoneCard";
 import * as Types from "../types";
-import { DragAndDropProvider } from "../../utils/DragAndDrop";
+import { useBoardDnD } from "../../utils/PragmaticDragAndDrop";
+import type { BoardMove } from "../../utils/PragmaticDragAndDrop";
 import { reorderTasksInList } from "../utils/taskReorderingUtils";
 import { createContextualDate } from "../../DateField/mockData";
 import { usePersonFieldSearch } from "../../utils/storybook/usePersonFieldSearch";
@@ -32,24 +33,22 @@ const meta: Meta<typeof MilestoneCard> = {
         }, [context.args]);
         
         // Handle drop events to update task order
-        const handleDrop = (dropZoneId: string, draggedId: string, indexInDropZone: number) => {
-          console.log(`Dragged item ${draggedId} was dropped onto ${dropZoneId} at index ${indexInDropZone}`);
-          
-          // Skip if not a milestone drop zone
-          if (!dropZoneId.startsWith('milestone-')) return true;
-          
-          // Use the utility function to reorder tasks
-          const updatedTasks = reorderTasksInList(
-            tasks,
-            draggedId,
-            indexInDropZone
-          );
-          
-          // Update state
-          setTasks(updatedTasks);
-          
-          return true;
-        };
+        const handleTaskMove = React.useCallback(
+          (move: BoardMove) => {
+            console.log(
+              `Dragged item ${move.itemId} was dropped onto ${move.destination.containerId} at index ${move.destination.index}`,
+            );
+
+            // Use the utility function to reorder tasks
+            const updatedTasks = reorderTasksInList(tasks, move.itemId, move.destination.index);
+
+            // Update state
+            setTasks(updatedTasks);
+          },
+          [tasks],
+        );
+
+        const { draggedItemId, destination, draggedItemDimensions } = useBoardDnD(handleTaskMove);
         
         // Handle task creation
         const handleTaskCreate = (newTask: Types.NewTaskPayload) => {
@@ -95,27 +94,28 @@ const meta: Meta<typeof MilestoneCard> = {
         }
         
         return (
-          <DragAndDropProvider onDrop={handleDrop}>
-            <MilestoneCard
-              milestone={milestone} 
-              tasks={tasks}
-              showHiddenTasksToggle={context.args.showHiddenTasksToggle ?? true}
-              onTaskCreate={handleTaskCreate}
-              onTaskAssigneeChange={(taskId, assignee) => {
-                console.log('Task assignee updated:', taskId, assignee);
-              }}
-              onTaskDueDateChange={(taskId, dueDate) => {
-                console.log('Task due date updated:', taskId, dueDate);
-              }}
-              onTaskStatusChange={(taskId, status) => {
-                console.log('Task status updated:', taskId, status);
-              }}
-              onMilestoneUpdate={handleMilestoneUpdate}
-              assigneePersonSearch={assigneePersonSearch}
-              statusOptions={DEFAULT_STATUS_OPTIONS}
-              availableMilestones={[milestone]}
-            />
-          </DragAndDropProvider>
+          <MilestoneCard
+            milestone={milestone} 
+            tasks={tasks}
+            showHiddenTasksToggle={context.args.showHiddenTasksToggle ?? true}
+            onTaskCreate={handleTaskCreate}
+            onTaskAssigneeChange={(taskId, assignee) => {
+              console.log('Task assignee updated:', taskId, assignee);
+            }}
+            onTaskDueDateChange={(taskId, dueDate) => {
+              console.log('Task due date updated:', taskId, dueDate);
+            }}
+            onTaskStatusChange={(taskId, status) => {
+              console.log('Task status updated:', taskId, status);
+            }}
+            onMilestoneUpdate={handleMilestoneUpdate}
+            assigneePersonSearch={assigneePersonSearch}
+            statusOptions={DEFAULT_STATUS_OPTIONS}
+            availableMilestones={[milestone]}
+            draggedItemId={draggedItemId}
+            targetLocation={destination}
+            placeholderHeight={draggedItemDimensions?.height ?? null}
+          />
         );
       };
       

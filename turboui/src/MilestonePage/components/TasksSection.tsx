@@ -6,7 +6,8 @@ import { BlackLink } from "../../Link";
 import { PieChart } from "../../PieChart";
 import { IconLayoutKanban, IconPlus } from "../../icons";
 import { Tooltip } from "../../Tooltip";
-import { DragAndDropProvider } from "../../utils/DragAndDrop";
+import { useBoardDnD } from "../../utils/PragmaticDragAndDrop";
+import type { BoardMove } from "../../utils/PragmaticDragAndDrop";
 import { MilestonePage } from "..";
 import { calculateMilestoneStats } from "../../TaskBoard/components/MilestoneCard";
 import { TaskFilter } from "../../TaskBoard";
@@ -80,16 +81,16 @@ export function TasksSection({
 
   const hasHiddenTasks = baseFilteredTasks.some((task) => task.status?.closed === true);
 
-  const handleTaskReorder = React.useCallback(
-    (dropZoneId: string, draggedId: string, indexInDropZone: number) => {
+  const handleTaskMove = React.useCallback(
+    (move: BoardMove) => {
       if (onTaskReorder) {
-        onTaskReorder(draggedId, dropZoneId, indexInDropZone);
-        return true;
+        onTaskReorder(move.itemId, move.destination.containerId, move.destination.index);
       }
-      return false;
     },
     [onTaskReorder],
   );
+
+  const { draggedItemId, destination, draggedItemDimensions } = useBoardDnD(handleTaskMove);
 
   // Hotkey handled by useInlineTaskCreator
 
@@ -171,31 +172,32 @@ export function TasksSection({
             </div>
           ) : (
             /* Task list with drag and drop */
-            <DragAndDropProvider onDrop={handleTaskReorder}>
-              <TaskList
-                tasks={orderedTasks}
-                showHiddenTasksToggle={hasHiddenTasks}
-                milestoneId={milestone.id}
-                onTaskAssigneeChange={onTaskAssigneeChange}
-                onTaskDueDateChange={onTaskDueDateChange}
-                onTaskStatusChange={onTaskStatusChange}
-                assigneePersonSearch={assigneePersonSearch}
-                statusOptions={statusOptions}
-                inlineCreateRow={
-                  creatorOpen ? (
-                    <InlineTaskCreator
-                      ref={creatorRef}
-                      milestone={milestone}
-                      onCreate={(t) => onTaskCreate?.({ ...t, milestone })}
-                      onRequestAdvanced={() => setIsTaskModalOpen(true)}
-                      onCancel={closeCreator}
-                      autoFocus
-                      testId="inline-task-creator-milestonepage"
-                    />
-                  ) : undefined
-                }
-              />
-            </DragAndDropProvider>
+            <TaskList
+              tasks={orderedTasks}
+              showHiddenTasksToggle={hasHiddenTasks}
+              milestoneId={milestone.id}
+              onTaskAssigneeChange={onTaskAssigneeChange}
+              onTaskDueDateChange={onTaskDueDateChange}
+              onTaskStatusChange={onTaskStatusChange}
+              assigneePersonSearch={assigneePersonSearch}
+              statusOptions={statusOptions}
+              draggedItemId={draggedItemId}
+              targetLocation={destination}
+              placeholderHeight={draggedItemDimensions?.height ?? null}
+              inlineCreateRow={
+                creatorOpen ? (
+                  <InlineTaskCreator
+                    ref={creatorRef}
+                    milestone={milestone}
+                    onCreate={(t) => onTaskCreate?.({ ...t, milestone })}
+                    onRequestAdvanced={() => setIsTaskModalOpen(true)}
+                    onCancel={closeCreator}
+                    autoFocus
+                    testId="inline-task-creator-milestonepage"
+                  />
+                ) : undefined
+              }
+            />
           )}
         </div>
       </div>

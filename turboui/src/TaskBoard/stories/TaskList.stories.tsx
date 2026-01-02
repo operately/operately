@@ -3,7 +3,8 @@ import React, { useState, useEffect } from "react";
 import { TaskList } from "../components/TaskList";
 import * as Types from "../types";
 import { DateField } from "../../DateField";
-import { DragAndDropProvider } from "../../utils/DragAndDrop";
+import { useBoardDnD } from "../../utils/PragmaticDragAndDrop";
+import type { BoardMove } from "../../utils/PragmaticDragAndDrop";
 import { reorderTasksInList } from "../utils/taskReorderingUtils";
 import { usePersonFieldSearch } from "../../utils/storybook/usePersonFieldSearch";
 
@@ -41,29 +42,35 @@ const meta: Meta<typeof TaskList> = {
           setTasks([...initialTasks]);
         }, [initialTasks]);
 
-        const handleDrop = (dropZoneId: string, draggedId: string, indexInDropZone: number) => {
-          console.log(`Dragged item ${draggedId} was dropped into zone ${dropZoneId} at index ${indexInDropZone}`);
+        const handleTaskMove = React.useCallback(
+          (move: BoardMove) => {
+            console.log(
+              `Dragged item ${move.itemId} was dropped into zone ${move.destination.containerId} at index ${move.destination.index}`,
+            );
 
-          // Use the provided index directly for reordering
-          const updatedTasks = reorderTasksInList(tasks, draggedId, indexInDropZone);
-          setTasks(updatedTasks);
+            // Use the provided index directly for reordering
+            const updatedTasks = reorderTasksInList(tasks, move.itemId, move.destination.index);
+            setTasks(updatedTasks);
+          },
+          [tasks],
+        );
 
-          return true;
-        };
+        const { draggedItemId, destination, draggedItemDimensions } = useBoardDnD(handleTaskMove);
 
         return (
-          <DragAndDropProvider onDrop={handleDrop}>
-            <TaskList
-              tasks={tasks}
-              showHiddenTasksToggle={showHiddenTasksToggle}
-              milestoneId="milestone-1"
-              onTaskAssigneeChange={onTaskAssigneeChange || (() => {})}
-              onTaskDueDateChange={onTaskDueDateChange || (() => {})}
-              onTaskStatusChange={onTaskStatusChange || (() => {})}
-              assigneePersonSearch={assigneePersonSearch}
-              statusOptions={DEFAULT_STATUS_OPTIONS}
-            />
-          </DragAndDropProvider>
+          <TaskList
+            tasks={tasks}
+            showHiddenTasksToggle={showHiddenTasksToggle}
+            milestoneId="milestone-1"
+            onTaskAssigneeChange={onTaskAssigneeChange || (() => {})}
+            onTaskDueDateChange={onTaskDueDateChange || (() => {})}
+            onTaskStatusChange={onTaskStatusChange || (() => {})}
+            assigneePersonSearch={assigneePersonSearch}
+            statusOptions={DEFAULT_STATUS_OPTIONS}
+            draggedItemId={draggedItemId}
+            targetLocation={destination}
+            placeholderHeight={draggedItemDimensions?.height ?? null}
+          />
         );
       };
 

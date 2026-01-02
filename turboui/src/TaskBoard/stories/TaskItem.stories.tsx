@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { TaskItem } from "../components/TaskItem";
 import * as Types from "../types";
-import { DragAndDropProvider } from "../../utils/DragAndDrop";
 import { usePersonFieldSearch } from "../../utils/storybook/usePersonFieldSearch";
 
 /**
@@ -16,19 +15,11 @@ const meta: Meta<typeof TaskItem> = {
   },
   decorators: [
     (Story) => {
-      // Define a simple onDrop handler for the DragAndDropProvider
-      const handleDrop = (draggedId: string, targetId: string) => {
-        console.log(`Dragged item ${draggedId} was dropped onto ${targetId}`);
-        return true; // Return true to indicate successful drop
-      };
-      
       return (
         <div className="m-4 w-[500px]">
-          <DragAndDropProvider onDrop={handleDrop}>
-            <ul className="list-none p-0 m-0">
-              <Story />
-            </ul>
-          </DragAndDropProvider>
+          <ul className="list-none p-0 m-0">
+            <Story />
+          </ul>
         </div>
       );
     },
@@ -38,10 +29,9 @@ const meta: Meta<typeof TaskItem> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// Fixed milestoneId and itemStyle for all stories
+// Fixed milestoneId for all stories
 const sharedProps = {
   milestoneId: "milestone-1",
-  itemStyle: () => ({ position: "relative" }),
 };
 
 // Mock people data for assignee selection
@@ -120,7 +110,6 @@ export const BasicTask: Story = {
     return <TaskItem 
       task={task} // Use the state-managed task instead of args.task
       milestoneId={args.milestoneId} 
-      itemStyle={args.itemStyle}
       onTaskAssigneeChange={(taskId, assignee) => {
         console.log('Task assignee updated:', taskId, assignee);
       }}
