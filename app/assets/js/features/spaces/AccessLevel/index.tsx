@@ -3,7 +3,7 @@ import { PermissionLevels } from "@/features/Permissions";
 import { match } from "ts-pattern";
 import { IconBuilding, IconLockFilled, IconWorld } from "turboui";
 
-export interface AccessLevelProps {
+interface AccessLevelProps {
   tense: "present" | "future";
 
   anonymous: PermissionLevels;
