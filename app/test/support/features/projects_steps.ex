@@ -447,6 +447,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     ctx
     |> UI.click_text("Resume project")
     |> UI.assert_page(Paths.resume_project_path(ctx.company, ctx.project))
+    |> UI.fill_rich_text("Resuming the project.")
     |> UI.click_button("Resume project")
   end
 

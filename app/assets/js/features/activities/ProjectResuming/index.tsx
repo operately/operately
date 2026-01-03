@@ -1,24 +1,46 @@
+import * as React from "react";
+
 import { feedTitle, projectLink } from "../feedItemLinks";
 
 import type { ActivityContentProjectResuming } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
+import { usePaths } from "@/routes/paths";
+import { isContentEmpty, Link, RichContent, Summary } from "turboui";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 const ProjectResuming: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
-    throw new Error("Not implemented");
+    return "Project resumed";
   },
 
   pagePath(paths, activity: Activity): string {
-    return paths.projectPath(content(activity).project!.id!);
+    if (activity.id) {
+      return paths.projectActivityPath(activity.id);
+    }
+
+    const projectId = content(activity).project?.id;
+    return projectId ? paths.projectPath(projectId) : paths.homePath();
   },
 
   PageTitle(_props: { activity: any }) {
-    throw new Error("Not implemented");
+    return <>Project resumed</>;
   },
 
-  PageContent(_props: { activity: Activity }) {
-    throw new Error("Not implemented");
+  PageContent({ activity }: { activity: Activity }) {
+    const { mentionedPersonLookup } = useRichEditorHandlers();
+
+    return (
+      <div>
+        {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
+          <RichContent
+            content={activity.commentThread.message}
+            mentionedPersonLookup={mentionedPersonLookup}
+            parseContent
+          />
+        )}
+      </div>
+    );
   },
 
   PageOptions(_props: { activity: Activity }) {
@@ -26,35 +48,55 @@ const ProjectResuming: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+    const paths = usePaths();
+    const activityPath = activity.id ? paths.projectActivityPath(activity.id) : null;
+    const link = activityPath ? <Link to={activityPath}>resumed</Link> : "resumed";
+    const project = content(activity).project;
+
     if (page === "project") {
-      return feedTitle(activity, "resumed the project");
+      return feedTitle(activity, link, "the project");
+    } else if (project) {
+      return feedTitle(activity, link, "the", projectLink(project), "project");
     } else {
-      return feedTitle(activity, "resumed the", projectLink(content(activity).project!), "project");
+      return feedTitle(activity, link, "a project");
     }
   },
 
-  FeedItemContent(_props: { activity: Activity; page: any }) {
-    return null;
+  FeedItemContent({ activity }: { activity: Activity }) {
+    const { mentionedPersonLookup } = useRichEditorHandlers();
+
+    return (
+      <div>
+        {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
+          <Summary
+            content={activity.commentThread.message}
+            characterCount={300}
+            mentionedPersonLookup={mentionedPersonLookup}
+          />
+        )}
+      </div>
+    );
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
     return "items-center";
   },
 
-  commentCount(_activity: Activity): number {
-    throw new Error("Not implemented");
+  commentCount(activity: Activity): number {
+    return activity.commentThread?.commentsCount || 0;
   },
 
-  hasComments(_activity: Activity): boolean {
-    throw new Error("Not implemented");
+  hasComments(activity: Activity): boolean {
+    return !!activity.commentThread;
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return "Resumed the " + content(activity).project!.name! + " project";
+    const projectName = content(activity).project?.name;
+    return projectName ? `Resumed the ${projectName} project` : "Resumed a project";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
-    return content(activity).project!.name!;
+    return content(activity).project?.name || null;
   },
 };
 

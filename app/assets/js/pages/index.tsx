@@ -50,6 +50,7 @@ import PeopleOrgChartPage from "./PeopleOrgChartPage";
 import PeoplePage from "./PeoplePage";
 import ProfileEditPage from "./ProfileEditPage";
 import ProfilePage from "./ProfilePage";
+import ProjectActivityPage from "./ProjectActivityPage";
 import ProjectAddPage from "./ProjectAddPage";
 import ProjectAsMarkdownPage from "./ProjectAsMarkdownPage";
 import ProjectCheckInEditPage from "./ProjectCheckInEditPage";
@@ -148,6 +149,7 @@ export default {
   PeoplePage,
   ProfileEditPage,
   ProfilePage,
+  ProjectActivityPage,
   ProjectAddPage,
   ProjectAsMarkdownPage,
   ProjectCheckInEditPage,

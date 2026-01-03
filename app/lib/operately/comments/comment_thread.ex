@@ -65,19 +65,44 @@ defmodule Operately.Comments.CommentThread do
   end
 
   def set_potential_subscribers(activity = %Operately.Activities.Activity{}) do
-    goal =
-      activity.content["goal_id"]
-      |> Operately.Goals.get_goal()
-      |> Repo.preload([:champion, :reviewer, group: :members])
+    cond do
+      is_nil(activity.comment_thread) ->
+        activity
 
-    subs =
-      activity.comment_thread
-      |> Repo.preload(:access_context)
-      |> Notifications.SubscribersLoader.preload_subscriptions()
-      |> Notifications.Subscriber.from_goal_discussion(goal)
+      activity.content["goal_id"] ->
+        goal =
+          activity.content["goal_id"]
+          |> Operately.Goals.get_goal()
+          |> Repo.preload([:champion, :reviewer, group: :members])
 
-    comment_thread = Map.put(activity.comment_thread, :potential_subscribers, subs)
-    Map.put(activity, :comment_thread, comment_thread)
+        subs =
+          activity.comment_thread
+          |> Repo.preload(:access_context)
+          |> Notifications.SubscribersLoader.preload_subscriptions()
+          |> Notifications.Subscriber.from_goal_discussion(goal)
+
+        comment_thread = Map.put(activity.comment_thread, :potential_subscribers, subs)
+        Map.put(activity, :comment_thread, comment_thread)
+
+      activity.content["project_id"] ->
+        project =
+          activity.content["project_id"]
+          |> Operately.Projects.get_project!()
+          |> Repo.preload(contributors: :person)
+
+        subs =
+          activity.comment_thread
+          |> Repo.preload(:access_context)
+          |> Notifications.SubscribersLoader.preload_subscriptions()
+          |> then(fn thread -> Map.put(thread, :project, project) end)
+          |> Notifications.Subscriber.from_project_child()
+
+        comment_thread = Map.put(activity.comment_thread, :potential_subscribers, subs)
+        Map.put(activity, :comment_thread, comment_thread)
+
+      true ->
+        activity
+    end
   end
 
   def list_for_project(project_id) do

@@ -11,6 +11,7 @@ import type {
 } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 
+import * as Activities from "@/models/activities";
 import { usePaths } from "@/routes/paths";
 import { match } from "ts-pattern";
 import { Link, Summary } from "turboui";
@@ -34,6 +35,9 @@ const CommentAdded: ActivityHandler = {
       .with("project_discussion_submitted", () => {
         const projectSubmitted = commentedActivity.content as ActivityContentProjectDiscussionSubmitted;
         return paths.projectDiscussionPath(projectSubmitted.discussion!.id!);
+      })
+      .with("project_resuming", () => {
+        return paths.projectActivityPath(commentedActivity.id);
       })
       .otherwise(() => {
         throw new Error("Comment added not implemented for action: " + commentedActivity.action);
@@ -123,6 +127,17 @@ const CommentAdded: ActivityHandler = {
           return feedTitle(activity, "commented on", activityLink, "in the", projectLink(project), "project");
         }
       })
+      .with("project_resuming", () => {
+        const path = paths.projectActivityPath(commentedActivity.id);
+        const activityLink = <Link to={path}>project resuming</Link>;
+        const project = Activities.getProject(commentedActivity);
+
+        if (page === "project") {
+          return feedTitle(activity, "commented on", activityLink);
+        } else {
+          return feedTitle(activity, "commented on", activityLink, "in the", projectLink(project), "project");
+        }
+      })
       .otherwise(() => {
         throw new Error("Comment added not implemented for action: " + commentedActivity.action);
       });
@@ -160,6 +175,7 @@ const CommentAdded: ActivityHandler = {
       .with("goal_discussion_creation", () => commentedActivity.commentThread!.title)
       .with("goal_reopening", () => "goal reopening")
       .with("project_discussion_submitted", () => commentedActivity.commentThread!.title)
+      .with("project_resuming", () => "project resuming")
       .otherwise(() => {
         throw new Error("Comment added not implemented for action: " + commentedActivity.action);
       });
@@ -190,6 +206,10 @@ const CommentAdded: ActivityHandler = {
       .with("project_discussion_submitted", () => {
         const c = commentedActivity.content as ActivityContentProjectDiscussionSubmitted;
         return c.title!;
+      })
+      .with("project_resuming", () => {
+        const project = Activities.getProject(commentedActivity);
+        return project.name!;
       })
       .otherwise(() => {
         throw new Error("Comment added not implemented for action: " + commentedActivity.action);
