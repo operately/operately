@@ -25,6 +25,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Permissions do
       can_edit_statuses: permissions.can_edit_statuses,
       can_close: permissions.can_close,
       can_pause: permissions.can_pause,
+      can_resume: permissions.can_resume,
       can_check_in: permissions.can_check_in,
       can_acknowledge_check_in: permissions.can_acknowledge_check_in,
       can_comment_on_retrospective: permissions.can_comment_on_retrospective,

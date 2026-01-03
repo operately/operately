@@ -1504,6 +1504,7 @@ export interface ProjectPermissions {
   canEditPermissions: boolean;
   canClose: boolean;
   canPause: boolean;
+  canResume: boolean;
   canCheckIn: boolean;
   canEditTask: boolean;
   canEditStatuses: boolean;
@@ -2229,6 +2230,7 @@ export interface GetActivitiesResult {
 export interface GetActivityInput {
   id?: string | null;
   includeUnreadGoalNotifications?: boolean | null;
+  includeUnreadProjectNotifications?: boolean | null;
   includePermissions?: boolean | null;
   includeSubscriptionsList?: boolean | null;
   includePotentialSubscribers?: boolean | null;
@@ -4250,11 +4252,14 @@ export interface RestoreCompanyMemberInput {
 export interface RestoreCompanyMemberResult {}
 
 export interface ResumeProjectInput {
-  projectId?: string | null;
+  projectId: Id;
+  message: Json;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
 }
 
 export interface ResumeProjectResult {
-  project?: Project | null;
+  project: Project;
 }
 
 export interface SpacesUpdateKanbanInput {
