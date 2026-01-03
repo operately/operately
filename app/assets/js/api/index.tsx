@@ -1504,6 +1504,7 @@ export interface ProjectPermissions {
   canEditPermissions: boolean;
   canClose: boolean;
   canPause: boolean;
+  canResume: boolean;
   canCheckIn: boolean;
   canEditTask: boolean;
   canEditStatuses: boolean;
