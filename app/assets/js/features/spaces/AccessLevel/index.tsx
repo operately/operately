@@ -3,7 +3,7 @@ import { PermissionLevels } from "@/features/Permissions";
 import { match } from "ts-pattern";
 import { IconBuilding, IconLockFilled, IconWorld } from "turboui";
 
-interface AccessLevelProps {
+export interface AccessLevelProps {
   tense: "present" | "future";
 
   anonymous: PermissionLevels;
@@ -48,19 +48,19 @@ function calcTitle(props: AccessLevelProps) {
   return "Invite-only Access";
 }
 
-function calcDescription(props: AccessLevelProps) {
+export function calcDescription(props: AccessLevelProps) {
   const can = props.tense === "future" ? "will be able to" : "can";
-  const have = props.tense === "future" ? "will have" : "have";
 
   if (props.anonymous >= PermissionLevels.VIEW_ACCESS) {
     let message = `Anyone on the internet ${can} view this space`;
+    const have = props.tense === "future" ? "will have" : "have";
 
-    if (props.company > props.company) {
+    if (props.company > props.anonymous) {
       message += match(props.company)
         .with(PermissionLevels.VIEW_ACCESS, () => "")
-        .with(PermissionLevels.COMMENT_ACCESS, () => ", company members can view and comment")
-        .with(PermissionLevels.EDIT_ACCESS, () => ", company members can edit")
-        .with(PermissionLevels.FULL_ACCESS, () => `, company members have ${have} full access`)
+        .with(PermissionLevels.COMMENT_ACCESS, () => `, company members ${can} view and comment`)
+        .with(PermissionLevels.EDIT_ACCESS, () => `, company members ${can} edit`)
+        .with(PermissionLevels.FULL_ACCESS, () => `, company members ${have} full access`)
         .run();
     }
 
@@ -68,13 +68,14 @@ function calcDescription(props: AccessLevelProps) {
   }
 
   if (props.company >= PermissionLevels.VIEW_ACCESS) {
-    let message = `Everyone in the company ${can} `;
+    let message = `Everyone in the company `;
+    const have = props.tense === "future" ? "will have" : "has";
 
     message += match(props.company)
-      .with(PermissionLevels.VIEW_ACCESS, () => "view this space")
-      .with(PermissionLevels.COMMENT_ACCESS, () => "view and comment on this space")
-      .with(PermissionLevels.EDIT_ACCESS, () => "view and edit this space")
-      .with(PermissionLevels.FULL_ACCESS, () => "view and edit this space")
+      .with(PermissionLevels.VIEW_ACCESS, () => `${can} view this space`)
+      .with(PermissionLevels.COMMENT_ACCESS, () => `${can} view and comment on this space`)
+      .with(PermissionLevels.EDIT_ACCESS, () => `${can} view and edit this space`)
+      .with(PermissionLevels.FULL_ACCESS, () => `${have} full access to this space`)
       .run();
 
     return message;
