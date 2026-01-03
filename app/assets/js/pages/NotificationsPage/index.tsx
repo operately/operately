@@ -131,7 +131,7 @@ function NotificationItem({ notification }: any) {
 
   return (
     <div
-      className="flex items-center gap-3 hover:bg-surface-highlight rounded p-1 group transition-all duration-100 cursor-pointer mb-1"
+      className="relative flex items-center gap-3 hover:bg-surface-highlight rounded p-1 group transition-all duration-100 cursor-pointer mb-1"
       onClick={clickHandler}
       data-test-id={testId}
     >
@@ -139,8 +139,8 @@ function NotificationItem({ notification }: any) {
         <Avatar person={author} size="small" />
       </div>
 
-      <div className="flex-1">
-        <div className="text-content-accent font-semibold">
+      <div className="min-w-0 flex-1">
+        <div className="truncate text-content-accent font-semibold">
           <ActivityHandler.NotificationTitle activity={notification.activity} />
         </div>
 
@@ -154,7 +154,7 @@ function NotificationItem({ notification }: any) {
       </div>
 
       {notification.read ? null : (
-        <div className="shrink-0 group-hover:opacity-100 opacity-0 cursor-pointer mb-4 mr-1" onClick={closeHandler}>
+        <div className="absolute -right-8 -top-1 rounded group-hover:opacity-100 opacity-0 cursor-pointer p-2" onClick={closeHandler}>
           <IconX size={16} className="hover:text-content-accent" />
         </div>
       )}
