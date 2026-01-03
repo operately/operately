@@ -4250,11 +4250,14 @@ export interface RestoreCompanyMemberInput {
 export interface RestoreCompanyMemberResult {}
 
 export interface ResumeProjectInput {
-  projectId?: string | null;
+  projectId: Id;
+  message: Json;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
 }
 
 export interface ResumeProjectResult {
-  project?: Project | null;
+  project: Project;
 }
 
 export interface SpacesUpdateKanbanInput {
