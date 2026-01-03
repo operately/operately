@@ -1180,6 +1180,7 @@ defmodule OperatelyWeb.Api.Types do
     field :can_edit_permissions, :boolean, null: false
     field :can_close, :boolean, null: false
     field :can_pause, :boolean, null: false
+    field :can_resume, :boolean, null: false
     field :can_check_in, :boolean, null: false
     field :can_edit_task, :boolean, null: false
     field :can_edit_statuses, :boolean, null: false

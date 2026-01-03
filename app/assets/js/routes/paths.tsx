@@ -176,6 +176,10 @@ export class Paths {
     return this.createCompanyPath(["project-discussions", discussionId, "edit"]);
   }
 
+  projectActivityPath(activityId: string) {
+    return this.createCompanyPath(["project-activities", activityId]);
+  }
+
   projectNewPath({ goalId }: { goalId: string }) {
     return this.createCompanyPath(["projects", "new"]) + "?goalId=" + goalId;
   }

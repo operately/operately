@@ -6,11 +6,10 @@ defmodule Operately.Activities.Notifications.ProjectResuming do
   The person who authored the activity is excluded from notifications.
   """
 
-  alias Operately.Projects.{Project, Notifications}
+  alias Operately.Projects.Notifications
 
   def dispatch(activity) do
-    {:ok, project} = Project.get(:system, id: activity.content["project_id"])
-    subscriber_ids = Notifications.get_project_subscribers(project)
+    subscriber_ids = Notifications.get_discussion_subscribers(activity.comment_thread_id, ignore: [activity.author_id])
 
     subscriber_ids
     |> Enum.uniq_by(& &1)
