@@ -116,9 +116,9 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
     <NodeViewWrapper className="blob-container blob-image relative group">
       <div className="flex items-center justify-center">{imgNode}</div>
 
-      <div className="footer flex items-center gap-1 justify-center">
+      <div className="footer flex flex-wrap items-center gap-x-1 gap-y-0 justify-center">
         <NodeViewContent
-          className="title outline-none"
+          className="title outline-none min-w-0 max-w-full truncate"
           contentEditable={view.editable}
           suppressContentEditableWarning={true}
           onKeyDown={disableEnter}
@@ -127,7 +127,7 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
           {node.attrs.alt}
         </NodeViewContent>
         {!view.editable && (
-          <>
+          <span className="flex items-center gap-1 shrink-0 whitespace-nowrap">
             <div className="text-content-dimmed text-sm">•</div>
             <a
               className="text-content-dimmed text-sm underline cursor-pointer"
@@ -136,15 +136,15 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
             >
               Download
             </a>
-          </>
+          </span>
         )}
         {!view.editable && (
-          <>
+          <span className="flex items-center gap-1 shrink-0 whitespace-nowrap">
             <div className="text-content-dimmed text-sm">•</div>
             <a className="text-content-dimmed text-sm underline cursor-pointer" href={node.attrs.src} target="_blank">
               View
             </a>
-          </>
+          </span>
         )}
       </div>
 
@@ -171,14 +171,14 @@ function FileView({ node, deleteNode, view }) {
           <FileIcon filetype={node.attrs.filetype} />
         </div>
 
-        <div>
-          <div className="font-medium text-content-accent leading-snug">{node.attrs.title}</div>
+        <div className="min-w-0">
+          <div className="font-medium text-content-accent leading-snug truncate">{node.attrs.title}</div>
           <div className="flex items-center gap-1">
             <div className="text-content-dimmed text-sm">
               <HumanFilesize size={node.attrs.filesize} />
             </div>
             {!view.editable && (
-              <>
+              <span className="flex items-center gap-1 shrink-0 whitespace-nowrap">
                 <div className="text-content-dimmed text-sm">•</div>
                 <a
                   className="text-content-dimmed text-sm underline cursor-pointer"
@@ -187,7 +187,7 @@ function FileView({ node, deleteNode, view }) {
                 >
                   Download
                 </a>
-              </>
+              </span>
             )}
           </div>
         </div>
