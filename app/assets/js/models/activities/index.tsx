@@ -55,3 +55,17 @@ export function getGoal(activity: Activity) {
 
   return content.goal!;
 }
+
+export function getProject(activity: Activity) {
+  const content = match(activity.action)
+    .with("project_resuming", () => activity.content as api.ActivityContentProjectResuming)
+    .otherwise(() => {
+      throw new Error("Project not available for activity action: " + activity.action);
+    });
+
+  if (!content.project) {
+    throw new Error("Project not available for activity action: " + activity.action);
+  }
+
+  return content.project;
+}

@@ -2229,6 +2229,7 @@ export interface GetActivitiesResult {
 export interface GetActivityInput {
   id?: string | null;
   includeUnreadGoalNotifications?: boolean | null;
+  includeUnreadProjectNotifications?: boolean | null;
   includePermissions?: boolean | null;
   includeSubscriptionsList?: boolean | null;
   includePotentialSubscribers?: boolean | null;

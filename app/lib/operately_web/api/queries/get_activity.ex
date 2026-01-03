@@ -9,6 +9,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivity do
   inputs do
     field? :id, :string, null: true
     field? :include_unread_goal_notifications, :boolean, null: true
+    field? :include_unread_project_notifications, :boolean, null: true
     field? :include_permissions, :boolean, null: true
     field? :include_subscriptions_list, :boolean, null: true
     field? :include_potential_subscribers, :boolean, null: true
@@ -57,6 +58,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivity do
       always_include: &Activities.cast_content/1,
       always_include: &Preloader.preload/1,
       include_unread_goal_notifications: load_unread_goal_notifications(person),
+      include_unread_project_notifications: load_unread_project_notifications(person),
       include_permissions: &Activity.set_permissions/1,
       include_potential_subscribers: &CommentThread.set_potential_subscribers/1,
     ])
@@ -69,6 +71,12 @@ defmodule OperatelyWeb.Api.Queries.GetActivity do
   defp load_unread_goal_notifications(person) do
     fn activity ->
       Activity.load_unread_goal_notifications(activity, person)
+    end
+  end
+
+  defp load_unread_project_notifications(person) do
+    fn activity ->
+      Activity.load_unread_project_notifications(activity, person)
     end
   end
 end

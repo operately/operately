@@ -72,6 +72,26 @@ defmodule Operately.Activities.Activity do
     end
   end
 
+  def load_unread_project_notifications(activity = %__MODULE__{}, person) do
+    actions = [
+      "project_resuming",
+    ]
+
+    if Enum.member?(actions, activity.action) do
+      notifications =
+        from(n in Operately.Notifications.Notification,
+          where: n.activity_id == ^activity.id,
+          where: n.person_id == ^person.id and not n.read,
+          select: n
+        )
+        |> Repo.all()
+
+      Map.put(activity, :notifications, notifications)
+    else
+      activity
+    end
+  end
+
   def set_permissions(activity) do
     permissions = Operately.Activities.Permissions.calculate_permissions(activity.request_info.access_level)
     Map.put(activity, :permissions, permissions)
