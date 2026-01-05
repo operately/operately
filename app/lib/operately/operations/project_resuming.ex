@@ -7,7 +7,14 @@ defmodule Operately.Operations.ProjectResuming do
   alias Operately.Operations.Notifications.{Subscription, SubscriptionList}
 
   def run(author, project, attrs) do
-    changeset = Projects.Project.changeset(project, %{status: "active"})
+    next_check_in = Operately.Time.calculate_next_weekly_check_in(
+      project.next_check_in_scheduled_at,
+      DateTime.utc_now()
+    )
+    changeset = Projects.Project.changeset(project, %{
+      status: "active",
+      next_check_in_scheduled_at: next_check_in,
+    })
 
     Multi.new()
     |> SubscriptionList.insert(attrs)
