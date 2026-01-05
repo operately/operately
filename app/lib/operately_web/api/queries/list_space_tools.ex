@@ -30,7 +30,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceTools do
   defp respond(result) do
     case result do
       {:ok, ctx} -> {:ok, ctx.serialized}
-      {:error, :space, :not_found} -> {:error, :not_found}
+      {:error, :space, _} -> {:error, :not_found}
       {:error, :nodes, _} -> {:error, :not_found}
       {:error, :bad_request, message} -> {:error, :bad_request, message}
       _ -> {:error, :internal_server_error}
