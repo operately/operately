@@ -196,6 +196,23 @@ defmodule Operately.Support.Features.ProjectSteps do
     })
   end
 
+  step :given_project_check_in_is_overdue, ctx do
+    three_days_ago = DateTime.utc_now() |> DateTime.add(-3, :day)
+    {:ok, project} = Operately.Projects.update_project(ctx.project, %{next_check_in_scheduled_at: three_days_ago})
+    Map.put(ctx, :project, project)
+  end
+
+  step :assert_next_check_in_scheduled_at_is_next_friday, ctx do
+    project = Operately.Repo.reload(ctx.project)
+    next_friday = Operately.Time.calculate_next_weekly_check_in(
+      ctx.project.next_check_in_scheduled_at,
+      DateTime.utc_now()
+    )
+
+    assert Date.compare(project.next_check_in_scheduled_at, next_friday) == :eq
+    ctx
+  end
+
   step :given_the_goal_is_connected_with_project, ctx do
     {:ok, project} = Operately.Projects.update_project(ctx.project, %{goal_id: ctx.goal.id})
     project = Operately.Repo.preload(project, :goal)

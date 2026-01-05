@@ -2,6 +2,7 @@ defmodule Operately.Features.ProjectsTest do
   import ExUnit.Callbacks, only: [on_exit: 1]
   use Operately.FeatureCase
   alias Operately.Support.Features.ProjectSteps, as: Steps
+  alias Operately.Support.Features.ReviewSteps
 
   describe "project page" do
     setup ctx do
@@ -52,6 +53,19 @@ defmodule Operately.Features.ProjectsTest do
       |> Steps.assert_resume_notification_sent_to_reviewer()
       |> Steps.assert_project_resumed_visible_on_feed()
       |> Steps.assert_resume_email_sent_to_reviewer()
+    end
+
+    @tag login_as: :champion
+    feature "resuming a paused project clears overdue check-ins", ctx do
+      ctx
+      |> Steps.given_project_check_in_is_overdue()
+      |> ReviewSteps.visit_review_page()
+      |> ReviewSteps.assert_the_due_project_is_listed()
+      |> Steps.visit_project_page()
+      |> Steps.pause_project()
+      |> Steps.resume_project()
+      |> ReviewSteps.assert_the_checked_in_project_is_no_longer_displayed()
+      |> Steps.assert_next_check_in_scheduled_at_is_next_friday()
     end
 
     @tag login_as: :champion
