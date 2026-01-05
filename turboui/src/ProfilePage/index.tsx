@@ -50,7 +50,7 @@ export function ProfilePage(props: ProfilePage.Props) {
 
   const workMapColumnOptions = React.useMemo(() => {
     return match(tabs.active)
-      .with("tasks", () => ({ hideOwner: true, hideProgress: true, hideSpace: true }))
+      .with("tasks", () => ({ hideOwner: true, hideProgress: true, hideNextStep: true, hideRole: true }))
       .otherwise(() => ({ hideOwner: true, hideProject: true }));
   }, [tabs.active]);
 
