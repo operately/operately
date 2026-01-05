@@ -185,6 +185,89 @@ defmodule Operately.Demo.Data do
             :walter_baker,
             :liam_harris,
             :frank_miller,
+          ],
+          tasks: [
+            %{
+              name: "Review beta feedback themes",
+              description: "Summarize the top issues from the real-time collaboration beta and propose next steps.",
+              assignee: :walter_baker,
+              status: :in_progress,
+              due_in_days: 5,
+              priority: "high",
+              size: "medium"
+            },
+            %{
+              name: "Finalize collaboration UI specs",
+              description: "Lock the UI specs for presence indicators and inline comments.",
+              assignee: :liam_harris,
+              status: :pending,
+              due_in_days: 12,
+              priority: "medium",
+              size: "small"
+            },
+            %{
+              name: "Draft Q2 roadmap narrative",
+              description: "Prepare the storyline for the Q2 roadmap review with leadership.",
+              assignee: :owner,
+              status: :in_progress,
+              due_in_days: -3,
+              priority: "medium",
+              size: "medium"
+            },
+            %{
+              name: "Instrument collaboration usage metrics",
+              description: "Add tracking for adoption, engagement, and session duration across collaboration features.",
+              assignee: :walter_baker,
+              status: :in_progress,
+              due_in_days: 6,
+              priority: "high",
+              size: "medium"
+            },
+            %{
+              name: "QA pass for real-time sync edge cases",
+              description: "Test offline recovery, simultaneous edits, and conflict resolution scenarios.",
+              assignee: :walter_baker,
+              status: :pending,
+              due_in_days: 10,
+              priority: "high",
+              size: "large"
+            },
+            %{
+              name: "Plan beta onboarding email flow",
+              description: "Draft the onboarding sequence for beta invitees and coordinate with support.",
+              assignee: :frank_miller,
+              status: :pending,
+              due_in_days: 8,
+              priority: "medium",
+              size: "small"
+            },
+            %{
+              name: "Review accessibility pass for new components",
+              description: "Validate keyboard navigation, contrast ratios, and ARIA labels for collaboration UI.",
+              assignee: :liam_harris,
+              status: :pending,
+              due_in_days: 14,
+              priority: "low",
+              size: "small"
+            },
+            %{
+              name: "Scope permissions control phase 2",
+              description: "Define requirements and acceptance criteria for advanced sharing controls.",
+              assignee: :frank_miller,
+              status: :canceled,
+              due_in_days: -2,
+              priority: "medium",
+              size: "medium"
+            },
+            %{
+              name: "Close out collaboration launch release notes",
+              description: "Finalize release notes and coordinate launch messaging with marketing.",
+              assignee: :frank_miller,
+              status: :done,
+              due_in_days: -1,
+              priority: "low",
+              size: "small"
+            }
           ]
         },
         %{
@@ -193,6 +276,62 @@ defmodule Operately.Demo.Data do
           description: "Hiring, internal operations, and employee experience",
           members: [
             :karen_martinez,
+          ],
+          tasks: [
+            %{
+              name: "Update onboarding checklist for new hires",
+              description: "Revise the checklist to include security training and product walkthroughs.",
+              assignee: :karen_martinez,
+              status: :in_progress,
+              due_in_days: 6,
+              priority: "medium",
+              size: "small"
+            },
+            %{
+              name: "Schedule Q1 skill-sharing sessions",
+              description: "Plan monthly sessions and confirm speakers across departments.",
+              assignee: :karen_martinez,
+              status: :pending,
+              due_in_days: 12,
+              priority: "medium",
+              size: "small"
+            },
+            %{
+              name: "Prepare performance review guidelines",
+              description: "Draft expectations and calibration steps for managers.",
+              assignee: :owner,
+              status: :in_progress,
+              due_in_days: 18,
+              priority: "high",
+              size: "medium"
+            },
+            %{
+              name: "Coordinate benefits renewal with broker",
+              description: "Review plan options and gather feedback from leadership.",
+              assignee: :karen_martinez,
+              status: :pending,
+              due_in_days: 14,
+              priority: "high",
+              size: "medium"
+            },
+            %{
+              name: "Collect feedback on remote work policy",
+              description: "Survey team members and summarize improvement suggestions.",
+              assignee: :karen_martinez,
+              status: :done,
+              due_in_days: -5,
+              priority: "low",
+              size: "small"
+            },
+            %{
+              name: "Launch mentorship program pilot",
+              description: "Match mentors and mentees and schedule kickoff sessions.",
+              assignee: :karen_martinez,
+              status: :pending,
+              due_in_days: 22,
+              priority: "medium",
+              size: "large"
+            }
           ],
           privacy: :invite_only
         },
@@ -206,6 +345,116 @@ defmodule Operately.Demo.Data do
             :emily_davis,
             :noah_lewis,
             :paul_young
+          ],
+          tasks: [
+            %{
+              name: "Analyze referral program signups",
+              description: "Compare referral signups vs paid channels and summarize insights.",
+              assignee: :noah_lewis,
+              status: :in_progress,
+              due_in_days: 4,
+              priority: "high",
+              size: "medium"
+            },
+            %{
+              name: "Design swag for annual conference",
+              description: "Create designs for t-shirts, stickers, and booths.",
+              assignee: :olivia_hall,
+              status: :pending,
+              due_in_days: 14,
+              priority: "medium",
+              size: "small"
+            },
+            %{
+              name: "Publish Enterprise research summary",
+              description: "Compile the Enterprise research findings into a shareable summary deck.",
+              assignee: :paul_young,
+              status: :pending,
+              due_in_days: 9,
+              priority: "medium",
+              size: "large"
+            },
+            %{
+              name: "Finalize Q1 campaign calendar",
+              description: "Confirm key launch dates, channels, and owners for Q1 campaigns.",
+              assignee: :rachel_king,
+              status: :done,
+              due_in_days: -2,
+              priority: "medium",
+              size: "small"
+            },
+            %{
+              name: "Draft International market launch messaging",
+              description: "Write messaging for landing pages, ads, and onboarding for International markets.",
+              assignee: :rachel_king,
+              status: :in_progress,
+              due_in_days: 7,
+              priority: "high",
+              size: "medium"
+            },
+            %{
+              name: "Set up UTM tracking for Enterprise campaign",
+              description: "Standardize campaign tags and validate tracking dashboards.",
+              assignee: :paul_young,
+              status: :in_progress,
+              due_in_days: 3,
+              priority: "high",
+              size: "small"
+            },
+            %{
+              name: "Publish customer story for collaboration beta",
+              description: "Interview a beta customer and publish a short case study.",
+              assignee: :emily_davis,
+              status: :done,
+              due_in_days: -4,
+              priority: "medium",
+              size: "medium"
+            },
+            %{
+              name: "Refresh paid social creative briefs",
+              description: "Update creative briefs for the next sprint of ad testing.",
+              assignee: :noah_lewis,
+              status: :pending,
+              due_in_days: 6,
+              priority: "medium",
+              size: "small"
+            },
+            %{
+              name: "Compile competitive ad spend estimates",
+              description: "Estimate ad budgets for key competitors across channels.",
+              assignee: :rachel_king,
+              status: :canceled,
+              due_in_days: -1,
+              priority: "low",
+              size: "small"
+            },
+            %{
+              name: "Create referral program FAQ page",
+              description: "Write answers for reward eligibility, timing, and tiers.",
+              assignee: :olivia_hall,
+              status: :done,
+              due_in_days: -2,
+              priority: "low",
+              size: "small"
+            },
+            %{
+              name: "Plan webinar calendar for Q2",
+              description: "Select themes, speakers, and dates for the next webinar series.",
+              assignee: :owner,
+              status: :in_progress,
+              due_in_days: 20,
+              priority: "medium",
+              size: "large"
+            },
+            %{
+              name: "Book influencer partnerships for referral launch",
+              description: "Identify partners and draft outreach for referral promotion.",
+              assignee: :olivia_hall,
+              status: :pending,
+              due_in_days: 15,
+              priority: "medium",
+              size: "medium"
+            }
           ]
         },
         %{
@@ -214,6 +463,62 @@ defmodule Operately.Demo.Data do
           description: "Providing accurate and timely financial info and safeguarding company assets",
           members: [
             :martin_smith,
+          ],
+          tasks: [
+            %{
+              name: "Close December month-end books",
+              description: "Finalize reconciliations and post adjusting journal entries.",
+              assignee: :martin_smith,
+              status: :done,
+              due_in_days: -3,
+              priority: "high",
+              size: "medium"
+            },
+            %{
+              name: "Update cash runway model",
+              description: "Refresh projections with latest burn and hiring plans.",
+              assignee: :martin_smith,
+              status: :in_progress,
+              due_in_days: 5,
+              priority: "high",
+              size: "medium"
+            },
+            %{
+              name: "Review vendor contract renewals",
+              description: "Audit renewal dates and flag contracts for renegotiation.",
+              assignee: :martin_smith,
+              status: :canceled,
+              due_in_days: -4,
+              priority: "medium",
+              size: "small"
+            },
+            %{
+              name: "Prepare board finance update",
+              description: "Draft slides covering cash, ARR, and KPIs for the board pack.",
+              assignee: :owner,
+              status: :in_progress,
+              due_in_days: 12,
+              priority: "high",
+              size: "medium"
+            },
+            %{
+              name: "Reconcile ARR and churn report",
+              description: "Align billing data with revenue recognition for the month.",
+              assignee: :martin_smith,
+              status: :pending,
+              due_in_days: 7,
+              priority: "high",
+              size: "small"
+            },
+            %{
+              name: "Collect department budget inputs",
+              description: "Gather headcount and spend requests for Q2 planning.",
+              assignee: :martin_smith,
+              status: :pending,
+              due_in_days: 15,
+              priority: "medium",
+              size: "large"
+            }
           ]
         }
       ],
@@ -292,9 +597,9 @@ defmodule Operately.Demo.Data do
             %{name: "Expand to new countries", from: 0, to: 2, unit: "countries"}
           ],
           update: %{
-            content: "Market research for Germany is progressing well, but we're facing challenges in adapting our product for Spanish-speaking markets. We may need to reassess our timeline.",
-            target_values: [0, 0]
-          }
+              content: "Market research for Enterprise market is progressing well, but we're facing challenges in adapting our product for International markets. We may need to reassess our timeline.",
+              target_values: [0, 0]
+            }
         },
         %{
           key: :improve_product,
@@ -407,10 +712,138 @@ defmodule Operately.Demo.Data do
             content: "A/B testing is yielding promising results. We've identified key demographics that respond well to our ads. On track to meet our conversion rate goal."
           },
           milestones: [
-            %{title: "Ideal customer profile created", status: :done},
-            %{title: "5 new ad creatives launched", status: :done},
-            %{title: "A/B test results analyzed", status: :pending},
-            %{title: "1000 click-throughs achieved from Stack Overflow", status: :pending}
+            %{
+              title: "Ideal customer profile created",
+              status: :done,
+              tasks: [
+                %{
+                  name: "Interview 5 high-LTV customers",
+                  description: "Run qualitative interviews focused on acquisition channels and ad resonance.",
+                  assignee: :noah_lewis,
+                  status: :done,
+                  due_offset_days: -12,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Synthesize ICP attributes",
+                  description: "Summarize demographics, pains, and messaging triggers in the ICP doc.",
+                  assignee: :emily_davis,
+                  status: :done,
+                  due_offset_days: -6,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Publish ICP doc in resource hub",
+                  description: "Upload the finalized ICP and share it with the marketing team.",
+                  assignee: :rachel_king,
+                  status: :done,
+                  due_offset_days: -2,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "5 new ad creatives launched",
+              status: :done,
+              tasks: [
+                %{
+                  name: "Write creative briefs for key segments",
+                  description: "Draft briefs for developer, team lead, and operations personas.",
+                  assignee: :rachel_king,
+                  status: :done,
+                  due_offset_days: -12,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Design and export ad creatives",
+                  description: "Produce final assets and sizes for each channel.",
+                  assignee: :olivia_hall,
+                  status: :done,
+                  due_offset_days: -6,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "QA campaign setup and tracking",
+                  description: "Verify links, UTMs, and creative mapping before launch.",
+                  assignee: :emily_davis,
+                  status: :done,
+                  due_offset_days: -2,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "A/B test results analyzed",
+              status: :pending,
+              tasks: [
+                %{
+                  name: "Compile performance dashboard",
+                  description: "Pull CTR, conversion, and CAC data across variants.",
+                  assignee: :noah_lewis,
+                  status: :in_progress,
+                  due_offset_days: -10,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Analyze results by persona",
+                  description: "Compare variant performance across target segments.",
+                  assignee: :paul_young,
+                  status: :canceled,
+                  due_offset_days: -5,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Recommend winning creatives",
+                  description: "Document winners and propose next iteration ideas.",
+                  assignee: :rachel_king,
+                  status: :pending,
+                  due_offset_days: -1,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "1000 click-throughs achieved from Stack Overflow",
+              status: :pending,
+              tasks: [
+                %{
+                  name: "Draft Stack Overflow ad copy variants",
+                  description: "Write and score copy variants for developer audiences.",
+                  assignee: :noah_lewis,
+                  status: :in_progress,
+                  due_offset_days: -10,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Target top programming tags",
+                  description: "Select tags and audiences for initial campaigns.",
+                  assignee: :paul_young,
+                  status: :pending,
+                  due_offset_days: -5,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Monitor spend and optimize bids",
+                  description: "Adjust bids and placements to hit the click-through goal.",
+                  assignee: :emily_davis,
+                  status: :pending,
+                  due_offset_days: -1,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            }
           ]
         },
         %{
@@ -429,15 +862,143 @@ defmodule Operately.Demo.Data do
             content: "Referral program UI is complete, but we're facing delays in implementing the reward system. May need an additional week to resolve technical issues."
           },
           milestones: [
-            %{title: "\"Golden Ticket\" referral UI implemented", status: :done},
-            %{title: "Blockchain-based reward system deployed", status: :pending},
-            %{title: "Tiered reward system launched", status: :pending},
-            %{title: "Referral program soft-launched to top users", status: :pending}
+            %{
+              title: "\"Golden Ticket\" referral UI implemented",
+              status: :done,
+              tasks: [
+                %{
+                  name: "Finalize referral entry flow wireframes",
+                  description: "Lock the entry flow wireframes and approve interactions.",
+                  assignee: :olivia_hall,
+                  status: :done,
+                  due_offset_days: -12,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Define reward visuals and microcopy",
+                  description: "Prepare the reward visuals and in-product microcopy.",
+                  assignee: :rachel_king,
+                  status: :done,
+                  due_offset_days: -6,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "QA referral CTA placement",
+                  description: "Verify CTA placement across onboarding and settings.",
+                  assignee: :emily_davis,
+                  status: :done,
+                  due_offset_days: -2,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "Blockchain-based reward system deployed",
+              status: :pending,
+              tasks: [
+                %{
+                  name: "Validate wallet provider options",
+                  description: "Compare wallet providers for cost, security, and user experience.",
+                  assignee: :owner,
+                  status: :in_progress,
+                  due_offset_days: -10,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Implement reward ledger schema",
+                  description: "Define data structures for reward credits and redemptions.",
+                  assignee: :paul_young,
+                  status: :pending,
+                  due_offset_days: -5,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Security review of payout flow",
+                  description: "Review payout workflows and document threat mitigations.",
+                  assignee: :emily_davis,
+                  status: :pending,
+                  due_offset_days: -1,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "Tiered reward system launched",
+              status: :pending,
+              tasks: [
+                %{
+                  name: "Define tier thresholds and perks",
+                  description: "Set thresholds, perks, and messaging for each tier.",
+                  assignee: :olivia_hall,
+                  status: :in_progress,
+                  due_offset_days: -10,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Update in-app rewards screen",
+                  description: "Add tier indicators and progress tracking to the rewards UI.",
+                  assignee: :rachel_king,
+                  status: :pending,
+                  due_offset_days: -5,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Draft FAQ and support macros",
+                  description: "Prepare customer support responses for tiered rewards.",
+                  assignee: :emily_davis,
+                  status: :canceled,
+                  due_offset_days: -1,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "Referral program soft-launched to top users",
+              status: :pending,
+              tasks: [
+                %{
+                  name: "Select pilot cohort list",
+                  description: "Identify and confirm the initial group of pilot users.",
+                  assignee: :olivia_hall,
+                  status: :in_progress,
+                  due_offset_days: -10,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Schedule launch email sequence",
+                  description: "Draft and schedule the launch communications.",
+                  assignee: :rachel_king,
+                  status: :pending,
+                  due_offset_days: -5,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Set up feedback survey",
+                  description: "Create the survey to capture pilot feedback.",
+                  assignee: :paul_young,
+                  status: :pending,
+                  due_offset_days: -1,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            }
           ]
         },
         %{
-          key: :conduct_market_research_germany,
-          name: "Conduct market research for expansion into Germany",
+          key: :conduct_market_research_enterprise,
+          name: "Conduct market research for expansion into Enterprise",
           space: :marketing_space,
           champion: :paul_young,
           reviewer: :emily_davis,
@@ -445,21 +1006,149 @@ defmodule Operately.Demo.Data do
             %{person: :paul_young, responsibility: "Market Research Analyst"}
           ],
           goal: :expand_into_new_markets,
-          description: "This project is crucial for our expansion into the German market. We'll conduct comprehensive market research, including hiring a local consultant, attending relevant conferences, and conducting focus groups with potential users. The research will cover competitor analysis, local work habits, and cultural preferences. The insights gained will inform our product localization strategy and go-to-market approach for Germany.",
+          description: "This project is crucial for our expansion into the Enterprise market. We'll conduct comprehensive market research, including hiring a specialist consultant, attending relevant conferences, and conducting focus groups with potential users. The research will cover competitor analysis, local work habits, and cultural preferences. The insights gained will inform our product localization strategy and go-to-market approach for Enterprise.",
           check_in: %{
             status: :on_track,
             content: "Research is progressing well. We've identified key competitors and potential partners. On track to present findings next week."
           },
           milestones: [
-            %{title: "Berlin-based consultant hired", status: :done},
-            %{title: "\"Bits & Pretzels\" conference attended", status: :pending},
-            %{title: "Focus groups conducted", status: :pending},
-            %{title: "Competitor analysis completed", status: :pending}
+            %{
+              title: "Specialist consultant hired",
+              status: :done,
+              tasks: [
+                %{
+                  name: "Create consultant brief and scope",
+                  description: "Draft the objectives and deliverables for the consultant.",
+                  assignee: :paul_young,
+                  status: :done,
+                  due_offset_days: -12,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Review proposals and shortlist",
+                  description: "Evaluate proposals and select the top candidates.",
+                  assignee: :rachel_king,
+                  status: :done,
+                  due_offset_days: -6,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Finalize contract and kickoff call",
+                  description: "Complete contracting and run the kickoff meeting.",
+                  assignee: :emily_davis,
+                  status: :done,
+                  due_offset_days: -2,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "\"Bits & Pretzels\" conference attended",
+              status: :pending,
+              tasks: [
+                %{
+                  name: "Prepare conference networking goals",
+                  description: "Define target outcomes and meeting priorities.",
+                  assignee: :paul_young,
+                  status: :in_progress,
+                  due_offset_days: -10,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Compile list of target companies",
+                  description: "Identify prospective partners and customers to meet.",
+                  assignee: :noah_lewis,
+                  status: :pending,
+                  due_offset_days: -5,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Book travel and booth materials",
+                  description: "Finalize travel plans and prepare conference assets.",
+                  assignee: :emily_davis,
+                  status: :pending,
+                  due_offset_days: -1,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "Focus groups conducted",
+              status: :pending,
+              tasks: [
+                %{
+                  name: "Recruit Enterprise participants",
+                  description: "Recruit at least 12 participants for the sessions.",
+                  assignee: :paul_young,
+                  status: :in_progress,
+                  due_offset_days: -10,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Draft moderator guide and script",
+                  description: "Prepare discussion prompts and session flow.",
+                  assignee: :rachel_king,
+                  status: :pending,
+                  due_offset_days: -5,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Synthesize session notes",
+                  description: "Compile observations and summarize findings.",
+                  assignee: :emily_davis,
+                  status: :pending,
+                  due_offset_days: -1,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "Competitor analysis completed",
+              status: :pending,
+              tasks: [
+                %{
+                  name: "Build competitor feature matrix",
+                  description: "Document feature sets and gaps across competitors.",
+                  assignee: :paul_young,
+                  status: :in_progress,
+                  due_offset_days: -10,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Estimate pricing and packaging ranges",
+                  description: "Summarize pricing ranges and plan tiers.",
+                  assignee: :emily_davis,
+                  status: :pending,
+                  due_offset_days: -5,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Summarize differentiation opportunities",
+                  description: "Identify positioning and feature opportunities.",
+                  assignee: :rachel_king,
+                  status: :pending,
+                  due_offset_days: -1,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            }
           ]
         },
         %{
-          key: :develop_spanish_localization,
-          name: "Develop localization strategy for Spanish-speaking markets",
+          key: :develop_international_expansion,
+          name: "Develop localization strategy for International markets",
           space: :marketing_space,
           champion: :rachel_king,
           reviewer: :emily_davis,
@@ -467,16 +1156,144 @@ defmodule Operately.Demo.Data do
             %{person: :rachel_king, responsibility: "Localization Specialist"}
           ],
           goal: :expand_into_new_markets,
-          description: "Let's focus on adapting our product for Spanish-speaking markets. We'll develop culturally relevant features like a 'Siesta-Friendly' scheduling option and a 'Fiesta Mode' UI theme. The project includes localizing product copy and establishing partnerships with local coworking spaces for beta testing. Success will be measured by user adoption and engagement rates in Spanish-speaking regions.",
+          description: "Let's focus on adapting our product for International markets. We'll develop culturally relevant features like a 'Timezone-Smart' scheduling option and a 'Cultural-Theme' UI theme. The project includes localizing product copy and establishing partnerships with local coworking spaces for beta testing. Success will be measured by user adoption and engagement rates in International regions.",
           check_in: %{
             status: :caution,
             content: "Facing challenges in adapting our UI for cultural preferences. May need to bring in a local UX consultant to assist."
           },
           milestones: [
-            %{title: "\"Siesta-Friendly\" feature conceptualized", status: :done},
-            %{title: "Product copy localization completed", status: :done},
-            %{title: "Madrid coworking space partnerships established", status: :done},
-            %{title: "\"Fiesta Mode\" UI theme developed", status: :pending}
+            %{
+              title: "\"Timezone-Smart\" feature conceptualized",
+              status: :done,
+              tasks: [
+                %{
+                  name: "Interview International users",
+                  description: "Run interviews to capture local scheduling needs.",
+                  assignee: :rachel_king,
+                  status: :done,
+                  due_offset_days: -12,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Document feature concept brief",
+                  description: "Write the concept brief and success criteria.",
+                  assignee: :emily_davis,
+                  status: :done,
+                  due_offset_days: -6,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Review concept with product",
+                  description: "Align the concept with product and design teams.",
+                  assignee: :olivia_hall,
+                  status: :done,
+                  due_offset_days: -2,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "Product copy localization completed",
+              status: :done,
+              tasks: [
+                %{
+                  name: "Translate core onboarding flows",
+                  description: "Localize onboarding content and key product screens.",
+                  assignee: :rachel_king,
+                  status: :done,
+                  due_offset_days: -12,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Review tone and cultural nuances",
+                  description: "Ensure language matches regional norms.",
+                  assignee: :emily_davis,
+                  status: :done,
+                  due_offset_days: -6,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Proofread final copy set",
+                  description: "Proofread the final copy before implementation.",
+                  assignee: :olivia_hall,
+                  status: :done,
+                  due_offset_days: -2,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "Global coworking space partnerships established",
+              status: :done,
+              tasks: [
+                %{
+                  name: "Identify coworking partners",
+                  description: "Create a shortlist of potential partner spaces.",
+                  assignee: :paul_young,
+                  status: :done,
+                  due_offset_days: -12,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Draft partnership outreach email",
+                  description: "Write outreach messaging and benefits overview.",
+                  assignee: :rachel_king,
+                  status: :done,
+                  due_offset_days: -6,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Secure pilot agreements",
+                  description: "Confirm pilot terms with at least two partners.",
+                  assignee: :emily_davis,
+                  status: :done,
+                  due_offset_days: -2,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "\"Cultural-Theme\" UI theme developed",
+              status: :pending,
+              tasks: [
+                %{
+                  name: "Gather visual inspiration references",
+                  description: "Collect references for color, typography, and imagery.",
+                  assignee: :rachel_king,
+                  status: :in_progress,
+                  due_offset_days: -10,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Design theme palette and tokens",
+                  description: "Define theme colors and UI tokens for implementation.",
+                  assignee: :olivia_hall,
+                  status: :pending,
+                  due_offset_days: -5,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Prototype themed landing page",
+                  description: "Build a prototype to validate the theme in context.",
+                  assignee: :emily_davis,
+                  status: :pending,
+                  due_offset_days: -1,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            }
           ]
         },
         %{
@@ -495,11 +1312,171 @@ defmodule Operately.Demo.Data do
             content: "Beta testing of the real-time document collaboration feature is going well. We're on track for the full release next month."
           },
           milestones: [
-            %{title: "Top 3 requested features identified", status: :done},
-            %{title: "Wireframes and user flows approved", status: :done},
-            %{title: "MVP developed and internally tested", status: :done},
-            %{title: "Beta testing completed with power users", status: :pending},
-            %{title: "Final iteration completed", status: :pending}
+            %{
+              title: "Top 3 requested features identified",
+              status: :done,
+              tasks: [
+                %{
+                  name: "Analyze top 50 feature requests",
+                  description: "Review request data and cluster by theme.",
+                  assignee: :walter_baker,
+                  status: :done,
+                  due_offset_days: -12,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Rank requests by usage impact",
+                  description: "Score requests by frequency and impact.",
+                  assignee: :frank_miller,
+                  status: :done,
+                  due_offset_days: -6,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Share findings in roadmap review",
+                  description: "Present findings to leadership and capture decisions.",
+                  assignee: :liam_harris,
+                  status: :done,
+                  due_offset_days: -2,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "Wireframes and user flows approved",
+              status: :done,
+              tasks: [
+                %{
+                  name: "Create wireframes for comments flow",
+                  description: "Draft wireframes for inline comments and mentions.",
+                  assignee: :liam_harris,
+                  status: :done,
+                  due_offset_days: -12,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Review flows with design and eng",
+                  description: "Walk through flows and capture feedback.",
+                  assignee: :frank_miller,
+                  status: :done,
+                  due_offset_days: -6,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Incorporate leadership feedback",
+                  description: "Apply feedback and finalize approvals.",
+                  assignee: :walter_baker,
+                  status: :done,
+                  due_offset_days: -2,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "MVP developed and internally tested",
+              status: :done,
+              tasks: [
+                %{
+                  name: "Implement realtime presence indicator",
+                  description: "Add presence indicators to collaborative sessions.",
+                  assignee: :walter_baker,
+                  status: :done,
+                  due_offset_days: -12,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Build collaborative editing MVP",
+                  description: "Deliver the core real-time editing experience.",
+                  assignee: :walter_baker,
+                  status: :done,
+                  due_offset_days: -6,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Run internal QA regression suite",
+                  description: "Test collaboration features across edge cases.",
+                  assignee: :frank_miller,
+                  status: :done,
+                  due_offset_days: -2,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "Beta testing completed with power users",
+              status: :pending,
+              tasks: [
+                %{
+                  name: "Recruit power users for beta",
+                  description: "Invite targeted power users into the beta program.",
+                  assignee: :frank_miller,
+                  status: :in_progress,
+                  due_offset_days: -10,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Collect structured beta feedback",
+                  description: "Run surveys and interviews to capture feedback.",
+                  assignee: :walter_baker,
+                  status: :pending,
+                  due_offset_days: -5,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Summarize bug list and wins",
+                  description: "Compile issues and positive feedback themes.",
+                  assignee: :liam_harris,
+                  status: :pending,
+                  due_offset_days: -1,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "Final iteration completed",
+              status: :pending,
+              tasks: [
+                %{
+                  name: "Address top beta issues",
+                  description: "Fix priority issues identified during beta.",
+                  assignee: :walter_baker,
+                  status: :in_progress,
+                  due_offset_days: -10,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Finalize docs and release notes",
+                  description: "Update documentation and prepare release notes.",
+                  assignee: :frank_miller,
+                  status: :pending,
+                  due_offset_days: -5,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Prepare rollout checklist",
+                  description: "List rollout steps and owners for launch.",
+                  assignee: :liam_harris,
+                  status: :canceled,
+                  due_offset_days: -1,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            }
           ]
         },
         %{
@@ -518,11 +1495,171 @@ defmodule Operately.Demo.Data do
             content: "Template creation is on schedule. We've completed drafts for 3 out of 5 top processes and are gathering feedback."
           },
           milestones: [
-            %{title: "Top 10 critical processes identified", status: :done},
-            %{title: "Current workflows for top 5 processes mapped", status: :done},
-            %{title: "Template format approved", status: :pending},
-            %{title: "First drafts of top 5 templates completed", status: :pending},
-            %{title: "All 5 process templates finalized", status: :pending}
+            %{
+              title: "Top 10 critical processes identified",
+              status: :done,
+              tasks: [
+                %{
+                  name: "Audit current SOP library",
+                  description: "Review existing SOPs and identify gaps.",
+                  assignee: :quinn_walker,
+                  status: :done,
+                  due_offset_days: -12,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Interview leads for critical processes",
+                  description: "Collect input from team leads on key processes.",
+                  assignee: :quinn_walker,
+                  status: :done,
+                  due_offset_days: -6,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Publish prioritized process list",
+                  description: "Share the prioritized list with leadership.",
+                  assignee: :bob_williams,
+                  status: :done,
+                  due_offset_days: -2,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "Current workflows for top 5 processes mapped",
+              status: :done,
+              tasks: [
+                %{
+                  name: "Facilitate mapping workshops",
+                  description: "Run workshops to map current workflows.",
+                  assignee: :quinn_walker,
+                  status: :done,
+                  due_offset_days: -12,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Document current-state swimlanes",
+                  description: "Create swimlane diagrams for each workflow.",
+                  assignee: :quinn_walker,
+                  status: :done,
+                  due_offset_days: -6,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Validate workflows with teams",
+                  description: "Review workflows with stakeholders for accuracy.",
+                  assignee: :bob_williams,
+                  status: :done,
+                  due_offset_days: -2,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "Template format approved",
+              status: :pending,
+              tasks: [
+                %{
+                  name: "Draft template outline with examples",
+                  description: "Create a template outline and sample sections.",
+                  assignee: :quinn_walker,
+                  status: :in_progress,
+                  due_offset_days: -10,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Collect feedback from department heads",
+                  description: "Review the template with department heads.",
+                  assignee: :bob_williams,
+                  status: :pending,
+                  due_offset_days: -5,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Finalize layout and headings",
+                  description: "Confirm the final layout and section headings.",
+                  assignee: :quinn_walker,
+                  status: :pending,
+                  due_offset_days: -1,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "First drafts of top 5 templates completed",
+              status: :pending,
+              tasks: [
+                %{
+                  name: "Draft onboarding template",
+                  description: "Create the onboarding process template.",
+                  assignee: :quinn_walker,
+                  status: :in_progress,
+                  due_offset_days: -10,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Draft customer escalation template",
+                  description: "Document escalation steps and owner roles.",
+                  assignee: :quinn_walker,
+                  status: :pending,
+                  due_offset_days: -5,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Draft quarterly planning template",
+                  description: "Create the template for quarterly planning.",
+                  assignee: :bob_williams,
+                  status: :pending,
+                  due_offset_days: -1,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "All 5 process templates finalized",
+              status: :pending,
+              tasks: [
+                %{
+                  name: "Run final review meeting",
+                  description: "Review drafts and finalize changes.",
+                  assignee: :quinn_walker,
+                  status: :in_progress,
+                  due_offset_days: -10,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Publish templates to resource hub",
+                  description: "Upload templates and set permissions.",
+                  assignee: :bob_williams,
+                  status: :pending,
+                  due_offset_days: -5,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Announce rollout in company update",
+                  description: "Communicate rollout and adoption expectations.",
+                  assignee: :bob_williams,
+                  status: :pending,
+                  due_offset_days: -1,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            }
           ]
         },
         %{
@@ -541,11 +1678,171 @@ defmodule Operately.Demo.Data do
             content: "We've narrowed down to 3 top candidates. Design challenge results are due this Friday. On track to make an offer next week."
           },
           milestones: [
-            %{title: "Job requirements defined", status: :done},
-            %{title: "Job opening posted on key platforms", status: :done},
-            %{title: "Initial screening interviews completed", status: :done},
-            %{title: "Design challenge assigned to top candidates", status: :pending},
-            %{title: "Final interviews conducted", status: :pending}
+            %{
+              title: "Job requirements defined",
+              status: :done,
+              tasks: [
+                %{
+                  name: "Define UX role responsibilities",
+                  description: "Document core responsibilities and expectations.",
+                  assignee: :karen_martinez,
+                  status: :done,
+                  due_offset_days: -12,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Align comp band with finance",
+                  description: "Confirm compensation band and leveling.",
+                  assignee: :karen_martinez,
+                  status: :done,
+                  due_offset_days: -6,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Create portfolio evaluation rubric",
+                  description: "Set criteria for assessing portfolios.",
+                  assignee: :liam_harris,
+                  status: :done,
+                  due_offset_days: -2,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "Job opening posted on key platforms",
+              status: :done,
+              tasks: [
+                %{
+                  name: "Publish job on LinkedIn",
+                  description: "Post the role and confirm visibility.",
+                  assignee: :karen_martinez,
+                  status: :done,
+                  due_offset_days: -12,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Share opening with design networks",
+                  description: "Share the opening in community channels.",
+                  assignee: :liam_harris,
+                  status: :done,
+                  due_offset_days: -6,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Set up applicant tracking pipeline",
+                  description: "Configure stages, tags, and notifications.",
+                  assignee: :karen_martinez,
+                  status: :done,
+                  due_offset_days: -2,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "Initial screening interviews completed",
+              status: :done,
+              tasks: [
+                %{
+                  name: "Review top resumes",
+                  description: "Screen the top applicants for initial calls.",
+                  assignee: :karen_martinez,
+                  status: :done,
+                  due_offset_days: -12,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Conduct first-round calls",
+                  description: "Run structured screening interviews.",
+                  assignee: :karen_martinez,
+                  status: :done,
+                  due_offset_days: -6,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Summarize candidate scorecards",
+                  description: "Collect feedback and summarize scorecards.",
+                  assignee: :liam_harris,
+                  status: :done,
+                  due_offset_days: -2,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "Design challenge assigned to top candidates",
+              status: :pending,
+              tasks: [
+                %{
+                  name: "Finalize design challenge prompt",
+                  description: "Write the prompt and confirm evaluation goals.",
+                  assignee: :liam_harris,
+                  status: :in_progress,
+                  due_offset_days: -10,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Schedule challenge walkthroughs",
+                  description: "Coordinate walkthrough calls with candidates.",
+                  assignee: :karen_martinez,
+                  status: :pending,
+                  due_offset_days: -5,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Set evaluation rubric for challenge",
+                  description: "Define scoring criteria and reviewers.",
+                  assignee: :liam_harris,
+                  status: :pending,
+                  due_offset_days: -1,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "Final interviews conducted",
+              status: :pending,
+              tasks: [
+                %{
+                  name: "Book panel interview slots",
+                  description: "Schedule final interviews with the panel.",
+                  assignee: :karen_martinez,
+                  status: :in_progress,
+                  due_offset_days: -10,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Collect final feedback notes",
+                  description: "Gather and summarize feedback from interviewers.",
+                  assignee: :liam_harris,
+                  status: :pending,
+                  due_offset_days: -5,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Prepare offer approval packet",
+                  description: "Compile approvals and compensation details.",
+                  assignee: :karen_martinez,
+                  status: :pending,
+                  due_offset_days: -1,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            }
           ]
         },
         %{
@@ -564,11 +1861,171 @@ defmodule Operately.Demo.Data do
             content: "Struggling to find candidates with the right mix of technical knowledge and customer service skills. May need to expand our search or consider internal training options."
           },
           milestones: [
-            %{title: "Job description created", status: :done},
-            %{title: "Posting on customer service job boards", status: :done},
-            %{title: "Initial phone screenings conducted", status: :pending},
-            %{title: "Role-playing exercises performed", status: :pending},
-            %{title: "Top candidate selected and offer extended", status: :pending}
+            %{
+              title: "Job description created",
+              status: :done,
+              tasks: [
+                %{
+                  name: "Draft support role responsibilities",
+                  description: "Define daily responsibilities and success metrics.",
+                  assignee: :karen_martinez,
+                  status: :done,
+                  due_offset_days: -12,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Define technical skill requirements",
+                  description: "Outline required tools knowledge and troubleshooting skills.",
+                  assignee: :jack_thomas,
+                  status: :done,
+                  due_offset_days: -6,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Review JD with support lead",
+                  description: "Validate the job description with support leadership.",
+                  assignee: :jack_thomas,
+                  status: :done,
+                  due_offset_days: -2,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "Posting on customer service job boards",
+              status: :done,
+              tasks: [
+                %{
+                  name: "Publish on Support Driven",
+                  description: "Post the role and confirm it is live.",
+                  assignee: :karen_martinez,
+                  status: :done,
+                  due_offset_days: -12,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Post to RemoteOK and Indeed",
+                  description: "Publish the role on two additional boards.",
+                  assignee: :karen_martinez,
+                  status: :done,
+                  due_offset_days: -6,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Update careers page listing",
+                  description: "Ensure the careers page reflects the new opening.",
+                  assignee: :jack_thomas,
+                  status: :done,
+                  due_offset_days: -2,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "Initial phone screenings conducted",
+              status: :pending,
+              tasks: [
+                %{
+                  name: "Shortlist applicants",
+                  description: "Select candidates for phone screenings.",
+                  assignee: :karen_martinez,
+                  status: :in_progress,
+                  due_offset_days: -10,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Schedule phone screens",
+                  description: "Coordinate schedules and send invites.",
+                  assignee: :karen_martinez,
+                  status: :pending,
+                  due_offset_days: -5,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Capture screening notes",
+                  description: "Document outcomes and concerns for each candidate.",
+                  assignee: :jack_thomas,
+                  status: :pending,
+                  due_offset_days: -1,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "Role-playing exercises performed",
+              status: :pending,
+              tasks: [
+                %{
+                  name: "Design support scenario script",
+                  description: "Create realistic scenarios for role-play exercises.",
+                  assignee: :jack_thomas,
+                  status: :in_progress,
+                  due_offset_days: -10,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Run role-play sessions",
+                  description: "Conduct role-play exercises with candidates.",
+                  assignee: :jack_thomas,
+                  status: :pending,
+                  due_offset_days: -5,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Score customer empathy rubric",
+                  description: "Evaluate candidates against empathy criteria.",
+                  assignee: :jack_thomas,
+                  status: :pending,
+                  due_offset_days: -1,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "Top candidate selected and offer extended",
+              status: :pending,
+              tasks: [
+                %{
+                  name: "Conduct reference checks",
+                  description: "Complete reference checks for the finalist.",
+                  assignee: :karen_martinez,
+                  status: :in_progress,
+                  due_offset_days: -10,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Draft offer letter",
+                  description: "Prepare the offer letter and compensation details.",
+                  assignee: :karen_martinez,
+                  status: :pending,
+                  due_offset_days: -5,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Align start date with team",
+                  description: "Confirm start date and onboarding plan.",
+                  assignee: :jack_thomas,
+                  status: :pending,
+                  due_offset_days: -1,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            }
           ]
         },
         %{
@@ -587,11 +2044,171 @@ defmodule Operately.Demo.Data do
             content: "Financial model is taking longer than expected due to complexities in our expansion plans. May need an extra week to finalize projections."
           },
           milestones: [
-            %{title: "Key metrics and growth data gathered", status: :done},
-            %{title: "Financial model developed", status: :pending},
-            %{title: "Pitch deck narrative and design created", status: :pending},
-            %{title: "Pitch rehearsed with advisors", status: :pending},
-            %{title: "Investor meetings scheduled", status: :pending}
+            %{
+              title: "Key metrics and growth data gathered",
+              status: :done,
+              tasks: [
+                %{
+                  name: "Collect ARR and churn metrics",
+                  description: "Compile ARR, churn, and retention trends.",
+                  assignee: :martin_smith,
+                  status: :done,
+                  due_offset_days: -12,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Gather CAC and LTV analysis",
+                  description: "Summarize CAC, LTV, and payback period metrics.",
+                  assignee: :martin_smith,
+                  status: :done,
+                  due_offset_days: -6,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Compile operational KPIs",
+                  description: "Aggregate growth, product, and support KPIs.",
+                  assignee: :owner,
+                  status: :done,
+                  due_offset_days: -2,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "Financial model developed",
+              status: :pending,
+              tasks: [
+                %{
+                  name: "Build 3-year revenue model",
+                  description: "Model revenue by plan and cohort assumptions.",
+                  assignee: :martin_smith,
+                  status: :in_progress,
+                  due_offset_days: -10,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Add hiring plan assumptions",
+                  description: "Incorporate hiring costs and timing.",
+                  assignee: :owner,
+                  status: :pending,
+                  due_offset_days: -5,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Review sensitivity scenarios",
+                  description: "Run upside and downside scenarios.",
+                  assignee: :martin_smith,
+                  status: :pending,
+                  due_offset_days: -1,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "Pitch deck narrative and design created",
+              status: :pending,
+              tasks: [
+                %{
+                  name: "Draft deck storyline",
+                  description: "Outline the narrative and key proof points.",
+                  assignee: :owner,
+                  status: :in_progress,
+                  due_offset_days: -10,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Create financial slides",
+                  description: "Build slides for metrics, model, and runway.",
+                  assignee: :martin_smith,
+                  status: :pending,
+                  due_offset_days: -5,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Review deck with CEO",
+                  description: "Run a narrative review with leadership.",
+                  assignee: :martin_smith,
+                  status: :pending,
+                  due_offset_days: -1,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "Pitch rehearsed with advisors",
+              status: :pending,
+              tasks: [
+                %{
+                  name: "Schedule advisor rehearsal session",
+                  description: "Coordinate a rehearsal with advisors.",
+                  assignee: :martin_smith,
+                  status: :in_progress,
+                  due_offset_days: -10,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Incorporate feedback into deck",
+                  description: "Apply feedback and refine the storyline.",
+                  assignee: :owner,
+                  status: :pending,
+                  due_offset_days: -5,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Refine Q&A responses",
+                  description: "Prepare answers to investor questions.",
+                  assignee: :owner,
+                  status: :pending,
+                  due_offset_days: -1,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            },
+            %{
+              title: "Investor meetings scheduled",
+              status: :pending,
+              tasks: [
+                %{
+                  name: "Finalize target investor list",
+                  description: "Create the prioritized investor outreach list.",
+                  assignee: :owner,
+                  status: :in_progress,
+                  due_offset_days: -10,
+                  priority: "high",
+                  size: "medium"
+                },
+                %{
+                  name: "Send intro emails",
+                  description: "Send outreach emails and track responses.",
+                  assignee: :martin_smith,
+                  status: :pending,
+                  due_offset_days: -5,
+                  priority: "medium",
+                  size: "small"
+                },
+                %{
+                  name: "Coordinate calendar availability",
+                  description: "Schedule meetings and confirm attendees.",
+                  assignee: :martin_smith,
+                  status: :pending,
+                  due_offset_days: -1,
+                  priority: "low",
+                  size: "small"
+                }
+              ]
+            }
           ]
         }
       ],
@@ -600,25 +2217,25 @@ defmodule Operately.Demo.Data do
           key: :market_expansion_update,
           space: :marketing_space,
           author: :emily_davis,
-          title: "Market Expansion Update: Germany & Spain Progress",
+          title: "Market Expansion Update: Enterprise & International Progress",
           content: """
-          Quick update on our market expansion efforts! Our research in Germany is progressing well, with some valuable insights from our Berlin-based consultant. Key findings suggest strong demand for our collaborative features among German SMEs.
+          Quick update on our market expansion efforts! Our research in Enterprise market is progressing well, with some valuable insights from our specialist consultant. Key findings suggest strong demand for our collaborative features among Enterprise clients.
 
-          For Spanish-speaking markets, we're adapting our approach based on recent user feedback. The "Siesta-Friendly" scheduling feature concept has received positive initial responses, though we're still working through some UX challenges.
+          For International markets, we're adapting our approach based on recent user feedback. The "Timezone-Smart" scheduling feature concept has received positive initial responses, though we're still working through some UX challenges.
 
           Next steps:
-          - Finalizing German market entry strategy
-          - Recruiting local partners in Madrid
-          - Adapting our UI for Spanish-speaking users
+          - Finalizing Enterprise market entry strategy
+          - Recruiting local partners in Global hubs
+          - Adapting our UI for International users
           """,
           comments: [
             %{
               author: :paul_young,
-              content: "The Berlin tech community has been very receptive during our initial outreach. We should have our full market analysis ready by next week."
+              content: "The Enterprise tech community has been very receptive during our initial outreach. We should have our full market analysis ready by next week."
             },
             %{
               author: :rachel_king,
-              content: "Working with the product team on the Spanish localization. We might need to bring in a local UX consultant to help with cultural nuances."
+              content: "Working with the product team on the International localization. We might need to bring in a local UX consultant to help with cultural nuances."
             }
           ]
         },
@@ -891,14 +2508,14 @@ defmodule Operately.Demo.Data do
 
           ### Target Markets
 
-          Germany
+          Enterprise Market
 
           - Market size: €2.8B
           - Key competitors
           - Entry barriers
           - Growth potential
 
-          Spain
+          International Market
 
           - Market size: €1.5B
           - Cultural considerations
