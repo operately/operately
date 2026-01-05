@@ -357,8 +357,17 @@ defmodule Operately.Demo.Data do
               size: "medium"
             },
             %{
-              name: "Publish Germany research summary",
-              description: "Compile the Germany research findings into a shareable summary deck.",
+              name: "Design swag for annual conference",
+              description: "Create designs for t-shirts, stickers, and booths.",
+              assignee: :olivia_hall,
+              status: :pending,
+              due_in_days: 14,
+              priority: "medium",
+              size: "small"
+            },
+            %{
+              name: "Publish Enterprise research summary",
+              description: "Compile the Enterprise research findings into a shareable summary deck.",
               assignee: :paul_young,
               status: :pending,
               due_in_days: 9,
@@ -375,8 +384,8 @@ defmodule Operately.Demo.Data do
               size: "small"
             },
             %{
-              name: "Draft Spanish market launch messaging",
-              description: "Write messaging for landing pages, ads, and onboarding for Spain.",
+              name: "Draft International market launch messaging",
+              description: "Write messaging for landing pages, ads, and onboarding for International markets.",
               assignee: :rachel_king,
               status: :in_progress,
               due_in_days: 7,
@@ -384,7 +393,7 @@ defmodule Operately.Demo.Data do
               size: "medium"
             },
             %{
-              name: "Set up UTM tracking for Germany campaign",
+              name: "Set up UTM tracking for Enterprise campaign",
               description: "Standardize campaign tags and validate tracking dashboards.",
               assignee: :paul_young,
               status: :in_progress,
@@ -588,9 +597,9 @@ defmodule Operately.Demo.Data do
             %{name: "Expand to new countries", from: 0, to: 2, unit: "countries"}
           ],
           update: %{
-            content: "Market research for Germany is progressing well, but we're facing challenges in adapting our product for Spanish-speaking markets. We may need to reassess our timeline.",
-            target_values: [0, 0]
-          }
+              content: "Market research for Enterprise market is progressing well, but we're facing challenges in adapting our product for International markets. We may need to reassess our timeline.",
+              target_values: [0, 0]
+            }
         },
         %{
           key: :improve_product,
@@ -893,7 +902,7 @@ defmodule Operately.Demo.Data do
                 %{
                   name: "Validate wallet provider options",
                   description: "Compare wallet providers for cost, security, and user experience.",
-                  assignee: :olivia_hall,
+                  assignee: :owner,
                   status: :in_progress,
                   due_offset_days: -10,
                   priority: "high",
@@ -988,8 +997,8 @@ defmodule Operately.Demo.Data do
           ]
         },
         %{
-          key: :conduct_market_research_germany,
-          name: "Conduct market research for expansion into Germany",
+          key: :conduct_market_research_enterprise,
+          name: "Conduct market research for expansion into Enterprise",
           space: :marketing_space,
           champion: :paul_young,
           reviewer: :emily_davis,
@@ -997,14 +1006,14 @@ defmodule Operately.Demo.Data do
             %{person: :paul_young, responsibility: "Market Research Analyst"}
           ],
           goal: :expand_into_new_markets,
-          description: "This project is crucial for our expansion into the German market. We'll conduct comprehensive market research, including hiring a local consultant, attending relevant conferences, and conducting focus groups with potential users. The research will cover competitor analysis, local work habits, and cultural preferences. The insights gained will inform our product localization strategy and go-to-market approach for Germany.",
+          description: "This project is crucial for our expansion into the Enterprise market. We'll conduct comprehensive market research, including hiring a specialist consultant, attending relevant conferences, and conducting focus groups with potential users. The research will cover competitor analysis, local work habits, and cultural preferences. The insights gained will inform our product localization strategy and go-to-market approach for Enterprise.",
           check_in: %{
             status: :on_track,
             content: "Research is progressing well. We've identified key competitors and potential partners. On track to present findings next week."
           },
           milestones: [
             %{
-              title: "Berlin-based consultant hired",
+              title: "Specialist consultant hired",
               status: :done,
               tasks: [
                 %{
@@ -1074,7 +1083,7 @@ defmodule Operately.Demo.Data do
               status: :pending,
               tasks: [
                 %{
-                  name: "Recruit German SMB participants",
+                  name: "Recruit Enterprise participants",
                   description: "Recruit at least 12 participants for the sessions.",
                   assignee: :paul_young,
                   status: :in_progress,
@@ -1138,8 +1147,8 @@ defmodule Operately.Demo.Data do
           ]
         },
         %{
-          key: :develop_spanish_localization,
-          name: "Develop localization strategy for Spanish-speaking markets",
+          key: :develop_international_expansion,
+          name: "Develop localization strategy for International markets",
           space: :marketing_space,
           champion: :rachel_king,
           reviewer: :emily_davis,
@@ -1147,18 +1156,18 @@ defmodule Operately.Demo.Data do
             %{person: :rachel_king, responsibility: "Localization Specialist"}
           ],
           goal: :expand_into_new_markets,
-          description: "Let's focus on adapting our product for Spanish-speaking markets. We'll develop culturally relevant features like a 'Siesta-Friendly' scheduling option and a 'Fiesta Mode' UI theme. The project includes localizing product copy and establishing partnerships with local coworking spaces for beta testing. Success will be measured by user adoption and engagement rates in Spanish-speaking regions.",
+          description: "Let's focus on adapting our product for International markets. We'll develop culturally relevant features like a 'Timezone-Smart' scheduling option and a 'Cultural-Theme' UI theme. The project includes localizing product copy and establishing partnerships with local coworking spaces for beta testing. Success will be measured by user adoption and engagement rates in International regions.",
           check_in: %{
             status: :caution,
             content: "Facing challenges in adapting our UI for cultural preferences. May need to bring in a local UX consultant to assist."
           },
           milestones: [
             %{
-              title: "\"Siesta-Friendly\" feature conceptualized",
+              title: "\"Timezone-Smart\" feature conceptualized",
               status: :done,
               tasks: [
                 %{
-                  name: "Interview Spain-based users",
+                  name: "Interview International users",
                   description: "Run interviews to capture local scheduling needs.",
                   assignee: :rachel_king,
                   status: :done,
@@ -1200,8 +1209,8 @@ defmodule Operately.Demo.Data do
                   size: "medium"
                 },
                 %{
-                  name: "Review tone and regionalisms",
-                  description: "Ensure language matches regional Spanish norms.",
+                  name: "Review tone and cultural nuances",
+                  description: "Ensure language matches regional norms.",
                   assignee: :emily_davis,
                   status: :done,
                   due_offset_days: -6,
@@ -1220,7 +1229,7 @@ defmodule Operately.Demo.Data do
               ]
             },
             %{
-              title: "Madrid coworking space partnerships established",
+              title: "Global coworking space partnerships established",
               status: :done,
               tasks: [
                 %{
@@ -1253,7 +1262,7 @@ defmodule Operately.Demo.Data do
               ]
             },
             %{
-              title: "\"Fiesta Mode\" UI theme developed",
+              title: "\"Cultural-Theme\" UI theme developed",
               status: :pending,
               tasks: [
                 %{
@@ -2208,25 +2217,25 @@ defmodule Operately.Demo.Data do
           key: :market_expansion_update,
           space: :marketing_space,
           author: :emily_davis,
-          title: "Market Expansion Update: Germany & Spain Progress",
+          title: "Market Expansion Update: Enterprise & International Progress",
           content: """
-          Quick update on our market expansion efforts! Our research in Germany is progressing well, with some valuable insights from our Berlin-based consultant. Key findings suggest strong demand for our collaborative features among German SMEs.
+          Quick update on our market expansion efforts! Our research in Enterprise market is progressing well, with some valuable insights from our specialist consultant. Key findings suggest strong demand for our collaborative features among Enterprise clients.
 
-          For Spanish-speaking markets, we're adapting our approach based on recent user feedback. The "Siesta-Friendly" scheduling feature concept has received positive initial responses, though we're still working through some UX challenges.
+          For International markets, we're adapting our approach based on recent user feedback. The "Timezone-Smart" scheduling feature concept has received positive initial responses, though we're still working through some UX challenges.
 
           Next steps:
-          - Finalizing German market entry strategy
-          - Recruiting local partners in Madrid
-          - Adapting our UI for Spanish-speaking users
+          - Finalizing Enterprise market entry strategy
+          - Recruiting local partners in Global hubs
+          - Adapting our UI for International users
           """,
           comments: [
             %{
               author: :paul_young,
-              content: "The Berlin tech community has been very receptive during our initial outreach. We should have our full market analysis ready by next week."
+              content: "The Enterprise tech community has been very receptive during our initial outreach. We should have our full market analysis ready by next week."
             },
             %{
               author: :rachel_king,
-              content: "Working with the product team on the Spanish localization. We might need to bring in a local UX consultant to help with cultural nuances."
+              content: "Working with the product team on the International localization. We might need to bring in a local UX consultant to help with cultural nuances."
             }
           ]
         },
@@ -2499,14 +2508,14 @@ defmodule Operately.Demo.Data do
 
           ### Target Markets
 
-          Germany
+          Enterprise Market
 
           - Market size: €2.8B
           - Key competitors
           - Entry barriers
           - Growth potential
 
-          Spain
+          International Market
 
           - Market size: €1.5B
           - Cultural considerations
