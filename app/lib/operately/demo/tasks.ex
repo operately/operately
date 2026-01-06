@@ -1,10 +1,12 @@
 defmodule Operately.Demo.Tasks do
   alias Operately.ContextualDates.ContextualDate
-  alias Operately.Demo.{Resources, RichText}
+  alias Operately.Demo.{Resources, RichText, Comments}
   alias Operately.Notifications
   alias Operately.Tasks
 
-  def create_task(attrs, assignee_id \\ nil) do
+  def create_task(resources, attrs, assignee_id \\ nil) do
+    {comments, attrs} = Map.pop(attrs, :comments)
+
     {:ok, subscription_list} = Notifications.create_subscription_list()
 
     attrs =
@@ -23,6 +25,8 @@ defmodule Operately.Demo.Tasks do
     if assignee_id do
       {:ok, _} = Tasks.create_assignee(%{task_id: task.id, person_id: assignee_id})
     end
+
+    Comments.create_comments(resources, task, comments)
 
     task
   end
