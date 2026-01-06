@@ -84,13 +84,15 @@ defmodule Operately.Support.Factory.Projects do
     role = Keyword.get(opts, :role, :contributor)
     level = Keyword.get(opts, :permissions, :edit_access)
     responsibility = Keyword.get(opts, :responsibility, "Project Manager & Developer")
+    person_type = Keyword.get(opts, :person_type, :human)
 
     person =
       case Keyword.get(opts, testid) do
         nil ->
           Operately.PeopleFixtures.person_fixture_with_account(%{
             company_id: ctx.company.id,
-            full_name: name
+            full_name: name,
+            type: person_type
           })
 
         person ->

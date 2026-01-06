@@ -177,6 +177,26 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       assert res.project.contributors == Serializer.serialize(Operately.Projects.list_project_contributors(project), level: :essential)
     end
 
+    test "include_contributors excludes non-humans", ctx do
+      ctx = Factory.add_company_member(ctx, :creator)
+        |> Factory.add_space(:space)
+        |> Factory.add_project(:project, :space)
+        |> Factory.add_project_contributor(:contrib1, :project)
+        |> Factory.add_project_contributor(:contrib2, :project)
+        |> Factory.add_project_contributor(:ai, :project, person_type: :ai)
+
+      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(ctx.project), include_contributors: true})
+
+      contributors = res.project.contributors
+
+      [ctx.contrib1, ctx.contrib2]
+      |> Enum.each(fn contrib ->
+        assert Enum.find(contributors, &(equal_ids?(&1.person.id, contrib.person_id)))
+      end)
+
+      refute Enum.find(contributors, &(equal_ids?(&1.person.id, ctx.ai.person_id)))
+    end
+
     test "include_goal", ctx do
       project = create_project(ctx)
 
@@ -311,6 +331,29 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
         candidate = Enum.find(res.project.potential_subscribers, &(equal_ids?(&1.person.id, contrib.person_id)))
         refute candidate.priority
       end)
+    end
+
+    test "include_potential_subscribers excludes non-humans", ctx do
+      ctx = Factory.add_company_member(ctx, :creator)
+        |> Factory.add_space(:space)
+        |> Factory.add_project(:project, :space)
+        |> Factory.add_project_contributor(:champion, :project, role: :champion)
+        |> Factory.add_project_contributor(:reviewer, :project, role: :reviewer)
+        |> Factory.add_project_contributor(:contrib1, :project)
+        |> Factory.add_project_contributor(:contrib2, :project)
+        |> Factory.add_project_contributor(:ai, :project, person_type: :ai)
+
+      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(ctx.project), include_potential_subscribers: true})
+
+      subs = res.project.potential_subscribers
+
+      [ctx.reviewer, ctx.champion, ctx.contrib1, ctx.contrib2]
+      |> Enum.each(fn contrib ->
+        candidate = Enum.find(subs, &(equal_ids?(&1.person.id, contrib.person_id)))
+        assert candidate
+      end)
+
+      refute Enum.find(subs, &(equal_ids?(&1.person.id, ctx.ai.person_id)))
     end
 
     test "include_milestones", ctx do
