@@ -4,6 +4,7 @@ import { Paths } from "@/routes/paths";
 import { parseMilestoneForTurboUi } from "../milestones";
 import { parseContent, richContentToString } from "turboui";
 import { StatusSelector, TaskBoard } from "turboui";
+import { parsePeopleForTurboUi } from "../people";
 
 export type { Task, EditMilestoneOrderingStateInput } from "@/api";
 export { useTasksForTurboUi } from "./useTasksForTurboUi";
@@ -39,7 +40,7 @@ export function parseTaskForTurboUi(paths: Paths, task: BackendTask, type: "proj
     status: parseTaskStatusForTurboUi(task.status),
     description: task.description || null,
     link: paths.taskPath(task.id),
-    assignees: task.assignees || [],
+    assignees: parsePeopleForTurboUi(paths, task.assignees || []),
     milestone: task.milestone ? parseMilestoneForTurboUi(paths, task.milestone) : null,
     dueDate: parseContextualDate(task.dueDate),
     hasDescription: richContentToString(description).trim().length > 0,
