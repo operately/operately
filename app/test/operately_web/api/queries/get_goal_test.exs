@@ -399,6 +399,8 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(ctx.goal), include_potential_subscribers: true})
       subs = res.goal.potential_subscribers
 
+      assert length(subs) == 5
+
       [ctx.reviewer, ctx.creator]
       |> Enum.each(fn contrib ->
         candidate = Enum.find(subs, &(&1.person.id == Paths.person_id(contrib)))
@@ -411,16 +413,62 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
         refute candidate.priority
       end)
     end
+
+    test "include_potential_subscribers excludes non-humans", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:creator)
+        |> Factory.add_company_member(:reviewer)
+        |> Factory.add_space(:space)
+        |> Factory.add_goal(:goal, :space, champion: :creator, reviewer: :reviewer)
+        |> Factory.add_space_member(:member1, :space)
+        |> Factory.add_space_member(:member2, :space)
+        |> Factory.add_space_member(:ai, :space, person_type: :ai)
+
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(ctx.goal), include_potential_subscribers: true})
+
+      subs = res.goal.potential_subscribers
+
+      [ctx.reviewer, ctx.creator, ctx.member1, ctx.member2]
+      |> Enum.each(fn member ->
+        assert Enum.find(subs, &(&1.person.id == Paths.person_id(member)))
+      end)
+
+      refute Enum.find(subs, &(&1.person.id == Paths.person_id(ctx.ai)))
+    end
+
+    test "include_space_members excludes non-humans", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:creator)
+        |> Factory.add_company_member(:reviewer)
+        |> Factory.add_space(:space)
+        |> Factory.add_goal(:goal, :space, champion: :creator, reviewer: :reviewer)
+        |> Factory.add_space_member(:member1, :space)
+        |> Factory.add_space_member(:member2, :space)
+        |> Factory.add_space_member(:ai, :space, person_type: :ai)
+
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(ctx.goal), include_space_members: true})
+      members = res.goal.space.members
+
+      [ctx.creator, ctx.member1, ctx.member2]
+      |> Enum.each(fn member ->
+        assert Enum.find(members, &(&1.id == Paths.person_id(member)))
+      end)
+
+      # Ensure AI is NOT there
+      refute Enum.find(members, &(&1.id == Paths.person_id(ctx.ai)))
+    end
   end
 
   #
   # Helpers
   #
 
-  defp add_person_to_space(ctx) do
+  defp add_person_to_space(ctx, person \\ nil) do
     Operately.Groups.add_members(ctx.person, ctx.space.id, [
       %{
-        id: ctx.person.id,
+        id: person || ctx.person.id,
         access_level: Binding.edit_access()
       }
     ])
