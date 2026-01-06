@@ -194,7 +194,17 @@ defmodule Operately.Demo.Data do
               status: :in_progress,
               due_in_days: 5,
               priority: "high",
-              size: "medium"
+              size: "medium",
+              comments: [
+                %{
+                  author: :liam_harris,
+                  content: "I've started tagging the feedback. Most of it is about the new notifications UI."
+                },
+                %{
+                  author: :walter_baker,
+                  content: "Great, let's sync on this tomorrow."
+                }
+              ]
             },
             %{
               name: "Finalize collaboration UI specs",
@@ -203,7 +213,17 @@ defmodule Operately.Demo.Data do
               status: :pending,
               due_in_days: 12,
               priority: "medium",
-              size: "small"
+              size: "small",
+              comments: [
+                %{
+                  author: :frank_miller,
+                  content: "Make sure to include the new accessibility requirements we discussed."
+                },
+                %{
+                  author: :liam_harris,
+                  content: "Will do. I'm adding a section for that now."
+                }
+              ]
             },
             %{
               name: "Draft Q2 roadmap narrative",
@@ -212,7 +232,17 @@ defmodule Operately.Demo.Data do
               status: :in_progress,
               due_in_days: -3,
               priority: "medium",
-              size: "medium"
+              size: "medium",
+              comments: [
+                %{
+                  author: :martin_smith,
+                  content: "Do we have the final budget numbers for Q2 yet? I need them for the narrative."
+                },
+                %{
+                  author: :owner,
+                  content: "Not yet, Martin is finalizing them this week. Use placeholders for now."
+                }
+              ]
             },
             %{
               name: "Instrument collaboration usage metrics",
@@ -221,7 +251,17 @@ defmodule Operately.Demo.Data do
               status: :in_progress,
               due_in_days: 6,
               priority: "high",
-              size: "medium"
+              size: "medium",
+              comments: [
+                %{
+                  author: :david_brown,
+                  content: "Are we tracking session duration per user?"
+                },
+                %{
+                  author: :walter_baker,
+                  content: "Yes, and also the number of concurrent editors."
+                }
+              ]
             },
             %{
               name: "QA pass for real-time sync edge cases",
@@ -230,7 +270,8 @@ defmodule Operately.Demo.Data do
               status: :pending,
               due_in_days: 10,
               priority: "high",
-              size: "large"
+              size: "large",
+              comments: []
             },
             %{
               name: "Plan beta onboarding email flow",
@@ -239,7 +280,13 @@ defmodule Operately.Demo.Data do
               status: :pending,
               due_in_days: 8,
               priority: "medium",
-              size: "small"
+              size: "small",
+              comments: [
+                %{
+                  author: :rachel_king,
+                  content: "I have some templates from the last launch we can reuse."
+                }
+              ]
             },
             %{
               name: "Review accessibility pass for new components",
@@ -248,7 +295,13 @@ defmodule Operately.Demo.Data do
               status: :pending,
               due_in_days: 14,
               priority: "low",
-              size: "small"
+              size: "small",
+              comments: [
+                %{
+                  author: :grace_wilson,
+                  content: "Please ensure we meet WCAG 2.1 AA standards."
+                }
+              ]
             },
             %{
               name: "Scope permissions control phase 2",
@@ -257,7 +310,13 @@ defmodule Operately.Demo.Data do
               status: :canceled,
               due_in_days: -2,
               priority: "medium",
-              size: "medium"
+              size: "medium",
+              comments: [
+                %{
+                  author: :frank_miller,
+                  content: "Canceling this for now as we decided to push it to Q3."
+                }
+              ]
             },
             %{
               name: "Close out collaboration launch release notes",
@@ -266,7 +325,13 @@ defmodule Operately.Demo.Data do
               status: :done,
               due_in_days: -1,
               priority: "low",
-              size: "small"
+              size: "small",
+              comments: [
+                %{
+                  author: :emily_davis,
+                  content: "Looks good! Ready for publication."
+                }
+              ]
             }
           ]
         },
@@ -285,7 +350,17 @@ defmodule Operately.Demo.Data do
               status: :in_progress,
               due_in_days: 6,
               priority: "medium",
-              size: "small"
+              size: "small",
+              comments: [
+                %{
+                  author: :owner,
+                  content: "Don't forget to add the new security training module."
+                },
+                %{
+                  author: :karen_martinez,
+                  content: "Added. I also updated the links to the handbook."
+                }
+              ]
             },
             %{
               name: "Schedule Q1 skill-sharing sessions",
@@ -294,7 +369,17 @@ defmodule Operately.Demo.Data do
               status: :pending,
               due_in_days: 12,
               priority: "medium",
-              size: "small"
+              size: "small",
+              comments: [
+                %{
+                  author: :walter_baker,
+                  content: "I'd love to do a session on Elixir macro debugging."
+                },
+                %{
+                  author: :karen_martinez,
+                  content: "That sounds great, Walter! I'll put you down for February."
+                }
+              ]
             },
             %{
               name: "Prepare performance review guidelines",
@@ -303,7 +388,8 @@ defmodule Operately.Demo.Data do
               status: :in_progress,
               due_in_days: 18,
               priority: "high",
-              size: "medium"
+              size: "medium",
+              comments: []
             },
             %{
               name: "Coordinate benefits renewal with broker",
@@ -312,7 +398,13 @@ defmodule Operately.Demo.Data do
               status: :pending,
               due_in_days: 14,
               priority: "high",
-              size: "medium"
+              size: "medium",
+              comments: [
+                %{
+                  author: :martin_smith,
+                  content: "Let's try to keep the premium increase under 5% this year."
+                }
+              ]
             },
             %{
               name: "Collect feedback on remote work policy",
@@ -321,7 +413,13 @@ defmodule Operately.Demo.Data do
               status: :done,
               due_in_days: -5,
               priority: "low",
-              size: "small"
+              size: "small",
+              comments: [
+                %{
+                  author: :karen_martinez,
+                  content: "Survey results are in. Overall sentiment is very positive."
+                }
+              ]
             },
             %{
               name: "Launch mentorship program pilot",
@@ -330,7 +428,17 @@ defmodule Operately.Demo.Data do
               status: :pending,
               due_in_days: 22,
               priority: "medium",
-              size: "large"
+              size: "large",
+              comments: [
+                %{
+                  author: :frank_miller,
+                  content: "Can I sign up as a mentor?"
+                },
+                %{
+                  author: :karen_martinez,
+                  content: "Absolutely! We need more senior leaders involved."
+                }
+              ]
             }
           ],
           privacy: :invite_only
@@ -354,7 +462,17 @@ defmodule Operately.Demo.Data do
               status: :in_progress,
               due_in_days: 4,
               priority: "high",
-              size: "medium"
+              size: "medium",
+              comments: [
+                %{
+                  author: :rachel_king,
+                  content: "How are the numbers looking compared to last month?"
+                },
+                %{
+                  author: :noah_lewis,
+                  content: "Up by 15%. The new incentives are working."
+                }
+              ]
             },
             %{
               name: "Design swag for annual conference",
@@ -363,7 +481,13 @@ defmodule Operately.Demo.Data do
               status: :pending,
               due_in_days: 14,
               priority: "medium",
-              size: "small"
+              size: "small",
+              comments: [
+                %{
+                  author: :emily_davis,
+                  content: "Let's stick to the new color palette."
+                }
+              ]
             },
             %{
               name: "Publish Enterprise research summary",
@@ -372,7 +496,8 @@ defmodule Operately.Demo.Data do
               status: :pending,
               due_in_days: 9,
               priority: "medium",
-              size: "large"
+              size: "large",
+              comments: []
             },
             %{
               name: "Finalize Q1 campaign calendar",
@@ -381,7 +506,17 @@ defmodule Operately.Demo.Data do
               status: :done,
               due_in_days: -2,
               priority: "medium",
-              size: "small"
+              size: "small",
+              comments: [
+                %{
+                  author: :noah_lewis,
+                  content: "Are we aligning this with the product launch dates?"
+                },
+                %{
+                  author: :rachel_king,
+                  content: "Yes, blocked out the weeks of the launch for dedicated promotion."
+                }
+              ]
             },
             %{
               name: "Draft International market launch messaging",
@@ -390,7 +525,13 @@ defmodule Operately.Demo.Data do
               status: :in_progress,
               due_in_days: 7,
               priority: "high",
-              size: "medium"
+              size: "medium",
+              comments: [
+                %{
+                  author: :paul_young,
+                  content: "Make sure to emphasize our local support availability."
+                }
+              ]
             },
             %{
               name: "Set up UTM tracking for Enterprise campaign",
@@ -399,7 +540,13 @@ defmodule Operately.Demo.Data do
               status: :in_progress,
               due_in_days: 3,
               priority: "high",
-              size: "small"
+              size: "small",
+              comments: [
+                %{
+                  author: :noah_lewis,
+                  content: "Double-check the source parameters for LinkedIn ads."
+                }
+              ]
             },
             %{
               name: "Publish customer story for collaboration beta",
@@ -408,7 +555,13 @@ defmodule Operately.Demo.Data do
               status: :done,
               due_in_days: -4,
               priority: "medium",
-              size: "medium"
+              size: "medium",
+              comments: [
+                %{
+                  author: :olivia_hall,
+                  content: "The photos from the on-site visit turned out great."
+                }
+              ]
             },
             %{
               name: "Refresh paid social creative briefs",
@@ -417,7 +570,13 @@ defmodule Operately.Demo.Data do
               status: :pending,
               due_in_days: 6,
               priority: "medium",
-              size: "small"
+              size: "small",
+              comments: [
+                %{
+                  author: :olivia_hall,
+                  content: "I need these by Friday to start design work."
+                }
+              ]
             },
             %{
               name: "Compile competitive ad spend estimates",
@@ -426,7 +585,13 @@ defmodule Operately.Demo.Data do
               status: :canceled,
               due_in_days: -1,
               priority: "low",
-              size: "small"
+              size: "small",
+              comments: [
+                %{
+                  author: :martin_smith,
+                  content: "This data will be useful for the board deck."
+                }
+              ]
             },
             %{
               name: "Create referral program FAQ page",
@@ -435,7 +600,13 @@ defmodule Operately.Demo.Data do
               status: :done,
               due_in_days: -2,
               priority: "low",
-              size: "small"
+              size: "small",
+              comments: [
+                %{
+                  author: :tina_scott,
+                  content: "Can we add a section about reward expiration?"
+                }
+              ]
             },
             %{
               name: "Plan webinar calendar for Q2",
@@ -444,7 +615,8 @@ defmodule Operately.Demo.Data do
               status: :in_progress,
               due_in_days: 20,
               priority: "medium",
-              size: "large"
+              size: "large",
+              comments: []
             },
             %{
               name: "Book influencer partnerships for referral launch",
@@ -453,7 +625,13 @@ defmodule Operately.Demo.Data do
               status: :pending,
               due_in_days: 15,
               priority: "medium",
-              size: "medium"
+              size: "medium",
+              comments: [
+                %{
+                  author: :rachel_king,
+                  content: "Focus on influencers in the B2B SaaS space."
+                }
+              ]
             }
           ]
         },
@@ -472,7 +650,17 @@ defmodule Operately.Demo.Data do
               status: :done,
               due_in_days: -3,
               priority: "high",
-              size: "medium"
+              size: "medium",
+              comments: [
+                %{
+                  author: :owner,
+                  content: "Let me know when the preliminary numbers are ready."
+                },
+                %{
+                  author: :martin_smith,
+                  content: "Should be done by EOD tomorrow."
+                }
+              ]
             },
             %{
               name: "Update cash runway model",
@@ -481,7 +669,17 @@ defmodule Operately.Demo.Data do
               status: :in_progress,
               due_in_days: 5,
               priority: "high",
-              size: "medium"
+              size: "medium",
+              comments: [
+                %{
+                  author: :david_brown,
+                  content: "Does this include the new hires for engineering?"
+                },
+                %{
+                  author: :martin_smith,
+                  content: "Yes, factored in 3 new devs starting in Q2."
+                }
+              ]
             },
             %{
               name: "Review vendor contract renewals",
@@ -490,7 +688,13 @@ defmodule Operately.Demo.Data do
               status: :canceled,
               due_in_days: -4,
               priority: "medium",
-              size: "small"
+              size: "small",
+              comments: [
+                %{
+                  author: :grace_wilson,
+                  content: "Please check the termination clauses on the software contracts."
+                }
+              ]
             },
             %{
               name: "Prepare board finance update",
@@ -499,7 +703,8 @@ defmodule Operately.Demo.Data do
               status: :in_progress,
               due_in_days: 12,
               priority: "high",
-              size: "medium"
+              size: "medium",
+              comments: []
             },
             %{
               name: "Reconcile ARR and churn report",
@@ -508,7 +713,13 @@ defmodule Operately.Demo.Data do
               status: :pending,
               due_in_days: 7,
               priority: "high",
-              size: "small"
+              size: "small",
+              comments: [
+                %{
+                  author: :martin_smith,
+                  content: "Found a discrepancy in the Enterprise tier churn calculations. Investigating."
+                }
+              ]
             },
             %{
               name: "Collect department budget inputs",
@@ -517,7 +728,17 @@ defmodule Operately.Demo.Data do
               status: :pending,
               due_in_days: 15,
               priority: "medium",
-              size: "large"
+              size: "large",
+              comments: [
+                %{
+                  author: :frank_miller,
+                  content: "Product team budget submitted."
+                },
+                %{
+                  author: :emily_davis,
+                  content: "Marketing budget coming in shortly."
+                }
+              ]
             }
           ]
         }
@@ -723,7 +944,13 @@ defmodule Operately.Demo.Data do
                   status: :done,
                   due_offset_days: -12,
                   priority: "high",
-                  size: "medium"
+                  size: "medium",
+                  comments: [
+                    %{
+                      author: :noah_lewis,
+                      content: "Scheduled 3 interviews so far."
+                    }
+                  ]
                 },
                 %{
                   name: "Synthesize ICP attributes",
@@ -732,7 +959,13 @@ defmodule Operately.Demo.Data do
                   status: :done,
                   due_offset_days: -6,
                   priority: "medium",
-                  size: "small"
+                  size: "small",
+                  comments: [
+                    %{
+                      author: :emily_davis,
+                      content: "Look for commonalities in their tech stack."
+                    }
+                  ]
                 },
                 %{
                   name: "Publish ICP doc in resource hub",
@@ -741,7 +974,8 @@ defmodule Operately.Demo.Data do
                   status: :done,
                   due_offset_days: -2,
                   priority: "low",
-                  size: "small"
+                  size: "small",
+                  comments: []
                 }
               ]
             },
@@ -756,7 +990,13 @@ defmodule Operately.Demo.Data do
                   status: :done,
                   due_offset_days: -12,
                   priority: "high",
-                  size: "medium"
+                  size: "medium",
+                  comments: [
+                    %{
+                      author: :rachel_king,
+                      content: "Just static images for now."
+                    }
+                  ]
                 },
                 %{
                   name: "Design and export ad creatives",
@@ -765,7 +1005,13 @@ defmodule Operately.Demo.Data do
                   status: :done,
                   due_offset_days: -6,
                   priority: "medium",
-                  size: "small"
+                  size: "small",
+                  comments: [
+                    %{
+                      author: :noah_lewis,
+                      content: "Please include a variation with the dark theme."
+                    }
+                  ]
                 },
                 %{
                   name: "QA campaign setup and tracking",
@@ -774,7 +1020,8 @@ defmodule Operately.Demo.Data do
                   status: :done,
                   due_offset_days: -2,
                   priority: "low",
-                  size: "small"
+                  size: "small",
+                  comments: []
                 }
               ]
             },
@@ -789,28 +1036,88 @@ defmodule Operately.Demo.Data do
                   status: :in_progress,
                   due_offset_days: -10,
                   priority: "high",
-                  size: "medium"
+                  size: "medium",
+                  comments: [
+                    %{
+                      author: :martin_smith,
+                      content: "Ensure we're tracking CAC payback period."
+                    }
+                  ]
                 },
                 %{
-                  name: "Analyze results by persona",
-                  description: "Compare variant performance across target segments.",
-                  assignee: :paul_young,
-                  status: :canceled,
+                  name: "Analyze winner and loser creatives",
+                  description: "Identify patterns in high-performing visuals and copy.",
+                  assignee: :rachel_king,
+                  status: :pending,
                   due_offset_days: -5,
                   priority: "medium",
-                  size: "small"
+                  size: "small",
+                  comments: [
+                    %{
+                      author: :rachel_king,
+                      content: "The 'Team Collaboration' angle seems to be performing best."
+                    }
+                  ]
                 },
                 %{
-                  name: "Recommend winning creatives",
-                  description: "Document winners and propose next iteration ideas.",
-                  assignee: :rachel_king,
+                  name: "Present findings to growth team",
+                  description: "Share insights and propose next steps.",
+                  assignee: :noah_lewis,
                   status: :pending,
                   due_offset_days: -1,
                   priority: "low",
-                  size: "small"
+                  size: "small",
+                  comments: []
                 }
               ]
             },
+            %{
+              title: "Next iteration planned",
+              status: :pending,
+              tasks: [
+                %{
+                  name: "Brainstorm new creative angles",
+                  description: "Ideate new concepts based on test learnings.",
+                  assignee: :olivia_hall,
+                  status: :in_progress,
+                  due_offset_days: -10,
+                  priority: "high",
+                  size: "medium",
+                  comments: [
+                    %{
+                      author: :olivia_hall,
+                      content: "Let's try a video ad next."
+                    }
+                  ]
+                },
+                %{
+                  name: "Update targeting parameters",
+                  description: "Refine audience definitions and exclusions.",
+                  assignee: :noah_lewis,
+                  status: :pending,
+                  due_offset_days: -5,
+                  priority: "medium",
+                  size: "small",
+                  comments: []
+                },
+                %{
+                  name: "Set budget for next sprint",
+                  description: "Allocate spend across successful channels.",
+                  assignee: :emily_davis,
+                  status: :pending,
+                  due_offset_days: -1,
+                  priority: "low",
+                  size: "small",
+                  comments: [
+                    %{
+                      author: :emily_davis,
+                      content: "Approved for a 20% budget increase."
+                    }
+                  ]
+                }
+              ]
+            },
+
             %{
               title: "1000 click-throughs achieved from Stack Overflow",
               status: :pending,
@@ -822,7 +1129,17 @@ defmodule Operately.Demo.Data do
                   status: :in_progress,
                   due_offset_days: -10,
                   priority: "high",
-                  size: "medium"
+                  size: "medium",
+                  comments: [
+                    %{
+                      author: :noah_lewis,
+                      content: "Focusing on the 'Solve complex problems faster' angle."
+                    },
+                    %{
+                      author: :paul_young,
+                      content: "Make sure to mention the API integration capabilities."
+                    }
+                  ]
                 },
                 %{
                   name: "Target top programming tags",
@@ -831,7 +1148,13 @@ defmodule Operately.Demo.Data do
                   status: :pending,
                   due_offset_days: -5,
                   priority: "medium",
-                  size: "small"
+                  size: "small",
+                  comments: [
+                    %{
+                      author: :paul_young,
+                      content: "Prioritizing #elixir, #ruby, and #react tags."
+                    }
+                  ]
                 },
                 %{
                   name: "Monitor spend and optimize bids",
@@ -840,7 +1163,8 @@ defmodule Operately.Demo.Data do
                   status: :pending,
                   due_offset_days: -1,
                   priority: "low",
-                  size: "small"
+                  size: "small",
+                  comments: []
                 }
               ]
             }
@@ -873,7 +1197,17 @@ defmodule Operately.Demo.Data do
                   status: :done,
                   due_offset_days: -12,
                   priority: "high",
-                  size: "medium"
+                  size: "medium",
+                  comments: [
+                    %{
+                      author: :olivia_hall,
+                      content: "Wireframes are attached. Please review the 'Invite Friends' modal."
+                    },
+                    %{
+                      author: :emily_davis,
+                      content: "Looks good. The copy on the success state is very clear."
+                    }
+                  ]
                 },
                 %{
                   name: "Define reward visuals and microcopy",
@@ -882,7 +1216,13 @@ defmodule Operately.Demo.Data do
                   status: :done,
                   due_offset_days: -6,
                   priority: "medium",
-                  size: "small"
+                  size: "small",
+                  comments: [
+                    %{
+                      author: :rachel_king,
+                      content: "Using the gold coin icon for credits."
+                    }
+                  ]
                 },
                 %{
                   name: "QA referral CTA placement",
@@ -891,7 +1231,8 @@ defmodule Operately.Demo.Data do
                   status: :done,
                   due_offset_days: -2,
                   priority: "low",
-                  size: "small"
+                  size: "small",
+                  comments: []
                 }
               ]
             },
@@ -906,7 +1247,21 @@ defmodule Operately.Demo.Data do
                   status: :in_progress,
                   due_offset_days: -10,
                   priority: "high",
-                  size: "medium"
+                  size: "medium",
+                  comments: [
+                    %{
+                      author: :owner,
+                      content: "Metamask seems too complex for our target user."
+                    },
+                    %{
+                      author: :paul_young,
+                      content: "Agreed. Let's look at custodial options like Magic or Privy."
+                    },
+                    %{
+                      author: :owner,
+                      content: "Good call. Investigating Magic.link pricing."
+                    }
+                  ]
                 },
                 %{
                   name: "Implement reward ledger schema",
@@ -915,7 +1270,13 @@ defmodule Operately.Demo.Data do
                   status: :pending,
                   due_offset_days: -5,
                   priority: "medium",
-                  size: "small"
+                  size: "small",
+                  comments: [
+                    %{
+                      author: :paul_young,
+                      content: "Draft schema is up for review. It handles partial redemptions."
+                    }
+                  ]
                 },
                 %{
                   name: "Security review of payout flow",
@@ -924,7 +1285,17 @@ defmodule Operately.Demo.Data do
                   status: :pending,
                   due_offset_days: -1,
                   priority: "low",
-                  size: "small"
+                  size: "small",
+                  comments: [
+                    %{
+                      author: :emily_davis,
+                      content: "We need to ensure rate limiting on payout requests."
+                    },
+                    %{
+                      author: :paul_young,
+                      content: "Added to the security checklist."
+                    }
+                  ]
                 }
               ]
             },
@@ -939,7 +1310,17 @@ defmodule Operately.Demo.Data do
                   status: :in_progress,
                   due_offset_days: -10,
                   priority: "high",
-                  size: "medium"
+                  size: "medium",
+                  comments: [
+                    %{
+                      author: :olivia_hall,
+                      content: "Thinking Bronze: 1 referral, Silver: 5, Gold: 10."
+                    },
+                    %{
+                      author: :rachel_king,
+                      content: "Maybe start Silver at 3 to make it more attainable?"
+                    }
+                  ]
                 },
                 %{
                   name: "Update in-app rewards screen",
@@ -948,7 +1329,13 @@ defmodule Operately.Demo.Data do
                   status: :pending,
                   due_offset_days: -5,
                   priority: "medium",
-                  size: "small"
+                  size: "small",
+                  comments: [
+                    %{
+                      author: :rachel_king,
+                      content: "Will reuse the progress bar component from onboarding."
+                    }
+                  ]
                 },
                 %{
                   name: "Draft FAQ and support macros",
@@ -957,7 +1344,8 @@ defmodule Operately.Demo.Data do
                   status: :canceled,
                   due_offset_days: -1,
                   priority: "low",
-                  size: "small"
+                  size: "small",
+                  comments: []
                 }
               ]
             },
@@ -972,7 +1360,13 @@ defmodule Operately.Demo.Data do
                   status: :in_progress,
                   due_offset_days: -10,
                   priority: "high",
-                  size: "medium"
+                  size: "medium",
+                  comments: [
+                    %{
+                      author: :olivia_hall,
+                      content: "Pulling the list of users with NPS > 9."
+                    }
+                  ]
                 },
                 %{
                   name: "Schedule launch email sequence",
@@ -981,7 +1375,17 @@ defmodule Operately.Demo.Data do
                   status: :pending,
                   due_offset_days: -5,
                   priority: "medium",
-                  size: "small"
+                  size: "small",
+                  comments: [
+                    %{
+                      author: :rachel_king,
+                      content: "Drafting the 'You're Invited' email."
+                    },
+                    %{
+                      author: :olivia_hall,
+                      content: "Let's emphasize the exclusivity in the subject line."
+                    }
+                  ]
                 },
                 %{
                   name: "Set up feedback survey",
@@ -990,7 +1394,8 @@ defmodule Operately.Demo.Data do
                   status: :pending,
                   due_offset_days: -1,
                   priority: "low",
-                  size: "small"
+                  size: "small",
+                  comments: []
                 }
               ]
             }
@@ -1023,7 +1428,17 @@ defmodule Operately.Demo.Data do
                   status: :done,
                   due_offset_days: -12,
                   priority: "high",
-                  size: "medium"
+                  size: "medium",
+                  comments: [
+                    %{
+                      author: :paul_young,
+                      content: "Key requirement: Experience with B2B SaaS in DACH region."
+                    },
+                    %{
+                      author: :emily_davis,
+                      content: "Make sure to include a clause about non-compete."
+                    }
+                  ]
                 },
                 %{
                   name: "Review proposals and shortlist",
@@ -1032,7 +1447,13 @@ defmodule Operately.Demo.Data do
                   status: :done,
                   due_offset_days: -6,
                   priority: "medium",
-                  size: "small"
+                  size: "small",
+                  comments: [
+                    %{
+                      author: :rachel_king,
+                      content: "We have 3 strong candidates. Scheduling interviews."
+                    }
+                  ]
                 },
                 %{
                   name: "Finalize contract and kickoff call",
@@ -1041,7 +1462,8 @@ defmodule Operately.Demo.Data do
                   status: :done,
                   due_offset_days: -2,
                   priority: "low",
-                  size: "small"
+                  size: "small",
+                  comments: []
                 }
               ]
             },
@@ -1056,7 +1478,17 @@ defmodule Operately.Demo.Data do
                   status: :in_progress,
                   due_offset_days: -10,
                   priority: "high",
-                  size: "medium"
+                  size: "medium",
+                  comments: [
+                    %{
+                      author: :paul_young,
+                      content: "Aiming for 20 qualified leads."
+                    },
+                    %{
+                      author: :noah_lewis,
+                      content: "Focus on meeting decision makers from FinTech."
+                    }
+                  ]
                 },
                 %{
                   name: "Compile list of target companies",
@@ -1065,7 +1497,13 @@ defmodule Operately.Demo.Data do
                   status: :pending,
                   due_offset_days: -5,
                   priority: "medium",
-                  size: "small"
+                  size: "small",
+                  comments: [
+                    %{
+                      author: :noah_lewis,
+                      content: "Added 50 companies to the target list."
+                    }
+                  ]
                 },
                 %{
                   name: "Book travel and booth materials",
@@ -1074,7 +1512,8 @@ defmodule Operately.Demo.Data do
                   status: :pending,
                   due_offset_days: -1,
                   priority: "low",
-                  size: "small"
+                  size: "small",
+                  comments: []
                 }
               ]
             },
@@ -1089,7 +1528,17 @@ defmodule Operately.Demo.Data do
                   status: :in_progress,
                   due_offset_days: -10,
                   priority: "high",
-                  size: "medium"
+                  size: "medium",
+                  comments: [
+                    %{
+                      author: :paul_young,
+                      content: "Reaching out to our existing waitlist first."
+                    },
+                    %{
+                      author: :rachel_king,
+                      content: "Consider offering an Amazon gift card as an incentive."
+                    }
+                  ]
                 },
                 %{
                   name: "Draft moderator guide and script",
@@ -1098,7 +1547,13 @@ defmodule Operately.Demo.Data do
                   status: :pending,
                   due_offset_days: -5,
                   priority: "medium",
-                  size: "small"
+                  size: "small",
+                  comments: [
+                    %{
+                      author: :rachel_king,
+                      content: "Focusing on the procurement process pain points."
+                    }
+                  ]
                 },
                 %{
                   name: "Synthesize session notes",
@@ -1107,7 +1562,8 @@ defmodule Operately.Demo.Data do
                   status: :pending,
                   due_offset_days: -1,
                   priority: "low",
-                  size: "small"
+                  size: "small",
+                  comments: []
                 }
               ]
             },
@@ -1122,7 +1578,17 @@ defmodule Operately.Demo.Data do
                   status: :in_progress,
                   due_offset_days: -10,
                   priority: "high",
-                  size: "medium"
+                  size: "medium",
+                  comments: [
+                    %{
+                      author: :paul_young,
+                      content: "Comparing us against Asana, Jira, and Monday."
+                    },
+                    %{
+                      author: :emily_davis,
+                      content: "Don't forget to include ClickUp."
+                    }
+                  ]
                 },
                 %{
                   name: "Estimate pricing and packaging ranges",
@@ -1131,7 +1597,13 @@ defmodule Operately.Demo.Data do
                   status: :pending,
                   due_offset_days: -5,
                   priority: "medium",
-                  size: "small"
+                  size: "small",
+                  comments: [
+                    %{
+                      author: :emily_davis,
+                      content: "Looking at per-seat vs flat-rate models."
+                    }
+                  ]
                 },
                 %{
                   name: "Summarize differentiation opportunities",
@@ -1140,7 +1612,8 @@ defmodule Operately.Demo.Data do
                   status: :pending,
                   due_offset_days: -1,
                   priority: "low",
-                  size: "small"
+                  size: "small",
+                  comments: []
                 }
               ]
             }
@@ -1173,7 +1646,17 @@ defmodule Operately.Demo.Data do
                   status: :done,
                   due_offset_days: -12,
                   priority: "high",
-                  size: "medium"
+                  size: "medium",
+                  comments: [
+                    %{
+                      author: :rachel_king,
+                      content: "Spoke with users in Tokyo and London. The overlap window is the main pain point."
+                    },
+                    %{
+                      author: :emily_davis,
+                      content: "Did they mention mobile usage patterns?"
+                    }
+                  ]
                 },
                 %{
                   name: "Document feature concept brief",
@@ -1182,7 +1665,13 @@ defmodule Operately.Demo.Data do
                   status: :done,
                   due_offset_days: -6,
                   priority: "medium",
-                  size: "small"
+                  size: "small",
+                  comments: [
+                    %{
+                      author: :emily_davis,
+                      content: "Brief is ready. I've included the 'Async First' principle."
+                    }
+                  ]
                 },
                 %{
                   name: "Review concept with product",
@@ -1191,7 +1680,8 @@ defmodule Operately.Demo.Data do
                   status: :done,
                   due_offset_days: -2,
                   priority: "low",
-                  size: "small"
+                  size: "small",
+                  comments: []
                 }
               ]
             },
@@ -1206,7 +1696,17 @@ defmodule Operately.Demo.Data do
                   status: :done,
                   due_offset_days: -12,
                   priority: "high",
-                  size: "medium"
+                  size: "medium",
+                  comments: [
+                    %{
+                      author: :rachel_king,
+                      content: "Starting with French and German."
+                    },
+                    %{
+                      author: :emily_davis,
+                      content: "Please check the length constraints for German strings."
+                    }
+                  ]
                 },
                 %{
                   name: "Review tone and cultural nuances",
@@ -1215,7 +1715,13 @@ defmodule Operately.Demo.Data do
                   status: :done,
                   due_offset_days: -6,
                   priority: "medium",
-                  size: "small"
+                  size: "small",
+                  comments: [
+                    %{
+                      author: :emily_davis,
+                      content: "The tone in Japan should be more formal than in the US."
+                    }
+                  ]
                 },
                 %{
                   name: "Proofread final copy set",
@@ -1224,7 +1730,8 @@ defmodule Operately.Demo.Data do
                   status: :done,
                   due_offset_days: -2,
                   priority: "low",
-                  size: "small"
+                  size: "small",
+                  comments: []
                 }
               ]
             },
@@ -1239,7 +1746,17 @@ defmodule Operately.Demo.Data do
                   status: :done,
                   due_offset_days: -12,
                   priority: "high",
-                  size: "medium"
+                  size: "medium",
+                  comments: [
+                    %{
+                      author: :paul_young,
+                      content: "Shortlisted WeWork and Impact Hub."
+                    },
+                    %{
+                      author: :rachel_king,
+                      content: "Also look at local independent spaces."
+                    }
+                  ]
                 },
                 %{
                   name: "Draft partnership outreach email",
@@ -1248,7 +1765,13 @@ defmodule Operately.Demo.Data do
                   status: :done,
                   due_offset_days: -6,
                   priority: "medium",
-                  size: "small"
+                  size: "small",
+                  comments: [
+                    %{
+                      author: :rachel_king,
+                      content: "Emphasizing the community benefits."
+                    }
+                  ]
                 },
                 %{
                   name: "Secure pilot agreements",
@@ -1257,7 +1780,8 @@ defmodule Operately.Demo.Data do
                   status: :done,
                   due_offset_days: -2,
                   priority: "low",
-                  size: "small"
+                  size: "small",
+                  comments: []
                 }
               ]
             },
@@ -1272,7 +1796,17 @@ defmodule Operately.Demo.Data do
                   status: :in_progress,
                   due_offset_days: -10,
                   priority: "high",
-                  size: "medium"
+                  size: "medium",
+                  comments: [
+                    %{
+                      author: :rachel_king,
+                      content: "Created a moodboard on Pinterest."
+                    },
+                    %{
+                      author: :olivia_hall,
+                      content: "Love the Nordic minimalism direction."
+                    }
+                  ]
                 },
                 %{
                   name: "Design theme palette and tokens",
@@ -1281,7 +1815,13 @@ defmodule Operately.Demo.Data do
                   status: :pending,
                   due_offset_days: -5,
                   priority: "medium",
-                  size: "small"
+                  size: "small",
+                  comments: [
+                    %{
+                      author: :olivia_hall,
+                      content: "Testing accessibility contrast ratios."
+                    }
+                  ]
                 },
                 %{
                   name: "Prototype themed landing page",
@@ -1290,7 +1830,8 @@ defmodule Operately.Demo.Data do
                   status: :pending,
                   due_offset_days: -1,
                   priority: "low",
-                  size: "small"
+                  size: "small",
+                  comments: []
                 }
               ]
             }
@@ -1323,7 +1864,17 @@ defmodule Operately.Demo.Data do
                   status: :done,
                   due_offset_days: -12,
                   priority: "high",
-                  size: "medium"
+                  size: "medium",
+                  comments: [
+                    %{
+                      author: :walter_baker,
+                      content: "Real-time editing is by far the most requested feature."
+                    },
+                    %{
+                      author: :frank_miller,
+                      content: "Are we seeing this across all plans or just Enterprise?"
+                    }
+                  ]
                 },
                 %{
                   name: "Rank requests by usage impact",
@@ -1332,7 +1883,13 @@ defmodule Operately.Demo.Data do
                   status: :done,
                   due_offset_days: -6,
                   priority: "medium",
-                  size: "small"
+                  size: "small",
+                  comments: [
+                    %{
+                      author: :frank_miller,
+                      content: "Weighting 'time saved' heavily in the impact score."
+                    }
+                  ]
                 },
                 %{
                   name: "Share findings in roadmap review",
@@ -1341,7 +1898,8 @@ defmodule Operately.Demo.Data do
                   status: :done,
                   due_offset_days: -2,
                   priority: "low",
-                  size: "small"
+                  size: "small",
+                  comments: []
                 }
               ]
             },
@@ -1356,7 +1914,17 @@ defmodule Operately.Demo.Data do
                   status: :done,
                   due_offset_days: -12,
                   priority: "high",
-                  size: "medium"
+                  size: "medium",
+                  comments: [
+                    %{
+                      author: :liam_harris,
+                      content: "Here are the flows for resolving comments."
+                    },
+                    %{
+                      author: :walter_baker,
+                      content: "We need a way to filter resolved comments."
+                    }
+                  ]
                 },
                 %{
                   name: "Review flows with design and eng",
@@ -1365,7 +1933,13 @@ defmodule Operately.Demo.Data do
                   status: :done,
                   due_offset_days: -6,
                   priority: "medium",
-                  size: "small"
+                  size: "small",
+                  comments: [
+                    %{
+                      author: :frank_miller,
+                      content: "Engineering is concerned about the realtime sync latency."
+                    }
+                  ]
                 },
                 %{
                   name: "Incorporate leadership feedback",
@@ -1374,7 +1948,8 @@ defmodule Operately.Demo.Data do
                   status: :done,
                   due_offset_days: -2,
                   priority: "low",
-                  size: "small"
+                  size: "small",
+                  comments: []
                 }
               ]
             },
@@ -1389,7 +1964,17 @@ defmodule Operately.Demo.Data do
                   status: :done,
                   due_offset_days: -12,
                   priority: "high",
-                  size: "medium"
+                  size: "medium",
+                  comments: [
+                    %{
+                      author: :walter_baker,
+                      content: "Using Phoenix Presence for this."
+                    },
+                    %{
+                      author: :frank_miller,
+                      content: "Make sure to handle the disconnect state gracefully."
+                    }
+                  ]
                 },
                 %{
                   name: "Build collaborative editing MVP",
@@ -1398,7 +1983,13 @@ defmodule Operately.Demo.Data do
                   status: :done,
                   due_offset_days: -6,
                   priority: "medium",
-                  size: "small"
+                  size: "small",
+                  comments: [
+                    %{
+                      author: :walter_baker,
+                      content: "Basic OT algorithm is implemented."
+                    }
+                  ]
                 },
                 %{
                   name: "Run internal QA regression suite",
@@ -1407,7 +1998,8 @@ defmodule Operately.Demo.Data do
                   status: :done,
                   due_offset_days: -2,
                   priority: "low",
-                  size: "small"
+                  size: "small",
+                  comments: []
                 }
               ]
             },
@@ -1422,7 +2014,17 @@ defmodule Operately.Demo.Data do
                   status: :in_progress,
                   due_offset_days: -10,
                   priority: "high",
-                  size: "medium"
+                  size: "medium",
+                  comments: [
+                    %{
+                      author: :frank_miller,
+                      content: "Invited 10 power users from the customer advisory board."
+                    },
+                    %{
+                      author: :liam_harris,
+                      content: "Let's make sure they sign the NDA."
+                    }
+                  ]
                 },
                 %{
                   name: "Collect structured beta feedback",
@@ -1431,7 +2033,13 @@ defmodule Operately.Demo.Data do
                   status: :pending,
                   due_offset_days: -5,
                   priority: "medium",
-                  size: "small"
+                  size: "small",
+                  comments: [
+                    %{
+                      author: :walter_baker,
+                      content: "Feedback form is live."
+                    }
+                  ]
                 },
                 %{
                   name: "Summarize bug list and wins",
@@ -1440,7 +2048,8 @@ defmodule Operately.Demo.Data do
                   status: :pending,
                   due_offset_days: -1,
                   priority: "low",
-                  size: "small"
+                  size: "small",
+                  comments: []
                 }
               ]
             },
@@ -1455,7 +2064,17 @@ defmodule Operately.Demo.Data do
                   status: :in_progress,
                   due_offset_days: -10,
                   priority: "high",
-                  size: "medium"
+                  size: "medium",
+                  comments: [
+                    %{
+                      author: :walter_baker,
+                      content: "Fixing the cursor jump issue."
+                    },
+                    %{
+                      author: :frank_miller,
+                      content: "This is a blocker for launch."
+                    }
+                  ]
                 },
                 %{
                   name: "Finalize docs and release notes",
@@ -1464,7 +2083,13 @@ defmodule Operately.Demo.Data do
                   status: :pending,
                   due_offset_days: -5,
                   priority: "medium",
-                  size: "small"
+                  size: "small",
+                  comments: [
+                    %{
+                      author: :frank_miller,
+                      content: "Drafting the help center article."
+                    }
+                  ]
                 },
                 %{
                   name: "Prepare rollout checklist",
@@ -1473,7 +2098,8 @@ defmodule Operately.Demo.Data do
                   status: :canceled,
                   due_offset_days: -1,
                   priority: "low",
-                  size: "small"
+                  size: "small",
+                  comments: []
                 }
               ]
             }
@@ -2432,6 +3058,29 @@ defmodule Operately.Demo.Data do
               """,
             }
           ]
+        },
+        %{
+          key: :brand_voice_guidelines,
+          space: :product_space,
+          name: "Brand Voice Guidelines 2025",
+          content: """
+          # Brand Voice Guidelines 2025
+
+          ## Core Pillars
+          1. **Clarity**: We speak plainly and avoid jargon.
+          2. **Empathy**: We understand our users' challenges.
+          3. **Optimism**: We focus on solutions and possibilities.
+
+          ## Do's and Don'ts
+          - **Do**: Use active voice, simple words, and direct sentences.
+          - **Don't**: Use corporate buzzwords, passive voice, or complex sentence structures.
+
+          ## Tone by Context
+          - **Marketing**: Inspiring, bold, confident.
+          - **Support**: Helpful, patient, clear.
+          - **Product**: Functional, concise, guiding.
+          """,
+          comments: []
         },
         %{
           key: :technical_architecture_overview,

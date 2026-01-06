@@ -126,7 +126,7 @@ defmodule Operately.Demo.Projects do
       due_date = milestone_task_due_date(milestone_due_date, task[:due_offset_days])
       due_date = Tasks.normalize_due_date(due_date, status)
 
-      Tasks.create_task(%{
+      Tasks.create_task(resources, %{
         name: task.name,
         description: task[:description],
         creator_id: champion.id,
@@ -136,7 +136,8 @@ defmodule Operately.Demo.Projects do
         task_status: status,
         status: status.value,
         priority: task[:priority],
-        size: task[:size]
+        size: task[:size],
+        comments: task[:comments]
       }, assignee && assignee.id)
     end)
   end
