@@ -236,6 +236,29 @@ defmodule OperatelyWeb.Api.Queries.GetSpaceTest do
         refute sub.is_subscribed
       end)
     end
+
+    test "include_potential_subscribers excludes non-humans", ctx do
+      ctx = Factory.add_company_member(ctx, :creator)
+        |> Factory.log_in_person(:creator)
+        |> Factory.add_space(:space)
+        |> Factory.add_space_member(:member1, :space)
+        |> Factory.add_space_member(:member2, :space)
+        |> Factory.add_space_member(:ai, :space, person_type: :ai)
+
+      assert {200, res} = query(ctx.conn, :get_space, %{
+        id: Paths.space_id(ctx.space),
+        include_potential_subscribers: true,
+      })
+
+      subs = res.space.potential_subscribers
+
+      [ctx.creator, ctx.member1, ctx.member2]
+      |> Enum.each(fn member ->
+        assert Enum.find(subs, &(&1.person.id == Paths.person_id(member)))
+      end)
+
+      refute Enum.find(subs, &(&1.person.id == Paths.person_id(ctx.ai)))
+    end
   end
 
   #
