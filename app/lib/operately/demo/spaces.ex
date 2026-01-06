@@ -46,7 +46,7 @@ defmodule Operately.Demo.Spaces do
       due_date = task[:due_in_days] && Date.add(Date.utc_today(), task.due_in_days)
       due_date = Tasks.normalize_due_date(due_date, status)
 
-      Tasks.create_task(%{
+      Tasks.create_task(resources, %{
         name: task.name,
         description: task[:description],
         creator_id: owner.id,
@@ -55,7 +55,8 @@ defmodule Operately.Demo.Spaces do
         task_status: status,
         status: status.value,
         priority: task[:priority],
-        size: task[:size]
+        size: task[:size],
+        comments: task[:comments]
       }, assignee && assignee.id)
     end)
   end
