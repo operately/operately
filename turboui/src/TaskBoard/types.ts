@@ -17,11 +17,7 @@ export type Status = StatusSelector.StatusOption;
 /**
  * Person interface for task assignees
  */
-export interface Person {
-  id: string;
-  fullName: string;
-  avatarUrl: string | null;
-}
+export type Person = PersonField.Person;
 
 /**
  * Milestone interface for task grouping
