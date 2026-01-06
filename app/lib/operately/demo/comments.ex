@@ -5,6 +5,7 @@ defmodule Operately.Demo.Comments do
   alias Operately.Updates.Comment
   alias Operately.Messages.Message
   alias Operately.ResourceHubs.Document
+  alias Operately.Tasks.Task
 
   def create_comments(_, _, nil), do: :ok
 
@@ -27,9 +28,12 @@ defmodule Operately.Demo.Comments do
 
   defp preload(message = %Message{}), do: Repo.preload(message, :space)
   defp preload(document = %Document{}), do: Repo.preload(document, [:resource_hub, :node])
+  defp preload(task = %Task{}), do: Repo.preload(task, [:space, :project])
 
   defp find_parent_type(%Message{}), do: "message"
   defp find_parent_type(%Document{}), do: "resource_hub_document"
+  defp find_parent_type(%Task{project_id: id}) when not is_nil(id), do: "project_task"
+  defp find_parent_type(%Task{space_id: id}) when not is_nil(id), do: "space_task"
 
   # if every comment is inserted at the same time, they will have the same inserted_at value
   # and the sorting will not have a well defined order
