@@ -54,7 +54,7 @@ export function Column({
 }: Props) {
   const columnRef = useRef<HTMLDivElement>(null);
   const [isCreating, setIsCreating] = React.useState(false);
-  const [newTaskTitle, setNewTaskTitle] = React.useState("");
+
   const columnWidth = useKanbanColumnWidth();
 
   const containerId = status.value;
@@ -92,22 +92,7 @@ export function Column({
     });
   }, [disableDnD, containerId, visibleTasks.length]);
 
-  const handleCreateTask = () => {
-    if (newTaskTitle.trim() && onCreateTask) {
-      onCreateTask(newTaskTitle.trim());
-      setNewTaskTitle("");
-      setIsCreating(false);
-    }
-  };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleCreateTask();
-    } else if (e.key === "Escape") {
-      setIsCreating(false);
-      setNewTaskTitle("");
-    }
-  };
 
   return (
     <div
@@ -180,53 +165,95 @@ export function Column({
           )}
         </div>
 
-        {isCreating ? (
-          <div className="bg-surface-base p-2 rounded border border-surface-outline shadow-sm mt-2">
-            <input
-              autoFocus
-              type="text"
-              placeholder="What needs to be done?"
-              className="w-full text-sm bg-transparent border-none focus:ring-0 p-0 mb-2 text-content-base placeholder:text-content-subtle"
-              value={newTaskTitle}
-              onChange={(e) => setNewTaskTitle(e.target.value)}
-              onKeyDown={handleKeyDown}
-              data-test-id={createTestId("new-task-title", status.value)}
-            />
-            <div className="flex items-center gap-2">
-              <button
-                className="px-2 py-1 text-xs font-medium text-white bg-accent-blue rounded hover:bg-accent-blue-dimmed"
-                onClick={handleCreateTask}
-                data-test-id={createTestId("new-task-submit", status.value)}
-              >
-                Add
-              </button>
-              <button
-                className="px-2 py-1 text-xs font-medium text-content-dimmed hover:text-content-base"
-                onClick={() => {
-                  setIsCreating(false);
-                  setNewTaskTitle("");
-                }}
-                data-test-id={createTestId("new-task-cancel", status.value)}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        ) : (
-          onCreateTask && (
-            <button
-              className="flex items-center gap-1.5 text-xs text-content-dimmed hover:text-content-base px-2 py-1.5 rounded hover:bg-surface-highlight transition-colors w-full text-left mt-2"
-              onClick={() => setIsCreating(true)}
-              data-test-id={createTestId("add-task-button", status.value)}
-            >
-              <span className="text-lg leading-none">+</span>
-              Add new task
-            </button>
-          )
-        )}
+        <TaskCreationForm onCreateTask={onCreateTask} statusValue={status.value} onModeChange={setIsCreating} />
       </div>
     </div>
   );
+}
+interface TaskCreationFormProps {
+  onCreateTask?: (title: string) => void;
+  statusValue: string;
+  onModeChange: (isCreating: boolean) => void;
+}
+
+function TaskCreationForm({ onCreateTask, statusValue, onModeChange }: TaskCreationFormProps) {
+  const [isCreating, setIsCreating] = React.useState(false);
+  const [title, setTitle] = React.useState("");
+  const inputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleModeChange = (creating: boolean) => {
+    setIsCreating(creating);
+    onModeChange(creating);
+  };
+
+  const handleCreate = () => {
+    if (title.trim() && onCreateTask) {
+      onCreateTask(title.trim());
+      setTitle("");
+      inputRef.current?.focus();
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleCreate();
+    } else if (e.key === "Escape") {
+      handleModeChange(false);
+      setTitle("");
+    }
+  };
+
+  if (isCreating) {
+    return (
+      <div className="bg-surface-base p-2 rounded border border-surface-outline shadow-sm mt-2">
+        <input
+          ref={inputRef}
+          autoFocus
+          type="text"
+          placeholder="What needs to be done?"
+          className="w-full text-sm bg-transparent border-none focus:ring-0 p-0 mb-2 text-content-base placeholder:text-content-subtle"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          onKeyDown={handleKeyDown}
+          data-test-id={createTestId("new-task-title", statusValue)}
+        />
+        <div className="flex items-center gap-2">
+          <button
+            className="px-2 py-1 text-xs font-medium text-white bg-accent-blue rounded hover:bg-accent-blue-dimmed"
+            onClick={handleCreate}
+            data-test-id={createTestId("new-task-submit", statusValue)}
+          >
+            Add
+          </button>
+          <button
+            className="px-2 py-1 text-xs font-medium text-content-dimmed hover:text-content-base"
+            onClick={() => {
+              handleModeChange(false);
+              setTitle("");
+            }}
+            data-test-id={createTestId("new-task-cancel", statusValue)}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (onCreateTask) {
+    return (
+      <button
+        className="flex items-center gap-1.5 text-xs text-content-dimmed hover:text-content-base px-2 py-1.5 rounded hover:bg-surface-highlight transition-colors w-full text-left mt-2"
+        onClick={() => handleModeChange(true)}
+        data-test-id={createTestId("add-task-button", statusValue)}
+      >
+        <span className="text-lg leading-none">+</span>
+        Add new task
+      </button>
+    );
+  }
+
+  return null;
 }
 
 interface MenuProps {
