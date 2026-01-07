@@ -180,7 +180,6 @@ function Page() {
     milestones,
     setMilestones,
     refresh,
-    type: "project",
   });
 
   const subscriptions = useSubscription({

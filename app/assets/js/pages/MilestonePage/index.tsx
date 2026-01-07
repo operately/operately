@@ -116,7 +116,6 @@ function Page() {
       milestones: milestones,
       setMilestones: setMilestones,
       refresh,
-      type: "project",
     });
   const { comments, setComments, handleCreateComment, handleEditComment, handleDeleteComment, handleAddReaction, handleRemoveReaction } =
     useComments(paths, milestone, () => {

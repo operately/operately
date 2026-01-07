@@ -2,6 +2,7 @@ import * as React from "react";
 
 import Api, { type TaskStatus, type TasksCreateInput } from "@/api";
 import * as Tasks from "./index";
+import * as Spaces from "../spaces";
 
 import { usePaths } from "@/routes/paths";
 import { PageCache } from "@/routes/PageCache";
@@ -11,7 +12,7 @@ import { DateField, showErrorToast, TaskBoard } from "turboui";
 
 interface Attrs {
   backendTasks: Tasks.Task[];
-  spaceId: string;
+  space: Spaces.Space;
   cacheKey: string;
   refresh?: () => Promise<void>;
 }
@@ -20,13 +21,13 @@ interface TasksSnapshot {
   tasks: TaskBoard.Task[];
 }
 
-export function useSpaceTasksForTurboUi({ backendTasks, spaceId, cacheKey, refresh }: Attrs) {
+export function useSpaceTasksForTurboUi({ backendTasks, space, cacheKey, refresh }: Attrs) {
   const paths = usePaths();
-  const [tasks, setTasks] = React.useState(Tasks.parseTasksForTurboUi(paths, backendTasks, "space"));
+  const [tasks, setTasks] = React.useState(Tasks.parseTasksForTurboUi(paths, backendTasks, { type: "space", space }));
 
   React.useEffect(() => {
-    setTasks(Tasks.parseTasksForTurboUi(paths, backendTasks, "space"));
-  }, [backendTasks, paths]);
+    setTasks(Tasks.parseTasksForTurboUi(paths, backendTasks, { type: "space", space }));
+  }, [backendTasks, paths, space]);
 
   const createSnapshot = React.useCallback(
     (): TasksSnapshot => ({
@@ -73,7 +74,7 @@ export function useSpaceTasksForTurboUi({ backendTasks, spaceId, cacheKey, refre
         assigneeId: task.assignee,
         dueDate: serializeContextualDate(task.dueDate),
         milestoneId: null,
-        id: spaceId,
+        id: space.id,
         type: "space",
       };
 
@@ -83,7 +84,7 @@ export function useSpaceTasksForTurboUi({ backendTasks, spaceId, cacheKey, refre
 
       const res = await Api.tasks.create(input);
 
-      const realTask = Tasks.parseTaskForTurboUi(paths, res.task, "space");
+      const realTask = Tasks.parseTaskForTurboUi(paths, res.task, { type: "space", space });
       setTasks((prev) => prev.map((t) => (t.id === tempId ? realTask : t)));
 
       await invalidateAndRefresh();
@@ -188,7 +189,7 @@ export function useSpaceTasksForTurboUi({ backendTasks, spaceId, cacheKey, refre
     try {
       const response = await Api.tasks.updateStatus({ taskId, status: backendStatus, type: "space" });
 
-      const updatedTask = Tasks.parseTaskForTurboUi(paths, response.task, "space");
+      const updatedTask = Tasks.parseTaskForTurboUi(paths, response.task, { type: "space", space });
       setTasks((prev) => prev.map((t) => (t.id === taskId ? { ...t, status: updatedTask.status } : t)));
 
       await invalidateAndRefresh();

@@ -113,7 +113,7 @@ function Page() {
   });
 
   const [status, setStatus] = usePageField({
-    value: ({ task }) => Tasks.parseTaskForTurboUi(paths, task, "project").status,
+    value: ({ task }) => Tasks.parseTaskForTurboUi(paths, task, { type: "project" }).status,
     update: (v) => Api.tasks.updateStatus({ taskId: task.id, status: Tasks.serializeTaskStatus(v), type: "project" }),
     onError: () => showErrorToast("Error", "Failed to update task status."),
     refreshPageData,
