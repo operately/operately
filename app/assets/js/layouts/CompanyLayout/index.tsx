@@ -232,7 +232,7 @@ export default function CompanyLayout() {
         <Outlet />
       </div>
 
-      {/* <DevBar /> */}
+      <DevBar />
       <AiSidebar />
     </div>
   );
