@@ -25,7 +25,7 @@ interface Attrs {
   refresh?: () => Promise<void>;
 }
 
-export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, milestones, setMilestones, refresh }: Attrs) {
+export function useProjectTasksForTurboUi({ backendTasks, projectId, cacheKey, milestones, setMilestones, refresh }: Attrs) {
   const paths = usePaths();
   const [tasks, setTasks] = React.useState(Tasks.parseTasksForTurboUi(paths, backendTasks, { type: "project" }));
 

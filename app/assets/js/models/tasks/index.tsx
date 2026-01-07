@@ -8,7 +8,7 @@ import { parsePeopleForTurboUi } from "../people";
 import { Space } from "../spaces";
 
 export type { Task, EditMilestoneOrderingStateInput } from "@/api";
-export { useTasksForTurboUi } from "./useTasksForTurboUi";
+export { useProjectTasksForTurboUi } from "./useProjectTasksForTurboUi";
 export { useSpaceTasksForTurboUi } from "./useSpaceTasksForTurboUi";
 export { useTaskAssigneeSearch } from "./useTaskAssigneeSearch";
 export { useKanbanState } from "./useKanbanState";

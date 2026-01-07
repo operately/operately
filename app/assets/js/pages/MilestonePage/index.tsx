@@ -109,7 +109,7 @@ function Page() {
   const { parsedMilestone, milestones, setMilestones, title, setTitle } = useMilestones(pageData, milestone);
 
   const { tasks, createTask, updateTaskAssignee, updateTaskDueDate, updateTaskStatus, updateTaskMilestone } =
-    Tasks.useTasksForTurboUi({
+    Tasks.useProjectTasksForTurboUi({
       backendTasks: data.tasks,
       projectId: milestone.project.id,
       cacheKey: pageCacheKey(milestone.id),

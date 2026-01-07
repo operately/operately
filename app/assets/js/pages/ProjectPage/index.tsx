@@ -173,7 +173,7 @@ function Page() {
     updateTaskDescription,
     updateTaskMilestone,
     deleteTask,
-  } = Tasks.useTasksForTurboUi({
+  } = Tasks.useProjectTasksForTurboUi({
     backendTasks,
     projectId: project.id,
     cacheKey: pageCacheKey(project.id),
