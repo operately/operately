@@ -14,6 +14,9 @@ defmodule Operately.Support.Features.ProfileSteps do
     person = person_fixture_with_account(%{company_id: company.id, full_name: "Miles Davis", manager_id: manager.id})
 
     space = group_fixture(manager, %{company_id: company.id})
+    {:ok, _} = Operately.Groups.add_members(manager, space.id, [
+      %{id: person.id, access_level: Operately.Access.Binding.full_access()}
+    ])
 
     report_1 = person_fixture_with_account(%{company_id: company.id, full_name: "Bill Evans", manager_id: person.id})
     report_2 = person_fixture_with_account(%{company_id: company.id, full_name: "Herbie Hancock", manager_id: person.id})
@@ -321,6 +324,37 @@ defmodule Operately.Support.Features.ProfileSteps do
 
   step :refute_item_visible, ctx, name: name do
     UI.refute_text(ctx, name)
+  end
+
+  step :given_space_task_assigned_to_person, ctx, task_name: task_name do
+    ctx
+    |> Map.put(:creator, ctx.person)
+    |> Factory.create_space_task(:space_task, :space, [name: task_name])
+    |> Factory.add_task_assignee(:space_task_assignee, :space_task, :person)
+  end
+
+  step :click_task, ctx, task_name: task_name do
+    UI.click_link(ctx, task_name)
+  end
+
+  step :assert_on_task_page, ctx do
+    ctx
+    |> UI.sleep(200)
+    |> UI.assert_page(Paths.project_task_path(ctx.company, ctx.task))
+    |> UI.assert_text(ctx.task.name)
+  end
+
+  step :assert_on_space_kanban_page, ctx do
+    ctx
+    |> UI.assert_page(Paths.space_kanban_path(ctx.company, ctx.space))
+  end
+
+  step :assert_task_slide_in_open, ctx, task_name: task_name do
+    ctx
+    |> UI.assert_has(testid: "task-slide-in")
+    |> UI.find([testid: "task-slide-in"], fn ctx ->
+      UI.assert_text(ctx, task_name)
+    end)
   end
 
   defp status_to_map(status) do
