@@ -41,6 +41,18 @@ defmodule Operately.Features.GlobalSearchTest do
     |> Steps.assert_navigated_to_task()
   end
 
+  feature "searching for space tasks", ctx do
+    task_name = "Update Marketing Strategy"
+
+    ctx
+    |> Steps.given_space_task_exists(task_name)
+    |> Steps.open_global_search()
+    |> Steps.search_for("Strategy")
+    |> Steps.assert_task_result_visible(task_name)
+    |> Steps.click_task_result(task_name)
+    |> Steps.assert_navigated_to_space_kanban_with_task(task_name)
+  end
+
   feature "searching for people", ctx do
     ctx
     |> Steps.open_global_search()

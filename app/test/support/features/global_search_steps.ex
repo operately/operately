@@ -149,6 +149,18 @@ defmodule Operately.Support.Features.GlobalSearchSteps do
     ctx |> UI.assert_page(Paths.project_task_path(ctx.company, ctx.design_task))
   end
 
+  step :assert_navigated_to_space_kanban_with_task, ctx, task_name do
+    task = Operately.Repo.get_by(Operately.Tasks.Task, name: task_name)
+    space = Operately.Groups.get_group!(task.space_id)
+
+    ctx
+    |> UI.assert_page(Paths.space_kanban_path(ctx.company, space))
+    |> UI.assert_has(testid: "task-slide-in")
+    |> UI.find([testid: "task-slide-in"], fn ctx ->
+      UI.assert_text(ctx, task_name)
+    end)
+  end
+
   step :assert_navigated_to_person, ctx, person_name do
     person = Operately.Repo.get_by(Operately.People.Person, full_name: person_name)
     ctx |> UI.assert_page(Paths.profile_path(ctx.company, person))
@@ -249,6 +261,11 @@ defmodule Operately.Support.Features.GlobalSearchSteps do
       status: :pending
     )
     |> Factory.add_project_task(:test_task, :test_milestone, name: "Test Task")
+  end
+
+  step :given_space_task_exists, ctx, task_name do
+    ctx
+    |> Factory.create_space_task(:space_task, :marketing, name: task_name)
   end
 
   step :given_done_milestone_exists, ctx, title do
