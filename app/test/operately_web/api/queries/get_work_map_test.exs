@@ -320,6 +320,35 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
       assert Enum.find(child_item.children, &(&1.id == Paths.project_id(ctx.child_project)))
     end
 
+    test "returns correct item_path for all item types", ctx do
+      ctx =
+        ctx
+        |> Factory.log_in_person(:creator)
+        |> Factory.add_project_milestone(:milestone, :project1)
+        |> Factory.add_project_task(:project_task, :milestone)
+        |> Factory.add_task_assignee(:project_task_assignee, :project_task, :creator)
+        |> Factory.create_space_task(:space_task, :space1)
+        |> Factory.add_task_assignee(:space_task_assignee, :space_task, :creator)
+
+      # Test Goals and Projects via get_work_map
+      assert {200, res} = query(ctx.conn, :get_work_map, %{space_id: Paths.space_id(ctx.space1)})
+
+      goal = Enum.find(res.work_map, &(&1.id == Paths.goal_id(ctx.goal1)))
+      assert goal.item_path == Paths.goal_path(ctx.company, ctx.goal1)
+
+      project = Enum.find(res.work_map, &(&1.id == Paths.project_id(ctx.project1)))
+      assert project.item_path == Paths.project_path(ctx.company, ctx.project1)
+
+      # Test Tasks via get_flat_work_map (since get_work_map doesn't return tasks)
+      assert {200, res} = query(ctx.conn, :get_flat_work_map, %{space_id: Paths.space_id(ctx.space1), include_tasks: true})
+
+      project_task = Enum.find(res.work_map, &(&1.id == Paths.task_id(ctx.project_task)))
+      assert project_task.item_path == Paths.project_task_path(ctx.company, ctx.project_task)
+
+      space_task = Enum.find(res.work_map, &(&1.id == Paths.task_id(ctx.space_task)))
+      assert space_task.item_path == Paths.space_task_path(ctx.company, ctx.space1, ctx.space_task)
+    end
+
     test "successfully returns item without owner", ctx do
       ctx =
         ctx
