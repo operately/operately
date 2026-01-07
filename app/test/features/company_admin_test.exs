@@ -154,21 +154,21 @@ defmodule Operately.Features.CompanyAdminTest do
   end
 
   @tag role: :owner
-  feature "Delete organization", ctx do
+  feature "Delete company", ctx do
     ctx
     |> Steps.add_second_company_with_resources()
     |> Steps.when_i_open_the_company_admin_page()
-    |> Steps.click_delete_organization()
-    |> Steps.confirm_delete_organization()
+    |> Steps.click_delete_company()
+    |> Steps.confirm_delete_company()
     |> Steps.assert_redirected_to_lobby()
     |> Steps.assert_company_is_deleted()
     |> Steps.assert_other_company_is_intact()
   end
 
   @tag role: :admin
-  feature "Admin cannot see delete organization option", ctx do
+  feature "Admin cannot see delete company option", ctx do
     ctx
     |> Steps.when_i_open_the_company_admin_page()
-    |> Steps.assert_delete_organization_not_visible()
+    |> Steps.assert_delete_company_not_visible()
   end
 end
