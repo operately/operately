@@ -447,20 +447,23 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert res.message == "Milestone not found"
     end
 
-    test "it excludes done and canceled tasks from count", ctx do
+    test "it excludes closed tasks from count", ctx do
+      statuses = Operately.Tasks.Status.default_task_statuses()
+      closed_status = Enum.find(statuses, &(&1.closed))
+
       ctx =
         ctx
-        |> Factory.add_project_task(:task1, :milestone, status: "todo")
-        |> Factory.add_project_task(:task2, :milestone, status: "done")
-        |> Factory.add_project_task(:task3, :milestone, status: "canceled")
-        |> Factory.add_project_task(:task4, :milestone, status: "in_progress")
+        |> Factory.add_project_task(:task1, :milestone)
+        |> Factory.add_project_task(:task2, :milestone, task_status: Map.from_struct(closed_status))
+        |> Factory.add_project_task(:task3, :milestone, task_status: Map.from_struct(closed_status))
+        |> Factory.add_project_task(:task4, :milestone)
         |> Factory.log_in_person(:creator)
 
       assert {200, res} = query(ctx.conn, [:projects, :count_children], %{
         id: Paths.project_id(ctx.project)
       })
 
-      # Should only count todo and in_progress tasks (2 tasks)
+      # Should only count open tasks (2 tasks)
       assert res.children_count.tasks_count == 2
       assert res.children_count.discussions_count == 0
       assert res.children_count.check_ins_count == 0

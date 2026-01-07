@@ -600,12 +600,12 @@ defmodule OperatelyWeb.Api.Projects do
       Ecto.Multi.run(multi, :open_tasks_count, fn _repo, %{project: project} ->
         # This query counts tasks where:
         # 1. The task belongs to the specified project
-        # 2. The task status is not 'done' and not 'canceled'
+        # 2. The task is not closed
         # 3. Either the task has no milestone OR its milestone status is not 'done'
         query = from(t in Operately.Tasks.Task,
           left_join: m in Operately.Projects.Milestone, on: t.milestone_id == m.id,
           where: t.project_id == ^project.id and
-            t.status not in ["done", "canceled"] and
+            fragment("NOT (?->>'closed')::boolean", t.task_status) and
             (is_nil(t.milestone_id) or m.status != :done),
           select: count(t.id)
         )
