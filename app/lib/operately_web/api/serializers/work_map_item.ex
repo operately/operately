@@ -42,7 +42,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.WorkMaps.WorkMapItem do
     cond do
       item.type == :goal -> Paths.goal_path(item.company, item.resource)
       item.type == :project -> Paths.project_path(item.company, item.resource)
-      item.type == :task -> Paths.project_task_path(item.company, item.resource)
+      item.type == :task and not is_nil(item.resource.project_id) -> Paths.project_task_path(item.company, item.resource)
+      item.type == :task -> Paths.space_task_path(item.company, item.space, item.resource)
     end
   end
 

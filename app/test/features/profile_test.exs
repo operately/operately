@@ -169,6 +169,29 @@ defmodule Operately.Features.ProfileTest do
     |> Steps.refute_item_visible(name: closed_status_task_name)
   end
 
+  feature "clicking on a project task redirects to the task page", ctx do
+    task_name = "Project Task"
+
+    ctx
+    |> Steps.given_task_assigned_to_person(task_name: task_name)
+    |> Steps.visit_profile_page()
+    |> Steps.click_tasks_tab()
+    |> Steps.click_task(task_name: task_name)
+    |> Steps.assert_on_task_page()
+  end
+
+  feature "clicking on a space task redirects to the space kanban page with the task open", ctx do
+    task_name = "Space Task"
+
+    ctx
+    |> Steps.given_space_task_assigned_to_person(task_name: task_name)
+    |> Steps.visit_profile_page()
+    |> Steps.click_tasks_tab()
+    |> Steps.click_task(task_name: task_name)
+    |> Steps.assert_on_space_kanban_page()
+    |> Steps.assert_task_slide_in_open(task_name: task_name)
+  end
+
   feature "assignments email toggle controls cron emails", ctx do
     ctx
     |> Steps.visit_profile_edit_page()
