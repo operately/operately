@@ -81,11 +81,11 @@ function preparePeople(paths: Paths, result: Api.GlobalSearchResult): GlobalSear
 function prepareTasks(paths: Paths, result: Api.GlobalSearchResult): GlobalSearch.Task[] {
   return (
     result.tasks?.map((task) => ({
-      id: task.id!,
-      name: task.name!,
-      link: paths.taskPath(task.id!),
+      id: task.id,
+      name: task.name,
+      link: task.type === "project" ? paths.taskPath(task.id!) : paths.spaceKanbanPath(task.space?.id || "", { taskId: task.id }),
       project: task.project ?? null,
-      space: task.projectSpace ?? null,
+      space: task.type === "project" ? task.projectSpace : task.space,
     })) || []
   );
 }
