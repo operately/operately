@@ -72,13 +72,12 @@ function Page() {
     updateTaskDescription,
     updateTaskMilestone,
     deleteTask,
-  } = Tasks.useTasksForTurboUi({
+  } = Tasks.useProjectTasksForTurboUi({
     backendTasks,
     projectId: milestone.project.id,
     cacheKey: pageCacheKey(milestone.id),
     milestones: [],
     refresh,
-    type: "project",
   });
 
   const { tasks, statuses, handleStatusesChange } = useMilestoneTaskStatuses(

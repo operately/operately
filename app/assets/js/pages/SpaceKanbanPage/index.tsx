@@ -75,7 +75,7 @@ function Page() {
     updateTaskDescription,
   } = Tasks.useSpaceTasksForTurboUi({
     backendTasks,
-    spaceId: space.id,
+    space: space,
     cacheKey: pageCacheKey(space.id),
     refresh: pageData.refresh,
   });

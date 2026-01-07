@@ -235,6 +235,37 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearchTest do
       assert res.milestones == []
     end
 
+    test "searches space tasks by name", ctx do
+      ctx =
+        ctx
+        |> log_in()
+        |> Factory.create_space_task(:space_task, :marketing, name: "Marketing Strategy Task")
+
+      assert {200, res} = query(ctx.conn, :global_search, query: "Strategy")
+
+      assert length(res.tasks) == 1
+      assert List.first(res.tasks).name == "Marketing Strategy Task"
+    end
+
+    test "does not return closed tasks", ctx do
+      ctx =
+        ctx
+        |> log_in()
+        |> Factory.add_project(:website, :marketing)
+        |> Factory.add_project_milestone(:launch, :website)
+        |> Factory.add_project_task(:open_task, :launch, name: "Open Task")
+        |> Factory.add_project_task(:closed_task, :launch, name: "Closed Task")
+
+      # Close the task
+      closed_status = Operately.Tasks.Status.default_task_statuses() |> Enum.find(& &1.closed)
+      {:ok, _} = Operately.Tasks.update_task(ctx.closed_task, %{task_status: Map.from_struct(closed_status)})
+
+      assert {200, res} = query(ctx.conn, :global_search, query: "Task")
+
+      assert length(res.tasks) == 1
+      assert List.first(res.tasks).name == "Open Task"
+    end
+
     defp add_multiple_projects(ctx, count, space_key) do
       Enum.reduce(1..count, ctx, fn i, acc_ctx ->
         Factory.add_project(acc_ctx, String.to_atom("project_#{i}"), space_key, name: "Project #{i}")
