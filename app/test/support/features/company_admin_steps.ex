@@ -432,11 +432,11 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     |> UI.click_button("Add Goal")
   end
 
-  step :click_delete_organization, ctx do
-    ctx |> UI.click(testid: "delete-this-organization")
+  step :click_delete_company, ctx do
+    ctx |> UI.click(testid: "delete-this-company")
   end
 
-  step :confirm_delete_organization, ctx do
+  step :confirm_delete_company, ctx do
     ctx
     |> UI.fill(testid: "confirm-delete-input", with: ctx.company.name)
     |> UI.click(testid: "confirm-delete-button")
@@ -468,10 +468,10 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     |> UI.assert_page(Paths.goal_path(company, goal))
   end
 
-  step :assert_delete_organization_not_visible, ctx do
+  step :assert_delete_company_not_visible, ctx do
     ctx
     |> UI.assert_has(testid: "as-an-admin-or-owner-you-can--section")
     |> UI.refute_has(testid: "danger-zone--section")
-    |> UI.refute_has(testid: "delete-this-organization")
+    |> UI.refute_has(testid: "delete-this-company")
   end
 end
