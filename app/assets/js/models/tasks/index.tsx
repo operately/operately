@@ -5,9 +5,10 @@ import { parseMilestoneForTurboUi } from "../milestones";
 import { parseContent, richContentToString } from "turboui";
 import { StatusSelector, TaskBoard } from "turboui";
 import { parsePeopleForTurboUi } from "../people";
+import { Space } from "../spaces";
 
 export type { Task, EditMilestoneOrderingStateInput } from "@/api";
-export { useTasksForTurboUi } from "./useTasksForTurboUi";
+export { useProjectTasksForTurboUi } from "./useProjectTasksForTurboUi";
 export { useSpaceTasksForTurboUi } from "./useSpaceTasksForTurboUi";
 export { useTaskAssigneeSearch } from "./useTaskAssigneeSearch";
 export { useKanbanState } from "./useKanbanState";
@@ -18,6 +19,8 @@ export { prepareTaskTimelineItems } from "./prepareTaskTimelineItems";
 
 export { getTask, getTasks, useGetTasks } from "@/api";
 
+type ParserOptions = { type: "project" } | { type: "space"; space: Space };
+
 /**
  * Parses backend Task objects to the format expected by TurboUI TaskBoard
  *
@@ -25,11 +28,13 @@ export { getTask, getTasks, useGetTasks } from "@/api";
  * @param tasks - Array of backend Task objects
  * @returns Array of TurboUI Task objects
  */
-export function parseTasksForTurboUi(paths: Paths, tasks: BackendTask[], type: "project" | "space"): TaskBoard.Task[] {
-  return tasks.map((task) => parseTaskForTurboUi(paths, task, type));
+export function parseTasksForTurboUi(paths: Paths, tasks: BackendTask[], opts: ParserOptions): TaskBoard.Task[] {
+  return tasks.map((task) => {
+      return parseTaskForTurboUi(paths, task, opts);
+  });
 }
 
-export function parseTaskForTurboUi(paths: Paths, task: BackendTask, type: "project" | "space"): TaskBoard.Task {
+export function parseTaskForTurboUi(paths: Paths, task: BackendTask, opts: ParserOptions): TaskBoard.Task {
   const description = parseContent(task.description || "{}");
   const commentCount = task.commentsCount || 0;
   const hasComments = commentCount > 0;
@@ -39,7 +44,7 @@ export function parseTaskForTurboUi(paths: Paths, task: BackendTask, type: "proj
     title: task.name,
     status: parseTaskStatusForTurboUi(task.status),
     description: task.description || null,
-    link: paths.taskPath(task.id),
+    link: opts.type === "project" ? paths.taskPath(task.id) : paths.spaceKanbanPath(opts.space.id, { taskId: task.id }),
     assignees: parsePeopleForTurboUi(paths, task.assignees || []),
     milestone: task.milestone ? parseMilestoneForTurboUi(paths, task.milestone) : null,
     dueDate: parseContextualDate(task.dueDate),
@@ -47,7 +52,7 @@ export function parseTaskForTurboUi(paths: Paths, task: BackendTask, type: "proj
     hasComments,
     commentCount,
     comments: undefined,
-    type,
+    type: opts.type,
   };
 }
 

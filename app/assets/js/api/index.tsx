@@ -1796,6 +1796,7 @@ export interface Task {
   assignees?: Person[] | null;
   creator?: Person | null;
   projectSpace?: Space | null;
+  space?: Space | null;
   permissions?: ProjectPermissions | null;
   commentsCount?: number | null;
   subscriptionList?: SubscriptionList | null;
