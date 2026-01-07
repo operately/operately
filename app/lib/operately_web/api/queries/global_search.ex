@@ -134,27 +134,55 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearch do
 
     ilike_query = "%" <> search_term <> "%"
 
-    ranked_tasks_query =
+    # 1. Project Tasks
+    project_tasks_query =
       from(t in Task, as: :task)
       |> join(:inner, [t], m in assoc(t, :milestone))
       |> join(:inner, [t, m], p in assoc(m, :project), as: :project)
       |> Task.scope_company(person.company_id)
       |> where([_t, _m, p], p.status != "closed")
+      |> where([t], fragment("NOT (?->>'closed')::boolean", t.task_status))
       |> where([t], ilike(t.name, ^ilike_query))
       |> filter_by_view_access(person.id, named_binding: :project)
       |> select([t], %{
         id: t.id,
         search_rank: fragment("POSITION(LOWER(?) IN LOWER(?))", ^search_term, t.name)
       })
+      |> limit(@limit)
 
-    limited_tasks =
-      from(r in subquery(ranked_tasks_query),
-        order_by: [asc: r.search_rank, asc: r.id],
-        limit: @limit
-      )
+    # 2. Space Tasks (Directly on Space)
+    space_tasks_query =
+      from(t in Task, as: :task)
+      |> join(:inner, [t], s in assoc(t, :space), as: :space)
+      |> where([t, s], s.company_id == ^person.company_id)
+      |> where([t], fragment("NOT (?->>'closed')::boolean", t.task_status))
+      |> where([t], ilike(t.name, ^ilike_query))
+      |> filter_by_view_access(person.id, named_binding: :space)
+      |> select([t], %{
+        id: t.id,
+        search_rank: fragment("POSITION(LOWER(?) IN LOWER(?))", ^search_term, t.name)
+      })
+      |> limit(@limit)
 
-    from(t in Task, join: r in subquery(limited_tasks), on: t.id == r.id, preload: [:project, :project_space], order_by: [asc: r.search_rank, asc: t.id], select: t)
+    # Execute queries
+    project_results = Repo.all(project_tasks_query)
+    space_results = Repo.all(space_tasks_query)
+
+    # Merge and Sort
+    top_results =
+      (project_results ++ space_results)
+      |> Enum.uniq_by(& &1.id)
+      |> Enum.sort_by(&{&1.search_rank, &1.id})
+      |> Enum.take(@limit)
+
+    # Fetch full records for the top results
+    top_ids = Enum.map(top_results, & &1.id)
+
+    from(t in Task, where: t.id in ^top_ids, preload: [:project, :project_space, :space], select: t)
     |> Repo.all()
+    |> Enum.sort_by(fn t ->
+      Enum.find_index(top_results, & &1.id == t.id)
+    end)
   end
 
   defp search_people(person, query) do
