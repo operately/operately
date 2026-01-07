@@ -19,33 +19,33 @@ export function DangerZone() {
   return (
     <Paper.Section title="Danger Zone:">
       <div className="bg-surface-base">
-        <DeleteOrganizationItem companyName={company.name!} />
+        <DeleteCompanyItem companyName={company.name!} />
       </div>
     </Paper.Section>
   );
 }
 
-function DeleteOrganizationItem({ companyName }: { companyName: string }) {
+function DeleteCompanyItem({ companyName }: { companyName: string }) {
   const [showModal, setShowModal] = useState(false);
 
   return (
     <>
       <OptionsMenuItem
         icon={IconTrash}
-        title="Delete this organization"
+        title="Delete this company"
         onClick={() => setShowModal(true)}
         danger
-        description="Permanently delete the organization and all its resources. This action cannot be undone."
+        description="Permanently delete the company and all its resources. This action cannot be undone."
       />
 
       {showModal && (
-        <DeleteOrganizationModal companyName={companyName} isOpen={showModal} onClose={() => setShowModal(false)} />
+        <DeleteCompanyModal companyName={companyName} isOpen={showModal} onClose={() => setShowModal(false)} />
       )}
     </>
   );
 }
 
-function DeleteOrganizationModal({
+function DeleteCompanyModal({
   companyName,
   isOpen,
   onClose,
@@ -70,7 +70,7 @@ function DeleteOrganizationModal({
   };
 
   return (
-    <Modal isOpen={isOpen} hideModal={onClose} title="Delete Organization" size="base">
+    <Modal isOpen={isOpen} hideModal={onClose} title="Delete Company" size="base">
       <div className="space-y-4">
         <WarningCallout
           message="This action cannot be undone."
@@ -103,7 +103,7 @@ function DeleteOrganizationModal({
             loading={loading}
             testId="confirm-delete-button"
           >
-            {loading ? "Deleting..." : "Delete Organization"}
+            {loading ? "Deleting..." : "Delete Company"}
           </DangerButton>
           <SecondaryButton onClick={onClose}>Cancel</SecondaryButton>
         </div>
