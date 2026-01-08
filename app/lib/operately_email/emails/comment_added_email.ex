@@ -61,6 +61,9 @@ defmodule OperatelyEmail.Emails.CommentAddedEmail do
       activity.action == "project_discussion_submitted" ->
         "commented on: #{comment_thread.title}"
 
+      activity.action == "project_resuming" ->
+        "commented on project resumption"
+
       true ->
         raise "Unsupported action: #{activity.action}"
     end
@@ -86,6 +89,9 @@ defmodule OperatelyEmail.Emails.CommentAddedEmail do
 
       activity.action == "project_discussion_submitted" ->
         Paths.project_discussion_path(company, comment_thread, comment) |> Paths.to_url()
+
+      activity.action == "project_resuming" ->
+        Paths.project_activity_path(company, activity, comment) |> Paths.to_url()
 
       true ->
         raise "Unsupported action"
