@@ -69,6 +69,19 @@ defmodule Operately.Features.ProjectsTest do
     end
 
     @tag login_as: :champion
+    feature "comment on project resumption", ctx do
+      ctx
+      |> Steps.visit_project_page()
+      |> Steps.given_project_is_paused()
+      |> Steps.given_project_is_resumed()
+      |> Steps.login_as_reviewer()
+      |> Steps.leave_comment_on_project_resumption()
+      |> Steps.assert_comment_on_resumption_visible_on_feed()
+      |> Steps.assert_comment_on_resumption_received_in_notifications()
+      |> Steps.assert_comment_on_resumption_received_in_email()
+    end
+
+    @tag login_as: :champion
     feature "connect a goal to a project", ctx do
       goal_name = "Improve support first response time"
 
