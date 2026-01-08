@@ -234,6 +234,38 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorsTest do
       assert reactivated.id == subscription.id
       refute reactivated.canceled
     end
+
+    test "adds contributors without responsibility", ctx do
+      project = create_project(ctx, company_access_level: Binding.full_access())
+
+      person1 = person_fixture(%{company_id: ctx.company.id})
+      person2 = person_fixture(%{company_id: ctx.company.id})
+      person3 = person_fixture(%{company_id: ctx.company.id})
+
+      assert {200, _} =
+               request(ctx.conn, %{
+                 project: project,
+                 contributors: [
+                   %{
+                     person_id: OperatelyWeb.Paths.person_id(person1),
+                     access_level: Binding.edit_access()
+                   },
+                   %{
+                     person_id: OperatelyWeb.Paths.person_id(person2),
+                     access_level: Binding.edit_access()
+                   },
+                   %{
+                     person_id: OperatelyWeb.Paths.person_id(person3),
+                     responsibility: "software development",
+                     access_level: Binding.edit_access()
+                   }
+                 ]
+               })
+
+      assert_contributor_created(project, person1)
+      assert_contributor_created(project, person2)
+      assert_contributor_created(project, person3)
+    end
   end
 
   #

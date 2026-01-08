@@ -32,7 +32,7 @@ defmodule Operately.Operations.ProjectContributorsAddition do
       project_id: project.id,
       person_id: attrs.person_id,
       role: attrs.role,
-      responsibility: attrs.responsibility,
+      responsibility: attrs[:responsibility],
     })
 
     {:ok, contrib} = Operately.Repo.insert(changeset)

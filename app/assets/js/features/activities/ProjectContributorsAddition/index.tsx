@@ -1,10 +1,9 @@
 import * as People from "@/models/people";
 import React from "react";
 
-import type { ActivityContentProjectContributorsAddition } from "@/api";
+import type { ActivityContentProjectContributorsAddition, ProjectContributorsAdditionContributor } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
-
 
 import { Avatar } from "turboui";
 import { feedTitle, projectLink } from "./../feedItemLinks";
@@ -15,7 +14,9 @@ const ProjectContributorsAddition: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity): string {
-    return paths.projectPath(content(activity).project!.id!);
+    const { project } = content(activity);
+
+    return project ? paths.projectPath(project.id) : "#";
   },
 
   PageTitle(_props: { activity: any }) {
@@ -31,24 +32,21 @@ const ProjectContributorsAddition: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const project = projectLink(content(activity).project!);
+    const { project } = content(activity);
+
+    const projectLinkOrName = project ? ["the", projectLink(project), "project"] : ["a project"];
 
     if (page === "project") {
       return feedTitle(activity, "added new contributors to the project");
     } else {
-      return feedTitle(activity, "added new contributors to the", project, "project");
+      return feedTitle(activity, "added new contributors to", ...projectLinkOrName);
     }
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
     return (
       <div className="flex flex-col gap-2 mt-2">
-        {content(activity).contributors!.map((c) => (
-          <div key={c.person!.id} className="flex items-center gap-1">
-            <Avatar person={c.person!} size={20} /> <span>{People.firstName(c.person!)}</span> &ndash;{" "}
-            {c.responsibility}
-          </div>
-        ))}
+        {content(activity).contributors?.map((c, idx) => <FeedContent c={c} key={idx} />)}
       </div>
     );
   },
@@ -70,7 +68,7 @@ const ProjectContributorsAddition: ActivityHandler = {
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
-    return content(activity).project!.name!;
+    return content(activity).project?.name || "Project";
   },
 };
 
@@ -79,3 +77,17 @@ function content(activity: Activity): ActivityContentProjectContributorsAddition
 }
 
 export default ProjectContributorsAddition;
+
+function FeedContent({ c }: { c?: ProjectContributorsAdditionContributor | null }) {
+  if (!c?.person) {
+    return null;
+  }
+
+  return (
+    <div key={c.person.id} className="flex items-center gap-1">
+      <Avatar person={c.person} size={20} />
+      <span>{People.firstName(c.person)}</span>
+      {c.responsibility && <> &ndash; {c.responsibility}</>}
+    </div>
+  );
+}

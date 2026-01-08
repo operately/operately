@@ -1450,9 +1450,9 @@ export interface ProjectContributor {
 }
 
 export interface ProjectContributorInput {
-  personId?: string | null;
-  responsibility?: string | null;
-  accessLevel?: number | null;
+  personId: string;
+  responsibility?: string;
+  accessLevel: number;
 }
 
 export interface ProjectContributorsAdditionContributor {
@@ -3031,12 +3031,12 @@ export interface AddProjectContributorResult {
 }
 
 export interface AddProjectContributorsInput {
-  projectId?: string | null;
-  contributors?: ProjectContributorInput[] | null;
+  projectId: string;
+  contributors: ProjectContributorInput[];
 }
 
 export interface AddProjectContributorsResult {
-  success?: boolean | null;
+  success: boolean;
 }
 
 export interface AddReactionInput {

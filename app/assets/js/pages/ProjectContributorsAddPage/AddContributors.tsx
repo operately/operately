@@ -122,7 +122,6 @@ function Contributor({ field, search, index, last, addMore }) {
             field={field + ".responsibility"}
             placeholder="e.g. Project Manager"
             label="Responsibility"
-            required={true}
             onEnter={() => {
               if (last) addMore();
             }}
