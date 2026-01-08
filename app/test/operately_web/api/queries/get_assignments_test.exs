@@ -236,15 +236,19 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
     test "get pending tasks", ctx do
       project = create_project(ctx, upcoming_date(), %{name: "My Project"})
 
+      pending = Enum.find(project.task_statuses, &(&1.color == :gray)) |> Map.from_struct()
+      in_progress = Enum.find(project.task_statuses, &(&1.color == :blue)) |> Map.from_struct()
+      done = Enum.find(project.task_statuses, &(&1.color == :green)) |> Map.from_struct()
+
       task1 = create_task(project, ctx.person, %{
         name: "Task 1",
-        status: "todo",
+        task_status: pending,
         due_date: ContextualDate.create_day_date(Date.utc_today())
       })
 
       task2 = create_task(project, ctx.person, %{
         name: "Task 2",
-        status: "in_progress",
+        task_status: in_progress,
         due_date: ContextualDate.create_day_date(past_date_as_date())
       })
 
@@ -252,14 +256,14 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
       another_person = person_fixture_with_account(%{company_id: ctx.company.id})
       create_task(project, another_person, %{
         name: "Other Task",
-        status: "todo",
+        task_status: pending,
         due_date: ContextualDate.create_day_date(past_date_as_date())
       })
 
       # Completed task - should not appear
       create_task(project, ctx.person, %{
         name: "Completed Task",
-        status: "completed",
+        task_status: done,
         due_date: ContextualDate.create_day_date(past_date_as_date())
       })
 
@@ -278,13 +282,60 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
       assert t1.type == "project_task"
       assert t1.role == "owner"
       assert t1.action_label == "Task 1"
-      assert t1.task_status == "todo"
+      assert t1.task_status == "pending"
       assert t1.origin
       assert t1.origin.type == "project"
       assert t1.origin.name == "My Project"
 
       assert t2.resource_id == Paths.task_id(task2)
       assert t2.name == "Task 2"
+      assert t2.task_status == "in_progress"
+    end
+
+    test "get pending space tasks", ctx do
+      pending = Enum.find(ctx.space.task_statuses, &(&1.color == :gray)) |> Map.from_struct()
+      in_progress = Enum.find(ctx.space.task_statuses, &(&1.color == :blue)) |> Map.from_struct()
+
+      task1 = create_space_task(ctx.space, ctx.person, %{
+        name: "Space Task 1",
+        task_status: pending,
+        due_date: ContextualDate.create_day_date(Date.utc_today())
+      })
+
+      task2 = create_space_task(ctx.space, ctx.person, %{
+        name: "Space Task 2",
+        task_status: in_progress,
+        due_date: ContextualDate.create_day_date(past_date_as_date())
+      })
+
+      # Task for another person - should not appear
+      another_person = person_fixture_with_account(%{company_id: ctx.company.id})
+      create_space_task(ctx.space, another_person, %{
+        name: "Other Space Task",
+        task_status: pending,
+        due_date: ContextualDate.create_day_date(past_date_as_date())
+      })
+
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
+
+      space_task_assignments = Enum.filter(assignments, &(&1.type == "space_task" and &1.origin.type == "space"))
+
+      assert length(space_task_assignments) == 2
+
+      [t1, t2] = Enum.sort_by(space_task_assignments, & &1.name)
+
+      assert t1.resource_id == Paths.task_id(task1)
+      assert t1.name == "Space Task 1"
+      assert t1.type == "space_task"
+      assert t1.role == "owner"
+      assert t1.action_label == "Space Task 1"
+      assert t1.task_status == "pending"
+      assert t1.origin
+      assert t1.origin.type == "space"
+      assert t1.origin.name == ctx.space.name
+
+      assert t2.resource_id == Paths.task_id(task2)
+      assert t2.name == "Space Task 2"
       assert t2.task_status == "in_progress"
     end
 
@@ -784,6 +835,19 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
     })
 
     Repo.preload(task, :project)
+  end
+
+  defp create_space_task(space, person, attrs) do
+    task =
+      Map.merge(%{space_id: space.id, creator_id: person.id}, attrs)
+      |> Operately.TasksFixtures.task_fixture()
+
+    Operately.TasksFixtures.assignee_fixture(%{
+      task_id: task.id,
+      person_id: person.id
+    })
+
+    Repo.preload(task, :space)
   end
 
   defp create_milestone(project, attrs) do

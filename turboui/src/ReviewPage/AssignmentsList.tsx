@@ -2,7 +2,7 @@ import React from "react";
 
 import { BlackLink, DivLink } from "../Link";
 import { FormattedTime } from "../FormattedTime";
-import { IconCalendar, IconFlag, IconGoalPlain, IconMessage, IconProjectPlain, IconSquare } from "../icons";
+import { IconCalendar, IconFlag, IconGoalPlain, IconMessage, IconProjectPlain, IconSquare, IconTent } from "../icons";
 import { createTestId } from "../TestableElement";
 
 import { ReviewPageV2 } from ".";
@@ -17,6 +17,7 @@ const TYPE_ICON: Partial<Record<ReviewPageV2.AssignmentType, typeof IconSquare>>
 const ORIGIN_ICON: Record<ReviewPageV2.AssignmentOrigin["type"], typeof IconSquare> = {
   goal: IconGoalPlain,
   project: IconProjectPlain,
+  space: IconTent,
 };
 
 export function AssignmentGroups({ groups }: { groups: ReviewPageV2.AssignmentGroup[] }) {

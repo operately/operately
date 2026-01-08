@@ -1680,7 +1680,7 @@ export interface ReviewAssignment {
   actionLabel: string | null;
   path: string;
   origin: ReviewAssignmentOrigin;
-  taskStatus: TaskStatusTypes | null;
+  taskStatus: string | null;
   authorId: string | null;
   authorName: string | null;
   description: string | null;
@@ -2116,11 +2116,11 @@ export type ReactionParentType =
   | "resource_hub_file"
   | "resource_hub_link";
 
-export type ReviewAssignmentOriginTypes = "project" | "goal";
+export type ReviewAssignmentOriginTypes = "project" | "goal" | "space";
 
 export type ReviewAssignmentRoles = "owner" | "reviewer";
 
-export type ReviewAssignmentTypes = "check_in" | "goal_update" | "project_task" | "milestone";
+export type ReviewAssignmentTypes = "check_in" | "goal_update" | "space_task" | "project_task" | "milestone";
 
 export type SubscriptionParentType =
   | "project_check_in"
@@ -2136,8 +2136,6 @@ export type SubscriptionParentType =
   | "project_task";
 
 export type SuccessStatus = "achieved" | "missed";
-
-export type TaskStatusTypes = "pending" | "todo" | "in_progress" | "done" | "canceled";
 
 export type TaskType = "space" | "project";
 

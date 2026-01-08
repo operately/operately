@@ -271,30 +271,81 @@ defmodule Operately.Assignments.LoaderV2Test do
     end
   end
 
+  describe "space tasks" do
+    test "returns assignments for tasks owned by the person", ctx do
+      pending = Enum.find(ctx.space.task_statuses, &(&1.color == :gray)) |> Map.from_struct()
+      in_progress = Enum.find(ctx.space.task_statuses, &(&1.color == :blue)) |> Map.from_struct()
+
+      ctx =
+        ctx
+        |> Factory.create_space_task(:task1, :space,
+          name: "Task 1",
+          task_status: pending,
+          due_date: ContextualDate.create_day_date(today())
+        )
+        |> Factory.add_task_assignee(:assignee1, :task1, :champion)
+        |> Factory.create_space_task(:task2, :space,
+          name: "Task 2",
+          task_status: in_progress,
+          due_date: ContextualDate.create_day_date(days_ago(1))
+        )
+        |> Factory.add_task_assignee(:assignee2, :task2, :champion)
+        |> Factory.create_space_task(:other_task, :space,
+          name: "Other Task",
+          task_status: pending,
+          due_date: ContextualDate.create_day_date(days_ago(1))
+        )
+
+      ctx = Factory.add_space_member(ctx, :other_person, :space)
+      ctx = Factory.add_task_assignee(ctx, :other_assignee, :other_task, :other_person)
+
+      assignments = LoaderV2.load(ctx.champion, ctx.company)
+      task_assignments = Enum.filter(assignments, &(&1.type == :space_task))
+
+      assert length(task_assignments) == 2
+
+      [t1, t2] = Enum.sort_by(task_assignments, & &1.name)
+
+      assert t1.resource_id == Paths.task_id(ctx.task1)
+      assert t1.name == "Task 1"
+      assert t1.role == :owner
+      assert t1.task_status == :pending
+      assert t1.action_label == "Task 1"
+      assert t1.origin.name == ctx.space.name
+
+      assert t2.resource_id == Paths.task_id(ctx.task2)
+      assert t2.task_status == :in_progress
+      assert t2.origin.name == ctx.space.name
+    end
+  end
+
   describe "project tasks" do
     test "returns assignments for tasks owned by the person", ctx do
       ctx = Factory.add_project(ctx, :project, :space, champion: :champion, reviewer: :reviewer)
+
+      pending = Enum.find(ctx.project.task_statuses, &(&1.color == :gray)) |> Map.from_struct()
+      in_progress = Enum.find(ctx.project.task_statuses, &(&1.color == :blue)) |> Map.from_struct()
 
       ctx =
         ctx
         |> Factory.add_project_task(:task1, nil,
           project_id: ctx.project.id,
           name: "Task 1",
-          status: "todo",
+          task_status: pending,
           due_date: ContextualDate.create_day_date(today())
         )
         |> Factory.add_task_assignee(:assignee1, :task1, :champion)
         |> Factory.add_project_task(:task2, nil,
           project_id: ctx.project.id,
           name: "Task 2",
-          status: "in_progress",
+          task_status: in_progress,
           due_date: ContextualDate.create_day_date(days_ago(1))
         )
         |> Factory.add_task_assignee(:assignee2, :task2, :champion)
         |> Factory.add_project_task(:other_task, nil,
           project_id: ctx.project.id,
           name: "Other Task",
-          status: "todo",
+          task_status: pending,
           due_date: ContextualDate.create_day_date(days_ago(1))
         )
 
@@ -311,7 +362,7 @@ defmodule Operately.Assignments.LoaderV2Test do
       assert t1.resource_id == Paths.task_id(ctx.task1)
       assert t1.name == "Task 1"
       assert t1.role == :owner
-      assert t1.task_status == :todo
+      assert t1.task_status == :pending
       assert t1.action_label == "Task 1"
       assert t1.origin.name == ctx.project.name
 
@@ -322,12 +373,13 @@ defmodule Operately.Assignments.LoaderV2Test do
 
     test "ignores tasks from deleted projects", ctx do
       ctx = Factory.add_project(ctx, :project, :space, champion: :champion, reviewer: :reviewer)
+      pending = Enum.find(ctx.project.task_statuses, &(&1.color == :gray)) |> Map.from_struct()
 
       ctx =
         ctx
         |> Factory.add_project_task(:task, nil,
           project_id: ctx.project.id,
-          status: "todo",
+          task_status: pending,
           due_date: ContextualDate.create_day_date(days_ago(1))
         )
         |> Factory.add_task_assignee(:assignee, :task, :champion)
@@ -340,12 +392,13 @@ defmodule Operately.Assignments.LoaderV2Test do
 
     test "ignores tasks from closed projects", ctx do
       ctx = Factory.add_project(ctx, :project, :space, champion: :champion, reviewer: :reviewer)
+      pending = Enum.find(ctx.project.task_statuses, &(&1.color == :gray)) |> Map.from_struct()
 
       ctx =
         ctx
         |> Factory.add_project_task(:task, nil,
           project_id: ctx.project.id,
-          status: "todo",
+          task_status: pending,
           due_date: ContextualDate.create_day_date(days_ago(1))
         )
         |> Factory.add_task_assignee(:assignee, :task, :champion)

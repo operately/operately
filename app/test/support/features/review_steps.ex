@@ -272,6 +272,41 @@ defmodule Operately.Support.Features.ReviewSteps do
   end
 
   #
+  # Due Space Tasks
+  #
+
+  step :given_there_are_due_space_tasks, ctx do
+    ctx
+    |> Factory.create_space_task(:space_task, :product_space, [
+      name: "Space Task 1",
+      due_date: Operately.ContextualDates.ContextualDate.create_day_date(past_date()),
+    ])
+    |> Factory.add_task_assignee(:assignee, :space_task, :me)
+  end
+
+  step :assert_due_space_task_is_listed, ctx do
+    ctx
+    |> UI.assert_text("Space Task 1")
+    |> UI.assert_text("3 days overdue")
+  end
+
+  step :when_space_task_is_marked_as_completed, ctx do
+    ctx
+    |> UI.click(testid: UI.testid(["assignment", Paths.task_id(ctx.space_task)]))
+    |> UI.find([testid: "task-slide-in"], fn el ->
+      UI.click_text(el, "Not started")
+    end)
+    |> UI.click(testid: "status-option-done")
+    |> UI.sleep(500)
+  end
+
+  step :assert_completed_space_task_is_no_longer_displayed, ctx do
+    ctx
+    |> UI.visit(Paths.review_path(ctx.company))
+    |> UI.refute_text("Space Task 1")
+  end
+
+  #
   # Due Goal Updates
   #
 
