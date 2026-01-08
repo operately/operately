@@ -24,24 +24,29 @@ defmodule Operately.Demo.PoorMansMarkdown do
   defp parse_block(block, acc, resources) do
     cond do
       String.starts_with?(block, "- ") ->
-        acc ++ parse_bullet_list(block)
+        acc ++ parse_bullet_list(block, resources)
 
       String.starts_with?(block, "1. ") ->
-        acc ++ parse_numbered_list(block)
+        acc ++ parse_numbered_list(block, resources)
 
       String.match?(block, ~r/^#+\s/) ->
-        acc ++ parse_heading(block)
+        if String.contains?(block, "\n") do
+          [heading, rest] = String.split(block, "\n", parts: 2)
+          acc ++ parse_heading(heading) ++ parse_block(rest, [], resources)
+        else
+          acc ++ parse_heading(block)
+        end
 
       true ->
         acc ++ parse_paragraph(block, resources)
     end
   end
 
-  defp parse_numbered_list(block) do
+  defp parse_numbered_list(block, resources) do
     items =
       block
       |> String.split("\n", trim: true)
-      |> Enum.map(&parse_numbered_item/1)
+      |> Enum.map(fn item -> parse_numbered_item(item, resources) end)
 
     [
       %{
@@ -53,20 +58,20 @@ defmodule Operately.Demo.PoorMansMarkdown do
     ]
   end
 
-  defp parse_numbered_item(item) do
-    cleaned_item = String.replace(item, ~r/^\d+\./, "")
+  defp parse_numbered_item(item, resources) do
+    cleaned_item = String.replace(item, ~r/^\d+\./, "") |> String.trim()
 
     %{
       "type" => "listItem",
-      "content" => [%{"type" => "paragraph", "content" => [%{"type" => "text", "text" => cleaned_item}]}]
+      "content" => [%{"type" => "paragraph", "content" => parse_text(cleaned_item, resources)}]
     }
   end
 
-  defp parse_bullet_list(block) do
+  defp parse_bullet_list(block, resources) do
     items =
       block
       |> String.split("\n", trim: true)
-      |> Enum.map(&parse_bullet_item/1)
+      |> Enum.map(fn item -> parse_bullet_item(item, resources) end)
 
     [
       %{
@@ -77,12 +82,12 @@ defmodule Operately.Demo.PoorMansMarkdown do
     ]
   end
 
-  defp parse_bullet_item(item) do
+  defp parse_bullet_item(item, resources) do
     cleaned_item = String.trim_leading(item, "- ")
 
     %{
       "type" => "listItem",
-      "content" => [%{"type" => "paragraph", "content" => [%{"type" => "text", "text" => cleaned_item}]}]
+      "content" => [%{"type" => "paragraph", "content" => parse_text(cleaned_item, resources)}]
     }
   end
 
