@@ -62,7 +62,7 @@ export function SpaceToolsConfigurationPage(props: SpaceToolsConfigurationPage.P
             />
 
             <ToolRow
-              title="Task board"
+              title="Tasks"
               description="Work together on tasks that don’t belong to a specific project."
               value={props.tools.tasksEnabled}
               onChange={(value) => props.onToolsChange({ ...props.tools, tasksEnabled: value })}
