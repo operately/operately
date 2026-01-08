@@ -14,8 +14,8 @@ const DUE_SOON_WINDOW_IN_DAYS = 1;
 
 export namespace ReviewPageV2 {
   export type AssignmentRole = "owner" | "reviewer";
-  export type AssignmentType = "check_in" | "goal_update" | "project_task" | "milestone";
-  export type OriginType = "project" | "goal";
+  export type AssignmentType = "check_in" | "goal_update" | "space_task" | "project_task" | "milestone";
+  export type OriginType = "project" | "goal" | "space";
 
   export interface AssignmentOrigin {
     id: string;
@@ -26,8 +26,6 @@ export namespace ReviewPageV2 {
     dueDate?: string | null;
   }
 
-  export type TaskStatus = "pending" | "todo" | "in_progress" | "done" | "canceled";
-
   export interface Assignment {
     resourceId: string;
     name: string;
@@ -37,7 +35,7 @@ export namespace ReviewPageV2 {
     actionLabel: string | null;
     path: string;
     origin: AssignmentOrigin;
-    taskStatus: TaskStatus | null;
+    taskStatus: string | null;
     authorId?: string | null;
     authorName?: string | null;
     description?: string | null;

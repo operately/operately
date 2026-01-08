@@ -246,6 +246,7 @@ defmodule OperatelyWeb.Api.Types do
     values: [
       :check_in,
       :goal_update,
+      :space_task,
       :project_task,
       :milestone
     ]
@@ -253,17 +254,7 @@ defmodule OperatelyWeb.Api.Types do
 
   enum(:review_assignment_roles, values: [ :owner, :reviewer ])
 
-  enum(:review_assignment_origin_types, values: [ :project, :goal ])
-
-  enum(:task_status_types,
-    values: [
-      :pending,
-      :todo,
-      :in_progress,
-      :done,
-      :canceled
-    ]
-  )
+  enum(:review_assignment_origin_types, values: [ :project, :goal, :space ])
 
   object :review_assignment_origin do
     field :id, :string, null: false
@@ -283,7 +274,7 @@ defmodule OperatelyWeb.Api.Types do
     field :action_label, :string, null: true
     field :path, :string, null: false
     field :origin, :review_assignment_origin, null: false
-    field :task_status, :task_status_types, null: true
+    field :task_status, :string, null: true
     field :author_id, :string, null: true
     field :author_name, :string, null: true
     field :description, :string, null: true

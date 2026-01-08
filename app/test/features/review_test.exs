@@ -41,6 +41,15 @@ defmodule Operately.Features.ReviewTest do
       |> Steps.assert_completed_task_is_no_longer_displayed()
     end
 
+    feature "viewing and completing due space tasks", ctx do
+      ctx
+      |> Steps.given_there_are_due_space_tasks()
+      |> Steps.visit_review_page()
+      |> Steps.assert_due_space_task_is_listed()
+      |> Steps.when_space_task_is_marked_as_completed()
+      |> Steps.assert_completed_space_task_is_no_longer_displayed()
+    end
+
     feature "viewing and submitting due goal updates", ctx do
       ctx
       |> Steps.given_there_are_due_goal_updates()
@@ -155,6 +164,15 @@ defmodule Operately.Features.ReviewTest do
       |> Steps.assert_the_review_item_count(is: 2)
       |> Steps.delete_task()
       |> Steps.assert_the_review_item_count(is: 1)
+    end
+
+    feature "completing space tasks updates counter", ctx do
+      ctx
+      |> Steps.given_there_are_due_space_tasks()
+      |> Steps.visit_review_page()
+      |> Steps.assert_the_review_item_count(is: 1)
+      |> Steps.when_space_task_is_marked_as_completed()
+      |> Steps.assert_the_review_item_count(is: 0)
     end
 
     feature "changing task assignee updates counter", ctx do

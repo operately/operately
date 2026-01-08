@@ -4,7 +4,6 @@ defmodule Operately.Assignments.LoaderV2 do
   alias Operately.Repo
   alias Operately.Goals.{Goal, Update}
   alias Operately.Projects.{Project, CheckIn, Milestone}
-  alias Operately.Tasks.Task, as: ProjectTask
 
   alias Operately.ContextualDates.{ContextualDate, Timeframe}
   alias OperatelyWeb.Paths
@@ -41,6 +40,7 @@ defmodule Operately.Assignments.LoaderV2 do
       Task.async(fn -> load_pending_goal_updates(company, person) end),
       Task.async(fn -> load_pending_goal_update_acknowledgements(company, person) end),
       Task.async(fn -> load_pending_tasks(company, person) end),
+      Task.async(fn -> load_pending_space_tasks(company, person) end),
       Task.async(fn -> load_pending_milestones(company, person) end)
     ]
     |> Task.await_many()
@@ -54,6 +54,7 @@ defmodule Operately.Assignments.LoaderV2 do
       Task.async(fn -> count_pending_goal_updates(person) end),
       Task.async(fn -> count_pending_goal_update_acknowledgements(person) end),
       Task.async(fn -> count_pending_tasks(person) end),
+      Task.async(fn -> count_pending_space_tasks(person) end),
       Task.async(fn -> count_pending_milestones(person) end)
     ]
     |> Task.await_many()
@@ -85,7 +86,7 @@ defmodule Operately.Assignments.LoaderV2 do
         action_label: task.name,
         path: Paths.project_task_path(company, task),
         origin: origin,
-        task_status: String.to_atom(task.status)
+        task_status: String.to_atom(task.task_status.value)
       }
     end)
   end
@@ -103,11 +104,11 @@ defmodule Operately.Assignments.LoaderV2 do
   end
 
   defp pending_tasks_query(person) do
-    from(t in ProjectTask, as: :task,
+    from(t in Operately.Tasks.Task, as: :task,
       join: assignee in assoc(t, :assignees),
       join: project in assoc(t, :project), as: :project,
       where: assignee.person_id == ^person.id,
-      where: t.status in ["pending", "todo", "in_progress"],
+      where: fragment("not (?->>'closed')::boolean", t.task_status),
       where: is_nil(project.deleted_at),
       where: project.status == "active" and is_nil(project.closed_at)
     )
@@ -392,6 +393,59 @@ defmodule Operately.Assignments.LoaderV2 do
   end
 
   #
+  # Pending space tasks
+  #
+
+  defp load_pending_space_tasks(company, person) do
+    base_query = pending_space_tasks_query(person)
+
+    result = from([task: t] in base_query,
+      join: space in assoc(t, :space),
+      preload: [space: space]
+    )
+    |> Repo.all()
+
+    Enum.map(result, fn task ->
+      origin = build_space_origin(company, task.space)
+      due_date = ContextualDate.get_date(task.due_date)
+
+      %Assignment{
+        resource_id: Paths.task_id(task),
+        name: task.name,
+        due: due_date,
+        type: :space_task,
+        role: :owner,
+        action_label: task.name,
+        path: Paths.space_task_path(company, task.space, task),
+        origin: origin,
+        task_status: String.to_atom(task.task_status.value)
+      }
+    end)
+  end
+
+  defp count_pending_space_tasks(person) do
+    due_cutoff = Date.add(Date.utc_today(), @due_soon_window_in_days)
+    base_query = pending_space_tasks_query(person)
+
+    from([task: t] in base_query,
+      where: fragment("(?->>'date')::date <= ?", t.due_date, ^due_cutoff),
+      select: count(t.id)
+    )
+    |> Repo.one()
+    |> default_zero()
+  end
+
+  defp pending_space_tasks_query(person) do
+    from(t in Operately.Tasks.Task, as: :task,
+      join: assignee in assoc(t, :assignees),
+      join: space in assoc(t, :space), as: :space,
+      where: assignee.person_id == ^person.id,
+      where: fragment("not (?->>'closed')::boolean", t.task_status),
+      where: is_nil(space.deleted_at)
+    )
+  end
+
+  #
   # Helpers
   #
 
@@ -406,6 +460,17 @@ defmodule Operately.Assignments.LoaderV2 do
       path: Paths.project_path(company, project),
       space_name: if(project.group, do: project.group.name, else: nil),
       due_date: extract_timeframe_end_date(project.timeframe)
+    }
+  end
+
+  defp build_space_origin(company, space) do
+    %AssignmentOrigin{
+      id: Paths.space_id(space),
+      name: space.name,
+      type: :space,
+      path: Paths.space_path(company, space),
+      space_name: space.name,
+      due_date: nil
     }
   end
 
