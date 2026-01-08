@@ -16,6 +16,7 @@ defmodule Operately.Support.Features.ProjectSteps do
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
   import Phoenix.ConnTest
+  import Ecto.Query, only: [from: 2]
 
   defp build_api_conn(person, company) do
     person = Operately.Repo.preload(person, :account)
@@ -154,6 +155,33 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :visit_project_page, ctx do
     ctx |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+  end
+
+  step :given_project_is_paused, ctx do
+    {:ok, project} = Operately.Operations.ProjectPausing.run(ctx.champion, ctx.project)
+    Map.put(ctx, :project, project)
+  end
+
+  step :given_project_is_resumed, ctx do
+    {:ok, project} = Operately.Operations.ProjectResuming.run(ctx.champion, ctx.project, %{
+      content: %{
+        "type" => "doc",
+        "content" => [
+          %{
+            "type" => "paragraph",
+            "content" => [%{"type" => "text", "text" => "Resuming project"}]
+          }
+        ]
+      },
+      send_to_everyone: true,
+      subscriber_ids: [],
+      subscription_parent_type: :comment_thread
+    })
+    Map.put(ctx, :project, project)
+  end
+
+  step :login_as_reviewer, ctx do
+    UI.login_as(ctx, ctx.reviewer)
   end
 
   step :open_ai_sidebar, ctx do
@@ -1017,5 +1045,53 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.sleep(300)
     |> UI.refute_has(testid: "project-subscribe-button")
     |> UI.assert_has(testid: "project-unsubscribe-button")
+  end
+
+  #
+  # Comments
+  #
+
+  step :leave_comment_on_project_resumption, ctx do
+    activity = Operately.Repo.one!(from a in Operately.Activities.Activity, where: a.action == "project_resuming" and a.content["project_id"] == ^ctx.project.id)
+    path = Paths.project_activity_path(ctx.company, activity)
+
+    ctx
+    |> UI.visit(path)
+    |> UI.click(testid: "add-comment")
+    |> UI.fill_rich_text("This is a comment on resumption.")
+    |> UI.click(testid: "post-comment")
+    |> UI.refute_has(testid: "post-comment")
+    |> UI.sleep(300)
+  end
+
+  step :assert_comment_on_resumption_visible_on_feed, ctx do
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
+    |> FeedSteps.assert_project_resumption_commented(author: ctx.reviewer, comment: "This is a comment on resumption.")
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> FeedSteps.assert_project_resumption_commented(author: ctx.reviewer, comment: "This is a comment on resumption.", project_name: ctx.project.name)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> FeedSteps.assert_project_resumption_commented(author: ctx.reviewer, comment: "This is a comment on resumption.", project_name: ctx.project.name)
+  end
+
+  step :assert_comment_on_resumption_received_in_notifications, ctx do
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.reviewer,
+      action: "Re: project resuming"
+    })
+  end
+
+  step :assert_comment_on_resumption_received_in_email, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.champion,
+      action: "commented on project resumption",
+      author: ctx.reviewer
+    })
   end
 end
