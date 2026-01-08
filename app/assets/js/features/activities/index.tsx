@@ -59,9 +59,27 @@ const ActivityHandler: interfaces.ActivityHandler = {
   NotificationLocation({ activity }: { activity: Activity }) {
     return React.createElement(handler(activity).NotificationLocation, { activity });
   },
+
+  hidden(activity: Activity) {
+    const h = handler(activity);
+    return h.hidden ? h.hidden(activity) : false;
+  },
 };
 
 export default ActivityHandler;
+
+/**
+ * Filters out activities that should be hidden based on their handler's hidden? method.
+ * Uses memoization to avoid re-filtering on every render.
+ */
+export function filterVisibleActivities(activities: Activity[]): Activity[] {
+  return React.useMemo(() => {
+    return activities.filter((activity) => {
+      const h = handler(activity);
+      return !h.hidden || !h.hidden(activity);
+    });
+  }, [activities]);
+}
 
 export const DISPLAYED_IN_FEED = [
   "goal_check_toggled",
