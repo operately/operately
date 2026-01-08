@@ -33,8 +33,12 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountTest do
 
       # 3. Pending task
       project_for_task = create_project(ctx, gen_future_date(3))
+
+      todo = Enum.find(project_for_task.task_statuses, &(&1.color == :gray)) |> Map.from_struct()
+      done = Enum.find(project_for_task.task_statuses, &(&1.color == :green)) |> Map.from_struct()
+
       create_task(project_for_task, ctx.person, %{
-        status: "todo",
+        task_status: todo,
         due_date: ContextualDate.create_day_date(Date.utc_today())
       })
 
@@ -64,12 +68,12 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountTest do
       # Goal update in the future
       create_goal(ctx.person, ctx.company, gen_future_date(3))
       # Completed task
-      create_task(project_for_task, ctx.person, %{status: "done"})
+      create_task(project_for_task, ctx.person, %{task_status: done})
       # Completed milestone
       create_milestone(project_for_milestone, %{status: :done})
       # Upcoming task
       create_task(project_for_task, ctx.person, %{
-        status: "todo",
+        task_status: todo,
         due_date: ContextualDate.create_day_date(Date.add(Date.utc_today(), 5))
       })
       # Upcoming milestone
@@ -158,12 +162,15 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountTest do
     test "doesn't include tasks with done and canceled status", ctx do
       project_for_task = create_project(ctx, gen_future_date(3))
 
+      done = Enum.find(project_for_task.task_statuses, &(&1.color == :green)) |> Map.from_struct()
+      canceled = Enum.find(project_for_task.task_statuses, &(&1.color == :red)) |> Map.from_struct()
+
       create_task(project_for_task, ctx.person, %{
-        status: "done",
+        task_status: done,
         due_date: ContextualDate.create_day_date(Date.utc_today())
       })
       create_task(project_for_task, ctx.person, %{
-        status: "canceled",
+        task_status: canceled,
         due_date: ContextualDate.create_day_date(Date.utc_today())
       })
 
