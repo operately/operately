@@ -300,7 +300,7 @@ defmodule Operately.Assignments.LoaderV2Test do
       ctx = Factory.add_task_assignee(ctx, :other_assignee, :other_task, :other_person)
 
       assignments = LoaderV2.load(ctx.champion, ctx.company)
-      task_assignments = Enum.filter(assignments, &(&1.type == :project_task))
+      task_assignments = Enum.filter(assignments, &(&1.type == :space_task))
 
       assert length(task_assignments) == 2
 

@@ -318,7 +318,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
 
       assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
 
-      space_task_assignments = Enum.filter(assignments, &(&1.type == "project_task" and &1.origin.type == "space"))
+      space_task_assignments = Enum.filter(assignments, &(&1.type == "space_task" and &1.origin.type == "space"))
 
       assert length(space_task_assignments) == 2
 
@@ -326,7 +326,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
 
       assert t1.resource_id == Paths.task_id(task1)
       assert t1.name == "Space Task 1"
-      assert t1.type == "project_task"
+      assert t1.type == "space_task"
       assert t1.role == "owner"
       assert t1.action_label == "Space Task 1"
       assert t1.task_status == "pending"
