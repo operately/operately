@@ -33,7 +33,7 @@ export function LinkEditForm({ editor }): JSX.Element {
   const isSelectionLink = editor?.isActive("link");
 
   const unlink = React.useCallback(() => {
-    editor.chain().focus().unsetLink().run();
+    editor.chain().focus().extendMarkRange("link").unsetLink().run();
     setLinkEditActive(false);
   }, [editor]);
 
@@ -42,7 +42,12 @@ export function LinkEditForm({ editor }): JSX.Element {
     setError(hasError);
     if (hasError) return;
 
-    editor.chain().focus().setLink({ href: link.trim() }).run();
+    if (editor.isActive("link")) {
+      editor.chain().focus().extendMarkRange("link").setLink({ href: link.trim() }).run();
+    } else {
+      editor.chain().focus().setLink({ href: link.trim() }).run();
+    }
+
     setLinkEditActive(false);
   }, [editor, link]);
 
