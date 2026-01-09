@@ -47,6 +47,7 @@ const GoalDiscussionCreation: ActivityHandler = {
             title="Edit"
             to={paths.goalDiscussionEditPath(activity.id!)}
             testId="edit"
+            keepOutsideOnBigScreen
           />
         )}
       </PageOptions.Root>

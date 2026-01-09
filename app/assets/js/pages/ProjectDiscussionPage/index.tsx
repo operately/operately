@@ -79,6 +79,7 @@ function Options() {
           title="Edit"
           to={paths.projectDiscussionEditPath(discussion.id!)}
           testId="edit"
+          keepOutsideOnBigScreen
         />
       )}
     </PageOptions.Root>

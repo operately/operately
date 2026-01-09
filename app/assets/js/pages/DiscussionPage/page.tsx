@@ -32,7 +32,7 @@ export function Page() {
 
   return (
     <Pages.Page title={discussion.title!} testId="discussion-page">
-      <Paper.Root size="large">
+      <Paper.Root size="medium">
         <Navigation space={discussion.space} />
 
         <Paper.Body minHeight="600px" className="lg:px-28">
