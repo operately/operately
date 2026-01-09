@@ -152,6 +152,7 @@ export namespace TaskPage {
     isDeleteModalOpen: boolean;
     openDeleteModal: () => void;
     closeDeleteModal: () => void;
+    useMinimalistDelete?: boolean;
   }
 
   export interface State extends Props {

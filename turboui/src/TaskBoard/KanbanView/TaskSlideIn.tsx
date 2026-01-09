@@ -18,6 +18,10 @@ export function TaskSlideIn({
   const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
   const isLargeScreen = useWindowSizeBiggerOrEqualTo("sm");
 
+  React.useEffect(() => {
+    setIsDeleteModalOpen(false);
+  }, [isOpen]);
+
   if (!taskPageProps) return null;
 
   const state: TaskPage.ContentState = {
@@ -25,6 +29,7 @@ export function TaskSlideIn({
     isDeleteModalOpen,
     openDeleteModal: () => setIsDeleteModalOpen(true),
     closeDeleteModal: () => setIsDeleteModalOpen(false),
+    useMinimalistDelete: true,
   };
 
   return (
