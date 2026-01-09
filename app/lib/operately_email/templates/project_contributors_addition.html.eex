@@ -2,7 +2,7 @@
 
 <%= spacer() %>
 
-Your responsibility is: <%= @responsibility %>
+<%= if @responsibility, do: "Your responsibility is: #{@responsibility}" %>
 
 <%= spacer() %>
 

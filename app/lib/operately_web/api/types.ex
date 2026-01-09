@@ -2057,9 +2057,9 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :project_contributor_input do
-    field? :person_id, :string, null: true
-    field? :responsibility, :string, null: true
-    field? :access_level, :integer, null: true
+    field :person_id, :string, null: false
+    field? :responsibility, :string, null: false
+    field :access_level, :integer, null: false
   end
 
   enum(:work_map_item_type, values: [:project, :goal])
