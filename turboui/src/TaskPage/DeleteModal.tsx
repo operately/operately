@@ -3,8 +3,34 @@ import { TaskPage } from ".";
 import { DangerButton, SecondaryButton } from "../Button";
 import { WarningCallout } from "../Callouts";
 import Modal from "../Modal";
+import { ActionConfirmation } from "../SlideIn";
 
 export function DeleteModal(props: TaskPage.ContentState) {
+  const [isDeleting, setIsDeleting] = React.useState(false);
+
+  const handleConfirm = async () => {
+    setIsDeleting(true);
+    try {
+      await props.onDelete();
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  if (props.useMinimalistDelete) {
+    return (
+      <ActionConfirmation
+        isOpen={props.isDeleteModalOpen}
+        onClose={props.closeDeleteModal}
+        onConfirm={handleConfirm}
+        title="Delete Task"
+        message="Are you sure you want to delete this task? This action cannot be undone."
+        confirmLabel="Delete Forever"
+        isConfirming={isDeleting}
+      />
+    );
+  }
+
   const title = "Delete Task";
 
   return (
