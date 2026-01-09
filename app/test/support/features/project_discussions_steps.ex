@@ -82,7 +82,6 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
 
   step :click_edit_discussion, ctx do
     ctx
-    |> UI.click(testid: "options")
     |> UI.click(testid: "edit")
   end
 
