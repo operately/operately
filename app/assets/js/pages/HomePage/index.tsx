@@ -30,17 +30,17 @@ async function loader({ params }): Promise<LoaderData> {
     id: params.companyId,
     includeOwners: true,
     includeAdmins: true,
-  }).then((d) => d.company!);
+  }).then((d) => d.company);
 
   const spaces = await Spaces.getSpaces({ includeAccessLevels: true });
-  const adminIds = company!.admins!.map((a) => a.id!);
-  const ownerIds = company!.owners!.map((o) => o.id!);
+  const adminIds = company.admins?.map((a) => a.id);
+  const ownerIds = company.owners?.map((o) => o.id);
 
   return {
     company,
     spaces,
-    adminIds,
-    ownerIds,
+    adminIds: adminIds || [],
+    ownerIds: ownerIds || [],
   };
 }
 
