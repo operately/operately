@@ -3,6 +3,8 @@ import { createPortal } from "react-dom";
 
 import { IconX } from "../icons";
 
+export { ActionConfirmation } from "./ActionConfirmation";
+
 export interface SlideInProps {
   isOpen: boolean;
   onClose: () => void;
