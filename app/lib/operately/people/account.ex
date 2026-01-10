@@ -11,6 +11,7 @@ defmodule Operately.People.Account do
     field :hashed_password, :string, redact: true
     field :confirmed_at, :naive_datetime
     field :site_admin, :boolean, default: false
+    field :theme, :string
 
     request_info()
     timestamps()
@@ -26,6 +27,11 @@ defmodule Operately.People.Account do
 
   def registration_changeset(attrs) do
     registration_changeset(%__MODULE__{}, attrs)
+  end
+
+  def changeset(account, attrs) do
+    account
+    |> cast(attrs, [:theme])
   end
 
   def registration_changeset(account, attrs, opts \\ []) do
