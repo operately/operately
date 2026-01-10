@@ -144,6 +144,12 @@ defmodule Operately.People do
     Account.email_changeset(account, attrs, validate_email: false)
   end
 
+  def update_theme(%Account{} = account, theme) do
+    account
+    |> Account.changeset(%{theme: theme})
+    |> Repo.update()
+  end
+
   def apply_account_email(account, password, attrs) do
     account
     |> Account.email_changeset(attrs)
@@ -233,9 +239,5 @@ defmodule Operately.People do
 
   def find_or_create_account(attrs) do
     Operately.People.FetchOrCreateAccountOperation.call(attrs)
-  end
-
-  def get_theme(%Person{} = person) do
-    person.theme || "system"
   end
 end
