@@ -3,7 +3,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateTheme do
   use OperatelyWeb.Api.Helpers
 
   inputs do
-    field :theme, :string
+    field :theme, :account_theme
   end
 
   outputs do

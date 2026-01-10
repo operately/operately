@@ -2,6 +2,8 @@ defmodule Operately.People.Account do
   use Operately.Schema
   use Operately.Repo.Getter
 
+  @valid_themes [:dark, :light, :system]
+
   schema "accounts" do
     has_many :people, Operately.People.Person, foreign_key: :account_id
 
@@ -11,7 +13,7 @@ defmodule Operately.People.Account do
     field :hashed_password, :string, redact: true
     field :confirmed_at, :naive_datetime
     field :site_admin, :boolean, default: false
-    field :theme, :string
+    field :theme, Ecto.Enum, values: @valid_themes, default: :system
 
     request_info()
     timestamps()
@@ -150,4 +152,6 @@ defmodule Operately.People.Account do
       add_error(changeset, :current_password, "is not valid")
     end
   end
+
+  def valid_themes(), do: @valid_themes
 end
