@@ -19,7 +19,7 @@ defmodule OperatelyWeb.Api.Queries.GetMe do
     |> ok_tuple()
   end
 
-  defp preload_manager(me, true), do: Repo.preload(me, [:manager])
+  defp preload_manager(me, true), do: Repo.preload(me, [:manager, :account])
   defp preload_manager(me, _), do: me
 
   defp serialize(me, include_manager) do
@@ -35,7 +35,7 @@ defmodule OperatelyWeb.Api.Queries.GetMe do
         send_daily_summary: me.send_daily_summary,
         notify_on_mention: me.notify_on_mention,
         notify_about_assignments: me.notify_about_assignments,
-        theme: me.theme || "system",
+        theme: me.account.theme || "system",
         manager: include_manager && serialize_manager(me.manager),
         show_dev_bar: Application.get_env(:operately, :app_env) == :dev
       }
