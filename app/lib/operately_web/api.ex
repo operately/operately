@@ -12,7 +12,12 @@ defmodule OperatelyWeb.Api do
 
       # must be public to allow lookup by token
       {:query, "invitations/get_invitation"},
-      {:query, "invitations/get_invite_link_by_token"}
+      {:query, "invitations/get_invite_link_by_token"},
+
+      # get_theme is called when the app loads, including pages such as /login and /sign-up,
+      # so it's public to avoid requiring 401. If there isn't an account logged-in, the query
+      # will return the default theme: "system".
+      {:query, "get_theme"}
     ]
   )
 
@@ -178,6 +183,7 @@ defmodule OperatelyWeb.Api do
   query(:get_spaces, Q.GetSpaces)
   query(:get_task, Q.GetTask)
   query(:get_tasks, Q.GetTasks)
+  query(:get_theme, Q.GetTheme)
   query(:get_binded_people, Q.GetBindedPeople)
   query(:get_unread_notification_count, Q.GetUnreadNotificationCount)
   query(:get_resource_hub, Q.GetResourceHub)
@@ -296,6 +302,7 @@ defmodule OperatelyWeb.Api do
   mutation(:subscribe_to_notifications, M.SubscribeToNotifications)
   mutation(:unsubscribe_from_notifications, M.UnsubscribeFromNotifications)
   mutation(:update_profile, M.UpdateProfile)
+  mutation(:update_theme, M.UpdateTheme)
   mutation(:update_profile_picture, M.UpdateProfilePicture)
   mutation(:update_project_contributor, M.UpdateProjectContributor)
   mutation(:update_project_description, M.UpdateProjectDescription)

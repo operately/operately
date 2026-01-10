@@ -19,9 +19,11 @@ defmodule OperatelyWeb.Api.Types do
     decode_with: &OperatelyWeb.Api.Types.Json.decode/1
   )
 
+  enum :account_theme, values: Operately.People.Account.valid_themes()
+
   object :account do
-    field? :full_name, :string, null: true
-    field? :site_admin, :boolean, null: true
+    field :full_name, :string, null: false
+    field :site_admin, :boolean, null: false
   end
 
   object :access_levels do
@@ -1531,7 +1533,6 @@ defmodule OperatelyWeb.Api.Types do
     field? :manager, :person, null: true
     field? :reports, list_of(:person), null: true
     field? :peers, list_of(:person), null: true
-    field? :theme, :string, null: true
     field? :access_level, :integer, null: true
     field? :has_open_invitation, :boolean, null: true
     field? :invitation, :invitation, null: true

@@ -26,8 +26,6 @@ defmodule Operately.People.Person do
     field :notify_on_mention, :boolean
     field :notify_about_assignments, :boolean, default: true
 
-    field :theme, :string
-
     field :suspended, :boolean, default: false
     field :suspended_at, :utc_datetime
 
@@ -64,7 +62,6 @@ defmodule Operately.People.Person do
       :send_daily_summary,
       :notify_on_mention,
       :notify_about_assignments,
-      :theme,
       :suspended,
       :suspended_at,
       :avatar_blob_id,
