@@ -17,7 +17,7 @@ defmodule OperatelyWeb.Api.Queries.GetTheme do
         {:ok, %{theme: theme}}
 
       {:error, _} ->
-        {:error, :unauthorized}
+        {:ok, %{theme: :system}}
     end
   end
 end

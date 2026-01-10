@@ -3,7 +3,7 @@ defmodule OperatelyWeb.Api.Queries.GetThemeTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, :get_theme, %{})
+      assert {200, %{theme: "system"}} = query(ctx.conn, :get_theme, %{})
     end
   end
 
@@ -17,7 +17,7 @@ defmodule OperatelyWeb.Api.Queries.GetThemeTest do
     test "it returns the updated theme", ctx do
       account = Operately.People.get_account!(ctx.person.account_id)
       {:ok, _} = Operately.People.update_theme(account, :dark)
-      
+
       assert {200, %{theme: "dark"}} = query(ctx.conn, :get_theme, %{})
     end
   end
