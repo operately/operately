@@ -4447,6 +4447,14 @@ export interface UpdateProjectDescriptionResult {
   project: Project;
 }
 
+export interface UpdateThemeInput {
+  theme: string;
+}
+
+export interface UpdateThemeResult {
+  success: boolean;
+}
+
 class ApiNamespaceRoot {
   constructor(private client: ApiClient) {}
 
@@ -5024,6 +5032,10 @@ class ApiNamespaceRoot {
 
   async updateProjectDescription(input: UpdateProjectDescriptionInput): Promise<UpdateProjectDescriptionResult> {
     return this.client.post("/update_project_description", input);
+  }
+
+  async updateTheme(input: UpdateThemeInput): Promise<UpdateThemeResult> {
+    return this.client.post("/update_theme", input);
   }
 }
 
@@ -6053,6 +6065,10 @@ export class ApiClient {
   updateProjectDescription(input: UpdateProjectDescriptionInput): Promise<UpdateProjectDescriptionResult> {
     return this.apiNamespaceRoot.updateProjectDescription(input);
   }
+
+  updateTheme(input: UpdateThemeInput): Promise<UpdateThemeResult> {
+    return this.apiNamespaceRoot.updateTheme(input);
+  }
 }
 
 const defaultApiClient = new ApiClient();
@@ -6542,6 +6558,9 @@ export async function updateProjectDescription(
   input: UpdateProjectDescriptionInput,
 ): Promise<UpdateProjectDescriptionResult> {
   return defaultApiClient.updateProjectDescription(input);
+}
+export async function updateTheme(input: UpdateThemeInput): Promise<UpdateThemeResult> {
+  return defaultApiClient.updateTheme(input);
 }
 
 export function useGetAccount(input: GetAccountInput): UseQueryHookResult<GetAccountResult> {
@@ -7371,6 +7390,10 @@ export function useUpdateProjectDescription(): UseMutationHookResult<
   );
 }
 
+export function useUpdateTheme(): UseMutationHookResult<UpdateThemeInput, UpdateThemeResult> {
+  return useMutation<UpdateThemeInput, UpdateThemeResult>((input) => defaultApiClient.updateTheme(input));
+}
+
 export default {
   default: defaultApiClient,
 
@@ -7654,6 +7677,8 @@ export default {
   useUpdateProjectContributor,
   updateProjectDescription,
   useUpdateProjectDescription,
+  updateTheme,
+  useUpdateTheme,
 
   invitations: {
     getInviteLinkByToken: (input: InvitationsGetInviteLinkByTokenInput) =>
