@@ -8,7 +8,6 @@ import { companyLoader } from "./companyLoader";
 import { pageRoute } from "./pageRoute";
 
 import { CurrentCompanyProvider } from "@/contexts/CurrentCompanyContext";
-import { ThemeProvider } from "@/contexts/ThemeContext";
 import { TimezoneProvider } from "@/contexts/TimezoneContext";
 
 import { saasAdminRoutes } from "@/ee/routes";
@@ -17,23 +16,17 @@ import NonCompanyLayout from "@/layouts/NonCompanyLayout";
 import { AiSidebarContextProvider } from "../features/AiSidebar/context";
 
 function NonCompanyRoutes() {
-  return (
-    <ThemeProvider>
-      <NonCompanyLayout />
-    </ThemeProvider>
-  );
+  return <NonCompanyLayout />;
 }
 
 function CompanyRoutes() {
   return (
     <CurrentCompanyProvider>
-      <ThemeProvider>
-        <TimezoneProvider>
-          <AiSidebarContextProvider>
-            <CompanyLayout />
-          </AiSidebarContextProvider>
-        </TimezoneProvider>
-      </ThemeProvider>
+      <TimezoneProvider>
+        <AiSidebarContextProvider>
+          <CompanyLayout />
+        </AiSidebarContextProvider>
+      </TimezoneProvider>
     </CurrentCompanyProvider>
   );
 }

@@ -1,10 +1,10 @@
 import React from "react";
-import { useMe } from "@/contexts/CurrentCompanyContext";
+import { useGetTheme, AccountTheme } from "@/models/people";
 
 interface ThemeContextProps {
-  theme: string;
+  theme: AccountTheme;
   colorMode: "dark" | "light";
-  setTheme: (theme: string) => void;
+  setTheme: (theme: AccountTheme) => void;
 }
 
 const ThemeContext = React.createContext<ThemeContextProps>({
@@ -14,14 +14,19 @@ const ThemeContext = React.createContext<ThemeContextProps>({
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const me = useMe();
-  const theme = me?.theme || "system";
+  const { data } = useGetTheme({});
+  const theme = data?.theme || "system";
 
   return <Context userTheme={theme}>{children}</Context>;
 }
 
-function Context({ userTheme, children }: { userTheme: string; children: React.ReactNode }) {
+function Context({ userTheme, children }: { userTheme: AccountTheme; children: React.ReactNode }) {
   const [theme, setTheme] = React.useState(userTheme);
+
+  React.useEffect(() => {
+    setTheme(userTheme);
+  }, [userTheme]);
+
   const [colorMode, setColorMode] = React.useState<"dark" | "light">("dark");
 
   React.useEffect(() => {

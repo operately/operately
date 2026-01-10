@@ -62,14 +62,6 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProfileTest do
       assert person.title == "Software Engineer"
       assert person.timezone == "America/New_York"
     end
-
-    test "you can't update the theme of someone else", ctx do
-      promote_me_to_admin(ctx)
-
-      assert {200, %{person: %{}}} = mutation(ctx.conn, :update_profile, %{id: Paths.person_id(ctx.company_member), theme: "dark"})
-      person = Operately.People.get_person!(ctx.company_member.id)
-      assert person.theme == "light"
-    end
   end
 
   describe "updating my own profile" do
@@ -89,16 +81,6 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProfileTest do
       assert person.full_name == "John Doe"
       assert person.title == "Software Engineer"
       assert person.timezone == "America/New_York"
-    end
-
-    test "update the theme", ctx do
-      assert {200, %{person: %{}}} = mutation(ctx.conn, :update_profile, %{id: Paths.person_id(ctx.person), theme: "dark"})
-      person = Operately.People.get_person!(ctx.person.id)
-      assert person.theme == "dark"
-
-      assert {200, %{person: %{}}} = mutation(ctx.conn, :update_profile, %{id: Paths.person_id(ctx.person), theme: "light"})
-      person = Operately.People.get_person!(ctx.person.id)
-      assert person.theme == "light"
     end
 
     test "inputs that are not provided are not updated", ctx do
