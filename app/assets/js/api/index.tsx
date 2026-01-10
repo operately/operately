@@ -129,8 +129,8 @@ export interface AccessLevels {
 }
 
 export interface Account {
-  fullName?: string | null;
-  siteAdmin?: boolean | null;
+  fullName: string;
+  siteAdmin: boolean;
 }
 
 export interface Activity {
@@ -1364,7 +1364,6 @@ export interface Person {
   manager?: Person | null;
   reports?: Person[] | null;
   peers?: Person[] | null;
-  theme?: string | null;
   accessLevel?: number | null;
   hasOpenInvitation?: boolean | null;
   invitation?: Invitation | null;
@@ -2049,6 +2048,8 @@ export type UpdateContent =
   | UpdateContentProjectDiscussion
   | UpdateContentMessage;
 
+export type AccountTheme = "dark" | "light" | "system";
+
 export type ActivityScopeType = "person" | "company" | "space" | "project" | "milestone" | "task" | "goal";
 
 export type AgentMessageSender = "user" | "ai";
@@ -2678,6 +2679,12 @@ export interface GetTasksInput {
 
 export interface GetTasksResult {
   tasks?: Task[] | null;
+}
+
+export interface GetThemeInput {}
+
+export interface GetThemeResult {
+  theme: AccountTheme;
 }
 
 export interface GetUnreadNotificationCountInput {}
@@ -4447,6 +4454,14 @@ export interface UpdateProjectDescriptionResult {
   project: Project;
 }
 
+export interface UpdateThemeInput {
+  theme: AccountTheme;
+}
+
+export interface UpdateThemeResult {
+  success: boolean;
+}
+
 class ApiNamespaceRoot {
   constructor(private client: ApiClient) {}
 
@@ -4592,6 +4607,10 @@ class ApiNamespaceRoot {
 
   async getTasks(input: GetTasksInput): Promise<GetTasksResult> {
     return this.client.get("/get_tasks", input);
+  }
+
+  async getTheme(input: GetThemeInput): Promise<GetThemeResult> {
+    return this.client.get("/get_theme", input);
   }
 
   async getUnreadNotificationCount(input: GetUnreadNotificationCountInput): Promise<GetUnreadNotificationCountResult> {
@@ -5024,6 +5043,10 @@ class ApiNamespaceRoot {
 
   async updateProjectDescription(input: UpdateProjectDescriptionInput): Promise<UpdateProjectDescriptionResult> {
     return this.client.post("/update_project_description", input);
+  }
+
+  async updateTheme(input: UpdateThemeInput): Promise<UpdateThemeResult> {
+    return this.client.post("/update_theme", input);
   }
 }
 
@@ -5630,6 +5653,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.getTasks(input);
   }
 
+  getTheme(input: GetThemeInput): Promise<GetThemeResult> {
+    return this.apiNamespaceRoot.getTheme(input);
+  }
+
   getUnreadNotificationCount(input: GetUnreadNotificationCountInput): Promise<GetUnreadNotificationCountResult> {
     return this.apiNamespaceRoot.getUnreadNotificationCount(input);
   }
@@ -6053,6 +6080,10 @@ export class ApiClient {
   updateProjectDescription(input: UpdateProjectDescriptionInput): Promise<UpdateProjectDescriptionResult> {
     return this.apiNamespaceRoot.updateProjectDescription(input);
   }
+
+  updateTheme(input: UpdateThemeInput): Promise<UpdateThemeResult> {
+    return this.apiNamespaceRoot.updateTheme(input);
+  }
 }
 
 const defaultApiClient = new ApiClient();
@@ -6168,6 +6199,9 @@ export async function getTask(input: GetTaskInput): Promise<GetTaskResult> {
 }
 export async function getTasks(input: GetTasksInput): Promise<GetTasksResult> {
   return defaultApiClient.getTasks(input);
+}
+export async function getTheme(input: GetThemeInput): Promise<GetThemeResult> {
+  return defaultApiClient.getTheme(input);
 }
 export async function getUnreadNotificationCount(
   input: GetUnreadNotificationCountInput,
@@ -6543,6 +6577,9 @@ export async function updateProjectDescription(
 ): Promise<UpdateProjectDescriptionResult> {
   return defaultApiClient.updateProjectDescription(input);
 }
+export async function updateTheme(input: UpdateThemeInput): Promise<UpdateThemeResult> {
+  return defaultApiClient.updateTheme(input);
+}
 
 export function useGetAccount(input: GetAccountInput): UseQueryHookResult<GetAccountResult> {
   return useQuery<GetAccountResult>(() => defaultApiClient.getAccount(input));
@@ -6696,6 +6733,10 @@ export function useGetTask(input: GetTaskInput): UseQueryHookResult<GetTaskResul
 
 export function useGetTasks(input: GetTasksInput): UseQueryHookResult<GetTasksResult> {
   return useQuery<GetTasksResult>(() => defaultApiClient.getTasks(input));
+}
+
+export function useGetTheme(input: GetThemeInput): UseQueryHookResult<GetThemeResult> {
+  return useQuery<GetThemeResult>(() => defaultApiClient.getTheme(input));
 }
 
 export function useGetUnreadNotificationCount(
@@ -7371,6 +7412,10 @@ export function useUpdateProjectDescription(): UseMutationHookResult<
   );
 }
 
+export function useUpdateTheme(): UseMutationHookResult<UpdateThemeInput, UpdateThemeResult> {
+  return useMutation<UpdateThemeInput, UpdateThemeResult>((input) => defaultApiClient.updateTheme(input));
+}
+
 export default {
   default: defaultApiClient,
 
@@ -7446,6 +7491,8 @@ export default {
   useGetTask,
   getTasks,
   useGetTasks,
+  getTheme,
+  useGetTheme,
   getUnreadNotificationCount,
   useGetUnreadNotificationCount,
   getWorkMap,
@@ -7654,6 +7701,8 @@ export default {
   useUpdateProjectContributor,
   updateProjectDescription,
   useUpdateProjectDescription,
+  updateTheme,
+  useUpdateTheme,
 
   invitations: {
     getInviteLinkByToken: (input: InvitationsGetInviteLinkByTokenInput) =>

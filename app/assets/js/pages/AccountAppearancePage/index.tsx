@@ -3,12 +3,11 @@ import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
 import * as React from "react";
 
-import { IconSun, IconMoon, IconDeviceLaptop } from "turboui";
+import { IconSun, IconMoon, IconDeviceLaptop, showErrorToast } from "turboui";
 
 import Forms from "@/components/Forms";
 import classnames from "classnames";
 
-import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useSetTheme, useTheme } from "@/contexts/ThemeContext";
 import { PageNavigation } from "@/features/accounts/PageNavigation";
 import { PageModule } from "@/routes/types";
@@ -32,7 +31,6 @@ function Page() {
 
 function Form() {
   const paths = usePaths();
-  const me = useMe()!;
   const currentTheme = useTheme();
   const navigate = useNavigate();
 
@@ -41,8 +39,12 @@ function Form() {
       theme: currentTheme,
     },
     submit: async () => {
-      await People.updateProfile({ id: me.id, theme: form.values.theme });
-      navigate(paths.accountPath());
+      try {
+        await People.updateTheme({ theme: form.values.theme });
+        navigate(paths.accountPath());
+      } catch {
+        showErrorToast("Error", "Failed to update theme");
+      }
     },
   });
 

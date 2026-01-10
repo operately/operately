@@ -15,6 +15,7 @@ import {
 } from "react-router-dom";
 
 import { createAppRoutes } from "./routes";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 
 import Api from "@/api";
 import AdminApi from "@/ee/admin_api";
@@ -54,7 +55,9 @@ const routes = createAppRoutes();
 const App: JSX.Element = (
   <React.StrictMode>
     <ToasterBar />
-    <RouterProvider router={routes} />
+    <ThemeProvider>
+      <RouterProvider router={routes} />
+    </ThemeProvider>
   </React.StrictMode>
 );
 
