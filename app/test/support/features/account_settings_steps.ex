@@ -29,7 +29,7 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
   end
 
   step :assert_person_has_theme, ctx, theme do
-    assert Operately.People.get_person!(ctx.person.id).theme == theme
+    assert Operately.People.get_account_by_email(ctx.person.email).theme == theme
     ctx
   end
 
