@@ -14,12 +14,12 @@ defmodule OperatelyWeb.Api.Mutations.UpdateThemeTest do
       assert {200, %{success: true}} = mutation(ctx.conn, :update_theme, %{theme: "dark"})
 
       account = Operately.People.get_account!(ctx.person.account_id)
-      assert account.theme == "dark"
+      assert account.theme == :dark
 
       assert {200, %{success: true}} = mutation(ctx.conn, :update_theme, %{theme: "light"})
 
       account = Operately.People.get_account!(ctx.person.account_id)
-      assert account.theme == "light"
+      assert account.theme == :light
     end
   end
 end
