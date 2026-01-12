@@ -4,7 +4,6 @@ import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
 
 import Forms from "@/components/Forms";
-import classNames from "classnames";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { TosAndPrivacyPolicy } from "@/features/auth/AgreeToTosAndPp";
@@ -155,7 +154,7 @@ function Form({ form, submitError }: { form: ReturnType<typeof Forms.useForm>; s
               </Forms.FieldGroup>
 
               <div className="my-6">
-                <SubmitButton onClick={form.actions.submit} disabled={!validation.isValid} />
+                <Forms.Submit saveText={!validation.isValid ? "Please fill in all fields" : "Continue ->"} className="w-full py-2 px-4" />
               </div>
 
               <TosAndPrivacyPolicy />
@@ -176,51 +175,39 @@ function WhatHappensNext() {
   );
 }
 
-function SubmitButton({ onClick, disabled }) {
-  const className = classNames(
-    "w-full flex justify-center py-2 px-4",
-    "border border-transparent",
-    "rounded-md shadow-sm font-medium text-white-1",
-    {
-      "bg-blue-400 cursor-not-allowed": disabled,
-      "bg-blue-600 hover:bg-blue-700": !disabled,
-    },
-  );
-
-  return (
-    <button className={className} onClick={onClick} type="submit" data-test-id="submit" disabled={disabled}>
-      {disabled ? "Please fill in all fields" : "Continue ->"}
-    </button>
-  );
-}
-
-function CodeVerification({ form }) {
+function CodeVerification({ form }: { form: ReturnType<typeof Forms.useForm> }) {
   return (
     <Pages.Page title={["Sign Up"]} testId="sign-up-page">
       <Paper.Root size="tiny">
         <Paper.Body className="h-dvh sm:h-auto">
-          <div className="py-8 sm:px-4 sm:py-4">
-            <div className="flex flex-col items-center text-center">
+          <Forms.Form form={form}>
+            <div className="py-8 sm:px-4 sm:py-4 flex flex-col items-center text-center">
               <OperatelyLogo width="32px" height="32px" />
               <h1 className="text-3xl font-bold mt-4 mb-4">Check your email for a code</h1>
-              <p className="text-content-dimmed mb-8">
-                We've sent you a 6-character code to <span className="font-bold">{form.values.email}</span>. The code
-                expires in 5 minutes, so please enter it soon.
-              </p>
+              <CodeMessage />
 
-              <Forms.Form form={form}>
-                <div className="flex flex-col items-center">
-                  <CodeInput field={"code"} />
-                  <VerifyButton onClick={form.actions.submit} />
-                </div>
+              <div className="flex flex-col items-center">
+                <CodeInput field={"code"} />
+                <Forms.Submit saveText="Continue ->" className="w-60" />
+              </div>
 
-                <div className="mt-8 text-center text-sm">Can’t find your code? Check your spam folder.</div>
-              </Forms.Form>
+              <div className="mt-8 text-center text-sm">Can’t find your code? Check your spam folder.</div>
             </div>
-          </div>
+          </Forms.Form>
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
+  );
+}
+
+function CodeMessage() {
+  const [email] = Forms.useFieldValue<string>("email");
+
+  return (
+    <p className="text-content-dimmed mb-8">
+      We've sent you a 6-character code to <span className="font-bold">{email}</span>. The code expires in 5 minutes, so
+      please enter it soon.
+    </p>
   );
 }
 
@@ -239,21 +226,6 @@ function CodeInput({ field }: { field: string }) {
       value={value}
       onChange={(e) => setValue(e.target.value)}
     />
-  );
-}
-
-function VerifyButton({ onClick }: { onClick: () => void }) {
-  const className = classNames(
-    "w-60 flex justify-center py-2 px-4 mt-4",
-    "border border-transparent",
-    "rounded-md shadow-sm font-medium text-white-1",
-    "bg-blue-600 hover:bg-blue-700",
-  );
-
-  return (
-    <button className={className} onClick={onClick} type="button" data-test-id="submit">
-      Continue -&gt;
-    </button>
   );
 }
 

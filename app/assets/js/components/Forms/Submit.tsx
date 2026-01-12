@@ -11,6 +11,7 @@ interface SubmitProps {
   layout?: "left" | "centered";
   buttonSize?: BaseButtonProps["size"];
   submitOnEnter?: boolean;
+  className?: string;
 }
 
 const DefaultSubmitProps: SubmitProps = {
@@ -51,6 +52,7 @@ export function Submit(props: SubmitProps) {
         testId="submit"
         size={props.buttonSize}
         onClick={onSubmitClick}
+        className={props.className}
       >
         {buttonText}
       </PrimaryButton>
