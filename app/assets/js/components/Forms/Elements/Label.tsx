@@ -12,7 +12,7 @@ export function Label({ field, label, icon, required }: LabelProps) {
     <label className="font-semibold flex items-center gap-2" htmlFor={field}>
       {icon}
       {label}
-      {required && <span className="text-sm -ml-1 text-red-500">*</span>}
+      {required && <span className="text-xs -ml-1 text-red-500">*</span>}
     </label>
   );
 }
