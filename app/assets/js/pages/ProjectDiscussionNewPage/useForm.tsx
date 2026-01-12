@@ -1,22 +1,13 @@
 import * as Projects from "@/models/projects";
 
 import Api from "@/api";
-import React from "react";
 import { useNavigate } from "react-router-dom";
 
-import { formValidator, useFormState } from "@/components/Form/useFormState";
+import Forms from "@/components/Forms";
 import { SubscriptionsState } from "@/models/subscriptions";
-import { Validators } from "@/utils/validators";
-import { useEditor } from "turboui";
-import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { emptyContent, isContentEmpty } from "turboui";
 
 import { usePaths } from "@/routes/paths";
-
-type FormFields = {
-  title: string;
-  setTitle: (title: string) => void;
-  editor: any;
-};
 
 interface UseFormProps {
   project: Projects.Project;
@@ -27,43 +18,28 @@ export function useForm({ project, subscriptionsState }: UseFormProps) {
   const paths = usePaths();
   const navigate = useNavigate();
 
-  const [title, setTitle] = React.useState("");
-
-  const handlers = useRichEditorHandlers({ scope: { type: "project", id: project.id } });
-  const editor = useEditor({
-    placeholder: "Start a new discussion...",
-    className: "min-h-[350px] py-2 text-lg",
-    handlers: handlers,
-  });
-
-  const [submitting, setSubmitting] = React.useState(false);
-
-  return useFormState<FormFields>({
+  const form = Forms.useForm({
     fields: {
-      title: title,
-      setTitle: setTitle,
-      editor: editor,
+      title: "",
+      message: emptyContent(),
     },
-    validations: [
-      formValidator("title", "Title is required", Validators.nonEmptyString),
-      formValidator("editor", "Body is required", Validators.nonEmptyRichText),
-    ],
-    action: [
-      async (fields: FormFields) => {
-        setSubmitting(true);
+    validate: (addError) => {
+      if (isContentEmpty(form.values.message)) {
+        addError("message", "Body is required");
+      }
+    },
+    submit: async () => {
+      const res = await Api.project_discussions.create({
+        projectId: project.id,
+        title: form.values.title,
+        message: JSON.stringify(form.values.message),
+        sendNotificationsToEveryone: subscriptionsState.notifyEveryone,
+        subscriberIds: subscriptionsState.currentSubscribersList,
+      });
 
-        Api.project_discussions
-          .create({
-            projectId: project.id,
-            title: fields.title,
-            message: JSON.stringify(fields.editor.editor.getJSON()),
-            sendNotificationsToEveryone: subscriptionsState.notifyEveryone,
-            subscriberIds: subscriptionsState.currentSubscribersList,
-          })
-          .then((data) => navigate(paths.projectDiscussionPath(data.discussion.id!)))
-          .finally(() => setSubmitting(false));
-      },
-      submitting,
-    ],
+      navigate(paths.projectDiscussionPath(res.discussion.id!));
+    },
   });
+
+  return form;
 }
