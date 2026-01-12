@@ -78,7 +78,7 @@ function ActivityGroup(props: FeedConfig & { group: Activities.ActivityGroup }) 
 function ActivityGroupDate({ group }: { group: Activities.ActivityGroup }) {
   return (
     <div className="w-1/5 shrink-0 mb-2">
-      <div className="text-sm text-content-accent font-bold">
+      <div className="text-sm text-content-accent font-bold whitespace-nowrap">
         <FormattedTime time={group.date} format="long-date" />
       </div>
       <div className="whitespace-nowrap text-content-dimmed text-sm">{Time.relativeDay(group.date)}</div>
