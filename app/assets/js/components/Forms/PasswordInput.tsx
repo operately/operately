@@ -17,6 +17,7 @@ interface PasswordInputProps {
   maxLength?: number;
   noAutofill?: boolean;
   okSign?: boolean;
+  testId?: string;
 }
 
 const DEFAULT_VALIDATION_PROPS = {
@@ -35,12 +36,12 @@ export function PasswordInput(props: PasswordInputProps) {
   useValidation(field, validateTextLength(minLength, maxLength));
 
   return (
-    <InputField field={field} label={label} error={error}>
+    <InputField field={field} label={label} error={error} required={required}>
       <div className="relative">
         <input
           name={field}
           type="password"
-          data-test-id={field}
+          data-test-id={props.testId ?? field}
           className={styles(!!error)}
           value={value}
           onChange={(e) => setValue(e.target.value)}
