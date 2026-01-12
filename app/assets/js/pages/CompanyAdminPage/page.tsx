@@ -30,7 +30,7 @@ export function Page() {
           <Paper.Section title="What's this?">
             <p>
               This is the company administration page where owners and admins can manage the company's settings. They
-              have special permissions to add or remove team members, change who can access the applicacation, and more. If
+              have special permissions to add or remove team members, change who can access the application, and more. If
               you need something done, contact one of them.
             </p>
 
