@@ -23,6 +23,7 @@ export interface FormState<T extends FieldObject> {
   state: State;
   trigger: string | undefined;
   errors: ErrorMap;
+  hasErrors: boolean;
   hasCancel: boolean;
   actions: {
     clearErrors: () => void;
@@ -45,6 +46,7 @@ export function useForm<T extends FieldObject>(props: FormProps<T>): FormState<T
 
   const [errors, setErrors] = React.useState<ErrorMap>({});
   const clearErrors = () => setErrors({});
+  const hasErrors = Object.keys(errors).length > 0;
 
   const { state, setState } = useFormState();
   const { trigger, setTrigger } = useSubmitTrigger();
@@ -56,6 +58,7 @@ export function useForm<T extends FieldObject>(props: FormProps<T>): FormState<T
     state,
     trigger,
     errors,
+    hasErrors,
     hasCancel,
     actions: {
       clearErrors,
