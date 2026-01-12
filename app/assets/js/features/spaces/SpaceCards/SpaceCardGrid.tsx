@@ -1,5 +1,5 @@
 import React from "react";
 
 export function SpaceCardGrid({ children }: { children: React.ReactNode }) {
-  return <div className="grid grid-cols-3 gap-4">{children}</div>;
+  return <div className="grid md:grid-cols-3 grid-cols-2 gap-4">{children}</div>;
 }
