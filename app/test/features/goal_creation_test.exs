@@ -12,11 +12,15 @@ defmodule Operately.Features.GoalCreationTest do
     |> Steps.assert_goal_added("Example Goal")
   end
 
-  feature "create a new subgoal from for an exitsting goal (from the goal page)", ctx do
+  feature "create a new subgoal from an existing goal (from the goal page)", ctx do
     ctx
     |> Steps.given_a_goal_exists(%{name: "Existing Goal"})
-    |> Steps.add_subgoal("Example Subgoal")
-    |> Steps.assert_subgoal_added("Example Subgoal")
+    |> Steps.visit_goal_page()
+    |> Steps.click_add_goal_in_related_work()
+    |> Steps.assert_subgoal_form_title_and_subtitle()
+    |> Steps.fill_in_goal_name("Example Subgoal")
+    |> Steps.submit()
+    |> Steps.assert_parent_goal()
   end
 
   feature "create a new goal from the company work map", ctx do
