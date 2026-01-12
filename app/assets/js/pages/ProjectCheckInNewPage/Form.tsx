@@ -68,6 +68,8 @@ export function Form({ project }: { project: Project }) {
 
       <SubscribersSelector {...subscriptionsState} />
 
+      <Forms.FormError message="Fill out all the required fields" className="-mb-6 mt-4" />
+
       <Forms.Submit saveText="Submit" buttonSize="base" />
     </Forms.Form>
   );
