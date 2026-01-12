@@ -65,10 +65,10 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includePrivacy: true,
           includeRetrospective: true,
           includeChecklist: true,
-        }).then((d) => d.goal!),
-        workMap: getWorkMap({ parentGoalId: params.id, includeAssignees: true }).then((d) => d.workMap!),
-        checkIns: Api.goals.getCheckIns({ goalId: params.id }).then((d) => d.checkIns!),
-        discussions: Api.goals.getDiscussions({ goalId: params.id }).then((d) => d.discussions!),
+        }).then((d) => d.goal),
+        workMap: getWorkMap({ parentGoalId: params.id, includeAssignees: true }).then((d) => d.workMap),
+        checkIns: Api.goals.getCheckIns({ goalId: params.id }).then((d) => d.checkIns),
+        discussions: Api.goals.getDiscussions({ goalId: params.id }).then((d) => d.discussions),
       }),
   });
 }
@@ -86,16 +86,16 @@ function Page() {
 
   useAiSidebar({
     conversationContext: {
-      id: goal.id!,
+      id: goal.id,
       type: "goal",
       title: goal.name,
-      url: paths.goalPath(goal.id!),
+      url: paths.goalPath(goal.id),
     },
   });
 
   const [goalName, setGoalName] = usePageField({
-    value: (data) => data.goal.name!,
-    update: (v) => Api.goals.updateName({ goalId: goal.id!, name: v }),
+    value: (data) => data.goal.name,
+    update: (v) => Api.goals.updateName({ goalId: goal.id, name: v }),
     onError: (e: string) => showErrorToast(e, "Reverted the goal name to its previous value."),
     validations: [(v) => (v.trim() === "" ? "Goal name cannot be empty" : null)],
   });
@@ -108,43 +108,43 @@ function Page() {
 
   const [accessLevels, setAccessLevels] = usePageField({
     value: (data) => accessLevelsAsStrings(data.goal.accessLevels),
-    update: (v) => Api.goals.updateAccessLevels({ goalId: goal.id!, accessLevels: accessLevelsAsNumbers(v) }),
+    update: (v) => Api.goals.updateAccessLevels({ goalId: goal.id, accessLevels: accessLevelsAsNumbers(v) }),
     onError: () => showErrorToast("Network Error", "Reverted the access levels to their previous values."),
   });
 
   const [space, setSpace] = usePageField({
     value: (data) => parseSpaceForTurboUI(paths, data.goal.space),
-    update: (v) => Api.goals.updateSpace({ goalId: goal.id!, spaceId: v.id }),
+    update: (v) => Api.goals.updateSpace({ goalId: goal.id, spaceId: v.id }),
     onError: () => showErrorToast("Network Error", "Reverted the space to its previous value."),
   });
 
   const [startDate, setStartDate] = usePageField({
     value: (data: { goal: Goal }) => parseContextualDate(data.goal.timeframe?.contextualStartDate),
-    update: (v) => Api.goals.updateStartDate({ goalId: goal.id!, startDate: serializeContextualDate(v) }),
+    update: (v) => Api.goals.updateStartDate({ goalId: goal.id, startDate: serializeContextualDate(v) }),
     onError: () => showErrorToast("Network Error", "Reverted the start date to its previous value."),
   });
 
   const [dueDate, setDueDate] = usePageField({
     value: (data: { goal: Goal }) => parseContextualDate(data.goal.timeframe?.contextualEndDate),
-    update: (v) => Api.goals.updateDueDate({ goalId: goal.id!, dueDate: serializeContextualDate(v) }),
+    update: (v) => Api.goals.updateDueDate({ goalId: goal.id, dueDate: serializeContextualDate(v) }),
     onError: () => showErrorToast("Network Error", "Reverted the due date to its previous value."),
   });
 
   const [champion, setChampion] = usePageField({
     value: (data) => People.parsePersonForTurboUi(paths, data.goal.champion),
-    update: (v) => Api.goals.updateChampion({ goalId: goal.id!, championId: v && v.id }),
+    update: (v) => Api.goals.updateChampion({ goalId: goal.id, championId: v && v.id }),
     onError: () => showErrorToast("Network Error", "Reverted the champion to its previous value."),
   });
 
   const [reviewer, setReviewer] = usePageField({
     value: (data) => People.parsePersonForTurboUi(paths, data.goal.reviewer),
-    update: (v) => Api.goals.updateReviewer({ goalId: goal.id!, reviewerId: v && v.id }),
+    update: (v) => Api.goals.updateReviewer({ goalId: goal.id, reviewerId: v && v.id }),
     onError: () => showErrorToast("Network Error", "Reverted the reviewer to its previous value."),
   });
 
   const [parentGoal, setParentGoal] = usePageField({
     value: (data) => parseParentGoalForTurboUi(paths, data.goal.parentGoal),
-    update: (v) => Api.goals.updateParentGoal({ goalId: goal.id!, parentGoalId: v && v.id }),
+    update: (v) => Api.goals.updateParentGoal({ goalId: goal.id, parentGoalId: v && v.id }),
     onError: () => showErrorToast("Network Error", "Reverted the parent goal to its previous value."),
     onSuccess: () => showSuccessToast("Parent Goal Updated", "The parent goal has been successfully changed."),
   });
@@ -153,16 +153,19 @@ function Page() {
   const transformPerson = React.useCallback((p) => People.parsePersonForTurboUi(paths, p)!, [paths]);
 
   // ignoredIds must be memoized to prevent infinite loop in the hook
-  const ignoredIds = React.useMemo(() => [champion?.id!, reviewer?.id!], [champion?.id, reviewer?.id]);
+  const ignoredIds = React.useMemo(
+    () => [champion?.id, reviewer?.id].filter((id) => id !== undefined),
+    [champion?.id, reviewer?.id],
+  );
 
   const championSearch = People.usePersonFieldSearch({
-    scope: { type: "space", id: goal.space.id! },
+    scope: { type: "space", id: goal.space.id },
     ignoredIds,
     transformResult: transformPerson,
   });
 
   const reviewerSearch = People.usePersonFieldSearch({
-    scope: { type: "space", id: goal.space.id! },
+    scope: { type: "space", id: goal.space.id },
     ignoredIds,
     transformResult: transformPerson,
   });
@@ -172,7 +175,7 @@ function Page() {
 
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "goal", id: goal.id } });
 
-  const checklists = useChecklists({ goalId: goal.id!, initialChecklist: goal.checklist! });
+  const checklists = useChecklists({ goalId: goal.id, initialChecklist: goal.checklist || [] });
 
   const initialTargets = React.useMemo(() => prepareTargets(goal.targets), [goal.targets]);
 
@@ -185,9 +188,15 @@ function Page() {
 
   const deleteGoal = async () => {
     try {
-      await Api.deleteGoal({ goalId: goal.id! });
-      navigate(paths.spaceWorkMapPath(goal.space!.id, "goals"));
-      PageCache.invalidate(pageCacheKey(goal.id!));
+      await Api.deleteGoal({ goalId: goal.id });
+      PageCache.invalidate(pageCacheKey(goal.id));
+      
+      if (goal.space?.id) {
+        navigate(paths.spaceWorkMapPath(goal.space.id, "goals"));
+      }
+      else {
+        navigate(paths.homePath())
+      }
     } catch (error) {
       console.error("Failed to delete goal:", error);
       showErrorToast("Something went wrong", "Failed to delete the goal. Please try again.");
@@ -204,8 +213,8 @@ function Page() {
     reopenLink: paths.goalReopenPath(goal.id),
     newCheckInLink: paths.goalCheckInNewPath(goal.id),
     newDiscussionLink: paths.newGoalDiscussionPath(goal.id),
-    addSubprojectLink: paths.newProjectPath({ goalId: goal.id!, spaceId: goal.space!.id! }),
-    addSubgoalLink: paths.newGoalPath({ parentGoalId: goal.id!, spaceId: goal.space!.id! }),
+    addSubprojectLink: paths.newProjectPath({ goalId: goal.id, spaceId: goal.space.id }),
+    addSubgoalLink: paths.newGoalPath({ parentGoalId: goal.id, spaceId: goal.space.id }),
     exportMarkdown,
     closedAt: Time.parse(goal.closedAt),
     retrospective: prepareRetrospective(paths, goal.retrospective),
@@ -267,10 +276,10 @@ function Page() {
     toggleChecklistItem: checklists.toggle,
     updateChecklistItemIndex: checklists.updateIndex,
 
-    activityFeed: <GoalFeedItems goalId={goal.id!} />,
+    activityFeed: <GoalFeedItems goalId={goal.id} />,
   };
 
-  return <GoalPage key={goal.id!} {...props} />;
+  return <GoalPage key={goal.id} {...props} />;
 }
 
 function prepareCheckIns(paths: Paths, checkIns: GoalProgressUpdate[]): GoalPage.Props["checkIns"] {
@@ -278,10 +287,10 @@ function prepareCheckIns(paths: Paths, checkIns: GoalProgressUpdate[]): GoalPage
     assertPresent(checkIn.author, "author must be present in check-in");
 
     return {
-      id: checkIn.id!,
+      id: checkIn.id,
       author: People.parsePersonForTurboUi(paths, checkIn.author)!,
-      date: Time.parse(checkIn.insertedAt!)!,
-      link: paths.goalCheckInPath(checkIn.id!),
+      date: Time.parse(checkIn.insertedAt)!,
+      link: paths.goalCheckInPath(checkIn.id),
       content: JSON.parse(checkIn.message!),
       commentCount: checkIn.commentsCount!,
       status: checkIn.status!,
@@ -303,7 +312,7 @@ function GoalFeedItems({ goalId }: { goalId: string }) {
   if (error) return <div>Error: {error.message}</div>;
   if (!data) return null;
 
-  return <Feed items={data!.activities!} page="goal" testId="goal-feed" />;
+  return <Feed items={data.activities} page="goal" testId="goal-feed" />;
 }
 
 function prepareTargets(targets: Target[] | null | undefined): GoalPage.Props["targets"] {
@@ -379,7 +388,7 @@ function usePageField<T>({
       const oldVal = state;
 
       const successHandler = () => {
-        PageCache.invalidate(pageCacheKey(data.goal.id!));
+        PageCache.invalidate(pageCacheKey(data.goal.id));
         onSuccess?.();
         resolve(true);
       };
@@ -443,7 +452,7 @@ function useParentGoalSearch(goal: Goal): GoalPage.Props["parentGoalSearch"] {
   const paths = usePaths();
 
   return async ({ query }: { query: string }): Promise<GoalPage.ParentGoal[]> => {
-    const data = await Api.goals.parentGoalSearch({ query: query.trim(), goalId: goal.id! });
+    const data = await Api.goals.parentGoalSearch({ query: query.trim(), goalId: goal.id });
     const goals = data.goals.map((g) => parseParentGoalForTurboUi(paths, g));
 
     return goals.map((g) => g!);
@@ -457,9 +466,9 @@ function useSpaceSearch(): GoalPage.Props["spaceSearch"] {
     const data = await Api.spaces.search({ query: query });
 
     return data.spaces.map((space) => ({
-      id: space.id!,
-      name: space.name!,
-      link: paths.spacePath(space.id!),
+      id: space.id,
+      name: space.name,
+      link: paths.spacePath(space.id),
     }));
   };
 }

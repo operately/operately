@@ -42,7 +42,7 @@ function warningTitle(activeSubitems: ActiveSubitem[]): string {
   const activeProjects = activeSubitems.filter((item) => item.type === "project");
 
   if (activeSubgoals.length > 0) {
-    title += plurarize(activeSubgoals.length, "sub-goal", "sub-goals");
+    title += plurarize(activeSubgoals.length, "subgoal", "subgoals");
   }
 
   if (activeSubgoals.length > 0 && activeProjects.length > 0) {
