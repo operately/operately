@@ -14,9 +14,10 @@ export function Navigation() {
   return (
     <Paper.Navigation
       items={[
-        { to: paths.spacePath(goal.space.id!), label: goal.space.name! },
-        { to: paths.spaceWorkMapPath(goal.space.id!), label: "Work Map" },
-        { to: paths.goalPath(goal.id!), label: goal.name! },
+        { to: paths.spacePath(goal.space.id), label: goal.space.name },
+        { to: paths.spaceWorkMapPath(goal.space.id), label: "Work Map" },
+        { to: paths.goalPath(goal.id), label: goal.name },
+        { to: paths.goalPath(goal.id, { tab: "check-ins" }), label: "Check-ins" },
       ]}
     />
   );
