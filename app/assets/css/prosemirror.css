@@ -293,3 +293,8 @@
   background-color: var(--color-green-800);
   color: white;
 }
+
+.rich-text-summary .ProseMirror-trailingBreak,
+.rich-text-summary .ProseMirror-separator {
+  display: none !important;
+}

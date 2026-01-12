@@ -12,7 +12,7 @@ interface SummaryProps {
 export function Summary({ content, characterCount, mentionedPersonLookup }: SummaryProps): JSX.Element {
   const summary = useSummarized(content, characterCount);
 
-  return <RichContent content={summary} mentionedPersonLookup={mentionedPersonLookup} />;
+  return <RichContent content={summary} mentionedPersonLookup={mentionedPersonLookup} className="rich-text-summary" />;
 }
 
 //
