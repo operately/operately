@@ -10,9 +10,10 @@ interface Props {
   onClick: (attrs: any) => void;
   buttonSize?: BaseButtonProps["size"];
   primary?: boolean;
+  className?: string;
 }
 
-export function SubmitButton({ name, onClick, text, buttonSize, primary }: Props) {
+export function SubmitButton({ name, onClick, text, buttonSize, primary, className }: Props) {
   const form = useFormContext();
 
   const clickHandler = (attrs: any) => {
@@ -26,6 +27,7 @@ export function SubmitButton({ name, onClick, text, buttonSize, primary }: Props
     testId: name,
     size: buttonSize || "base",
     onClick: clickHandler,
+    className,
   };
 
   if (primary) {
