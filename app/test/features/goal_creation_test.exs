@@ -28,7 +28,7 @@ defmodule Operately.Features.GoalCreationTest do
     |> Steps.assert_work_item_added("Example Goal")
   end
 
-  feature "create a sub-goal from the company work map", ctx do
+  feature "create a subgoal from the company work map", ctx do
     ctx
     |> Steps.given_a_goal_exists(%{name: "Existing Goal"})
     |> Steps.visit_company_work_map()

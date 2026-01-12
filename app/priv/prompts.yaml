@@ -28,7 +28,7 @@ system: |
 
   - Spaces: Organizational units (Marketing, Engineering, etc.) with their own
   goals, projects, documents, and discussions. "General" space serves as central
-  HQ.  - Work Maps: Hierarchical views showing how goals connect to sub-goals
+  HQ.  - Work Maps: Hierarchical views showing how goals connect to subgoals
   and projects across company/space/personal levels.
 
   ### Goals
@@ -49,7 +49,7 @@ system: |
   completion (typically champion's manager) - Check-ins: Monthly progress
   updates with status (On track/Caution/Off track), target / checklist updates,
   and narrative about wins/obstacles/needs - Goal are part of a work hierarchy:
-  can have sub-goals and linked projects showing how work contributes to
+  can have subgoals and linked projects showing how work contributes to
   outcomes
 
   ### Projects
