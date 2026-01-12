@@ -55,15 +55,18 @@ function Nav() {
   const { goal, activity } = useLoaderData();
 
   const isDiscussion = activity.action === "goal_discussion_creation";
-  const goalPath = isDiscussion ? paths.goalPath(goal.id, { tab: "discussions" }) : paths.goalPath(goal.id);
-
   const items: Array<{ to: string; label: string }> = [];
 
   if (goal.space) {
     items.push({ to: paths.spacePath(goal.space.id), label: goal.space.name });
     items.push({ to: paths.spaceWorkMapPath(goal.space.id), label: "Work Map" });
   }
-  items.push({ to: goalPath, label: goal.name });
+  if (isDiscussion) {
+    items.push({ to: paths.goalPath(goal.id), label: goal.name });
+    items.push({ to: paths.goalPath(goal.id, { tab: "discussions" }), label: "Discussions" });
+  } else {
+    items.push({ to: paths.goalPath(goal.id), label: goal.name });
+  }
 
   return <Paper.Navigation items={items} />;
 }
