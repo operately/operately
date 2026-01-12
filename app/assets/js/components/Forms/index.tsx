@@ -15,6 +15,7 @@ import { CheckboxInput } from "./CheckboxInput";
 import { SelectStatus } from "./SelectStatus";
 import { NumberInput } from "./NumberInput";
 import { ErrorMessage } from "./ErrorMessage";
+import { FormError } from "./FormError";
 
 import { useForm } from "./useForm";
 import { useFieldError, useFieldValue } from "./FormContext";
@@ -43,4 +44,5 @@ export default {
   SelectStatus,
   NumberInput,
   ErrorMessage,
+  FormError,
 };
