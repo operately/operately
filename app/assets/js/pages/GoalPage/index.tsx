@@ -154,7 +154,7 @@ function Page() {
 
   // ignoredIds must be memoized to prevent infinite loop in the hook
   const ignoredIds = React.useMemo(
-    () => [champion?.id, reviewer?.id].filter((id) => id !== undefined),
+    () => [champion?.id, reviewer?.id].filter((id): id is string => id !== undefined),
     [champion?.id, reviewer?.id],
   );
 
