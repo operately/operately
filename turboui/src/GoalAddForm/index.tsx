@@ -6,10 +6,13 @@ import { PrivacyField } from "../PrivacyField";
 import { SpaceField } from "../SpaceField";
 import { TextField } from "../TextField";
 import { showErrorToast } from "../Toasts";
+import { BlackLink } from "../Link";
 
 export function GoalAddPage(props: GoalAddForm.Props) {
+  const title = props.parentGoal ? "Add a subgoal" : "Add a new goal";
+
   return (
-    <Page title="Add a new goal" testId="goal-add-page" size="small">
+    <Page title={title} testId="goal-add-page" size="small">
       <div className="p-8">
         <GoalAddForm {...props} />
       </div>
@@ -22,6 +25,12 @@ export function GoalAddPage(props: GoalAddForm.Props) {
 //
 
 export namespace GoalAddForm {
+  export interface ParentGoal {
+    id: string;
+    name: string;
+    link: string;
+  }
+
   export interface SaveProps {
     name: string;
     spaceId: string;
@@ -31,6 +40,7 @@ export namespace GoalAddForm {
   export interface Props {
     space?: SpaceField.Space | null;
     spaceSearch: SpaceField.SearchSpaceFn;
+    parentGoal?: ParentGoal | null;
 
     save: (props: SaveProps) => Promise<{ id: string }>;
     onSuccess?: (id: string) => void;
@@ -53,12 +63,21 @@ export namespace GoalAddForm {
 
 export function GoalAddForm(props: GoalAddForm.Props) {
   const state = useFormState(props);
+  const title = props.parentGoal ? "Add a subgoal" : "Add a new goal";
 
   return (
     <div>
-      <h1 className="mb-4 font-bold text-xl">Add a new goal</h1>
+      <h1 className="font-bold text-xl">{title}</h1>
+      {props.parentGoal && (
+        <div className="text-xs text-content-dimmed">
+          Adding under{" "}
+          <BlackLink to={props.parentGoal.link} className="font-medium" underline="hover">
+            {props.parentGoal.name}
+          </BlackLink>
+        </div>
+      )}
 
-      <div className="flex flex-col gap-4">
+      <div className="mt-4 flex flex-col gap-4">
         <TextField
           autofocus
           label="Name"

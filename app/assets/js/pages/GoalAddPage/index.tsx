@@ -42,21 +42,29 @@ async function loader({ request }): Promise<LoaderResult> {
   }
 
   if (parentGoalId) {
-    data.parentGoal = await Goals.getGoal({ id: parentGoalId }).then((data) => data.goal!);
+    data.parentGoal = await Goals.getGoal({ id: parentGoalId }).then((data) => data.goal);
   }
 
   return data;
 }
 
 function Page() {
-  const { space } = Pages.useLoadedData<LoaderResult>();
+  const { space, parentGoal } = Pages.useLoadedData<LoaderResult>();
 
   const paths = usePaths();
   const save = useSaveGoal();
   const onSuccess = useOnSuccess();
   const spaceSearch = useSpaceSearch();
 
-  return <GoalAddPage spaceSearch={spaceSearch} save={save} onSuccess={onSuccess} space={prepareSpace(paths, space)} />;
+  return (
+    <GoalAddPage
+      spaceSearch={spaceSearch}
+      save={save}
+      onSuccess={onSuccess}
+      space={prepareSpace(paths, space)}
+      parentGoal={prepareParentGoal(paths, parentGoal)}
+    />
+  );
 }
 
 function useSaveGoal(): (props: GoalAddForm.SaveProps) => Promise<{ id: string }> {
@@ -72,7 +80,7 @@ function useSaveGoal(): (props: GoalAddForm.SaveProps) => Promise<{ id: string }
       spaceAccessLevel: accessLevelAsNumber(props.accessLevels.space),
       parentGoalId: parentGoal ? parentGoal.id : undefined,
     }).then((response) => {
-      return { id: response.goal!.id! };
+      return { id: response.goal.id };
     });
   };
 }
@@ -93,4 +101,8 @@ function prepareSpace(paths: Paths, space: Spaces.Space | null): SpaceField.Spac
     ...space,
     link: paths.spacePath(space.id),
   };
+}
+
+function prepareParentGoal(paths: Paths, goal: Goals.Goal | null): GoalAddForm.ParentGoal | null {
+  return Goals.parseParentGoalForTurboUi(paths, goal);
 }
