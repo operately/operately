@@ -12,6 +12,7 @@ export function calcClassName(
     "flex-grow-0 flex-shrink-0",
     "font-semibold text-center inline-block",
     "transition-all duration-100",
+    props.className,
     always,
     {
       "cursor-default": props.loading,

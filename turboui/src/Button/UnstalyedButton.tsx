@@ -30,6 +30,7 @@ export interface BaseButtonProps extends MenuOptions, Linkable, Clickable, Testa
   icon?: React.ComponentType<IconProps>;
   iconSize?: number;
   disabled?: boolean;
+  className?: string;
 }
 
 interface UnstyledButtonProps extends BaseButtonProps {
