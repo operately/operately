@@ -19,7 +19,7 @@ function CantDeleteHasSubitems(props: GoalPage.State) {
   return (
     <div>
       <p className="mb-6">
-        You need to delete all sub-goals and projects before you can delete this goal. The following items are connected
+        You need to delete all subgoals and projects before you can delete this goal. The following items are connected
         to this goal and must be deleted first:
       </p>
 

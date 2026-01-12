@@ -19,11 +19,25 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
     ctx |> UI.visit(Paths.new_goal_path(ctx.company))
   end
 
+  step :visit_goal_page, ctx do
+    ctx |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
+  end
+
+  step :click_add_goal_in_related_work, ctx do
+    ctx
+    |> UI.assert_text("Subgoals & Projects", testid: "goal-page")
+    |> UI.click(testid: "add-subgoal")
+  end
+
   step :fill_in_goal_form, ctx, name do
     ctx
     |> UI.fill_text_field(testid: "goal-name", with: name)
     |> UI.click(testid: "space-field")
     |> UI.click(testid: UI.testid(["space-field", "search-result", "general"]))
+  end
+
+  step :fill_in_goal_name, ctx, name do
+    ctx |> UI.fill_text_field(testid: "goal-name", with: name)
   end
 
   step :submit, ctx do
@@ -36,13 +50,18 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
     |> UI.assert_text(name)
   end
 
-  step :add_subgoal, ctx, name do
+  step :assert_subgoal_form_title_and_subtitle, ctx do
     ctx
-    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
-    |> UI.click(testid: "add-subgoal")
-    |> UI.fill_text_field(testid: "goal-name", with: name)
-    |> UI.click(testid: "submit")
+    |> UI.assert_has(testid: "goal-add-page")
+    |> UI.assert_text("Add a subgoal", testid: "goal-add-page")
+    |> UI.assert_text("Adding under", testid: "goal-add-page")
+    |> UI.assert_text(ctx.goal.name, testid: "goal-add-page")
+  end
+
+  step :assert_parent_goal, ctx do
+    ctx
     |> UI.assert_has(testid: "goal-page")
+    |> UI.assert_text(ctx.goal.name, testid: "parent-goal-field")
   end
 
   step :assert_subgoal_added, ctx, name do

@@ -2355,7 +2355,7 @@ export interface GetGoalInput {
 }
 
 export interface GetGoalResult {
-  goal?: Goal;
+  goal: Goal;
   markdown?: string;
 }
 
