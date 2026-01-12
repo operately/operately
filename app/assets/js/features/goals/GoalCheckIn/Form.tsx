@@ -5,7 +5,7 @@ import * as React from "react";
 import { SubscriptionsState } from "@/models/subscriptions";
 
 import { InfoCallout } from "@/components/Callouts";
-import Forms from "@/components/Forms";
+import Forms, { FormState } from "@/components/Forms";
 import { useFieldValue } from "@/components/Forms/FormContext";
 import { GoalTargetsField } from "@/features/goals/GoalTargetsV2";
 import { durationHumanized } from "@/utils/time";
@@ -15,7 +15,7 @@ import { StatusSelector } from "./StatusSelector";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 interface Props {
-  form: any;
+  form: FormState<any>;
   mode: "new" | "view" | "edit";
   goal: Goals.Goal;
   children?: React.ReactNode;
@@ -39,6 +39,9 @@ export function Form(props: Props) {
       </div>
 
       <Subscribers {...props} />
+
+      <Forms.FormError message="Fill out all the required fields" className="-mb-6 mt-4" />
+
       <SubmitSection {...props} />
     </Forms.Form>
   );

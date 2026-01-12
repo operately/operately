@@ -213,7 +213,7 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
   end
 
   step :navigate_to_goal_from_discussion, ctx do
-    UI.click(ctx, testid: UI.testid(["nav-item", ctx.goal.name]))
+    UI.click(ctx, testid: UI.testid(["nav-item", "Discussions"]))
   end
 
   step :assert_goal_discussions_tab, ctx do
