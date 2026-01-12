@@ -40,7 +40,7 @@ function Page() {
   const [state, setState] = React.useState<PageState>({ state: "form" });
 
   return (
-    <Pages.Page title={["Invite new Member", company.name!]}>
+    <Pages.Page title={["Invite new team member", company.name!]}>
       {match(state.state)
         .with("form", () => <InviteForm setPageState={setState} />)
         .with("invited", () => <InvitedPage state={state as PageStateInvited} setPageState={setState} />)
@@ -99,7 +99,7 @@ function InviteForm({ setPageState }: { setPageState: SetPageStateFn }) {
     <Paper.Root size="small">
       <Navigation />
       <Paper.Body minHeight="none">
-        <div className="text-content-accent text-2xl font-extrabold mb-8">Invite a new Member</div>
+        <div className="text-content-accent text-2xl font-extrabold mb-8">Invite a new team member</div>
 
         <Forms.Form form={form}>
           <Forms.FieldGroup layout="horizontal">
@@ -176,7 +176,7 @@ function Navigation() {
     <Paper.Navigation
       items={[
         { to: paths.companyAdminPath(), label: "Company Administration" },
-        { to: paths.companyManagePeoplePath(), label: "Manage People" },
+        { to: paths.companyManagePeoplePath(), label: "Manage Team Members" },
       ]}
     />
   );
