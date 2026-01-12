@@ -27,7 +27,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
   end
 
   outputs do
-    field? :goal, :goal
+    field :goal, :goal, null: false
     field? :markdown, :string
   end
 
