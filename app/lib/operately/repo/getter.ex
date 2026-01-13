@@ -324,7 +324,19 @@ defmodule Operately.Repo.Getter do
   defp assoc_module(module, assoc) do
     case module.__schema__(:association, assoc) do
       nil -> raise ArgumentError, "Unknown association #{inspect(assoc)} for #{inspect(module)}"
+      %Ecto.Association.HasThrough{through: through} -> resolve_through_assoc(module, through)
       association -> association.related
+    end
+  end
+
+  defp resolve_through_assoc(_module, []), do: (raise ArgumentError, "Invalid through association path")
+
+  defp resolve_through_assoc(module, [assoc | rest]) do
+    next_module = assoc_module(module, assoc)
+
+    case rest do
+      [] -> next_module
+      _ -> resolve_through_assoc(next_module, rest)
     end
   end
 
