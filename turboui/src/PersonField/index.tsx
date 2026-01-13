@@ -31,7 +31,6 @@ export namespace PersonField {
 
   interface BaseProps {
     person: Person | null;
-    setPerson: (person: Person | null) => void;
 
     isOpen?: boolean;
     avatarSize?: number;
@@ -47,12 +46,16 @@ export namespace PersonField {
 
   interface ReadonlyProps extends BaseProps {
     readonly: true;
-    searchData?: SearchData; // Optional for readonly
+    // Optional for readonly
+    searchData?: SearchData; 
+    setPerson?: (person: Person | null) => void;
   }
 
   interface EditableProps extends BaseProps {
     readonly?: boolean;
-    searchData: SearchData; // Required for editable
+    // Required for editable
+    searchData: SearchData;
+    setPerson: (person: Person | null) => void;
   }
 
   export type Props = ReadonlyProps | EditableProps;
@@ -65,7 +68,7 @@ export namespace PersonField {
     setDialogMode: (mode: "menu" | "search") => void;
 
     person: Person | null;
-    setPerson: (person: Person | null) => void;
+    setPerson?: (person: Person | null) => void;
 
     readonly: boolean;
     avatarSize: number;
@@ -370,7 +373,7 @@ function DialogMenu({ state }: { state: PersonField.State }) {
       icon: IconCircleX,
       label: "Clear assignment",
       onClick: () => {
-        state.setPerson(null);
+        state?.setPerson?.(null);
         state.setIsOpen(false);
       },
     });
@@ -483,7 +486,7 @@ function DialogSearch({ state }: { state: PersonField.State }) {
         e.preventDefault();
         const selectedPerson = state.searchResults[selectedIndex];
         if (selectedPerson) {
-          state.setPerson(selectedPerson);
+          state?.setPerson?.(selectedPerson);
           state.setSearchQuery(""); // Clear search query
           state.setIsOpen(false);
         }
@@ -520,7 +523,7 @@ function DialogSearch({ state }: { state: PersonField.State }) {
               "hover:bg-surface-dimmed": index !== selectedIndex,
             })}
             onClick={() => {
-              state.setPerson(person);
+              state?.setPerson?.(person);
               state.setSearchQuery(""); // Clear search query
               state.setIsOpen(false);
             }}

@@ -4,6 +4,7 @@ import { Tabs, TabsState } from "../Tabs";
 import { StatusBanner } from "./StatusBanner";
 import { PageHeader } from "./PageHeader";
 import { BadgeStatus } from "../StatusBadge/types";
+import { ProjectPage } from "../ProjectPage";
 
 export namespace ProjectPageLayout {
   export interface ChildrenCount {
@@ -12,18 +13,10 @@ export namespace ProjectPageLayout {
     checkInsCount: number;
   }
 
-  export interface Space {
-    id: string;
-    name: string;
-    link: string;
-  }
-
-  export interface Props {
+  export type Props = ProjectPage.SpaceProps & {
     title: string[];
     testId?: string;
 
-    space: Space;
-    workmapLink: string;
     projectName: string;
     canEdit: boolean;
     status: BadgeStatus;
