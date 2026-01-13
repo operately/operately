@@ -259,7 +259,7 @@ defmodule Operately.Repo.Getter do
   defp preload_auth(resource, _requester, %{auth_preload: auth_preload}) when auth_preload in [nil, []], do: resource
 
   defp preload_auth(resource, :system, %{auth_preload: auth_preload, with_deleted: with_deleted}) do
-    Operately.Repo.preload(resource, List.wrap(auth_preload), with_deleted: with_deleted)
+    Operately.Repo.preload(resource, List.wrap(auth_preload) |> List.flatten(), with_deleted: with_deleted)
   end
 
   defp preload_auth(resource, requester, %{auth_preload: auth_preload, with_deleted: with_deleted}) do
@@ -280,6 +280,7 @@ defmodule Operately.Repo.Getter do
   defp build_auth_preload(module, requester_id, auth_preload) do
     auth_preload
     |> List.wrap()
+    |> List.flatten()
     |> Enum.map(&build_auth_preload_item(module, requester_id, &1))
   end
 
