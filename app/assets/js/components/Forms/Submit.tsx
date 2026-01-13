@@ -12,6 +12,8 @@ interface SubmitProps {
   buttonSize?: BaseButtonProps["size"];
   submitOnEnter?: boolean;
   className?: string;
+  containerClassName?: string;
+  testId?: string;
 }
 
 const DefaultSubmitProps: SubmitProps = {
@@ -30,7 +32,7 @@ export function Submit(props: SubmitProps) {
   const className = classNames("flex items-center gap-2 mt-8", {
     "justify-start": props.layout === "left",
     "justify-center": props.layout === "centered",
-  });
+  }, props.containerClassName);
 
   const loading = React.useMemo(() => form.state === "submitting" || form.state === "uploading", [form.state]);
   const buttonText = form.state === "uploading" ? "Uploading..." : props.saveText;
@@ -49,7 +51,7 @@ export function Submit(props: SubmitProps) {
       <PrimaryButton
         type={buttonType}
         loading={loading}
-        testId="submit"
+        testId={props.testId ?? "submit"}
         size={props.buttonSize}
         onClick={onSubmitClick}
         className={props.className}

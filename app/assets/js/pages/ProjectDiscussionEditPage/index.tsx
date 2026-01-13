@@ -7,16 +7,13 @@ import { PageModule } from "@/routes/types";
 import { assertPresent } from "@/utils/assertions";
 
 import Api from "@/api";
-import { DimmedLink, PrimaryButton, Editor, useEditor, SubscribersSelector } from "turboui";
-import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
-import { FormTitleInput } from "../../components/FormTitleInput";
+import Forms from "@/components/Forms";
+import { DimmedLink, SubscribersSelector, emptyContent, isContentEmpty } from "turboui";
 import { useSubscriptionsAdapter, SubscriptionsState } from "@/models/subscriptions";
 import { usePaths } from "../../routes/paths";
 
 import { useNavigate } from "react-router-dom";
 
-import { formValidator, useFormState } from "@/components/Form/useFormState";
-import { Validators } from "@/utils/validators";
 
 export default { name: "ProjectDiscussionEditPage", loader, Page } as PageModule;
 
@@ -75,6 +72,8 @@ function Form() {
 
   assertPresent(discussion.potentialSubscribers, "potentialSubscribers must be present in discussion");
   assertPresent(discussion.project, "project must be present in discussion");
+  assertPresent(discussion.project.id, "project id must be present in discussion");
+  assertPresent(discussion.id, "discussion id must be present in discussion");
 
   const subscriptionsState = useSubscriptionsAdapter(discussion.potentialSubscribers, {
     ignoreMe: true,
@@ -83,30 +82,43 @@ function Form() {
   });
 
   const form = useForm({ discussion, subscriptionsState });
+  const mentionSearchScope = { type: "project", id: discussion.project.id } as const;
 
   return (
-    <>
-      <FormTitleInput
-        value={form.fields.title}
-        onChange={form.fields.setTitle}
-        error={false}
-        testId="discussion-title"
-      />
-
-      <div className="mt-2 border-y border-stroke-base text-content-base font-medium ">
-        <Editor editor={form.fields.editor} hideBorder padding="p-0" />
-      </div>
+    <Forms.Form form={form}>
+      <Forms.FieldGroup>
+        <div>
+          <Forms.TitleInput
+            field="title"
+            placeholder="Title..."
+            autoFocus
+            testId="discussion-title"
+            errorMessage="Please add a title"
+          />
+          <div className="mt-2 border-y border-stroke-base text-content-base font-medium">
+            <Forms.RichTextArea
+              field="message"
+              mentionSearchScope={mentionSearchScope}
+              placeholder="Write here..."
+              hideBorder
+              height="min-h-[350px]"
+              fontSize="text-lg"
+              horizontalPadding="px-0"
+              verticalPadding="py-2"
+            />
+          </div>
+        </div>
+      </Forms.FieldGroup>
 
       <Subscribers discussion={discussion} subscriptionsState={subscriptionsState} />
 
-      <div className="flex items-center gap-4 mt-4">
-        <PrimaryButton testId="post-discussion" onClick={form.submit} loading={form.submitting}>
-          Save
-        </PrimaryButton>
+      <Forms.FormError message="Fill out all the required fields" className="mt-4" />
 
-        <DimmedLink to={paths.projectDiscussionPath(discussion.id!)}>Cancel</DimmedLink>
+      <div className="flex items-center gap-4 mt-4">
+        <Forms.Submit saveText="Save" buttonSize="base" testId="post-discussion" containerClassName="mt-0" />
+        <DimmedLink to={paths.projectDiscussionPath(discussion.id)}>Cancel</DimmedLink>
       </div>
-    </>
+    </Forms.Form>
   );
 }
 
@@ -126,10 +138,9 @@ function Subscribers({
   );
 }
 
-type FormFields = {
+type FormValues = {
   title: string;
-  setTitle: (title: string) => void;
-  editor: any;
+  message: any;
 };
 
 interface UseFormProps {
@@ -143,43 +154,27 @@ function useForm({ discussion, subscriptionsState }: UseFormProps) {
   const paths = usePaths();
   const navigate = useNavigate();
 
-  const [title, setTitle] = React.useState(discussion.title || "");
-
-  const handlers = useRichEditorHandlers({ scope: {type: "project", id: discussion.project.id}})
-  const editor = useEditor({
-    placeholder: "Write here...",
-    className: "min-h-[350px] py-2 text-lg",
-    content: discussion.message ? JSON.parse(discussion.message) : undefined,
-    handlers,
-  });
-
-  const [submitting, setSubmitting] = React.useState(false);
-
-  return useFormState<FormFields>({
+  const form = Forms.useForm<FormValues>({
     fields: {
-      title: title,
-      setTitle: setTitle,
-      editor: editor,
+      title: discussion.title || "",
+      message: discussion.message ? JSON.parse(discussion.message) : emptyContent(),
     },
-    validations: [
-      formValidator("title", "Title is required", Validators.nonEmptyString),
-      formValidator("editor", "Body is required", Validators.nonEmptyRichText),
-    ],
-    action: [
-      async (fields: FormFields) => {
-        setSubmitting(true);
+    validate: (addError) => {
+      if (isContentEmpty(form.values.message)) {
+        addError("message", "Body is required");
+      }
+    },
+    submit: async () => {
+      const res = await Api.project_discussions.edit({
+        id: discussion.id,
+        title: form.values.title,
+        message: JSON.stringify(form.values.message),
+        subscriberIds: subscriptionsState.currentSubscribersList,
+      });
 
-        Api.project_discussions
-          .edit({
-            id: discussion.id!,
-            title: fields.title,
-            message: JSON.stringify(fields.editor.editor.getJSON()),
-            subscriberIds: subscriptionsState.currentSubscribersList,
-          })
-          .then((data) => navigate(paths.projectDiscussionPath(data.discussion.id!)))
-          .finally(() => setSubmitting(false));
-      },
-      submitting,
-    ],
+      navigate(paths.projectDiscussionPath(res.discussion.id!));
+    },
   });
+
+  return form;
 }

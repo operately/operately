@@ -39,9 +39,9 @@ function Page() {
         <Navigation space={discussion.space!} />
 
         <Paper.Body>
-          <Form form={form} />
-
-          <Submit form={form} />
+          <Form form={form}>
+            <Submit form={form} />
+          </Form>
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>

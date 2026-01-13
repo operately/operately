@@ -1,14 +1,13 @@
-import * as TipTapEditor from "@/components/Editor";
 import * as Discussions from "@/models/discussions";
 import * as Spaces from "@/models/spaces";
-import * as React from "react";
 
+import Forms, { FormState as FormsFormState } from "@/components/Forms";
 import { SubscriptionsState, useSubscriptionsAdapter } from "@/models/subscriptions";
 import { Subscriber } from "@/models/notifications";
 import { usePaths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
-import { useEditor } from "turboui";
-import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { emptyContent } from "turboui";
+import { assertPresent } from "@/utils/assertions";
 
 interface UseFormOptions {
   mode: "create" | "edit";
@@ -17,217 +16,133 @@ interface UseFormOptions {
   potentialSubscribers?: Subscriber[];
 }
 
-export interface FormState {
+type FormValues = {
   title: string;
-  setTitle: (title: string) => void;
-  editor: TipTapEditor.EditorState;
+  body: any;
+};
 
+type FormAction = "post-message" | "post-draft" | "save-changes" | "publish-draft";
+
+export interface FormState extends FormsFormState<FormValues> {
   mode: "create" | "edit";
   space: Spaces.Space;
+  subscriptionsState: SubscriptionsState;
 
-  postMessage: () => Promise<boolean>;
-  postAsDraft: () => Promise<boolean>;
-  saveChanges: () => Promise<boolean>;
-  publishDraft: () => Promise<boolean>;
+  cancelPath: string;
+
+  postMessage: () => void;
+  postAsDraft: () => void;
+  saveChanges: () => void;
+  publishDraft: () => void;
 
   postMessageSubmitting: boolean;
   postAsDraftSubmitting: boolean;
   saveChangesSubmitting: boolean;
   publishDraftSubmitting: boolean;
-
-  errors: Error[];
-
-  cancelPath: string;
-  subscriptionsState: SubscriptionsState;
-}
-
-interface Error {
-  field: string;
-  message: string;
 }
 
 export function useForm({ space, mode, discussion, potentialSubscribers = [] }: UseFormOptions): FormState {
   const paths = usePaths();
+  const navigate = useNavigate();
+  const [post] = Discussions.usePostDiscussion();
+  const [edit] = Discussions.useEditDiscussion();
+
   const subscriptionsState = useSubscriptionsAdapter(potentialSubscribers, { ignoreMe: true, spaceName: space.name });
+  const initialBody = discussion?.body ? JSON.parse(discussion.body) : emptyContent();
 
-  const [errors, setErrors] = React.useState<Error[]>([]);
-  const [title, setTitle] = React.useState(() => discussion?.title || "");
+  const form = Forms.useForm<FormValues>({
+    fields: {
+      title: discussion?.title || "",
+      body: initialBody,
+    },
+    submit: async (action?: FormAction) => {
+      const resolvedAction = action ?? (mode === "edit" ? "save-changes" : "post-message");
 
-  const handlers = useRichEditorHandlers({ scope: { type: "space", id: space ? space.id : discussion?.space?.id! } });
-  const editor = useEditor({
-    placeholder: "Write here...",
-    className: "min-h-[350px] py-2 px-1",
-    content: discussion?.body && JSON.parse(discussion.body),
-    handlers,
+      switch (resolvedAction) {
+        case "post-message":
+        case "post-draft": {
+          assertPresent(space.id, "space id must be present in discussion form");
+          const spaceId = space.id;
+
+          const res = await post({
+            spaceId,
+            title: form.values.title,
+            postAsDraft: resolvedAction === "post-draft",
+            body: JSON.stringify(form.values.body),
+            sendNotificationsToEveryone: subscriptionsState.notifyEveryone,
+            subscriberIds: subscriptionsState.currentSubscribersList,
+          });
+
+          navigate(paths.discussionPath(res.discussion.id));
+          break;
+        }
+        case "save-changes": {
+          assertPresent(discussion, "discussion must be present in edit mode");
+          assertPresent(discussion.id, "discussion id must be present in edit mode");
+          const discussionId = discussion.id;
+
+          const res = await edit({
+            id: discussionId,
+            title: form.values.title,
+            body: JSON.stringify(form.values.body),
+          });
+
+          navigate(paths.discussionPath(res.discussion.id));
+          break;
+        }
+        case "publish-draft": {
+          assertPresent(discussion, "discussion must be present in edit mode");
+          assertPresent(discussion.id, "discussion id must be present in edit mode");
+          const discussionId = discussion.id;
+
+          const res = await edit({
+            id: discussionId,
+            title: form.values.title,
+            body: JSON.stringify(form.values.body),
+            state: "published",
+          });
+
+          navigate(paths.discussionPath(res.discussion.id));
+          break;
+        }
+      }
+    },
   });
 
-  const validate = () => {
-    if (!editor.editor) return false;
-    if (editor.uploading) return false;
-
-    const foundErrors: Error[] = [];
-    if (title.trim() === "") foundErrors.push({ field: "title", message: "Title is required" });
-
-    if (foundErrors.length) {
-      setErrors(foundErrors);
-      return false;
-    }
-
-    return true;
+  const submitWith = (action: FormAction) => {
+    form.actions.setTrigger(action);
+    form.actions.submit(action);
   };
 
-  const [postMessage, postMessageSubmitting] = usePostMessage({ space, title, editor, subscriptionsState, validate });
-  const [postAsDraft, postAsDraftSubmitting] = usePostAsDraft({ space, title, editor, subscriptionsState, validate });
-  const [saveChanges, saveChangesSubmitting] = useSaveChanges({ discussion, title, editor, validate });
-  const [publishDraft, publishDraftSubmitting] = usePublishDraft({ discussion, title, editor, validate });
+  const isSubmitting = form.state === "submitting";
+  const postMessageSubmitting = isSubmitting && form.trigger === "post-message";
+  const postAsDraftSubmitting = isSubmitting && form.trigger === "post-draft";
+  const saveChangesSubmitting = isSubmitting && form.trigger === "save-changes";
+  const publishDraftSubmitting = isSubmitting && form.trigger === "publish-draft";
 
-  const cancelPath = mode === "edit" ? paths.discussionPath(discussion?.id!) : paths.spaceDiscussionsPath(space.id!);
+  let cancelPath: string;
+  if (mode === "edit") {
+    assertPresent(discussion, "discussion must be present in edit mode");
+    assertPresent(discussion.id, "discussion id must be present in edit mode");
+    cancelPath = paths.discussionPath(discussion.id);
+  } else {
+    assertPresent(space.id, "space id must be present in discussion form");
+    cancelPath = paths.spaceDiscussionsPath(space.id);
+  }
 
   return {
-    title,
-    setTitle,
-    editor,
-
-    space,
+    ...form,
     mode,
+    space,
     subscriptionsState,
-
-    postMessage,
-    postAsDraft,
-    saveChanges,
-    publishDraft,
-
+    cancelPath,
+    postMessage: () => submitWith("post-message"),
+    postAsDraft: () => submitWith("post-draft"),
+    saveChanges: () => submitWith("save-changes"),
+    publishDraft: () => submitWith("publish-draft"),
     postMessageSubmitting,
     postAsDraftSubmitting,
     saveChangesSubmitting,
     publishDraftSubmitting,
-
-    cancelPath,
-    errors,
   };
-}
-
-interface UsePostMessageOptions {
-  space: Spaces.Space;
-  title: string;
-  editor: TipTapEditor.EditorState;
-  subscriptionsState: SubscriptionsState;
-  validate: () => boolean;
-}
-
-function usePostMessage({ space, title, editor, subscriptionsState, validate }: UsePostMessageOptions): [() => Promise<boolean>, boolean] {
-  const paths = usePaths();
-  const navigate = useNavigate();
-  const [post] = Discussions.usePostDiscussion();
-
-  const [submitting, setSubmitting] = React.useState(false);
-
-  const postMessage = async (): Promise<boolean> => {
-    if (!validate()) return false;
-
-    setSubmitting(true);
-
-    const res = await post({
-      spaceId: space.id,
-      title: title,
-      postAsDraft: false,
-      body: JSON.stringify(editor.editor.getJSON()),
-      sendNotificationsToEveryone: subscriptionsState.notifyEveryone,
-      subscriberIds: subscriptionsState.currentSubscribersList,
-    });
-
-    setSubmitting(false);
-
-    navigate(paths.discussionPath(res.discussion.id));
-
-    return true;
-  };
-
-  return [postMessage, submitting];
-}
-
-function usePostAsDraft({ space, title, editor, subscriptionsState, validate }: UsePostMessageOptions): [() => Promise<boolean>, boolean] {
-  const paths = usePaths();
-  const navigate = useNavigate();
-  const [post] = Discussions.usePostDiscussion();
-
-  const [submitting, setSubmitting] = React.useState(false);
-
-  const postMessage = async (): Promise<boolean> => {
-    if (!validate()) return false;
-
-    setSubmitting(true);
-
-    const res = await post({
-      spaceId: space.id,
-      title: title,
-      postAsDraft: true,
-      body: JSON.stringify(editor.editor.getJSON()),
-      sendNotificationsToEveryone: subscriptionsState.notifyEveryone,
-      subscriberIds: subscriptionsState.currentSubscribersList,
-    });
-
-    setSubmitting(false);
-
-    navigate(paths.discussionPath(res.discussion.id));
-
-    return true;
-  };
-
-  return [postMessage, submitting];
-}
-
-function useSaveChanges({ discussion, title, editor, validate }): [() => Promise<boolean>, boolean] {
-  const paths = usePaths();
-  const navigate = useNavigate();
-  const [edit] = Discussions.useEditDiscussion();
-  const [submitting, setSubmitting] = React.useState(false);
-
-  const saveChanges = async () => {
-    if (!validate()) return false;
-
-    setSubmitting(true);
-
-    const res = await edit({
-      id: discussion!.id,
-      title: title,
-      body: JSON.stringify(editor.editor.getJSON()),
-    });
-
-    setSubmitting(false);
-
-    navigate(paths.discussionPath(res.discussion.id));
-
-    return true;
-  };
-
-  return [saveChanges, submitting];
-}
-
-function usePublishDraft({ discussion, title, editor, validate }): [() => Promise<boolean>, boolean] {
-  const paths = usePaths();
-  const navigate = useNavigate();
-  const [edit] = Discussions.useEditDiscussion();
-  const [submitting, setSubmitting] = React.useState(false);
-
-  const saveChanges = async () => {
-    if (!validate()) return false;
-
-    setSubmitting(true);
-
-    const res = await edit({
-      id: discussion!.id,
-      title: title,
-      body: JSON.stringify(editor.editor.getJSON()),
-      state: "published",
-    });
-
-    setSubmitting(false);
-
-    navigate(paths.discussionPath(res.discussion.id));
-
-    return true;
-  };
-
-  return [saveChanges, submitting];
 }
