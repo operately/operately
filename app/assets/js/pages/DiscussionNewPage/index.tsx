@@ -34,8 +34,9 @@ function Page() {
         <Navigation space={space} />
 
         <Paper.Body>
-          <Form form={form} />
-          <Footer form={form} />
+          <Form form={form}>
+            <Footer form={form} />
+          </Form>
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>

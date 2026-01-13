@@ -4,8 +4,8 @@ import * as Projects from "@/models/projects";
 import * as React from "react";
 
 import { PageModule } from "@/routes/types";
-import { DimmedLink, Editor, PrimaryButton, SubscribersSelector } from "turboui";
-import { FormTitleInput } from "../../components/FormTitleInput";
+import Forms from "@/components/Forms";
+import { DimmedLink, SubscribersSelector } from "turboui";
 import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import { usePaths } from "../../routes/paths";
 import { assertPresent } from "../../utils/assertions";
@@ -63,6 +63,7 @@ function Form() {
   const paths = usePaths();
 
   assertPresent(project.potentialSubscribers, "potentialSubscribers must be present in project");
+  assertPresent(project.id, "project id must be present in project");
 
   const subscriptionsState = useSubscriptionsAdapter(project.potentialSubscribers, {
     ignoreMe: true,
@@ -70,31 +71,44 @@ function Form() {
   });
 
   const form = useForm({ project, subscriptionsState });
+  const mentionSearchScope = { type: "project", id: project.id } as const;
 
   return (
-    <>
-      <FormTitleInput
-        value={form.fields.title}
-        onChange={form.fields.setTitle}
-        error={false}
-        testId="discussion-title"
-      />
-
-      <div className="mt-2 border-y border-stroke-base text-content-base font-medium ">
-        <Editor editor={form.fields.editor} hideBorder padding="p-0" />
-      </div>
+    <Forms.Form form={form}>
+      <Forms.FieldGroup>
+        <div>
+          <Forms.TitleInput
+            field="title"
+            placeholder="Title..."
+            autoFocus
+            testId="discussion-title"
+            errorMessage="Please add a title"
+          />
+          <div className="mt-2 border-y border-stroke-base text-content-base font-medium">
+            <Forms.RichTextArea
+              field="message"
+              mentionSearchScope={mentionSearchScope}
+              placeholder="Start a new discussion..."
+              hideBorder
+              height="min-h-[350px]"
+              fontSize="text-lg"
+              horizontalPadding="px-0"
+              verticalPadding="py-2"
+            />
+          </div>
+        </div>
+      </Forms.FieldGroup>
 
       <div className="my-10">
         <SubscribersSelector {...subscriptionsState} />
       </div>
 
-      <div className="flex items-center gap-4 mt-4">
-        <PrimaryButton testId="post-discussion" onClick={form.submit} loading={form.submitting}>
-          Post Discussion
-        </PrimaryButton>
+      <Forms.FormError message="Fill out all the required fields" className="mt-4" />
 
-        <DimmedLink to={paths.projectPath(project.id!)}>Cancel</DimmedLink>
+      <div className="flex items-center gap-4 mt-4">
+        <Forms.Submit saveText="Post Discussion" buttonSize="base" testId="post-discussion" containerClassName="mt-0" />
+        <DimmedLink to={paths.projectPath(project.id)}>Cancel</DimmedLink>
       </div>
-    </>
+    </Forms.Form>
   );
 }
