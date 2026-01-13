@@ -34,6 +34,7 @@ defmodule OperatelyWeb.Api.Queries.GetTask do
   defp load(person, inputs) do
     Task.get(person, id: inputs.id, opts: [
       preload: preload(inputs),
+      auth_preload: auth_preload(inputs),
       after_load: after_load(inputs)
     ])
   end
@@ -44,8 +45,13 @@ defmodule OperatelyWeb.Api.Queries.GetTask do
       include_milestone: [milestone: :project],
       include_project: [:project],
       include_creator: [:creator],
-      include_project_space: [:project_space],
       include_subscription_list: [subscription_list: [subscriptions: :person]]
+    )
+  end
+
+  defp auth_preload(inputs) do
+    Inputs.parse_includes(inputs,
+      include_project_space: [:project_space]
     )
   end
 

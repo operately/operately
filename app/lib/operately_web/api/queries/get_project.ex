@@ -70,6 +70,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
     Inputs.parse_includes(inputs,
       include_contributors: [contributors: [:person]],
       include_key_resources: [key_resources: :project],
+      include_goal: [:goal],
       include_champion: [:champion],
       include_reviewer: [:reviewer],
       include_last_check_in: [last_check_in: :author],
@@ -80,7 +81,6 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
 
   def auth_preload(inputs) do
     Inputs.parse_includes(inputs,
-      include_goal: [:goal],
       include_space: [:group]
     )
   end
