@@ -1178,3 +1178,193 @@ export const ClosedProject: Story = {
     );
   },
 };
+
+export const ProjectWithoutSpace: Story = {
+  render: () => {
+    const [tasks, setTasks] = useState([...mockTasks("project")]);
+    // Use dynamic, short-horizon milestones to encourage manageable scopes
+    const initialMilestones: TaskBoardTypes.Milestone[] = [
+      {
+        id: "m1",
+        name: "Kickoff Complete",
+        dueDate: createContextualDate(daysAgo(7), "day"),
+        hasDescription: true,
+        hasComments: true,
+        commentCount: 2,
+        status: "done",
+        link: "#",
+        kanbanLink: "#",
+      },
+      {
+        id: "m2",
+        name: "Usability Test Round 1",
+        dueDate: createContextualDate(addDays(new Date(), 7), "day"),
+        hasDescription: true,
+        hasComments: false,
+        status: "pending",
+        link: "#",
+        kanbanLink: "#",
+      },
+      {
+        id: "m3",
+        name: "Beta Release",
+        dueDate: createContextualDate(addDays(new Date(), 21), "day"),
+        hasDescription: false,
+        hasComments: false,
+        status: "pending",
+        link: "#",
+        kanbanLink: "#",
+      },
+    ];
+    const { milestones, setMilestones, reorderMilestones } = useMockMilestoneOrdering({ initialMilestones });
+    const [filters, setFilters] = useState<TaskBoardTypes.FilterCondition[]>([]);
+    const [statuses, setStatuses] = useState<TaskBoardTypes.Status[]>(DEFAULT_STATUSES);
+    const [reviewer, _] = useState<ProjectPage.Person | null>(people[2] || null);
+    const [startedAt, setStartedAt] = useState<DateField.ContextualDate | null>(() =>
+      createContextualDate(daysAgo(7), "day"),
+    );
+    const [dueAt, setDueAt] = useState<DateField.ContextualDate | null>(() =>
+      createContextualDate(addDays(new Date(), 21), "day"),
+    );
+    const [resources, setResources] = useState<ResourceManager.Resource[]>([...mockResources]);
+
+    const handleMilestoneCreate = (newMilestoneData: ProjectPage.NewMilestonePayload) => {
+      const milestoneId = `milestone-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      const newMilestone = { id: milestoneId, ...newMilestoneData };
+      console.log("Milestone created:", newMilestone);
+
+      // Add the new milestone to the milestones array
+      setMilestones((prev) => [...prev, newMilestone]);
+    };
+
+    const handleMilestoneUpdate = (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => {
+      console.log("Milestone updated:", milestoneId, updates);
+
+      // Update the milestone in the milestones array
+      const updatedMilestones = milestones.map((milestone) =>
+        milestone.id === milestoneId ? { ...milestone, ...updates } : milestone,
+      );
+      setMilestones(updatedMilestones);
+
+      const updatedTasks = tasks.map((task) => {
+        if (task.milestone?.id === milestoneId) {
+          return {
+            ...task,
+            milestone: { ...task.milestone, ...updates },
+          };
+        }
+        return task;
+      });
+      setTasks(updatedTasks);
+    };
+
+    const handleResourceAdd = (resource: ResourceManager.NewResourcePayload) => {
+      const resourceId = `resource-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      const newResource = { id: resourceId, ...resource };
+      console.log("Resource added:", newResource);
+      setResources([...resources, newResource]);
+    };
+
+    const handleResourceEdit = (updates: ResourceManager.Resource) => {
+      console.log("Resource edited:", updates);
+      const updatedResources = resources.map((resource) =>
+        resource.id === updates.id ? { ...resource, ...updates } : resource,
+      );
+      setResources(updatedResources);
+    };
+
+    const handleResourceRemove = (id: string) => {
+      console.log("Resource removed:", id);
+      const updatedResources = resources.filter((resource) => resource.id !== id);
+      setResources(updatedResources);
+    };
+
+    const subscriptions = useMockSubscriptions({ entityType: "project" });
+
+    const taskActions = useMockTaskBoardActions({
+      tasks,
+      setTasks,
+      statuses,
+      subscriptions,
+    });
+
+    return (
+      <ProjectPage
+        homeLink="/home"
+        closeLink="#"
+        reopenLink="#"
+        pauseLink="#"
+        showMilestoneKanbanLink={true}
+        project={{ id: "project-no-space", name: "Project Without Space" }}
+        childrenCount={{
+          tasksCount: tasks.length,
+          discussionsCount: mockDiscussions.length,
+          checkInsCount: mockCheckIns.length,
+        }}
+        description={
+          asRichText(
+            "This project demonstrates a project that is not associated with any space. It should function normally but without space navigation or space-related context.",
+          ) as any
+        }
+        champion={people[4] || null}
+        reviewer={reviewer}
+        status="on_track"
+        state="active"
+        closedAt={null}
+        canEdit={true}
+        updateProjectName={async () => true}
+        onDescriptionChange={async () => true}
+        activityFeed={<div>Activity feed content</div>}
+        tasks={tasks}
+        kanbanState={taskActions.kanbanState}
+        onTaskKanbanChange={taskActions.onTaskKanbanChange}
+        milestones={milestones}
+        searchableMilestones={milestones}
+        onMilestoneSearch={async () => {}}
+        assigneePersonSearch={usePersonFieldSearch(mockPeople)}
+        onTaskCreate={taskActions.onTaskCreate}
+        onTaskNameChange={taskActions.onTaskNameChange}
+        onMilestoneCreate={handleMilestoneCreate}
+        onTaskAssigneeChange={taskActions.onTaskAssigneeChange}
+        onTaskDueDateChange={taskActions.onTaskDueDateChange}
+        onTaskStatusChange={taskActions.onTaskStatusChange}
+        onTaskDelete={taskActions.onTaskDelete}
+        onTaskDescriptionChange={taskActions.onTaskDescriptionChange}
+        getTaskPageProps={taskActions.getTaskPageProps}
+        onMilestoneUpdate={handleMilestoneUpdate}
+        onMilestoneReorder={reorderMilestones}
+        richTextHandlers={createMockRichEditorHandlers()}
+        filters={filters}
+        onFiltersChange={setFilters}
+        statuses={statuses}
+        onSaveCustomStatuses={(data) => {
+          console.log("Statuses updated:", data.nextStatuses);
+          console.log("Deleted status replacements:", data.deletedStatusReplacements);
+          setStatuses(data.nextStatuses);
+        }}
+        canManageStatuses={true}
+        parentGoal={null}
+        setParentGoal={() => {}}
+        parentGoalSearch={mockParentGoalSearch}
+        startedAt={startedAt}
+        setStartedAt={setStartedAt}
+        dueAt={dueAt}
+        setDueAt={setDueAt}
+        resources={resources}
+        onResourceAdd={handleResourceAdd}
+        onResourceEdit={handleResourceEdit}
+        onResourceRemove={handleResourceRemove}
+        contributors={mockContributors}
+        manageTeamLink="/projects/no-space/team"
+        newCheckInLink="#"
+        checkIns={mockCheckIns}
+        newDiscussionLink="#"
+        currentUser={currentViewer}
+        discussions={mockDiscussions}
+        onProjectDelete={() => {}}
+        canDelete={true}
+        subscriptions={subscriptions}
+      />
+    );
+  },
+};
