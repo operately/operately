@@ -60,6 +60,7 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
       opts: [
         with_deleted: true,
         preload: preload(inputs),
+        auth_preload: auth_preload(inputs),
         after_load: after_load(inputs, requester)
       ]
     )
@@ -69,13 +70,18 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
     Inputs.parse_includes(inputs,
       include_contributors: [contributors: [:person]],
       include_key_resources: [key_resources: :project],
-      include_goal: [:goal],
-      include_space: [:group],
       include_champion: [:champion],
       include_reviewer: [:reviewer],
       include_last_check_in: [last_check_in: :author],
       include_retrospective: [:retrospective],
       include_subscription_list: [subscription_list: [subscriptions: :person]]
+    )
+  end
+
+  def auth_preload(inputs) do
+    Inputs.parse_includes(inputs,
+      include_goal: [:goal],
+      include_space: [:group]
     )
   end
 
