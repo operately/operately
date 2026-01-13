@@ -80,6 +80,17 @@ defmodule Operately.Repo.Getter do
 
     MySchema.get(person, id: "123", opts: [preload: [projects: [champion: :person]]])
 
+  ## Auth preloading
+
+  If a preloaded association has its own access_context, use the `:auth_preload`
+  option. It accepts the same shape as `:preload` and applies the same access
+  check as `get/2`.
+
+    MySchema.get(person, id: "123", opts: [auth_preload: [:space, :goal]])
+
+  Auth preloads are applied at the top level only; nested preloads are loaded
+  normally. For `:system` requester, `:auth_preload` behaves like `:preload`.
+
   ## Getting solf-deleted resources
 
   If you want to get soft-deleted resources, you can pass the `:with_deleted`
@@ -230,6 +241,7 @@ defmodule Operately.Repo.Getter do
 
   def process_resource(resource, requester, access_level, args) do
     resource = RequestInfo.populate_request_info(resource, requester, access_level)
+    resource = preload_auth(resource, requester, args)
     resource = run_after_load_hooks(resource, args.after_load)
 
     {:ok, resource}
@@ -244,15 +256,87 @@ defmodule Operately.Repo.Getter do
   def to_tuple(nil), do: {:error, :not_found}
   def to_tuple(resource), do: {:ok, resource}
 
+  defp preload_auth(resource, _requester, %{auth_preload: auth_preload}) when auth_preload in [nil, []], do: resource
+
+  defp preload_auth(resource, :system, %{auth_preload: auth_preload, with_deleted: with_deleted}) do
+    Operately.Repo.preload(resource, List.wrap(auth_preload), with_deleted: with_deleted)
+  end
+
+  defp preload_auth(resource, requester, %{auth_preload: auth_preload, with_deleted: with_deleted}) do
+    requester_id = requester_id(requester)
+
+    if requester_id do
+      preload = build_auth_preload(resource.__struct__, requester_id, auth_preload)
+      Operately.Repo.preload(resource, preload, with_deleted: with_deleted, force: true)
+    else
+      resource
+    end
+  end
+
+  defp requester_id(%{id: id}), do: id
+  defp requester_id(id) when is_binary(id), do: id
+  defp requester_id(_), do: nil
+
+  defp build_auth_preload(module, requester_id, auth_preload) do
+    auth_preload
+    |> List.wrap()
+    |> Enum.map(&build_auth_preload_item(module, requester_id, &1))
+  end
+
+  defp build_auth_preload_item(module, requester_id, {assoc, {query, nested}}) do
+    {assoc, {auth_query(module, assoc, requester_id, query), normalize_nested_preload(nested)}}
+  end
+
+  defp build_auth_preload_item(module, requester_id, {assoc, %Ecto.Query{} = query}) do
+    {assoc, auth_query(module, assoc, requester_id, query)}
+  end
+
+  defp build_auth_preload_item(module, requester_id, {assoc, %Ecto.SubQuery{} = query}) do
+    {assoc, auth_query(module, assoc, requester_id, query)}
+  end
+
+  defp build_auth_preload_item(module, requester_id, {assoc, nested}) do
+    {assoc, {auth_query(module, assoc, requester_id), normalize_nested_preload(nested)}}
+  end
+
+  defp build_auth_preload_item(module, requester_id, assoc) when is_atom(assoc) do
+    {assoc, auth_query(module, assoc, requester_id)}
+  end
+
+  defp normalize_nested_preload(nil), do: []
+  defp normalize_nested_preload(nested), do: nested
+
+  defp auth_query(module, assoc, requester_id, query \\ nil) do
+    assoc_module = assoc_module(module, assoc)
+
+    (query || assoc_module)
+    |> Ecto.Queryable.to_query()
+    |> ensure_resource_binding()
+    |> base_query(requester_id)
+    |> distinct([resource: r], r.id)
+  end
+
+  defp ensure_resource_binding(query) do
+    from(r in query, as: :resource)
+  end
+
+  defp assoc_module(module, assoc) do
+    case module.__schema__(:association, assoc) do
+      nil -> raise ArgumentError, "Unknown association #{inspect(assoc)} for #{inspect(module)}"
+      association -> association.related
+    end
+  end
+
   defmodule GetterArgs do
     defstruct [
       field_matchers: [],
       preload: [],
+      auth_preload: [],
       with_deleted: false,
       after_load: []
     ]
 
-    @allowed_options [:preload, :with_deleted, :after_load]
+    @allowed_options [:preload, :auth_preload, :with_deleted, :after_load]
 
     def parse(args) do
       field_matchers = Keyword.delete(args, :opts)
@@ -263,6 +347,7 @@ defmodule Operately.Repo.Getter do
       %__MODULE__{
         field_matchers: field_matchers,
         preload: Keyword.get(opts, :preload, []),
+        auth_preload: Keyword.get(opts, :auth_preload, []),
         with_deleted: Keyword.get(opts, :with_deleted, false),
         after_load: Keyword.get(opts, :after_load, [])
       }
