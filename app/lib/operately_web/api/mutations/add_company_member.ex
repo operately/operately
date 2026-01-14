@@ -5,16 +5,17 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMember do
   require Logger
   import Operately.Access.Filters, only: [filter_by_edit_access: 2]
   alias Operately.People
+  alias OperatelyWeb.Api.InvitationView
 
   inputs do
-    field? :full_name, :string, null: true
-    field? :email, :string, null: true
-    field? :title, :string, null: true
+    field :full_name, :string, null: false
+    field :email, :string, null: false
+    field :title, :string, null: false
   end
 
   outputs do
-    field? :invitation, :invitation, null: true
-    field? :new_account, :boolean, null: true
+    field :invite_link, :invite_link, null: false
+    field :new_account, :boolean, null: false
   end
 
   def call(conn, inputs) do
@@ -38,11 +39,9 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMember do
       {:ok, nil} ->
         {:ok, %{invitation: nil, new_account: false}}
 
-      {:ok, invitation} ->
-        invitation_with_token = create_invitation_token(invitation)
-
+      {:ok, invite_link} ->
         {:ok, %{
-          invitation: OperatelyWeb.Api.Serializer.serialize(invitation_with_token, level: :full),
+          invitation: InvitationView.from_invite_link(invite_link, :full),
           new_account: true
         }}
 
@@ -55,8 +54,8 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMember do
     skip_invitation = not People.is_new_account?(inputs[:email])
 
     case Operately.Operations.CompanyMemberAdding.run(admin, inputs, skip_invitation) do
-      {:ok, result} ->
-        {:ok, result}
+      {:ok, invite_link} ->
+        {:ok, invite_link}
 
       {:error, [%{field: :email, message: message}]} ->
         {:error, :bad_request, "Email " <> message}
@@ -71,20 +70,5 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMember do
         Logger.error("Unexpected error: #{inspect(error)}")
         raise "Unexpected error"
     end
-  end
-
-  defp create_invitation_token(invitation) do
-    token_value = Operately.Invitations.InvitationToken.build_token()
-
-    {:ok, token} = Operately.Invitations.create_invitation_token!(%{
-      token: token_value,
-      invitation_id: invitation.id,
-    })
-
-    invitation = Repo.preload(invitation, [:member, :admin])
-
-    # The token is a virtual field, so we need to update the struct after reload
-    updated_token = %{token | token: token_value}
-    %{invitation | invitation_token: updated_token}
   end
 end

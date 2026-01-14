@@ -1342,18 +1342,10 @@ defmodule OperatelyWeb.Api.Types do
     field? :project, :project, null: true
   end
 
-  object :invitation do
-    field? :id, :string, null: true
-    field? :admin, :person, null: true
-    field? :member, :person, null: true
-    field? :company, :company, null: true
-    field? :token, :string, null: true
-    field? :expires_at, :datetime, null: true
-  end
-
   object :invite_link do
     field? :id, :string, null: true
     field? :token, :string, null: true
+    field? :type, :string, null: true
     field? :company_id, :string, null: true
     field? :author, :person, null: true
     field? :company, :company, null: true

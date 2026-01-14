@@ -3,8 +3,10 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.InviteLinks.InviteLink do
     %{
       id: invite_link.id,
       token: invite_link.token,
+      type: invite_link.type,
       company_id: invite_link.company_id,
       author: OperatelyWeb.Api.Serializer.serialize(invite_link.author),
+      expires_at: OperatelyWeb.Api.Serializer.serialize(invite_link.expires_at),
       use_count: invite_link.use_count,
       is_active: invite_link.is_active,
       inserted_at: OperatelyWeb.Api.Serializer.serialize(invite_link.inserted_at),
