@@ -309,7 +309,7 @@ function RenewInvitationModal(props: { person: People.Person; state: ModalState 
 
   React.useEffect(() => {
     create({ personId: props.person.id! }).then((res) => {
-      setUrl(Companies.createInvitationUrl(res.invitation!.token!));
+      setUrl(Companies.createInvitationUrl(res.inviteLink.token));
     });
   }, []);
 

@@ -72,7 +72,7 @@ function InviteForm({ setPageState }: { setPageState: SetPageStateFn }) {
       });
 
       if (res.newAccount) {
-        const url = Companies.createInvitationUrl(res.invitation!.token!);
+        const url = Companies.createInvitationUrl(res.inviteLink.token);
         setPageState({ state: "invited", url, fullName: form.values.fullName });
       } else {
         setPageState({ state: "added", fullName: form.values.fullName });
