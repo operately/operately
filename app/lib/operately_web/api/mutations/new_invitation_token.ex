@@ -6,11 +6,11 @@ defmodule OperatelyWeb.Api.Mutations.NewInvitationToken do
   alias Operately.Companies.Permissions
 
   inputs do
-    field? :person_id, :string, null: true
+    field :person_id, :string, null: false
   end
 
   outputs do
-    field? :invitation, :invitation, null: true
+    field :invite_link, :invite_link, null: false
   end
 
   def call(conn, inputs) do
@@ -19,7 +19,7 @@ defmodule OperatelyWeb.Api.Mutations.NewInvitationToken do
     |> run(:company, fn ctx -> Companies.get_company_with_access_level(ctx.me.id, id: ctx.me.company_id) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.company.requester_access_level, :can_invite_members) end)
     |> run(:operation, fn ctx -> execute(ctx.me, inputs) end)
-    |> run(:serialized, fn ctx -> serialize(ctx.operation) end)
+    |> run(:serialized, fn ctx -> {:ok, %{invite_link: Serializer.serialize(ctx.operation, level: :essential)}} end)
     |> respond()
   end
 
@@ -37,34 +37,40 @@ defmodule OperatelyWeb.Api.Mutations.NewInvitationToken do
   defp execute(admin, inputs) do
     {:ok, id} = decode_id(inputs.person_id)
 
-    case Operately.Invitations.get_invitation_by_member(id) do
-      nil -> {:error, message: "This member didn't join the company using an invitation token."}
-      invitation -> create_token(admin, invitation)
+    person = Operately.People.get_person(id)
+
+    cond do
+      is_nil(person) ->
+        {:error, message: "Team member not found."}
+
+      not person.has_open_invitation ->
+        {:error, message: "Team member doesn't have an open invitation."}
+
+      true ->
+        create_token(admin, person)
     end
   end
 
-  defp create_token(admin, invitation) do
-    {:ok, _} = Operately.Operations.CompanyInvitationTokenCreation.run(admin, invitation)
+  defp create_token(admin, person) do
+    invite_link =
+      case Operately.InviteLinks.get_personal_invite_link_for_person(person.id) do
+        {:ok, link} -> link
+        {:error, :not_found} ->
+          {:ok, link} = Operately.InviteLinks.create_personal_invite_link(%{
+            company_id: admin.company_id,
+            author_id: admin.id,
+            person_id: person.id
+          })
+          link
 
-    value = Operately.Invitations.InvitationToken.build_token()
+      end
 
-    {:ok, token} = Operately.Invitations.create_invitation_token!(%{
-      token: value,
-      invitation_id: invitation.id,
-    })
-    token = %{token | token: value}
+    case invite_link do
+      {:error, _} = error ->
+        error
 
-    invitation =
-      from(i in Operately.Invitations.Invitation,
-        where: i.id == ^invitation.id,
-        preload: [:member, :invitation_token, :admin]
-      )
-      |> Repo.one()
-
-    {:ok, %{invitation | invitation_token: token}}
-  end
-
-  defp serialize(invitation) do
-    {:ok, %{invitation: Serializer.serialize(invitation, level: :full)}}
+      %Operately.InviteLinks.InviteLink{} = link ->
+        {:ok, _link} = Operately.InviteLinks.refresh_personal_invite_link(link)
+    end
   end
 end

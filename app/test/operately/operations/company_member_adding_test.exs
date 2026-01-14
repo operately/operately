@@ -11,8 +11,7 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
   alias Operately.People.Person
   alias Operately.Groups
   alias Operately.Groups.Member
-  alias Operately.Invitations
-  alias Operately.Invitations.Invitation
+  alias Operately.InviteLinks
   alias Operately.Activities.Activity
   alias Operately.Companies.Company
 
@@ -59,13 +58,13 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
     assert Access.get_group_membership(group_id: company_group.id, person_id: person.id)
   end
 
-  test "CompanyMemberAdding operation creates invitation for person", ctx do
-    {:ok, _} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
+  test "CompanyMemberAdding operation creates invite link for person", ctx do
+    {:ok, _invite_link} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
 
     person = People.get_person_by_email(ctx.company, @email)
 
-    assert Repo.aggregate(Invitation, :count, :id) == 1
-    assert Invitations.get_invitation_by_member(person)
+    assert {:ok, invite_link} = InviteLinks.get_personal_invite_link_for_person(person.id)
+    assert invite_link.person_id == person.id
   end
 
   test "CompanyMemberAdding operation creates company space member", ctx do
@@ -88,8 +87,8 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
       |> Company.changeset(%{company_space_id: nil})
       |> Repo.update()
 
-    {:ok, invitation} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
-    assert invitation
+    {:ok, invite_link} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
+    assert invite_link
 
     person = People.get_person_by_email(ctx.company, @email)
 
@@ -103,11 +102,11 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
   end
 
   test "CompanyMemberAdding operation creates activity", ctx do
-    {:ok, invitation} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
+    {:ok, invite_link} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
 
     activity = from(a in Activity, where: a.action == "company_member_added" and a.content["company_id"] == ^ctx.company.id) |> Repo.one()
 
-    assert activity.content["invitatition_id"] == invitation.id
+    assert activity.content["invite_link_id"] == invite_link.id
     assert activity.content["name"] == "John Doe"
     assert activity.content["email"] == @email
     assert activity.content["title"] == "Developer"

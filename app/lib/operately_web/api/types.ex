@@ -1342,18 +1342,10 @@ defmodule OperatelyWeb.Api.Types do
     field? :project, :project, null: true
   end
 
-  object :invitation do
-    field? :id, :string, null: true
-    field? :admin, :person, null: true
-    field? :member, :person, null: true
-    field? :company, :company, null: true
-    field? :token, :string, null: true
-    field? :expires_at, :datetime, null: true
-  end
-
   object :invite_link do
     field? :id, :string, null: true
     field? :token, :string, null: true
+    field? :type, :string, null: true
     field? :company_id, :string, null: true
     field? :author, :person, null: true
     field? :company, :company, null: true
@@ -1535,7 +1527,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :peers, list_of(:person), null: true
     field? :access_level, :integer, null: true
     field? :has_open_invitation, :boolean, null: true
-    field? :invitation, :invitation, null: true
+    field? :invite_link, :invite_link, null: true
     field? :show_dev_bar, :boolean, null: true
     field? :permissions, :person_permissions, null: true
     field? :agent_def, :agent_def

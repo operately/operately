@@ -1,6 +1,7 @@
 defmodule Operately.Operations.CompanyMemberAdding do
   alias Ecto.Multi
   alias Operately.{Access, Repo}
+  alias Operately.InviteLinks
 
   def run(admin, attrs, skip_invitation \\ false) do
     result = Multi.new()
@@ -8,10 +9,10 @@ defmodule Operately.Operations.CompanyMemberAdding do
     |> insert_person(admin, attrs, skip_invitation)
     |> insert_membership_with_company_space_group()
     |> add_person_to_general_space()
-    |> insert_invitation(admin, skip_invitation)
+    |> insert_invite_link(admin, skip_invitation)
     |> insert_activity(admin)
     |> Repo.transaction()
-    |> Repo.extract_result(:invitation)
+    |> Repo.extract_result(:invite_link)
 
     case result do
       {:ok, result} ->
@@ -89,16 +90,16 @@ defmodule Operately.Operations.CompanyMemberAdding do
     end)
   end
 
-  defp insert_invitation(multi, _, true) do
-    Multi.put(multi, :invitation, nil)
+  defp insert_invite_link(multi, _, true) do
+    Multi.put(multi, :invite_link, nil)
   end
 
-  defp insert_invitation(multi, admin, false) do
-    Multi.insert(multi, :invitation, fn changes ->
-      Operately.Invitations.Invitation.changeset(%{
-        member_id: changes[:person].id,
-        admin_id: admin.id,
-        admin_name: admin.full_name,
+  defp insert_invite_link(multi, admin, false) do
+    Multi.run(multi, :invite_link, fn _, %{person: person} ->
+      InviteLinks.create_personal_invite_link(%{
+        company_id: admin.company_id,
+        author_id: admin.id,
+        person_id: person.id
       })
     end)
   end
@@ -107,7 +108,7 @@ defmodule Operately.Operations.CompanyMemberAdding do
     Operately.Activities.insert_sync(multi, admin.id, :company_member_added, fn changes ->
       %{
         company_id: admin.company_id,
-        invitatition_id: changes[:invitation] && changes[:invitation].id,
+        invite_link_id: changes[:invite_link] && changes[:invite_link].id,
         name: changes[:person].full_name,
         email: changes[:person].email,
         title: changes[:person].title,

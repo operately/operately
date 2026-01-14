@@ -9,7 +9,7 @@ defmodule Operately.InviteLinks do
 
   def list_invite_links_for_company(company_id) do
     from(il in InviteLink,
-      where: il.company_id == ^company_id,
+      where: il.company_id == ^company_id and il.type == :company_wide,
       order_by: [desc: il.inserted_at],
       preload: [:author, :company]
     )
@@ -22,8 +22,26 @@ defmodule Operately.InviteLinks do
 
   def get_invite_link_by_token(token) when is_binary(token) do
     from(il in InviteLink,
-      where: il.token == ^token,
+      where: il.token == ^token and il.type == :company_wide and is_nil(il.person_id),
       preload: [:author, :company]
+    )
+    |> Repo.one()
+    |> case do
+      nil -> {:error, :not_found}
+      invite_link -> {:ok, invite_link}
+    end
+  end
+
+  def get_personal_invite_link_by_token(token, opts \\ [])
+
+  def get_personal_invite_link_by_token(nil, _opts), do: {:error, :not_found}
+
+  def get_personal_invite_link_by_token(token, opts) when is_binary(token) do
+    preload = Keyword.get(opts, :preload, [])
+
+    from(il in InviteLink,
+      where: il.token == ^token and il.type == :personal and not is_nil(il.person_id),
+      preload: ^preload
     )
     |> Repo.one()
     |> case do
@@ -41,7 +59,7 @@ defmodule Operately.InviteLinks do
 
   def get_invite_link(company_id) do
     from(il in InviteLink,
-      where: il.company_id == ^company_id,
+      where: il.company_id == ^company_id and il.type == :company_wide,
       order_by: [desc: il.inserted_at],
       limit: 1
     )
@@ -55,7 +73,11 @@ defmodule Operately.InviteLinks do
   def create_invite_link(attrs \\ %{}) do
     token = InviteLink.build_token()
 
-    attrs_with_token = Map.put(attrs, :token, token)
+    attrs_with_token =
+      attrs
+      |> Map.put(:token, token)
+      |> Map.put(:type, :company_wide)
+      |> Map.put(:person_id, nil)
 
     %InviteLink{}
     |> InviteLink.changeset(attrs_with_token)
@@ -81,6 +103,29 @@ defmodule Operately.InviteLinks do
     update_invite_link(invite_link, %{token: new_token})
   end
 
+  def create_personal_invite_link(attrs) do
+    token = InviteLink.build_token()
+    expires_at = personal_invite_expires_at()
+
+    attrs_with_token =
+      attrs
+      |> Map.put(:token, token)
+      |> Map.put(:type, :personal)
+      |> Map.put(:expires_at, expires_at)
+      |> Map.put(:allowed_domains, [])
+
+    %InviteLink{}
+    |> InviteLink.changeset(attrs_with_token)
+    |> Repo.insert()
+  end
+
+  def refresh_personal_invite_link(%InviteLink{} = invite_link) do
+    new_token = InviteLink.build_token()
+    expires_at = personal_invite_expires_at()
+
+    update_invite_link(invite_link, %{token: new_token, expires_at: expires_at, is_active: true, type: :personal})
+  end
+
   def increment_use_count(%InviteLink{} = invite_link) do
     update_invite_link(invite_link, %{use_count: invite_link.use_count + 1})
   end
@@ -104,6 +149,19 @@ defmodule Operately.InviteLinks do
 
       not allowed_for_account?(link.allowed_domains, account) ->
         {:error, :invite_link_domain_not_allowed}
+
+      true ->
+        {:ok, link}
+    end
+  end
+
+  def validate_personal_invite_link(link) do
+    cond do
+      link.is_active == false ->
+        {:error, :invite_link_inactive}
+
+      invite_link_expired?(link) ->
+        {:error, :invite_link_expired}
 
       true ->
         {:ok, link}
@@ -175,6 +233,19 @@ defmodule Operately.InviteLinks do
     end
   end
 
+  def get_personal_invite_link_for_person(person_id) when is_binary(person_id) do
+    from(il in InviteLink,
+      where: il.person_id == ^person_id and il.type == :personal,
+      order_by: [desc: il.inserted_at],
+      limit: 1
+    )
+    |> Repo.one()
+    |> case do
+      nil -> {:error, :not_found}
+      invite_link -> {:ok, invite_link}
+    end
+  end
+
   defp allowed_for_account?(allowed_domains, account) do
     allowed_domains = allowed_domains || []
 
@@ -202,4 +273,16 @@ defmodule Operately.InviteLinks do
   end
 
   defp account_email_domain(_), do: nil
+
+  defp invite_link_expired?(%InviteLink{expires_at: nil}), do: false
+
+  defp invite_link_expired?(%InviteLink{expires_at: expires_at}) do
+    DateTime.compare(expires_at, DateTime.utc_now()) != :gt
+  end
+
+  defp personal_invite_expires_at() do
+    DateTime.utc_now()
+    |> DateTime.add(24 * 60 * 60, :second)
+    |> DateTime.truncate(:second)
+  end
 end

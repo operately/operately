@@ -1,16 +1,11 @@
 defmodule OperatelyWeb.Api.Mutations.JoinCompanyText do
   use OperatelyWeb.TurboCase
 
-  import Operately.InvitationsFixtures
+  import Operately.InviteLinksFixtures
 
   setup ctx do
-    invitation = invitation_fixture()
-    token = Operately.Invitations.InvitationToken.build_token()
-
-    Operately.Invitations.create_invitation_token!(%{
-      invitation_id: invitation.id,
-      token: token,
-    })
+    invite_link = personal_invite_link_fixture()
+    token = invite_link.token
 
     Map.put(ctx, :token, token)
   end

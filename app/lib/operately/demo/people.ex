@@ -11,13 +11,13 @@ defmodule Operately.Demo.People do
     company = Resources.get(resources, :company)
     owner = Resources.get(resources, :owner)
 
-    {:ok, invitation} = Operately.Operations.CompanyMemberAdding.run(owner, %{
+    {:ok, invite_link} = Operately.Operations.CompanyMemberAdding.run(owner, %{
       full_name: data.name,
       email: create_email(company, data),
       title: data.title,
     })
 
-    person = Operately.Repo.preload(invitation, :member).member
+    person = Operately.Repo.preload(invite_link, :person).person
 
     {:ok, person} = set_avatar(person, data.avatar)
     {:ok, person} = set_manager(person, resources, data[:reports_to])

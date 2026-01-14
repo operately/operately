@@ -3,7 +3,7 @@ import Api from "@/api";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Accounts from "@/models/accounts";
-import * as Invitations from "@/models/invitations";
+import * as People from "@/models/people";
 import { PageModule } from "@/routes/types";
 import * as React from "react";
 
@@ -16,7 +16,8 @@ import Forms from "@/components/Forms";
 export default { name: "JoinPage", loader, Page } as PageModule;
 
 interface LoaderResult {
-  invitation: Invitations.Invitation;
+  member: People.Person;
+  inviteLink: People.InviteLink;
   token: string;
 }
 
@@ -24,10 +25,11 @@ async function loader({ request }): Promise<any> {
   const token = Pages.getSearchParam(request, "token");
   if (!token) return redirect("/");
 
-  const invitation = await Api.invitations.getInvitation({ token: token }).then((res) => res.invitation!);
-  if (!invitation) return redirect("/");
+  const { inviteLink, member } = await Api.invitations.getInvitation({ token: token }).then((res) => res);
 
-  return { invitation, token };
+  if (!inviteLink) return redirect("/");
+
+  return { inviteLink, member, token };
 }
 
 function Page() {
@@ -47,14 +49,14 @@ function Page() {
 }
 
 function Header() {
-  const { invitation } = Pages.useLoadedData() as LoaderResult;
+  const { inviteLink } = Pages.useLoadedData() as LoaderResult;
 
   return (
     <div className="flex items-center justify-between mb-10">
       <div className="">
         <div className="text-content-accent text-2xl font-extrabold">Welcome to Operately!</div>
         <div className="text-content-accent mt-1">
-          You were invited by {invitation.admin!.fullName} to join {invitation.company!.name}.
+          You were invited by {inviteLink.author?.fullName} to join {inviteLink.company?.name}.
         </div>
       </div>
       <OperatelyLogo width="40" height="40" />
@@ -63,11 +65,11 @@ function Header() {
 }
 
 function WhatHappensNext() {
-  const { invitation } = Pages.useLoadedData() as LoaderResult;
+  const { inviteLink } = Pages.useLoadedData() as LoaderResult;
 
   return (
     <div className="my-8 text-center px-20">
-      <span className="font-bold">What happens next?</span> You will join the {invitation.company!.name} company and get
+      <span className="font-bold">What happens next?</span> You will join the {inviteLink.company?.name} company and get
       access to the Operately platform.
     </div>
   );
@@ -75,7 +77,7 @@ function WhatHappensNext() {
 
 function Form() {
   const [join] = Accounts.useJoinCompany();
-  const { invitation, token } = Pages.useLoadedData() as LoaderResult;
+  const { inviteLink, token, member } = Pages.useLoadedData() as LoaderResult;
 
   const form = Forms.useForm({
     fields: {
@@ -94,7 +96,7 @@ function Form() {
         passwordConfirmation: form.values.passwordConfirmation.trim(),
       });
 
-      await logInAndGotoCompany(invitation, form.values.password.trim());
+      await logInAndGotoCompany(inviteLink, member, form.values.password.trim());
     },
   });
 
@@ -115,6 +117,6 @@ function Form() {
   );
 }
 
-async function logInAndGotoCompany(invitation: Invitations.Invitation, password: string) {
-  await logIn(invitation.member!.email!, password, { redirectTo: `/${invitation.company!.id}` });
+async function logInAndGotoCompany(inviteLink: People.InviteLink, member: People.Person, password: string) {
+  await logIn(member.email, password, { redirectTo: `/${inviteLink.company?.id}` });
 }

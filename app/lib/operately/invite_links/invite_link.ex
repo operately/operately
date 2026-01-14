@@ -6,18 +6,21 @@ defmodule Operately.InviteLinks.InviteLink do
     field(:use_count, :integer, default: 0)
     field(:is_active, :boolean, default: true)
     field(:allowed_domains, {:array, :string}, default: [])
+    field :type, Ecto.Enum, values: [:company_wide, :personal], default: :company_wide
+    field :expires_at, :utc_datetime
 
     belongs_to(:company, Operately.Companies.Company)
     belongs_to(:author, Operately.People.Person)
+    belongs_to :person, Operately.People.Person
 
     timestamps()
   end
 
   def changeset(invite_link \\ %__MODULE__{}, attrs) do
     invite_link
-    |> cast(attrs, [:token, :company_id, :author_id, :use_count, :is_active, :allowed_domains])
+    |> cast(attrs, [:token, :company_id, :author_id, :use_count, :is_active, :allowed_domains, :type, :expires_at, :person_id])
     |> normalize_allowed_domains()
-    |> validate_required([:token, :company_id, :author_id])
+    |> validate_required([:token, :company_id, :author_id, :type])
     |> validate_length(:token, min: 32, max: 72)
     |> validate_allowed_domains()
     |> unique_constraint(:token)
