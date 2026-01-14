@@ -89,12 +89,13 @@ function Page() {
     },
   });
 
-  assertPresent(project.space);
   assertPresent(project.state);
   assertPresent(project.permissions?.canEditName);
   assertPresent(project.contributors);
 
-  const workmapLink = paths.spaceWorkMapPath(project.space.id, "projects" as const);
+  const transformPerson = React.useCallback((p) => People.parsePersonForTurboUi(paths, p)!, [paths]);
+  const { spaceProps, champion, reviewer } = useSpaceProps({ project, paths, transformPerson });
+  const backLink = "workmapLink" in spaceProps ? spaceProps.workmapLink : spaceProps.homeLink;
 
   const [projectName, setProjectName] = usePageField({
     value: (data) => data.project.name!,
@@ -108,24 +109,6 @@ function Page() {
     update: (v) =>
       Api.updateProjectDescription({ projectId: project.id!, description: JSON.stringify(v) }).then(() => true),
     onError: () => showErrorToast("Network Error", "Reverted the description to its previous value."),
-  });
-
-  const [space, setSpace] = usePageField({
-    value: (data) => parseSpaceForTurboUI(paths, data.project.space),
-    update: (v) => Api.moveProjectToSpace({ projectId: project.id, spaceId: v.id }).then(() => true),
-    onError: () => showErrorToast("Network Error", "Reverted the space to its previous value."),
-  });
-
-  const [champion, setChampion] = usePageField({
-    value: (data) => People.parsePersonForTurboUi(paths, data.project.champion),
-    update: (v) => Api.projects.updateChampion({ projectId: project.id, championId: v?.id ?? null }),
-    onError: () => showErrorToast("Network Error", "Reverted the champion to its previous value."),
-  });
-
-  const [reviewer, setReviewer] = usePageField({
-    value: (data) => People.parsePersonForTurboUi(paths, data.project.reviewer),
-    update: (v) => Api.projects.updateReviewer({ projectId: project.id, reviewerId: v?.id ?? null }),
-    onError: () => showErrorToast("Network Error", "Reverted the reviewer to its previous value."),
   });
 
   const [parentGoal, setParentGoal] = usePageField({
@@ -191,30 +174,8 @@ function Page() {
   });
 
   const parentGoalSearch = useParentGoalSearch(project);
-  const spaceSearch = useSpaceSearch();
-
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: project.id } });
 
-  // Transform function must be memoized to prevent infinite loop in the hook
-  const transformPerson = React.useCallback((p) => People.parsePersonForTurboUi(paths, p)!, [paths]);
-
-  // ignoredIds must be memoized to prevent infinite loop in the hook
-  const ignoredIds = React.useMemo(
-    () => [champion?.id, reviewer?.id].filter((id): id is string => Boolean(id)),
-    [champion?.id, reviewer?.id],
-  );
-
-  const championSearch = People.usePersonFieldSearch({
-    scope: { type: "space", id: project.space.id },
-    ignoredIds,
-    transformResult: transformPerson,
-  });
-
-  const reviewerSearch = People.usePersonFieldSearch({
-    scope: { type: "space", id: project.space.id },
-    ignoredIds,
-    transformResult: transformPerson,
-  });
 
   const assigneePersonSearch = Tasks.useTaskAssigneeSearch({
     id: project.id,
@@ -260,7 +221,7 @@ function Page() {
       .delete({ projectId: project.id })
       .then(() => {
         PageCache.invalidate(pageCacheKey(project.id));
-        navigate(workmapLink);
+        navigate(backLink);
 
         return { success: true };
       })
@@ -277,7 +238,9 @@ function Page() {
   }, [paths, project.id]);
 
   const props: ProjectPage.Props = {
-    workmapLink,
+    ...spaceProps,
+    champion,
+    reviewer,
     closeLink: paths.projectClosePath(project.id),
     reopenLink: paths.resumeProjectPath(project.id),
     pauseLink: paths.pauseProjectPath(project.id),
@@ -296,21 +259,9 @@ function Page() {
     description,
     onDescriptionChange: setDescription,
 
-    space: space as ProjectPage.Space,
-    setSpace,
-    spaceSearch,
-
     parentGoal,
     setParentGoal,
     parentGoalSearch,
-
-    champion: champion as ProjectPage.Person | null,
-    setChampion,
-    championSearch,
-
-    reviewer: reviewer as ProjectPage.Person | null | undefined,
-    setReviewer,
-    reviewerSearch,
 
     startedAt: startedDate,
     setStartedAt: setStartedDate,
@@ -452,7 +403,87 @@ function usePageField<T>({
   return [state, updateState];
 }
 
-function useSpaceSearch(): ProjectPage.Props["spaceSearch"] {
+function useSpaceProps({
+  project,
+  paths,
+  transformPerson,
+}: {
+  project: Projects.Project;
+  paths: Paths;
+  transformPerson: (p: any) => ProjectPage.Person;
+}): {
+  spaceProps: ProjectPage.SpaceProps;
+  champion: ProjectPage.Person | null;
+  reviewer: ProjectPage.Person | null | undefined;
+} {
+  const [space, setSpace] = usePageField({
+    value: (data) => (data.project.space ? parseSpaceForTurboUI(paths, data.project.space) : null),
+    update: (v) => Api.moveProjectToSpace({ projectId: project.id, spaceId: v!.id }).then(() => true),
+    onError: () => showErrorToast("Network Error", "Reverted the space to its previous value."),
+  });
+
+  const [champion, setChampion] = usePageField({
+    value: (data) => People.parsePersonForTurboUi(paths, data.project.champion),
+    update: (v) => Api.projects.updateChampion({ projectId: project.id, championId: v?.id ?? null }),
+    onError: () => showErrorToast("Network Error", "Reverted the champion to its previous value."),
+  });
+
+  const [reviewer, setReviewer] = usePageField({
+    value: (data) => People.parsePersonForTurboUi(paths, data.project.reviewer),
+    update: (v) => Api.projects.updateReviewer({ projectId: project.id, reviewerId: v?.id ?? null }),
+    onError: () => showErrorToast("Network Error", "Reverted the reviewer to its previous value."),
+  });
+
+  const spaceSearch = useSpaceSearch();
+
+  const ignoredIds = React.useMemo(
+    () => [champion?.id, reviewer?.id].filter((id): id is string => Boolean(id)),
+    [champion?.id, reviewer?.id],
+  );
+
+  const searchScope = space ? { type: "space" as const, id: space.id } : { type: "company" as const };
+
+  const championSearch = People.usePersonFieldSearch({
+    scope: searchScope,
+    ignoredIds,
+    transformResult: transformPerson,
+  });
+
+  const reviewerSearch = People.usePersonFieldSearch({
+    scope: searchScope,
+    ignoredIds,
+    transformResult: transformPerson,
+  });
+
+  if (!space) {
+    return {
+      spaceProps: {
+        homeLink: paths.homePath(),
+      },
+      champion: champion as ProjectPage.Person | null,
+      reviewer: reviewer as ProjectPage.Person | null | undefined,
+    };
+  }
+
+  return {
+    spaceProps: {
+      workmapLink: paths.spaceWorkMapPath(space.id, "projects" as const),
+      space: space as ProjectPage.Space,
+      setSpace: setSpace as any,
+      spaceSearch,
+
+      setChampion,
+      championSearch,
+
+      setReviewer,
+      reviewerSearch,
+    },
+    champion: champion as ProjectPage.Person | null,
+    reviewer: reviewer as ProjectPage.Person | null | undefined,
+  };
+}
+
+function useSpaceSearch(): (params: { query: string }) => Promise<ProjectPage.Space[]> {
   const paths = usePaths();
 
   return async ({ query }: { query: string }): Promise<ProjectPage.Space[]> => {

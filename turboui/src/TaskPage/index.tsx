@@ -22,6 +22,15 @@ export namespace TaskPage {
     link: string;
   }
 
+  export type SpaceProps =
+    | {
+        workmapLink: string;
+        space: Space;
+      }
+    | {
+        homeLink: string;
+      };
+
   export interface Person {
     id: string;
     fullName: string;
@@ -39,16 +48,13 @@ export namespace TaskPage {
 
   export type TimelineItemType = TimelineItem;
 
-  export interface Props {
+  export type Props = SpaceProps & {
     // Navigation/Hierarchy
     projectName: string;
     projectLink: string;
-    workmapLink: string;
     projectStatus: string;
 
     childrenCount: ProjectPageLayout.ChildrenCount;
-
-    space: Space;
 
     // Milestone selection
     milestone: Milestone | null;
@@ -108,7 +114,7 @@ export namespace TaskPage {
     onAddReaction?: (commentId: string, emoji: string) => void | Promise<void>;
     onRemoveReaction?: (commentId: string, reactionId: string) => void | Promise<void>;
     timelineFilters?: TimelineFilters;
-  }
+  };
 
   export type ContentProps = Pick<
     Props,
@@ -155,11 +161,11 @@ export namespace TaskPage {
     useMinimalistDelete?: boolean;
   }
 
-  export interface State extends Props {
+  export type State = Props & {
     isDeleteModalOpen: boolean;
     openDeleteModal: () => void;
     closeDeleteModal: () => void;
-  }
+  };
 }
 
 function useTaskPageState(props: TaskPage.Props): TaskPage.ContentState {

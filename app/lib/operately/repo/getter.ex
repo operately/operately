@@ -259,7 +259,7 @@ defmodule Operately.Repo.Getter do
   defp preload_auth(resource, _requester, %{auth_preload: auth_preload}) when auth_preload in [nil, []], do: resource
 
   defp preload_auth(resource, :system, %{auth_preload: auth_preload, with_deleted: with_deleted}) do
-    Operately.Repo.preload(resource, List.wrap(auth_preload), with_deleted: with_deleted)
+    Operately.Repo.preload(resource, List.wrap(auth_preload) |> List.flatten(), with_deleted: with_deleted)
   end
 
   defp preload_auth(resource, requester, %{auth_preload: auth_preload, with_deleted: with_deleted}) do
@@ -280,6 +280,7 @@ defmodule Operately.Repo.Getter do
   defp build_auth_preload(module, requester_id, auth_preload) do
     auth_preload
     |> List.wrap()
+    |> List.flatten()
     |> Enum.map(&build_auth_preload_item(module, requester_id, &1))
   end
 
@@ -323,7 +324,19 @@ defmodule Operately.Repo.Getter do
   defp assoc_module(module, assoc) do
     case module.__schema__(:association, assoc) do
       nil -> raise ArgumentError, "Unknown association #{inspect(assoc)} for #{inspect(module)}"
+      %Ecto.Association.HasThrough{through: through} -> resolve_through_assoc(module, through)
       association -> association.related
+    end
+  end
+
+  defp resolve_through_assoc(_module, []), do: (raise ArgumentError, "Invalid through association path")
+
+  defp resolve_through_assoc(module, [assoc | rest]) do
+    next_module = assoc_module(module, assoc)
+
+    case rest do
+      [] -> next_module
+      _ -> resolve_through_assoc(next_module, rest)
     end
   end
 

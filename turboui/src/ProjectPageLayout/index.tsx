@@ -6,24 +6,31 @@ import { PageHeader } from "./PageHeader";
 import { BadgeStatus } from "../StatusBadge/types";
 
 export namespace ProjectPageLayout {
-  export interface ChildrenCount {
-    tasksCount: number;
-    discussionsCount: number;
-    checkInsCount: number;
-  }
-
   export interface Space {
     id: string;
     name: string;
     link: string;
   }
 
-  export interface Props {
+  export type SpaceProps =
+    | {
+        workmapLink: string;
+        space: Space;
+      }
+    | {
+        homeLink: string;
+      };
+
+  export interface ChildrenCount {
+    tasksCount: number;
+    discussionsCount: number;
+    checkInsCount: number;
+  }
+
+  export type Props = SpaceProps & {
     title: string[];
     testId?: string;
 
-    space: Space;
-    workmapLink: string;
     projectName: string;
     canEdit: boolean;
     status: BadgeStatus;

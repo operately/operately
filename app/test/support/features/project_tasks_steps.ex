@@ -90,6 +90,17 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> UI.visit(Paths.project_task_path(ctx.company, ctx.task))
   end
 
+  step :assert_task_navigation_without_space, ctx do
+    home_link = Paths.home_path(ctx.company)
+    space_link = Paths.space_path(ctx.company, ctx.group)
+    workmap_link = Paths.space_work_map_path(ctx.company, ctx.group) <> "?tab=projects"
+
+    ctx
+    |> UI.assert_has(css: "[data-test-id=\"project-page\"] nav a[href=\"#{home_link}\"]")
+    |> UI.refute_has(css: "[data-test-id=\"project-page\"] nav a[href=\"#{space_link}\"]")
+    |> UI.refute_has(css: "[data-test-id=\"project-page\"] nav a[href=\"#{workmap_link}\"]")
+  end
+
   step :go_to_tasks_tab, ctx do
     ctx
     |> UI.click(testid: "tab-tasks")

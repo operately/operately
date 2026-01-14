@@ -137,6 +137,7 @@ function ProjectDates(props: ProjectPage.State) {
 }
 
 function Champion(props: ProjectPage.State) {
+  const readonly = !props.canEdit || !("setChampion" in props) || !("championSearch" in props);
   return (
     <SidebarSection
       title={
@@ -158,20 +159,30 @@ function Champion(props: ProjectPage.State) {
         </div>
       }
     >
-      <PersonField
-        testId="champion-field"
-        person={props.champion}
-        setPerson={props.setChampion}
-        readonly={!props.canEdit}
-        searchData={props.championSearch}
-        emptyStateMessage="Set champion"
-        emptyStateReadOnlyMessage="No champion"
-      />
+      {readonly ? (
+        <PersonField
+          testId="champion-field"
+          person={props.champion}
+          readonly={true}
+          emptyStateMessage="Set champion"
+          emptyStateReadOnlyMessage="No champion"
+        />
+      ) : (
+        <PersonField
+          testId="champion-field"
+          person={props.champion}
+          setPerson={props.setChampion}
+          searchData={props.championSearch}
+          emptyStateMessage="Set champion"
+          emptyStateReadOnlyMessage="No champion"
+        />
+      )}
     </SidebarSection>
   );
 }
 
 function Reviewer(props: ProjectPage.State) {
+  const readonly = !props.canEdit || !("setReviewer" in props) || !("reviewerSearch" in props);
   return (
     <SidebarSection
       title={
@@ -192,15 +203,24 @@ function Reviewer(props: ProjectPage.State) {
         </div>
       }
     >
-      <PersonField
-        testId="reviewer-field"
-        person={props.reviewer || null}
-        setPerson={props.setReviewer || (() => {})}
-        readonly={!props.canEdit}
-        searchData={props.reviewerSearch}
-        emptyStateMessage="Set reviewer"
-        emptyStateReadOnlyMessage="No reviewer"
-      />
+      {readonly ? (
+        <PersonField
+          testId="reviewer-field"
+          person={props.reviewer || null}
+          readonly={true}
+          emptyStateMessage="Set reviewer"
+          emptyStateReadOnlyMessage="No reviewer"
+        />
+      ) : (
+        <PersonField
+          testId="reviewer-field"
+          person={props.reviewer || null}
+          setPerson={props.setReviewer || (() => {})}
+          searchData={props.reviewerSearch}
+          emptyStateMessage="Set reviewer"
+          emptyStateReadOnlyMessage="No reviewer"
+        />
+      )}
     </SidebarSection>
   );
 }
@@ -213,13 +233,7 @@ function Contributors(props: ProjectPage.State) {
       <div className="space-y-3">
         {contributors.length > 0 ? (
           contributors.map((person: any) => (
-            <PersonField
-              key={person.id}
-              person={person}
-              setPerson={() => {}}
-              readonly={true}
-              showTitle={true}
-            />
+            <PersonField key={person.id} person={person} readonly={true} showTitle={true} />
           ))
         ) : (
           <div className="text-sm text-content-dimmed">No contributors</div>
@@ -249,7 +263,7 @@ function Actions(props: ProjectPage.State) {
       label: "Move to another space",
       onClick: props.openMoveModal,
       icon: IconCircleArrowRight,
-      hidden: !props.canEdit,
+      hidden: !props.canEdit || !("space" in props),
     },
     {
       type: "link" as const,
