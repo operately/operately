@@ -32,11 +32,16 @@ defmodule Operately.InviteLinks do
     end
   end
 
-  def get_personal_invite_link_by_token(nil), do: {:error, :not_found}
+  def get_personal_invite_link_by_token(token, opts \\ [])
 
-  def get_personal_invite_link_by_token(token) when is_binary(token) do
+  def get_personal_invite_link_by_token(nil, _opts), do: {:error, :not_found}
+
+  def get_personal_invite_link_by_token(token, opts) when is_binary(token) do
+    preload = Keyword.get(opts, :preload, [])
+
     from(il in InviteLink,
-      where: il.token == ^token and il.type == :personal and not is_nil(il.person_id)
+      where: il.token == ^token and il.type == :personal and not is_nil(il.person_id),
+      preload: ^preload
     )
     |> Repo.one()
     |> case do

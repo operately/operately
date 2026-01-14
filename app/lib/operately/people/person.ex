@@ -14,7 +14,7 @@ defmodule Operately.People.Person do
     has_one(:access_context, through: [:company, :access_context])
     has_many(:access_group_memberships, Operately.Access.GroupMembership, foreign_key: :person_id)
 
-    has_one(:invitation, Operately.Invitations.Invitation, foreign_key: :member_id)
+    has_one(:invite_link, Operately.InviteLinks.InviteLink, foreign_key: :person_id)
 
     field :full_name, :string
     field :title, :string
