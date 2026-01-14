@@ -64,6 +64,16 @@ defmodule Operately.Support.Features.ProjectSteps do
     Factory.add_space_member(ctx, :space_member, :group, opts)
   end
 
+  step :given_company_members_cannot_access_space, ctx do
+    context = Operately.Access.get_context!(group_id: ctx.group.id)
+    company_group = Operately.Access.get_group!(company_id: ctx.company.id, tag: :standard)
+    binding = Operately.Access.get_binding!(context_id: context.id, group_id: company_group.id)
+
+    {:ok, _} = Operately.Access.update_binding(binding, %{access_level: Binding.no_access()})
+
+    ctx
+  end
+
   def create_project(ctx, name: name) do
     company = company_fixture(%{name: "Test Org"})
     champion = person_fixture_with_account(%{company_id: company.id, full_name: "John Champion"})
@@ -315,6 +325,23 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :reload_project_page, ctx do
     ctx |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+  end
+
+  step :assert_project_navigation_without_space, ctx do
+    home_link = Paths.home_path(ctx.company)
+    space_link = Paths.space_path(ctx.company, ctx.group)
+    workmap_link = Paths.space_work_map_path(ctx.company, ctx.group) <> "?tab=projects"
+
+    ctx
+    |> UI.assert_has(css: "[data-test-id=\"project-page\"] nav a[href=\"#{home_link}\"]")
+    |> UI.refute_has(css: "[data-test-id=\"project-page\"] nav a[href=\"#{space_link}\"]")
+    |> UI.refute_has(css: "[data-test-id=\"project-page\"] nav a[href=\"#{workmap_link}\"]")
+  end
+
+  step :assert_move_to_another_space_is_hidden, ctx do
+    ctx
+    |> UI.assert_text("Copy URL", testid: "actions-section")
+    |> UI.refute_text("Move to another space", testid: "actions-section")
   end
 
   step :edit_project_due_date, ctx, date do
@@ -1028,7 +1055,7 @@ defmodule Operately.Support.Features.ProjectSteps do
   #
 
   step :given_subscriber_exists, ctx do
-    Factory.add_company_member(ctx, :subscriber)
+    Factory.add_space_member(ctx, :subscriber, :product)
   end
 
   step :log_in_as_subscriber, ctx do

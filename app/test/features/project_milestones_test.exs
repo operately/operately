@@ -145,6 +145,14 @@ defmodule Operately.Features.ProjectMilestonesTest do
       |> Steps.assert_milestone_due_date(formatted_date)
     end
 
+    feature "milestone page hides space navigation when space is not accessible", ctx do
+      ctx
+      |> ProjectSteps.given_company_members_cannot_access_space()
+      |> ProjectSteps.login_as_reviewer()
+      |> Steps.visit_milestone_page()
+      |> Steps.assert_milestone_navigation_without_space()
+    end
+
     feature "edit milestone due date", ctx do
       next_friday = Operately.Support.Time.next_friday()
       formatted_date = Operately.Support.Time.format_month_day(next_friday)

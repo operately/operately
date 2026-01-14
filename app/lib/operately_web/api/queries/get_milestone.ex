@@ -41,6 +41,7 @@ defmodule OperatelyWeb.Api.Queries.GetMilestone do
   defp load(ctx, inputs) do
     Milestone.get(ctx.me, id: inputs.id, opts: [
       preload: preload(inputs),
+      auth_preload: auth_preload(inputs),
       after_load: after_load(inputs, ctx.me),
     ])
   end
@@ -49,9 +50,14 @@ defmodule OperatelyWeb.Api.Queries.GetMilestone do
     Inputs.parse_includes(inputs, [
       include_project: :project,
       include_creator: :creator,
-      include_space: :space,
       include_comments: [comments: [comment: [:author, reactions: :person]]],
       include_subscription_list: [subscription_list: [subscriptions: :person]],
+    ])
+  end
+
+  defp auth_preload(inputs) do
+    Inputs.parse_includes(inputs, [
+      include_space: :space,
     ])
   end
 

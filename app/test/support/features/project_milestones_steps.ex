@@ -90,6 +90,17 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     UI.visit(ctx, Paths.project_milestone_path(ctx.company, ctx.milestone))
   end
 
+  step :assert_milestone_navigation_without_space, ctx do
+    home_link = Paths.home_path(ctx.company)
+    space_link = Paths.space_path(ctx.company, ctx.group)
+    workmap_link = Paths.space_work_map_path(ctx.company, ctx.group) <> "?tab=projects"
+
+    ctx
+    |> UI.assert_has(css: "[data-test-id=\"milestone-page\"] nav a[href=\"#{home_link}\"]")
+    |> UI.refute_has(css: "[data-test-id=\"milestone-page\"] nav a[href=\"#{space_link}\"]")
+    |> UI.refute_has(css: "[data-test-id=\"milestone-page\"] nav a[href=\"#{workmap_link}\"]")
+  end
+
   step :navigate_to_milestone, ctx, name: name do
     ctx
     |> UI.find(UI.query(testid: "tasks-board"), fn el ->

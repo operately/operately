@@ -72,8 +72,24 @@ export namespace ProjectPage {
   export type NewTaskPayload = TaskBoardTypes.NewTaskPayload;
   export type TaskStatus = TaskBoardTypes.StatusCustomizationStatus;
 
-  export interface Props {
-    workmapLink: string;
+  export type SpaceProps =
+    | {
+        workmapLink: string;
+        space: Space;
+        setSpace: (space: Space) => void;
+        spaceSearch: (params: { query: string }) => Promise<Space[]>;
+
+        setChampion: (person: Person | null) => void;
+        championSearch: PersonField.SearchData;
+
+        setReviewer?: (person: Person | null) => void;
+        reviewerSearch: PersonField.SearchData;
+      }
+    | {
+        homeLink: string;
+      };
+
+  interface CommonProps {
     closeLink: string;
     reopenLink: string;
     pauseLink: string;
@@ -88,17 +104,8 @@ export namespace ProjectPage {
 
     childrenCount: ProjectPageLayout.ChildrenCount;
 
-    space: Space;
-    setSpace: (space: Space) => void;
-    spaceSearch: (params: { query: string }) => Promise<Space[]>;
-
     champion: Person | null;
-    setChampion: (person: Person | null) => void;
-    championSearch: PersonField.SearchData;
-
     reviewer?: Person | null;
-    setReviewer?: (person: Person | null) => void;
-    reviewerSearch: PersonField.SearchData;
 
     parentGoal: ParentGoal | null;
     setParentGoal: (goal: ParentGoal | null) => void;
@@ -181,7 +188,9 @@ export namespace ProjectPage {
     subscriptions: SidebarNotificationSection.Props;
   }
 
-  export interface State extends Props {
+  export type Props = CommonProps & SpaceProps;
+
+  export type State = Props & {
     canManageStatuses: boolean;
 
     isMoveModalOpen: boolean;
@@ -191,7 +200,7 @@ export namespace ProjectPage {
     isDeleteModalOpen: boolean;
     openDeleteModal: () => void;
     closeDeleteModal: () => void;
-  }
+  };
 }
 
 function useProjectPageState(props: ProjectPage.Props): ProjectPage.State {
@@ -249,7 +258,7 @@ export function ProjectPage(props: ProjectPage.Props) {
         {tabs.active === "activity" && <Activity {...state} />}
       </div>
 
-      <MoveModal {...state} />
+      {"space" in state && <MoveModal {...state} />}
       <DeleteModal {...state} />
     </ProjectPageLayout>
   );

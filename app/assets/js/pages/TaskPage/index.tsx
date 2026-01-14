@@ -83,10 +83,14 @@ function Page() {
   const { task, childrenCount, activities } = data;
 
   assertPresent(task.project, "Task must have a project");
-  assertPresent(task.projectSpace, "Task must have a space");
   assertPresent(task.permissions, "Task must have permissions");
 
-  const workmapLink = paths.spaceWorkMapPath(task.projectSpace.id, "projects" as const);
+  const spaceProps = task.projectSpace
+    ? {
+        workmapLink: paths.spaceWorkMapPath(task.projectSpace.id, "projects" as const),
+        space: parseSpaceForTurboUI(paths, task.projectSpace),
+      }
+    : { homeLink: paths.homePath() };
 
   const [projectName, setProjectName] = usePageField({
     value: ({ task }) => task.project!.name,
@@ -201,8 +205,7 @@ function Page() {
     projectName,
     projectLink: paths.projectPath(task.project.id),
     projectStatus: task.project.status,
-    workmapLink,
-    space: parseSpaceForTurboUI(paths, task.projectSpace),
+    ...spaceProps,
     childrenCount,
 
     canEdit: Boolean(task.permissions.canEditTimeline),
