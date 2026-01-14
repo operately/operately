@@ -2743,6 +2743,7 @@ export interface InvitationsGetInvitationInput {
 
 export interface InvitationsGetInvitationResult {
   inviteLink: InviteLink;
+  member: Person;
 }
 
 export interface InvitationsGetInviteLinkByTokenInput {
