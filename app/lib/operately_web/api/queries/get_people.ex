@@ -12,7 +12,7 @@ defmodule OperatelyWeb.Api.Queries.GetPeople do
 
     field? :include_suspended, :boolean, null: true
     field? :include_manager, :boolean, null: true
-    field? :include_invitations, :boolean, null: true
+    field? :include_invite_link, :boolean, null: true
   end
 
   outputs do
@@ -43,7 +43,7 @@ defmodule OperatelyWeb.Api.Queries.GetPeople do
     )
     |> filter_by_suspended_status(!!inputs[:include_suspended], !!inputs[:only_suspended])
     |> include_manager(inputs[:include_manager])
-    |> include_invitations(inputs[:include_invitations])
+    |> include_invite_link(inputs[:include_invite_link])
     |> Repo.all()
   end
 
@@ -61,6 +61,6 @@ defmodule OperatelyWeb.Api.Queries.GetPeople do
   defp include_manager(q, true), do: from(p in q, preload: [:manager])
   defp include_manager(q, _), do: q
 
-  defp include_invitations(q, true), do: from(p in q, preload: [invitation: :invite_link])
-  defp include_invitations(q, _), do: q
+  defp include_invite_link(q, true), do: from(p in q, preload: [:invite_link])
+  defp include_invite_link(q, _), do: q
 end

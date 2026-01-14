@@ -1527,7 +1527,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :peers, list_of(:person), null: true
     field? :access_level, :integer, null: true
     field? :has_open_invitation, :boolean, null: true
-    field? :invitation, :invitation, null: true
+    field? :invite_link, :invite_link, null: true
     field? :show_dev_bar, :boolean, null: true
     field? :permissions, :person_permissions, null: true
     field? :agent_def, :agent_def
