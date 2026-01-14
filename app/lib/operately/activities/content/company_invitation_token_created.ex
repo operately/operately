@@ -3,7 +3,7 @@ defmodule Operately.Activities.Content.CompanyInvitationTokenCreated do
 
   embedded_schema do
     belongs_to :company, Operately.Companies.Company
-    belongs_to :invitation, Operately.Invitations.Invitation
+    belongs_to :invite_link, Operately.InviteLinks.InviteLink
 
     field :name, :string
     field :email, :string

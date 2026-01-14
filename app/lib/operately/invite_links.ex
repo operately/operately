@@ -22,7 +22,7 @@ defmodule Operately.InviteLinks do
 
   def get_invite_link_by_token(token) when is_binary(token) do
     from(il in InviteLink,
-      where: il.token == ^token,
+      where: il.token == ^token and il.type == :company_wide and is_nil(il.person_id),
       preload: [:author, :company]
     )
     |> Repo.one()
@@ -36,8 +36,7 @@ defmodule Operately.InviteLinks do
 
   def get_personal_invite_link_by_token(token) when is_binary(token) do
     from(il in InviteLink,
-      where: il.token == ^token and il.type == :personal and not is_nil(il.person_id),
-      preload: [:author, :company, :person]
+      where: il.token == ^token and il.type == :personal and not is_nil(il.person_id)
     )
     |> Repo.one()
     |> case do
@@ -232,7 +231,6 @@ defmodule Operately.InviteLinks do
   def get_personal_invite_link_for_person(person_id) when is_binary(person_id) do
     from(il in InviteLink,
       where: il.person_id == ^person_id and il.type == :personal,
-      preload: [:author, :company, :person],
       order_by: [desc: il.inserted_at],
       limit: 1
     )
