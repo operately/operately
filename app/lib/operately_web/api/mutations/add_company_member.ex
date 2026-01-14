@@ -5,7 +5,6 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMember do
   require Logger
   import Operately.Access.Filters, only: [filter_by_edit_access: 2]
   alias Operately.People
-  alias OperatelyWeb.Api.InvitationView
 
   inputs do
     field :full_name, :string, null: false
@@ -37,13 +36,14 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMember do
   defp process_member_creation(admin, inputs) do
     case create_person(admin, inputs) do
       {:ok, nil} ->
-        {:ok, %{invitation: nil, new_account: false}}
+        {:ok, %{invite_link: nil, new_account: false}}
 
       {:ok, invite_link} ->
-        {:ok, %{
-          invitation: InvitationView.from_invite_link(invite_link, :full),
-          new_account: true
-        }}
+        {:ok,
+         %{
+           invite_link: Serializer.serialize(invite_link, level: :full),
+           new_account: true
+         }}
 
       error ->
         error
