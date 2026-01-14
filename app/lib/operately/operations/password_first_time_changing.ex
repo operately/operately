@@ -3,13 +3,16 @@ defmodule Operately.Operations.PasswordFirstTimeChanging do
   alias Operately.Repo
   alias Operately.People.{Account, Person}
 
-  def run(attrs, invitation) do
-    invitation = Repo.preload(invitation, [:admin, member: [:account]])
+  def run(attrs, invite_link) do
+    invite_link = Repo.preload(invite_link, [:author, person: [:account]])
+    member = invite_link.person
+    admin = invite_link.author
 
     Multi.new()
-    |> change_password(attrs, invitation.member.account)
-    |> update_member(invitation.member)
-    |> insert_activity(invitation)
+    |> change_password(attrs, member.account)
+    |> update_member(member)
+    |> deactivate_invite_link(invite_link)
+    |> insert_activity(invite_link, admin, member)
     |> Repo.transaction()
   end
 
@@ -23,15 +26,19 @@ defmodule Operately.Operations.PasswordFirstTimeChanging do
     |> Multi.update(:member, Person.changeset(member, %{has_open_invitation: false}))
   end
 
-  defp insert_activity(multi, invitation) do
-    Operately.Activities.insert_sync(multi, invitation.member_id, :password_first_time_changed, fn _changes ->
+  defp deactivate_invite_link(multi, invite_link) do
+    Multi.update(multi, :invite_link, Operately.InviteLinks.InviteLink.changeset(invite_link, %{is_active: false}))
+  end
+
+  defp insert_activity(multi, invite_link, admin, member) do
+    Operately.Activities.insert_sync(multi, member.id, :password_first_time_changed, fn _changes ->
       %{
-        invitatition_id: invitation.id,
-        company_id: invitation.admin.company_id,
-        admin_name: invitation.admin.full_name,
-        admin_email: invitation.admin.email,
-        member_name: invitation.member.full_name,
-        member_email: invitation.member.email,
+        invite_link_id: invite_link.id,
+        company_id: admin.company_id,
+        admin_name: admin.full_name,
+        admin_email: admin.email,
+        member_name: member.full_name,
+        member_email: member.email,
       }
     end)
   end

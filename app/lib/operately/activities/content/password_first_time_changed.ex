@@ -3,7 +3,7 @@ defmodule Operately.Activities.Content.PasswordFirstTimeChanged do
 
   embedded_schema do
     belongs_to :company, Operately.Companies.Company
-    belongs_to :invitatition, Operately.Invitations.Invitation
+    belongs_to :invite_link, Operately.InviteLinks.InviteLink
 
     field :admin_name, :string
     field :admin_email, :string

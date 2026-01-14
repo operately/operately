@@ -3,35 +3,38 @@ defmodule OperatelyWeb.Api.Mutations.JoinCompany do
   use OperatelyWeb.Api.Helpers
 
   inputs do
-    field? :token, :string, null: true
-    field? :password, :string, null: true
-    field? :password_confirmation, :string, null: true
+    field :token, :string, null: false
+    field :password, :string, null: false
+    field :password_confirmation, :string, null: false
   end
 
   outputs do
-    field? :result, :string, null: true
+    field :result, :string, null: false
   end
 
   def call(_conn, inputs) do
-    case valid_password_input(inputs) do
-      {:ok, invitation} ->
-        Operately.Operations.PasswordFirstTimeChanging.run(inputs, invitation)
+    case validate(inputs) do
+      {:ok, invite_link} ->
+        Operately.Operations.PasswordFirstTimeChanging.run(inputs, invite_link)
         {:ok, %{result: "Password successfully changed"}}
       {:error, reason} ->
         {:error, :bad_request, reason}
     end
   end
 
-  defp valid_password_input(input) do
+  defp validate(inputs) do
     cond do
-      input.password != input.password_confirmation ->
+      inputs.password != inputs.password_confirmation ->
         {:error, "Passwords don't match"}
       true ->
-        case Operately.Invitations.get_invitation_by_token(input.token) do
-          nil ->
-            {:error, "Invalid token"}
-          invitation ->
-            {:ok, invitation}
+        with(
+          {:ok, invite_link} <- Operately.InviteLinks.get_personal_invite_link_by_token(inputs.token, preload: [:person]),
+          {:ok, _invite_link} <- Operately.InviteLinks.validate_personal_invite_link(invite_link),
+          true <- invite_link.person && invite_link.person.has_open_invitation
+        ) do
+          {:ok, invite_link}
+        else
+          _ -> {:error, "Invalid token"}
         end
     end
   end
