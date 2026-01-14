@@ -4,7 +4,7 @@ defmodule OperatelyWeb.Api.Queries.GetPeopleTest do
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
 
-  alias Operately.{Repo, People}
+  alias Operately.{Repo, People, InviteLinks}
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -115,6 +115,22 @@ defmodule OperatelyWeb.Api.Queries.GetPeopleTest do
       assert find_person_in_response(res.people, person1).manager == nil
       assert find_person_in_response(res.people, person2).manager == nil
       assert find_person_in_response(res.people, person3).manager == Serializer.serialize(person1, level: :essential)
+    end
+
+    test "include_invite_link", ctx do
+      person = person_fixture(company_id: ctx.company.id, full_name: "Invited Person")
+
+      assert {:ok, invite_link} =
+               InviteLinks.create_personal_invite_link(%{
+                 company_id: ctx.company.id,
+                 author_id: ctx.person.id,
+                 person_id: person.id
+               })
+
+      assert {200, res} = query(ctx.conn, :get_people, %{include_invite_link: true})
+
+      assert find_person_in_response(res.people, person).invite_link ==
+               Serializer.serialize(invite_link, level: :essential)
     end
   end
 

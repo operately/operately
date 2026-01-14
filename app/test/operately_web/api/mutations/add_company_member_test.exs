@@ -30,7 +30,7 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMemberTest do
     test "creates first-time-access token for new member", ctx do
       assert {200, res} = mutation(ctx.conn, :add_company_member, @add_company_member_input)
 
-      assert res.invitation.token
+      assert res.invite_link.token
     end
 
     test "email already taken", ctx do
@@ -59,13 +59,13 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMemberTest do
 
       assert {200, res} = mutation(ctx.conn, :add_company_member, @add_company_member_input)
       assert res.new_account
-      assert res.invitation
+      assert res.invite_link
 
       update_person_has_open_invitation(ctx)
 
       assert {200, res} = mutation(other_ctx.conn, :add_company_member, @add_company_member_input)
       refute res.new_account
-      refute res.invitation
+      refute res.invite_link
 
       assert {400, res} = mutation(ctx.conn, :add_company_member, @add_company_member_input)
       assert res == %{:error => "Bad request", :message => "Email has already been taken"}

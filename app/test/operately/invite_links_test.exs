@@ -24,11 +24,26 @@ defmodule Operately.InviteLinksTest do
       assert {:ok, invite_link} = InviteLinks.create_invite_link(attrs)
       assert invite_link.company_id == ctx.company.id
       assert invite_link.author_id == ctx.creator.id
+      assert invite_link.type == :company_wide
       assert invite_link.is_active == true
       assert invite_link.use_count == 0
       assert invite_link.token != nil
       assert String.length(invite_link.token) >= 32
       assert invite_link.allowed_domains == []
+    end
+
+    test "create_personal_invite_link/1 creates a personal link", ctx do
+      person = PeopleFixtures.person_fixture_with_account(%{company_id: ctx.company.id})
+
+      assert {:ok, invite_link} =
+               InviteLinks.create_personal_invite_link(%{
+                 company_id: ctx.company.id,
+                 author_id: ctx.creator.id,
+                 person_id: person.id
+               })
+
+      assert invite_link.type == :personal
+      assert invite_link.person_id == person.id
     end
 
     test "get_invite_link_by_token/1 returns the correct link", ctx do
