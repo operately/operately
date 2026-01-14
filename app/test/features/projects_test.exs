@@ -31,6 +31,15 @@ defmodule Operately.Features.ProjectsTest do
       |> Steps.assert_project_moved_feed_item_exists()
     end
 
+    @tag login_as: :reviewer
+    feature "project page hides space navigation when space is not accessible", ctx do
+      ctx
+      |> Steps.given_company_members_cannot_access_space()
+      |> Steps.visit_project_page()
+      |> Steps.assert_project_navigation_without_space()
+      |> Steps.assert_move_to_another_space_is_hidden()
+    end
+
     @tag login_as: :champion
     feature "pausing a project", ctx do
       ctx

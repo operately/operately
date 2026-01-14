@@ -3,6 +3,7 @@ defmodule Operately.Repo.GetterTest do
 
   alias Operately.Access.Binding
   alias Operately.Goals.Goal
+  alias Operately.Projects.Milestone
   alias Operately.Projects.Project
   alias Operately.Support.Factory
 
@@ -28,6 +29,7 @@ defmodule Operately.Repo.GetterTest do
         company_access_level: Binding.no_access(),
         space_access_level: Binding.no_access()
       )
+      |> Factory.add_project_milestone(:restricted_milestone, :restricted_project)
 
     ctx = Factory.add_project_contributor(ctx, :viewer_on_open_project, :open_project, viewer_on_open_project: ctx.viewer)
 
@@ -142,5 +144,23 @@ defmodule Operately.Repo.GetterTest do
 
     assert ctx.open_project.id in project_ids
     refute ctx.closed_project.id in project_ids
+  end
+
+  test "auth_preload supports has_through associations", ctx do
+    assert {:ok, milestone} =
+             Milestone.get(ctx.viewer,
+               id: ctx.restricted_milestone.id,
+               opts: [auth_preload: [:space]]
+             )
+
+    assert milestone.space == nil
+
+    assert {:ok, milestone} =
+             Milestone.get(ctx.creator,
+               id: ctx.restricted_milestone.id,
+               opts: [auth_preload: [:space]]
+             )
+
+    assert milestone.space.id == ctx.space.id
   end
 end

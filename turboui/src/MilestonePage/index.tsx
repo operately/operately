@@ -33,6 +33,21 @@ export namespace MilestonePage {
 
   export type TimelineItemType = TimelineItem;
 
+  interface Space {
+    id: string;
+    name: string;
+    link: string;
+  }
+
+  export type SpaceProps =
+    | {
+        workmapLink: string;
+        space: Space;
+      }
+    | {
+        homeLink: string;
+      };
+
   export type Person = {
     id: string;
     fullName: string;
@@ -42,15 +57,7 @@ export namespace MilestonePage {
 
   export type Status = "pending" | "done";
 
-  export interface Props {
-    // Navigation info
-    workmapLink: string;
-    space: {
-      id: string;
-      name: string;
-      link: string;
-    };
-
+  export type Props = SpaceProps & {
     childrenCount: ProjectPageLayout.ChildrenCount;
 
     // Project
@@ -110,15 +117,15 @@ export namespace MilestonePage {
 
     // Rich editor support for description and comments
     richTextHandlers: RichEditorHandlers;
-  }
+  };
 
-  export interface State extends Props {
+  export type State = Props & {
     isTaskModalOpen: boolean;
     setIsTaskModalOpen: (open: boolean) => void;
     isDeleteModalOpen: boolean;
     openDeleteModal: () => void;
     closeDeleteModal: () => void;
-  }
+  };
 }
 
 function useMilestonePageState(props: MilestonePage.Props): MilestonePage.State {
@@ -185,6 +192,9 @@ export function MilestonePage(props: MilestonePage.Props) {
     { urlPath: projectLink },
   );
 
+  const spaceProps =
+    "space" in state ? { space: state.space, workmapLink: state.workmapLink } : { homeLink: state.homeLink };
+
   // Prepare props for ProjectPageLayout
   const layoutProps = {
     projectName: projectName,
@@ -196,8 +206,7 @@ export function MilestonePage(props: MilestonePage.Props) {
     status: projectStatus,
     updateProjectName: props.updateProjectName,
     closedAt: null,
-    space: state.space,
-    workmapLink: state.workmapLink,
+    ...spaceProps,
     canEdit: canEdit,
   };
 

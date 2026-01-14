@@ -19,6 +19,15 @@ defmodule Operately.Features.ProjectTasksTest do
     |> Steps.assert_task_added("Task 1")
   end
 
+  @tag login_as: :reviewer
+  feature "task page hides space navigation when space is not accessible", ctx do
+    ctx
+    |> Steps.given_task_exists()
+    |> ProjectSteps.given_company_members_cannot_access_space()
+    |> Steps.visit_task_page()
+    |> Steps.assert_task_navigation_without_space()
+  end
+
   @tag login_as: :champion
   feature "create task from tasks board", ctx do
     next_friday = Operately.Support.Time.next_friday()
