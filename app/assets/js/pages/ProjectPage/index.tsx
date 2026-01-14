@@ -441,7 +441,7 @@ function useSpaceProps({
     [champion?.id, reviewer?.id],
   );
 
-  const searchScope = project.space ? { type: "space" as const, id: project.space.id } : { type: "company" as const };
+  const searchScope = space ? { type: "space" as const, id: space.id } : { type: "company" as const };
 
   const championSearch = People.usePersonFieldSearch({
     scope: searchScope,
@@ -455,7 +455,7 @@ function useSpaceProps({
     transformResult: transformPerson,
   });
 
-  if (!project.space) {
+  if (!space) {
     return {
       spaceProps: {
         homeLink: paths.homePath(),
@@ -467,7 +467,7 @@ function useSpaceProps({
 
   return {
     spaceProps: {
-      workmapLink: paths.spaceWorkMapPath(project.space.id, "projects" as const),
+      workmapLink: paths.spaceWorkMapPath(space.id, "projects" as const),
       space: space as ProjectPage.Space,
       setSpace: setSpace as any,
       spaceSearch,

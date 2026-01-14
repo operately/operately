@@ -1055,7 +1055,7 @@ defmodule Operately.Support.Features.ProjectSteps do
   #
 
   step :given_subscriber_exists, ctx do
-    Factory.add_company_member(ctx, :subscriber)
+    Factory.add_space_member(ctx, :subscriber, :product)
   end
 
   step :log_in_as_subscriber, ctx do
