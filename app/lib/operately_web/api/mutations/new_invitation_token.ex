@@ -18,7 +18,7 @@ defmodule OperatelyWeb.Api.Mutations.NewInvitationToken do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:company, fn ctx -> Companies.get_company_with_access_level(ctx.me.id, id: ctx.me.company_id) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.company.requester_access_level, :can_invite_members) end)
-    |> run(:operation, fn -> execute(inputs) end)
+    |> run(:operation, fn ctx -> execute(ctx.me, inputs) end)
     |> run(:serialized, fn ctx -> {:ok, %{invite_link: Serializer.serialize(ctx.operation, level: :essential)}} end)
     |> respond()
   end
@@ -34,7 +34,7 @@ defmodule OperatelyWeb.Api.Mutations.NewInvitationToken do
     end
   end
 
-  defp execute(inputs) do
+  defp execute(admin, inputs) do
     {:ok, id} = decode_id(inputs.person_id)
 
     person = Operately.People.get_person(id)
@@ -47,15 +47,22 @@ defmodule OperatelyWeb.Api.Mutations.NewInvitationToken do
         {:error, message: "Team member doesn't have an open invitation."}
 
       true ->
-        create_token(person)
+        create_token(admin, person)
     end
   end
 
-  defp create_token(person) do
+  defp create_token(admin, person) do
     invite_link =
       case Operately.InviteLinks.get_personal_invite_link_for_person(person.id) do
         {:ok, link} -> link
-        {:error, :not_found} -> {:error, message: "Team member doesn't have an open invitation."}
+        {:error, :not_found} ->
+          {:ok, link} = Operately.InviteLinks.create_personal_invite_link(%{
+            company_id: admin.company_id,
+            author_id: admin.id,
+            person_id: person.id
+          })
+          link
+
       end
 
     case invite_link do

@@ -1277,18 +1277,10 @@ export interface GoalUpdatePermissions {
   canComment?: boolean | null;
 }
 
-export interface Invitation {
-  id?: string | null;
-  admin?: Person | null;
-  member?: Person | null;
-  company?: Company | null;
-  token?: string | null;
-  expiresAt?: string | null;
-}
-
 export interface InviteLink {
   id?: string | null;
   token?: string | null;
+  type?: string | null;
   companyId?: string | null;
   author?: Person | null;
   company?: Company | null;
@@ -1366,7 +1358,7 @@ export interface Person {
   peers?: Person[] | null;
   accessLevel?: number | null;
   hasOpenInvitation?: boolean | null;
-  invitation?: Invitation | null;
+  inviteLink?: InviteLink | null;
   showDevBar?: boolean | null;
   permissions?: PersonPermissions | null;
   agentDef?: AgentDef;
@@ -2438,7 +2430,7 @@ export interface GetPeopleInput {
   onlySuspended?: boolean | null;
   includeSuspended?: boolean | null;
   includeManager?: boolean | null;
-  includeInvitations?: boolean | null;
+  includeInviteLink?: boolean | null;
 }
 
 export interface GetPeopleResult {
@@ -2746,11 +2738,11 @@ export interface GoalsParentGoalSearchResult {
 }
 
 export interface InvitationsGetInvitationInput {
-  token?: string | null;
+  token: string;
 }
 
 export interface InvitationsGetInvitationResult {
-  invitation?: Invitation | null;
+  inviteLink: InviteLink;
 }
 
 export interface InvitationsGetInviteLinkByTokenInput {
@@ -2976,14 +2968,14 @@ export interface AddCompanyAdminsInput {
 export interface AddCompanyAdminsResult {}
 
 export interface AddCompanyMemberInput {
-  fullName?: string | null;
-  email?: string | null;
-  title?: string | null;
+  fullName: string;
+  email: string;
+  title: string;
 }
 
 export interface AddCompanyMemberResult {
-  invitation?: Invitation | null;
-  newAccount?: boolean | null;
+  inviteLink: InviteLink;
+  newAccount: boolean;
 }
 
 export interface AddCompanyOwnersInput {
@@ -3840,11 +3832,11 @@ export interface InvitationsJoinCompanyViaInviteLinkResult {
 }
 
 export interface InvitationsNewInvitationTokenInput {
-  personId?: string | null;
+  personId: string;
 }
 
 export interface InvitationsNewInvitationTokenResult {
-  invitation?: Invitation | null;
+  inviteLink: InviteLink;
 }
 
 export interface InvitationsResetCompanyInviteLinkInput {}
@@ -3863,13 +3855,13 @@ export interface InvitationsUpdateCompanyInviteLinkResult {
 }
 
 export interface JoinCompanyInput {
-  token?: string | null;
-  password?: string | null;
-  passwordConfirmation?: string | null;
+  token: string;
+  password: string;
+  passwordConfirmation: string;
 }
 
 export interface JoinCompanyResult {
-  result?: string | null;
+  result: string;
 }
 
 export interface JoinSpaceInput {

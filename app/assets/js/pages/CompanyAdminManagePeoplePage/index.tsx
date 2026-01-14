@@ -4,7 +4,6 @@ import { PageModule } from "@/routes/types";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Companies from "@/models/companies";
-import * as Invitations from "@/models/invitations";
 import * as People from "@/models/people";
 import * as Time from "@/utils/time";
 import * as React from "react";
@@ -30,7 +29,7 @@ interface LoaderResult {
 
 async function loader({ params }): Promise<LoaderResult> {
   const company = await Companies.getCompany({ id: params.companyId }).then((res) => res.company!);
-  const people = await People.getPeople({ includeManager: true, includeInvitations: true }).then((res) => res.people!);
+  const people = await People.getPeople({ includeManager: true, includeInviteLink: true }).then((res) => res.people!);
 
   return {
     company: company,
@@ -117,7 +116,7 @@ function PersonRow({ person }: { person: People.Person }) {
       </div>
 
       <div className="flex gap-2 items-center">
-        {People.hasValidInvite(person) && <ExpiresIn invitation={person.invitation!} />}
+        {People.hasValidInvite(person) && <ExpiresIn inviteLink={person.inviteLink || null} />}
 
         <PersonActions person={person} />
         <PersonOptions person={person} />
@@ -278,8 +277,8 @@ function ReissueInvitationModal(props: { person: People.Person; state: ModalStat
   const [create, { loading }] = Api.invitations.useNewInvitationToken();
 
   const generate = async () => {
-    const res = await create({ personId: props.person.id! });
-    const result = Companies.createInvitationUrl(res.invitation!.token!);
+    const res = await create({ personId: props.person.id });
+    const result = Companies.createInvitationUrl(res.inviteLink.token);
 
     setUrl(result);
     setGenerated(true);
@@ -345,8 +344,11 @@ function NewInvitationUrl({ url, person }: { url: string; person: People.Person 
   );
 }
 
-function ExpiresIn({ invitation }: { invitation: Invitations.Invitation }) {
-  const expiresAt = Time.parse(invitation.expiresAt);
+function ExpiresIn({ inviteLink }: { inviteLink: People.InviteLink | null }) {
+  if (!inviteLink) return null;
+
+  const expiresAt = Time.parse(inviteLink.expiresAt);
+
   if (!expiresAt) return null;
 
   const diff = +expiresAt - +new Date();

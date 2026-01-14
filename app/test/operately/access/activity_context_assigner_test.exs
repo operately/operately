@@ -50,7 +50,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "password_first_time_changed",
         author_id: ctx.author.id,
-        content: %{company_id: ctx.company.id, invitatition_id: "-", admin_name: "-", admin_email: "-", member_name: "-", member_email: "-"}
+        content: %{company_id: ctx.company.id, invite_link_id: "-", admin_name: "-", admin_email: "-", member_name: "-", member_email: "-"}
       }
 
       create_activity(attrs)
@@ -61,7 +61,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "company_invitation_token_created",
         author_id: ctx.author.id,
-        content: %{company_id: ctx.company.id, invitation_id: "-", name: "-", email: "-", title: "-"}
+        content: %{company_id: ctx.company.id, invite_link_id: "-", name: "-", email: "-", title: "-"}
       }
 
       create_activity(attrs)
@@ -72,7 +72,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "company_member_added",
         author_id: ctx.author.id,
-        content: %{company_id: ctx.company.id, invitatition_id: "-", name: "-", email: "-", title: "-"}
+        content: %{company_id: ctx.company.id, invite_link_id: "-", name: "-", email: "-", title: "-"}
       }
 
       create_activity(attrs)

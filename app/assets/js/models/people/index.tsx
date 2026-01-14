@@ -6,7 +6,7 @@ import { Paths } from "../../routes/paths";
 export type Person = api.Person;
 
 export { getPeople, getPerson, updateProfile, updateProfilePicture, useGetMe, useGetPeople, updateTheme, useGetTheme } from "@/api";
-export type { AccountTheme } from "@/api";
+export type { AccountTheme, InviteLink } from "@/api";
 export { usePersonFieldSearch } from "./usePersonFieldSearch";
 export { useMentionedPersonSearch } from "./useMentionedPersonSearch";
 export { usePossibleManagersSearch } from "./usePossibleManagersSearch";
@@ -127,9 +127,9 @@ export function sortByName(people: Person[]): Person[] {
 
 export function hasValidInvite(person: Person): boolean {
   if (!person.hasOpenInvitation) return false;
-  if (!person.invitation?.expiresAt) return false;
+  if (!person.inviteLink?.expiresAt) return false;
 
-  const time = Time.parse(person.invitation!.expiresAt!);
+  const time = Time.parse(person.inviteLink.expiresAt);
   if (!time) return false;
 
   return time > Time.now();
@@ -137,9 +137,9 @@ export function hasValidInvite(person: Person): boolean {
 
 export function hasInvitationExpired(person: Person): boolean {
   if (!person.hasOpenInvitation) return false;
-  if (!person.invitation?.expiresAt) return false;
+  if (!person.inviteLink?.expiresAt) return false;
 
-  const time = Time.parse(person.invitation!.expiresAt!);
+  const time = Time.parse(person.inviteLink.expiresAt);
   if (!time) return false;
 
   return time < Time.now();

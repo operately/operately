@@ -56,8 +56,16 @@ defmodule OperatelyWeb.Api.Mutations.NewInvitationTokenTest do
       assert res.invite_link.token
     end
 
-    test "no invitation associated with member", ctx do
-      assert {400, res} = mutation(ctx.conn, [:invitations, :new_invitation_token], %{person_id: Paths.person_id(ctx.member)})
+    test "creates InviteLink when member has open invitation, but no InviteLink", ctx do
+      assert {200, res} = mutation(ctx.conn, [:invitations, :new_invitation_token], %{person_id: Paths.person_id(ctx.member)})
+
+      assert res.invite_link.token
+    end
+
+    test "returns error when member doesn't have open invitation", ctx do
+      member = person_fixture_with_account(%{company_id: ctx.company.id, has_open_invitation: false})
+
+      assert {400, res} = mutation(ctx.conn, [:invitations, :new_invitation_token], %{person_id: Paths.person_id(member)})
 
       assert res == %{
                error: "Bad request",
