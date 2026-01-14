@@ -4,16 +4,30 @@ import { Tabs, TabsState } from "../Tabs";
 import { StatusBanner } from "./StatusBanner";
 import { PageHeader } from "./PageHeader";
 import { BadgeStatus } from "../StatusBadge/types";
-import { ProjectPage } from "../ProjectPage";
 
 export namespace ProjectPageLayout {
+  export interface Space {
+    id: string;
+    name: string;
+    link: string;
+  }
+
+  export type SpaceProps =
+    | {
+        workmapLink: string;
+        space: Space;
+      }
+    | {
+        homeLink: string;
+      };
+
   export interface ChildrenCount {
     tasksCount: number;
     discussionsCount: number;
     checkInsCount: number;
   }
 
-  export type Props = ProjectPage.SpaceProps & {
+  export type Props = SpaceProps & {
     title: string[];
     testId?: string;
 

@@ -80,10 +80,14 @@ function Page() {
   const { milestone, childrenCount, activities } = data;
 
   assertPresent(milestone.project, "Milestone must have a project");
-  assertPresent(milestone.space, "Milestone must have a space");
   assertPresent(milestone.permissions, "Milestone must have permissions");
 
-  const workmapLink = paths.spaceWorkMapPath(milestone.space.id, "projects" as const);
+  const spaceProps = milestone.space
+    ? {
+        workmapLink: paths.spaceWorkMapPath(milestone.space.id, "projects" as const),
+        space: parseSpaceForTurboUI(paths, milestone.space),
+      }
+    : { homeLink: paths.homePath() };
 
   const [projectName, setProjectName] = usePageField(pageData, {
     value: ({ milestone }) => milestone.project?.name!,
@@ -167,8 +171,7 @@ function Page() {
   );
 
   const props: MilestonePage.Props = {
-    workmapLink,
-    space: parseSpaceForTurboUI(paths, milestone.space),
+    ...spaceProps,
     childrenCount,
 
     canEdit: Boolean(milestone.permissions.canEditTimeline),
