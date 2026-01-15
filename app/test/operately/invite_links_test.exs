@@ -8,6 +8,7 @@ defmodule Operately.InviteLinksTest do
   alias Operately.People
   alias Operately.PeopleFixtures
   alias Operately.Support.Factory
+  import Operately.InviteLinksFixtures
 
   setup ctx do
     ctx
@@ -274,6 +275,75 @@ defmodule Operately.InviteLinksTest do
 
       reloaded_link = Repo.get!(InviteLink, invite_link.id)
       assert reloaded_link.use_count == 1
+    end
+
+    test "joins company via personal invite link for invited account", ctx do
+      member =
+        PeopleFixtures.person_fixture_with_account(%{
+          company_id: ctx.company.id,
+          has_open_invitation: true
+        })
+
+      invite_link =
+        personal_invite_link_fixture(%{
+          company_id: ctx.company.id,
+          author_id: ctx.creator.id,
+          person_id: member.id
+        })
+
+      member = Repo.preload(member, :account)
+      account = member.account
+
+      assert {:ok, person} = InviteLinks.join_company_via_invite_link(account, invite_link.token)
+      assert person.id == member.id
+
+      reloaded_member = Repo.reload(member)
+      refute reloaded_member.has_open_invitation
+
+      reloaded_link = Repo.reload(invite_link)
+      refute reloaded_link.is_active
+    end
+
+    test "returns error when personal invite link belongs to different account", ctx do
+      member =
+        PeopleFixtures.person_fixture_with_account(%{
+          company_id: ctx.company.id,
+          has_open_invitation: true
+        })
+
+      invite_link =
+        personal_invite_link_fixture(%{
+          company_id: ctx.company.id,
+          author_id: ctx.creator.id,
+          person_id: member.id
+        })
+
+      other_account = PeopleFixtures.account_fixture(%{})
+
+      assert InviteLinks.join_company_via_invite_link(other_account, invite_link.token) ==
+               {:error, :invite_token_invalid}
+    end
+
+    test "returns error when personal invite link member has no open invitation", ctx do
+      member =
+        PeopleFixtures.person_fixture_with_account(%{
+          company_id: ctx.company.id,
+          has_open_invitation: true
+        })
+
+      invite_link =
+        personal_invite_link_fixture(%{
+          company_id: ctx.company.id,
+          author_id: ctx.creator.id,
+          person_id: member.id
+        })
+
+      {:ok, member} = Operately.People.update_person(member, %{has_open_invitation: false})
+      member = Repo.preload(member, :account)
+      account = member.account
+
+      assert InviteLinks.join_company_via_invite_link(account, invite_link.token) ==
+               {:error, :invite_token_invalid}
     end
   end
 end

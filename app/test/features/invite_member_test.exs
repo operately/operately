@@ -2,6 +2,9 @@ defmodule Operately.Features.InviteMemberTest do
   use Operately.FeatureCase
   alias Operately.Support.Features.InviteMemberSteps, as: Steps
 
+  set_app_config(:allow_login_with_email, true)
+  set_app_config(:allow_login_with_google, true)
+
   setup ctx do
     ctx |> Steps.given_that_a_company_and_an_admin_exists()
   end
@@ -43,6 +46,14 @@ defmodule Operately.Features.InviteMemberTest do
     |> Steps.goto_invitation_page()
     |> Steps.submit_password("Aa12345#&!123")
     |> Steps.assert_password_set_for_new_member(%{email: "john@john.com", password: "Aa12345#&!123"})
+  end
+
+  feature "joining a company via Google using an invitation", ctx do
+    ctx
+    |> Steps.given_that_I_was_invited_and_have_a_token(%{name: "John Doe", email: "john@john.com"})
+    |> Steps.goto_invitation_page()
+    |> Steps.join_company_with_google()
+    |> Steps.assert_joined_company_via_google()
   end
 
   feature "admin can reissue tokens", ctx do
