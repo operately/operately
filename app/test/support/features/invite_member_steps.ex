@@ -249,4 +249,20 @@ defmodule Operately.Support.Features.InviteMemberSteps do
     ctx |> UI.assert_text("Expires in ")
     ctx |> UI.assert_text("day")
   end
+
+  step :open_invitation_link_view_for, ctx, name do
+    person = Operately.People.get_person_by_name!(ctx.company, name)
+
+    ctx
+    |> UI.click(testid: UI.testid(["person-options", Paths.person_id(person)]))
+    |> UI.click(testid: UI.testid(["view-invite-link", Paths.person_id(person)]))
+  end
+
+  step :assert_invitation_link_modal_visible, ctx, name do
+    person = Operately.People.get_person_by_name!(ctx.company, name)
+
+    ctx
+    |> UI.assert_text("Share this URL with #{person.full_name} to invite them to the company:")
+    |> UI.assert_text("/join?token=")
+  end
 end
