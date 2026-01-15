@@ -28,13 +28,13 @@ interface LoaderResult {
 }
 
 async function loader({ params }): Promise<LoaderResult> {
-  const company = await Companies.getCompany({ id: params.companyId }).then((res) => res.company!);
-  const people = await People.getPeople({ includeManager: true, includeInviteLink: true }).then((res) => res.people!);
+  const company = await Companies.getCompany({ id: params.companyId }).then((res) => res.company);
+  const people = await People.getPeople({ includeManager: true, includeInviteLink: true }).then((res) => res.people);
 
   return {
     company: company,
-    invitedPeople: People.sortByName(people!.filter((person) => person!.hasOpenInvitation)),
-    currentMembers: People.sortByName(people!.filter((person) => !person!.hasOpenInvitation)),
+    invitedPeople: People.sortByName(people?.filter((person) => person.hasOpenInvitation) || []),
+    currentMembers: People.sortByName(people?.filter((person) => !person.hasOpenInvitation) || []),
   };
 }
 

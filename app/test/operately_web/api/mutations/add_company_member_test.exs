@@ -33,6 +33,25 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMemberTest do
       assert res.invite_link.token
     end
 
+    test "if account already exists, skips invitation and add account to company", ctx do
+      ctx = Factory.add_account(ctx, :account)
+      people = Operately.People.list_people(ctx.company.id)
+
+      refute Enum.any?(people, fn p -> p.account_id == ctx.account.id end)
+
+      assert {200, _} = mutation(ctx.conn, :add_company_member, %{
+        full_name: @add_company_member_input.full_name,
+        email: ctx.account.email,
+        title: @add_company_member_input.title,
+      })
+
+      people = Operately.People.list_people(ctx.company.id)
+
+      assert Enum.any?(people, fn p -> p.account_id == ctx.account.id end)
+      new_person = Enum.find(people, fn p -> p.account_id == ctx.account.id end)
+      refute new_person.has_open_invitation
+    end
+
     test "email already taken", ctx do
       assert {200, _} = mutation(ctx.conn, :add_company_member, @add_company_member_input)
       assert {400, res} = mutation(ctx.conn, :add_company_member, @add_company_member_input)
