@@ -51,7 +51,7 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMember do
   end
 
   defp create_person(admin, inputs) do
-    skip_invitation = not People.is_new_account?(inputs[:email])
+    skip_invitation = People.account_exists?(inputs[:email])
 
     case Operately.Operations.CompanyMemberAdding.run(admin, inputs, skip_invitation) do
       {:ok, invite_link} ->

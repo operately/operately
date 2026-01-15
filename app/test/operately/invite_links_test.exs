@@ -294,6 +294,8 @@ defmodule Operately.InviteLinksTest do
       member = Repo.preload(member, :account)
       account = member.account
 
+      assert member.has_open_invitation
+
       assert {:ok, person} = InviteLinks.join_company_via_invite_link(account, invite_link.token)
       assert person.id == member.id
 
