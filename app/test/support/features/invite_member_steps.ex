@@ -120,6 +120,15 @@ defmodule Operately.Support.Features.InviteMemberSteps do
     |> UI.assert_text("Repeat password")
   end
 
+  step :join_company_with_google, ctx do
+    email = ctx.person.email
+
+    ctx
+    |> UI.assert_has(testid: "sign-in-with-google")
+    |> UI.visit("/accounts/auth/test_google?email=#{URI.encode_www_form(email)}&invite_token=#{ctx.token}")
+    |> UI.sleep(500)
+  end
+
   step :assert_password_set_for_new_member, ctx, params do
     account = Operately.People.get_account_by_email_and_password(params[:email], params[:password])
     person = Operately.Repo.preload(account, :people).people |> hd()
@@ -128,6 +137,11 @@ defmodule Operately.Support.Features.InviteMemberSteps do
     assert person.email == params[:email]
 
     ctx
+  end
+
+  step :assert_joined_company_via_google, ctx do
+    ctx
+    |> UI.assert_has(testid: "company-home")
   end
 
   step :given_that_an_invitation_was_sent_and_expired, ctx, params do
