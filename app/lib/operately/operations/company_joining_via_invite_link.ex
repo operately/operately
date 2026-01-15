@@ -105,6 +105,8 @@ defmodule Operately.Operations.CompanyJoiningViaInviteLink do
       cond do
         person.account_id != account.id ->
           {:error, :invite_link_not_for_person}
+        person.email != account.email ->
+          {:error, :invite_link_not_for_person}
         not person.has_open_invitation ->
           {:error, :person_not_invited}
         true ->
