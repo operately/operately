@@ -64,12 +64,12 @@ defmodule Operately.People do
     if Operately.People.Account.valid_password?(account, password), do: account
   end
 
-  def is_new_account?(email) when is_binary(email) do
-    not Repo.exists?(
+  def account_exists?(email) when is_binary(email) do
+    Repo.exists?(
       from(a in Account,
-        join: p in assoc(a, :people),
+        left_join: p in assoc(a, :people),
         where: a.email == ^email,
-        where: not p.has_open_invitation
+        where: is_nil(p.id) or p.has_open_invitation == false
       )
     )
   end
