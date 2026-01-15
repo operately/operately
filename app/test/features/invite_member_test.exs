@@ -62,6 +62,15 @@ defmodule Operately.Features.InviteMemberTest do
     |> Steps.assert_invitation_renewed()
   end
 
+  feature "admin can view invite link after reloading team page", ctx do
+    ctx
+    |> Steps.log_in_as_admin()
+    |> Steps.given_that_an_invitation_was_sent(%{name: "John Doe", email: "john@john.com"})
+    |> Steps.open_company_team_page()
+    |> Steps.open_invitation_link_view_for("John Doe")
+    |> Steps.assert_invitation_link_modal_visible("John Doe")
+  end
+
   describe "invitation expiration times" do
     setup ctx do
       Steps.log_in_as_admin(ctx)
