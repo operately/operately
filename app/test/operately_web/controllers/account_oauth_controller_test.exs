@@ -3,6 +3,9 @@ defmodule OperatelyWeb.AccountOauthControllerTest do
 
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
+  import Operately.InviteLinksFixtures
+
+  alias OperatelyWeb.Paths
 
   setup do
     conn = build_conn()
@@ -79,6 +82,42 @@ defmodule OperatelyWeb.AccountOauthControllerTest do
 
       saved_person = Operately.People.get_person_by_email(ctx.company, person.email)
       assert saved_person.avatar_url == "http://example.com/new-image.png"
+    end
+
+    test "when invite_token is provided, joins company and redirects to home", ctx do
+      author = person_fixture_with_account(%{company_id: ctx.company.id})
+
+      person =
+        person_fixture_with_account(%{
+          company_id: ctx.company.id,
+          email: "invited@example.com",
+          has_open_invitation: true
+        })
+
+      invite_link =
+        personal_invite_link_fixture(%{
+          company_id: ctx.company.id,
+          author_id: author.id,
+          person_id: person.id
+        })
+
+      conn =
+        Plug.Conn.assign(ctx.conn, :ueberauth_auth, %{
+          info: %{
+            email: person.email,
+            image: "http://example.com/image.png",
+            name: person.full_name
+          }
+        })
+
+      conn =
+        get(conn, "/accounts/auth/google/callback", %{
+          "provider" => "google",
+          "invite_token" => invite_link.token
+        })
+
+      assert conn.status == 302
+      assert redirected_to(conn) == Paths.home_path(ctx.company)
     end
   end
 
