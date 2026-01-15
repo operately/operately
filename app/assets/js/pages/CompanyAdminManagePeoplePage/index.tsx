@@ -7,7 +7,7 @@ import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
 import * as Time from "@/utils/time";
 import * as React from "react";
-import { IconAlertTriangle, IconId, IconRefresh, IconUserX } from "turboui";
+import { IconAlertTriangle, IconId, IconLink, IconRefresh, IconUserX } from "turboui";
 
 import { CopyToClipboard } from "@/components/CopyToClipboard";
 import { BlackLink, Menu, MenuActionItem, MenuLinkItem, PrimaryButton, SecondaryButton } from "turboui";
@@ -192,14 +192,17 @@ function PersonOptions({ person }: { person: People.Person }) {
 
   const removeModal = useModalState();
   const reissueModal = useModalState();
+  const viewInvitationModal = useModalState();
 
   return (
     <>
       <RemovePersonModal person={person} state={removeModal} />
       <ReissueInvitationModal person={person} state={reissueModal} />
+       <ViewInvitationModal person={person} state={viewInvitationModal} />
 
       <Menu testId={testId} size={size}>
         <PersonOptionViewProfile person={person} />
+        <PersonOptionViewInvitation person={person} onClick={viewInvitationModal.show} />
         <PersonOptionReissueInvitation person={person} onClick={reissueModal.show} />
         <PersonOptionRemove person={person} onClick={removeModal.show} />
       </Menu>
@@ -222,6 +225,16 @@ function PersonOptionReissueInvitation({ person, onClick }: { person: People.Per
   return (
     <MenuActionItem icon={IconRefresh} onClick={onClick} testId={createTestId("reissue-token", person.id!)}>
       Re-Issue Invitation
+    </MenuActionItem>
+  );
+}
+
+function PersonOptionViewInvitation({ person, onClick }: { person: People.Person; onClick: () => void }) {
+  if (!People.hasValidInvite(person)) return null;
+
+  return (
+    <MenuActionItem icon={IconLink} onClick={onClick} testId={createTestId("view-invite-link", person.id!)}>
+      View Invitation Link
     </MenuActionItem>
   );
 }
@@ -297,6 +310,21 @@ function ReissueInvitationModal(props: { person: People.Person; state: ModalStat
 
         {!isGenerated && <NewInvitationButton onClick={generate} loading={loading} />}
         {isGenerated && <NewInvitationUrl url={url} person={props.person} />}
+      </Modal>
+    </>
+  );
+}
+
+function ViewInvitationModal(props: { person: People.Person; state: ModalState }) {
+  const token = props.person.inviteLink?.token;
+  if (!token) return null;
+
+  const url = Companies.createInvitationUrl(token);
+
+  return (
+    <>
+      <Modal title="Invitation URL" isOpen={props.state.isOpen} hideModal={props.state.hide} size="lg">
+        <NewInvitationUrl url={url} person={props.person} />
       </Modal>
     </>
   );
