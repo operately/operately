@@ -92,6 +92,10 @@ function CheckInsSection(props: ProjectPage.State) {
 }
 
 function ParentGoal(props: ProjectPage.State) {
+  if (!props.parentGoal && !props.canEditGoal) {
+    return null;
+  }
+
   return (
     <SidebarSection title="Parent goal">
       <GoalField
@@ -99,7 +103,7 @@ function ParentGoal(props: ProjectPage.State) {
         goal={props.parentGoal}
         setGoal={props.setParentGoal}
         searchGoals={props.parentGoalSearch}
-        readonly={!props.canEdit}
+        readonly={!props.canEditGoal}
         emptyStateMessage="Set parent goal"
         emptyStateReadOnlyMessage="No parent goal"
       />
