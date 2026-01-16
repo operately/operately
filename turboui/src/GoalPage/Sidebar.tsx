@@ -328,6 +328,8 @@ function Privacy(props: GoalPage.State) {
 }
 
 function Actions(props: GoalPage.State) {
+  const hasSpace = "space" in props;
+
   const actions = [
     {
       type: "link" as const,
@@ -350,7 +352,7 @@ function Actions(props: GoalPage.State) {
       label: "Move to another space",
       onClick: props.openMoveModal,
       icon: IconCircleArrowRight,
-      hidden: !props.canEdit,
+      hidden: !props.canEdit || !hasSpace,
       testId: "move-to-another-space",
     },
     {

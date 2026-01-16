@@ -5,23 +5,28 @@ import { MiniWorkMap } from "../MiniWorkMap";
 import { SectionHeader } from "./SectionHeader";
 
 export function RelatedWork(props: GoalPage.State) {
-  if (props.relatedWorkItems.length === 0 && !props.canEdit) return null;
+  const spaceProps = "space" in props ? props : null;
+  const canAddRelatedWork = props.canEdit && Boolean(spaceProps);
+
+  if (props.relatedWorkItems.length === 0 && !canAddRelatedWork) return null;
+
+  const buttons = canAddRelatedWork && spaceProps ? (
+    <div className="flex items-center gap-2">
+      <SecondaryButton size="xxs" linkTo={spaceProps.addSubgoalLink} testId="add-subgoal">
+        Add goal
+      </SecondaryButton>
+      <SecondaryButton size="xxs" linkTo={spaceProps.addSubprojectLink}>
+        Add project
+      </SecondaryButton>
+    </div>
+  ) : null;
 
   return (
     <div>
       <SectionHeader
         title="Subgoals & Projects"
-        buttons={
-          <div className="flex items-center gap-2">
-            <SecondaryButton size="xxs" linkTo={props.addSubgoalLink} testId="add-subgoal">
-              Add goal
-            </SecondaryButton>
-            <SecondaryButton size="xxs" linkTo={props.addSubprojectLink}>
-              Add project
-            </SecondaryButton>
-          </div>
-        }
-        showButtons={props.canEdit}
+        buttons={buttons}
+        showButtons={canAddRelatedWork}
       />
 
       {props.relatedWorkItems.length > 0 ? <RelatedWorkContent {...props} /> : <RelatedWorkZeroState />}

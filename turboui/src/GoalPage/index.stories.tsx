@@ -46,7 +46,9 @@ function Component(props: Partial<GoalPage.Props>) {
   const reviewerSearch = usePersonFieldSearch(mockPeople);
 
   const [goalName, setGoalName] = React.useState<string>(props.goalName || "Launch AI Platform");
-  const [space, setSpace] = React.useState<GoalPage.Space>(props.space || defaultSpace);
+  const [space, setSpace] = React.useState<GoalPage.Space>(
+    "space" in props && props.space ? props.space : defaultSpace,
+  );
   const [dueDate, setDueDate] = React.useState<DateField.ContextualDate | null>(props.dueDate || null);
   const [startDate, setStartDate] = React.useState<DateField.ContextualDate | null>(props.startDate || null);
   const [champion, setChampion] = React.useState<GoalPage.Person | null>(props.champion || null);
