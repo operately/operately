@@ -88,6 +88,28 @@ defmodule Operately.Repo.GetterTest do
     assert project.goal == nil
   end
 
+  test "auth_preload merges duplicate associations with nested preloads (goal)", ctx do
+    assert {:ok, project} =
+             Project.get(ctx.creator,
+               id: ctx.restricted_project.id,
+               opts: [auth_preload: [:goal, goal: [:champion]]]
+             )
+
+    assert project.goal.id == ctx.restricted_goal.id
+    assert project.goal.champion.id == ctx.creator.id
+  end
+
+  test "auth_preload merges duplicate associations with nested preloads (group)", ctx do
+    assert {:ok, project} =
+             Project.get(ctx.creator,
+               id: ctx.restricted_project.id,
+               opts: [auth_preload: [:group, group: [:members]]]
+             )
+
+    assert project.group.id == ctx.space.id
+    assert Enum.any?(project.group.members, &(&1.id == ctx.creator.id))
+  end
+
   test "auth_preload filters multiple associations", ctx do
     assert {:ok, project} =
              Project.get(ctx.viewer,

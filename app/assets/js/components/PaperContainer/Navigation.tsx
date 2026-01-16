@@ -23,6 +23,8 @@ interface Item {
   label: string;
 }
 
+export { Item as NavigationItem };
+
 const navigationClassName = classNames(
   "bg-surface-dimmed",
   "flex items-center gap-1 justify-center",

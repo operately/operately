@@ -7,7 +7,6 @@ import { parseContextualDate, serializeContextualDate } from "@/models/contextua
 
 import Forms from "@/components/Forms";
 import { SubscriptionsState } from "@/models/subscriptions";
-import { assertPresent } from "@/utils/assertions";
 import { validateTargets } from "../GoalTargetsV2/targetErrors";
 
 import { usePaths } from "@/routes/paths";
@@ -33,8 +32,6 @@ export function useForm(props: EditProps | NewProps) {
 
   const navigate = useNavigate();
   const setPageMode = Pages.useSetPageMode();
-
-  assertPresent(goal?.targets, "targets must be present in goal");
 
   const timeframe = props.mode === "edit" ? props.update.timeframe : props.goal.timeframe;
 
