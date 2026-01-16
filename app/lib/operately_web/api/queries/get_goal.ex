@@ -69,6 +69,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
       opts: [
         with_deleted: true,
         preload: preload(inputs),
+        auth_preload: auth_preload(inputs),
         after_load: after_load(inputs, ctx.me)
       ]
     )
@@ -80,14 +81,19 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
       include_closed_by: :closed_by,
       include_projects: [projects: [:champion, :reviewer]],
       include_reviewer: :reviewer,
-      include_space: :group,
-      include_space_members: [group: [:members, :company]],
       include_potential_subscribers: [:reviewer, :champion, group: :members],
       include_last_check_in: [last_update: [:author, [reactions: :person]]],
       include_checklist: [:checks],
       always_include: [targets: from(t in Target, order_by: t.index)],
       always_include: :parent_goal,
       always_include: [checks: from(c in Operately.Goals.Check, order_by: c.index)]
+    )
+  end
+
+  defp auth_preload(inputs) do
+    Inputs.parse_includes(inputs,
+      include_space: [:group],
+      include_space_members: [group: [:members, :company]]
     )
   end
 
