@@ -100,6 +100,65 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       assert {404, %{message: msg} = _res} = query(ctx.conn, :get_project, %{id: Paths.project_id(p)})
       assert msg == "The requested resource was not found"
     end
+
+    test "space is not loaded when requester cannot access it", ctx do
+      project = create_project(ctx, group_id: ctx.space.id, company_access_level: Binding.view_access())
+
+      assert {200, res} = query(ctx.conn, :get_project, %{
+        id: Paths.project_id(project),
+        include_space: true,
+      })
+
+      assert res.project.space == nil
+
+      space_member = person_fixture_with_account(%{company_id: ctx.company.id})
+
+      {:ok, _} = Operately.Groups.add_members(space_member, ctx.space.id, [
+        %{id: space_member.id, access_level: Binding.view_access()},
+      ])
+
+      account = Repo.preload(space_member, :account).account
+      conn = log_in_account(ctx.conn, account)
+
+      assert {200, res} = query(conn, :get_project, %{
+        id: Paths.project_id(project),
+        include_space: true,
+      })
+
+      assert res.project.space == Serializer.serialize(ctx.space, level: :essential)
+    end
+
+    test "goal is not loaded when requester cannot access it", ctx do
+      project = create_project(ctx, group_id: ctx.space.id, company_access_level: Binding.view_access())
+      goal_champion = person_fixture_with_account(%{company_id: ctx.company.id})
+
+      goal = goal_fixture(ctx.person, %{
+        space_id: ctx.space.id,
+        champion_id: goal_champion.id,
+        reviewer_id: goal_champion.id,
+        company_access_level: Binding.no_access(),
+        space_access_level: Binding.no_access(),
+      })
+
+      {:ok, project} = Operately.Projects.update_project(project, %{goal_id: goal.id})
+
+      assert {200, res} = query(ctx.conn, :get_project, %{
+        id: Paths.project_id(project),
+        include_goal: true,
+      })
+
+      assert res.project.goal == nil
+
+      account = Repo.preload(goal_champion, :account).account
+      conn = log_in_account(ctx.conn, account)
+
+      assert {200, res} = query(conn, :get_project, %{
+        id: Paths.project_id(project),
+        include_goal: true,
+      })
+
+      assert res.project.goal == Serializer.serialize(goal, level: :essential)
+    end
   end
 
   describe "get_project functionality" do

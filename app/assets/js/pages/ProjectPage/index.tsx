@@ -274,6 +274,7 @@ function Page() {
     retrospectiveLink: paths.projectRetrospectivePath(project.id),
 
     canEdit: project.permissions?.canEditName || false,
+    canEditGoal: project.permissions?.canEditGoal || false,
     manageTeamLink: paths.projectContributorsPath(project.id),
 
     canDelete: project.permissions?.canDelete || false,
