@@ -80,7 +80,6 @@ function Page() {
   const { goal, workMap, checkIns, discussions } = data;
   const currentUser = useMe();
 
-  assertPresent(goal.space);
   assertPresent(goal.privacy);
   assertPresent(goal.permissions?.canEdit);
 
@@ -113,8 +112,12 @@ function Page() {
   });
 
   const [space, setSpace] = usePageField({
-    value: (data) => parseSpaceForTurboUI(paths, data.goal.space),
-    update: (v) => Api.goals.updateSpace({ goalId: goal.id, spaceId: v.id }),
+    value: (data) => (data.goal.space ? parseSpaceForTurboUI(paths, data.goal.space) : null),
+    update: (v) => {
+      if (!v) return Promise.resolve({ success: false });
+
+      return Api.goals.updateSpace({ goalId: goal.id, spaceId: v.id });
+    },
     onError: () => showErrorToast("Network Error", "Reverted the space to its previous value."),
   });
 
@@ -158,14 +161,16 @@ function Page() {
     [champion?.id, reviewer?.id],
   );
 
+  const searchScope = space ? { type: "space" as const, id: space.id } : { type: "company" as const };
+
   const championSearch = People.usePersonFieldSearch({
-    scope: { type: "space", id: goal.space.id },
+    scope: searchScope,
     ignoredIds,
     transformResult: transformPerson,
   });
 
   const reviewerSearch = People.usePersonFieldSearch({
-    scope: { type: "space", id: goal.space.id },
+    scope: searchScope,
     ignoredIds,
     transformResult: transformPerson,
   });
@@ -190,12 +195,11 @@ function Page() {
     try {
       await Api.deleteGoal({ goalId: goal.id });
       PageCache.invalidate(pageCacheKey(goal.id));
-      
-      if (goal.space?.id) {
-        navigate(paths.spaceWorkMapPath(goal.space.id, "goals"));
-      }
-      else {
-        navigate(paths.homePath())
+
+      if (space?.id) {
+        navigate(paths.spaceWorkMapPath(space.id, "goals"));
+      } else {
+        navigate(paths.homePath());
       }
     } catch (error) {
       console.error("Failed to delete goal:", error);
@@ -207,14 +211,25 @@ function Page() {
     window.open(paths.goalMarkdownExportPath(goal.id), "_blank", "noopener");
   }, [goal.id, paths]);
 
+  const spaceProps: GoalPage.SpaceProps = space
+    ? {
+        workmapLink: paths.spaceWorkMapPath(space.id, "goals"),
+        addSubprojectLink: paths.newProjectPath({ goalId: goal.id, spaceId: space.id }),
+        addSubgoalLink: paths.newGoalPath({ parentGoalId: goal.id, spaceId: space.id }),
+        space: space as GoalPage.Space,
+        setSpace: setSpace as any,
+        spaceSearch,
+      }
+    : {
+        homeLink: paths.homePath(),
+      };
+
   const props: GoalPage.Props = {
-    workmapLink: paths.spaceWorkMapPath(goal.space.id, "goals"),
+    ...spaceProps,
     closeLink: paths.goalClosePath(goal.id),
     reopenLink: paths.goalReopenPath(goal.id),
     newCheckInLink: paths.goalCheckInNewPath(goal.id),
     newDiscussionLink: paths.newGoalDiscussionPath(goal.id),
-    addSubprojectLink: paths.newProjectPath({ goalId: goal.id, spaceId: goal.space.id }),
-    addSubgoalLink: paths.newGoalPath({ parentGoalId: goal.id, spaceId: goal.space.id }),
     exportMarkdown,
     closedAt: Time.parse(goal.closedAt),
     retrospective: prepareRetrospective(paths, goal.retrospective),
@@ -227,10 +242,6 @@ function Page() {
 
     accessLevels,
     setAccessLevels,
-
-    space,
-    setSpace,
-    spaceSearch,
 
     parentGoal,
     setParentGoal,
@@ -459,7 +470,7 @@ function useParentGoalSearch(goal: Goal): GoalPage.Props["parentGoalSearch"] {
   };
 }
 
-function useSpaceSearch(): GoalPage.Props["spaceSearch"] {
+function useSpaceSearch(): (params: { query: string }) => Promise<GoalPage.Space[]> {
   const paths = usePaths();
 
   return async ({ query }: { query: string }): Promise<GoalPage.Space[]> => {
