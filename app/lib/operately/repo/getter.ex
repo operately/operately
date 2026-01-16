@@ -174,7 +174,9 @@ defmodule Operately.Repo.Getter do
   def get(module, requester, args) do
     args = __MODULE__.GetterArgs.parse(args)
 
-    query = from(r in module, as: :resource, preload: ^args.preload)
+    # Auth preloads must override regular preloads for the same association.
+    preload = drop_overlapping_preloads(args.preload, args.auth_preload)
+    query = from(r in module, as: :resource, preload: ^preload)
     query = add_where_clauses(query, args.field_matchers)
 
     case requester do
@@ -217,6 +219,7 @@ defmodule Operately.Repo.Getter do
   end
 
   defp base_query(query, requester_id) do
+    # Join the access graph and keep only bindings visible to the requester.
     from([resource: r] in query,
       join: c in assoc(r, :access_context),
       join: b in assoc(c, :bindings), as: :binding,
@@ -256,6 +259,37 @@ defmodule Operately.Repo.Getter do
   def to_tuple(nil), do: {:error, :not_found}
   def to_tuple(resource), do: {:ok, resource}
 
+  defp drop_overlapping_preloads(preload, auth_preload) when auth_preload in [nil, []], do: preload
+
+  defp drop_overlapping_preloads(preload, auth_preload) do
+    auth_assocs = auth_preload_assocs(auth_preload)
+
+    preload
+    |> List.wrap()
+    |> List.flatten()
+    |> Enum.reject(&preload_assoc_in?(&1, auth_assocs))
+  end
+
+  defp auth_preload_assocs(auth_preload) do
+    auth_preload
+    |> List.wrap()
+    |> List.flatten()
+    |> Enum.map(&preload_assoc_name/1)
+    |> Enum.reject(&is_nil/1)
+    |> MapSet.new()
+  end
+
+  defp preload_assoc_in?(item, assocs) do
+    case preload_assoc_name(item) do
+      nil -> false
+      assoc -> MapSet.member?(assocs, assoc)
+    end
+  end
+
+  defp preload_assoc_name({assoc, _}) when is_atom(assoc), do: assoc
+  defp preload_assoc_name(assoc) when is_atom(assoc), do: assoc
+  defp preload_assoc_name(_), do: nil
+
   defp preload_auth(resource, _requester, %{auth_preload: auth_preload}) when auth_preload in [nil, []], do: resource
 
   defp preload_auth(resource, :system, %{auth_preload: auth_preload, with_deleted: with_deleted}) do
@@ -263,11 +297,12 @@ defmodule Operately.Repo.Getter do
   end
 
   defp preload_auth(resource, requester, %{auth_preload: auth_preload, with_deleted: with_deleted}) do
+    # Auth preloads re-run access checks on the associated resources.
     requester_id = requester_id(requester)
 
     if requester_id do
       preload = build_auth_preload(resource.__struct__, requester_id, auth_preload)
-      Operately.Repo.preload(resource, preload, with_deleted: with_deleted, force: true)
+      Operately.Repo.preload(resource, preload, with_deleted: with_deleted)
     else
       resource
     end
@@ -282,6 +317,7 @@ defmodule Operately.Repo.Getter do
     |> List.wrap()
     |> List.flatten()
     |> Enum.map(&build_auth_preload_item(module, requester_id, &1))
+    |> merge_auth_preload_items()
   end
 
   defp build_auth_preload_item(module, requester_id, {assoc, {query, nested}}) do
@@ -304,12 +340,44 @@ defmodule Operately.Repo.Getter do
     {assoc, auth_query(module, assoc, requester_id)}
   end
 
+  # Deduplicate auth preloads per assoc to avoid Ecto errors on repeated keys.
+  defp merge_auth_preload_items(items) do
+    items
+    |> Enum.reduce(%{}, fn item, acc ->
+      {assoc, query, nested} = normalize_auth_preload_item(item)
+
+      # Keep the first auth query and merge nested preloads for the same assoc.
+      Map.update(acc, assoc, {query, List.wrap(nested)}, fn {existing_query, existing_nested} ->
+        {existing_query || query, merge_nested_preloads(existing_nested, nested)}
+      end)
+    end)
+    |> Enum.map(fn {assoc, {query, nested}} ->
+      if nested == [] do
+        {assoc, query}
+      else
+        {assoc, {query, nested}}
+      end
+    end)
+  end
+
+  defp normalize_auth_preload_item({assoc, {query, nested}}), do: {assoc, query, normalize_nested_preload(nested)}
+  defp normalize_auth_preload_item({assoc, query}), do: {assoc, query, []}
+
+  # Merge nested preloads (e.g., [:members] + [:company]) into a single list.
+  defp merge_nested_preloads(existing, nested) do
+    existing = List.wrap(existing)
+    nested = List.wrap(nested)
+
+    Enum.uniq(existing ++ nested)
+  end
+
   defp normalize_nested_preload(nil), do: []
   defp normalize_nested_preload(nested), do: nested
 
   defp auth_query(module, assoc, requester_id, query \\ nil) do
     assoc_module = assoc_module(module, assoc)
 
+    # Build an access-filtered query for the association being auth-preloaded.
     (query || assoc_module)
     |> Ecto.Queryable.to_query()
     |> ensure_resource_binding()
