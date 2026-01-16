@@ -4,7 +4,7 @@ This guide walks you through updating a self-hosted installation of Operately,
 from any version to a newer version.
 
 Before starting, log in to the server running Operately, and navigate to the
-directory where operately is running. By default this location is `~/operately`.
+directory where Operately is running. By default this location is `~/operately`.
 
 ### Stop the Operately server
 
