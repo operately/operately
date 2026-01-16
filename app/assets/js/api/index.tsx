@@ -2357,11 +2357,11 @@ export interface GetGoalProgressUpdateInput {
   includeAcknowledgedBy?: boolean | null;
   includeReactions?: boolean | null;
   includeGoal?: boolean | null;
-  includeGoalSpace?: boolean | null;
   includeGoalTargets?: boolean | null;
   includeGoalChecklist?: boolean | null;
   includeReviewer?: boolean | null;
   includeChampion?: boolean | null;
+  includeSpace?: boolean | null;
   includeSpaceMembers?: boolean | null;
   includeSubscriptionsList?: boolean | null;
   includePotentialSubscribers?: boolean | null;
