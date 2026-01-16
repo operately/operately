@@ -7,10 +7,13 @@ import { StatusBadge } from "../StatusBadge";
 import { TextField } from "../TextField";
 
 export function PageHeader(props: GoalPage.State) {
-  const navigation = [
-    { to: props.space.link, label: props.space.name },
-    { to: props.workmapLink, label: "Goals" },
-  ];
+  const navigation =
+    "space" in props
+      ? [
+          { to: props.space.link, label: props.space.name },
+          { to: props.workmapLink, label: "Goals" },
+        ]
+      : [{ to: props.homeLink, label: "Home" }];
 
   return (
     <div className="mt-4 px-4 flex items-center gap-3" data-test-id="page-header">

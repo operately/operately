@@ -3,6 +3,7 @@ defmodule Operately.Support.Features.GoalSteps do
   @endpoint OperatelyWeb.Endpoint
 
   alias Operately.Access
+  alias Operately.Access.Binding
   alias Operately.Support.Features.EmailSteps
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.ContextualDates.ContextualDate
@@ -56,6 +57,36 @@ defmodule Operately.Support.Features.GoalSteps do
   step :given_space_member_exists, ctx, opts \\ [] do
     ctx
     |> Factory.add_space_member(:space_member, :product, opts)
+  end
+
+  step :given_goal_in_secret_space_for_reviewer, ctx do
+    ctx
+    |> Factory.add_space(:space, company_permissions: Binding.no_access())
+    |> Factory.add_goal(:goal, :space,
+      name: "Hidden goal",
+      champion: :champion,
+      reviewer: :reviewer
+    )
+  end
+
+  step :login_as_reviewer, ctx do
+    UI.login_as(ctx, ctx.reviewer)
+  end
+
+  step :assert_goal_navigation_without_space, ctx do
+    home_link = Paths.home_path(ctx.company)
+    space = Map.get(ctx, :space, ctx.product)
+    space_link = Paths.space_path(ctx.company, space)
+    workmap_link = Paths.space_work_map_path(ctx.company, space) <> "?tab=goals"
+
+    ctx
+    |> UI.assert_has(css: "[data-test-id=\"goal-page\"] nav a[href=\"#{home_link}\"]")
+    |> UI.refute_has(css: "[data-test-id=\"goal-page\"] nav a[href=\"#{space_link}\"]")
+    |> UI.refute_has(css: "[data-test-id=\"goal-page\"] nav a[href=\"#{workmap_link}\"]")
+  end
+
+  step :assert_move_to_another_space_is_hidden, ctx do
+    ctx |> UI.refute_has(testid: "move-to-another-space")
   end
 
   #
