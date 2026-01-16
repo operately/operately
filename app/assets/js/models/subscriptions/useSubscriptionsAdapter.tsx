@@ -4,7 +4,7 @@ import { Subscriber } from "@/models/notifications";
 import { compareIds } from "@/routes/paths";
 import { SubscribersSelector } from "turboui";
 
-type LabelContext = { projectName: string } | { spaceName: string } | { resourceHubName: string };
+type LabelContext = { projectName: string } | { spaceName: string } | { resourceHubName: string } | { goalName: string };
 
 type UseSubscriptionsAdapterOpts = {
   notifyPrioritySubscribers?: boolean;
@@ -125,6 +125,8 @@ function buildAllSubscribersLabel(subscribers: Subscriber[], opts: UseSubscripti
     part2 = ` who are members of the ${opts.spaceName} space`;
   } else if ("resourceHubName" in opts) {
     part2 = ` who have access to ${opts.resourceHubName}`;
+  } else if ("goalName" in opts) {
+    part2 = ` who have access to ${opts.goalName}`;
   }
 
   return part1 + part2;
