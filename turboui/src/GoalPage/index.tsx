@@ -28,6 +28,19 @@ export namespace GoalPage {
     link: string;
   }
 
+  export type SpaceProps =
+    | {
+        workmapLink: string;
+        addSubgoalLink: string;
+        addSubprojectLink: string;
+        space: Space;
+        setSpace: (space: Space) => void;
+        spaceSearch: (params: { query: string }) => Promise<Space[]>;
+      }
+    | {
+        homeLink: string;
+      };
+
   export interface Retrospective {
     link: string;
     content: string;
@@ -80,22 +93,15 @@ export namespace GoalPage {
     commentCount: number;
   }
 
-  export interface Props {
-    workmapLink: string;
+  interface CommonProps {
     closeLink: string;
     reopenLink: string;
     newCheckInLink: string;
     newDiscussionLink: string;
-    addSubgoalLink: string;
-    addSubprojectLink: string;
     exportMarkdown?: () => void;
 
     goalName: string;
     setGoalName: (name: string) => void;
-
-    space: Space;
-    setSpace: (space: Space) => void;
-    spaceSearch: (params: { query: string }) => Promise<Space[]>;
 
     parentGoal: ParentGoal | null;
     setParentGoal: (goal: ParentGoal | null) => void;
@@ -160,7 +166,9 @@ export namespace GoalPage {
     richTextHandlers: RichEditorHandlers;
   }
 
-  export interface State extends Props {
+  export type Props = CommonProps & SpaceProps;
+
+  export type State = Props & {
     isDeleteModalOpen: boolean;
     openDeleteModal: () => void;
     closeDeleteModal: () => void;
@@ -221,7 +229,7 @@ export function GoalPage(props: GoalPage.Props) {
         </div>
 
         <DeleteModal {...state} />
-        <MoveModal {...state} />
+        {"space" in state && <MoveModal {...state} />}
       </PageNew>
     </>
   );
