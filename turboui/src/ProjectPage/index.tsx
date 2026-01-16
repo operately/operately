@@ -123,6 +123,7 @@ export namespace ProjectPage {
     retrospectiveLink?: string;
 
     canEdit: boolean;
+    canEditGoal?: boolean;
     manageTeamLink: string;
 
     updateProjectName: (name: string) => Promise<boolean>;
@@ -192,6 +193,7 @@ export namespace ProjectPage {
 
   export type State = Props & {
     canManageStatuses: boolean;
+    canEditGoal: boolean;
 
     isMoveModalOpen: boolean;
     openMoveModal: () => void;
@@ -209,6 +211,7 @@ function useProjectPageState(props: ProjectPage.Props): ProjectPage.State {
 
   return {
     ...props,
+    canEditGoal: props.canEditGoal ?? props.canEdit,
     canManageStatuses: props.canManageStatuses ?? false,
 
     isMoveModalOpen,

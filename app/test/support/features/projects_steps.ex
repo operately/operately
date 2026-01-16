@@ -1,6 +1,7 @@
 defmodule Operately.Support.Features.ProjectSteps do
   use Operately.FeatureCase
   @endpoint OperatelyWeb.Endpoint
+  alias Operately.Access
   alias Operately.Access.Binding
   alias Operately.Support.Features.UI
   alias Operately.Support.Features.EmailSteps
@@ -167,6 +168,10 @@ defmodule Operately.Support.Features.ProjectSteps do
     ctx |> UI.visit(Paths.project_path(ctx.company, ctx.project))
   end
 
+  step :assert_project_page_loaded, ctx do
+    ctx |> UI.assert_has(testid: "project-page")
+  end
+
   step :given_project_is_paused, ctx do
     {:ok, project} = Operately.Operations.ProjectPausing.run(ctx.champion, ctx.project)
     Map.put(ctx, :project, project)
@@ -194,6 +199,10 @@ defmodule Operately.Support.Features.ProjectSteps do
     UI.login_as(ctx, ctx.reviewer)
   end
 
+  step :login_as_space_member, ctx do
+    UI.login_as(ctx, ctx.space_member)
+  end
+
   step :open_ai_sidebar, ctx do
     ctx |> UI.click(css: "button[title*=\"Ask Alfred\"]")
   end
@@ -214,6 +223,10 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.assert_text(goal_name, testid: "parent-goal-field")
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> UI.assert_text(goal_name, testid: "parent-goal-field")
+  end
+
+  step :assert_parent_goal_field_not_rendered, ctx do
+    ctx |> UI.refute_has(testid: "parent-goal-field")
   end
 
   step :assert_goal_link_on_project_page, ctx, goal_name: goal_name do
@@ -256,6 +269,28 @@ defmodule Operately.Support.Features.ProjectSteps do
     project = Operately.Repo.preload(project, :goal)
 
     Map.put(ctx, :project, project)
+  end
+
+  step :assert_project_has_parent_goal, ctx do
+    project = Operately.Repo.reload(ctx.project)
+
+    assert project.goal_id == ctx.goal.id
+
+    ctx
+  end
+
+  step :given_goal_is_not_accessible_to_company_members, ctx do
+    context = Access.get_context!(goal_id: ctx.goal.id)
+    company_group = Access.get_group!(company_id: ctx.company.id, tag: :standard)
+    space_group = Access.get_group!(group_id: ctx.group.id, tag: :standard)
+
+    company_binding = Access.get_binding!(context_id: context.id, group_id: company_group.id)
+    space_binding = Access.get_binding!(context_id: context.id, group_id: space_group.id)
+
+    {:ok, _} = Access.update_binding(company_binding, %{access_level: Binding.no_access()})
+    {:ok, _} = Access.update_binding(space_binding, %{access_level: Binding.no_access()})
+
+    ctx
   end
 
   step :disconnect_goal, ctx do
