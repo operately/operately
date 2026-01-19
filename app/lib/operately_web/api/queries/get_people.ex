@@ -8,11 +8,12 @@ defmodule OperatelyWeb.Api.Queries.GetPeople do
   alias Operately.Companies.Company
 
   inputs do
-    field? :only_suspended, :boolean, null: true
+    field? :only_suspended, :boolean, null: false
 
-    field? :include_suspended, :boolean, null: true
-    field? :include_manager, :boolean, null: true
-    field? :include_invite_link, :boolean, null: true
+    field? :include_suspended, :boolean, null: false
+    field? :include_manager, :boolean, null: false
+    field? :include_account, :boolean, null: false
+    field? :include_invite_link, :boolean, null: false
   end
 
   outputs do
@@ -42,6 +43,7 @@ defmodule OperatelyWeb.Api.Queries.GetPeople do
       order_by: [asc: p.full_name]
     )
     |> filter_by_suspended_status(!!inputs[:include_suspended], !!inputs[:only_suspended])
+    |> include_account(inputs[:include_account])
     |> include_manager(inputs[:include_manager])
     |> include_invite_link(inputs[:include_invite_link])
     |> Repo.all()
@@ -63,4 +65,7 @@ defmodule OperatelyWeb.Api.Queries.GetPeople do
 
   defp include_invite_link(q, true), do: from(p in q, preload: [:invite_link])
   defp include_invite_link(q, _), do: q
+
+  defp include_account(q, true), do: from(p in q, preload: [:account])
+  defp include_account(q, _), do: q
 end

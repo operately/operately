@@ -45,16 +45,12 @@ defmodule Operately.Operations.CompanyJoiningViaInviteLink do
         Logger.info("Invite link does not belong to the logged-in account")
         {:error, :invite_token_invalid}
 
-      {:error, :validate_person, :person_not_invited, _changes} ->
-        Logger.info("Invite link used for a person without an open invitation")
-        {:error, :invite_token_invalid}
+      {:error, :account_first_login, reason, _changes} ->
+        Logger.error("Failed to mark account first login: #{inspect(reason)}")
+        {:error, :person_creation_failed}
 
       {:error, :person, changeset, _changes} ->
         Logger.error("Failed to create person via invite link: #{inspect(changeset)}")
-        {:error, :person_creation_failed}
-
-      {:error, :person_update, reason, _changes} ->
-        Logger.error("Failed to update person via invite link: #{inspect(reason)}")
         {:error, :person_creation_failed}
 
       {:error, :invite_link_update, reason, _changes} ->
@@ -107,14 +103,12 @@ defmodule Operately.Operations.CompanyJoiningViaInviteLink do
           {:error, :invite_link_not_for_person}
         person.email != account.email ->
           {:error, :invite_link_not_for_person}
-        not person.has_open_invitation ->
-          {:error, :person_not_invited}
         true ->
           {:ok, person}
       end
     end)
-    |> Multi.run(:person_update, fn _, %{person: person} ->
-      People.update_person(person, %{ has_open_invitation: false })
+    |> Multi.run(:account_first_login, fn _, _ ->
+      People.mark_account_first_login(account)
     end)
     |> Multi.run(:invite_link_update, fn _repo, %{invite_link: invite_link} ->
       InviteLinks.revoke_invite_link(invite_link)

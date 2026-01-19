@@ -6,7 +6,7 @@ defmodule Operately.Operations.CompanyMemberAdding do
   def run(admin, attrs, skip_invitation \\ false) do
     result = Multi.new()
     |> insert_account(attrs)
-    |> insert_person(admin, attrs, skip_invitation)
+    |> insert_person(admin, attrs)
     |> insert_membership_with_company_space_group()
     |> add_person_to_general_space()
     |> insert_invite_link(admin, skip_invitation)
@@ -42,7 +42,7 @@ defmodule Operately.Operations.CompanyMemberAdding do
     end)
   end
 
-  defp insert_person(multi, admin, attrs, skip_invitation) do
+  defp insert_person(multi, admin, attrs) do
     attrs = Map.put(attrs, :company_id, admin.company_id)
 
     multi
@@ -56,7 +56,6 @@ defmodule Operately.Operations.CompanyMemberAdding do
         full_name: attrs.full_name,
         email: attrs.email,
         title: attrs.title,
-        has_open_invitation: not skip_invitation,
       })
     end)
   end

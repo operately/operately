@@ -42,7 +42,47 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
 
     assert person.full_name == "John Doe"
     assert person.title == "Developer"
-    assert person.has_open_invitation
+    person = Repo.preload(person, :account)
+    assert is_nil(person.account.first_login_at)
+  end
+
+  test "CompanyMemberAdding operation leaves first_login_at nil for new account", ctx do
+    email = "new-member@your-company.com"
+    attrs = Map.put(@member_attrs, :email, email)
+
+    refute People.get_account_by_email(email)
+
+    {:ok, _} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, attrs)
+
+    account = People.get_account_by_email(email)
+    assert account
+    assert is_nil(account.first_login_at)
+  end
+
+  test "CompanyMemberAdding operation leaves first_login_at nil when account exists without first login", ctx do
+    email = "existing-no-login@your-company.com"
+    account = account_fixture(%{email: email})
+
+    assert People.get_account_by_email(email)
+
+    attrs = Map.put(@member_attrs, :email, email)
+    {:ok, _} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, attrs)
+
+    account = Repo.get!(Operately.People.Account, account.id)
+    assert is_nil(account.first_login_at)
+  end
+
+  test "CompanyMemberAdding operation keeps first_login_at when account already logged in", ctx do
+    account = account_fixture(%{email: "existing-logged-in@your-company.com"})
+
+    {:ok, account} = People.mark_account_first_login(account)
+    first_login_at = account.first_login_at
+
+    attrs = Map.put(@member_attrs, :email, account.email)
+    {:ok, _} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, attrs)
+
+    account = Repo.get!(Operately.People.Account, account.id)
+    assert account.first_login_at == first_login_at
   end
 
   test "CompanyMemberAdding operation creates members's access group and membership", ctx do

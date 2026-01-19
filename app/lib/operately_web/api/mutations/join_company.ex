@@ -28,9 +28,9 @@ defmodule OperatelyWeb.Api.Mutations.JoinCompany do
         {:error, "Passwords don't match"}
       true ->
         with(
-          {:ok, invite_link} <- Operately.InviteLinks.get_personal_invite_link_by_token(inputs.token, preload: [:person]),
+          {:ok, invite_link} <- Operately.InviteLinks.get_personal_invite_link_by_token(inputs.token, preload: [person: [:account]]),
           {:ok, _invite_link} <- Operately.InviteLinks.validate_personal_invite_link(invite_link),
-          true <- invite_link.person && invite_link.person.has_open_invitation
+          true <- not is_nil(invite_link.person)
         ) do
           {:ok, invite_link}
         else

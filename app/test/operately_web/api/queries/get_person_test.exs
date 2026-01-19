@@ -87,5 +87,23 @@ defmodule OperatelyWeb.Api.Queries.GetPersonTest do
       assert Enum.find(res.person.peers, fn p -> p.id == Paths.person_id(peer1) end) == Serializer.serialize(peer1, level: :essential)
       assert Enum.find(res.person.peers, fn p -> p.id == Paths.person_id(peer2) end) == Serializer.serialize(peer2, level: :essential)
     end
+
+    test "include_account populates has_open_invitation based on first_login_at", ctx do
+      invited = person_fixture_with_account(%{company_id: ctx.company.id, has_open_invitation: true})
+      active = person_fixture_with_account(%{company_id: ctx.company.id, has_open_invitation: false})
+
+      assert {200, res} = query(ctx.conn, :get_person, %{id: Paths.person_id(invited), include_account: true})
+      assert res.person.has_open_invitation == true
+
+      assert {200, res} = query(ctx.conn, :get_person, %{id: Paths.person_id(active), include_account: true})
+      assert res.person.has_open_invitation == false
+    end
+
+    test "omitting include_account leaves has_open_invitation unset", ctx do
+      invited = person_fixture_with_account(%{company_id: ctx.company.id, has_open_invitation: true})
+
+      assert {200, res} = query(ctx.conn, :get_person, %{id: Paths.person_id(invited)})
+      assert is_nil(res.person.has_open_invitation)
+    end
   end
 end

@@ -1,4 +1,6 @@
 defmodule Operately.PeopleFixtures do
+  import Ecto.Query, only: [from: 2]
+
   @moduledoc """
   This module defines test helpers for creating
   entities via the `Operately.People` context.
@@ -21,6 +23,7 @@ defmodule Operately.PeopleFixtures do
   end
 
   def person_fixture_with_account(attrs \\ %{}) do
+    {open_invitation, attrs} = Map.pop(attrs, :has_open_invitation)
     email = attrs[:email] || unique_account_email(attrs[:full_name])
     password = attrs[:password] || valid_account_password()
 
@@ -30,7 +33,12 @@ defmodule Operately.PeopleFixtures do
       full_name: attrs[:full_name] || "John Doe"
     })
 
-    person_fixture(Map.merge(attrs, %{account_id: account.id, email: email}))
+    person = person_fixture(Map.merge(attrs, %{account_id: account.id, email: email}))
+
+    maybe_mark_first_login(account, open_invitation)
+    maybe_set_has_open_invitation(person, open_invitation)
+
+    person
   end
 
   def unique_account_email(), do: "account#{System.unique_integer()}@example.com"
@@ -58,6 +66,19 @@ defmodule Operately.PeopleFixtures do
       |> Operately.People.register_account()
 
     account
+  end
+
+  defp maybe_mark_first_login(_account, nil), do: :ok
+  defp maybe_mark_first_login(_account, true), do: :ok
+  defp maybe_mark_first_login(account, false), do: Operately.People.mark_account_first_login(account)
+
+  defp maybe_set_has_open_invitation(_person, nil), do: :ok
+
+  defp maybe_set_has_open_invitation(person, open_invitation) do
+    person_id = Ecto.UUID.dump!(person.id)
+
+    from(p in "people", where: p.id == ^person_id)
+    |> Operately.Repo.update_all(set: [has_open_invitation: open_invitation])
   end
 
   def extract_account_token(fun) do

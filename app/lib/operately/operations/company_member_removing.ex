@@ -16,7 +16,7 @@ defmodule Operately.Operations.CompanyMemberRemoving do
     - person_id: ID of the person to remove
   """
   def run(admin, person_id) do
-    person = People.get_person!(person_id)
+    person = People.get_person!(person_id) |> Repo.preload(:account)
 
     Multi.new()
     |> suspend_or_delete_person(person)
@@ -26,7 +26,7 @@ defmodule Operately.Operations.CompanyMemberRemoving do
   end
 
   defp suspend_or_delete_person(multi, person) do
-    case person.has_open_invitation do
+    case open_invitation?(person) do
       # For users with open invitations, delete them entirely
       true ->
         Multi.delete(multi, :person, person)
@@ -40,6 +40,9 @@ defmodule Operately.Operations.CompanyMemberRemoving do
         Multi.update(multi, :person, changeset)
     end
   end
+
+  defp open_invitation?(%{account: %{first_login_at: nil}}), do: true
+  defp open_invitation?(_person), do: false
 
   defp insert_activity(multi, admin) do
     Operately.Activities.insert_sync(multi, admin.id, :company_member_removed, fn changes ->
