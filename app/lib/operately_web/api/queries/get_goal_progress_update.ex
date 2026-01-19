@@ -12,11 +12,11 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
     field? :include_acknowledged_by, :boolean, null: true
     field? :include_reactions, :boolean, null: true
     field? :include_goal, :boolean, null: true
-    field? :include_goal_space, :boolean, null: true
     field? :include_goal_targets, :boolean, null: true
     field? :include_goal_checklist, :boolean, null: true
     field? :include_reviewer, :boolean, null: true
     field? :include_champion, :boolean, null: true
+    field? :include_space, :boolean, null: true
     field? :include_space_members, :boolean, null: true
     field? :include_subscriptions_list, :boolean, null: true
     field? :include_potential_subscribers, :boolean, null: true
@@ -53,6 +53,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
       id: ctx.id,
       opts: [
         preload: preload(inputs),
+        auth_preload: auth_preload(inputs),
         after_load: after_load(inputs, ctx.me)
       ]
     )
@@ -64,13 +65,19 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
       include_acknowledged_by: :acknowledged_by,
       include_reactions: [reactions: :person],
       include_goal: :goal,
-      include_goal_space: [goal: :group],
       include_goal_targets: [goal: :targets],
       include_champion: [goal: :champion],
       include_reviewer: [goal: :reviewer],
-      include_space_members: [goal: [group: [:members, :company]]],
       include_subscriptions_list: :subscription_list,
-      include_potential_subscribers: [:access_context, goal: [:champion, :reviewer, group: :members]]
+      include_potential_subscribers: [:access_context, goal: [:champion, :reviewer]]
+    )
+  end
+
+  defp auth_preload(inputs) do
+    Inputs.parse_includes(inputs,
+      include_space: [:space],
+      include_space_members: [space: [:members, :company]],
+      include_potential_subscribers: [space: :members]
     )
   end
 

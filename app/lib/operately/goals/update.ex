@@ -13,6 +13,7 @@ defmodule Operately.Goals.Update do
     belongs_to :subscription_list, Notifications.SubscriptionList, foreign_key: :subscription_list_id
 
     has_one :access_context, through: [:goal, :access_context]
+    has_one :space, through: [:goal, :group]
     has_many :reactions, Operately.Updates.Reaction, foreign_key: :entity_id, where: [entity_type: :goal_update]
     has_many :comments, Operately.Updates.Comment, foreign_key: :entity_id, where: [entity_type: :goal_update]
 
@@ -71,9 +72,13 @@ defmodule Operately.Goals.Update do
 
   def set_potential_subscribers(update = %__MODULE__{}) do
     subs =
-      update
-      |> Notifications.SubscribersLoader.preload_subscriptions()
-      |> Notifications.Subscriber.from_goal_update()
+      if not is_nil(update.space) and Ecto.assoc_loaded?(update.space) and Ecto.assoc_loaded?(update.space.members) do
+        update
+        |> Notifications.SubscribersLoader.preload_subscriptions()
+        |> Notifications.Subscriber.from_goal_update()
+      else
+        []
+      end
 
     %{update | potential_subscribers: subs}
   end

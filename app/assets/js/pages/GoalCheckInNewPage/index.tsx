@@ -7,7 +7,6 @@ import { Form as CheckInForm, useForm } from "@/features/goals/GoalCheckIn";
 import { banner } from "@/features/goals/GoalPageHeader/Banner";
 import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import { PageModule } from "@/routes/types";
-import { assertPresent } from "@/utils/assertions";
 
 import FormattedTime from "@/components/FormattedTime";
 
@@ -60,27 +59,26 @@ function Header() {
 
 function Navigation({ goal }: { goal: Goals.Goal }) {
   const paths = usePaths();
-  assertPresent(goal.space, "space must be present in goal");
+  const items: Paper.NavigationItem[] = [];
 
-  return (
-    <Paper.Navigation
-      items={[
-        { to: paths.spacePath(goal.space.id!), label: goal.space.name! },
-        { to: paths.spaceWorkMapPath(goal.space.id!), label: "Work Map" },
-        { to: paths.goalPath(goal.id!), label: goal.name! },
-      ]}
-    />
-  );
+  if (goal.space) {
+    items.push({ to: paths.spacePath(goal.space.id), label: goal.space.name });
+    items.push({ to: paths.spaceWorkMapPath(goal.space.id!), label: "Work Map" });
+  } else {
+    items.push({ to: paths.homePath(), label: "Home" });
+  }
+
+  items.push({ to: paths.goalPath(goal.id), label: goal.name });
+
+  return <Paper.Navigation items={items} />;
 }
 
 function Form({ goal }: { goal: Goals.Goal }) {
-  assertPresent(goal.space, "space must be present in goal");
-  assertPresent(goal.potentialSubscribers, "potentialSubscribers must be present in goal");
-
-  const subscriptionsState = useSubscriptionsAdapter(goal.potentialSubscribers, {
+  const opts = goal.space ? { spaceName: goal.space.name } : { goalName: goal.name };
+  const subscriptionsState = useSubscriptionsAdapter(goal.potentialSubscribers || [], {
     ignoreMe: true,
     notifyPrioritySubscribers: true,
-    spaceName: goal.space.name,
+    ...opts,
   });
 
   const form = useForm({ mode: "new", goal, subscriptionsState });
