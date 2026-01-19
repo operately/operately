@@ -23,7 +23,6 @@ export function TasksSection({
   onFiltersChange,
   onTaskReorder,
   milestone,
-  showMilestoneKanbanLink,
   onTaskCreate,
   onTaskAssigneeChange,
   onTaskDueDateChange,
@@ -115,15 +114,15 @@ export function TasksSection({
             <h2 className="font-bold">Tasks</h2>
           </div>
           <div className="flex items-center gap-4">
-            {showMilestoneKanbanLink && milestone.kanbanLink && (
-              <Tooltip content="Open Kanban" size="sm">
+            {milestone.kanbanLink && (
+              <Tooltip content="View on board" size="sm">
                 <BlackLink
                   to={milestone.kanbanLink}
                   className="flex items-center text-content-dimmed md:hover:text-content-base transition-colors"
                   underline="hover"
                 >
                   <IconLayoutKanban size={18} className="text-content-dimmed" />
-                  <span className="sr-only">Open Kanban</span>
+                  <span className="sr-only">View on board</span>
                 </BlackLink>
               </Tooltip>
             )}

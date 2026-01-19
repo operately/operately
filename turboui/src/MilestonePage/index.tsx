@@ -68,7 +68,6 @@ export namespace MilestonePage {
 
     // Milestone
     milestone: Milestone;
-    showMilestoneKanbanLink?: boolean;
     title: string;
     onMilestoneTitleChange: (name: string) => Promise<boolean>;
     dueDate: DateField.ContextualDate | null;

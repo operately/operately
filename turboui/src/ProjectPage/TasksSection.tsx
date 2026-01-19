@@ -5,8 +5,8 @@ import { KanbanBoard, TaskBoard, TasksMenu, TaskDisplayMenu } from "../TaskBoard
 import * as TaskBoardTypes from "../TaskBoard/types";
 import { Menu, MenuActionItem } from "../Menu";
 import { IconFlag } from "../icons";
-import { useStateWithLocalStorage } from "../utils/useStateWithLocalStorage";
 import { compareIds } from "../utils/ids";
+import { useLocalStorage } from "../utils/useLocalStorage";
 
 import type { ProjectPage } from "./index";
 
@@ -20,11 +20,9 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
     return normalizeStorageKeyPart(state.project.id);
   }, [state.project.id]);
 
-  const [taskDisplayMode, setTaskDisplayMode] = useStateWithLocalStorage<TaskBoardTypes.TaskDisplayMode>(
-    "project-task-display",
-    projectDisplayStorageKey,
-    "list",
-  );
+  const [taskDisplayMode, setTaskDisplayMode] = useTaskDisplayMode({
+    storageKey: projectDisplayStorageKey,
+  });
 
   // When creating tasks from the kanban, create them within the selected milestone (if any).
   const onKanbanTaskCreate = React.useCallback(
@@ -51,7 +49,6 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
     [state.onTaskMilestoneChange],
   );
 
-  // Switching to list view clears the milestone filter from the URL.
   const handleDisplayModeChange = React.useCallback(
     (mode: TaskBoardTypes.TaskDisplayMode) => {
       setTaskDisplayMode(mode);
@@ -136,6 +133,95 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
   );
 }
 
+const TASK_DISPLAY_MODE_PARAM = "taskDisplay";
+const TASK_DISPLAY_STORAGE_NAMESPACE = "project-task-display";
+
+function useTaskDisplayMode({ storageKey }: { storageKey: string }) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const fullStorageKey = `${TASK_DISPLAY_STORAGE_NAMESPACE}:${storageKey}`;
+
+  const readStoredMode = React.useCallback(() => {
+    const { getItem, setItem } = useLocalStorage(fullStorageKey);
+    const storedValue = getItem();
+
+    if (storedValue === null) {
+      return null;
+    }
+
+    try {
+      const parsed = JSON.parse(storedValue);
+      const mode = parseTaskDisplayMode(parsed);
+
+      if (!mode) {
+        setItem(null);
+      }
+
+      return mode;
+    } catch (error) {
+      console.error(`Error reading localStorage key "${fullStorageKey}":`, error);
+      setItem(null);
+      return null;
+    }
+  }, [fullStorageKey]);
+
+  const writeStoredMode = React.useCallback(
+    (mode: TaskBoardTypes.TaskDisplayMode) => {
+      const { setItem } = useLocalStorage(fullStorageKey);
+
+      try {
+        setItem(JSON.stringify(mode));
+      } catch (error) {
+        console.error(`Error writing localStorage key "${fullStorageKey}":`, error);
+      }
+    },
+    [fullStorageKey],
+  );
+
+  const [mode, setModeState] = React.useState<TaskBoardTypes.TaskDisplayMode>(() => {
+    const urlMode = parseTaskDisplayMode(searchParams.get(TASK_DISPLAY_MODE_PARAM));
+    const storedMode = readStoredMode();
+
+    return urlMode ?? storedMode ?? "list";
+  });
+
+  React.useEffect(() => {
+    const rawUrlValue = searchParams.get(TASK_DISPLAY_MODE_PARAM);
+
+    if (!rawUrlValue) {
+      return;
+    }
+
+    const urlMode = parseTaskDisplayMode(rawUrlValue);
+
+    if (urlMode) {
+      if (mode !== urlMode) {
+        setModeState(urlMode);
+      }
+
+      writeStoredMode(urlMode);
+    }
+
+    const next = new URLSearchParams(searchParams);
+    next.delete(TASK_DISPLAY_MODE_PARAM);
+    setSearchParams(next, { replace: true });
+  }, [mode, searchParams, setSearchParams, writeStoredMode]);
+
+  const setMode = React.useCallback(
+    (nextMode: TaskBoardTypes.TaskDisplayMode) => {
+      setModeState(nextMode);
+      writeStoredMode(nextMode);
+    },
+    [writeStoredMode],
+  );
+
+  return [mode, setMode] as const;
+}
+
+const parseTaskDisplayMode = (value: unknown): TaskBoardTypes.TaskDisplayMode | null => {
+  if (value === "list" || value === "board") return value;
+  return null;
+};
+
 function MilestoneFilter({
   milestones,
   selectedMilestone,
@@ -151,6 +237,7 @@ function MilestoneFilter({
         <button
           type="button"
           className="flex items-center gap-1.5 text-sm font-medium text-content-dimmed hover:text-content-base transition px-2 py-1 -mx-2 rounded-md hover:bg-surface-dimmed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-surface-outline"
+          data-test-id="current-milestone"
         >
           <IconFlag size={18} className="flex-shrink-0" />
           {selectedMilestone?.name ?? "All milestones"}

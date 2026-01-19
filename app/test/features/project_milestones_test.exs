@@ -231,6 +231,17 @@ defmodule Operately.Features.ProjectMilestonesTest do
       |> Steps.assert_milestone_description_indicator_visible_on_overview()
     end
 
+    feature "milestone tasks link opens project board view", ctx do
+      ctx
+      |> Steps.visit_tasks_tab_on_project_page()
+      |> Steps.assert_tasks_list_view()
+      |> Steps.visit_milestone_page()
+      |> Steps.click_view_on_board_link()
+      |> Steps.assert_redirected_to_project_tasks_tab()
+      |> Steps.assert_tasks_board_view()
+      |> Steps.assert_milestone_selected()
+    end
+
     feature "mark milestone as completed", ctx do
       ctx
       |> Steps.visit_milestone_page()
