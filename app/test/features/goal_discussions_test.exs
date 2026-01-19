@@ -57,4 +57,24 @@ defmodule Operately.Features.GoalDiscussionsTest do
     |> Steps.navigate_to_goal_from_discussion()
     |> Steps.assert_goal_discussions_tab()
   end
+
+  describe "goal discussions pages preload access" do
+    @tag login_as: :champion
+    feature "goal discussion new page hides space navigation when space is not accessible", ctx do
+      ctx
+      |> Steps.given_goal_in_secret_space_for_champion()
+      |> Steps.visit_new_discussion_page()
+      |> Steps.assert_goal_discussion_new_navigation_without_space()
+    end
+
+    @tag login_as: :champion
+    feature "creating a goal discussion works when space is not accessible", ctx do
+      params = %{title: "New goal discussion", message: "Let's do this!", goal_key: :secret_goal}
+
+      ctx
+      |> Steps.given_goal_in_secret_space_for_champion()
+      |> Steps.start_new_discussion(params)
+      |> Steps.assert_goal_discussion_navigation_without_space()
+    end
+  end
 end
