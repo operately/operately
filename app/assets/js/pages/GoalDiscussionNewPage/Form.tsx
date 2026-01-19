@@ -13,13 +13,13 @@ import { usePaths } from "@/routes/paths";
 export function Form({ goal }: { goal: Goals.Goal }) {
   const paths = usePaths();
   assertPresent(goal.potentialSubscribers, "potentialSubscribers must be present in goal");
-  assertPresent(goal.space, "space must be present in goal");
   assertPresent(goal.id, "goal id must be present in goal");
 
+  const opts = goal.space ? { spaceName: goal.space.name } : { goalName: goal.name };
   const subscriptionsState = useSubscriptionsAdapter(goal.potentialSubscribers, {
     ignoreMe: true,
     notifyPrioritySubscribers: true,
-    spaceName: goal.space.name,
+    ...opts
   });
   const form = useForm({ goal, subscriptionsState });
   const mentionSearchScope = { type: "goal", id: goal.id } as const;
