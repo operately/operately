@@ -10,6 +10,7 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
   import Operately.GoalsFixtures
+  alias Operately.Access.Binding
   import Ecto.Query
 
   step :setup, ctx do
@@ -25,6 +26,11 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
         champion_id: champion.id,
         reviewer_id: reviewer.id
       })
+
+    {:ok, _} =
+      Operately.Groups.add_members(champion, group.id, [
+        %{id: reviewer.id, access_level: Binding.comment_access()}
+      ])
 
     ctx = Map.merge(ctx, %{company: company, champion: champion, reviewer: reviewer, group: group, goal: goal})
     ctx = UI.login_based_on_tag(ctx)
