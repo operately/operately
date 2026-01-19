@@ -391,6 +391,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
         |> Factory.add_space_member(:member1, :space)
         |> Factory.add_space_member(:member2, :space)
         |> Factory.add_space_member(:member3, :space)
+        |> Factory.log_in_person(:creator)
 
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(ctx.goal)})
 
@@ -424,6 +425,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
         |> Factory.add_space_member(:member1, :space)
         |> Factory.add_space_member(:member2, :space)
         |> Factory.add_space_member(:ai, :space, person_type: :ai)
+        |> Factory.log_in_person(:creator)
 
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(ctx.goal), include_potential_subscribers: true})
 
@@ -447,6 +449,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
         |> Factory.add_space_member(:member1, :space)
         |> Factory.add_space_member(:member2, :space)
         |> Factory.add_space_member(:ai, :space, person_type: :ai)
+        |> Factory.log_in_person(:creator)
 
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(ctx.goal), include_space_members: true})
       members = res.goal.space.members
@@ -458,6 +461,51 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
 
       # Ensure AI is NOT there
       refute Enum.find(members, &(&1.id == Paths.person_id(ctx.ai)))
+    end
+
+    test "auth_preload resources are returned only with permissions", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:creator)
+        |> Factory.add_company_member(:reviewer)
+        |> Factory.add_company_member(:champion)
+        |> Factory.add_space(:space)
+        |> Factory.add_goal(:goal, :space,
+          champion: :champion,
+          reviewer: :reviewer,
+          company_access: Binding.no_access(),
+          space_access: Binding.no_access()
+        )
+        |> Factory.add_space_member(:member1, :space)
+        |> Factory.add_space_member(:member2, :space)
+
+      ctx_creator = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = query(ctx_creator.conn, :get_goal, %{
+        id: Paths.goal_id(ctx.goal),
+        include_space: true,
+        include_space_members: true,
+        include_potential_subscribers: true
+      })
+
+      assert res.goal.space
+      assert Enum.find(res.goal.space.members, &(&1.id == Paths.person_id(ctx.creator)))
+      assert Enum.find(res.goal.space.members, &(&1.id == Paths.person_id(ctx.member1)))
+      assert Enum.find(res.goal.space.members, &(&1.id == Paths.person_id(ctx.member2)))
+      assert length(res.goal.potential_subscribers) > 0
+
+      ctx_champion = Factory.log_in_person(ctx, :champion)
+
+      assert {200, res} = query(ctx_champion.conn, :get_goal, %{
+        id: Paths.goal_id(ctx.goal),
+        include_space: true,
+        include_space_members: true,
+        include_potential_subscribers: true
+      })
+
+      assert res.goal.id == Paths.goal_id(ctx.goal)
+      assert res.goal.space == nil
+      assert res.goal.potential_subscribers == []
     end
   end
 

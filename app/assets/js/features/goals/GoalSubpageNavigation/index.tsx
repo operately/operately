@@ -11,6 +11,8 @@ export function GoalSubpageNavigation({ goal }: { goal: Goals.Goal }) {
   if (goal.space) {
     items.push({ to: paths.spacePath(goal.space.id), label: goal.space.name });
     items.push({ to: paths.spaceWorkMapPath(goal.space.id), label: "Work Map" });
+  } else {
+    items.push({ to: paths.workMapPath("goals"), label: "Work Map" })
   }
   items.push({ to: paths.goalPath(goal.id), label: goal.name });
   items.push({ to: paths.goalPath(goal.id, { tab: "discussions" }), label: "Discussions" });

@@ -38,7 +38,7 @@ export namespace GoalPage {
         spaceSearch: (params: { query: string }) => Promise<Space[]>;
       }
     | {
-        homeLink: string;
+        companyWorkMapLink: string;
       };
 
   export interface Retrospective {

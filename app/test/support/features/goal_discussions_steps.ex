@@ -5,6 +5,7 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
   alias Operately.Support.Features.FeedSteps
   alias Operately.Support.Features.EmailSteps
   alias Operately.Support.Features.NotificationsSteps
+  alias Operately.Access.Binding
 
   import Operately.CompaniesFixtures
   import Operately.GroupsFixtures
@@ -26,15 +27,54 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
         reviewer_id: reviewer.id
       })
 
+    {:ok, _} =
+      Operately.Groups.add_members(champion, group.id, [
+        %{id: reviewer.id, access_level: Binding.comment_access()}
+      ])
+
     ctx = Map.merge(ctx, %{company: company, champion: champion, reviewer: reviewer, group: group, goal: goal})
     ctx = UI.login_based_on_tag(ctx)
 
     ctx
   end
 
-  step :start_new_discussion, ctx, params do
+  step :given_goal_in_secret_space_for_champion, ctx do
     ctx
-    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal, tab: "discussions"))
+    |> Factory.setup()
+    |> Factory.add_company_member(:champion)
+    |> Factory.add_company_member(:reviewer)
+    |> Factory.add_space(:secret_space, company_permissions: Binding.no_access())
+    |> Factory.add_goal(:secret_goal, :secret_space,
+      champion: :champion,
+      reviewer: :reviewer
+    )
+    |> Factory.log_in_person(:champion)
+  end
+
+  step :visit_new_discussion_page, ctx do
+    UI.visit(ctx, Paths.new_goal_discussion_path(ctx.company, ctx.secret_goal))
+  end
+
+  step :assert_goal_discussion_new_navigation_without_space, ctx do
+    ctx
+    |> UI.assert_has(testid: UI.testid(["nav-item", "Work Map"]))
+    |> UI.assert_has(testid: UI.testid(["nav-item", ctx.secret_goal.name]))
+    |> UI.assert_has(testid: UI.testid(["nav-item", "Discussions"]))
+    |> UI.refute_has(testid: UI.testid(["nav-item", ctx.secret_space.name]))
+  end
+
+  step :assert_goal_discussion_navigation_without_space, ctx do
+    ctx
+    |> UI.assert_has(testid: UI.testid(["nav-item", ctx.secret_goal.name]))
+    |> UI.assert_has(testid: UI.testid(["nav-item", "Discussions"]))
+    |> UI.refute_has(testid: UI.testid(["nav-item", ctx.secret_space.name]))
+  end
+
+  step :start_new_discussion, ctx, params do
+    goal_key = Map.get(params, :goal_key, :goal)
+
+    ctx
+    |> UI.visit(Paths.goal_path(ctx.company, ctx[goal_key], tab: "discussions"))
     |> UI.click(testid: "start-discussion")
     |> UI.fill(testid: "discussion-title", with: params.title)
     |> UI.fill_rich_text(params.message)

@@ -199,8 +199,12 @@ defmodule Operately.Goals.Goal do
   end
 
   def set_potential_subscribers(goal = %__MODULE__{}) do
-    subscribers = Operately.Notifications.Subscriber.from_goal(goal)
-    Map.put(goal, :potential_subscribers, subscribers)
+    if not is_nil(goal.group) and Ecto.assoc_loaded?(goal.group) and Ecto.assoc_loaded?(goal.group.members) do
+      subscribers = Operately.Notifications.Subscriber.from_goal(goal)
+      Map.put(goal, :potential_subscribers, subscribers)
+    else
+      Map.put(goal, :potential_subscribers, [])
+    end
   end
 
   def load_last_check_in_permissions(goal = %__MODULE__{}) do

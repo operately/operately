@@ -145,6 +145,17 @@ defmodule Operately.Features.GoalTest do
     |> Steps.assert_space_member_goal_description_email_sent()
   end
 
+  describe "goal page preload access" do
+    feature "goal page hides space navigation when space is not accessible", ctx do
+      ctx
+      |> Steps.given_goal_in_secret_space_for_reviewer()
+      |> Steps.login_as_reviewer()
+      |> Steps.visit_page()
+      |> Steps.assert_goal_navigation_without_space()
+      |> Steps.assert_move_to_another_space_is_hidden()
+    end
+  end
+
   describe "deletion" do
     feature "deleting a goal with no subitems", ctx do
       ctx

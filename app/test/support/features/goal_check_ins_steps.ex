@@ -4,6 +4,7 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
   alias Operately.Support.Features.FeedSteps
   alias Operately.Support.Features.EmailSteps
   alias Operately.Support.Features.NotificationsSteps
+  alias Operately.Access.Binding
 
   step :setup, ctx do
     ctx
@@ -18,14 +19,45 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     end)
   end
 
+  step :given_goal_in_secret_space_for_champion, ctx do
+    ctx
+    |> Factory.add_company_member(:champion)
+    |> Factory.add_company_member(:reviewer)
+    |> Factory.add_space(:secret_space, company_permissions: Binding.no_access())
+    |> Factory.add_goal(:secret_goal, :secret_space,
+      champion: :champion,
+      reviewer: :reviewer
+    )
+    |> Factory.log_in_person(:champion)
+  end
+
+  step :visit_goal_new_check_in_page, ctx do
+    UI.visit(ctx, Paths.goal_check_in_new_path(ctx.company, ctx.secret_goal))
+  end
+
+  step :assert_check_in_new_navigation_without_space, ctx do
+    ctx
+    |> UI.assert_has(testid: UI.testid(["nav-item", "Work Map"]))
+    |> UI.assert_has(testid: UI.testid(["nav-item", ctx.secret_goal.name]))
+    |> UI.refute_has(testid: UI.testid(["nav-item", ctx.secret_space.name]))
+  end
+
+  step :assert_check_in_navigation_without_space, ctx do
+    ctx
+    |> UI.assert_has(testid: UI.testid(["nav-item", "Work Map"]))
+    |> UI.assert_has(testid: UI.testid(["nav-item", ctx.goal.name]))
+    |> UI.assert_has(testid: UI.testid(["nav-item", "Check-ins"]))
+    |> UI.refute_has(testid: UI.testid(["nav-item", ctx.space.name]))
+  end
+
   step :visit_check_in, ctx do
     ctx
     |> UI.visit(Paths.goal_check_in_path(ctx.company, ctx.check_in))
   end
 
-  step :visit_check_ins_tab, ctx do
+  step :visit_check_ins_tab, ctx, goal_key \\ :goal do
     ctx
-    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal, tab: "check-ins"))
+    |> UI.visit(Paths.goal_path(ctx.company, ctx[goal_key], tab: "check-ins"))
   end
 
   step :assert_check_in_status_displayed, ctx, status do

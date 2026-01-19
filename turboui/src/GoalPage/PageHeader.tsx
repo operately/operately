@@ -13,7 +13,7 @@ export function PageHeader(props: GoalPage.State) {
           { to: props.space.link, label: props.space.name },
           { to: props.workmapLink, label: "Goals" },
         ]
-      : [{ to: props.homeLink, label: "Home" }];
+      : [{ to: props.companyWorkMapLink, label: "Work Map" }];
 
   return (
     <div className="mt-4 px-4 flex items-center gap-3" data-test-id="page-header">
