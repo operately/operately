@@ -17,7 +17,7 @@ const TaskAdding: ActivityHandler = {
     }
 
     if (project) {
-      return paths.projectPath(project.id, "tasks");
+      return paths.projectPath(project.id, { tab: "tasks" });
     }
 
     return paths.spaceKanbanPath(space.id);
