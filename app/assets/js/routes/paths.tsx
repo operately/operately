@@ -150,7 +150,7 @@ export class Paths {
 
   projectPath(projectId: string, attrs?: { tab?: "overview" | "tasks" | "check-ins" | "discussions" | "activity", milestoneId?: string }) {
     if (attrs?.milestoneId) {
-      return this.createCompanyPath(["projects", projectId]) + `?tab=tasks&milestoneId=${attrs.milestoneId}`;
+      return this.createCompanyPath(["projects", projectId]) + `?tab=tasks&milestone=${attrs.milestoneId}`;
     }
     if (attrs?.tab) {
       return this.createCompanyPath(["projects", projectId]) + `?tab=${attrs.tab}`;
