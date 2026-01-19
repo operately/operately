@@ -21,7 +21,7 @@ defmodule OperatelyEmail.Emails.TaskAddingEmail do
     |> subject(where: find_where_name(task), who: author, action: "added the task \"#{task.name}\"")
     |> assign(:author, author)
     |> assign(:task_name, task.name)
-    |> assign(:cta_url, Paths.project_task_path(company, task) |> Paths.to_url())
+    |> assign(:cta_url, Paths.task_path(company, task) |> Paths.to_url())
     |> render("task_adding")
   end
 

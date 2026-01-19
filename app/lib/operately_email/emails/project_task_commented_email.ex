@@ -22,7 +22,7 @@ defmodule OperatelyEmail.Emails.ProjectTaskCommentedEmail do
     |> assign(:author, author)
     |> assign(:comment, comment)
     |> assign(:name, task.name)
-    |> assign(:cta_url, Paths.project_task_path(company, task, comment) |> Paths.to_url())
+    |> assign(:cta_url, Paths.task_path(company, task, comment) |> Paths.to_url())
     |> render("project_task_commented")
   end
 end
