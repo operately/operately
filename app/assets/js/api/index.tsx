@@ -2427,10 +2427,11 @@ export interface GetNotificationsResult {
 }
 
 export interface GetPeopleInput {
-  onlySuspended?: boolean | null;
-  includeSuspended?: boolean | null;
-  includeManager?: boolean | null;
-  includeInviteLink?: boolean | null;
+  onlySuspended?: boolean;
+  includeSuspended?: boolean;
+  includeManager?: boolean;
+  includeAccount?: boolean;
+  includeInviteLink?: boolean;
 }
 
 export interface GetPeopleResult {
@@ -2438,11 +2439,12 @@ export interface GetPeopleResult {
 }
 
 export interface GetPersonInput {
-  id?: Id | null;
-  includeManager?: boolean | null;
-  includeReports?: boolean | null;
-  includePeers?: boolean | null;
-  includePermissions?: boolean | null;
+  id: Id;
+  includeManager?: boolean;
+  includeReports?: boolean;
+  includePeers?: boolean;
+  includePermissions?: boolean;
+  includeAccount?: boolean;
 }
 
 export interface GetPersonResult {
@@ -4156,11 +4158,11 @@ export interface RemoveCompanyAdminResult {
 }
 
 export interface RemoveCompanyMemberInput {
-  personId?: string | null;
+  personId: string;
 }
 
 export interface RemoveCompanyMemberResult {
-  person?: Person | null;
+  person: Person;
 }
 
 export interface RemoveCompanyOwnerInput {
