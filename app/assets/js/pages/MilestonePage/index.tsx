@@ -137,7 +137,7 @@ function Page() {
 
     if (milestone.project) {
       PageCache.invalidate(projectPageCacheKey(milestone.project.id));
-      navigate(paths.projectPath(milestone.project.id, "tasks"));
+      navigate(paths.projectPath(milestone.project.id, { tab: "tasks" }));
     } else {
       navigate(paths.homePath());
     }
@@ -186,7 +186,6 @@ function Page() {
 
     // Milestone data
     milestone: parsedMilestone,
-    showMilestoneKanbanLink: false,
 
     // Timeline/Comments
     currentUser: People.parsePersonForTurboUi(paths, currentUser)!,
