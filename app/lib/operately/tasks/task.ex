@@ -157,6 +157,13 @@ defmodule Operately.Tasks.Task do
     end
   end
 
+  def task_type(task = %__MODULE__{}) do
+    cond do
+      is_nil(task.project_id) -> "space"
+      is_nil(task.space_id) -> "project"
+    end
+  end
+
   #
   # Scopes
   #
