@@ -29,9 +29,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveCompanyMemberTest do
         assert code == @test.expected
 
         case @test.expected do
-          200 ->
-            member = Repo.reload(member)
-            member.suspended
+          200 -> assert res.person.id == Paths.person_id(member)
           403 -> assert res.message == "You don't have permission to perform this action"
           404 -> assert res.message == "The requested resource was not found"
         end
@@ -42,12 +40,22 @@ defmodule OperatelyWeb.Api.Mutations.RemoveCompanyMemberTest do
   describe "remove_company_member functionality" do
     setup :register_and_log_in_account
 
-    test "admin can remove members", ctx do
+    test "admin can remove members with open invitations", ctx do
       set_caller_access_level(ctx, :full_access)
       member = person_fixture_with_account(%{company_id: ctx.company.id})
 
       assert {200, res} = mutation(ctx.conn, :remove_company_member, %{person_id: Paths.person_id(member)})
-      member = Repo.reload(member)
+
+      assert Repo.get(Operately.People.Person, member.id) == nil
+      assert res.person.id == Paths.person_id(member)
+    end
+
+    test "admin can remove members with used accounts", ctx do
+      set_caller_access_level(ctx, :full_access)
+      member = person_fixture_with_account(%{company_id: ctx.company.id, has_open_invitation: false})
+
+      assert {200, res} = mutation(ctx.conn, :remove_company_member, %{person_id: Paths.person_id(member)})
+      member = Repo.get(Operately.People.Person, member.id) |> Repo.preload(:account)
 
       assert member.suspended
       assert member.suspended_at

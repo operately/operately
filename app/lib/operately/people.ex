@@ -64,15 +64,22 @@ defmodule Operately.People do
     if Operately.People.Account.valid_password?(account, password), do: account
   end
 
-  def account_exists?(email) when is_binary(email) do
+  def account_used?(email) when is_binary(email) do
     Repo.exists?(
       from(a in Account,
-        left_join: p in assoc(a, :people),
         where: a.email == ^email,
-        where: is_nil(p.id) or p.has_open_invitation == false
+        where: not is_nil(a.first_login_at)
       )
     )
   end
+
+  def mark_account_first_login(%Account{first_login_at: nil} = account) do
+    account
+    |> Ecto.Changeset.change(first_login_at: DateTime.utc_now() |> DateTime.truncate(:second))
+    |> Repo.update()
+  end
+
+  def mark_account_first_login(%Account{} = account), do: {:ok, account}
 
   defdelegate insert_person(multi, callback), to: Operately.People.InsertPersonIntoOperation, as: :insert
 
