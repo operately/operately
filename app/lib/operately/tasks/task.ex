@@ -94,6 +94,13 @@ defmodule Operately.Tasks.Task do
     |> validate_project_or_group()
   end
 
+  def task_type(task = %__MODULE__{}) do
+    cond do
+      is_nil(task.project_id) -> "space"
+      is_nil(task.space_id) -> "project"
+    end
+  end
+
   def get(requester, args) do
     __MODULE__.Getter.get(__MODULE__, requester, args)
   end

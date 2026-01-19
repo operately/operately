@@ -1,4 +1,6 @@
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Tasks.Task do
+  alias Operately.Tasks.Task
+
   def serialize(task, level: :essential) do
     %{
       id: OperatelyWeb.Paths.task_id(task),
@@ -27,14 +29,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Tasks.Task do
       comments_count: task.comments_count,
       subscription_list: OperatelyWeb.Api.Serializer.serialize(task.subscription_list),
       available_statuses: OperatelyWeb.Api.Serializer.serialize(task.available_statuses),
-      type: get_task_type(task),
+      type: Task.task_type(task),
     }
-  end
-
-  defp get_task_type(task) do
-    cond do
-      is_nil(task.project_id) -> "space"
-      is_nil(task.space_id) -> "project"
-    end
   end
 end

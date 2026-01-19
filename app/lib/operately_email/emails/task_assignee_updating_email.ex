@@ -26,7 +26,7 @@ defmodule OperatelyEmail.Emails.TaskAssigneeUpdatingEmail do
     |> assign(:name, task.name)
     |> assign(:old_assignee, old_assignee)
     |> assign(:new_assignee, new_assignee)
-    |> assign(:cta_url, Paths.project_task_path(company, task) |> Paths.to_url())
+    |> assign(:cta_url, Paths.task_path(company, task) |> Paths.to_url())
     |> render("task_assignee_updating")
   end
 

@@ -25,7 +25,7 @@ defmodule OperatelyEmail.Emails.TaskDueDateUpdatingEmail do
     |> assign(:name, task.name)
     |> assign(:previous_date, previous_date)
     |> assign(:new_date, new_date)
-    |> assign(:cta_url, Paths.project_task_path(company, task) |> Paths.to_url())
+    |> assign(:cta_url, Paths.task_path(company, task) |> Paths.to_url())
     |> render("task_due_date_updating")
   end
 
