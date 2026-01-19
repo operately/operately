@@ -9,17 +9,17 @@ defmodule OperatelyEmail.Emails.TaskDescriptionChangeEmail do
     %{author: author = %{company: company}} = Repo.preload(activity, author: :company)
 
     {:ok, task} =
-      Task.get(:system, id: activity.content["task_id"], opts: [preload: [:project]])
+      Task.get(:system, id: activity.content["task_id"], opts: [preload: [:project, :space]])
 
     company
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: task.project.name, who: author, action: "updated the description for \"#{task.name}\"")
+    |> subject(where: find_where_name(task), who: author, action: "updated the description for \"#{task.name}\"")
     |> assign(:author, author)
     |> assign(:task_name, task.name)
     |> assign(:description, decode_description(activity.content["description"]))
-    |> assign(:cta_url, Paths.project_task_path(company, task) |> Paths.to_url())
+    |> assign(:cta_url, Paths.task_path(company, task) |> Paths.to_url())
     |> render("task_description_change")
   end
 
@@ -34,4 +34,12 @@ defmodule OperatelyEmail.Emails.TaskDescriptionChangeEmail do
 
   defp decode_description(description) when is_map(description), do: description
   defp decode_description(_), do: nil
+
+  defp find_where_name(task) do
+    case task do
+      %{project: %{name: name}} -> name
+      %{space: %{name: name}} -> name
+      _ -> "Unknown"
+    end
+  end
 end

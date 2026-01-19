@@ -5,6 +5,7 @@ defmodule OperatelyWeb.Paths do
   alias Operately.Companies.Company
   alias Operately.People.Person
   alias Operately.Projects.Milestone
+  alias Operately.Tasks.Task
   alias Operately.Updates.Comment
 
   def agent_run_id(run = %Operately.People.AgentRun{}) do
@@ -117,6 +118,20 @@ defmodule OperatelyWeb.Paths do
 
   def space_task_path(company = %Company{}, space = %Group{}, task = %Operately.Tasks.Task{}) do
     create_path([company_id(company), "spaces", space_id(space), "kanban"]) <> "?taskId=#{task_id(task)}"
+  end
+
+  def task_path(company = %Company{}, task = %Task{}) do
+    case Task.task_type(task) do
+      "space" -> space_task_path(company, task.space, task)
+      "project" -> project_task_path(company, task)
+    end
+  end
+
+  def task_path(company = %Company{}, task = %Task{}, comment = %Comment{}) do
+    case Task.task_type(task) do
+      "space" -> space_task_path(company, task.space, task)
+      "project" -> project_task_path(company, task, comment)
+    end
   end
 
   def feed_path(company = %Company{}) do
