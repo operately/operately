@@ -148,9 +148,12 @@ export class Paths {
     return this.createCompanyPath(["spaces", spaceId, "discussions", "new"]);
   }
 
-  projectPath(projectId: string, tab?: "overview" | "tasks" | "check-ins" | "discussions" | "activity") {
-    if (tab) {
-      return this.createCompanyPath(["projects", projectId]) + `?tab=${tab}`;
+  projectPath(projectId: string, attrs?: { tab?: "overview" | "tasks" | "check-ins" | "discussions" | "activity", milestoneId?: string }) {
+    if (attrs?.milestoneId) {
+      return this.createCompanyPath(["projects", projectId]) + `?tab=tasks&milestone=${attrs.milestoneId}&taskDisplay=board`;
+    }
+    if (attrs?.tab) {
+      return this.createCompanyPath(["projects", projectId]) + `?tab=${attrs.tab}`;
     }
 
     return this.createCompanyPath(["projects", projectId]);

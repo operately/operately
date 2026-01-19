@@ -52,7 +52,7 @@ export function parseMilestoneForTurboUi(paths: Paths, milestone: Milestone) {
     status: milestone.status,
     dueDate: parseContextualDate(milestone.timeframe?.contextualEndDate),
     link: paths.projectMilestonePath(milestone.id),
-    kanbanLink: paths.projectMilestoneKanbanPath(milestone.id),
+    kanbanLink: milestone.project ? paths.projectPath(milestone.project.id, { milestoneId: milestone.id }) : undefined,
     tasksOrderingState: milestone.tasksOrderingState ?? [],
     completedAt: Time.parseDate(milestone.completedAt),
     hasDescription,

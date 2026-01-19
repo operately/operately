@@ -82,6 +82,32 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     UI.visit(ctx, Paths.project_path(ctx.company, ctx.project, tab: "tasks"))
   end
 
+  step :assert_tasks_list_view, ctx do
+    ctx
+    |> UI.assert_has(testid: "tasks-board")
+    |> UI.refute_has(testid: "kanban-board")
+  end
+
+  step :assert_tasks_board_view, ctx do
+    ctx
+    |> UI.assert_has(testid: "kanban-board")
+    |> UI.refute_has(testid: "tasks-board")
+  end
+
+  step :click_view_on_board_link, ctx do
+    UI.click(ctx, css: "[data-test-id=\"tasks-section\"] a[href*=\"taskDisplay=board\"]")
+  end
+
+  step :assert_redirected_to_project_tasks_tab, ctx do
+    UI.assert_page(ctx, Paths.project_path(ctx.company, ctx.project))
+  end
+
+  step :assert_milestone_selected, ctx do
+    ctx
+    |> UI.assert_text(ctx.milestone.title, testid: "current-milestone")
+    |> UI.refute_text("All milestones", testid: "current-milestone")
+  end
+
   step :reload_project_page, ctx do
     UI.visit(ctx, Paths.project_path(ctx.company, ctx.project))
   end
