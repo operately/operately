@@ -221,7 +221,7 @@ function Page() {
         spaceSearch,
       }
     : {
-        homeLink: paths.homePath(),
+        companyWorkMapLink: paths.workMapPath("goals"),
       };
 
   const props: GoalPage.Props = {
