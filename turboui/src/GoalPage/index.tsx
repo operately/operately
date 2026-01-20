@@ -98,6 +98,7 @@ export namespace GoalPage {
     reopenLink: string;
     newCheckInLink: string;
     newDiscussionLink: string;
+    manageAccessLink?: string;
     exportMarkdown?: () => void;
 
     goalName: string;
@@ -132,6 +133,7 @@ export namespace GoalPage {
     retrospective: Retrospective | null;
 
     canEdit: boolean;
+    canEditAccessLevel: boolean;
     accessLevels: PrivacyField.AccessLevels;
     setAccessLevels: (levels: PrivacyField.AccessLevels) => void;
 

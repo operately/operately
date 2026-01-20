@@ -25,6 +25,8 @@ import DiscussionNewPage from "./DiscussionNewPage";
 import DiscussionPage from "./DiscussionPage";
 import FeedPage from "./FeedPage";
 import ForgotPasswordPage from "./ForgotPasswordPage";
+import GoalAccessAddPage from "./GoalAccessAddPage";
+import GoalAccessManagementPage from "./GoalAccessManagementPage";
 import GoalActivityPage from "./GoalActivityPage";
 import GoalAddPage from "./GoalAddPage";
 import GoalAsMarkdownPage from "./GoalAsMarkdownPage";
@@ -33,6 +35,7 @@ import GoalCheckInPage from "./GoalCheckInPage";
 import GoalClosingPage from "./GoalClosingPage";
 import GoalDiscussionEditPage from "./GoalDiscussionEditPage";
 import GoalDiscussionNewPage from "./GoalDiscussionNewPage";
+import GoalEditAccessLevelsPage from "./GoalEditAccessLevelsPage";
 import GoalPage from "./GoalPage";
 import GoalReopenPage from "./GoalReopenPage";
 import HomePage from "./HomePage";
@@ -124,6 +127,8 @@ export default {
   DiscussionPage,
   FeedPage,
   ForgotPasswordPage,
+  GoalAccessAddPage,
+  GoalAccessManagementPage,
   GoalActivityPage,
   GoalAddPage,
   GoalAsMarkdownPage,
@@ -132,6 +137,7 @@ export default {
   GoalClosingPage,
   GoalDiscussionEditPage,
   GoalDiscussionNewPage,
+  GoalEditAccessLevelsPage,
   GoalPage,
   GoalReopenPage,
   HomePage,

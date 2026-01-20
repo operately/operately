@@ -24,6 +24,13 @@ export function SpaceAccessLevelBadge({ accessLevel }: { accessLevel: Permission
   );
 }
 
+export function GoalAccessLevelBadge({ accessLevel }: { accessLevel: PermissionLevels }) {
+  const data = permissionData[accessLevel];
+  assertPresent(data, `Invalid access level: ${accessLevel}`);
+
+  return <AccessBadge title={data.title} colors={data.colors} description={data.description.goal} />;
+}
+
 //
 // Private components and utilities
 //
@@ -72,6 +79,7 @@ interface PermissionData {
     description: {
       project: string; // message shown in the tooltip for project access
       space: string; // message shown in the tooltip for space access
+      goal: string; // message shown in the tooltip for goal access
     };
   };
 }
@@ -88,6 +96,11 @@ const permissionData: PermissionData = {
         "archiving the project.",
       ),
       space: "Has full access to all resources in the space, including team and access management.",
+      goal: joinStr(
+        "Has full access to the goal and can perform any action, ",
+        "including editing, commenting, checking-in, closing, and ",
+        "archiving the goal.",
+      ),
     },
   },
 
@@ -104,6 +117,7 @@ const permissionData: PermissionData = {
         "Can edit the space and its details, add new members, but cannot access ",
         "invite-only projects or change space managers.",
       ),
+      goal: "Can edit the goal, including its details and targets.",
     },
   },
 
@@ -117,6 +131,10 @@ const permissionData: PermissionData = {
         "Cannot edit, close, or archive the project.",
       ),
       space: "Can comment all resources in the space, but cannot add or remove members or resources in the space.",
+      goal: joinStr(
+        "Can comment on the goal updates and discussions. ",
+        "Cannot edit, close, or archive the goal.",
+      ),
     },
   },
 
@@ -130,6 +148,10 @@ const permissionData: PermissionData = {
         "Cannot edit, comment, close, or archive the project.",
       ),
       space: "Can view all resources in the space, but cannot edit, comment, or add new resources.",
+      goal: joinStr(
+        "Can view the goal, including its details and updates. ",
+        "Cannot edit, comment, close, or archive the goal.",
+      ),
     },
   },
 };
