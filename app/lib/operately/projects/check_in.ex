@@ -18,6 +18,7 @@ defmodule Operately.Projects.CheckIn do
     field :acknowledged_at, :utc_datetime
 
     has_one :access_context, through: [:project, :access_context]
+    has_one :space, through: [:project, :group]
     has_many :reactions, Operately.Updates.Reaction, foreign_key: :entity_id, where: [entity_type: :project_check_in]
     has_many :comments, Operately.Updates.Comment, foreign_key: :entity_id, where: [entity_type: :project_check_in]
 

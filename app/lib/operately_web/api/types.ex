@@ -1886,6 +1886,7 @@ defmodule OperatelyWeb.Api.Types do
     field :description, :string, null: true
     field :author, :person, null: true
     field :project, :project, null: true
+    field :space, :space, null: true
     field :acknowledged_at, :datetime, null: true
     field :acknowledged_by, :person, null: true
     field? :reactions, list_of(:reaction), null: true
