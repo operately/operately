@@ -26,18 +26,18 @@ import { banner } from "./Banner";
 import { useLoadedData, useRefresh } from "./loader";
 
 import { usePaths } from "@/routes/paths";
+
 export function Page() {
   const { checkIn } = useLoadedData();
 
-  assertPresent(checkIn.notifications, "Check-in notifications must be defined");
   assertPresent(checkIn.project, "Check-in project must be defined");
 
-  useClearNotificationsOnLoad(checkIn.notifications);
+  useClearNotificationsOnLoad(checkIn.notifications || []);
 
   return (
-    <Pages.Page title={["Check-In", checkIn.project!.name!]} testId="project-check-in-page">
+    <Pages.Page title={["Check-In", checkIn.project.name]} testId="project-check-in-page">
       <Paper.Root>
-        <Navigation project={checkIn.project} />
+        <Navigation />
 
         <Paper.Body className="p-4 md:p-8 lg:px-28 lg:pt-8" noPadding banner={banner(checkIn.project)}>
           <Options />
@@ -65,13 +65,11 @@ function Comments() {
   const { checkIn } = useLoadedData();
   const commentsForm = useForProjectCheckIn(checkIn);
 
-  assertPresent(checkIn.project?.permissions?.canCommentOnCheckIn, "permissions must be present in project checkIn");
-
   return (
     <CommentSection
       form={commentsForm}
       commentParentType="project_check_in"
-      canComment={checkIn.project.permissions.canCommentOnCheckIn}
+      canComment={checkIn.project?.permissions?.canCommentOnCheckIn || false}
     />
   );
 }
@@ -82,9 +80,7 @@ function CheckInReactions() {
   const entity = Reactions.entity(checkIn.id!, "project_check_in");
   const form = useReactionsForm(entity, reactions);
 
-  assertPresent(checkIn.project?.permissions?.canCommentOnCheckIn, "permissions must be present in project checkIn");
-
-  return <ReactionList form={form} size={24} canAddReaction={checkIn.project.permissions.canCommentOnCheckIn} />;
+  return <ReactionList form={form} size={24} canAddReaction={checkIn.project?.permissions?.canCommentOnCheckIn || false} />;
 }
 
 function SubscriptionsSection() {
@@ -125,20 +121,24 @@ function Title() {
   );
 }
 
-function Navigation({ project }) {
+function Navigation() {
+  const { checkIn } = useLoadedData();
   const paths = usePaths();
-  assertPresent(project.space, "space must be present on project");
+  const items: Paper.NavigationItem[] = [];
 
-  return (
-    <Paper.Navigation
-      items={[
-        { to: paths.spacePath(project.space.id), label: project.space.name },
-        { to: paths.spaceWorkMapPath(project.space.id, "projects" as const), label: "Work Map" },
-        { to: paths.projectPath(project.id), label: project.name },
-        { to: paths.projectCheckInsPath(project.id), label: "Check-Ins" },
-      ]}
-    />
-  );
+  if (checkIn.space) {
+    items.push({ to: paths.spacePath(checkIn.space.id), label: checkIn.space.name });
+    items.push({ to: paths.spaceWorkMapPath(checkIn.space.id, "projects" as const), label: "Work Map" });
+  } else {
+    items.push({ to: paths.workMapPath("projects"), label: "Work Map" });
+  }
+
+  if (checkIn.project) {
+    items.push({ to: paths.projectPath(checkIn.project.id), label: checkIn.project.name });
+    items.push({ to: paths.projectCheckInsPath(checkIn.project.id), label: "Check-Ins" });
+  }
+
+  return <Paper.Navigation items={items} />;
 }
 
 function Acknowledgement() {

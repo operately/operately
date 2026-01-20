@@ -142,4 +142,22 @@ defmodule Operately.Features.ProjectCheckInsTest do
     |> Steps.assert_check_in_acknowledged(values)
     |> Steps.assert_acknowledgement_email_sent_to_champion(values)
   end
+
+  describe "project check-in pages preload access" do
+    feature "project check-in new page hides space navigation when space is not accessible", ctx do
+      ctx
+      |> Steps.given_project_in_secret_space_for_champion()
+      |> Steps.visit_project_check_in_new_page(:secret_project)
+      |> Steps.assert_check_in_new_navigation_without_space()
+    end
+
+    feature "project check-in page hides space navigation when space is not accessible", ctx do
+      values = %{status: "on_track", description: "This is a check-in.", project_key: :secret_project}
+
+      ctx
+      |> Steps.given_project_in_secret_space_for_champion()
+      |> Steps.submit_check_in(values)
+      |> Steps.assert_check_in_navigation_without_space()
+    end
+  end
 end
