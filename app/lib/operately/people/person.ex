@@ -30,7 +30,6 @@ defmodule Operately.People.Person do
     field :suspended_at, :utc_datetime
 
     field :avatar_blob_id, :binary_id
-    field :has_open_invitation, :boolean, default: false
     field :type, Ecto.Enum, values: [:human, :ai], default: :human
 
     # loaded via hooks
@@ -65,7 +64,6 @@ defmodule Operately.People.Person do
       :suspended,
       :suspended_at,
       :avatar_blob_id,
-      :has_open_invitation,
       :type
     ])
     |> validate_required([:full_name, :company_id])

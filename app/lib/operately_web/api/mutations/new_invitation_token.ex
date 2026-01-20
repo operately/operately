@@ -37,13 +37,13 @@ defmodule OperatelyWeb.Api.Mutations.NewInvitationToken do
   defp execute(admin, inputs) do
     {:ok, id} = decode_id(inputs.person_id)
 
-    person = Operately.People.get_person(id)
+    person = Operately.People.get_person(id) |> Operately.Repo.preload(:account)
 
     cond do
       is_nil(person) ->
         {:error, message: "Team member not found."}
 
-      not person.has_open_invitation ->
+      not open_invitation?(person) ->
         {:error, message: "Team member doesn't have an open invitation."}
 
       true ->
@@ -73,4 +73,7 @@ defmodule OperatelyWeb.Api.Mutations.NewInvitationToken do
         {:ok, _link} = Operately.InviteLinks.refresh_personal_invite_link(link)
     end
   end
+
+  defp open_invitation?(%{account: %{first_login_at: nil}}), do: true
+  defp open_invitation?(_person), do: false
 end

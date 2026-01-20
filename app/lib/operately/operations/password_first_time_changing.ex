@@ -1,7 +1,7 @@
 defmodule Operately.Operations.PasswordFirstTimeChanging do
   alias Ecto.Multi
   alias Operately.Repo
-  alias Operately.People.{Account, Person}
+  alias Operately.People.Account
 
   def run(attrs, invite_link) do
     invite_link = Repo.preload(invite_link, [:author, person: [:account]])
@@ -10,7 +10,6 @@ defmodule Operately.Operations.PasswordFirstTimeChanging do
 
     Multi.new()
     |> change_password(attrs, member.account)
-    |> update_member(member)
     |> deactivate_invite_link(invite_link)
     |> insert_activity(invite_link, admin, member)
     |> Repo.transaction()
@@ -18,12 +17,7 @@ defmodule Operately.Operations.PasswordFirstTimeChanging do
 
   defp change_password(multi, attrs, account) do
     multi
-    |> Multi.update(:member_account, Account.password_changeset(account, attrs))
-  end
-
-  defp update_member(multi, member) do
-    multi
-    |> Multi.update(:member, Person.changeset(member, %{has_open_invitation: false}))
+    |> Multi.update(:member_account, password_changeset(account, attrs))
   end
 
   defp deactivate_invite_link(multi, invite_link) do
@@ -42,4 +36,16 @@ defmodule Operately.Operations.PasswordFirstTimeChanging do
       }
     end)
   end
+
+  defp password_changeset(account, attrs) do
+    account
+    |> Account.password_changeset(attrs)
+    |> maybe_set_first_login_at(account)
+  end
+
+  defp maybe_set_first_login_at(changeset, %Account{first_login_at: nil}) do
+    Ecto.Changeset.change(changeset, first_login_at: DateTime.utc_now() |> DateTime.truncate(:second))
+  end
+
+  defp maybe_set_first_login_at(changeset, _account), do: changeset
 end

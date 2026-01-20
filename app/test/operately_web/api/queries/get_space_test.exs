@@ -153,7 +153,7 @@ defmodule OperatelyWeb.Api.Queries.GetSpaceTest do
       |> Enum.with_index()
       |> Enum.map(fn {m, i} -> {m, Enum.at(res.space.members, i)} end)
       |> Enum.each(fn {m, res} ->
-        assert res == %{id: Paths.person_id(m), full_name: m.full_name, email: m.email, avatar_url: m.avatar_url, title: m.title, has_open_invitation: false}
+        assert res == %{id: Paths.person_id(m), full_name: m.full_name, email: m.email, avatar_url: m.avatar_url, title: m.title}
       end)
     end
 

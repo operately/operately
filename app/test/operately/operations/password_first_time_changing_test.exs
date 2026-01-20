@@ -32,13 +32,14 @@ defmodule Operately.Operations.PasswordFirstTimeChangingTest do
     assert Account.valid_password?(member_account, ctx.attrs.password)
   end
 
-  test "PasswordFirstTimeChanging operation sets has_open_invitation to false", ctx do
-    assert ctx.member.has_open_invitation
+  test "PasswordFirstTimeChanging operation marks first login", ctx do
+    member_account = Repo.preload(ctx.member, :account).account
+    assert is_nil(member_account.first_login_at)
 
     {:ok, _} = Operately.Operations.PasswordFirstTimeChanging.run(ctx.attrs, ctx.invite_link)
 
-    member = Repo.reload(ctx.member)
-    refute member.has_open_invitation
+    member_account = Repo.get!(Account, member_account.id)
+    assert member_account.first_login_at
   end
 
   test "PasswordFirstTimeChanging operation creates activity", ctx do

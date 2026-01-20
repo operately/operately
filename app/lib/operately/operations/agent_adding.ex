@@ -34,7 +34,6 @@ defmodule Operately.Operations.AgentAdding do
         company_id: company.id,
         full_name: attrs.full_name,
         title: attrs.title,
-        has_open_invitation: false,
         type: :ai
       })
     end)
