@@ -10,7 +10,7 @@ defmodule Operately.Data.Change092BackfillPersonalInviteLinksForOpenInvitationsT
     invitation = create_invitation_fixture()
     company_id = invitation.member.company_id
 
-    closed_member = person_fixture_with_account(%{company_id: company_id, has_open_invitation: false})
+    closed_member = create_person(%{company_id: company_id, has_open_invitation: false})
     {:ok, closed_invitation} = create_invitation(%{member_id: closed_member.id, admin_id: invitation.admin_id})
 
     valid_until = DateTime.utc_now() |> DateTime.add(3600, :second) |> DateTime.truncate(:second)
@@ -48,7 +48,7 @@ defmodule Operately.Data.Change092BackfillPersonalInviteLinksForOpenInvitationsT
   defp create_invitation_fixture do
     company = Operately.CompaniesFixtures.company_fixture(%{name: "Test Company"})
     admin = person_fixture(%{email: "admin@test.com", company_id: company.id})
-    member = person_fixture_with_account(%{email: "member@test.com", company_id: company.id, has_open_invitation: true})
+    member = create_person(%{email: "member@test.com", company_id: company.id, has_open_invitation: true})
 
     {:ok, invitation} = create_invitation(%{member_id: member.id, admin_id: admin.id})
 
@@ -76,5 +76,19 @@ defmodule Operately.Data.Change092BackfillPersonalInviteLinksForOpenInvitationsT
       inserted_at: now,
       updated_at: now
     }}
+  end
+
+  defp create_person(attrs) do
+    person = person_fixture_with_account(attrs)
+    set_has_open_invitation(person, attrs.has_open_invitation)
+
+    person
+  end
+
+  defp set_has_open_invitation(person, open_invitation) do
+    person_id = Ecto.UUID.dump!(person.id)
+
+    from(p in "people", where: p.id == ^person_id)
+    |> Operately.Repo.update_all(set: [has_open_invitation: open_invitation])
   end
 end
