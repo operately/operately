@@ -1,6 +1,8 @@
 defmodule OperatelyWeb.Api.GoalsTest do
   alias Operately.Support.RichText
   alias Operately.ContextualDates.Timeframe
+  alias Operately.Access
+  alias Operately.Access.Binding
 
   use OperatelyWeb.TurboCase
 
@@ -36,6 +38,196 @@ defmodule OperatelyWeb.Api.GoalsTest do
 
       assert {200, res} = mutation(ctx.conn, [:goals, :update_access_levels], inputs)
       assert res.success == true
+    end
+  end
+
+  describe "list access members" do
+    test "it requires authentication", ctx do
+      assert {401, _} = query(ctx.conn, [:goals, :list_access_members], %{})
+    end
+
+    test "it requires a goal_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = query(ctx.conn, [:goals, :list_access_members], %{})
+      assert res.message == "Missing required fields: goal_id"
+    end
+
+    test "it returns 404 if the goal does not exist", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      goal_id = Ecto.UUID.generate() |> Paths.goal_id()
+      assert {404, res} = query(ctx.conn, [:goals, :list_access_members], %{goal_id: goal_id})
+      assert res.message == "Goal not found"
+    end
+
+    test "it requires access level editing permissions", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:editor, :marketing)
+        |> Factory.log_in_person(:editor)
+
+      assert {404, _} = query(ctx.conn, [:goals, :list_access_members], %{goal_id: Paths.goal_id(ctx.goal)})
+    end
+
+    test "it returns people with direct access", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:member)
+        |> Factory.log_in_person(:creator)
+
+      context = Access.get_context!(goal_id: ctx.goal.id)
+      {:ok, _} = Access.bind_person(context, ctx.member.id, Binding.edit_access())
+
+      assert {200, res} = query(ctx.conn, [:goals, :list_access_members], %{goal_id: Paths.goal_id(ctx.goal)})
+
+      assert_includes_person(res.people, ctx.member.id, :edit_access)
+      assert_includes_person(res.people, ctx.creator.id, :full_access)
+    end
+  end
+
+  describe "add access members" do
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:goals, :add_access_members], %{})
+    end
+
+    test "it requires a goal_id and members", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:goals, :add_access_members], %{})
+      assert res.message == "Missing required fields: goal_id, members"
+    end
+
+    test "it requires access level editing permissions", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:editor, :marketing)
+        |> Factory.add_company_member(:member)
+        |> Factory.log_in_person(:editor)
+
+      assert {404, _} =
+               mutation(ctx.conn, [:goals, :add_access_members], %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 members: [%{id: Paths.person_id(ctx.member), access_level: Binding.edit_access()}]
+               })
+
+      refute direct_binding(ctx.goal, ctx.member)
+    end
+
+    test "it adds access members", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:member)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} =
+               mutation(ctx.conn, [:goals, :add_access_members], %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 members: [%{id: Paths.person_id(ctx.member), access_level: Binding.edit_access()}]
+               })
+
+      assert res.success == true
+      assert_binding_access(ctx.goal, ctx.member, Binding.edit_access())
+    end
+  end
+
+  describe "update access member" do
+    setup ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:editor, :marketing)
+        |> Factory.add_company_member(:member)
+
+      context = Access.get_context!(goal_id: ctx.goal.id)
+      {:ok, _} = Access.bind_person(context, ctx.member.id, Binding.view_access())
+
+      {:ok, ctx}
+    end
+
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:goals, :update_access_member], %{})
+    end
+
+    test "it requires a goal_id, person_id and access_level", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:goals, :update_access_member], %{})
+      assert res.message == "Missing required fields: goal_id, person_id, access_level"
+    end
+
+    test "it requires access level editing permissions", ctx do
+      ctx = Factory.log_in_person(ctx, :editor)
+
+      assert {404, _} =
+               mutation(ctx.conn, [:goals, :update_access_member], %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 person_id: Paths.person_id(ctx.member),
+                 access_level: Binding.edit_access()
+               })
+    end
+
+    test "it updates the access level", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert_binding_access(ctx.goal, ctx.member, Binding.view_access())
+
+      assert {200, res} =
+               mutation(ctx.conn, [:goals, :update_access_member], %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 person_id: Paths.person_id(ctx.member),
+                 access_level: Binding.edit_access()
+               })
+
+      assert res.success == true
+      assert_binding_access(ctx.goal, ctx.member, Binding.edit_access())
+    end
+  end
+
+  describe "remove access member" do
+    setup ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:editor, :marketing)
+        |> Factory.add_company_member(:member)
+
+      context = Access.get_context!(goal_id: ctx.goal.id)
+      {:ok, _} = Access.bind_person(context, ctx.member.id, Binding.comment_access())
+
+      {:ok, ctx}
+    end
+
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:goals, :remove_access_member], %{})
+    end
+
+    test "it requires a goal_id and person_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:goals, :remove_access_member], %{})
+      assert res.message == "Missing required fields: goal_id, person_id"
+    end
+
+    test "it requires access level editing permissions", ctx do
+      ctx = Factory.log_in_person(ctx, :editor)
+
+      assert {404, _} =
+               mutation(ctx.conn, [:goals, :remove_access_member], %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 person_id: Paths.person_id(ctx.member)
+               })
+    end
+
+    test "it removes the access member", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} =
+               mutation(ctx.conn, [:goals, :remove_access_member], %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 person_id: Paths.person_id(ctx.member)
+               })
+
+      assert res.success == true
+      refute direct_binding(ctx.goal, ctx.member)
     end
   end
 
@@ -729,5 +921,27 @@ defmodule OperatelyWeb.Api.GoalsTest do
       ctx = Factory.reload(ctx, :goal)
       assert ctx.goal.reviewer_id == nil
     end
+  end
+
+  defp assert_includes_person(people, person_id, access_level) do
+    person = Operately.People.get_person!(person_id)
+    returned_person = Enum.find(people, fn p -> p.id == Paths.person_id(person) end)
+
+    assert returned_person != nil
+    assert returned_person.access_level == Binding.from_atom(access_level)
+  end
+
+  defp direct_binding(goal, person) do
+    context = Access.get_context!(goal_id: goal.id)
+    group = Access.get_group!(person_id: person.id)
+
+    Access.get_binding(context_id: context.id, group_id: group.id)
+  end
+
+  defp assert_binding_access(goal, person, access_level) do
+    binding = direct_binding(goal, person)
+
+    assert binding
+    assert binding.access_level == access_level
   end
 end
