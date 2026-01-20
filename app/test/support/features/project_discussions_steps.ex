@@ -69,7 +69,7 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
 
   step :assert_project_discussion_new_navigation_without_space, ctx do
     ctx
-    |> UI.assert_has(testid: UI.testid(["nav-item", "Projects"]))
+    |> UI.assert_has(testid: UI.testid(["nav-item", "Work Map"]))
     |> UI.assert_has(testid: UI.testid(["nav-item", ctx.secret_project.name]))
     |> UI.assert_has(testid: UI.testid(["nav-item", "Discussions"]))
     |> UI.refute_has(testid: UI.testid(["nav-item", ctx.secret_space.name]))
@@ -77,7 +77,7 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
 
   step :assert_project_discussion_navigation_without_space, ctx do
     ctx
-    |> UI.assert_has(testid: UI.testid(["nav-item", "Projects"]))
+    |> UI.assert_has(testid: UI.testid(["nav-item", "Work Map"]))
     |> UI.assert_has(testid: UI.testid(["nav-item", ctx.secret_project.name]))
     |> UI.assert_has(testid: UI.testid(["nav-item", "Discussions"]))
     |> UI.refute_has(testid: UI.testid(["nav-item", ctx.secret_space.name]))
