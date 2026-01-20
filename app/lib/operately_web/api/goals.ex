@@ -529,6 +529,100 @@ defmodule OperatelyWeb.Api.Goals do
     end
   end
 
+  defmodule ListAccessMembers do
+    use TurboConnect.Query
+
+    inputs do
+      field :goal_id, :id, null: false
+    end
+
+    outputs do
+      field :people, list_of(:person), null: true
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_goal(inputs.goal_id)
+      |> Steps.check_permissions(:can_edit_access_level)
+      |> Steps.list_access_members()
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        %{people: Serializer.serialize(changes.access_members, level: :essential)}
+      end)
+    end
+  end
+
+  defmodule AddAccessMembers do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :goal_id, :id, null: false
+      field :members, list_of(:add_member_input), null: false
+    end
+
+    outputs do
+      field :success, :boolean, null: true
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_goal(inputs.goal_id)
+      |> Steps.check_permissions(:can_edit_access_level)
+      |> Steps.add_access_members(inputs.members)
+      |> Steps.commit()
+      |> Steps.respond(fn _ -> %{success: true} end)
+    end
+  end
+
+  defmodule UpdateAccessMember do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :goal_id, :id, null: false
+      field :person_id, :id, null: false
+      field :access_level, :integer, null: false
+    end
+
+    outputs do
+      field :success, :boolean, null: true
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_goal(inputs.goal_id)
+      |> Steps.check_permissions(:can_edit_access_level)
+      |> Steps.update_access_member(inputs.person_id, inputs.access_level)
+      |> Steps.commit()
+      |> Steps.respond(fn _ -> %{success: true} end)
+    end
+  end
+
+  defmodule RemoveAccessMember do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :goal_id, :id, null: false
+      field :person_id, :id, null: false
+    end
+
+    outputs do
+      field :success, :boolean, null: true
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_goal(inputs.goal_id)
+      |> Steps.check_permissions(:can_edit_access_level)
+      |> Steps.remove_access_member(inputs.person_id)
+      |> Steps.commit()
+      |> Steps.respond(fn _ -> %{success: true} end)
+    end
+  end
+
   defmodule SharedMultiSteps do
     require Logger
 
@@ -552,6 +646,43 @@ defmodule OperatelyWeb.Api.Goals do
     def check_permissions(multi, permission) do
       Ecto.Multi.run(multi, :permissions, fn _repo, %{goal: goal} ->
         Operately.Goals.Permissions.check(goal.request_info.access_level, permission)
+      end)
+    end
+
+    def list_access_members(multi) do
+      Ecto.Multi.run(multi, :access_members, fn _repo, %{goal: goal} ->
+        {:ok, Operately.Goals.list_goal_access_people(goal.id)}
+      end)
+    end
+
+    def add_access_members(multi, members) do
+      members = List.wrap(members)
+
+      Ecto.Multi.run(multi, :added_access_members, fn _repo, %{goal: goal} ->
+        context = goal.access_context
+
+        members
+        |> Enum.reject(fn member -> is_nil(member.id) end)
+        |> Enum.reduce_while({:ok, []}, fn member, {:ok, acc} ->
+          case Access.bind_person(context, member.id, member.access_level) do
+            {:ok, binding} -> {:cont, {:ok, [binding | acc]}}
+            {:error, reason} -> {:halt, {:error, reason}}
+          end
+        end)
+      end)
+    end
+
+    def update_access_member(multi, person_id, access_level) do
+      Ecto.Multi.run(multi, :updated_access_member, fn _repo, %{goal: goal} ->
+        context = goal.access_context
+        Access.bind_person(context, person_id, access_level)
+      end)
+    end
+
+    def remove_access_member(multi, person_id) do
+      Ecto.Multi.run(multi, :removed_access_member, fn _repo, %{goal: goal} ->
+        context = goal.access_context
+        Access.unbind_person(context, person_id)
       end)
     end
 

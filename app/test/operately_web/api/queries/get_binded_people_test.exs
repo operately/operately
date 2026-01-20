@@ -2,6 +2,7 @@ defmodule OperatelyWeb.Api.Queries.GetBindedPeopleTest do
   use OperatelyWeb.TurboCase
 
   alias Operately.Support.Factory
+  alias Operately.Access.Binding
 
   setup ctx do
     ctx
@@ -11,6 +12,7 @@ defmodule OperatelyWeb.Api.Queries.GetBindedPeopleTest do
     |> Factory.add_space_member(:mike, :product_space)
     |> Factory.add_space_member(:jane, :product_space)
     |> Factory.add_project(:hello, :product_space)
+    |> Factory.add_goal(:goal, :product_space, company_access: Binding.no_access())
     |> Factory.add_project_contributor(:champion, :hello)
   end
 
@@ -35,6 +37,20 @@ defmodule OperatelyWeb.Api.Queries.GetBindedPeopleTest do
     assert_includes_person result.people, ctx.silvia.id, :edit_access
     assert_includes_person result.people, ctx.creator.id, :full_access
     assert_includes_person result.people, ctx.champion.person_id, :edit_access
+  end
+
+  test "loading binded people for a goal", ctx do
+    ctx = log_in_account(ctx, ctx.mike)
+
+    assert {200, result} = query(ctx.conn, :get_binded_people, %{
+      resourse_type: "goal",
+      resourse_id: Paths.goal_id(ctx.goal)
+    })
+
+    assert length(result.people) == 3
+    assert_includes_person result.people, ctx.mike.id, :comment_access
+    assert_includes_person result.people, ctx.jane.id, :comment_access
+    assert_includes_person result.people, ctx.creator.id, :full_access
   end
 
   test "when user is not binded to the project it should return not found", ctx do

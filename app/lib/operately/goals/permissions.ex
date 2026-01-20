@@ -11,6 +11,7 @@ defmodule Operately.Goals.Permissions do
     :can_delete,
     :can_open_discussion,
     :can_edit_discussion,
+    :can_edit_access_level,
   ]
 
   def calculate(access_level) do
@@ -24,6 +25,7 @@ defmodule Operately.Goals.Permissions do
       can_delete: can_delete(access_level),
       can_open_discussion: can_edit(access_level),
       can_edit_discussion: can_edit(access_level),
+      can_edit_access_level: can_edit_access_level(access_level),
     }
   end
 
@@ -35,6 +37,7 @@ defmodule Operately.Goals.Permissions do
   def can_delete(access_level), do: access_level >= Binding.edit_access()
   def can_open_discussion(access_level), do: access_level >= Binding.edit_access()
   def can_edit_discussion(access_level), do: access_level >= Binding.edit_access()
+  def can_edit_access_level(access_level), do: access_level >= Binding.full_access()
 
   def check(access_level, permission) when is_atom(permission) and is_integer(access_level) do
     permissions = calculate(access_level)
