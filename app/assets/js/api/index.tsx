@@ -1416,6 +1416,7 @@ export interface ProjectCheckIn {
   description: string | null;
   author: Person | null;
   project: Project | null;
+  space: Space | null;
   acknowledgedAt: string | null;
   acknowledgedBy: Person | null;
   reactions?: Reaction[] | null;
@@ -2478,13 +2479,14 @@ export interface GetProjectResult {
 }
 
 export interface GetProjectCheckInInput {
-  id?: string | null;
-  includeAuthor?: boolean | null;
-  includeAcknowledgedBy?: boolean | null;
-  includeProject?: boolean | null;
-  includeReactions?: boolean | null;
-  includeSubscriptionsList?: boolean | null;
-  includePotentialSubscribers?: boolean | null;
+  id: string;
+  includeAuthor?: boolean;
+  includeAcknowledgedBy?: boolean;
+  includeProject?: boolean;
+  includeSpace?: boolean;
+  includeReactions?: boolean;
+  includeSubscriptionsList?: boolean;
+  includePotentialSubscribers?: boolean;
   includeUnreadNotifications?: boolean | null;
 }
 

@@ -50,9 +50,9 @@ function Nav() {
 
   if (project.space) {
     items.push({ to: paths.spacePath(project.space.id), label: project.space.name });
-    items.push({ to: paths.spaceWorkMapPath(project.space.id, "projects"), label: "Projects" });
+    items.push({ to: paths.spaceWorkMapPath(project.space.id, "projects"), label: "Work Map" });
   } else {
-    items.push({ to: paths.workMapPath("projects"), label: "Projects" });
+    items.push({ to: paths.workMapPath("projects"), label: "Work Map" });
   }
 
   items.push({ to: paths.projectPath(project.id, { tab: "overview" }), label: project.name });
