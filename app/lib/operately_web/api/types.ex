@@ -1285,11 +1285,16 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :goal_permissions do
-    field? :can_edit, :boolean, null: true
-    field? :can_check_in, :boolean, null: true
-    field? :can_close, :boolean, null: true
-    field? :can_archive, :boolean, null: true
-    field? :can_delete, :boolean, null: true
+    field :can_view, :boolean, null: false
+    field :can_edit, :boolean, null: false
+    field :can_check_in, :boolean, null: false
+    field :can_close, :boolean, null: false
+    field :can_archive, :boolean, null: false
+    field :can_reopen, :boolean, null: false
+    field :can_delete, :boolean, null: false
+    field :can_open_discussion, :boolean, null: false
+    field :can_edit_discussion, :boolean, null: false
+    field :can_edit_access_level, :boolean, null: false
   end
 
   object :goal_update_permissions do

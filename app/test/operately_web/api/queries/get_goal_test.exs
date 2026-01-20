@@ -233,10 +233,8 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal)})
       assert res.goal.permissions == nil
 
-      permissions = Operately.Goals.Permissions.calculate(Binding.full_access())
-
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_permissions: true})
-      assert res.goal.permissions == Serializer.serialize(permissions, level: :full)
+      assert res.goal.permissions == Map.from_struct(Operately.Goals.Permissions.calculate(Binding.full_access()))
     end
 
     test "include_projects", ctx do
