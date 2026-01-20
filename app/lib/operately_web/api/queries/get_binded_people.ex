@@ -29,6 +29,10 @@ defmodule OperatelyWeb.Api.Queries.GetBindedPeople do
     {:ok, Operately.Access.get_context!(group_id: id)}
   end
 
+  def load_access_context("goal", id) do
+    {:ok, Operately.Access.get_context!(goal_id: id)}
+  end
+
   def load_access_context(type, _) do
     {:error, :bad_request, "Unknown resourse type: #{type}"}
   end

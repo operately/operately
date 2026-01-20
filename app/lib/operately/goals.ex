@@ -5,6 +5,7 @@ defmodule Operately.Goals do
   alias Operately.Goals.{Goal, Target}
   alias Operately.People.Person
   alias Operately.Access.Fetch
+  alias Operately.Access.Binding
 
   @goal_actions [
     "goal_check_in",
@@ -133,6 +134,21 @@ defmodule Operately.Goals do
     |> select([person: p], p)
     |> distinct([person: p], p.id)
     |> Repo.all()
+  end
+
+  def list_goal_access_people(goal_id) when is_binary(goal_id) do
+    from(p in Person,
+      join: g in assoc(p, :access_group),
+      join: b in assoc(g, :bindings),
+      join: c in assoc(b, :context),
+      where: c.goal_id == ^goal_id and is_nil(p.suspended_at) and b.access_level >= ^Binding.view_access(),
+      group_by: p.id,
+      select: %{person: p, access_level: max(b.access_level)}
+    )
+    |> Repo.all()
+    |> Enum.map(fn %{person: person, access_level: level} ->
+      %{person | access_level: level}
+    end)
   end
 
   defp goal_contribs_initial_query(goal_id, nil) do
