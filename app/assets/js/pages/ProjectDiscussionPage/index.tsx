@@ -10,14 +10,13 @@ import { ReactionList, useReactionsForm } from "@/features/Reactions";
 
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { PageModule } from "@/routes/types";
-import { assertPresent } from "@/utils/assertions";
 import { Avatar, IconEdit, CurrentSubscriptions } from "turboui";
 
 import Api from "@/api";
 import FormattedTime from "@/components/FormattedTime";
 import { RichContent } from "turboui";
 import { useMe, useMentionedPersonLookupFn } from "../../contexts/CurrentCompanyContext";
-import { usePaths } from "../../routes/paths";
+import { compareIds, usePaths } from "../../routes/paths";
 import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 
 export default { name: "ProjectDiscussionPage", loader, Page } as PageModule;
@@ -45,11 +44,10 @@ async function loader({ params }): Promise<LoaderResult> {
 function Page() {
   const { discussion } = Pages.useLoadedData<LoaderResult>();
 
-  assertPresent(discussion.notifications, "Discussion notifications must be defined");
-  useClearNotificationsOnLoad(discussion.notifications);
+  useClearNotificationsOnLoad(discussion.notifications || []);
 
   return (
-    <Pages.Page title={[discussion.title!, discussion.project!.name!]}>
+    <Pages.Page title={[discussion.title || "Discussion", discussion.project?.name || ""]}>
       <Paper.Root>
         <Nav />
 
@@ -73,11 +71,11 @@ function Options() {
 
   return (
     <PageOptions.Root testId="options">
-      {discussion.author!.id! === me!.id && (
+      {discussion.author && me && compareIds(discussion.author.id, me.id) && (
         <PageOptions.Link
           icon={IconEdit}
           title="Edit"
-          to={paths.projectDiscussionEditPath(discussion.id!)}
+          to={paths.projectDiscussionEditPath(discussion.id)}
           testId="edit"
           keepOutsideOnBigScreen
         />
@@ -92,7 +90,7 @@ function Content() {
 
   return (
     <div className="my-8">
-      <RichContent content={JSON.parse(discussion!.message!)} mentionedPersonLookup={peopleLookup} />
+      <RichContent content={JSON.parse(discussion.message || "{}")} mentionedPersonLookup={peopleLookup} />
     </div>
   );
 }
@@ -101,13 +99,22 @@ function Nav() {
   const paths = usePaths();
   const { discussion } = Pages.useLoadedData<LoaderResult>();
 
+  const items: Paper.NavigationItem[] = [];
+
+  if (discussion.space) {
+    items.push({ to: paths.spacePath(discussion.space.id), label: discussion.space.name });
+    items.push({ to: paths.spaceWorkMapPath(discussion.space.id, "projects"), label: "Projects" });
+  } else {
+    items.push({ to: paths.workMapPath("projects"), label: "Projects" });
+  }
+
+  if (discussion.project) {
+    items.push({ to: paths.projectPath(discussion.project.id, { tab: "overview" }), label: discussion.project.name });
+    items.push({ to: paths.projectPath(discussion.project.id, { tab: "discussions" }), label: "Discussions" });
+  }
+
   return (
-    <Paper.Navigation
-      items={[
-        { to: paths.spacePath(discussion.space!.id!), label: discussion.space!.name! },
-        { to: paths.projectPath(discussion.project!.id!, { tab: "discussions" }), label: discussion.project!.name! },
-      ]}
-    />
+    <Paper.Navigation items={items} />
   );
 }
 
@@ -116,12 +123,12 @@ function Title() {
 
   return (
     <div className="flex items-center gap-3">
-      <Avatar person={discussion.author!} size={50} />
+      {discussion.author && <Avatar person={discussion.author} size={50} />}
       <div>
-        <div className="text-content-accent text-2xl font-bold leading-tight">{discussion.title!}</div>
+        <div className="text-content-accent text-2xl font-bold leading-tight">{discussion.title}</div>
         <div className="inline-flex items-center gap-1">
-          <span>{discussion.author!.fullName!}</span>
-          on <FormattedTime time={discussion.insertedAt!} format="long-date" />
+          <span>{discussion.author?.fullName}</span>
+          on <FormattedTime time={discussion.insertedAt} format="long-date" />
         </div>
       </div>
     </div>
@@ -131,26 +138,23 @@ function Title() {
 function DiscussionReactions() {
   const { discussion } = Pages.useLoadedData<LoaderResult>();
 
-  assertPresent(discussion.reactions, "discussion.reactions must be present");
-  assertPresent(discussion.canComment, "discussion.canComment must be present");
 
-  const reactions = discussion.reactions.map((r) => r!);
-  const entity = Reactions.entity(discussion.id!, "comment_thread");
+  const reactions = (discussion.reactions || []).map((r) => r);
+  const entity = Reactions.entity(discussion.id, "comment_thread");
   const addReactionForm = useReactionsForm(entity, reactions);
 
-  return <ReactionList size={24} form={addReactionForm} canAddReaction={discussion.canComment} />;
+  return <ReactionList size={24} form={addReactionForm} canAddReaction={discussion.canComment || false} />;
 }
 
 function Comments() {
   const { discussion } = Pages.useLoadedData<LoaderResult>();
 
-  assertPresent(discussion.canComment, "discussion.canComment must be present");
-  const commentsForm = useComments({ thread: discussion, parentType: "comment_thread", project: discussion.project! });
+  const commentsForm = useComments({ thread: discussion, parentType: "comment_thread", project: discussion.project });
 
   return (
     <>
       <div className="border-t border-stroke-base mt-8" />
-      <CommentSection form={commentsForm} commentParentType="comment_thread" canComment={discussion.canComment!} />
+      <CommentSection form={commentsForm} commentParentType="comment_thread" canComment={discussion.canComment || false} />
     </>
   );
 }
