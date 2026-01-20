@@ -49,6 +49,17 @@ defmodule OperatelyWeb.Api.ProjectDiscussionsTest do
       assert {200, res} = query(ctx.conn, [:project_discussions, :get], %{id: id, include_space: true})
       assert res.discussion.space.id == Paths.space_id(ctx.marketing)
     end
+
+    test "include space returns nil when person cannot access the space", ctx do
+      ctx = Factory.add_project_contributor(ctx, :contributor, :project, :as_person)
+      ctx = Factory.add_project_discussion(ctx, :discussion, :project)
+      ctx = Factory.log_in_person(ctx, :contributor)
+
+      id = Paths.comment_thread_id(ctx.discussion)
+
+      assert {200, res} = query(ctx.conn, [:project_discussions, :get], %{id: id, include_space: true})
+      assert res.discussion.space == nil
+    end
   end
 
   describe "list project discussions" do

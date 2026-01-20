@@ -50,13 +50,34 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
     end
 
     defp after_load(conn, inputs) do
+      {:ok, person} = find_me(conn)
+
       Inputs.parse_includes(inputs,
-        include_unread_notifications: fn ct -> CommentThread.load_unread_notifications(ct, conn.assigns.current_person) end,
+        include_unread_notifications: fn ct -> CommentThread.load_unread_notifications(ct, person) end,
         include_project: &CommentThread.load_project/1,
-        include_space: &CommentThread.load_space/1,
+        include_space: fn ct -> load_space(person, ct) end,
         include_potential_subscribers: &CommentThread.set_potential_subscribers/1,
         include_permissions: &CommentThread.load_permissions/1
       )
+    end
+
+
+    def load_space(person, thread) do
+      thread = ensure_project_loaded(thread)
+
+      case Operately.Groups.Group.get(person, id: thread.project.group_id) do
+        {:ok, space} -> Map.put(thread, :space, space)
+        {:error, _} -> Map.put(thread, :space, nil)
+      end
+    end
+
+    defp ensure_project_loaded(thread) do
+      if thread.project do
+        thread
+      else
+        thread = CommentThread.load_project(thread)
+        if thread.project, do: thread, else: raise(ArgumentError, "Project could not be loaded")
+      end
     end
   end
 

@@ -8,7 +8,6 @@ import Forms from "@/components/Forms";
 import { DimmedLink, SubscribersSelector } from "turboui";
 import { useSubscriptionsAdapter } from "@/models/subscriptions";
 import { usePaths } from "../../routes/paths";
-import { assertPresent } from "../../utils/assertions";
 import { useForm } from "./useForm";
 
 export default { name: "ProjectDiscussionNewPage", loader, Page } as PageModule;
@@ -25,7 +24,7 @@ async function loader({ params }): Promise<LoaderResult> {
       includeReviewer: true,
       includeSpace: true,
       includePotentialSubscribers: true,
-    }).then((data) => data.project!),
+    }).then((data) => data.project),
   };
 }
 
@@ -33,7 +32,7 @@ function Page() {
   const { project } = Pages.useLoadedData<LoaderResult>();
 
   return (
-    <Pages.Page title={["New Discussion", project.name!]}>
+    <Pages.Page title={["New Discussion", project.name]}>
       <Paper.Root>
         <Nav />
         <Paper.Body>
@@ -47,25 +46,26 @@ function Page() {
 function Nav() {
   const paths = usePaths();
   const { project } = Pages.useLoadedData<LoaderResult>();
+  const items: Paper.NavigationItem[] = [];
 
-  return (
-    <Paper.Navigation
-      items={[
-        { to: paths.spacePath(project.space?.id!), label: project.space?.name! },
-        { to: paths.projectPath(project.id!, { tab: "discussions" }), label: project.name! },
-      ]}
-    />
-  );
+  if (project.space) {
+    items.push({ to: paths.spacePath(project.space.id), label: project.space.name });
+    items.push({ to: paths.spaceWorkMapPath(project.space.id, "projects"), label: "Projects" });
+  } else {
+    items.push({ to: paths.workMapPath("projects"), label: "Projects" });
+  }
+
+  items.push({ to: paths.projectPath(project.id, { tab: "overview" }), label: project.name });
+  items.push({ to: paths.projectPath(project.id, { tab: "discussions" }), label: "Discussions" });
+
+  return <Paper.Navigation items={items} />;
 }
 
 function Form() {
   const { project } = Pages.useLoadedData<LoaderResult>();
   const paths = usePaths();
 
-  assertPresent(project.potentialSubscribers, "potentialSubscribers must be present in project");
-  assertPresent(project.id, "project id must be present in project");
-
-  const subscriptionsState = useSubscriptionsAdapter(project.potentialSubscribers, {
+  const subscriptionsState = useSubscriptionsAdapter(project.potentialSubscribers || [], {
     ignoreMe: true,
     projectName: project.name,
   });
