@@ -108,6 +108,7 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
 
   step :assert_check_in_new_navigation_without_space, ctx do
     ctx
+    |> UI.assert_has(testid: UI.testid(["nav-item", "Work Map"]))
     |> UI.assert_has(testid: UI.testid(["nav-item", ctx.secret_project.name]))
     |> UI.assert_has(testid: UI.testid(["nav-item", "Check-Ins"]))
     |> UI.refute_has(testid: UI.testid(["nav-item", ctx.secret_space.name]))
