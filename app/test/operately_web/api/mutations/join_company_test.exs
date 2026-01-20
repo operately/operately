@@ -3,11 +3,15 @@ defmodule OperatelyWeb.Api.Mutations.JoinCompanyText do
 
   import Operately.InviteLinksFixtures
 
+  alias Operately.People
+  alias Operately.People.Account
+  alias Operately.Repo
+
   setup ctx do
     invite_link = personal_invite_link_fixture()
     token = invite_link.token
 
-    Map.put(ctx, :token, token)
+    Map.merge(ctx, %{token: token, invite_link: invite_link})
   end
 
   describe "join_company functionality" do
@@ -44,6 +48,25 @@ defmodule OperatelyWeb.Api.Mutations.JoinCompanyText do
 
       assert {200, res} = mutation(ctx.conn, :join_company, payload)
       assert res.result == "Password successfully changed"
+    end
+
+    test "succeeds when account already logged in and keeps first_login_at", ctx do
+      person = People.get_person!(ctx.invite_link.person_id) |> Repo.preload(:account)
+      {:ok, account} = People.mark_account_first_login(person.account)
+      first_login_at = account.first_login_at
+
+      payload = %{
+        token: ctx.token,
+        password: "Aa12345#&!123",
+        password_confirmation: "Aa12345#&!123"
+      }
+
+      assert {200, res} = mutation(ctx.conn, :join_company, payload)
+      assert res.result == "Password successfully changed"
+
+      account = Repo.get!(Account, account.id)
+      assert account.first_login_at == first_login_at
+      assert Account.valid_password?(account, payload.password)
     end
   end
 end 

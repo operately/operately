@@ -294,13 +294,13 @@ defmodule Operately.InviteLinksTest do
       member = Repo.preload(member, :account)
       account = member.account
 
-      assert member.has_open_invitation
+      assert is_nil(account.first_login_at)
 
       assert {:ok, person} = InviteLinks.join_company_via_invite_link(account, invite_link.token)
       assert person.id == member.id
 
-      reloaded_member = Repo.reload(member)
-      refute reloaded_member.has_open_invitation
+      reloaded_account = Repo.get!(Operately.People.Account, account.id)
+      assert reloaded_account.first_login_at
 
       reloaded_link = Repo.reload(invite_link)
       refute reloaded_link.is_active
@@ -326,7 +326,7 @@ defmodule Operately.InviteLinksTest do
                {:error, :invite_token_invalid}
     end
 
-    test "returns error when personal invite link member has no open invitation", ctx do
+    test "allows joining when personal invite link member already logged in", ctx do
       member =
         PeopleFixtures.person_fixture_with_account(%{
           company_id: ctx.company.id,
@@ -340,12 +340,19 @@ defmodule Operately.InviteLinksTest do
           person_id: member.id
         })
 
-      {:ok, member} = Operately.People.update_person(member, %{has_open_invitation: false})
       member = Repo.preload(member, :account)
       account = member.account
+      {:ok, _} = Operately.People.mark_account_first_login(account)
+      reloaded_account = Repo.get!(Operately.People.Account, account.id)
 
-      assert InviteLinks.join_company_via_invite_link(account, invite_link.token) ==
-               {:error, :invite_token_invalid}
+      assert {:ok, person} = InviteLinks.join_company_via_invite_link(account, invite_link.token)
+      assert person.id == member.id
+
+      latest_account = Repo.get!(Operately.People.Account, account.id)
+      assert latest_account.first_login_at == reloaded_account.first_login_at
+
+      reloaded_link = Repo.reload(invite_link)
+      refute reloaded_link.is_active
     end
   end
 end

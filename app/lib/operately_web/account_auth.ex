@@ -19,6 +19,8 @@ defmodule OperatelyWeb.AccountAuth do
   function to customize this behaviour.
   """
   def log_in_account(conn, account, params \\ %{}) do
+    People.mark_account_first_login(account)
+
     token = People.generate_account_session_token(account)
     path = params["redirect_to"] || get_session(conn, :redirect_to) || get_session(conn, :account_return_to) || after_login_path(account)
 

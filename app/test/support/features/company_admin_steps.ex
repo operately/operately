@@ -151,7 +151,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   end
 
   step :given_a_company_member_exists, ctx do
-    Factory.add_company_member(ctx, :member, name: "Member Memberson")
+    Factory.add_company_member(ctx, :member, name: "Member Memberson", has_open_invitation: false)
   end
 
   step :given_a_company_admin_exists, ctx do

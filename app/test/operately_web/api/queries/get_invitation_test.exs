@@ -3,6 +3,9 @@ defmodule OperatelyWeb.Api.Queries.GetInvitationTest do
 
   import Operately.InviteLinksFixtures
 
+  alias Operately.People
+  alias Operately.Repo
+
   describe "get_invitation functionality" do
     setup :register_and_log_in_account
 
@@ -29,12 +32,24 @@ defmodule OperatelyWeb.Api.Queries.GetInvitationTest do
 
     test "result includes member", %{conn: conn} do
       invite_link = personal_invite_link_fixture()
-      invite_link = Operately.Repo.preload(invite_link, [:person])
+      invite_link = Operately.Repo.preload(invite_link, [person: [:account]])
       token = invite_link.token
 
       assert {200, res} = query(conn, [:invitations, :get_invitation], %{"token" => token})
 
       assert res.member == Serializer.serialize(invite_link.person, level: :full)
+    end
+
+    test "returns invite even when account already logged in", %{conn: conn} do
+      invite_link = personal_invite_link_fixture()
+      invite_link = Operately.Repo.preload(invite_link, [person: [:account]])
+      person = invite_link.person
+      {:ok, _} = People.mark_account_first_login(person.account)
+
+      assert {200, res} = query(conn, [:invitations, :get_invitation], %{"token" => invite_link.token})
+
+      person = person.id |> People.get_person!() |> Repo.preload(:account)
+      assert res.member == Serializer.serialize(person, level: :full)
     end
   end
 end

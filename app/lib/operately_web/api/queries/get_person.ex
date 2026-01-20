@@ -5,11 +5,12 @@ defmodule OperatelyWeb.Api.Queries.GetPerson do
   alias Operately.People.Person
 
   inputs do
-    field? :id, :id, null: true
-    field? :include_manager, :boolean, null: true
-    field? :include_reports, :boolean, null: true
-    field? :include_peers, :boolean, null: true
-    field? :include_permissions, :boolean, null: true
+    field :id, :id, null: false
+    field? :include_manager, :boolean, null: false
+    field? :include_reports, :boolean, null: false
+    field? :include_peers, :boolean, null: false
+    field? :include_permissions, :boolean, null: false
+    field? :include_account, :boolean, null: false
   end
 
   outputs do
@@ -30,10 +31,11 @@ defmodule OperatelyWeb.Api.Queries.GetPerson do
     ])
   end
 
-   def preload(inputs) do
+  def preload(inputs) do
     Inputs.parse_includes(inputs, [
       include_manager: [:manager],
       include_reports: [:reports],
+      include_account: [:account],
     ])
   end
 

@@ -132,6 +132,24 @@ defmodule OperatelyWeb.Api.Queries.GetPeopleTest do
       assert find_person_in_response(res.people, person).invite_link ==
                Serializer.serialize(invite_link, level: :essential)
     end
+
+    test "include_account populates has_open_invitation based on first_login_at", ctx do
+      invited = person_fixture_with_account(%{company_id: ctx.company.id, full_name: "Invited Member", has_open_invitation: true})
+      active = person_fixture_with_account(%{company_id: ctx.company.id, full_name: "Active Member", has_open_invitation: false})
+
+      assert {200, res} = query(ctx.conn, :get_people, %{include_account: true})
+
+      assert find_person_in_response(res.people, invited).has_open_invitation == true
+      assert find_person_in_response(res.people, active).has_open_invitation == false
+    end
+
+    test "omitting include_account leaves has_open_invitation unset", ctx do
+      invited = person_fixture_with_account(%{company_id: ctx.company.id, full_name: "Unloaded Member", has_open_invitation: true})
+
+      assert {200, res} = query(ctx.conn, :get_people, %{})
+
+      assert is_nil(find_person_in_response(res.people, invited).has_open_invitation)
+    end
   end
 
   defp find_person_in_response(people, person) do
