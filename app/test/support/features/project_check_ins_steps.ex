@@ -1,6 +1,7 @@
 defmodule Operately.Support.Features.ProjectCheckInsSteps do
   use Operately.FeatureCase
 
+  alias Operately.Access.Binding
   alias Operately.Support.Features.UI
   alias Operately.Support.Features.FeedSteps
   alias Operately.Support.Features.EmailSteps
@@ -33,6 +34,15 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     end)
   end
 
+  step :given_project_in_secret_space_for_champion, ctx do
+    ctx
+    |> Factory.add_company_member(:champion)
+    |> Factory.add_company_member(:reviewer)
+    |> Factory.add_space(:secret_space, company_permissions: Binding.no_access())
+    |> Factory.add_project(:secret_project, :secret_space, champion: :champion, reviewer: :reviewer)
+    |> Factory.log_in_person(:champion)
+  end
+
   step :log_in_as_champion, ctx do
     ctx
     |> UI.login_as(ctx.creator)
@@ -44,9 +54,11 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     ctx |> UI.login_as(person)
   end
 
-  step :submit_check_in, ctx, %{status: status, description: description} do
+  step :submit_check_in, ctx, %{status: status, description: description} = params do
+    project = Map.fetch!(ctx, Map.get(params, :project_key, :project))
+
     ctx
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.visit(Paths.project_path(ctx.company, project))
     |> UI.click(testid: "tab-check-ins")
     |> UI.click(testid: "check-in-button")
     |> UI.click(testid: "status-dropdown")
@@ -56,7 +68,7 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> UI.sleep(300)
     |> UI.assert_has(testid: "project-check-in-page")
     |> then(fn ctx ->
-      check_in = Operately.Projects.CheckIn.get!(:system, project_id: ctx.project.id)
+      check_in = Operately.Projects.CheckIn.get!(:system, project_id: project.id)
       Map.put(ctx, :check_in, check_in)
     end)
   end
@@ -85,6 +97,28 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> UI.assert_has(testid: UI.testid(["nav-item", "Work Map"]))
     |> UI.assert_has(testid: UI.testid(["nav-item", ctx.project.name]))
     |> UI.assert_has(testid: UI.testid(["nav-item", "Check-Ins"]))
+  end
+
+  step :visit_project_check_in_new_page, ctx, project_key \\ :project do
+    project = Map.fetch!(ctx, project_key)
+
+    ctx
+    |> UI.visit(Paths.project_check_in_new_path(ctx.company, project))
+  end
+
+  step :assert_check_in_new_navigation_without_space, ctx do
+    ctx
+    |> UI.assert_has(testid: UI.testid(["nav-item", ctx.secret_project.name]))
+    |> UI.assert_has(testid: UI.testid(["nav-item", "Check-Ins"]))
+    |> UI.refute_has(testid: UI.testid(["nav-item", ctx.secret_space.name]))
+  end
+
+  step :assert_check_in_navigation_without_space, ctx do
+    ctx
+    |> UI.assert_has(testid: UI.testid(["nav-item", "Work Map"]))
+    |> UI.assert_has(testid: UI.testid(["nav-item", ctx.secret_project.name]))
+    |> UI.assert_has(testid: UI.testid(["nav-item", "Check-Ins"]))
+    |> UI.refute_has(testid: UI.testid(["nav-item", ctx.secret_space.name]))
   end
 
   step :assert_check_in_visible_on_project_page, ctx, %{description: description} do

@@ -87,6 +87,33 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckInTest do
       assert {404, res} = query(ctx.conn, :get_project_check_in, %{id: check_in.id})
       assert res.message == "The requested resource was not found"
     end
+
+    test "space is not loaded when requester cannot access it", ctx do
+      check_in = create_check_in(ctx, company_access: Binding.view_access())
+
+      assert {200, res} = query(ctx.conn, :get_project_check_in, %{
+        id: check_in.id,
+        include_space: true,
+      })
+
+      assert res.project_check_in.space == nil
+
+      space_member = person_fixture_with_account(%{company_id: ctx.company.id})
+
+      {:ok, _} = Operately.Groups.add_members(space_member, ctx.space.id, [
+        %{id: space_member.id, access_level: Binding.view_access()},
+      ])
+
+      account = Repo.preload(space_member, :account).account
+      conn = log_in_account(ctx.conn, account)
+
+      assert {200, res} = query(conn, :get_project_check_in, %{
+        id: check_in.id,
+        include_space: true,
+      })
+
+      assert res.project_check_in.space == Serializer.serialize(ctx.space, level: :essential)
+    end
   end
 
   describe "get_project_check_in functionality" do
