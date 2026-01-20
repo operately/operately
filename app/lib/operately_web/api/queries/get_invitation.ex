@@ -23,9 +23,9 @@ defmodule OperatelyWeb.Api.Queries.GetInvitation do
 
   defp fetch_invitation(token) do
     with(
-      {:ok, invite_link} <- InviteLinks.get_personal_invite_link_by_token(token, preload: [:author, :person, :company]),
+      {:ok, invite_link} <- InviteLinks.get_personal_invite_link_by_token(token, preload: [:author, :company, person: [:account]]),
       {:ok, _invite_link} <- InviteLinks.validate_personal_invite_link(invite_link),
-      true <- invite_link.person && invite_link.person.has_open_invitation
+      true <- not is_nil(invite_link.person)
     ) do
       invite_link
     else

@@ -21,16 +21,21 @@ defmodule Operately.PeopleFixtures do
   end
 
   def person_fixture_with_account(attrs \\ %{}) do
+    {open_invitation, attrs} = Map.pop(attrs, :has_open_invitation)
     email = attrs[:email] || unique_account_email(attrs[:full_name])
     password = attrs[:password] || valid_account_password()
 
     account = account_fixture(%{
-      email: email, 
+      email: email,
       password: password,
       full_name: attrs[:full_name] || "John Doe"
     })
 
-    person_fixture(Map.merge(attrs, %{account_id: account.id, email: email}))
+    person = person_fixture(Map.merge(attrs, %{account_id: account.id, email: email}))
+
+    maybe_mark_first_login(account, open_invitation)
+
+    person
   end
 
   def unique_account_email(), do: "account#{System.unique_integer()}@example.com"
@@ -59,6 +64,10 @@ defmodule Operately.PeopleFixtures do
 
     account
   end
+
+  defp maybe_mark_first_login(_account, nil), do: :ok
+  defp maybe_mark_first_login(_account, true), do: :ok
+  defp maybe_mark_first_login(account, false), do: Operately.People.mark_account_first_login(account)
 
   def extract_account_token(fun) do
     {:ok, captured_email} = fun.(&"[TOKEN]#{&1}[TOKEN]")

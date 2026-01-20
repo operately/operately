@@ -19,7 +19,7 @@ defmodule Operately.Support.Features.InviteMemberSteps do
 
   step :given_that_an_account_exists_in_another_company, ctx, attrs do
     company = company_fixture()
-    person_fixture_with_account(%{company_id: company.id, email: attrs.email, full_name: attrs.fullName})
+    person_fixture_with_account(%{company_id: company.id, email: attrs.email, full_name: attrs.fullName, has_open_invitation: false})
     ctx
   end
 

@@ -17,7 +17,6 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
       email: data.email,
       avatar_url: data.avatar_url,
       title: data.title,
-      has_open_invitation: data.has_open_invitation
     }
     |> then(fn map ->
       case data.access_level do
@@ -39,7 +38,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
       manager: OperatelyWeb.Api.Serializer.serialize(data.manager),
       reports: OperatelyWeb.Api.Serializer.serialize(data.reports),
       peers: OperatelyWeb.Api.Serializer.serialize(data.peers),
-      has_open_invitation: data.has_open_invitation,
+      has_open_invitation: has_open_invitation(data),
       permissions: OperatelyWeb.Api.Serializer.serialize(data.permissions),
       invite_link: OperatelyWeb.Api.Serializer.serialize(data.invite_link),
       agent_def: data.agent_def && OperatelyWeb.Api.Serializer.serialize(data.agent_def, level: :full),
@@ -50,4 +49,9 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
   defp find_access_level(bindings) do
     Enum.max_by(bindings, & &1.access_level).access_level
   end
+
+  defp has_open_invitation(%{account: nil}), do: false
+  defp has_open_invitation(%{account: %{first_login_at: nil}}), do: true
+  defp has_open_invitation(%{account: %{first_login_at: _}}), do: false
+  defp has_open_invitation(_), do: nil
 end
