@@ -362,6 +362,18 @@ export class Paths {
     return this.createCompanyPath(["goals", goalId]) + (params?.tab ? "?tab=" + params.tab : "");
   }
 
+  goalAccessManagementPath(goalId: string) {
+    return this.createCompanyPath(["goals", goalId, "access"]);
+  }
+
+  goalAccessAddPath(goalId: string) {
+    return this.createCompanyPath(["goals", goalId, "access", "add"]);
+  }
+
+  goalEditPermissionsPath(goalId: string) {
+    return this.createCompanyPath(["goals", goalId, "edit", "permissions"]);
+  }
+
   goalMarkdownExportPath(goalId: string) {
     return this.createCompanyPath(["exports", "markdown", "goals", goalId]);
   }
