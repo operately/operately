@@ -62,4 +62,25 @@ defmodule Operately.Features.ProjectDiscussionTest do
     |> Steps.save_discussion_edit()
     |> Steps.assert_discussion_updated("Updated content")
   end
+
+  describe "project discussions pages preload access" do
+    feature "project discussion new page hides space navigation when space is not accessible", ctx do
+      ctx
+      |> Steps.given_project_in_secret_space_for_champion()
+      |> Steps.visit_project_page(:secret_project)
+      |> Steps.click_new_discussion()
+      |> Steps.assert_project_discussion_new_navigation_without_space()
+    end
+
+    feature "creating a project discussion works when space is not accessible", ctx do
+      ctx
+      |> Steps.given_project_in_secret_space_for_champion()
+      |> Steps.visit_project_page(:secret_project)
+      |> Steps.click_new_discussion()
+      |> Steps.fill_in_discussion_title("Secret discussion")
+      |> Steps.fill_in_discussion_content("Discussion content goes here")
+      |> Steps.submit_discussion()
+      |> Steps.assert_project_discussion_navigation_without_space()
+    end
+  end
 end

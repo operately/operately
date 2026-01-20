@@ -1,6 +1,7 @@
 defmodule Operately.Support.Features.ProjectDiscussionSteps do
   use Operately.FeatureCase
   alias Operately.Support.RichText
+  alias Operately.Access.Binding
 
   import Ecto.Query, only: [from: 2]
 
@@ -17,6 +18,15 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
     |> Factory.log_in_person(:creator)
   end
 
+  step :given_project_in_secret_space_for_champion, ctx do
+    ctx
+    |> Factory.add_company_member(:champion)
+    |> Factory.add_company_member(:reviewer)
+    |> Factory.add_space(:secret_space, company_permissions: Binding.no_access())
+    |> Factory.add_project(:secret_project, :secret_space, champion: :champion, reviewer: :reviewer)
+    |> Factory.log_in_person(:champion)
+  end
+
   step :given_several_discussions_exist, ctx do
     ctx
     |> Factory.add_project_discussion(:discussion1, :project, title: "Discussion 1", message: "Content for discussion 1")
@@ -24,8 +34,10 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
     |> Factory.add_project_discussion(:discussion3, :project, title: "Discussion 3", message: "Content for discussion 3")
   end
 
-  step :visit_project_page, ctx do
-    ctx |> UI.visit(OperatelyWeb.Paths.project_path(ctx.company, ctx.project, tab: "discussions"))
+  step :visit_project_page, ctx, project_key \\ :project do
+    project = Map.fetch!(ctx, project_key)
+
+    ctx |> UI.visit(OperatelyWeb.Paths.project_path(ctx.company, project, tab: "discussions"))
   end
 
   step :visit_discussion_page, ctx do
@@ -53,6 +65,22 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
     ctx
     |> UI.assert_text("Existing Discussion")
     |> UI.assert_text("Content for existing discussion")
+  end
+
+  step :assert_project_discussion_new_navigation_without_space, ctx do
+    ctx
+    |> UI.assert_has(testid: UI.testid(["nav-item", "Projects"]))
+    |> UI.assert_has(testid: UI.testid(["nav-item", ctx.secret_project.name]))
+    |> UI.assert_has(testid: UI.testid(["nav-item", "Discussions"]))
+    |> UI.refute_has(testid: UI.testid(["nav-item", ctx.secret_space.name]))
+  end
+
+  step :assert_project_discussion_navigation_without_space, ctx do
+    ctx
+    |> UI.assert_has(testid: UI.testid(["nav-item", "Projects"]))
+    |> UI.assert_has(testid: UI.testid(["nav-item", ctx.secret_project.name]))
+    |> UI.assert_has(testid: UI.testid(["nav-item", "Discussions"]))
+    |> UI.refute_has(testid: UI.testid(["nav-item", ctx.secret_space.name]))
   end
 
   step :click_new_discussion, ctx do
