@@ -103,9 +103,9 @@ function Nav() {
 
   if (discussion.space) {
     items.push({ to: paths.spacePath(discussion.space.id), label: discussion.space.name });
-    items.push({ to: paths.spaceWorkMapPath(discussion.space.id, "projects"), label: "Projects" });
+    items.push({ to: paths.spaceWorkMapPath(discussion.space.id, "projects"), label: "Work Map" });
   } else {
-    items.push({ to: paths.workMapPath("projects"), label: "Projects" });
+    items.push({ to: paths.workMapPath("projects"), label: "Work Map" });
   }
 
   if (discussion.project) {

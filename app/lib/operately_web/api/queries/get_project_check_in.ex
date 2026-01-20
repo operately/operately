@@ -6,13 +6,14 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
   alias Operately.Notifications.UnreadNotificationsLoader
 
   inputs do
-    field? :id, :string, null: true
-    field? :include_author, :boolean, null: true
-    field? :include_acknowledged_by, :boolean, null: true
-    field? :include_project, :boolean, null: true
-    field? :include_reactions, :boolean, null: true
-    field? :include_subscriptions_list, :boolean, null: true
-    field? :include_potential_subscribers, :boolean, null: true
+    field :id, :string, null: false
+    field? :include_author, :boolean, null: false
+    field? :include_acknowledged_by, :boolean, null: false
+    field? :include_project, :boolean, null: false
+    field? :include_space, :boolean, null: false
+    field? :include_reactions, :boolean, null: false
+    field? :include_subscriptions_list, :boolean, null: false
+    field? :include_potential_subscribers, :boolean, null: false
     field? :include_unread_notifications, :boolean, null: true
   end
 
@@ -41,6 +42,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
   defp load(ctx, inputs) do
     CheckIn.get(ctx.me, id: ctx.id, opts: [
       preload: preload(inputs),
+      auth_preload: auth_preload(inputs),
       after_load: after_load(inputs, ctx.me),
     ])
   end
@@ -49,9 +51,15 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
     Inputs.parse_includes(inputs, [
       include_author: [:author],
       include_acknowledged_by: [:acknowledged_by],
-      include_project: [project: [:group, :champion, :reviewer, [contributors: :person]]],
+      include_project: [project: [:champion, :reviewer, [contributors: :person]]],
       include_reactions: [reactions: :person],
       include_subscriptions_list: :subscription_list,
+    ])
+  end
+
+  defp auth_preload(inputs) do
+    Inputs.parse_includes(inputs, [
+      include_space: [:space],
     ])
   end
 
