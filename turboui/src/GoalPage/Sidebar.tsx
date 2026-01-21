@@ -104,6 +104,10 @@ function CompletedOn(props: GoalPage.State) {
 }
 
 function ParentGoal(props: GoalPage.State) {
+  if (!props.parentGoal && !props.canEditParentGoal) {
+    return null;
+  }
+
   return (
     <SidebarSection title="Parent Goal">
       <GoalField
@@ -111,7 +115,8 @@ function ParentGoal(props: GoalPage.State) {
         goal={props.parentGoal}
         setGoal={props.setParentGoal}
         searchGoals={props.parentGoalSearch}
-        emptyStateMessage="No parent goal"
+        readonly={!props.canEditParentGoal}
+        emptyStateMessage="Set parent goal"
         emptyStateReadOnlyMessage="No parent goal"
       />
     </SidebarSection>
