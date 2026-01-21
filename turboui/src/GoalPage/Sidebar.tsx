@@ -323,6 +323,13 @@ function Privacy(props: GoalPage.State) {
         resourceType={"goal"}
         readonly={!props.canEdit}
       />
+      {props.canEditAccessLevel && props.manageAccessLink && (
+        <div className="mt-3">
+          <SecondaryButton linkTo={props.manageAccessLink} size="xs" testId="manage-goal-access-button">
+            Manage access
+          </SecondaryButton>
+        </div>
+      )}
     </SidebarSection>
   );
 }
