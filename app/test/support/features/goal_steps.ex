@@ -89,6 +89,40 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx |> UI.refute_has(testid: "move-to-another-space")
   end
 
+  step :given_goal_with_hidden_parent_goal, ctx do
+    ctx
+    |> Factory.add_company_member(:company_member)
+    |> Factory.add_space(:space)
+    |> Factory.add_goal(:hidden_parent_goal, :space, name: "Hidden Parent Goal", company_access: Binding.no_access(), space_access: Binding.no_access())
+    |> Factory.add_goal(:goal, :space, name: "Child goal", champion: :company_member, parent_goal: :hidden_parent_goal)
+  end
+
+  step :assert_company_member_cant_see_parent_goal, ctx do
+    assert {:error, :not_found} = Operately.Goals.Goal.get(ctx.company_member, id: ctx.hidden_parent_goal.id)
+
+    ctx
+  end
+
+  step :login_as_company_member, ctx do
+    UI.login_as(ctx, ctx.company_member)
+  end
+
+  step :assert_goal_has_parent_goal, ctx do
+    goal = Operately.Repo.reload(ctx.goal)
+
+    assert goal.parent_goal_id == ctx.hidden_parent_goal.id
+
+    ctx
+  end
+
+  step :assert_parent_goal_field_not_rendered, ctx do
+    ctx |> UI.refute_has(testid: "parent-goal-field")
+  end
+
+  step :assert_goal_page_loaded, ctx do
+    ctx |> UI.assert_has(testid: "goal-page")
+  end
+
   #
   # Description
   #

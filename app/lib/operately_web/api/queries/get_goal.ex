@@ -85,7 +85,6 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
       include_last_check_in: [last_update: [:author, [reactions: :person]]],
       include_checklist: [:checks],
       always_include: [targets: from(t in Target, order_by: t.index)],
-      always_include: :parent_goal,
       always_include: [checks: from(c in Operately.Goals.Check, order_by: c.index)]
     )
   end
@@ -94,7 +93,8 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
     Inputs.parse_includes(inputs,
       include_potential_subscribers: [group: :members],
       include_space: [:group],
-      include_space_members: [group: [:members, :company]]
+      include_space_members: [group: [:members, :company]],
+      always_include: :parent_goal
     )
   end
 

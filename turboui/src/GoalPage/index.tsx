@@ -107,6 +107,7 @@ export namespace GoalPage {
     parentGoal: ParentGoal | null;
     setParentGoal: (goal: ParentGoal | null) => void;
     parentGoalSearch: (params: { query: string }) => Promise<ParentGoal[]>;
+    canEditParentGoal?: boolean;
 
     champion: Person | null;
     setChampion: (person: Person | null) => void;

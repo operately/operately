@@ -509,6 +509,58 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
     end
   end
 
+  describe "parent goal access" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+      space = group_fixture(creator, %{company_id: ctx.company.id})
+
+      Map.merge(ctx, %{space: space, creator: creator})
+    end
+
+    test "parent goal is returned when user has access to it", ctx do
+      parent_goal =
+        goal_fixture(ctx.creator, %{
+          space_id: ctx.space.id,
+          company_access_level: Binding.view_access()
+        })
+
+      child_goal =
+        goal_fixture(ctx.creator, %{
+          space_id: ctx.space.id,
+          parent_goal_id: parent_goal.id,
+          company_access_level: Binding.view_access()
+        })
+
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(child_goal)})
+      assert res.goal.parent_goal.id == Paths.goal_id(parent_goal)
+    end
+
+    test "parent goal is not returned when user has no access to it", ctx do
+      parent_goal =
+        goal_fixture(ctx.creator, %{
+          space_id: ctx.space.id,
+          company_access_level: Binding.no_access(),
+          space_access_level: Binding.no_access()
+        })
+
+      child_goal =
+        goal_fixture(ctx.creator, %{
+          space_id: ctx.space.id,
+          parent_goal_id: parent_goal.id,
+          company_access_level: Binding.view_access()
+        })
+
+      # Verify the child goal has a parent goal in the database
+      child_goal = Operately.Repo.preload(child_goal, :parent_goal)
+      assert child_goal.parent_goal_id == parent_goal.id
+
+      # But the API should not return the parent goal since user has no access
+      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(child_goal)})
+      assert res.goal.parent_goal == nil
+    end
+  end
+
   #
   # Helpers
   #
