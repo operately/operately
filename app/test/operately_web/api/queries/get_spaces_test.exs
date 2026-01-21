@@ -107,18 +107,20 @@ defmodule OperatelyWeb.Api.Queries.GetSpacesTest do
       end)
     end
 
-    test "only returns human members", ctx do
+    test "includes guests and excludes ai members", ctx do
       ctx =
         ctx
         |> Factory.add_space(:space)
         |> Factory.add_space_member(:human, :space, person_type: :human)
+        |> Factory.add_space_member(:guest, :space, person_type: :guest)
         |> Factory.add_space_member(:ai, :space, person_type: :ai)
 
       assert {200, res} = query(ctx.conn, :get_spaces, %{include_members: true})
 
       assert space_res = Enum.find(res.spaces, &(&1.id == Paths.space_id(ctx.space)))
-      assert length(space_res.members) == 2 # 1 creator (ctx.person) + 1 added human
+      assert length(space_res.members) == 3 # 1 creator (ctx.person) + 1 added human + 1 guest
       assert Enum.find(space_res.members, &(&1.id == Paths.person_id(ctx.human)))
+      assert Enum.find(space_res.members, &(&1.id == Paths.person_id(ctx.guest)))
       refute Enum.find(space_res.members, &(&1.id == Paths.person_id(ctx.ai)))
     end
   end

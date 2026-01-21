@@ -3,7 +3,7 @@ defmodule Operately.Groups.Member do
 
   schema "members" do
     belongs_to :group, Operately.Groups.Group
-    belongs_to :person, Operately.People.Person, where: [suspended_at: nil, type: :human]
+    belongs_to :person, Operately.People.Person, where: [suspended_at: nil, type: {:fragment, "? != 'ai'"}]
 
     timestamps()
   end
