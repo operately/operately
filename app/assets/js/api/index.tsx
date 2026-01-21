@@ -1221,11 +1221,16 @@ export interface GoalEditingUpdatedTarget {
 }
 
 export interface GoalPermissions {
-  canEdit?: boolean | null;
-  canCheckIn?: boolean | null;
-  canClose?: boolean | null;
-  canArchive?: boolean | null;
-  canDelete?: boolean | null;
+  canView: boolean;
+  canEdit: boolean;
+  canCheckIn: boolean;
+  canClose: boolean;
+  canArchive: boolean;
+  canReopen: boolean;
+  canDelete: boolean;
+  canOpenDiscussion: boolean;
+  canEditDiscussion: boolean;
+  canEditAccessLevel: boolean;
 }
 
 export interface GoalProgressUpdate {
@@ -2732,6 +2737,14 @@ export interface GoalsGetDiscussionsResult {
   discussions: Discussion[] | null;
 }
 
+export interface GoalsListAccessMembersInput {
+  goalId: Id;
+}
+
+export interface GoalsListAccessMembersResult {
+  people: Person[] | null;
+}
+
 export interface GoalsParentGoalSearchInput {
   query: string;
   goalId: Id;
@@ -3638,6 +3651,15 @@ export interface EditSubscriptionsListInput {
 
 export interface EditSubscriptionsListResult {}
 
+export interface GoalsAddAccessMembersInput {
+  goalId: Id;
+  members: AddMemberInput[];
+}
+
+export interface GoalsAddAccessMembersResult {
+  success: boolean | null;
+}
+
 export interface GoalsAddCheckInput {
   goalId: Id;
   name: string;
@@ -3679,6 +3701,15 @@ export interface GoalsDeleteTargetResult {
   success: boolean | null;
 }
 
+export interface GoalsRemoveAccessMemberInput {
+  goalId: Id;
+  personId: Id;
+}
+
+export interface GoalsRemoveAccessMemberResult {
+  success: boolean | null;
+}
+
 export interface GoalsToggleCheckInput {
   goalId: Id;
   checkId: Id;
@@ -3694,6 +3725,16 @@ export interface GoalsUpdateAccessLevelsInput {
 }
 
 export interface GoalsUpdateAccessLevelsResult {
+  success: boolean | null;
+}
+
+export interface GoalsUpdateAccessMemberInput {
+  goalId: Id;
+  personId: Id;
+  accessLevel: number;
+}
+
+export interface GoalsUpdateAccessMemberResult {
   success: boolean | null;
 }
 
@@ -5288,8 +5329,16 @@ class ApiNamespaceGoals {
     return this.client.get("/goals/get_discussions", input);
   }
 
+  async listAccessMembers(input: GoalsListAccessMembersInput): Promise<GoalsListAccessMembersResult> {
+    return this.client.get("/goals/list_access_members", input);
+  }
+
   async parentGoalSearch(input: GoalsParentGoalSearchInput): Promise<GoalsParentGoalSearchResult> {
     return this.client.get("/goals/parent_goal_search", input);
+  }
+
+  async addAccessMembers(input: GoalsAddAccessMembersInput): Promise<GoalsAddAccessMembersResult> {
+    return this.client.post("/goals/add_access_members", input);
   }
 
   async addCheck(input: GoalsAddCheckInput): Promise<GoalsAddCheckResult> {
@@ -5308,12 +5357,20 @@ class ApiNamespaceGoals {
     return this.client.post("/goals/delete_target", input);
   }
 
+  async removeAccessMember(input: GoalsRemoveAccessMemberInput): Promise<GoalsRemoveAccessMemberResult> {
+    return this.client.post("/goals/remove_access_member", input);
+  }
+
   async toggleCheck(input: GoalsToggleCheckInput): Promise<GoalsToggleCheckResult> {
     return this.client.post("/goals/toggle_check", input);
   }
 
   async updateAccessLevels(input: GoalsUpdateAccessLevelsInput): Promise<GoalsUpdateAccessLevelsResult> {
     return this.client.post("/goals/update_access_levels", input);
+  }
+
+  async updateAccessMember(input: GoalsUpdateAccessMemberInput): Promise<GoalsUpdateAccessMemberResult> {
+    return this.client.post("/goals/update_access_member", input);
   }
 
   async updateChampion(input: GoalsUpdateChampionInput): Promise<GoalsUpdateChampionResult> {
@@ -7996,6 +8053,11 @@ export default {
   },
 
   goals: {
+    listAccessMembers: (input: GoalsListAccessMembersInput) =>
+      defaultApiClient.apiNamespaceGoals.listAccessMembers(input),
+    useListAccessMembers: (input: GoalsListAccessMembersInput) =>
+      useQuery<GoalsListAccessMembersResult>(() => defaultApiClient.apiNamespaceGoals.listAccessMembers(input)),
+
     parentGoalSearch: (input: GoalsParentGoalSearchInput) => defaultApiClient.apiNamespaceGoals.parentGoalSearch(input),
     useParentGoalSearch: (input: GoalsParentGoalSearchInput) =>
       useQuery<GoalsParentGoalSearchResult>(() => defaultApiClient.apiNamespaceGoals.parentGoalSearch(input)),
@@ -8012,6 +8074,13 @@ export default {
     useUpdateName: () =>
       useMutation<GoalsUpdateNameInput, GoalsUpdateNameResult>((input) =>
         defaultApiClient.apiNamespaceGoals.updateName(input),
+      ),
+
+    updateAccessMember: (input: GoalsUpdateAccessMemberInput) =>
+      defaultApiClient.apiNamespaceGoals.updateAccessMember(input),
+    useUpdateAccessMember: () =>
+      useMutation<GoalsUpdateAccessMemberInput, GoalsUpdateAccessMemberResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.updateAccessMember(input),
       ),
 
     updateTargetIndex: (input: GoalsUpdateTargetIndexInput) =>
@@ -8118,6 +8187,19 @@ export default {
     useUpdateChampion: () =>
       useMutation<GoalsUpdateChampionInput, GoalsUpdateChampionResult>((input) =>
         defaultApiClient.apiNamespaceGoals.updateChampion(input),
+      ),
+
+    removeAccessMember: (input: GoalsRemoveAccessMemberInput) =>
+      defaultApiClient.apiNamespaceGoals.removeAccessMember(input),
+    useRemoveAccessMember: () =>
+      useMutation<GoalsRemoveAccessMemberInput, GoalsRemoveAccessMemberResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.removeAccessMember(input),
+      ),
+
+    addAccessMembers: (input: GoalsAddAccessMembersInput) => defaultApiClient.apiNamespaceGoals.addAccessMembers(input),
+    useAddAccessMembers: () =>
+      useMutation<GoalsAddAccessMembersInput, GoalsAddAccessMembersResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.addAccessMembers(input),
       ),
 
     updateReviewer: (input: GoalsUpdateReviewerInput) => defaultApiClient.apiNamespaceGoals.updateReviewer(input),

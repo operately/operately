@@ -84,6 +84,27 @@ defmodule OperatelyWeb.Api.GoalsTest do
       assert_includes_person(res.people, ctx.member.id, :edit_access)
       assert_includes_person(res.people, ctx.creator.id, :full_access)
     end
+
+    test "returns people with direct access bindings including champion and reviewer", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space(:space)
+        |> Factory.add_company_member(:member)
+        |> Factory.add_company_member(:champion)
+        |> Factory.add_company_member(:reviewer)
+        |> Factory.add_goal(:goal_with_roles, :space, champion: :champion, reviewer: :reviewer)
+        |> Factory.log_in_person(:champion)
+
+      context = Access.get_context!(goal_id: ctx.goal_with_roles.id)
+      {:ok, _} = Access.bind_person(context, ctx.member.id, Binding.edit_access())
+
+      assert {200, res} = query(ctx.conn, [:goals, :list_access_members], %{goal_id: Paths.goal_id(ctx.goal_with_roles)})
+
+      assert length(res.people) == 3
+      assert_includes_person(res.people, ctx.champion.id, :full_access)
+      assert_includes_person(res.people, ctx.reviewer.id, :full_access)
+      assert_includes_person(res.people, ctx.member.id, :edit_access)
+    end
   end
 
   describe "add access members" do
