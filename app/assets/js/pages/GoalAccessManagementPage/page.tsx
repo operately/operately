@@ -57,7 +57,7 @@ function Title() {
   const paths = usePaths();
   const { goal } = useLoadedData();
 
-  const canEdit = goal.permissions?.canEdit ?? false;
+  const canEdit = goal.permissions?.canEditAccessLevel ?? false;
   const addPath = paths.goalAccessAddPath(goal.id);
 
   return (
