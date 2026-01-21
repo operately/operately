@@ -1,0 +1,13 @@
+<%= title("#{short_name(@author)} invited you as a guest to #{@company.name}") %>
+
+<%= spacer() %>
+
+<%= row do %>
+  You now have guest access to <%= @company.name %>.
+<% end %>
+
+<%= spacer() %>
+
+<%= row do %>
+  <%= cta_button(@login_url, "Log in to Operately") %>
+<% end %>

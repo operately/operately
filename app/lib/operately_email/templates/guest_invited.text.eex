@@ -1,0 +1,5 @@
+<%= short_name(@author) %> invited you as a guest to <%= @company.name %>.
+
+You now have guest access to <%= @company.name %>.
+
+Log in to Operately: <%= @login_url %>
