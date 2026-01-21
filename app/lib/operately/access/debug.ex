@@ -34,6 +34,8 @@ defmodule Operately.Access.Debug do
     case binding.access_level do
       10 -> "view    "
       40 -> "comment "
+      55 -> "contrib "
+      70 -> "edit    "
       100 -> "full    "
       other -> "unknown #{other}"
     end
