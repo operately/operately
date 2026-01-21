@@ -30,6 +30,11 @@ defmodule OperatelyWeb.EmailPreview do
     preview :no_reviewer
   end
 
+  group "guest-invited", module: Previews.GuestInvited do
+    preview :new_account, label: "New Account"
+    preview :existing_account, label: "Existing Account"
+  end
+
   get "/*_path" do
     OperatelyWeb.EmailPreview.Router.call(conn, __MODULE__)
   end
