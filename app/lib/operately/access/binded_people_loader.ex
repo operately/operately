@@ -8,7 +8,7 @@ defmodule Operately.Access.BindedPeopleLoader do
   alias Operately.Access.Binding
 
   @type context_id :: binary()
-  @type access_level :: :any | :view_access | :comment_access | :edit_access | :full_access
+  @type access_level :: :any | :view_access | :comment_access | :contribute_access | :edit_access | :full_access
 
   def load(access_content_id), do: load(access_content_id, :any)
   def load(access_context_id, level)

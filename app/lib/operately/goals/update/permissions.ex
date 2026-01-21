@@ -22,8 +22,8 @@ defmodule Operately.Goals.Update.Permissions do
   end
 
   def can_view(access_level), do: access_level >= Binding.view_access()
-  def can_edit(access_level), do: access_level >= Binding.edit_access()
-  def can_delete(access_level), do: access_level >= Binding.edit_access()
+  def can_edit(access_level), do: access_level >= Binding.contribute_access()
+  def can_delete(access_level), do: access_level >= Binding.contribute_access()
   def can_comment(access_level), do: access_level >= Binding.comment_access()
 
   def can_acknowledge(update, user_id) when is_binary(user_id) do
