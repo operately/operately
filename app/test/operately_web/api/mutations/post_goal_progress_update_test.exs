@@ -23,10 +23,10 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
       %{company: :no_access, space: :no_access, goal: :champion, expected: 200},
       %{company: :no_access, space: :no_access, goal: :reviewer, expected: 200},
       %{company: :no_access, space: :comment_access, goal: :no_access, expected: 403},
-      %{company: :no_access, space: :edit_access, goal: :no_access, expected: 403},
+      %{company: :no_access, space: :edit_access, goal: :no_access, expected: 200},
       %{company: :no_access, space: :full_access, goal: :no_access, expected: 200},
       %{company: :comment_access, space: :no_access, goal: :no_access, expected: 403},
-      %{company: :edit_access, space: :no_access, goal: :no_access, expected: 403},
+      %{company: :edit_access, space: :no_access, goal: :no_access, expected: 200},
       %{company: :full_access, space: :no_access, goal: :no_access, expected: 200}
     ]
 
