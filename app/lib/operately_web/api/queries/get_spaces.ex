@@ -23,7 +23,7 @@ defmodule OperatelyWeb.Api.Queries.GetSpaces do
     from(g in Operately.Groups.Group,
       where: g.company_id == ^me.company_id,
       order_by: g.name,
-      preload: [:company, members: ^from(m in Operately.People.Person, where: m.type == :human)]
+      preload: [:company, members: ^from(m in Operately.People.Person, where: m.type != :ai)]
     )
     |> filter_by_view_access(me.id)
     |> Repo.all()

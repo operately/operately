@@ -413,7 +413,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       end)
     end
 
-    test "include_potential_subscribers excludes non-humans", ctx do
+    test "include_potential_subscribers includes guests and excludes ai", ctx do
       ctx =
         ctx
         |> Factory.add_company_member(:creator)
@@ -422,6 +422,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
         |> Factory.add_goal(:goal, :space, champion: :creator, reviewer: :reviewer)
         |> Factory.add_space_member(:member1, :space)
         |> Factory.add_space_member(:member2, :space)
+        |> Factory.add_space_member(:guest, :space, person_type: :guest)
         |> Factory.add_space_member(:ai, :space, person_type: :ai)
         |> Factory.log_in_person(:creator)
 
@@ -429,7 +430,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
 
       subs = res.goal.potential_subscribers
 
-      [ctx.reviewer, ctx.creator, ctx.member1, ctx.member2]
+      [ctx.reviewer, ctx.creator, ctx.member1, ctx.member2, ctx.guest]
       |> Enum.each(fn member ->
         assert Enum.find(subs, &(&1.person.id == Paths.person_id(member)))
       end)
@@ -437,7 +438,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       refute Enum.find(subs, &(&1.person.id == Paths.person_id(ctx.ai)))
     end
 
-    test "include_space_members excludes non-humans", ctx do
+    test "include_space_members includes guests and excludes ai", ctx do
       ctx =
         ctx
         |> Factory.add_company_member(:creator)
@@ -446,13 +447,14 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
         |> Factory.add_goal(:goal, :space, champion: :creator, reviewer: :reviewer)
         |> Factory.add_space_member(:member1, :space)
         |> Factory.add_space_member(:member2, :space)
+        |> Factory.add_space_member(:guest, :space, person_type: :guest)
         |> Factory.add_space_member(:ai, :space, person_type: :ai)
         |> Factory.log_in_person(:creator)
 
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(ctx.goal), include_space_members: true})
       members = res.goal.space.members
 
-      [ctx.creator, ctx.member1, ctx.member2]
+      [ctx.creator, ctx.member1, ctx.member2, ctx.guest]
       |> Enum.each(fn member ->
         assert Enum.find(members, &(&1.id == Paths.person_id(member)))
       end)

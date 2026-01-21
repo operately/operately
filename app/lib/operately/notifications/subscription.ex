@@ -4,7 +4,7 @@ defmodule Operately.Notifications.Subscription do
 
   schema "subscriptions" do
     belongs_to :subscription_list, Operately.Notifications.SubscriptionList, foreign_key: :subscription_list_id
-    belongs_to :person, Operately.People.Person, foreign_key: :person_id
+    belongs_to :person, Operately.People.Person, foreign_key: :person_id, where: [suspended_at: nil, type: {:fragment, "? != 'ai'"}]
 
     field :type, Ecto.Enum, values: [:invited, :joined, :mentioned]
     field :canceled, :boolean, default: false
