@@ -230,11 +230,13 @@ function Page() {
     reopenLink: paths.goalReopenPath(goal.id),
     newCheckInLink: paths.goalCheckInNewPath(goal.id),
     newDiscussionLink: paths.newGoalDiscussionPath(goal.id),
+    manageAccessLink: paths.goalAccessManagementPath(goal.id),
     exportMarkdown,
     closedAt: Time.parse(goal.closedAt),
     retrospective: prepareRetrospective(paths, goal.retrospective),
     neglectedGoal: false,
     canEdit: goal.permissions.canEdit,
+    canEditAccessLevel: goal.permissions.canEditAccessLevel,
     deleteGoal,
 
     goalName,
