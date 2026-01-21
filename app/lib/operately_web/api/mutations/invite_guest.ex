@@ -1,0 +1,61 @@
+defmodule OperatelyWeb.Api.Mutations.InviteGuest do
+  use TurboConnect.Mutation
+  use OperatelyWeb.Api.Helpers
+
+  require Logger
+  import Operately.Access.Filters, only: [filter_by_full_access: 2]
+
+  inputs do
+    field :full_name, :string, null: false
+    field :email, :string, null: false
+    field :title, :string, null: false
+  end
+
+  outputs do
+    field? :invite_link, :invite_link, null: true
+    field :new_account, :boolean, null: false
+  end
+
+  def call(conn, inputs) do
+    admin = me(conn)
+
+    if admin_has_full_access?(admin) do
+      process_guest_invitation(admin, inputs)
+    else
+      {:error, :forbidden}
+    end
+  end
+
+  defp admin_has_full_access?(admin) do
+    from(c in Operately.Companies.Company, where: c.id == ^admin.company_id)
+    |> filter_by_full_access(admin.id)
+    |> Repo.exists?()
+  end
+
+  defp process_guest_invitation(admin, inputs) do
+    case Operately.Operations.GuestInviting.run(admin, inputs) do
+      {:ok, nil} ->
+        {:ok, %{invite_link: nil, new_account: false}}
+
+      {:ok, invite_link} ->
+        {:ok,
+         %{
+           invite_link: Serializer.serialize(invite_link, level: :full),
+           new_account: true
+         }}
+
+      {:error, [%{field: :email, message: message}]} ->
+        {:error, :bad_request, "Email " <> message}
+
+      {:error, [%{field: :full_name, message: message}]} ->
+        {:error, :bad_request, "Name " <> message}
+
+      {:error, [%{message: message}]} ->
+        {:error, :bad_request, message}
+
+      {:error, error} ->
+        Logger.error("Unexpected error: #{inspect(error)}")
+        raise "Unexpected error"
+    end
+  end
+end

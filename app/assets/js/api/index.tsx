@@ -415,6 +415,11 @@ export interface ActivityContentGroupEdited {
   newMission: string | null;
 }
 
+export interface ActivityContentGuestInvited {
+  company: Company;
+  person: Person;
+}
+
 export interface ActivityContentMessageArchiving {
   companyId?: string | null;
   spaceId?: string | null;
@@ -1957,6 +1962,7 @@ export interface WorkMapItem {
 export type ActivityContent =
   | ActivityContentCompanyOwnersAdding
   | ActivityContentCompanyAdminAdded
+  | ActivityContentGuestInvited
   | ActivityContentCompanyEditing
   | ActivityContentCommentAdded
   | ActivityContentDiscussionCommentSubmitted
@@ -3900,6 +3906,17 @@ export interface InvitationsUpdateCompanyInviteLinkResult {
   inviteLink?: InviteLink;
 }
 
+export interface InviteGuestInput {
+  fullName: string;
+  email: string;
+  title: string;
+}
+
+export interface InviteGuestResult {
+  inviteLink?: InviteLink | null;
+  newAccount: boolean;
+}
+
 export interface JoinCompanyInput {
   token: string;
   password: string;
@@ -4945,6 +4962,10 @@ class ApiNamespaceRoot {
 
   async editSubscriptionsList(input: EditSubscriptionsListInput): Promise<EditSubscriptionsListResult> {
     return this.client.post("/edit_subscriptions_list", input);
+  }
+
+  async inviteGuest(input: InviteGuestInput): Promise<InviteGuestResult> {
+    return this.client.post("/invite_guest", input);
   }
 
   async joinCompany(input: JoinCompanyInput): Promise<JoinCompanyResult> {
@@ -6001,6 +6022,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.editSubscriptionsList(input);
   }
 
+  inviteGuest(input: InviteGuestInput): Promise<InviteGuestResult> {
+    return this.apiNamespaceRoot.inviteGuest(input);
+  }
+
   joinCompany(input: JoinCompanyInput): Promise<JoinCompanyResult> {
     return this.apiNamespaceRoot.joinCompany(input);
   }
@@ -6507,6 +6532,9 @@ export async function editSpacePermissions(input: EditSpacePermissionsInput): Pr
 }
 export async function editSubscriptionsList(input: EditSubscriptionsListInput): Promise<EditSubscriptionsListResult> {
   return defaultApiClient.editSubscriptionsList(input);
+}
+export async function inviteGuest(input: InviteGuestInput): Promise<InviteGuestResult> {
+  return defaultApiClient.inviteGuest(input);
 }
 export async function joinCompany(input: JoinCompanyInput): Promise<JoinCompanyResult> {
   return defaultApiClient.joinCompany(input);
@@ -7238,6 +7266,10 @@ export function useEditSubscriptionsList(): UseMutationHookResult<
   );
 }
 
+export function useInviteGuest(): UseMutationHookResult<InviteGuestInput, InviteGuestResult> {
+  return useMutation<InviteGuestInput, InviteGuestResult>((input) => defaultApiClient.inviteGuest(input));
+}
+
 export function useJoinCompany(): UseMutationHookResult<JoinCompanyInput, JoinCompanyResult> {
   return useMutation<JoinCompanyInput, JoinCompanyResult>((input) => defaultApiClient.joinCompany(input));
 }
@@ -7689,6 +7721,8 @@ export default {
   useEditSpacePermissions,
   editSubscriptionsList,
   useEditSubscriptionsList,
+  inviteGuest,
+  useInviteGuest,
   joinCompany,
   useJoinCompany,
   joinSpace,

@@ -92,7 +92,7 @@ This spec defines a multi‑step implementation plan to add guest accounts (exte
   - It **does not** add the person to the company access group or company space.
   - It creates a `Person` with `type: :guest`.
   - It creates a personal invite link **only** when `People.account_used?/1` returns `false`.
-- Add a new GraphQL mutation (e.g., `inviteGuest`) to call this operation.
+- Add a new mutation (e.g., `inviteGuest`) to call this operation.
 - Define a guest invitation activity event (content, notification, type, serializer, feed handler) for auditing and notifications.
 - Add mailer(s) for guest invites:
   - If no account used: include invite link.

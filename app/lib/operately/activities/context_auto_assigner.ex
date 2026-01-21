@@ -28,6 +28,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "company_admin_removed",
     "company_member_removed",
     "company_member_restoring",
+    "guest_invited",
     "password_first_time_changed",
     "company_invitation_token_created",
     "company_member_added",
