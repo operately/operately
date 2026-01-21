@@ -236,6 +236,7 @@ function Page() {
     retrospective: prepareRetrospective(paths, goal.retrospective),
     neglectedGoal: false,
     canEdit: goal.permissions.canEdit,
+    canEditParentGoal: goal.permissions.canEdit,
     canEditAccessLevel: goal.permissions.canEditAccessLevel,
     deleteGoal,
 

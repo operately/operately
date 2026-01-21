@@ -154,6 +154,17 @@ defmodule Operately.Features.GoalTest do
       |> Steps.assert_goal_navigation_without_space()
       |> Steps.assert_move_to_another_space_is_hidden()
     end
+
+    feature "goal page hides parent goal when viewer cannot access it", ctx do
+      ctx
+      |> Steps.given_goal_with_hidden_parent_goal()
+      |> Steps.assert_goal_has_parent_goal()
+      |> Steps.assert_company_member_cant_see_parent_goal()
+      |> Steps.login_as_company_member()
+      |> Steps.visit_page()
+      |> Steps.assert_goal_page_loaded()
+      |> Steps.assert_parent_goal_field_not_rendered()
+    end
   end
 
   describe "deletion" do
