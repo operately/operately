@@ -157,19 +157,21 @@ defmodule OperatelyWeb.Api.Queries.GetSpaceTest do
       end)
     end
 
-    test "only returns human members", ctx do
+    test "includes guests and excludes ai members", ctx do
       ctx =
         ctx
         |> Factory.add_company_owner(:creator)
         |> Factory.log_in_person(:creator)
         |> Factory.add_space(:space)
         |> Factory.add_space_member(:human, :space, person_type: :human)
+        |> Factory.add_space_member(:guest, :space, person_type: :guest)
         |> Factory.add_space_member(:ai, :space, person_type: :ai)
 
       assert {200, res} = query(ctx.conn, :get_space, %{id: Paths.space_id(ctx.space), include_members: true})
 
-      assert length(res.space.members) == 2 # 1 creator (ctx.person) + 1 added human
+      assert length(res.space.members) == 3 # 1 creator (ctx.person) + 1 added human + 1 guest
       assert Enum.find(res.space.members, &(&1.id == Paths.person_id(ctx.human)))
+      assert Enum.find(res.space.members, &(&1.id == Paths.person_id(ctx.guest)))
       refute Enum.find(res.space.members, &(&1.id == Paths.person_id(ctx.ai)))
     end
 
@@ -237,12 +239,13 @@ defmodule OperatelyWeb.Api.Queries.GetSpaceTest do
       end)
     end
 
-    test "include_potential_subscribers excludes non-humans", ctx do
+    test "include_potential_subscribers includes guests and excludes ai", ctx do
       ctx = Factory.add_company_member(ctx, :creator)
         |> Factory.log_in_person(:creator)
         |> Factory.add_space(:space)
         |> Factory.add_space_member(:member1, :space)
         |> Factory.add_space_member(:member2, :space)
+        |> Factory.add_space_member(:guest, :space, person_type: :guest)
         |> Factory.add_space_member(:ai, :space, person_type: :ai)
 
       assert {200, res} = query(ctx.conn, :get_space, %{
@@ -252,7 +255,7 @@ defmodule OperatelyWeb.Api.Queries.GetSpaceTest do
 
       subs = res.space.potential_subscribers
 
-      [ctx.creator, ctx.member1, ctx.member2]
+      [ctx.creator, ctx.member1, ctx.member2, ctx.guest]
       |> Enum.each(fn member ->
         assert Enum.find(subs, &(&1.person.id == Paths.person_id(member)))
       end)

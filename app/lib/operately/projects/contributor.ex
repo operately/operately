@@ -4,7 +4,7 @@ defmodule Operately.Projects.Contributor do
 
   schema "project_contributors" do
     belongs_to :project, Operately.Projects.Project, foreign_key: :project_id
-    belongs_to :person, Operately.People.Person, foreign_key: :person_id, where: [suspended_at: nil, type: :human]
+    belongs_to :person, Operately.People.Person, foreign_key: :person_id, where: [suspended_at: nil, type: {:fragment, "? != 'ai'"}]
 
     has_one :access_context, through: [:project, :access_context]
 

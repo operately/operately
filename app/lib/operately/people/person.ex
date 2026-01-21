@@ -30,7 +30,7 @@ defmodule Operately.People.Person do
     field :suspended_at, :utc_datetime
 
     field :avatar_blob_id, :binary_id
-    field :type, Ecto.Enum, values: [:human, :ai], default: :human
+    field :type, Ecto.Enum, values: [:human, :guest, :ai], default: :human
 
     # loaded via hooks
     field :access_level, :any, virtual: true
