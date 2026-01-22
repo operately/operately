@@ -14,6 +14,26 @@ defmodule Operately.Features.ProfileTest do
     |> Steps.assert_contact_email_visible()
   end
 
+  feature "view about me on your profile", ctx do
+    about_me = "I love modal jazz and clean APIs."
+
+    ctx
+    |> Steps.given_person_about_me(content: about_me)
+    |> Steps.visit_profile_page()
+    |> Steps.click_about_tab()
+    |> Steps.assert_about_me_visible(text: about_me)
+  end
+
+  feature "view about me on another profile", ctx do
+    about_me = "Always happy to pair on tough bugs."
+
+    ctx
+    |> Steps.given_person_about_me(person_key: :manager, content: about_me)
+    |> Steps.visit_profile_page(person_key: :manager)
+    |> Steps.click_about_tab()
+    |> Steps.assert_about_me_visible(text: about_me)
+  end
+
   feature "view colleagues", ctx do
     ctx
     |> Steps.visit_profile_page()
@@ -30,6 +50,18 @@ defmodule Operately.Features.ProfileTest do
     |> Steps.click_manager()
     |> Steps.assert_on_manager_profile()
     |> Steps.assert_person_listed_as_report_on_manager_profile()
+  end
+
+  feature "edit about me from profile edit page", ctx do
+    about_me = "Here to unblock teams and ship great work."
+
+    ctx
+    |> Steps.visit_profile_edit_page()
+    |> Steps.fill_about_me(text: about_me)
+    |> Steps.submit_profile_changes()
+    |> Steps.visit_profile_page()
+    |> Steps.click_about_tab()
+    |> Steps.assert_about_me_visible(text: about_me)
   end
 
   feature "view assigned goals and projects", ctx do

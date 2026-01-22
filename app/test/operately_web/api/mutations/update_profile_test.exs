@@ -3,6 +3,8 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProfileTest do
 
   import Operately.PeopleFixtures
 
+  alias Operately.Support.RichText
+
   describe "security" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, :update_profile, %{})
@@ -47,6 +49,22 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProfileTest do
       assert person.timezone == "America/New_Jersey"
     end
 
+    test "when I'm an admin, it ignores description changes", ctx do
+      promote_me_to_admin(ctx)
+
+      {:ok, _} = Operately.People.update_person(ctx.company_member, %{description: RichText.rich_text("Original description")})
+
+      assert {200, %{person: %{}}} =
+               mutation(ctx.conn, :update_profile, %{
+                 id: Paths.person_id(ctx.company_member),
+                 description: RichText.rich_text("New description", :as_string)
+               })
+
+      person = Operately.People.get_person!(ctx.company_member.id)
+
+      assert person.description == RichText.rich_text("Original description")
+    end
+
     test "when I'm not an admin, it doesn't update the profile", ctx do
       assert {403, %{}} =
                mutation(ctx.conn, :update_profile, %{
@@ -81,6 +99,18 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProfileTest do
       assert person.full_name == "John Doe"
       assert person.title == "Software Engineer"
       assert person.timezone == "America/New_York"
+    end
+
+    test "it updates the description", ctx do
+      assert {200, %{person: %{}}} =
+               mutation(ctx.conn, :update_profile, %{
+                 id: Paths.person_id(ctx.person),
+                 description: RichText.rich_text("Bio goes here", :as_string)
+               })
+
+      person = Operately.People.get_person!(ctx.person.id)
+
+      assert person.description == RichText.rich_text("Bio goes here")
     end
 
     test "inputs that are not provided are not updated", ctx do

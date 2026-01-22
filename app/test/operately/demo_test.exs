@@ -11,6 +11,17 @@ defmodule Operately.DemoTest do
     assert Operately.Companies.get_company_by_name("Acme Inc.")
   end
 
+  test "most demo people have descriptions" do
+    account = account_fixture(%{full_name: "Peter Parker", email: "peter.parker@localhost"})
+
+    assert {:ok, company} = Operately.Demo.run(account, "Acme Inc.", "CEO")
+
+    people = Operately.People.list_people(company.id)
+    described_count = Enum.count(people, fn person -> person.description end)
+
+    assert described_count > div(length(people), 2)
+  end
+
   test "milestone creation" do
     account = account_fixture(%{full_name: "Peter Parker", email: "peter.parker@localhost"})
 

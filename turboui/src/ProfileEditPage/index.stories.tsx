@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import { ProfileEditPage } from "./index";
 import { genPerson, genPeople } from "../utils/storybook/genPeople";
 import { usePersonFieldSearch } from "../utils/storybook/usePersonFieldSearch";
+import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { asRichText } from "../utils/storybook/richContent";
 
 const meta: Meta<typeof ProfileEditPage> = {
   title: "Pages/ProfileEditPage",
@@ -29,11 +31,13 @@ const timezones: ProfileEditPage.Timezone[] = [
 
 // Generate mock people for manager search
 const potentialManagers = genPeople(15);
+const mockRichTextHandlers = createMockRichEditorHandlers();
 
 const DefaultStory = (args: Partial<ProfileEditPage.Props>) => {
   const currentPerson = args.person || genPerson();
   const [fullName, setFullName] = useState(currentPerson.fullName);
   const [title, setTitle] = useState(currentPerson.title || "");
+  const [aboutMe, setAboutMe] = useState(asRichText("I like setting teams up for success and pairing on tricky problems."));
   const [timezone, setTimezone] = useState("America/New_York");
   const [notifyAboutAssignments, setNotifyAboutAssignments] = useState<boolean>(true);
 
@@ -98,11 +102,13 @@ const DefaultStory = (args: Partial<ProfileEditPage.Props>) => {
       person={displayPerson}
       fullName={fullName}
       title={title}
+      aboutMe={aboutMe}
       timezone={timezone}
       manager={manager}
       notifyAboutAssignments={notifyAboutAssignments}
       onFullNameChange={setFullName}
       onTitleChange={setTitle}
+      onAboutMeChange={setAboutMe}
       onTimezoneChange={setTimezone}
       onManagerChange={setManager}
       onNotifyAboutAssignmentsChange={setNotifyAboutAssignments}
@@ -114,6 +120,7 @@ const DefaultStory = (args: Partial<ProfileEditPage.Props>) => {
       avatarError={avatarError}
       canChangeAvatar={args.canChangeAvatar !== false}
       managerSearch={managerSearch}
+      richTextHandlers={mockRichTextHandlers}
       timezones={timezones}
       isCurrentUser={args.isCurrentUser ?? true}
       fromLocation={args.fromLocation ?? null}

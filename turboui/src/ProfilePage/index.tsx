@@ -12,12 +12,14 @@ import {
 
 import { PageNew } from "../Page";
 import { Tabs, useTabs } from "../Tabs";
-import { Colleagues, Contact, PageHeader } from "./components";
+import { AboutMe, Colleagues, Contact, PageHeader } from "./components";
 
 import { WorkMap, WorkMapTable } from "../WorkMap";
 import { processPersonalItems } from "../WorkMap/utils/itemProcessor";
 import { sortItemsByClosedDate, sortItemsByDueDate } from "../WorkMap/utils/sort";
 import { PersonCard } from "../PersonCard";
+import { isContentEmpty } from "../RichContent";
+import { MentionedPersonLookupFn } from "../RichEditor/useEditor";
 import { match } from "ts-pattern";
 
 export namespace ProfilePage {
@@ -40,6 +42,9 @@ export namespace ProfilePage {
     canEditProfile: boolean;
 
     viewer: Person | null;
+
+    aboutMe?: string | null;
+    mentionedPersonLookup: MentionedPersonLookupFn;
   }
 
   export type TabOptions = "tasks" | "assigned" | "reviewing" | "paused" | "completed" | "activity" | "about";
@@ -126,9 +131,12 @@ function ActivityFeed(props: ProfilePage.Props) {
 }
 
 function About(props: ProfilePage.Props) {
+  const showAboutMe = !isContentEmpty(props.aboutMe);
+
   return (
     <div className="p-4 max-w-5xl mx-auto my-6">
-      <div className="flex flex-col divide-y divide-stroke-base">
+      <div className="flex flex-col gap-y-6">
+        {showAboutMe && <AboutMe content={props.aboutMe} mentionedPersonLookup={props.mentionedPersonLookup} />}
         <Contact person={props.person} />
         <Colleagues {...props} />
       </div>
