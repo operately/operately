@@ -1,16 +1,11 @@
-import * as Pages from "@/components/Pages";
-import * as Paper from "@/components/PaperContainer";
 import * as Companies from "@/models/companies";
 import * as React from "react";
 
-import { CopyToClipboard } from "@/components/CopyToClipboard";
 import { PageModule } from "@/routes/types";
 import { useNavigate } from "react-router-dom";
-import { PrimaryButton } from "turboui";
+import { CompanyAdminAddPeoplePage, InviteMemberForm } from "turboui";
 
-import Forms from "@/components/Forms";
-import { match } from "ts-pattern";
-
+import * as Pages from "@/components/Pages";
 import { usePaths } from "@/routes/paths";
 export default { name: "CompanyAdminAddPeoplePage", loader, Page } as PageModule;
 
@@ -24,160 +19,117 @@ async function loader({ params }): Promise<LoaderResult> {
   };
 }
 
-type PageState = PageStateForm | PageStateInvited | PageStateAdded;
-type PageStateForm = { state: "form" };
-type PageStateInvited = { state: "invited"; url: string; fullName: string };
-type PageStateAdded = { state: "added"; fullName: string };
-type SetPageStateFn = (state: PageState) => void;
-
-//
-// The page can be in two states: "form" or "invited".
-// When in "form" state, the user can fill out the form to invite a new member.
-// When in "invited" state, the user is shown the invitation link to share with the new member.
-//
 function Page() {
   const { company } = Pages.useLoadedData<LoaderResult>();
-  const [state, setState] = React.useState<PageState>({ state: "form" });
-
-  return (
-    <Pages.Page title={["Invite new team member", company.name!]}>
-      {match(state.state)
-        .with("form", () => <InviteForm setPageState={setState} />)
-        .with("invited", () => <InvitedPage state={state as PageStateInvited} setPageState={setState} />)
-        .with("added", () => <AddedPage state={state as PageStateAdded} setPageState={setState} />)
-        .exhaustive()}
-    </Pages.Page>
-  );
-}
-
-function InviteForm({ setPageState }: { setPageState: SetPageStateFn }) {
-  const paths = usePaths();
   const navigate = useNavigate();
-
+  const paths = usePaths();
   const [add] = Companies.useAddCompanyMember();
-  const form = Forms.useForm({
-    fields: {
-      fullName: "",
-      email: "",
-      title: "",
-    },
-    validate: (addError) => {
-      if (!form.values.email.includes("@")) addError("email", "Email must include '@'");
-    },
-    submit: async () => {
+
+  const [state, setState] = React.useState<CompanyAdminAddPeoplePage.PageState>({ state: "form" });
+  const [values, setValues] = React.useState<InviteMemberForm.Values>({ fullName: "", email: "", title: "" });
+  const [errors, setErrors] = React.useState<InviteMemberForm.Errors>({});
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+  const navigationItems = React.useMemo(
+    () => [
+      { to: paths.companyAdminPath(), label: "Company Administration" },
+      { to: paths.companyManagePeoplePath(), label: "Manage Team Members" },
+    ],
+    [paths],
+  );
+
+  const handleFormChange = React.useCallback((field: InviteMemberForm.Field, value: string) => {
+    setValues((prev) => ({ ...prev, [field]: value }));
+  }, []);
+
+  const resetForm = React.useCallback(() => {
+    setValues({ fullName: "", email: "", title: "" });
+    setErrors({});
+  }, []);
+
+  const handleInviteAnother = React.useCallback(() => {
+    setState({ state: "form" });
+    resetForm();
+  }, [resetForm]);
+
+  const handleCancel = React.useCallback(() => {
+    navigate(paths.companyManagePeoplePath());
+  }, [navigate, paths]);
+
+  const handleSubmit = React.useCallback(async () => {
+    if (isSubmitting) return;
+
+    const validationErrors = validateInvite(values);
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
       const res = await add({
-        fullName: form.values.fullName.trim(),
-        email: form.values.email.trim(),
-        title: form.values.title.trim(),
+        fullName: values.fullName.trim(),
+        email: values.email.trim(),
+        title: values.title.trim(),
       });
 
       if (res.newAccount) {
         const url = Companies.createInvitationUrl(res.inviteLink.token);
-        setPageState({ state: "invited", url, fullName: form.values.fullName });
+        setState({ state: "invited", inviteLink: url, fullName: values.fullName });
       } else {
-        setPageState({ state: "added", fullName: form.values.fullName });
+        setState({ state: "added", fullName: values.fullName });
       }
-    },
-    onError: (e) => {
-      const { data } = (e.response as any) ?? {};
 
-      if ("message" in data && typeof data.message === "string") {
-        if (data.message.toLowerCase().includes("email")) {
-          form.actions.addErrors({ email: data.message });
-        }
-        if (data.message.toLowerCase().includes("name")) {
-          form.actions.addErrors({ fullName: data.message });
+      setErrors({});
+    } catch (e) {
+      console.error(e);
+      const data = (e as any)?.response?.data;
+      const message = typeof data?.message === "string" ? data.message : null;
+      if (message) {
+        const lower = message.toLowerCase();
+        const nextErrors: InviteMemberForm.Errors = {};
+
+        if (lower.includes("email")) nextErrors.email = message;
+        if (lower.includes("name")) nextErrors.fullName = message;
+
+        if (Object.keys(nextErrors).length > 0) {
+          setErrors((prev) => ({ ...nextErrors, ...prev }));
         }
       }
-    },
-    cancel: () => {
-      navigate(paths.companyManagePeoplePath());
-    },
-  });
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [add, isSubmitting, values]);
 
   return (
-    <Paper.Root size="small">
-      <Navigation />
-      <Paper.Body minHeight="none">
-        <div className="text-content-accent text-2xl font-extrabold mb-8">Invite a new team member</div>
-
-        <Forms.Form form={form}>
-          <Forms.FieldGroup layout="horizontal">
-            <Forms.TextInput field={"fullName"} label="Full Name" placeholder="e.g. John Doe" minLength={3} />
-            <Forms.TextInput field={"email"} label="Email" placeholder="e.g. john@yourcompany.com" minLength={3} />
-            <Forms.TextInput field={"title"} label="Title" placeholder="e.g. Software Engineer" />
-          </Forms.FieldGroup>
-          <Forms.Submit saveText="Invite Member" />
-        </Forms.Form>
-      </Paper.Body>
-
-      <div className="my-8 text-center px-20">
-        <span className="font-bold">What happens next?</span> If the new member already has an account, they will be
-        added to your company. If they don't have an account, you will get a invitation link to share with them. The
-        link will be valid for 24 hours.
-      </div>
-    </Paper.Root>
-  );
-}
-
-function InvitedPage({ state, setPageState }: { state: PageStateInvited; setPageState: SetPageStateFn }) {
-  const inviteAnother = () => setPageState({ state: "form" });
-
-  return (
-    <Paper.Root size="medium">
-      <Navigation />
-      <Paper.Body minHeight="none">
-        <div className="text-content-accent text-2xl font-extrabold">{state.fullName} has been invited 🎉</div>
-
-        <div className="mt-4">
-          Share this link with them to allow them to join your company.
-          <div className="mt-4 font-bold text-content-accent mb-1">Invitation Link</div>
-          <div className="text-content-primary border border-surface-outline rounded-lg px-3 py-1 font-medium flex items-center justify-between">
-            {state.url}
-
-            <CopyToClipboard text={state.url} size={25} padding={1} containerClass="" />
-          </div>
-        </div>
-
-        <div className="mt-2">This link will expire in 24 hours.</div>
-      </Paper.Body>
-
-      <div className="flex items-center gap-3 mt-8 justify-center">
-        <PrimaryButton onClick={inviteAnother} testId="invite-another-button">
-          Invite Another Member
-        </PrimaryButton>
-      </div>
-    </Paper.Root>
-  );
-}
-
-function AddedPage({ state, setPageState }: { state: PageStateAdded; setPageState: SetPageStateFn }) {
-  const inviteAnother = () => setPageState({ state: "form" });
-
-  return (
-    <Paper.Root size="medium">
-      <Navigation />
-      <Paper.Body minHeight="none">
-        <div className="text-content-accent text-2xl font-extrabold">{state.fullName} has been added 🎉</div>
-      </Paper.Body>
-
-      <div className="flex items-center gap-3 mt-8 justify-center">
-        <PrimaryButton onClick={inviteAnother} testId="invite-another-button">
-          Invite Another Member
-        </PrimaryButton>
-      </div>
-    </Paper.Root>
-  );
-}
-
-function Navigation() {
-  const paths = usePaths();
-  return (
-    <Paper.Navigation
-      items={[
-        { to: paths.companyAdminPath(), label: "Company Administration" },
-        { to: paths.companyManagePeoplePath(), label: "Manage Team Members" },
-      ]}
+    <CompanyAdminAddPeoplePage
+      companyName={company.name || ""}
+      navigationItems={navigationItems}
+      state={state}
+      formValues={values}
+      formErrors={errors}
+      onFormChange={handleFormChange}
+      onSubmit={handleSubmit}
+      onCancel={handleCancel}
+      onInviteAnother={handleInviteAnother}
+      isSubmitting={isSubmitting}
     />
   );
+}
+
+function validateInvite(values: InviteMemberForm.Values): InviteMemberForm.Errors {
+  const errors: InviteMemberForm.Errors = {};
+
+  if (values.fullName.length < 3) {
+    errors.fullName = "Must be at least 3 characters long";
+  }
+
+  if (values.email.length < 3) {
+    errors.email = "Must be at least 3 characters long";
+  } else if (!values.email.includes("@")) {
+    errors.email = "Email must include '@'";
+  }
+
+  return errors;
 }
