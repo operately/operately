@@ -39,8 +39,14 @@ defmodule Operately.Support.Features.ProfileSteps do
     })
   end
 
-  step :visit_profile_page, ctx do
-    UI.visit(ctx, Paths.profile_path(ctx.company, ctx.person))
+  step :visit_profile_page, ctx, opts \\ [] do
+    person =
+      case Keyword.fetch(opts, :person_key) do
+        {:ok, key} -> Map.fetch!(ctx, key)
+        :error -> Keyword.get(opts, :person, ctx.person)
+      end
+
+    UI.visit(ctx, Paths.profile_path(ctx.company, person))
   end
 
   step :visit_profile_edit_page, ctx do
@@ -49,6 +55,30 @@ defmodule Operately.Support.Features.ProfileSteps do
 
   step :assert_contact_email_visible, ctx do
     UI.assert_text(ctx, ctx.person.email)
+  end
+
+  step :given_person_about_me, ctx, opts \\ [] do
+    person_key = Keyword.get(opts, :person_key, :person)
+    content = Keyword.get(opts, :content, "About me")
+    person = Map.fetch!(ctx, person_key)
+
+    {:ok, person} = Operately.People.update_person(person, %{description: Operately.Support.RichText.rich_text(content)})
+
+    Map.put(ctx, person_key, person)
+  end
+
+  step :assert_about_me_visible, ctx, text: text do
+    UI.assert_text(ctx, text)
+  end
+
+  step :fill_about_me, ctx, text: text do
+    UI.fill_rich_text(ctx, testid: "about-me", with: text)
+  end
+
+  step :submit_profile_changes, ctx do
+    ctx
+    |> UI.click(testid: "submit")
+    |> UI.assert_page(Paths.account_path(ctx.company))
   end
 
   step :assert_manager_visible, ctx do

@@ -1,5 +1,5 @@
 defmodule Operately.Demo.People do
-  alias Operately.Demo.Resources
+  alias Operately.Demo.{Resources, RichText}
 
   def create_people(resources, data) do
     Resources.create(resources, data, fn {resources, d, _index} ->
@@ -21,6 +21,7 @@ defmodule Operately.Demo.People do
 
     {:ok, person} = set_avatar(person, data.avatar)
     {:ok, person} = set_manager(person, resources, data[:reports_to])
+    {:ok, person} = set_description(person, data[:description])
 
     person
   end
@@ -35,6 +36,13 @@ defmodule Operately.Demo.People do
   defp set_manager(person, resources, key) do
     Operately.People.update_person(person, %{
       manager_id: Resources.get(resources, key).id
+    })
+  end
+
+  defp set_description(person, nil), do: {:ok, person}
+  defp set_description(person, description) do
+    Operately.People.update_person(person, %{
+      description: RichText.from_string(description)
     })
   end
 

@@ -5,6 +5,7 @@ import { SecondaryButton } from "../../Button";
 import { IconMail } from "../../icons";
 import { ProfilePage } from "../index";
 
+export { AboutMe } from "./AboutMe";
 export { Colleagues } from "./Colleagues";
 
 export function PageHeader(props: ProfilePage.Props) {
@@ -30,7 +31,7 @@ export function PageHeader(props: ProfilePage.Props) {
 
 export function Contact({ person }: { person: ProfilePage.Person }) {
   return (
-    <div className="pb-6">
+    <div>
       <div className="text-xs mb-2 uppercase font-bold">Contact</div>
       <div className="flex items-center gap-1 font-medium">
         <IconMail size={20} className="text-content-dimmed" />

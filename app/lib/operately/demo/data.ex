@@ -46,6 +46,7 @@ defmodule Operately.Demo.Data do
           key: :bob_williams,
           name: "Bob Williams",
           title: "Chief Operating Officer (COO)",
+          description: "Ops lead. Keeps teams aligned. Early riser, bike commuter.",
           avatar: "photo-1500648767791-00dcc994a43e",
           reports_to: :owner
         },
@@ -53,6 +54,7 @@ defmodule Operately.Demo.Data do
           key: :martin_smith,
           name: "Martin Smith",
           title: "Chief Financial Officer (CFO)",
+          description: "Finance + data. Builder of calm models. Espresso and spreadsheets.",
           avatar: "photo-1472099645785-5658abf4ff4e",
           reports_to: :owner
         },
@@ -60,6 +62,7 @@ defmodule Operately.Demo.Data do
           key: :david_brown,
           name: "David Brown",
           title: "Chief Technology Officer (CTO)",
+          description: "CTO. Systems tinkerer. APIs, bikes, clean docs.",
           avatar: "photo-1491528323818-fdd1faba62cc",
           reports_to: :owner
         },
@@ -67,6 +70,7 @@ defmodule Operately.Demo.Data do
           key: :emily_davis,
           name: "Emily Davis",
           title: "Chief Marketing Officer (CMO)",
+          description: "Marketing storyteller. Brand builder. Vintage posters and playlists.",
           avatar: "photo-1438761681033-6461ffad8d80",
           reports_to: :owner
         },
@@ -74,6 +78,7 @@ defmodule Operately.Demo.Data do
           key: :frank_miller,
           name: "Frank Miller",
           title: "VP of Product",
+          description: "Product lead. Ships small bets. Camera in hand.",
           avatar: "photo-1633332755192-727a05c4013d",
           reports_to: :david_brown
         },
@@ -81,6 +86,7 @@ defmodule Operately.Demo.Data do
           key: :grace_wilson,
           name: "Grace Wilson",
           title: "VP of Compliance",
+          description: "Compliance + risk. Keeps it simple. Hiker, list-maker.",
           avatar: "photo-1494790108377-be9c29b29330",
           reports_to: :bob_williams
         },
@@ -88,6 +94,7 @@ defmodule Operately.Demo.Data do
           key: :henry_taylor,
           name: "Henry Taylor",
           title: "VP of Engineering",
+          description: "Engineering leader. Makes teams fast. Devtools nerd, weekend cook.",
           avatar: "photo-1492562080023-ab3db95bfbce",
           reports_to: :david_brown
         },
@@ -95,6 +102,7 @@ defmodule Operately.Demo.Data do
           key: :ivy_anderson,
           name: "Ivy Anderson",
           title: "VP of Sales",
+          description: "Sales leader. Pipeline and people. Book club host.",
           avatar: "photo-1522075469751-3a6694fb2f61",
           reports_to: :emily_davis
         },
@@ -102,6 +110,7 @@ defmodule Operately.Demo.Data do
           key: :jack_thomas,
           name: "Jack Thomas",
           title: "VP of Customer Success",
+          description: "Customer success. Voice of the user. Dad jokes included.",
           avatar: "photo-1579038773867-044c48829161",
           reports_to: :bob_williams
         },
@@ -109,6 +118,7 @@ defmodule Operately.Demo.Data do
           key: :karen_martinez,
           name: "Karen Martinez",
           title: "VP of Human Resources",
+          description: "People ops. Hiring and culture. Mentor, gardener.",
           avatar: "photo-1534528741775-53994a69daeb",
           reports_to: :bob_williams
         },
@@ -116,6 +126,7 @@ defmodule Operately.Demo.Data do
           key: :liam_harris,
           name: "Liam Harris",
           title: "VP of Design",
+          description: "Design lead. UX + systems. Sketchbook always open.",
           avatar: "photo-1489980557514-251d61e3eeb6",
           reports_to: :david_brown
         },
@@ -123,6 +134,7 @@ defmodule Operately.Demo.Data do
           key: :mia_clark,
           name: "Mia Clark",
           title: "Director of Engineering",
+          description: "Director of engineering. Reliability first. Loves pairing.",
           avatar: "photo-1541823709867-1b206113eafd",
           reports_to: :frank_miller
         },
@@ -130,6 +142,7 @@ defmodule Operately.Demo.Data do
           key: :noah_lewis,
           name: "Noah Lewis",
           title: "Director of Sales",
+          description: "Sales director. Playbooks and coaching. Runner, podcast fan.",
           avatar: "photo-1568602471122-7832951cc4c5",
           reports_to: :ivy_anderson
         },
@@ -137,6 +150,7 @@ defmodule Operately.Demo.Data do
           key: :olivia_hall,
           name: "Olivia Hall",
           title: "Product Manager",
+          description: "PM. Research and experiments. Notion hoarder.",
           avatar: "photo-1531123897727-8f129e1688ce",
           reports_to: :frank_miller
         },
@@ -144,6 +158,7 @@ defmodule Operately.Demo.Data do
           key: :paul_young,
           name: "Paul Young",
           title: "Director of Business Development",
+          description: "Biz dev. Partnerships + strategy. Traveler, soccer fan.",
           avatar: "photo-1600180758890-6b94519a8ba6",
           reports_to: :ivy_anderson
         },
@@ -158,6 +173,7 @@ defmodule Operately.Demo.Data do
           key: :rachel_king,
           name: "Rachel King",
           title: "Director of Marketing",
+          description: "Marketing director. Lifecycle and launches. Writes, walks, caffeine.",
           avatar: "photo-1502031882019-24c0bccfffc6",
           reports_to: :emily_davis
         },
