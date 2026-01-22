@@ -22,7 +22,7 @@ export function RelatedWork(props: GoalPage.State) {
   ) : null;
 
   return (
-    <div>
+    <div data-test-id="related-work-section">
       <SectionHeader
         title="Subgoals & Projects"
         buttons={buttons}
