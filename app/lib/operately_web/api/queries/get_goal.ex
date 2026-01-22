@@ -79,7 +79,6 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
     Inputs.parse_includes(inputs,
       include_champion: :champion,
       include_closed_by: :closed_by,
-      include_projects: [projects: [:champion, :reviewer]],
       include_reviewer: :reviewer,
       include_potential_subscribers: [:reviewer, :champion],
       include_last_check_in: [last_update: [:author, [reactions: :person]]],
@@ -94,6 +93,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
       include_potential_subscribers: [group: :members],
       include_space: [:group],
       include_space_members: [group: [:members, :company]],
+      include_projects: [projects: [:champion, :reviewer]],
       always_include: :parent_goal
     )
   end
