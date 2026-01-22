@@ -42,7 +42,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
       permissions: OperatelyWeb.Api.Serializer.serialize(data.permissions),
       invite_link: OperatelyWeb.Api.Serializer.serialize(data.invite_link),
       agent_def: data.agent_def && OperatelyWeb.Api.Serializer.serialize(data.agent_def, level: :full),
-      notify_about_assignments: data.notify_about_assignments
+      notify_about_assignments: data.notify_about_assignments,
+      description: encode_description(data.description)
     }
   end
 
@@ -54,4 +55,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
   defp has_open_invitation(%{account: %{first_login_at: nil}}), do: true
   defp has_open_invitation(%{account: %{first_login_at: _}}), do: false
   defp has_open_invitation(_), do: nil
+
+  defp encode_description(nil), do: nil
+  defp encode_description(description), do: Jason.encode!(description)
 end

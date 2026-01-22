@@ -11,13 +11,14 @@ import { loader, useLoadedData } from "./loader";
 
 import { usePaths } from "@/routes/paths";
 import { convertToWorkMapItems } from "../../models/workMap";
-import { useMe } from "@/contexts/CurrentCompanyContext";
+import { useMe, useMentionedPersonLookupFn } from "@/contexts/CurrentCompanyContext";
 
 export default { name: "ProfilePage", loader, Page } as PageModule;
 
 function Page() {
   const paths = usePaths();
   const me = useMe();
+  const mentionedPersonLookup = useMentionedPersonLookupFn();
   const { person, workMap, reviewerWorkMap } = useLoadedData();
 
   assertPresent(person.peers);
@@ -46,6 +47,8 @@ function Page() {
     editProfilePath: paths.profileEditPath(person.id),
 
     activityFeed: <ActivityFeed personId={person.id} />,
+    aboutMe: person.description,
+    mentionedPersonLookup,
   };
 
   return <ProfilePage {...props} />;

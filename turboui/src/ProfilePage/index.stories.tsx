@@ -7,6 +7,8 @@ import { PersonCard } from "../PersonCard";
 import { WorkMap } from "../WorkMap";
 import { genPeople } from "../utils/storybook/genPeople";
 import { mockItems, mockTasksTabItems } from "../WorkMap/tests/mockData";
+import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { asRichText } from "../utils/storybook/richContent";
 
 const meta = {
   title: "Pages/ProfilePage",
@@ -62,6 +64,9 @@ const defaultArgs: ProfilePage.Props = {
   canEditProfile: true,
 
   viewer: viewer!,
+
+  aboutMe: asRichText("Coffee nerd, jazz fan, and always happy to share shortcuts."),
+  mentionedPersonLookup: createMockRichEditorHandlers().mentionedPersonLookup,
 };
 
 export const Default: Story = {

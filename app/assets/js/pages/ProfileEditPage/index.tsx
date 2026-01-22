@@ -8,8 +8,10 @@ import { Timezones } from "./timezones";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { PageModule } from "@/routes/types";
 import { usePaths } from "@/routes/paths";
-import { ProfileEditPage } from "turboui";
+import { emptyContent, parseContent, ProfileEditPage } from "turboui";
 import * as Blobs from "@/models/blobs";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import type { UpdateProfileInput } from "@/api";
 
 export default { name: "ProfileEditPage", loader, Page } as PageModule;
 
@@ -38,6 +40,10 @@ function Page() {
   // Form state
   const [fullName, setFullName] = React.useState(person.fullName || "");
   const [title, setTitle] = React.useState(person.title || "");
+  const [aboutMe, setAboutMe] = React.useState(() => {
+    if (!person.description) return emptyContent();
+    return parseContent(person.description);
+  });
   const [timezone, setTimezone] = React.useState(person.timezone || "");
   const [notifyAboutAssignments, setNotifyAboutAssignments] = React.useState<boolean>(
     person.notifyAboutAssignments ?? false,
@@ -46,6 +52,7 @@ function Page() {
     person.manager ? People.parsePersonForTurboUi(paths, person.manager) : null,
   );
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const richTextHandlers = useRichEditorHandlers({ scope: People.CompanyWideSearchScope });
 
   // Avatar handlers
   const avatar = useAvatarHandlers(person.id);
@@ -71,14 +78,20 @@ function Page() {
     setIsSubmitting(true);
 
     try {
-      await People.updateProfile({
+      const updateParams: UpdateProfileInput = {
         id: person.id,
         fullName: fullName.trim(),
         title: title.trim(),
         timezone: timezone,
         managerId: manager?.id || null,
         notifyAboutAssignments,
-      });
+      };
+
+      if (isCurrentUser) {
+        updateParams.description = JSON.stringify(aboutMe);
+      }
+
+      await People.updateProfile(updateParams);
 
       if (isCurrentUser) {
         navigate(paths.accountPath());
@@ -90,7 +103,18 @@ function Page() {
     } finally {
       setIsSubmitting(false);
     }
-  }, [fullName, title, timezone, manager, notifyAboutAssignments, person.id, isCurrentUser, navigate, paths]);
+  }, [
+    fullName,
+    title,
+    aboutMe,
+    timezone,
+    manager,
+    notifyAboutAssignments,
+    person.id,
+    isCurrentUser,
+    navigate,
+    paths,
+  ]);
 
   const displayPerson: ProfileEditPage.Person = {
     id: person.id,
@@ -105,11 +129,13 @@ function Page() {
       person={displayPerson}
       fullName={fullName}
       title={title}
+      aboutMe={aboutMe}
       timezone={timezone}
       manager={manager}
       notifyAboutAssignments={notifyAboutAssignments}
       onFullNameChange={setFullName}
       onTitleChange={setTitle}
+      onAboutMeChange={setAboutMe}
       onTimezoneChange={setTimezone}
       onManagerChange={setManager}
       onNotifyAboutAssignmentsChange={setNotifyAboutAssignments}
@@ -121,6 +147,7 @@ function Page() {
       avatarError={avatar.avatarError}
       canChangeAvatar={true}
       managerSearch={managerSearch}
+      richTextHandlers={richTextHandlers}
       timezones={Timezones}
       isCurrentUser={isCurrentUser}
       fromLocation={from}

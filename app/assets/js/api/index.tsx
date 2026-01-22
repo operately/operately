@@ -1357,6 +1357,7 @@ export interface Person {
   avatarUrl: string | null;
   avatarBlobId?: string | null;
   email: string;
+  description?: string | null;
   timezone?: string | null;
   sendDailySummary?: boolean | null;
   notifyOnMention?: boolean | null;
@@ -4472,6 +4473,7 @@ export interface UpdateProfileInput {
   managerId?: string | null;
   theme?: string | null;
   notifyAboutAssignments?: boolean;
+  description?: Json | null;
 }
 
 export interface UpdateProfileResult {

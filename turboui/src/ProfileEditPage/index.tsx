@@ -7,6 +7,8 @@ import { Textfield } from "../forms/Textfield";
 import { PersonField } from "../PersonField";
 import { SwitchToggle } from "../SwitchToggle";
 import { IconPencil } from "../icons";
+import { Editor, useEditor } from "../RichEditor";
+import { RichEditorHandlers } from "../RichEditor/useEditor";
 
 export namespace ProfileEditPage {
   export interface Person {
@@ -29,6 +31,7 @@ export namespace ProfileEditPage {
     // Form fields
     fullName: string;
     title: string;
+    aboutMe: any;
     timezone: string;
     manager: Person | null;
     notifyAboutAssignments: boolean;
@@ -36,6 +39,7 @@ export namespace ProfileEditPage {
     // Form handlers
     onFullNameChange: (value: string) => void;
     onTitleChange: (value: string) => void;
+    onAboutMeChange: (value: any) => void;
     onTimezoneChange: (value: string) => void;
     onManagerChange: (person: Person | null) => void;
     onNotifyAboutAssignmentsChange: (value: boolean) => void;
@@ -52,6 +56,9 @@ export namespace ProfileEditPage {
 
     // Manager search
     managerSearch: PersonField.SearchData;
+
+    // Rich text handlers
+    richTextHandlers: RichEditorHandlers;
 
     // Options
     timezones: Timezone[];
@@ -110,6 +117,17 @@ export function ProfileEditPage(props: ProfileEditPage.Props) {
               onChange={(e) => props.onTitleChange(e.target.value)}
               testId="title"
             />
+
+            {props.isCurrentUser && (
+              <div data-test-id="about-me">
+                <label className="font-bold text-sm mb-1 block">About me</label>
+                <AboutMeEditor
+                  value={props.aboutMe}
+                  onChange={props.onAboutMeChange}
+                  handlers={props.richTextHandlers}
+                />
+              </div>
+            )}
 
             <div>
               <label className="font-bold text-sm mb-1 block">Timezone</label>
@@ -174,6 +192,30 @@ export function ProfileEditPage(props: ProfileEditPage.Props) {
       </div>
     </Page>
   );
+}
+
+function AboutMeEditor({
+  value,
+  onChange,
+  handlers,
+}: {
+  value: any;
+  onChange: (value: any) => void;
+  handlers: RichEditorHandlers;
+}) {
+  const editor = useEditor({
+    handlers,
+    placeholder: "Share a short bio, what you work on, or anything you'd like others to know.",
+    onUpdate: ({ json }) => onChange(json),
+  });
+
+  React.useEffect(() => {
+    if (editor.editor) {
+      editor.editor.commands.setContent(value);
+    }
+  }, [editor.editor]);
+
+  return <Editor editor={editor} />;
 }
 
 function AvatarSection(props: ProfileEditPage.Props) {
