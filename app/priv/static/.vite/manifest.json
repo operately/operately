@@ -3,20 +3,20 @@
     "file": "assets/vendor-Bbj0aRzQ.css",
     "src": "_vendor-Bbj0aRzQ.css"
   },
-  "_vendor-XQFBUNob.js": {
-    "file": "assets/vendor-XQFBUNob.js",
+  "_vendor-D1KtdAIM.js": {
+    "file": "assets/vendor-D1KtdAIM.js",
     "name": "vendor",
     "css": [
       "assets/vendor-Bbj0aRzQ.css"
     ]
   },
   "assets/js/app.tsx": {
-    "file": "assets/app-DdeGgneh.js",
+    "file": "assets/app-DEtoM5Hs.js",
     "name": "app",
     "src": "assets/js/app.tsx",
     "isEntry": true,
     "imports": [
-      "_vendor-XQFBUNob.js"
+      "_vendor-D1KtdAIM.js"
     ]
   }
 }
