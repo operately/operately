@@ -123,6 +123,66 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx |> UI.assert_has(testid: "goal-page")
   end
 
+  step :given_goal_with_hidden_related_work_items, ctx do
+    ctx
+    |> Factory.add_company_member(:company_member)
+    |> Factory.add_goal(:visible_child_goal, :product, parent_goal: :goal, name: "Visible Child Goal")
+    |> Factory.add_project(:visible_child_project, :product, goal: :goal, name: "Visible Child Project")
+    |> Factory.add_goal(:hidden_child_goal, :product,
+      parent_goal: :goal,
+      name: "Hidden Child Goal",
+      company_access: Binding.no_access(),
+      space_access: Binding.no_access()
+    )
+    |> Factory.add_project(:hidden_child_project, :product,
+      goal: :goal,
+      name: "Hidden Child Project",
+      company_access_level: Binding.no_access(),
+      space_access_level: Binding.no_access()
+    )
+  end
+
+  step :assert_related_work_items_visible, ctx do
+    ctx
+    |> UI.assert_text(ctx.visible_child_goal.name)
+    |> UI.assert_text(ctx.visible_child_project.name)
+  end
+
+  step :refute_hidden_related_work_items, ctx do
+    ctx
+    |> UI.refute_text(ctx.hidden_child_goal.name)
+    |> UI.refute_text(ctx.hidden_child_project.name)
+  end
+
+  step :given_goal_with_nested_related_work_access, ctx do
+    ctx
+    |> Factory.add_company_member(:company_member)
+    |> Factory.add_goal(:child_goal, :product, parent_goal: :goal, name: "Accessible Child Goal")
+    |> Factory.add_goal(:grandchild_goal, :product,
+      parent_goal: :child_goal,
+      name: "Hidden Grandchild Goal",
+      company_access: Binding.no_access(),
+      space_access: Binding.no_access()
+    )
+    |> Factory.add_project(:grandchild_project, :product,
+      goal: :child_goal,
+      name: "Visible Grandchild Project",
+      company_access_level: Binding.view_access(),
+      space_access_level: Binding.view_access()
+    )
+  end
+
+  step :assert_nested_related_work_items_visible, ctx do
+    ctx
+    |> UI.assert_text(ctx.child_goal.name)
+    |> UI.assert_text(ctx.grandchild_project.name)
+  end
+
+  step :refute_nested_related_work_items_hidden, ctx do
+    ctx
+    |> UI.refute_text(ctx.grandchild_goal.name)
+  end
+
   #
   # Description
   #
