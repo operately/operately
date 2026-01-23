@@ -41,6 +41,12 @@ function Page() {
 
       navigate(paths.spacePath(res.group.id!));
     },
+    onError: (error) => {
+      const data = error.response?.data as { error?: string; message?: string } | undefined;
+      const message = data?.message || "There was an unexpected error. Please try again later.";
+
+      form.actions.addErrors({ _submit: message });
+    },
   });
 
   return (
@@ -55,6 +61,8 @@ function Page() {
               <NameInput field="name" />
               <PurposeInput field="mission" />
             </Forms.FieldGroup>
+
+            <Forms.FormError message={form.errors._submit} when={!!form.errors._submit} className="mt-4" />
 
             <PrivacyLevel />
           </Paper.Body>

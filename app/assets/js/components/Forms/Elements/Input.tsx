@@ -13,7 +13,7 @@ interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 
 export function InputElement(props: Props) {
-  const { field, testId, error, ...rest } = props;
+  const { field, testId, error, onEnter, ...rest } = props;
   return (
     <div className="relative">
       <input
@@ -22,8 +22,8 @@ export function InputElement(props: Props) {
         data-test-id={testId}
         className={styles(error, props.className)}
         onKeyDown={(e) => {
-          if (e.key === "Enter" && props.onEnter) {
-            props.onEnter(e);
+          if (e.key === "Enter" && onEnter) {
+            onEnter(e);
           }
         }}
         //

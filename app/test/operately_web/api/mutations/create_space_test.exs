@@ -13,7 +13,13 @@ defmodule OperatelyWeb.Api.Mutations.CreateSpaceTest do
   describe "permissions" do
     setup :register_and_log_in_account
 
-    test "company members can create spaces", ctx do
+    test "company members with view access cannot create spaces", ctx do
+      assert {403, _} = request(ctx.conn)
+    end
+
+    test "company members with edit access can create spaces", ctx do
+      give_person_edit_access(ctx)
+
       assert {200, res} = request(ctx.conn)
       assert_space_created(res)
     end
@@ -65,6 +71,14 @@ defmodule OperatelyWeb.Api.Mutations.CreateSpaceTest do
   #
   # Helpers
   #
+
+  defp give_person_edit_access(ctx) do
+    group = Access.get_group!(company_id: ctx.company.id, tag: :standard)
+    context = Access.get_context!(company_id: ctx.company.id)
+
+    Access.get_binding!(group_id: group.id, context_id: context.id)
+    |> Access.update_binding(%{access_level: Binding.edit_access()})
+  end
 
   defp give_person_full_access(ctx) do
     group = Access.get_group!(company_id: ctx.company.id, tag: :standard)
