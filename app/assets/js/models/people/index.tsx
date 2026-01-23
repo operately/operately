@@ -5,7 +5,16 @@ import Api from "@/api";
 import { Paths } from "../../routes/paths";
 export type Person = api.Person;
 
-export { getPeople, getPerson, updateProfile, updateProfilePicture, useGetMe, useGetPeople, updateTheme, useGetTheme } from "@/api";
+export {
+  getPeople,
+  getPerson,
+  updateProfile,
+  updateProfilePicture,
+  useGetMe,
+  useGetPeople,
+  updateTheme,
+  useGetTheme,
+} from "@/api";
 export type { AccountTheme, InviteLink } from "@/api";
 export { usePersonFieldSearch } from "./usePersonFieldSearch";
 export { useMentionedPersonSearch } from "./useMentionedPersonSearch";
@@ -143,4 +152,18 @@ export function hasInvitationExpired(person: Person): boolean {
   if (!time) return false;
 
   return time < Time.now();
+}
+
+export function separatePeople(people?: Person[] | null) {
+  people = people || [];
+
+  const isGuest = (person: Person) => person.type === "guest";
+  const nonGuests = people.filter((person) => !isGuest(person));
+  const guests = people.filter(isGuest);
+
+  return {
+    invitedPeople: nonGuests.filter((person) => person.hasOpenInvitation),
+    currentMembers: nonGuests.filter((person) => !person.hasOpenInvitation),
+    guests,
+  };
 }
