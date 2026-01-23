@@ -1177,6 +1177,7 @@ defmodule OperatelyWeb.Api.Types do
     field :can_edit_space, :boolean, null: false
     field :can_edit_retrospective, :boolean, null: false
     field :can_edit_permissions, :boolean, null: false
+    field :can_edit_subscriptions_list, :boolean, null: false
     field :can_close, :boolean, null: false
     field :can_pause, :boolean, null: false
     field :can_resume, :boolean, null: false
@@ -1790,6 +1791,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :potential_subscribers, list_of(:subscriber), null: true
     field? :notifications, list_of(:notification)
     field? :project, :project
+    field? :project_permissions, :project_permissions
     field? :space, :space
     field? :can_comment, :boolean
   end

@@ -24,6 +24,7 @@ defmodule Operately.Comments.CommentThread do
     # populated with after load hooks
     field :potential_subscribers, :any, virtual: true
     field :project, :any, virtual: true
+    field :project_permissions, :any, virtual: true
     field :space, :any, virtual: true
     field :notifications, :any, virtual: true
     field :can_comment, :boolean, virtual: true
@@ -142,8 +143,8 @@ defmodule Operately.Comments.CommentThread do
 
   def load_permissions(thread) do
     if thread.parent_type == :project do
-      can_comment = Operately.Projects.Permissions.calculate(thread.request_info.access_level).can_comment
-      Map.put(thread, :can_comment, can_comment)
+      permissions = Operately.Projects.Permissions.calculate(thread.request_info.access_level)
+      Map.put(thread, :project_permissions, permissions)
     else
       raise ArgumentError, "Permissions can only be loaded for project comment threads"
     end

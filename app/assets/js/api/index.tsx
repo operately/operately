@@ -1067,6 +1067,7 @@ export interface CommentThread {
   potentialSubscribers?: Subscriber[] | null;
   notifications?: Notification[];
   project?: Project;
+  projectPermissions?: ProjectPermissions;
   space?: Space;
   canComment?: boolean;
 }
@@ -1505,6 +1506,7 @@ export interface ProjectPermissions {
   canEditSpace: boolean;
   canEditRetrospective: boolean;
   canEditPermissions: boolean;
+  canEditSubscriptionsList: boolean;
   canClose: boolean;
   canPause: boolean;
   canResume: boolean;

@@ -167,7 +167,7 @@ function Subscriptions() {
     <>
       <div className="border-t border-stroke-base mt-16 mb-8" />
 
-      <CurrentSubscriptions {...subscriptionsState} />
+      <CurrentSubscriptions {...subscriptionsState} canEditSubscribers={retrospective.permissions?.canEditRetrospective || false} />
     </>
   );
 }
