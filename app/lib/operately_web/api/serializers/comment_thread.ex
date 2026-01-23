@@ -9,6 +9,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Comments.CommentThread do
       reactions: OperatelyWeb.Api.Serializer.serialize(thread.reactions),
       notifications: OperatelyWeb.Api.Serializer.serialize(thread.notifications),
       project: OperatelyWeb.Api.Serializer.serialize(thread.project),
+      project_permissions: OperatelyWeb.Api.Serializer.serialize(thread.project_permissions),
       space: OperatelyWeb.Api.Serializer.serialize(thread.space),
       subscription_list: OperatelyWeb.Api.Serializer.serialize(thread.subscription_list),
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(thread.potential_subscribers),
