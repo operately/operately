@@ -87,6 +87,26 @@ defmodule Operately.Support.Factory.Companies do
     Map.put(ctx, testid, person)
   end
 
+  def add_outside_collaborator(ctx, testid, admin_key, opts \\ []) do
+    name = Keyword.get(opts, :name) || Utils.testid_to_name(testid)
+    title = Keyword.get(opts, :title, "Collaborator")
+    email = Keyword.get(opts, :email, Operately.PeopleFixtures.unique_account_email(name))
+
+    admin = Map.fetch!(ctx, admin_key)
+
+    attrs = %{
+      full_name: name,
+      title: title,
+      email: email
+    }
+
+    {:ok, _invite_link} = Operately.Operations.GuestInviting.run(admin, attrs)
+
+    person = Operately.People.get_person_by_email(ctx.company, email)
+
+    Map.put(ctx, testid, person)
+  end
+
   defp set_access_level(ctx, person, access_level) do
     context = Operately.Access.get_context(company_id: ctx.company.id)
     Operately.Access.bind(context, person_id: person.id, level: access_level)

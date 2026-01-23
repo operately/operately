@@ -1,6 +1,7 @@
 defmodule Operately.Operations.GuestInviting do
   alias Ecto.Multi
   alias Operately.{Access, Repo}
+  alias Operately.Access.Binding
   alias Operately.InviteLinks
   alias Operately.People
 
@@ -10,7 +11,7 @@ defmodule Operately.Operations.GuestInviting do
     result = Multi.new()
     |> insert_account(attrs)
     |> insert_person(admin, attrs)
-    |> insert_person_access_group()
+    |> insert_person_access_group(admin)
     |> insert_invite_link(admin, skip_invitation)
     |> insert_activity(admin)
     |> Repo.transaction()
@@ -57,7 +58,7 @@ defmodule Operately.Operations.GuestInviting do
     end)
   end
 
-  defp insert_person_access_group(multi) do
+  defp insert_person_access_group(multi, admin) do
     multi
     |> Multi.insert(:person_access_group, fn %{person: person} ->
       Access.Group.changeset(%{person_id: person.id})
@@ -66,6 +67,15 @@ defmodule Operately.Operations.GuestInviting do
       Access.GroupMembership.changeset(%{
         group_id: group.id,
         person_id: person.id,
+      })
+    end)
+    |> Multi.insert(:company_access_binding, fn %{person_access_group: group} ->
+      context = Access.get_context!(company_id: admin.company_id)
+
+      Binding.changeset(%{
+        group_id: group.id,
+        context_id: context.id,
+        access_level: Binding.view_access(),
       })
     end)
   end
