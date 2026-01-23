@@ -235,6 +235,40 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
   end
 
   #
+  # Subscriber permission steps
+  #
+
+  step :given_project_with_edit_access_contributor, ctx do
+    ctx
+    |> Factory.add_space(:space)
+    |> Factory.add_space_member(:editor, :space)
+    |> Factory.add_project(:project, :space, company_access_level: Binding.no_access(), space_access_level: Binding.edit_access())
+  end
+
+  step :given_project_with_comment_access_contributor, ctx do
+    ctx
+    |> Factory.add_space(:space)
+    |> Factory.add_space_member(:commenter, :space)
+    |> Factory.add_project(:project, :space, company_access_level: Binding.no_access(), space_access_level: Binding.comment_access())
+  end
+
+  step :login_as_editor, ctx do
+    ctx |> UI.login_as(ctx.editor)
+  end
+
+  step :login_as_commenter, ctx do
+    ctx |> UI.login_as(ctx.commenter)
+  end
+
+  step :assert_can_edit_subscribers, ctx do
+    ctx |> UI.assert_has(testid: "add-remove-subscribers")
+  end
+
+  step :assert_cannot_edit_subscribers, ctx do
+    ctx |> UI.refute_has(testid: "add-remove-subscribers")
+  end
+
+  #
   # Helper functions
   #
 
