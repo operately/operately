@@ -146,6 +146,7 @@ defmodule Operately.Features.InviteMemberTest do
       |> Steps.select_outside_collaborator_type()
       |> Steps.invite_collaborator(params)
       |> Steps.assert_member_invited()
+      |> Steps.assert_guest_invited_email_sent(params[:email])
     end
   end
 end

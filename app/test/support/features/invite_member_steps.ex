@@ -2,6 +2,7 @@ defmodule Operately.Support.Features.InviteMemberSteps do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.UI
+  alias Operately.Support.Features.EmailSteps
   alias Operately.Companies
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
@@ -90,6 +91,19 @@ defmodule Operately.Support.Features.InviteMemberSteps do
 
   step :assert_member_invited, ctx do
     ctx |> UI.assert_text("/join?token=")
+  end
+
+  step :assert_guest_invited_email_sent, ctx, email do
+    person = Operately.People.get_person_by_email(ctx.company, email)
+    assert person
+
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.company.name,
+      to: person,
+      author: ctx.admin,
+      action: "invited you as an outside collaborator"
+    })
   end
 
   step :assert_member_added, ctx, name do
