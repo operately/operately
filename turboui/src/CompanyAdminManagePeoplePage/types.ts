@@ -22,6 +22,8 @@ export interface CompanyAdminManagePeoplePageProps {
   addMemberPath: string;
   invitedPeople: CompanyAdminManagePerson[];
   currentMembers: CompanyAdminManagePerson[];
+  outsideCollaborators?: CompanyAdminManagePerson[];
+  showOutsideCollaborators?: boolean;
   onRemovePerson: (personId: string) => Promise<void> | void;
   onReissueInvitation: (personId: string) => Promise<string>;
   onRenewInvitation: (personId: string) => Promise<string>;
