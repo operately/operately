@@ -28,6 +28,8 @@ const defaultRenewState = { inviteUrl: "", loading: false };
 export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage.Props) {
   const pageTitle = ["Manage Team Members", props.companyName];
   useHtmlTitle(pageTitle);
+  const outsideCollaborators = props.outsideCollaborators ?? [];
+  const showOutsideCollaborators = props.showOutsideCollaborators && outsideCollaborators.length > 0;
 
   const [activeModal, setActiveModal] = React.useState<ActiveModal | null>(null);
   const [removeLoading, setRemoveLoading] = React.useState(false);
@@ -120,7 +122,7 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
             subtitle="Add new team members, update profiles, or remove access as needed."
             actions={
               <PrimaryButton linkTo={props.addMemberPath} testId="add-person">
-                Add Team Member
+                Add Member
               </PrimaryButton>
             }
           />
@@ -141,6 +143,18 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
             <Section title="Current Team Members">
               <PeopleList
                 people={props.currentMembers}
+                onOpenRemove={openRemoveModal}
+                onOpenReissue={openReissueModal}
+                onOpenView={openViewModal}
+                onOpenRenew={openRenewModal}
+              />
+            </Section>
+          )}
+
+          {showOutsideCollaborators && (
+            <Section title="Outside collaborators">
+              <PeopleList
+                people={outsideCollaborators}
                 onOpenRemove={openRemoveModal}
                 onOpenReissue={openReissueModal}
                 onOpenView={openViewModal}

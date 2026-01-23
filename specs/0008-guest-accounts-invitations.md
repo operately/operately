@@ -103,18 +103,48 @@ This spec defines a multi‑step implementation plan to add guest accounts (exte
 - Activity + notification tests.
 - Email tests (content and presence/absence of invite link).
 
-### PR 5 — Guest invite UI (admin flow)
+### PR 5a — TurboUI: Manage People UI updates (outside collaborators section)
 
 **Changes**
-- Create a new admin page or extend `CompanyAdminAddPeoplePage` to support guest invites.
-- Add resource selection UI for Goals/Projects/Spaces with role selection (Champion/Reviewer/Contributor/Member as appropriate).
-- Provide clear invite outcome messaging:
-  - When invite link is generated, show the link and explain TTL.
-  - When no invite link is generated, show confirmation and that the user has been invited.
+- Extend `turboui/src/CompanyAdminManagePeoplePage/index.tsx` with a new section for guest members.
+- UI label must be **Outside collaborators** (do not use "guest").
+- Render the section just like **Current Team Members**, with the same actions/options.
+- Replace the button label **Add Team Member** with **Add Member**.
+- Keep this behind a feature flag and disabled in the app for now.
+- Add a Storybook story that shows the outside collaborators section visible.
 
 **Tests**
-- UI tests for the new page/flow (component or integration tests under `app/assets/js`).
-- Mocked API tests for both invite outcomes.
+- Storybook coverage for the new section state (no app enablement yet).
+
+### PR 5b — TurboUI: Add People UI updates (choose member type + adjusted copy)
+
+**Changes**
+- Extend `turboui/src/CompanyAdminAddPeoplePage/index.tsx` so the user first chooses between **team member** and **outside collaborator**.
+- After selection, show the same form fields but adjust:
+  - Page title (outside collaborator wording).
+  - "What happens next?" copy for outside collaborators.
+- Keep this behind a feature flag and disabled in the app for now.
+- Add Storybook stories covering:
+  - The initial selection step.
+  - The outside collaborator form variant.
+
+**Tests**
+- Storybook coverage for both flows (no app enablement yet).
+
+### PR 5c — App enablement (behind feature flag)
+
+**Changes**
+- Enable the new TurboUI flows in the app pages behind a feature flag.
+- Feature is visible only for companies that have the flag enabled.
+- Use the new guest invite endpoints from the previous step when the feature is enabled.
+- Filter out people of type guest from the existing team-member lists and pass guests as a dedicated prop to the UI.
+
+**Tests**
+- App-level tests or integration coverage to ensure the flag gates the UI correctly.
+- Feature tests to ensure:
+  - Guest people are listed.
+  - Guest people can be deactivated.
+  - Guest people can be added (including email, notifications, and feed).
 
 ### PR 6 — Resource access assignment on invite
 
