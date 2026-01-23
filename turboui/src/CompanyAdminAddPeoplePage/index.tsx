@@ -55,7 +55,7 @@ const memberCopy: Record<CompanyAdminAddPeoplePage.MemberType, MemberCopy> = {
     helperText: helperTextWrapper(
       <>
         If the new member already has an account, they will be added to your company. If they don&apos;t have an account,
-        you will get a invitation link to share with them. The link will be valid for 24 hours.
+        you will get an invitation link to share with them. The link will be valid for 24 hours.
       </>,
     ),
     submitLabel: "Invite Member",
@@ -67,7 +67,7 @@ const memberCopy: Record<CompanyAdminAddPeoplePage.MemberType, MemberCopy> = {
     helperText: helperTextWrapper(
       <>
         If the outside collaborator already has an account, they will be added to your company as an outside
-        collaborator. If they don&apos;t have an account, you will get a invitation link to share with them. The link
+        collaborator. If they don&apos;t have an account, you will get an invitation link to share with them. The link
         will be valid for 24 hours.
       </>,
     ),
