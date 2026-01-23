@@ -6,7 +6,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
       email: data.email,
       avatar_url: data.avatar_url,
       title: data.title,
-      type: data.type,
+      type: Atom.to_string(data.type),
       access_level: find_access_level(bindings)
     }
   end
@@ -18,7 +18,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
       email: data.email,
       avatar_url: data.avatar_url,
       title: data.title,
-      type: data.type
+      type: Atom.to_string(data.type)
     }
     |> then(fn map ->
       case data.access_level do
@@ -35,7 +35,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
       email: data.email,
       avatar_url: data.avatar_url,
       title: data.title,
-      type: data.type,
+      type: Atom.to_string(data.type),
       suspended: data.suspended,
       timezone: data.timezone,
       manager: OperatelyWeb.Api.Serializer.serialize(data.manager),
