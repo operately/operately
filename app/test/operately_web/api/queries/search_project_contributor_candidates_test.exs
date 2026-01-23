@@ -179,13 +179,7 @@ defmodule OperatelyWeb.Api.Queries.SearchProjectContributorCandidatesTest do
         query: person.full_name
       })
 
-      assert res.people == [%{
-        id: Paths.person_id(person),
-        full_name: person.full_name,
-        email: person.email,
-        title: person.title,
-        avatar_url: person.avatar_url,
-      }]
+      assert res.people == [Serializer.serialize(person)]
     end
 
     test "doesn't return suspended people", ctx do

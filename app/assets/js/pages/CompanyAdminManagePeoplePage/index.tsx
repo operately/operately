@@ -18,6 +18,7 @@ interface LoaderResult {
   company: Companies.Company;
   invitedPeople: People.Person[];
   currentMembers: People.Person[];
+  guests: People.Person[];
 }
 
 async function loader({ params }): Promise<LoaderResult> {
@@ -25,21 +26,24 @@ async function loader({ params }): Promise<LoaderResult> {
   const people = await People.getPeople({ includeManager: true, includeInviteLink: true, includeAccount: true }).then(
     (res) => res.people,
   );
+  const { invitedPeople, currentMembers, guests } = People.separatePeople(people);
 
   return {
     company: company,
-    invitedPeople: People.sortByName(people?.filter((person) => person.hasOpenInvitation) || []),
-    currentMembers: People.sortByName(people?.filter((person) => !person.hasOpenInvitation) || []),
+    invitedPeople: People.sortByName(invitedPeople),
+    currentMembers: People.sortByName(currentMembers),
+    guests: People.sortByName(guests),
   };
 }
 
 function Page() {
-  const { company, invitedPeople, currentMembers } = Pages.useLoadedData() as LoaderResult;
+  const { company, invitedPeople, currentMembers, guests } = Pages.useLoadedData() as LoaderResult;
   const paths = usePaths();
   const me = useMe()!;
   const refresh = Pages.useRefresh();
   const [remove] = Companies.useRemoveCompanyMember();
   const [createInvite] = Api.invitations.useNewInvitationToken();
+  const showOutsideCollaborators = Companies.hasFeature(company, "guest-accounts");
 
   const buildPerson = React.useCallback(
     (person: People.Person): CompanyAdminManagePeoplePage.Person => {
@@ -68,6 +72,7 @@ function Page() {
 
   const invited = React.useMemo(() => invitedPeople.map(buildPerson), [invitedPeople, buildPerson]);
   const members = React.useMemo(() => currentMembers.map(buildPerson), [currentMembers, buildPerson]);
+  const collaborators = React.useMemo(() => guests.map(buildPerson), [guests, buildPerson]);
 
   const handleRemove = React.useCallback(
     async (personId: string) => {
@@ -97,6 +102,8 @@ function Page() {
       addMemberPath={paths.companyManagePeopleAddPeoplePath()}
       invitedPeople={invited}
       currentMembers={members}
+      outsideCollaborators={collaborators}
+      showOutsideCollaborators={showOutsideCollaborators}
       onRemovePerson={handleRemove}
       onReissueInvitation={handleCreateInvite}
       onRenewInvitation={handleCreateInvite}
