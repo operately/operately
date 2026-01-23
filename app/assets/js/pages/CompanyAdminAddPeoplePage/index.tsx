@@ -1,3 +1,4 @@
+import Api from "@/api";
 import * as Companies from "@/models/companies";
 import * as React from "react";
 
@@ -24,11 +25,15 @@ function Page() {
   const navigate = useNavigate();
   const paths = usePaths();
   const [add] = Companies.useAddCompanyMember();
+  const [inviteGuest] = Api.useInviteGuest();
+  const [memberType, setMemberType] = React.useState<CompanyAdminAddPeoplePage.MemberType | null>(null);
 
   const [state, setState] = React.useState<CompanyAdminAddPeoplePage.PageState>({ state: "form" });
   const [values, setValues] = React.useState<InviteMemberForm.Values>({ fullName: "", email: "", title: "" });
   const [errors, setErrors] = React.useState<InviteMemberForm.Errors>({});
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const showMemberTypeSelection = Companies.hasFeature(company, "guest-accounts");
+  const activeMemberType = showMemberTypeSelection ? memberType : "team_member";
 
   const navigationItems = React.useMemo(
     () => [
@@ -50,6 +55,7 @@ function Page() {
   const handleInviteAnother = React.useCallback(() => {
     setState({ state: "form" });
     resetForm();
+    setMemberType(null);
   }, [resetForm]);
 
   const handleCancel = React.useCallback(() => {
@@ -58,6 +64,7 @@ function Page() {
 
   const handleSubmit = React.useCallback(async () => {
     if (isSubmitting) return;
+    if (showMemberTypeSelection && !activeMemberType) return;
 
     const validationErrors = validateInvite(values);
     if (Object.keys(validationErrors).length > 0) {
@@ -68,13 +75,17 @@ function Page() {
     setIsSubmitting(true);
 
     try {
-      const res = await add({
+      const payload = {
         fullName: values.fullName.trim(),
         email: values.email.trim(),
         title: values.title.trim(),
-      });
+      };
+      const res =
+        activeMemberType === "outside_collaborator"
+          ? await inviteGuest(payload)
+          : await add(payload);
 
-      if (res.newAccount) {
+      if (res.newAccount && res.inviteLink?.token) {
         const url = Companies.createInvitationUrl(res.inviteLink.token);
         setState({ state: "invited", inviteLink: url, fullName: values.fullName });
       } else {
@@ -100,7 +111,7 @@ function Page() {
     } finally {
       setIsSubmitting(false);
     }
-  }, [add, isSubmitting, values]);
+  }, [activeMemberType, add, inviteGuest, isSubmitting, showMemberTypeSelection, values]);
 
   return (
     <CompanyAdminAddPeoplePage
@@ -114,6 +125,9 @@ function Page() {
       onCancel={handleCancel}
       onInviteAnother={handleInviteAnother}
       isSubmitting={isSubmitting}
+      showMemberTypeSelection={showMemberTypeSelection}
+      memberType={memberType ?? undefined}
+      onMemberTypeChange={setMemberType}
     />
   );
 }

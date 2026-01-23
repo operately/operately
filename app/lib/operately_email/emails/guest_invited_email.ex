@@ -16,7 +16,7 @@ defmodule OperatelyEmail.Emails.GuestInvitedEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: company.name, who: author, action: "invited you as a guest")
+    |> subject(where: company.name, who: author, action: "invited you as an outside collaborator")
     |> assign(:author, author)
     |> assign(:company, company)
     |> assign(:login_url, login_url)

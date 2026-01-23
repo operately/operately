@@ -2,6 +2,7 @@ defmodule Operately.Support.Features.InviteMemberSteps do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.UI
+  alias Operately.Support.Features.EmailSteps
   alias Operately.Companies
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
@@ -11,10 +12,12 @@ defmodule Operately.Support.Features.InviteMemberSteps do
     company = company_fixture()
     creator = hd(Companies.list_owners(company))
 
-    admin = person_fixture_with_account(%{company_id: company.id, full_name: "John Admin"})
-    Companies.add_admins(creator, admin.id)
+    Map.merge(ctx, %{company: company, admin: creator})
+  end
 
-    Map.merge(ctx, %{company: company, admin: admin})
+  step :given_that_guest_accounts_feature_is_enabled, ctx do
+    {:ok, company} = Companies.enable_experimental_feature(ctx.company, "guest-accounts")
+    Map.put(ctx, :company, company)
   end
 
   step :given_that_an_account_exists_in_another_company, ctx, attrs do
@@ -47,7 +50,23 @@ defmodule Operately.Support.Features.InviteMemberSteps do
     |> UI.fill(testid: "fullname", with: params[:fullName])
     |> UI.fill(testid: "email", with: params[:email])
     |> UI.fill(testid: "title", with: params[:title])
-    |> UI.click(testid: "submit")
+    |> UI.click_button("Invite Member")
+  end
+
+  step :invite_collaborator, ctx, params do
+    ctx
+    |> UI.fill(testid: "fullname", with: params[:fullName])
+    |> UI.fill(testid: "email", with: params[:email])
+    |> UI.fill(testid: "title", with: params[:title])
+    |> UI.click_button("Invite Collaborator")
+  end
+
+  step :select_team_member_type, ctx do
+    ctx |> UI.click(testid: "select-team-member")
+  end
+
+  step :select_outside_collaborator_type, ctx do
+    ctx |> UI.click(testid: "select-outside-collaborator")
   end
 
   step :submit_password, ctx, password do
@@ -72,6 +91,19 @@ defmodule Operately.Support.Features.InviteMemberSteps do
 
   step :assert_member_invited, ctx do
     ctx |> UI.assert_text("/join?token=")
+  end
+
+  step :assert_guest_invited_email_sent, ctx, email do
+    person = Operately.People.get_person_by_email(ctx.company, email)
+    assert person
+
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.company.name,
+      to: person,
+      author: ctx.admin,
+      action: "invited you as an outside collaborator"
+    })
   end
 
   step :assert_member_added, ctx, name do

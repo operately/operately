@@ -1,5 +1,5 @@
-<%= short_name(@author) %> invited you as a guest to <%= @company.name %>.
+<%= short_name(@author) %> invited you as an outside collaborator to <%= @company.name %>.
 
-You now have guest access to <%= @company.name %>.
+You now have access to <%= @company.name %> as an outside collaborator.
 
 Log in to Operately: <%= @login_url %>
