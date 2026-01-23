@@ -90,4 +90,26 @@ defmodule Operately.Features.OutsideCollaboratorAccessTest do
       |> Steps.assert_404_page()
     end
   end
+
+  describe "space creation for outside collaborators" do
+    setup ctx do
+      Steps.setup_outside_collaborator(ctx)
+    end
+
+    feature "outside collaborator does not see Add Space button on homepage", ctx do
+      ctx
+      |> Steps.log_in_as_collaborator()
+      |> Steps.visit_home_page()
+      |> Steps.assert_add_space_button_not_visible()
+    end
+
+    feature "outside collaborator gets error when manually submitting space creation form", ctx do
+      ctx
+      |> Steps.log_in_as_collaborator()
+      |> Steps.visit_new_space_page()
+      |> Steps.fill_space_form(%{name: "Test Space", mission: "Test Mission"})
+      |> Steps.submit_space_form()
+      |> Steps.assert_permission_error_message()
+    end
+  end
 end
