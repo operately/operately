@@ -22,7 +22,7 @@ export function Subscriptions() {
 
   return (
     <div className="border-t border-stroke-base mt-16 pt-8">
-      <CurrentSubscriptions {...subscriptionsState} />
+      <CurrentSubscriptions {...subscriptionsState} canEditSubscribers={update.permissions?.canEdit || false} />
     </div>
   );
 }

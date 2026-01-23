@@ -17,6 +17,7 @@ export namespace CurrentSubscriptions {
     onEditSubscribers: (subscriberIds: string[]) => void;
     isSubscribeLoading?: boolean;
     isUnsubscribeLoading?: boolean;
+    canEditSubscribers: boolean;
   }
 }
 
@@ -30,6 +31,7 @@ export function CurrentSubscriptions({
   onEditSubscribers,
   isSubscribeLoading = false,
   isUnsubscribeLoading = false,
+  canEditSubscribers,
 }: CurrentSubscriptions.Props) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -43,23 +45,12 @@ export function CurrentSubscriptions({
 
   return (
     <div>
-      <div className="font-bold text-sm sm:text-[16px]">Subscribers</div>
-      <div className="text-xs sm:text-sm mt-1">{label}</div>
-      <div className="flex items-center gap-1 mt-2 flex-wrap gap-y-2">
-        {sortedSubscribers
-          .filter((s) => s.person)
-          .map((s, idx) => (
-            <Avatar
-              person={s.person!}
-              size="tiny"
-              key={s.person!.id}
-              testId={createTestId("subscriber", s.person?.id || idx.toString())}
-            />
-          ))}
-        <SecondaryButton onClick={() => setIsModalOpen(true)} size="xs" testId="add-remove-subscribers">
-          Add/remove people...
-        </SecondaryButton>
-      </div>
+      <CurrentSubscribersSection
+        label={label}
+        sortedSubscribers={sortedSubscribers}
+        canEditSubscribers={canEditSubscribers}
+        setIsModalOpen={setIsModalOpen}
+      />
 
       <div className="mt-4">
         {isCurrentUserSubscribed ? (
@@ -82,6 +73,50 @@ export function CurrentSubscriptions({
         onSave={handleSaveSubscribers}
       />
     </div>
+  );
+}
+
+interface CurrentSubscribersSectionProps {
+  label: string;
+  sortedSubscribers: SubscribersSelector.Subscriber[];
+  canEditSubscribers: boolean;
+  setIsModalOpen: (open: boolean) => void;
+}
+
+function CurrentSubscribersSection({
+  label,
+  sortedSubscribers,
+  canEditSubscribers,
+  setIsModalOpen,
+}: CurrentSubscribersSectionProps) {
+  const noSubscribers = !sortedSubscribers || sortedSubscribers.length < 1;
+
+  if (noSubscribers && !canEditSubscribers) {
+    return null;
+  }
+
+  return (
+    <>
+      <div className="font-bold text-sm sm:text-[16px]">Subscribers</div>
+      <div className="text-xs sm:text-sm mt-1">{label}</div>
+      <div className="flex items-center gap-1 mt-2 flex-wrap gap-y-2">
+        {sortedSubscribers
+          .filter((s) => s.person)
+          .map((s, idx) => (
+            <Avatar
+              person={s.person!}
+              size="tiny"
+              key={s.person!.id}
+              testId={createTestId("subscriber", s.person?.id || idx.toString())}
+            />
+          ))}
+        {canEditSubscribers && (
+          <SecondaryButton onClick={() => setIsModalOpen(true)} size="xs" testId="add-remove-subscribers">
+            Add/remove people...
+          </SecondaryButton>
+        )}
+      </div>
+    </>
   );
 }
 
