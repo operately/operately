@@ -108,4 +108,44 @@ defmodule Operately.Features.InviteMemberTest do
       |> Steps.assert_invitation_expires_in_days()
     end
   end
+
+  describe "with guest accounts feature enabled" do
+    setup ctx do
+      Steps.given_that_guest_accounts_feature_is_enabled(ctx)
+    end
+
+    feature "admin account can invite team members", ctx do
+      full_name = "Jamie Cole"
+
+      params = %{
+        fullName: full_name,
+        email: Operately.PeopleFixtures.unique_account_email(full_name),
+        title: "Engineer",
+      }
+
+      ctx
+      |> Steps.log_in_as_admin()
+      |> Steps.navigate_to_invitation_page()
+      |> Steps.select_team_member_type()
+      |> Steps.invite_member(params)
+      |> Steps.assert_member_invited()
+    end
+
+    feature "admin account can invite outside collaborators", ctx do
+      full_name = "Morgan Patel"
+
+      params = %{
+        fullName: full_name,
+        email: Operately.PeopleFixtures.unique_account_email(full_name),
+        title: "Consultant",
+      }
+
+      ctx
+      |> Steps.log_in_as_admin()
+      |> Steps.navigate_to_invitation_page()
+      |> Steps.select_outside_collaborator_type()
+      |> Steps.invite_collaborator(params)
+      |> Steps.assert_member_invited()
+    end
+  end
 end
