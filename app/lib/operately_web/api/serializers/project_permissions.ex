@@ -21,6 +21,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Permissions do
       can_edit_retrospective: permissions.can_edit_retrospective,
       can_edit_contributors: permissions.can_edit_contributors,
       can_edit_permissions: permissions.can_edit_permissions,
+      can_edit_subscriptions_list: permissions.can_edit_subscriptions_list,
       can_edit_task: permissions.can_edit_task,
       can_edit_statuses: permissions.can_edit_statuses,
       can_close: permissions.can_close,

@@ -83,4 +83,24 @@ defmodule Operately.Features.ProjectDiscussionTest do
       |> Steps.assert_project_discussion_navigation_without_space()
     end
   end
+
+  describe "discussion subscriber permissions" do
+    feature "user with edit access can edit discussion subscribers", ctx do
+      ctx
+      |> Steps.given_project_with_edit_access_contributor()
+      |> Steps.given_a_discussion_exists()
+      |> Steps.login_as_editor()
+      |> Steps.visit_discussion_page()
+      |> Steps.assert_can_edit_subscribers()
+    end
+
+    feature "user with comment access cannot see edit subscribers button", ctx do
+      ctx
+      |> Steps.given_project_with_comment_access_contributor()
+      |> Steps.given_a_discussion_exists()
+      |> Steps.login_as_commenter()
+      |> Steps.visit_discussion_page()
+      |> Steps.assert_cannot_edit_subscribers()
+    end
+  end
 end

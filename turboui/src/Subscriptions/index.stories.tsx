@@ -173,6 +173,7 @@ export const CurrentSubscriptionsSubscribed: CurrentSubscriptionsStory = {
             const updated = mockSubscribers.filter((s) => ids.includes(s.person?.id || ""));
             setSubscribedPeople(updated);
           }}
+          canEditSubscribers={true}
         />
     );
   },
@@ -202,6 +203,7 @@ export const CurrentSubscriptionsNotSubscribed: CurrentSubscriptionsStory = {
             const updated = mockSubscribers.filter((s) => ids.includes(s.person?.id || ""));
             setSubscribedPeople(updated);
           }}
+          canEditSubscribers={true}
         />
     );
   },
@@ -231,6 +233,7 @@ export const CurrentSubscriptionsNoSubscribers: CurrentSubscriptionsStory = {
             const updated = mockSubscribers.filter((s) => ids.includes(s.person?.id || ""));
             setSubscribedPeople(updated);
           }}
+          canEditSubscribers={true}
         />
     );
   },
@@ -248,6 +251,7 @@ export const CurrentSubscriptionsLoading: CurrentSubscriptionsStory = {
           onUnsubscribe={() => console.log("Unsubscribe clicked")}
           onEditSubscribers={(ids) => console.log("Edit subscribers:", ids)}
           isSubscribeLoading={true}
+          canEditSubscribers={true}
         />
     );
   },
