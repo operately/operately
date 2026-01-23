@@ -58,6 +58,29 @@ defmodule Operately.Operations.GuestInvitingTest do
     refute Access.get_group_membership(group_id: company_group.id, person_id: person.id)
   end
 
+  test "GuestInviting operation creates binding to company context with view access", ctx do
+    {:ok, _} = Operately.Operations.GuestInviting.run(ctx.admin, @guest_attrs)
+
+    person = People.get_person_by_email(ctx.company, @email)
+    person_group = Access.get_group!(person_id: person.id)
+    company_context = Access.get_context!(company_id: ctx.company.id)
+
+    binding = Access.get_binding(group_id: person_group.id, context_id: company_context.id)
+
+    assert binding
+    assert binding.access_level == Access.Binding.view_access()
+  end
+
+  test "GuestInviting operation does not create binding to company space context", ctx do
+    {:ok, _} = Operately.Operations.GuestInviting.run(ctx.admin, @guest_attrs)
+
+    person = People.get_person_by_email(ctx.company, @email)
+    person_group = Access.get_group!(person_id: person.id)
+    company_space_context = Access.get_context!(group_id: ctx.company.company_space_id)
+
+    refute Access.get_binding(group_id: person_group.id, context_id: company_space_context.id)
+  end
+
   test "GuestInviting operation does not add guest to company space", ctx do
     company_space = Groups.get_group!(ctx.company.company_space_id)
     initial_count = length(Groups.list_members(company_space))
