@@ -143,7 +143,7 @@ function DiscussionReactions() {
   const entity = Reactions.entity(discussion.id, "comment_thread");
   const addReactionForm = useReactionsForm(entity, reactions);
 
-  return <ReactionList size={24} form={addReactionForm} canAddReaction={discussion.project?.permissions?.canComment || false} />;
+  return <ReactionList size={24} form={addReactionForm} canAddReaction={discussion.projectPermissions?.canComment || false} />;
 }
 
 function Comments() {
@@ -154,7 +154,7 @@ function Comments() {
   return (
     <>
       <div className="border-t border-stroke-base mt-8" />
-      <CommentSection form={commentsForm} commentParentType="comment_thread" canComment={discussion.project?.permissions?.canComment || false} />
+      <CommentSection form={commentsForm} commentParentType="comment_thread" canComment={discussion.projectPermissions?.canComment || false} />
     </>
   );
 }
