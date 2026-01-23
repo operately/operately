@@ -1358,7 +1358,7 @@ export interface Person {
   avatarUrl: string | null;
   avatarBlobId?: string | null;
   email: string;
-  type?: string | null;
+  type: string;
   description?: string | null;
   timezone?: string | null;
   sendDailySummary?: boolean | null;

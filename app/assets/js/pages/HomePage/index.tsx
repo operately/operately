@@ -30,6 +30,7 @@ async function loader({ params }): Promise<LoaderData> {
     id: params.companyId,
     includeOwners: true,
     includeAdmins: true,
+    includePermissions: true,
   }).then((d) => d.company);
 
   const spaces = await Spaces.getSpaces({ includeAccessLevels: true });
@@ -154,7 +155,12 @@ function ActivityItemSkeleton() {
 }
 
 function AddSpaceButton() {
+  const { company } = useLoadedData();
   const paths = usePaths();
+
+  if (!company.permissions?.canCreateSpace) {
+    return null;
+  }
 
   return (
     <PrimaryButton linkTo={paths.newSpacePath()} testId="add-space" size="sm">
