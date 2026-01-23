@@ -1,0 +1,30 @@
+import type { Navigation } from "../Page/Navigation";
+
+export interface CompanyAdminManagePerson {
+  id: string;
+  fullName: string;
+  title?: string | null;
+  email: string;
+  avatarUrl: string | null;
+  hasOpenInvitation: boolean;
+  hasValidInvite: boolean;
+  invitationExpired: boolean;
+  expiresIn?: string | null;
+  profilePath: string;
+  profileEditPath: string;
+  inviteLinkUrl?: string | null;
+  canRemove: boolean;
+}
+
+export interface CompanyAdminManagePeoplePageProps {
+  companyName: string;
+  navigationItems: Navigation.Item[];
+  addMemberPath: string;
+  invitedPeople: CompanyAdminManagePerson[];
+  currentMembers: CompanyAdminManagePerson[];
+  onRemovePerson: (personId: string) => Promise<void> | void;
+  onReissueInvitation: (personId: string) => Promise<string>;
+  onRenewInvitation: (personId: string) => Promise<string>;
+  onRenewModalClose?: () => void;
+  testId?: string;
+}

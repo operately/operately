@@ -36,6 +36,7 @@ export { InviteLinkJoinPage } from "./InviteLinkJoinPage";
 export { InviteMemberForm } from "./InviteMemberForm";
 export { InvitePeoplePage } from "./InvitePeoplePage";
 export { CompanyAdminAddPeoplePage } from "./CompanyAdminAddPeoplePage";
+export { CompanyAdminManagePeoplePage } from "./CompanyAdminManagePeoplePage";
 export { MilestoneKanbanPage } from "./MilestoneKanbanPage";
 export { MilestonePage } from "./MilestonePage";
 export { MiniWorkMap } from "./MiniWorkMap";
