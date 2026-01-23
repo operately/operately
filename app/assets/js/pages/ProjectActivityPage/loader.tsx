@@ -20,7 +20,7 @@ export async function loader({ params }): Promise<LoaderResult> {
   try {
     return {
       activity,
-      project: await Projects.getProject({ id: project.id, includeSpace: true }).then(
+      project: await Projects.getProject({ id: project.id, includeSpace: true, includePermissions: true }).then(
         (data) => data.project,
       ),
     };

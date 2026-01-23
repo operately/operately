@@ -20,7 +20,7 @@ export async function loader({ params }): Promise<LoaderResult> {
   try {
     return {
       activity,
-      goal: await Goals.getGoal({ id: goal.id, includeSpace: true }).then((d) => d.goal!),
+      goal: await Goals.getGoal({ id: goal.id, includeSpace: true, includePermissions: true }).then((d) => d.goal!),
     };
   } catch (e) {
     return { activity, goal };

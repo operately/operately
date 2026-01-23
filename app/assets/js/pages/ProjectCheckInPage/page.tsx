@@ -99,7 +99,7 @@ function SubscriptionsSection() {
     onRefresh: refresh,
   });
 
-  return <CurrentSubscriptions {...subscriptionsState} />;
+  return <CurrentSubscriptions {...subscriptionsState} canEditSubscribers={checkIn.project?.permissions?.canEditSubscriptionsList || false} />;
 }
 
 function Title() {
