@@ -213,7 +213,7 @@ export function useEditor(props: UseEditorProps): EditorState {
   };
 }
 
-const AUTOSAVE_TTL_MS = 1000 * 60 * 60 * 6;
+const AUTOSAVE_TTL_MS = 1000 * 60 * 30; // 30 minutes
 
 function getAutosavedContent(autosaveKey: string): unknown | null {
   try {
@@ -237,7 +237,7 @@ function getAutosavedContent(autosaveKey: string): unknown | null {
 
 function saveAutosavedContent(autosaveKey: string, json: any): void {
   try {
-    if (json?.content?.[0]?.content?.length === 0) {
+    if (!json?.content?.[0]?.content?.length) {
       sessionStorage.removeItem(autosaveKey);
       return;
     }
