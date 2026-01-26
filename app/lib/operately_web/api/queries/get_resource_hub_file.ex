@@ -5,7 +5,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFile do
   alias Operately.ResourceHubs.File
 
   inputs do
-    field? :id, :id, null: true
+    field :id, :id, null: false
     field? :include_author, :boolean, null: true
     field? :include_resource_hub, :boolean, null: true
     field? :include_space, :boolean, null: true
@@ -18,7 +18,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFile do
   end
 
   outputs do
-    field? :file, :resource_hub_file, null: true
+    field :file, :resource_hub_file, null: false
   end
 
   def call(conn, inputs) do

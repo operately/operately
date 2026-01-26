@@ -68,7 +68,7 @@ function DiscussionBody() {
 }
 
 function DiscussionSubscriptions() {
-  const { discussion } = useLoadedData();
+  const { discussion, isCurrentUserSubscribed } = useLoadedData();
   const refresh = Pages.useRefresh();
 
   if (!discussion.potentialSubscribers || !discussion.subscriptionList) {
@@ -87,7 +87,11 @@ function DiscussionSubscriptions() {
     <>
       <div className="border-t border-stroke-base mt-16 mb-8" />
 
-      <CurrentSubscriptions {...subscriptionsState} canEditSubscribers={discussion.permissions?.canEdit || false} />
+      <CurrentSubscriptions
+        {...subscriptionsState}
+        isCurrentUserSubscribed={isCurrentUserSubscribed}
+        canEditSubscribers={discussion.permissions?.canEdit || false}
+      />
     </>
   );
 }

@@ -126,7 +126,7 @@ function Comments({ goal }: { goal: Goals.Goal }) {
 
 function Subscriptions() {
   const refresh = Pages.useRefresh();
-  const { activity, goal } = useLoaderData();
+  const { activity, goal, isCurrentUserSubscribed } = useLoaderData();
 
   if (!activity.commentThread?.potentialSubscribers || !activity.commentThread?.subscriptionList) {
     return null;
@@ -142,7 +142,11 @@ function Subscriptions() {
 
   return (
     <div className="border-t border-stroke-base mt-16 pt-8">
-      <CurrentSubscriptions {...subscriptionsState} canEditSubscribers={goal.permissions?.canEdit || false} />
+      <CurrentSubscriptions
+        {...subscriptionsState}
+        isCurrentUserSubscribed={isCurrentUserSubscribed}
+        canEditSubscribers={goal.permissions?.canEdit || false}
+      />
     </div>
   );
 }

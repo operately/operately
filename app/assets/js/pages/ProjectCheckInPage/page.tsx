@@ -84,7 +84,7 @@ function CheckInReactions() {
 }
 
 function SubscriptionsSection() {
-  const { checkIn } = useLoadedData();
+  const { checkIn, isCurrentUserSubscribed } = useLoadedData();
   const refresh = useRefresh();
 
   if (!checkIn.potentialSubscribers || !checkIn.subscriptionList) {
@@ -99,7 +99,13 @@ function SubscriptionsSection() {
     onRefresh: refresh,
   });
 
-  return <CurrentSubscriptions {...subscriptionsState} canEditSubscribers={checkIn.project?.permissions?.canEditSubscriptionsList || false} />;
+  return (
+    <CurrentSubscriptions
+      {...subscriptionsState}
+      isCurrentUserSubscribed={isCurrentUserSubscribed}
+      canEditSubscribers={checkIn.project?.permissions?.canEditSubscriptionsList || false}
+    />
+  );
 }
 
 function Title() {

@@ -203,7 +203,7 @@ function DeleteFileModal({ isOpen, hideModal, fileName }: DeleteFileModalProps) 
 }
 
 function FileSubscriptions() {
-  const { file } = useLoadedData();
+  const { file, isCurrentUserSubscribed } = useLoadedData();
   const refresh = Pages.useRefresh();
 
   if (!file.potentialSubscribers || !file.subscriptionList) {
@@ -222,7 +222,11 @@ function FileSubscriptions() {
     <>
       <div className="border-t border-stroke-base mt-16 mb-8" />
 
-      <CurrentSubscriptions {...subscriptionsState} canEditSubscribers={file.permissions?.canEditFile || false} />
+      <CurrentSubscriptions
+        {...subscriptionsState}
+        isCurrentUserSubscribed={isCurrentUserSubscribed}
+        canEditSubscribers={file.permissions?.canEditFile || false}
+      />
     </>
   );
 }

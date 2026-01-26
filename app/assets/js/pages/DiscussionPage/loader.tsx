@@ -1,13 +1,15 @@
 import * as Pages from "@/components/Pages";
 import * as Discussions from "@/models/discussions";
+import { isSubscribedToResource } from "@/models/subscriptions";
 
 interface LoaderResult {
   discussion: Discussions.Discussion;
+  isCurrentUserSubscribed: boolean;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
-  return {
-    discussion: await Discussions.getDiscussion({
+  const [discussion, subscriptionStatus] = await Promise.all([
+    Discussions.getDiscussion({
       id: params.id,
       includeAuthor: true,
       includeReactions: true,
@@ -17,7 +19,16 @@ export async function loader({ params }): Promise<LoaderResult> {
       includePotentialSubscribers: true,
       includeUnreadNotifications: true,
       includePermissions: true,
-    }).then((d) => d.discussion!),
+    }).then((d) => d.discussion),
+    isSubscribedToResource({
+      resourceId: params.id,
+      resourceType: "message",
+    }),
+  ]);
+
+  return {
+    discussion,
+    isCurrentUserSubscribed: subscriptionStatus.subscribed,
   };
 }
 

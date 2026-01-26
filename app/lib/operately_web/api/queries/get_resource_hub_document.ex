@@ -6,7 +6,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubDocument do
   alias Operately.Notifications.UnreadNotificationsLoader
 
   inputs do
-    field? :id, :id, null: true
+    field :id, :id, null: false
     field? :include_author, :boolean, null: true
     field? :include_space, :boolean, null: true
     field? :include_resource_hub, :boolean, null: true
@@ -20,7 +20,7 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubDocument do
   end
 
   outputs do
-    field? :document, :resource_hub_document, null: true
+    field :document, :resource_hub_document, null: false
   end
 
   def call(conn, inputs) do
