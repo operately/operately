@@ -1,6 +1,4 @@
 import { useMemo } from "react";
-import { useMe } from "@/contexts/CurrentCompanyContext";
-import { compareIds } from "@/routes/paths";
 import {
   Subscriber,
   SubscriptionList,
@@ -21,7 +19,6 @@ interface UseCurrentSubscriptionsAdapterOpts {
 interface CurrentSubscriptionsAdapterState {
   subscribers: Subscriber[];
   subscribedPeople: Subscriber[];
-  isCurrentUserSubscribed: boolean;
   resourceName: string;
   onSubscribe: () => void;
   onUnsubscribe: () => void;
@@ -41,7 +38,6 @@ export function useCurrentSubscriptionsAdapter({
   type,
   onRefresh,
 }: UseCurrentSubscriptionsAdapterOpts): CurrentSubscriptionsAdapterState {
-  const me = useMe();
   const [subscribe, { loading: subscribeLoading }] = useSubscribeToNotifications();
   const [unsubscribe, { loading: unsubscribeLoading }] = useUnsubscribeFromNotifications();
   const [editSubscribers] = useEditSubscriptionsList();
@@ -49,11 +45,6 @@ export function useCurrentSubscriptionsAdapter({
   const subscribedPeople = useMemo(
     () => potentialSubscribers.filter((s) => s.isSubscribed),
     [potentialSubscribers],
-  );
-
-  const isCurrentUserSubscribed = useMemo(
-    () => subscribedPeople.some((s) => s.person && compareIds(s.person.id, me?.id)),
-    [subscribedPeople, me?.id],
   );
 
   const handleSubscribe = () => {
@@ -80,7 +71,6 @@ export function useCurrentSubscriptionsAdapter({
   return {
     subscribers: potentialSubscribers,
     subscribedPeople,
-    isCurrentUserSubscribed,
     resourceName,
     onSubscribe: handleSubscribe,
     onUnsubscribe: handleUnsubscribe,

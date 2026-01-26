@@ -148,7 +148,7 @@ function Comments() {
 }
 
 function Subscriptions() {
-  const { retrospective } = useLoadedData();
+  const { retrospective, isCurrentUserSubscribed } = useLoadedData();
   const refresh = useRefresh();
 
   if (!retrospective.potentialSubscribers || !retrospective.subscriptionList) {
@@ -167,7 +167,11 @@ function Subscriptions() {
     <>
       <div className="border-t border-stroke-base mt-16 mb-8" />
 
-      <CurrentSubscriptions {...subscriptionsState} canEditSubscribers={retrospective.permissions?.canEditRetrospective || false} />
+      <CurrentSubscriptions
+        {...subscriptionsState}
+        isCurrentUserSubscribed={isCurrentUserSubscribed}
+        canEditSubscribers={retrospective.permissions?.canEditRetrospective || false}
+      />
     </>
   );
 }

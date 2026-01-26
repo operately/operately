@@ -129,7 +129,7 @@ function Comments({ project }: { project: Projects.Project }) {
 
 function Subscriptions() {
   const refresh = Pages.useRefresh();
-  const { activity, project } = useLoaderData();
+  const { activity, project, isCurrentUserSubscribed } = useLoaderData();
 
   if (!activity.commentThread?.potentialSubscribers || !activity.commentThread?.subscriptionList) {
     return null;
@@ -145,7 +145,11 @@ function Subscriptions() {
 
   return (
     <div className="border-t border-stroke-base mt-16 pt-8">
-      <CurrentSubscriptions {...subscriptionsState} canEditSubscribers={project.permissions?.canEditSubscriptionsList || false} />
+      <CurrentSubscriptions
+        {...subscriptionsState}
+        isCurrentUserSubscribed={isCurrentUserSubscribed}
+        canEditSubscribers={project.permissions?.canEditSubscriptionsList || false}
+      />
     </div>
   );
 }

@@ -2300,7 +2300,7 @@ export interface GetCompanyResult {
 }
 
 export interface GetDiscussionInput {
-  id?: string | null;
+  id: string;
   includeAuthor?: boolean | null;
   includeReactions?: boolean | null;
   includeSpace?: boolean | null;
@@ -2312,7 +2312,7 @@ export interface GetDiscussionInput {
 }
 
 export interface GetDiscussionResult {
-  discussion?: Discussion | null;
+  discussion: Discussion;
 }
 
 export interface GetDiscussionsInput {
@@ -2368,7 +2368,7 @@ export interface GetGoalResult {
 }
 
 export interface GetGoalProgressUpdateInput {
-  id?: string | null;
+  id: string;
   includeAuthor?: boolean | null;
   includeAcknowledgedBy?: boolean | null;
   includeReactions?: boolean | null;
@@ -2386,7 +2386,7 @@ export interface GetGoalProgressUpdateInput {
 }
 
 export interface GetGoalProgressUpdateResult {
-  update?: GoalProgressUpdate | null;
+  update: GoalProgressUpdate;
 }
 
 export interface GetGoalsInput {
@@ -2506,7 +2506,7 @@ export interface GetProjectCheckInInput {
 }
 
 export interface GetProjectCheckInResult {
-  projectCheckIn?: ProjectCheckIn | null;
+  projectCheckIn: ProjectCheckIn;
 }
 
 export interface GetProjectCheckInsInput {
@@ -2530,7 +2530,7 @@ export interface GetProjectContributorResult {
 }
 
 export interface GetProjectRetrospectiveInput {
-  projectId?: string | null;
+  projectId: Id;
   includeAuthor?: boolean | null;
   includeProject?: boolean | null;
   includeClosedAt?: boolean | null;
@@ -2542,7 +2542,7 @@ export interface GetProjectRetrospectiveInput {
 }
 
 export interface GetProjectRetrospectiveResult {
-  retrospective?: ProjectRetrospective | null;
+  retrospective: ProjectRetrospective;
 }
 
 export interface GetProjectsInput {
@@ -2579,7 +2579,7 @@ export interface GetResourceHubResult {
 }
 
 export interface GetResourceHubDocumentInput {
-  id?: Id | null;
+  id: Id;
   includeAuthor?: boolean | null;
   includeSpace?: boolean | null;
   includeResourceHub?: boolean | null;
@@ -2593,11 +2593,11 @@ export interface GetResourceHubDocumentInput {
 }
 
 export interface GetResourceHubDocumentResult {
-  document?: ResourceHubDocument | null;
+  document: ResourceHubDocument;
 }
 
 export interface GetResourceHubFileInput {
-  id?: Id | null;
+  id: Id;
   includeAuthor?: boolean | null;
   includeResourceHub?: boolean | null;
   includeSpace?: boolean | null;
@@ -2610,7 +2610,7 @@ export interface GetResourceHubFileInput {
 }
 
 export interface GetResourceHubFileResult {
-  file?: ResourceHubFile | null;
+  file: ResourceHubFile;
 }
 
 export interface GetResourceHubFolderInput {
@@ -2627,7 +2627,7 @@ export interface GetResourceHubFolderResult {
 }
 
 export interface GetResourceHubLinkInput {
-  id?: Id | null;
+  id: Id;
   includeAuthor?: boolean | null;
   includeSpace?: boolean | null;
   includeResourceHub?: boolean | null;
@@ -2641,7 +2641,7 @@ export interface GetResourceHubLinkInput {
 }
 
 export interface GetResourceHubLinkResult {
-  link?: ResourceHubLink | null;
+  link: ResourceHubLink;
 }
 
 export interface GetSpaceInput {

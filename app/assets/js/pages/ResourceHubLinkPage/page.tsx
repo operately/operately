@@ -194,7 +194,7 @@ function DeleteLinkModal({ isOpen, hideModal, linkName }: DeleteLinkModalProps) 
 }
 
 function LinkSubscriptions() {
-  const { link } = useLoadedData();
+  const { link, isCurrentUserSubscribed } = useLoadedData();
   const refresh = Pages.useRefresh();
 
   if (!link.potentialSubscribers || !link.subscriptionList) {
@@ -213,7 +213,11 @@ function LinkSubscriptions() {
     <>
       <div className="border-t border-stroke-base mt-16 mb-8" />
 
-      <CurrentSubscriptions {...subscriptionsState} canEditSubscribers={link.permissions?.canEditLink || false} />
+      <CurrentSubscriptions
+        {...subscriptionsState}
+        isCurrentUserSubscribed={isCurrentUserSubscribed}
+        canEditSubscribers={link.permissions?.canEditLink || false}
+      />
     </>
   );
 }

@@ -172,7 +172,7 @@ function DeleteDocumentModal({ isOpen, toggleModal }: DeleteDocumentModalProps) 
 }
 
 function DocumentSubscriptions() {
-  const { document } = useLoadedData();
+  const { document, isCurrentUserSubscribed } = useLoadedData();
   const refresh = Pages.useRefresh();
 
   if (!document.potentialSubscribers || !document.subscriptionList) {
@@ -191,7 +191,11 @@ function DocumentSubscriptions() {
     <>
       <div className="border-t border-stroke-base mt-16 mb-8" />
 
-      <CurrentSubscriptions {...subscriptionsState} canEditSubscribers={document.permissions?.canEditDocument || false} />
+      <CurrentSubscriptions
+        {...subscriptionsState}
+        isCurrentUserSubscribed={isCurrentUserSubscribed}
+        canEditSubscribers={document.permissions?.canEditDocument || false}
+      />
     </>
   );
 }
