@@ -120,7 +120,9 @@ defmodule Operately.Support.Features.GoalSteps do
   end
 
   step :assert_goal_page_loaded, ctx do
-    ctx |> UI.assert_has(testid: "goal-page")
+    ctx
+    |> UI.sleep(300)
+    |> UI.assert_has(testid: "goal-page")
   end
 
   step :given_goal_with_hidden_related_work_items, ctx do
@@ -717,6 +719,112 @@ defmodule Operately.Support.Features.GoalSteps do
     assert is_binary(markdown)
     assert String.contains?(markdown, "# #{ctx.goal.name}")
     assert String.contains?(markdown, "Status:")
+
+    ctx
+  end
+
+  #
+  # Access management
+  #
+
+  step :setup_goal_with_comment_access_and_outside_collaborator, ctx do
+    ctx
+    |> Factory.setup()
+    |> Factory.add_company_owner(:owner)
+    |> Factory.enable_feature("guest-accounts")
+    |> Factory.add_space(:space)
+    |> Factory.add_goal(:goal, :space, name: "Test Goal", company_access: Binding.comment_access(), space_access: Binding.comment_access())
+    |> Factory.add_outside_collaborator(:collaborator, :owner)
+    |> Factory.log_in_person(:creator)
+  end
+
+  step :setup_goal_with_comment_access_and_space_member, ctx do
+    ctx
+    |> Factory.setup()
+    |> Factory.add_space(:space)
+    |> Factory.add_space_member(:member, :space)
+    |> Factory.add_goal(:goal, :space, name: "Test Goal", company_access: Binding.comment_access(), space_access: Binding.comment_access())
+    |> Factory.log_in_person(:creator)
+  end
+
+  step :login_as_outside_collaborator, ctx do
+    ctx |> UI.login_as(ctx.collaborator)
+  end
+
+  step :login_as_space_member, ctx do
+    ctx |> UI.login_as(ctx.member)
+  end
+
+  step :login_as_admin, ctx do
+    ctx |> UI.login_as(ctx.creator)
+  end
+
+  step :visit_goal_page_as_collaborator, ctx do
+    ctx |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
+  end
+
+  step :visit_goal_discussions_page_as_member, ctx do
+    ctx
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal, tab: "discussions"))
+  end
+
+  step :assert_goal_page_not_found, ctx do
+    ctx |> UI.assert_text("Page Not Found")
+  end
+
+  step :visit_goal_access_management_page, ctx do
+    ctx
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
+    |> UI.click(testid: "manage-goal-access-button")
+    |> UI.assert_has(testid: "goal-access-management-page")
+  end
+
+  step :give_collaborator_view_access, ctx do
+    ctx
+    |> UI.click(testid: "add-goal-access")
+    |> UI.assert_has(testid: "goal-access-add-page")
+    |> UI.select_person_in(testid: "members-0-personid", name: ctx.collaborator.full_name)
+    |> UI.select(testid: "members-0-accesslevel", option: "View Access")
+    |> UI.click(testid: "submit")
+    |> UI.assert_has(testid: "goal-access-management-page")
+  end
+
+  step :give_member_edit_access, ctx do
+    ctx
+    |> UI.click(testid: "add-goal-access")
+    |> UI.assert_has(testid: "goal-access-add-page")
+    |> UI.select_person_in(testid: "members-0-personid", name: ctx.member.full_name)
+    |> UI.click(testid: "members-0-accesslevel")
+    |> UI.send_keys(["Edit", :enter])
+    |> UI.click(testid: "submit")
+    |> UI.assert_has(testid: "goal-access-management-page")
+  end
+
+  step :assert_start_discussion_button_not_visible, ctx do
+    ctx |> UI.refute_has(testid: "start-discussion")
+  end
+
+  step :assert_start_discussion_button_visible, ctx do
+    ctx |> UI.assert_has(testid: "start-discussion")
+  end
+
+  step :click_start_discussion_button, ctx do
+    ctx |> UI.click(testid: "start-discussion")
+  end
+
+  step :assert_add_discussion_page_loaded, ctx do
+    ctx |> UI.assert_page(Paths.new_goal_discussion_path(ctx.company, ctx.goal))
+  end
+
+  step :remove_collaborator_access, ctx do
+    ctx
+    |> UI.click(testid: UI.testid(["goal-access-menu", ctx.collaborator.full_name]))
+    |> UI.click(testid: "remove-goal-access")
+    |> UI.sleep(500)
+  end
+
+  step :assert_collaborator_has_no_access, ctx do
+    {:error, :not_found} = Operately.Goals.Goal.get(ctx.collaborator, id: ctx.goal.id)
 
     ctx
   end
