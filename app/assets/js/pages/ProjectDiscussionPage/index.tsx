@@ -17,17 +17,18 @@ import FormattedTime from "@/components/FormattedTime";
 import { RichContent } from "turboui";
 import { useMe, useMentionedPersonLookupFn } from "../../contexts/CurrentCompanyContext";
 import { compareIds, usePaths } from "../../routes/paths";
-import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
+import { useCurrentSubscriptionsAdapter, isSubscribedToResource } from "@/models/subscriptions";
 
 export default { name: "ProjectDiscussionPage", loader, Page } as PageModule;
 
 interface LoaderResult {
   discussion: Projects.Discussion;
+  isCurrentUserSubscribed: boolean;
 }
 
 async function loader({ params }): Promise<LoaderResult> {
-  return {
-    discussion: await Api.project_discussions
+  const [discussion, subscriptionStatus] = await Promise.all([
+    Api.project_discussions
       .get({
         id: params.id,
         includeUnreadNotifications: true,
@@ -38,6 +39,15 @@ async function loader({ params }): Promise<LoaderResult> {
         includeSpace: true,
       })
       .then((data) => data.discussion),
+    isSubscribedToResource({
+      resourceId: params.id,
+      resourceType: "comment_thread",
+    }),
+  ]);
+
+  return {
+    discussion,
+    isCurrentUserSubscribed: subscriptionStatus.subscribed,
   };
 }
 
@@ -113,9 +123,7 @@ function Nav() {
     items.push({ to: paths.projectPath(discussion.project.id, { tab: "discussions" }), label: "Discussions" });
   }
 
-  return (
-    <Paper.Navigation items={items} />
-  );
+  return <Paper.Navigation items={items} />;
 }
 
 function Title() {
@@ -138,12 +146,17 @@ function Title() {
 function DiscussionReactions() {
   const { discussion } = Pages.useLoadedData<LoaderResult>();
 
-
   const reactions = (discussion.reactions || []).map((r) => r);
   const entity = Reactions.entity(discussion.id, "comment_thread");
   const addReactionForm = useReactionsForm(entity, reactions);
 
-  return <ReactionList size={24} form={addReactionForm} canAddReaction={discussion.projectPermissions?.canComment || false} />;
+  return (
+    <ReactionList
+      size={24}
+      form={addReactionForm}
+      canAddReaction={discussion.projectPermissions?.canComment || false}
+    />
+  );
 }
 
 function Comments() {
@@ -154,14 +167,18 @@ function Comments() {
   return (
     <>
       <div className="border-t border-stroke-base mt-8" />
-      <CommentSection form={commentsForm} commentParentType="comment_thread" canComment={discussion.projectPermissions?.canComment || false} />
+      <CommentSection
+        form={commentsForm}
+        commentParentType="comment_thread"
+        canComment={discussion.projectPermissions?.canComment || false}
+      />
     </>
   );
 }
 
 function Subscriptions() {
   const refresh = Pages.useRefresh();
-  const { discussion } = Pages.useLoadedData<LoaderResult>();
+  const { discussion, isCurrentUserSubscribed } = Pages.useLoadedData<LoaderResult>();
 
   if (!discussion.potentialSubscribers || !discussion.subscriptionList) {
     return null;
@@ -177,7 +194,11 @@ function Subscriptions() {
 
   return (
     <div className="border-t border-stroke-base mt-16 pt-8">
-      <CurrentSubscriptions {...subscriptionsState} canEditSubscribers={discussion.projectPermissions?.canEditSubscriptionsList || false} />
+      <CurrentSubscriptions
+        {...subscriptionsState}
+        isCurrentUserSubscribed={isCurrentUserSubscribed}
+        canEditSubscribers={discussion.projectPermissions?.canEditSubscriptionsList || false}
+      />
     </div>
   );
 }

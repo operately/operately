@@ -1,13 +1,15 @@
 import * as Pages from "@/components/Pages";
 import { getResourceHubFile, ResourceHubFile } from "@/models/resourceHubs";
+import { isSubscribedToResource } from "@/models/subscriptions";
 
 interface LoaderResult {
   file: ResourceHubFile;
+  isCurrentUserSubscribed: boolean;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
-  return {
-    file: await getResourceHubFile({
+  const [file, subscriptionStatus] = await Promise.all([
+    getResourceHubFile({
       id: params.id,
       includeAuthor: true,
       includeResourceHub: true,
@@ -17,7 +19,16 @@ export async function loader({ params }): Promise<LoaderResult> {
       includeSubscriptionsList: true,
       includePotentialSubscribers: true,
       includePathToFile: true,
-    }).then((res) => res.file!),
+    }).then((res) => res.file),
+    isSubscribedToResource({
+      resourceId: params.id,
+      resourceType: "resource_hub_file",
+    }),
+  ]);
+
+  return {
+    file,
+    isCurrentUserSubscribed: subscriptionStatus.subscribed,
   };
 }
 

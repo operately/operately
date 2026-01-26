@@ -6,7 +6,7 @@ import { useCurrentSubscriptionsAdapter } from "@/models/subscriptions";
 
 export function Subscriptions() {
   const refresh = useRefresh();
-  const { update } = useLoadedData();
+  const { update, isCurrentUserSubscribed } = useLoadedData();
 
   if (!update.potentialSubscribers || !update.subscriptionList) {
     return null;
@@ -22,7 +22,11 @@ export function Subscriptions() {
 
   return (
     <div className="border-t border-stroke-base mt-16 pt-8">
-      <CurrentSubscriptions {...subscriptionsState} canEditSubscribers={update.permissions?.canEdit || false} />
+      <CurrentSubscriptions
+        {...subscriptionsState}
+        isCurrentUserSubscribed={isCurrentUserSubscribed}
+        canEditSubscribers={update.permissions?.canEdit || false}
+      />
     </div>
   );
 }

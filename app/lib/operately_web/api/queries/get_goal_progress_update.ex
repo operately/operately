@@ -7,7 +7,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
   alias Operately.Notifications.UnreadNotificationsLoader
 
   inputs do
-    field? :id, :string, null: true
+    field :id, :string, null: false
     field? :include_author, :boolean, null: true
     field? :include_acknowledged_by, :boolean, null: true
     field? :include_reactions, :boolean, null: true
@@ -25,7 +25,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
   end
 
   outputs do
-    field? :update, :goal_progress_update, null: true
+    field :update, :goal_progress_update, null: false
   end
 
   def call(conn, inputs) do

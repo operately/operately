@@ -18,7 +18,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
   end
 
   outputs do
-    field? :project_check_in, :project_check_in, null: true
+    field :project_check_in, :project_check_in, null: false
   end
 
   def call(conn, inputs) do

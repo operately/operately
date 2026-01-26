@@ -1,13 +1,15 @@
 import * as Pages from "@/components/Pages";
 import { getResourceHubLink, ResourceHubLink } from "@/models/resourceHubs";
+import { isSubscribedToResource } from "@/models/subscriptions";
 
 interface LoaderResult {
   link: ResourceHubLink;
+  isCurrentUserSubscribed: boolean;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
-  return {
-    link: await getResourceHubLink({
+  const [link, subscriptionStatus] = await Promise.all([
+    getResourceHubLink({
       id: params.id,
       includeAuthor: true,
       includeSubscriptionsList: true,
@@ -18,7 +20,16 @@ export async function loader({ params }): Promise<LoaderResult> {
       includeResourceHub: true,
       includeUnreadNotifications: true,
       includeParentFolder: true,
-    }).then((res) => res.link!),
+    }).then((res) => res.link),
+    isSubscribedToResource({
+      resourceId: params.id,
+      resourceType: "resource_hub_link",
+    }),
+  ]);
+
+  return {
+    link,
+    isCurrentUserSubscribed: subscriptionStatus.subscribed,
   };
 }
 

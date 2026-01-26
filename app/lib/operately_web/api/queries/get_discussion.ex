@@ -7,7 +7,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
   alias Operately.Notifications.UnreadNotificationsLoader
 
   inputs do
-    field? :id, :string, null: true
+    field :id, :string, null: false
     field? :include_author, :boolean, null: true
     field? :include_reactions, :boolean, null: true
     field? :include_space, :boolean, null: true
@@ -19,7 +19,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
   end
 
   outputs do
-    field? :discussion, :discussion, null: true
+    field :discussion, :discussion, null: false
   end
 
   def call(conn, inputs) do

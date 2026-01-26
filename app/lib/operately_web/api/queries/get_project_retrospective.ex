@@ -6,7 +6,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectRetrospective do
   alias Operately.Notifications.UnreadNotificationsLoader
 
   inputs do
-    field? :project_id, :string, null: true
+    field :project_id, :id, null: false
     field? :include_author, :boolean, null: true
     field? :include_project, :boolean, null: true
     field? :include_closed_at, :boolean, null: true
@@ -18,13 +18,12 @@ defmodule OperatelyWeb.Api.Queries.GetProjectRetrospective do
   end
 
   outputs do
-    field? :retrospective, :project_retrospective, null: true
+    field :retrospective, :project_retrospective, null: false
   end
 
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:id, fn -> decode_id(inputs.project_id) end)
     |> run(:retrospective, fn ctx -> load(ctx, inputs) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.retrospective.request_info.access_level, :can_view) end)
     |> run(:serialized, fn ctx -> {:ok, %{retrospective: Serializer.serialize(ctx.retrospective)}} end)
@@ -42,7 +41,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectRetrospective do
   end
 
   defp load(ctx, inputs) do
-    Retrospective.get(ctx.me, project_id: ctx.id, opts: [
+    Retrospective.get(ctx.me, project_id: inputs.project_id, opts: [
       preload: preload(inputs),
       after_load: after_load(inputs, ctx.me),
     ])
