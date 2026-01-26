@@ -206,6 +206,7 @@ defmodule OperatelyWeb.Api do
   query(:get_flat_work_map, Q.GetFlatWorkMap)
   query(:global_search, Q.GlobalSearch)
   query(:list_task_assignable_people, Q.ListTaskAssignablePeople)
+  query(:is_subscribed_to_resource, Q.IsSubscribedToResource)
 
   mutation(:delete_company, M.DeleteCompany)
   mutation(:archive_message, M.ArchiveMessage)

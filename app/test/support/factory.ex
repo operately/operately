@@ -78,6 +78,9 @@ defmodule Operately.Support.Factory do
   defdelegate add_comment(ctx, testid, parent_name, opts \\ []), to: Factory.Comments
   defdelegate add_reactions(ctx, testid, parent_name, opts \\ []), to: Factory.Comments
 
+  # subscriptions
+  defdelegate add_subscription(ctx, testid, parent_name, opts \\ []), to: Factory.Subscriptions
+
   # resource hubs
   defdelegate add_resource_hub(ctx, testid, space_name, creator_name, opts \\ []), to: Factory.ResourceHubs
   defdelegate add_folder(ctx, testid, hub_name, folder_name \\ nil), to: Factory.ResourceHubs
