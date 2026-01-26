@@ -2781,6 +2781,15 @@ export interface InvitationsGetInviteLinkByTokenResult {
   inviteLink?: InviteLink | null;
 }
 
+export interface IsSubscribedToResourceInput {
+  resourceId: Id;
+  resourceType: SubscriptionParentType;
+}
+
+export interface IsSubscribedToResourceResult {
+  subscribed: boolean;
+}
+
 export interface ListGoalContributorsInput {
   goalId?: Id | null;
 }
@@ -4685,6 +4694,10 @@ class ApiNamespaceRoot {
     return this.client.get("/global_search", input);
   }
 
+  async isSubscribedToResource(input: IsSubscribedToResourceInput): Promise<IsSubscribedToResourceResult> {
+    return this.client.get("/is_subscribed_to_resource", input);
+  }
+
   async listGoalContributors(input: ListGoalContributorsInput): Promise<ListGoalContributorsResult> {
     return this.client.get("/list_goal_contributors", input);
   }
@@ -5749,6 +5762,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.globalSearch(input);
   }
 
+  isSubscribedToResource(input: IsSubscribedToResourceInput): Promise<IsSubscribedToResourceResult> {
+    return this.apiNamespaceRoot.isSubscribedToResource(input);
+  }
+
   listGoalContributors(input: ListGoalContributorsInput): Promise<ListGoalContributorsResult> {
     return this.apiNamespaceRoot.listGoalContributors(input);
   }
@@ -6298,6 +6315,11 @@ export async function getWorkMap(input: GetWorkMapInput): Promise<GetWorkMapResu
 export async function globalSearch(input: GlobalSearchInput): Promise<GlobalSearchResult> {
   return defaultApiClient.globalSearch(input);
 }
+export async function isSubscribedToResource(
+  input: IsSubscribedToResourceInput,
+): Promise<IsSubscribedToResourceResult> {
+  return defaultApiClient.isSubscribedToResource(input);
+}
 export async function listGoalContributors(input: ListGoalContributorsInput): Promise<ListGoalContributorsResult> {
   return defaultApiClient.listGoalContributors(input);
 }
@@ -6838,6 +6860,12 @@ export function useGetWorkMap(input: GetWorkMapInput): UseQueryHookResult<GetWor
 
 export function useGlobalSearch(input: GlobalSearchInput): UseQueryHookResult<GlobalSearchResult> {
   return useQuery<GlobalSearchResult>(() => defaultApiClient.globalSearch(input));
+}
+
+export function useIsSubscribedToResource(
+  input: IsSubscribedToResourceInput,
+): UseQueryHookResult<IsSubscribedToResourceResult> {
+  return useQuery<IsSubscribedToResourceResult>(() => defaultApiClient.isSubscribedToResource(input));
 }
 
 export function useListGoalContributors(
@@ -7590,6 +7618,8 @@ export default {
   useGetWorkMap,
   globalSearch,
   useGlobalSearch,
+  isSubscribedToResource,
+  useIsSubscribedToResource,
   listGoalContributors,
   useListGoalContributors,
   listPossibleManagers,
