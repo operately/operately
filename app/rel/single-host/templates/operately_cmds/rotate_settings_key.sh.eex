@@ -7,16 +7,32 @@ cmd_rotate_settings_key() {
   local new_key
   new_key=$(openssl rand -hex 32)
 
+  local read_env_value
+  read_env_value() {
+    local key="$1"
+    local file="$2"
+    local line
+    line=$(grep -E "^${key}=" "$file" | tail -n 1 || true)
+    line="${line#${key}=}"
+    line="${line#\"}"
+    line="${line%\"}"
+    echo "$line"
+  }
+
   local existing_keys
-  existing_keys=$(grep -E '^SYSTEM_SETTINGS_ENCRYPTION_KEYS=' "$env_file" | tail -n 1 | sed -E 's/^SYSTEM_SETTINGS_ENCRYPTION_KEYS="?//; s/"?$//')
+  existing_keys=$(read_env_value "SYSTEM_SETTINGS_ENCRYPTION_KEYS" "$env_file")
   local existing_key
-  existing_key=$(grep -E '^SYSTEM_SETTINGS_ENCRYPTION_KEY=' "$env_file" | tail -n 1 | sed -E 's/^SYSTEM_SETTINGS_ENCRYPTION_KEY="?//; s/"?$//')
+  existing_key=$(read_env_value "SYSTEM_SETTINGS_ENCRYPTION_KEY" "$env_file")
+  local secret_key_base
+  secret_key_base=$(read_env_value "SECRET_KEY_BASE" "$env_file")
 
   local old_keys=""
   if [ -n "$existing_keys" ]; then
     old_keys="$existing_keys"
   elif [ -n "$existing_key" ]; then
     old_keys="$existing_key"
+  elif [ -n "$secret_key_base" ]; then
+    old_keys="$secret_key_base"
   fi
 
   local combined
