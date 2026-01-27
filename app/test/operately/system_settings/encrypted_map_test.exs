@@ -5,7 +5,7 @@ defmodule Operately.SystemSettings.EncryptedMapTest do
   alias Operately.SystemSettings.Encryption
 
   defp clear_key_cache do
-    :persistent_term.erase({Encryption, :key})
+    :persistent_term.erase({Encryption, :keys})
   end
 
   setup do
@@ -14,6 +14,7 @@ defmodule Operately.SystemSettings.EncryptedMapTest do
 
     on_exit(fn ->
       System.delete_env("SYSTEM_SETTINGS_ENCRYPTION_KEY")
+      System.delete_env("SYSTEM_SETTINGS_ENCRYPTION_KEYS")
       clear_key_cache()
     end)
 

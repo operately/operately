@@ -1,0 +1,69 @@
+latest_release() {
+  local repo="$1"
+  require_cmd curl
+
+  local url="https://github.com/${repo}/releases/latest"
+  local final
+  final=$(curl -fsSL -o /dev/null -w "%{url_effective}" -L "$url")
+  [ -n "$final" ] || die "Failed to resolve latest release for ${repo}"
+  echo "${final##*/}"
+}
+
+download_release() {
+  local repo="$1"
+  local release="$2"
+  local dest="$3"
+
+  require_cmd curl
+
+  local url="https://github.com/${repo}/releases/download/${release}/operately-single-host.tar.gz"
+  echo "Downloading ${url}"
+  curl -fsSL -o "$dest" "$url"
+}
+
+extract_release() {
+  local archive="$1"
+  local dest="$2"
+
+  require_cmd tar
+  tar -xzf "$archive" -C "$dest"
+}
+
+apply_release_files() {
+  local release_dir="$1/operately"
+  [ -f "$release_dir/docker-compose.yml" ] || die "docker-compose.yml not found in release"
+  [ -f "$release_dir/operately" ] || die "operately helper not found in release (updates supported only for releases >= 1.4.0)"
+
+  cp "$release_dir/docker-compose.yml" ./docker-compose.yml
+  cp "$release_dir/operately" ./operately
+  chmod +x ./operately
+}
+
+cmd_update() {
+  local release="${1:-}"
+  local repo="operately/operately"
+
+  if [ -z "$release" ]; then
+    release=$(latest_release "$repo")
+    echo "Using latest official release: ${release}"
+  fi
+
+  if [[ "$release" == nightly-build-* ]]; then
+    repo="operately/nightly"
+  fi
+
+  echo "Updating to ${release} (${repo})"
+
+  local tmp_dir
+  tmp_dir=$(mktemp -d)
+  local tmp_tar="$tmp_dir/operately-single-host.tar.gz"
+  trap 'rm -rf "'"$tmp_dir"'"' EXIT
+
+  download_release "$repo" "$release" "$tmp_tar"
+  extract_release "$tmp_tar" "$tmp_dir"
+  apply_release_files "$tmp_dir"
+
+  "${COMPOSE[@]}" pull app
+  cmd_migrate
+  "${COMPOSE[@]}" up -d
+}
