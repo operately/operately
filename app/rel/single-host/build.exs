@@ -44,7 +44,8 @@ defmodule ReleaseBuilder do
     IO.puts("* Injecting operately helper script")
     template_path = get_template_path("operately.eex")
     output_path = Path.join([build_path, "operately", "operately"])
-    content = EEx.eval_file(template_path, [version: version])
+    templates_dir = Path.dirname(template_path)
+    content = EEx.eval_file(template_path, [version: version, templates_dir: templates_dir])
     File.write!(output_path, content)
     System.cmd("chmod", ["+x", output_path])
   end

@@ -51,134 +51,13 @@ require_cmd() {
   command -v "$1" >/dev/null 2>&1 || die "$1 is required"
 }
 
-latest_release() {
-  local repo="$1"
-  require_cmd curl
-
-  local url="https://github.com/${repo}/releases/latest"
-  local final
-  final=$(curl -fsSL -o /dev/null -w "%{url_effective}" -L "$url")
-  [ -n "$final" ] || die "Failed to resolve latest release for ${repo}"
-  echo "${final##*/}"
-}
-
-download_release() {
-  local repo="$1"
-  local release="$2"
-  local dest="$3"
-
-  require_cmd curl
-
-  local url="https://github.com/${repo}/releases/download/${release}/operately-single-host.tar.gz"
-  echo "Downloading ${url}"
-  curl -fsSL -o "$dest" "$url"
-}
-
-extract_release() {
-  local archive="$1"
-  local dest="$2"
-
-  require_cmd tar
-  tar -xzf "$archive" -C "$dest"
-}
-
-apply_release_files() {
-  local release_dir="$1/operately"
-  [ -f "$release_dir/docker-compose.yml" ] || die "docker-compose.yml not found in release"
-  [ -f "$release_dir/operately" ] || die "operately helper not found in release (updates supported only for releases >= 1.4.0)"
-
-  cp "$release_dir/docker-compose.yml" ./docker-compose.yml
-  cp "$release_dir/operately" ./operately
-  chmod +x ./operately
-}
-
 cmd_migrate() {
   "${COMPOSE[@]}" run --rm app sh -c "/opt/operately/bin/migrate"
 }
 
-cmd_update() {
-  local release="${1:-}"
-  local repo="operately/operately"
+<%= File.read!(Path.join([templates_dir, "operately_cmds", "update.sh.eex"])) %>
 
-  if [ -z "$release" ]; then
-    release=$(latest_release "$repo")
-    echo "Using latest official release: ${release}"
-  fi
-
-  if [[ "$release" == nightly-build-* ]]; then
-    repo="operately/nightly"
-  fi
-
-  echo "Updating to ${release} (${repo})"
-
-  local tmp_dir
-  tmp_dir=$(mktemp -d)
-  local tmp_tar="$tmp_dir/operately-single-host.tar.gz"
-  trap 'rm -rf "'"$tmp_dir"'"' EXIT
-
-  download_release "$repo" "$release" "$tmp_tar"
-  extract_release "$tmp_tar" "$tmp_dir"
-  apply_release_files "$tmp_dir"
-
-  "${COMPOSE[@]}" pull app
-  cmd_migrate
-  "${COMPOSE[@]}" up -d
-}
-
-cmd_rotate_settings_key() {
-  local env_file="operately.env"
-  [ -f "$env_file" ] || die "${env_file} not found"
-
-  require_cmd openssl
-
-  local new_key
-  new_key=$(openssl rand -hex 32)
-
-  local existing_keys
-  existing_keys=$(grep -E '^SYSTEM_SETTINGS_ENCRYPTION_KEYS=' "$env_file" | tail -n 1 | sed -E 's/^SYSTEM_SETTINGS_ENCRYPTION_KEYS="?//; s/"?$//')
-  local existing_key
-  existing_key=$(grep -E '^SYSTEM_SETTINGS_ENCRYPTION_KEY=' "$env_file" | tail -n 1 | sed -E 's/^SYSTEM_SETTINGS_ENCRYPTION_KEY="?//; s/"?$//')
-
-  local old_keys=""
-  if [ -n "$existing_keys" ]; then
-    old_keys="$existing_keys"
-  elif [ -n "$existing_key" ]; then
-    old_keys="$existing_key"
-  fi
-
-  local combined
-  if [ -n "$old_keys" ]; then
-    combined="${new_key},${old_keys}"
-  else
-    combined="${new_key}"
-  fi
-
-  local tmp
-  tmp=$(mktemp)
-  if grep -q '^SYSTEM_SETTINGS_ENCRYPTION_KEYS=' "$env_file"; then
-    sed -E "s/^SYSTEM_SETTINGS_ENCRYPTION_KEYS=.*/SYSTEM_SETTINGS_ENCRYPTION_KEYS=\"${combined}\"/" "$env_file" > "$tmp"
-  else
-    cat "$env_file" > "$tmp"
-    echo "SYSTEM_SETTINGS_ENCRYPTION_KEYS=\"${combined}\"" >> "$tmp"
-  fi
-  mv "$tmp" "$env_file"
-
-  "${COMPOSE[@]}" up -d
-  "${COMPOSE[@]}" exec app /app/bin/operately eval "Operately.SystemSettings.KeyRotation.rotate()"
-
-  local tmp2
-  tmp2=$(mktemp)
-  if grep -q '^SYSTEM_SETTINGS_ENCRYPTION_KEYS=' "$env_file"; then
-    sed -E "s/^SYSTEM_SETTINGS_ENCRYPTION_KEYS=.*/SYSTEM_SETTINGS_ENCRYPTION_KEYS=\"${new_key}\"/" "$env_file" > "$tmp2"
-  else
-    cat "$env_file" > "$tmp2"
-    echo "SYSTEM_SETTINGS_ENCRYPTION_KEYS=\"${new_key}\"" >> "$tmp2"
-  fi
-  mv "$tmp2" "$env_file"
-
-  "${COMPOSE[@]}" restart
-  echo "Rotation complete. New key applied."
-}
+<%= File.read!(Path.join([templates_dir, "operately_cmds", "rotate_settings_key.sh.eex"])) %>
 
 cmd_up() {
   "${COMPOSE[@]}" up -d
