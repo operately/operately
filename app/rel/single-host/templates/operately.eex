@@ -38,12 +38,21 @@ Commands:
   logs [service]         Tail logs (default: app)
   version                Show current release version
   help                   Show this help
+
+Notes:
+  - Official releases: https://github.com/operately/operately/releases
+  - Nightly releases:  https://github.com/operately/nightly/releases
+  - Nightly tags start with nightly-build- (e.g. nightly-build-20260127-070028-c18023dc9)
 USAGE
+}
+
+require_cmd() {
+  command -v "$1" >/dev/null 2>&1 || die "$1 is required"
 }
 
 latest_release() {
   local repo="$1"
-  command -v curl >/dev/null 2>&1 || die "curl is required to resolve latest release"
+  require_cmd curl
 
   local url="https://github.com/${repo}/releases/latest"
   local final
@@ -52,19 +61,34 @@ latest_release() {
   echo "${final##*/}"
 }
 
-update_compose_image() {
-  local tag="$1"
-  local file="docker-compose.yml"
-  [ -f "$file" ] || die "${file} not found"
+download_release() {
+  local repo="$1"
+  local release="$2"
+  local dest="$3"
 
-  if ! grep -q "image: operately/operately:" "$file"; then
-    die "Could not find operately image line in ${file}"
-  fi
+  require_cmd curl
 
-  local tmp
-  tmp=$(mktemp)
-  sed -e "s#^[[:space:]]*image: operately/operately:.*#    image: operately/operately:${tag}#" "$file" > "$tmp"
-  mv "$tmp" "$file"
+  local url="https://github.com/${repo}/releases/download/${release}/operately-single-host.tar.gz"
+  echo "Downloading ${url}"
+  curl -fsSL -o "$dest" "$url"
+}
+
+extract_release() {
+  local archive="$1"
+  local dest="$2"
+
+  require_cmd tar
+  tar -xzf "$archive" -C "$dest"
+}
+
+apply_release_files() {
+  local release_dir="$1/operately"
+  [ -f "$release_dir/docker-compose.yml" ] || die "docker-compose.yml not found in release"
+  [ -f "$release_dir/operately" ] || die "operately helper not found in release (updates supported only for releases >= 1.4.0)"
+
+  cp "$release_dir/docker-compose.yml" ./docker-compose.yml
+  cp "$release_dir/operately" ./operately
+  chmod +x ./operately
 }
 
 cmd_migrate() {
@@ -85,9 +109,18 @@ cmd_update() {
   fi
 
   echo "Updating to ${release} (${repo})"
-  update_compose_image "$release"
+
+  local tmp_dir
+  tmp_dir=$(mktemp -d)
+  local tmp_tar="$tmp_dir/operately-single-host.tar.gz"
+  trap 'rm -rf "$tmp_dir"' EXIT
+
+  download_release "$repo" "$release" "$tmp_tar"
+  extract_release "$tmp_tar" "$tmp_dir"
+  apply_release_files "$tmp_dir"
 
   "${COMPOSE[@]}" pull app
+  cmd_migrate
   "${COMPOSE[@]}" up -d
 }
 
