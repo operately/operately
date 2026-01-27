@@ -1,0 +1,134 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+cd "$SCRIPT_DIR"
+
+VERSION="<%= version %>"
+
+COMPOSE=()
+if docker compose version >/dev/null 2>&1; then
+  COMPOSE=(docker compose)
+elif command -v docker-compose >/dev/null 2>&1; then
+  COMPOSE=(docker-compose)
+else
+  echo "Error: docker compose is not installed." >&2
+  exit 1
+fi
+
+die() {
+  echo "Error: $*" >&2
+  exit 1
+}
+
+usage() {
+  cat <<'USAGE'
+Operately helper
+
+Usage:
+  ./operately <command> [options]
+
+Commands:
+  migrate                Run database migrations
+  update [release]       Update to a release (defaults to latest official)
+  up                     Start services
+  down                   Stop services
+  restart                Restart services
+  status                 Show service status
+  logs [service]         Tail logs (default: app)
+  version                Show current release version
+  help                   Show this help
+USAGE
+}
+
+latest_release() {
+  local repo="$1"
+  command -v curl >/dev/null 2>&1 || die "curl is required to resolve latest release"
+
+  local url="https://github.com/${repo}/releases/latest"
+  local final
+  final=$(curl -fsSL -o /dev/null -w "%{url_effective}" -L "$url")
+  [ -n "$final" ] || die "Failed to resolve latest release for ${repo}"
+  echo "${final##*/}"
+}
+
+update_compose_image() {
+  local tag="$1"
+  local file="docker-compose.yml"
+  [ -f "$file" ] || die "${file} not found"
+
+  if ! grep -q "image: operately/operately:" "$file"; then
+    die "Could not find operately image line in ${file}"
+  fi
+
+  local tmp
+  tmp=$(mktemp)
+  sed -e "s#^[[:space:]]*image: operately/operately:.*#    image: operately/operately:${tag}#" "$file" > "$tmp"
+  mv "$tmp" "$file"
+}
+
+cmd_migrate() {
+  "${COMPOSE[@]}" run --rm app sh -c "/opt/operately/bin/migrate"
+}
+
+cmd_update() {
+  local release="${1:-}"
+  local repo="operately/operately"
+
+  if [ -z "$release" ]; then
+    release=$(latest_release "$repo")
+    echo "Using latest official release: ${release}"
+  fi
+
+  if [[ "$release" == nightly-build-* ]]; then
+    repo="operately/nightly"
+  fi
+
+  echo "Updating to ${release} (${repo})"
+  update_compose_image "$release"
+
+  "${COMPOSE[@]}" pull app
+  "${COMPOSE[@]}" up -d
+}
+
+cmd_up() {
+  "${COMPOSE[@]}" up -d
+}
+
+cmd_down() {
+  "${COMPOSE[@]}" down
+}
+
+cmd_restart() {
+  "${COMPOSE[@]}" restart
+}
+
+cmd_status() {
+  "${COMPOSE[@]}" ps
+}
+
+cmd_logs() {
+  local service="${1:-app}"
+  "${COMPOSE[@]}" logs -f "$service"
+}
+
+cmd_version() {
+  echo "$VERSION"
+}
+
+case "${1:-}" in
+  migrate) shift; cmd_migrate "$@" ;;
+  update) shift; cmd_update "$@" ;;
+  up) shift; cmd_up "$@" ;;
+  down) shift; cmd_down "$@" ;;
+  restart) shift; cmd_restart "$@" ;;
+  status) shift; cmd_status "$@" ;;
+  logs) shift; cmd_logs "$@" ;;
+  version) shift; cmd_version "$@" ;;
+  help|--help|-h|"") usage ;;
+  *)
+    echo "Unknown command: $1" >&2
+    usage
+    exit 1
+    ;;
+ esac
