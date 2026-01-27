@@ -113,7 +113,7 @@ cmd_update() {
   local tmp_dir
   tmp_dir=$(mktemp -d)
   local tmp_tar="$tmp_dir/operately-single-host.tar.gz"
-  trap 'rm -rf "$tmp_dir"' EXIT
+  trap 'rm -rf "'"$tmp_dir"'"' EXIT
 
   download_release "$repo" "$release" "$tmp_tar"
   extract_release "$tmp_tar" "$tmp_dir"
