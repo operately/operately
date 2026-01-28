@@ -16,5 +16,4 @@ defmodule OperatelyEE.AdminApi do
 
   mutation :enable_feature, M.EnableFeature
   mutation :update_email_settings, M.UpdateEmailSettings
-  mutation :send_test_email, M.SendTestEmail
 end
