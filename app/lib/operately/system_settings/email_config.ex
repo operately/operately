@@ -7,6 +7,7 @@ defmodule Operately.SystemSettings.EmailConfig do
   @primary_key false
   embedded_schema do
     field :provider, Ecto.Enum, values: @provider_values
+    field :notification_email, :string
     field :smtp_host, :string
     field :smtp_port, :integer
     field :smtp_username, :string
@@ -16,7 +17,7 @@ defmodule Operately.SystemSettings.EmailConfig do
 
   def changeset(email_config, attrs) do
     email_config
-    |> cast(attrs, [:provider, :smtp_host, :smtp_port, :smtp_username, :smtp_ssl, :smtp_tls_required])
+    |> cast(attrs, [:provider, :notification_email, :smtp_host, :smtp_port, :smtp_username, :smtp_ssl, :smtp_tls_required])
   end
 
   def provider_values, do: @provider_values
