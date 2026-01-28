@@ -1,5 +1,6 @@
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
+import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as AdminApi from "@/ee/admin_api";
 import * as React from "react";
 
@@ -11,6 +12,7 @@ import {
   IconBuilding,
   IconBuildingCommunity,
   IconInfoCircle,
+  IconMail,
   Tabs,
   Tooltip,
   useTabs,
@@ -30,6 +32,7 @@ export function Page() {
     <Pages.Page title={"Administration"} testId="saas-admin-page">
       <Paper.Root size="xlarge">
         <Paper.Body>
+          <Options />
           <PageHeader activeTab={tabs.active} />
           <div className="-mx-4 -mb-px">
             <Tabs tabs={tabs} />
@@ -204,4 +207,12 @@ function TableRow({ header, children, linkTo }: { header?: boolean; children: Re
   } else {
     return <div className={className} style={style} children={children} />;
   }
+}
+
+function Options() {
+  return (
+    <PageOptions.Root testId="options-button">
+      <PageOptions.Link icon={IconMail} title="Email Configuration" to="/admin/email-settings" />
+    </PageOptions.Root>
+  );
 }
