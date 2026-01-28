@@ -2,6 +2,8 @@ defmodule OperatelyEmail.Mailers.Config.Db do
   @moduledoc false
 
   alias Operately.SystemSettings.Cache
+  alias Operately.SystemSettings.EmailConfig
+  alias Operately.SystemSettings.EmailSecrets
   alias Operately.SystemSettings.Settings
   alias OperatelyEmail.Mailers.Config.TLS
 
@@ -14,7 +16,7 @@ defmodule OperatelyEmail.Mailers.Config.Db do
 
   def config do
     case settings() do
-      %Settings{} = settings -> build_config(settings.data || %{}, settings.secrets || %{})
+      %Settings{} = settings -> build_config(settings.email_config, settings.email_secrets)
       _ -> :not_configured
     end
   end
@@ -27,19 +29,18 @@ defmodule OperatelyEmail.Mailers.Config.Db do
     end
   end
 
-  defp build_config(data, secrets) do
-    email_data = get_value(data, :email) || %{}
-    email_secrets = get_value(secrets, :email) || %{}
-
-    case get_value(email_data, :provider) do
-      "sendgrid" -> sendgrid_config(email_data, email_secrets)
-      "smtp" -> smtp_config(email_data, email_secrets)
+  defp build_config(%EmailConfig{} = email_config, %EmailSecrets{} = email_secrets) do
+    case email_config.provider do
+      :sendgrid -> sendgrid_config(email_secrets)
+      :smtp -> smtp_config(email_config, email_secrets)
       _ -> :not_configured
     end
   end
 
-  defp sendgrid_config(email_data, email_secrets) do
-    api_key = get_value(email_secrets, :sendgrid_api_key) || get_value(email_data, :sendgrid_api_key)
+  defp build_config(_, _), do: :not_configured
+
+  defp sendgrid_config(%EmailSecrets{} = email_secrets) do
+    api_key = email_secrets.sendgrid_api_key
 
     if present?(api_key) do
       {:ok,
@@ -52,16 +53,14 @@ defmodule OperatelyEmail.Mailers.Config.Db do
     end
   end
 
-  defp smtp_config(email_data, email_secrets) do
-    smtp_data = get_value(email_data, :smtp) || %{}
+  defp smtp_config(%EmailConfig{} = email_config, %EmailSecrets{} = email_secrets) do
+    host = email_config.smtp_host
+    port = parse_port(email_config.smtp_port)
+    username = email_config.smtp_username
+    password = email_secrets.smtp_password
+    ssl = truthy?(email_config.smtp_ssl)
 
-    host = get_value(smtp_data, :host) || get_value(smtp_data, :server) || get_value(email_data, :smtp_server)
-    port = parse_port(get_value(smtp_data, :port) || get_value(email_data, :smtp_port))
-    username = get_value(smtp_data, :username) || get_value(email_data, :smtp_username)
-    password = get_value(email_secrets, :smtp_password) || get_value(email_secrets, :password)
-    ssl = truthy?(get_value(smtp_data, :ssl) || get_value(email_data, :smtp_ssl))
-
-    tls_required = truthy?(get_value(smtp_data, :tls_required) || get_value(smtp_data, :tls))
+    tls_required = truthy?(email_config.smtp_tls_required)
 
     if present?(host) and present?(username) and present?(password) and port do
       base_config = [
@@ -88,12 +87,6 @@ defmodule OperatelyEmail.Mailers.Config.Db do
       :not_configured
     end
   end
-
-  defp get_value(map, key) when is_map(map) do
-    Map.get(map, key) || Map.get(map, to_string(key))
-  end
-
-  defp get_value(_map, _key), do: nil
 
   defp parse_port(nil), do: nil
   defp parse_port(value) when is_integer(value), do: value
