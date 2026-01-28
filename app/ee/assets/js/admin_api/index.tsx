@@ -141,6 +141,7 @@ export interface Company {
 
 export interface EmailSettings {
   provider: EmailProvider;
+  notificationEmail?: string;
   smtp?: SmtpSettings;
   sendgridApiKeySet?: boolean;
 }
@@ -209,6 +210,7 @@ export interface EnableFeatureResult {
 
 export interface UpdateEmailSettingsInput {
   provider: EmailProvider;
+  notificationEmail?: string;
   smtpHost?: string;
   smtpPort?: number;
   smtpUsername?: string;

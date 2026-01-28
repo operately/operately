@@ -60,6 +60,7 @@ defmodule OperatelyEE.AdminApi.Queries.GetEmailSettingsTest do
         SystemSettings.upsert(%{
           email_config: %{
             provider: :smtp,
+            notification_email: "noreply@example.com",
             smtp_host: "smtp.example.com",
             smtp_port: 587,
             smtp_username: "user@example.com",
@@ -76,6 +77,7 @@ defmodule OperatelyEE.AdminApi.Queries.GetEmailSettingsTest do
       assert {200, %{email_settings: email_settings}} = admin_query(ctx.conn, :get_email_settings, %{})
 
       assert email_settings.provider == "smtp"
+      assert email_settings.notification_email == "noreply@example.com"
       assert email_settings.smtp.host == "smtp.example.com"
       assert email_settings.smtp.port == 587
       assert email_settings.smtp.username == "user@example.com"
@@ -87,7 +89,7 @@ defmodule OperatelyEE.AdminApi.Queries.GetEmailSettingsTest do
     test "it returns sendgrid settings", ctx do
       {:ok, _settings} =
         SystemSettings.upsert(%{
-          email_config: %{provider: :sendgrid},
+          email_config: %{provider: :sendgrid, notification_email: "noreply@example.com"},
           email_secrets: %{
             sendgrid_api_key: "sg-api-key"
           }
@@ -98,6 +100,7 @@ defmodule OperatelyEE.AdminApi.Queries.GetEmailSettingsTest do
       assert {200, %{email_settings: email_settings}} = admin_query(ctx.conn, :get_email_settings, %{})
 
       assert email_settings.provider == "sendgrid"
+      assert email_settings.notification_email == "noreply@example.com"
       assert email_settings.sendgrid_api_key_set == true
       assert email_settings.smtp.smtp_password_set == false
       assert email_settings.smtp.host == nil

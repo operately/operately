@@ -11,6 +11,7 @@ defmodule OperatelyEE.AdminApi.Mutations.UpdateEmailSettings do
 
   inputs do
     field :provider, :email_provider, null: false
+    field? :notification_email, :string, null: false
     field? :smtp_host, :string, null: false
     field? :smtp_port, :integer, null: false
     field? :smtp_username, :string, null: false
@@ -47,6 +48,7 @@ defmodule OperatelyEE.AdminApi.Mutations.UpdateEmailSettings do
     email_config =
       %{
         provider: email_config.provider,
+        notification_email: email_config.notification_email,
         smtp_host: email_config.smtp_host,
         smtp_port: email_config.smtp_port,
         smtp_username: email_config.smtp_username,
@@ -54,6 +56,7 @@ defmodule OperatelyEE.AdminApi.Mutations.UpdateEmailSettings do
         smtp_tls_required: email_config.smtp_tls_required
       }
       |> put_if_provided(:provider, Map.get(inputs, :provider))
+      |> put_if_provided(:notification_email, Map.get(inputs, :notification_email))
       |> put_if_provided(:smtp_host, Map.get(inputs, :smtp_host))
       |> put_if_provided(:smtp_port, Map.get(inputs, :smtp_port))
       |> put_if_provided(:smtp_username, Map.get(inputs, :smtp_username))
@@ -77,6 +80,7 @@ defmodule OperatelyEE.AdminApi.Mutations.UpdateEmailSettings do
 
     %{
       provider: email_config.provider,
+      notification_email: email_config.notification_email,
       smtp: %{
         host: email_config.smtp_host,
         port: email_config.smtp_port,
