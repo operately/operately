@@ -142,21 +142,45 @@ function SecretPasswordInput({
   isSet: boolean;
   placeholder: string;
 }) {
-  const tooltipContent = `A ${label.toLowerCase()} is already stored. Enter a new value to replace it.`;
+  const [value, setValue] = Forms.useFieldValue<string>(field);
+  const error = Forms.useFieldError(field);
+  const [isFocused, setIsFocused] = React.useState(false);
+
+  const helperText = <div className="text-xs text-content-dimmed">{label} already set. Leave blank to keep the current value</div>
+  const placeholderValue = isSet && !isFocused && value === "" ? "••••••••" : placeholder;
+
   const labelNode = (
     <span className="inline-flex items-center gap-2">
       <span>{label}</span>
-      {isSet && (
-        <Tooltip content={tooltipContent}>
-          <span className="inline-flex items-center cursor-help">
-            <IconInfoCircle size={14} className="text-content-dimmed hover:text-content-accent" />
-          </span>
-        </Tooltip>
-      )}
+      <Tooltip content={helperText}>
+        <span className="inline-flex items-center cursor-help">
+          <IconInfoCircle size={14} className="text-content-dimmed hover:text-content-accent" />
+        </span>
+      </Tooltip>
     </span>
   );
 
-  return <Forms.PasswordInput field={field} label={labelNode} placeholder={isSet ? "••••••••" : placeholder} />;
+  return (
+    <Forms.InputField field={field} label={labelNode} error={error}>
+      <div className="relative pb-5">
+        <input
+          name={field}
+          type="password"
+          className={passwordStyles(!!error)}
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder={placeholderValue}
+          onFocus={() => {
+            setIsFocused(true);
+            if (isSet && value === "") {
+              setValue("");
+            }
+          }}
+          onBlur={() => setIsFocused(false)}
+        />
+      </div>
+    </Forms.InputField>
+  );
 }
 
 function SmtpPasswordInput({ isSet }: { isSet: boolean }) {
@@ -165,7 +189,9 @@ function SmtpPasswordInput({ isSet }: { isSet: boolean }) {
   const error = Forms.useFieldError(field);
   const [isFocused, setIsFocused] = React.useState(false);
 
-  const helperText = <div className="text-xs text-content-dimmed">Password already set. Leave blank to keep current password</div>
+  const helperText = (
+    <div className="text-xs text-content-dimmed">Password already set. Leave blank to keep current password</div>
+  );
   const placeholder = isSet && !isFocused && value === "" ? "••••••••" : "Enter password";
 
   const labelNode = (
