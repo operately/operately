@@ -8,7 +8,7 @@ defmodule Operately.SystemSettings.KeyRotation do
   def rotate do
     case SystemSettings.get() do
       nil -> {:error, :not_configured}
-      settings -> settings |> Settings.changeset(%{secrets: settings.secrets}) |> Repo.update()
+      settings -> settings |> Settings.changeset(%{email_secrets: settings.email_secrets}) |> Repo.update()
     end
   end
 end

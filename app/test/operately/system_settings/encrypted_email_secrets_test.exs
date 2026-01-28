@@ -1,7 +1,8 @@
-defmodule Operately.SystemSettings.EncryptedMapTest do
+defmodule Operately.SystemSettings.EncryptedEmailSecretsTest do
   use ExUnit.Case
 
-  alias Operately.SystemSettings.EncryptedMap
+  alias Operately.SystemSettings.EmailSecrets
+  alias Operately.SystemSettings.EncryptedEmailSecrets
   alias Operately.SystemSettings.Encryption
 
   defp clear_key_cache do
@@ -22,21 +23,24 @@ defmodule Operately.SystemSettings.EncryptedMapTest do
   end
 
   test "dump/load round trip" do
-    value = %{"smtp_password" => "secret", "nested" => %{"key" => "value"}}
+    value = %EmailSecrets{smtp_password: "secret", sendgrid_api_key: "sg-api-key"}
 
-    assert {:ok, dumped} = EncryptedMap.dump(value)
+    refute is_binary(value)
+
+    assert {:ok, dumped} = EncryptedEmailSecrets.dump(value)
     assert is_binary(dumped)
-    assert {:ok, loaded} = EncryptedMap.load(dumped)
+
+    assert {:ok, loaded} = EncryptedEmailSecrets.load(dumped)
     assert loaded == value
   end
 
   test "dumping nil encrypts empty map" do
-    assert {:ok, dumped} = EncryptedMap.dump(nil)
-    assert {:ok, loaded} = EncryptedMap.load(dumped)
-    assert loaded == %{}
+    assert {:ok, dumped} = EncryptedEmailSecrets.dump(nil)
+    assert {:ok, loaded} = EncryptedEmailSecrets.load(dumped)
+    assert loaded == %EmailSecrets{}
   end
 
   test "load returns error for invalid payload" do
-    assert :error = EncryptedMap.load(<<1, 2, 3>>)
+    assert :error = EncryptedEmailSecrets.load(<<1, 2, 3>>)
   end
 end
