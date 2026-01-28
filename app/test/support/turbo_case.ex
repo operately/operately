@@ -59,6 +59,22 @@ defmodule OperatelyWeb.TurboCase do
     end
   end
 
+  def admin_query(conn, query_name, inputs) do
+    conn =
+      Phoenix.ConnTest.dispatch(
+        conn,
+        OperatelyWeb.Endpoint,
+        :get,
+        admin_request_path(query_name),
+        inputs
+      )
+
+    case Jason.decode(conn.resp_body, keys: :atoms) do
+      {:ok, res} -> {conn.status, res}
+      _ -> {conn.status, conn.resp_body}
+    end
+  end
+
   def mutation(conn, mutation_name, inputs) do
     conn =
       Phoenix.ConnTest.dispatch(
