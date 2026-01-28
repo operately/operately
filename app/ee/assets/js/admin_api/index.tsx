@@ -139,6 +139,12 @@ export interface Company {
   enabledFeatures?: string[];
 }
 
+export interface EmailSettings {
+  provider: EmailProvider;
+  smtp?: SmtpSettings;
+  sendgridApiKeySet?: boolean;
+}
+
 export interface Person {
   id: string;
   fullName: string;
@@ -146,6 +152,17 @@ export interface Person {
   avatarUrl: string;
   title: string;
 }
+
+export interface SmtpSettings {
+  host: string;
+  port: number;
+  username: string;
+  ssl: boolean;
+  tlsRequired: boolean;
+  smtpPasswordSet?: boolean;
+}
+
+export type EmailProvider = "smtp" | "sendgrid";
 
 export interface GetActiveCompaniesInput {}
 
@@ -175,6 +192,12 @@ export interface GetCompanyResult {
   company: Company;
 }
 
+export interface GetEmailSettingsInput {}
+
+export interface GetEmailSettingsResult {
+  emailSettings: EmailSettings;
+}
+
 export interface EnableFeatureInput {
   companyId: CompanyId;
   feature: string;
@@ -182,6 +205,34 @@ export interface EnableFeatureInput {
 
 export interface EnableFeatureResult {
   success: boolean;
+}
+
+export interface SendTestEmailInput {
+  recipient: string;
+  subject: string;
+  body: string;
+}
+
+export interface SendTestEmailResult {
+  success: boolean;
+  error?: string;
+}
+
+export interface UpdateEmailSettingsInput {
+  provider: EmailProvider;
+  smtpHost?: string;
+  smtpPort?: number;
+  smtpUsername?: string;
+  smtpPassword?: string;
+  smtpSsl?: boolean;
+  smtpTlsRequired?: boolean;
+  sendgridApiKey?: string;
+}
+
+export interface UpdateEmailSettingsResult {
+  success: boolean;
+  error?: string;
+  emailSettings?: EmailSettings;
 }
 
 class ApiNamespaceRoot {
@@ -203,8 +254,20 @@ class ApiNamespaceRoot {
     return this.client.get("/get_company", input);
   }
 
+  async getEmailSettings(input: GetEmailSettingsInput): Promise<GetEmailSettingsResult> {
+    return this.client.get("/get_email_settings", input);
+  }
+
   async enableFeature(input: EnableFeatureInput): Promise<EnableFeatureResult> {
     return this.client.post("/enable_feature", input);
+  }
+
+  async sendTestEmail(input: SendTestEmailInput): Promise<SendTestEmailResult> {
+    return this.client.post("/send_test_email", input);
+  }
+
+  async updateEmailSettings(input: UpdateEmailSettingsInput): Promise<UpdateEmailSettingsResult> {
+    return this.client.post("/update_email_settings", input);
   }
 }
 
@@ -265,8 +328,20 @@ export class ApiClient {
     return this.apiNamespaceRoot.getCompany(input);
   }
 
+  getEmailSettings(input: GetEmailSettingsInput): Promise<GetEmailSettingsResult> {
+    return this.apiNamespaceRoot.getEmailSettings(input);
+  }
+
   enableFeature(input: EnableFeatureInput): Promise<EnableFeatureResult> {
     return this.apiNamespaceRoot.enableFeature(input);
+  }
+
+  sendTestEmail(input: SendTestEmailInput): Promise<SendTestEmailResult> {
+    return this.apiNamespaceRoot.sendTestEmail(input);
+  }
+
+  updateEmailSettings(input: UpdateEmailSettingsInput): Promise<UpdateEmailSettingsResult> {
+    return this.apiNamespaceRoot.updateEmailSettings(input);
   }
 }
 
@@ -284,8 +359,17 @@ export async function getCompanies(input: GetCompaniesInput): Promise<GetCompani
 export async function getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
   return defaultApiClient.getCompany(input);
 }
+export async function getEmailSettings(input: GetEmailSettingsInput): Promise<GetEmailSettingsResult> {
+  return defaultApiClient.getEmailSettings(input);
+}
 export async function enableFeature(input: EnableFeatureInput): Promise<EnableFeatureResult> {
   return defaultApiClient.enableFeature(input);
+}
+export async function sendTestEmail(input: SendTestEmailInput): Promise<SendTestEmailResult> {
+  return defaultApiClient.sendTestEmail(input);
+}
+export async function updateEmailSettings(input: UpdateEmailSettingsInput): Promise<UpdateEmailSettingsResult> {
+  return defaultApiClient.updateEmailSettings(input);
 }
 
 export function useGetActiveCompanies(input: GetActiveCompaniesInput): UseQueryHookResult<GetActiveCompaniesResult> {
@@ -304,8 +388,22 @@ export function useGetCompany(input: GetCompanyInput): UseQueryHookResult<GetCom
   return useQuery<GetCompanyResult>(() => defaultApiClient.getCompany(input));
 }
 
+export function useGetEmailSettings(input: GetEmailSettingsInput): UseQueryHookResult<GetEmailSettingsResult> {
+  return useQuery<GetEmailSettingsResult>(() => defaultApiClient.getEmailSettings(input));
+}
+
 export function useEnableFeature(): UseMutationHookResult<EnableFeatureInput, EnableFeatureResult> {
   return useMutation<EnableFeatureInput, EnableFeatureResult>((input) => defaultApiClient.enableFeature(input));
+}
+
+export function useSendTestEmail(): UseMutationHookResult<SendTestEmailInput, SendTestEmailResult> {
+  return useMutation<SendTestEmailInput, SendTestEmailResult>((input) => defaultApiClient.sendTestEmail(input));
+}
+
+export function useUpdateEmailSettings(): UseMutationHookResult<UpdateEmailSettingsInput, UpdateEmailSettingsResult> {
+  return useMutation<UpdateEmailSettingsInput, UpdateEmailSettingsResult>((input) =>
+    defaultApiClient.updateEmailSettings(input),
+  );
 }
 
 export default {
@@ -319,6 +417,12 @@ export default {
   useGetCompanies,
   getCompany,
   useGetCompany,
+  getEmailSettings,
+  useGetEmailSettings,
   enableFeature,
   useEnableFeature,
+  sendTestEmail,
+  useSendTestEmail,
+  updateEmailSettings,
+  useUpdateEmailSettings,
 };

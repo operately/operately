@@ -37,4 +37,20 @@ defmodule OperatelyEE.AdminApi.Types do
     field? :inserted_at, :datetime
   end
 
+  enum(:email_provider, values: Operately.SystemSettings.EmailConfig.provider_values())
+
+  object :smtp_settings do
+    field :host, :string, null: false
+    field :port, :integer, null: false
+    field :username, :string, null: false
+    field :ssl, :boolean, null: false
+    field :tls_required, :boolean, null: false
+    field? :smtp_password_set, :boolean, null: false
+  end
+
+  object :email_settings do
+    field :provider, :email_provider, null: false
+    field? :smtp, :smtp_settings, null: false
+    field? :sendgrid_api_key_set, :boolean, null: false
+  end
 end

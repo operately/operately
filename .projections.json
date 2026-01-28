@@ -36,5 +36,15 @@
     "type": "test",
     "alternate": "app/ee/lib/{}.ex",
     "template": ["# app/ee/test/lib/{}_test.exs", "defmodule OperatelyEE.XXXTest do", "  use Operately.DataCase", "", "  # tests go here", "end"]
+  },
+  "app/ee/lib/admin_api/*.ex": {
+    "type": "src",
+    "alternate": "app/ee/test/operately_ee/admin_api/{}_test.exs",
+    "template": ["# app/ee/lib/admin_api/{}.ex", "defmodule OperatelyEE.XXX do", "end"]
+  },
+  "app/ee/test/operately_ee/admin_api/*_test.exs": {
+    "type": "test",
+    "alternate": "app/ee/lib/admin_api/{}.ex",
+    "template": ["# app/ee/test/operately_ee/admin_api/{}_test.exs", "defmodule OperatelyEE.XXXTest do", "  use Operately.DataCase", "", "  # tests go here", "end"]
   }
 }
