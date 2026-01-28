@@ -75,6 +75,22 @@ defmodule OperatelyWeb.TurboCase do
     end
   end
 
+  def admin_mutation(conn, mutation_name, inputs) do
+    conn =
+      Phoenix.ConnTest.dispatch(
+        conn,
+        OperatelyWeb.Endpoint,
+        :post,
+        admin_request_path(mutation_name),
+        inputs
+      )
+
+    case Jason.decode(conn.resp_body, keys: :atoms) do
+      {:ok, res} -> {conn.status, res}
+      _ -> {conn.status, conn.resp_body}
+    end
+  end
+
   defp request_path(name_parts) when is_list(name_parts) do
     name_parts
     |> Enum.map(&to_string/1)
@@ -88,6 +104,21 @@ defmodule OperatelyWeb.TurboCase do
 
   defp request_path(name) when is_binary(name) do
     "/api/v2/#{name}"
+  end
+
+  defp admin_request_path(name_parts) when is_list(name_parts) do
+    name_parts
+    |> Enum.map(&to_string/1)
+    |> Enum.join("/")
+    |> admin_request_path()
+  end
+
+  defp admin_request_path(name) when is_atom(name) do
+    admin_request_path(Atom.to_string(name))
+  end
+
+  defp admin_request_path(name) when is_binary(name) do
+    "/admin/api/v1/#{name}"
   end
 
   def bad_request_response do
