@@ -47,9 +47,12 @@ function TestEmailForm({ onClose }: { onClose: () => void }) {
     submit: async () => {
       setStatusMessage(null);
 
+      const recipient = form.values.recipient.trim();
+      const subject = form.values.subject.trim();
+
       const result = await sendTestEmail({
-        recipient: form.values.recipient,
-        subject: form.values.subject,
+        recipient,
+        subject,
         body: form.values.body,
       });
 
