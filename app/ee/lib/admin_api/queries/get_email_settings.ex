@@ -1,6 +1,8 @@
 defmodule OperatelyEE.AdminApi.Queries.GetEmailSettings do
   use TurboConnect.Query
 
+  require Logger
+
   alias Operately.SystemSettings.Cache
   alias Operately.SystemSettings.EmailConfig
   alias Operately.SystemSettings.EmailSecrets
@@ -18,7 +20,9 @@ defmodule OperatelyEE.AdminApi.Queries.GetEmailSettings do
     try do
       Cache.get()
     rescue
-      _ -> nil
+      error ->
+        Logger.error("Failed to load system settings cache: #{Exception.message(error)}")
+        nil
     end
   end
 
