@@ -50,6 +50,7 @@ defmodule OperatelyEE.AdminApi.Types do
 
   object :email_settings do
     field :provider, :email_provider, null: false
+    field? :notification_email, :string, null: false
     field? :smtp, :smtp_settings, null: false
     field? :sendgrid_api_key_set, :boolean, null: false
   end

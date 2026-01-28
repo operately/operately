@@ -39,10 +39,12 @@ function EmailSettingsForm({ emailSettings, onUpdate }: FormProps) {
 
   const initialProvider: AdminApi.EmailProvider = emailSettings?.provider ?? "smtp";
   const initialSmtp = emailSettings?.smtp;
+  const initialNotificationEmail = emailSettings?.notificationEmail ?? "";
 
   const form = Forms.useForm({
     fields: {
       provider: initialProvider,
+      notificationEmail: initialNotificationEmail,
       smtpHost: initialSmtp?.host ?? "",
       smtpPort: initialSmtp?.port?.toString() ?? "",
       smtpUsername: initialSmtp?.username ?? "",
@@ -60,6 +62,7 @@ function EmailSettingsForm({ emailSettings, onUpdate }: FormProps) {
 
       const result = await updateEmailSettings({
         provider: form.values.provider,
+        notificationEmail: normalizeOptional(form.values.notificationEmail),
         smtpHost: form.values.smtpHost,
         smtpPort,
         smtpUsername: form.values.smtpUsername,
@@ -88,6 +91,11 @@ function EmailSettingsForm({ emailSettings, onUpdate }: FormProps) {
   return (
     <Forms.Form form={form}>
       <Forms.FieldGroup>
+        <Forms.TextInput
+          field="notificationEmail"
+          label="Notification Email"
+          placeholder="noreply@yourcompany.com"
+        />
         <Forms.RadioButtons
           field="provider"
           label="Provider"
@@ -272,6 +280,11 @@ function parsePort(value: string) {
 }
 
 function normalizeSecret(value: string) {
+  const trimmed = value.trim();
+  return trimmed === "" ? undefined : trimmed;
+}
+
+function normalizeOptional(value: string) {
   const trimmed = value.trim();
   return trimmed === "" ? undefined : trimmed;
 }

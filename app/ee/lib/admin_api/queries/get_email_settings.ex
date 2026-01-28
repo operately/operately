@@ -32,6 +32,7 @@ defmodule OperatelyEE.AdminApi.Queries.GetEmailSettings do
 
     %{
       provider: email_config.provider,
+      notification_email: email_config.notification_email,
       smtp: %{
         host: email_config.smtp_host,
         port: parse_port(email_config.smtp_port),
