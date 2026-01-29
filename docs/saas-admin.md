@@ -14,3 +14,9 @@ application console. In the console, run the following command:
 account = Operately.People.get_account_by_email(<email>)
 Operately.People.Account.promote_to_admin(account)
 ```
+
+In production, you can open a remote IEx shell with:
+
+```bash
+docker compose exec app /opt/operately/bin/operately remote
+```
