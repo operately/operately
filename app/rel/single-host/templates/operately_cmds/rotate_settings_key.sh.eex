@@ -21,26 +21,9 @@ cmd_rotate_settings_key() {
 
   local existing_keys
   existing_keys=$(read_env_value "SYSTEM_SETTINGS_ENCRYPTION_KEYS" "$env_file")
-  local existing_key
-  existing_key=$(read_env_value "SYSTEM_SETTINGS_ENCRYPTION_KEY" "$env_file")
-  local secret_key_base
-  secret_key_base=$(read_env_value "SECRET_KEY_BASE" "$env_file")
+  [ -n "$existing_keys" ] || die "SYSTEM_SETTINGS_ENCRYPTION_KEYS is missing in ${env_file}"
 
-  local old_keys=""
-  if [ -n "$existing_keys" ]; then
-    old_keys="$existing_keys"
-  elif [ -n "$existing_key" ]; then
-    old_keys="$existing_key"
-  elif [ -n "$secret_key_base" ]; then
-    old_keys="$secret_key_base"
-  fi
-
-  local combined
-  if [ -n "$old_keys" ]; then
-    combined="${new_key},${old_keys}"
-  else
-    combined="${new_key}"
-  fi
+  local combined="${new_key},${existing_keys}"
 
   local tmp
   tmp=$(mktemp)
