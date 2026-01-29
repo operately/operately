@@ -53,7 +53,7 @@ cmd_rotate_settings_key() {
   mv "$tmp" "$env_file"
 
   "${COMPOSE[@]}" up -d
-  "${COMPOSE[@]}" exec app /app/bin/operately eval "Operately.SystemSettings.KeyRotation.rotate()"
+  "${COMPOSE[@]}" exec app /opt/operately/bin/operately eval "Application.ensure_all_started(:operately); case Operately.SystemSettings.KeyRotation.rotate() do {:ok, _} -> :ok; {:error, reason} -> IO.puts(:stderr, \"rotation failed: #{inspect(reason)}\"); System.halt(1) end"
 
   local tmp2
   tmp2=$(mktemp)
@@ -65,6 +65,6 @@ cmd_rotate_settings_key() {
   fi
   mv "$tmp2" "$env_file"
 
-  "${COMPOSE[@]}" restart
+  "${COMPOSE[@]}" up -d --force-recreate app
   echo "Rotation complete. New key applied."
 }
