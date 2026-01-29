@@ -32,6 +32,9 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyTest do
       assert person.account_id == account.id
       assert person.company_id == company.id
 
+      reloaded_account = Operately.People.get_account_by_email(account.email)
+      refute reloaded_account.site_admin
+
       owners = Operately.Companies.list_owners(company)
       assert Enum.any?(owners, fn o -> o.id == person.id end)
     end
