@@ -8,11 +8,10 @@ defmodule Operately.SystemSettings.EncryptionTest do
   end
 
   setup do
-    System.put_env("SYSTEM_SETTINGS_ENCRYPTION_KEY", "test-encryption-key")
+    System.put_env("SYSTEM_SETTINGS_ENCRYPTION_KEYS", "test-encryption-key")
     clear_key_cache()
 
     on_exit(fn ->
-      System.delete_env("SYSTEM_SETTINGS_ENCRYPTION_KEY")
       System.delete_env("SYSTEM_SETTINGS_ENCRYPTION_KEYS")
       clear_key_cache()
     end)
@@ -31,7 +30,7 @@ defmodule Operately.SystemSettings.EncryptionTest do
     plaintext = "top-secret"
     ciphertext = Encryption.encrypt(plaintext)
 
-    System.put_env("SYSTEM_SETTINGS_ENCRYPTION_KEY", "another-key")
+    System.put_env("SYSTEM_SETTINGS_ENCRYPTION_KEYS", "another-key")
     clear_key_cache()
 
     assert {:error, :invalid} = Encryption.decrypt(ciphertext)
@@ -39,7 +38,6 @@ defmodule Operately.SystemSettings.EncryptionTest do
 
   test "decrypt succeeds with key ring regardless of order" do
     System.put_env("SYSTEM_SETTINGS_ENCRYPTION_KEYS", "primary-key,secondary-key")
-    System.delete_env("SYSTEM_SETTINGS_ENCRYPTION_KEY")
     clear_key_cache()
 
     plaintext = "ring-secret"
@@ -52,7 +50,6 @@ defmodule Operately.SystemSettings.EncryptionTest do
   end
 
   test "falls back to secret_key_base when env key is missing" do
-    System.delete_env("SYSTEM_SETTINGS_ENCRYPTION_KEY")
     System.delete_env("SYSTEM_SETTINGS_ENCRYPTION_KEYS")
     clear_key_cache()
 
