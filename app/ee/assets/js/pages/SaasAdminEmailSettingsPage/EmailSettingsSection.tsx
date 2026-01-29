@@ -7,6 +7,7 @@ import classNames from "classnames";
 import { Spacer } from "@/components/Spacer";
 import { Tooltip } from "@/components/Tooltip";
 import { IconInfoCircle } from "turboui";
+import { TestEmailAction } from "./TestEmailModal";
 
 interface Props {
   initialSettings: AdminApi.EmailSettings | null;
@@ -20,6 +21,7 @@ export function EmailSettingsSection({ initialSettings }: Props) {
       <Paper.Section
         title="Email Settings"
         subtitle="Configure the email provider used by all companies. Secrets are never displayed; enter a new value to replace them."
+        actions={<TestEmailAction />}
       >
         <EmailSettingsForm emailSettings={emailSettings} onUpdate={setEmailSettings} />
       </Paper.Section>
