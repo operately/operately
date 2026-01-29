@@ -45,9 +45,10 @@ cmd_rotate_settings_key() {
   local tmp
   tmp=$(mktemp)
   if grep -q '^SYSTEM_SETTINGS_ENCRYPTION_KEYS=' "$env_file"; then
-    sed -E "s/^SYSTEM_SETTINGS_ENCRYPTION_KEYS=.*/SYSTEM_SETTINGS_ENCRYPTION_KEYS=\"${combined}\"/" "$env_file" > "$tmp"
+    sed -E "s/^SYSTEM_SETTINGS_ENCRYPTION_KEYS=.*/SYSTEM_SETTINGS_ENCRYPTION_KEYS=\"${combined}\"/" "$env_file" \
+      | grep -v '^SYSTEM_SETTINGS_ENCRYPTION_KEY=' > "$tmp"
   else
-    cat "$env_file" > "$tmp"
+    grep -v '^SYSTEM_SETTINGS_ENCRYPTION_KEY=' "$env_file" > "$tmp"
     echo "SYSTEM_SETTINGS_ENCRYPTION_KEYS=\"${combined}\"" >> "$tmp"
   fi
   mv "$tmp" "$env_file"
@@ -58,9 +59,10 @@ cmd_rotate_settings_key() {
   local tmp2
   tmp2=$(mktemp)
   if grep -q '^SYSTEM_SETTINGS_ENCRYPTION_KEYS=' "$env_file"; then
-    sed -E "s/^SYSTEM_SETTINGS_ENCRYPTION_KEYS=.*/SYSTEM_SETTINGS_ENCRYPTION_KEYS=\"${new_key}\"/" "$env_file" > "$tmp2"
+    sed -E "s/^SYSTEM_SETTINGS_ENCRYPTION_KEYS=.*/SYSTEM_SETTINGS_ENCRYPTION_KEYS=\"${new_key}\"/" "$env_file" \
+      | grep -v '^SYSTEM_SETTINGS_ENCRYPTION_KEY=' > "$tmp2"
   else
-    cat "$env_file" > "$tmp2"
+    grep -v '^SYSTEM_SETTINGS_ENCRYPTION_KEY=' "$env_file" > "$tmp2"
     echo "SYSTEM_SETTINGS_ENCRYPTION_KEYS=\"${new_key}\"" >> "$tmp2"
   fi
   mv "$tmp2" "$env_file"
