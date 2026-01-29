@@ -265,6 +265,10 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "admin"])
   end
 
+  def company_manage_people_add_path(company = %Company{}) do
+    create_path([company_id(company), "admin", "manage-people", "add"])
+  end
+
   def resource_hub_path(company = %Company{}, resource_hub) do
     create_path([company_id(company), "resource-hubs", resource_hub_id(resource_hub)])
   end
