@@ -19,9 +19,15 @@ defmodule OperatelyWeb.Api.Mutations.AddFirstCompany do
 
     if allowed do
       {:ok, company} = Operately.Operations.CompanyAdding.run(inputs)
+      {:ok, _} = promote_to_admin(inputs.email)
       {:ok, %{company: OperatelyWeb.Api.Serializer.serialize(company)}}
     else
       {:error, :bad_request}
     end
+  end
+
+  defp promote_to_admin(email) do
+    account = Operately.People.get_account_by_email(email)
+    {:ok, _} = Operately.People.Account.promote_to_admin(account)
   end
 end

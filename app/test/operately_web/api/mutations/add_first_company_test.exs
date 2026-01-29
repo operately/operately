@@ -21,6 +21,7 @@ defmodule OperatelyWeb.Api.Mutations.AddFirstCompanyTest do
 
       assert Operately.Repo.aggregate(Operately.People.Person, :count, :id) == 1
       assert account
+      assert account.site_admin
       assert group
 
       person = Operately.Repo.preload(account, :people).people |> hd()
