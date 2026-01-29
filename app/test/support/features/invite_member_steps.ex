@@ -31,12 +31,11 @@ defmodule Operately.Support.Features.InviteMemberSteps do
   end
 
   step :navigate_to_invitation_page, ctx do
+    path = Paths.company_manage_people_add_path(ctx.company)
+
     ctx
-    |> UI.visit(Paths.home_path(ctx.company))
-    |> UI.click(testid: "company-dropdown")
-    |> UI.click(testid: "company-dropdown-company-admin")
-    |> UI.click(testid: "manage-team-members")
-    |> UI.click(testid: "add-person")
+    |> UI.visit(path)
+    |> UI.assert_page(path)
   end
 
   step :open_company_team_page, ctx do
