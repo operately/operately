@@ -140,7 +140,6 @@ echo "DB_USERNAME=\"${DB_USERNAME}\"" >> operately.env
 echo "POSTGRES_USER=\"${POSTGRES_USER}\"" >> operately.env
 echo "POSTGRES_PASSWORD=\"${POSTGRES_PASSWORD}\"" >> operately.env
 echo "DATABASE_URL=\"${DATABASE_URL}\"" >> operately.env
-echo "NOTIFICATION_EMAIL=\"${NOTIFICATION_EMAIL}\"" >> operately.env
 echo "ALLOW_LOGIN_WITH_EMAIL=\"${ALLOW_LOGIN_WITH_EMAIL}\"" >> operately.env
 echo "ALLOW_SIGNUP_WITH_EMAIL=\"${ALLOW_SIGNUP_WITH_EMAIL}\"" >> operately.env
 echo "OPERATELY_BEACON_ENABLED=\"${OPERATELY_BEACON_ENABLED}\"" >> operately.env
