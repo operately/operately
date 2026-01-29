@@ -23,65 +23,7 @@ echo -e "1. What domain will you be using to run Operately? ${LBLUE}e.g. operate
 read -p "   Domain: " DOMAIN
 
 echo -e ""
-echo -e "2. How would you like to configure email delivery?"
-echo -e "   ${LBLUE}1)${CLEAR} SendGrid - Use SendGrid service for email delivery"
-echo -e "   ${LBLUE}2)${CLEAR} AWS SES - Use Amazon Simple Email Service"
-echo -e "   ${LBLUE}3)${CLEAR} SMTP - Use your own SMTP server"
-echo -e "   ${LBLUE}4)${CLEAR} I'll set it up later"
-read -p "   Choose an option (1-4): " EMAIL_OPTION
-
-case $EMAIL_OPTION in
-    1)
-        echo -e ""
-        echo -e "   What is your SendGrid API token? ${LBLUE}docs: https://www.twilio.com/docs/sendgrid/ui/account-and-settings/api-keys${CLEAR}"
-        read -p "   Token: " SENDGRID_TOKEN
-        read -p "   Sender email address (default: notifications@${DOMAIN}): " NOTIFICATION_EMAIL_INPUT
-        NOTIFICATION_EMAIL=${NOTIFICATION_EMAIL_INPUT:-"notifications@${DOMAIN}"}
-        ;;
-    2)
-        echo -e ""
-        echo -e "   Please provide your AWS SES SMTP credentials:"
-        echo -e "   ${LBLUE}Note:${CLEAR} Use SMTP credentials from SES console, not IAM access keys"
-        read -p "   AWS Region (e.g., us-east-1, eu-central-1): " AWS_REGION
-        SMTP_SERVER="email-smtp.${AWS_REGION}.amazonaws.com"
-        SMTP_PORT="587"
-        read -p "   SMTP Username: " SMTP_USERNAME
-        read -p "   SMTP Password: " SMTP_PASSWORD
-        SMTP_SSL="false"
-        SMTP_PROVIDER="aws-ses"
-        echo -e ""
-        echo -e "   ${LBLUE}Important:${CLEAR} The sender email must be verified in AWS SES console"
-        read -p "   Verified sender email address: " NOTIFICATION_EMAIL
-        ;;
-    3)
-        echo -e ""
-        echo -e "   Please provide your SMTP server details:"
-        read -p "   SMTP Server: " SMTP_SERVER
-        read -p "   SMTP Port (default 587): " SMTP_PORT
-        SMTP_PORT=${SMTP_PORT:-587}
-        read -p "   SMTP Username: " SMTP_USERNAME
-        read -p "   SMTP Password: " SMTP_PASSWORD
-        read -p "   Use SSL? (y/n, default n): " SMTP_SSL_YN
-        case $SMTP_SSL_YN in
-            y|yes|Y) SMTP_SSL="true" ;;
-            *) SMTP_SSL="false" ;;
-        esac
-        read -p "   Sender email address (default: notifications@${DOMAIN}): " NOTIFICATION_EMAIL_INPUT
-        NOTIFICATION_EMAIL=${NOTIFICATION_EMAIL_INPUT:-"notifications@${DOMAIN}"}
-        ;;
-    4)
-        echo -e ""
-        echo -e "   ${LBLUE}Note:${CLEAR} You can configure email delivery later by setting the appropriate environment variables."
-        NOTIFICATION_EMAIL="notifications@${DOMAIN}"
-        ;;
-    *)
-        echo "Invalid option. Please choose 1, 2, 3, or 4."
-        exit 1
-        ;;
-esac
-
-echo -e ""
-echo -e "3. How would you like to configure AI (Ask Alfred)?"
+echo -e "2. How would you like to configure AI (Ask Alfred)?"
 echo -e "   ${LBLUE}1)${CLEAR} Use OpenAI"
 echo -e "   ${LBLUE}2)${CLEAR} Use Anthropic Claude"
 echo -e "   ${LBLUE}3)${CLEAR} I'll set it up later"
@@ -109,7 +51,7 @@ case $AI_OPTION in
 esac
 
 echo -e ""
-echo -e "4. Do you want Operately to issue and auto-renew a Let's Encrypt SSL certificate?"
+echo -e "3. Do you want Operately to issue and auto-renew a Let's Encrypt SSL certificate?"
 read -p "   Manage SSL certs? (y/n): " MANAGE_CERTS_YN
 
 case $MANAGE_CERTS_YN in
@@ -129,21 +71,6 @@ case $MANAGE_CERTS_YN in
         *)
                 echo -e "- Operately will be accessible from: ${LBLUE}http://${DOMAIN}${CLEAR}"
                 ;;
-esac
-
-case $EMAIL_OPTION in
-    1)
-        echo -e "- Operately emails will be sent from: ${LBLUE}${NOTIFICATION_EMAIL}${CLEAR} via SendGrid"
-        ;;
-    2)
-        echo -e "- Operately emails will be sent from: ${LBLUE}${NOTIFICATION_EMAIL}${CLEAR} via AWS SES (${AWS_REGION})"
-        ;;
-    3)
-        echo -e "- Operately emails will be sent from: ${LBLUE}${NOTIFICATION_EMAIL}${CLEAR} via SMTP (${SMTP_SERVER}:${SMTP_PORT})"
-        ;;
-    4)
-        echo -e "- Email delivery will be configured later (emails will not be sent until configured)"
-        ;;
 esac
 
 case $AI_OPTION in
@@ -217,38 +144,6 @@ echo "NOTIFICATION_EMAIL=\"${NOTIFICATION_EMAIL}\"" >> operately.env
 echo "ALLOW_LOGIN_WITH_EMAIL=\"${ALLOW_LOGIN_WITH_EMAIL}\"" >> operately.env
 echo "ALLOW_SIGNUP_WITH_EMAIL=\"${ALLOW_SIGNUP_WITH_EMAIL}\"" >> operately.env
 echo "OPERATELY_BEACON_ENABLED=\"${OPERATELY_BEACON_ENABLED}\"" >> operately.env
-
-# Write email configuration based on user choice
-case $EMAIL_OPTION in
-    1)
-        # SendGrid configuration
-        echo "SENDGRID_API_KEY=\"${SENDGRID_TOKEN}\"" >> operately.env
-        ;;
-    2)
-        # AWS SES configuration
-        echo "SMTP_PROVIDER=\"${SMTP_PROVIDER}\"" >> operately.env
-        echo "SMTP_SERVER=\"${SMTP_SERVER}\"" >> operately.env
-        echo "SMTP_PORT=\"${SMTP_PORT}\"" >> operately.env
-        echo "SMTP_USERNAME=\"${SMTP_USERNAME}\"" >> operately.env
-        echo "SMTP_PASSWORD=\"${SMTP_PASSWORD}\"" >> operately.env
-        echo "SMTP_SSL=\"${SMTP_SSL}\"" >> operately.env
-        ;;
-    3)
-        # SMTP configuration
-        echo "SMTP_SERVER=\"${SMTP_SERVER}\"" >> operately.env
-        echo "SMTP_PORT=\"${SMTP_PORT}\"" >> operately.env
-        echo "SMTP_USERNAME=\"${SMTP_USERNAME}\"" >> operately.env
-        echo "SMTP_PASSWORD=\"${SMTP_PASSWORD}\"" >> operately.env
-        echo "SMTP_SSL=\"${SMTP_SSL}\"" >> operately.env
-        ;;
-    4)
-        # No email configuration - add a comment for future reference
-        echo "# Email configuration not set - configure later by adding:" >> operately.env
-        echo "# For SendGrid: SENDGRID_API_KEY=\"your_api_key\"" >> operately.env
-        echo "# For AWS SES: SMTP_PROVIDER=\"aws-ses\", SMTP_SERVER, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD, SMTP_SSL" >> operately.env
-        echo "# For SMTP: SMTP_SERVER, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD, SMTP_SSL" >> operately.env
-        ;;
-esac
 
 # Write AI configuration based on user choice
 case $AI_OPTION in
