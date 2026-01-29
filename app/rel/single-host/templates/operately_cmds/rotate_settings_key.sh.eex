@@ -53,7 +53,7 @@ cmd_rotate_settings_key() {
   mv "$tmp" "$env_file"
 
   "${COMPOSE[@]}" up -d
-  "${COMPOSE[@]}" exec app /app/bin/operately eval "Operately.SystemSettings.KeyRotation.rotate()"
+  "${COMPOSE[@]}" exec app /opt/operately/bin/operately eval "Operately.SystemSettings.KeyRotation.rotate()"
 
   local tmp2
   tmp2=$(mktemp)
