@@ -12,7 +12,7 @@ interface TestEmailModalProps {
   onClose: () => void;
 }
 
-export function TestEmailModal({ isOpen, onClose }: TestEmailModalProps) {
+function TestEmailModal({ isOpen, onClose }: TestEmailModalProps) {
   return (
     <Modal title="Send Test Email" isOpen={isOpen} hideModal={onClose}>
       <TestEmailForm onClose={onClose} />
