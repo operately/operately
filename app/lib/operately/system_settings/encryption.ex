@@ -1,8 +1,8 @@
 defmodule Operately.SystemSettings.Encryption do
   @moduledoc """
   Settings secrets rotation flow: encryption uses the first key in
-  `SYSTEM_SETTINGS_ENCRYPTION_KEYS` (or `SYSTEM_SETTINGS_ENCRYPTION_KEY` fallback),
-  while decryption tries all keys in order to support temporary key rings during
+  `SYSTEM_SETTINGS_ENCRYPTION_KEYS` (or `SECRET_KEY_BASE` fallback), while
+  decryption tries all keys in order to support temporary key rings during
   rotation.
   """
 
@@ -67,16 +67,8 @@ defmodule Operately.SystemSettings.Encryption do
     |> presence()
     |> parse_keys()
     |> case do
-      [] ->
-        System.get_env("SYSTEM_SETTINGS_ENCRYPTION_KEY")
-        |> presence()
-        |> case do
-          nil -> [application_secret_key_base()]
-          key -> [key]
-        end
-
-      keys ->
-        keys
+      [] -> [application_secret_key_base()]
+      keys -> keys
     end
     |> case do
       [nil] -> raise "secret_key_base is missing, cannot encrypt system settings"

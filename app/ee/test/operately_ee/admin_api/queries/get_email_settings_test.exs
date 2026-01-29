@@ -12,11 +12,10 @@ defmodule OperatelyEE.AdminApi.Queries.GetEmailSettingsTest do
   end
 
   setup do
-    System.put_env("SYSTEM_SETTINGS_ENCRYPTION_KEY", "test-encryption-key")
+    System.put_env("SYSTEM_SETTINGS_ENCRYPTION_KEYS", "test-encryption-key")
     clear_key_cache()
 
     on_exit(fn ->
-      System.delete_env("SYSTEM_SETTINGS_ENCRYPTION_KEY")
       System.delete_env("SYSTEM_SETTINGS_ENCRYPTION_KEYS")
       clear_key_cache()
     end)
