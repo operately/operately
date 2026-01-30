@@ -11,14 +11,12 @@ export namespace MemberTypeSelectionPage {
     navigationItems?: Navigation.Item[];
     teamMemberPath: string;
     outsideCollaboratorPath: string;
-    showOutsideCollaborator?: boolean;
     testId?: string;
   }
 }
 
 export function MemberTypeSelectionPage(props: MemberTypeSelectionPage.Props) {
   const pageTitle = props.companyName ? ["Invite people", props.companyName] : "Invite people";
-  const showOutsideCollaborator = props.showOutsideCollaborator ?? true;
   useHtmlTitle(pageTitle);
 
   return (
@@ -35,14 +33,12 @@ export function MemberTypeSelectionPage(props: MemberTypeSelectionPage.Props) {
               to={props.teamMemberPath}
               testId="select-team-member"
             />
-            {showOutsideCollaborator && (
-              <MemberTypeCard
-                title="Outside collaborator"
-                description="This person is not a company member. They get access only to specific spaces, goals, or projects that are shared with them."
-                to={props.outsideCollaboratorPath}
-                testId="select-outside-collaborator"
-              />
-            )}
+            <MemberTypeCard
+              title="Outside collaborator"
+              description="This person is not a company member. They get access only to specific spaces, goals, or projects that are shared with them."
+              to={props.outsideCollaboratorPath}
+              testId="select-outside-collaborator"
+            />
           </div>
         </div>
       </div>

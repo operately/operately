@@ -1,19 +1,26 @@
 import React from "react";
 
 import * as Companies from "@/models/companies";
-import * as Pages from "@/components/Pages";
 import { MemberTypeSelectionPage } from "turboui";
 import { PageModule } from "@/routes/types";
-import { usePaths } from "@/routes/paths";
+import { Paths, usePaths } from "@/routes/paths";
 import { useRouteLoaderData } from "react-router-dom";
+import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
 
-export default { name: "MemberTypeSelectionPage", loader: Pages.emptyLoader, Page } as PageModule;
+export default { name: "MemberTypeSelectionPage", loader, Page } as PageModule;
+
+async function loader({ params }) {
+  const paths = new Paths({ companyId: params.companyId });
+
+  await redirectIfFeatureNotEnabled(params, { feature: "guest-accounts", path: paths.inviteTeamPath() });
+
+  return {};
+}
 
 function Page() {
   const paths = usePaths();
   const data = useRouteLoaderData("companyRoot") as { company?: Companies.Company } | null;
   const company = data?.company;
-  const showOutsideCollaborator = company ? Companies.hasFeature(company, "guest-accounts") : false;
   const navigationItems = React.useMemo(
     () => [
       { to: paths.companyAdminPath(), label: "Company Administration" },
@@ -28,7 +35,6 @@ function Page() {
       navigationItems={navigationItems}
       teamMemberPath={paths.inviteTeamPath()}
       outsideCollaboratorPath={paths.companyManagePeopleAddPeoplePath({ memberType: "outside_collaborator" })}
-      showOutsideCollaborator={showOutsideCollaborator}
       testId="member-type-selection-page"
     />
   );
