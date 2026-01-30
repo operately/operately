@@ -25,15 +25,15 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectRetrospectiveTest do
     @table [
       %{company: :no_access,      space: :no_access,      project: :no_access,      expected: 404},
       %{company: :no_access,      space: :no_access,      project: :comment_access, expected: 403},
-      %{company: :no_access,      space: :no_access,      project: :edit_access,    expected: 200},
+      %{company: :no_access,      space: :no_access,      project: :edit_access,    expected: 403},
       %{company: :no_access,      space: :no_access,      project: :full_access,    expected: 200},
 
       %{company: :no_access,      space: :comment_access, project: :no_access,      expected: 403},
-      %{company: :no_access,      space: :edit_access,    project: :no_access,      expected: 200},
+      %{company: :no_access,      space: :edit_access,    project: :no_access,      expected: 403},
       %{company: :no_access,      space: :full_access,    project: :no_access,      expected: 200},
 
       %{company: :comment_access, space: :no_access,      project: :no_access,      expected: 403},
-      %{company: :edit_access,    space: :no_access,      project: :no_access,      expected: 200},
+      %{company: :edit_access,    space: :no_access,      project: :no_access,      expected: 403},
       %{company: :full_access,    space: :no_access,      project: :no_access,      expected: 200},
     ]
 
@@ -79,7 +79,7 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectRetrospectiveTest do
       |> Factory.add_company_member(:person)
       |> Factory.log_in_person(:person)
       |> Factory.add_space(:space)
-      |> Factory.add_project(:project, :space)
+      |> Factory.add_project(:project, :space, company_access_level: Binding.full_access(), space_access_level: Binding.full_access())
       |> Factory.add_project_retrospective(:retrospective, :project, :person)
     end
 

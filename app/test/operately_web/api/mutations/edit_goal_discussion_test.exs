@@ -32,16 +32,16 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalDiscussionTest do
       assert res.message == "The requested resource was not found"
     end
 
-    test "company members without edit access can't edit a goal discussion", ctx do
-      goal = create_goal(ctx, company_access_level: Binding.comment_access())
+    test "company members without full access can't edit a goal discussion", ctx do
+      goal = create_goal(ctx, company_access_level: Binding.edit_access())
       discussion = create_discussion(ctx, goal)
 
       assert {403, res} = request(ctx.conn, discussion)
       assert res.message == "You don't have permission to perform this action"
     end
 
-    test "company members with edit access can edit a goal discussion", ctx do
-      goal = create_goal(ctx, company_access_level: Binding.edit_access())
+    test "company members with full access can edit a goal discussion", ctx do
+      goal = create_goal(ctx, company_access_level: Binding.full_access())
       discussion = create_discussion(ctx, goal)
 
       assert {200, _} = request(ctx.conn, discussion)
@@ -80,9 +80,9 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalDiscussionTest do
       assert res.message == "You don't have permission to perform this action"
     end
 
-    test "space members with edit access can edit a goal discussion", ctx do
+    test "space members with full access can edit a goal discussion", ctx do
       add_person_to_space(ctx)
-      goal = create_goal(ctx, space_access_level: Binding.edit_access())
+      goal = create_goal(ctx, space_access_level: Binding.full_access())
       discussion = create_discussion(ctx, goal)
 
       assert {200, _} = request(ctx.conn, discussion)
