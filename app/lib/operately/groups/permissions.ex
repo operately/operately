@@ -13,6 +13,7 @@ defmodule Operately.Groups.Permissions do
     :can_edit_members_permissions,
     :can_edit_permissions,
     :can_edit_statuses,
+    :can_edit_tasks,
     :can_join,
     :can_post_discussions,
     :can_remove_member,
@@ -35,6 +36,7 @@ defmodule Operately.Groups.Permissions do
       can_edit_members_permissions: can_edit_members_permissions(access_level),
       can_edit_permissions: can_edit_permissions(access_level),
       can_edit_statuses: can_edit_statuses(access_level),
+      can_edit_tasks: can_edit_tasks(access_level),
       can_join: can_join(access_level),
       can_post_discussions: can_post_discussions(access_level),
       can_remove_member: can_remove_member(access_level),
@@ -56,6 +58,7 @@ defmodule Operately.Groups.Permissions do
   def can_edit_members_permissions(access_level), do: access_level >= Binding.full_access()
   def can_edit_permissions(access_level), do: access_level >= Binding.full_access()
   def can_edit_statuses(access_level), do: access_level >= Binding.edit_access()
+  def can_edit_tasks(access_level), do: access_level >= Binding.edit_access()
   def can_join(access_level), do: access_level >= Binding.view_access()
   def can_post_discussions(access_level), do: access_level >= Binding.edit_access()
   def can_remove_member(access_level), do: access_level >= Binding.full_access()

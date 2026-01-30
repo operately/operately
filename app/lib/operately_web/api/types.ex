@@ -1201,6 +1201,7 @@ defmodule OperatelyWeb.Api.Types do
     field :can_edit_members_permissions, :boolean, null: false
     field :can_edit_permissions, :boolean, null: false
     field :can_edit_statuses, :boolean, null: false
+    field :can_edit_tasks, :boolean, null: false
     field :can_join, :boolean, null: false
     field :can_post_discussions, :boolean, null: false
     field :can_remove_member, :boolean, null: false

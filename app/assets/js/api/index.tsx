@@ -1731,6 +1731,7 @@ export interface SpacePermissions {
   canEditMembersPermissions: boolean;
   canEditPermissions: boolean;
   canEditStatuses: boolean;
+  canEditTasks: boolean;
   canJoin: boolean;
   canPostDiscussions: boolean;
   canRemoveMember: boolean;
