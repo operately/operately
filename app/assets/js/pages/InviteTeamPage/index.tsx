@@ -2,11 +2,10 @@ import Api, { InviteLink } from "@/api";
 import React from "react";
 
 import { useLoadedData } from "@/components/Pages";
-import type * as Companies from "@/models/companies";
 import { PageModule } from "@/routes/types";
 import { InvitePeoplePage, showErrorToast } from "turboui";
 import { usePaths } from "../../routes/paths";
-import { useRouteLoaderData } from "react-router-dom";
+import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 
 export default { name: "InviteTeamPage", loader, Page } as PageModule;
 
@@ -29,7 +28,7 @@ interface DomainState {
 function Page() {
   const paths = usePaths();
   const { link } = useLoadedData();
-  const data = useRouteLoaderData("companyRoot") as { company?: Companies.Company } | null;
+  const data = useCompanyLoaderData();
   const company = data?.company;
   const navigationItems = React.useMemo(
     () => [
