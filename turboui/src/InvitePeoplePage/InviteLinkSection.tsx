@@ -1,12 +1,11 @@
-import React from "react";
+import React, { useCallback } from "react";
 
 import { PrimaryButton } from "../Button";
 import { IconCopy } from "../icons";
 import { SwitchToggle } from "../SwitchToggle";
 import { TextField } from "../TextField";
+import { showErrorToast, showSuccessToast } from "../Toasts";
 import classNames from "../utils/classnames";
-
-type CopyState = "idle" | "copied" | "error";
 
 interface DomainRestrictionControls {
   enabled: boolean;
@@ -23,8 +22,6 @@ interface InviteLinkSectionProps {
   invitationLink: string | null;
   linkEnabled: boolean;
   onToggleLink: (enabled: boolean) => void;
-  copyState: CopyState;
-  onCopyLink: () => void;
   onOpenResetConfirm: () => void;
   isResettingLink: boolean;
   domainRestriction?: DomainRestrictionControls;
@@ -36,8 +33,6 @@ export function InviteLinkSection({
   invitationLink,
   linkEnabled,
   onToggleLink,
-  copyState,
-  onCopyLink,
   onOpenResetConfirm,
   isResettingLink,
   domainRestriction,
@@ -47,6 +42,18 @@ export function InviteLinkSection({
   const canCopy = Boolean(invitationLink) && linkEnabled;
   const domainTestId = domainRestriction?.testId ?? "invite-people-domain-toggle";
   const domainRadioName = `${domainTestId}-options`;
+
+  const handleCopyLink = useCallback(async () => {
+    if (!invitationLink || !linkEnabled) return;
+
+    try {
+      await copyToClipboard(invitationLink);
+      showSuccessToast("Link copied", "The invite link has been copied to your clipboard.");
+    } catch {
+      showErrorToast("Copy failed", "We couldn't copy the invite link automatically.");
+      return;
+    }
+  }, [invitationLink, linkEnabled]);
 
   return (
     <section className="rounded-2xl border border-surface-outline bg-surface-base p-8 shadow-lg">
@@ -80,8 +87,8 @@ export function InviteLinkSection({
             data-test-id="invite-people-invite-link"
             onFocus={(event) => event.currentTarget.select()}
           />
-          <PrimaryButton onClick={onCopyLink} disabled={!canCopy} size="sm" icon={IconCopy} testId="invite-people-copy-link">
-            {copyState === "copied" ? "Copied" : "Copy"}
+          <PrimaryButton onClick={handleCopyLink} disabled={!canCopy} size="sm" icon={IconCopy} testId="invite-people-copy-link">
+            Copy
           </PrimaryButton>
         </div>
 
@@ -104,11 +111,6 @@ export function InviteLinkSection({
           </p>
         ) : null}
 
-        {copyState === "error" && (
-          <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
-            We couldn&apos;t copy the link automatically. Try copying it manually.
-          </div>
-        )}
       </div>
 
       {linkEnabled && domainRestriction ? (
@@ -178,4 +180,31 @@ export function InviteLinkSection({
       ) : null}
     </section>
   );
+}
+
+async function copyToClipboard(text: string) {
+  if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+
+  if (typeof document === "undefined") {
+    throw new Error("Clipboard API unavailable");
+  }
+
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.style.position = "fixed";
+  textarea.style.left = "-9999px";
+  textarea.setAttribute("readonly", "true");
+
+  document.body.appendChild(textarea);
+  textarea.select();
+
+  const successful = document.execCommand("copy");
+  document.body.removeChild(textarea);
+
+  if (!successful) {
+    throw new Error("Copy command failed");
+  }
 }
