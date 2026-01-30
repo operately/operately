@@ -62,6 +62,7 @@ export function createAppRoutes() {
       children: [
         pageRoute("", pages.HomePage),
         pageRoute("invite-team", pages.InviteTeamPage),
+        pageRoute("invite-people", pages.MemberTypeSelectionPage),
         pageRoute("feed", pages.FeedPage),
         pageRoute("review", pages.ReviewPage),
         pageRoute("notifications", pages.NotificationsPage),
