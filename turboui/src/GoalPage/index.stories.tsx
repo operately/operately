@@ -171,6 +171,7 @@ function Component(props: Partial<GoalPage.Props>) {
       deleteGoal={deleteGoal}
       richTextHandlers={createMockRichEditorHandlers()}
       currentUser={currentUser}
+      canAddDiscussion={true}
     />
   );
 }

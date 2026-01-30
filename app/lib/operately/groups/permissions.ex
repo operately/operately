@@ -13,6 +13,7 @@ defmodule Operately.Groups.Permissions do
     :can_edit_members_permissions,
     :can_edit_permissions,
     :can_edit_statuses,
+    :can_edit_tasks,
     :can_join,
     :can_post_discussions,
     :can_remove_member,
@@ -35,6 +36,7 @@ defmodule Operately.Groups.Permissions do
       can_edit_members_permissions: can_edit_members_permissions(access_level),
       can_edit_permissions: can_edit_permissions(access_level),
       can_edit_statuses: can_edit_statuses(access_level),
+      can_edit_tasks: can_edit_tasks(access_level),
       can_join: can_join(access_level),
       can_post_discussions: can_post_discussions(access_level),
       can_remove_member: can_remove_member(access_level),
@@ -45,19 +47,20 @@ defmodule Operately.Groups.Permissions do
     }
   end
 
-  def can_create_goal(access_level), do: access_level >= Binding.contribute_access()
-  def can_create_project(access_level), do: access_level >= Binding.contribute_access()
-  def can_create_resource_hub(access_level), do: access_level >= Binding.contribute_access()
-  def can_create_task(access_level), do: access_level >= Binding.contribute_access()
+  def can_create_goal(access_level), do: access_level >= Binding.edit_access()
+  def can_create_project(access_level), do: access_level >= Binding.edit_access()
+  def can_create_resource_hub(access_level), do: access_level >= Binding.edit_access()
+  def can_create_task(access_level), do: access_level >= Binding.edit_access()
   def can_comment_on_tasks(access_level), do: access_level >= Binding.comment_access()
   def can_comment_on_discussions(access_level), do: access_level >= Binding.comment_access()
-  def can_edit(access_level), do: access_level >= Binding.edit_access()
-  def can_edit_discussions(access_level), do: access_level >= Binding.contribute_access()
+  def can_edit(access_level), do: access_level >= Binding.full_access()
+  def can_edit_discussions(access_level), do: access_level >= Binding.edit_access()
   def can_edit_members_permissions(access_level), do: access_level >= Binding.full_access()
   def can_edit_permissions(access_level), do: access_level >= Binding.full_access()
-  def can_edit_statuses(access_level), do: access_level >= Binding.contribute_access()
+  def can_edit_statuses(access_level), do: access_level >= Binding.edit_access()
+  def can_edit_tasks(access_level), do: access_level >= Binding.edit_access()
   def can_join(access_level), do: access_level >= Binding.view_access()
-  def can_post_discussions(access_level), do: access_level >= Binding.contribute_access()
+  def can_post_discussions(access_level), do: access_level >= Binding.edit_access()
   def can_remove_member(access_level), do: access_level >= Binding.full_access()
   def can_view(access_level), do: access_level >= Binding.view_access()
   def can_view_message(access_level), do: access_level >= Binding.view_access()

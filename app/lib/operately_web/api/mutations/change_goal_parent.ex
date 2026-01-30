@@ -2,7 +2,7 @@ defmodule OperatelyWeb.Api.Mutations.ChangeGoalParent do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  import Operately.Access.Filters, only: [filter_by_edit_access: 2, forbidden_or_not_found: 2]
+  import Operately.Access.Filters, only: [filter_by_full_access: 2, forbidden_or_not_found: 2]
 
   alias Operately.Repo
 
@@ -33,7 +33,7 @@ defmodule OperatelyWeb.Api.Mutations.ChangeGoalParent do
 
   defp load_goal(person, goal_id) do
     query(goal_id)
-    |> filter_by_edit_access(person.id)
+    |> filter_by_full_access(person.id)
     |> Repo.one()
   end
 

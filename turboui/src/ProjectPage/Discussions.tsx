@@ -6,9 +6,9 @@ import { InfoCallout } from "../Callouts";
 import { DiscussionCard } from "../DiscussionCard";
 
 export function Discussions(props: ProjectPage.State) {
-  if (props.discussions.length === 0 && !props.canEdit) return null;
+  if (props.discussions.length === 0 && !props.canCreateDiscussion) return null;
 
-  const showNewDiscussionButton = props.canEdit && props.state !== "closed";
+  const showNewDiscussionButton = props.canCreateDiscussion && props.state !== "closed";
   const isZeroState = props.discussions.length === 0 && props.state !== "closed";
 
   return (

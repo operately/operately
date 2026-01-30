@@ -24,7 +24,7 @@ jest.mock("../../DiscussionCard", () => ({
 describe("Discussions", () => {
   const defaultProps: any = {
     discussions: [],
-    canEdit: false,
+    canAddDiscussion: false,
     state: "active",
     newDiscussionLink: "/new-discussion",
     richTextHandlers: {
@@ -41,24 +41,24 @@ describe("Discussions", () => {
   };
 
   it("renders nothing if goal is active, no discussions, and cannot edit", () => {
-    const { container } = renderWithRouter(<Discussions {...defaultProps} canEdit={false} state="active" discussions={[]} />);
+    const { container } = renderWithRouter(<Discussions {...defaultProps} canAddDiscussion={false} state="active" discussions={[]} />);
     expect(container.firstChild).toBeNull();
   });
 
   it("renders 'No discussions yet' (open zero state) if goal is active, no discussions, and CAN edit", () => {
-    renderWithRouter(<Discussions {...defaultProps} canEdit={true} state="active" discussions={[]} />);
+    renderWithRouter(<Discussions {...defaultProps} canAddDiscussion={true} state="active" discussions={[]} />);
     expect(screen.getByText("No discussions yet")).toBeInTheDocument();
     expect(screen.getByText("Start discussion")).toBeInTheDocument();
   });
 
   it("renders 'This goal is closed and has no discussions' if goal is closed and no discussions", () => {
-    renderWithRouter(<Discussions {...defaultProps} canEdit={true} state="closed" discussions={[]} />);
+    renderWithRouter(<Discussions {...defaultProps} canAddDiscussion={true} state="closed" discussions={[]} />);
     expect(screen.getByText("This goal is closed and has no discussions.")).toBeInTheDocument();
     expect(screen.queryByText("Start discussion")).not.toBeInTheDocument();
   });
 
   it("renders 'This goal is closed and has no discussions' if goal is closed and no discussions (cannot edit)", () => {
-    renderWithRouter(<Discussions {...defaultProps} canEdit={false} state="closed" discussions={[]} />);
+    renderWithRouter(<Discussions {...defaultProps} canAddDiscussion={false} state="closed" discussions={[]} />);
     expect(screen.getByText("This goal is closed and has no discussions.")).toBeInTheDocument();
   });
 
@@ -84,7 +84,7 @@ describe("Discussions", () => {
       },
     ];
 
-    renderWithRouter(<Discussions {...defaultProps} canEdit={true} state="active" discussions={discussions} />);
+    renderWithRouter(<Discussions {...defaultProps} canAddDiscussion={true} state="active" discussions={discussions} />);
     
     expect(screen.getAllByTestId("discussion-card")).toHaveLength(2);
     expect(screen.getByText("Discussion 1")).toBeInTheDocument();

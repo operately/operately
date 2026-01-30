@@ -30,10 +30,10 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectPermissionsTest do
       assert res.message == "The requested resource was not found"
     end
 
-    test "company members with edit access can edit project permissions", ctx do
+    test "company members with edit access cannot edit project permissions", ctx do
       project = create_project(ctx, company_access_level: Binding.edit_access())
 
-      assert {200, _} = request(ctx.conn, project)
+      assert {403, _} = request(ctx.conn, project)
     end
 
     test "company members with full access can edit project permissions", ctx do
@@ -64,11 +64,11 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectPermissionsTest do
       assert res.message == "The requested resource was not found"
     end
 
-    test "space members with edit access can edit project permissions", ctx do
+    test "space members with edit access cannot edit project permissions", ctx do
       add_person_to_space(ctx)
       project = create_project(ctx, space_access_level: Binding.edit_access())
 
-      assert {200, _} = request(ctx.conn, project)
+      assert {403, _} = request(ctx.conn, project)
     end
 
     test "space members with full access can edit project permissions", ctx do
@@ -92,14 +92,14 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectPermissionsTest do
       assert res.success
     end
 
-    test "contributors with edit access can edit project permissions", ctx do
+    test "contributors with edit access cannot edit project permissions", ctx do
       project = create_project(ctx)
       contributor = create_contributor(ctx, project, Binding.edit_access())
 
       account = Repo.preload(contributor, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, _} = request(conn, project)
+      assert {403, _} = request(conn, project)
     end
 
     test "contributors with full access can edit project permissions", ctx do
