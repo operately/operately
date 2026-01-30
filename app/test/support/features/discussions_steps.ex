@@ -18,6 +18,19 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     |> Factory.log_in_person(:author)
   end
 
+  step :given_comment_access_member, ctx do
+    ctx
+    |> Factory.add_space_member(:commenter, :marketing_space, permissions: :comment_access)
+  end
+
+  step :login_as_commenter, ctx do
+    ctx |> UI.login_as(ctx.commenter)
+  end
+
+  step :assert_new_discussion_button_not_visible, ctx do
+    ctx |> UI.refute_has(testid: "new-discussion")
+  end
+
   step :post_a_discussion, ctx do
     ctx
     |> UI.visit(Paths.space_discussions_path(ctx.company, ctx.marketing_space))

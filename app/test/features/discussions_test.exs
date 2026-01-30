@@ -126,4 +126,14 @@ defmodule Operately.Features.DiscussionsTest do
     |> Steps.assert_discussion_is_archived()
     |> Steps.assert_discussion_feed_events()
   end
+
+  describe "permissions" do
+    feature "'New discussion' button is hidden if user has no permissions", ctx do
+      ctx
+      |> Steps.given_comment_access_member()
+      |> Steps.login_as_commenter()
+      |> Steps.visit_the_discussion_board()
+      |> Steps.assert_new_discussion_button_not_visible()
+    end
+  end
 end
