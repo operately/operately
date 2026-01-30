@@ -60,11 +60,11 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorsTest do
       assert message == "The requested resource was not found"
     end
 
-    test "space members with edit access can add contributor to a project", ctx do
+    test "space members with edit access cannot add contributor to a project", ctx do
       add_person_to_space(ctx)
       project = create_project(ctx, space_access_level: Binding.edit_access())
 
-      assert {200, _} = request(ctx.conn, %{project: project, contributors: []})
+      assert {403, _} = request(ctx.conn, %{project: project, contributors: []})
     end
 
     test "space members with full access can add contributor to a project", ctx do
@@ -86,14 +86,14 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorsTest do
       assert {200, _} = request(ctx.conn, %{project: project, contributors: []})
     end
 
-    test "contributors with edit access can add contributor to a project", ctx do
+    test "contributors with edit access cannot add contributor to a project", ctx do
       project = create_project(ctx)
 
       contributor = create_contributor(ctx, project, Binding.edit_access())
       account = Repo.preload(contributor, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, _} = request(conn, %{project: project, contributors: []})
+      assert {403, _} = request(conn, %{project: project, contributors: []})
     end
 
     test "contributors with full access can add contributor to a project", ctx do

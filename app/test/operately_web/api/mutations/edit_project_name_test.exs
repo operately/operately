@@ -29,15 +29,15 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectNameTest do
       assert res.message == "The requested resource was not found"
     end
 
-    test "company members without edit access can't edit project name", ctx do
+    test "company members without full access can't edit project name", ctx do
       project = create_project(ctx, company_access_level: Binding.comment_access())
 
       assert {403, res} = request(ctx.conn, project)
       assert res.message == "You don't have permission to perform this action"
     end
 
-    test "company members with edit access can edit project name", ctx do
-      project = create_project(ctx, company_access_level: Binding.edit_access())
+    test "company members with full access can edit project name", ctx do
+      project = create_project(ctx, company_access_level: Binding.full_access())
 
       assert {200, res} = request(ctx.conn, project)
       assert_name_edited(res, project)
@@ -64,7 +64,7 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectNameTest do
       assert res.message == "The requested resource was not found"
     end
 
-    test "space members without edit access can't edit project name", ctx do
+    test "space members without full access can't edit project name", ctx do
       add_person_to_space(ctx)
       project = create_project(ctx, space_access_level: Binding.comment_access())
 
@@ -72,9 +72,9 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectNameTest do
       assert res.message == "You don't have permission to perform this action"
     end
 
-    test "space members with edit access can edit project name", ctx do
+    test "space members with full access can edit project name", ctx do
       add_person_to_space(ctx)
-      project = create_project(ctx, space_access_level: Binding.edit_access())
+      project = create_project(ctx, space_access_level: Binding.full_access())
 
       assert {200, res} = request(ctx.conn, project)
       assert_name_edited(res, project)
@@ -93,7 +93,7 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectNameTest do
       assert_name_edited(res, project)
     end
 
-    test "contributors without edit access can't edit project name", ctx do
+    test "contributors without full access can't edit project name", ctx do
       project = create_project(ctx)
       contributor = create_contributor(ctx, project, Binding.comment_access())
 
@@ -104,7 +104,7 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectNameTest do
       assert res.message == "You don't have permission to perform this action"
     end
 
-    test "contributors with edit access can edit project name", ctx do
+    test "contributors with full access can edit project name", ctx do
       project = create_project(ctx)
       contributor = create_contributor(ctx, project, Binding.full_access())
 

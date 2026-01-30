@@ -36,7 +36,7 @@ defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
       assert_project_not_closed(project)
     end
 
-    test "company members without edit access can't close a project", ctx do
+    test "company members without full access can't close a project", ctx do
       project = create_project(ctx, company_access_level: Binding.comment_access())
 
       assert {403, res} = request(ctx.conn, project)
@@ -44,7 +44,7 @@ defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
       assert_project_not_closed(project)
     end
 
-    test "company members with edit access can close a project", ctx do
+    test "company members with full access can close a project", ctx do
       project = create_project(ctx, company_access_level: Binding.full_access())
 
       assert {200, res} = request(ctx.conn, project)
@@ -74,7 +74,7 @@ defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
       assert_project_not_closed(project)
     end
 
-    test "space members without edit access can't close a project", ctx do
+    test "space members without full access can't close a project", ctx do
       add_person_to_space(ctx)
       project = create_project(ctx, space_access_level: Binding.comment_access())
 
@@ -83,7 +83,7 @@ defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
       assert_project_not_closed(project)
     end
 
-    test "space members with edit access can close a project", ctx do
+    test "space members with full access can close a project", ctx do
       add_person_to_space(ctx)
       project = create_project(ctx, space_access_level: Binding.full_access())
 
@@ -105,7 +105,7 @@ defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
       assert_project_closed(res, project)
     end
 
-    test "contributors without edit access can't close a project", ctx do
+    test "contributors without full access can't close a project", ctx do
       project = create_project(ctx)
       contributor = create_contributor(ctx, project, Binding.comment_access())
 
@@ -117,7 +117,7 @@ defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
       assert_project_not_closed(project)
     end
 
-    test "contributors with edit access can close a project", ctx do
+    test "contributors with full access can close a project", ctx do
       project = create_project(ctx)
       contributor = create_contributor(ctx, project, Binding.full_access())
 
