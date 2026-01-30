@@ -167,7 +167,7 @@ function MemberTypeSelection({
       <div className="mt-6 flex flex-col gap-4">
         <MemberTypeCard
           title="Team member"
-          description="This person is part of the company. They get access to everything regular members can see and do."
+          description="This person is part of the company. They are added to the general space and can see all non-secret projects, goals, and spaces."
           onClick={() => onSelect("team_member")}
           testId="select-team-member"
         />
