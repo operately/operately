@@ -13,7 +13,6 @@ export namespace InvitePeoplePage {
     inviteIndividuallyHref?: string;
     onInviteIndividually?: () => void;
 
-    onCopyLink?: (link: string) => void | Promise<void>;
     onResetLink: () => void | Promise<void>;
     isResettingLink?: boolean;
     linkEnabled?: boolean;
@@ -38,30 +37,12 @@ export namespace InvitePeoplePage {
 }
 
 export function InvitePeoplePage(props: InvitePeoplePage.Props) {
-  const [copyState, setCopyState] = useState<InvitePeoplePage.CopyState>("idle");
   const [resettingLink, setResettingLink] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [internalLinkEnabled, setInternalLinkEnabled] = useState(props.linkEnabled ?? true);
   const linkEnabled = props.linkEnabled ?? internalLinkEnabled;
   const canInviteIndividually = Boolean(props.inviteIndividuallyHref || props.onInviteIndividually);
   const isResettingLink = props.isResettingLink ?? resettingLink;
-
-  const handleCopyLink = useCallback(async () => {
-    if (!props.invitationLink || !linkEnabled) return;
-
-    try {
-      await copyToClipboard(props.invitationLink);
-      setCopyState("copied");
-      setTimeout(() => setCopyState("idle"), 2000);
-    } catch {
-      setCopyState("error");
-      return;
-    }
-
-    if (props.onCopyLink) {
-      Promise.resolve(props.onCopyLink(props.invitationLink)).catch(() => undefined);
-    }
-  }, [props.invitationLink, props.onCopyLink, linkEnabled]);
 
   const handleResetLink = useCallback(async () => {
     if (isResettingLink || !linkEnabled) return;
@@ -134,8 +115,6 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
             invitationLink={props.invitationLink}
             linkEnabled={linkEnabled}
             onToggleLink={handleLinkToggle}
-            copyState={copyState}
-            onCopyLink={handleCopyLink}
             onOpenResetConfirm={handleOpenResetConfirm}
             isResettingLink={isResettingLink}
             domainRestriction={props.domainRestriction}
@@ -179,29 +158,3 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
   );
 }
 
-async function copyToClipboard(text: string) {
-  if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
-    await navigator.clipboard.writeText(text);
-    return;
-  }
-
-  if (typeof document === "undefined") {
-    throw new Error("Clipboard API unavailable");
-  }
-
-  const textarea = document.createElement("textarea");
-  textarea.value = text;
-  textarea.style.position = "fixed";
-  textarea.style.left = "-9999px";
-  textarea.setAttribute("readonly", "true");
-
-  document.body.appendChild(textarea);
-  textarea.select();
-
-  const successful = document.execCommand("copy");
-  document.body.removeChild(textarea);
-
-  if (!successful) {
-    throw new Error("Copy command failed");
-  }
-}
