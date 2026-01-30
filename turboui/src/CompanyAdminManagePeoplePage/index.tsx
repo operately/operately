@@ -122,7 +122,7 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
             subtitle="Add new team members, update profiles, or remove access as needed."
             actions={
               <PrimaryButton linkTo={props.addMemberPath} testId="add-person">
-                Add Member
+                Invite people
               </PrimaryButton>
             }
           />
