@@ -132,8 +132,10 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
             <section className="rounded-lg border border-surface-outline bg-surface-base p-6">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <h2 className="text-lg font-semibold">Inviting someone outside the team?</h2>
-                  <p className="mt-1 text-sm text-content-dimmed">Create a personal link just for them.</p>
+                  <h2 className="text-lg font-semibold">Invite one person</h2>
+                  <p className="mt-1 text-sm text-content-dimmed">
+                    Create a personal link to share with a single team member.
+                  </p>
                 </div>
                 <SecondaryButton
                   linkTo={props.inviteIndividuallyHref}
