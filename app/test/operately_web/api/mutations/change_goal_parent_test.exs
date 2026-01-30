@@ -34,7 +34,7 @@ defmodule OperatelyWeb.Api.Mutations.ChangeGoalParentTest do
       refute_parent_changed(goal, new_parent)
     end
 
-    test "company members without edit access can't change goal parent", ctx do
+    test "company members without full access can't change goal parent", ctx do
       new_parent = create_goal(ctx)
       goal = create_goal(ctx, company_access_level: Binding.comment_access())
 
@@ -43,9 +43,9 @@ defmodule OperatelyWeb.Api.Mutations.ChangeGoalParentTest do
       refute_parent_changed(goal, new_parent)
     end
 
-    test "company members with edit access can change goal parent", ctx do
+    test "company members with full access can change goal parent", ctx do
       new_parent = create_goal(ctx)
-      goal = create_goal(ctx, company_access_level: Binding.edit_access())
+      goal = create_goal(ctx, company_access_level: Binding.full_access())
 
       assert {200, _} = request(ctx.conn, goal, new_parent)
       assert_parent_changed(goal, new_parent)
@@ -77,7 +77,7 @@ defmodule OperatelyWeb.Api.Mutations.ChangeGoalParentTest do
       refute_parent_changed(goal, new_parent)
     end
 
-    test "space members without edit access can't change goal parent", ctx do
+    test "space members without full access can't change goal parent", ctx do
       add_person_to_space(ctx)
       new_parent = create_goal(ctx)
       goal = create_goal(ctx, space_access_level: Binding.comment_access())
@@ -87,10 +87,10 @@ defmodule OperatelyWeb.Api.Mutations.ChangeGoalParentTest do
       refute_parent_changed(goal, new_parent)
     end
 
-    test "space members with edit access can change goal parent", ctx do
+    test "space members with full access can change goal parent", ctx do
       add_person_to_space(ctx)
       new_parent = create_goal(ctx)
-      goal = create_goal(ctx, space_access_level: Binding.edit_access())
+      goal = create_goal(ctx, space_access_level: Binding.full_access())
 
       assert {200, _} = request(ctx.conn, goal, new_parent)
       assert_parent_changed(goal, new_parent)
