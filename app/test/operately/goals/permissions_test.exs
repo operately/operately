@@ -4,8 +4,8 @@ defmodule Operately.Goals.PermissionsTest do
   alias Operately.Access.Binding
   alias Operately.Goals.Permissions
 
-  test "contribute access allows check-ins and discussions without goal edits" do
-    perms = Permissions.calculate(Binding.contribute_access())
+  test "edit access allows check-ins and discussions without goal edits" do
+    perms = Permissions.calculate(Binding.edit_access())
 
     assert perms.can_check_in
     assert perms.can_open_discussion
