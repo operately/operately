@@ -17,11 +17,10 @@ defmodule OperatelyWeb.Api.Mutations.CreateSpaceTest do
       assert {403, _} = request(ctx.conn)
     end
 
-    test "company members with edit access can create spaces", ctx do
+    test "company members with edit access cannot create spaces", ctx do
       give_person_edit_access(ctx)
 
-      assert {200, res} = request(ctx.conn)
-      assert_space_created(res)
+      assert {403, _} = request(ctx.conn)
     end
 
     test "company members with full access can create space", ctx do

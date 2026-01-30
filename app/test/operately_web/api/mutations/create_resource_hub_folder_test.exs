@@ -22,11 +22,11 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubFolderTest do
       %{company: :no_access,      space: :no_access,      expected: 404},
 
       %{company: :no_access,      space: :comment_access, expected: 403},
-      %{company: :no_access,      space: :edit_access,    expected: 200},
+      %{company: :no_access,      space: :edit_access,    expected: 403},
       %{company: :no_access,      space: :full_access,    expected: 200},
 
       %{company: :comment_access, space: :no_access,      expected: 403},
-      %{company: :edit_access,    space: :no_access,      expected: 200},
+      %{company: :edit_access,    space: :no_access,      expected: 403},
       %{company: :full_access,    space: :no_access,      expected: 200},
     ]
 
@@ -66,7 +66,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubFolderTest do
     setup ctx do
       ctx
       |> Factory.add_space(:space)
-      |> Factory.add_space_member(:person, :space)
+      |> Factory.add_space_member(:person, :space, permissions: :full_access)
       |> Factory.log_in_person(:person)
       |> Factory.add_resource_hub(:hub, :space, :person)
     end

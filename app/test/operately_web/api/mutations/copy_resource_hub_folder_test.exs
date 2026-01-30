@@ -40,18 +40,18 @@ defmodule OperatelyWeb.Api.Mutations.CopyResourceHubFolderTest do
       %{company: :no_access,      origin_space: :edit_access,     dest_space: :no_access,       expected: 404},
       %{company: :no_access,      origin_space: :edit_access,     dest_space: :view_access,     expected: 403},
       %{company: :no_access,      origin_space: :edit_access,     dest_space: :comment_access,  expected: 403},
-      %{company: :no_access,      origin_space: :edit_access,     dest_space: :edit_access,     expected: 200},
-      %{company: :no_access,      origin_space: :edit_access,     dest_space: :full_access,     expected: 200},
+      %{company: :no_access,      origin_space: :edit_access,     dest_space: :edit_access,     expected: 403},
+      %{company: :no_access,      origin_space: :edit_access,     dest_space: :full_access,     expected: 403},
 
       %{company: :no_access,      origin_space: :full_access,     dest_space: :no_access,       expected: 404},
       %{company: :no_access,      origin_space: :full_access,     dest_space: :view_access,     expected: 403},
       %{company: :no_access,      origin_space: :full_access,     dest_space: :comment_access,  expected: 403},
-      %{company: :no_access,      origin_space: :full_access,     dest_space: :edit_access,     expected: 200},
+      %{company: :no_access,      origin_space: :full_access,     dest_space: :edit_access,     expected: 403},
       %{company: :no_access,      origin_space: :full_access,     dest_space: :full_access,     expected: 200},
 
       %{company: :view_access,      origin_space: :no_access,     dest_space: :no_access,     expected: 403},
       %{company: :comment_access,   origin_space: :no_access,     dest_space: :no_access,     expected: 403},
-      %{company: :edit_access,      origin_space: :no_access,     dest_space: :no_access,     expected: 200},
+      %{company: :edit_access,      origin_space: :no_access,     dest_space: :no_access,     expected: 403},
       %{company: :full_access,      origin_space: :no_access,     dest_space: :no_access,     expected: 200},
     ]
 
