@@ -65,7 +65,7 @@ defmodule Operately.Projects.Permissions do
       can_edit_task: access_level >= Binding.edit_access(),
       can_edit_statuses: access_level >= Binding.edit_access(),
       can_acknowledge_check_in: access_level >= Binding.edit_access(),
-      can_edit_subscriptions_list: access_level >= Binding.full_access(),
+      can_edit_subscriptions_list: access_level >= Binding.edit_access(),
       can_edit_contributors: access_level >= Binding.full_access(),
       can_edit_permissions: access_level >= Binding.full_access(),
       can_delete: access_level >= Binding.full_access(),
