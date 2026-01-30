@@ -14,7 +14,7 @@ defmodule OperatelyWeb.Api.Mutations.InviteGuestTest do
       assert {401, _} = mutation(ctx.conn, :invite_guest, %{})
     end
 
-    test "member account without full access cannot invite guests", ctx do
+    test "member account without edit access cannot invite guests", ctx do
       ctx = register_and_log_in_account(ctx)
 
       assert {403, res} = mutation(ctx.conn, :invite_guest, @invite_guest_input)
