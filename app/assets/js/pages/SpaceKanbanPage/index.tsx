@@ -111,7 +111,7 @@ function Page() {
     currentUser,
     tasks,
     commentEntityType: "space_task",
-    canEdit: Boolean(space.permissions?.canEdit),
+    canEdit: Boolean(space.permissions?.canEditTasks),
     canComment: Boolean(space.permissions?.canCommentOnTasks),
     hideMilestone: true,
     onTaskNameChange: updateTaskName,

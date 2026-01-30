@@ -1164,6 +1164,7 @@ defmodule OperatelyWeb.Api.Types do
     field :can_comment_on_task, :boolean, null: false
     field :can_create_milestone, :boolean, null: false
     field :can_create_task, :boolean, null: false
+    field :can_create_discussion, :boolean, null: false
     field :can_complete_milestone, :boolean, null: false
     field :can_reopen_milestone, :boolean, null: false
     field :can_delete_milestone, :boolean, null: false
@@ -1201,6 +1202,7 @@ defmodule OperatelyWeb.Api.Types do
     field :can_edit_members_permissions, :boolean, null: false
     field :can_edit_permissions, :boolean, null: false
     field :can_edit_statuses, :boolean, null: false
+    field :can_edit_tasks, :boolean, null: false
     field :can_join, :boolean, null: false
     field :can_post_discussions, :boolean, null: false
     field :can_remove_member, :boolean, null: false

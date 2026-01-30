@@ -17,15 +17,15 @@ defmodule OperatelyWeb.Api.Mutations.MoveProjectToSpaceTest do
     @project_table [
       %{company: :no_access,      space: :no_access,      project: :no_access,      expected: 404},
       %{company: :no_access,      space: :no_access,      project: :comment_access, expected: 403},
-      %{company: :no_access,      space: :no_access,      project: :edit_access,    expected: 200},
+      %{company: :no_access,      space: :no_access,      project: :edit_access,    expected: 403},
       %{company: :no_access,      space: :no_access,      project: :full_access,    expected: 200},
 
       %{company: :no_access,      space: :comment_access, project: :no_access,      expected: 403},
-      %{company: :no_access,      space: :edit_access,    project: :no_access,      expected: 200},
+      %{company: :no_access,      space: :edit_access,    project: :no_access,      expected: 403},
       %{company: :no_access,      space: :full_access,    project: :no_access,      expected: 200},
 
       %{company: :comment_access, space: :no_access,      project: :no_access,      expected: 403},
-      %{company: :edit_access,    space: :no_access,      project: :no_access,      expected: 200},
+      %{company: :edit_access,    space: :no_access,      project: :no_access,      expected: 403},
       %{company: :full_access,    space: :no_access,      project: :no_access,      expected: 200},
     ]
 
@@ -103,7 +103,9 @@ defmodule OperatelyWeb.Api.Mutations.MoveProjectToSpaceTest do
       project = project_fixture(%{
         company_id: ctx.company.id,
         group_id: ctx.company.company_space_id,
-        creator_id: ctx.person.id
+        creator_id: ctx.person.id,
+        company_access_level: Binding.full_access(),
+        space_access_level: Binding.full_access()
       })
 
       space = group_fixture(ctx.person, %{company_id: ctx.company.id})

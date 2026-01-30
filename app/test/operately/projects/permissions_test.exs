@@ -4,8 +4,8 @@ defmodule Operately.Projects.PermissionsTest do
   alias Operately.Access.Binding
   alias Operately.Projects.Permissions
 
-  test "contribute access allows child actions but not parent edits" do
-    perms = Permissions.calculate(Binding.contribute_access())
+  test "edit access allows child actions but not parent edits" do
+    perms = Permissions.calculate(Binding.edit_access())
 
     assert perms.can_create_milestone
     assert perms.can_edit_task

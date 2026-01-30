@@ -35,7 +35,7 @@ defmodule OperatelyWeb.Api.Mutations.CloseGoalTest do
       refute_goal_closed(goal)
     end
 
-    test "company members without edit access can't close a goal", ctx do
+    test "company members without full access can't close a goal", ctx do
       goal = create_goal(ctx, company_access_level: Binding.comment_access())
 
       assert {403, res} = request(ctx.conn, goal)

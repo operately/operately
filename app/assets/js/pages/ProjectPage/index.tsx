@@ -275,6 +275,7 @@ function Page() {
 
     canEdit: project.permissions?.canEditName || false,
     canEditGoal: project.permissions?.canEditGoal || false,
+    canCreateDiscussion: project.permissions?.canCreateDiscussion || false,
     manageTeamLink: paths.projectContributorsPath(project.id),
 
     canDelete: project.permissions?.canDelete || false,

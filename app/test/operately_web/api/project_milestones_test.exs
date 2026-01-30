@@ -481,11 +481,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
       assert updated_milestone.title != original_title
     end
 
-    test "it updates the milestone title for space members with edit access", ctx do
+    test "it updates the milestone title for space members with full access", ctx do
       ctx =
         ctx
         |> Factory.edit_project_company_members_access(:project, :no_access)
-        |> Factory.edit_project_space_members_access(:project, :edit_access)
+        |> Factory.edit_project_space_members_access(:project, :full_access)
         |> Factory.log_in_person(:space_member)
 
       assert {200, res} = mutation(ctx.conn, [:project_milestones, :update_title], %{
@@ -502,7 +502,7 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
     test "it updates the milestone title for project champion", ctx do
       ctx =
         ctx
-        |> Factory.add_project_contributor(:champion, :project, role: :champion)
+        |> Factory.add_project_contributor(:champion, :project, role: :champion, permissions: :full_access)
         |> Factory.preload(:champion, :person)
 
       ctx = log_in_account(ctx, ctx.champion.person)
@@ -521,7 +521,7 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
     test "it updates the milestone title for project reviewer", ctx do
       ctx =
         ctx
-        |> Factory.add_project_contributor(:reviewer, :project, role: :reviewer)
+        |> Factory.add_project_contributor(:reviewer, :project, role: :reviewer, permissions: :full_access)
         |> Factory.preload(:reviewer, :person)
 
       ctx = log_in_account(ctx, ctx.reviewer.person)
@@ -783,11 +783,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
       assert Operately.ContextualDates.Timeframe.end_date(updated_milestone.timeframe) == ~D[2026-06-01]
     end
 
-    test "it updates due date for space members with edit access", ctx do
+    test "it updates due date for space members with full access", ctx do
       ctx =
         ctx
         |> Factory.edit_project_company_members_access(:project, :no_access)
-        |> Factory.edit_project_space_members_access(:project, :edit_access)
+        |> Factory.edit_project_space_members_access(:project, :full_access)
         |> Factory.log_in_person(:space_member)
 
       contextual_date = %{
@@ -951,11 +951,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
       assert updated_milestone.description == description
     end
 
-    test "it updates the milestone description for space members with edit access", ctx do
+    test "it updates the milestone description for space members with full access", ctx do
       ctx =
         ctx
         |> Factory.edit_project_company_members_access(:project, :no_access)
-        |> Factory.edit_project_space_members_access(:project, :edit_access)
+        |> Factory.edit_project_space_members_access(:project, :full_access)
         |> Factory.log_in_person(:space_member)
 
       description = RichText.rich_text("Updated by space member")
@@ -974,7 +974,7 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
     test "it updates the milestone description for project champion", ctx do
       ctx =
         ctx
-        |> Factory.add_project_contributor(:champion, :project, role: :champion)
+        |> Factory.add_project_contributor(:champion, :project, role: :champion, permissions: :full_access)
         |> Factory.preload(:champion, :person)
 
       ctx = log_in_account(ctx, ctx.champion.person)
@@ -995,7 +995,7 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
     test "it updates the milestone description for project reviewer", ctx do
       ctx =
         ctx
-        |> Factory.add_project_contributor(:reviewer, :project, role: :reviewer)
+        |> Factory.add_project_contributor(:reviewer, :project, role: :reviewer, permissions: :full_access)
         |> Factory.preload(:reviewer, :person)
 
       ctx = log_in_account(ctx, ctx.reviewer.person)
@@ -1223,11 +1223,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
       })
     end
 
-    test "it returns forbidden for space members without edit permission", ctx do
+    test "it returns forbidden for space members without full access", ctx do
       ctx =
         ctx
         |> Factory.edit_project_company_members_access(:project, :no_access)
-        |> Factory.edit_project_space_members_access(:project, :view_access)
+        |> Factory.edit_project_space_members_access(:project, :edit_access)
         |> Factory.log_in_person(:space_member)
 
       assert {403, _} = mutation(ctx.conn, [:project_milestones, :delete], %{
@@ -1255,11 +1255,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
       assert project_after.milestones_ordering_state == []
     end
 
-    test "it deletes the milestone for space members with edit access", ctx do
+    test "it deletes the milestone for space members with full access", ctx do
       ctx =
         ctx
         |> Factory.edit_project_company_members_access(:project, :no_access)
-        |> Factory.edit_project_space_members_access(:project, :edit_access)
+        |> Factory.edit_project_space_members_access(:project, :full_access)
         |> Factory.log_in_person(:space_member)
 
       milestone_id = ctx.milestone.id
@@ -1277,7 +1277,7 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
     test "it deletes the milestone for project champion", ctx do
       ctx =
         ctx
-        |> Factory.add_project_contributor(:champion, :project, role: :champion)
+        |> Factory.add_project_contributor(:champion, :project, role: :champion, permissions: :full_access)
         |> Factory.preload(:champion, :person)
 
       ctx = log_in_account(ctx, ctx.champion.person)
@@ -1296,7 +1296,7 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
     test "it deletes the milestone for project reviewer", ctx do
       ctx =
         ctx
-        |> Factory.add_project_contributor(:reviewer, :project, role: :reviewer)
+        |> Factory.add_project_contributor(:reviewer, :project, role: :reviewer, permissions: :full_access)
         |> Factory.preload(:reviewer, :person)
 
       ctx = log_in_account(ctx, ctx.reviewer.person)

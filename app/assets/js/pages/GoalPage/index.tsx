@@ -238,6 +238,7 @@ function Page() {
     canEdit: goal.permissions.canEdit,
     canEditParentGoal: goal.permissions.canEdit,
     canEditAccessLevel: goal.permissions.canEditAccessLevel,
+    canAddDiscussion: goal.permissions.canOpenDiscussion,
     deleteGoal,
 
     goalName,

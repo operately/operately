@@ -124,6 +124,7 @@ export namespace ProjectPage {
 
     canEdit: boolean;
     canEditGoal?: boolean;
+    canCreateDiscussion?: boolean;
     manageTeamLink: string;
 
     updateProjectName: (name: string) => Promise<boolean>;
