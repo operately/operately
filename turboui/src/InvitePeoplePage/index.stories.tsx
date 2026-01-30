@@ -44,6 +44,11 @@ export const LinkDisabled: Story = {
 
     return (
       <InvitePeoplePage
+        companyName="Operately"
+        navigationItems={[
+          { label: "Company Administration", to: "/admin" },
+          { label: "Manage Team Members", to: "/admin/people" },
+        ]}
         invitationLink={invitationLink}
         inviteIndividuallyHref="/people/new"
         linkEnabled={linkEnabled}
@@ -70,6 +75,11 @@ export const LinkEnabledNoRestrictions: Story = {
 
     return (
       <InvitePeoplePage
+        companyName="Operately"
+        navigationItems={[
+          { label: "Company Administration", to: "/admin" },
+          { label: "Manage Team Members", to: "/admin/people" },
+        ]}
         invitationLink={invitationLink}
         inviteIndividuallyHref="/people/new"
         linkEnabled={linkEnabled}
@@ -96,6 +106,11 @@ export const LinkEnabledRestricted: Story = {
 
     return (
       <InvitePeoplePage
+        companyName="Operately"
+        navigationItems={[
+          { label: "Company Administration", to: "/admin" },
+          { label: "Manage Team Members", to: "/admin/people" },
+        ]}
         invitationLink={invitationLink}
         inviteIndividuallyHref="/people/new"
         linkEnabled={linkEnabled}

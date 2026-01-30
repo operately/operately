@@ -56,10 +56,10 @@ export function InviteLinkSection({
   }, [invitationLink, linkEnabled]);
 
   return (
-    <section className="rounded-2xl border border-surface-outline bg-surface-base p-8 shadow-lg">
+    <section className="rounded-lg border border-surface-outline bg-surface-base p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h2 className="text-xl font-semibold">Invite your whole team at once</h2>
+          <h2 className="text-lg font-semibold">Invite your whole team at once</h2>
           <p className="mt-1 text-sm text-content-dimmed">
             Share it in group chat, via email, or wherever your team is.
           </p>
