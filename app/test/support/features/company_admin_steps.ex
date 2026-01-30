@@ -56,6 +56,9 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   step :invite_company_member, ctx, params do
     ctx
     |> UI.click(testid: "add-person")
+    |> UI.assert_has(testid: "invite-people-individual")
+    |> UI.click(testid: "invite-people-individual")
+    |> UI.assert_has(testid: "fullname")
     |> UI.fill(testid: "fullname", with: params[:full_name])
     |> UI.fill(testid: "email", with: params[:email])
     |> UI.fill(testid: "title", with: params[:title])

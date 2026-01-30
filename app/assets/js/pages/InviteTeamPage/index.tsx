@@ -127,7 +127,7 @@ function Page() {
       onResetLink={handleResetLink}
       isResettingLink={resettingLink}
       domainRestriction={domainRestriction}
-      inviteIndividuallyHref={paths.companyManagePeopleAddPeoplePath({ memberType: "outside_collaborator" })}
+      inviteIndividuallyHref={paths.companyManagePeopleAddPeoplePath()}
       testId="invite-team-page"
       errorMessage={pageError ?? undefined}
     />
