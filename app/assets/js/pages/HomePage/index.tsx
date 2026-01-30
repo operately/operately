@@ -182,7 +182,7 @@ function InvitePeopleButton() {
   }
 
   return (
-    <GhostButton linkTo={paths.inviteTeamPath()} testId="invite-people" size="sm">
+    <GhostButton linkTo={paths.invitePeoplePath()} testId="invite-people" size="sm">
       Invite People
     </GhostButton>
   );

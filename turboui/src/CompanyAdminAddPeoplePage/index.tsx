@@ -27,8 +27,6 @@ export namespace CompanyAdminAddPeoplePage {
     inviteAnotherLabel?: string;
     isSubmitting?: boolean;
     memberType?: MemberType;
-    onMemberTypeChange?: (memberType: MemberType) => void;
-    showMemberTypeSelection?: boolean;
   }
 }
 
@@ -77,10 +75,7 @@ const memberCopy: Record<CompanyAdminAddPeoplePage.MemberType, MemberCopy> = {
 };
 
 export function CompanyAdminAddPeoplePage(props: CompanyAdminAddPeoplePage.Props) {
-  const [localMemberType, setLocalMemberType] = React.useState<CompanyAdminAddPeoplePage.MemberType | null>(null);
-  const selectedMemberType = props.showMemberTypeSelection ? props.memberType ?? localMemberType : "team_member";
-  const memberType = selectedMemberType ?? "team_member";
-  const isSelectionStep = props.showMemberTypeSelection && props.state.state === "form" && !selectedMemberType;
+  const memberType = props.memberType ?? "team_member";
   const copy = memberCopy[memberType];
 
   const pageTitle = [copy.pageTitlePrefix, props.companyName];
@@ -93,20 +88,10 @@ export function CompanyAdminAddPeoplePage(props: CompanyAdminAddPeoplePage.Props
   const inviteAnotherLabel = props.inviteAnotherLabel ?? copy.inviteAnotherLabel;
 
   const belowCardContent = match(props.state)
-    .with({ state: "form" }, () => (isSelectionStep ? null : helperText))
+    .with({ state: "form" }, () => helperText)
     .with({ state: "invited" }, () => <InviteAnotherButton onClick={props.onInviteAnother} label={inviteAnotherLabel} />)
     .with({ state: "added" }, () => <InviteAnotherButton onClick={props.onInviteAnother} label={inviteAnotherLabel} />)
     .exhaustive();
-
-  const handleMemberTypeSelect = React.useCallback(
-    (nextType: CompanyAdminAddPeoplePage.MemberType) => {
-      props.onMemberTypeChange?.(nextType);
-      if (!props.memberType) {
-        setLocalMemberType(nextType);
-      }
-    },
-    [props.memberType, props.onMemberTypeChange],
-  );
 
   return (
     <div className={`mx-auto relative sm:my-10 ${sizeClassName}`}>
@@ -114,22 +99,18 @@ export function CompanyAdminAddPeoplePage(props: CompanyAdminAddPeoplePage.Props
       <div className="relative bg-surface-base min-h-dvh sm:min-h-0 sm:border sm:border-surface-outline sm:rounded-lg sm:shadow-xl">
         <div className={bodyClassName}>
           {match(props.state)
-            .with({ state: "form" }, () =>
-              isSelectionStep ? (
-                <MemberTypeSelection onSelect={handleMemberTypeSelect} />
-              ) : (
-                <InviteMemberForm
-                  title={copy.formTitle}
-                  values={props.formValues}
-                  errors={props.formErrors}
-                  onChange={props.onFormChange}
-                  onSubmit={props.onSubmit}
-                  onCancel={props.onCancel}
-                  isSubmitting={props.isSubmitting}
-                  submitLabel={copy.submitLabel}
-                />
-              ),
-            )
+            .with({ state: "form" }, () => (
+              <InviteMemberForm
+                title={copy.formTitle}
+                values={props.formValues}
+                errors={props.formErrors}
+                onChange={props.onFormChange}
+                onSubmit={props.onSubmit}
+                onCancel={props.onCancel}
+                isSubmitting={props.isSubmitting}
+                submitLabel={copy.submitLabel}
+              />
+            ))
             .with({ state: "invited" }, (state) => (
               <div>
                 <div className="text-content-accent text-2xl font-extrabold">
@@ -153,56 +134,6 @@ export function CompanyAdminAddPeoplePage(props: CompanyAdminAddPeoplePage.Props
       </div>
       {belowCardContent}
     </div>
-  );
-}
-
-function MemberTypeSelection({
-  onSelect,
-}: {
-  onSelect: (memberType: CompanyAdminAddPeoplePage.MemberType) => void;
-}) {
-  return (
-    <div>
-      <div className="text-content-accent text-2xl font-extrabold">Who are you inviting?</div>
-      <div className="mt-6 flex flex-col gap-4">
-        <MemberTypeCard
-          title="Team member"
-          description="This person is part of the company. They are added to the general space and can see all non-secret projects, goals, and spaces."
-          onClick={() => onSelect("team_member")}
-          testId="select-team-member"
-        />
-        <MemberTypeCard
-          title="Outside collaborator"
-          description="This person is not a company member. They get access only to specific spaces, goals, or projects that are shared with them."
-          onClick={() => onSelect("outside_collaborator")}
-          testId="select-outside-collaborator"
-        />
-      </div>
-    </div>
-  );
-}
-
-function MemberTypeCard({
-  title,
-  description,
-  onClick,
-  testId,
-}: {
-  title: string;
-  description: string;
-  onClick: () => void;
-  testId: string;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="border border-surface-outline rounded-lg px-5 py-4 text-left hover:bg-surface-dimmed transition-colors"
-      data-test-id={testId}
-    >
-      <div className="font-bold text-content-accent">{title}</div>
-      <div className="text-sm text-content-dimmed mt-1">{description}</div>
-    </button>
   );
 }
 
