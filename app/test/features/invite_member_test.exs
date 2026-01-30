@@ -148,5 +148,25 @@ defmodule Operately.Features.InviteMemberTest do
       |> Steps.assert_member_invited()
       |> Steps.assert_guest_invited_email_sent(params[:email])
     end
+
+    feature "outside collaborator can accept invitation and see activity", ctx do
+      full_name = "Alex Parker"
+      password = "Aa12345#&!123"
+
+      params = %{
+        fullName: full_name,
+        email: Operately.PeopleFixtures.unique_account_email(full_name),
+        title: "Advisor",
+        password: password,
+      }
+
+      ctx
+      |> Steps.given_that_an_outside_collaborator_was_invited(params)
+      |> Steps.goto_invitation_page()
+      |> Steps.submit_password(password)
+      |> Steps.assert_password_set_for_new_member(%{email: params.email, password: password})
+      |> Steps.assert_guest_invited_feed_item()
+      |> Steps.assert_guest_invited_notification()
+    end
   end
 end
