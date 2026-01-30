@@ -1494,6 +1494,7 @@ export interface ProjectPermissions {
   canCommentOnTask: boolean;
   canCreateMilestone: boolean;
   canCreateTask: boolean;
+  canCreateDiscussion: boolean;
   canCompleteMilestone: boolean;
   canReopenMilestone: boolean;
   canDeleteMilestone: boolean;
