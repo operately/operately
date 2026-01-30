@@ -99,7 +99,7 @@ function Page() {
     <CompanyAdminManagePeoplePage
       companyName={company?.name || ""}
       navigationItems={navigationItems}
-      addMemberPath={paths.companyManagePeopleAddPeoplePath()}
+      addMemberPath={paths.invitePeoplePath()}
       invitedPeople={invited}
       currentMembers={members}
       outsideCollaborators={collaborators}

@@ -10,6 +10,7 @@ import { useRouteLoaderData } from "react-router-dom";
 import { WorkMap } from "turboui";
 
 const UNACCEPTABLE_PATH_CHARACTERS = ["/", "?", "#", "[", "]"];
+type MemberType = "team_member" | "outside_collaborator";
 
 export class Paths {
   private companyId: string;
@@ -116,8 +117,14 @@ export class Paths {
     return this.createCompanyPath(["admin", "manage-admins"]);
   }
 
-  companyManagePeopleAddPeoplePath() {
-    return this.createCompanyPath(["admin", "manage-people", "add"]);
+  companyManagePeopleAddPeoplePath(opts?: { memberType?: MemberType }) {
+    const path = this.createCompanyPath(["admin", "manage-people", "add"]);
+
+    if (opts?.memberType) {
+      return `${path}?memberType=${opts.memberType}`;
+    }
+
+    return path;
   }
 
   companyAdminManageTrustedDomainsPath() {
@@ -448,6 +455,10 @@ export class Paths {
 
   inviteTeamPath() {
     return this.createCompanyPath(["invite-team"]);
+  }
+
+  invitePeoplePath() {
+    return this.createCompanyPath(["invite-people"]);
   }
 
   //
