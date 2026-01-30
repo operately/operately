@@ -27,15 +27,15 @@ defmodule OperatelyWeb.Api.Mutations.EditSpaceTest do
       assert res.message == "The requested resource was not found"
     end
 
-    test "company members without edit access can't edit a space", ctx do
-      space = create_space(ctx, company_permissions: Binding.view_access())
+    test "company members without full access can't edit a space", ctx do
+      space = create_space(ctx, company_permissions: Binding.edit_access())
 
       assert {403, res} = request(ctx.conn, space)
       assert res.message == "You don't have permission to perform this action"
     end
 
-    test "company members with edit access can edit a space", ctx do
-      space = create_space(ctx, company_permissions: Binding.edit_access())
+    test "company members with full access can edit a space", ctx do
+      space = create_space(ctx, company_permissions: Binding.full_access())
 
       assert {200, res} = request(ctx.conn, space)
       assert res.space == Serializer.serialize(space)
@@ -54,7 +54,7 @@ defmodule OperatelyWeb.Api.Mutations.EditSpaceTest do
       assert res.space == Serializer.serialize(space)
     end
 
-    test "space members without edit access can't edit a space", ctx do
+    test "space members without full access can't edit a space", ctx do
       space = create_space(ctx, company_permissions: Binding.no_access())
       add_person_to_space(ctx, space.id, Binding.comment_access())
 
@@ -62,9 +62,9 @@ defmodule OperatelyWeb.Api.Mutations.EditSpaceTest do
       assert res.message == "You don't have permission to perform this action"
     end
 
-    test "space members with edit access can edit a space", ctx do
+    test "space members with full access can edit a space", ctx do
       space = create_space(ctx, company_permissions: Binding.no_access())
-      add_person_to_space(ctx, space.id, Binding.edit_access())
+      add_person_to_space(ctx, space.id, Binding.full_access())
 
       assert {200, res} = request(ctx.conn, space)
       assert res.space == Serializer.serialize(space)

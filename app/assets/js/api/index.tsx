@@ -1494,6 +1494,7 @@ export interface ProjectPermissions {
   canCommentOnTask: boolean;
   canCreateMilestone: boolean;
   canCreateTask: boolean;
+  canCreateDiscussion: boolean;
   canCompleteMilestone: boolean;
   canReopenMilestone: boolean;
   canDeleteMilestone: boolean;
@@ -1731,6 +1732,7 @@ export interface SpacePermissions {
   canEditMembersPermissions: boolean;
   canEditPermissions: boolean;
   canEditStatuses: boolean;
+  canEditTasks: boolean;
   canJoin: boolean;
   canPostDiscussions: boolean;
   canRemoveMember: boolean;

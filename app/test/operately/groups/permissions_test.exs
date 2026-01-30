@@ -4,8 +4,8 @@ defmodule Operately.Groups.PermissionsTest do
   alias Operately.Access.Binding
   alias Operately.Groups.Permissions
 
-  test "contribute access allows child creation without space edits" do
-    perms = Permissions.calculate_permissions(Binding.contribute_access())
+  test "edit access allows child creation without space edits" do
+    perms = Permissions.calculate_permissions(Binding.edit_access())
 
     assert perms.can_create_goal
     assert perms.can_create_project

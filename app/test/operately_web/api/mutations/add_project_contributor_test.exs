@@ -34,11 +34,11 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorTest do
       assert message == "The requested resource was not found"
     end
 
-    test "company members with edit access can add contributor to a project", ctx do
+    test "company members with edit access cannot add contributor to a project", ctx do
       project = create_project(ctx, company_access_level: Binding.edit_access())
       contributor = person_fixture(%{company_id: ctx.company.id})
 
-      assert {200, _} = request(ctx.conn, %{project: project, contributor: contributor})
+      assert {403, _} = request(ctx.conn, %{project: project, contributor: contributor})
     end
 
     test "company members with full access can add contributor to a project", ctx do
@@ -73,12 +73,12 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorTest do
       assert message == "The requested resource was not found"
     end
 
-    test "space members with edit access can add contributor to a project", ctx do
+    test "space members with edit access cannot add contributor to a project", ctx do
       add_person_to_space(ctx)
       project = create_project(ctx, space_access_level: Binding.edit_access())
       contributor = person_fixture(%{company_id: ctx.company.id})
 
-      assert {200, _} = request(ctx.conn, %{project: project, contributor: contributor})
+      assert {403, _} = request(ctx.conn, %{project: project, contributor: contributor})
     end
 
     test "space members with full access can add contributor to a project", ctx do
@@ -104,7 +104,7 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorTest do
       assert_contributor_created(res, contributor)
     end
 
-    test "contributors with edit access can add contributor to a project", ctx do
+    test "contributors with edit access cannot add contributor to a project", ctx do
       project = create_project(ctx)
       new_contributor = person_fixture(%{company_id: ctx.company.id})
 
@@ -112,7 +112,7 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorTest do
       account = Repo.preload(contributor, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, _} = request(conn, %{project: project, contributor: new_contributor})
+      assert {403, _} = request(conn, %{project: project, contributor: new_contributor})
     end
 
     test "contributors with full access can add contributor to a project", ctx do

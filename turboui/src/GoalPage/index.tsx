@@ -135,6 +135,7 @@ export namespace GoalPage {
 
     canEdit: boolean;
     canEditAccessLevel: boolean;
+    canAddDiscussion: boolean;
     accessLevels: PrivacyField.AccessLevels;
     setAccessLevels: (levels: PrivacyField.AccessLevels) => void;
 
