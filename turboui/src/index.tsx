@@ -35,6 +35,7 @@ export { GoalPage } from "./GoalPage";
 export { InviteLinkJoinPage } from "./InviteLinkJoinPage";
 export { InviteMemberForm } from "./InviteMemberForm";
 export { InvitePeoplePage } from "./InvitePeoplePage";
+export { MemberTypeSelectionPage } from "./MemberTypeSelectionPage";
 export { CompanyAdminAddPeoplePage } from "./CompanyAdminAddPeoplePage";
 export { CompanyAdminManagePeoplePage } from "./CompanyAdminManagePeoplePage";
 export { MilestoneKanbanPage } from "./MilestoneKanbanPage";

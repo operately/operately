@@ -41,6 +41,14 @@ defmodule Operately.Support.Features.InviteMemberSteps do
     |> UI.assert_page(path)
   end
 
+  step :navigate_to_member_type_selection_page, ctx do
+    path = Paths.home_path(ctx.company) <> "/invite-people"
+
+    ctx
+    |> UI.visit(path)
+    |> UI.assert_has(testid: "member-type-selection-page")
+  end
+
   step :open_company_team_page, ctx do
     ctx
     |> UI.visit(Paths.company_admin_path(ctx.company))
@@ -65,6 +73,12 @@ defmodule Operately.Support.Features.InviteMemberSteps do
 
   step :select_team_member_type, ctx do
     ctx |> UI.click(testid: "select-team-member")
+  end
+
+  step :open_single_member_invite_form, ctx do
+    ctx
+    |> UI.click(testid: "invite-people-individual")
+    |> UI.assert_has(testid: "fullname")
   end
 
   step :select_outside_collaborator_type, ctx do

@@ -3,7 +3,7 @@ import * as Companies from "@/models/companies";
 import * as React from "react";
 
 import { PageModule } from "@/routes/types";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { CompanyAdminAddPeoplePage, InviteMemberForm } from "turboui";
 
 import * as Pages from "@/components/Pages";
@@ -24,16 +24,18 @@ function Page() {
   const { company } = Pages.useLoadedData<LoaderResult>();
   const navigate = useNavigate();
   const paths = usePaths();
+  const [searchParams] = useSearchParams();
   const [add] = Companies.useAddCompanyMember();
   const [inviteGuest] = Api.useInviteGuest();
-  const [memberType, setMemberType] = React.useState<CompanyAdminAddPeoplePage.MemberType | null>(null);
 
   const [state, setState] = React.useState<CompanyAdminAddPeoplePage.PageState>({ state: "form" });
   const [values, setValues] = React.useState<InviteMemberForm.Values>({ fullName: "", email: "", title: "" });
   const [errors, setErrors] = React.useState<InviteMemberForm.Errors>({});
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const showMemberTypeSelection = Companies.hasFeature(company, "guest-accounts");
-  const activeMemberType = showMemberTypeSelection ? memberType : "team_member";
+  const showOutsideCollaborators = Companies.hasFeature(company, "guest-accounts");
+  const memberTypeParam = searchParams.get("memberType");
+  const memberType: CompanyAdminAddPeoplePage.MemberType =
+    memberTypeParam === "outside_collaborator" && showOutsideCollaborators ? "outside_collaborator" : "team_member";
 
   const navigationItems = React.useMemo(
     () => [
@@ -55,7 +57,6 @@ function Page() {
   const handleInviteAnother = React.useCallback(() => {
     setState({ state: "form" });
     resetForm();
-    setMemberType(null);
   }, [resetForm]);
 
   const handleCancel = React.useCallback(() => {
@@ -64,7 +65,6 @@ function Page() {
 
   const handleSubmit = React.useCallback(async () => {
     if (isSubmitting) return;
-    if (showMemberTypeSelection && !activeMemberType) return;
 
     const validationErrors = validateInvite(values);
     if (Object.keys(validationErrors).length > 0) {
@@ -81,7 +81,7 @@ function Page() {
         title: values.title.trim(),
       };
       const res =
-        activeMemberType === "outside_collaborator"
+        memberType === "outside_collaborator"
           ? await inviteGuest(payload)
           : await add(payload);
 
@@ -111,7 +111,7 @@ function Page() {
     } finally {
       setIsSubmitting(false);
     }
-  }, [activeMemberType, add, inviteGuest, isSubmitting, showMemberTypeSelection, values]);
+  }, [add, inviteGuest, isSubmitting, memberType, values]);
 
   return (
     <CompanyAdminAddPeoplePage
@@ -125,9 +125,7 @@ function Page() {
       onCancel={handleCancel}
       onInviteAnother={handleInviteAnother}
       isSubmitting={isSubmitting}
-      showMemberTypeSelection={showMemberTypeSelection}
-      memberType={memberType ?? undefined}
-      onMemberTypeChange={setMemberType}
+      memberType={memberType}
     />
   );
 }
