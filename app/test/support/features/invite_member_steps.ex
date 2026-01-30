@@ -2,8 +2,11 @@ defmodule Operately.Support.Features.InviteMemberSteps do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.UI
+  alias Operately.Support.Features.FeedSteps
   alias Operately.Support.Features.EmailSteps
+  alias Operately.Support.Features.NotificationsSteps
   alias Operately.Companies
+  alias Operately.InviteLinks
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
   import Operately.InviteLinksFixtures
@@ -102,6 +105,39 @@ defmodule Operately.Support.Features.InviteMemberSteps do
       to: person,
       author: ctx.admin,
       action: "invited you as an outside collaborator"
+    })
+  end
+
+  step :given_that_an_outside_collaborator_was_invited, ctx, params do
+    ctx =
+      Factory.add_outside_collaborator(ctx, :guest, :admin,
+        name: params[:fullName],
+        title: params[:title],
+        email: params[:email]
+      )
+
+    {:ok, invite_link} = InviteLinks.get_personal_invite_link_for_person(ctx.guest.id)
+
+    ctx
+    |> Map.put(:token, invite_link.token)
+    |> Map.put(:person, ctx.guest)
+  end
+
+  step :assert_guest_invited_feed_item, ctx do
+    guest_first_name = Operately.People.Person.first_name(ctx.guest)
+
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.find(UI.query(testid: "company-feed"), fn el ->
+      FeedSteps.assert_feed_item_exists(el, ctx.admin, "invited #{guest_first_name} as an outside collaborator")
+    end)
+  end
+
+  step :assert_guest_invited_notification, ctx do
+    ctx
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.admin,
+      action: "Invited you as an outside collaborator"
     })
   end
 

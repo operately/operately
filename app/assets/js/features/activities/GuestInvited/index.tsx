@@ -31,9 +31,9 @@ const GuestInvited: ActivityHandler = {
     const guest = content(activity).person;
 
     if (guest) {
-      return feedTitle(activity, "invited", People.firstName(guest), "as a guest");
+      return feedTitle(activity, "invited", People.firstName(guest), "as an outside collaborator");
     } else {
-      return feedTitle(activity, "invited a guest");
+      return feedTitle(activity, "invited an outside collaborator");
     }
   },
 
@@ -54,7 +54,7 @@ const GuestInvited: ActivityHandler = {
   },
 
   NotificationTitle(_props: { activity: Activity }) {
-    return "Invited you as a guest";
+    return "Invited you as an outside collaborator";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
