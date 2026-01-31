@@ -115,29 +115,6 @@ export const FormToAdded: Story = {
   },
 };
 
-export const SelectMemberType: Story = {
-  args: {} as any,
-  render: () => {
-    const flow = useInviteFlow("invited");
-
-    return (
-      <CompanyAdminAddPeoplePage
-        companyName="Operately"
-        navigationItems={navigationItems}
-        state={flow.state}
-        formValues={flow.values}
-        formErrors={flow.errors}
-        onFormChange={flow.handleFormChange}
-        onSubmit={flow.handleSubmit}
-        onInviteAnother={flow.handleInviteAnother}
-        onCancel={() => console.log("Cancel invite")}
-        isSubmitting={flow.isSubmitting}
-        showMemberTypeSelection
-      />
-    );
-  },
-};
-
 export const OutsideCollaboratorForm: Story = {
   args: {} as any,
   render: () => {
@@ -155,7 +132,6 @@ export const OutsideCollaboratorForm: Story = {
         onInviteAnother={flow.handleInviteAnother}
         onCancel={() => console.log("Cancel invite")}
         isSubmitting={flow.isSubmitting}
-        showMemberTypeSelection
         memberType="outside_collaborator"
       />
     );

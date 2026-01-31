@@ -125,8 +125,9 @@ defmodule Operately.Features.InviteMemberTest do
 
       ctx
       |> Steps.log_in_as_admin()
-      |> Steps.navigate_to_invitation_page()
+      |> Steps.navigate_to_member_type_selection_page()
       |> Steps.select_team_member_type()
+      |> Steps.open_single_member_invite_form()
       |> Steps.invite_member(params)
       |> Steps.assert_member_invited()
     end
@@ -142,7 +143,7 @@ defmodule Operately.Features.InviteMemberTest do
 
       ctx
       |> Steps.log_in_as_admin()
-      |> Steps.navigate_to_invitation_page()
+      |> Steps.navigate_to_member_type_selection_page()
       |> Steps.select_outside_collaborator_type()
       |> Steps.invite_collaborator(params)
       |> Steps.assert_member_invited()

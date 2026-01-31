@@ -34,9 +34,9 @@ export function NewDropdown() {
       <DropdownSeparator />
 
       <DropdownLinkItem
-        path={paths.companyManagePeopleAddPeoplePath()}
+        path={paths.invitePeoplePath()}
         icon={IconUser}
-        title="New team member"
+        title="Invite people"
         testId="new-dropdown-new-team-member"
       />
     </DropdownMenu>
