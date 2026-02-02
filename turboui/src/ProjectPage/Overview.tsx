@@ -48,6 +48,7 @@ function OverviewSection(props: ProjectPage.State) {
     <div data-test-id="description-section">
       <PageDescription
         {...props}
+        canEdit={props.permissions.canEditDescription}
         label="Description"
         placeholder="Add a project description..."
         zeroStatePlaceholder="Add a project description..."
