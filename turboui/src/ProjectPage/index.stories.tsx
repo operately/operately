@@ -15,6 +15,7 @@ import { useMockTaskBoardActions } from "../utils/storybook/tasks";
 import { ProjectPage } from "./index";
 import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 import { usePersonFieldSearch } from "../utils/storybook/usePersonFieldSearch";
+import { generatePermissions } from "../utils/storybook/permissions";
 
 const DEFAULT_STATUSES: TaskBoardTypes.Status[] = [
   { id: "pending", value: "pending", label: "Not started", color: "gray", icon: "circleDashed", index: 0 },
@@ -356,7 +357,7 @@ export const Default: Story = {
         status="on_track"
         state="active"
         closedAt={null}
-        canEdit={true}
+        permissions={generatePermissions(true)}
         updateProjectName={async () => true}
         onDescriptionChange={async () => true}
         activityFeed={<div>Activity feed content</div>}
@@ -387,7 +388,6 @@ export const Default: Story = {
           console.log("Deleted status replacements:", data.deletedStatusReplacements);
           setStatuses(data.nextStatuses);
         }}
-        canManageStatuses={true}
         parentGoal={parentGoal}
         setParentGoal={setParentGoal}
         parentGoalSearch={mockParentGoalSearch}
@@ -409,7 +409,6 @@ export const Default: Story = {
         currentUser={currentViewer}
         discussions={mockDiscussions}
         onProjectDelete={() => {}}
-        canDelete={true}
         subscriptions={subscriptions}
       />
     );
@@ -462,7 +461,15 @@ export const ReadOnly: Story = {
         status="on_track"
         state="active"
         closedAt={null}
-        canEdit={false}
+        permissions={generatePermissions(false, {
+          canView: true,
+          canCommentOnMilestone: true,
+          canCommentOnCheckIn: true,
+          canCommentOnRetrospective: true,
+          canCommentOnTask: true,
+          canAcknowledgeCheckIn: true,
+          canComment: true,
+        })}
         updateProjectName={async () => true}
         onDescriptionChange={async () => true}
         activityFeed={<div>Activity feed content</div>}
@@ -489,7 +496,6 @@ export const ReadOnly: Story = {
         onFiltersChange={() => {}}
         statuses={DEFAULT_STATUSES}
         onSaveCustomStatuses={() => {}}
-        canManageStatuses={false}
         parentGoal={{
           id: "2",
           name: "Increase Product Adoption",
@@ -515,7 +521,6 @@ export const ReadOnly: Story = {
         currentUser={currentViewer}
         discussions={[]}
         onProjectDelete={() => {}}
-        canDelete={true}
         subscriptions={subscriptions}
       />
     );
@@ -605,7 +610,7 @@ export const EmptyTasks: Story = {
         status="on_track"
         state="active"
         closedAt={null}
-        canEdit={true}
+        permissions={generatePermissions(true)}
         updateProjectName={async () => true}
         onDescriptionChange={async () => true}
         activityFeed={<div>Activity feed content</div>}
@@ -636,7 +641,6 @@ export const EmptyTasks: Story = {
           console.log("Deleted status replacements:", data.deletedStatusReplacements);
           setStatuses(data.nextStatuses);
         }}
-        canManageStatuses={true}
         parentGoal={null}
         setParentGoal={() => {}}
         parentGoalSearch={mockParentGoalSearch}
@@ -658,7 +662,6 @@ export const EmptyTasks: Story = {
         currentUser={currentViewer}
         discussions={[]}
         onProjectDelete={() => {}}
-        canDelete={true}
         subscriptions={subscriptions}
       />
     );
@@ -747,7 +750,7 @@ export const EmptyProject: Story = {
         status="on_track"
         state="active"
         closedAt={null}
-        canEdit={true}
+        permissions={generatePermissions(true)}
         updateProjectName={async () => true}
         onDescriptionChange={async () => true}
         activityFeed={<div>Activity feed content</div>}
@@ -778,7 +781,6 @@ export const EmptyProject: Story = {
           console.log("Deleted status replacements:", data.deletedStatusReplacements);
           setStatuses(data.nextStatuses);
         }}
-        canManageStatuses={true}
         parentGoal={null}
         setParentGoal={() => {}}
         parentGoalSearch={mockParentGoalSearch}
@@ -800,7 +802,6 @@ export const EmptyProject: Story = {
         currentUser={currentViewer}
         discussions={[]}
         onProjectDelete={() => {}}
-        canDelete={true}
         subscriptions={subscriptions}
       />
     );
@@ -847,7 +848,15 @@ export const EmptyProjectReadOnly: Story = {
         status="on_track"
         state="active"
         closedAt={null}
-        canEdit={false}
+        permissions={generatePermissions(false, {
+          canView: true,
+          canCommentOnMilestone: true,
+          canCommentOnCheckIn: true,
+          canCommentOnRetrospective: true,
+          canCommentOnTask: true,
+          canAcknowledgeCheckIn: true,
+          canComment: true,
+        })}
         updateProjectName={async () => true}
         onDescriptionChange={async () => true}
         activityFeed={<div>Activity feed content</div>}
@@ -874,7 +883,6 @@ export const EmptyProjectReadOnly: Story = {
         onFiltersChange={() => {}}
         statuses={statuses}
         onSaveCustomStatuses={() => {}}
-        canManageStatuses={false}
         parentGoal={null}
         setParentGoal={() => {}}
         parentGoalSearch={mockParentGoalSearch}
@@ -896,7 +904,6 @@ export const EmptyProjectReadOnly: Story = {
         currentUser={currentViewer}
         discussions={[]}
         onProjectDelete={() => {}}
-        canDelete={true}
         subscriptions={subscriptions}
       />
     );
@@ -1008,7 +1015,7 @@ export const PausedProject: Story = {
         status="paused"
         state="paused"
         closedAt={null}
-        canEdit={true}
+        permissions={generatePermissions(true)}
         updateProjectName={async () => true}
         onDescriptionChange={async () => true}
         activityFeed={<div>Activity feed content</div>}
@@ -1039,7 +1046,6 @@ export const PausedProject: Story = {
           console.log("Deleted status replacements:", data.deletedStatusReplacements);
           setStatuses(data.nextStatuses);
         }}
-        canManageStatuses={true}
         parentGoal={parentGoal}
         setParentGoal={setParentGoal}
         parentGoalSearch={mockParentGoalSearch}
@@ -1061,7 +1067,6 @@ export const PausedProject: Story = {
         currentUser={currentViewer}
         discussions={[]}
         onProjectDelete={() => {}}
-        canDelete={true}
         subscriptions={subscriptions}
       />
     );
@@ -1123,7 +1128,15 @@ export const ClosedProject: Story = {
         state="closed"
         closedAt={closedAt}
         retrospectiveLink="/projects/work-map-ga/retrospective"
-        canEdit={false}
+        permissions={generatePermissions(false, {
+          canView: true,
+          canCommentOnMilestone: true,
+          canCommentOnCheckIn: true,
+          canCommentOnRetrospective: true,
+          canCommentOnTask: true,
+          canAcknowledgeCheckIn: true,
+          canComment: true,
+        })}
         updateProjectName={async () => true}
         onDescriptionChange={async () => true}
         activityFeed={<div>Activity feed content</div>}
@@ -1149,7 +1162,6 @@ export const ClosedProject: Story = {
         onFiltersChange={() => {}}
         statuses={DEFAULT_STATUSES}
         onSaveCustomStatuses={() => {}}
-        canManageStatuses={false}
         richTextHandlers={createMockRichEditorHandlers()}
         parentGoal={parentGoal}
         setParentGoal={() => {}}
@@ -1172,7 +1184,6 @@ export const ClosedProject: Story = {
         currentUser={currentViewer}
         discussions={[]}
         onProjectDelete={() => {}}
-        canDelete={true}
         subscriptions={subscriptions}
       />
     );
@@ -1311,7 +1322,7 @@ export const ProjectWithoutSpace: Story = {
         status="on_track"
         state="active"
         closedAt={null}
-        canEdit={true}
+        permissions={generatePermissions(true)}
         updateProjectName={async () => true}
         onDescriptionChange={async () => true}
         activityFeed={<div>Activity feed content</div>}
@@ -1342,7 +1353,6 @@ export const ProjectWithoutSpace: Story = {
           console.log("Deleted status replacements:", data.deletedStatusReplacements);
           setStatuses(data.nextStatuses);
         }}
-        canManageStatuses={true}
         parentGoal={null}
         setParentGoal={() => {}}
         parentGoalSearch={mockParentGoalSearch}
@@ -1362,7 +1372,6 @@ export const ProjectWithoutSpace: Story = {
         currentUser={currentViewer}
         discussions={mockDiscussions}
         onProjectDelete={() => {}}
-        canDelete={true}
         subscriptions={subscriptions}
       />
     );
