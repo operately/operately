@@ -4,6 +4,7 @@ import { Tabs, TabsState } from "../Tabs";
 import { StatusBanner } from "./StatusBanner";
 import { PageHeader } from "./PageHeader";
 import { BadgeStatus } from "../StatusBadge/types";
+import { ProjectPermissions } from "../ProjectPage/types";
 
 export namespace ProjectPageLayout {
   export interface Space {
@@ -32,9 +33,9 @@ export namespace ProjectPageLayout {
     testId?: string;
 
     projectName: string;
-    canEdit: boolean;
     status: BadgeStatus;
     updateProjectName: (name: string) => Promise<boolean>;
+    permissions: ProjectPermissions;
 
     state?: "paused" | "closed" | "active";
     closedAt: Date | null;

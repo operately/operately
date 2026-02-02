@@ -273,12 +273,9 @@ function Page() {
     closedAt: Time.parse(project.closedAt),
     retrospectiveLink: paths.projectRetrospectivePath(project.id),
 
-    canEdit: project.permissions?.canEditName || false,
-    canEditGoal: project.permissions?.canEditGoal || false,
-    canCreateDiscussion: project.permissions?.canCreateDiscussion || false,
+    permissions: project.permissions,
     manageTeamLink: paths.projectContributorsPath(project.id),
 
-    canDelete: project.permissions?.canDelete || false,
     onProjectDelete: deleteProject,
 
     tasks: baseTasks,
@@ -310,7 +307,6 @@ function Page() {
 
     statuses,
     onSaveCustomStatuses: handleSaveStatuses,
-    canManageStatuses: project.permissions.canEditStatuses,
 
     richTextHandlers: richEditorHandlers,
 

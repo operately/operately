@@ -27,6 +27,7 @@ import { launchConfetti } from "../utils/confetti";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
 import { PageDescription } from "../PageDescription";
 import { SidebarNotificationSection } from "../SidebarSection";
+import { ProjectPermissions } from "../ProjectPage/types";
 
 export namespace MilestonePage {
   export type Milestone = Types.Milestone;
@@ -59,6 +60,7 @@ export namespace MilestonePage {
 
   export type Props = SpaceProps & {
     childrenCount: ProjectPageLayout.ChildrenCount;
+    permissions: ProjectPermissions;
 
     // Project
     projectName: string;
@@ -99,7 +101,6 @@ export namespace MilestonePage {
     // Timeline data
     timelineItems: TimelineItemType[];
     currentUser: Person;
-    canComment: boolean;
     onAddComment: (comment: string) => void;
     onEditComment: (commentId: string, content: string) => void;
     onDeleteComment: (commentId: string) => void;
@@ -109,7 +110,6 @@ export namespace MilestonePage {
     // Milestone metadata
     createdBy: Person | null;
     createdAt: Date;
-    canEdit?: boolean;
 
     // Subscriptions
     subscriptions: SidebarNotificationSection.Props;
@@ -152,12 +152,12 @@ export function MilestonePage(props: MilestonePage.Props) {
     onMilestoneTitleChange,
     status,
     assigneePersonSearch,
-    canEdit = true,
     projectName,
     projectLink,
     projectStatus = "active",
     isTaskModalOpen,
     setIsTaskModalOpen,
+    permissions,
   } = state;
   const handleCreateTask = (newTask: Types.NewTaskPayload) => {
     if (onTaskCreate) {
@@ -205,8 +205,8 @@ export function MilestonePage(props: MilestonePage.Props) {
     status: projectStatus,
     updateProjectName: props.updateProjectName,
     closedAt: null,
+    permissions,
     ...spaceProps,
-    canEdit: canEdit,
   };
 
   return (
@@ -214,7 +214,7 @@ export function MilestonePage(props: MilestonePage.Props) {
       <MainContainer>
         <Header
           title={title}
-          canEdit={canEdit}
+          canEdit={permissions.canEditMilestone}
           status={status}
           onMilestoneTitleChange={onMilestoneTitleChange}
         />
@@ -257,9 +257,10 @@ export function MilestonePage(props: MilestonePage.Props) {
 }
 
 function MobileMeta(props: MilestonePage.State) {
-  const { status, onStatusChange, canEdit = true, dueDate, onDueDateChange, milestone } = props;
+  const { status, onStatusChange, permissions, dueDate, onDueDateChange, milestone } = props;
   const isCompleted = status === "done";
   const showOverdueWarning = !isCompleted;
+  const canEdit = permissions.canCompleteMilestone || permissions.canReopenMilestone;
 
   const handleStatusToggle = () => {
     if (!canEdit) return;
@@ -336,7 +337,7 @@ function TimelineSection(props: MilestonePage.State) {
       <Timeline
         items={props.timelineItems}
         currentUser={props.currentUser}
-        canComment={props.canComment}
+        canComment={props.permissions.canCommentOnMilestone}
         commentParentType="milestone"
         onAddComment={props.onAddComment}
         onEditComment={props.onEditComment}

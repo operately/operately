@@ -8,6 +8,7 @@ import { DateField } from "../DateField";
 import { createContextualDate } from "../DateField/mockData";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { useMockSubscriptions } from "../utils/storybook/subscriptions";
+import { generatePermissions } from "../utils/storybook/permissions";
 
 /**
  * MilestonePage displays a standalone page for a single milestone and its tasks.
@@ -262,7 +263,7 @@ export const Default: Story = {
         onFiltersChange={(filters) => console.log("Filters changed:", filters)}
         timelineItems={createMockTimelineItems()}
         currentUser={mockPeople[0]!}
-        canComment={true}
+        permissions={generatePermissions(true)}
         onAddComment={(comment) => console.log("Add comment:", comment)}
         onEditComment={(commentId, content) => console.log("Edit comment:", { commentId, content })}
         onDeleteComment={(commentId) => console.log("Delete comment:", commentId)}
@@ -272,7 +273,6 @@ export const Default: Story = {
         createdAt={new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)} // 7 days ago
         subscriptions={subscriptions}
         onDelete={() => console.log("Milestone deleted")}
-        canEdit={true}
         description={mockDescription}
         onDescriptionChange={async (newDescription) => {
           console.log("Description changed:", newDescription);
@@ -371,7 +371,7 @@ export const EmptyMilestone: Story = {
         onFiltersChange={(filters) => console.log("Filters changed:", filters)}
         timelineItems={emptyMilestoneTimeline}
         currentUser={mockPeople[0]!}
-        canComment={true}
+        permissions={generatePermissions(true)}
         onAddComment={(comment) => console.log("Add comment:", comment)}
         onEditComment={(commentId, content) => console.log("Edit comment:", { commentId, content })}
         onDeleteComment={(commentId) => console.log("Delete comment:", commentId)}
@@ -381,7 +381,6 @@ export const EmptyMilestone: Story = {
         createdAt={new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)} // 3 days ago
         subscriptions={subscriptions}
         onDelete={() => console.log("Milestone deleted")}
-        canEdit={true}
         description={null}
         onDescriptionChange={async (newDescription) => {
           console.log("Description changed:", newDescription);
@@ -591,7 +590,7 @@ export const CompletedMilestone: Story = {
         onFiltersChange={(filters) => console.log("Filters changed:", filters)}
         timelineItems={completedMilestoneTimeline}
         currentUser={mockPeople[0]!}
-        canComment={true}
+        permissions={generatePermissions(true)}
         onAddComment={(comment) => console.log("Add comment:", comment)}
         onEditComment={(commentId, content) => console.log("Edit comment:", { commentId, content })}
         onDeleteComment={(commentId) => console.log("Delete comment:", commentId)}
@@ -601,7 +600,6 @@ export const CompletedMilestone: Story = {
         createdAt={new Date(Date.now() - 21 * 24 * 60 * 60 * 1000)} // 21 days ago
         subscriptions={subscriptions}
         onDelete={() => console.log("Milestone delete attempted")}
-        canEdit={true}
         description={mockDescription}
         onDescriptionChange={async (newDescription) => {
           console.log("Description change attempted on completed milestone:", newDescription);
