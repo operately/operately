@@ -20,6 +20,7 @@ import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { usePersonFieldSearch } from "../utils/storybook/usePersonFieldSearch";
 import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 import { StatusSelector } from "../StatusSelector";
+import { generatePermissions } from "../utils/storybook/permissions";
 
 const DEFAULT_STATUS_OPTIONS: StatusSelector.StatusOption[] = [
   { id: "pending", value: "pending", label: "Not started", color: "gray", icon: "circleDashed", index: 0 },
@@ -172,6 +173,7 @@ function Component(props: Partial<TaskPage.Props>) {
     richTextHandlers: createMockRichEditorHandlers(),
 
     // Permissions
+    permissions: generatePermissions(true),
     canEdit: true,
 
     // Timeline data

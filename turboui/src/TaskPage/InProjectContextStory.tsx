@@ -14,6 +14,7 @@ import {
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 import { StatusSelector } from "../StatusSelector";
+import { generatePermissions } from "../utils/storybook/permissions";
 
 const DEFAULT_STATUS_OPTIONS: StatusSelector.StatusOption[] = [
   { id: "pending", value: "pending", label: "Not started", color: "gray", icon: "circleDashed", index: 0 },
@@ -121,6 +122,7 @@ export function InProjectContextStory() {
       richTextHandlers={createMockRichEditorHandlers()}
       statusOptions={DEFAULT_STATUS_OPTIONS}
       // Permissions
+      permissions={generatePermissions(true)}
       canEdit={true}
       // Timeline data
       timelineItems={createActiveTaskTimeline()}
