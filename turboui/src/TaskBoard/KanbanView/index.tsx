@@ -109,6 +109,7 @@ export function KanbanBoard(props: KanbanBoardProps) {
         assigneePersonSearch={props.assigneePersonSearch}
         onTaskCreate={props.onTaskCreate}
         canManageStatuses={props.canManageStatuses}
+        canCreateTask={props.canCreateTask}
         onAddStatusClick={
           props.canManageStatuses
             ? () => {

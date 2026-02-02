@@ -50,6 +50,8 @@ export function TaskBoard({
   onSaveCustomStatuses,
   statuses = [],
   canManageStatuses,
+  canCreateMilestone,
+  canCreateTask,
   displayMode = "list",
   onDisplayModeChange,
 }: Types.TaskBoardProps) {
@@ -177,6 +179,8 @@ export function TaskBoard({
         onSaveCustomStatuses={onSaveCustomStatuses}
         statuses={statuses}
         canManageStatuses={canManageStatuses}
+        canCreateMilestone={canCreateMilestone}
+        canCreateTask={canCreateTask}
         displayMode={displayMode}
         onDisplayModeChange={onDisplayModeChange}
       />
@@ -289,6 +293,8 @@ interface ActionBarProps {
   }) => void;
   statuses: StatusSelector.StatusOption[];
   canManageStatuses: boolean;
+  canCreateMilestone: boolean;
+  canCreateTask: boolean;
   displayMode: Types.TaskDisplayMode;
   onDisplayModeChange: (mode: Types.TaskDisplayMode) => void;
 }
@@ -302,24 +308,31 @@ function StickyActionBar({
   onSaveCustomStatuses,
   statuses,
   canManageStatuses,
+  canCreateMilestone,
+  canCreateTask,
   displayMode,
   onDisplayModeChange,
 }: ActionBarProps) {
   return (
     <header className="sticky top-0 z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between py-6 bg-surface-base px-4 lg:px-0">
       <div className="flex flex-row items-center gap-4">
-        <PrimaryButton
-          size="xs"
-          onClick={() => {
-            openTaskModal(undefined);
-          }}
-        >
-          New task
-        </PrimaryButton>
+        {canCreateTask && (
+          <PrimaryButton
+            size="xs"
+            onClick={() => {
+              openTaskModal(undefined);
+            }}
+            testId="add-task"
+          >
+            New task
+          </PrimaryButton>
+        )}
 
-        <SecondaryButton size="xs" onClick={openMilestoneModal} testId="add-milestone">
-          New milestone
-        </SecondaryButton>
+        {canCreateMilestone && (
+          <SecondaryButton size="xs" onClick={openMilestoneModal} testId="add-milestone">
+            New milestone
+          </SecondaryButton>
+        )}
 
         {/* Filter widget */}
         {onFiltersChange && <TaskFilter filters={filters} onFiltersChange={onFiltersChange} tasks={internalTasks} />}

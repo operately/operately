@@ -18,19 +18,19 @@ export function MilestoneSidebar({
   createdAt,
   subscriptions,
   openDeleteModal,
-  canEdit = true,
+  permissions,
 }: MilestonePage.State) {
   return (
     <div className="sm:col-span-4 hidden sm:block sm:pl-8">
       <div className="space-y-6 mt-4" data-test-id="sidebar">
-        <SidebarDueDate milestone={milestone} onDueDateChange={onDueDateChange} canEdit={canEdit} />
-        <SidebarStatus status={status} onStatusChange={onStatusChange} canEdit={canEdit} />
+        <SidebarDueDate milestone={milestone} onDueDateChange={onDueDateChange} canEdit={permissions.canEditMilestone} />
+        <SidebarStatus status={status} onStatusChange={onStatusChange} canEdit={permissions.canEditMilestone} />
         {milestone.completedAt && milestone.status === "done" && (
           <SidebarCompletedOn completedAt={milestone.completedAt} />
         )}
         {createdBy && <SidebarCreatedBy createdBy={createdBy} createdAt={createdAt} />}
         <SidebarNotificationSection {...subscriptions} />
-        <SidebarActions onDelete={openDeleteModal} canEdit={canEdit} />
+        <SidebarActions onDelete={openDeleteModal} canEdit={permissions.canEditMilestone} />
       </div>
     </div>
   );

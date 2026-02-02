@@ -28,6 +28,7 @@ interface Props {
   onEditStatus?: (status: StatusSelector.StatusOption) => void;
   onDeleteStatus?: (status: StatusSelector.StatusOption) => void;
   onTaskClick: (taskId: string) => void;
+  canCreateTask: boolean;
 }
 
 export function Kanban({
@@ -46,6 +47,7 @@ export function Kanban({
   onEditStatus,
   onDeleteStatus,
   onTaskClick,
+  canCreateTask,
 }: Props) {
   const testId = useMemo(
     () => (milestone ? createTestId("milestone", milestone.id) : "kanban-no-milestone"),
@@ -92,6 +94,7 @@ export function Kanban({
               onEditStatus={undefined}
               onDeleteStatus={undefined}
               onTaskClick={onTaskClick}
+              canCreateTask={canCreateTask}
               hideStatusIcon
               disableDnD
             />
@@ -119,6 +122,7 @@ export function Kanban({
                   isStatusDraggable={Boolean(canManageStatuses)}
                   allStatuses={statuses}
                   canManageStatuses={canManageStatuses}
+                  canCreateTask={canCreateTask}
                   onEditStatus={onEditStatus}
                   onDeleteStatus={onDeleteStatus}
                   onTaskClick={onTaskClick}

@@ -273,6 +273,8 @@ export const Default: Story = {
     return (
       <div className="min-h-[800px] py-[4.5rem] px-2 bg-surface-base">
         <MilestoneKanbanPage
+          canCreateTask
+          canManageStatuses={false}
           projectName="Demo Project"
           navigation={[
             { to: "/spaces/demo-space", label: "Demo Space" },
@@ -508,6 +510,7 @@ export const WithStatusManagement: Story = {
           assigneePersonSearch={assigneeSearch}
           richTextHandlers={createMockRichEditorHandlers()}
           canManageStatuses
+          canCreateTask
           onTaskNameChange={taskActions.onTaskNameChange}
           onStatusesChange={(data) => {
             const nextStatuses = data.nextStatuses;

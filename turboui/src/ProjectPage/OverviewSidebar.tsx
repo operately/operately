@@ -47,7 +47,7 @@ function CheckInsSection(props: ProjectPage.State) {
   const checkIns = props.checkIns || [];
   const isClosed = props.state === "closed";
   const lastCheckInState: "active" | "closed" | undefined = isClosed ? "closed" : "active";
-  const viewerCanCheckIn = props.canEdit && !isClosed;
+  const viewerCanCheckIn = props.permissions.canCheckIn && !isClosed;
   const isChampion = !!props.currentUser?.id && !!props.champion?.id && props.currentUser.id === props.champion.id;
   const championFirstName = props.champion?.fullName?.split(" ")[0];
 
@@ -92,7 +92,7 @@ function CheckInsSection(props: ProjectPage.State) {
 }
 
 function ParentGoal(props: ProjectPage.State) {
-  if (!props.parentGoal && !props.canEditGoal) {
+  if (!props.parentGoal && !props.permissions.canEditGoal) {
     return null;
   }
 
@@ -103,7 +103,7 @@ function ParentGoal(props: ProjectPage.State) {
         goal={props.parentGoal}
         setGoal={props.setParentGoal}
         searchGoals={props.parentGoalSearch}
-        readonly={!props.canEditGoal}
+        readonly={!props.permissions.canEditGoal}
         emptyStateMessage="Set parent goal"
         emptyStateReadOnlyMessage="No parent goal"
       />
@@ -118,7 +118,7 @@ function ProjectDates(props: ProjectPage.State) {
         <DateField
           date={props.startedAt || null}
           onDateSelect={props.setStartedAt || (() => {})}
-          readonly={!props.canEdit}
+          readonly={!props.permissions.canEditTimeline}
           placeholder="Set start date"
           showOverdueWarning={false}
           useStartOfPeriod={true}
@@ -129,7 +129,7 @@ function ProjectDates(props: ProjectPage.State) {
         <DateField
           date={props.dueAt || null}
           onDateSelect={props.setDueAt || (() => {})}
-          readonly={!props.canEdit}
+          readonly={!props.permissions.canEditTimeline}
           placeholder="Set due date"
           testId="project-due-date"
           showOverdueWarning={props.state === "active"}
@@ -141,7 +141,7 @@ function ProjectDates(props: ProjectPage.State) {
 }
 
 function Champion(props: ProjectPage.State) {
-  const readonly = !props.canEdit || !("setChampion" in props) || !("championSearch" in props);
+  const readonly = !props.permissions.canEditContributors || !("setChampion" in props) || !("championSearch" in props);
   return (
     <SidebarSection
       title={
@@ -186,7 +186,7 @@ function Champion(props: ProjectPage.State) {
 }
 
 function Reviewer(props: ProjectPage.State) {
-  const readonly = !props.canEdit || !("setReviewer" in props) || !("reviewerSearch" in props);
+  const readonly = !props.permissions.canEditContributors || !("setReviewer" in props) || !("reviewerSearch" in props);
   return (
     <SidebarSection
       title={
@@ -242,7 +242,7 @@ function Contributors(props: ProjectPage.State) {
         ) : (
           <div className="text-sm text-content-dimmed">No contributors</div>
         )}
-        {props.canEdit && (
+        {props.permissions.canEditContributors && (
           <div className="mt-3">
             <SecondaryButton linkTo={props.manageTeamLink} size="xs" testId="manage-team-button">
               Manage team & access
@@ -267,28 +267,30 @@ function Actions(props: ProjectPage.State) {
       label: "Move to another space",
       onClick: props.openMoveModal,
       icon: IconCircleArrowRight,
-      hidden: !props.canEdit || !("space" in props),
+      hidden: !props.permissions.canEditSpace || !("space" in props),
     },
     {
       type: "link" as const,
       label: "Pause project",
       link: props.pauseLink,
       icon: IconPlayerPause,
-      hidden: !props.canEdit || props.state === "closed" || props.state === "paused",
+      testId: "pause-project",
+      hidden: !props.permissions.canPause || props.state === "closed" || props.state === "paused",
     },
     {
       type: "link" as const,
       label: "Close project",
       link: props.closeLink,
       icon: IconCircleCheck,
-      hidden: !props.canEdit || props.state === "closed",
+      testId: "close-project",
+      hidden: !props.permissions.canClose || props.state === "closed",
     },
     {
       type: "link" as const,
       label: "Resume project",
       link: props.reopenLink,
       icon: IconRotateDot,
-      hidden: !props.canEdit || props.state !== "paused",
+      hidden: !props.permissions.canResume || props.state !== "paused",
     },
     {
       type: "action" as const,
@@ -303,7 +305,7 @@ function Actions(props: ProjectPage.State) {
       label: "Delete",
       onClick: props.openDeleteModal,
       icon: IconTrash,
-      hidden: !props.canDelete,
+      hidden: !props.permissions.canDelete,
       danger: true,
     },
   ];

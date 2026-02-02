@@ -173,8 +173,7 @@ function Page() {
   const props: MilestonePage.Props = {
     ...spaceProps,
     childrenCount,
-
-    canEdit: Boolean(milestone.permissions.canEditTimeline),
+    permissions: milestone.permissions,
 
     assigneePersonSearch: assigneeSearch,
 
@@ -195,7 +194,6 @@ function Page() {
     onDeleteComment: handleDeleteComment,
     onAddReaction: handleAddReaction,
     onRemoveReaction: handleRemoveReaction,
-    canComment: Boolean(milestone.permissions.canComment),
 
     // Core milestone data
     title,

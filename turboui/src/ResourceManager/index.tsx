@@ -37,7 +37,7 @@ export function ResourceManager({
   const hasResources = resources.length > 0;
 
   const addButton = (
-    <SecondaryButton size="xxs" onClick={() => setIsAddModalOpen(true)}>
+    <SecondaryButton size="xxs" onClick={() => setIsAddModalOpen(true)} testId="add-resource">
       Add resource
     </SecondaryButton>
   );

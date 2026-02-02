@@ -132,6 +132,7 @@ function Page() {
     statuses,
     kanbanState,
     canManageStatuses: !!space.permissions?.canEditStatuses,
+    canCreateTask: !!space.permissions?.canCreateTask,
     assigneePersonSearch: assigneeSearch,
 
     onTaskKanbanChange: handleTaskKanbanChange,

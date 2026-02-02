@@ -208,7 +208,9 @@ function Page() {
     ...spaceProps,
     childrenCount,
 
-    canEdit: Boolean(task.permissions.canEditTimeline),
+    permissions: task.permissions,
+    canEdit: Boolean(task.permissions.canEditTask),
+    canComment: Boolean(task.permissions.canComment),
 
     assigneePersonSearch,
     updateProjectName: setProjectName,
@@ -221,7 +223,6 @@ function Page() {
     onDeleteComment: deleteComment,
     onAddReaction: addReaction,
     onRemoveReaction: removeReaction,
-    canComment: Boolean(task.permissions.canComment),
 
     // Milestone selection
     milestone: milestone as TaskPage.Milestone | null,
