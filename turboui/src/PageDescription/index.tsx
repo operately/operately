@@ -71,7 +71,7 @@ function SectionHeader({ title, startEdit, showButtons }: SectionHeaderProps) {
     <div className="flex items-center gap-2">
       <h2 className="font-bold">{title}</h2>
       {showButtons && (
-        <SecondaryButton size="xxs" onClick={startEdit}>
+        <SecondaryButton size="xxs" onClick={startEdit} testId="edit-description">
           Edit
         </SecondaryButton>
       )}

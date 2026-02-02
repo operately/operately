@@ -274,6 +274,7 @@ function Actions(props: ProjectPage.State) {
       label: "Pause project",
       link: props.pauseLink,
       icon: IconPlayerPause,
+      testId: "pause-project",
       hidden: !props.permissions.canPause || props.state === "closed" || props.state === "paused",
     },
     {
@@ -281,6 +282,7 @@ function Actions(props: ProjectPage.State) {
       label: "Close project",
       link: props.closeLink,
       icon: IconCircleCheck,
+      testId: "close-project",
       hidden: !props.permissions.canClose || props.state === "closed",
     },
     {
