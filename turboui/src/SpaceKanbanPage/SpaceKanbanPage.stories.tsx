@@ -278,6 +278,8 @@ export const Default: Story = {
     return (
       <div className="min-h-[800px] py-[4.5rem] px-2 bg-surface-base">
         <SpaceKanbanPage
+          canCreateTask
+          canManageStatuses={false}
           space={space}
           navigation={[
             { to: "/spaces/demo-space", label: "Demo Space" },
@@ -499,6 +501,7 @@ export const WithStatusManagement: Story = {
           }
           assigneePersonSearch={assigneeSearch}
           canManageStatuses
+          canCreateTask
           richTextHandlers={createMockRichEditorHandlers()}
           onTaskNameChange={taskActions.onTaskNameChange}
           onStatusesChange={(data) => {
