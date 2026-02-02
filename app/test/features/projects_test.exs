@@ -289,6 +289,50 @@ defmodule Operately.Features.ProjectsTest do
     end
   end
 
+  describe "project page permissions" do
+    setup ctx, do: Steps.setup(ctx)
+
+    feature "Person with full access can see all actions", ctx do
+      ctx
+      |> Steps.given_project_with_full_access_member_logged_in()
+      |> Steps.assert_member_has_full_access()
+      |> Steps.visit_project_page()
+      |> Steps.assert_description_editable()
+      |> Steps.assert_start_date_editable()
+      |> Steps.assert_manage_access_visible()
+      |> Steps.assert_pause_and_close_actions_visible()
+    end
+
+    feature "Person with edit access can see correct actions", ctx do
+      ctx
+      |> Steps.given_project_with_edit_access_member_logged_in()
+      |> Steps.assert_member_has_edit_access()
+      |> Steps.visit_project_page()
+      |> Steps.refute_description_editable()
+      |> Steps.refute_manage_access_visible()
+      |> Steps.refute_pause_and_close_actions_visible()
+      |> Steps.assert_add_milestone_visible()
+      |> Steps.assert_add_resource_visible()
+      |> Steps.assert_add_task_and_milestone_visible_in_tasks_tab()
+      |> Steps.assert_add_task_visible_in_kanban_view()
+      |> Steps.assert_add_check_in_visible()
+      |> Steps.assert_add_dicussion_visible()
+    end
+
+    feature "Person with comment access can see correct actions", ctx do
+      ctx
+      |> Steps.given_project_with_comment_access_member_logged_in()
+      |> Steps.assert_member_has_comment_access()
+      |> Steps.visit_project_page()
+      |> Steps.refute_add_milestone_visible()
+      |> Steps.refute_add_resource_visible()
+      |> Steps.refute_add_task_and_milestone_visible_in_tasks_tab()
+      |> Steps.refute_add_task_visible_in_kanban_view()
+      |> Steps.refute_add_check_in_visible()
+      |> Steps.refute_add_dicussion_visible()
+    end
+  end
+
   describe "ai sidebar" do
     setup ctx do
       ctx =

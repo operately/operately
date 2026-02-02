@@ -34,6 +34,7 @@ export interface KanbanBoardProps {
   statuses: StatusSelector.StatusOption[];
   kanbanState: KanbanState;
   canManageStatuses?: boolean;
+  canCreateTask: boolean;
   onStatusesChange?: (data: {
     nextStatuses: StatusSelector.StatusOption[];
     deletedStatusReplacements: Record<string, string>;

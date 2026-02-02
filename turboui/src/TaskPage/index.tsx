@@ -14,6 +14,7 @@ import { PageHeader } from "./PageHeader";
 import { Overview } from "./Overview";
 import { Sidebar, MobileSidebar } from "./Sidebar";
 import { DeleteModal } from "./DeleteModal";
+import { ProjectPermissions } from "../ProjectPage/types";
 
 export namespace TaskPage {
   export interface Space {
@@ -99,7 +100,9 @@ export namespace TaskPage {
     richTextHandlers: RichEditorHandlers;
 
     // Permissions
+    permissions: ProjectPermissions;
     canEdit: boolean;
+    canComment?: boolean;
 
     updateProjectName: (name: string) => Promise<boolean>;
 
@@ -107,7 +110,6 @@ export namespace TaskPage {
     timelineItems?: TimelineItem[];
     timelineIsLoading?: boolean;
     currentUser?: TimelinePerson;
-    canComment?: boolean;
     onAddComment: (content: any) => void;
     onEditComment: (id: string, content: any) => void;
     onDeleteComment: (id: string) => void;

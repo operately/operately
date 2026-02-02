@@ -29,7 +29,8 @@ export namespace MilestoneKanbanPage {
     statuses: Types.Status[];
     kanbanState: KanbanState;
 
-    canManageStatuses?: boolean;
+    canManageStatuses: boolean;
+    canCreateTask: boolean;
     onStatusesChange?: (data: {
       nextStatuses: Types.Status[];
       deletedStatusReplacements: Record<string, string>;
@@ -88,7 +89,8 @@ export function MilestoneKanbanPage(props: MilestoneKanbanPage.Props) {
           richTextHandlers={props.richTextHandlers}
           assigneePersonSearch={props.assigneePersonSearch}
           getTaskPageProps={props.getTaskPageProps}
-          canManageStatuses={props.canManageStatuses ?? false}
+          canManageStatuses={props.canManageStatuses}
+          canCreateTask={props.canCreateTask}
           onStatusesChange={props.onStatusesChange}
           unstyled
         />

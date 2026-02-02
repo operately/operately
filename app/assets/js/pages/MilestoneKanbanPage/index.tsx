@@ -180,6 +180,7 @@ function Page() {
     richTextHandlers: richEditorHandlers,
 
     canManageStatuses: milestone.permissions.canEditStatuses,
+    canCreateTask: milestone.permissions.canCreateTask,
     onStatusesChange: handleStatusesChange,
     onTaskKanbanChange: handleTaskKanbanChange,
 

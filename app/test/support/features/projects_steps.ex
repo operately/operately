@@ -1086,6 +1086,178 @@ defmodule Operately.Support.Features.ProjectSteps do
   end
 
   #
+  # Permissions
+  #
+
+  step :given_project_with_full_access_member_logged_in, ctx do
+    ctx
+    |> Factory.add_project_contributor(:full_access_member, :project, permissions: :full_access)
+    |> then(fn ctx ->
+      contributor = Map.fetch!(ctx, :full_access_member)
+      member = Operately.Repo.preload(contributor, :person).person
+
+      Map.put(ctx, :member, member)
+    end)
+    |> Factory.log_in_person(:member)
+  end
+
+  step :given_project_with_edit_access_member_logged_in, ctx do
+    ctx
+    |> Factory.add_project_contributor(:edit_access_member, :project, permissions: :edit_access)
+    |> then(fn ctx ->
+      contributor = Map.fetch!(ctx, :edit_access_member)
+      member = Operately.Repo.preload(contributor, :person).person
+
+      Map.put(ctx, :member, member)
+    end)
+    |> Factory.log_in_person(:member)
+  end
+
+  step :given_project_with_comment_access_member_logged_in, ctx do
+    ctx
+    |> Factory.add_space_member(:member, :product)
+    |> Factory.add_project(:project, :product, space_access_level: Binding.comment_access(), company_access_level: Binding.no_access())
+    |> Factory.log_in_person(:member)
+  end
+
+  step :assert_member_has_full_access, ctx do
+    {:ok, project} = Operately.Projects.Project.get(ctx.member, id: ctx.project.id)
+
+    assert project.request_info.access_level == Binding.full_access()
+
+    ctx
+  end
+
+  step :assert_member_has_edit_access, ctx do
+    {:ok, project} = Operately.Projects.Project.get(ctx.member, id: ctx.project.id)
+
+    assert project.request_info.access_level == Binding.edit_access()
+
+    ctx
+  end
+
+  step :assert_member_has_comment_access, ctx do
+    {:ok, project} = Operately.Projects.Project.get(ctx.member, id: ctx.project.id)
+
+    assert project.request_info.access_level == Binding.comment_access()
+
+    ctx
+  end
+
+  step :assert_description_editable, ctx do
+    ctx
+    |> UI.assert_has(testid: "description-section")
+  end
+
+  step :refute_description_editable, ctx do
+    ctx
+    |> UI.refute_has(testid: "description-section")
+  end
+
+  step :assert_start_date_editable, ctx do
+    ctx
+    |> UI.refute_text("Set Date")
+    |> UI.click(testid: "project-start-date")
+    |> UI.assert_text("Set Date")
+  end
+
+  step :assert_manage_access_visible, ctx do
+    ctx
+    |> UI.assert_has(testid: "manage-team-button")
+  end
+
+  step :refute_manage_access_visible, ctx do
+    ctx
+    |> UI.refute_has(testid: "manage-team-button")
+  end
+
+  step :assert_pause_and_close_actions_visible, ctx do
+    ctx
+    |> UI.assert_has(testid: "pause-project")
+    |> UI.assert_has(testid: "close-project")
+  end
+
+  step :refute_pause_and_close_actions_visible, ctx do
+    ctx
+    |> UI.refute_has(testid: "pause-project")
+    |> UI.refute_has(testid: "close-project")
+  end
+
+  step :assert_add_milestone_visible, ctx do
+    ctx
+    |> UI.assert_has(testid: "add-milestone-button")
+  end
+
+  step :refute_add_milestone_visible, ctx do
+    ctx
+    |> UI.refute_has(testid: "add-milestone-button")
+  end
+
+  step :assert_add_resource_visible, ctx do
+    ctx
+    |> UI.assert_has(testid: "add-resource")
+  end
+
+  step :refute_add_resource_visible, ctx do
+    ctx
+    |> UI.refute_has(testid: "add-resource")
+  end
+
+  step :assert_add_task_and_milestone_visible_in_tasks_tab, ctx do
+    ctx
+    |> UI.click(testid: "tab-tasks")
+    |> UI.assert_has(testid: "add-task")
+    |> UI.assert_has(testid: "add-milestone")
+  end
+
+  step :refute_add_task_and_milestone_visible_in_tasks_tab, ctx do
+    ctx
+    |> UI.click(testid: "tab-tasks")
+    |> UI.refute_has(testid: "add-task")
+    |> UI.refute_has(testid: "add-milestone")
+  end
+
+  step :assert_add_task_visible_in_kanban_view, ctx do
+    ctx
+    |> UI.click(testid: "display-menu-trigger")
+    |> UI.click(testid: "display-menu-option-board")
+    |> UI.assert_has(testid: "add-task-button-pending")
+    |> UI.assert_has(testid: "add-task-button-in-progress")
+  end
+
+  step :refute_add_task_visible_in_kanban_view, ctx do
+    ctx
+    |> UI.click(testid: "display-menu-trigger")
+    |> UI.click(testid: "display-menu-option-board")
+    |> UI.refute_has(testid: "add-task-button-pending")
+    |> UI.refute_has(testid: "add-task-button-in-progress")
+  end
+
+  step :assert_add_check_in_visible, ctx do
+    ctx
+    |> UI.click(testid: "tab-check-ins")
+    |> UI.assert_has(testid: "check-in-button")
+  end
+
+  step :refute_add_check_in_visible, ctx do
+    ctx
+    |> UI.click(testid: "tab-check-ins")
+    |> UI.refute_has(testid: "check-in-button")
+  end
+
+  step :assert_add_dicussion_visible, ctx do
+    ctx
+    |> UI.click(testid: "tab-discussions")
+    |> UI.assert_has(testid: "start-discussion")
+  end
+
+  step :refute_add_dicussion_visible, ctx do
+    ctx
+    |> UI.click(testid: "tab-discussions")
+    |> UI.refute_has(testid: "start-discussion")
+  end
+
+  #
   # Subscription steps
   #
 
