@@ -73,7 +73,7 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
             <TasksMenu
               statuses={state.statuses}
               onSaveCustomStatuses={state.onSaveCustomStatuses}
-              canManageStatuses={state.canManageStatuses}
+              canManageStatuses={state.permissions.canEditStatuses}
             />
             <TaskDisplayMenu mode={taskDisplayMode} onChange={handleDisplayModeChange} />
           </div>
@@ -97,7 +97,7 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
           richTextHandlers={state.richTextHandlers}
           assigneePersonSearch={state.assigneePersonSearch}
           getTaskPageProps={state.getTaskPageProps}
-          canManageStatuses={state.canManageStatuses}
+          canManageStatuses={state.permissions.canEditStatuses}
           onStatusesChange={state.onSaveCustomStatuses}
           unstyled
         />
@@ -124,7 +124,7 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
         filters={state.filters}
         onFiltersChange={state.onFiltersChange}
         statuses={state.statuses}
-        canManageStatuses={state.canManageStatuses}
+        canManageStatuses={state.permissions.canEditStatuses}
         onSaveCustomStatuses={state.onSaveCustomStatuses}
         displayMode={taskDisplayMode}
         onDisplayModeChange={handleDisplayModeChange}

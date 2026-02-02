@@ -19,6 +19,7 @@ import { Overview } from "./Overview";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
 import { SidebarNotificationSection } from "../SidebarSection";
 import { TasksSection } from "./TasksSection";
+import { ProjectPermissions } from "./types";
 
 export namespace ProjectPage {
   export interface Space {
@@ -103,6 +104,7 @@ export namespace ProjectPage {
     newDiscussionLink: string;
 
     childrenCount: ProjectPageLayout.ChildrenCount;
+    permissions: ProjectPermissions;
 
     champion: Person | null;
     reviewer?: Person | null;
@@ -122,9 +124,6 @@ export namespace ProjectPage {
     closedAt: Date | null;
     retrospectiveLink?: string;
 
-    canEdit: boolean;
-    canEditGoal?: boolean;
-    canCreateDiscussion?: boolean;
     manageTeamLink: string;
 
     updateProjectName: (name: string) => Promise<boolean>;
@@ -134,7 +133,6 @@ export namespace ProjectPage {
 
     activityFeed: React.ReactNode;
 
-    canDelete: boolean;
     onProjectDelete: () => void;
 
     // TaskBoard props
@@ -163,7 +161,6 @@ export namespace ProjectPage {
     onFiltersChange?: (filters: TaskBoardTypes.FilterCondition[]) => void;
 
     statuses: TaskBoardTypes.Status[];
-    canManageStatuses?: boolean;
     onSaveCustomStatuses: (data: {
       nextStatuses: TaskBoardTypes.Status[];
       deletedStatusReplacements: Record<string, string>;
@@ -193,9 +190,6 @@ export namespace ProjectPage {
   export type Props = CommonProps & SpaceProps;
 
   export type State = Props & {
-    canManageStatuses: boolean;
-    canEditGoal: boolean;
-
     isMoveModalOpen: boolean;
     openMoveModal: () => void;
     closeMoveModal: () => void;
@@ -212,8 +206,6 @@ function useProjectPageState(props: ProjectPage.Props): ProjectPage.State {
 
   return {
     ...props,
-    canEditGoal: props.canEditGoal ?? props.canEdit,
-    canManageStatuses: props.canManageStatuses ?? false,
 
     isMoveModalOpen,
     openMoveModal: () => setIsMoveModalOpen(true),
