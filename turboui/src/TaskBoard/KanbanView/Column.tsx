@@ -30,6 +30,7 @@ interface Props {
   hideStatusIcon?: boolean;
   disableDnD?: boolean;
   onTaskClick?: (taskId: string) => void;
+  canCreateTask: boolean;
 }
 
 export function Column({
@@ -51,6 +52,7 @@ export function Column({
   hideStatusIcon,
   disableDnD,
   onTaskClick,
+  canCreateTask,
 }: Props) {
   const columnRef = useRef<HTMLDivElement>(null);
   const [isCreating, setIsCreating] = React.useState(false);
@@ -165,7 +167,7 @@ export function Column({
           )}
         </div>
 
-        <TaskCreationForm onCreateTask={onCreateTask} statusValue={status.value} onModeChange={setIsCreating} />
+        <TaskCreationForm onCreateTask={onCreateTask} statusValue={status.value} onModeChange={setIsCreating} canCreateTask={canCreateTask} />
       </div>
     </div>
   );
@@ -174,9 +176,10 @@ interface TaskCreationFormProps {
   onCreateTask?: (title: string) => void;
   statusValue: string;
   onModeChange: (isCreating: boolean) => void;
+  canCreateTask: boolean;
 }
 
-function TaskCreationForm({ onCreateTask, statusValue, onModeChange }: TaskCreationFormProps) {
+function TaskCreationForm({ onCreateTask, statusValue, onModeChange, canCreateTask = true }: TaskCreationFormProps) {
   const [isCreating, setIsCreating] = React.useState(false);
   const [title, setTitle] = React.useState("");
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -202,6 +205,10 @@ function TaskCreationForm({ onCreateTask, statusValue, onModeChange }: TaskCreat
       setTitle("");
     }
   };
+
+  if (!canCreateTask) {
+    return null;
+  }
 
   if (isCreating) {
     return (

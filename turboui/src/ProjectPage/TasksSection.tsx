@@ -98,6 +98,7 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
           assigneePersonSearch={state.assigneePersonSearch}
           getTaskPageProps={state.getTaskPageProps}
           canManageStatuses={state.permissions.canEditStatuses}
+          canCreateTask={state.permissions.canCreateTask}
           onStatusesChange={state.onSaveCustomStatuses}
           unstyled
         />
@@ -125,6 +126,8 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
         onFiltersChange={state.onFiltersChange}
         statuses={state.statuses}
         canManageStatuses={state.permissions.canEditStatuses}
+        canCreateMilestone={state.permissions.canCreateMilestone}
+        canCreateTask={state.permissions.canCreateTask}
         onSaveCustomStatuses={state.onSaveCustomStatuses}
         displayMode={taskDisplayMode}
         onDisplayModeChange={handleDisplayModeChange}

@@ -175,6 +175,8 @@ export interface TaskBoardProps {
     deletedStatusReplacements: Record<string, string>;
   }) => void;
   canManageStatuses: boolean;
+  canCreateMilestone: boolean;
+  canCreateTask: boolean;
 
   displayMode: TaskDisplayMode;
   onDisplayModeChange: (mode: TaskDisplayMode) => void;

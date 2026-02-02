@@ -147,6 +147,8 @@ export const Default: Story = {
           setStatuses(data.nextStatuses);
         }}
         canManageStatuses={true}
+        canAddMilestone={true}
+        canAddTask={true}
         displayMode={displayMode}
         onDisplayModeChange={setDisplayMode}
       />
