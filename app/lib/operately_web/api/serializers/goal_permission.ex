@@ -3,6 +3,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Permissions do
     %{
       can_view: permissions.can_view,
       can_edit: permissions.can_edit,
+      can_edit_target: permissions.can_edit_target,
       can_check_in: permissions.can_check_in,
       can_close: permissions.can_close,
       can_archive: permissions.can_archive,

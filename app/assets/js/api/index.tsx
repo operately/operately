@@ -1237,6 +1237,7 @@ export interface GoalPermissions {
   canOpenDiscussion: boolean;
   canEditDiscussion: boolean;
   canEditAccessLevel: boolean;
+  canEditTarget: boolean;
 }
 
 export interface GoalProgressUpdate {

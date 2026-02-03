@@ -1304,6 +1304,7 @@ defmodule OperatelyWeb.Api.Types do
     field :can_open_discussion, :boolean, null: false
     field :can_edit_discussion, :boolean, null: false
     field :can_edit_access_level, :boolean, null: false
+    field :can_edit_target, :boolean, null: false
   end
 
   object :goal_update_permissions do
