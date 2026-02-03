@@ -10,7 +10,6 @@ defmodule Operately.Support.Features.NotificationsSteps do
       name: "my project",
       champion_id: ctx.champion.id,
       reviewer_id: ctx.reviewer.id,
-      creator_is_contributor: "yes",
       creator_role: "developer",
       visibility: "everyone",
       creator_id: ctx.reviewer.id,

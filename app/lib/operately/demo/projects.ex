@@ -24,7 +24,6 @@ defmodule Operately.Demo.Projects do
       reviewer_id: reviewer && reviewer.id,
       creator_id: owner.id,
       creator_role: "contributor",
-      creator_is_contributor: "yes",
       visibility: "everyone",
       group_id: space.id,
       goal_id: goal && goal.id,

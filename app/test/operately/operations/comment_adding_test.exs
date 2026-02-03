@@ -28,7 +28,6 @@ defmodule Operately.Operations.CommentAddingTest do
         project_fixture(%{
           company_id: ctx.company.id,
           creator_id: ctx.creator.id,
-          creator_is_contributor: "no",
           champion_id: champion.id,
           reviewer_id: reviewer.id,
           group_id: space.id,
@@ -77,8 +76,8 @@ defmodule Operately.Operations.CommentAddingTest do
       perform_job(activity.id)
       notifications = fetch_notifications(activity.id, action: action)
 
-      # 3 contribs + reviewer
-      assert 4 == notifications_count(action: action)
+      # 3 contribs + reviewer + creator
+      assert 5 == notifications_count(action: action)
 
       ctx.contribs
       |> Enum.filter(&(&1.person_id != ctx.champion.id))

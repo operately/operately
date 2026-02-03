@@ -28,7 +28,6 @@ defmodule Operately.Operations.ProjectCreationTest do
       name: "my project",
       champion_id: champion.id,
       reviewer_id: reviewer.id,
-      creator_is_contributor: "yes",
       creator_role: "developer",
       visibility: "everyone",
       creator_id: creator.id,
@@ -88,6 +87,32 @@ defmodule Operately.Operations.ProjectCreationTest do
     assert Enum.member?(contributors, {ctx.creator.id, :contributor})
     assert Enum.member?(contributors, {ctx.reviewer.id, :reviewer})
     assert Enum.member?(contributors, {ctx.champion.id, :champion})
+  end
+
+  test "ProjectCreation operation doesn't add creator as contributor when creator is champion", ctx do
+    attrs = Map.merge(ctx.project_attrs, %{champion_id: ctx.creator.id})
+
+    {:ok, project} = Operately.Operations.ProjectCreation.run(attrs)
+
+    contributors = Projects.list_project_contributors(project) |> Enum.map(fn contributor -> {contributor.person_id, contributor.role} end)
+
+    assert length(contributors) == 2
+    assert Enum.member?(contributors, {ctx.creator.id, :champion})
+    assert Enum.member?(contributors, {ctx.reviewer.id, :reviewer})
+    refute Enum.member?(contributors, {ctx.creator.id, :contributor})
+  end
+
+  test "ProjectCreation operation doesn't add creator as contributor when creator is reviewer", ctx do
+    attrs = Map.merge(ctx.project_attrs, %{reviewer_id: ctx.creator.id})
+
+    {:ok, project} = Operately.Operations.ProjectCreation.run(attrs)
+
+    contributors = Projects.list_project_contributors(project) |> Enum.map(fn contributor -> {contributor.person_id, contributor.role} end)
+
+    assert length(contributors) == 2
+    assert Enum.member?(contributors, {ctx.creator.id, :reviewer})
+    assert Enum.member?(contributors, {ctx.champion.id, :champion})
+    refute Enum.member?(contributors, {ctx.creator.id, :contributor})
   end
 
   test "ProjectCreation operation creates bindings to company", ctx do
@@ -156,20 +181,17 @@ defmodule Operately.Operations.ProjectCreationTest do
     refute creator_subscription.canceled
   end
 
-  test "ProjectCreation operation doesn't add creator as contributor", ctx do
-    attrs = Map.merge(ctx.project_attrs, %{creator_is_contributor: "no"})
+  test "ProjectCreation operation always adds creator as contributor", ctx do
+    {:ok, project} = Operately.Operations.ProjectCreation.run(ctx.project_attrs)
 
-    {:ok, project} = Operately.Operations.ProjectCreation.run(attrs)
+    contributors = Projects.list_project_contributors(project) |> Enum.map(fn c -> {c.person_id, c.role} end)
 
-    contributors = Projects.list_project_contributors(project) |> Enum.map(fn c -> c.person_id end)
-
-    assert 2 == length(contributors)
-    refute Enum.member?(contributors, {ctx.creator.id, :contributor})
+    assert Enum.member?(contributors, {ctx.creator.id, :contributor})
 
     context = Access.get_context!(project_id: project.id)
     creator = Access.get_group!(person_id: ctx.creator.id)
 
-    refute Access.get_binding(group_id: creator.id, context_id: context.id)
+    assert Access.get_binding(group_id: creator.id, context_id: context.id, access_level: Binding.full_access())
   end
 
   test "ProjectCreation operation doesn't create bindings to space", ctx do

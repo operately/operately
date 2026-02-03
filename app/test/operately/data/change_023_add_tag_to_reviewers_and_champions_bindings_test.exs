@@ -98,7 +98,6 @@ defmodule Operately.Data.Change023AddTagToReviewersAndChampionsBindingsTest do
       reviewer_id: reviewer.id,
       champion_id: champion.id,
       group_id: company.company_space_id,
-      creator_is_contributor: "yes",
     })
   end
 

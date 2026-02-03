@@ -129,6 +129,14 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
     ctx
   end
 
+  step :assert_creator_is_contributor, ctx, fields do
+    ctx
+    |> UI.click(testid: "manage-team-button")
+    |> UI.find(UI.query(testid: "contributors-section"), fn el ->
+      UI.assert_text(el, fields.creator.full_name)
+    end)
+  end
+
   step :assert_project_created_email_sent, ctx, fields do
     people = who_should_be_notified(fields)
 
