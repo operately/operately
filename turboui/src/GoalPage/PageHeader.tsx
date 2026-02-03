@@ -27,7 +27,7 @@ export function PageHeader(props: GoalPage.State) {
             className="font-semibold text-lg"
             text={props.goalName}
             onChange={props.setGoalName}
-            readonly={!props.canEdit}
+            readonly={!props.permissions.canEdit}
             trimBeforeSave
             testId="goal-name-field"
           />
