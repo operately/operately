@@ -269,7 +269,7 @@ defmodule OperatelyWeb.Api.Goals do
       conn
       |> Steps.start_transaction()
       |> Steps.find_goal(inputs.goal_id)
-      |> Steps.check_permissions(:can_edit)
+      |> Steps.check_permissions(:can_edit_target)
       |> Steps.add_target(inputs.name, inputs.start_value, inputs.target_value, inputs.unit)
       |> Steps.save_activity(:goal_target_adding, fn changes ->
         %{
@@ -302,7 +302,7 @@ defmodule OperatelyWeb.Api.Goals do
       conn
       |> Steps.start_transaction()
       |> Steps.find_goal(inputs.goal_id)
-      |> Steps.check_permissions(:can_edit)
+      |> Steps.check_permissions(:can_edit_target)
       |> Steps.find_target(inputs.target_id)
       |> Steps.delete_target()
       |> Steps.save_activity(:goal_target_deleting, fn changes ->
@@ -339,7 +339,7 @@ defmodule OperatelyWeb.Api.Goals do
       conn
       |> Steps.start_transaction()
       |> Steps.find_goal(inputs.goal_id)
-      |> Steps.check_permissions(:can_edit)
+      |> Steps.check_permissions(:can_edit_target)
       |> Steps.find_target(inputs.target_id)
       |> Steps.update_target(inputs)
       # |> Steps.save_activity(:goal_target_updated, fn changes ->
@@ -380,7 +380,7 @@ defmodule OperatelyWeb.Api.Goals do
       conn
       |> Steps.start_transaction()
       |> Steps.find_goal(inputs.goal_id)
-      |> Steps.check_permissions(:can_edit)
+      |> Steps.check_permissions(:can_edit_target)
       |> Steps.find_target(inputs.target_id)
       |> Steps.update_target_value(inputs.value)
       |> Steps.save_activity(:goal_target_updating, fn changes ->
@@ -416,7 +416,7 @@ defmodule OperatelyWeb.Api.Goals do
       conn
       |> Steps.start_transaction()
       |> Steps.find_goal(inputs.goal_id)
-      |> Steps.check_permissions(:can_edit)
+      |> Steps.check_permissions(:can_edit_target)
       |> Steps.find_target(inputs.target_id)
       |> Steps.update_target_index(inputs.index)
       # |> Steps.save_activity(:goal_target_index_updated, fn changes ->

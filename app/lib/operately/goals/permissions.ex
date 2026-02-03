@@ -12,6 +12,8 @@ defmodule Operately.Goals.Permissions do
     :can_open_discussion,
     :can_edit_discussion,
     :can_edit_access_level,
+    :can_edit_target,
+    :can_edit_checklist,
   ]
 
   def calculate(access_level) do
@@ -19,6 +21,7 @@ defmodule Operately.Goals.Permissions do
       can_view: can_view(access_level),
       can_check_in: can_check_in(access_level),
       can_edit: can_edit(access_level),
+      can_edit_target: can_edit_target(access_level),
       can_reopen: can_edit(access_level),
       can_archive: can_archive(access_level),
       can_close: can_edit(access_level),
@@ -26,6 +29,7 @@ defmodule Operately.Goals.Permissions do
       can_open_discussion: can_open_discussion(access_level),
       can_edit_discussion: can_edit_discussion(access_level),
       can_edit_access_level: can_edit_access_level(access_level),
+      can_edit_checklist: can_edit_checklist(access_level),
     }
   end
 
@@ -33,6 +37,8 @@ defmodule Operately.Goals.Permissions do
   def can_view(access_level), do: access_level >= Binding.view_access()
   def can_check_in(access_level), do: access_level >= Binding.edit_access()
   def can_edit(access_level), do: access_level >= Binding.full_access()
+  def can_edit_target(access_level), do: access_level >= Binding.edit_access()
+  def can_edit_checklist(access_level), do: access_level >= Binding.edit_access()
   def can_reopen(access_level), do: access_level >= Binding.full_access()
   def can_delete(access_level), do: access_level >= Binding.full_access()
   def can_open_discussion(access_level), do: access_level >= Binding.edit_access()
