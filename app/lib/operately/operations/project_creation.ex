@@ -17,7 +17,6 @@ defmodule Operately.Operations.ProjectCreation do
     :reviewer_id,
     :creator_id,
     :creator_role,
-    :creator_is_contributor,
     :visibility,
     :group_id,
     :goal_id,
@@ -106,7 +105,9 @@ defmodule Operately.Operations.ProjectCreation do
   end
 
   defp insert_creator_as_contributor(multi, params) do
-    if is_creator_a_contributor?(params) do
+    if creator_is_champion_or_reviewer?(params) do
+      multi
+    else
       Multi.insert(multi, :creator, fn changes ->
         Contributor.changeset(%{
           project_id: changes.project.id,
@@ -118,8 +119,6 @@ defmodule Operately.Operations.ProjectCreation do
       |> Multi.run(:creator_subscription, fn _repo, %{project: project} ->
         ensure_subscription(project.subscription_list_id, params.creator_id)
       end)
-    else
-      multi
     end
   end
 
@@ -141,11 +140,11 @@ defmodule Operately.Operations.ProjectCreation do
   end
 
   defp insert_binding_for_creator(multi, params) do
-    if is_creator_a_contributor?(params) do
+    if creator_is_champion_or_reviewer?(params) do
+      multi
+    else
       group = Access.get_group!(person_id: params.creator_id)
       Access.insert_binding(multi, :creator_binding, group, Binding.full_access())
-    else
-      multi
     end
   end
 
@@ -177,14 +176,8 @@ defmodule Operately.Operations.ProjectCreation do
     end)
   end
 
-  defp is_creator_a_contributor?(%__MODULE__{} = params) do
-    cond do
-      params.champion_id == params.creator_id -> false
-      params.reviewer_id == params.creator_id -> false
-      params.creator_is_contributor == "no" -> false
-      params.creator_is_contributor == "yes" -> true
-      true -> false
-    end
+  defp creator_is_champion_or_reviewer?(%__MODULE__{} = params) do
+    params.champion_id == params.creator_id or params.reviewer_id == params.creator_id
   end
 
   defp is_private(visibility) do

@@ -94,7 +94,6 @@ defmodule Operately.Operations.ProjectSpaceMovingTest do
     attrs = Map.merge(ctx.attrs, %{
       champion_id: champion.id,
       reviewer_id: reviewer.id,
-      creator_is_contributor: "no",
     })
 
     {:ok, project} = Oban.Testing.with_testing_mode(:manual, fn ->
