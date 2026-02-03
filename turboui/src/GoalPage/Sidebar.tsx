@@ -49,6 +49,7 @@ export function Sidebar(props: GoalPage.State) {
 
 function StartDate(props: GoalPage.State) {
   const isReadonly = !props.permissions.canEdit || !!props.closedAt;
+  const testId = isReadonly ? "start-date-field-readonly" : "start-date-field";
 
   return (
     <SidebarSection title="Start Date">
@@ -57,7 +58,7 @@ function StartDate(props: GoalPage.State) {
         onDateSelect={props.setStartDate}
         placeholder="Set date"
         readonly={isReadonly}
-        testId="start-date-field"
+        testId={testId}
         useStartOfPeriod
       />
     </SidebarSection>
@@ -66,6 +67,7 @@ function StartDate(props: GoalPage.State) {
 
 function DueDate(props: GoalPage.State) {
   const isReadonly = !props.permissions.canEdit || !!props.closedAt;
+  const testId = isReadonly ? "due-date-field-readonly" : "due-date-field";
 
   return (
     <SidebarSection title="Due Date">
@@ -75,7 +77,7 @@ function DueDate(props: GoalPage.State) {
         placeholder="Set date"
         readonly={isReadonly}
         showOverdueWarning={!props.closedAt}
-        testId="due-date-field"
+        testId={testId}
       />
 
       <OverdueWarning {...props} />
@@ -124,6 +126,9 @@ function ParentGoal(props: GoalPage.State) {
 }
 
 function Champion(props: GoalPage.State) {
+  const readonly = !props.permissions.canEdit;
+  const testId = readonly ? "champion-field-readonly" : "champion-field";
+
   return (
     <SidebarSection
       title={
@@ -145,10 +150,10 @@ function Champion(props: GoalPage.State) {
       }
     >
       <PersonField
-        testId="champion-field"
+        testId={testId}
         person={props.champion}
         setPerson={props.setChampion}
-        readonly={!props.permissions.canEdit}
+        readonly={readonly}
         searchData={props.championSearch}
         emptyStateMessage="Set champion"
         emptyStateReadOnlyMessage="No champion"
@@ -168,6 +173,9 @@ function Champion(props: GoalPage.State) {
 }
 
 function Reviewer(props: GoalPage.State) {
+  const readonly = !props.permissions.canEdit;
+  const testId = readonly ? "reviewer-field-readonly" : "reviewer-field";
+  
   return (
     <SidebarSection
       title={
@@ -189,10 +197,10 @@ function Reviewer(props: GoalPage.State) {
       }
     >
       <PersonField
-        testId="reviewer-field"
+        testId={testId}
         person={props.reviewer}
         setPerson={props.setReviewer}
-        readonly={!props.permissions.canEdit}
+        readonly={readonly}
         searchData={props.reviewerSearch}
         emptyStateMessage="Set reviewer"
         emptyStateReadOnlyMessage="No reviewer"
