@@ -32,6 +32,12 @@ defmodule Operately.Demo.Data do
     - :company_space
     - :owner
 
+  # Invitations and Outside Collaborators
+
+  Set `invited: true` on a person to keep their invitation open.
+  Add outside collaborators under `outside_collaborators` and reference them
+  in spaces or projects like any other person key.
+
   # Avatars
 
   The avatars are sourced from Unsplash. To add an avatar, go to unsplash.com,
@@ -88,6 +94,7 @@ defmodule Operately.Demo.Data do
           title: "VP of Compliance",
           description: "Compliance + risk. Keeps it simple. Hiker, list-maker.",
           avatar: "photo-1494790108377-be9c29b29330",
+          invited: true,
           reports_to: :bob_williams
         },
         %{
@@ -182,6 +189,7 @@ defmodule Operately.Demo.Data do
           name: "Tina Scott",
           title: "Customer Support Representative",
           avatar: "photo-1700248356502-ca48ae3bafd6",
+          invited: true,
           reports_to: :jack_thomas
         },
         %{
@@ -189,7 +197,28 @@ defmodule Operately.Demo.Data do
           name: "Walter Baker",
           title: "Lead Software Engineer",
           avatar: "photo-1521341957697-b93449760f30",
+          invited: true,
           reports_to: :mia_clark
+        },
+      ],
+      outside_collaborators: [
+        %{
+          key: :sasha_park,
+          name: "Sasha Park",
+          title: "Brand Strategy Consultant",
+          avatar: "photo-1524504388940-b1c1722653e1"
+        },
+        %{
+          key: :diego_ramirez,
+          name: "Diego Ramirez",
+          title: "Freelance Product Designer",
+          avatar: "photo-1506794778202-cad84cf45f1d"
+        },
+        %{
+          key: :maya_singh,
+          name: "Maya Singh",
+          title: "Solutions Architect",
+          avatar: "photo-1508214751196-bcfd4ca60f91"
         },
       ],
       spaces: [
@@ -940,7 +969,8 @@ defmodule Operately.Demo.Data do
           champion: :noah_lewis,
           reviewer: :emily_davis,
           contributors: [
-            %{person: :noah_lewis, responsibility: "Growth Marketer"}
+            %{person: :noah_lewis, responsibility: "Growth Marketer"},
+            %{person: :sasha_park, responsibility: "Brand Strategy Consultant"}
           ],
           goal: :optimize_roi_of_ads,
           description: "This project aims to improve our ad targeting strategies on major social media platforms. By analyzing user behavior and creating an ideal customer profile, we'll develop more effective ad creatives. The project includes A/B testing different ad placements and content to maximize our return on investment. Success will be measured by increased click-through rates and improved conversion from ads to signups.",
@@ -1860,7 +1890,8 @@ defmodule Operately.Demo.Data do
           champion: :walter_baker,
           reviewer: :frank_miller,
           contributors: [
-            %{person: :walter_baker, responsibility: "Senior Developer"}
+            %{person: :walter_baker, responsibility: "Senior Developer"},
+            %{person: :diego_ramirez, responsibility: "Product Designer"}
           ],
           goal: :enhance_product_functionality,
           description: "This project aims to enhance our product's collaborative capabilities. We'll identify and develop the top requested collaborative features, with a focus on real-time document collaboration. The project includes creating detailed wireframes, developing an MVP, and conducting extensive beta testing with power users. Success will be measured by user adoption of new features and improvement in team productivity metrics.",
@@ -2128,7 +2159,8 @@ defmodule Operately.Demo.Data do
           champion: :quinn_walker,
           reviewer: :bob_williams,
           contributors: [
-            %{person: :quinn_walker, responsibility: "Operations Manager"}
+            %{person: :quinn_walker, responsibility: "Operations Manager"},
+            %{person: :maya_singh, responsibility: "Systems Consultant"}
           ],
           goal: :document_core_business_processes,
           description: "This project focuses on standardizing and documenting core business processes to improve operational efficiency. We'll identify the top 10 most critical processes, create detailed workflow maps, and develop standardized templates. These templates will serve as a company-wide resource, ensuring consistency and facilitating onboarding of new team members. Success will be measured by the number of processes documented and the reduction in time spent on routine tasks.",
