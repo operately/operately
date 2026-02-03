@@ -8,7 +8,6 @@ defmodule Operately.Support.Features.OutsideCollaboratorAccessSteps do
     ctx
     |> Factory.setup()
     |> Factory.add_company_owner(:owner)
-    |> Factory.enable_feature("guest-accounts")
     |> Factory.add_space(:space, company_permissions: Binding.edit_access())
     |> Factory.add_goal(:parent_goal, :space, name: "Parent Goal", company_access: Binding.edit_access(), space_access: Binding.edit_access())
     |> Factory.add_project(:project, :space, name: "Test Project", goal: :parent_goal, company_access_level: Binding.edit_access(), space_access_level: Binding.edit_access())
@@ -20,7 +19,6 @@ defmodule Operately.Support.Features.OutsideCollaboratorAccessSteps do
     ctx
     |> Factory.setup()
     |> Factory.add_company_owner(:owner)
-    |> Factory.enable_feature("guest-accounts")
     |> Factory.add_space(:space, company_permissions: Binding.edit_access())
     |> Factory.add_goal(:parent_goal, :space, name: "Parent Goal", company_access: Binding.edit_access(), space_access: Binding.edit_access())
     |> Factory.add_goal(:goal, :space, name: "Test Goal", parent_goal: :parent_goal, company_access: Binding.edit_access(), space_access: Binding.edit_access())
@@ -136,7 +134,6 @@ defmodule Operately.Support.Features.OutsideCollaboratorAccessSteps do
     ctx
     |> Factory.setup()
     |> Factory.add_company_owner(:owner)
-    |> Factory.enable_feature("guest-accounts")
     |> Factory.add_outside_collaborator(:collaborator, :owner)
   end
 
