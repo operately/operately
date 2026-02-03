@@ -15,11 +15,12 @@ export function Page() {
 
   const [items, addItem] = useWorkMapItems(workMap);
   const spaceSearch = useSpaceSearch();
+  const canAddResource = space.permissions?.canCreateGoal && space.permissions?.canCreateProject;
 
   return (
     <WorkMapPage
       title="Work Map"
-      addingEnabled={true}
+      addingEnabled={canAddResource}
       items={convertToWorkMapItems(paths, items)}
       addItem={addItem}
       spaceSearch={spaceSearch}

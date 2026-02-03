@@ -48,14 +48,14 @@ function Options({ permissions }: { permissions: ResourceHubPermissions }) {
       hidden={!permissions.canCreateFile}
       children="Upload files"
     />,
-    <NewLinkSubMenu key={4} permissions={permissions} />,
+    <NewLinkSubMenu key={4} hidden={!permissions.canCreateLink} />,
   ];
 }
 
-function NewLinkSubMenu({ permissions }: { permissions: ResourceHubPermissions }) {
+function NewLinkSubMenu({ hidden }: { hidden: boolean }) {
   const { navigateToNewLink } = useNewFileModalsContext();
 
-  if (!permissions.canCreateLink) return <></>;
+  if (hidden) return null;
 
   return (
     <SubMenu label="Add link" icon={IconLink}>
