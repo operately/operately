@@ -110,10 +110,6 @@ defmodule Operately.Features.InviteMemberTest do
   end
 
   describe "with guest accounts feature enabled" do
-    setup ctx do
-      Steps.given_that_guest_accounts_feature_is_enabled(ctx)
-    end
-
     feature "admin account can invite team members", ctx do
       full_name = "Jamie Cole"
 

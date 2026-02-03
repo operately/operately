@@ -731,7 +731,6 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx
     |> Factory.setup()
     |> Factory.add_company_owner(:owner)
-    |> Factory.enable_feature("guest-accounts")
     |> Factory.add_space(:space)
     |> Factory.add_goal(:goal, :space, name: "Test Goal", company_access: Binding.comment_access(), space_access: Binding.comment_access())
     |> Factory.add_outside_collaborator(:collaborator, :owner)
