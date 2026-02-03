@@ -144,7 +144,6 @@ defmodule Operately.Data.Change021CreateProjectBindingsToCompanyAndSpaceTest do
       reviewer_id: reviewer.id,
       champion_id: champion.id,
       group_id: attrs.group_id,
-      creator_is_contributor: "yes",
     })
   end
 
