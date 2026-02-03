@@ -49,7 +49,7 @@ function Warnings(props: GoalPage.State) {
 }
 
 function NeglectedGoalWarning(props: GoalPage.State) {
-  if (props.canEdit) {
+  if (props.permissions.canEdit) {
     return (
       <WarningCallout
         message="Outdated goal"

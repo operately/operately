@@ -4,7 +4,7 @@ import { PrimaryButton } from "../Button";
 import { CheckInCard } from "../CheckInCard";
 
 export function CheckIns(props: GoalPage.State) {
-  const showCheckInButton = props.canEdit && props.state !== "closed";
+  const showCheckInButton = props.permissions.canCheckIn && props.state !== "closed";
 
   return (
     <div className="p-4 max-w-3xl mx-auto my-6 overflow-auto">

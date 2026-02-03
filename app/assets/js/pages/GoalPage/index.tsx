@@ -235,10 +235,7 @@ function Page() {
     closedAt: Time.parse(goal.closedAt),
     retrospective: prepareRetrospective(paths, goal.retrospective),
     neglectedGoal: false,
-    canEdit: goal.permissions.canEdit,
-    canEditParentGoal: goal.permissions.canEdit,
-    canEditAccessLevel: goal.permissions.canEditAccessLevel,
-    canAddDiscussion: goal.permissions.canOpenDiscussion,
+    permissions: goal.permissions,
     deleteGoal,
 
     goalName,
