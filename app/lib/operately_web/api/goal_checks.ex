@@ -18,7 +18,7 @@ defmodule OperatelyWeb.Api.GoalChecks do
       conn
       |> Steps.start_transaction()
       |> Steps.find_goal(inputs.goal_id)
-      |> Steps.check_permissions(:can_edit)
+      |> Steps.check_permissions(:can_edit_checklist)
       |> Steps.add_check(inputs.name)
       |> Steps.save_activity(:goal_check_adding, fn changes ->
         %{
@@ -49,7 +49,7 @@ defmodule OperatelyWeb.Api.GoalChecks do
       conn
       |> Steps.start_transaction()
       |> Steps.find_goal(inputs.goal_id)
-      |> Steps.check_permissions(:can_edit)
+      |> Steps.check_permissions(:can_edit_checklist)
       |> Steps.find_check(inputs.check_id)
       |> Steps.delete_check()
       |> Steps.save_activity(:goal_check_removing, fn changes ->
@@ -82,7 +82,7 @@ defmodule OperatelyWeb.Api.GoalChecks do
       conn
       |> Steps.start_transaction()
       |> Steps.find_goal(inputs.goal_id)
-      |> Steps.check_permissions(:can_edit)
+      |> Steps.check_permissions(:can_edit_checklist)
       |> Steps.find_check(inputs.check_id)
       |> Steps.update_check(inputs.name)
       |> Steps.commit()
@@ -107,7 +107,7 @@ defmodule OperatelyWeb.Api.GoalChecks do
       conn
       |> Steps.start_transaction()
       |> Steps.find_goal(inputs.goal_id)
-      |> Steps.check_permissions(:can_edit)
+      |> Steps.check_permissions(:can_edit_checklist)
       |> Steps.find_check(inputs.check_id)
       |> Steps.update_check_index(inputs.index)
       |> Steps.commit()
@@ -131,7 +131,7 @@ defmodule OperatelyWeb.Api.GoalChecks do
       conn
       |> Steps.start_transaction()
       |> Steps.find_goal(inputs.goal_id)
-      |> Steps.check_permissions(:can_edit)
+      |> Steps.check_permissions(:can_edit_checklist)
       |> Steps.find_check(inputs.check_id)
       |> Steps.toggle_check()
       |> Steps.save_activity(:goal_check_toggled, fn changes ->

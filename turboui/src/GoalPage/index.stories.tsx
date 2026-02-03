@@ -12,6 +12,7 @@ import { asRichText } from "../utils/storybook/richContent";
 import { spaceSearchFn } from "../utils/storybook/spaceSearchFn";
 import { storyPath } from "../utils/storybook/storypath";
 import { startOfCurrentYear } from "../utils/time";
+import { generateGoalPermissions } from "../utils/storybook/permissions";
 
 const meta: Meta<typeof GoalPage> = {
   title: "Pages/GoalPage",
@@ -141,7 +142,6 @@ function Component(props: Partial<GoalPage.Props>) {
       closeLink="#"
       reopenLink="#"
       manageAccessLink="#"
-      canEditAccessLevel={true}
       newCheckInLink={storyPath("Pages/GoalCheckInPage", "Default")}
       newDiscussionLink="#"
       addSubgoalLink="#"
@@ -157,7 +157,7 @@ function Component(props: Partial<GoalPage.Props>) {
       setDueDate={setDueDate}
       startDate={startDate}
       setStartDate={setStartDate}
-      canEdit={props.canEdit ?? true}
+      permissions={props.permissions ?? generateGoalPermissions(true)}
       championSearch={championSearch}
       reviewerSearch={reviewerSearch}
       activityFeed={<div></div>}
@@ -171,7 +171,6 @@ function Component(props: Partial<GoalPage.Props>) {
       deleteGoal={deleteGoal}
       richTextHandlers={createMockRichEditorHandlers()}
       currentUser={currentUser}
-      canAddDiscussion={true}
     />
   );
 }
