@@ -326,7 +326,7 @@ defmodule OperatelyWeb.Api.Projects do
       conn
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.project_id, [:champion])
-      |> Steps.check_permissions(:can_edit_timeline)
+      |> Steps.check_permissions(:can_create_milestone)
       |> Steps.create_milestone(inputs)
       |> Steps.add_milestone_to_ordering_state()
       |> Steps.save_activity(:project_milestone_creation, fn changes ->
@@ -364,7 +364,7 @@ defmodule OperatelyWeb.Api.Projects do
       conn
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.project_id)
-      |> Steps.check_permissions(:can_edit_timeline)
+      |> Steps.check_permissions(:can_edit_milestone)
       |> Steps.find_milestone(inputs.milestone_id)
       |> Ecto.Multi.run(:updated_milestone, fn _repo, %{milestone: milestone} ->
         tf = milestone.timeframe || %{}
