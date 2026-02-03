@@ -1,5 +1,6 @@
 defmodule Operately.Demo.People do
   alias Operately.Demo.{Resources, RichText}
+  alias Operately.People
 
   def create_people(resources, data) do
     Resources.create(resources, data, fn {resources, d, _index} ->
@@ -7,21 +8,60 @@ defmodule Operately.Demo.People do
     end)
   end
 
+  def create_outside_collaborators(resources, nil), do: resources
+  def create_outside_collaborators(resources, []), do: resources
+  def create_outside_collaborators(resources, data) do
+    company = Resources.get(resources, :company)
+
+    Resources.create(resources, data, fn {_res, d, _index} ->
+      create_guest_person(company, d)
+    end)
+  end
+
   defp create_person(resources, data) do
     company = Resources.get(resources, :company)
     owner = Resources.get(resources, :owner)
+    email = create_email(company, data)
+    invited = data[:invited] == true
 
-    {:ok, invite_link} = Operately.Operations.CompanyMemberAdding.run(owner, %{
+    {:ok, invitation} = Operately.Operations.CompanyMemberAdding.run(owner, %{
       full_name: data.name,
-      email: create_email(company, data),
+      email: email,
       title: data.title,
-    })
+    }, not invited)
 
-    person = Operately.Repo.preload(invite_link, :person).person
+    person = fetch_member(company, invitation, email)
 
     {:ok, person} = set_avatar(person, data.avatar)
     {:ok, person} = set_manager(person, resources, data[:reports_to])
     {:ok, person} = set_description(person, data[:description])
+    {:ok, person} = set_first_login(person, invited)
+
+    person
+  end
+
+  defp fetch_member(company, nil, email) do
+    case Operately.People.get_person_by_email(company, email) do
+      nil -> raise "Could not find person with email #{email}"
+      person -> person
+    end
+  end
+
+  defp fetch_member(_company, invitation, _email) do
+    Operately.Repo.preload(invitation, :person).person
+  end
+
+  defp create_guest_person(company, data) do
+    {:ok, person} = Operately.People.create_person(%{
+      company_id: company.id,
+      full_name: data.name,
+      email: create_email(company, data),
+      title: data.title,
+      type: :guest,
+    })
+
+    {:ok, person} = set_avatar(person, data.avatar)
+    {:ok, person} = set_first_login(person, false)
 
     person
   end
@@ -44,6 +84,17 @@ defmodule Operately.Demo.People do
     Operately.People.update_person(person, %{
       description: RichText.from_string(description)
     })
+  end
+
+  defp set_first_login(person, true), do: {:ok, person}
+  defp set_first_login(person, _) do
+    person = Operately.Repo.preload(person, :account)
+    case person.account do
+      nil -> {:ok, person}
+      account ->
+        {:ok, _} = People.mark_account_first_login(account)
+        {:ok, person}
+    end
   end
 
   defp create_email(company, data) do
