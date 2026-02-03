@@ -10,4 +10,5 @@ export interface GoalPermissions {
   canEditDiscussion: boolean;
   canEditAccessLevel: boolean;
   canEditTarget: boolean;
+  canEditChecklist: boolean;
 }
