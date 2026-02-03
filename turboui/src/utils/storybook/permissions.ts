@@ -78,6 +78,7 @@ export function generateGoalPermissions(
     canEditDiscussion: baseValue,
     canEditAccessLevel: baseValue,
     canEditTarget: baseValue,
+    canEditChecklist: baseValue,
   };
 
   if (overrides) {
