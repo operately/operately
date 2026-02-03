@@ -61,8 +61,6 @@ function Form() {
       champion: "",
       reviewer: "",
       goal: goal,
-      creatorRole: "",
-      isContrib: "no",
       access: initialAccessLevels(null, findParentAccessLevel(space, spaces, space?.id)),
       showAdvancedAccess: false,
     },
@@ -88,8 +86,6 @@ function Form() {
         name: form.values.name,
         championId: form.values.champion,
         reviewerId: form.values.reviewer,
-        creatorIsContributor: form.values.isContrib,
-        creatorRole: form.values.creatorRole,
         spaceId: form.values.space,
         goalId: form.values.goal?.id,
         anonymousAccessLevel: form.values.access.anonymous,
@@ -113,8 +109,6 @@ function Form() {
             <SelectChampion me={me} />
             <SelectReviewer me={me} />
           </Forms.FieldGroup>
-
-          <CreatorsResponsibilityFields form={form} />
         </Forms.FieldGroup>
 
         <PrivacyLevel />
@@ -139,35 +133,6 @@ function SelectReviewer({ me }: { me: People.Person }) {
       default={me?.manager}
       required={false}
     />
-  );
-}
-
-const WillYouContributeOptions = [
-  { label: "No, I'm just setting it up for someone else", value: "no" },
-  { label: "Yes, I'll contribute", value: "yes" },
-];
-
-function CreatorsResponsibilityFields({ form }) {
-  const hideIsContrib = useShouldHideIsCotrib({ form });
-  const hideCreatorRole = useShouldHideCreatorRole({ form });
-
-  return (
-    <>
-      <Forms.RadioButtons
-        label="Will you contribute?"
-        field={"isContrib"}
-        hidden={hideIsContrib}
-        options={WillYouContributeOptions}
-      />
-
-      <Forms.TextInput
-        label="What is your responsibility on this project?"
-        field="creatorRole"
-        placeholder="e.g. Responsible for managing the project and coordinating tasks"
-        hidden={hideCreatorRole}
-        required={false}
-      />
-    </>
   );
 }
 
@@ -221,27 +186,4 @@ function findParentAccessLevel(
       space: PermissionLevels.COMMENT_ACCESS,
     };
   }
-}
-
-function useShouldHideIsCotrib({ form }) {
-  const me = useMe()!;
-
-  return React.useMemo(() => {
-    const isChampion = compareIds(form.values.champion, me.id);
-    const isReviewer = compareIds(form.values.reviewer, me.id);
-
-    return isChampion || isReviewer;
-  }, [form.values.champion, form.values.reviewer, me?.id]);
-}
-
-function useShouldHideCreatorRole({ form }) {
-  const me = useMe()!;
-
-  return React.useMemo(() => {
-    const isChampion = compareIds(form.values.champion, me.id!);
-    const isReviewer = compareIds(form.values.reviewer, me.id!);
-    const isContributor = form.values.isContrib === "yes";
-
-    return isChampion || isReviewer || !isContributor;
-  }, [form.values.champion, form.values.reviewer, form.values.isContrib, me.id]);
 }

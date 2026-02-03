@@ -31,30 +31,14 @@ defmodule Operately.Features.ProjectCreationTest do
   end
 
   @tag login_as: :non_contributor
-  feature "add project for someone else, I'm not a contributor", ctx do
+  feature "creator is added as contributor when creating a project", ctx do
     params = %{name: "Website Redesign", space: ctx.group, creator: ctx.non_contributor, champion: ctx.champion, reviewer: ctx.reviewer}
 
     ctx
     |> Steps.start_adding_project()
     |> Steps.submit_project_form(params)
     |> Steps.assert_project_created(params)
-    |> Steps.assert_project_created_email_sent(params)
-    |> Steps.assert_project_created_notification_sent(params)
-    |> Steps.assert_project_created_feed(ctx.non_contributor)
-  end
-
-
-  @tag login_as: :project_manager
-  feature "add project for someone else, I'm a contributor", ctx do
-    params = %{name: "Website Redesign", space: ctx.group, creator: ctx.project_manager, champion: ctx.champion, reviewer: ctx.reviewer, add_creator_as_contributor: true}
-
-    ctx
-    |> Steps.start_adding_project()
-    |> Steps.submit_project_form(params)
-    |> Steps.assert_project_created(params)
-    |> Steps.assert_project_created_email_sent(params)
-    |> Steps.assert_project_created_notification_sent(params)
-    |> Steps.assert_project_created_feed(ctx.project_manager)
+    |> Steps.assert_creator_is_contributor(params)
   end
 
   @tag login_as: :champion

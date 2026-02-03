@@ -3344,8 +3344,6 @@ export interface CreateProjectInput {
   name?: string | null;
   championId?: string | null;
   reviewerId?: string | null;
-  creatorIsContributor?: string | null;
-  creatorRole?: string | null;
   goalId?: string | null;
   anonymousAccessLevel?: number | null;
   companyAccessLevel?: number | null;

@@ -19,7 +19,6 @@ defmodule Operately.Operations.ProjectCheckInTest do
     project = project_fixture(%{
       company_id: company.id,
       creator_id: creator.id,
-      creator_is_contributor: "no",
       champion_id: champion.id,
       reviewer_id: reviewer.id,
       group_id: company.company_space_id,
@@ -79,7 +78,7 @@ defmodule Operately.Operations.ProjectCheckInTest do
 
     perform_job(activity.id)
 
-    assert 4 == notifications_count(action: "project_check_in_submitted")
+    assert 5 == notifications_count(action: "project_check_in_submitted")
 
     notifications = fetch_notifications(activity.id, action: "project_check_in_submitted")
 
@@ -106,7 +105,7 @@ defmodule Operately.Operations.ProjectCheckInTest do
 
     perform_job(activity.id)
 
-    assert 4 == notifications_count(action: "project_check_in_submitted")
+    assert 5 == notifications_count(action: "project_check_in_submitted")
 
     notifications = fetch_notifications(activity.id, action: "project_check_in_submitted")
 

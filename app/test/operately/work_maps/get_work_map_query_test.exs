@@ -122,8 +122,9 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       assert Enum.any?(goal.assignees, fn person -> person.id == ctx.member1.id end)
 
       assert project.assignees != nil
-      assert length(project.assignees) == 1
-      assert hd(project.assignees).id == ctx.member2.id
+      assert length(project.assignees) == 2
+      assert Enum.any?(project.assignees, fn person -> person.id == ctx.member2.id end)
+      assert Enum.any?(project.assignees, fn person -> person.id == ctx.creator.id end)
     end
 
     test "does not include assignees when include_assignees is false", ctx do
@@ -654,7 +655,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
 
       # child_goal1 has 2 projects, but :creator contributes to only one of them
       |> Factory.add_project(:child_project1, :space1, goal: :child_goal1, champion: :member)
-      |> Factory.add_project(:child_project2, :space1, goal: :child_goal1, champion: :member)
+      |> Factory.add_project(:child_project2, :space1, goal: :child_goal1, champion: :member, creator: :member)
       |> Factory.add_project_contributor(:creator, :child_project1, :as_person)
 
       # Create goals in space2
@@ -663,7 +664,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
 
       # Create projects
       |> Factory.add_project(:project1, :space1, goal: :parent_goal1, champion: :creator)
-      |> Factory.add_project(:project2, :space1, goal: :parent_goal1, champion: :member)
+      |> Factory.add_project(:project2, :space1, goal: :parent_goal1, champion: :member, creator: :member)
     end
 
     test "filters correctly with all parameters", ctx do
