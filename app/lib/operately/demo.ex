@@ -14,6 +14,7 @@ defmodule Operately.Demo do
       resources
       |> Company.create_company(account, company_name, title)
       |> People.create_people(data[:people])
+      |> People.create_outside_collaborators(data[:outside_collaborators])
       |> Spaces.create_spaces(data[:spaces])
       |> Goals.create_goals(data[:goals])
       |> Projects.create_projects(data[:projects])
