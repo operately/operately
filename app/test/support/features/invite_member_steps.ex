@@ -18,11 +18,6 @@ defmodule Operately.Support.Features.InviteMemberSteps do
     Map.merge(ctx, %{company: company, admin: creator})
   end
 
-  step :given_that_guest_accounts_feature_is_enabled, ctx do
-    {:ok, company} = Companies.enable_experimental_feature(ctx.company, "guest-accounts")
-    Map.put(ctx, :company, company)
-  end
-
   step :given_that_an_account_exists_in_another_company, ctx, attrs do
     company = company_fixture()
     person_fixture_with_account(%{company_id: company.id, email: attrs.email, full_name: attrs.fullName, has_open_invitation: false})
