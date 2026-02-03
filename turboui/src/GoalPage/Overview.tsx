@@ -26,6 +26,7 @@ function MainContent(props: GoalPage.State) {
       <Warnings {...props} />
       <PageDescription
         {...props}
+        canEdit={props.permissions.canEdit}
         label="Goal description"
         placeholder="Describe the goal..."
         zeroStatePlaceholder="Describe the goal to provide context and clarity."

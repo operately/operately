@@ -628,7 +628,7 @@ defmodule Operately.Support.Features.GoalSteps do
 
   step :delete_goal, ctx do
     ctx
-    |> UI.click(testid: "delete-goal")
+    |> UI.click(testid: "delete-goal-button")
     |> UI.click(testid: "delete")
   end
 
@@ -653,7 +653,7 @@ defmodule Operately.Support.Features.GoalSteps do
 
   step :assert_goal_cannot_be_deleted, ctx do
     ctx
-    |> UI.click(testid: "delete-goal")
+    |> UI.click(testid: "delete-goal-button")
     |> UI.assert_text("Cannot delete")
   end
 

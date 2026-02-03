@@ -70,7 +70,7 @@ defmodule Operately.Support.Features.GoalClosingSteps do
 
   step :close_goal, ctx do
     ctx
-    |> UI.click(testid: "close-goal")
+    |> UI.click(testid: "close-goal-button")
     |> UI.assert_page(OperatelyWeb.Paths.goal_closing_path(ctx.company, ctx.goal))
     |> UI.fill_rich_text("We are closing the goal.")
     |> UI.click_button("Close Goal")
@@ -79,7 +79,7 @@ defmodule Operately.Support.Features.GoalClosingSteps do
 
   step :reopen_goal, ctx do
     ctx
-    |> UI.click(testid: "reopen-goal")
+    |> UI.click(testid: "reopen-goal-button")
     |> UI.assert_page(OperatelyWeb.Paths.goal_reopening_path(ctx.company, ctx.goal))
     |> UI.fill_rich_text("We are reopening the goal.")
     |> UI.click_button("Reopen Goal")
@@ -106,7 +106,7 @@ defmodule Operately.Support.Features.GoalClosingSteps do
     |> UI.find(UI.query(testid: "sidebar"), fn el ->
       el
       |> UI.assert_text("Goal Retrospective")
-      |> UI.assert_has(testid: "reopen-goal")
+      |> UI.assert_has(testid: "reopen-goal-button")
     end)
   end
 
@@ -118,11 +118,11 @@ defmodule Operately.Support.Features.GoalClosingSteps do
     |> UI.find(UI.query(testid: "sidebar"), fn el ->
       el
       |> UI.assert_text("Last update")
-      |> UI.assert_has(testid: "close-goal")
+      |> UI.assert_has(testid: "close-goal-button")
     end)
     |> UI.refute_text("Achieved")
     |> UI.refute_text("Goal Retrospective")
-    |> UI.refute_has(testid: "reopen-goal")
+    |> UI.refute_has(testid: "reopen-goal-button")
   end
 
   step :assert_goal_closed_status_banner_visible, ctx do
