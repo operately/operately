@@ -145,7 +145,6 @@ defmodule OperatelyWeb.Api.Mutations.CreateProjectTest do
       name: "project",
       reviewer_id: Paths.person_id(ctx.person),
       champion_id: Paths.person_id(ctx.person),
-      creator_role: "Developer",
       goal_id: Paths.goal_id(ctx.goal),
       anonymous_access_level: Binding.no_access(),
       company_access_level: Binding.view_access(),

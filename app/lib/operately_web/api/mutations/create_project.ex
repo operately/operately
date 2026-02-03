@@ -12,7 +12,6 @@ defmodule OperatelyWeb.Api.Mutations.CreateProject do
     field? :name, :string, null: true
     field? :champion_id, :string, null: true
     field? :reviewer_id, :string, null: true
-    field? :creator_role, :string, null: true
     field? :goal_id, :string, null: true
     field? :anonymous_access_level, :integer, null: true
     field? :company_access_level, :integer, null: true
@@ -56,7 +55,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateProject do
       name: inputs.name,
       champion_id: champion_id,
       reviewer_id: reviewer_id,
-      creator_role: inputs[:creator_role],
+      creator_role: "Contributor",
       visibility: "everyone",
       creator_id: person.id,
       company_id: person.company_id,
