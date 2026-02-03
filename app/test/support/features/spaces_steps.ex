@@ -498,4 +498,163 @@ defmodule Operately.Support.Features.SpacesSteps do
     |> UI.assert_text("Space deleted")
     |> UI.assert_text("The space and its content were deleted.")
   end
+
+
+  #
+  # Permission-based visibility tests
+  #
+
+  step :visit_page, ctx do
+    UI.visit(ctx, Paths.space_path(ctx.company, ctx.space))
+  end
+
+  step :given_user_has_full_access, ctx do
+    ctx
+    |> Factory.add_company_member(:person)
+    |> Factory.add_space(:space, company_permissions: Binding.full_access())
+    |> Factory.log_in_person(:person)
+  end
+
+  step :given_user_has_edit_access, ctx do
+    ctx
+    |> Factory.add_company_member(:person)
+    |> Factory.add_space(:space, company_permissions: Binding.edit_access())
+    |> Factory.log_in_person(:person)
+  end
+
+  step :given_user_has_comment_access, ctx do
+    ctx
+    |> Factory.add_company_member(:person)
+    |> Factory.add_space(:space, company_permissions: Binding.comment_access())
+    |> Factory.log_in_person(:person)
+  end
+
+  step :assert_user_has_full_access, ctx do
+    {:ok, space} = Group.get(ctx.person, id: ctx.space.id)
+
+    assert space.request_info.access_level == Binding.full_access()
+
+    ctx
+  end
+
+  step :assert_user_has_edit_access, ctx do
+    {:ok, space} = Group.get(ctx.person, id: ctx.space.id)
+
+    assert space.request_info.access_level == Binding.edit_access()
+
+    ctx
+  end
+
+  step :assert_user_has_comment_access, ctx do
+    {:ok, space} = Group.get(ctx.person, id: ctx.space.id)
+
+    assert space.request_info.access_level == Binding.comment_access()
+
+    ctx
+  end
+
+  step :assert_edit_space_visible, ctx do
+    UI.assert_has(ctx, testid: "edit-space")
+  end
+
+  step :refute_edit_space_visible, ctx do
+    UI.refute_has(ctx, testid: "edit-space")
+  end
+
+  step :assert_configure_tools_and_delete_options_visible, ctx do
+    ctx
+    |> UI.click(testid: "options-button")
+    |> UI.assert_has(testid: "configure-tools")
+    |> UI.assert_has(testid: "delete-space")
+  end
+
+  step :refute_configure_tools_and_delete_options_visible, ctx do
+    UI.refute_has(ctx, testid: "options-button")
+  end
+
+  step :assert_manage_access_visible, ctx do
+    UI.assert_has(ctx, testid: "access-management")
+  end
+
+  step :refute_manage_access_visible, ctx do
+    UI.refute_has(ctx, testid: "access-management")
+  end
+
+  step :assert_user_can_add_projects_and_goals_zero_state, ctx do
+    ctx
+    |> UI.visit(Paths.space_work_map_path(ctx.company, ctx.space))
+    |> UI.assert_text("Add a goal")
+    |> UI.assert_text("Add a project")
+  end
+
+  step :assert_user_can_add_projects_and_goals_non_zero_state, ctx do
+    ctx
+    |> Factory.add_project(:project, :space)
+    |> Factory.add_goal(:goal, :space, name: "Test Goal")
+    |> UI.visit(Paths.space_work_map_path(ctx.company, ctx.space))
+    |> UI.assert_text("Test Goal")
+    |> UI.assert_text("Add new item")
+  end
+
+  step :refute_user_can_add_projects_and_goals_zero_state, ctx do
+    ctx
+    |> UI.visit(Paths.space_work_map_path(ctx.company, ctx.space))
+    |> UI.assert_text("Nothing here yet.")
+  end
+
+  step :refute_user_can_add_projects_and_goals_non_zero_state, ctx do
+    ctx
+    |> Factory.add_project(:project, :space)
+    |> Factory.add_goal(:goal, :space, name: "Test Goal")
+    |> UI.visit(Paths.space_work_map_path(ctx.company, ctx.space))
+    |> UI.assert_text("Test Goal")
+    |> UI.refute_text("Add new item")
+  end
+
+  step :assert_user_can_post_discussion, ctx do
+    ctx
+    |> UI.visit(Paths.space_discussions_path(ctx.company, ctx.space))
+    |> UI.assert_has(testid: "new-discussion")
+  end
+
+  step :refute_user_can_post_discussion, ctx do
+    ctx
+    |> UI.visit(Paths.space_discussions_path(ctx.company, ctx.space))
+    |> UI.refute_has(testid: "new-discussion")
+  end
+
+  step :assert_user_can_add_resources, ctx do
+    ctx
+    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
+    |> UI.click(testid: "documents-files")
+    |> UI.assert_text("Ready for your first document")
+    |> UI.click(testid: "add-options")
+    |> UI.assert_has(testid: "new-document")
+    |> UI.assert_has(testid: "new-folder")
+    |> UI.assert_has(testid: "upload-files")
+    |> UI.assert_has(testid: "add-link")
+  end
+
+  step :refute_user_can_add_resources, ctx do
+    ctx
+    |> UI.visit(Paths.space_path(ctx.company, ctx.space))
+    |> UI.click(testid: "documents-files")
+    |> UI.assert_text("Ready for your first document")
+    |> UI.refute_has(testid: "add-options")
+  end
+
+  step :assert_user_can_add_tasks, ctx do
+    ctx
+    |> UI.visit(Paths.space_kanban_path(ctx.company, ctx.space))
+    |> UI.assert_has(testid: "add-task-button-pending")
+    |> UI.assert_has(testid: "add-task-button-in-progress")
+  end
+
+  step :refute_user_can_add_tasks, ctx do
+    ctx
+    |> UI.visit(Paths.space_kanban_path(ctx.company, ctx.space))
+    |> UI.assert_text("Tasks")
+    |> UI.refute_has(testid: "add-task-button-pending")
+    |> UI.refute_has(testid: "add-task-button-in-progress")
+  end
 end
