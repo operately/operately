@@ -32,10 +32,9 @@ function Page() {
   const [values, setValues] = React.useState<InviteMemberForm.Values>({ fullName: "", email: "", title: "" });
   const [errors, setErrors] = React.useState<InviteMemberForm.Errors>({});
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const showOutsideCollaborators = Companies.hasFeature(company, "guest-accounts");
   const memberTypeParam = searchParams.get("memberType");
   const memberType: CompanyAdminAddPeoplePage.MemberType =
-    memberTypeParam === "outside_collaborator" && showOutsideCollaborators ? "outside_collaborator" : "team_member";
+    memberTypeParam === "outside_collaborator" ? "outside_collaborator" : "team_member";
 
   const navigationItems = React.useMemo(
     () => [

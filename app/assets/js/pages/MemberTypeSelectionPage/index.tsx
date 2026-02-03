@@ -2,19 +2,11 @@ import React from "react";
 
 import { MemberTypeSelectionPage } from "turboui";
 import { PageModule } from "@/routes/types";
-import { Paths, usePaths } from "@/routes/paths";
-import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
+import { usePaths } from "@/routes/paths";
 import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
+import * as Pages from "@/components/Pages";
 
-export default { name: "MemberTypeSelectionPage", loader, Page } as PageModule;
-
-async function loader({ params }) {
-  const paths = new Paths({ companyId: params.companyId });
-
-  await redirectIfFeatureNotEnabled(params, { feature: "guest-accounts", path: paths.inviteTeamPath() });
-
-  return {};
-}
+export default { name: "MemberTypeSelectionPage", loader: Pages.emptyLoader, Page } as PageModule;
 
 function Page() {
   const paths = usePaths();

@@ -43,7 +43,6 @@ function Page() {
   const refresh = Pages.useRefresh();
   const [remove] = Companies.useRemoveCompanyMember();
   const [createInvite] = Api.invitations.useNewInvitationToken();
-  const showOutsideCollaborators = Companies.hasFeature(company, "guest-accounts");
 
   const buildPerson = React.useCallback(
     (person: People.Person): CompanyAdminManagePeoplePage.Person => {
@@ -103,7 +102,7 @@ function Page() {
       invitedPeople={invited}
       currentMembers={members}
       outsideCollaborators={collaborators}
-      showOutsideCollaborators={showOutsideCollaborators}
+      showOutsideCollaborators={true}
       onRemovePerson={handleRemove}
       onReissueInvitation={handleCreateInvite}
       onRenewInvitation={handleCreateInvite}
