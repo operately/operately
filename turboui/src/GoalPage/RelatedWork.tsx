@@ -6,7 +6,7 @@ import { SectionHeader } from "./SectionHeader";
 
 export function RelatedWork(props: GoalPage.State) {
   const spaceProps = "space" in props ? props : null;
-  const canAddRelatedWork = props.canEdit && Boolean(spaceProps);
+  const canAddRelatedWork = props.permissions.canEdit && Boolean(spaceProps);
 
   if (props.relatedWorkItems.length === 0 && !canAddRelatedWork) return null;
 

@@ -20,6 +20,7 @@ import { Overview } from "./Overview";
 import { PageHeader } from "./PageHeader";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
 import { StatusBanner } from "../ProjectPageLayout/StatusBanner";
+import { GoalPermissions } from "./types";
 
 export namespace GoalPage {
   export interface Space {
@@ -107,7 +108,6 @@ export namespace GoalPage {
     parentGoal: ParentGoal | null;
     setParentGoal: (goal: ParentGoal | null) => void;
     parentGoalSearch: (params: { query: string }) => Promise<ParentGoal[]>;
-    canEditParentGoal?: boolean;
 
     champion: Person | null;
     setChampion: (person: Person | null) => void;
@@ -133,9 +133,7 @@ export namespace GoalPage {
     closedAt: Date | null;
     retrospective: Retrospective | null;
 
-    canEdit: boolean;
-    canEditAccessLevel: boolean;
-    canAddDiscussion: boolean;
+    permissions: GoalPermissions;
     accessLevels: PrivacyField.AccessLevels;
     setAccessLevels: (levels: PrivacyField.AccessLevels) => void;
 

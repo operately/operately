@@ -628,7 +628,7 @@ defmodule Operately.Support.Features.GoalSteps do
 
   step :delete_goal, ctx do
     ctx
-    |> UI.click(testid: "delete-goal")
+    |> UI.click(testid: "delete-goal-button")
     |> UI.click(testid: "delete")
   end
 
@@ -653,7 +653,7 @@ defmodule Operately.Support.Features.GoalSteps do
 
   step :assert_goal_cannot_be_deleted, ctx do
     ctx
-    |> UI.click(testid: "delete-goal")
+    |> UI.click(testid: "delete-goal-button")
     |> UI.assert_text("Cannot delete")
   end
 
@@ -827,5 +827,158 @@ defmodule Operately.Support.Features.GoalSteps do
     {:error, :not_found} = Operately.Goals.Goal.get(ctx.collaborator, id: ctx.goal.id)
 
     ctx
+  end
+
+  #
+  # Permission-based visibility tests
+  #
+
+  step :given_user_has_full_access, ctx do
+    ctx
+    |> Factory.add_space_member(:person, :product)
+    |> Factory.add_goal(:goal, :product, champion: :person)
+    |> Factory.log_in_person(:person)
+  end
+
+  step :given_user_has_edit_access, ctx do
+    ctx
+    |> Factory.add_company_member(:person)
+    |> Factory.add_goal(:goal, :product, company_access: Binding.edit_access())
+    |> Factory.log_in_person(:person)
+  end
+
+  step :given_user_has_comment_access, ctx do
+    ctx
+    |> Factory.add_company_member(:person)
+    |> Factory.add_goal(:goal, :product, company_access: Binding.comment_access())
+    |> Factory.log_in_person(:person)
+  end
+
+  step :assert_user_has_full_access, ctx do
+    {:ok, goal} = Operately.Goals.Goal.get(ctx.person, id: ctx.goal.id)
+
+    assert goal.request_info.access_level == Binding.full_access()
+
+    ctx
+  end
+
+  step :assert_user_has_edit_access, ctx do
+    {:ok, goal} = Operately.Goals.Goal.get(ctx.person, id: ctx.goal.id)
+
+    assert goal.request_info.access_level == Binding.edit_access()
+
+    ctx
+  end
+
+  step :assert_user_has_comment_access, ctx do
+    {:ok, goal} = Operately.Goals.Goal.get(ctx.person, id: ctx.goal.id)
+
+    assert goal.request_info.access_level == Binding.comment_access()
+
+    ctx
+  end
+
+  step :assert_parent_goal_editable, ctx do
+    ctx
+    |> UI.click_text("Set parent goal")
+    |> UI.assert_has(testid: UI.testid(["parent-goal-field", ctx.parent_goal.name]))
+  end
+
+  step :refute_parent_goal_editable, ctx do
+    ctx
+    |> UI.refute_text("Set parent goal")
+  end
+
+  step :assert_start_date_editable, ctx do
+    ctx |> UI.assert_has(testid: "start-date-field")
+  end
+
+  step :refute_start_date_editable, ctx do
+    ctx
+    |> UI.assert_has(testid: "start-date-field-readonly")
+    |> UI.refute_has(testid: "start-date-field")
+  end
+
+  step :assert_champion_editable, ctx do
+    ctx
+    |> UI.click(testid: "champion-field")
+    |> UI.assert_has(testid: "champion-field-view-profile")
+    |> UI.assert_has(testid: "champion-field-assign-another")
+  end
+
+  step :refute_champion_editable, ctx do
+    ctx
+    |> UI.assert_has(testid: "champion-field-readonly")
+    |> UI.refute_has(testid: "champion-field")
+  end
+
+  step :assert_manage_access_button_visible, ctx do
+    ctx |> UI.assert_has(testid: "manage-goal-access-button")
+  end
+
+  step :refute_manage_access_button_visible, ctx do
+    ctx |> UI.refute_has(testid: "manage-goal-access-button")
+  end
+
+  step :assert_close_goal_button_visible, ctx do
+    ctx |> UI.assert_has(testid: "close-goal-button")
+  end
+
+  step :refute_close_goal_button_visible, ctx do
+    ctx |> UI.refute_has(testid: "close-goal-button")
+  end
+
+  step :assert_delete_goal_button_visible, ctx do
+    ctx |> UI.assert_has(testid: "delete-goal-button")
+  end
+
+  step :refute_delete_goal_button_visible, ctx do
+    ctx |> UI.refute_has(testid: "delete-goal-button")
+  end
+
+  step :assert_add_subgoal_button_visible, ctx do
+    ctx |> UI.assert_has(testid: "add-subgoal")
+  end
+
+  step :refute_add_subgoal_button_visible, ctx do
+    ctx |> UI.refute_has(testid: "add-subgoal")
+  end
+
+  step :assert_check_in_button_visible, ctx do
+    ctx
+    |> UI.assert_has(testid: "sidebar-check-in-button")
+    |> UI.click(testid: "tab-check-ins")
+    |> UI.assert_has(testid: "check-in-button")
+  end
+
+  step :refute_check_in_button_visible, ctx do
+    ctx
+    |> UI.refute_has(testid: "sidebar-check-in-button")
+    |> UI.click(testid: "tab-check-ins")
+    |> UI.refute_has(testid: "check-in-button")
+  end
+
+  step :assert_discussion_button_visible, ctx do
+    ctx
+    |> UI.click(testid: "tab-discussions")
+    |> UI.assert_has(testid: "start-discussion")
+  end
+
+  step :refute_discussion_button_visible, ctx do
+    ctx
+    |> UI.click(testid: "tab-discussions")
+    |> UI.refute_has(testid: "start-discussion")
+  end
+
+  step :assert_add_checklist_button_visible, ctx do
+    ctx
+    |> UI.click(testid: "tab-overview")
+    |> UI.assert_has(testid: "add-checklist-item")
+  end
+
+  step :refute_add_checklist_button_visible, ctx do
+    ctx
+    |> UI.click(testid: "tab-overview")
+    |> UI.refute_has(testid: "add-checklist-item")
   end
 end
