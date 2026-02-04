@@ -5,6 +5,7 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
 
   alias Operately.Support.Features.{EmailSteps, NotificationsSteps, FeedSteps}
   alias Operately.ContextualDates.ContextualDate
+  alias Operately.Access.Binding
   alias OperatelyWeb.Paths
   alias Wallaby.QueryError
 
@@ -33,7 +34,7 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
 
   step :given_that_milestone_has_comment, ctx do
     ctx
-    |> Map.put(:creator, ctx.champion)
+    |> Map.put(:creator, ctx.commenter.person)
     |> Factory.add_comment(:comment, :milestone)
   end
 
@@ -80,6 +81,46 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
 
   step :visit_tasks_tab_on_project_page, ctx do
     UI.visit(ctx, Paths.project_path(ctx.company, ctx.project, tab: "tasks"))
+  end
+
+  step :log_in_as_champion, ctx do
+    Factory.log_in_person(ctx, :champion)
+  end
+
+  step :log_in_as_contributor, ctx do
+    Factory.log_in_contributor(ctx, :contributor)
+  end
+
+  step :log_in_as_commenter, ctx do
+    Factory.log_in_contributor(ctx, :commenter)
+  end
+
+  step :log_in_as_viewer, ctx do
+    Factory.log_in_contributor(ctx, :viewer)
+  end
+
+  step :assert_contributor_has_edit_access, ctx do
+    {:ok, project} = Operately.Projects.Project.get(ctx.contributor.person, id: ctx.project.id)
+
+    assert project.request_info.access_level == Binding.edit_access()
+
+    ctx
+  end
+
+  step :assert_commenter_has_comment_access, ctx do
+    {:ok, project} = Operately.Projects.Project.get(ctx.commenter.person, id: ctx.project.id)
+
+    assert project.request_info.access_level == Binding.comment_access()
+
+    ctx
+  end
+
+  step :assert_viewer_has_view_access, ctx do
+    {:ok, project} = Operately.Projects.Project.get(ctx.viewer.person, id: ctx.project.id)
+
+    assert project.request_info.access_level == Binding.view_access()
+
+    ctx
   end
 
   step :assert_tasks_list_view, ctx do
@@ -594,11 +635,12 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
   end
 
   step :assert_milestone_deleted_visible_in_feed, ctx do
+    person = ctx.contributor.person
     short =
-      "#{Operately.People.Person.first_name(ctx.champion)} deleted the \"#{ctx.milestone.title}\" milestone"
+      "#{Operately.People.Person.first_name(person)} deleted the \"#{ctx.milestone.title}\" milestone"
 
     long =
-      "#{Operately.People.Person.first_name(ctx.champion)} deleted the \"#{ctx.milestone.title}\" milestone in #{ctx.project.name}"
+      "#{Operately.People.Person.first_name(person)} deleted the \"#{ctx.milestone.title}\" milestone in #{ctx.project.name}"
 
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
@@ -685,7 +727,7 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
       where: ctx.project.name,
       to: ctx.reviewer,
       action: "commented on the #{ctx.milestone.title} milestone",
-      author: ctx.champion
+      author: ctx.commenter.person
     })
   end
 
@@ -695,7 +737,7 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
       where: ctx.project.name,
       to: ctx.space_member,
       action: "commented on the #{ctx.milestone.title} milestone",
-      author: ctx.champion
+      author: ctx.commenter.person
     })
   end
 
@@ -765,7 +807,7 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     |> UI.login_as(ctx.space_member)
     |> UI.visit(Paths.notifications_path(ctx.company))
     |> NotificationsSteps.assert_activity_notification(%{
-      author: ctx.champion,
+      author: ctx.commenter.person,
       action: "Re: #{ctx.milestone.title}"
     })
   end

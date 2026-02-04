@@ -1223,11 +1223,11 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
       })
     end
 
-    test "it returns forbidden for space members without full access", ctx do
+    test "it returns forbidden for space members without edit access", ctx do
       ctx =
         ctx
         |> Factory.edit_project_company_members_access(:project, :no_access)
-        |> Factory.edit_project_space_members_access(:project, :edit_access)
+        |> Factory.edit_project_space_members_access(:project, :comment_access)
         |> Factory.log_in_person(:space_member)
 
       assert {403, _} = mutation(ctx.conn, [:project_milestones, :delete], %{
