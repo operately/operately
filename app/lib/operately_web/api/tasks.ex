@@ -755,6 +755,9 @@ defmodule OperatelyWeb.Api.Tasks do
     def create_task(multi, inputs) do
       multi
       |> Notifications.SubscriptionList.insert(%{send_to_everyone: false, subscription_parent_type: :project_task})
+      |> Ecto.Multi.run(:creator_subscription, fn _repo, %{me: me, subscription_list: subscription_list} ->
+        ensure_subscription(subscription_list.id, me.id, :joined)
+      end)
       |> Ecto.Multi.run(:new_task, fn _repo, changes ->
         context = get_context_from_changes(changes)
         {project_id, space_id} = get_ids_from_context(changes)
@@ -839,7 +842,7 @@ defmodule OperatelyWeb.Api.Tasks do
           end)
           |> Operately.Access.insert_binding(:contributor_binding, access_group, Binding.edit_access())
           |> Ecto.Multi.run(:subscription, fn _repo, _ ->
-            ensure_subscription(project.subscription_list_id, assignee_id)
+            ensure_subscription(project.subscription_list_id, assignee_id, :invited)
           end)
           |> Operately.Repo.transaction()
           |> Operately.Repo.extract_result(:contributor)
@@ -849,15 +852,15 @@ defmodule OperatelyWeb.Api.Tasks do
       end
     end
 
-    defp ensure_subscription(nil, _person_id), do: {:ok, nil}
+    defp ensure_subscription(nil, _person_id, _type), do: {:ok, nil}
 
-    defp ensure_subscription(subscription_list_id, person_id) do
+    defp ensure_subscription(subscription_list_id, person_id, type) do
       case Subscription.get(:system, subscription_list_id: subscription_list_id, person_id: person_id) do
         {:error, :not_found} ->
           Operately.Notifications.create_subscription(%{
             subscription_list_id: subscription_list_id,
             person_id: person_id,
-            type: :invited
+            type: type
           })
 
         {:ok, subscription} ->
