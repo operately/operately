@@ -136,6 +136,21 @@ defmodule Operately.Features.ProjectTasksTest do
   end
 
   @tag login_as: :contributor
+  feature "creating task automatically subscribes creator", ctx do
+    ctx
+    |> Steps.assert_contributor_has_edit_access()
+    |> Steps.visit_milestone_page()
+    |> Steps.add_task_from_milestone_page("Task 1")
+    |> Steps.assert_task_added("Task 1")
+    |> then(fn ctx ->
+      task = Operately.Tasks.Task.get!(:system, name: "Task 1")
+      Map.put(ctx, :task, task)
+    end)
+    |> Steps.go_to_task_page()
+    |> Steps.assert_subscribed_to_task()
+  end
+
+  @tag login_as: :contributor
   feature "creating a task notifies the champion and assignee", ctx do
     ctx = Steps.given_space_member_exists(ctx)
 
