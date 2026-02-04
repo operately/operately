@@ -22,5 +22,11 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Companies.Company do
       permissions: OperatelyWeb.Api.Serializer.serialize(company.permissions),
       general_space: OperatelyWeb.Api.Serializer.serialize(company.general_space, level: :full)
     }
+    |> then(fn map ->
+      case company.access_level do
+        nil -> map
+        level -> Map.put(map, :access_level, level)
+      end
+    end)
   end
 end

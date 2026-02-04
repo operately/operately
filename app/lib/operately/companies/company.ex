@@ -24,6 +24,7 @@ defmodule Operately.Companies.Company do
     field :admins, :any, virtual: true
     field :owners, :any, virtual: true
     field :permissions, :any, virtual: true
+    field :access_level, :integer, virtual: true
     field :general_space, :any, virtual: true
 
     field :people_count, :integer, virtual: true
@@ -148,6 +149,16 @@ defmodule Operately.Companies.Company do
   def load_permissions(company) do
     permissions = Operately.Companies.Permissions.calculate(company.request_info.access_level)
     Map.put(company, :permissions, permissions)
+  end
+
+  def load_access_level(company) do
+    access_level =
+      case company.request_info do
+        %{access_level: level} -> level
+        _ -> company.requester_access_level
+      end
+
+    Map.put(company, :access_level, access_level)
   end
 
   def load_people_count(companies) when is_list(companies) do

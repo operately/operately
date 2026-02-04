@@ -198,7 +198,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
                  person_id: ctx.creator.id
                )
 
-      assert subscription.type == :joined
+      assert subscription.type == :invited
       assert subscription.canceled == false
     end
 
@@ -590,7 +590,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
                  person_id: ctx.creator.id
                )
 
-      assert subscription.type == :joined
+      assert subscription.type == :invited
       assert subscription.canceled == false
     end
 
