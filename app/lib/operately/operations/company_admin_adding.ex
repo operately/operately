@@ -19,7 +19,7 @@ defmodule Operately.Operations.CompanyAdminAdding do
     Enum.reduce(ids, multi, fn id, multi ->
       Multi.run(multi, "person_#{id}", fn _, ctx ->
         person = Operately.People.get_person!(id)
-        {:ok, _} = Operately.Access.bind(ctx.context, person_id: id, level: Operately.Access.Binding.edit_access())
+        {:ok, _} = Operately.Access.bind(ctx.context, person_id: id, level: Operately.Access.Binding.admin_access())
         {:ok, person}
       end)
     end)
