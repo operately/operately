@@ -13,7 +13,7 @@ import { compareIds, usePaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { createTestId } from "@/utils/testid";
 import { useNavigate } from "react-router-dom";
-import { DimmedLink, SecondaryButton } from "turboui";
+import { Link, SecondaryButton } from "turboui";
 
 export default { name: "SpaceAddMembersPage", loader, Page } as PageModule;
 
@@ -68,9 +68,9 @@ function Page() {
         <div className="text-2xl font-extrabold mb-4 text-center">Add members to {space.name}</div>
         <p className="text-sm text-center text-content-dimmed mb-4">
           Only existing members can be added.{" "}
-          <DimmedLink to={paths.companyManagePeopleAddPeoplePath()} className="text-sm" underline="hover">
+          <Link to={paths.invitePeoplePath()} className="text-sm" underline="hover">
             Invite someone new to the organization
-          </DimmedLink>
+          </Link>
         </p>
 
         <Forms.Form form={form}>
