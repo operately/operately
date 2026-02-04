@@ -62,6 +62,10 @@ function Page() {
     navigate(paths.companyManagePeoplePath());
   }, [navigate, paths]);
 
+  const handleGoBack = React.useCallback(() => {
+    navigate(-1);
+  }, [navigate]);
+
   const handleSubmit = React.useCallback(async () => {
     if (isSubmitting) return;
 
@@ -123,6 +127,8 @@ function Page() {
       onSubmit={handleSubmit}
       onCancel={handleCancel}
       onInviteAnother={handleInviteAnother}
+      onGoBack={handleGoBack}
+      goBackLabel="Back"
       isSubmitting={isSubmitting}
       memberType={memberType}
     />

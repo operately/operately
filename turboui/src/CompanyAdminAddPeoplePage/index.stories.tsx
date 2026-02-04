@@ -86,6 +86,8 @@ export const FormToInvited: Story = {
         onFormChange={flow.handleFormChange}
         onSubmit={flow.handleSubmit}
         onInviteAnother={flow.handleInviteAnother}
+        onGoBack={() => console.log("Go back")}
+        goBackLabel="Back to Manage Team Members"
         onCancel={() => console.log("Cancel invite")}
         isSubmitting={flow.isSubmitting}
       />
@@ -108,6 +110,8 @@ export const FormToAdded: Story = {
         onFormChange={flow.handleFormChange}
         onSubmit={flow.handleSubmit}
         onInviteAnother={flow.handleInviteAnother}
+        onGoBack={() => console.log("Go back")}
+        goBackLabel="Back to Manage Team Members"
         onCancel={() => console.log("Cancel invite")}
         isSubmitting={flow.isSubmitting}
       />
@@ -130,6 +134,8 @@ export const OutsideCollaboratorForm: Story = {
         onFormChange={flow.handleFormChange}
         onSubmit={flow.handleSubmit}
         onInviteAnother={flow.handleInviteAnother}
+        onGoBack={() => console.log("Go back")}
+        goBackLabel="Back to Manage Team Members"
         onCancel={() => console.log("Cancel invite")}
         isSubmitting={flow.isSubmitting}
         memberType="outside_collaborator"

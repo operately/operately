@@ -1,7 +1,7 @@
 import React from "react";
 
 import { match } from "ts-pattern";
-import { PrimaryButton } from "../Button";
+import { PrimaryButton, SecondaryButton } from "../Button";
 import { InviteLinkPanel } from "../InviteLinkPanel";
 import { InviteMemberForm } from "../InviteMemberForm";
 import { Navigation } from "../Page/Navigation";
@@ -25,12 +25,12 @@ export namespace CompanyAdminAddPeoplePage {
     onCancel?: () => void;
     onInviteAnother?: () => void;
     inviteAnotherLabel?: string;
+    onGoBack?: () => void;
+    goBackLabel?: string;
     isSubmitting?: boolean;
     memberType?: MemberType;
   }
 }
-
-const celebrationEmoji = "\u{1F389}";
 
 type MemberCopy = {
   pageTitlePrefix: string;
@@ -52,8 +52,9 @@ const memberCopy: Record<CompanyAdminAddPeoplePage.MemberType, MemberCopy> = {
     formTitle: "Invite a new team member",
     helperText: helperTextWrapper(
       <>
-        If the new member already has an account, they will be added to your company. If they don&apos;t have an account,
-        you will get an invitation link to share with them. The link will be valid for 24 hours.
+        If the new member already has an account, they will be added to your company. If they don&apos;t have an
+        account, we&apos;ll send them an email with an invitation link, and you&apos;ll get the same link here to share
+        if needed. The link will be valid for 24 hours.
       </>,
     ),
     submitLabel: "Invite Member",
@@ -65,8 +66,8 @@ const memberCopy: Record<CompanyAdminAddPeoplePage.MemberType, MemberCopy> = {
     helperText: helperTextWrapper(
       <>
         If the outside collaborator already has an account, they will be added to your company as an outside
-        collaborator. If they don&apos;t have an account, you will get an invitation link to share with them. The link
-        will be valid for 24 hours.
+        collaborator. If they don&apos;t have an account, we&apos;ll send them an email with an invitation link, and
+        you&apos;ll get the same link here to share if needed. The link will be valid for 24 hours.
       </>,
     ),
     submitLabel: "Invite Collaborator",
@@ -89,8 +90,22 @@ export function CompanyAdminAddPeoplePage(props: CompanyAdminAddPeoplePage.Props
 
   const belowCardContent = match(props.state)
     .with({ state: "form" }, () => helperText)
-    .with({ state: "invited" }, () => <InviteAnotherButton onClick={props.onInviteAnother} label={inviteAnotherLabel} />)
-    .with({ state: "added" }, () => <InviteAnotherButton onClick={props.onInviteAnother} label={inviteAnotherLabel} />)
+    .with({ state: "invited" }, () => (
+      <SuccessActions
+        onInviteAnother={props.onInviteAnother}
+        inviteAnotherLabel={inviteAnotherLabel}
+        onGoBack={props.onGoBack}
+        goBackLabel={props.goBackLabel}
+      />
+    ))
+    .with({ state: "added" }, () => (
+      <SuccessActions
+        onInviteAnother={props.onInviteAnother}
+        inviteAnotherLabel={inviteAnotherLabel}
+        onGoBack={props.onGoBack}
+        goBackLabel={props.goBackLabel}
+      />
+    ))
     .exhaustive();
 
   return (
@@ -114,19 +129,19 @@ export function CompanyAdminAddPeoplePage(props: CompanyAdminAddPeoplePage.Props
             .with({ state: "invited" }, (state) => (
               <div>
                 <div className="text-content-accent text-2xl font-extrabold">
-                  {state.fullName} has been invited {celebrationEmoji}
+                  {state.fullName} has been invited by email
                 </div>
 
                 <InviteLinkPanel
                   link={state.inviteLink}
-                  description="Share this link with them to allow them to join your company."
-                  footer="This link will expire in 24 hours."
+                  description="They've received an email with this link. You can copy it here to share again if they didn't get the email or prefer another channel."
+                  footer="This link (including the one in their email) expires in 24 hours."
                 />
               </div>
             ))
             .with({ state: "added" }, (state) => (
               <div className="text-content-accent text-2xl font-extrabold">
-                {state.fullName} has been added {celebrationEmoji}
+                {state.fullName} has been added
               </div>
             ))
             .exhaustive()}
@@ -137,14 +152,33 @@ export function CompanyAdminAddPeoplePage(props: CompanyAdminAddPeoplePage.Props
   );
 }
 
-function InviteAnotherButton({ onClick, label }: { onClick?: () => void; label?: string }) {
-  if (!onClick) return null;
+function SuccessActions({
+  onInviteAnother,
+  inviteAnotherLabel,
+  onGoBack,
+  goBackLabel,
+}: {
+  onInviteAnother?: () => void;
+  inviteAnotherLabel?: string;
+  onGoBack?: () => void;
+  goBackLabel?: string;
+}) {
+  const hasInviteAnother = Boolean(onInviteAnother);
+  const hasGoBack = Boolean(onGoBack);
+  if (!hasInviteAnother && !hasGoBack) return null;
 
   return (
-    <div className="flex items-center gap-3 mt-8 justify-center">
-      <PrimaryButton onClick={onClick} testId="invite-another-button">
-        {label ?? "Invite Another Member"}
-      </PrimaryButton>
+    <div className="flex flex-col items-center gap-3 mt-8 sm:flex-row sm:justify-center">
+      {hasInviteAnother && (
+        <PrimaryButton onClick={onInviteAnother} testId="invite-another-button">
+          {inviteAnotherLabel ?? "Invite Another Member"}
+        </PrimaryButton>
+      )}
+      {hasGoBack && (
+        <SecondaryButton onClick={onGoBack} testId="invite-success-go-back">
+          {goBackLabel ?? "Back to Manage Team Members"}
+        </SecondaryButton>
+      )}
     </div>
   );
 }
