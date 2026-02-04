@@ -103,7 +103,7 @@ defmodule Operately.Companies.Company do
 
   def load_admins(company) do
     context = Operately.Access.get_context(company_id: company.id)
-    people = Operately.Access.BindedPeopleLoader.load(context.id, :edit_access)
+    people = Operately.Access.BindedPeopleLoader.load(context.id, :admin_access)
     Map.put(company, :admins, people)
   end
 
