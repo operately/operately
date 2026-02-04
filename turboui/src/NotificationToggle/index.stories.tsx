@@ -28,12 +28,12 @@ export const Default: Story = {
         <NotificationToggle
           isSubscribed={isSubscribed}
           onToggle={setIsSubscribed}
-          entityType={args.entityType || "task"}
+          entityType={args.entityType || "project_task"}
         />
       </div>
     );
   },
   args: {
-    entityType: "task",
+    entityType: "project_task",
   },
 };
