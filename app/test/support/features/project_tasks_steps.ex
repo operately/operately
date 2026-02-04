@@ -3,8 +3,29 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
 
   alias Operately.Tasks.Task
   alias Operately.Projects
+  alias Operately.Access.Binding
   alias Operately.Support.Features.EmailSteps
   alias Operately.Support.Features.NotificationsSteps
+
+  step :setup_contributor, ctx do
+    ctx
+    |> Factory.add_company_owner(:creator)
+    |> Factory.add_project_contributor(:contributor, :project, permissions: :edit_access)
+    |> then(fn ctx ->
+      ctx = Factory.preload(ctx, :contributor, :person)
+      Map.put(ctx, :contributor, ctx.contributor.person)
+    end)
+    |> Factory.add_project_contributor(:commenter, :project, permissions: :comment_access)
+    |> then(fn ctx ->
+      ctx = Factory.preload(ctx, :commenter, :person)
+      Map.put(ctx, :commenter, ctx.commenter.person)
+    end)
+    |> Factory.add_project_contributor(:viewer, :project, permissions: :view_access)
+    |> then(fn ctx ->
+      ctx = Factory.preload(ctx, :viewer, :person)
+      Map.put(ctx, :viewer, ctx.viewer.person)
+    end)
+  end
 
   step :given_task_exists, ctx do
     ctx
@@ -43,7 +64,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
 
   step :given_task_has_comment, ctx do
     ctx
-    |> Map.put(:creator, ctx.champion)
+    |> Map.put(:creator, ctx.commenter)
     |> Factory.preload(:task, :project)
     |> Factory.add_comment(:comment, :task)
   end
@@ -88,6 +109,30 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
   step :reload_task_page, ctx do
     ctx
     |> UI.visit(Paths.project_task_path(ctx.company, ctx.task))
+  end
+
+  step :assert_contributor_has_edit_access, ctx do
+    {:ok, project} = Projects.Project.get(ctx.contributor, id: ctx.project.id)
+
+    assert project.request_info.access_level == Binding.edit_access()
+
+    ctx
+  end
+
+  step :assert_commenter_has_comment_access, ctx do
+    {:ok, project} = Projects.Project.get(ctx.commenter, id: ctx.project.id)
+
+    assert project.request_info.access_level == Binding.comment_access()
+
+    ctx
+  end
+
+  step :assert_viewer_has_view_access, ctx do
+    {:ok, project} = Projects.Project.get(ctx.viewer, id: ctx.project.id)
+
+    assert project.request_info.access_level == Binding.view_access()
+
+    ctx
   end
 
   step :assert_task_navigation_without_space, ctx do
@@ -273,6 +318,14 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     UI.login_as(ctx, ctx.champion)
   end
 
+  step :login_as_contributor, ctx do
+    UI.login_as(ctx, ctx.contributor)
+  end
+
+  step :login_as_commenter, ctx do
+    UI.login_as(ctx, ctx.commenter)
+  end
+
   step :delete_task, ctx do
     ctx
     |> UI.click(testid: "delete-task")
@@ -445,7 +498,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     ctx
     |> UI.find(UI.query(testid: "task-activity-section"), fn el ->
       el
-      |> UI.assert_text(Operately.People.Person.short_name(ctx.champion))
+      |> UI.assert_text(Operately.People.Person.short_name(ctx.contributor))
       |> UI.assert_text(title)
     end)
   end
@@ -500,10 +553,10 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
 
   step :assert_task_due_date_change_visible_in_feed, ctx, date do
     short =
-      "#{Operately.People.Person.first_name(ctx.champion)} changed the due date to #{date} on #{ctx.task.name}"
+      "#{Operately.People.Person.first_name(ctx.contributor)} changed the due date to #{date} on #{ctx.task.name}"
 
     long =
-      "#{Operately.People.Person.first_name(ctx.champion)} changed the due date to #{date} on #{ctx.task.name} in #{ctx.project.name}"
+      "#{Operately.People.Person.first_name(ctx.contributor)} changed the due date to #{date} on #{ctx.task.name} in #{ctx.project.name}"
 
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
@@ -522,10 +575,10 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
 
   step :assert_task_assignee_change_visible_in_feed, ctx do
     short =
-      "#{Operately.People.Person.first_name(ctx.reviewer)} assigned to #{ctx.champion.full_name} the task #{ctx.task.name}"
+      "#{Operately.People.Person.first_name(ctx.contributor)} assigned to #{ctx.champion.full_name} the task #{ctx.task.name}"
 
     long =
-      "#{Operately.People.Person.first_name(ctx.reviewer)} assigned to #{ctx.champion.full_name} the task #{ctx.task.name} in #{ctx.project.name}"
+      "#{Operately.People.Person.first_name(ctx.contributor)} assigned to #{ctx.champion.full_name} the task #{ctx.task.name} in #{ctx.project.name}"
 
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
@@ -564,10 +617,10 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
   end
 
   step :assert_task_comment_visible_in_feed_after_deletion, ctx do
-    short = "#{Operately.People.Person.first_name(ctx.champion)} commented on #{ctx.task.name}"
+    short = "#{Operately.People.Person.first_name(ctx.commenter)} commented on #{ctx.task.name}"
 
     long =
-      "#{Operately.People.Person.first_name(ctx.champion)} commented on #{ctx.task.name} in the #{ctx.project.name} project"
+      "#{Operately.People.Person.first_name(ctx.commenter)} commented on #{ctx.task.name} in the #{ctx.project.name} project"
 
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
@@ -593,7 +646,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
       to: ctx.champion,
-      author: ctx.reviewer,
+      author: ctx.contributor,
       action: "changed the due date for \"#{ctx.task.name}\""
     })
   end
@@ -613,7 +666,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
       to: ctx.champion,
-      author: ctx.reviewer,
+      author: ctx.contributor,
       action: "changed the assignee for #{ctx.task.name}"
     })
   end
@@ -623,7 +676,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
       to: ctx.champion,
-      author: ctx.reviewer,
+      author: ctx.contributor,
       action: "changed the assignee for #{ctx.task.name}"
     })
   end
@@ -633,7 +686,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
       to: ctx.champion,
-      author: ctx.reviewer,
+      author: ctx.commenter,
       action: "commented on: #{ctx.task.name}"
     })
   end
@@ -656,7 +709,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
       to: ctx.space_member,
-      author: ctx.champion,
+      author: ctx.commenter,
       action: "commented on: #{ctx.task.name}"
     })
   end
@@ -666,7 +719,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
       to: ctx.space_member,
-      author: ctx.champion,
+      author: ctx.contributor,
       action: "updated the description for \"#{ctx.task.name}\""
     })
   end
@@ -679,7 +732,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     ctx
     |> UI.login_as(ctx.champion)
     |> NotificationsSteps.assert_activity_notification(%{
-      author: ctx.reviewer,
+      author: ctx.contributor,
       action: "Updated due date for #{ctx.task.name} to #{date}"
     })
   end
@@ -688,7 +741,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     ctx
     |> UI.login_as(ctx.champion)
     |> NotificationsSteps.assert_activity_notification(%{
-      author: ctx.reviewer,
+      author: ctx.contributor,
       action: "Cleared due date for #{ctx.task.name}"
     })
   end
@@ -697,7 +750,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     ctx
     |> UI.login_as(ctx.champion)
     |> NotificationsSteps.assert_activity_notification(%{
-      author: ctx.reviewer,
+      author: ctx.contributor,
       action: "Task \"#{ctx.task.name}\" was assigned to #{ctx.champion.full_name}"
     })
   end
@@ -706,7 +759,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     ctx
     |> UI.login_as(ctx.champion)
     |> NotificationsSteps.assert_activity_notification(%{
-      author: ctx.reviewer,
+      author: ctx.contributor,
       action: "Task \"#{ctx.task.name}\" was unassigned"
     })
   end
@@ -715,7 +768,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     ctx
     |> UI.login_as(ctx.champion)
     |> NotificationsSteps.assert_activity_notification(%{
-      author: ctx.reviewer,
+      author: ctx.commenter,
       action: "Re: #{task_name}"
     })
   end
@@ -753,7 +806,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     ctx
     |> UI.login_as(ctx.space_member)
     |> NotificationsSteps.assert_activity_notification(%{
-      author: ctx.champion,
+      author: ctx.commenter,
       action: "Re: #{ctx.task.name}"
     })
   end
@@ -762,7 +815,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     ctx
     |> UI.login_as(ctx.space_member)
     |> NotificationsSteps.assert_activity_notification(%{
-      author: ctx.champion,
+      author: ctx.contributor,
       action: "Updated the description of: #{ctx.task.name}"
     })
   end

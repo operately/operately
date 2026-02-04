@@ -166,6 +166,7 @@ defmodule Operately.Features.ProjectsTest do
       {:ok, ctx}
     end
 
+    @tag login_as: :reviewer
     feature "project page hides parent goal when viewer cannot access it", ctx do
       ctx
       |> Steps.given_a_goal_exists(name: "Hidden Goal")
