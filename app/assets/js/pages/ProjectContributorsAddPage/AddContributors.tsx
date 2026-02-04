@@ -1,7 +1,7 @@
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Projects from "@/models/projects";
-import { IconPlus, IconX } from "turboui";
+import { DimmedLink, IconPlus, IconX } from "turboui";
 import * as React from "react";
 
 import { useAddProjectContributors } from "@/api";
@@ -69,6 +69,12 @@ export function AddContributors() {
       <Paper.Root size="small">
         <Paper.NavigateBack to={paths.projectContributorsPath(project.id!)} title="Back to Team & Access" />
         <div className="text-2xl font-extrabold mb-4 text-center">Add contributors to {project.name}</div>
+        <p className="text-sm text-center text-content-dimmed mb-4">
+          Only existing members can be added.{" "}
+          <DimmedLink to={paths.companyManagePeopleAddPeoplePath()} className="text-sm" underline="hover">
+            Invite someone new to the organization
+          </DimmedLink>
+        </p>
 
         <Forms.Form form={form}>
           <Contributors project={project} />
