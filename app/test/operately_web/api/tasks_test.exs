@@ -177,6 +177,31 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert task.creator_id == ctx.creator.id
     end
 
+    test "it subscribes the creator to the task", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
+        id: Paths.project_id(ctx.project),
+        type: "project",
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        name: "Subscription test task",
+        assignee_id: nil,
+        due_date: nil
+      })
+
+      {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.task.id)
+      task = Operately.Tasks.Task.get!(:system, id: id)
+
+      assert {:ok, subscription} =
+               Operately.Notifications.Subscription.get(:system,
+                 subscription_list_id: task.subscription_list_id,
+                 person_id: ctx.creator.id
+               )
+
+      assert subscription.type == :joined
+      assert subscription.canceled == false
+    end
+
     test "it sets default task_status when creating a task", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
@@ -542,6 +567,31 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert task.project_id == nil
       assert task.milestone_id == nil
       assert task.creator_id == ctx.creator.id
+    end
+
+    test "it subscribes the creator to the space task", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
+        id: Paths.space_id(ctx.engineering),
+        type: "space",
+        milestone_id: nil,
+        name: "Space subscription task",
+        assignee_id: nil,
+        due_date: nil
+      })
+
+      {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.task.id)
+      task = Operately.Tasks.Task.get!(:system, id: id)
+
+      assert {:ok, subscription} =
+               Operately.Notifications.Subscription.get(:system,
+                 subscription_list_id: task.subscription_list_id,
+                 person_id: ctx.creator.id
+               )
+
+      assert subscription.type == :joined
+      assert subscription.canceled == false
     end
 
     test "it sets default task_status when creating a space task", ctx do
