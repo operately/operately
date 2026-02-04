@@ -350,6 +350,12 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
   # Assertions
   #
 
+  step :assert_subscribed_to_task, ctx do
+    ctx
+    |> UI.assert_has(testid: "project-unsubscribe-button")
+    |> UI.assert_text("You're receiving notifications because you're subscribed to this task.")
+  end
+
   step :assert_task_marked_completed, ctx do
     ctx
     |> UI.assert_text("Done")
