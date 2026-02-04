@@ -26,6 +26,13 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearch do
 
   @limit 5
 
+  # Normalize so "re establish" matches "re-establish" (hyphens/underscores ≈ spaces)
+  defp normalize_search_term(query) do
+    query
+    |> String.replace(~r/[-_\s]+/, " ")
+    |> String.trim()
+  end
+
   def call(conn, inputs) do
     person = me(conn)
     query = String.trim(inputs.query)
@@ -33,13 +40,16 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearch do
     if String.length(query) < 2 do
       {:ok, %{projects: [], goals: [], milestones: [], tasks: [], people: []}}
     else
+      normalized = normalize_search_term(query)
+      search_term = if normalized == "", do: query, else: normalized
+
       [projects, goals, milestones, tasks, people] =
         [
-          Task.async(fn -> search_projects(person, query) end),
-          Task.async(fn -> search_goals(person, query) end),
-          Task.async(fn -> search_milestones(person, query) end),
-          Task.async(fn -> search_tasks(person, query) end),
-          Task.async(fn -> search_people(person, query) end)
+          Task.async(fn -> search_projects(person, search_term) end),
+          Task.async(fn -> search_goals(person, search_term) end),
+          Task.async(fn -> search_milestones(person, search_term) end),
+          Task.async(fn -> search_tasks(person, search_term) end),
+          Task.async(fn -> search_people(person, search_term) end)
         ]
         |> Task.await_many()
 
@@ -62,11 +72,11 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearch do
       from(p in Project, as: :project)
       |> Project.scope_company(person.company_id)
       |> where([p], p.status != "closed")
-      |> where([p], ilike(p.name, ^ilike_query))
+      |> where([p], fragment("regexp_replace(regexp_replace(LOWER(?), '[-_]', ' ', 'g'), ' +', ' ', 'g') LIKE ?", p.name, ^ilike_query))
       |> filter_by_view_access(person.id)
       |> select([p], %{
         id: p.id,
-        search_rank: fragment("POSITION(LOWER(?) IN LOWER(?))", ^search_term, p.name)
+        search_rank: fragment("POSITION(LOWER(?) IN regexp_replace(regexp_replace(LOWER(?), '[-_]', ' ', 'g'), ' +', ' ', 'g'))", ^search_term, p.name)
       })
 
     limited_projects =
@@ -86,11 +96,11 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearch do
       from(g in Goal, as: :goal)
       |> Goal.scope_company(person.company_id)
       |> where([g], is_nil(g.closed_at))
-      |> where([g], ilike(g.name, ^ilike_query))
+      |> where([g], fragment("regexp_replace(regexp_replace(LOWER(?), '[-_]', ' ', 'g'), ' +', ' ', 'g') LIKE ?", g.name, ^ilike_query))
       |> filter_by_view_access(person.id)
       |> select([g], %{
         id: g.id,
-        search_rank: fragment("POSITION(LOWER(?) IN LOWER(?))", ^search_term, g.name)
+        search_rank: fragment("POSITION(LOWER(?) IN regexp_replace(regexp_replace(LOWER(?), '[-_]', ' ', 'g'), ' +', ' ', 'g'))", ^search_term, g.name)
       })
 
     limited_goals =
@@ -112,11 +122,11 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearch do
       |> where([_m, p], p.company_id == ^person.company_id)
       |> where([_m, p], p.status != "closed")
       |> where([m], m.status != :done)
-      |> where([m], ilike(m.title, ^ilike_query))
+      |> where([m], fragment("regexp_replace(regexp_replace(LOWER(?), '[-_]', ' ', 'g'), ' +', ' ', 'g') LIKE ?", m.title, ^ilike_query))
       |> filter_by_view_access(person.id, named_binding: :project)
       |> select([m], %{
         id: m.id,
-        search_rank: fragment("POSITION(LOWER(?) IN LOWER(?))", ^search_term, m.title)
+        search_rank: fragment("POSITION(LOWER(?) IN regexp_replace(regexp_replace(LOWER(?), '[-_]', ' ', 'g'), ' +', ' ', 'g'))", ^search_term, m.title)
       })
 
     limited_milestones =
@@ -142,11 +152,11 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearch do
       |> Task.scope_company(person.company_id)
       |> where([_t, _m, p], p.status != "closed")
       |> where([t], fragment("NOT (?->>'closed')::boolean", t.task_status))
-      |> where([t], ilike(t.name, ^ilike_query))
+      |> where([t], fragment("regexp_replace(regexp_replace(LOWER(?), '[-_]', ' ', 'g'), ' +', ' ', 'g') LIKE ?", t.name, ^ilike_query))
       |> filter_by_view_access(person.id, named_binding: :project)
       |> select([t], %{
         id: t.id,
-        search_rank: fragment("POSITION(LOWER(?) IN LOWER(?))", ^search_term, t.name)
+        search_rank: fragment("POSITION(LOWER(?) IN regexp_replace(regexp_replace(LOWER(?), '[-_]', ' ', 'g'), ' +', ' ', 'g'))", ^search_term, t.name)
       })
       |> limit(@limit)
 
@@ -156,11 +166,11 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearch do
       |> join(:inner, [t], s in assoc(t, :space), as: :space)
       |> where([t, s], s.company_id == ^person.company_id)
       |> where([t], fragment("NOT (?->>'closed')::boolean", t.task_status))
-      |> where([t], ilike(t.name, ^ilike_query))
+      |> where([t], fragment("regexp_replace(regexp_replace(LOWER(?), '[-_]', ' ', 'g'), ' +', ' ', 'g') LIKE ?", t.name, ^ilike_query))
       |> filter_by_view_access(person.id, named_binding: :space)
       |> select([t], %{
         id: t.id,
-        search_rank: fragment("POSITION(LOWER(?) IN LOWER(?))", ^search_term, t.name)
+        search_rank: fragment("POSITION(LOWER(?) IN regexp_replace(regexp_replace(LOWER(?), '[-_]', ' ', 'g'), ' +', ' ', 'g'))", ^search_term, t.name)
       })
       |> limit(@limit)
 
@@ -185,16 +195,19 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearch do
     end)
   end
 
-  defp search_people(person, query) do
-    ilike_query = "%" <> query <> "%"
+  defp search_people(person, search_term) do
+    ilike_query = "%" <> search_term <> "%"
 
     from(p in Person)
     |> where([p], p.company_id == ^person.company_id)
     |> where([p], p.suspended == false)
-    |> where([p], ilike(p.full_name, ^ilike_query) or ilike(p.title, ^ilike_query))
+    |> where([p],
+      fragment("regexp_replace(regexp_replace(LOWER(?), '[-_]', ' ', 'g'), ' +', ' ', 'g') LIKE ?", p.full_name, ^ilike_query) or
+        fragment("regexp_replace(regexp_replace(LOWER(?), '[-_]', ' ', 'g'), ' +', ' ', 'g') LIKE ?", p.title, ^ilike_query)
+    )
     |> order_by([p],
-      asc: fragment("POSITION(LOWER(?) IN LOWER(?))", ^query, p.full_name),
-      asc: fragment("POSITION(LOWER(?) IN LOWER(?))", ^query, p.title),
+      asc: fragment("POSITION(LOWER(?) IN regexp_replace(regexp_replace(LOWER(?), '[-_]', ' ', 'g'), ' +', ' ', 'g'))", ^search_term, p.full_name),
+      asc: fragment("POSITION(LOWER(?) IN regexp_replace(regexp_replace(LOWER(?), '[-_]', ' ', 'g'), ' +', ' ', 'g'))", ^search_term, p.title),
       asc: p.full_name
     )
     |> limit(@limit)
