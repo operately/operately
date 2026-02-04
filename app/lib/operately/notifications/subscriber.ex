@@ -13,7 +13,9 @@ defmodule Operately.Notifications.Subscriber do
   ]
 
   def from_project_contributor(contributors) when is_list(contributors) do
-    Enum.map(contributors, &from_project_contributor/1)
+    contributors
+    |> Enum.filter(& &1.person)
+    |> Enum.map(&from_project_contributor/1)
   end
 
   def from_project_contributor(%Contributor{} = contributor) do
@@ -23,21 +25,27 @@ defmodule Operately.Notifications.Subscriber do
   end
 
   def from_space_members(members) do
-    Enum.map(members, fn m ->
-      from_person(m)
-    end)
+    members
+    |> Enum.filter(& &1)
+    |> Enum.map(&from_person/1)
   end
 
   def from_project_child(project_child) do
     subs =
       exclude_canceled_subscriptions(project_child.subscription_list)
-      |> Enum.into(%{}, fn s ->
-        {s.person.id, from_subscription(s)}
+      |> Enum.reduce(%{}, fn s, acc ->
+        case s.person do
+          nil -> acc
+          person -> Map.put(acc, person.id, from_subscription(s))
+        end
       end)
 
     potential_subs =
-      Enum.into(project_child.project.contributors, %{}, fn c ->
-        {c.person.id, from_project_contributor(c)}
+      Enum.reduce(project_child.project.contributors, %{}, fn c, acc ->
+        case c.person do
+          nil -> acc
+          person -> Map.put(acc, person.id, from_project_contributor(c))
+        end
       end)
 
     merge_subs_and_potential_subs(subs, potential_subs)

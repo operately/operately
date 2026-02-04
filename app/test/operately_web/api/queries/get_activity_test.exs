@@ -161,6 +161,31 @@ defmodule OperatelyWeb.Api.Queries.GetActivityTest do
     end
   end
 
+  describe "include_potential_subscribers" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.log_in_person(:creator)
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
+    end
+
+    test "project discussions with a suspended contributor", ctx do
+      ctx = Factory.add_project_contributor(ctx, :suspended_contributor, :project, :as_person)
+      ctx = Factory.suspend_company_member(ctx, :suspended_contributor)
+      ctx = Factory.add_project_discussion(ctx, :discussion, :project)
+
+      activity =
+        from(a in Operately.Activities.Activity, where: a.action == "project_discussion_submitted")
+        |> Repo.one!()
+
+      assert {200, _res} = query(ctx.conn, :get_activity, %{
+        id: Paths.activity_id(activity),
+        include_potential_subscribers: true,
+      })
+    end
+  end
+
   #
   # Helpers
   #
