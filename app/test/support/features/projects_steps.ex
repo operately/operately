@@ -115,11 +115,8 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   def login(ctx) do
     case ctx[:login_as] do
-      :champion ->
-        UI.login_as(ctx, ctx.champion)
-
-      :reviewer ->
-        UI.login_as(ctx, ctx.reviewer)
+      person when is_atom(person) ->
+        UI.login_as(ctx, ctx[person])
 
       _ ->
         ctx
