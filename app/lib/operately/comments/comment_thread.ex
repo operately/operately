@@ -52,6 +52,7 @@ defmodule Operately.Comments.CommentThread do
   end
 
   def set_potential_subscribers(thread = %__MODULE__{}) do
+    thread = ensure_project_loaded(thread)
     project = Operately.Repo.preload(thread.project, contributors: :person)
     thread = Operately.Repo.preload(thread, :access_context)
 
@@ -147,6 +148,15 @@ defmodule Operately.Comments.CommentThread do
       Map.put(thread, :project_permissions, permissions)
     else
       raise ArgumentError, "Permissions can only be loaded for project comment threads"
+    end
+  end
+
+  defp ensure_project_loaded(thread = %__MODULE__{}) do
+    if thread.project do
+      thread
+    else
+      thread = load_project(thread)
+      if thread.project, do: thread, else: raise(ArgumentError, "Project could not be loaded")
     end
   end
 end

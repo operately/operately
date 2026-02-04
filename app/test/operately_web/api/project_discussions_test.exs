@@ -60,6 +60,23 @@ defmodule OperatelyWeb.Api.ProjectDiscussionsTest do
       assert {200, res} = query(ctx.conn, [:project_discussions, :get], %{id: id, include_space: true})
       assert res.discussion.space == nil
     end
+
+    test "include potential subscribers with a suspended contributor", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      ctx = Factory.add_project_contributor(ctx, :suspended_contributor, :project, :as_person)
+      ctx = Factory.suspend_company_member(ctx, :suspended_contributor)
+      ctx = Factory.add_project_discussion(ctx, :discussion, :project)
+
+      id = Paths.comment_thread_id(ctx.discussion)
+
+      assert {200, _res} = query(ctx.conn, [:project_discussions, :get], %{
+        id: id,
+        include_project: true,
+        include_potential_subscribers: true,
+        include_subscriptions_list: true,
+        include_permissions: true,
+      })
+    end
   end
 
   describe "list project discussions" do
