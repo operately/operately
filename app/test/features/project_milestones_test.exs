@@ -5,21 +5,30 @@ defmodule Operately.Features.ProjectMilestonesTest do
   alias Operately.Support.Features.ProjectMilestonesSteps, as: Steps
 
   setup ctx do
-    ctx = ProjectSteps.create_project(ctx, name: "Live support")
-    ctx = UI.login_as(ctx, ctx.champion)
-
-    {:ok, ctx}
+    ctx
+    |> ProjectSteps.create_project(name: "Live support")
+    |> Factory.add_company_owner(:creator)
+    |> Factory.add_project_contributor(:contributor, :project, permissions: :edit_access)
+    |> Factory.preload(:contributor, :person)
+    |> Factory.add_project_contributor(:commenter, :project, permissions: :comment_access)
+    |> Factory.preload(:commenter, :person)
+    |> Factory.add_project_contributor(:viewer, :project, permissions: :view_access)
+    |> Factory.preload(:viewer, :person)
   end
 
   describe "Project page" do
     feature "project timeline zero state", ctx do
       ctx
+      |> Steps.log_in_as_contributor()
+      |> Steps.assert_contributor_has_edit_access()
       |> Steps.visit_project_page()
       |> Steps.assert_project_milestones_zero_state()
     end
 
     feature "add first milestone", ctx do
       ctx
+      |> Steps.log_in_as_contributor()
+      |> Steps.assert_contributor_has_edit_access()
       |> Steps.visit_project_page()
       |> Steps.add_first_milestone(name: "My milestone")
       |> Steps.assert_add_milestone_form_closed()
@@ -28,6 +37,8 @@ defmodule Operately.Features.ProjectMilestonesTest do
 
     feature "add milestones to project", ctx do
       ctx
+      |> Steps.log_in_as_contributor()
+      |> Steps.assert_contributor_has_edit_access()
       |> Steps.visit_project_page()
       |> Steps.add_milestone(name: "1st milestone")
       |> Steps.assert_add_milestone_form_closed()
@@ -42,6 +53,8 @@ defmodule Operately.Features.ProjectMilestonesTest do
 
     feature "add milestone to project that doesn't have a champion", ctx do
       ctx
+      |> Steps.log_in_as_contributor()
+      |> Steps.assert_contributor_has_edit_access()
       |> Steps.given_that_milestone_project_doesnt_have_champion()
       |> Steps.visit_project_page()
       |> Steps.add_milestone(name: "My milestone")
@@ -53,6 +66,8 @@ defmodule Operately.Features.ProjectMilestonesTest do
 
     feature "add multiple milestone with 'Create more' toggle on", ctx do
       ctx
+      |> Steps.log_in_as_contributor()
+      |> Steps.assert_contributor_has_edit_access()
       |> Steps.visit_project_page()
       |> Steps.add_multiple_milestones(names: ["1st milestone", "2nd milestone", "3rd milestone"])
       |> Steps.assert_add_milestone_form_closed()
@@ -70,6 +85,8 @@ defmodule Operately.Features.ProjectMilestonesTest do
       formatted_date = Operately.Support.Time.format_month_day(next_friday)
 
       ctx
+      |> Steps.log_in_as_contributor()
+      |> Steps.assert_contributor_has_edit_access()
       |> Steps.visit_project_page()
       |> Steps.add_milestone(name: "My milestone", due_date: next_friday)
       |> Steps.assert_add_milestone_form_closed()
@@ -83,6 +100,8 @@ defmodule Operately.Features.ProjectMilestonesTest do
       formatted_date = Operately.Support.Time.format_month_day(next_friday)
 
       ctx
+      |> Steps.log_in_as_contributor()
+      |> Steps.assert_contributor_has_edit_access()
       |> Steps.given_that_a_milestone_exists("My milestone")
       |> Steps.visit_project_page()
       |> Steps.edit_milestone(name: "My milestone", new_name: "Edited milestone", new_due_date: next_friday)
@@ -138,6 +157,8 @@ defmodule Operately.Features.ProjectMilestonesTest do
       formatted_date = Operately.Support.Time.format_month_day(due_date)
 
       ctx
+      |> Steps.log_in_as_contributor()
+      |> Steps.assert_contributor_has_edit_access()
       |> Steps.visit_milestone_page()
       |> Steps.assert_empty_description()
       |> Steps.assert_milestone_status("Active")
@@ -158,6 +179,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
       formatted_date = Operately.Support.Time.format_month_day(next_friday)
 
       ctx
+      |> Steps.log_in_as_champion()
       |> Steps.visit_milestone_page()
       |> Steps.edit_milestone_due_date(next_friday)
       |> Steps.assert_milestone_due_date(formatted_date)
@@ -173,6 +195,8 @@ defmodule Operately.Features.ProjectMilestonesTest do
       formatted_date = Operately.Support.Time.format_month_day(next_friday)
 
       ctx
+      |> Steps.log_in_as_contributor()
+      |> Steps.assert_contributor_has_edit_access()
       |> Steps.given_that_milestone_project_doesnt_have_champion()
       |> Steps.visit_milestone_page()
       |> Steps.edit_milestone_due_date(next_friday)
@@ -208,6 +232,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
       ctx = Steps.given_space_member_exists(ctx)
 
       ctx
+      |> Steps.log_in_as_champion()
       |> Steps.visit_milestone_page()
       |> Steps.assert_empty_description()
       |> Steps.edit_milestone_description_mentioning(ctx.space_member)
@@ -219,6 +244,8 @@ defmodule Operately.Features.ProjectMilestonesTest do
 
     feature "milestone shows description indicator when description is added", ctx do
       ctx
+      |> Steps.log_in_as_contributor()
+      |> Steps.assert_contributor_has_edit_access()
       |> Steps.visit_tasks_tab_on_project_page()
       |> Steps.assert_milestone_description_indicator_not_visible()
       |> Steps.visit_project_page()
@@ -233,6 +260,8 @@ defmodule Operately.Features.ProjectMilestonesTest do
 
     feature "milestone tasks link opens project board view", ctx do
       ctx
+      |> Steps.log_in_as_contributor()
+      |> Steps.assert_contributor_has_edit_access()
       |> Steps.visit_tasks_tab_on_project_page()
       |> Steps.assert_tasks_list_view()
       |> Steps.visit_milestone_page()
@@ -244,6 +273,8 @@ defmodule Operately.Features.ProjectMilestonesTest do
 
     feature "mark milestone as completed", ctx do
       ctx
+      |> Steps.log_in_as_contributor()
+      |> Steps.assert_contributor_has_edit_access()
       |> Steps.visit_milestone_page()
       |> Steps.mark_milestone_as_completed()
       |> Steps.assert_milestone_status("Completed")
@@ -255,6 +286,8 @@ defmodule Operately.Features.ProjectMilestonesTest do
 
     feature "mark milestone as completed updates project page", ctx do
       ctx
+      |> Steps.log_in_as_contributor()
+      |> Steps.assert_contributor_has_edit_access()
       |> Steps.visit_tasks_tab_on_project_page()
       |> Steps.assert_milestone_visible_in_tasks_board(name: ctx.milestone.title)
       |> Steps.navigate_to_milestone(name: ctx.milestone.title)
@@ -267,6 +300,8 @@ defmodule Operately.Features.ProjectMilestonesTest do
 
     feature "reopen milestone", ctx do
       ctx
+      |> Steps.log_in_as_contributor()
+      |> Steps.assert_contributor_has_edit_access()
       |> Steps.given_that_milestone_is_completed()
       |> Steps.visit_milestone_page()
       |> Steps.reopen_milestone()
@@ -279,6 +314,8 @@ defmodule Operately.Features.ProjectMilestonesTest do
 
     feature "reopen milestone updates project page", ctx do
       ctx
+      |> Steps.log_in_as_contributor()
+      |> Steps.assert_contributor_has_edit_access()
       |> Steps.given_that_milestone_is_completed()
       |> Steps.visit_tasks_tab_on_project_page()
       |> Steps.refute_milestone_visible_in_tasks_board(name: ctx.milestone.title)
@@ -292,6 +329,8 @@ defmodule Operately.Features.ProjectMilestonesTest do
 
     feature "add a task", ctx do
       ctx
+      |> Steps.log_in_as_contributor()
+      |> Steps.assert_contributor_has_edit_access()
       |> Steps.visit_milestone_page()
       |> Steps.add_task(name: "My task")
       |> Steps.assert_task_created(name: "My task")
@@ -303,6 +342,8 @@ defmodule Operately.Features.ProjectMilestonesTest do
 
     feature "add multiple tasks", ctx do
       ctx
+      |> Steps.log_in_as_contributor()
+      |> Steps.assert_contributor_has_edit_access()
       |> Steps.visit_milestone_page()
       |> Steps.add_multiple_tasks(names: ["1st task", "2nd task"])
       |> Steps.assert_add_task_form_closed()
@@ -321,6 +362,8 @@ defmodule Operately.Features.ProjectMilestonesTest do
       comment = "This is a comment"
 
       ctx
+      |> Steps.log_in_as_commenter()
+      |> Steps.assert_commenter_has_comment_access()
       |> Steps.visit_milestone_page()
       |> Steps.post_comment(comment)
       |> Steps.assert_comment(comment)
@@ -337,6 +380,8 @@ defmodule Operately.Features.ProjectMilestonesTest do
       person_first_name = Operately.People.Person.first_name(ctx.space_member)
 
       ctx
+      |> Steps.log_in_as_commenter()
+      |> Steps.assert_commenter_has_comment_access()
       |> Steps.visit_milestone_page()
       |> Steps.post_comment_with_mention(ctx.space_member)
       |> Steps.assert_comment(person_first_name)
@@ -351,9 +396,14 @@ defmodule Operately.Features.ProjectMilestonesTest do
       comment = "This is a comment"
 
       ctx
+      |> Steps.log_in_as_commenter()
+      |> Steps.assert_commenter_has_comment_access()
       |> Steps.visit_milestone_page()
       |> Steps.post_comment(comment)
       |> Steps.assert_comment(comment)
+      |> Steps.log_in_as_contributor()
+      |> Steps.assert_contributor_has_edit_access()
+      |> Steps.visit_milestone_page()
       |> Steps.delete_milestone()
       |> Steps.assert_redirected_to_project_page()
       |> Steps.assert_milestone_deleted()
@@ -364,6 +414,8 @@ defmodule Operately.Features.ProjectMilestonesTest do
 
     feature "milestone shows comment indicator with count when comments exist", ctx do
       ctx
+      |> Steps.log_in_as_viewer()
+      |> Steps.assert_viewer_has_view_access()
       |> Steps.given_milestone_without_comments_exists()
       |> Steps.given_milestone_with_comments_exists()
       |> Steps.visit_tasks_tab_on_project_page()
@@ -379,6 +431,8 @@ defmodule Operately.Features.ProjectMilestonesTest do
 
       ctx
       |> Steps.given_that_milestone_has_comment()
+      |> Steps.log_in_as_commenter()
+      |> Steps.assert_commenter_has_comment_access()
       |> Steps.visit_milestone_page()
       |> Steps.assert_comment("Content")
       |> Steps.edit_comment(new_comment)
@@ -389,6 +443,8 @@ defmodule Operately.Features.ProjectMilestonesTest do
 
     feature "delete milestone comment", ctx do
       ctx
+      |> Steps.log_in_as_commenter()
+      |> Steps.assert_commenter_has_comment_access()
       |> Steps.given_that_milestone_has_comment()
       |> Steps.visit_milestone_page()
       |> Steps.assert_comment("Content")
@@ -401,8 +457,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
     feature "comment edit and delete not visible to other users", ctx do
       ctx
       |> Steps.given_that_milestone_has_comment()
-      |> Steps.given_space_member_exists()
-      |> Factory.log_in_person(:space_member)
+      |> Steps.log_in_as_champion()
       |> Steps.visit_milestone_page()
       |> Steps.assert_comment("Content")
       |> Steps.assert_comment_edit_delete_not_visible()
@@ -411,6 +466,8 @@ defmodule Operately.Features.ProjectMilestonesTest do
     feature "copy comment link shows success message", ctx do
       ctx
       |> Steps.given_that_milestone_has_comment()
+      |> Steps.log_in_as_viewer()
+      |> Steps.assert_viewer_has_view_access()
       |> Steps.visit_milestone_page()
       |> Steps.assert_comment("Content")
       |> Steps.copy_comment_link()
@@ -421,6 +478,8 @@ defmodule Operately.Features.ProjectMilestonesTest do
       comment = "This is a comment"
 
       ctx
+      |> Steps.log_in_as_commenter()
+      |> Steps.assert_commenter_has_comment_access()
       |> Steps.visit_milestone_page()
       |> Steps.post_comment(comment)
       |> Steps.assert_comment(comment)
@@ -431,6 +490,8 @@ defmodule Operately.Features.ProjectMilestonesTest do
 
     feature "delete milestone", ctx do
       ctx
+      |> Steps.log_in_as_contributor()
+      |> Steps.assert_contributor_has_edit_access()
       |> Steps.visit_milestone_page()
       |> Steps.delete_milestone()
       |> Steps.assert_redirected_to_project_page()
@@ -440,6 +501,8 @@ defmodule Operately.Features.ProjectMilestonesTest do
 
     feature "delete milestone when project doesn't have champion", ctx do
       ctx
+      |> Steps.log_in_as_contributor()
+      |> Steps.assert_contributor_has_edit_access()
       |> Steps.given_that_milestone_project_doesnt_have_champion()
       |> Steps.visit_milestone_page()
       |> Steps.delete_milestone()
