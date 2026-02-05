@@ -328,8 +328,6 @@ defmodule Operately.Features.ProjectsTest do
       |> Steps.given_project_with_full_access_member_logged_in()
       |> Steps.assert_member_has_full_access()
       |> Steps.visit_project_page()
-      |> Steps.assert_description_editable()
-      |> Steps.assert_start_date_editable()
       |> Steps.assert_manage_access_visible()
     end
 
@@ -338,8 +336,9 @@ defmodule Operately.Features.ProjectsTest do
       |> Steps.given_project_with_edit_access_member_logged_in()
       |> Steps.assert_member_has_edit_access()
       |> Steps.visit_project_page()
-      |> Steps.refute_description_editable()
       |> Steps.refute_manage_access_visible()
+      |> Steps.assert_start_date_editable()
+      |> Steps.assert_description_editable()
       |> Steps.assert_pause_and_close_actions_visible()
       |> Steps.assert_add_milestone_visible()
       |> Steps.assert_add_resource_visible()
@@ -354,6 +353,7 @@ defmodule Operately.Features.ProjectsTest do
       |> Steps.given_project_with_comment_access_member_logged_in()
       |> Steps.assert_member_has_comment_access()
       |> Steps.visit_project_page()
+      |> Steps.refute_description_editable()
       |> Steps.refute_pause_and_close_actions_visible()
       |> Steps.refute_add_milestone_visible()
       |> Steps.refute_add_resource_visible()
