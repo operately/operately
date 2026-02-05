@@ -681,11 +681,11 @@ defmodule Operately.Support.Features.ProjectSteps do
 
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
-    |> FeedSteps.assert_project_renamed(author: ctx.champion)
+    |> FeedSteps.assert_project_renamed(author: ctx.contributor)
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
-    |> FeedSteps.assert_project_renamed(author: ctx.champion, project_name: project.name)
+    |> FeedSteps.assert_project_renamed(author: ctx.contributor, project_name: project.name)
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> FeedSteps.assert_project_renamed(author: ctx.champion, project_name: project.name)
+    |> FeedSteps.assert_project_renamed(author: ctx.contributor, project_name: project.name)
   end
 
   step :assert_project_goal_connection_visible_on_feed, ctx, goal_name: goal_name do
@@ -927,7 +927,7 @@ defmodule Operately.Support.Features.ProjectSteps do
   step :assert_project_name_changed_feed_posted, ctx do
     ctx
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_feed_item(ctx.creator, "renamed")
+    |> UI.assert_feed_item(ctx.contributor, "renamed")
   end
 
   #

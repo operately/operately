@@ -12,9 +12,10 @@ defmodule Operately.Features.ProjectsTest do
       |> Steps.login()
     end
 
-    @tag login_as: :champion
+    @tag login_as: :contributor
     feature "rename a project", ctx do
       ctx
+      |> Steps.assert_logged_in_contributor_has_edit_access()
       |> Steps.visit_project_page()
       |> Steps.rename_project(new_name: "New Name")
       |> Steps.assert_project_renamed(new_name: "New Name")
@@ -215,11 +216,16 @@ defmodule Operately.Features.ProjectsTest do
   end
 
   describe "new project page" do
-    setup ctx, do: Steps.setup(ctx)
+    setup ctx do
+      ctx
+      |> Steps.setup()
+      |> Steps.setup_contributors()
+    end
 
     feature "changing project name", ctx do
       ctx
-      |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+      |> Steps.assert_logged_in_contributor_has_edit_access()
+      |> Steps.visit_project_page()
       |> Steps.change_project_name()
       |> Steps.assert_project_name_changed()
       |> Steps.assert_project_name_changed_feed_posted()
