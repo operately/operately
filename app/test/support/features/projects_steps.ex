@@ -752,7 +752,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     ctx
     |> UI.login_as(ctx.space_member)
     |> NotificationsSteps.assert_activity_notification(%{
-      author: ctx.champion,
+      author: ctx.contributor,
       action: "Project \"#{ctx.project.name}\" description was updated"
     })
   end
@@ -762,7 +762,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
       to: ctx.space_member,
-      author: ctx.champion,
+      author: ctx.contributor,
       action: "updated the project description"
     })
   end
