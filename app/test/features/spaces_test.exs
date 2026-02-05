@@ -84,12 +84,12 @@ defmodule Operately.Features.SpacesTest do
     |> Steps.assert_delete_option_not_visible()
   end
 
-  feature "viewing space home with paused projects", ctx do
+  feature "viewing space home excludes paused projects", ctx do
     ctx
     |> Steps.given_a_space_with_active_and_paused_projects()
     |> Steps.visit_space()
     |> Steps.assert_goals_and_projects_box_shows_correct_counts()
-    |> Steps.assert_paused_projects_are_listed()
+    |> Steps.assert_paused_projects_are_not_listed()
   end
 
   feature "pending projects and goals are not counted as on track", ctx do
