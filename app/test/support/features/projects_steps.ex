@@ -257,7 +257,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
       to: ctx.reviewer,
-      author: ctx.champion,
+      author: ctx.contributor,
       action: "connected the project to the #{goal_name} goal"
     })
   end
@@ -665,22 +665,22 @@ defmodule Operately.Support.Features.ProjectSteps do
   step :assert_project_goal_connection_visible_on_feed, ctx, goal_name: goal_name do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
-    |> FeedSteps.assert_project_goal_connection(author: ctx.champion, goal_name: goal_name)
+    |> FeedSteps.assert_project_goal_connection(author: ctx.contributor, goal_name: goal_name)
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
     |> FeedSteps.assert_project_goal_connection(
-      author: ctx.champion,
+      author: ctx.contributor,
       project_name: ctx.project.name,
       goal_name: goal_name
     )
     |> UI.visit(Paths.feed_path(ctx.company))
     |> FeedSteps.assert_project_goal_connection(
-      author: ctx.champion,
+      author: ctx.contributor,
       project_name: ctx.project.name,
       goal_name: goal_name
     )
     |> UI.visit(Paths.goal_path(ctx.company, ctx.goal, tab: "activity"))
     |> FeedSteps.assert_project_goal_connection(
-      author: ctx.champion,
+      author: ctx.contributor,
       project_name: ctx.project.name
     )
   end

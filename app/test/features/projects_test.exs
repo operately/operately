@@ -81,12 +81,13 @@ defmodule Operately.Features.ProjectsTest do
       |> Steps.assert_comment_on_resumption_received_in_email()
     end
 
-    @tag login_as: :champion
+    @tag login_as: :contributor
     feature "connect a goal to a project", ctx do
       goal_name = "Improve support first response time"
 
       ctx
       |> Steps.given_a_goal_exists(name: goal_name)
+      |> Steps.assert_logged_in_contributor_has_edit_access()
       |> Steps.visit_project_page()
       |> Steps.choose_new_goal(goal_name: goal_name)
       |> Steps.assert_goal_connected(goal_name: goal_name)
