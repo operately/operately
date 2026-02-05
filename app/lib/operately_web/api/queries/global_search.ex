@@ -51,27 +51,29 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearch do
       {:ok, %{projects: [], goals: [], milestones: [], tasks: [], people: []}}
     else
       normalized = normalize_search_term(query)
-      search_term = if normalized == "", do: query, else: normalized
+      if normalized == "" do
+        {:ok, %{projects: [], goals: [], milestones: [], tasks: [], people: []}}
+      else
+        [projects, goals, milestones, tasks, people] =
+          [
+            Task.async(fn -> search_projects(person, normalized) end),
+            Task.async(fn -> search_goals(person, normalized) end),
+            Task.async(fn -> search_milestones(person, normalized) end),
+            Task.async(fn -> search_tasks(person, normalized) end),
+            Task.async(fn -> search_people(person, normalized) end)
+          ]
+          |> Task.await_many()
 
-      [projects, goals, milestones, tasks, people] =
-        [
-          Task.async(fn -> search_projects(person, search_term) end),
-          Task.async(fn -> search_goals(person, search_term) end),
-          Task.async(fn -> search_milestones(person, search_term) end),
-          Task.async(fn -> search_tasks(person, search_term) end),
-          Task.async(fn -> search_people(person, search_term) end)
-        ]
-        |> Task.await_many()
+        output = %{
+          projects: Serializer.serialize(projects, level: :full),
+          goals: Serializer.serialize(goals, level: :essential),
+          milestones: Serializer.serialize(milestones, level: :essential),
+          tasks: Serializer.serialize(tasks, level: :full),
+          people: Serializer.serialize(people, level: :essential)
+        }
 
-      output = %{
-        projects: Serializer.serialize(projects, level: :full),
-        goals: Serializer.serialize(goals, level: :essential),
-        milestones: Serializer.serialize(milestones, level: :essential),
-        tasks: Serializer.serialize(tasks, level: :full),
-        people: Serializer.serialize(people, level: :essential)
-      }
-
-      {:ok, output}
+        {:ok, output}
+      end
     end
   end
 
