@@ -52,7 +52,7 @@ defmodule Operately.Projects.Permissions do
       can_delete_milestone: access_level >= Binding.edit_access(),
       can_edit_check_in: access_level >= Binding.edit_access(),
       can_edit_description: access_level >= Binding.full_access(),
-      can_edit_timeline: access_level >= Binding.full_access(),
+      can_edit_timeline: access_level >= Binding.edit_access(),
       can_edit_resources: access_level >= Binding.edit_access(),
       can_edit_goal: access_level >= Binding.full_access(),
       can_edit_name: access_level >= Binding.full_access(),

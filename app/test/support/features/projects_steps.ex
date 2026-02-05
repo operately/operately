@@ -113,6 +113,16 @@ defmodule Operately.Support.Features.ProjectSteps do
     })
   end
 
+  def setup_contributors(ctx) do
+    ctx
+    |> Factory.add_company_owner(:creator)
+    |> Factory.add_project_contributor(:contributor, :project, permissions: :edit_access)
+    |> then(fn ctx ->
+      ctx = Factory.preload(ctx, :contributor, :person)
+      Map.put(ctx, :contributor, ctx.contributor.person)
+    end)
+  end
+
   def login(ctx) do
     case ctx[:login_as] do
       person when is_atom(person) ->
@@ -202,6 +212,14 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :open_ai_sidebar, ctx do
     ctx |> UI.click(css: "button[title*=\"Ask Alfred\"]")
+  end
+
+  step :assert_logged_in_contributor_has_edit_access, ctx do
+    {:ok, project} = Operately.Projects.Project.get(ctx.contributor, id: ctx.project.id)
+
+    assert project.request_info.access_level == Binding.edit_access()
+
+    UI.login_as(ctx, ctx.contributor)
   end
 
   step :assert_ai_sidebar_disabled_message, ctx, message: message do
@@ -376,6 +394,35 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.refute_text("Move to another space", testid: "actions-section")
   end
 
+  step :edit_project_start_date, ctx, date do
+    ctx
+    |> UI.select_day_in_date_field(testid: "project-start-date", date: date)
+    |> UI.sleep(300)
+  end
+
+  step :assert_project_start_date, ctx, formatted_date do
+    ctx |> UI.assert_text(formatted_date, testid: "project-start-date")
+  end
+
+  step :assert_project_start_date_change_visible_in_feed, ctx, date_text do
+    short = "#{Person.first_name(ctx.contributor)} changed the start date to #{date_text}"
+    long = "#{Person.first_name(ctx.contributor)} changed the start date to #{date_text} on the #{ctx.project.name}"
+
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
+    |> UI.find(UI.query(testid: "project-feed"), fn el ->
+      UI.assert_text(el, short)
+    end)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> UI.find(UI.query(testid: "space-feed"), fn el ->
+      UI.assert_text(el, long)
+    end)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.find(UI.query(testid: "company-feed"), fn el ->
+      UI.assert_text(el, long)
+    end)
+  end
+
   step :edit_project_due_date, ctx, date do
     ctx
     |> UI.select_day_in_date_field(testid: "project-due-date", date: date)
@@ -399,8 +446,8 @@ defmodule Operately.Support.Features.ProjectSteps do
   end
 
   step :assert_project_due_date_change_visible_in_feed, ctx, date_text do
-    short = "#{Person.first_name(ctx.champion)} changed the due date to #{date_text}"
-    long = "#{Person.first_name(ctx.champion)} changed the due date to #{date_text} on the #{ctx.project.name}"
+    short = "#{Person.first_name(ctx.contributor)} changed the due date to #{date_text}"
+    long = "#{Person.first_name(ctx.contributor)} changed the due date to #{date_text} on the #{ctx.project.name}"
 
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
@@ -422,7 +469,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
       to: ctx.reviewer,
-      author: ctx.champion,
+      author: ctx.contributor,
       action: "set the due date"
     })
   end
@@ -431,7 +478,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     ctx
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.assert_activity_notification(%{
-      author: ctx.champion,
+      author: ctx.contributor,
       action: "Updated due date for #{ctx.project.name} to #{date_text}"
     })
   end
@@ -440,7 +487,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     ctx
     |> UI.login_as(ctx.champion)
     |> NotificationsSteps.assert_activity_notification(%{
-      author: ctx.reviewer,
+      author: ctx.contributor,
       action: "Updated due date for #{ctx.project.name} to #{date_text}"
     })
   end
@@ -449,7 +496,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     ctx
     |> UI.login_as(ctx.champion)
     |> NotificationsSteps.assert_activity_notification(%{
-      author: ctx.reviewer,
+      author: ctx.contributor,
       action: "Cleared due date for #{ctx.project.name}"
     })
   end
@@ -459,7 +506,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
       to: ctx.champion,
-      author: ctx.reviewer,
+      author: ctx.contributor,
       action: "set the due date"
     })
   end
@@ -469,7 +516,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
       to: ctx.champion,
-      author: ctx.reviewer,
+      author: ctx.contributor,
       action: "removed the due date"
     })
   end
