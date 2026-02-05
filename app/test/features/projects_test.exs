@@ -68,13 +68,13 @@ defmodule Operately.Features.ProjectsTest do
       |> Steps.assert_next_check_in_scheduled_at_is_next_friday()
     end
 
-    @tag login_as: :champion
+    @tag login_as: :commenter
     feature "comment on project resumption", ctx do
       ctx
+      |> Steps.assert_logged_in_contributor_has_comment_access()
       |> Steps.visit_project_page()
       |> Steps.given_project_is_paused()
       |> Steps.given_project_is_resumed()
-      |> Steps.login_as_reviewer()
       |> Steps.leave_comment_on_project_resumption()
       |> Steps.assert_comment_on_resumption_visible_on_feed()
       |> Steps.assert_comment_on_resumption_received_in_notifications()
@@ -170,9 +170,10 @@ defmodule Operately.Features.ProjectsTest do
       |> Steps.assert_project_overdue_message("Overdue by 2 weeks")
     end
 
-    @tag login_as: :champion
+    @tag login_as: :viewer
     feature "export project as markdown", ctx do
       ctx
+      |> Steps.assert_logged_in_contributor_has_view_access()
       |> Steps.visit_project_page()
       |> Steps.download_project_markdown()
       |> Steps.assert_project_markdown_includes_details()

@@ -121,6 +121,16 @@ defmodule Operately.Support.Features.ProjectSteps do
       ctx = Factory.preload(ctx, :contributor, :person)
       Map.put(ctx, :contributor, ctx.contributor.person)
     end)
+    |> Factory.add_project_contributor(:commenter, :project, permissions: :comment_access)
+    |> then(fn ctx ->
+      ctx = Factory.preload(ctx, :commenter, :person)
+      Map.put(ctx, :commenter, ctx.commenter.person)
+    end)
+    |> Factory.add_project_contributor(:viewer, :project, permissions: :view_access)
+    |> then(fn ctx ->
+      ctx = Factory.preload(ctx, :viewer, :person)
+      Map.put(ctx, :viewer, ctx.viewer.person)
+    end)
   end
 
   def login(ctx) do
@@ -220,6 +230,22 @@ defmodule Operately.Support.Features.ProjectSteps do
     assert project.request_info.access_level == Binding.edit_access()
 
     UI.login_as(ctx, ctx.contributor)
+  end
+
+  step :assert_logged_in_contributor_has_comment_access, ctx do
+    {:ok, project} = Operately.Projects.Project.get(ctx.commenter, id: ctx.project.id)
+
+    assert project.request_info.access_level == Binding.comment_access()
+
+    UI.login_as(ctx, ctx.commenter)
+  end
+
+  step :assert_logged_in_contributor_has_view_access, ctx do
+    {:ok, project} = Operately.Projects.Project.get(ctx.viewer, id: ctx.project.id)
+
+    assert project.request_info.access_level == Binding.view_access()
+
+    UI.login_as(ctx, ctx.viewer)
   end
 
   step :assert_ai_sidebar_disabled_message, ctx, message: message do
@@ -1346,11 +1372,11 @@ defmodule Operately.Support.Features.ProjectSteps do
     ctx
     |> UI.login_as(ctx.champion)
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
-    |> FeedSteps.assert_project_resumption_commented(author: ctx.reviewer, comment: "This is a comment on resumption.")
+    |> FeedSteps.assert_project_resumption_commented(author: ctx.commenter, comment: "This is a comment on resumption.")
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
-    |> FeedSteps.assert_project_resumption_commented(author: ctx.reviewer, comment: "This is a comment on resumption.", project_name: ctx.project.name)
+    |> FeedSteps.assert_project_resumption_commented(author: ctx.commenter, comment: "This is a comment on resumption.", project_name: ctx.project.name)
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> FeedSteps.assert_project_resumption_commented(author: ctx.reviewer, comment: "This is a comment on resumption.", project_name: ctx.project.name)
+    |> FeedSteps.assert_project_resumption_commented(author: ctx.commenter, comment: "This is a comment on resumption.", project_name: ctx.project.name)
   end
 
   step :assert_comment_on_resumption_received_in_notifications, ctx do
@@ -1358,7 +1384,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.login_as(ctx.champion)
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
-      author: ctx.reviewer,
+      author: ctx.commenter,
       action: "Re: project resuming"
     })
   end
@@ -1369,7 +1395,7 @@ defmodule Operately.Support.Features.ProjectSteps do
       where: ctx.project.name,
       to: ctx.champion,
       action: "commented on project resumption",
-      author: ctx.reviewer
+      author: ctx.commenter
     })
   end
 end
