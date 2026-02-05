@@ -12,10 +12,10 @@ defmodule Operately.Projects.PermissionsTest do
     assert perms.can_check_in
     assert perms.can_edit_resources
     assert perms.can_acknowledge_check_in
-    refute perms.can_edit_description
-    refute perms.can_edit_name
+    assert perms.can_edit_description
+    assert perms.can_edit_name
     refute perms.can_edit_permissions
-    refute perms.can_close
-    refute perms.can_edit_retrospective
+    assert perms.can_close
+    assert perms.can_edit_retrospective
   end
 end

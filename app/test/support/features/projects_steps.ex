@@ -113,6 +113,26 @@ defmodule Operately.Support.Features.ProjectSteps do
     })
   end
 
+  def setup_contributors(ctx) do
+    ctx
+    |> Factory.add_company_owner(:creator)
+    |> Factory.add_project_contributor(:contributor, :project, permissions: :edit_access)
+    |> then(fn ctx ->
+      ctx = Factory.preload(ctx, :contributor, :person)
+      Map.put(ctx, :contributor, ctx.contributor.person)
+    end)
+    |> Factory.add_project_contributor(:commenter, :project, permissions: :comment_access)
+    |> then(fn ctx ->
+      ctx = Factory.preload(ctx, :commenter, :person)
+      Map.put(ctx, :commenter, ctx.commenter.person)
+    end)
+    |> Factory.add_project_contributor(:viewer, :project, permissions: :view_access)
+    |> then(fn ctx ->
+      ctx = Factory.preload(ctx, :viewer, :person)
+      Map.put(ctx, :viewer, ctx.viewer.person)
+    end)
+  end
+
   def login(ctx) do
     case ctx[:login_as] do
       person when is_atom(person) ->
@@ -204,6 +224,30 @@ defmodule Operately.Support.Features.ProjectSteps do
     ctx |> UI.click(css: "button[title*=\"Ask Alfred\"]")
   end
 
+  step :assert_logged_in_contributor_has_edit_access, ctx do
+    {:ok, project} = Operately.Projects.Project.get(ctx.contributor, id: ctx.project.id)
+
+    assert project.request_info.access_level == Binding.edit_access()
+
+    UI.login_as(ctx, ctx.contributor)
+  end
+
+  step :assert_logged_in_contributor_has_comment_access, ctx do
+    {:ok, project} = Operately.Projects.Project.get(ctx.commenter, id: ctx.project.id)
+
+    assert project.request_info.access_level == Binding.comment_access()
+
+    UI.login_as(ctx, ctx.commenter)
+  end
+
+  step :assert_logged_in_contributor_has_view_access, ctx do
+    {:ok, project} = Operately.Projects.Project.get(ctx.viewer, id: ctx.project.id)
+
+    assert project.request_info.access_level == Binding.view_access()
+
+    UI.login_as(ctx, ctx.viewer)
+  end
+
   step :assert_ai_sidebar_disabled_message, ctx, message: message do
     ctx |> UI.assert_text(message)
   end
@@ -239,7 +283,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
       to: ctx.reviewer,
-      author: ctx.champion,
+      author: ctx.contributor,
       action: "connected the project to the #{goal_name} goal"
     })
   end
@@ -376,6 +420,35 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.refute_text("Move to another space", testid: "actions-section")
   end
 
+  step :edit_project_start_date, ctx, date do
+    ctx
+    |> UI.select_day_in_date_field(testid: "project-start-date", date: date)
+    |> UI.sleep(300)
+  end
+
+  step :assert_project_start_date, ctx, formatted_date do
+    ctx |> UI.assert_text(formatted_date, testid: "project-start-date")
+  end
+
+  step :assert_project_start_date_change_visible_in_feed, ctx, date_text do
+    short = "#{Person.first_name(ctx.contributor)} changed the start date to #{date_text}"
+    long = "#{Person.first_name(ctx.contributor)} changed the start date to #{date_text} on the #{ctx.project.name}"
+
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
+    |> UI.find(UI.query(testid: "project-feed"), fn el ->
+      UI.assert_text(el, short)
+    end)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> UI.find(UI.query(testid: "space-feed"), fn el ->
+      UI.assert_text(el, long)
+    end)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.find(UI.query(testid: "company-feed"), fn el ->
+      UI.assert_text(el, long)
+    end)
+  end
+
   step :edit_project_due_date, ctx, date do
     ctx
     |> UI.select_day_in_date_field(testid: "project-due-date", date: date)
@@ -399,8 +472,8 @@ defmodule Operately.Support.Features.ProjectSteps do
   end
 
   step :assert_project_due_date_change_visible_in_feed, ctx, date_text do
-    short = "#{Person.first_name(ctx.champion)} changed the due date to #{date_text}"
-    long = "#{Person.first_name(ctx.champion)} changed the due date to #{date_text} on the #{ctx.project.name}"
+    short = "#{Person.first_name(ctx.contributor)} changed the due date to #{date_text}"
+    long = "#{Person.first_name(ctx.contributor)} changed the due date to #{date_text} on the #{ctx.project.name}"
 
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
@@ -422,7 +495,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
       to: ctx.reviewer,
-      author: ctx.champion,
+      author: ctx.contributor,
       action: "set the due date"
     })
   end
@@ -431,7 +504,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     ctx
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.assert_activity_notification(%{
-      author: ctx.champion,
+      author: ctx.contributor,
       action: "Updated due date for #{ctx.project.name} to #{date_text}"
     })
   end
@@ -440,7 +513,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     ctx
     |> UI.login_as(ctx.champion)
     |> NotificationsSteps.assert_activity_notification(%{
-      author: ctx.reviewer,
+      author: ctx.contributor,
       action: "Updated due date for #{ctx.project.name} to #{date_text}"
     })
   end
@@ -449,7 +522,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     ctx
     |> UI.login_as(ctx.champion)
     |> NotificationsSteps.assert_activity_notification(%{
-      author: ctx.reviewer,
+      author: ctx.contributor,
       action: "Cleared due date for #{ctx.project.name}"
     })
   end
@@ -459,7 +532,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
       to: ctx.champion,
-      author: ctx.reviewer,
+      author: ctx.contributor,
       action: "set the due date"
     })
   end
@@ -469,7 +542,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
       to: ctx.champion,
-      author: ctx.reviewer,
+      author: ctx.contributor,
       action: "removed the due date"
     })
   end
@@ -516,7 +589,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
-      author: ctx.champion,
+      author: ctx.contributor,
       action: "Paused the #{ctx.project.name} project"
     })
   end
@@ -527,7 +600,7 @@ defmodule Operately.Support.Features.ProjectSteps do
       where: ctx.project.name,
       to: ctx.reviewer,
       action: "paused the project",
-      author: ctx.champion
+      author: ctx.contributor
     })
   end
 
@@ -535,15 +608,15 @@ defmodule Operately.Support.Features.ProjectSteps do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
     |> UI.find(UI.query(testid: "project-feed"), fn el ->
-      el |> FeedSteps.assert_project_paused(author: ctx.champion)
+      el |> FeedSteps.assert_project_paused(author: ctx.contributor)
     end)
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
     |> UI.find(UI.query(testid: "space-feed"), fn el ->
-      el |> FeedSteps.assert_project_paused(author: ctx.champion, project_name: ctx.project.name)
+      el |> FeedSteps.assert_project_paused(author: ctx.contributor, project_name: ctx.project.name)
     end)
     |> UI.visit(Paths.feed_path(ctx.company))
     |> UI.find(UI.query(testid: "company-feed"), fn el ->
-      el |> FeedSteps.assert_project_paused(author: ctx.champion, project_name: ctx.project.name)
+      el |> FeedSteps.assert_project_paused(author: ctx.contributor, project_name: ctx.project.name)
     end)
   end
 
@@ -566,7 +639,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
-      author: ctx.champion,
+      author: ctx.contributor,
       action: "Resumed the #{ctx.project.name} project"
     })
   end
@@ -577,18 +650,18 @@ defmodule Operately.Support.Features.ProjectSteps do
       where: ctx.project.name,
       to: ctx.reviewer,
       action: "resumed the project",
-      author: ctx.champion
+      author: ctx.contributor
     })
   end
 
   step :assert_project_resumed_visible_on_feed, ctx do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
-    |> FeedSteps.assert_project_resumed(author: ctx.champion)
+    |> FeedSteps.assert_project_resumed(author: ctx.contributor)
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
-    |> FeedSteps.assert_project_resumed(author: ctx.champion, project_name: ctx.project.name)
+    |> FeedSteps.assert_project_resumed(author: ctx.contributor, project_name: ctx.project.name)
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> FeedSteps.assert_project_resumed(author: ctx.champion, project_name: ctx.project.name)
+    |> FeedSteps.assert_project_resumed(author: ctx.contributor, project_name: ctx.project.name)
   end
 
   step :rename_project, ctx, new_name: new_name do
@@ -608,32 +681,32 @@ defmodule Operately.Support.Features.ProjectSteps do
 
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
-    |> FeedSteps.assert_project_renamed(author: ctx.champion)
+    |> FeedSteps.assert_project_renamed(author: ctx.contributor)
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
-    |> FeedSteps.assert_project_renamed(author: ctx.champion, project_name: project.name)
+    |> FeedSteps.assert_project_renamed(author: ctx.contributor, project_name: project.name)
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> FeedSteps.assert_project_renamed(author: ctx.champion, project_name: project.name)
+    |> FeedSteps.assert_project_renamed(author: ctx.contributor, project_name: project.name)
   end
 
   step :assert_project_goal_connection_visible_on_feed, ctx, goal_name: goal_name do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
-    |> FeedSteps.assert_project_goal_connection(author: ctx.champion, goal_name: goal_name)
+    |> FeedSteps.assert_project_goal_connection(author: ctx.contributor, goal_name: goal_name)
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
     |> FeedSteps.assert_project_goal_connection(
-      author: ctx.champion,
+      author: ctx.contributor,
       project_name: ctx.project.name,
       goal_name: goal_name
     )
     |> UI.visit(Paths.feed_path(ctx.company))
     |> FeedSteps.assert_project_goal_connection(
-      author: ctx.champion,
+      author: ctx.contributor,
       project_name: ctx.project.name,
       goal_name: goal_name
     )
     |> UI.visit(Paths.goal_path(ctx.company, ctx.goal, tab: "activity"))
     |> FeedSteps.assert_project_goal_connection(
-      author: ctx.champion,
+      author: ctx.contributor,
       project_name: ctx.project.name
     )
   end
@@ -679,7 +752,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     ctx
     |> UI.login_as(ctx.space_member)
     |> NotificationsSteps.assert_activity_notification(%{
-      author: ctx.champion,
+      author: ctx.contributor,
       action: "Project \"#{ctx.project.name}\" description was updated"
     })
   end
@@ -689,7 +762,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
       to: ctx.space_member,
-      author: ctx.champion,
+      author: ctx.contributor,
       action: "updated the project description"
     })
   end
@@ -854,7 +927,7 @@ defmodule Operately.Support.Features.ProjectSteps do
   step :assert_project_name_changed_feed_posted, ctx do
     ctx
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_feed_item(ctx.creator, "renamed")
+    |> UI.assert_feed_item(ctx.contributor, "renamed")
   end
 
   #
@@ -1299,11 +1372,11 @@ defmodule Operately.Support.Features.ProjectSteps do
     ctx
     |> UI.login_as(ctx.champion)
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
-    |> FeedSteps.assert_project_resumption_commented(author: ctx.reviewer, comment: "This is a comment on resumption.")
+    |> FeedSteps.assert_project_resumption_commented(author: ctx.commenter, comment: "This is a comment on resumption.")
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
-    |> FeedSteps.assert_project_resumption_commented(author: ctx.reviewer, comment: "This is a comment on resumption.", project_name: ctx.project.name)
+    |> FeedSteps.assert_project_resumption_commented(author: ctx.commenter, comment: "This is a comment on resumption.", project_name: ctx.project.name)
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> FeedSteps.assert_project_resumption_commented(author: ctx.reviewer, comment: "This is a comment on resumption.", project_name: ctx.project.name)
+    |> FeedSteps.assert_project_resumption_commented(author: ctx.commenter, comment: "This is a comment on resumption.", project_name: ctx.project.name)
   end
 
   step :assert_comment_on_resumption_received_in_notifications, ctx do
@@ -1311,7 +1384,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.login_as(ctx.champion)
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
-      author: ctx.reviewer,
+      author: ctx.commenter,
       action: "Re: project resuming"
     })
   end
@@ -1322,7 +1395,7 @@ defmodule Operately.Support.Features.ProjectSteps do
       where: ctx.project.name,
       to: ctx.champion,
       action: "commented on project resumption",
-      author: ctx.reviewer
+      author: ctx.commenter
     })
   end
 end

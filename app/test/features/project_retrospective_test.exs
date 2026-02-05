@@ -4,14 +4,15 @@ defmodule Operately.Features.ProjectRetrospectiveTest do
 
   setup ctx, do: Steps.setup(ctx)
 
-  @tag login_as: :champion
+  @tag login_as: :contributor
   feature "closing a project and submitting a retrospective", ctx do
     params = %{
-      "author" => ctx.champion,
+      "author" => ctx.contributor,
       "notes" => "We built the thing",
     }
 
     ctx
+    |> Steps.assert_logged_in_contributor_has_edit_access()
     |> Steps.initiate_project_closing()
     |> Steps.fill_in_retrospective(params)
     |> Steps.submit_retrospective()
@@ -20,23 +21,25 @@ defmodule Operately.Features.ProjectRetrospectiveTest do
     |> Steps.assert_notification_sent()
   end
 
-  @tag login_as: :champion
+  @tag login_as: :contributor
   feature "project can't be closed without filling in the retrospective", ctx do
     ctx
+    |> Steps.assert_logged_in_contributor_has_edit_access()
     |> Steps.initiate_project_closing()
     |> Steps.submit_retrospective()
     |> Steps.assert_retrospective_error()
   end
 
-  @tag login_as: :champion
+  @tag login_as: :contributor
   feature "edit project retrospective", ctx do
     params = %{
-      "author" => ctx.champion,
+      "author" => ctx.contributor,
       "notes" => "We built the thing",
     }
     edited_notes = "We built the thing (edited)"
 
     ctx
+    |> Steps.assert_logged_in_contributor_has_edit_access()
     |> Steps.initiate_project_closing()
     |> Steps.fill_in_retrospective(params)
     |> Steps.submit_retrospective()
@@ -46,33 +49,37 @@ defmodule Operately.Features.ProjectRetrospectiveTest do
     |> Steps.assert_project_retrospective_edited(edited_notes)
   end
 
-  @tag login_as: :champion
+  @tag login_as: :contributor
   feature "comment on project retrospective", ctx do
     params = %{
-      "author" => ctx.champion,
+      "author" => ctx.contributor,
       "notes" => "We built the thing",
     }
 
     ctx
+    |> Steps.assert_logged_in_contributor_has_edit_access()
     |> Steps.initiate_project_closing()
     |> Steps.fill_in_retrospective(params)
     |> Steps.submit_retrospective()
+    |> Steps.assert_logged_in_contributor_has_comment_access()
     |> Steps.visit_retrospective_page()
     |> Steps.leave_comment("This is a comment.")
     |> Steps.assert_comment_present()
   end
 
-  @tag login_as: :champion
+  @tag login_as: :contributor
   feature "delete comment from retrospective", ctx do
     params = %{
-      "author" => ctx.champion,
+      "author" => ctx.contributor,
       "notes" => "We built the thing",
     }
 
     ctx
+    |> Steps.assert_logged_in_contributor_has_edit_access()
     |> Steps.initiate_project_closing()
     |> Steps.fill_in_retrospective(params)
     |> Steps.submit_retrospective()
+    |> Steps.assert_logged_in_contributor_has_comment_access()
     |> Steps.visit_retrospective_page()
     |> Steps.leave_comment("This is a comment.")
     |> Steps.delete_comment()
