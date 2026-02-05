@@ -4,15 +4,16 @@ defmodule Operately.Features.ProjectsDescriptionTest do
   alias Operately.Support.Features.ProjectSteps, as: Steps
 
   setup ctx do
-    ctx = Steps.create_project(ctx, name: "Test Project")
-    ctx = Steps.login(ctx)
-
-    {:ok, ctx}
+    ctx
+    |> Steps.create_project(name: "Test Project")
+    |> Steps.setup_contributors()
+    |> Steps.login()
   end
 
-  @tag login_as: :champion
+  @tag login_as: :contributor
   feature "writing a project description", ctx do
     ctx
+    |> Steps.assert_logged_in_contributor_has_edit_access()
     |> Steps.visit_project_page()
     |> Steps.assert_project_description_absent()
     |> Steps.submit_project_description(description: project_description())
@@ -20,9 +21,10 @@ defmodule Operately.Features.ProjectsDescriptionTest do
     |> Steps.assert_project_description_present(description: "TEXT END MARKER")
   end
 
-  @tag login_as: :champion
+  @tag login_as: :contributor
   feature "editing a project description", ctx do
     ctx
+    |> Steps.assert_logged_in_contributor_has_edit_access()
     |> Steps.given_project_has_description(description: "Old description")
     |> Steps.visit_project_page()
     |> Steps.assert_project_description_present(description: "Old description")
@@ -31,11 +33,12 @@ defmodule Operately.Features.ProjectsDescriptionTest do
     |> Steps.assert_project_description_feed_item(description: "New description")
   end
 
-  @tag login_as: :champion
+  @tag login_as: :contributor
   feature "mentioning a person in a project description sends notification and email", ctx do
     ctx = Steps.given_space_member_exists(ctx)
 
     ctx
+    |> Steps.assert_logged_in_contributor_has_edit_access()
     |> Steps.visit_project_page()
     |> Steps.assert_project_description_absent()
     |> Steps.submit_project_description_mentioning(ctx.space_member)
