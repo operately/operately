@@ -325,7 +325,6 @@ defmodule Operately.Features.ProjectsTest do
       |> Steps.assert_description_editable()
       |> Steps.assert_start_date_editable()
       |> Steps.assert_manage_access_visible()
-      |> Steps.assert_pause_and_close_actions_visible()
     end
 
     feature "Person with edit access can see correct actions", ctx do
@@ -335,7 +334,7 @@ defmodule Operately.Features.ProjectsTest do
       |> Steps.visit_project_page()
       |> Steps.refute_description_editable()
       |> Steps.refute_manage_access_visible()
-      |> Steps.refute_pause_and_close_actions_visible()
+      |> Steps.assert_pause_and_close_actions_visible()
       |> Steps.assert_add_milestone_visible()
       |> Steps.assert_add_resource_visible()
       |> Steps.assert_add_task_and_milestone_visible_in_tasks_tab()
@@ -349,6 +348,7 @@ defmodule Operately.Features.ProjectsTest do
       |> Steps.given_project_with_comment_access_member_logged_in()
       |> Steps.assert_member_has_comment_access()
       |> Steps.visit_project_page()
+      |> Steps.refute_pause_and_close_actions_visible()
       |> Steps.refute_add_milestone_visible()
       |> Steps.refute_add_resource_visible()
       |> Steps.refute_add_task_and_milestone_visible_in_tasks_tab()

@@ -5,7 +5,7 @@ defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
   import Operately.GroupsFixtures
   import Operately.ProjectsFixtures
 
-  alias Operately.{Repo, Projects, Companies}
+  alias Operately.{Repo, Projects}
   alias Operately.Notifications.SubscriptionList
   alias Operately.Projects.Retrospective
   alias Operately.Access.Binding
@@ -20,144 +20,41 @@ defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
   end
 
   describe "permissions" do
+    @table [
+      %{company: :no_access,      space: :no_access,      project: :no_access,      expected: 404},
+      %{company: :no_access,      space: :no_access,      project: :comment_access, expected: 403},
+      %{company: :no_access,      space: :no_access,      project: :edit_access,    expected: 200},
+      %{company: :no_access,      space: :no_access,      project: :full_access,    expected: 200},
+
+      %{company: :no_access,      space: :comment_access, project: :no_access,      expected: 403},
+      %{company: :no_access,      space: :edit_access,    project: :no_access,      expected: 200},
+      %{company: :no_access,      space: :full_access,    project: :no_access,      expected: 200},
+
+      %{company: :comment_access, space: :no_access,      project: :no_access,      expected: 403},
+      %{company: :edit_access,    space: :no_access,      project: :no_access,      expected: 200},
+      %{company: :full_access,    space: :no_access,      project: :no_access,      expected: 200},
+    ]
+
     setup ctx do
       ctx = register_and_log_in_account(ctx)
       creator = person_fixture(%{company_id: ctx.company.id})
-      space = group_fixture(creator, %{company_id: ctx.company.id})
-
-      Map.merge(ctx, %{creator: creator, creator_id: creator.id, space_id: space.id})
+      Map.merge(ctx, %{creator: creator})
     end
 
-    test "company members without view access can't see a project", ctx do
-      project = create_project(ctx, company_access_level: Binding.no_access())
+    tabletest @table do
+      test "if caller has levels company=#{@test.company}, space=#{@test.space}, project=#{@test.project} on the project, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        project = create_project(ctx, space, @test.company, @test.space, @test.project)
 
-      assert {404, res} = request(ctx.conn, project)
-      assert res.message == "The requested resource was not found"
-      assert_project_not_closed(project)
-    end
+        assert {code, res} = request(ctx.conn, project)
+        assert code == @test.expected
 
-    test "company members without full access can't close a project", ctx do
-      project = create_project(ctx, company_access_level: Binding.comment_access())
-
-      assert {403, res} = request(ctx.conn, project)
-      assert res.message == "You don't have permission to perform this action"
-      assert_project_not_closed(project)
-    end
-
-    test "company members with full access can close a project", ctx do
-      project = create_project(ctx, company_access_level: Binding.full_access())
-
-      assert {200, res} = request(ctx.conn, project)
-      assert_project_closed(res, project)
-    end
-
-    test "company owner can close a project", ctx do
-      project = create_project(ctx, company_access_level: Binding.view_access())
-
-      # Not owner
-      assert {403, _} = request(ctx.conn, project)
-      assert_project_not_closed(project)
-
-      # Owner
-      {:ok, _} = Companies.add_owner(ctx.company_creator, ctx.person.id)
-
-      assert {200, res} = request(ctx.conn, project)
-      assert_project_closed(res, project)
-    end
-
-    test "space members without view access can't see a project", ctx do
-      add_person_to_space(ctx)
-      project = create_project(ctx, space_access_level: Binding.no_access())
-
-      assert {404, res} = request(ctx.conn, project)
-      assert res.message == "The requested resource was not found"
-      assert_project_not_closed(project)
-    end
-
-    test "space members without full access can't close a project", ctx do
-      add_person_to_space(ctx)
-      project = create_project(ctx, space_access_level: Binding.comment_access())
-
-      assert {403, res} = request(ctx.conn, project)
-      assert res.message == "You don't have permission to perform this action"
-      assert_project_not_closed(project)
-    end
-
-    test "space members with full access can close a project", ctx do
-      add_person_to_space(ctx)
-      project = create_project(ctx, space_access_level: Binding.full_access())
-
-      assert {200, res} = request(ctx.conn, project)
-      assert_project_closed(res, project)
-    end
-
-    test "space managers can close a project", ctx do
-      add_person_to_space(ctx)
-      project = create_project(ctx, space_access_level: Binding.view_access())
-
-      # Not manager
-      assert {403, _} = request(ctx.conn, project)
-      assert_project_not_closed(project)
-
-      # Manager
-      add_manager_to_space(ctx)
-      assert {200, res} = request(ctx.conn, project)
-      assert_project_closed(res, project)
-    end
-
-    test "contributors without full access can't close a project", ctx do
-      project = create_project(ctx)
-      contributor = create_contributor(ctx, project, Binding.comment_access())
-
-      account = Repo.preload(contributor, :account).account
-      conn = log_in_account(ctx.conn, account)
-
-      assert {403, res} = request(conn, project)
-      assert res.message == "You don't have permission to perform this action"
-      assert_project_not_closed(project)
-    end
-
-    test "contributors with full access can close a project", ctx do
-      project = create_project(ctx)
-      contributor = create_contributor(ctx, project, Binding.full_access())
-
-      account = Repo.preload(contributor, :account).account
-      conn = log_in_account(ctx.conn, account)
-
-      assert {200, res} = request(conn, project)
-      assert_project_closed(res, project)
-    end
-
-    test "champions can close a project", ctx do
-      champion = person_fixture_with_account(%{company_id: ctx.company.id})
-      project = create_project(ctx, champion_id: champion.id, company_access_level: Binding.view_access())
-
-      # another user's request
-      assert {403, _} = request(ctx.conn, project)
-      assert_project_not_closed(project)
-
-      # champion's request
-      account = Repo.preload(champion, :account).account
-      conn = log_in_account(ctx.conn, account)
-
-      assert {200, res} = request(conn, project)
-      assert_project_closed(res, project)
-    end
-
-    test "reviewers can close a project", ctx do
-      reviewer = person_fixture_with_account(%{company_id: ctx.company.id})
-      project = create_project(ctx, reviewer_id: reviewer.id, company_access_level: Binding.view_access())
-
-      # another user's request
-      assert {403, _} = request(ctx.conn, project)
-      assert_project_not_closed(project)
-
-      # reviewer's request
-      account = Repo.preload(reviewer, :account).account
-      conn = log_in_account(ctx.conn, account)
-
-      assert {200, res} = request(conn, project)
-      assert_project_closed(res, project)
+        case @test.expected do
+          200 -> assert_project_closed(res, project)
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "The requested resource was not found"
+        end
+      end
     end
   end
 
@@ -302,6 +199,39 @@ defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
     list.subscriptions
   end
 
+  defp create_space(ctx) do
+    group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.no_access()})
+  end
+
+  defp create_project(ctx, space, company_level, space_level, project_level) do
+    project = project_fixture(%{
+      company_id: ctx.company.id,
+      name: "Project 1",
+      creator_id: ctx.creator.id,
+      group_id: space.id,
+      company_access_level: Binding.from_atom(company_level),
+      space_access_level: Binding.from_atom(space_level),
+    })
+
+    if space_level != :no_access do
+      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
+        id: ctx.person.id,
+        access_level: Binding.from_atom(space_level)
+      }])
+    end
+
+    if project_level != :no_access do
+      {:ok, _} = Projects.create_contributor(ctx.creator, %{
+        project_id: project.id,
+        person_id: ctx.person.id,
+        permissions: Binding.from_atom(project_level),
+        responsibility: "some responsibility"
+      })
+    end
+
+    project
+  end
+
   defp create_project(ctx, attrs \\ %{}) do
     project_fixture(Map.merge(%{
       company_id: ctx.company.id,
@@ -311,30 +241,5 @@ defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
       company_access_level: Binding.no_access(),
       space_access_level: Binding.no_access(),
     }, Enum.into(attrs, %{})))
-  end
-
-  defp create_contributor(ctx, project, permissions) do
-    contributor = person_fixture_with_account(%{company_id: ctx.company.id})
-    {:ok, _} = Projects.create_contributor(ctx.creator, %{
-      project_id: project.id,
-      person_id: contributor.id,
-      responsibility: "some responsibility",
-      permissions: permissions,
-    })
-    contributor
-  end
-
-  defp add_person_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space_id, [%{
-      id: ctx.person.id,
-      access_level: Binding.edit_access(),
-    }])
-  end
-
-  defp add_manager_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space_id, [%{
-      id: ctx.person.id,
-      access_level: Binding.full_access(),
-    }])
   end
 end
