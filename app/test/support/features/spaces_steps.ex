@@ -420,18 +420,18 @@ defmodule Operately.Support.Features.SpacesSteps do
   end
 
   step :assert_goals_and_projects_box_shows_correct_counts, ctx do
-    # Should show "0/4 projects on track" (0 with check-ins out of 4 total)
+    # Should show "0/2 projects on track" (0 with check-ins out of 2 active projects)
     # because active projects without check-ins are pending, not on track
-    ctx |> UI.assert_text("0/4 projects on track")
+    ctx |> UI.assert_text("0/2 projects on track")
   end
 
-  step :assert_paused_projects_are_listed, ctx do
-    # Both paused and active projects should be visible in the list
+  step :assert_paused_projects_are_not_listed, ctx do
+    # Only active projects should be visible in the list
     ctx
-    |> UI.assert_text("Active Project 1")
-    |> UI.assert_text("Active Project 2")
-    |> UI.assert_text("Paused Project 1")
-    |> UI.assert_text("Paused Project 2")
+    |> UI.assert_text("Active Project 1", testid: "goals-and-projects")
+    |> UI.assert_text("Active Project 2", testid: "goals-and-projects")
+    |> UI.refute_text("Paused Project 1", testid: "goals-and-projects")
+    |> UI.refute_text("Paused Project 2", testid: "goals-and-projects")
   end
 
   step :given_a_space_with_pending_projects_and_goals, ctx do
