@@ -6,15 +6,16 @@ defmodule Operately.Features.ProjectsTest do
 
   describe "project page" do
     setup ctx do
-      ctx = Steps.create_project(ctx, name: "Test Project")
-      ctx = Steps.login(ctx)
-
-      {:ok, ctx}
+      ctx
+      |> Steps.create_project(name: "Test Project")
+      |> Steps.setup_contributors()
+      |> Steps.login()
     end
 
-    @tag login_as: :champion
+    @tag login_as: :contributor
     feature "rename a project", ctx do
       ctx
+      |> Steps.assert_logged_in_contributor_has_edit_access()
       |> Steps.visit_project_page()
       |> Steps.rename_project(new_name: "New Name")
       |> Steps.assert_project_renamed(new_name: "New Name")
@@ -31,9 +32,10 @@ defmodule Operately.Features.ProjectsTest do
       |> Steps.assert_project_moved_feed_item_exists()
     end
 
-    @tag login_as: :champion
+    @tag login_as: :contributor
     feature "pausing a project", ctx do
       ctx
+      |> Steps.assert_logged_in_contributor_has_edit_access()
       |> Steps.visit_project_page()
       |> Steps.pause_project()
       |> Steps.assert_project_paused()
@@ -42,9 +44,10 @@ defmodule Operately.Features.ProjectsTest do
       |> Steps.assert_pause_email_sent_to_reviewer()
     end
 
-    @tag login_as: :champion
+    @tag login_as: :contributor
     feature "resuming a project", ctx do
       ctx
+      |> Steps.assert_logged_in_contributor_has_edit_access()
       |> Steps.visit_project_page()
       |> Steps.pause_project()
       |> Steps.assert_project_paused()
@@ -68,25 +71,26 @@ defmodule Operately.Features.ProjectsTest do
       |> Steps.assert_next_check_in_scheduled_at_is_next_friday()
     end
 
-    @tag login_as: :champion
+    @tag login_as: :commenter
     feature "comment on project resumption", ctx do
       ctx
+      |> Steps.assert_logged_in_contributor_has_comment_access()
       |> Steps.visit_project_page()
       |> Steps.given_project_is_paused()
       |> Steps.given_project_is_resumed()
-      |> Steps.login_as_reviewer()
       |> Steps.leave_comment_on_project_resumption()
       |> Steps.assert_comment_on_resumption_visible_on_feed()
       |> Steps.assert_comment_on_resumption_received_in_notifications()
       |> Steps.assert_comment_on_resumption_received_in_email()
     end
 
-    @tag login_as: :champion
+    @tag login_as: :contributor
     feature "connect a goal to a project", ctx do
       goal_name = "Improve support first response time"
 
       ctx
       |> Steps.given_a_goal_exists(name: goal_name)
+      |> Steps.assert_logged_in_contributor_has_edit_access()
       |> Steps.visit_project_page()
       |> Steps.choose_new_goal(goal_name: goal_name)
       |> Steps.assert_goal_connected(goal_name: goal_name)
@@ -95,13 +99,30 @@ defmodule Operately.Features.ProjectsTest do
       |> Steps.assert_goal_connected_email_sent_to_champion(goal_name: goal_name)
     end
 
-    @tag login_as: :champion
+    @tag login_as: :contributor
+    feature "edit project start date", ctx do
+      next_friday = Operately.Support.Time.next_friday()
+      formatted_date = Operately.Support.Time.format_month_day(next_friday)
+      formatted_date_in_feed = Operately.Support.Time.format_month_day_maybe_year(next_friday)
+
+      ctx
+      |> Steps.assert_logged_in_contributor_has_edit_access()
+      |> Steps.visit_project_page()
+      |> Steps.edit_project_start_date(next_friday)
+      |> Steps.assert_project_start_date(formatted_date)
+      |> Steps.reload_project_page()
+      |> Steps.assert_project_start_date(formatted_date)
+      |> Steps.assert_project_start_date_change_visible_in_feed(formatted_date_in_feed)
+    end
+
+    @tag login_as: :contributor
     feature "edit project due date", ctx do
       next_friday = Operately.Support.Time.next_friday()
       formatted_date = Operately.Support.Time.format_month_day(next_friday)
       formatted_date_in_feed = Operately.Support.Time.format_month_day_maybe_year(next_friday)
 
       ctx
+      |> Steps.assert_logged_in_contributor_has_edit_access()
       |> Steps.visit_project_page()
       |> Steps.edit_project_due_date(next_friday)
       |> Steps.assert_project_due_date(formatted_date)
@@ -112,12 +133,13 @@ defmodule Operately.Features.ProjectsTest do
       |> Steps.assert_project_due_date_set_email_sent()
     end
 
-    @tag login_as: :reviewer
+    @tag login_as: :contributor
     feature "edit project due date sends notification to champion", ctx do
       next_friday = Operately.Support.Time.next_friday()
       formatted_date = Operately.Support.Time.format_month_day(next_friday)
 
       ctx
+      |> Steps.assert_logged_in_contributor_has_edit_access()
       |> Steps.visit_project_page()
       |> Steps.edit_project_due_date(next_friday)
       |> Steps.assert_project_due_date(formatted_date)
@@ -125,9 +147,10 @@ defmodule Operately.Features.ProjectsTest do
       |> Steps.assert_project_due_date_changed_email_sent()
     end
 
-    @tag login_as: :reviewer
+    @tag login_as: :contributor
     feature "remove project due date sends notification to champion", ctx do
       ctx
+      |> Steps.assert_logged_in_contributor_has_edit_access()
       |> Steps.given_project_due_date_exists()
       |> Steps.visit_project_page()
       |> Steps.remove_project_due_date()
@@ -136,12 +159,13 @@ defmodule Operately.Features.ProjectsTest do
       |> Steps.assert_project_due_date_removed_email_sent()
     end
 
-    @tag login_as: :champion
+    @tag login_as: :contributor
     feature "overdue project shows overdue message", ctx do
       three_days_ago = Date.utc_today() |> Date.add(-3)
       fifteen_days_ago = Date.utc_today() |> Date.add(-15)
 
       ctx
+      |> Steps.assert_logged_in_contributor_has_edit_access()
       |> Steps.visit_project_page()
       |> Steps.edit_project_due_date(three_days_ago)
       |> Steps.assert_project_overdue_message("Overdue by 3 days")
@@ -149,9 +173,10 @@ defmodule Operately.Features.ProjectsTest do
       |> Steps.assert_project_overdue_message("Overdue by 2 weeks")
     end
 
-    @tag login_as: :champion
+    @tag login_as: :viewer
     feature "export project as markdown", ctx do
       ctx
+      |> Steps.assert_logged_in_contributor_has_view_access()
       |> Steps.visit_project_page()
       |> Steps.download_project_markdown()
       |> Steps.assert_project_markdown_includes_details()
@@ -191,11 +216,16 @@ defmodule Operately.Features.ProjectsTest do
   end
 
   describe "new project page" do
-    setup ctx, do: Steps.setup(ctx)
+    setup ctx do
+      ctx
+      |> Steps.setup()
+      |> Steps.setup_contributors()
+    end
 
     feature "changing project name", ctx do
       ctx
-      |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+      |> Steps.assert_logged_in_contributor_has_edit_access()
+      |> Steps.visit_project_page()
       |> Steps.change_project_name()
       |> Steps.assert_project_name_changed()
       |> Steps.assert_project_name_changed_feed_posted()
@@ -301,7 +331,6 @@ defmodule Operately.Features.ProjectsTest do
       |> Steps.assert_description_editable()
       |> Steps.assert_start_date_editable()
       |> Steps.assert_manage_access_visible()
-      |> Steps.assert_pause_and_close_actions_visible()
     end
 
     feature "Person with edit access can see correct actions", ctx do
@@ -311,7 +340,7 @@ defmodule Operately.Features.ProjectsTest do
       |> Steps.visit_project_page()
       |> Steps.refute_description_editable()
       |> Steps.refute_manage_access_visible()
-      |> Steps.refute_pause_and_close_actions_visible()
+      |> Steps.assert_pause_and_close_actions_visible()
       |> Steps.assert_add_milestone_visible()
       |> Steps.assert_add_resource_visible()
       |> Steps.assert_add_task_and_milestone_visible_in_tasks_tab()
@@ -325,6 +354,7 @@ defmodule Operately.Features.ProjectsTest do
       |> Steps.given_project_with_comment_access_member_logged_in()
       |> Steps.assert_member_has_comment_access()
       |> Steps.visit_project_page()
+      |> Steps.refute_pause_and_close_actions_visible()
       |> Steps.refute_add_milestone_visible()
       |> Steps.refute_add_resource_visible()
       |> Steps.refute_add_task_and_milestone_visible_in_tasks_tab()

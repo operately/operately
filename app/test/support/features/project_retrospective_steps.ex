@@ -8,6 +8,7 @@ defmodule Operately.Support.Features.ProjectRetrospectiveSteps do
   step :setup, ctx do
     ctx
     |> ProjectSteps.create_project(name: "Test Project")
+    |> ProjectSteps.setup_contributors()
     |> ProjectSteps.login()
   end
 
@@ -20,6 +21,10 @@ defmodule Operately.Support.Features.ProjectRetrospectiveSteps do
       |> UI.click_text("retrospective")
     end)
   end
+
+  defdelegate assert_logged_in_contributor_has_edit_access(ctx), to: ProjectSteps
+
+  defdelegate assert_logged_in_contributor_has_comment_access(ctx), to: ProjectSteps
 
   step :initiate_project_closing, ctx do
     ctx
@@ -82,7 +87,7 @@ defmodule Operately.Support.Features.ProjectRetrospectiveSteps do
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
       to: ctx.reviewer,
-      author: ctx.champion,
+      author: ctx.contributor,
       action: "closed the project and submitted a retrospective"
     })
   end
@@ -90,7 +95,7 @@ defmodule Operately.Support.Features.ProjectRetrospectiveSteps do
   step :assert_notification_sent, ctx do
     ctx
     |> UI.login_as(ctx.reviewer)
-    |> NotificationsSteps.assert_project_retrospective_sent(author: ctx.champion)
+    |> NotificationsSteps.assert_project_retrospective_sent(author: ctx.contributor)
   end
 
   step :assert_retrospective_error, ctx do
