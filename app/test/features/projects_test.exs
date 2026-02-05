@@ -31,9 +31,10 @@ defmodule Operately.Features.ProjectsTest do
       |> Steps.assert_project_moved_feed_item_exists()
     end
 
-    @tag login_as: :champion
+    @tag login_as: :contributor
     feature "pausing a project", ctx do
       ctx
+      |> Steps.assert_logged_in_contributor_has_edit_access()
       |> Steps.visit_project_page()
       |> Steps.pause_project()
       |> Steps.assert_project_paused()
@@ -42,9 +43,10 @@ defmodule Operately.Features.ProjectsTest do
       |> Steps.assert_pause_email_sent_to_reviewer()
     end
 
-    @tag login_as: :champion
+    @tag login_as: :contributor
     feature "resuming a project", ctx do
       ctx
+      |> Steps.assert_logged_in_contributor_has_edit_access()
       |> Steps.visit_project_page()
       |> Steps.pause_project()
       |> Steps.assert_project_paused()
