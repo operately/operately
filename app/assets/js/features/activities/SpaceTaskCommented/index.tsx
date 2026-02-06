@@ -16,9 +16,11 @@ const SpaceTaskCommented: ActivityHandler = {
 
   pagePath(paths, activity: Activity): string {
     const { task, space } = content(activity);
-    const path = task ? paths.taskPath(task.id) : paths.spacePath(space.id);
 
-    return path;
+    if (task) {
+      return paths.spaceKanbanPath(space.id, { taskId: task.id });
+    }
+    return paths.spaceKanbanPath(space.id);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -37,8 +39,8 @@ const SpaceTaskCommented: ActivityHandler = {
     const paths = usePaths();
     const { space, task } = content(activity);
 
-    const taskPath = task ? paths.taskPath(task.id) : null;
-    const taskLink = (taskPath && task) ? <Link to={taskPath}>{task.name}</Link> : "a task";
+    const taskPath = task ? paths.spaceKanbanPath(space.id, { taskId: task.id }) : paths.spaceKanbanPath(space.id);
+    const taskLink = task ? <Link to={taskPath}>{task.name}</Link> : "a task";
 
     if (page === "space") {
       return feedTitle(activity, "commented on", taskLink);

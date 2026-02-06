@@ -23,6 +23,10 @@ const TaskAssigneeUpdating: ActivityHandler = {
       return paths.projectPath(project.id, { tab: "tasks" });
     }
 
+    if (task) {
+      return paths.spaceKanbanPath(space.id, { taskId: task.id });
+    }
+
     return paths.spaceKanbanPath(space.id);
   },
 
