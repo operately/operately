@@ -1,6 +1,8 @@
 defmodule OperatelyWeb.Api.Queries.GetCompanyTest do
   use OperatelyWeb.TurboCase
 
+  alias Operately.Companies.Company
+
   test "invalid company id", ctx do
     assert {400, res} = query(ctx.conn, :get_company, %{id: "invalid"})
     assert res.message == "Invalid id format"
@@ -44,6 +46,7 @@ defmodule OperatelyWeb.Api.Queries.GetCompanyTest do
       assert res.company == company
       refute res.company.admins
       refute res.company.people
+      refute res.company.access_level
     end
 
     test "include_people", ctx do
@@ -68,6 +71,14 @@ defmodule OperatelyWeb.Api.Queries.GetCompanyTest do
       assert includes_person(res.company.owners, ctx.owner_john)
       refute includes_person(res.company.owners, ctx.admin_susan)
       refute includes_person(res.company.owners, ctx.member_peter)
+    end
+
+    test "include_access_level", ctx do
+      ctx = log_in_account(ctx, ctx.member_peter)
+      {:ok, company} = Company.get(ctx.member_peter, short_id: ctx.company.short_id)
+
+      assert {200, res} = query(ctx.conn, :get_company, %{id: Paths.company_id(ctx.company), include_access_level: true})
+      assert res.company.access_level == company.request_info.access_level
     end
 
     defp includes_person(list, person) do

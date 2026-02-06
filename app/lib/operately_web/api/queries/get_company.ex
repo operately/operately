@@ -15,6 +15,7 @@ defmodule OperatelyWeb.Api.Queries.GetCompany do
     field? :include_admins, :boolean, null: true
     field? :include_owners, :boolean, null: true
     field? :include_general_space, :boolean, null: true
+    field? :include_access_level, :boolean, null: true
   end
 
   outputs do
@@ -41,7 +42,8 @@ defmodule OperatelyWeb.Api.Queries.GetCompany do
       include_admins: &Company.load_admins/1,
       include_owners: &Company.load_owners/1,
       include_permissions: &Company.load_permissions/1,
-      include_general_space: &Company.load_general_space/1
+      include_general_space: &Company.load_general_space/1,
+      include_access_level: &Company.load_access_level/1
     )
   end
 

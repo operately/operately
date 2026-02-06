@@ -1085,6 +1085,7 @@ export interface Company {
   people?: Person[] | null;
   memberCount?: number | null;
   permissions?: CompanyPermissions | null;
+  accessLevel?: number | null;
   generalSpace?: Space;
 }
 
@@ -2297,6 +2298,7 @@ export interface GetCompanyInput {
   includeAdmins?: boolean | null;
   includeOwners?: boolean | null;
   includeGeneralSpace?: boolean | null;
+  includeAccessLevel?: boolean | null;
 }
 
 export interface GetCompanyResult {

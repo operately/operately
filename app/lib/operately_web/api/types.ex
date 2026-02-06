@@ -1726,6 +1726,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :people, list_of(:person), null: true
     field? :member_count, :integer, null: true
     field? :permissions, :company_permissions, null: true
+    field? :access_level, :integer, null: true
     field? :general_space, :space
   end
 
