@@ -5,6 +5,8 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
   alias Operately.Tasks.Task
   alias Operately.Support.Features.UI
   alias Operately.Support.Features.FeedSteps
+  alias Operately.Support.Features.NotificationsSteps
+  alias Operately.Support.Features.EmailSteps
   alias OperatelyWeb.Paths
 
   step :visit_kanban_page, ctx do
@@ -271,6 +273,93 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
     |> UI.find([testid: UI.testid(["kanban-column", status_value])], fn ctx ->
       UI.refute_has(ctx, testid: card_testid(task))
     end)
+  end
+
+  step :add_comment_on_task, ctx, opts do
+    comment = Keyword.fetch!(opts, :comment)
+
+    ctx
+    |> UI.click_text("Write a comment here...")
+    |> UI.fill_rich_text(comment)
+    |> UI.click_button("Post")
+    |> UI.refute_has(testid: "new-comment-form")
+    |> UI.sleep(300)
+  end
+
+  step :assert_comment_notification_sent, ctx, opts do
+    recipient = Map.fetch!(ctx, Keyword.fetch!(opts, :to))
+    task_name = Keyword.fetch!(opts, :task_name)
+
+    ctx
+    |> UI.login_as(recipient)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.creator,
+      action: "Re: #{task_name}"
+    })
+  end
+
+  step :assert_comment_email_sent, ctx, opts do
+    recipient = Map.fetch!(ctx, Keyword.fetch!(opts, :to))
+    task_name = Keyword.fetch!(opts, :task_name)
+
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.space.name,
+      to: recipient,
+      action: "commented on: #{task_name}",
+      author: ctx.creator
+    })
+  end
+
+  step :assert_assignee_change_notification_sent, ctx, opts do
+    assignee = Map.fetch!(ctx, Keyword.fetch!(opts, :to))
+
+    ctx
+    |> UI.login_as(assignee)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.creator,
+      action: "Task \"#{ctx.task.name}\" was assigned to #{assignee.full_name}"
+    })
+  end
+
+  step :assert_assignee_change_email_sent, ctx, opts do
+    assignee = Map.fetch!(ctx, Keyword.fetch!(opts, :to))
+
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.space.name,
+      to: assignee,
+      action: "changed the assignee for #{ctx.task.name}",
+      author: ctx.creator
+    })
+  end
+
+  step :assert_due_date_change_notification_sent, ctx, opts do
+    assignee = Map.fetch!(ctx, Keyword.fetch!(opts, :to))
+    task_name = Keyword.fetch!(opts, :task_name)
+
+    ctx
+    |> UI.login_as(assignee)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.creator,
+      action: "Updated due date for #{task_name}"
+    })
+  end
+
+  step :assert_due_date_change_email_sent, ctx, opts do
+    assignee = Map.fetch!(ctx, Keyword.fetch!(opts, :to))
+    task_name = Keyword.fetch!(opts, :task_name)
+
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.space.name,
+      to: assignee,
+      action: "changed the due date for \"#{task_name}\"",
+      author: ctx.creator
+    })
   end
 
   #
