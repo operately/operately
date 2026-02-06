@@ -17,6 +17,7 @@ defmodule Operately.Features.CompanyAdminTest do
     }
 
     ctx
+    |> Steps.assert_logged_in_user_has_admin_access_level()
     |> Steps.open_company_team_page()
     |> Steps.invite_company_member(params)
     |> Steps.assert_invitation_url_is_generated()
@@ -26,6 +27,14 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.assert_expiration_date_is_visible_on_team_page()
   end
 
+  @tag role: :member
+  feature "member can't add person to company", ctx do
+    ctx
+    |> Steps.visit_company_admin_page()
+    |> Steps.assert_logged_in_user_has_edit_access_level()
+    |> Steps.assert_cannot_add_person_to_company()
+  end
+
   @tag role: :owner
   feature "promote a person to admin", ctx do
     ctx
@@ -33,6 +42,14 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.open_manage_admins_page()
     |> Steps.add_company_admin()
     |> Steps.assert_person_is_admin()
+  end
+
+  @tag role: :admin
+  feature "admins can't promote to admin", ctx do
+    ctx
+    |> Steps.visit_company_admin_page()
+    |> Steps.assert_logged_in_user_has_admin_access_level()
+    |> Steps.assert_cannot_promote_to_admin()
   end
 
   @tag role: :owner
@@ -98,6 +115,7 @@ defmodule Operately.Features.CompanyAdminTest do
   @tag role: :admin
   feature "remove members from the company", ctx do
     ctx
+    |> Steps.assert_logged_in_user_has_admin_access_level()
     |> Steps.given_a_company_member_exists()
     |> Steps.open_company_team_page()
     |> Steps.assert_company_member_is_listed()
@@ -114,6 +132,7 @@ defmodule Operately.Features.CompanyAdminTest do
     }
 
     ctx
+    |> Steps.assert_logged_in_user_has_admin_access_level()
     |> Steps.open_company_team_page()
     |> Steps.invite_company_member(params)
     |> Steps.open_company_team_page()
@@ -125,6 +144,7 @@ defmodule Operately.Features.CompanyAdminTest do
   @tag role: :admin
   feature "restore removed member", ctx do
     ctx
+    |> Steps.assert_logged_in_user_has_admin_access_level()
     |> Steps.given_a_company_admin_exists()
     |> Steps.given_a_removed_company_member_exists()
     |> Steps.open_restore_people_page()
@@ -135,9 +155,18 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.assert_feed_item_notification_and_email_sent_to_restored_member()
   end
 
+  @tag role: :member
+  feature "member can't restore other members", ctx do
+    ctx
+    |> Steps.assert_logged_in_user_has_edit_access_level()
+    |> Steps.visit_company_admin_page()
+    |> Steps.assert_cannot_restore_member()
+  end
+
   @tag role: :admin
   feature "visiting the company admin page as an admin", ctx do
     ctx
+    |> Steps.assert_logged_in_user_has_admin_access_level()
     |> Steps.when_i_open_the_company_admin_page()
     |> Steps.assert_i_dont_see_reach_out_to_admins()
   end
@@ -145,12 +174,21 @@ defmodule Operately.Features.CompanyAdminTest do
   @tag role: :admin
   feature "rename company", ctx do
     ctx
+    |> Steps.assert_logged_in_user_has_admin_access_level()
     |> Steps.open_company_admins_page()
     |> Steps.click_rename_company()
     |> Steps.fill_in_new_company_name_and_submit()
     |> Steps.assert_company_name_is_changed()
     |> Steps.assert_company_name_is_changed_in_navbar()
     |> Steps.assert_company_feed_shows_the_company_name_change()
+  end
+
+  @tag role: :member
+  feature "member can't rename company", ctx do
+    ctx
+    |> Steps.assert_logged_in_user_has_edit_access_level()
+    |> Steps.visit_company_admin_page()
+    |> Steps.assert_rename_company_not_visible()
   end
 
   @tag role: :owner
@@ -168,6 +206,7 @@ defmodule Operately.Features.CompanyAdminTest do
   @tag role: :admin
   feature "Admin cannot see delete company option", ctx do
     ctx
+    |> Steps.assert_logged_in_user_has_admin_access_level()
     |> Steps.when_i_open_the_company_admin_page()
     |> Steps.assert_delete_company_not_visible()
   end

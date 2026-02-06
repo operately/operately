@@ -4,6 +4,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   alias Operately.People.Person
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
+  alias Operately.Access.Binding
 
   step :given_a_company_exists, ctx do
     ctx |> Factory.setup()
@@ -23,9 +24,30 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
 
       role == :member ->
         ctx
-        |> Factory.add_company_member(:member, name: "Member Memberson")
+        |> Factory.add_company_member(:member, name: "Edit Access Member")
+        |> Factory.set_company_access_level(:member, Binding.edit_access())
         |> Factory.log_in_person(:member)
     end
+  end
+
+  step :assert_logged_in_user_has_admin_access_level, ctx do
+    company = Operately.Companies.Company.get!(ctx.admin, id: ctx.company.id)
+    assert company.request_info.access_level == Binding.admin_access()
+
+    ctx
+  end
+
+  step :assert_logged_in_user_has_edit_access_level, ctx do
+    company = Operately.Companies.Company.get!(ctx.member, id: ctx.company.id)
+    assert company.request_info.access_level == Binding.edit_access()
+
+    ctx
+  end
+
+  step :visit_company_admin_page, ctx do
+    ctx
+    |> UI.visit(Paths.company_admin_path(ctx.company))
+    |> UI.assert_has(testid: "company-admin-page")
   end
 
   step :open_company_team_page, ctx do
@@ -146,6 +168,31 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
 
   step :assert_expiration_date_is_visible_on_team_page, ctx do
     ctx |> UI.assert_text("Expires in 24 hours")
+  end
+
+  step :assert_cannot_add_person_to_company, ctx do
+    ctx
+    |> UI.assert_has(testid: "account-owners-section")
+    |> UI.refute_has(testid: "manage-team-members")
+  end
+
+  step :assert_cannot_promote_to_admin, ctx do
+    ctx
+    |> UI.assert_has(testid: "as-an-admin-or-owner-you-can--section")
+    |> UI.refute_has(testid: "as-an-owner-you-can--section")
+    |> UI.refute_has(testid: "manage-administrators-and-owners")
+  end
+
+  step :assert_rename_company_not_visible, ctx do
+    ctx
+    |> UI.assert_has(testid: "account-owners-section")
+    |> UI.refute_has(testid: "rename-the-company")
+  end
+
+  step :assert_cannot_restore_member, ctx do
+    ctx
+    |> UI.assert_has(testid: "account-owners-section")
+    |> UI.refute_has(testid: "restore-access-for-deactivated-team-members")
   end
 
   step :given_the_company_has_trusted_email_domains, ctx, domains do
