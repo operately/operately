@@ -2,8 +2,8 @@ import React from "react";
 
 import { Avatar } from "../../Avatar";
 import { BlackLink } from "../../Link";
+import { IconAlertTriangle } from "../../icons";
 import { CompanyAdminManagePerson } from "../types";
-import { PersonActions } from "./PersonActions";
 import { PersonOptions } from "./PersonOptions";
 
 type PersonHandler = (person: CompanyAdminManagePerson) => void;
@@ -29,14 +29,14 @@ export function PersonRow({
       </div>
 
       <div className="flex gap-2 items-center">
-        {person.hasValidInvite && person.expiresIn && <ExpiresIn expiresIn={person.expiresIn} />}
+        <InvitationStatus person={person} />
 
-        <PersonActions person={person} onOpenRenew={onOpenRenew} />
         <PersonOptions
           person={person}
           onOpenRemove={onOpenRemove}
           onOpenReissue={onOpenReissue}
           onOpenView={onOpenView}
+          onOpenRenew={onOpenRenew}
         />
       </div>
     </div>
@@ -59,6 +59,19 @@ function PersonInfo({ person }: { person: CompanyAdminManagePerson }) {
   );
 }
 
-function ExpiresIn({ expiresIn }: { expiresIn: string }) {
-  return <div>Expires in {expiresIn}</div>;
+function InvitationStatus({ person }: { person: CompanyAdminManagePerson }) {
+  if (person.invitationExpired) {
+    return (
+      <div className="text-content-error font-semibold flex items-center gap-2">
+        <IconAlertTriangle size={20} />
+        Invitation Expired
+      </div>
+    );
+  }
+
+  if (person.hasValidInvite && person.expiresIn) {
+    return <div>Expires in {person.expiresIn}</div>;
+  }
+
+  return null;
 }
