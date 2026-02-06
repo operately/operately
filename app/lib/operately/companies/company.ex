@@ -101,6 +101,17 @@ defmodule Operately.Companies.Company do
     company |> Repo.preload([:people])
   end
 
+  def preload_members_access_level(company = %__MODULE__{}) do
+    subquery =
+      from(b in Operately.Access.Binding,
+        join: c in assoc(b, :context),
+        where: c.company_id == ^company.id,
+        select: b
+      )
+
+    Repo.preload(company, people: [access_group: [bindings: subquery]])
+  end
+
   def load_admins(company) do
     context = Operately.Access.get_context(company_id: company.id)
     people = Operately.Access.BindedPeopleLoader.load(context.id, :admin_access)

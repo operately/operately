@@ -2291,12 +2291,13 @@ export interface GetCompaniesResult {
 }
 
 export interface GetCompanyInput {
-  id?: CompanyId | null;
-  includePermissions?: boolean | null;
-  includePeople?: boolean | null;
-  includeAdmins?: boolean | null;
-  includeOwners?: boolean | null;
-  includeGeneralSpace?: boolean | null;
+  id: CompanyId;
+  includePermissions?: boolean;
+  includePeople?: boolean;
+  includeAdmins?: boolean;
+  includeOwners?: boolean;
+  includeGeneralSpace?: boolean;
+  includeMembersAccessLevels?: boolean;
 }
 
 export interface GetCompanyResult {
