@@ -3512,11 +3512,11 @@ export interface EditCompanyResult {
 }
 
 export interface EditCompanyMembersPermissionsInput {
-  members?: EditMemberPermissionsInput[] | null;
+  members: EditMemberPermissionsInput[];
 }
 
 export interface EditCompanyMembersPermissionsResult {
-  success?: boolean | null;
+  success: boolean;
 }
 
 export interface EditDiscussionInput {

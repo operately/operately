@@ -8,11 +8,11 @@ defmodule OperatelyWeb.Api.Mutations.EditCompanyMembersPermissions do
   alias Operately.Operations.CompanyMembersPermissionsEditing
 
   inputs do
-    field? :members, list_of(:edit_member_permissions_input), null: true
+    field :members, list_of(:edit_member_permissions_input), null: false
   end
 
   outputs do
-    field? :success, :boolean, null: true
+    field :success, :boolean, null: false
   end
 
   def call(conn, inputs) do

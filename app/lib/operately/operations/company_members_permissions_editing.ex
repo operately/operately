@@ -17,10 +17,19 @@ defmodule Operately.Operations.CompanyMembersPermissionsEditing do
   defp update_bindings(multi, members) do
     members
     |> Enum.reduce(multi, fn (%{id: person_id, access_level: access_level}, multi) ->
-      access_group = Access.get_group!(person_id: person_id)
       name = person_id <> "_updated_binding"
 
-      Access.update_or_insert_binding(multi, name, access_group, access_level)
+      Multi.run(multi, name, fn _, %{context: context} ->
+        access_group = Access.get_group!(person_id: person_id)
+        previous_access_level = get_previous_access_level(context.id, access_group.id)
+        {:ok, binding} = Access.bind(context, access_group_id: access_group.id, level: access_level)
+
+        {:ok,
+         %{
+           previous: %{access_level: previous_access_level},
+           updated: binding
+         }}
+      end)
     end)
   end
 
@@ -44,5 +53,12 @@ defmodule Operately.Operations.CompanyMembersPermissionsEditing do
         updated_access_level: target.updated.access_level,
       }
     end)
+  end
+
+  defp get_previous_access_level(context_id, group_id) do
+    case Access.get_binding(context_id: context_id, group_id: group_id) do
+      nil -> Operately.Access.Binding.no_access()
+      binding -> binding.access_level
+    end
   end
 end
