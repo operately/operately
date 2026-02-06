@@ -107,6 +107,14 @@ defmodule Operately.Support.Factory.Companies do
     Map.put(ctx, testid, person)
   end
 
+  def set_company_access_level(ctx, testid, access_level) do
+    person = Map.fetch!(ctx, testid)
+
+    set_access_level(ctx, person, access_level)
+
+    Map.put(ctx, testid, person)
+  end
+
   defp set_access_level(ctx, person, access_level) do
     context = Operately.Access.get_context(company_id: ctx.company.id)
     Operately.Access.bind(context, person_id: person.id, level: access_level)
