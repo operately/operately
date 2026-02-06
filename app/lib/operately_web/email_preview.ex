@@ -35,6 +35,12 @@ defmodule OperatelyWeb.EmailPreview do
     preview :existing_account, label: "Existing Account"
   end
 
+  group "company-members-permissions-edited", module: Previews.CompanyMembersPermissionsEdited do
+    preview :access_level_increased, label: "Access Level Increased"
+    preview :access_level_decreased, label: "Access Level Decreased"
+    preview :access_level_to_full, label: "Access Level To Full"
+  end
+
   get "/*_path" do
     OperatelyWeb.EmailPreview.Router.call(conn, __MODULE__)
   end

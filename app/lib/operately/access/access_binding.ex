@@ -53,4 +53,21 @@ defmodule Operately.Access.Binding do
   def from_atom(:comment_access), do: @comment_access
   def from_atom(:edit_access), do: @edit_access
   def from_atom(:full_access), do: @full_access
+
+  def to_atom(@no_access), do: :no_access
+  def to_atom(@view_access), do: :view_access
+  def to_atom(@comment_access), do: :comment_access
+  def to_atom(@edit_access), do: :edit_access
+  def to_atom(@full_access), do: :full_access
+
+  def label(:no_access), do: "No Access"
+  def label(@no_access), do: "No Access"
+  def label(:view_access), do: "View Access"
+  def label(@view_access), do: "View Access"
+  def label(:comment_access), do: "Comment Access"
+  def label(@comment_access), do: "Comment Access"
+  def label(:edit_access), do: "Edit Access"
+  def label(@edit_access), do: "Edit Access"
+  def label(:full_access), do: "Full Access"
+  def label(@full_access), do: "Full Access"
 end
