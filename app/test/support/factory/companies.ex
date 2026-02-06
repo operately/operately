@@ -65,7 +65,7 @@ defmodule Operately.Support.Factory.Companies do
 
     person = Operately.PeopleFixtures.person_fixture_with_account(attrs)
 
-    set_access_level(ctx, person, Operately.Access.Binding.edit_access())
+    set_access_level(ctx, person, Operately.Access.Binding.admin_access())
 
     Map.put(ctx, testid, person)
   end
@@ -103,6 +103,14 @@ defmodule Operately.Support.Factory.Companies do
     {:ok, _invite_link} = Operately.Operations.GuestInviting.run(admin, attrs)
 
     person = Operately.People.get_person_by_email(ctx.company, email)
+
+    Map.put(ctx, testid, person)
+  end
+
+  def set_company_access_level(ctx, testid, access_level) do
+    person = Map.fetch!(ctx, testid)
+
+    set_access_level(ctx, person, access_level)
 
     Map.put(ctx, testid, person)
   end
