@@ -2453,6 +2453,7 @@ export interface GetPeopleInput {
   includeManager?: boolean;
   includeAccount?: boolean;
   includeInviteLink?: boolean;
+  includeCompanyAccessLevels?: boolean;
 }
 
 export interface GetPeopleResult {
