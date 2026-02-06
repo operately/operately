@@ -65,7 +65,7 @@ defmodule Operately.Support.Factory.Companies do
 
     person = Operately.PeopleFixtures.person_fixture_with_account(attrs)
 
-    set_access_level(ctx, person, Operately.Access.Binding.edit_access())
+    set_access_level(ctx, person, Operately.Access.Binding.admin_access())
 
     Map.put(ctx, testid, person)
   end

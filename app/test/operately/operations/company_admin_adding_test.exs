@@ -11,6 +11,7 @@ defmodule Operately.Operations.CompanyAdminAddingTest do
   setup do
     company = company_fixture()
     admin = person_fixture_with_account(%{company_id: company.id, company_role: :admin})
+
     people = Enum.map(1..3, fn _ ->
       person_fixture_with_account(%{company_id: company.id})
     end)
