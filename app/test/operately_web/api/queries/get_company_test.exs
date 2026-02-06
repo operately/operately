@@ -70,6 +70,20 @@ defmodule OperatelyWeb.Api.Queries.GetCompanyTest do
       refute includes_person(res.company.owners, ctx.member_peter)
     end
 
+    test "include_members_access_levels", ctx do
+      assert {200, res} = query(ctx.conn, :get_company, %{
+        id: Paths.company_id(ctx.company),
+        include_people: true,
+        include_members_access_levels: true
+      })
+
+      admin = includes_person(res.company.people, ctx.admin_susan)
+      owner = includes_person(res.company.people, ctx.owner_john)
+
+      assert admin.access_level == Operately.Access.Binding.admin_access()
+      assert owner.access_level == Operately.Access.Binding.full_access()
+    end
+
     defp includes_person(list, person) do
       Enum.find(list, fn p -> p.id == Paths.person_id(person) end)
     end
