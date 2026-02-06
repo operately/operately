@@ -3511,6 +3511,14 @@ export interface EditCompanyResult {
   company?: Company | null;
 }
 
+export interface EditCompanyMembersPermissionsInput {
+  members: EditMemberPermissionsInput[];
+}
+
+export interface EditCompanyMembersPermissionsResult {
+  success: boolean;
+}
+
 export interface EditDiscussionInput {
   id?: Id | null;
   title?: string | null;
@@ -4916,6 +4924,12 @@ class ApiNamespaceRoot {
     return this.client.post("/edit_company", input);
   }
 
+  async editCompanyMembersPermissions(
+    input: EditCompanyMembersPermissionsInput,
+  ): Promise<EditCompanyMembersPermissionsResult> {
+    return this.client.post("/edit_company_members_permissions", input);
+  }
+
   async editDiscussion(input: EditDiscussionInput): Promise<EditDiscussionResult> {
     return this.client.post("/edit_discussion", input);
   }
@@ -5980,6 +5994,12 @@ export class ApiClient {
     return this.apiNamespaceRoot.editCompany(input);
   }
 
+  editCompanyMembersPermissions(
+    input: EditCompanyMembersPermissionsInput,
+  ): Promise<EditCompanyMembersPermissionsResult> {
+    return this.apiNamespaceRoot.editCompanyMembersPermissions(input);
+  }
+
   editDiscussion(input: EditDiscussionInput): Promise<EditDiscussionResult> {
     return this.apiNamespaceRoot.editDiscussion(input);
   }
@@ -6501,6 +6521,11 @@ export async function editComment(input: EditCommentInput): Promise<EditCommentR
 }
 export async function editCompany(input: EditCompanyInput): Promise<EditCompanyResult> {
   return defaultApiClient.editCompany(input);
+}
+export async function editCompanyMembersPermissions(
+  input: EditCompanyMembersPermissionsInput,
+): Promise<EditCompanyMembersPermissionsResult> {
+  return defaultApiClient.editCompanyMembersPermissions(input);
 }
 export async function editDiscussion(input: EditDiscussionInput): Promise<EditDiscussionResult> {
   return defaultApiClient.editDiscussion(input);
@@ -7189,6 +7214,15 @@ export function useEditCompany(): UseMutationHookResult<EditCompanyInput, EditCo
   return useMutation<EditCompanyInput, EditCompanyResult>((input) => defaultApiClient.editCompany(input));
 }
 
+export function useEditCompanyMembersPermissions(): UseMutationHookResult<
+  EditCompanyMembersPermissionsInput,
+  EditCompanyMembersPermissionsResult
+> {
+  return useMutation<EditCompanyMembersPermissionsInput, EditCompanyMembersPermissionsResult>((input) =>
+    defaultApiClient.editCompanyMembersPermissions(input),
+  );
+}
+
 export function useEditDiscussion(): UseMutationHookResult<EditDiscussionInput, EditDiscussionResult> {
   return useMutation<EditDiscussionInput, EditDiscussionResult>((input) => defaultApiClient.editDiscussion(input));
 }
@@ -7726,6 +7760,8 @@ export default {
   useEditComment,
   editCompany,
   useEditCompany,
+  editCompanyMembersPermissions,
+  useEditCompanyMembersPermissions,
   editDiscussion,
   useEditDiscussion,
   editGoalDiscussion,

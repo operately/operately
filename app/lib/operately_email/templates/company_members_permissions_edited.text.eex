@@ -1,0 +1,6 @@
+Your access level has been updated by <%= short_name(@author) %>.
+
+Previous Access Level: <%= @previous_access_level %>
+New Access Level: <%= @updated_access_level %>
+
+Link: <%= @link %>

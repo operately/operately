@@ -1,0 +1,24 @@
+<%= title("Your access level has been updated by #{short_name(@author)}") %>
+
+<%= spacer() %>
+
+<%= row do %>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr>
+      <td style="padding: 12px 0; border-bottom: 1px solid #e0e0e0;">
+        <strong>Previous Access Level:</strong> <%= @previous_access_level %>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 12px 0;">
+        <strong>New Access Level:</strong> <%= @updated_access_level %>
+      </td>
+    </tr>
+  </table>
+<% end %>
+
+<%= spacer() %>
+
+<%= row do %>
+  <%= cta_button(@link, "View Company") %>
+<% end %>
