@@ -251,6 +251,7 @@ defmodule Operately.Support.Features.InviteMemberSteps do
     person = Operately.People.get_person_by_name!(ctx.company, name)
 
     ctx
+    |> UI.click(testid: UI.testid(["person-options", Paths.person_id(person)]))
     |> UI.click(testid: UI.testid(["renew-invitation", Paths.person_id(person)]))
     |> UI.assert_text("/join?token=")
   end

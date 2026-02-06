@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Menu, MenuActionItem, MenuLinkItem } from "../../Menu";
-import { IconId, IconLink, IconRefresh, IconUserX } from "../../icons";
+import { IconId, IconLink, IconPencil, IconRefresh, IconUserX, IconRotateDot } from "../../icons";
 import { createTestId } from "../../TestableElement";
 import { CompanyAdminManagePerson } from "../types";
 
@@ -12,11 +12,13 @@ export function PersonOptions({
   onOpenRemove,
   onOpenReissue,
   onOpenView,
+  onOpenRenew,
 }: {
   person: CompanyAdminManagePerson;
   onOpenRemove: PersonHandler;
   onOpenReissue: PersonHandler;
   onOpenView: PersonHandler;
+  onOpenRenew: PersonHandler;
 }) {
   const testId = createTestId("person-options", person.id);
   const size = person.hasOpenInvitation ? "medium" : "small";
@@ -27,13 +29,23 @@ export function PersonOptions({
         View Profile
       </MenuLinkItem>
 
-      {person.hasValidInvite && (
+      <MenuLinkItem icon={IconPencil} testId={createTestId("edit", person.id)} to={person.profileEditPath}>
+        Edit Profile
+      </MenuLinkItem>
+
+      {person.invitationExpired && (
+        <MenuActionItem icon={IconRotateDot} onClick={() => onOpenRenew(person)} testId={createTestId("renew-invitation", person.id)}>
+          Renew Invitation
+        </MenuActionItem>
+      )}
+
+      {person.hasValidInvite && !person.invitationExpired && (
         <MenuActionItem icon={IconLink} onClick={() => onOpenView(person)} testId={createTestId("view-invite-link", person.id)}>
           View Invitation Link
         </MenuActionItem>
       )}
 
-      {person.hasOpenInvitation && (
+      {person.hasOpenInvitation && !person.invitationExpired && (
         <MenuActionItem icon={IconRefresh} onClick={() => onOpenReissue(person)} testId={createTestId("reissue-token", person.id)}>
           Re-Issue Invitation
         </MenuActionItem>

@@ -98,6 +98,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
 
   step :edit_company_member, ctx, params do
     ctx
+    |> UI.click(testid: UI.testid(["person-options", Paths.person_id(ctx.member)]))
     |> UI.click(testid: UI.testid(["edit", Paths.person_id(ctx.member)]))
     |> UI.fill(testid: "name", with: params[:new_name])
     |> UI.fill(testid: "title", with: params[:new_title])

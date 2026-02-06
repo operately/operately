@@ -15,7 +15,7 @@ defmodule Operately.Operations.CompanyAdding do
     |> insert_access_context()
     |> insert_access_groups()
     |> insert_access_bindings()
-    |> insert_group()
+    |> insert_space()
     |> insert_account_if_doesnt_exists(attrs, account)
     |> insert_person(attrs)
     |> insert_activity()
@@ -44,7 +44,7 @@ defmodule Operately.Operations.CompanyAdding do
     end)
   end
 
-  defp insert_group(multi) do
+  defp insert_space(multi) do
     attrs = %{
       name: "General",
       mission: "Organization-wide announcements and resources",
