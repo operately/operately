@@ -23,8 +23,8 @@ defmodule OperatelyWeb.EmailPreview.Sidebar do
         .sidebar-header { padding: 20px; border-bottom: 1px solid #dee2e6; }
         .sidebar-header h1 { font-size: 18px; font-weight: 600; color: #212529; }
         .sidebar-nav { padding: 12px 0; }
-        .sidebar-email { padding: 16px 20px 8px 20px; font-weight: 600; font-size: 13px; color: #6c757d; text-transform: uppercase; letter-spacing: 0.5px; }
-        .sidebar-link { display: block; padding: 8px 20px 8px 36px; color: #495057; text-decoration: none; font-size: 14px; transition: background 0.15s; }
+        .sidebar-email { padding: 16px 20px 8px 20px; font-weight: 600; font-size: 13px; color: #6c757d; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.6; }
+        .sidebar-link { display: block; padding: 8px 20px 8px 36px; color: #495057; text-decoration: none; font-size: 14px; transition: background 0.15s; line-height: 2; }
         .sidebar-link:hover { background: #e9ecef; }
         .sidebar-link.active { background: #007bff; color: white; font-weight: 500; }
         .content { flex: 1; overflow: hidden; background: #ffffff; display: flex; }
