@@ -21,6 +21,11 @@ const TaskStatusUpdating: ActivityHandler = {
     if (project) {
       return paths.projectPath(project.id);
     }
+
+    if (task) {
+      return paths.spaceKanbanPath(space.id, { taskId: task.id });
+    }
+
     return paths.spaceKanbanPath(space.id);
   },
 
