@@ -128,6 +128,38 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     |> UI.assert_has(testid: "manage-people-page")
   end
 
+  step :edit_company_member_access_level, ctx, access_level do
+    label = Binding.label(access_level)
+
+    ctx
+    |> UI.click(testid: UI.testid(["person-options", Paths.person_id(ctx.member)]))
+    |> UI.click(testid: "change-access-level")
+    |> UI.click(testid: UI.testid([label, Paths.person_id(ctx.member)]))
+    |> UI.sleep(300)
+  end
+
+  step :assert_company_member_access_level_is_updated, ctx, access_level do
+    testid = UI.testid(["person-row", Paths.person_id(ctx.member)])
+    label = Binding.label(access_level) |> String.upcase()
+
+    ctx
+    |> UI.find(UI.query(testid: testid), fn el ->
+      UI.assert_text(el, label)
+    end)
+
+    company = Operately.Companies.Company.get!(ctx.member, id: ctx.company.id)
+    assert company.request_info.access_level == Binding.from_atom(access_level)
+
+    ctx
+  end
+
+  step :assert_admin_cant_edit_member_access_level, ctx do
+    ctx
+    |> UI.click(testid: UI.testid(["person-options", Paths.person_id(ctx.member)]))
+    |> UI.assert_has(testid: UI.testid(["edit", Paths.person_id(ctx.member)]))
+    |> UI.refute_has(testid: "change-access-level")
+  end
+
   step :assert_company_member_details_updated, ctx, params do
     person = Operately.Repo.reload(ctx.member)
 
