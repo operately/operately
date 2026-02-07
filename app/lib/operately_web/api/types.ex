@@ -249,6 +249,20 @@ defmodule OperatelyWeb.Api.Types do
     field? :old_name, :string, null: true
   end
 
+  object :activity_content_company_members_permissions_edited_member do
+    field :person_id, :string, null: false
+    field :person, :person, null: false
+    field :previous_access_level, :integer, null: false
+    field :previous_access_level_label, :string, null: false
+    field :updated_access_level, :integer, null: false
+    field :updated_access_level_label, :string, null: false
+  end
+
+  object :activity_content_company_members_permissions_edited do
+    field :company_id, :string, null: false
+    field :members, list_of(:activity_content_company_members_permissions_edited_member), null: false
+  end
+
   enum(:review_assignment_types,
     values: [
       :check_in,
@@ -630,6 +644,7 @@ defmodule OperatelyWeb.Api.Types do
     types: [
       :activity_content_company_owners_adding,
       :activity_content_company_admin_added,
+      :activity_content_company_members_permissions_edited,
       :activity_content_guest_invited,
       :activity_content_company_editing,
       :activity_content_comment_added,
@@ -1730,12 +1745,13 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :company_permissions do
-    field? :can_edit_trusted_email_domains, :boolean, null: true
-    field? :can_invite_members, :boolean, null: true
-    field? :can_remove_members, :boolean, null: true
-    field? :can_create_space, :boolean, null: true
-    field? :can_manage_admins, :boolean, null: true
-    field? :can_manage_owners, :boolean, null: true
+    field :can_edit_trusted_email_domains, :boolean, null: false
+    field :can_invite_members, :boolean, null: false
+    field :can_remove_members, :boolean, null: false
+    field :can_create_space, :boolean, null: false
+    field :can_manage_admins, :boolean, null: false
+    field :can_manage_owners, :boolean, null: false
+    field :can_edit_members_access_levels, :boolean, null: false
   end
 
   object :space_setup_input do
