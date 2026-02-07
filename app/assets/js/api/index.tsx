@@ -183,6 +183,20 @@ export interface ActivityContentCompanyMemberRestoring {
   person?: Person | null;
 }
 
+export interface ActivityContentCompanyMembersPermissionsEdited {
+  companyId: string;
+  members: ActivityContentCompanyMembersPermissionsEditedMember[];
+}
+
+export interface ActivityContentCompanyMembersPermissionsEditedMember {
+  personId: string;
+  person: Person;
+  previousAccessLevel: number;
+  previousAccessLevelLabel: string;
+  updatedAccessLevel: number;
+  updatedAccessLevelLabel: string;
+}
+
 export interface ActivityContentCompanyOwnerRemoving {
   company: Company;
   person: Person | null;
@@ -1971,6 +1985,7 @@ export interface WorkMapItem {
 export type ActivityContent =
   | ActivityContentCompanyOwnersAdding
   | ActivityContentCompanyAdminAdded
+  | ActivityContentCompanyMembersPermissionsEdited
   | ActivityContentGuestInvited
   | ActivityContentCompanyEditing
   | ActivityContentCommentAdded

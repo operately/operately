@@ -184,6 +184,7 @@ import CompanyEditing from "@/features/activities/CompanyEditing";
 import CompanyMemberRestoring from "@/features/activities/CompanyMemberRestoring";
 import CompanyOwnerRemoving from "@/features/activities/CompanyOwnerRemoving";
 import CompanyOwnersAdding from "@/features/activities/CompanyOwnersAdding";
+import CompanyMembersPermissionsEdited from "@/features/activities/CompanyMembersPermissionsEdited";
 import GuestInvited from "@/features/activities/GuestInvited";
 import DiscussionCommentSubmitted from "@/features/activities/DiscussionCommentSubmitted";
 import DiscussionPosting from "@/features/activities/DiscussionPosting";
@@ -290,6 +291,7 @@ function handler(activity: Activity) {
     .with("company_owners_adding", () => CompanyOwnersAdding)
     .with("company_owner_removing", () => CompanyOwnerRemoving)
     .with("company_member_restoring", () => CompanyMemberRestoring)
+    .with("company_members_permissions_edited", () => CompanyMembersPermissionsEdited)
     .with("guest_invited", () => GuestInvited)
     .with("discussion_posting", () => DiscussionPosting)
     .with("discussion_comment_submitted", () => DiscussionCommentSubmitted)
