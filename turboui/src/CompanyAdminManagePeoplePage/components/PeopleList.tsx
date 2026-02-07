@@ -1,9 +1,19 @@
 import React from "react";
 
-import { CompanyAdminManagePerson } from "../types";
+import { CompanyAdminManagePerson, Permissions } from "../types";
 import { PersonRow } from "./PersonRow";
 
 type PersonHandler = (person: CompanyAdminManagePerson) => void;
+
+interface Props {
+  people: CompanyAdminManagePerson[];
+  onOpenRemove: PersonHandler;
+  onOpenReissue: PersonHandler;
+  onOpenView: PersonHandler;
+  onOpenRenew: PersonHandler;
+  onChangeAccessLevel: (personId: string, accessLevel: number) => void;
+  permissions?: Permissions;
+}
 
 export function PeopleList({
   people,
@@ -11,13 +21,9 @@ export function PeopleList({
   onOpenReissue,
   onOpenView,
   onOpenRenew,
-}: {
-  people: CompanyAdminManagePerson[];
-  onOpenRemove: PersonHandler;
-  onOpenReissue: PersonHandler;
-  onOpenView: PersonHandler;
-  onOpenRenew: PersonHandler;
-}) {
+  onChangeAccessLevel,
+  permissions,
+}: Props) {
   return (
     <div>
       {people.map((person) => (
@@ -28,6 +34,8 @@ export function PeopleList({
           onOpenReissue={onOpenReissue}
           onOpenView={onOpenView}
           onOpenRenew={onOpenRenew}
+          onChangeAccessLevel={onChangeAccessLevel}
+          permissions={permissions}
         />
       ))}
     </div>

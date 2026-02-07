@@ -22,8 +22,8 @@ interface LoaderResult {
 }
 
 async function loader({ params }): Promise<LoaderResult> {
-  const company = await Companies.getCompany({ id: params.companyId }).then((res) => res.company);
-  const people = await People.getPeople({ includeManager: true, includeInviteLink: true, includeAccount: true }).then(
+  const company = await Companies.getCompany({ id: params.companyId, includePermissions: true }).then((res) => res.company);
+  const people = await People.getPeople({ includeManager: true, includeCompanyAccessLevels: true, includeInviteLink: true, includeAccount: true }).then(
     (res) => res.people,
   );
   const { invitedPeople, currentMembers, guests } = People.separatePeople(people);
@@ -43,6 +43,7 @@ function Page() {
   const refresh = Pages.useRefresh();
   const [remove] = Companies.useRemoveCompanyMember();
   const [createInvite] = Api.invitations.useNewInvitationToken();
+  const [editPermissions] = Api.useEditCompanyMembersPermissions();
 
   const buildPerson = React.useCallback(
     (person: People.Person): CompanyAdminManagePeoplePage.Person => {
@@ -64,6 +65,7 @@ function Page() {
         profileEditPath: paths.profileEditPath(person.id!, { from: "admin-manage-people" }),
         inviteLinkUrl: inviteToken ? Companies.createInvitationUrl(inviteToken) : null,
         canRemove: me.id !== person.id,
+        accessLevel: person.accessLevel || undefined,
       };
     },
     [me.id, paths],
@@ -89,6 +91,14 @@ function Page() {
     [createInvite],
   );
 
+  const handleChangeAccessLevel = React.useCallback(
+    async (personId: string, accessLevel: number) => {
+      await editPermissions({ members: [{ id: personId, accessLevel }] });
+      refresh();
+    },
+    [editPermissions, refresh],
+  );
+
   const navigationItems = React.useMemo(
     () => [{ to: paths.companyAdminPath(), label: "Company Administration" }],
     [paths],
@@ -106,8 +116,10 @@ function Page() {
       onRemovePerson={handleRemove}
       onReissueInvitation={handleCreateInvite}
       onRenewInvitation={handleCreateInvite}
+      onChangeAccessLevel={handleChangeAccessLevel}
       onRenewModalClose={refresh}
       testId="manage-people-page"
+      permissions={company.permissions || {}}
     />
   );
 }

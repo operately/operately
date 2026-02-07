@@ -15,31 +15,36 @@ defmodule OperatelyWeb.Api.Mutations.EditCompanyMembersPermissionsTest do
   end
 
   describe "permissions" do
+    @table [
+      %{access_level: :no_access, expected: 404},
+      %{access_level: :comment_access, expected: 403},
+      %{access_level: :edit_access, expected: 403},
+      %{access_level: :admin_access, expected: 403},
+      %{access_level: :full_access, expected: 200}
+    ]
+
     setup :register_and_log_in_account
 
-    test "company members without full access can't edit members permissions", ctx do
-      person = person_fixture(%{company_id: ctx.company.id})
+    tabletest @table do
+      test "if caller has access_level=#{@test.access_level}, then expect code=#{@test.expected}", ctx do
+        person = person_fixture(%{company_id: ctx.company.id})
+        set_caller_access_level(ctx, @test.access_level)
 
-      assert {403, res} = mutation(ctx.conn, :edit_company_members_permissions, %{
-        members: [%{
-          id: Paths.person_id(person),
-          access_level: Binding.edit_access(),
-        }],
-      })
-      assert res.message == "You don't have permission to perform this action"
-    end
+        assert {code, res} = mutation(ctx.conn, :edit_company_members_permissions, %{
+          members: [%{
+            id: Paths.person_id(person),
+            access_level: Binding.edit_access(),
+          }],
+        })
 
-    test "company members with full access can edit members permissions", ctx do
-      account = Repo.preload(ctx.company_creator, :account).account
-      conn = log_in_account(ctx.conn, account)
-      person = person_fixture(%{company_id: ctx.company.id})
+        assert code == @test.expected
 
-      assert {200, _} = mutation(conn, :edit_company_members_permissions, %{
-        members: [%{
-          id: Paths.person_id(person),
-          access_level: Binding.edit_access(),
-        }],
-      })
+        case @test.expected do
+          200 -> assert res.success
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "The requested resource was not found"
+        end
+      end
     end
   end
 
@@ -111,5 +116,23 @@ defmodule OperatelyWeb.Api.Mutations.EditCompanyMembersPermissionsTest do
     group = Access.get_group!(person_id: person.id)
 
     assert Access.get_binding(context_id: context.id, group_id: group.id, access_level: access_level)
+  end
+
+  defp set_caller_access_level(ctx, :no_access) do
+    Access.get_group!(company_id: ctx.company.id, tag: :standard)
+    |> Repo.delete()
+
+    ctx
+  end
+
+  defp set_caller_access_level(ctx, access_level) when access_level in [:comment_access, :edit_access, :admin_access, :full_access] do
+    binding_level = case access_level do
+      :comment_access -> Binding.comment_access()
+      :edit_access -> Binding.edit_access()
+      :admin_access -> Binding.admin_access()
+      :full_access -> Binding.full_access()
+    end
+
+    Factory.set_company_access_level(ctx, :person, binding_level)
   end
 end

@@ -2,11 +2,22 @@ import React from "react";
 
 import { Avatar } from "../../Avatar";
 import { BlackLink } from "../../Link";
+import { AccessLevelBadge } from "../../AccessLevelBadge";
 import { IconAlertTriangle } from "../../icons";
-import { CompanyAdminManagePerson } from "../types";
+import { CompanyAdminManagePerson, Permissions } from "../types";
 import { PersonOptions } from "./PersonOptions";
 
 type PersonHandler = (person: CompanyAdminManagePerson) => void;
+
+interface Props {
+  person: CompanyAdminManagePerson;
+  onOpenRemove: PersonHandler;
+  onOpenReissue: PersonHandler;
+  onOpenView: PersonHandler;
+  onOpenRenew: PersonHandler;
+  onChangeAccessLevel: (personId: string, accessLevel: number) => void;
+  permissions?: Permissions;
+}
 
 export function PersonRow({
   person,
@@ -14,13 +25,9 @@ export function PersonRow({
   onOpenReissue,
   onOpenView,
   onOpenRenew,
-}: {
-  person: CompanyAdminManagePerson;
-  onOpenRemove: PersonHandler;
-  onOpenReissue: PersonHandler;
-  onOpenView: PersonHandler;
-  onOpenRenew: PersonHandler;
-}) {
+  onChangeAccessLevel,
+  permissions,
+}: Props) {
   return (
     <div className="flex items-center justify-between border-t border-stroke-dimmed py-4 last:border-b">
       <div className="flex items-center gap-4">
@@ -31,12 +38,18 @@ export function PersonRow({
       <div className="flex gap-2 items-center">
         <InvitationStatus person={person} />
 
+        {!person.hasOpenInvitation && person.accessLevel !== undefined && (
+          <AccessLevelBadge accessLevel={person.accessLevel} />
+        )}
+
         <PersonOptions
           person={person}
           onOpenRemove={onOpenRemove}
           onOpenReissue={onOpenReissue}
           onOpenView={onOpenView}
           onOpenRenew={onOpenRenew}
+          onChangeAccessLevel={onChangeAccessLevel}
+          permissions={permissions}
         />
       </div>
     </div>
