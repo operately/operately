@@ -2,9 +2,8 @@ defmodule OperatelyWeb.Api.Mutations.EditCompanyMembersPermissions do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  import Operately.Access.Filters, only: [filter_by_full_access: 2]
-
   alias Operately.Companies.Company
+  alias Operately.Companies.Permissions
   alias Operately.Operations.CompanyMembersPermissionsEditing
 
   inputs do
@@ -16,28 +15,29 @@ defmodule OperatelyWeb.Api.Mutations.EditCompanyMembersPermissions do
   end
 
   def call(conn, inputs) do
-    me = me(conn)
-    company = company(conn)
+    me = find_me(conn) |> unwrap()
+    company = Company.get(me, id: me.company_id) |> unwrap()
 
-    if has_permissions?(me, company) do
-      {:ok, _} = CompanyMembersPermissionsEditing.run(me, inputs.members)
-      {:ok, %{success: true}}
-    else
-      {:error, :forbidden}
+    :ok = authorize(company)
+
+    {:ok, _} = CompanyMembersPermissionsEditing.run(me, inputs.members)
+    {:ok, %{success: true}}
+  catch
+    {:error, :forbidden} -> {:error, :forbidden}
+    {:error, :not_found} -> {:error, :not_found}
+    {:error, _} -> {:error, :internal_server_error}
+  end
+
+  defp authorize(company) do
+    access_level = company.request_info.access_level
+
+    case Permissions.check(access_level, :can_edit_members_access_levels) do
+      {:ok, :allowed} -> :ok
+      {:error, _} -> throw {:error, :forbidden}
     end
   end
 
-  defp has_permissions?(person, company) do
-    dev_env?() || company_full_access?(person, company)
-  end
-
-  defp dev_env?() do
-    Application.get_env(:operately, :app_env) == :dev
-  end
-
-  defp company_full_access?(person, company) do
-    from(c in Company, where: c.id == ^company.id)
-    |> filter_by_full_access(person.id)
-    |> Repo.exists?()
-  end
+  defp unwrap({:ok, value}), do: value
+  defp unwrap({:error, :not_found}), do: throw {:error, :not_found}
+  defp unwrap({:error, _}), do: throw {:error, :internal_server_error}
 end
