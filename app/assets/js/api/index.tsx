@@ -2291,7 +2291,7 @@ export interface GetCompaniesResult {
 }
 
 export interface GetCompanyInput {
-  id: CompanyId;
+  id?: CompanyId;
   includePermissions?: boolean;
   includePeople?: boolean;
   includeAdmins?: boolean;
