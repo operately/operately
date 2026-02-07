@@ -159,9 +159,11 @@ defmodule OperatelyWeb.Api.Queries.GetPeopleTest do
 
       assert {200, res} = query(ctx.conn, :get_people, %{include_company_access_levels: true})
 
+      member = find_person_in_response(res.people, ctx.person)
       admin = find_person_in_response(res.people, ctx.admin)
       owner = find_person_in_response(res.people, ctx.owner)
 
+      assert member.access_level == Operately.Access.Binding.view_access()
       assert admin.access_level == Operately.Access.Binding.admin_access()
       assert owner.access_level == Operately.Access.Binding.full_access()
     end

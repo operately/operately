@@ -77,9 +77,11 @@ defmodule OperatelyWeb.Api.Queries.GetCompanyTest do
         include_members_access_levels: true
       })
 
+      member = includes_person(res.company.people, ctx.member_peter)
       admin = includes_person(res.company.people, ctx.admin_susan)
       owner = includes_person(res.company.people, ctx.owner_john)
 
+      assert member.access_level == Operately.Access.Binding.view_access()
       assert admin.access_level == Operately.Access.Binding.admin_access()
       assert owner.access_level == Operately.Access.Binding.full_access()
     end

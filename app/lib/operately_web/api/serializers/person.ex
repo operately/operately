@@ -35,6 +35,12 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
 
   def serialize(data, level: :full) do
     serialize_full(data)
+    |> then(fn map ->
+      case data.access_level do
+        nil -> map
+        level -> Map.put(map, :access_level, level)
+      end
+    end)
   end
 
   defp serialize_full(data) do

@@ -72,8 +72,7 @@ defmodule OperatelyWeb.Api.Queries.GetPeople do
   defp include_account(q, _), do: q
 
   defp include_company_access_levels(people, company_id, true) do
-    subquery = Operately.Companies.Company.company_bindings_subquery(company_id)
-    Repo.preload(people, [access_group: [bindings: subquery]])
+    Company.load_company_access_levels(people, company_id)
   end
 
   defp include_company_access_levels(people, _company_id, _), do: people
