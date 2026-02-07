@@ -28,7 +28,22 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
     end)
   end
 
+  def serialize(%{access_group: %{bindings: bindings}} = data, level: :full) do
+    serialize_full(data)
+    |> Map.put(:access_level, find_access_level(bindings))
+  end
+
   def serialize(data, level: :full) do
+    serialize_full(data)
+    |> then(fn map ->
+      case data.access_level do
+        nil -> map
+        level -> Map.put(map, :access_level, level)
+      end
+    end)
+  end
+
+  defp serialize_full(data) do
     %{
       id: OperatelyWeb.Paths.person_id(data),
       full_name: data.full_name,
@@ -50,9 +65,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
     }
   end
 
-  defp find_access_level(bindings) do
-    Enum.max_by(bindings, & &1.access_level).access_level
-  end
+  defp find_access_level([]), do: nil
+  defp find_access_level(bindings), do: Enum.max_by(bindings, & &1.access_level).access_level
 
   defp has_open_invitation(%{account: nil}), do: false
   defp has_open_invitation(%{account: %{first_login_at: nil}}), do: true

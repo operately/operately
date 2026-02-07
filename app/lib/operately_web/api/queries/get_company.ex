@@ -8,13 +8,14 @@ defmodule OperatelyWeb.Api.Queries.GetCompany do
   require Logger
 
   inputs do
-    field? :id, :company_id, null: true
+    field? :id, :company_id, null: false
 
-    field? :include_permissions, :boolean, null: true
-    field? :include_people, :boolean, null: true
-    field? :include_admins, :boolean, null: true
-    field? :include_owners, :boolean, null: true
-    field? :include_general_space, :boolean, null: true
+    field? :include_permissions, :boolean, null: false
+    field? :include_people, :boolean, null: false
+    field? :include_admins, :boolean, null: false
+    field? :include_owners, :boolean, null: false
+    field? :include_general_space, :boolean, null: false
+    field? :include_members_access_levels, :boolean, null: false
   end
 
   outputs do
@@ -41,7 +42,8 @@ defmodule OperatelyWeb.Api.Queries.GetCompany do
       include_admins: &Company.load_admins/1,
       include_owners: &Company.load_owners/1,
       include_permissions: &Company.load_permissions/1,
-      include_general_space: &Company.load_general_space/1
+      include_general_space: &Company.load_general_space/1,
+      include_members_access_levels: &Company.preload_members_access_level/1
     )
   end
 

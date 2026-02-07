@@ -150,6 +150,23 @@ defmodule OperatelyWeb.Api.Queries.GetPeopleTest do
 
       assert is_nil(find_person_in_response(res.people, invited).has_open_invitation)
     end
+
+    test "include_company_access_levels", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_admin(:admin)
+        |> Factory.add_company_owner(:owner)
+
+      assert {200, res} = query(ctx.conn, :get_people, %{include_company_access_levels: true})
+
+      member = find_person_in_response(res.people, ctx.person)
+      admin = find_person_in_response(res.people, ctx.admin)
+      owner = find_person_in_response(res.people, ctx.owner)
+
+      assert member.access_level == Operately.Access.Binding.view_access()
+      assert admin.access_level == Operately.Access.Binding.admin_access()
+      assert owner.access_level == Operately.Access.Binding.full_access()
+    end
   end
 
   defp find_person_in_response(people, person) do

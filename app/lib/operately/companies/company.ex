@@ -57,6 +57,7 @@ defmodule Operately.Companies.Company do
   require Logger
 
   alias Operately.Groups.Group
+  alias Operately.Access
 
   def load_general_space(%__MODULE__{company_space_id: nil} = company) do
     Map.put(company, :general_space, nil)
@@ -99,6 +100,32 @@ defmodule Operately.Companies.Company do
 
   def load_people(company) do
     company |> Repo.preload([:people])
+  end
+
+  def preload_members_access_level(company = %__MODULE__{}) do
+    company = load_people(company)
+    people = load_company_access_levels(company.people, company.id)
+    %{company | people: people}
+  end
+
+  def load_company_access_levels(people, company_id) when is_list(people) do
+    person_ids = Enum.map(people, & &1.id)
+
+    access_levels =
+      from(m in Access.GroupMembership,
+        join: g in assoc(m, :group),
+        join: b in assoc(g, :bindings),
+        join: c in assoc(b, :context),
+        where: c.company_id == ^company_id and m.person_id in ^person_ids,
+        group_by: m.person_id,
+        select: {m.person_id, max(b.access_level)}
+      )
+      |> Repo.all()
+      |> Map.new()
+
+    Enum.map(people, fn person ->
+      %{person | access_level: Map.get(access_levels, person.id, Access.Binding.no_access())}
+    end)
   end
 
   def load_admins(company) do

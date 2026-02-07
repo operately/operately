@@ -14,6 +14,7 @@ defmodule OperatelyWeb.Api.Queries.GetPeople do
     field? :include_manager, :boolean, null: false
     field? :include_account, :boolean, null: false
     field? :include_invite_link, :boolean, null: false
+    field? :include_company_access_levels, :boolean, null: false
   end
 
   outputs do
@@ -47,6 +48,7 @@ defmodule OperatelyWeb.Api.Queries.GetPeople do
     |> include_manager(inputs[:include_manager])
     |> include_invite_link(inputs[:include_invite_link])
     |> Repo.all()
+    |> include_company_access_levels(company_id, inputs[:include_company_access_levels])
   end
 
   defp filter_by_suspended_status(query, include_suspended, only_suspended) do
@@ -68,4 +70,10 @@ defmodule OperatelyWeb.Api.Queries.GetPeople do
 
   defp include_account(q, true), do: from(p in q, preload: [:account])
   defp include_account(q, _), do: q
+
+  defp include_company_access_levels(people, company_id, true) do
+    Company.load_company_access_levels(people, company_id)
+  end
+
+  defp include_company_access_levels(people, _company_id, _), do: people
 end
