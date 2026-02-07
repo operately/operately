@@ -1089,12 +1089,13 @@ export interface Company {
 }
 
 export interface CompanyPermissions {
-  canEditTrustedEmailDomains?: boolean | null;
-  canInviteMembers?: boolean | null;
-  canRemoveMembers?: boolean | null;
-  canCreateSpace?: boolean | null;
-  canManageAdmins?: boolean | null;
-  canManageOwners?: boolean | null;
+  canEditTrustedEmailDomains: boolean;
+  canInviteMembers: boolean;
+  canRemoveMembers: boolean;
+  canCreateSpace: boolean;
+  canManageAdmins: boolean;
+  canManageOwners: boolean;
+  canEditMembersAccessLevels: boolean;
 }
 
 export interface ContextualDate {

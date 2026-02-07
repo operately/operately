@@ -31,4 +31,15 @@ export interface CompanyAdminManagePeoplePageProps {
   onChangeAccessLevel: (personId: string, accessLevel: number) => Promise<void>;
   onRenewModalClose?: () => void;
   testId?: string;
+  permissions: Permissions;
+}
+
+export interface Permissions {
+  canEditTrustedEmailDomains?: boolean;
+  canInviteMembers?: boolean;
+  canRemoveMembers?: boolean;
+  canCreateSpace?: boolean;
+  canManageAdmins?: boolean;
+  canManageOwners?: boolean;
+  canEditMembersAccessLevels?: boolean;
 }

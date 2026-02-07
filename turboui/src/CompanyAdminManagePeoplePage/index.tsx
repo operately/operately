@@ -149,6 +149,7 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
                 onOpenView={openViewModal}
                 onOpenRenew={openRenewModal}
                 onChangeAccessLevel={props.onChangeAccessLevel}
+                permissions={props.permissions}
               />
             </Section>
           )}
@@ -162,6 +163,7 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
                 onOpenView={openViewModal}
                 onOpenRenew={openRenewModal}
                 onChangeAccessLevel={props.onChangeAccessLevel}
+                permissions={props.permissions}
               />
             </Section>
           )}

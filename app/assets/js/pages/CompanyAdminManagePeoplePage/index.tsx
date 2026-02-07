@@ -22,7 +22,7 @@ interface LoaderResult {
 }
 
 async function loader({ params }): Promise<LoaderResult> {
-  const company = await Companies.getCompany({ id: params.companyId }).then((res) => res.company);
+  const company = await Companies.getCompany({ id: params.companyId, includePermissions: true }).then((res) => res.company);
   const people = await People.getPeople({ includeManager: true, includeCompanyAccessLevels: true, includeInviteLink: true, includeAccount: true }).then(
     (res) => res.people,
   );
@@ -119,6 +119,7 @@ function Page() {
       onChangeAccessLevel={handleChangeAccessLevel}
       onRenewModalClose={refresh}
       testId="manage-people-page"
+      permissions={company.permissions || {}}
     />
   );
 }

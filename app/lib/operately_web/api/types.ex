@@ -1730,12 +1730,13 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :company_permissions do
-    field? :can_edit_trusted_email_domains, :boolean, null: true
-    field? :can_invite_members, :boolean, null: true
-    field? :can_remove_members, :boolean, null: true
-    field? :can_create_space, :boolean, null: true
-    field? :can_manage_admins, :boolean, null: true
-    field? :can_manage_owners, :boolean, null: true
+    field :can_edit_trusted_email_domains, :boolean, null: false
+    field :can_invite_members, :boolean, null: false
+    field :can_remove_members, :boolean, null: false
+    field :can_create_space, :boolean, null: false
+    field :can_manage_admins, :boolean, null: false
+    field :can_manage_owners, :boolean, null: false
+    field :can_edit_members_access_levels, :boolean, null: false
   end
 
   object :space_setup_input do

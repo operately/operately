@@ -3,7 +3,7 @@ import React from "react";
 import { Menu, MenuActionItem, MenuLinkItem, SubMenu } from "../../Menu";
 import { IconId, IconLink, IconLock, IconPencil, IconRefresh, IconUserX, IconRotateDot } from "../../icons";
 import { createTestId } from "../../TestableElement";
-import { CompanyAdminManagePerson } from "../types";
+import { CompanyAdminManagePerson, Permissions } from "../types";
 
 type PersonHandler = (person: CompanyAdminManagePerson) => void;
 
@@ -14,6 +14,16 @@ const PERMISSION_LEVELS = {
   FULL_ACCESS: 100,
 };
 
+interface Props {
+  person: CompanyAdminManagePerson;
+  onOpenRemove: PersonHandler;
+  onOpenReissue: PersonHandler;
+  onOpenView: PersonHandler;
+  onOpenRenew: PersonHandler;
+  onChangeAccessLevel: (personId: string, accessLevel: number) => void;
+  permissions?: Permissions;
+}
+
 export function PersonOptions({
   person,
   onOpenRemove,
@@ -21,14 +31,8 @@ export function PersonOptions({
   onOpenView,
   onOpenRenew,
   onChangeAccessLevel,
-}: {
-  person: CompanyAdminManagePerson;
-  onOpenRemove: PersonHandler;
-  onOpenReissue: PersonHandler;
-  onOpenView: PersonHandler;
-  onOpenRenew: PersonHandler;
-  onChangeAccessLevel: (personId: string, accessLevel: number) => void;
-}) {
+  permissions,
+}: Props) {
   const testId = createTestId("person-options", person.id);
   const size = person.hasOpenInvitation ? "medium" : "small";
   const isInvited = person.hasOpenInvitation;
@@ -43,40 +47,66 @@ export function PersonOptions({
         Edit Profile
       </MenuLinkItem>
 
-      {!isInvited && (
+      {!isInvited && permissions?.canEditMembersAccessLevels && (
         <SubMenu icon={IconLock} label="Change access level" hidden={false}>
-          <MenuActionItem testId={createTestId("edit-access", person.id)} onClick={() => onChangeAccessLevel(person.id, PERMISSION_LEVELS.EDIT_ACCESS)}>
+          <MenuActionItem
+            testId={createTestId("edit-access", person.id)}
+            onClick={() => onChangeAccessLevel(person.id, PERMISSION_LEVELS.EDIT_ACCESS)}
+          >
             Edit access
           </MenuActionItem>
-          <MenuActionItem testId={createTestId("comment-access", person.id)} onClick={() => onChangeAccessLevel(person.id, PERMISSION_LEVELS.COMMENT_ACCESS)}>
+          <MenuActionItem
+            testId={createTestId("comment-access", person.id)}
+            onClick={() => onChangeAccessLevel(person.id, PERMISSION_LEVELS.COMMENT_ACCESS)}
+          >
             Comment access
           </MenuActionItem>
-          <MenuActionItem testId={createTestId("view-access", person.id)} onClick={() => onChangeAccessLevel(person.id, PERMISSION_LEVELS.VIEW_ACCESS)}>
+          <MenuActionItem
+            testId={createTestId("view-access", person.id)}
+            onClick={() => onChangeAccessLevel(person.id, PERMISSION_LEVELS.VIEW_ACCESS)}
+          >
             View access
           </MenuActionItem>
         </SubMenu>
       )}
 
       {person.invitationExpired && (
-        <MenuActionItem icon={IconRotateDot} onClick={() => onOpenRenew(person)} testId={createTestId("renew-invitation", person.id)}>
+        <MenuActionItem
+          icon={IconRotateDot}
+          onClick={() => onOpenRenew(person)}
+          testId={createTestId("renew-invitation", person.id)}
+        >
           Renew Invitation
         </MenuActionItem>
       )}
 
       {person.hasValidInvite && !person.invitationExpired && (
-        <MenuActionItem icon={IconLink} onClick={() => onOpenView(person)} testId={createTestId("view-invite-link", person.id)}>
+        <MenuActionItem
+          icon={IconLink}
+          onClick={() => onOpenView(person)}
+          testId={createTestId("view-invite-link", person.id)}
+        >
           View Invitation Link
         </MenuActionItem>
       )}
 
       {person.hasOpenInvitation && !person.invitationExpired && (
-        <MenuActionItem icon={IconRefresh} onClick={() => onOpenReissue(person)} testId={createTestId("reissue-token", person.id)}>
+        <MenuActionItem
+          icon={IconRefresh}
+          onClick={() => onOpenReissue(person)}
+          testId={createTestId("reissue-token", person.id)}
+        >
           Re-Issue Invitation
         </MenuActionItem>
       )}
 
       {person.canRemove && (
-        <MenuActionItem icon={IconUserX} onClick={() => onOpenRemove(person)} danger testId={createTestId("remove-person", person.id)}>
+        <MenuActionItem
+          icon={IconUserX}
+          onClick={() => onOpenRemove(person)}
+          danger
+          testId={createTestId("remove-person", person.id)}
+        >
           {person.hasOpenInvitation ? "Revoke Invitation" : "Deactivate Account"}
         </MenuActionItem>
       )}

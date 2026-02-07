@@ -104,6 +104,15 @@ const baseProps = {
   onChangeAccessLevel: async (personId: string, accessLevel: number) => {
     console.log(`Changed access level for person ${personId} to ${accessLevel}`);
   },
+  permissions: {
+    canEditTrustedEmailDomains: true,
+    canInviteMembers: true,
+    canRemoveMembers: true,
+    canCreateSpace: true,
+    canManageAdmins: true,
+    canManageOwners: true,
+    canEditMembersAccessLevels: true,
+  },
 };
 
 export const Default: Story = {
