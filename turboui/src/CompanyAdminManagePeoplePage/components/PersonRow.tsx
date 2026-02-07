@@ -6,6 +6,7 @@ import { AccessLevelBadge } from "../../AccessLevelBadge";
 import { IconAlertTriangle } from "../../icons";
 import { CompanyAdminManagePerson, Permissions } from "../types";
 import { PersonOptions } from "./PersonOptions";
+import { createTestId } from "../../TestableElement";
 
 type PersonHandler = (person: CompanyAdminManagePerson) => void;
 
@@ -29,7 +30,10 @@ export function PersonRow({
   permissions,
 }: Props) {
   return (
-    <div className="flex items-center justify-between border-t border-stroke-dimmed py-4 last:border-b">
+    <div
+      className="flex items-center justify-between border-t border-stroke-dimmed py-4 last:border-b"
+      data-test-id={createTestId("person-row", person.id)}
+    >
       <div className="flex items-center gap-4">
         <Avatar person={person} size={48} />
         <PersonInfo person={person} />
