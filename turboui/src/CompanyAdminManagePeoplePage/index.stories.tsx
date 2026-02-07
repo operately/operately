@@ -1,3 +1,4 @@
+import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { CompanyAdminManagePeoplePage } from ".";
@@ -39,6 +40,7 @@ function buildPerson(index: number, overrides: Partial<CompanyAdminManagePeopleP
     profileEditPath: `/people/${basePerson.id}/edit`,
     inviteLinkUrl: null,
     canRemove: true,
+    accessLevel: 70, // EDIT_ACCESS
     ...overrides,
   };
 }
@@ -54,12 +56,41 @@ const invitedPeople = [
 
 const currentMembers = [
   buildPerson(1, {}),
-  buildPerson(2, {}),
+  buildPerson(2, { accessLevel: 100 }), // FULL_ACCESS
+  buildPerson(3, { accessLevel: 40 }), // COMMENT_ACCESS
+  buildPerson(4, {}),
 ];
 
 const outsideCollaborators = [
-  buildPerson(3, {}),
+  buildPerson(5, { accessLevel: 10 }), // VIEW_ACCESS
+  buildPerson(6, {}),
 ];
+
+function StoryWrapper({ args }: { args: CompanyAdminManagePeoplePage.Props }) {
+  const [people, setPeople] = React.useState({
+    invited: args.invitedPeople,
+    members: args.currentMembers,
+    collaborators: args.outsideCollaborators || [],
+  });
+
+  const handleChangeAccessLevel = async (personId: string, accessLevel: number) => {
+    setPeople((prev) => ({
+      ...prev,
+      members: prev.members.map((p) => (p.id === personId ? { ...p, accessLevel } : p)),
+      collaborators: prev.collaborators.map((p) => (p.id === personId ? { ...p, accessLevel } : p)),
+    }));
+    console.log(`Changed access level for person ${personId} to ${accessLevel}`);
+  };
+
+  return (
+    <CompanyAdminManagePeoplePage
+      {...args}
+      currentMembers={people.members}
+      outsideCollaborators={people.collaborators}
+      onChangeAccessLevel={handleChangeAccessLevel}
+    />
+  );
+}
 
 const baseProps = {
   companyName: "Operately",
@@ -70,10 +101,14 @@ const baseProps = {
   onRemovePerson: async () => {},
   onReissueInvitation: async () => inviteLink,
   onRenewInvitation: async () => inviteLink,
+  onChangeAccessLevel: async (personId: string, accessLevel: number) => {
+    console.log(`Changed access level for person ${personId} to ${accessLevel}`);
+  },
 };
 
 export const Default: Story = {
   args: baseProps,
+  render: (args) => <StoryWrapper args={args} />,
 };
 
 export const WithOutsideCollaborators: Story = {
@@ -82,4 +117,5 @@ export const WithOutsideCollaborators: Story = {
     outsideCollaborators,
     showOutsideCollaborators: true,
   },
+  render: (args) => <StoryWrapper args={args} />,
 };

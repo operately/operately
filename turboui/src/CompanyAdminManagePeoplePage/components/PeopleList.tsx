@@ -11,12 +11,14 @@ export function PeopleList({
   onOpenReissue,
   onOpenView,
   onOpenRenew,
+  onChangeAccessLevel,
 }: {
   people: CompanyAdminManagePerson[];
   onOpenRemove: PersonHandler;
   onOpenReissue: PersonHandler;
   onOpenView: PersonHandler;
   onOpenRenew: PersonHandler;
+  onChangeAccessLevel: (personId: string, accessLevel: number) => void;
 }) {
   return (
     <div>
@@ -28,6 +30,7 @@ export function PeopleList({
           onOpenReissue={onOpenReissue}
           onOpenView={onOpenView}
           onOpenRenew={onOpenRenew}
+          onChangeAccessLevel={onChangeAccessLevel}
         />
       ))}
     </div>
