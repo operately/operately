@@ -14,6 +14,7 @@ export interface CompanyAdminManagePerson {
   profileEditPath: string;
   inviteLinkUrl?: string | null;
   canRemove: boolean;
+  accessLevel?: number;
 }
 
 export interface CompanyAdminManagePeoplePageProps {
@@ -27,6 +28,7 @@ export interface CompanyAdminManagePeoplePageProps {
   onRemovePerson: (personId: string) => Promise<void> | void;
   onReissueInvitation: (personId: string) => Promise<string>;
   onRenewInvitation: (personId: string) => Promise<string>;
+  onChangeAccessLevel: (personId: string, accessLevel: number) => Promise<void>;
   onRenewModalClose?: () => void;
   testId?: string;
 }

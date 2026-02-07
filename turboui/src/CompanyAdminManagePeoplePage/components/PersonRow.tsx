@@ -2,6 +2,7 @@ import React from "react";
 
 import { Avatar } from "../../Avatar";
 import { BlackLink } from "../../Link";
+import { AccessLevelBadge } from "../../AccessLevelBadge";
 import { IconAlertTriangle } from "../../icons";
 import { CompanyAdminManagePerson } from "../types";
 import { PersonOptions } from "./PersonOptions";
@@ -14,12 +15,14 @@ export function PersonRow({
   onOpenReissue,
   onOpenView,
   onOpenRenew,
+  onChangeAccessLevel,
 }: {
   person: CompanyAdminManagePerson;
   onOpenRemove: PersonHandler;
   onOpenReissue: PersonHandler;
   onOpenView: PersonHandler;
   onOpenRenew: PersonHandler;
+  onChangeAccessLevel: (personId: string, accessLevel: number) => void;
 }) {
   return (
     <div className="flex items-center justify-between border-t border-stroke-dimmed py-4 last:border-b">
@@ -31,12 +34,17 @@ export function PersonRow({
       <div className="flex gap-2 items-center">
         <InvitationStatus person={person} />
 
+        {!person.hasOpenInvitation && person.accessLevel !== undefined && (
+          <AccessLevelBadge accessLevel={person.accessLevel} />
+        )}
+
         <PersonOptions
           person={person}
           onOpenRemove={onOpenRemove}
           onOpenReissue={onOpenReissue}
           onOpenView={onOpenView}
           onOpenRenew={onOpenRenew}
+          onChangeAccessLevel={onChangeAccessLevel}
         />
       </div>
     </div>
