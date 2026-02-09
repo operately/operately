@@ -6,9 +6,9 @@ import { InfoCallout } from "../Callouts";
 import { DiscussionCard } from "../DiscussionCard";
 
 export function Discussions(props: GoalPage.State) {
-  if (props.discussions.length === 0 && !props.permissions.canOpenDiscussion && props.state !== "closed") return null;
+  if (props.discussions.length === 0 && !props.permissions.canEdit && props.state !== "closed") return null;
 
-  const showNewDiscussionButton = props.permissions.canOpenDiscussion && props.state !== "closed";
+  const showNewDiscussionButton = props.permissions.canEdit && props.state !== "closed";
   const isZeroState = props.discussions.length === 0;
 
   return (
