@@ -7,18 +7,16 @@ defmodule OperatelyWeb.Api.Mutations.RemoveGroupMember do
   alias Operately.Operations.GroupMemberRemoving
 
   inputs do
-    field? :group_id, :string, null: true
-    field? :member_id, :string, null: true
+    field :group_id, :id, null: false
+    field :member_id, :id, null: false
   end
 
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:group_id, fn -> decode_id(inputs.group_id) end)
-    |> run(:member_id, fn -> decode_id(inputs.member_id) end)
-    |> run(:space, fn ctx -> Groups.get_group_with_access_level(ctx.group_id, ctx.me.id) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.requester_access_level, :can_remove_member) end)
-    |> run(:operation, fn ctx -> GroupMemberRemoving.run(ctx.me, ctx.space, ctx.member_id) end)
+    |> run(:space, fn ctx -> Groups.get_group_with_access_level(inputs.group_id, ctx.me.id) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.requester_access_level, :has_full_access) end)
+    |> run(:operation, fn ctx -> GroupMemberRemoving.run(ctx.me, ctx.space, inputs.member_id) end)
     |> respond()
   end
 

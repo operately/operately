@@ -1730,25 +1730,10 @@ export interface Space {
 }
 
 export interface SpacePermissions {
-  canCreateGoal: boolean;
-  canCreateProject: boolean;
-  canCreateResourceHub: boolean;
-  canCreateTask: boolean;
-  canCommentOnDiscussions: boolean;
-  canCommentOnTasks: boolean;
-  canEdit: boolean;
-  canEditDiscussions: boolean;
-  canEditMembersPermissions: boolean;
-  canEditPermissions: boolean;
-  canEditStatuses: boolean;
-  canEditTasks: boolean;
-  canJoin: boolean;
-  canPostDiscussions: boolean;
-  canRemoveMember: boolean;
   canView: boolean;
-  canViewMessage: boolean;
-  canAddMembers: boolean;
-  canDelete: boolean;
+  canComment: boolean;
+  canEdit: boolean;
+  hasFullAccess: boolean;
 }
 
 export interface SpaceSetupInput {
@@ -3101,11 +3086,13 @@ export interface AddReactionResult {
 }
 
 export interface AddSpaceMembersInput {
-  spaceId?: Id | null;
-  members?: AddMemberInput[] | null;
+  spaceId: Id;
+  members: AddMemberInput[];
 }
 
-export interface AddSpaceMembersResult {}
+export interface AddSpaceMembersResult {
+  success: boolean;
+}
 
 export interface AiAddAgentInput {
   title: string;
@@ -3320,8 +3307,8 @@ export interface CreateEmailActivationCodeInput {
 export interface CreateEmailActivationCodeResult {}
 
 export interface CreateGoalInput {
-  spaceId?: Id | null;
-  name?: string | null;
+  spaceId: Id;
+  name: string;
   championId?: Id | null;
   reviewerId?: Id | null;
   timeframe?: Timeframe | null;
@@ -3350,11 +3337,11 @@ export interface CreateGoalDiscussionResult {
 }
 
 export interface CreateProjectInput {
-  spaceId?: string | null;
-  name?: string | null;
-  championId?: string | null;
-  reviewerId?: string | null;
-  goalId?: string | null;
+  spaceId: Id;
+  name: string;
+  championId?: Id | null;
+  reviewerId?: Id | null;
+  goalId?: Id | null;
   anonymousAccessLevel?: number | null;
   companyAccessLevel?: number | null;
   spaceAccessLevel?: number | null;
@@ -3496,11 +3483,11 @@ export interface DeleteResourceHubLinkResult {
 }
 
 export interface DeleteSpaceInput {
-  spaceId?: Id | null;
+  spaceId: Id;
 }
 
 export interface DeleteSpaceResult {
-  space?: Space | null;
+  space: Space;
 }
 
 export interface EditCommentInput {
@@ -3530,14 +3517,14 @@ export interface EditCompanyMembersPermissionsResult {
 }
 
 export interface EditDiscussionInput {
-  id?: Id | null;
+  id: Id;
   title?: string | null;
   body?: string | null;
   state?: string | null;
 }
 
 export interface EditDiscussionResult {
-  discussion?: Discussion | null;
+  discussion: Discussion;
 }
 
 export interface EditGoalDiscussionInput {
@@ -3654,31 +3641,31 @@ export interface EditResourceHubLinkResult {
 }
 
 export interface EditSpaceInput {
-  id?: Id | null;
-  name?: string | null;
-  mission?: string | null;
+  id: Id;
+  name: string;
+  mission: string;
 }
 
 export interface EditSpaceResult {
-  space?: Space | null;
+  space: Space;
 }
 
 export interface EditSpaceMembersPermissionsInput {
-  spaceId?: Id | null;
-  members?: EditMemberPermissionsInput[] | null;
+  spaceId: Id;
+  members: EditMemberPermissionsInput[];
 }
 
 export interface EditSpaceMembersPermissionsResult {
-  success?: boolean | null;
+  success: boolean;
 }
 
 export interface EditSpacePermissionsInput {
-  spaceId?: string | null;
-  accessLevels?: AccessLevels | null;
+  spaceId: string;
+  accessLevels: AccessLevels;
 }
 
 export interface EditSpacePermissionsResult {
-  success?: boolean | null;
+  success: boolean;
 }
 
 export interface EditSubscriptionsListInput {
@@ -3998,8 +3985,8 @@ export interface PauseProjectResult {
 }
 
 export interface PostDiscussionInput {
-  spaceId?: Id | null;
-  title?: string | null;
+  spaceId: Id;
+  title: string;
   body?: string | null;
   postAsDraft?: boolean | null;
   sendNotificationsToEveryone?: boolean | null;
@@ -4007,7 +3994,7 @@ export interface PostDiscussionInput {
 }
 
 export interface PostDiscussionResult {
-  discussion?: Discussion | null;
+  discussion: Discussion;
 }
 
 export interface PostGoalProgressUpdateInput {
@@ -4274,8 +4261,8 @@ export interface RemoveCompanyTrustedEmailDomainResult {
 }
 
 export interface RemoveGroupMemberInput {
-  groupId?: string | null;
-  memberId?: string | null;
+  groupId: Id;
+  memberId: Id;
 }
 
 export interface RemoveGroupMemberResult {}

@@ -44,7 +44,7 @@ function NewDiscussionButton() {
   const { space } = useLoadedData();
   const paths = usePaths();
 
- if (!space.permissions?.canPostDiscussions) return null;
+ if (!space.permissions?.canEdit) return null;
 
   return (
     <PrimaryButton linkTo={paths.discussionNewPath(space.id!)} size="sm" testId="new-discussion">

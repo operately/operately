@@ -23,12 +23,11 @@ interface Props {
   onTaskDueDateChange?: TaskBoardProps["onTaskDueDateChange"];
   assigneePersonSearch?: TaskBoardProps["assigneePersonSearch"];
   onTaskCreate?: TaskBoardProps["onTaskCreate"];
-  canManageStatuses?: boolean;
   onAddStatusClick?: () => void;
   onEditStatus?: (status: StatusSelector.StatusOption) => void;
   onDeleteStatus?: (status: StatusSelector.StatusOption) => void;
   onTaskClick: (taskId: string) => void;
-  canCreateTask: boolean;
+  canEdit: boolean;
 }
 
 export function Kanban({
@@ -42,12 +41,11 @@ export function Kanban({
   onTaskDueDateChange,
   assigneePersonSearch,
   onTaskCreate,
-  canManageStatuses,
   onAddStatusClick,
   onEditStatus,
   onDeleteStatus,
   onTaskClick,
-  canCreateTask,
+  canEdit,
 }: Props) {
   const testId = useMemo(
     () => (milestone ? createTestId("milestone", milestone.id) : "kanban-no-milestone"),
@@ -94,7 +92,7 @@ export function Kanban({
               onEditStatus={undefined}
               onDeleteStatus={undefined}
               onTaskClick={onTaskClick}
-              canCreateTask={canCreateTask}
+              canCreateTask={canEdit}
               hideStatusIcon
               disableDnD
             />
@@ -105,7 +103,7 @@ export function Kanban({
               key={status.value}
               status={status}
               index={index}
-              canReorder={Boolean(canManageStatuses)}
+              canReorder={Boolean(canEdit)}
             >
               {(dragHandleRef) => (
                 <Column
@@ -119,10 +117,10 @@ export function Kanban({
                   assigneePersonSearch={assigneePersonSearch}
                   onCreateTask={onTaskCreate ? (title) => handleTaskCreate(title, status.value) : undefined}
                   dragHandleRef={dragHandleRef}
-                  isStatusDraggable={Boolean(canManageStatuses)}
+                  isStatusDraggable={Boolean(canEdit)}
                   allStatuses={statuses}
-                  canManageStatuses={canManageStatuses}
-                  canCreateTask={canCreateTask}
+                  canManageStatuses={canEdit}
+                  canCreateTask={canEdit}
                   onEditStatus={onEditStatus}
                   onDeleteStatus={onDeleteStatus}
                   onTaskClick={onTaskClick}
@@ -131,7 +129,7 @@ export function Kanban({
             </SortableStatusColumn>
           ))}
 
-          {canManageStatuses && (
+          {canEdit && (
             <button
               type="button"
               onClick={onAddStatusClick}

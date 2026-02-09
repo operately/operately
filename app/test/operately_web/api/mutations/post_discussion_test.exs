@@ -16,46 +16,46 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
   end
 
   describe "company permissions" do
+    @table [
+      %{permissions: :view_access, expected: 403},
+      %{permissions: :comment_access, expected: 403},
+      %{permissions: :edit_access, expected: 200},
+      %{permissions: :full_access, expected: 200},
+    ]
+
     setup ctx do
       ctx
       |> Factory.setup()
-      |> Factory.add_space(:space, company_permissions: Binding.view_access())
       |> Factory.add_company_member(:person)
       |> Factory.log_in_person(:person)
     end
 
-    test "company member can see only their company", ctx do
-      other_ctx = register_and_log_in_account(ctx)
+    tabletest @table do
+      test "company member with #{@test.permissions} can #{if @test.expected == 200, do: "create", else: "not create"} discussion", ctx do
+        ctx = Factory.add_space(ctx, :space, company_permissions: Binding.from_atom(@test.permissions))
 
-      assert {404, res} = request(other_ctx.conn, ctx.space)
-      assert res.message == "The requested resource was not found"
-    end
+        assert {code, res} = request(ctx.conn, ctx.space)
+        assert code == @test.expected
 
-    test "company members without edit access can't create discussion", ctx do
-      assert {403, res} = request(ctx.conn, ctx.space)
-      assert res.message == "You don't have permission to perform this action"
-    end
-
-    test "company members with edit access can create discussion", ctx do
-      ctx = Factory.add_space(ctx, :space, company_permissions: Binding.edit_access())
-
-      assert {200, res} = request(ctx.conn, ctx.space)
-      assert_discussion_created(res)
-    end
-
-    test "company owners can create discussion", ctx do
-      # Not owner
-      assert {403, _} = request(ctx.conn, ctx.space)
-
-      # Owner
-      {:ok, _} = Operately.Companies.add_owner(ctx.creator, ctx.person.id)
-
-      assert {200, res} = request(ctx.conn, ctx.space)
-      assert_discussion_created(res)
+        case @test.expected do
+          200 ->
+            assert_discussion_created(res)
+          403 ->
+            assert res.message == "You don't have permission to perform this action"
+        end
+      end
     end
   end
 
   describe "space permissions" do
+    @table [
+      %{space: :no_access,      expected: 404},
+      %{space: :view_access,    expected: 403},
+      %{space: :comment_access, expected: 403},
+      %{space: :edit_access,    expected: 200},
+      %{space: :full_access,    expected: 200},
+    ]
+
     setup ctx do
       ctx = register_and_log_in_account(ctx)
       space = group_fixture(ctx.company_creator, %{company_id: ctx.company.id})
@@ -63,34 +63,22 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
       Map.merge(ctx, %{space: space})
     end
 
-    test "company member without view access can't see space", ctx do
-      assert {404, res} = request(ctx.conn, ctx.space)
-      assert res.message == "The requested resource was not found"
-    end
+    tabletest @table do
+      test "space member with #{@test.space} can #{if @test.expected == 200, do: "create", else: "not create"} discussion", ctx do
+        add_person_to_space(ctx, Binding.from_atom(@test.space))
 
-    test "space member without edit access can't create discussion", ctx do
-      add_person_to_space(ctx, Binding.comment_access())
+        assert {code, res} = request(ctx.conn, ctx.space)
+        assert code == @test.expected
 
-      assert {403, res} = request(ctx.conn, ctx.space)
-      assert res.message == "You don't have permission to perform this action"
-    end
-
-    test "space members with edit access can create discussion", ctx do
-      add_person_to_space(ctx, Binding.edit_access())
-
-      assert {200, res} = request(ctx.conn, ctx.space)
-      assert_discussion_created(res)
-    end
-
-    test "company owner can create discussion", ctx do
-      # Not owner
-      assert {404, _} = request(ctx.conn, ctx.space)
-
-      # Owner
-      {:ok, _} = Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
-
-      assert {200, res} = request(ctx.conn, ctx.space)
-      assert_discussion_created(res)
+        case @test.expected do
+          200 ->
+            assert_discussion_created(res)
+          403 ->
+            assert res.message == "You don't have permission to perform this action"
+          404 ->
+            assert res.message == "The requested resource was not found"
+        end
+      end
     end
   end
 

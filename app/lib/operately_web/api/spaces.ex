@@ -43,7 +43,7 @@ defmodule OperatelyWeb.Api.Spaces do
       |> Steps.start_transaction()
       |> Steps.find_space(inputs.space_id)
       |> Steps.find_task(inputs.task_id)
-      |> Steps.check_task_permissions(:can_edit_task)
+      |> Steps.check_task_permissions(:can_edit)
       |> Steps.update_space_kanban_state(inputs.status, inputs.kanban_state)
       |> Steps.commit()
       |> Steps.broadcast_review_count_update()
@@ -171,7 +171,7 @@ defmodule OperatelyWeb.Api.Spaces do
       conn
       |> Steps.start_transaction()
       |> Steps.find_space(inputs.space_id)
-      |> Steps.check_permissions(:can_edit_statuses)
+      |> Steps.check_permissions(:can_edit)
       |> Steps.validate_status_replacements(inputs.task_statuses, replacements)
       |> Steps.update_task_statuses(inputs.task_statuses)
       |> Steps.replace_deleted_task_statuses(replacements)
@@ -238,7 +238,7 @@ defmodule OperatelyWeb.Api.Spaces do
 
     def check_task_permissions(multi, permission) do
       Multi.run(multi, :permissions, fn _repo, %{task: task} ->
-        Operately.Projects.Permissions.check(task.request_info.access_level, permission)
+        Operately.Groups.Permissions.check(task.request_info.access_level, permission)
       end)
     end
 

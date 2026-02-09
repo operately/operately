@@ -55,7 +55,7 @@ function Title() {
           <div className="text-medium">Manage the team and access to this space</div>
         </div>
 
-        {space.permissions.canAddMembers && (
+        {space.permissions.hasFullAccess && (
           <PrimaryButton size="sm" linkTo={addMembersPath} testId="add-members">
             Add Members
           </PrimaryButton>
@@ -83,7 +83,7 @@ function GeneralAccess() {
       <BorderedRow>
         <AccessLevel anonymous={space.accessLevels.public!} company={space.accessLevels.company!} tense="present" />
 
-        {space.permissions.canAddMembers && (
+        {space.permissions.hasFullAccess && (
           <SecondaryButton linkTo={editPath} size="xs">
             Edit
           </SecondaryButton>
@@ -157,7 +157,7 @@ function MemberName({ member }: { member: People.Person }) {
 function MemberMenu({ member }: { member: People.Person }) {
   const { space } = useLoadedData();
 
-  const editPerms = space.permissions!.canEditMembersPermissions!;
+  const editPerms = space.permissions?.hasFullAccess;
   const isManager = member.accessLevel === PermissionLevels.FULL_ACCESS;
 
   if (!editPerms) return null;

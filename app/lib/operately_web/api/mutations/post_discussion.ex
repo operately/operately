@@ -7,8 +7,8 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussion do
   alias Operately.Operations.DiscussionPosting
 
   inputs do
-    field? :space_id, :id, null: true
-    field? :title, :string, null: true
+    field :space_id, :id, null: false
+    field :title, :string, null: false
     field? :body, :string, null: true
     field? :post_as_draft, :boolean, null: true
 
@@ -17,7 +17,7 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussion do
   end
 
   outputs do
-    field? :discussion, :discussion, null: true
+    field :discussion, :discussion, null: false
   end
 
   def call(conn, inputs) do
@@ -25,7 +25,7 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussion do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:attrs, fn -> parse_inputs(inputs) end)
     |> run(:space, fn ctx -> Groups.get_group_with_access_level(ctx.attrs.space_id, ctx.me.id) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.requester_access_level, :can_post_discussions) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.requester_access_level, :can_edit) end)
     |> run(:operation, fn ctx -> DiscussionPosting.run(ctx.me, ctx.space, ctx.attrs) end)
     |> run(:serialized, fn ctx -> {:ok, %{discussion: Serializer.serialize(ctx.operation, level: :essential)}} end)
     |> respond()
