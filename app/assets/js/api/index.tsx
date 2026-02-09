@@ -3639,13 +3639,13 @@ export interface EditResourceHubLinkResult {
 }
 
 export interface EditSpaceInput {
-  id?: Id | null;
-  name?: string | null;
-  mission?: string | null;
+  id: Id;
+  name: string;
+  mission: string;
 }
 
 export interface EditSpaceResult {
-  space?: Space | null;
+  space: Space;
 }
 
 export interface EditSpaceMembersPermissionsInput {

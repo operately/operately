@@ -13,6 +13,20 @@ defmodule OperatelyWeb.Api.Mutations.EditSpaceTest do
   end
 
   describe "permissions" do
+    @table [
+      %{company: :no_access,      space: :no_access,      expected: 404},
+
+      %{company: :view_access,    space: :no_access,      expected: 403},
+      %{company: :comment_access, space: :no_access,      expected: 403},
+      %{company: :edit_access,    space: :no_access,      expected: 200},
+      %{company: :full_access,    space: :no_access,      expected: 200},
+
+      %{company: :no_access,      space: :view_access,    expected: 403},
+      %{company: :no_access,      space: :comment_access, expected: 403},
+      %{company: :no_access,      space: :edit_access,    expected: 200},
+      %{company: :no_access,      space: :full_access,    expected: 200},
+    ]
+
     setup ctx do
       ctx = register_and_log_in_account(ctx)
       creator = person_fixture(%{company_id: ctx.company.id})
@@ -20,54 +34,23 @@ defmodule OperatelyWeb.Api.Mutations.EditSpaceTest do
       Map.merge(ctx, %{creator: creator})
     end
 
-    test "company members without view access can't see a space", ctx do
-      space = create_space(ctx, company_permissions: Binding.no_access())
+    tabletest @table do
+      test "if caller has company=#{@test.company} and space=#{@test.space}, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx, company_permissions: Binding.from_atom(@test.company))
+        add_person_to_space(ctx, space.id, Binding.from_atom(@test.space))
 
-      assert {404, res} = request(ctx.conn, space)
-      assert res.message == "The requested resource was not found"
-    end
+        assert {code, res} = request(ctx.conn, space)
+        assert code == @test.expected
 
-    test "company members without full access can't edit a space", ctx do
-      space = create_space(ctx, company_permissions: Binding.edit_access())
-
-      assert {403, res} = request(ctx.conn, space)
-      assert res.message == "You don't have permission to perform this action"
-    end
-
-    test "company members with full access can edit a space", ctx do
-      space = create_space(ctx, company_permissions: Binding.full_access())
-
-      assert {200, res} = request(ctx.conn, space)
-      assert res.space == Serializer.serialize(space)
-    end
-
-    test "company owners can edit a space", ctx do
-      space = create_space(ctx, company_permissions: Binding.view_access())
-
-      # Not owner
-      assert {403, _} = request(ctx.conn, space)
-
-      # Admin
-      Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
-
-      assert {200, res} = request(ctx.conn, space)
-      assert res.space == Serializer.serialize(space)
-    end
-
-    test "space members without full access can't edit a space", ctx do
-      space = create_space(ctx, company_permissions: Binding.no_access())
-      add_person_to_space(ctx, space.id, Binding.comment_access())
-
-      assert {403, res} = request(ctx.conn, space)
-      assert res.message == "You don't have permission to perform this action"
-    end
-
-    test "space members with full access can edit a space", ctx do
-      space = create_space(ctx, company_permissions: Binding.no_access())
-      add_person_to_space(ctx, space.id, Binding.full_access())
-
-      assert {200, res} = request(ctx.conn, space)
-      assert res.space == Serializer.serialize(space)
+        case @test.expected do
+          200 ->
+            assert res.space == Serializer.serialize(space)
+          403 ->
+            assert res.message == "You don't have permission to perform this action"
+          404 ->
+            assert res.message == "The requested resource was not found"
+        end
+      end
     end
   end
 
