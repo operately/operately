@@ -23,7 +23,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHub do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:attrs, fn -> parse_inputs(inputs) end)
     |> run(:space, fn ctx -> Group.get(ctx.me, id: ctx.attrs.id) end)
-    |> run(:permissions, fn ctx -> Permissions.check(ctx.space.request_info.access_level, :can_create_resource_hub) end)
+    |> run(:permissions, fn ctx -> Permissions.check(ctx.space.request_info.access_level, :can_edit) end)
     |> run(:operation, fn ctx -> ResourceHubCreating.run(ctx.me, ctx.space, ctx.attrs) end)
     |> run(:serialized, fn ctx -> {:ok, %{resource_hub: Serializer.serialize(ctx.operation)}} end)
     |> respond()

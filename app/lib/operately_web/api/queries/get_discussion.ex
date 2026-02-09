@@ -27,7 +27,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:id, fn -> decode_id(inputs.id) end)
     |> run(:message, fn ctx -> load(ctx, inputs) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.message.request_info.access_level, :can_view_message) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.message.request_info.access_level, :can_view) end)
     |> run(:serialized, fn ctx -> {:ok, %{discussion: OperatelyWeb.Api.Serializer.serialize(ctx.message, level: :full)}} end)
     |> respond()
    end
