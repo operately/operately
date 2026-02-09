@@ -89,8 +89,7 @@ export function MilestoneKanbanPage(props: MilestoneKanbanPage.Props) {
           richTextHandlers={props.richTextHandlers}
           assigneePersonSearch={props.assigneePersonSearch}
           getTaskPageProps={props.getTaskPageProps}
-          canManageStatuses={props.canManageStatuses}
-          canCreateTask={props.canCreateTask}
+          canEdit={props.canManageStatuses}
           onStatusesChange={props.onStatusesChange}
           unstyled
         />

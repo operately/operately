@@ -435,7 +435,7 @@ defmodule OperatelyWeb.Api.Tasks do
       conn
       |> Steps.start_transaction()
       |> Steps.find_space(inputs.id)
-      |> Steps.check_permissions(:can_create_task)
+      |> Steps.check_permissions(:can_edit)
       |> Steps.create_task(inputs)
       |> SpaceSync.sync_after_task_create(inputs.id)
       |> Steps.save_activity(:task_adding, fn changes ->

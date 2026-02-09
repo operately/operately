@@ -7,14 +7,14 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussion do
   alias Operately.Messages.Message
 
   inputs do
-    field? :id, :id, null: true
+    field :id, :id, null: false
     field? :title, :string, null: true
     field? :body, :string, null: true
     field? :state, :string, null: true
   end
 
   outputs do
-    field? :discussion, :discussion, null: true
+    field :discussion, :discussion, null: false
   end
 
   def call(conn, inputs) do
@@ -22,7 +22,7 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussion do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:attrs, fn -> parse_inputs(inputs) end)
     |> run(:message, fn ctx -> Message.get(ctx.me, id: ctx.attrs.id, opts: [preload: :space]) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.message.request_info.access_level, :can_edit_discussions) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.message.request_info.access_level, :can_edit) end)
     |> run(:operation, fn ctx -> DiscussionEditing.run(ctx.me, ctx.message, ctx.attrs) end)
     |> run(:serialized, fn ctx -> {:ok, %{discussion: Serializer.serialize(ctx.operation, level: :essential)}} end)
     |> respond()

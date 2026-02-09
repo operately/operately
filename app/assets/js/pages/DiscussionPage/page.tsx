@@ -105,12 +105,12 @@ function DiscussionReactions() {
   const entity = Reactions.entity(discussion.id!, "message");
   const addReactionForm = useReactionsForm(entity, reactions);
 
-  assertPresent(discussion.permissions?.canCommentOnDiscussions, "permissions must be present in discussion");
+  assertPresent(discussion.permissions?.canComment, "permissions must be present in discussion");
 
   return (
     <>
       <Spacer size={2} />
-      <ReactionList size={24} form={addReactionForm} canAddReaction={discussion.permissions.canCommentOnDiscussions} />
+      <ReactionList size={24} form={addReactionForm} canAddReaction={discussion.permissions.canComment} />
     </>
   );
 }
@@ -175,7 +175,7 @@ function DicusssionComments() {
 
   if (discussion.state === "draft") return null;
 
-  assertPresent(discussion.permissions?.canCommentOnDiscussions, "permissions must be present in discussion");
+  assertPresent(discussion.permissions?.canComment, "permissions must be present in discussion");
 
   return (
     <>
@@ -184,7 +184,7 @@ function DicusssionComments() {
       <CommentSection
         form={commentsForm}
         commentParentType="message"
-        canComment={discussion.permissions.canCommentOnDiscussions}
+        canComment={discussion.permissions.canComment}
       />
     </>
   );

@@ -14,6 +14,20 @@ defmodule OperatelyWeb.Api.Mutations.EditSpaceMembersPermissionsTest do
   end
 
   describe "permissions" do
+    @table [
+      %{company: :no_access,      space: :no_access,      expected: 404},
+
+      %{company: :view_access,    space: :no_access,      expected: 403},
+      %{company: :comment_access, space: :no_access,      expected: 403},
+      %{company: :edit_access,    space: :no_access,      expected: 403},
+      %{company: :full_access,    space: :no_access,      expected: 200},
+
+      %{company: :no_access,      space: :view_access,    expected: 403},
+      %{company: :no_access,      space: :comment_access, expected: 403},
+      %{company: :no_access,      space: :edit_access,    expected: 403},
+      %{company: :no_access,      space: :full_access,    expected: 200},
+    ]
+
     setup ctx do
       ctx = register_and_log_in_account(ctx)
       creator = person_fixture(%{company_id: ctx.company.id})
@@ -21,86 +35,31 @@ defmodule OperatelyWeb.Api.Mutations.EditSpaceMembersPermissionsTest do
       Map.merge(ctx, %{creator: creator})
     end
 
-    test "company members without view access can't see space", ctx do
-      {space, p1, p2} = create_space_with_members(ctx, company_permissions: Binding.no_access())
+    tabletest @table do
+      test "if caller has company=#{@test.company} and space=#{@test.space}, then expect code=#{@test.expected}", ctx do
+        {space, p1, p2} = create_space_with_members(ctx, company_permissions: Binding.from_atom(@test.company))
+        add_person_to_space(ctx.person, space.id, Binding.from_atom(@test.space))
 
-      assert {404, res} = request(ctx.conn, space, [
-        {p1, Binding.edit_access()},
-        {p2, Binding.comment_access()},
-      ])
-      assert res.message == "The requested resource was not found"
-      refute_member_access_level(space, p1, Binding.edit_access())
-      refute_member_access_level(space, p2, Binding.comment_access())
-    end
+        assert {code, res} = request(ctx.conn, space, [
+          {p1, Binding.edit_access()},
+          {p2, Binding.comment_access()},
+        ])
+        assert code == @test.expected
 
-    test "company members without full access can't edit members permissions", ctx do
-      {space, p1, p2} = create_space_with_members(ctx, company_permissions: Binding.edit_access())
-
-      assert {403, res} = request(ctx.conn, space, [
-        {p1, Binding.edit_access()},
-        {p2, Binding.comment_access()},
-      ])
-      assert res.message == "You don't have permission to perform this action"
-      refute_member_access_level(space, p1, Binding.edit_access())
-      refute_member_access_level(space, p2, Binding.comment_access())
-    end
-
-    test "company members with full access can edit members permissions", ctx do
-      {space, p1, p2} = create_space_with_members(ctx, company_permissions: Binding.full_access())
-
-      assert {200, _} = request(ctx.conn, space, [
-        {p1, Binding.edit_access()},
-        {p2, Binding.comment_access()},
-      ])
-      assert_member_access_level(space, p1, Binding.edit_access())
-      assert_member_access_level(space, p2, Binding.comment_access())
-    end
-
-    test "company owner can edit members permissions", ctx do
-      {space, p1, p2} = create_space_with_members(ctx, company_permissions: Binding.view_access())
-
-      # Not owner
-      assert {403, _} = request(ctx.conn, space, [
-        {p1, Binding.edit_access()},
-        {p2, Binding.comment_access()},
-      ])
-      refute_member_access_level(space, p1, Binding.edit_access())
-      refute_member_access_level(space, p2, Binding.comment_access())
-
-      # Owner
-      Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
-
-      assert {200, _} = request(ctx.conn, space, [
-        {p1, Binding.edit_access()},
-        {p2, Binding.comment_access()},
-      ])
-      assert_member_access_level(space, p1, Binding.edit_access())
-      assert_member_access_level(space, p2, Binding.comment_access())
-    end
-
-    test "space members without full access can't edit members permissions", ctx do
-      {space, p1, p2} = create_space_with_members(ctx, company_permissions: Binding.no_access())
-      add_person_to_space(ctx.person, space.id, Binding.comment_access())
-
-      assert {403, res} = request(ctx.conn, space, [
-        {p1, Binding.edit_access()},
-        {p2, Binding.comment_access()},
-      ])
-      assert res.message == "You don't have permission to perform this action"
-      refute_member_access_level(space, p1, Binding.edit_access())
-      refute_member_access_level(space, p2, Binding.comment_access())
-    end
-
-    test "space members with full access can edit members permissions", ctx do
-      {space, p1, p2} = create_space_with_members(ctx, company_permissions: Binding.no_access())
-      add_person_to_space(ctx.person, space.id, Binding.full_access())
-
-      assert {200, _} = request(ctx.conn, space, [
-        {p1, Binding.edit_access()},
-        {p2, Binding.comment_access()},
-      ])
-      assert_member_access_level(space, p1, Binding.edit_access())
-      assert_member_access_level(space, p2, Binding.comment_access())
+        case @test.expected do
+          200 ->
+            assert_member_access_level(space, p1, Binding.edit_access())
+            assert_member_access_level(space, p2, Binding.comment_access())
+          403 ->
+            assert res.message == "You don't have permission to perform this action"
+            refute_member_access_level(space, p1, Binding.edit_access())
+            refute_member_access_level(space, p2, Binding.comment_access())
+          404 ->
+            assert res.message == "The requested resource was not found"
+            refute_member_access_level(space, p1, Binding.edit_access())
+            refute_member_access_level(space, p2, Binding.comment_access())
+        end
+      end
     end
   end
 

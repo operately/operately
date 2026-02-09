@@ -72,12 +72,12 @@ defmodule OperatelyWeb.Api.Mutations.CreateComment do
       :project_retrospective -> Projects.Permissions.check(parent.request_info.access_level, :can_comment_on_retrospective)
       :comment_thread -> Activities.Permissions.check(parent.request_info.access_level, :can_comment_on_thread)
       :goal_update -> Goals.Update.Permissions.check(parent.request_info.access_level, parent, parent.request_info.requester.id, :can_comment)
-      :message -> Groups.Permissions.check(parent.request_info.access_level, :can_comment_on_discussions)
+      :message -> Groups.Permissions.check(parent.request_info.access_level, :can_comment)
       :resource_hub_document -> ResourceHubs.Permissions.check(parent.request_info.access_level, :can_comment_on_document)
       :resource_hub_file -> ResourceHubs.Permissions.check(parent.request_info.access_level, :can_comment_on_file)
       :resource_hub_link -> ResourceHubs.Permissions.check(parent.request_info.access_level, :can_comment_on_link)
       :project_task -> Projects.Permissions.check(parent.request_info.access_level, :can_comment_on_task)
-      :space_task -> Groups.Permissions.check(parent.request_info.access_level, :can_comment_on_tasks)
+      :space_task -> Groups.Permissions.check(parent.request_info.access_level, :can_comment)
     end
   end
 

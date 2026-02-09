@@ -86,7 +86,7 @@ function Form() {
         name: form.values.name,
         championId: form.values.champion,
         reviewerId: form.values.reviewer,
-        spaceId: form.values.space,
+        spaceId: form.values.space!,
         goalId: form.values.goal?.id,
         anonymousAccessLevel: form.values.access.anonymous,
         companyAccessLevel: form.values.access.companyMembers,
