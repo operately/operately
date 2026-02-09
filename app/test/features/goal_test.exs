@@ -7,6 +7,8 @@ defmodule Operately.Features.GoalTest do
 
   feature "changing goal name", ctx do
     ctx
+    |> Steps.assert_logged_in_member_has_edit_access()
+    |> Steps.visit_goal()
     |> Steps.change_goal_name()
     |> Steps.assert_goal_name_changed()
     |> Steps.assert_goal_name_changed_feed_posted()
@@ -14,6 +16,8 @@ defmodule Operately.Features.GoalTest do
 
   feature "changing the champion", ctx do
     ctx
+    |> Steps.assert_logged_in_member_has_full_access()
+    |> Steps.visit_goal()
     |> Steps.change_champion()
     |> Steps.assert_champion_changed()
     |> Steps.assert_champion_changed_feed_posted()
@@ -23,6 +27,8 @@ defmodule Operately.Features.GoalTest do
 
   feature "removing the champion", ctx do
     ctx
+    |> Steps.assert_logged_in_member_has_full_access()
+    |> Steps.visit_goal()
     |> Steps.remove_champion()
     |> Steps.assert_champion_removed()
     |> Steps.assert_champion_removed_feed_posted()
@@ -30,6 +36,8 @@ defmodule Operately.Features.GoalTest do
 
   feature "changing the reviewer", ctx do
     ctx
+    |> Steps.assert_logged_in_member_has_full_access()
+    |> Steps.visit_goal()
     |> Steps.change_reviewer()
     |> Steps.assert_reviewer_changed()
     |> Steps.assert_reviewer_changed_feed_posted()
@@ -39,6 +47,8 @@ defmodule Operately.Features.GoalTest do
 
   feature "removing the reviewer", ctx do
     ctx
+    |> Steps.assert_logged_in_member_has_full_access()
+    |> Steps.visit_goal()
     |> Steps.remove_reviewer()
     |> Steps.assert_reviewer_removed()
     |> Steps.assert_reviewer_removed_feed_posted()
@@ -46,6 +56,8 @@ defmodule Operately.Features.GoalTest do
 
   feature "export goal as markdown", ctx do
     ctx
+    |> Steps.assert_logged_in_member_has_view_access()
+    |> Steps.visit_goal()
     |> Steps.download_goal_markdown()
     |> Steps.assert_goal_markdown_includes_details()
   end
@@ -66,6 +78,8 @@ defmodule Operately.Features.GoalTest do
 
   feature "changing the parent goal", ctx do
     ctx
+    |> Steps.assert_logged_in_member_has_edit_access()
+    |> Steps.visit_goal()
     |> Steps.change_parent_goal()
     |> Steps.assert_parent_goal_changed_toast()
     |> Steps.assert_parent_goal_changed()
@@ -74,6 +88,8 @@ defmodule Operately.Features.GoalTest do
 
   feature "removing the parent goal", ctx do
     ctx
+    |> Steps.assert_logged_in_member_has_edit_access()
+    |> Steps.visit_goal()
     |> Steps.remove_parent_goal()
     |> Steps.assert_parent_goal_removed()
     |> Steps.assert_parent_goal_removed_feed_posted()
@@ -81,6 +97,8 @@ defmodule Operately.Features.GoalTest do
 
   feature "move to another space", ctx do
     ctx
+    |> Steps.assert_logged_in_member_has_full_access()
+    |> Steps.visit_goal()
     |> Steps.move_goal_to_another_space()
     |> Steps.assert_goal_moved_to_another_space()
     |> Steps.assert_goal_moved_to_another_space_feed_posted()
@@ -88,6 +106,8 @@ defmodule Operately.Features.GoalTest do
 
   feature "adding the first target", ctx do
     ctx
+    |> Steps.assert_logged_in_member_has_edit_access()
+    |> Steps.visit_goal()
     |> Steps.add_first_target()
     |> Steps.assert_target_added()
     |> Steps.assert_target_added_feed_posted()
@@ -95,6 +115,8 @@ defmodule Operately.Features.GoalTest do
 
   feature "adding a new target", ctx do
     ctx
+    |> Steps.assert_logged_in_member_has_edit_access()
+    |> Steps.visit_goal()
     |> Steps.add_new_target()
     |> Steps.assert_target_added()
     |> Steps.assert_target_added_feed_posted()
@@ -102,6 +124,8 @@ defmodule Operately.Features.GoalTest do
 
   feature "deleting a target", ctx do
     ctx
+    |> Steps.assert_logged_in_member_has_edit_access()
+    |> Steps.visit_goal()
     |> Steps.delete_target()
     |> Steps.assert_target_deleted()
     |> Steps.assert_target_deleted_feed_posted()
@@ -109,6 +133,8 @@ defmodule Operately.Features.GoalTest do
 
   feature "update target value", ctx do
     ctx
+    |> Steps.assert_logged_in_member_has_edit_access()
+    |> Steps.visit_goal()
     |> Steps.update_target_value()
     |> Steps.assert_target_value_updated()
     |> Steps.assert_target_value_updated_feed_posted()
@@ -116,6 +142,8 @@ defmodule Operately.Features.GoalTest do
 
   feature "changing the access level", ctx do
     ctx
+    |> Steps.assert_logged_in_member_has_full_access()
+    |> Steps.visit_goal()
     |> Steps.change_access_level()
     |> Steps.assert_access_level_changed()
   end
@@ -124,7 +152,8 @@ defmodule Operately.Features.GoalTest do
     new_description = "New goal description"
 
     ctx
-    |> Steps.visit_page()
+    |> Steps.assert_logged_in_member_has_edit_access()
+    |> Steps.visit_goal()
     |> Steps.refute_goal_description(new_description)
     |> Steps.edit_goal_description(new_description)
     |> Steps.assert_goal_description(new_description)
@@ -138,6 +167,8 @@ defmodule Operately.Features.GoalTest do
     ctx = Steps.given_space_member_exists(ctx)
 
     ctx
+    |> Steps.assert_logged_in_member_has_edit_access()
+    |> Steps.visit_goal()
     |> Steps.edit_goal_description_mentioning(ctx.space_member)
 
     ctx
@@ -190,12 +221,16 @@ defmodule Operately.Features.GoalTest do
   describe "deletion" do
     feature "deleting a goal with no subitems", ctx do
       ctx
+      |> Steps.assert_logged_in_member_has_full_access()
+      |> Steps.visit_page()
       |> Steps.delete_goal()
       |> Steps.assert_goal_deleted()
     end
 
     feature "attemping to delete a goal with subitems", ctx do
       ctx
+      |> Steps.assert_logged_in_member_has_full_access()
+      |> Steps.visit_page()
       |> Steps.given_goal_has_subgoals()
       |> Steps.visit_page()
       |> Steps.assert_goal_cannot_be_deleted()
@@ -208,13 +243,9 @@ defmodule Operately.Features.GoalTest do
       |> Steps.given_user_has_full_access()
       |> Steps.assert_user_has_full_access()
       |> Steps.visit_page()
-      |> Steps.assert_parent_goal_editable()
-      |> Steps.assert_start_date_editable()
       |> Steps.assert_champion_editable()
       |> Steps.assert_manage_access_button_visible()
-      |> Steps.assert_close_goal_button_visible()
       |> Steps.assert_delete_goal_button_visible()
-      |> Steps.assert_add_subgoal_button_visible()
     end
 
     feature "user with edit access can see actions they can perform only", ctx do
@@ -222,13 +253,13 @@ defmodule Operately.Features.GoalTest do
       |> Steps.given_user_has_edit_access()
       |> Steps.assert_user_has_edit_access()
       |> Steps.visit_page()
-      |> Steps.refute_parent_goal_editable()
-      |> Steps.refute_start_date_editable()
       |> Steps.refute_champion_editable()
       |> Steps.refute_manage_access_button_visible()
-      |> Steps.refute_close_goal_button_visible()
       |> Steps.refute_delete_goal_button_visible()
-      |> Steps.refute_add_subgoal_button_visible()
+      |> Steps.assert_start_date_editable()
+      |> Steps.assert_parent_goal_editable()
+      |> Steps.assert_close_goal_button_visible()
+      |> Steps.assert_add_subgoal_button_visible()
       |> Steps.assert_check_in_button_visible()
       |> Steps.assert_discussion_button_visible()
       |> Steps.assert_add_checklist_button_visible()
@@ -242,6 +273,10 @@ defmodule Operately.Features.GoalTest do
       |> Steps.refute_check_in_button_visible()
       |> Steps.refute_discussion_button_visible()
       |> Steps.refute_add_checklist_button_visible()
+      |> Steps.refute_parent_goal_editable()
+      |> Steps.refute_start_date_editable()
+      |> Steps.refute_close_goal_button_visible()
+      |> Steps.refute_add_subgoal_button_visible()
     end
   end
 

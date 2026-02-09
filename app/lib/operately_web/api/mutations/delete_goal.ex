@@ -16,7 +16,7 @@ defmodule OperatelyWeb.Api.Mutations.DeleteGoal do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:goal, fn ctx -> Goal.get(ctx.me, id: inputs.goal_id) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.goal.request_info.access_level, :can_delete) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.goal.request_info.access_level, :has_full_access) end)
     |> run(:operation, fn ctx -> Operately.Operations.GoalDeleting.run(ctx.goal) end)
     |> run(:serialized, fn ctx -> {:ok, %{goal: Serializer.serialize(ctx.operation)}} end)
     |> respond()

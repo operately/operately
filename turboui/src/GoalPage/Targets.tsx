@@ -17,13 +17,13 @@ export function Targets(props: GoalPage.State) {
             Add
           </SecondaryButton>
         }
-        showButtons={props.permissions.canEditTarget && !addActive}
+        showButtons={props.permissions.canEdit && !addActive}
       />
 
       {Boolean(!addActive && props.targets.length === 0) && (
         <div className="mt-1">
           <div className="text-content-dimmed text-sm">
-            {props.permissions.canEditTarget
+            {props.permissions.canEdit
               ? "Add targets to track quantitative progress with numbers."
               : "The champion hasn't yet set targets for this goal."}
           </div>
@@ -33,8 +33,8 @@ export function Targets(props: GoalPage.State) {
       <div className="mt-3">
         <GoalTargetList
           targets={props.targets}
-          showEditButton={props.permissions.canEditTarget}
-          showUpdateButton={props.permissions.canEditTarget}
+          showEditButton={props.permissions.canEdit}
+          showUpdateButton={props.permissions.canEdit}
           addActive={addActive}
           onAddActiveChange={(active) => setAddActive(active)}
           addTarget={props.addTarget}
