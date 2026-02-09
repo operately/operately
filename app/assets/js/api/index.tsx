@@ -3086,11 +3086,13 @@ export interface AddReactionResult {
 }
 
 export interface AddSpaceMembersInput {
-  spaceId?: Id | null;
-  members?: AddMemberInput[] | null;
+  spaceId: Id;
+  members: AddMemberInput[];
 }
 
-export interface AddSpaceMembersResult {}
+export interface AddSpaceMembersResult {
+  success: boolean;
+}
 
 export interface AiAddAgentInput {
   title: string;
@@ -3481,11 +3483,11 @@ export interface DeleteResourceHubLinkResult {
 }
 
 export interface DeleteSpaceInput {
-  spaceId?: Id | null;
+  spaceId: Id;
 }
 
 export interface DeleteSpaceResult {
-  space?: Space | null;
+  space: Space;
 }
 
 export interface EditCommentInput {
@@ -3515,14 +3517,14 @@ export interface EditCompanyMembersPermissionsResult {
 }
 
 export interface EditDiscussionInput {
-  id?: Id | null;
+  id: Id;
   title?: string | null;
   body?: string | null;
   state?: string | null;
 }
 
 export interface EditDiscussionResult {
-  discussion?: Discussion | null;
+  discussion: Discussion;
 }
 
 export interface EditGoalDiscussionInput {
@@ -3649,12 +3651,12 @@ export interface EditSpaceResult {
 }
 
 export interface EditSpaceMembersPermissionsInput {
-  spaceId?: Id | null;
-  members?: EditMemberPermissionsInput[] | null;
+  spaceId: Id;
+  members: EditMemberPermissionsInput[];
 }
 
 export interface EditSpaceMembersPermissionsResult {
-  success?: boolean | null;
+  success: boolean;
 }
 
 export interface EditSpacePermissionsInput {
@@ -4259,8 +4261,8 @@ export interface RemoveCompanyTrustedEmailDomainResult {
 }
 
 export interface RemoveGroupMemberInput {
-  groupId?: string | null;
-  memberId?: string | null;
+  groupId: Id;
+  memberId: Id;
 }
 
 export interface RemoveGroupMemberResult {}
