@@ -12,7 +12,7 @@ defmodule OperatelyWeb.Api.Mutations.JoinSpace do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:space, fn ctx -> Group.get(ctx.me, id: inputs.space_id) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.request_info.access_level, :can_edit) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.request_info.access_level, :can_view) end)
     |> run(:operation, fn ctx -> Operately.Operations.SpaceJoining.run(ctx.me, inputs.space_id) end)
     |> run(:serialized, fn _ctx -> {:ok, %{}} end)
     |> respond()

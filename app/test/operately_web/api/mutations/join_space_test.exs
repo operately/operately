@@ -16,8 +16,8 @@ defmodule OperatelyWeb.Api.Mutations.JoinSpaceTest do
   describe "permissions" do
     @table [
       %{permissions: :no_access, expected: 404},
-      %{permissions: :view_access, expected: 403},
-      %{permissions: :comment_access, expected: 403},
+      %{permissions: :view_access, expected: 200},
+      %{permissions: :comment_access, expected: 200},
       %{permissions: :edit_access, expected: 200},
       %{permissions: :full_access, expected: 200},
     ]
