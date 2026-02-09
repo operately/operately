@@ -3307,8 +3307,8 @@ export interface CreateEmailActivationCodeInput {
 export interface CreateEmailActivationCodeResult {}
 
 export interface CreateGoalInput {
-  spaceId?: Id | null;
-  name?: string | null;
+  spaceId: Id;
+  name: string;
   championId?: Id | null;
   reviewerId?: Id | null;
   timeframe?: Timeframe | null;

@@ -7,8 +7,8 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoal do
   alias Operately.Operations.GoalCreation
 
   inputs do
-    field? :space_id, :id, null: true
-    field? :name, :string, null: true
+    field :space_id, :id, null: false
+    field :name, :string, null: false
     field? :champion_id, :id, null: true
     field? :reviewer_id, :id, null: true
     field? :timeframe, :timeframe, null: true
@@ -29,7 +29,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoal do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:space, fn ctx -> Group.get(ctx.me, id: inputs.space_id) end)
     |> run(:inputs, fn ctx -> {:ok, sanitize_company_access_level(ctx.space, inputs)} end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.request_info.access_level, :can_create_goal) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.request_info.access_level, :can_edit) end)
     |> run(:champion_validation, fn ctx -> validate_champion_permissions(ctx.me, inputs) end)
     |> run(:reviewer_validation, fn ctx -> validate_reviewer_permissions(ctx.me, inputs) end)
     |> run(:operation, fn ctx -> GoalCreation.run(ctx.me, ctx.inputs) end)
