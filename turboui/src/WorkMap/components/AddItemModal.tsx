@@ -50,7 +50,7 @@ export function AddItemModal(props: AddItemModal.Props) {
   const state = useAddItemModalState(props);
 
   return (
-    <Modal isOpen={props.isOpen} onClose={props.close} size="large" closeOnBackdropClick={false}>
+    <Modal isOpen={props.isOpen} onClose={props.close} size="large" closeOnBackdropClick={false} testId="add-item-modal">
       <div className="p-4">
         <h1 className="font-bold text-xl w-52">Add {state.itemType === "goal" ? "goal" : "project"}</h1>
 
