@@ -32,8 +32,7 @@ export namespace SpaceKanbanPage {
     statuses: Types.Status[];
     kanbanState: KanbanState;
 
-    canManageStatuses: boolean;
-    canCreateTask: boolean;
+    canEdit: boolean;
     onStatusesChange?: (data: {
       nextStatuses: Types.Status[];
       deletedStatusReplacements: Record<string, string>;
@@ -81,8 +80,7 @@ export function SpaceKanbanPage(props: SpaceKanbanPage.Props) {
           richTextHandlers={props.richTextHandlers}
           assigneePersonSearch={props.assigneePersonSearch}
           getTaskPageProps={props.getTaskPageProps}
-          canManageStatuses={props.canManageStatuses}
-          canCreateTask={props.canCreateTask}
+          canEdit={props.canEdit}
           onStatusesChange={props.onStatusesChange}
           unstyled
         />

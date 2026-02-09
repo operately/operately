@@ -138,7 +138,7 @@ function ManageAccessButton({ space }: { space: Spaces.Space }) {
   const path = paths.spaceAccessManagementPath(space.id!);
 
   assertPresent(space.permissions, "permissions must be present in space");
-  if (!space.permissions.canAddMembers) return null;
+  if (!space.permissions.hasFullAccess) return null;
 
   return (
     <SecondaryButton linkTo={path} size="xs" testId="access-management">
@@ -217,7 +217,7 @@ function SpaceOptions() {
         {space.permissions?.canEdit && (
           <PageOptions.Link icon={IconSettings} to={toolsConfigLink} title="Configure tools" testId="configure-tools" />
         )}
-        {space.permissions?.canDelete && !space.isCompanySpace && (
+        {space.permissions?.hasFullAccess && !space.isCompanySpace && (
           <PageOptions.Action icon={IconTrash} title="Delete" onClick={handleDelete} testId="delete-space" />
         )}
       </PageOptions.Root>
