@@ -3985,8 +3985,8 @@ export interface PauseProjectResult {
 }
 
 export interface PostDiscussionInput {
-  spaceId?: Id | null;
-  title?: string | null;
+  spaceId: Id;
+  title: string;
   body?: string | null;
   postAsDraft?: boolean | null;
   sendNotificationsToEveryone?: boolean | null;
@@ -3994,7 +3994,7 @@ export interface PostDiscussionInput {
 }
 
 export interface PostDiscussionResult {
-  discussion?: Discussion | null;
+  discussion: Discussion;
 }
 
 export interface PostGoalProgressUpdateInput {
