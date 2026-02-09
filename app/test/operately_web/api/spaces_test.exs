@@ -25,6 +25,50 @@ defmodule OperatelyWeb.Api.SpacesTest do
       assert length(res.spaces) == 1
       assert res.spaces |> hd() |> Map.get(:name) == "Product Space"
     end
+
+    test "it returns only spaces that the user can see", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:member)
+        |> Factory.add_space(:product, name: "Product Space", company_permissions: Binding.view_access())
+        |> Factory.add_space(:secret, name: "Secret Space", company_permissions: Binding.no_access())
+        |> Factory.log_in_person(:member)
+
+      assert {200, res} = query(ctx.conn, [:spaces, :search], %{query: ""})
+      assert length(res.spaces) == 2
+      assert Enum.map(res.spaces, & &1.name) |> Enum.sort() == ["General", "Product Space"]
+
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = query(ctx.conn, [:spaces, :search], %{query: ""})
+      assert length(res.spaces) == 3
+      assert Enum.map(res.spaces, & &1.name) |> Enum.sort() == ["General", "Product Space", "Secret Space"]
+    end
+
+    test "it filters by access_level when provided", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:member)
+        |> Factory.add_space(:view_space, name: "View Space", company_permissions: Binding.view_access())
+        |> Factory.add_space(:edit_space, name: "Edit Space", company_permissions: Binding.edit_access())
+        |> Factory.add_space(:full_space, name: "Full Space", company_permissions: Binding.full_access())
+        |> Factory.log_in_person(:member)
+
+      # With view_access filter, should see all three spaces
+      assert {200, res} = query(ctx.conn, [:spaces, :search], %{query: "", access_level: :view_access})
+      assert length(res.spaces) == 4
+      assert Enum.map(res.spaces, & &1.name) |> Enum.sort() == ["Edit Space", "Full Space", "General", "View Space"]
+
+      # With edit_access filter, should only see edit and full spaces
+      assert {200, res} = query(ctx.conn, [:spaces, :search], %{query: "", access_level: :edit_access})
+      assert length(res.spaces) == 3
+      assert Enum.map(res.spaces, & &1.name) |> Enum.sort() == ["Edit Space", "Full Space", "General"]
+
+      # With full_access filter, should only see full space
+      assert {200, res} = query(ctx.conn, [:spaces, :search], %{query: "", access_level: :full_access})
+      assert length(res.spaces) == 1
+      assert res.spaces |> hd() |> Map.get(:name) == "Full Space"
+    end
   end
 
   describe "list tasks" do

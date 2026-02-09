@@ -129,14 +129,17 @@ defmodule Operately.Groups.Group do
     Map.put(space, :permissions, Operately.Groups.Permissions.calculate_permissions(space.request_info.access_level))
   end
 
-  def search(person, query) do
+  def search(person, query, access_level \\ nil)
+  def search(person, query, nil), do: search(person, query, :view_access)
+
+  def search(person, query, access_level) do
     import Ecto.Query
-    import Operately.Access.Filters, only: [filter_by_view_access: 2]
+    alias Operately.Access.Filters
 
     from(s in __MODULE__)
     |> where([s], s.company_id == ^person.company_id)
     |> where([s], ilike(s.name, ^"%#{query}%"))
-    |> filter_by_view_access(person.id)
+    |> Filters.filter_by_access(person.id, access_level)
     |> order_by([s], asc: s.name)
     |> limit(10)
     |> Operately.Repo.all()
