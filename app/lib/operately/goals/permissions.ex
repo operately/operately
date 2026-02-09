@@ -14,6 +14,8 @@ defmodule Operately.Goals.Permissions do
     :can_edit_access_level,
     :can_edit_target,
     :can_edit_checklist,
+    :can_edit_space,
+    :has_full_access
   ]
 
   def calculate(access_level) do
@@ -30,13 +32,15 @@ defmodule Operately.Goals.Permissions do
       can_edit_discussion: can_edit_discussion(access_level),
       can_edit_access_level: can_edit_access_level(access_level),
       can_edit_checklist: can_edit_checklist(access_level),
+      can_edit_space: can_edit_space(access_level),
+      has_full_access: has_full_access(access_level),
     }
   end
 
   def can_archive(access_level), do: access_level >= Binding.full_access()
   def can_view(access_level), do: access_level >= Binding.view_access()
   def can_check_in(access_level), do: access_level >= Binding.edit_access()
-  def can_edit(access_level), do: access_level >= Binding.full_access()
+  def can_edit(access_level), do: access_level >= Binding.edit_access()
   def can_edit_target(access_level), do: access_level >= Binding.edit_access()
   def can_edit_checklist(access_level), do: access_level >= Binding.edit_access()
   def can_reopen(access_level), do: access_level >= Binding.full_access()
@@ -44,6 +48,8 @@ defmodule Operately.Goals.Permissions do
   def can_open_discussion(access_level), do: access_level >= Binding.edit_access()
   def can_edit_discussion(access_level), do: access_level >= Binding.edit_access()
   def can_edit_access_level(access_level), do: access_level >= Binding.full_access()
+  def can_edit_space(access_level), do: access_level >= Binding.full_access()
+  def has_full_access(access_level), do: access_level >= Binding.full_access()
 
   def check(access_level, permission) when is_atom(permission) and is_integer(access_level) do
     permissions = calculate(access_level)

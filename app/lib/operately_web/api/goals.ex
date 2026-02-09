@@ -233,7 +233,7 @@ defmodule OperatelyWeb.Api.Goals do
       conn
       |> Steps.start_transaction()
       |> Steps.find_goal(inputs.goal_id)
-      |> Steps.check_permissions(:can_edit)
+      |> Steps.check_permissions(:can_edit_space)
       |> Steps.check_idempotency(fn %{goal: goal} -> goal.group_id == inputs.space_id end)
       |> Steps.update_space(inputs.space_id)
       |> Steps.save_activity(:goal_space_updating, fn changes ->
@@ -450,7 +450,7 @@ defmodule OperatelyWeb.Api.Goals do
       conn
       |> Steps.start_transaction()
       |> Steps.find_goal(inputs.goal_id)
-      |> Steps.check_permissions(:can_edit)
+      |> Steps.check_permissions(:has_full_access)
       |> Steps.update_goal_champion(inputs.champion_id)
       |> Steps.save_activity(:goal_champion_updating, fn changes ->
         %{
@@ -482,7 +482,7 @@ defmodule OperatelyWeb.Api.Goals do
       conn
       |> Steps.start_transaction()
       |> Steps.find_goal(inputs.goal_id)
-      |> Steps.check_permissions(:can_edit)
+      |> Steps.check_permissions(:has_full_access)
       |> Steps.update_goal_reviewer(inputs.reviewer_id)
       |> Steps.save_activity(:goal_reviewer_updating, fn changes ->
         %{
@@ -514,7 +514,7 @@ defmodule OperatelyWeb.Api.Goals do
       conn
       |> Steps.start_transaction()
       |> Steps.find_goal(inputs.goal_id)
-      |> Steps.check_permissions(:can_edit)
+      |> Steps.check_permissions(:has_full_access)
       |> Steps.update_access_levels(inputs.access_levels)
       # |> Steps.save_activity(:goal_access_levels_updated, fn changes ->
       #   %{
@@ -931,7 +931,7 @@ defmodule OperatelyWeb.Api.Goals do
           {:error, :not_found}
 
         {:error, _failed_operation, :forbidden, _changes} ->
-          {:error, :not_found}
+          {:error, :forbidden}
 
         {:error, _failed_operation, reason, _changes} ->
           Logger.error("Transaction failed: #{inspect(reason)}")
