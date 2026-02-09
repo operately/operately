@@ -22,7 +22,7 @@ defmodule OperatelyWeb.Api.Mutations.CloseGoal do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:goal, fn ctx -> Goal.get(ctx.me, id: inputs.goal_id) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.goal.request_info.access_level, :can_close) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.goal.request_info.access_level, :can_edit) end)
     |> run(:attrs, fn -> parse_inputs(inputs) end)
     |> run(:operation, fn ctx -> GoalClosing.run(ctx.me, ctx.goal, ctx.attrs) end)
     |> run(:serialized, fn ctx -> {:ok, %{goal: Serializer.serialize(ctx.operation)}} end)

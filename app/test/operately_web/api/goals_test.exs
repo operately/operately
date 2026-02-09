@@ -6,6 +6,40 @@ defmodule OperatelyWeb.Api.GoalsTest do
 
   use OperatelyWeb.TurboCase
 
+  import Operately.PeopleFixtures
+  import Operately.GoalsFixtures
+  import Operately.GroupsFixtures
+
+  @full_access_table [
+    %{company: :no_access,      space: :no_access,      goal: :no_access,      expected: 404},
+    %{company: :no_access,      space: :no_access,      goal: :comment_access, expected: 403},
+    %{company: :no_access,      space: :no_access,      goal: :edit_access,    expected: 403},
+    %{company: :no_access,      space: :no_access,      goal: :full_access,    expected: 200},
+
+    %{company: :no_access,      space: :comment_access, goal: :no_access,      expected: 403},
+    %{company: :no_access,      space: :edit_access,    goal: :no_access,      expected: 403},
+    %{company: :no_access,      space: :full_access,    goal: :no_access,      expected: 200},
+
+    %{company: :comment_access, space: :no_access,      goal: :no_access,      expected: 403},
+    %{company: :edit_access,    space: :no_access,      goal: :no_access,      expected: 403},
+    %{company: :full_access,    space: :no_access,      goal: :no_access,      expected: 200},
+  ]
+
+  @edit_access_table [
+    %{company: :no_access,      space: :no_access,      goal: :no_access,      expected: 404},
+    %{company: :no_access,      space: :no_access,      goal: :comment_access, expected: 403},
+    %{company: :no_access,      space: :no_access,      goal: :edit_access,    expected: 200},
+    %{company: :no_access,      space: :no_access,      goal: :full_access,    expected: 200},
+
+    %{company: :no_access,      space: :comment_access, goal: :no_access,      expected: 403},
+    %{company: :no_access,      space: :edit_access,    goal: :no_access,      expected: 200},
+    %{company: :no_access,      space: :full_access,    goal: :no_access,      expected: 200},
+
+    %{company: :comment_access, space: :no_access,      goal: :no_access,      expected: 403},
+    %{company: :edit_access,    space: :no_access,      goal: :no_access,      expected: 200},
+    %{company: :full_access,    space: :no_access,      goal: :no_access,      expected: 200},
+  ]
+
   setup ctx do
     ctx
     |> Factory.setup()
@@ -41,6 +75,33 @@ defmodule OperatelyWeb.Api.GoalsTest do
     end
   end
 
+  describe "update access levels - permissions" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+      Map.merge(ctx, %{creator: creator})
+    end
+
+    tabletest @full_access_table do
+      test "if caller has levels company=#{@test.company}, space=#{@test.space}, goal=#{@test.goal} on the goal, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        goal = create_goal(ctx, space, @test.company, @test.space, @test.goal)
+
+        assert {code, res} = mutation(ctx.conn, [:goals, :update_access_levels], %{
+          goal_id: Paths.goal_id(goal),
+          access_levels: %{company: 0, space: 100}
+        })
+        assert code == @test.expected
+
+        case @test.expected do
+          200 -> assert res.success == true
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "Goal not found"
+        end
+      end
+    end
+  end
+
   describe "list access members" do
     test "it requires authentication", ctx do
       assert {401, _} = query(ctx.conn, [:goals, :list_access_members], %{})
@@ -67,7 +128,7 @@ defmodule OperatelyWeb.Api.GoalsTest do
         |> Factory.add_space_member(:editor, :marketing)
         |> Factory.log_in_person(:editor)
 
-      assert {404, _} = query(ctx.conn, [:goals, :list_access_members], %{goal_id: Paths.goal_id(ctx.goal)})
+      assert {403, _} = query(ctx.conn, [:goals, :list_access_members], %{goal_id: Paths.goal_id(ctx.goal)})
     end
 
     test "it returns people with direct access", ctx do
@@ -126,7 +187,7 @@ defmodule OperatelyWeb.Api.GoalsTest do
         |> Factory.add_company_member(:member)
         |> Factory.log_in_person(:editor)
 
-      assert {404, _} =
+      assert {403, _} =
                mutation(ctx.conn, [:goals, :add_access_members], %{
                  goal_id: Paths.goal_id(ctx.goal),
                  members: [%{id: Paths.person_id(ctx.member), access_level: Binding.edit_access()}]
@@ -149,6 +210,34 @@ defmodule OperatelyWeb.Api.GoalsTest do
 
       assert res.success == true
       assert_binding_access(ctx.goal, ctx.member, Binding.edit_access())
+    end
+  end
+
+  describe "add access members - permissions" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+      member = person_fixture(%{company_id: ctx.company.id})
+      Map.merge(ctx, %{creator: creator, member: member})
+    end
+
+    tabletest @full_access_table do
+      test "if caller has levels company=#{@test.company}, space=#{@test.space}, goal=#{@test.goal} on the goal, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        goal = create_goal(ctx, space, @test.company, @test.space, @test.goal)
+
+        assert {code, res} = mutation(ctx.conn, [:goals, :add_access_members], %{
+          goal_id: Paths.goal_id(goal),
+          members: [%{id: Paths.person_id(ctx.member), access_level: Binding.edit_access()}]
+        })
+        assert code == @test.expected
+
+        case @test.expected do
+          200 -> assert res.success == true
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "Goal not found"
+        end
+      end
     end
   end
 
@@ -179,7 +268,7 @@ defmodule OperatelyWeb.Api.GoalsTest do
     test "it requires access level editing permissions", ctx do
       ctx = Factory.log_in_person(ctx, :editor)
 
-      assert {404, _} =
+      assert {403, _} =
                mutation(ctx.conn, [:goals, :update_access_member], %{
                  goal_id: Paths.goal_id(ctx.goal),
                  person_id: Paths.person_id(ctx.member),
@@ -201,6 +290,38 @@ defmodule OperatelyWeb.Api.GoalsTest do
 
       assert res.success == true
       assert_binding_access(ctx.goal, ctx.member, Binding.edit_access())
+    end
+  end
+
+  describe "update access member - permissions" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+      member = person_fixture(%{company_id: ctx.company.id})
+      Map.merge(ctx, %{creator: creator, member: member})
+    end
+
+    tabletest @full_access_table do
+      test "if caller has levels company=#{@test.company}, space=#{@test.space}, goal=#{@test.goal} on the goal, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        goal = create_goal(ctx, space, @test.company, @test.space, @test.goal)
+
+        context = Access.get_context!(goal_id: goal.id)
+        {:ok, _} = Access.bind_person(context, ctx.member.id, Binding.view_access())
+
+        assert {code, res} = mutation(ctx.conn, [:goals, :update_access_member], %{
+          goal_id: Paths.goal_id(goal),
+          person_id: Paths.person_id(ctx.member),
+          access_level: Binding.edit_access()
+        })
+        assert code == @test.expected
+
+        case @test.expected do
+          200 -> assert res.success == true
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "Goal not found"
+        end
+      end
     end
   end
 
@@ -231,7 +352,7 @@ defmodule OperatelyWeb.Api.GoalsTest do
     test "it requires access level editing permissions", ctx do
       ctx = Factory.log_in_person(ctx, :editor)
 
-      assert {404, _} =
+      assert {403, _} =
                mutation(ctx.conn, [:goals, :remove_access_member], %{
                  goal_id: Paths.goal_id(ctx.goal),
                  person_id: Paths.person_id(ctx.member)
@@ -249,6 +370,37 @@ defmodule OperatelyWeb.Api.GoalsTest do
 
       assert res.success == true
       refute direct_binding(ctx.goal, ctx.member)
+    end
+  end
+
+  describe "remove access member - permissions" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+      member = person_fixture(%{company_id: ctx.company.id})
+      Map.merge(ctx, %{creator: creator, member: member})
+    end
+
+    tabletest @full_access_table do
+      test "if caller has levels company=#{@test.company}, space=#{@test.space}, goal=#{@test.goal} on the goal, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        goal = create_goal(ctx, space, @test.company, @test.space, @test.goal)
+
+        context = Access.get_context!(goal_id: goal.id)
+        {:ok, _} = Access.bind_person(context, ctx.member.id, Binding.comment_access())
+
+        assert {code, res} = mutation(ctx.conn, [:goals, :remove_access_member], %{
+          goal_id: Paths.goal_id(goal),
+          person_id: Paths.person_id(ctx.member)
+        })
+        assert code == @test.expected
+
+        case @test.expected do
+          200 -> assert res.success == true
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "Goal not found"
+        end
+      end
     end
   end
 
@@ -294,6 +446,34 @@ defmodule OperatelyWeb.Api.GoalsTest do
     end
   end
 
+  describe "update space - permissions" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+      Map.merge(ctx, %{creator: creator})
+    end
+
+    tabletest @full_access_table do
+      test "if caller has levels company=#{@test.company}, space=#{@test.space}, goal=#{@test.goal} on the goal, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        goal = create_goal(ctx, space, @test.company, @test.space, @test.goal)
+        new_space = create_space(ctx)
+
+        assert {code, res} = mutation(ctx.conn, [:goals, :update_space], %{
+          goal_id: Paths.goal_id(goal),
+          space_id: Paths.space_id(new_space)
+        })
+        assert code == @test.expected
+
+        case @test.expected do
+          200 -> assert res.success == true
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "Goal not found"
+        end
+      end
+    end
+  end
+
   describe "update parent goal" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:goals, :update_parent_goal], %{})
@@ -335,6 +515,33 @@ defmodule OperatelyWeb.Api.GoalsTest do
 
       ctx = Factory.reload(ctx, :goal)
       assert ctx.goal.parent_goal_id == nil
+    end
+  end
+
+  describe "update parent goal - permissions" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+      Map.merge(ctx, %{creator: creator})
+    end
+
+    tabletest @edit_access_table do
+      test "if caller has levels company=#{@test.company}, space=#{@test.space}, goal=#{@test.goal} on the goal, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        goal = create_goal(ctx, space, @test.company, @test.space, @test.goal)
+
+        assert {code, res} = mutation(ctx.conn, [:goals, :update_parent_goal], %{
+          goal_id: Paths.goal_id(goal),
+          parent_goal_id: nil
+        })
+        assert code == @test.expected
+
+        case @test.expected do
+          200 -> assert res.success == true
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "Goal not found"
+        end
+      end
     end
   end
 
@@ -441,6 +648,33 @@ defmodule OperatelyWeb.Api.GoalsTest do
     end
   end
 
+  describe "update name - permissions" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+      Map.merge(ctx, %{creator: creator})
+    end
+
+    tabletest @edit_access_table do
+      test "if caller has levels company=#{@test.company}, space=#{@test.space}, goal=#{@test.goal} on the goal, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        goal = create_goal(ctx, space, @test.company, @test.space, @test.goal)
+
+        assert {code, res} = mutation(ctx.conn, [:goals, :update_name], %{
+          goal_id: Paths.goal_id(goal),
+          name: "Updated Name"
+        })
+        assert code == @test.expected
+
+        case @test.expected do
+          200 -> assert res.success == true
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "Goal not found"
+        end
+      end
+    end
+  end
+
   describe "update description" do
     @content Jason.encode!(RichText.rich_text("Test"))
 
@@ -470,6 +704,33 @@ defmodule OperatelyWeb.Api.GoalsTest do
 
       ctx = Factory.reload(ctx, :goal)
       assert ctx.goal.description == Jason.decode!(@content)
+    end
+  end
+
+  describe "update description - permissions" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+      Map.merge(ctx, %{creator: creator})
+    end
+
+    tabletest @edit_access_table do
+      test "if caller has levels company=#{@test.company}, space=#{@test.space}, goal=#{@test.goal} on the goal, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        goal = create_goal(ctx, space, @test.company, @test.space, @test.goal)
+
+        assert {code, res} = mutation(ctx.conn, [:goals, :update_description], %{
+          goal_id: Paths.goal_id(goal),
+          description: Jason.encode!(RichText.rich_text("Test"))
+        })
+        assert code == @test.expected
+
+        case @test.expected do
+          200 -> assert res.success == true
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "Goal not found"
+        end
+      end
     end
   end
 
@@ -515,6 +776,39 @@ defmodule OperatelyWeb.Api.GoalsTest do
     end
   end
 
+  describe "update due date - permissions" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+      Map.merge(ctx, %{creator: creator})
+    end
+
+    tabletest @edit_access_table do
+      test "if caller has levels company=#{@test.company}, space=#{@test.space}, goal=#{@test.goal} on the goal, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        goal = create_goal(ctx, space, @test.company, @test.space, @test.goal)
+
+        contextual_date = %{
+          date: "2026-01-01",
+          date_type: "day",
+          value: "Jan 1, 2026"
+        }
+
+        assert {code, res} = mutation(ctx.conn, [:goals, :update_due_date], %{
+          goal_id: Paths.goal_id(goal),
+          due_date: contextual_date
+        })
+        assert code == @test.expected
+
+        case @test.expected do
+          200 -> assert res.success == true
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "Goal not found"
+        end
+      end
+    end
+  end
+
   describe "update start date" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:goals, :update_start_date], %{})
@@ -557,6 +851,39 @@ defmodule OperatelyWeb.Api.GoalsTest do
     end
   end
 
+  describe "update start date - permissions" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+      Map.merge(ctx, %{creator: creator})
+    end
+
+    tabletest @edit_access_table do
+      test "if caller has levels company=#{@test.company}, space=#{@test.space}, goal=#{@test.goal} on the goal, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        goal = create_goal(ctx, space, @test.company, @test.space, @test.goal)
+
+        contextual_date = %{
+          date: "2025-01-01",
+          date_type: "day",
+          value: "Jan 1, 2025"
+        }
+
+        assert {code, res} = mutation(ctx.conn, [:goals, :update_start_date], %{
+          goal_id: Paths.goal_id(goal),
+          start_date: contextual_date
+        })
+        assert code == @test.expected
+
+        case @test.expected do
+          200 -> assert res.success == true
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "Goal not found"
+        end
+      end
+    end
+  end
+
   describe "add target" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:goals, :add_target], %{})
@@ -591,6 +918,36 @@ defmodule OperatelyWeb.Api.GoalsTest do
       assert target.unit == inputs.unit
       assert target.goal_id == ctx.goal.id
       assert target.value == inputs.start_value
+    end
+  end
+
+  describe "add target - permissions" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+      Map.merge(ctx, %{creator: creator})
+    end
+
+    tabletest @edit_access_table do
+      test "if caller has levels company=#{@test.company}, space=#{@test.space}, goal=#{@test.goal} on the goal, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        goal = create_goal(ctx, space, @test.company, @test.space, @test.goal)
+
+        assert {code, res} = mutation(ctx.conn, [:goals, :add_target], %{
+          goal_id: Paths.goal_id(goal),
+          name: "New Target",
+          start_value: 0,
+          target_value: 100,
+          unit: "USD"
+        })
+        assert code == @test.expected
+
+        case @test.expected do
+          200 -> assert Map.has_key?(res, :target_id)
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "Goal not found"
+        end
+      end
     end
   end
 
@@ -646,6 +1003,34 @@ defmodule OperatelyWeb.Api.GoalsTest do
 
       assert {404, res} = mutation(ctx.conn, [:goals, :delete_target], inputs)
       assert res.message == "Goal not found"
+    end
+  end
+
+  describe "delete target - permissions" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+      Map.merge(ctx, %{creator: creator})
+    end
+
+    tabletest @edit_access_table do
+      test "if caller has levels company=#{@test.company}, space=#{@test.space}, goal=#{@test.goal} on the goal, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        goal = create_goal(ctx, space, @test.company, @test.space, @test.goal)
+        target = goal_target_fixture(goal)
+
+        assert {code, res} = mutation(ctx.conn, [:goals, :delete_target], %{
+          goal_id: Paths.goal_id(goal),
+          target_id: Paths.target_id(target)
+        })
+        assert code == @test.expected
+
+        case @test.expected do
+          200 -> assert res.success == true
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "Goal not found"
+        end
+      end
     end
   end
 
@@ -705,6 +1090,35 @@ defmodule OperatelyWeb.Api.GoalsTest do
 
       target = Repo.get(Operately.Goals.Target, ctx.target.id)
       assert target.value == 55
+    end
+  end
+
+  describe "update target value - permissions" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+      Map.merge(ctx, %{creator: creator})
+    end
+
+    tabletest @edit_access_table do
+      test "if caller has levels company=#{@test.company}, space=#{@test.space}, goal=#{@test.goal} on the goal, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        goal = create_goal(ctx, space, @test.company, @test.space, @test.goal)
+        target = goal_target_fixture(goal)
+
+        assert {code, res} = mutation(ctx.conn, [:goals, :update_target_value], %{
+          goal_id: Paths.goal_id(goal),
+          target_id: Paths.target_id(target),
+          value: 42
+        })
+        assert code == @test.expected
+
+        case @test.expected do
+          200 -> assert res.success == true
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "Goal not found"
+        end
+      end
     end
   end
 
@@ -776,6 +1190,38 @@ defmodule OperatelyWeb.Api.GoalsTest do
       assert target.from == 10
       assert target.to == 200
       assert target.unit == "EUR"
+    end
+  end
+
+  describe "update target - permissions" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+      Map.merge(ctx, %{creator: creator})
+    end
+
+    tabletest @edit_access_table do
+      test "if caller has levels company=#{@test.company}, space=#{@test.space}, goal=#{@test.goal} on the goal, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        goal = create_goal(ctx, space, @test.company, @test.space, @test.goal)
+        target = goal_target_fixture(goal)
+
+        assert {code, res} = mutation(ctx.conn, [:goals, :update_target], %{
+          goal_id: Paths.goal_id(goal),
+          target_id: Paths.target_id(target),
+          name: "Updated Target",
+          start_value: 10,
+          target_value: 200,
+          unit: "EUR"
+        })
+        assert code == @test.expected
+
+        case @test.expected do
+          200 -> assert res.success == true
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "Goal not found"
+        end
+      end
     end
   end
 
@@ -856,6 +1302,35 @@ defmodule OperatelyWeb.Api.GoalsTest do
     end
   end
 
+  describe "update target index - permissions" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+      Map.merge(ctx, %{creator: creator})
+    end
+
+    tabletest @edit_access_table do
+      test "if caller has levels company=#{@test.company}, space=#{@test.space}, goal=#{@test.goal} on the goal, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        goal = create_goal(ctx, space, @test.company, @test.space, @test.goal)
+        target = goal_target_fixture(goal)
+
+        assert {code, res} = mutation(ctx.conn, [:goals, :update_target_index], %{
+          goal_id: Paths.goal_id(goal),
+          target_id: Paths.target_id(target),
+          index: 0
+        })
+        assert code == @test.expected
+
+        case @test.expected do
+          200 -> assert res.success == true
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "Goal not found"
+        end
+      end
+    end
+  end
+
   describe "update champion" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:goals, :update_champion], %{})
@@ -897,6 +1372,33 @@ defmodule OperatelyWeb.Api.GoalsTest do
 
       ctx = Factory.reload(ctx, :goal)
       assert ctx.goal.champion_id == nil
+    end
+  end
+
+  describe "update champion - permissions" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+      Map.merge(ctx, %{creator: creator})
+    end
+
+    tabletest @full_access_table do
+      test "if caller has levels company=#{@test.company}, space=#{@test.space}, goal=#{@test.goal} on the goal, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        goal = create_goal(ctx, space, @test.company, @test.space, @test.goal)
+
+        assert {code, res} = mutation(ctx.conn, [:goals, :update_champion], %{
+          goal_id: Paths.goal_id(goal),
+          champion_id: nil
+        })
+        assert code == @test.expected
+
+        case @test.expected do
+          200 -> assert res.success == true
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "Goal not found"
+        end
+      end
     end
   end
 
@@ -944,6 +1446,33 @@ defmodule OperatelyWeb.Api.GoalsTest do
     end
   end
 
+  describe "update reviewer - permissions" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+      Map.merge(ctx, %{creator: creator})
+    end
+
+    tabletest @full_access_table do
+      test "if caller has levels company=#{@test.company}, space=#{@test.space}, goal=#{@test.goal} on the goal, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        goal = create_goal(ctx, space, @test.company, @test.space, @test.goal)
+
+        assert {code, res} = mutation(ctx.conn, [:goals, :update_reviewer], %{
+          goal_id: Paths.goal_id(goal),
+          reviewer_id: nil
+        })
+        assert code == @test.expected
+
+        case @test.expected do
+          200 -> assert res.success == true
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "Goal not found"
+        end
+      end
+    end
+  end
+
   defp assert_includes_person(people, person_id, access_level) do
     person = Operately.People.get_person!(person_id)
     returned_person = Enum.find(people, fn p -> p.id == Paths.person_id(person) end)
@@ -964,5 +1493,37 @@ defmodule OperatelyWeb.Api.GoalsTest do
 
     assert binding
     assert binding.access_level == access_level
+  end
+
+  #
+  # Helpers for permissions tests
+  #
+
+  def create_space(ctx) do
+    group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.no_access()})
+  end
+
+  def create_goal(ctx, space, company_members_level, space_members_level, goal_member_level) do
+    goal_attrs = %{
+      space_id: space.id,
+      company_access_level: Binding.from_atom(company_members_level),
+      space_access_level: Binding.from_atom(space_members_level),
+    }
+
+    goal = goal_fixture(ctx.creator, goal_attrs)
+
+    if goal_member_level != :no_access do
+      context = Access.get_context!(goal_id: goal.id)
+      {:ok, _} = Access.bind_person(context, ctx.person.id, Binding.from_atom(goal_member_level))
+    end
+
+    if space_members_level != :no_access do
+      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
+        id: ctx.person.id,
+        access_level: Binding.from_atom(space_members_level)
+      }])
+    end
+
+    Operately.Repo.preload(goal, :access_context)
   end
 end
