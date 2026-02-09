@@ -179,10 +179,7 @@ defmodule Operately.Features.WorkMapTest do
   end
 
   describe "Space Work Map Permissions" do
-    setup ctx do
-      ctx
-      |> Steps.setup_spaces()
-    end
+    setup ctx, do: Steps.setup_spaces(ctx)
 
     feature "User cannot see secret space work map", ctx do
       ctx
@@ -213,6 +210,40 @@ defmodule Operately.Features.WorkMapTest do
       ctx
       |> Steps.given_there_are_items_in_spaces()
       |> Steps.visit_space_work_map(:view_space)
+      |> Steps.assert_cannot_add_items()
+    end
+  end
+
+  describe "Company Work Map Permissions" do
+    feature "Zero state - User can add goals/projects", ctx do
+      ctx
+      |> Steps.setup_spaces()
+      |> Steps.visit_company_work_map()
+      |> Steps.assert_can_add_items_zero_state()
+    end
+
+    feature "Zero state - User cannot add goals/projects", ctx do
+      ctx
+      |> Steps.given_there_is_a_space_with_view_access()
+      |> Steps.given_user_has_view_access_to_general_space()
+      |> Steps.visit_company_work_map()
+      |> Steps.assert_cannot_add_items_zero_state()
+    end
+
+    feature "User can add goals/projects", ctx do
+      ctx
+      |> Steps.setup_spaces()
+      |> Steps.given_there_are_items_in_spaces()
+      |> Steps.visit_company_work_map()
+      |> Steps.assert_can_add_items()
+    end
+
+    feature "User cannot add goals/projects", ctx do
+      ctx
+      |> Steps.given_there_is_a_space_with_view_access()
+      |> Steps.given_view_space_has_a_goal()
+      |> Steps.given_user_has_view_access_to_general_space()
+      |> Steps.visit_company_work_map()
       |> Steps.assert_cannot_add_items()
     end
   end
