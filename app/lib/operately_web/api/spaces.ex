@@ -7,9 +7,11 @@ defmodule OperatelyWeb.Api.Spaces do
 
   defmodule Search do
     use TurboConnect.Query
+    use OperatelyWeb.Api.Helpers
 
     inputs do
       field :query, :string, null: false
+      field? :access_level, :access_options, null: false
     end
 
     outputs do
@@ -17,7 +19,8 @@ defmodule OperatelyWeb.Api.Spaces do
     end
 
     def call(conn, inputs) do
-      spaces = Space.search(conn.assigns.current_person, inputs.query)
+      person = me(conn)
+      spaces = Space.search(person, inputs.query, inputs[:access_level])
 
       {:ok, %{spaces: Serializer.serialize(spaces, level: :essential)}}
     end

@@ -2053,6 +2053,14 @@ export type UpdateContent =
   | UpdateContentProjectDiscussion
   | UpdateContentMessage;
 
+export type AccessOptions =
+  | "no_access"
+  | "view_access"
+  | "comment_access"
+  | "edit_access"
+  | "admin_access"
+  | "full_access";
+
 export type AccountTheme = "dark" | "light" | "system";
 
 export type ActivityScopeType = "person" | "company" | "space" | "project" | "milestone" | "task" | "goal";
@@ -2957,6 +2965,7 @@ export interface SpacesListTasksResult {
 
 export interface SpacesSearchInput {
   query: string;
+  accessLevel?: AccessOptions;
 }
 
 export interface SpacesSearchResult {
