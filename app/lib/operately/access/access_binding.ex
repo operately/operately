@@ -49,6 +49,7 @@ defmodule Operately.Access.Binding do
   def admin_access, do: @admin_access
   def full_access, do: @full_access
   def valid_access_levels, do: @valid_access_levels
+  def valid_access_levels(:as_atom), do: @valid_access_levels |> Enum.map(&to_atom/1)
 
   def from_atom(:no_access), do: @no_access
   def from_atom(:view_access), do: @view_access

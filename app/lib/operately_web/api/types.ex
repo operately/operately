@@ -26,6 +26,8 @@ defmodule OperatelyWeb.Api.Types do
     field :site_admin, :boolean, null: false
   end
 
+  enum :access_options, values: Operately.Access.Binding.valid_access_levels(:as_atom)
+
   object :access_levels do
     field? :public, :integer, null: true
     field? :company, :integer, null: true

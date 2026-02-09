@@ -33,9 +33,9 @@ export function useSpaceSearch(): SpaceField.SearchSpaceFn {
     const data = await Api.spaces.search({ query: query });
 
     return data.spaces.map((space) => ({
-      id: space.id!,
-      name: space.name!,
-      link: paths.spacePath(space.id!),
+      id: space.id,
+      name: space.name,
+      link: paths.spacePath(space.id),
     }));
   };
 }

@@ -10,6 +10,12 @@ defmodule Operately.Access.Filters do
     |> filter(person_id, Binding.view_access())
   end
 
+  def filter_by_comment_access(query, person_id, opts \\ []) do
+    query
+    |> join_context(opts)
+    |> filter(person_id, Binding.comment_access())
+  end
+
   def filter_by_edit_access(query, person_id, opts \\ []) do
     query
     |> join_context(opts)
@@ -20,6 +26,14 @@ defmodule Operately.Access.Filters do
     query
     |> join_context(opts)
     |> filter(person_id, Binding.full_access())
+  end
+
+  def filter_by_access(query, person_id, access_level, opts \\ []) do
+    access_level = if is_atom(access_level), do: Binding.from_atom(access_level), else: access_level
+
+    query
+    |> join_context(opts)
+    |> filter(person_id, access_level)
   end
 
   def forbidden_or_not_found(query, person_id, opts \\ []) do
