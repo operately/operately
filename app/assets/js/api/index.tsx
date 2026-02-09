@@ -3658,12 +3658,12 @@ export interface EditSpaceMembersPermissionsResult {
 }
 
 export interface EditSpacePermissionsInput {
-  spaceId?: string | null;
-  accessLevels?: AccessLevels | null;
+  spaceId: string;
+  accessLevels: AccessLevels;
 }
 
 export interface EditSpacePermissionsResult {
-  success?: boolean | null;
+  success: boolean;
 }
 
 export interface EditSubscriptionsListInput {
