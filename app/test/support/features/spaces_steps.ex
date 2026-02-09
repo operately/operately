@@ -558,18 +558,32 @@ defmodule Operately.Support.Features.SpacesSteps do
   end
 
   step :refute_edit_space_visible, ctx do
-    UI.refute_has(ctx, testid: "edit-space")
+    ctx
+    |> UI.assert_page(Paths.space_path(ctx.company, ctx.space))
+    |> UI.refute_has(testid: "edit-space")
   end
 
   step :assert_configure_tools_and_delete_options_visible, ctx do
     ctx
     |> UI.click(testid: "options-button")
     |> UI.assert_has(testid: "configure-tools")
-    |> UI.assert_has(testid: "delete-space")
   end
 
   step :refute_configure_tools_and_delete_options_visible, ctx do
     UI.refute_has(ctx, testid: "options-button")
+  end
+
+  step :assert_delete_space_visible, ctx do
+    ctx
+    |> UI.click(testid: "options-button")
+    |> UI.assert_has(testid: "delete-space")
+  end
+
+  step :refute_delete_space_visible, ctx do
+    ctx
+    |> UI.click(testid: "options-button")
+    |> UI.assert_has(testid: "configure-tools")
+    |> UI.refute_has(testid: "delete-space")
   end
 
   step :assert_manage_access_visible, ctx do
