@@ -21,7 +21,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalDiscussion do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:goal, fn ctx -> Goal.get(ctx.me, id: inputs.goal_id) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.goal.request_info.access_level, :can_open_discussion) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.goal.request_info.access_level, :can_edit) end)
     |> run(:attrs, fn -> parse_inputs(inputs) end)
     |> run(:operation, fn ctx -> GoalDiscussionCreation.run(ctx.me, ctx.goal, ctx.attrs) end)
     |> run(:serialized, fn ctx -> {:ok, %{id: OperatelyWeb.Paths.activity_id(ctx.operation)}} end)

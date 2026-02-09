@@ -20,7 +20,7 @@ defmodule OperatelyWeb.Api.Mutations.ReopenGoal do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:goal, fn ctx -> Goal.get(ctx.me, id: inputs.id) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.goal.request_info.access_level, :can_reopen) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.goal.request_info.access_level, :can_edit) end)
     |> run(:attrs, fn -> parse_inputs(inputs) end)
     |> run(:operation, fn ctx -> GoalReopening.run(ctx.me, ctx.goal, ctx.attrs) end)
     |> run(:serialized, fn ctx -> {:ok, %{goal: Serializer.serialize(ctx.operation)}} end)
