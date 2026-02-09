@@ -8,11 +8,11 @@ defmodule OperatelyWeb.Api.Mutations.CreateProject do
   alias Operately.Operations.ProjectCreation
 
   inputs do
-    field? :space_id, :string, null: true
-    field? :name, :string, null: true
-    field? :champion_id, :string, null: true
-    field? :reviewer_id, :string, null: true
-    field? :goal_id, :string, null: true
+    field :space_id, :id, null: false
+    field :name, :string, null: false
+    field? :champion_id, :id, null: true
+    field? :reviewer_id, :id, null: true
+    field? :goal_id, :id, null: true
     field? :anonymous_access_level, :integer, null: true
     field? :company_access_level, :integer, null: true
     field? :space_access_level, :integer, null: true
@@ -28,7 +28,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateProject do
     |> run(:attrs, fn ctx -> decode_inputs(ctx.me, inputs) end)
     |> run(:space, fn ctx -> Groups.get_group_with_access_level(ctx.attrs.group_id, ctx.me.id) end)
     |> run(:enforced_attrs, fn ctx -> {:ok, sanitize_company_access_level(ctx.space, ctx.attrs)} end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.requester_access_level, :can_create_project) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.requester_access_level, :can_edit) end)
     |> run(:operation, fn ctx -> ProjectCreation.run(ctx.enforced_attrs) end)
     |> run(:serialized, fn ctx -> {:ok, %{project: Serializer.serialize(ctx.operation, level: :essential)}} end)
     |> respond()
@@ -46,21 +46,16 @@ defmodule OperatelyWeb.Api.Mutations.CreateProject do
   end
 
   defp decode_inputs(person, inputs) do
-    {:ok, goal_id} = decode_id(inputs[:goal_id], :allow_nil)
-    {:ok, space_id} = decode_id(inputs[:space_id], :allow_nil)
-    {:ok, champion_id} = decode_id(inputs[:champion_id], :allow_nil)
-    {:ok, reviewer_id} = decode_id(inputs[:reviewer_id], :allow_nil)
-
     {:ok, %ProjectCreation{
       name: inputs.name,
-      champion_id: champion_id,
-      reviewer_id: reviewer_id,
+      champion_id: inputs[:champion_id],
+      reviewer_id: inputs[:reviewer_id],
       creator_role: "Contributor",
       visibility: "everyone",
       creator_id: person.id,
       company_id: person.company_id,
-      group_id: space_id,
-      goal_id: goal_id,
+      group_id: inputs[:space_id],
+      goal_id: inputs[:goal_id],
       anonymous_access_level: inputs.anonymous_access_level,
       company_access_level: inputs.company_access_level,
       space_access_level: inputs.space_access_level,

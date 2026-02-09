@@ -28,7 +28,7 @@ export function KanbanBoard(props: KanbanBoardProps) {
 
   const { selectedTaskId, setSelectedTaskId, taskPageProps, taskById } = useTaskSlideIn(props);
 
-  const canReorderStatuses = Boolean(props.canManageStatuses && props.onStatusesChange);
+  const canReorderStatuses = Boolean(props.canEdit && props.onStatusesChange);
 
   useSortableList(
     orderedStatuses.map((status, index) => ({ id: status.value, index })),
@@ -108,10 +108,9 @@ export function KanbanBoard(props: KanbanBoardProps) {
         onTaskDueDateChange={props.onTaskDueDateChange}
         assigneePersonSearch={props.assigneePersonSearch}
         onTaskCreate={props.onTaskCreate}
-        canManageStatuses={props.canManageStatuses}
-        canCreateTask={props.canCreateTask}
+        canEdit={props.canEdit}
         onAddStatusClick={
-          props.canManageStatuses
+          props.canEdit
             ? () => {
                 setEditingStatus(undefined);
                 setIsAddStatusModalOpen(true);
@@ -119,7 +118,7 @@ export function KanbanBoard(props: KanbanBoardProps) {
             : undefined
         }
         onEditStatus={
-          props.canManageStatuses
+          props.canEdit
             ? (status) => {
                 setEditingStatus(status);
                 setIsAddStatusModalOpen(true);
@@ -127,7 +126,7 @@ export function KanbanBoard(props: KanbanBoardProps) {
             : undefined
         }
         onDeleteStatus={
-          props.canManageStatuses
+          props.canEdit
             ? (status) => {
                 setDeletingStatus(status);
               }

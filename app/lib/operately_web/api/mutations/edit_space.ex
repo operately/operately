@@ -7,13 +7,13 @@ defmodule OperatelyWeb.Api.Mutations.EditSpace do
   alias Operately.Groups.Permissions
 
   inputs do
-    field? :id, :id, null: true
-    field? :name, :string, null: true
-    field? :mission, :string, null: true
+    field :id, :id, null: false
+    field :name, :string, null: false
+    field :mission, :string, null: false
   end
 
   outputs do
-    field? :space, :space, null: true
+    field :space, :space, null: false
   end
 
   def call(conn, inputs) do
@@ -34,5 +34,5 @@ defmodule OperatelyWeb.Api.Mutations.EditSpace do
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
     end
-  end 
+  end
 end

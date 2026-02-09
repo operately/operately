@@ -1206,25 +1206,10 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :space_permissions do
-    field :can_create_goal, :boolean, null: false
-    field :can_create_project, :boolean, null: false
-    field :can_create_resource_hub, :boolean, null: false
-    field :can_create_task, :boolean, null: false
-    field :can_comment_on_discussions, :boolean, null: false
-    field :can_comment_on_tasks, :boolean, null: false
-    field :can_edit, :boolean, null: false
-    field :can_edit_discussions, :boolean, null: false
-    field :can_edit_members_permissions, :boolean, null: false
-    field :can_edit_permissions, :boolean, null: false
-    field :can_edit_statuses, :boolean, null: false
-    field :can_edit_tasks, :boolean, null: false
-    field :can_join, :boolean, null: false
-    field :can_post_discussions, :boolean, null: false
-    field :can_remove_member, :boolean, null: false
     field :can_view, :boolean, null: false
-    field :can_view_message, :boolean, null: false
-    field :can_add_members, :boolean, null: false
-    field :can_delete, :boolean, null: false
+    field :can_comment, :boolean, null: false
+    field :can_edit, :boolean, null: false
+    field :has_full_access, :boolean, null: false
   end
 
   union(:activity_data_union,

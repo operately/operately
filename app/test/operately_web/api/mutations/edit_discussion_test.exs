@@ -18,52 +18,47 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussionTest do
   end
 
   describe "company permissions" do
+    @table [
+      %{permissions: :view_access, expected: 403},
+      %{permissions: :comment_access, expected: 403},
+      %{permissions: :edit_access, expected: 200},
+      %{permissions: :full_access, expected: 200},
+    ]
+
     setup ctx do
       ctx
       |> Factory.setup()
-      |> Factory.add_space(:space, company_permissions: Binding.view_access())
       |> Factory.add_company_member(:person)
       |> Factory.log_in_person(:person)
     end
 
-    test "company member can see only their company", ctx do
-      other_ctx = register_and_log_in_account(ctx)
-      message = create_message(ctx.creator.id, ctx.company.company_space_id)
+    tabletest @table do
+      test "company member with #{@test.permissions} can #{if @test.expected == 200, do: "edit", else: "not edit"} discussion", ctx do
+        ctx = Factory.add_space(ctx, :space, company_permissions: Binding.from_atom(@test.permissions))
+        message = create_message(ctx.creator.id, ctx.space.id)
 
-      assert {404, res} = request(other_ctx.conn, message)
-      assert res.message == "The requested resource was not found"
-    end
+        assert {code, res} = request(ctx.conn, message)
+        assert code == @test.expected
 
-    test "company members without edit access can't edit discussion", ctx do
-      message = create_message(ctx.creator.id, ctx.space.id)
-
-      assert {403, res} = request(ctx.conn, message)
-      assert res.message == "You don't have permission to perform this action"
-    end
-
-    test "company members with edit access can edit discussion", ctx do
-      ctx = Factory.add_space(ctx, :space, company_permissions: Binding.edit_access())
-      message = create_message(ctx.creator.id, ctx.space.id)
-
-      assert {200, _} = request(ctx.conn, message)
-      assert_discussion_edited(message)
-    end
-
-    test "company owners can edit discussion", ctx do
-      message = create_message(ctx.creator.id, ctx.space.id)
-
-      # Not owner
-      assert {403, _} = request(ctx.conn, message)
-
-      # Owner
-      {:ok, _} = Operately.Companies.add_owner(ctx.creator, ctx.person.id)
-
-      assert {200, _} = request(ctx.conn, message)
-      assert_discussion_edited(message)
+        case @test.expected do
+          200 ->
+            assert_discussion_edited(message)
+          403 ->
+            assert res.message == "You don't have permission to perform this action"
+        end
+      end
     end
   end
 
   describe "space permissions" do
+    @table [
+      %{space: :no_access,      expected: 404},
+      %{space: :view_access,    expected: 403},
+      %{space: :comment_access, expected: 403},
+      %{space: :edit_access,    expected: 200},
+      %{space: :full_access,    expected: 200},
+    ]
+
     setup ctx do
       ctx = register_and_log_in_account(ctx)
       creator = person_fixture(%{company_id: ctx.company.id})
@@ -72,40 +67,23 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussionTest do
       Map.merge(ctx, %{creator_id: creator.id, space_id: space.id})
     end
 
-    test "company member without view access can't see space", ctx do
-      message = create_message(ctx.creator_id, ctx.space_id)
+    tabletest @table do
+      test "space member with #{@test.space} can #{if @test.expected == 200, do: "edit", else: "not edit"} discussion", ctx do
+        message = create_message(ctx.creator_id, ctx.space_id)
+        add_person_to_space(ctx, Binding.from_atom(@test.space))
 
-      assert {404, res} = request(ctx.conn, message)
-      assert res.message == "The requested resource was not found"
-    end
+        assert {code, res} = request(ctx.conn, message)
+        assert code == @test.expected
 
-    test "space member without edit access can't edit discussion", ctx do
-      message = create_message(ctx.creator_id, ctx.space_id)
-      add_person_to_space(ctx, Binding.comment_access())
-
-      assert {403, res} = request(ctx.conn, message)
-      assert res.message == "You don't have permission to perform this action"
-    end
-
-    test "space members with edit access can edit discussion", ctx do
-      message = create_message(ctx.creator_id, ctx.space_id)
-      add_person_to_space(ctx, Binding.edit_access())
-
-      assert {200, _} = request(ctx.conn, message)
-      assert_discussion_edited(message)
-    end
-
-    test "company owner can edit discussion", ctx do
-      message = create_message(ctx.creator_id, ctx.space_id)
-
-      # Not owner
-      assert {404, _} = request(ctx.conn, message)
-
-      # Owner
-      {:ok, _} = Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
-
-      assert {200, _} = request(ctx.conn, message)
-      assert_discussion_edited(message)
+        case @test.expected do
+          200 ->
+            assert_discussion_edited(message)
+          403 ->
+            assert res.message == "You don't have permission to perform this action"
+          404 ->
+            assert res.message == "The requested resource was not found"
+        end
+      end
     end
   end
 

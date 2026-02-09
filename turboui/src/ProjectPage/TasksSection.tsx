@@ -97,8 +97,7 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
           richTextHandlers={state.richTextHandlers}
           assigneePersonSearch={state.assigneePersonSearch}
           getTaskPageProps={state.getTaskPageProps}
-          canManageStatuses={state.permissions.canEditStatuses}
-          canCreateTask={state.permissions.canCreateTask}
+          canEdit={state.permissions.canEditStatuses}
           onStatusesChange={state.onSaveCustomStatuses}
           unstyled
         />

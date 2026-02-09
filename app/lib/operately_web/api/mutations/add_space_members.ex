@@ -3,16 +3,21 @@ defmodule OperatelyWeb.Api.Mutations.AddSpaceMembers do
   use OperatelyWeb.Api.Helpers
 
   inputs do
-    field? :space_id, :id, null: true
-    field? :members, list_of(:add_member_input), null: true
+    field :space_id, :id, null: false
+    field :members, list_of(:add_member_input), null: false
+  end
+
+  outputs do
+    field :success, :boolean, null: false
   end
 
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:space, fn ctx -> Operately.Groups.Group.get(ctx.me, id: inputs.space_id) end)
-    |> run(:check_permissions, fn ctx -> Operately.Groups.Permissions.check(ctx.space.request_info.access_level, :can_add_members) end)
+    |> run(:check_permissions, fn ctx -> Operately.Groups.Permissions.check(ctx.space.request_info.access_level, :has_full_access) end)
     |> run(:operation, fn ctx -> Operately.Operations.GroupMembersAdding.run(ctx.me, ctx.space.id, inputs.members) end)
+    |> run(:serialized, fn -> {:ok, %{success: true}} end)
     |> respond()
   end
 
