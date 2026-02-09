@@ -44,6 +44,22 @@ defmodule Operately.Support.Features.WorkMapSteps do
     |> Factory.log_in_person(:creator)
   end
 
+  step :setup_spaces, ctx do
+    ctx
+    |> Factory.setup()
+    |> Factory.add_space(:edit_space, name: "Editable Space", company_permissions: Binding.edit_access())
+    |> Factory.add_space(:view_space, name: "Visible Space", company_permissions: Binding.view_access())
+    |> Factory.add_space(:hidden_space, name: "Hidden Space", company_permissions: Binding.no_access())
+    |> Factory.add_company_member(:member)
+    |> Factory.log_in_person(:member)
+  end
+
+  step :given_there_are_items_in_spaces, ctx do
+    ctx
+    |> Factory.add_goal(:goal, :view_space, name: "Visible Space Goal")
+    |> Factory.add_project(:project, :edit_space, name: "Editable Space Project")
+  end
+
   step :given_company_projects_are_paused, ctx do
     ctx
     |> Factory.pause_project(:company_root_project1)
@@ -345,5 +361,44 @@ defmodule Operately.Support.Features.WorkMapSteps do
     |> UI.assert_text("Future Project")
     |> UI.assert_text("Pending")
     |> UI.refute_text("Outdated")
+  end
+
+  #
+  # Permissions
+  #
+
+  step :assert_work_map_not_accessible, ctx do
+    ctx
+    |> UI.assert_text("404")
+    |> UI.assert_text("Page Not Found")
+  end
+
+  step :assert_can_add_items_zero_state, ctx do
+    ctx
+    |> UI.assert_text("Start by adding a goal or project")
+    |> UI.assert_has(testid: "add-goal")
+    |> UI.assert_has(testid: "add-project")
+  end
+
+  step :assert_can_add_items, ctx do
+    ctx
+    |> UI.refute_has(testid: "add-item-modal")
+    |> UI.click_text("Add new item")
+    |> UI.assert_has(testid: "add-item-modal")
+  end
+
+  step :assert_cannot_add_items_zero_state, ctx do
+    ctx
+    |> UI.assert_text("Nothing here yet.")
+    |> UI.refute_text("Start by adding a goal or project")
+    |> UI.refute_has(testid: "add-goal")
+    |> UI.refute_has(testid: "add-project")
+  end
+
+  step :assert_cannot_add_items, ctx do
+    ctx
+    |> UI.assert_page(Paths.space_work_map_path(ctx.company, ctx.view_space))
+    |> UI.assert_text(ctx.goal.name)
+    |> UI.refute_text("Add new item")
   end
 end
