@@ -4,52 +4,18 @@ defmodule Operately.Goals.Permissions do
   defstruct [
     :can_view,
     :can_edit,
-    :can_check_in,
-    :can_close,
-    :can_archive,
-    :can_reopen,
-    :can_delete,
-    :can_open_discussion,
-    :can_edit_discussion,
-    :can_edit_access_level,
-    :can_edit_target,
-    :can_edit_checklist,
-    :can_edit_space,
+    :can_comment,
     :has_full_access
   ]
 
   def calculate(access_level) do
     %__MODULE__{
-      can_view: can_view(access_level),
-      can_check_in: can_check_in(access_level),
-      can_edit: can_edit(access_level),
-      can_edit_target: can_edit_target(access_level),
-      can_reopen: can_edit(access_level),
-      can_archive: can_archive(access_level),
-      can_close: can_edit(access_level),
-      can_delete: can_delete(access_level),
-      can_open_discussion: can_open_discussion(access_level),
-      can_edit_discussion: can_edit_discussion(access_level),
-      can_edit_access_level: can_edit_access_level(access_level),
-      can_edit_checklist: can_edit_checklist(access_level),
-      can_edit_space: can_edit_space(access_level),
-      has_full_access: has_full_access(access_level),
+      can_view: access_level >= Binding.view_access(),
+      can_comment: access_level >= Binding.comment_access(),
+      can_edit: access_level >= Binding.edit_access(),
+      has_full_access: access_level >= Binding.full_access(),
     }
   end
-
-  def can_archive(access_level), do: access_level >= Binding.full_access()
-  def can_view(access_level), do: access_level >= Binding.view_access()
-  def can_check_in(access_level), do: access_level >= Binding.edit_access()
-  def can_edit(access_level), do: access_level >= Binding.edit_access()
-  def can_edit_target(access_level), do: access_level >= Binding.edit_access()
-  def can_edit_checklist(access_level), do: access_level >= Binding.edit_access()
-  def can_reopen(access_level), do: access_level >= Binding.full_access()
-  def can_delete(access_level), do: access_level >= Binding.full_access()
-  def can_open_discussion(access_level), do: access_level >= Binding.edit_access()
-  def can_edit_discussion(access_level), do: access_level >= Binding.edit_access()
-  def can_edit_access_level(access_level), do: access_level >= Binding.full_access()
-  def can_edit_space(access_level), do: access_level >= Binding.full_access()
-  def has_full_access(access_level), do: access_level >= Binding.full_access()
 
   def check(access_level, permission) when is_atom(permission) and is_integer(access_level) do
     permissions = calculate(access_level)
