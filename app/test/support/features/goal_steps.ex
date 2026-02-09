@@ -16,9 +16,11 @@ defmodule Operately.Support.Features.GoalSteps do
   def setup(ctx) do
     ctx
     |> Factory.setup()
+    |> Factory.add_company_member(:view_access_member)
     |> Factory.add_space(:product)
     |> Factory.add_space_member(:champion, :product)
     |> Factory.add_space_member(:reviewer, :product)
+    |> Factory.add_space_member(:edit_access_member, :product)
     |> Factory.add_goal(:parent_goal, :product)
     |> Factory.add_goal(:goal, :product,
       name: "Improve support first response time",
@@ -28,12 +30,9 @@ defmodule Operately.Support.Features.GoalSteps do
         contextual_start_date: Operately.Time.days_ago(10) |> ContextualDate.create_day_date(),
         contextual_end_date: Operately.Time.days_from_now(10) |> ContextualDate.create_day_date()
       },
-      parent_goal: :parent_goal
+      parent_goal: :parent_goal,
+      space_access: Binding.edit_access()
     )
-    |> Factory.log_in_person(:champion)
-    |> then(fn ctx ->
-      UI.visit(ctx, Paths.goal_path(ctx.company, ctx.goal))
-    end)
   end
 
   defp build_api_conn(person, company) do
@@ -43,6 +42,34 @@ defmodule Operately.Support.Features.GoalSteps do
     Phoenix.ConnTest.build_conn()
     |> Plug.Test.init_test_session(%{})
     |> OperatelyWeb.ConnCase.log_in_account(account, company)
+  end
+
+  step :visit_goal, ctx do
+    UI.visit(ctx, Paths.goal_path(ctx.company, ctx.goal))
+  end
+
+  step :assert_logged_in_member_has_view_access, ctx do
+    {:ok, goal} = Operately.Goals.Goal.get(ctx.view_access_member, id: ctx.goal.id)
+
+    assert goal.request_info.access_level == Binding.view_access()
+
+    UI.login_as(ctx, ctx.view_access_member)
+  end
+
+  step :assert_logged_in_member_has_edit_access, ctx do
+    {:ok, goal} = Operately.Goals.Goal.get(ctx.edit_access_member, id: ctx.goal.id)
+
+    assert goal.request_info.access_level == Binding.edit_access()
+
+    UI.login_as(ctx, ctx.edit_access_member)
+  end
+
+  step :assert_logged_in_member_has_full_access, ctx do
+    {:ok, goal} = Operately.Goals.Goal.get(ctx.champion, id: ctx.goal.id)
+
+    assert goal.request_info.access_level == Binding.full_access()
+
+    UI.login_as(ctx, ctx.champion)
   end
 
   #
@@ -224,7 +251,7 @@ defmodule Operately.Support.Features.GoalSteps do
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.goal.name,
       to: ctx.space_member,
-      author: ctx.champion,
+      author: ctx.edit_access_member,
       action: "updated the goal description"
     })
   end
@@ -233,7 +260,7 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx
     |> UI.login_as(ctx.space_member)
     |> NotificationsSteps.assert_activity_notification(%{
-      author: ctx.champion,
+      author: ctx.edit_access_member,
       action: "Goal \"#{ctx.goal.name}\" description was updated"
     })
   end
@@ -841,8 +868,9 @@ defmodule Operately.Support.Features.GoalSteps do
 
   step :given_user_has_edit_access, ctx do
     ctx
-    |> Factory.add_company_member(:person)
-    |> Factory.add_goal(:goal, :product, company_access: Binding.edit_access())
+    |> Factory.add_space_member(:person, :product)
+    |> Factory.add_goal(:goal, :product, space_access: Binding.edit_access())
+    |> Factory.add_project(:child_project, :product, goal: :goal)
     |> Factory.log_in_person(:person)
   end
 

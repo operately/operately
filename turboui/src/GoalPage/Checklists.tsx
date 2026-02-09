@@ -10,7 +10,7 @@ export function Checklists(props: GoalPage.State) {
   return (
     <Checklist
       items={props.checklistItems}
-      canEdit={props.permissions.canEditChecklist}
+      canEdit={props.permissions.canEdit}
       addItem={props.addChecklistItem || noOpAsync}
       deleteItem={props.deleteChecklistItem || noOpAsyncBoolean}
       updateItem={props.updateChecklistItem || noOpAsyncBoolean}
