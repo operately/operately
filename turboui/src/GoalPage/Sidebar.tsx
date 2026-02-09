@@ -126,7 +126,7 @@ function ParentGoal(props: GoalPage.State) {
 }
 
 function Champion(props: GoalPage.State) {
-  const readonly = !props.permissions.canEdit;
+  const readonly = !props.permissions.hasFullAccess;
   const testId = readonly ? "champion-field-readonly" : "champion-field";
 
   return (
@@ -173,7 +173,7 @@ function Champion(props: GoalPage.State) {
 }
 
 function Reviewer(props: GoalPage.State) {
-  const readonly = !props.permissions.canEdit;
+  const readonly = !props.permissions.hasFullAccess;
   const testId = readonly ? "reviewer-field-readonly" : "reviewer-field";
   
   return (
@@ -223,7 +223,7 @@ function CheckInsSection(props: GoalPage.State) {
   const checkIns = props.checkIns || [];
   const isClosed = props.state === "closed";
   const lastCheckInState: "active" | "closed" | undefined = isClosed ? "closed" : "active";
-  const viewerCanCheckIn = props.permissions.canCheckIn && !isClosed;
+  const viewerCanCheckIn = props.permissions.canEdit && !isClosed;
   const isChampion = !!props.currentUser?.id && !!props.champion?.id && props.currentUser.id === props.champion.id;
   const championFirstName = props.champion?.fullName?.split(" ")[0];
 
@@ -336,7 +336,7 @@ function Privacy(props: GoalPage.State) {
         resourceType={"goal"}
         readonly={!props.permissions.canEdit}
       />
-      {props.permissions.canEditAccessLevel && props.manageAccessLink && (
+      {props.permissions.hasFullAccess && props.manageAccessLink && (
         <div className="mt-3">
           <SecondaryButton linkTo={props.manageAccessLink} size="xs" testId="manage-goal-access-button">
             Manage access
@@ -356,7 +356,7 @@ function Actions(props: GoalPage.State) {
       label: "Close Goal",
       link: props.closeLink,
       icon: IconCircleCheck,
-      hidden: !props.permissions.canClose || props.state === "closed",
+      hidden: !props.permissions.canEdit || props.state === "closed",
       testId: "close-goal-button",
     },
     {
@@ -364,7 +364,7 @@ function Actions(props: GoalPage.State) {
       label: "Re-open Goal",
       link: props.reopenLink,
       icon: IconRotateDot,
-      hidden: !props.permissions.canReopen || props.state !== "closed",
+      hidden: !props.permissions.canEdit || props.state !== "closed",
       testId: "reopen-goal-button",
     },
     {
@@ -372,7 +372,7 @@ function Actions(props: GoalPage.State) {
       label: "Move to another space",
       onClick: props.openMoveModal,
       icon: IconCircleArrowRight,
-      hidden: !props.permissions.canEdit || !hasSpace,
+      hidden: !props.permissions.hasFullAccess || !hasSpace,
       testId: "move-to-another-space",
     },
     {
@@ -388,7 +388,7 @@ function Actions(props: GoalPage.State) {
       label: "Delete",
       onClick: props.openDeleteModal,
       icon: IconTrash,
-      hidden: !props.permissions.canDelete,
+      hidden: !props.permissions.hasFullAccess,
       danger: true,
       testId: "delete-goal-button",
     },

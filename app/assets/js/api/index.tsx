@@ -1243,17 +1243,9 @@ export interface GoalEditingUpdatedTarget {
 
 export interface GoalPermissions {
   canView: boolean;
+  canComment: boolean;
   canEdit: boolean;
-  canCheckIn: boolean;
-  canClose: boolean;
-  canArchive: boolean;
-  canReopen: boolean;
-  canDelete: boolean;
-  canOpenDiscussion: boolean;
-  canEditDiscussion: boolean;
-  canEditAccessLevel: boolean;
-  canEditTarget: boolean;
-  canEditChecklist: boolean;
+  hasFullAccess: boolean;
 }
 
 export interface GoalProgressUpdate {

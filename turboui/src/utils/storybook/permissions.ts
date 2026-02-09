@@ -68,17 +68,9 @@ export function generateGoalPermissions(
 ): GoalPermissions {
   const permissions: GoalPermissions = {
     canView: baseValue,
+    canComment: baseValue,
     canEdit: baseValue,
-    canCheckIn: baseValue,
-    canClose: baseValue,
-    canArchive: baseValue,
-    canReopen: baseValue,
-    canDelete: baseValue,
-    canOpenDiscussion: baseValue,
-    canEditDiscussion: baseValue,
-    canEditAccessLevel: baseValue,
-    canEditTarget: baseValue,
-    canEditChecklist: baseValue,
+    hasFullAccess: baseValue,
   };
 
   if (overrides) {
