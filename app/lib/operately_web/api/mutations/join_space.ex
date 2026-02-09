@@ -2,27 +2,29 @@ defmodule OperatelyWeb.Api.Mutations.JoinSpace do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  alias Operately.Groups
-  alias Operately.Groups.Permissions
-  alias Operately.Access.Binding
+  alias Operately.Groups.{Permissions, Group}
 
   inputs do
     field? :space_id, :id, null: true
   end
 
   def call(conn, inputs) do
-    person = me(conn)
-    access_level = Groups.get_access_level(inputs.space_id, person.id)
-
-    cond do
-      Permissions.can_join(access_level) -> execute(person, inputs.space_id)
-      access_level >= Binding.view_access() -> {:error, :forbidden}
-      true -> {:error, :not_found}
-    end
+    Action.new()
+    |> run(:me, fn -> find_me(conn) end)
+    |> run(:space, fn ctx -> Group.get(ctx.me, id: inputs.space_id) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.request_info.access_level, :can_edit) end)
+    |> run(:operation, fn ctx -> Operately.Operations.SpaceJoining.run(ctx.me, inputs.space_id) end)
+    |> run(:serialized, fn _ctx -> {:ok, %{}} end)
+    |> respond()
   end
 
-  defp execute(person, space_id) do
-    {:ok, _} = Operately.Operations.SpaceJoining.run(person, space_id)
-    {:ok, %{}}
+  def respond(result) do
+    case result do
+      {:ok, ctx} -> {:ok, ctx.serialized}
+      {:error, :space, _} -> {:error, :not_found}
+      {:error, :check_permissions, _} -> {:error, :forbidden}
+      {:error, :operation, _} -> {:error, :internal_server_error}
+      _ -> {:error, :internal_server_error}
+    end
   end
 end
