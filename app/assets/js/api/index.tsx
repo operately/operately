@@ -3337,11 +3337,11 @@ export interface CreateGoalDiscussionResult {
 }
 
 export interface CreateProjectInput {
-  spaceId?: string | null;
-  name?: string | null;
-  championId?: string | null;
-  reviewerId?: string | null;
-  goalId?: string | null;
+  spaceId: Id;
+  name: string;
+  championId?: Id | null;
+  reviewerId?: Id | null;
+  goalId?: Id | null;
   anonymousAccessLevel?: number | null;
   companyAccessLevel?: number | null;
   spaceAccessLevel?: number | null;
