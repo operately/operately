@@ -17,7 +17,7 @@ import {
 } from "turboui";
 
 import { logOut } from "@/routes/auth";
-import { Outlet, useLoaderData, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { DivLink } from "turboui";
@@ -36,14 +36,21 @@ import { DevBar } from "@/features/DevBar";
 import { useScrollToTopOnNavigationChange } from "@/hooks/useScrollToTopOnNavigationChange";
 import { Paths, usePaths } from "@/routes/paths";
 import { useGlobalSearchHandler } from "./useGlobalSearch";
+import { useCompanyLoaderData } from "@/routes/useCompanyLoaderData";
 
-function Navigation({ company }: { company: Api.Company }) {
+interface NavigationProps {
+  company: Api.Company;
+  canAddProject: boolean;
+  canAddGoal: boolean;
+}
+
+function Navigation(props: NavigationProps) {
   const size = useWindowSizeBreakpoints();
 
   if (size === "xs") {
-    return <MobileNavigation company={company} />;
+    return <MobileNavigation {...props} />;
   } else {
-    return <DesktopNavigation company={company} />;
+    return <DesktopNavigation {...props} />;
   }
 }
 
@@ -151,7 +158,7 @@ function MobileSectionAction({ onClick, children, icon }) {
   );
 }
 
-function DesktopNavigation({ company }: { company: Api.Company }) {
+function DesktopNavigation({ company, canAddProject, canAddGoal }: NavigationProps) {
   const me = useMe()!;
   const paths = usePaths();
 
@@ -190,7 +197,12 @@ function DesktopNavigation({ company }: { company: Api.Company }) {
           <User />
           <Bell />
           <HelpDropdown company={company} />
-          <NewDropdown />
+          <NewDropdown
+            canAddGoal={canAddGoal}
+            canAddProject={canAddProject}
+            canAddSpace={company.permissions?.canCreateSpace || false}
+            canInvitePeople={company.permissions?.canInviteMembers || false}
+          />
           <Search />
         </div>
       </div>
@@ -219,14 +231,14 @@ function SectionLink({ to, children, icon: Icon, testId }: SectionLinkProps) {
 }
 
 export default function CompanyLayout() {
-  const { company } = useLoaderData() as { company: Api.Company };
+  const data = useCompanyLoaderData();
   const outletDiv = React.useRef<HTMLDivElement>(null);
 
   useScrollToTopOnNavigationChange({ outletDiv });
 
   return (
     <div className="flex flex-col h-screen">
-      <Navigation company={company} />
+      <Navigation {...data} />
       <SupportSessionBanner />
       <div className="flex-1 overflow-y-auto" ref={outletDiv}>
         <Outlet />

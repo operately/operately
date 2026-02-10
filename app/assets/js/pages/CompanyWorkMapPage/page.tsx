@@ -9,13 +9,13 @@ import { useLoadedData } from "./loader";
 
 export function Page() {
   const paths = usePaths();
-  const { workMap, company, spaces } = useLoadedData().data;
+  const { workMap, company, spacesCount } = useLoadedData().data;
 
   const title = `${company.name} Work Map`;
 
   const [items, addItem] = useWorkMapItems(workMap);
   const spaceSearch = useSpaceSearch({ accessLevel: "edit_access" });
-  const canAddItem = spaces.length > 0;
+  const canAddItem = spacesCount > 0;
 
   return (
     <WorkMapPage

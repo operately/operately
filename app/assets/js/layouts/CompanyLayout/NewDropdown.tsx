@@ -4,8 +4,17 @@ import { IconPlus, IconTargetArrow, IconTable, IconTent, IconUser } from "turbou
 import { DropdownLinkItem, DropdownMenu, DropdownSeparator } from "./DropdownMenu";
 
 import { usePaths } from "@/routes/paths";
-export function NewDropdown() {
+
+interface Props {
+  canAddGoal: boolean;
+  canAddProject: boolean;
+  canAddSpace: boolean;
+  canInvitePeople: boolean;
+}
+
+export function NewDropdown({ canAddGoal, canAddProject, canAddSpace, canInvitePeople }: Props) {
   const paths = usePaths();
+
   return (
     <DropdownMenu testId="new-dropdown" name="New" icon={IconPlus} align="end">
       <DropdownLinkItem
@@ -13,6 +22,7 @@ export function NewDropdown() {
         icon={IconTargetArrow}
         title="New goal"
         testId="new-dropdown-new-goal"
+        hidden={!canAddGoal}
       />
 
       <DropdownLinkItem
@@ -20,24 +30,27 @@ export function NewDropdown() {
         icon={IconTable}
         title="New project"
         testId="new-dropdown-new-project"
+        hidden={!canAddProject}
       />
 
-      <DropdownSeparator />
+      <DropdownSeparator hidden={!canAddSpace} />
 
       <DropdownLinkItem
         path={paths.newSpacePath()}
         icon={IconTent}
         title="New space"
         testId="new-dropdown-new-space"
+        hidden={!canAddSpace}
       />
 
-      <DropdownSeparator />
+      <DropdownSeparator hidden={!canInvitePeople} />
 
       <DropdownLinkItem
         path={paths.invitePeoplePath()}
         icon={IconUser}
         title="Invite people"
         testId="new-dropdown-new-team-member"
+        hidden={!canInvitePeople}
       />
     </DropdownMenu>
   );

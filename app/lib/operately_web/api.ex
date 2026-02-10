@@ -136,6 +136,7 @@ defmodule OperatelyWeb.Api do
 
   namespace(:spaces) do
     query(:search, OperatelyWeb.Api.Spaces.Search)
+    query(:count_by_access_level, OperatelyWeb.Api.Spaces.CountByAccessLevel)
     query(:list_members, OperatelyWeb.Api.Spaces.ListMembers)
     query(:list_tasks, OperatelyWeb.Api.Spaces.ListTasks)
     mutation(:update_task_statuses, OperatelyWeb.Api.Spaces.UpdateTaskStatuses)
