@@ -54,7 +54,7 @@ function Page() {
   const paths = usePaths();
   const save = useSaveGoal();
   const onSuccess = useOnSuccess();
-  const spaceSearch = useSpaceSearch();
+  const spaceSearch = useSpaceSearch({ accessLevel: "edit_access" });
 
   return (
     <GoalAddPage

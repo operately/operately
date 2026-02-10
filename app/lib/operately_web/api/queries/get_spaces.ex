@@ -2,15 +2,17 @@ defmodule OperatelyWeb.Api.Queries.GetSpaces do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
-  import Operately.Access.Filters, only: [filter_by_view_access: 2]
+  alias Operately.Groups.Group
+
+  inputs do
+    field? :access_level, :access_options, null: false
+
+    field? :include_access_levels, :boolean, null: false
+    field? :include_members, :boolean, null: false
+  end
 
   outputs do
     field? :spaces, list_of(:space), null: true
-  end
-
-  inputs do
-    field? :include_access_levels, :boolean, null: true
-    field? :include_members, :boolean, null: true
   end
 
   def call(conn, inputs) do
@@ -20,13 +22,8 @@ defmodule OperatelyWeb.Api.Queries.GetSpaces do
   end
 
   defp load_spaces(me, inputs) do
-    from(g in Operately.Groups.Group,
-      where: g.company_id == ^me.company_id,
-      order_by: g.name,
-      preload: [:company, members: ^from(m in Operately.People.Person, where: m.type != :ai)]
-    )
-    |> filter_by_view_access(me.id)
-    |> Repo.all()
+    Group.search(me, "", inputs[:access_level])
+    |> Repo.preload([:company, members: from(m in Operately.People.Person, where: m.type != :ai)])
     |> load_access_levels(inputs[:include_access_levels])
   end
 
