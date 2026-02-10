@@ -151,4 +151,17 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
     assert activity.content["email"] == @email
     assert activity.content["title"] == "Developer"
   end
+
+  test "CompanyMemberAdding operation creates notification for new member", ctx do
+    {:ok, _invite_link} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
+
+    person = People.get_person_by_email(ctx.company, @email)
+    activity = from(a in Activity, where: a.action == "company_member_added" and a.content["email"] == ^person.email) |> Repo.one()
+
+    notification = from(n in Operately.Notifications.Notification, where: n.activity_id == ^activity.id) |> Repo.one()
+
+    assert notification
+    assert notification.person_id == person.id
+    assert notification.should_send_email == true
+  end
 end

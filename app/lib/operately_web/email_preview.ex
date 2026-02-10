@@ -35,6 +35,10 @@ defmodule OperatelyWeb.EmailPreview do
     preview :existing_account, label: "Existing Account"
   end
 
+  group "company-member-added", module: Previews.CompanyMemberAdded do
+    preview :preview
+  end
+
   group "company-members-permissions-edited", module: Previews.CompanyMembersPermissionsEdited do
     preview :access_level_increased, label: "Access Level Increased"
     preview :access_level_decreased, label: "Access Level Decreased"

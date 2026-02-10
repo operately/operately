@@ -110,3 +110,10 @@ export const taskLink = (task: api.Task, attrs?: { taskName?: string; spaceId?: 
 
   return <Link to={path}>{name}</Link>;
 };
+
+export const personLink = (person: api.Person) => {
+  const paths = usePaths();
+  const path = paths.profilePath(person.id);
+
+  return <Link to={path}>{person.fullName}</Link>;
+}

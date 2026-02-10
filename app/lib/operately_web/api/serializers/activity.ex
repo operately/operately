@@ -80,10 +80,6 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     %{}
   end
 
-  def serialize_content("company_member_added", _content) do
-    %{}
-  end
-
   def serialize_content("company_member_removed", _content) do
     %{}
   end
