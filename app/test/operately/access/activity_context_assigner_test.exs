@@ -69,10 +69,11 @@ defmodule Operately.AccessActivityContextAssignerTest do
     end
 
     test "company_member_added action", ctx do
+      member = person_fixture_with_account(%{company_id: ctx.company.id})
       attrs = %{
         action: "company_member_added",
         author_id: ctx.author.id,
-        content: %{company_id: ctx.company.id, invite_link_id: "-", name: "-", email: "-", title: "-"}
+        content: %{company_id: ctx.company.id, person_id: member.id, invite_link_id: "-", name: "-", email: "-", title: "-"}
       }
 
       create_activity(attrs)

@@ -107,10 +107,11 @@ defmodule Operately.Operations.CompanyMemberAdding do
     Operately.Activities.insert_sync(multi, admin.id, :company_member_added, fn changes ->
       %{
         company_id: admin.company_id,
-        invite_link_id: changes[:invite_link] && changes[:invite_link].id,
-        name: changes[:person].full_name,
-        email: changes[:person].email,
-        title: changes[:person].title,
+        person_id: changes.person.id,
+        invite_link_id: changes.invite_link && changes.invite_link.id,
+        name: changes.person.full_name,
+        email: changes.person.email,
+        title: changes.person.title,
       }
     end)
   end
