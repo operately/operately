@@ -33,14 +33,25 @@ const TaskDescriptionChange: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const data = content(activity);
-    const task = data.task ? taskLink(data.task) : "a task";
+    const { task, projectName, space } = content(activity);
+    const isSpaceTask = task?.type === "space";
 
-    if (page === "project") {
-      return feedTitle(activity, "updated the description of", task);
-    } else {
-      return feedTitle(activity, "updated the description of", task, "in", data.projectName);
-    }
+    // Determine link and context
+    const link = isSpaceTask
+      ? space
+        ? taskLink(task, { spaceId: space.id })
+        : task.name
+      : task
+        ? taskLink(task)
+        : "a task";
+
+    // Add context suffix based on page view
+    const shouldShowContext = (isSpaceTask && page !== "space") || (!isSpaceTask && page !== "project");
+    const context = shouldShowContext ? (isSpaceTask ? space?.name : projectName) : undefined;
+
+    return context
+      ? feedTitle(activity, "updated the description of", link, "in", context)
+      : feedTitle(activity, "updated the description of", link);
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
@@ -69,7 +80,9 @@ const TaskDescriptionChange: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return "Updated the description of: " + content(activity).task!.name;
+    const { task } = content(activity);
+
+    return "Updated the description of: " + task?.name;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
