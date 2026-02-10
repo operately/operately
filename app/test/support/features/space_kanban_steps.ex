@@ -241,12 +241,18 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
     |> UI.assert_text(assignee, testid: UI.testid(["kanban-card-assignee-name", Paths.task_id(task)]))
   end
 
-  step :add_task_description, ctx, opts do
-    content = Keyword.fetch!(opts, :content)
-
+  step :add_task_description, ctx, content: content do
     ctx
     |> UI.click_text("Add notes about this task...")
     |> UI.fill_rich_text(content)
+    |> UI.click_button("Save")
+    |> UI.sleep(300)
+  end
+
+  step :add_task_description, ctx, person: person do
+    ctx
+    |> UI.click_text("Add notes about this task...")
+    |> UI.mention_person_in_rich_text(person)
     |> UI.click_button("Save")
     |> UI.sleep(300)
   end
@@ -358,6 +364,32 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
       where: ctx.space.name,
       to: assignee,
       action: "changed the due date for \"#{task_name}\"",
+      author: ctx.creator
+    })
+  end
+
+  step :assert_description_change_notification_sent, ctx, opts do
+    recipient = Map.fetch!(ctx, Keyword.fetch!(opts, :to))
+    task_name = Keyword.fetch!(opts, :task_name)
+
+    ctx
+    |> UI.login_as(recipient)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.creator,
+      action: "Updated the description of: #{task_name}"
+    })
+  end
+
+  step :assert_description_change_email_sent, ctx, opts do
+    recipient = Map.fetch!(ctx, Keyword.fetch!(opts, :to))
+    task_name = Keyword.fetch!(opts, :task_name)
+
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.space.name,
+      to: recipient,
+      action: "updated the description for \"#{task_name}\"",
       author: ctx.creator
     })
   end
