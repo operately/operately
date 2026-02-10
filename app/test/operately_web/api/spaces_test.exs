@@ -71,6 +71,72 @@ defmodule OperatelyWeb.Api.SpacesTest do
     end
   end
 
+  describe "count by access level" do
+    test "it requires authentication", ctx do
+      assert {401, _} = query(ctx.conn, [:spaces, :count_by_access_level], %{access_level: :view_access})
+    end
+
+    test "it requires access_level", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = query(ctx.conn, [:spaces, :count_by_access_level], %{})
+      assert res.message == "Missing required fields: access_level"
+    end
+
+    test "it returns the count of spaces with the specified access level", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:member)
+        |> Factory.add_space(:view_space, name: "View Space", company_permissions: Binding.view_access())
+        |> Factory.add_space(:edit_space, name: "Edit Space", company_permissions: Binding.edit_access())
+        |> Factory.add_space(:full_space, name: "Full Space", company_permissions: Binding.full_access())
+        |> Factory.log_in_person(:member)
+
+      # With view_access filter, should count all spaces (4 including General)
+      assert {200, res} = query(ctx.conn, [:spaces, :count_by_access_level], %{access_level: :view_access})
+      assert res.count == 4
+
+      # With edit_access filter, should count edit and full spaces (3 including General)
+      assert {200, res} = query(ctx.conn, [:spaces, :count_by_access_level], %{access_level: :edit_access})
+      assert res.count == 3
+
+      # With full_access filter, should count only full space
+      assert {200, res} = query(ctx.conn, [:spaces, :count_by_access_level], %{access_level: :full_access})
+      assert res.count == 1
+    end
+
+    test "it returns 0 when user has no spaces with the specified access level", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:member)
+        |> Factory.add_space(:view_space, name: "View Space", company_permissions: Binding.view_access())
+        |> Factory.log_in_person(:member)
+
+      # With full_access filter, member should have no spaces with full access
+      assert {200, res} = query(ctx.conn, [:spaces, :count_by_access_level], %{access_level: :full_access})
+      assert res.count == 0
+    end
+
+    test "it counts only spaces in the user's company", ctx do
+      other_ctx =
+        %{conn: ctx.conn}
+        |> Factory.setup()
+        |> Factory.add_company_member(:other_member)
+        |> Factory.add_space(:other_space, company_permissions: Binding.view_access())
+        |> Factory.log_in_person(:creator)
+
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = query(ctx.conn, [:spaces, :count_by_access_level], %{access_level: :view_access})
+      assert res.count == 1
+
+      assert {200, res} = query(other_ctx.conn, [:spaces, :count_by_access_level], %{access_level: :view_access})
+      assert res.count == 2
+    end
+  end
+
+
+
   describe "list tasks" do
     setup ctx do
       ctx

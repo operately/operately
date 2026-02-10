@@ -2946,6 +2946,14 @@ export interface SearchProjectContributorCandidatesResult {
   people?: Person[] | null;
 }
 
+export interface SpacesCountByAccessLevelInput {
+  accessLevel: AccessOptions;
+}
+
+export interface SpacesCountByAccessLevelResult {
+  count: number;
+}
+
 export interface SpacesListMembersInput {
   spaceId: Id;
   query?: string | null;
@@ -5194,6 +5202,10 @@ class ApiNamespaceInvitations {
 
 class ApiNamespaceSpaces {
   constructor(private client: ApiClient) {}
+
+  async countByAccessLevel(input: SpacesCountByAccessLevelInput): Promise<SpacesCountByAccessLevelResult> {
+    return this.client.get("/spaces/count_by_access_level", input);
+  }
 
   async listMembers(input: SpacesListMembersInput): Promise<SpacesListMembersResult> {
     return this.client.get("/spaces/list_members", input);
@@ -7922,6 +7934,11 @@ export default {
   },
 
   spaces: {
+    countByAccessLevel: (input: SpacesCountByAccessLevelInput) =>
+      defaultApiClient.apiNamespaceSpaces.countByAccessLevel(input),
+    useCountByAccessLevel: (input: SpacesCountByAccessLevelInput) =>
+      useQuery<SpacesCountByAccessLevelResult>(() => defaultApiClient.apiNamespaceSpaces.countByAccessLevel(input)),
+
     search: (input: SpacesSearchInput) => defaultApiClient.apiNamespaceSpaces.search(input),
     useSearch: (input: SpacesSearchInput) =>
       useQuery<SpacesSearchResult>(() => defaultApiClient.apiNamespaceSpaces.search(input)),

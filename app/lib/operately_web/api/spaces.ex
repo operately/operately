@@ -26,6 +26,26 @@ defmodule OperatelyWeb.Api.Spaces do
     end
   end
 
+  defmodule CountByAccessLevel do
+    use TurboConnect.Query
+    use OperatelyWeb.Api.Helpers
+
+    inputs do
+      field :access_level, :access_options, null: false
+    end
+
+    outputs do
+      field :count, :integer, null: false
+    end
+
+    def call(conn, inputs) do
+      person = me(conn)
+      count = Space.count_by_access_level(person, inputs.access_level)
+
+      {:ok, %{count: count}}
+    end
+  end
+
   defmodule UpdateKanban do
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers

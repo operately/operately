@@ -50,6 +50,16 @@ export function DropdownMenu(props: DropdownMenuProps) {
     minWidth: props.minWidth ?? 230,
   };
 
+  const hasVisibleChildren = React.useMemo(() => {
+    return React.Children.toArray(props.children).some((child) => {
+      if (!React.isValidElement(child)) return false;
+      const hidden = (child.props as { hidden?: boolean }).hidden;
+      return !hidden;
+    });
+  }, [props.children]);
+
+  if (!hasVisibleChildren) return null;
+
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
       <Popover.Trigger asChild>
@@ -77,9 +87,12 @@ interface DropdownLinkItemProps {
   title: string;
   testId?: string;
   target?: string;
+  hidden?: boolean;
 }
 
-export function DropdownLinkItem({ path, icon, title, testId, target }: DropdownLinkItemProps) {
+export function DropdownLinkItem({ path, icon, title, testId, target, hidden }: DropdownLinkItemProps) {
+  if (hidden) return null;
+
   return (
     <DivLink className={itemClassName} to={path} testId={testId} target={target}>
       {React.createElement(icon, { size: 18, strokeWidth: 2 })}
@@ -88,6 +101,8 @@ export function DropdownLinkItem({ path, icon, title, testId, target }: Dropdown
   );
 }
 
-export function DropdownSeparator() {
-  return <div className="border-t border-stroke-base my-2"></div>;
+export function DropdownSeparator({ hidden }: { hidden?: boolean }) {
+  if (hidden) return null;
+
+  return <div className="border-t border-stroke-base my-2 first:hidden"></div>;
 }
