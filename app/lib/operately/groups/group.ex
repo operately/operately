@@ -86,7 +86,8 @@ defmodule Operately.Groups.Group do
   # Scopes
   #
 
-  import Ecto.Query, only: [from: 2]
+  import Ecto.Query
+  alias Operately.Access.Filters
 
   def scope_company(query, company_id) do
     from g in query, where: g.company_id == ^company_id
@@ -133,9 +134,6 @@ defmodule Operately.Groups.Group do
   def search(person, query, nil), do: search(person, query, :view_access)
 
   def search(person, query, access_level) do
-    import Ecto.Query
-    alias Operately.Access.Filters
-
     from(s in __MODULE__)
     |> where([s], s.company_id == ^person.company_id)
     |> where([s], ilike(s.name, ^"%#{query}%"))
@@ -143,5 +141,12 @@ defmodule Operately.Groups.Group do
     |> order_by([s], asc: s.name)
     |> limit(10)
     |> Operately.Repo.all()
+  end
+
+  def count_by_access_level(person, access_level) do
+    from(s in __MODULE__)
+    |> where([s], s.company_id == ^person.company_id)
+    |> Filters.filter_by_access(person.id, access_level)
+    |> Operately.Repo.aggregate(:count)
   end
 end
