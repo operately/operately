@@ -887,6 +887,7 @@ export interface ActivityContentTaskDeleting {
 
 export interface ActivityContentTaskDescriptionChange {
   task: Task | null;
+  space: Space | null;
   projectName: string;
   hasDescription: boolean;
   description: string | null;
