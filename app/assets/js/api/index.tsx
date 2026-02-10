@@ -2666,8 +2666,9 @@ export interface GetSpaceResult {
 }
 
 export interface GetSpacesInput {
-  includeAccessLevels?: boolean | null;
-  includeMembers?: boolean | null;
+  accessLevel?: AccessOptions;
+  includeAccessLevels?: boolean;
+  includeMembers?: boolean;
 }
 
 export interface GetSpacesResult {

@@ -125,6 +125,36 @@ defmodule OperatelyWeb.Api.Queries.GetSpacesTest do
     end
   end
 
+  describe "access_level filtering" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_company_member(:member)
+      |> Factory.add_space(:view_space, name: "View Space", company_permissions: Binding.view_access())
+      |> Factory.add_space(:edit_space, name: "Edit Space", company_permissions: Binding.edit_access())
+      |> Factory.add_space(:full_space, name: "Full Space", company_permissions: Binding.full_access())
+      |> Factory.log_in_person(:member)
+    end
+
+    test "filters by view_access - shows all accessible spaces", ctx do
+      assert {200, res} = query(ctx.conn, :get_spaces, %{access_level: :view_access})
+      assert length(res.spaces) == 4
+      assert Enum.map(res.spaces, & &1.name) |> Enum.sort() == ["Edit Space", "Full Space", "General", "View Space"]
+    end
+
+    test "filters by edit_access - shows only edit and full spaces", ctx do
+      assert {200, res} = query(ctx.conn, :get_spaces, %{access_level: :edit_access})
+      assert length(res.spaces) == 3
+      assert Enum.map(res.spaces, & &1.name) |> Enum.sort() == ["Edit Space", "Full Space", "General"]
+    end
+
+    test "filters by full_access - shows only full access spaces", ctx do
+      assert {200, res} = query(ctx.conn, :get_spaces, %{access_level: :full_access})
+      assert length(res.spaces) == 1
+      assert Enum.map(res.spaces, & &1.name) |> Enum.sort() == ["Full Space"]
+    end
+  end
+
   #
   # Helpers
   #
