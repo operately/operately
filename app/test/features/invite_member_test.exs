@@ -165,5 +165,44 @@ defmodule Operately.Features.InviteMemberTest do
       |> Steps.assert_guest_invited_feed_item()
       |> Steps.assert_guest_invited_notification()
     end
+
+    feature "team member can accept invitation and see activity", ctx do
+      full_name = "Casey Morgan"
+      password = "Aa12345#&!123"
+
+      params = %{
+        fullName: full_name,
+        email: Operately.PeopleFixtures.unique_account_email(full_name),
+        title: "Product Manager",
+        password: password,
+      }
+
+      ctx
+      |> Steps.given_that_a_company_member_was_invited(params)
+      |> Steps.goto_invitation_page()
+      |> Steps.submit_password(password)
+      |> Steps.assert_password_set_for_new_member(%{email: params.email, password: password})
+      |> Steps.assert_company_member_added_feed_item()
+      |> Steps.assert_company_member_added_notification()
+    end
+
+    feature "admin account can invite team members and email is sent", ctx do
+      full_name = "Jordan Smith"
+
+      params = %{
+        fullName: full_name,
+        email: Operately.PeopleFixtures.unique_account_email(full_name),
+        title: "Designer",
+      }
+
+      ctx
+      |> Steps.log_in_as_admin()
+      |> Steps.navigate_to_member_type_selection_page()
+      |> Steps.select_team_member_type()
+      |> Steps.open_single_member_invite_form()
+      |> Steps.invite_member(params)
+      |> Steps.assert_member_invited()
+      |> Steps.assert_company_member_added_email_sent(params[:email])
+    end
   end
 end
