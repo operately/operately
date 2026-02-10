@@ -356,4 +356,49 @@ defmodule Operately.Support.Features.InviteMemberSteps do
     |> UI.assert_text("Share this URL with #{person.full_name} to invite them to the company:")
     |> UI.assert_text("/join?token=")
   end
+
+  step :assert_company_member_added_email_sent, ctx, email do
+    person = Operately.People.get_person_by_email(ctx.company, email)
+    assert person
+
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.company.name,
+      to: person,
+      author: ctx.admin,
+      action: "added you as a company member"
+    })
+  end
+
+  step :assert_company_member_added_feed_item, ctx do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.find(UI.query(testid: "company-feed"), fn el ->
+      FeedSteps.assert_feed_item_exists(el, ctx.admin, "added #{ctx.member.full_name} as a company member")
+    end)
+  end
+
+  step :assert_company_member_added_notification, ctx do
+    ctx
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.admin,
+      action: "Added you as a company member"
+    })
+  end
+
+  step :given_that_a_company_member_was_invited, ctx, params do
+    {:ok, _invite_link} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, %{
+      full_name: params[:fullName],
+      title: params[:title],
+      email: params[:email]
+    })
+
+    member = Operately.People.get_person_by_email(ctx.company, params[:email])
+    {:ok, invite_link} = InviteLinks.get_personal_invite_link_for_person(member.id)
+
+    ctx
+    |> Map.put(:member, member)
+    |> Map.put(:token, invite_link.token)
+    |> Map.put(:person, member)
+  end
 end
