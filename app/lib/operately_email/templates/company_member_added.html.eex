@@ -1,0 +1,13 @@
+<%= title("#{short_name(@author)} added you to #{@company.name}") %>
+
+<%= spacer() %>
+
+<%= row do %>
+  You now have access to <%= @company.name %> as a company member.
+<% end %>
+
+<%= spacer() %>
+
+<%= row do %>
+  <%= cta_button(@login_url, "Log in to Operately") %>
+<% end %>

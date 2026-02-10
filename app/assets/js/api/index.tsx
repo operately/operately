@@ -179,6 +179,12 @@ export interface ActivityContentCompanyEditing {
   oldName?: string | null;
 }
 
+export interface ActivityContentCompanyMemberAdded {
+  company: Company;
+  person: Person | null;
+  name: string;
+}
+
 export interface ActivityContentCompanyMemberRestoring {
   person?: Person | null;
 }
@@ -1963,6 +1969,7 @@ export type ActivityContent =
   | ActivityContentCompanyOwnersAdding
   | ActivityContentCompanyAdminAdded
   | ActivityContentCompanyMembersPermissionsEdited
+  | ActivityContentCompanyMemberAdded
   | ActivityContentGuestInvited
   | ActivityContentCompanyEditing
   | ActivityContentCommentAdded
