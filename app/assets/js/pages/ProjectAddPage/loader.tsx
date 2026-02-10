@@ -43,7 +43,7 @@ export async function loader({ request, params }): Promise<LoaderResult> {
   const company = await Companies.getCompany({ id: params.companyId }).then((data) => data.company!);
   const goals = await Goals.getGoals({ includeSpace: true, includeChampion: true }).then((data) => data.goals!);
 
-  const spaces = await Spaces.getSpaces({ includeAccessLevels: true });
+  const spaces = await Spaces.getSpaces({ includeAccessLevels: true, accessLevel: "edit_access" });
   const space = spaceID ? await Spaces.getSpace({ id: spaceID }) : undefined;
   const spaceOptions = spaces.map((space) => ({ value: space.id!, label: space.name! }));
 
