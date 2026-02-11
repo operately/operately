@@ -99,6 +99,7 @@ const baseProps = {
   invitedPeople,
   currentMembers,
   onRemovePerson: async () => {},
+  onConvertToGuest: async () => {},
   onReissueInvitation: async () => inviteLink,
   onRenewInvitation: async () => inviteLink,
   onChangeAccessLevel: async (personId: string, accessLevel: number) => {

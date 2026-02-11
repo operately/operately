@@ -43,6 +43,7 @@ function Page() {
   const refresh = Pages.useRefresh();
   const [remove] = Companies.useRemoveCompanyMember();
   const [createInvite] = Api.invitations.useNewInvitationToken();
+  const [convertToGuest] = Api.useConvertCompanyMemberToGuest();
   const [editPermissions] = Api.useEditCompanyMembersPermissions();
 
   const buildPerson = React.useCallback(
@@ -83,6 +84,14 @@ function Page() {
     [remove, refresh],
   );
 
+  const handleConvertToGuest = React.useCallback(
+    async (personId: string) => {
+      await convertToGuest({ personId });
+      refresh();
+    },
+    [convertToGuest, refresh],
+  );
+
   const handleCreateInvite = React.useCallback(
     async (personId: string) => {
       const res = await createInvite({ personId });
@@ -114,6 +123,7 @@ function Page() {
       outsideCollaborators={collaborators}
       showOutsideCollaborators={true}
       onRemovePerson={handleRemove}
+      onConvertToGuest={handleConvertToGuest}
       onReissueInvitation={handleCreateInvite}
       onRenewInvitation={handleCreateInvite}
       onChangeAccessLevel={handleChangeAccessLevel}

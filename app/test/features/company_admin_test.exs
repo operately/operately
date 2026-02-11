@@ -115,6 +115,17 @@ defmodule Operately.Features.CompanyAdminTest do
     })
   end
 
+  @tag role: :admin
+  feature "convert a team member to outside collaborator", ctx do
+    ctx
+    |> Steps.given_a_company_member_exists()
+    |> Steps.open_company_team_page()
+    |> Steps.convert_company_member_to_guest()
+    |> Steps.assert_company_member_moved_to_outside_collaborators_section()
+    |> Steps.assert_company_member_converted_to_guest()
+    |> Steps.assert_feed_item_notification_and_email_sent_to_converted_guest()
+  end
+
   @tag role: :owner
   feature "adding a trusted email domain", ctx do
     ctx
