@@ -212,6 +212,7 @@ defmodule OperatelyWeb.Api do
   mutation(:delete_company, M.DeleteCompany)
   mutation(:archive_message, M.ArchiveMessage)
   mutation(:restore_company_member, M.RestoreCompanyMember)
+  mutation(:convert_company_member_to_guest, M.ConvertCompanyMemberToGuest)
   mutation(:add_company, M.AddCompany)
   mutation(:add_company_admins, M.AddCompanyAdmins)
   mutation(:add_company_member, M.AddCompanyMember)

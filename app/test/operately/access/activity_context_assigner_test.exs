@@ -79,6 +79,18 @@ defmodule Operately.AccessActivityContextAssignerTest do
       create_activity(attrs)
       |> assert_context_assigned(ctx.company.access_context.id)
     end
+
+    test "company_member_converted_to_guest action", ctx do
+      member = person_fixture_with_account(%{company_id: ctx.company.id})
+      attrs = %{
+        action: "company_member_converted_to_guest",
+        author_id: ctx.author.id,
+        content: %{company_id: ctx.company.id, person_id: member.id}
+      }
+
+      create_activity(attrs)
+      |> assert_context_assigned(ctx.company.access_context.id)
+    end
   end
 
   describe "assigns access_context to space activities" do
