@@ -235,4 +235,44 @@ defmodule Operately.Features.ProfileTest do
     |> Steps.enable_assignments_email()
     |> Steps.assert_person_in_assignments_cron()
   end
+
+  describe "Permissions" do
+    feature "Task space is hidden when user has no access", ctx do
+      ctx
+      |> Steps.given_task_and_project_assigned_to_person()
+      |> Steps.assert_person_cant_see_space()
+      |> Steps.visit_profile_page()
+      |> Steps.click_tasks_tab()
+      |> Steps.assert_task_space_hidden()
+    end
+
+    feature "Task space is visible when user has access", ctx do
+      ctx
+      |> Steps.given_task_and_project_assigned_to_person()
+      |> Steps.given_person_is_member_of_space()
+      |> Steps.assert_person_can_see_space()
+      |> Steps.visit_profile_page()
+      |> Steps.click_tasks_tab()
+      |> Steps.assert_task_space_visible()
+    end
+
+    feature "Project space is hidden when user has no access", ctx do
+      ctx
+      |> Steps.given_task_and_project_assigned_to_person()
+      |> Steps.assert_person_cant_see_space()
+      |> Steps.visit_profile_page()
+      |> Steps.click_assigned_tab()
+      |> Steps.assert_project_space_hidden()
+    end
+
+    feature "Project space is visible when user has access", ctx do
+      ctx
+      |> Steps.given_task_and_project_assigned_to_person()
+      |> Steps.given_person_is_member_of_space()
+      |> Steps.assert_person_can_see_space()
+      |> Steps.visit_profile_page()
+      |> Steps.click_assigned_tab()
+      |> Steps.assert_project_space_visible()
+    end
+  end
 end
