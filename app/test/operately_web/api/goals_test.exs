@@ -161,7 +161,8 @@ defmodule OperatelyWeb.Api.GoalsTest do
 
       assert {200, res} = query(ctx.conn, [:goals, :list_access_members], %{goal_id: Paths.goal_id(ctx.goal_with_roles)})
 
-      assert length(res.people) == 3
+      assert length(res.people) == 4
+      assert_includes_person(res.people, ctx.creator.id, :full_access)
       assert_includes_person(res.people, ctx.champion.id, :full_access)
       assert_includes_person(res.people, ctx.reviewer.id, :full_access)
       assert_includes_person(res.people, ctx.member.id, :edit_access)
