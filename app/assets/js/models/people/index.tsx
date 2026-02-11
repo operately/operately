@@ -10,6 +10,7 @@ export {
   getPerson,
   updateProfile,
   updateProfilePicture,
+  getMe,
   useGetMe,
   useGetPeople,
   updateTheme,

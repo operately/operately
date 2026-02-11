@@ -28,6 +28,7 @@ defmodule OperatelyWeb.Api.Queries.GetMe do
         id: OperatelyWeb.Paths.person_id(me),
         full_name: me.full_name,
         email: me.email,
+        type: Atom.to_string(me.type),
         title: me.title,
         avatar_url: me.avatar_url,
         timezone: me.timezone,
@@ -48,6 +49,7 @@ defmodule OperatelyWeb.Api.Queries.GetMe do
       id: OperatelyWeb.Paths.person_id(manager),
       full_name: manager.full_name,
       email: manager.email,
+      type: Atom.to_string(manager.type),
       title: manager.title,
       avatar_url: manager.avatar_url
     }
