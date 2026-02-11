@@ -95,6 +95,26 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       assert open_task.type == :task
       assert open_task.parent_id == ctx.project.id
     end
+
+    test "preloads project_space as nil when assignee has no access to the space", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space(:hidden_space, company_permissions: Binding.no_access())
+        |> Factory.add_project(:hidden_project, :hidden_space, champion: :assignee)
+        |> Factory.add_project_milestone(:hidden_milestone, :hidden_project)
+        |> Factory.add_project_task(:hidden_task, :hidden_milestone)
+        |> Factory.add_task_assignee(:hidden_task_assignee, :hidden_task, :assignee)
+
+      {:ok, work_map} = GetWorkMapQuery.execute(ctx.assignee, %{company_id: ctx.company.id, include_tasks: true}, :flat)
+
+      items_by_id = index_work_map_by_id(work_map)
+
+      assert Map.has_key?(items_by_id, ctx.hidden_task.id)
+      hidden_task = Map.fetch!(items_by_id, ctx.hidden_task.id)
+
+      assert hidden_task.type == :task
+      assert hidden_task.space == nil
+    end
   end
 
   describe "functionality - execute/1 with include_assignees parameter" do
@@ -936,6 +956,34 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
           secret1: []
         })
       end
+    end
+  end
+
+  describe "permissions - hidden space associations" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:hidden_space, company_permissions: Binding.no_access())
+      |> Factory.add_company_member(:company_member)
+      |> Factory.add_goal(:goal, :hidden_space, champion: :company_member)
+      |> Factory.add_project(:project, :hidden_space, champion: :company_member)
+    end
+
+    test "keeps items visible while preloading inaccessible spaces as nil", ctx do
+      {:ok, work_map} = GetWorkMapQuery.execute(ctx.company_member, %{company_id: ctx.company.id})
+
+      assert_work_map_structure(work_map, ctx, %{
+        goal: [],
+        project: []
+      })
+
+      items_by_id = index_work_map_by_id(work_map)
+
+      goal = Map.fetch!(items_by_id, ctx.goal.id)
+      project = Map.fetch!(items_by_id, ctx.project.id)
+
+      assert goal.space == nil
+      assert project.space == nil
     end
   end
 

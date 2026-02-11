@@ -25,7 +25,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
           task_status: Status.t() | nil,
           state: String.t(),
           progress: float(),
-          space: map(),
+          space: map() | nil,
           owner: map() | nil,
           champion: map() | nil,
           reviewer: map() | nil,

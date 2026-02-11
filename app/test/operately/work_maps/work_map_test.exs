@@ -197,6 +197,38 @@ defmodule Operately.WorkMaps.WorkMapTest do
     end
   end
 
+  describe "filter_flat_list/2 with missing spaces" do
+    test "ignores nil-space items when filtering by space_id" do
+      item = %WorkMapItem{
+        id: "goal-1",
+        parent_id: nil,
+        type: :goal,
+        space: nil,
+        champion: nil,
+        reviewer: nil,
+        contributor: nil,
+        children: []
+      }
+
+      assert WorkMap.filter_flat_list([item], %{space_id: "space-1"}) == []
+    end
+
+    test "returns nil-space items when no space filter is provided" do
+      item = %WorkMapItem{
+        id: "goal-1",
+        parent_id: nil,
+        type: :goal,
+        space: nil,
+        champion: nil,
+        reviewer: nil,
+        contributor: nil,
+        children: []
+      }
+
+      assert WorkMap.filter_flat_list([item], %{}) == [item]
+    end
+  end
+
   #
   # Helpers
   #

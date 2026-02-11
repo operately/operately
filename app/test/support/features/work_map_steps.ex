@@ -426,4 +426,53 @@ defmodule Operately.Support.Features.WorkMapSteps do
     |> UI.assert_text(ctx.goal.name)
     |> UI.refute_text("Add new item")
   end
+
+  #
+  # Hide space permissions
+  #
+
+  step :given_there_are_resouces_within_secret_space, ctx do
+    ctx
+    |> Factory.setup()
+    |> Factory.add_company_member(:member)
+    |> Factory.add_space(:secret_space, company_permissions: Binding.no_access())
+    |> Factory.add_goal(:goal, :secret_space, name: "Secret Goal", champion: :member)
+    |> Factory.add_project(:project, :secret_space, name: "Secret Project", champion: :member)
+  end
+
+  step :given_there_are_resources_within_visible_space, ctx do
+    ctx
+    |> Factory.setup()
+    |> Factory.add_company_member(:member)
+    |> Factory.add_space(:visible_space, company_permissions: Binding.view_access())
+    |> Factory.add_goal(:goal, :visible_space, name: "Visible Goal", champion: :member)
+    |> Factory.add_project(:project, :visible_space, name: "Visible Project", champion: :member)
+  end
+
+  step :given_logged_in_user_cant_see_secret_space, ctx do
+    {:error, :not_found} = Operately.Groups.Group.get(ctx.member, id: ctx.secret_space.id)
+
+    UI.login_as(ctx, ctx.member)
+  end
+
+  step :given_logged_in_user_can_see_visible_space, ctx do
+    {:ok, space} = Operately.Groups.Group.get(ctx.member, id: ctx.visible_space.id)
+    assert space.request_info.access_level == Binding.view_access()
+
+    UI.login_as(ctx, ctx.member)
+  end
+
+  step :assert_goal_and_project_visible, ctx do
+    ctx
+    |> UI.assert_text(ctx.goal.name)
+    |> UI.assert_text(ctx.project.name)
+  end
+
+  step :assert_secret_space_not_visible, ctx do
+    UI.refute_text(ctx, ctx.secret_space.name)
+  end
+
+  step :assert_space_visible, ctx do
+    UI.assert_text(ctx, ctx.visible_space.name)
+  end
 end
