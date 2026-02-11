@@ -58,6 +58,7 @@ defmodule Operately.Operations.GoalCreation do
     |> Access.insert_binding(:space_members_binding, space_standard, attrs.space_access_level)
     |> bind_champion(attrs[:champion_id])
     |> bind_reviewer(attrs[:reviewer_id])
+    |> bind_creator(creator, attrs)
   end
 
   defp bind_champion(multi, champion_id) do
@@ -75,6 +76,15 @@ defmodule Operately.Operations.GoalCreation do
       Access.insert_binding(multi, :reviewer_binding, reviewer_group, Binding.full_access(), :reviewer)
     else
       multi
+    end
+  end
+
+  defp bind_creator(multi, creator, attrs) do
+    if creator_is_champion_or_reviewer?(creator, attrs) do
+      multi
+    else
+      creator_group = Access.get_group!(person_id: creator.id)
+      Access.insert_binding(multi, :creator_binding, creator_group, Binding.full_access())
     end
   end
 
@@ -116,5 +126,9 @@ defmodule Operately.Operations.GoalCreation do
       contextual_start_date: Operately.ContextualDates.ContextualDate.create_day_date(Date.utc_today()),
       contextual_end_date: nil,
     }
+  end
+
+  defp creator_is_champion_or_reviewer?(creator, attrs) do
+    attrs[:champion_id] == creator.id or attrs[:reviewer_id] == creator.id
   end
 end

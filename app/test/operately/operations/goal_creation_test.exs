@@ -109,6 +109,49 @@ defmodule Operately.Operations.GoalCreationTest do
     assert Access.get_binding(context_id: context.id, group_id: champion_group.id, access_level: Binding.full_access())
   end
 
+  test "GoalCreation operation creates binding to creator", ctx do
+    {:ok, goal} = Operately.Operations.GoalCreation.run(ctx.creator, ctx.attrs)
+
+    context = Access.get_context!(goal_id: goal.id)
+    creator_group = Access.get_group!(person_id: ctx.creator.id)
+
+    assert Access.get_binding(context_id: context.id, group_id: creator_group.id, access_level: Binding.full_access())
+  end
+
+  test "GoalCreation operation doesn't create separate creator binding when creator is champion", ctx do
+    attrs = Map.merge(ctx.attrs, %{champion_id: ctx.creator.id})
+
+    {:ok, goal} = Operately.Operations.GoalCreation.run(ctx.creator, attrs)
+
+    context = Access.get_context!(goal_id: goal.id)
+    creator_group = Access.get_group!(person_id: ctx.creator.id)
+
+    assert Access.get_binding(tag: :champion, context_id: context.id, group_id: creator_group.id, access_level: Binding.full_access())
+
+    count =
+      from(b in Binding, where: b.context_id == ^context.id and b.group_id == ^creator_group.id)
+      |> Repo.aggregate(:count, :id)
+
+    assert count == 1
+  end
+
+  test "GoalCreation operation doesn't create separate creator binding when creator is reviewer", ctx do
+    attrs = Map.merge(ctx.attrs, %{reviewer_id: ctx.creator.id})
+
+    {:ok, goal} = Operately.Operations.GoalCreation.run(ctx.creator, attrs)
+
+    context = Access.get_context!(goal_id: goal.id)
+    creator_group = Access.get_group!(person_id: ctx.creator.id)
+
+    assert Access.get_binding(tag: :reviewer, context_id: context.id, group_id: creator_group.id, access_level: Binding.full_access())
+
+    count =
+      from(b in Binding, where: b.context_id == ^context.id and b.group_id == ^creator_group.id)
+      |> Repo.aggregate(:count, :id)
+
+    assert count == 1
+  end
+
   test "GoalCreation operation adds tags to reviewer's and champion's bindings", ctx do
     {:ok, goal} = Operately.Operations.GoalCreation.run(ctx.creator, ctx.attrs)
 
