@@ -1,4 +1,5 @@
 import * as Companies from "@/models/companies";
+import * as People from "@/models/people";
 import { assertPresent } from "@/utils/assertions";
 import { redirect } from "react-router-dom";
 
@@ -43,5 +44,15 @@ async function getCachedEnabledFeatures(companyId: string): Promise<string[]> {
     const company = await Companies.getCompany({ id: companyId }).then((data) => data.company!);
     ENABLED_FEATURES_CACHE[companyId] = company.enabledExperimentalFeatures || [];
     return ENABLED_FEATURES_CACHE[companyId]!;
+  }
+}
+
+export async function redirectIfGuest({ path }: { path: string }) {
+  const me = await People.getMe({}).then((data) => data.me);
+
+  if (me?.type === "guest") {
+    throw redirect(path);
+  } else {
+    return; // do nothing, continue loading the page
   }
 }

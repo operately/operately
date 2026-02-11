@@ -10,6 +10,7 @@ import classNames from "classnames";
 import { OrgChart, OrgChartNode, useOrgChart } from "./useOrgChart";
 
 import { usePaths } from "@/routes/paths";
+
 export function Page() {
   const { people } = useLoadedData();
 
