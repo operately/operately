@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Menu, MenuActionItem, MenuLinkItem, SubMenu } from "../../Menu";
-import { IconId, IconLink, IconLock, IconPencil, IconRefresh, IconUserX, IconRotateDot } from "../../icons";
+import { IconId, IconLink, IconLock, IconPencil, IconRefresh, IconRotateDot, IconSwitch, IconUserX } from "../../icons";
 import { createTestId } from "../../TestableElement";
 import { CompanyAdminManagePerson, Permissions } from "../types";
 
@@ -17,21 +17,25 @@ const PERMISSION_LEVELS = {
 interface Props {
   person: CompanyAdminManagePerson;
   onOpenRemove: PersonHandler;
+  onOpenConvert: PersonHandler;
   onOpenReissue: PersonHandler;
   onOpenView: PersonHandler;
   onOpenRenew: PersonHandler;
   onChangeAccessLevel: (personId: string, accessLevel: number) => void;
   permissions?: Permissions;
+  showConvertToGuest?: boolean;
 }
 
 export function PersonOptions({
   person,
   onOpenRemove,
+  onOpenConvert,
   onOpenReissue,
   onOpenView,
   onOpenRenew,
   onChangeAccessLevel,
   permissions,
+  showConvertToGuest,
 }: Props) {
   const testId = createTestId("person-options", person.id);
   const size = person.hasOpenInvitation ? "medium" : "small";
@@ -68,6 +72,16 @@ export function PersonOptions({
             View access
           </MenuActionItem>
         </SubMenu>
+      )}
+
+      {showConvertToGuest && permissions?.canInviteMembers && person.canRemove && (
+        <MenuActionItem
+          icon={IconSwitch}
+          onClick={() => onOpenConvert(person)}
+          testId={createTestId("convert-to-guest", person.id)}
+        >
+          Convert to Outside Collaborator
+        </MenuActionItem>
       )}
 
       {person.invitationExpired && (
