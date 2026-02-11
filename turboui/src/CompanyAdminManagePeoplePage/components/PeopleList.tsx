@@ -7,6 +7,7 @@ type PersonHandler = (person: CompanyAdminManagePerson) => void;
 
 interface Props {
   people: CompanyAdminManagePerson[];
+  testId?: string;
   onOpenRemove: PersonHandler;
   onOpenConvert: PersonHandler;
   onOpenReissue: PersonHandler;
@@ -19,6 +20,7 @@ interface Props {
 
 export function PeopleList({
   people,
+  testId,
   onOpenRemove,
   onOpenConvert,
   onOpenReissue,
@@ -29,7 +31,7 @@ export function PeopleList({
   showConvertToGuest,
 }: Props) {
   return (
-    <div>
+    <div data-test-id={testId}>
       {people.map((person) => (
         <PersonRow
           key={person.id}

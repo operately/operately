@@ -153,6 +153,7 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
             <Section title="Invitations Awaiting Response">
               <PeopleList
                 people={props.invitedPeople}
+                testId="invited-people-list"
                 onOpenRemove={openRemoveModal}
                 onOpenConvert={openConvertModal}
                 onOpenReissue={openReissueModal}
@@ -169,6 +170,7 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
             <Section title="Current Team Members">
               <PeopleList
                 people={props.currentMembers}
+                testId="current-members-list"
                 onOpenRemove={openRemoveModal}
                 onOpenConvert={openConvertModal}
                 onOpenReissue={openReissueModal}
@@ -185,6 +187,7 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
             <Section title="Outside collaborators">
               <PeopleList
                 people={outsideCollaborators}
+                testId="outside-collaborators-list"
                 onOpenRemove={openRemoveModal}
                 onOpenConvert={openConvertModal}
                 onOpenReissue={openReissueModal}

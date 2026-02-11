@@ -265,6 +265,13 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     |> UI.click(testid: UI.testid("confirm-remove-member"))
   end
 
+  step :convert_company_member_to_guest, ctx do
+    ctx
+    |> UI.click(testid: UI.testid(["person-options", Paths.person_id(ctx.member)]))
+    |> UI.click(testid: UI.testid(["convert-to-guest", Paths.person_id(ctx.member)]))
+    |> UI.click(testid: "confirm-convert-member-to-guest")
+  end
+
   step :assert_member_removed, ctx do
     ctx |> UI.refute_text(ctx.member.full_name)
 
@@ -275,6 +282,22 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     assert person.suspended_at != nil
 
     ctx
+  end
+
+  step :assert_company_member_converted_to_guest, ctx do
+    person = Operately.Repo.reload(ctx.member)
+
+    assert person != nil
+    assert person.type == :guest
+    refute person.suspended
+
+    ctx
+  end
+
+  step :assert_company_member_moved_to_outside_collaborators_section, ctx do
+    ctx
+    |> UI.refute_text(ctx.member.full_name, testid: "current-members-list")
+    |> UI.assert_text(ctx.member.full_name, testid: "outside-collaborators-list")
   end
 
   step :assert_person_is_admin, ctx do
@@ -469,6 +492,25 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.admin,
       action: "Restored your account"
+    })
+  end
+
+  step :assert_feed_item_notification_and_email_sent_to_converted_guest, ctx do
+    name = ctx.member.full_name
+
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_feed_item(ctx.admin, "converted #{name} to an outside collaborator")
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.company.name,
+      to: ctx.member,
+      author: ctx.admin,
+      action: "converted your account to an outside collaborator"
+    })
+    |> Factory.log_in_person(:member)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.admin,
+      action: "Converted your account to an outside collaborator"
     })
   end
 
