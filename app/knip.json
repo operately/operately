@@ -10,7 +10,7 @@
     "**/__tests__/**",
     "assets/js/models/companies/hasFeature.tsx",
     "assets/js/components/Callouts/index.tsx",
-    "assets/js/routes/redirectIfFeatureEnabled.tsx"
+    "assets/js/routes/redirectUtils.tsx"
   ],
   "ignoreDependencies": ["@types/jest", "turboui"],
 
