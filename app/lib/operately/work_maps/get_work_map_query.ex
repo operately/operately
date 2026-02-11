@@ -169,7 +169,8 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
         |> Operately.Tasks.Task.scope_company(company_id)
         |> where([project: p], is_nil(p.id) or p.status == "active")
         |> where([task: t], fragment("COALESCE((?->>'closed')::boolean, false) = false", t.task_status))
-        |> preload([:project, :space, :project_space, :company, :assigned_people])
+        |> preload([:project, :space, :company, :assigned_people])
+        |> preload_project_space_if_authorized(person)
         |> Repo.all()
 
       true ->
@@ -296,6 +297,10 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
 
   defp preload_space_if_authorized(query, person) do
     preload(query, [], group: ^space_preload_query(person))
+  end
+
+  defp preload_project_space_if_authorized(query, person) do
+    preload(query, [], project_space: ^space_preload_query(person))
   end
 
   defp space_preload_query(:system), do: from(g in Group)
