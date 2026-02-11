@@ -6,6 +6,7 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   alias Operately.Repo
   alias Operately.Goals.Goal
   alias Operately.Projects.Project
+  alias Operately.Groups.Group
   alias Operately.WorkMaps.{WorkMap, WorkMapItem}
   alias Operately.Access.Filters
 
@@ -120,7 +121,7 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
         |> Repo.all()
 
       from(p in Project, where: p.id in ^project_ids)
-      |> preload_project_associations(args)
+      |> preload_project_associations(args, person)
       |> Repo.all()
     end
   end
@@ -140,7 +141,7 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
         |> Repo.all()
 
       from(g in Goal, as: :goal, where: g.id in ^goal_ids)
-      |> preload_goal_associations(args)
+      |> preload_goal_associations(args, person)
       |> Repo.all()
     end
   end
@@ -168,7 +169,8 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
         |> Operately.Tasks.Task.scope_company(company_id)
         |> where([project: p], is_nil(p.id) or p.status == "active")
         |> where([task: t], fragment("COALESCE((?->>'closed')::boolean, false) = false", t.task_status))
-        |> preload([:project, :space, :project_space, :company, :assigned_people])
+        |> preload([:project, :space, :company, :assigned_people])
+        |> preload_project_space_if_authorized(person)
         |> Repo.all()
 
       true ->
@@ -224,7 +226,7 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   # Preloads
   #
 
-  defp preload_project_associations(query, args) do
+  defp preload_project_associations(query, args, person) do
     include_reviewer = include_reviewer?(args)
     need_reviewer = needs_reviewer?(args)
     include_assignees = include_assignees?(args)
@@ -232,17 +234,16 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     query
     |> join(:left, [p], company in assoc(p, :company), as: :company)
     |> join(:left, [p], c in assoc(p, :champion), as: :champion)
-    |> join(:left, [p], gr in assoc(p, :group), as: :group)
     |> join(:left, [p], lci in assoc(p, :last_check_in), as: :last_check_in)
-    |> preload([company: company, champion: c, group: gr, last_check_in: lci],
+    |> preload([company: company, champion: c, last_check_in: lci],
       company: company,
       champion: c,
-      group: gr,
       last_check_in: lci
     )
     |> preload_project_milestones()
     |> maybe_preload_project_reviewer(include_reviewer || need_reviewer)
     |> maybe_preload_project_contributors(include_assignees || needs_contributor?(args))
+    |> preload_space_if_authorized(person)
     |> preload_access_levels()
   end
 
@@ -266,7 +267,7 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     preload(query, [], milestones: ^subquery)
   end
 
-  defp preload_goal_associations(query, args) do
+  defp preload_goal_associations(query, args, person) do
     include_assignees = include_assignees?(args)
     include_reviewer = include_reviewer?(args)
     need_reviewer = needs_reviewer?(args)
@@ -275,15 +276,14 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     query
     |> join(:left, [goal: g], company in assoc(g, :company), as: :company)
     |> join(:left, [goal: g], c in assoc(g, :champion), as: :champion)
-    |> join(:left, [goal: g], gr in assoc(g, :group), as: :group)
-    |> preload([company: company, champion: c, group: gr], [
+    |> preload([company: company, champion: c], [
       :targets,
       :checks,
       company: company,
-      champion: c,
-      group: gr
+      champion: c
     ])
     |> maybe_preload_goal_reviewer(need_reviewer_or_assignees)
+    |> preload_space_if_authorized(person)
     |> preload_access_levels()
   end
 
@@ -294,6 +294,24 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   end
 
   defp maybe_preload_goal_reviewer(query, false), do: query
+
+  defp preload_space_if_authorized(query, person) do
+    preload(query, [], group: ^space_preload_query(person))
+  end
+
+  defp preload_project_space_if_authorized(query, person) do
+    preload(query, [], project_space: ^space_preload_query(person))
+  end
+
+  defp space_preload_query(:system), do: from(g in Group)
+
+  defp space_preload_query(%Operately.People.Person{id: requester_id}) do
+    Filters.filter_by_view_access(Group, requester_id)
+  end
+
+  defp space_preload_query(_person) do
+    from(g in Group, where: false)
+  end
 
   #
   # Access

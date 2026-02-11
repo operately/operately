@@ -1947,8 +1947,8 @@ export interface WorkMapItem {
   status: WorkMapItemStatus;
   taskStatus: TaskStatus | null;
   progress: number;
-  space: Space;
-  spacePath: string;
+  space: Space | null;
+  spacePath: string | null;
   project: Project | null;
   projectPath: string | null;
   owner: Person | null;

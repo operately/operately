@@ -136,8 +136,8 @@ export namespace WorkMap {
     progress: number;
     project: { id: string; name: string } | null;
     projectPath: string | null;
-    space: Space;
-    spacePath: string;
+    space: Space | null;
+    spacePath: string | null;
     owner: Person | null;
     ownerPath: string | null;
     reviewer: Person | null;

@@ -177,6 +177,7 @@ function AddButton({
   hideCompanyAccess?: boolean;
 }) {
   if (item.type !== "goal") return null;
+  if (!item.space) return null;
 
   const [isOpen, setIsOpen] = React.useState(false);
   const open = () => setIsOpen(true);

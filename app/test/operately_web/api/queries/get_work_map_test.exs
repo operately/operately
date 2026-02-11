@@ -372,4 +372,28 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
       refute item.owner_path
     end
   end
+
+  describe "permissions - hidden space associations" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:hidden_space, company_permissions: Binding.no_access())
+      |> Factory.add_company_member(:company_member)
+      |> Factory.add_goal(:goal, :hidden_space, champion: :company_member)
+      |> Factory.add_project(:project, :hidden_space, champion: :company_member)
+      |> Factory.log_in_person(:company_member)
+    end
+
+    test "returns nil space fields when user cannot access the space", ctx do
+      assert {200, res} = query(ctx.conn, :get_work_map, %{})
+
+      goal = Enum.find(res.work_map, &(&1.id == Paths.goal_id(ctx.goal)))
+      project = Enum.find(res.work_map, &(&1.id == Paths.project_id(ctx.project)))
+
+      assert goal.space == nil
+      assert goal.space_path == nil
+      assert project.space == nil
+      assert project.space_path == nil
+    end
+  end
 end
