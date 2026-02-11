@@ -246,5 +246,23 @@ defmodule Operately.Features.WorkMapTest do
       |> Steps.visit_company_work_map()
       |> Steps.assert_cannot_add_items()
     end
+
+    feature "Space is not loaded when user can't see space", ctx do
+      ctx
+      |> Steps.given_there_are_resouces_within_secret_space()
+      |> Steps.given_logged_in_user_cant_see_secret_space()
+      |> Steps.visit_company_work_map()
+      |> Steps.assert_goal_and_project_visible()
+      |> Steps.assert_secret_space_not_visible()
+    end
+
+    feature "Space is loaded when user can see space", ctx do
+      ctx
+      |> Steps.given_there_are_resources_within_visible_space()
+      |> Steps.given_logged_in_user_can_see_visible_space()
+      |> Steps.visit_company_work_map()
+      |> Steps.assert_goal_and_project_visible()
+      |> Steps.assert_space_visible()
+    end
   end
 end
