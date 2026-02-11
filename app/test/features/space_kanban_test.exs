@@ -357,7 +357,7 @@ defmodule Operately.Features.SpaceKanbanTest do
       ctx
       |> Steps.visit_kanban_page()
       |> Steps.open_task_slide_in(:task)
-      |> Steps.add_task_description(content: "Updated description for the task.")
+      |> Steps.add_task_description(person: ctx.teammate)
       |> Steps.close_task_slide_in(:task)
       |> Steps.reload_task(:task)
       |> Steps.open_task_slide_in(:task)
@@ -367,6 +367,7 @@ defmodule Operately.Features.SpaceKanbanTest do
         title: "updated the description of a task",
         long_title: "updated the description of a task"
       )
+      |> Steps.assert_description_change_notification_sent(to: :teammate, task_name: "a task")
     end
 
     feature "task-description-changing activity task link redirects to space kanban page", ctx do
