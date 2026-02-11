@@ -13,7 +13,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.WorkMaps.WorkMapItem do
       type: item.type,
       item_path: item_path(item),
       space: OperatelyWeb.Api.Serializer.serialize(item.space),
-      space_path: Paths.space_work_map_path(item.company, item.space),
+      space_path: space_path(item),
       project: item.project && OperatelyWeb.Api.Serializer.serialize(item.project),
       project_path: item.project && Paths.project_path(item.company, item.project),
       owner: OperatelyWeb.Api.Serializer.serialize(item.owner),
@@ -52,6 +52,13 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.WorkMaps.WorkMapItem do
       Paths.person_path(item.company, item.reviewer)
     else
       nil
+    end
+  end
+
+  defp space_path(item) do
+    case item.space do
+      %Operately.Groups.Group{} -> Paths.space_work_map_path(item.company, item.space)
+      _ -> nil
     end
   end
 end

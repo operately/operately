@@ -1,6 +1,8 @@
 defmodule Operately.Support.Features.ProfileSteps do
   use Operately.FeatureCase
 
+  alias Operately.Access.Binding
+
   import Operately.PeopleFixtures
   import Operately.CompaniesFixtures
   import Operately.GroupsFixtures
@@ -396,5 +398,63 @@ defmodule Operately.Support.Features.ProfileSteps do
       value: status.value,
       closed: status.closed
     }
+  end
+
+  #
+  # Permissions
+  #
+
+  step :given_task_and_project_assigned_to_person, ctx do
+    ctx
+    |> Factory.add_space(:secret_space, company_permissions: Binding.no_access())
+    |> Factory.add_project(:project, :secret_space, champion: :person)
+    |> Factory.add_project_milestone(:milestone, :project)
+    |> Factory.add_project_task(:task, :milestone)
+    |> Factory.add_task_assignee(:task_assignee, :task, :person)
+  end
+
+  step :given_person_is_member_of_space, ctx do
+    {:ok, _} = Operately.Operations.GroupMembersAdding.run(ctx.creator, ctx.secret_space.id, [
+      %{ id: ctx.person.id, access_level: Binding.view_access() }
+    ])
+
+    ctx
+  end
+
+  step :assert_person_cant_see_space, ctx do
+    {:error, :not_found} = Operately.Groups.Group.get(ctx.person, id: ctx.secret_space.id)
+
+    UI.login_as(ctx, ctx.person)
+  end
+
+  step :assert_person_can_see_space, ctx do
+    {:ok, space} = Operately.Groups.Group.get(ctx.person, id: ctx.secret_space.id)
+    assert space.request_info.access_level == Binding.view_access()
+
+    UI.login_as(ctx, ctx.person)
+  end
+
+  step :assert_task_space_hidden, ctx do
+    ctx
+    |> UI.assert_text(ctx.task.name)
+    |> UI.refute_text(ctx.secret_space.name)
+  end
+
+  step :assert_task_space_visible, ctx do
+    ctx
+    |> UI.assert_text(ctx.task.name)
+    |> UI.assert_text(ctx.secret_space.name)
+  end
+
+  step :assert_project_space_hidden, ctx do
+    ctx
+    |> UI.assert_text(ctx.project.name)
+    |> UI.refute_text(ctx.secret_space.name)
+  end
+
+  step :assert_project_space_visible, ctx do
+    ctx
+    |> UI.assert_text(ctx.project.name)
+    |> UI.assert_text(ctx.secret_space.name)
   end
 end

@@ -19,13 +19,16 @@ export function SpaceCell({ item, hide }: SpaceCellProps) {
   );
 
   if (hide) return null;
+  const hasSpace = Boolean(item.space && item.spacePath);
 
   return (
     <td className="py-2 px-2 md:px-4 hidden lg:table-cell">
       <div className="max-w-[100px] min-w-[70px] w-fit overflow-hidden text-ellipsis whitespace-nowrap">
-        <BlackLink to={item.spacePath!} className={className} underline="hover">
-          {item.space?.name}
-        </BlackLink>
+        {hasSpace ? (
+          <BlackLink to={item.spacePath!} className={className} underline="hover">
+            {item.space?.name}
+          </BlackLink>
+        ) : null}
       </div>
     </td>
   );
