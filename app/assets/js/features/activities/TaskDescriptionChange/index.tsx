@@ -3,7 +3,6 @@ import React from "react";
 import type { ActivityContentTaskDescriptionChange } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
-import { assertPresent } from "@/utils/assertions";
 import { feedTitle, taskLink } from "../feedItemLinks";
 import { Summary } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -14,10 +13,14 @@ const TaskDescriptionChange: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity): string {
-    const data = content(activity);
-    assertPresent(data.task?.id, "task must be present in activity");
+    const { task, space } = content(activity);
+    const isSpaceTask = task?.type === "space";
 
-    return paths.taskPath(data.task.id);
+    if (isSpaceTask) {
+      return space ? paths.spaceKanbanPath(space.id, { taskId: task.id }) : paths.homePath();
+    } else {
+      return task ? paths.taskPath(task.id) : paths.homePath();
+    }
   },
 
   PageTitle(_props: { activity: any }) {
@@ -82,7 +85,7 @@ const TaskDescriptionChange: ActivityHandler = {
   NotificationTitle({ activity }: { activity: Activity }) {
     const { task } = content(activity);
 
-    return "Updated the description of: " + task?.name;
+    return "Updated the description of: " + (task?.name || "a task");
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
