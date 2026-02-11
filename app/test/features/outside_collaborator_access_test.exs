@@ -112,4 +112,33 @@ defmodule Operately.Features.OutsideCollaboratorAccessTest do
       |> Steps.assert_permission_error_message()
     end
   end
+
+  describe "people directory access for outside collaborators" do
+    setup ctx do
+      Steps.setup_outside_collaborator(ctx)
+    end
+
+    feature "outside collaborator does not see people links in the company dropdown", ctx do
+      ctx
+      |> Steps.log_in_as_collaborator()
+      |> Steps.visit_home_page()
+      |> Steps.open_company_dropdown()
+      |> Steps.assert_people_link_not_visible_in_company_dropdown()
+      |> Steps.assert_org_chart_link_not_visible_in_company_dropdown()
+    end
+
+    feature "outside collaborator is redirected when manually accessing people page", ctx do
+      ctx
+      |> Steps.log_in_as_collaborator()
+      |> Steps.visit_people_page()
+      |> Steps.assert_redirected_to_home_page()
+    end
+
+    feature "outside collaborator is redirected when manually accessing org chart page", ctx do
+      ctx
+      |> Steps.log_in_as_collaborator()
+      |> Steps.visit_org_chart_page()
+      |> Steps.assert_redirected_to_home_page()
+    end
+  end
 end

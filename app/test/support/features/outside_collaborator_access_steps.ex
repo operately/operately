@@ -137,8 +137,34 @@ defmodule Operately.Support.Features.OutsideCollaboratorAccessSteps do
     |> Factory.add_outside_collaborator(:collaborator, :owner)
   end
 
+  step :open_company_dropdown, ctx do
+    ctx |> UI.click(testid: "company-dropdown")
+  end
+
+  step :assert_people_link_not_visible_in_company_dropdown, ctx do
+    ctx |> UI.refute_has(testid: "company-dropdown-people")
+  end
+
+  step :assert_org_chart_link_not_visible_in_company_dropdown, ctx do
+    ctx |> UI.refute_has(testid: "company-dropdown-org-chart")
+  end
+
   step :visit_home_page, ctx do
     ctx |> UI.visit(Paths.home_path(ctx.company))
+  end
+
+  step :visit_people_page, ctx do
+    ctx |> UI.visit(Paths.people_path(ctx.company))
+  end
+
+  step :visit_org_chart_page, ctx do
+    ctx |> UI.visit(Paths.org_chart_path(ctx.company))
+  end
+
+  step :assert_redirected_to_home_page, ctx do
+    ctx
+    |> UI.sleep(300)
+    |> UI.assert_page(Paths.home_path(ctx.company))
   end
 
   step :visit_new_space_page, ctx do

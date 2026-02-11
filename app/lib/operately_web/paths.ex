@@ -32,6 +32,14 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company)])
   end
 
+  def people_path(company = %Company{}) do
+    create_path([company_id(company), "people"])
+  end
+
+  def org_chart_path(company = %Company{}) do
+    create_path([company_id(company), "people", "org-chart"])
+  end
+
   def review_path(company = %Company{}) do
     create_path([company_id(company), "review"])
   end
