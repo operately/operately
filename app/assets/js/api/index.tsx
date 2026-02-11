@@ -185,6 +185,11 @@ export interface ActivityContentCompanyMemberAdded {
   name: string;
 }
 
+export interface ActivityContentCompanyMemberConvertedToGuest {
+  company: Company;
+  person: Person | null;
+}
+
 export interface ActivityContentCompanyMemberRestoring {
   person?: Person | null;
 }
@@ -1971,6 +1976,7 @@ export type ActivityContent =
   | ActivityContentCompanyAdminAdded
   | ActivityContentCompanyMembersPermissionsEdited
   | ActivityContentCompanyMemberAdded
+  | ActivityContentCompanyMemberConvertedToGuest
   | ActivityContentGuestInvited
   | ActivityContentCompanyEditing
   | ActivityContentCommentAdded
@@ -3274,6 +3280,14 @@ export interface CompleteCompanySetupInput {
 }
 
 export interface CompleteCompanySetupResult {}
+
+export interface ConvertCompanyMemberToGuestInput {
+  personId: Id;
+}
+
+export interface ConvertCompanyMemberToGuestResult {
+  person: Person;
+}
 
 export interface CopyResourceHubFolderInput {
   folderName?: string | null;
@@ -4847,6 +4861,12 @@ class ApiNamespaceRoot {
     return this.client.post("/complete_company_setup", input);
   }
 
+  async convertCompanyMemberToGuest(
+    input: ConvertCompanyMemberToGuestInput,
+  ): Promise<ConvertCompanyMemberToGuestResult> {
+    return this.client.post("/convert_company_member_to_guest", input);
+  }
+
   async copyResourceHubFolder(input: CopyResourceHubFolderInput): Promise<CopyResourceHubFolderResult> {
     return this.client.post("/copy_resource_hub_folder", input);
   }
@@ -5921,6 +5941,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.completeCompanySetup(input);
   }
 
+  convertCompanyMemberToGuest(input: ConvertCompanyMemberToGuestInput): Promise<ConvertCompanyMemberToGuestResult> {
+    return this.apiNamespaceRoot.convertCompanyMemberToGuest(input);
+  }
+
   copyResourceHubFolder(input: CopyResourceHubFolderInput): Promise<CopyResourceHubFolderResult> {
     return this.apiNamespaceRoot.copyResourceHubFolder(input);
   }
@@ -6463,6 +6487,11 @@ export async function closeProject(input: CloseProjectInput): Promise<CloseProje
 }
 export async function completeCompanySetup(input: CompleteCompanySetupInput): Promise<CompleteCompanySetupResult> {
   return defaultApiClient.completeCompanySetup(input);
+}
+export async function convertCompanyMemberToGuest(
+  input: ConvertCompanyMemberToGuestInput,
+): Promise<ConvertCompanyMemberToGuestResult> {
+  return defaultApiClient.convertCompanyMemberToGuest(input);
 }
 export async function copyResourceHubFolder(input: CopyResourceHubFolderInput): Promise<CopyResourceHubFolderResult> {
   return defaultApiClient.copyResourceHubFolder(input);
@@ -7079,6 +7108,15 @@ export function useCompleteCompanySetup(): UseMutationHookResult<
 > {
   return useMutation<CompleteCompanySetupInput, CompleteCompanySetupResult>((input) =>
     defaultApiClient.completeCompanySetup(input),
+  );
+}
+
+export function useConvertCompanyMemberToGuest(): UseMutationHookResult<
+  ConvertCompanyMemberToGuestInput,
+  ConvertCompanyMemberToGuestResult
+> {
+  return useMutation<ConvertCompanyMemberToGuestInput, ConvertCompanyMemberToGuestResult>((input) =>
+    defaultApiClient.convertCompanyMemberToGuest(input),
   );
 }
 
@@ -7737,6 +7775,8 @@ export default {
   useCloseProject,
   completeCompanySetup,
   useCompleteCompanySetup,
+  convertCompanyMemberToGuest,
+  useConvertCompanyMemberToGuest,
   copyResourceHubFolder,
   useCopyResourceHubFolder,
   createAccount,

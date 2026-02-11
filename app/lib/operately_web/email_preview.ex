@@ -39,6 +39,10 @@ defmodule OperatelyWeb.EmailPreview do
     preview :preview
   end
 
+  group "company-member-converted-to-guest", module: Previews.CompanyMemberConvertedToGuest do
+    preview :preview
+  end
+
   group "company-members-permissions-edited", module: Previews.CompanyMembersPermissionsEdited do
     preview :access_level_increased, label: "Access Level Increased"
     preview :access_level_decreased, label: "Access Level Decreased"

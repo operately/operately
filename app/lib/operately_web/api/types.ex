@@ -201,6 +201,11 @@ defmodule OperatelyWeb.Api.Types do
     field :name, :string, null: false
   end
 
+  object :activity_content_company_member_converted_to_guest do
+    field :company, :company, null: false
+    field :person, :person, null: true
+  end
+
   object :activity_content_company_owner_removing do
     field :company, :company, null: false
     field :person, :person, null: true
@@ -654,6 +659,7 @@ defmodule OperatelyWeb.Api.Types do
       :activity_content_company_admin_added,
       :activity_content_company_members_permissions_edited,
       :activity_content_company_member_added,
+      :activity_content_company_member_converted_to_guest,
       :activity_content_guest_invited,
       :activity_content_company_editing,
       :activity_content_comment_added,
