@@ -132,7 +132,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       project = create_project(ctx, group_id: ctx.space.id, company_access_level: Binding.view_access())
       goal_champion = person_fixture_with_account(%{company_id: ctx.company.id})
 
-      goal = goal_fixture(ctx.person, %{
+      goal = goal_fixture(goal_champion, %{
         space_id: ctx.space.id,
         champion_id: goal_champion.id,
         reviewer_id: goal_champion.id,
