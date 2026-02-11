@@ -8,21 +8,25 @@ type PersonHandler = (person: CompanyAdminManagePerson) => void;
 interface Props {
   people: CompanyAdminManagePerson[];
   onOpenRemove: PersonHandler;
+  onOpenConvert: PersonHandler;
   onOpenReissue: PersonHandler;
   onOpenView: PersonHandler;
   onOpenRenew: PersonHandler;
   onChangeAccessLevel: (personId: string, accessLevel: number) => void;
   permissions?: Permissions;
+  showConvertToGuest?: boolean;
 }
 
 export function PeopleList({
   people,
   onOpenRemove,
+  onOpenConvert,
   onOpenReissue,
   onOpenView,
   onOpenRenew,
   onChangeAccessLevel,
   permissions,
+  showConvertToGuest,
 }: Props) {
   return (
     <div>
@@ -31,11 +35,13 @@ export function PeopleList({
           key={person.id}
           person={person}
           onOpenRemove={onOpenRemove}
+          onOpenConvert={onOpenConvert}
           onOpenReissue={onOpenReissue}
           onOpenView={onOpenView}
           onOpenRenew={onOpenRenew}
           onChangeAccessLevel={onChangeAccessLevel}
           permissions={permissions}
+          showConvertToGuest={showConvertToGuest}
         />
       ))}
     </div>

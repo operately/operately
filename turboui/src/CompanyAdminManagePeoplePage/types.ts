@@ -26,6 +26,7 @@ export interface CompanyAdminManagePeoplePageProps {
   outsideCollaborators?: CompanyAdminManagePerson[];
   showOutsideCollaborators?: boolean;
   onRemovePerson: (personId: string) => Promise<void> | void;
+  onConvertToGuest: (personId: string) => Promise<void>;
   onReissueInvitation: (personId: string) => Promise<string>;
   onRenewInvitation: (personId: string) => Promise<string>;
   onChangeAccessLevel: (personId: string, accessLevel: number) => Promise<void>;

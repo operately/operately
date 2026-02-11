@@ -4,6 +4,7 @@ import { PrimaryButton } from "../Button";
 import { Navigation } from "../Page/Navigation";
 import { useHtmlTitle } from "../Page/useHtmlTitle";
 import classNames from "../utils/classnames";
+import { ConvertToGuestModal } from "./components/ConvertToGuestModal";
 import { PeopleList } from "./components/PeopleList";
 import { ReissueInvitationModal } from "./components/ReissueInvitationModal";
 import { RemovePersonModal } from "./components/RemovePersonModal";
@@ -18,6 +19,7 @@ export namespace CompanyAdminManagePeoplePage {
 
 type ActiveModal =
   | { type: "remove"; person: CompanyAdminManagePeoplePage.Person }
+  | { type: "convert"; person: CompanyAdminManagePeoplePage.Person }
   | { type: "reissue"; person: CompanyAdminManagePeoplePage.Person }
   | { type: "view"; person: CompanyAdminManagePeoplePage.Person }
   | { type: "renew"; person: CompanyAdminManagePeoplePage.Person };
@@ -33,6 +35,7 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
 
   const [activeModal, setActiveModal] = React.useState<ActiveModal | null>(null);
   const [removeLoading, setRemoveLoading] = React.useState(false);
+  const [convertLoading, setConvertLoading] = React.useState(false);
   const [reissueState, setReissueState] = React.useState(defaultReissueState);
   const [renewState, setRenewState] = React.useState(defaultRenewState);
 
@@ -43,6 +46,7 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
 
     setActiveModal(null);
     setRemoveLoading(false);
+    setConvertLoading(false);
     setReissueState(defaultReissueState);
     setRenewState(defaultRenewState);
   }, [activeModal?.type, props.onRenewModalClose]);
@@ -50,6 +54,11 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
   const openRemoveModal = React.useCallback((person: CompanyAdminManagePeoplePage.Person) => {
     setActiveModal({ type: "remove", person });
     setRemoveLoading(false);
+  }, []);
+
+  const openConvertModal = React.useCallback((person: CompanyAdminManagePeoplePage.Person) => {
+    setActiveModal({ type: "convert", person });
+    setConvertLoading(false);
   }, []);
 
   const openReissueModal = React.useCallback((person: CompanyAdminManagePeoplePage.Person) => {
@@ -78,6 +87,19 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
       setRemoveLoading(false);
     }
   }, [activeModal, closeModal, props.onRemovePerson, removeLoading]);
+
+  const handleConvert = React.useCallback(async () => {
+    if (!activeModal || activeModal.type !== "convert") return;
+    if (convertLoading) return;
+
+    setConvertLoading(true);
+    try {
+      await props.onConvertToGuest(activeModal.person.id);
+      closeModal();
+    } finally {
+      setConvertLoading(false);
+    }
+  }, [activeModal, closeModal, convertLoading, props.onConvertToGuest]);
 
   const handleGenerateReissue = React.useCallback(async () => {
     if (!activeModal || activeModal.type !== "reissue") return;
@@ -132,10 +154,13 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
               <PeopleList
                 people={props.invitedPeople}
                 onOpenRemove={openRemoveModal}
+                onOpenConvert={openConvertModal}
                 onOpenReissue={openReissueModal}
                 onOpenView={openViewModal}
                 onOpenRenew={openRenewModal}
                 onChangeAccessLevel={props.onChangeAccessLevel}
+                permissions={props.permissions}
+                showConvertToGuest={true}
               />
             </Section>
           )}
@@ -145,11 +170,13 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
               <PeopleList
                 people={props.currentMembers}
                 onOpenRemove={openRemoveModal}
+                onOpenConvert={openConvertModal}
                 onOpenReissue={openReissueModal}
                 onOpenView={openViewModal}
                 onOpenRenew={openRenewModal}
                 onChangeAccessLevel={props.onChangeAccessLevel}
                 permissions={props.permissions}
+                showConvertToGuest={true}
               />
             </Section>
           )}
@@ -159,6 +186,7 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
               <PeopleList
                 people={outsideCollaborators}
                 onOpenRemove={openRemoveModal}
+                onOpenConvert={openConvertModal}
                 onOpenReissue={openReissueModal}
                 onOpenView={openViewModal}
                 onOpenRenew={openRenewModal}
@@ -176,6 +204,14 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
         onClose={closeModal}
         onConfirm={handleRemove}
         loading={removeLoading}
+      />
+
+      <ConvertToGuestModal
+        isOpen={activeModal?.type === "convert"}
+        person={activeModal?.type === "convert" ? activeModal.person : null}
+        onClose={closeModal}
+        onConfirm={handleConvert}
+        loading={convertLoading}
       />
 
       <ReissueInvitationModal
