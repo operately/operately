@@ -939,6 +939,34 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
     end
   end
 
+  describe "permissions - hidden space associations" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:hidden_space, company_permissions: Binding.no_access())
+      |> Factory.add_company_member(:company_member)
+      |> Factory.add_goal(:goal, :hidden_space, champion: :company_member)
+      |> Factory.add_project(:project, :hidden_space, champion: :company_member)
+    end
+
+    test "keeps items visible while preloading inaccessible spaces as nil", ctx do
+      {:ok, work_map} = GetWorkMapQuery.execute(ctx.company_member, %{company_id: ctx.company.id})
+
+      assert_work_map_structure(work_map, ctx, %{
+        goal: [],
+        project: []
+      })
+
+      items_by_id = index_work_map_by_id(work_map)
+
+      goal = Map.fetch!(items_by_id, ctx.goal.id)
+      project = Map.fetch!(items_by_id, ctx.project.id)
+
+      assert goal.space == nil
+      assert project.space == nil
+    end
+  end
+
   describe "handling edge cases" do
     setup ctx do
       ctx
