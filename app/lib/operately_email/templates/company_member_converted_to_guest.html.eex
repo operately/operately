@@ -1,0 +1,13 @@
+<%= title("#{short_name(@author)} converted your account in #{@company.name} to an outside collaborator") %>
+
+<%= spacer() %>
+
+<%= row do %>
+  Your team-member permissions were removed. You can still sign in and access the work you are explicitly invited to.
+<% end %>
+
+<%= spacer() %>
+
+<%= row do %>
+  <%= cta_button(@login_url, "Log in to Operately") %>
+<% end %>

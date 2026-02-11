@@ -1,0 +1,5 @@
+<%= short_name(@author) %> converted your account in <%= @company.name %> to an outside collaborator.
+
+Your team-member permissions were removed. You can still sign in and access the work you are explicitly invited to.
+
+Log in to Operately: <%= @login_url %>

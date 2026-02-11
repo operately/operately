@@ -87,6 +87,7 @@ export const DISPLAYED_IN_FEED = [
   "company_owner_removing",
   "company_member_restoring",
   "company_member_added",
+  "company_member_converted_to_guest",
   "guest_invited",
   "company_adding",
   "company_editing",
@@ -187,6 +188,7 @@ import CompanyOwnerRemoving from "@/features/activities/CompanyOwnerRemoving";
 import CompanyOwnersAdding from "@/features/activities/CompanyOwnersAdding";
 import CompanyMembersPermissionsEdited from "@/features/activities/CompanyMembersPermissionsEdited";
 import CompanyMemberAdded from "@/features/activities/CompanyMemberAdded";
+import CompanyMemberConvertedToGuest from "@/features/activities/CompanyMemberConvertedToGuest";
 import GuestInvited from "@/features/activities/GuestInvited";
 import DiscussionCommentSubmitted from "@/features/activities/DiscussionCommentSubmitted";
 import DiscussionPosting from "@/features/activities/DiscussionPosting";
@@ -295,6 +297,7 @@ function handler(activity: Activity) {
     .with("company_member_restoring", () => CompanyMemberRestoring)
     .with("company_members_permissions_edited", () => CompanyMembersPermissionsEdited)
     .with("company_member_added", () => CompanyMemberAdded)
+    .with("company_member_converted_to_guest", () => CompanyMemberConvertedToGuest)
     .with("guest_invited", () => GuestInvited)
     .with("discussion_posting", () => DiscussionPosting)
     .with("discussion_comment_submitted", () => DiscussionCommentSubmitted)
