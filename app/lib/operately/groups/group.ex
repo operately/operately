@@ -139,7 +139,6 @@ defmodule Operately.Groups.Group do
     |> where([s], ilike(s.name, ^"%#{query}%"))
     |> Filters.filter_by_access(person.id, access_level)
     |> order_by([s], asc: s.name)
-    |> limit(10)
     |> Operately.Repo.all()
   end
 

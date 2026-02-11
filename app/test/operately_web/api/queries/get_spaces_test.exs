@@ -123,6 +123,26 @@ defmodule OperatelyWeb.Api.Queries.GetSpacesTest do
       assert Enum.find(space_res.members, &(&1.id == Paths.person_id(ctx.guest)))
       refute Enum.find(space_res.members, &(&1.id == Paths.person_id(ctx.ai)))
     end
+
+    test "returns all 15 created spaces", ctx do
+      ctx =
+        Enum.reduce(1..15, ctx, fn i, acc ->
+          Factory.add_space(acc, String.to_atom("space#{i}"), name: "Space #{i}")
+        end)
+
+      assert {200, res} = query(ctx.conn, :get_spaces, %{})
+
+      assert length(res.spaces) == 16 # 15 created spaces + 1 company space
+
+      created_space_ids = Enum.map(1..15, fn i ->
+        space = Map.get(ctx, String.to_atom("space#{i}"))
+        Paths.space_id(space)
+      end)
+
+      Enum.each(created_space_ids, fn space_id ->
+        assert Enum.find(res.spaces, &(&1.id == space_id)) != nil
+      end)
+    end
   end
 
   describe "access_level filtering" do
