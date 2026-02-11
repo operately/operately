@@ -21,7 +21,7 @@ function convertToWorkMapItem(paths: Paths, item: WorkMapItem): WorkMap.Item {
   return {
     ...item,
     space: item.space ? parseSpaceForTurboUI(paths, item.space) : null,
-    spacePath: item.space ? paths.spacePath(item.space.id) : null,
+    spacePath: item.spacePath,
     taskStatus: parseTaskStatusForTurboUi(item.taskStatus),
     timeframe: convertTimeframe(item.timeframe),
     children: item.children.map((c) => convertToWorkMapItem(paths, c)),
