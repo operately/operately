@@ -17,6 +17,12 @@ export interface CompanyAdminManagePerson {
   accessLevel?: number;
 }
 
+export type AccessOptions =
+  | "minimal_access"
+  | "view_access"
+  | "comment_access"
+  | "edit_access"
+
 export interface CompanyAdminManagePeoplePageProps {
   companyName: string;
   navigationItems: Navigation.Item[];
@@ -29,7 +35,7 @@ export interface CompanyAdminManagePeoplePageProps {
   onConvertToGuest: (personId: string) => Promise<void>;
   onReissueInvitation: (personId: string) => Promise<string>;
   onRenewInvitation: (personId: string) => Promise<string>;
-  onChangeAccessLevel: (personId: string, accessLevel: number) => Promise<void>;
+  onChangeAccessLevel: (personId: string, accessLevel: AccessOptions) => Promise<void>;
   onRenewModalClose?: () => void;
   testId?: string;
   permissions: Permissions;

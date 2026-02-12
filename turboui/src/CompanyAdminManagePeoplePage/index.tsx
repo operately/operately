@@ -161,7 +161,7 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
                 onOpenRenew={openRenewModal}
                 onChangeAccessLevel={props.onChangeAccessLevel}
                 permissions={props.permissions}
-                showConvertToGuest={true}
+                showConvertToGuest
               />
             </Section>
           )}
@@ -178,7 +178,7 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
                 onOpenRenew={openRenewModal}
                 onChangeAccessLevel={props.onChangeAccessLevel}
                 permissions={props.permissions}
-                showConvertToGuest={true}
+                showConvertToGuest
               />
             </Section>
           )}
@@ -195,6 +195,7 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
                 onOpenRenew={openRenewModal}
                 onChangeAccessLevel={props.onChangeAccessLevel}
                 permissions={props.permissions}
+                allowMinimalAccess
               />
             </Section>
           )}
