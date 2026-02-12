@@ -1738,6 +1738,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :company_permissions do
+    field :can_view, :boolean, null: false
     field :can_edit_trusted_email_domains, :boolean, null: false
     field :can_invite_members, :boolean, null: false
     field :can_remove_members, :boolean, null: false
