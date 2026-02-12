@@ -170,5 +170,31 @@ defmodule Operately.Features.OutsideCollaboratorAccessTest do
       |> Steps.click_assigned_tab()
       |> Steps.assert_assignments_visible()
     end
+
+    feature "outside collaborator can edit their about me", ctx do
+      about_me = "I'm an outside collaborator helping with projects."
+
+      ctx
+      |> Steps.log_in_as_collaborator()
+      |> Steps.visit_profile_edit_page()
+      |> Steps.fill_about_me(text: about_me)
+      |> Steps.submit_profile_changes()
+      |> Steps.visit_profile_page()
+      |> Steps.click_about_tab()
+      |> Steps.assert_about_me_visible(text: about_me)
+    end
+
+    feature "outside collaborator can toggle assignments email", ctx do
+      ctx
+      |> Steps.log_in_as_collaborator()
+      |> Steps.visit_profile_edit_page()
+      |> Steps.assert_assignments_email_enabled()
+      |> Steps.assert_person_in_assignments_cron()
+      |> Steps.disable_assignments_email()
+      |> Steps.assert_person_not_in_assignments_cron()
+      |> Steps.visit_profile_edit_page()
+      |> Steps.enable_assignments_email()
+      |> Steps.assert_person_in_assignments_cron()
+    end
   end
 end

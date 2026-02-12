@@ -241,4 +241,63 @@ defmodule Operately.Support.Features.OutsideCollaboratorAccessSteps do
     |> UI.assert_text(ctx.project1.name)
     |> UI.assert_text(ctx.project2.name)
   end
+
+  step :visit_profile_edit_page, ctx do
+    ctx |> UI.visit(Paths.profile_edit_path(ctx.company, ctx.collaborator))
+  end
+
+  step :fill_about_me, ctx, text: text do
+    UI.fill_rich_text(ctx, testid: "about-me", with: text)
+  end
+
+  step :submit_profile_changes, ctx do
+    ctx
+    |> UI.click(testid: "submit")
+    |> UI.assert_page(Paths.account_path(ctx.company))
+  end
+
+  step :assert_about_me_visible, ctx, text: text do
+    UI.assert_text(ctx, text)
+  end
+
+  step :click_about_tab, ctx do
+    ctx |> UI.click(testid: "tab-about")
+  end
+
+  step :assert_assignments_email_enabled, ctx do
+    ctx
+    |> UI.assert_has(testid: "disable-assignments-email-toggle")
+  end
+
+  step :disable_assignments_email, ctx do
+    ctx
+    |> UI.click(testid: "disable-assignments-email-toggle")
+    |> UI.sleep(100)
+    |> UI.click(testid: "submit")
+    |> UI.assert_page(Paths.account_path(ctx.company))
+  end
+
+  step :enable_assignments_email, ctx do
+    ctx
+    |> UI.click(testid: "enable-assignments-email-toggle")
+    |> UI.sleep(100)
+    |> UI.click(testid: "submit")
+    |> UI.assert_page(Paths.account_path(ctx.company))
+  end
+
+  step :assert_person_not_in_assignments_cron, ctx do
+    people = OperatelyEmail.Assignments.Cron.people_who_want_assignment_emails()
+
+    refute Enum.any?(people, fn person -> person.id == ctx.collaborator.id end)
+
+    ctx
+  end
+
+  step :assert_person_in_assignments_cron, ctx do
+    people = OperatelyEmail.Assignments.Cron.people_who_want_assignment_emails()
+
+    assert Enum.any?(people, fn person -> person.id == ctx.collaborator.id end)
+
+    ctx
+  end
 end
