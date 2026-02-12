@@ -127,18 +127,18 @@ defmodule Operately.Features.OutsideCollaboratorAccessTest do
       |> Steps.assert_org_chart_link_not_visible_in_company_dropdown()
     end
 
-    feature "outside collaborator is redirected when manually accessing people page", ctx do
+    feature "outside collaborator can access people page but sees no people", ctx do
       ctx
       |> Steps.log_in_as_collaborator()
       |> Steps.visit_people_page()
-      |> Steps.assert_redirected_to_home_page()
+      |> Steps.assert_people_page_loads_with_no_people()
     end
 
-    feature "outside collaborator is redirected when manually accessing org chart page", ctx do
+    feature "outside collaborator can access org chart page but sees no people", ctx do
       ctx
       |> Steps.log_in_as_collaborator()
       |> Steps.visit_org_chart_page()
-      |> Steps.assert_redirected_to_home_page()
+      |> Steps.assert_org_chart_page_loads_with_no_people()
     end
   end
 

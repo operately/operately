@@ -34,4 +34,20 @@ defmodule Operately.Support.Features.PeoplePageSteps do
   step :click_activity_tab, ctx do
     UI.click(ctx, testid: "tab-activity")
   end
+
+  step :visit_people_page, ctx do
+    ctx
+    |> UI.click(testid: "company-dropdown")
+    |> UI.click(testid: "company-dropdown-people")
+  end
+
+  step :visit_org_chart_page, ctx do
+    ctx
+    |> UI.click(testid: "company-dropdown")
+    |> UI.click(testid: "company-dropdown-org-chart")
+  end
+
+  step :assert_person_visible_in_list, ctx, person do
+    UI.assert_text(ctx, person.full_name)
+  end
 end

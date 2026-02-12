@@ -167,6 +167,20 @@ defmodule Operately.Support.Features.OutsideCollaboratorAccessSteps do
     |> UI.assert_page(Paths.home_path(ctx.company))
   end
 
+  step :assert_people_page_loads_with_no_people, ctx do
+    ctx
+    |> UI.assert_page(Paths.people_path(ctx.company))
+    |> UI.assert_text("Members of")
+    |> UI.refute_text(ctx.collaborator.full_name)
+  end
+
+  step :assert_org_chart_page_loads_with_no_people, ctx do
+    ctx
+    |> UI.assert_page(Paths.org_chart_path(ctx.company))
+    |> UI.assert_text("Org Chart")
+    |> UI.refute_text(ctx.collaborator.full_name)
+  end
+
   step :visit_new_space_page, ctx do
     ctx |> UI.visit(Paths.new_space_path(ctx.company))
   end
@@ -186,7 +200,7 @@ defmodule Operately.Support.Features.OutsideCollaboratorAccessSteps do
   end
 
   step :assert_permission_error_message, ctx do
-    ctx |> UI.assert_text("You don't have permission to perform this action")
+    ctx |> UI.assert_text("The requested resource was not found")
   end
 
   #
