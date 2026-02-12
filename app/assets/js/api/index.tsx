@@ -1163,6 +1163,11 @@ export interface Discussion {
   permissions?: SpacePermissions | null;
 }
 
+export interface EditCompanyMemberPermissionsInput {
+  id: Id;
+  accessLevel: AccessOptions;
+}
+
 export interface EditMemberPermissionsInput {
   id?: Id | null;
   accessLevel?: number | null;
@@ -2069,6 +2074,7 @@ export type UpdateContent =
 
 export type AccessOptions =
   | "no_access"
+  | "minimal_access"
   | "view_access"
   | "comment_access"
   | "edit_access"
@@ -3549,7 +3555,7 @@ export interface EditCompanyResult {
 }
 
 export interface EditCompanyMembersPermissionsInput {
-  members: EditMemberPermissionsInput[];
+  members: EditCompanyMemberPermissionsInput[];
 }
 
 export interface EditCompanyMembersPermissionsResult {

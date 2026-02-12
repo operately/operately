@@ -13,6 +13,31 @@ interface LoaderResult {
   cacheVersion: number;
 }
 
+const fetchPersonWithFallback = async (personId: string) => {
+  try {
+    const person = await People.getPerson({
+      id: personId,
+      includeManager: true,
+      includeReports: true,
+      includePeers: true,
+      includePermissions: true,
+    });
+    return person.person;
+  } catch (error) {
+    if (error.status === 404) {
+      const me = await People.getMe({ includeManager: true }).then((result) => result.me);
+
+      if (me && me.id === personId) {
+        return me;
+      } else {
+        throw error;
+      }
+    }
+
+    throw error;
+  }
+};
+
 export async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
   const personId = params.id;
 
@@ -21,13 +46,7 @@ export async function loader({ params, refreshCache = false }): Promise<LoaderRe
     refreshCache,
     fetchFn: async () =>
       fetchAll({
-        person: People.getPerson({
-          id: personId,
-          includeManager: true,
-          includeReports: true,
-          includePeers: true,
-          includePermissions: true,
-        }).then((data) => data.person!),
+        person: fetchPersonWithFallback(personId),
         workMap: WorkMap.getFlatWorkMap({
           championId: personId,
           contributorId: personId,

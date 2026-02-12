@@ -5,9 +5,10 @@ defmodule OperatelyWeb.Api.Mutations.EditCompanyMembersPermissions do
   alias Operately.Companies.Company
   alias Operately.Companies.Permissions
   alias Operately.Operations.CompanyMembersPermissionsEditing
+  alias Operately.Access.Binding
 
   inputs do
-    field :members, list_of(:edit_member_permissions_input), null: false
+    field :members, list_of(:edit_company_member_permissions_input), null: false
   end
 
   outputs do
@@ -20,7 +21,9 @@ defmodule OperatelyWeb.Api.Mutations.EditCompanyMembersPermissions do
 
     :ok = authorize(company)
 
-    {:ok, _} = CompanyMembersPermissionsEditing.run(me, inputs.members)
+    members = parse_members(inputs.members)
+
+    {:ok, _} = CompanyMembersPermissionsEditing.run(me, members)
     {:ok, %{success: true}}
   catch
     {:error, :forbidden} -> {:error, :forbidden}
@@ -35,6 +38,12 @@ defmodule OperatelyWeb.Api.Mutations.EditCompanyMembersPermissions do
       {:ok, :allowed} -> :ok
       {:error, _} -> throw {:error, :forbidden}
     end
+  end
+
+  defp parse_members(members) do
+    Enum.map(members, fn member ->
+      %{member | access_level: Binding.from_atom(member.access_level)}
+    end)
   end
 
   defp unwrap({:ok, value}), do: value

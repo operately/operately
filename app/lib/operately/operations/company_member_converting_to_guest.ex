@@ -28,7 +28,7 @@ defmodule Operately.Operations.CompanyMemberConvertingToGuest do
         Binding.changeset(%{
           group_id: group.id,
           context_id: context.id,
-          access_level: Binding.view_access(),
+          access_level: Binding.minimal_access(),
         })
       end)
       |> insert_activity(admin, person)

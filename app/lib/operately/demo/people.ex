@@ -12,9 +12,10 @@ defmodule Operately.Demo.People do
   def create_outside_collaborators(resources, []), do: resources
   def create_outside_collaborators(resources, data) do
     company = Resources.get(resources, :company)
+    owner = Resources.get(resources, :owner)
 
     Resources.create(resources, data, fn {_res, d, _index} ->
-      create_guest_person(company, d)
+      create_guest_person(owner, company, d)
     end)
   end
 
@@ -51,15 +52,14 @@ defmodule Operately.Demo.People do
     Operately.Repo.preload(invitation, :person).person
   end
 
-  defp create_guest_person(company, data) do
-    {:ok, person} = Operately.People.create_person(%{
-      company_id: company.id,
+  defp create_guest_person(owner, company, data) do
+    {:ok, invite_link} = Operately.Operations.GuestInviting.run(owner, %{
       full_name: data.name,
       email: create_email(company, data),
       title: data.title,
-      type: :guest,
     })
 
+    person = Operately.Repo.preload(invite_link, :person).person
     {:ok, person} = set_avatar(person, data.avatar)
     {:ok, person} = set_first_login(person, false)
 
