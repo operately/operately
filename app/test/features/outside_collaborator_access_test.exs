@@ -141,4 +141,34 @@ defmodule Operately.Features.OutsideCollaboratorAccessTest do
       |> Steps.assert_redirected_to_home_page()
     end
   end
+
+  describe "profile access for outside collaborators" do
+    setup ctx do
+      Steps.setup_collaborator_with_goals_and_projects(ctx)
+    end
+
+    feature "outside collaborator can open their profile page", ctx do
+      ctx
+      |> Steps.log_in_as_collaborator()
+      |> Steps.visit_profile_page()
+      |> Steps.assert_profile_page_loaded()
+    end
+
+    feature "outside collaborator profile shows no assignments by default", ctx do
+      ctx
+      |> Steps.log_in_as_collaborator()
+      |> Steps.visit_profile_page()
+      |> Steps.click_assigned_tab()
+      |> Steps.assert_no_assignments_visible()
+    end
+
+    feature "outside collaborator profile shows assignments when they are champion", ctx do
+      ctx
+      |> Steps.setup_collaborator_as_champion_of_goals_and_projects()
+      |> Steps.log_in_as_collaborator()
+      |> Steps.visit_profile_page()
+      |> Steps.click_assigned_tab()
+      |> Steps.assert_assignments_visible()
+    end
+  end
 end

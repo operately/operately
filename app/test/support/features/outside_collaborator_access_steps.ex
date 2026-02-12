@@ -188,4 +188,57 @@ defmodule Operately.Support.Features.OutsideCollaboratorAccessSteps do
   step :assert_permission_error_message, ctx do
     ctx |> UI.assert_text("You don't have permission to perform this action")
   end
+
+  #
+  # Profile access
+  #
+
+  step :setup_collaborator_with_goals_and_projects, ctx do
+    ctx
+    |> Factory.setup()
+    |> Factory.add_company_owner(:owner)
+    |> Factory.add_space(:space, company_permissions: Binding.edit_access())
+    |> Factory.add_outside_collaborator(:collaborator, :owner)
+    |> Factory.add_goal(:goal, :space, name: "First Goal", company_access: Binding.edit_access(), space_access: Binding.edit_access())
+    |> Factory.add_project(:project, :space, name: "First Project", company_access_level: Binding.edit_access(), space_access_level: Binding.edit_access())
+  end
+
+  step :setup_collaborator_as_champion_of_goals_and_projects, ctx do
+    ctx
+    |> Factory.add_goal(:goal1, :space, name: "Goal 1", champion: :collaborator, company_access: Binding.edit_access(), space_access: Binding.edit_access())
+    |> Factory.add_goal(:goal2, :space, name: "Goal 2", champion: :collaborator, company_access: Binding.edit_access(), space_access: Binding.edit_access())
+    |> Factory.add_project(:project1, :space, name: "Project 1", champion: :collaborator, company_access_level: Binding.edit_access(), space_access_level: Binding.edit_access())
+    |> Factory.add_project(:project2, :space, name: "Project 2", champion: :collaborator, company_access_level: Binding.edit_access(), space_access_level: Binding.edit_access())
+  end
+
+  step :visit_profile_page, ctx do
+    ctx |> UI.visit(Paths.profile_path(ctx.company, ctx.collaborator))
+  end
+
+  step :click_my_work_link, ctx do
+    ctx |> UI.click(testid: "my-work-link")
+  end
+
+  step :assert_profile_page_loaded, ctx do
+    ctx
+    |> UI.sleep(200)
+    |> UI.assert_page(Paths.profile_path(ctx.company, ctx.collaborator))
+  end
+
+  step :click_assigned_tab, ctx do
+    ctx |> UI.click(testid: "tab-assigned")
+  end
+
+  step :assert_no_assignments_visible, ctx do
+    ctx |> UI.refute_text(ctx.goal.name)
+    ctx |> UI.refute_text(ctx.project.name)
+  end
+
+  step :assert_assignments_visible, ctx do
+    ctx
+    |> UI.assert_text(ctx.goal1.name)
+    |> UI.assert_text(ctx.goal2.name)
+    |> UI.assert_text(ctx.project1.name)
+    |> UI.assert_text(ctx.project2.name)
+  end
 end
