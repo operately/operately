@@ -36,6 +36,7 @@ defmodule OperatelyWeb.Api.Queries.GetMe do
         send_daily_summary: me.send_daily_summary,
         notify_on_mention: me.notify_on_mention,
         notify_about_assignments: me.notify_about_assignments,
+        description: encode_description(me.description),
         manager: include_manager && serialize_manager(me.manager),
         show_dev_bar: Application.get_env(:operately, :app_env) == :dev
       }
@@ -54,6 +55,9 @@ defmodule OperatelyWeb.Api.Queries.GetMe do
       avatar_url: manager.avatar_url
     }
   end
+
+  defp encode_description(nil), do: nil
+  defp encode_description(description), do: Jason.encode!(description)
 
   defp ok_tuple(value) do
     {:ok, value}

@@ -27,6 +27,7 @@ defmodule OperatelyWeb.Api.Queries.GetMeTest do
         send_daily_summary: ctx.person.send_daily_summary,
         notify_on_mention: ctx.person.notify_on_mention,
         notify_about_assignments: ctx.person.notify_about_assignments,
+        description: nil,
         manager: nil,
         show_dev_bar: false,
       }
@@ -50,6 +51,7 @@ defmodule OperatelyWeb.Api.Queries.GetMeTest do
         send_daily_summary: me.send_daily_summary,
         notify_on_mention: me.notify_on_mention,
         notify_about_assignments: me.notify_about_assignments,
+        description: nil,
         show_dev_bar: false,
         manager: %{
           id: Paths.person_id(manager),
@@ -77,6 +79,7 @@ defmodule OperatelyWeb.Api.Queries.GetMeTest do
         send_daily_summary: ctx.person.send_daily_summary,
         notify_on_mention: ctx.person.notify_on_mention,
         notify_about_assignments: ctx.person.notify_about_assignments,
+        description: nil,
         show_dev_bar: false,
         manager: nil
       }
