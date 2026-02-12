@@ -113,6 +113,30 @@ defmodule OperatelyWeb.Api.Queries.ListPossibleManagersTest do
     end
   end
 
+  describe "guest access control" do
+    test "guest without view access returns empty list", ctx do
+      ctx =
+        ctx
+        |> Factory.setup()
+        |> Factory.add_company_member(:member1)
+        |> Factory.add_company_member(:member2)
+        |> Factory.add_company_member(:member3)
+        |> Factory.add_company_member(:member4)
+        |> Factory.add_outside_collaborator(:guest, :creator)
+        |> Factory.log_in_person(:guest)
+
+      # Guest queries for possible managers
+      assert {200, res} = query(ctx.conn, :list_possible_managers, user_id: Paths.person_id(ctx.member1))
+      assert res.people == []
+
+      # Company member queries for possible managers
+      ctx = Factory.log_in_person(ctx, :member4)
+
+      assert {200, res} = query(ctx.conn, :list_possible_managers, user_id: Paths.person_id(ctx.member1))
+      assert length(res.people) == 5
+    end
+  end
+
   def serialized(person) do
     OperatelyWeb.Api.Serializer.serialize(person, level: :essential)
   end

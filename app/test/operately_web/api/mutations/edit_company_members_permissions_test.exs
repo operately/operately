@@ -33,7 +33,7 @@ defmodule OperatelyWeb.Api.Mutations.EditCompanyMembersPermissionsTest do
         assert {code, res} = mutation(ctx.conn, :edit_company_members_permissions, %{
           members: [%{
             id: Paths.person_id(person),
-            access_level: Binding.edit_access(),
+            access_level: "edit_access",
           }],
         })
 
@@ -62,7 +62,7 @@ defmodule OperatelyWeb.Api.Mutations.EditCompanyMembersPermissionsTest do
       assert {200, res} = mutation(ctx.conn, :edit_company_members_permissions, %{
         members: [%{
           id: Paths.person_id(person),
-          access_level: Binding.edit_access(),
+          access_level: "edit_access",
         }],
       })
       assert res.success
@@ -77,7 +77,7 @@ defmodule OperatelyWeb.Api.Mutations.EditCompanyMembersPermissionsTest do
         members: Enum.map(people, fn p ->
           %{
             id: Paths.person_id(p),
-            access_level: Binding.edit_access(),
+            access_level: "edit_access",
           }
         end),
       })
@@ -95,9 +95,9 @@ defmodule OperatelyWeb.Api.Mutations.EditCompanyMembersPermissionsTest do
 
       assert {200, _} = mutation(ctx.conn, :edit_company_members_permissions, %{
         members: [
-          %{id: Paths.person_id(p1), access_level: Binding.view_access()},
-          %{id: Paths.person_id(p2), access_level: Binding.edit_access()},
-          %{id: Paths.person_id(p3), access_level: Binding.full_access()},
+          %{id: Paths.person_id(p1), access_level: "view_access"},
+          %{id: Paths.person_id(p2), access_level: "edit_access"},
+          %{id: Paths.person_id(p3), access_level: "full_access"},
         ],
       })
 

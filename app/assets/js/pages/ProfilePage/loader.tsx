@@ -2,6 +2,7 @@ import * as People from "@/models/people";
 import * as WorkMap from "@/models/workMap";
 
 import { PageCache } from "@/routes/PageCache";
+import { compareIds } from "@/routes/paths";
 import { fetchAll } from "@/utils/async";
 
 interface LoaderResult {
@@ -13,6 +14,31 @@ interface LoaderResult {
   cacheVersion: number;
 }
 
+const fetchPersonWithFallback = async (personId: string) => {
+  try {
+    const person = await People.getPerson({
+      id: personId,
+      includeManager: true,
+      includeReports: true,
+      includePeers: true,
+      includePermissions: true,
+    });
+    return person.person;
+  } catch (error) {
+    if (error.status === 404) {
+      const me = await People.getMe({}).then((result) => result.me);
+
+      if (me && compareIds(me.id, personId)) {
+        return me;
+      } else {
+        throw error;
+      }
+    }
+
+    throw error;
+  }
+};
+
 export async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
   const personId = params.id;
 
@@ -21,13 +47,7 @@ export async function loader({ params, refreshCache = false }): Promise<LoaderRe
     refreshCache,
     fetchFn: async () =>
       fetchAll({
-        person: People.getPerson({
-          id: personId,
-          includeManager: true,
-          includeReports: true,
-          includePeers: true,
-          includePermissions: true,
-        }).then((data) => data.person!),
+        person: fetchPersonWithFallback(personId),
         workMap: WorkMap.getFlatWorkMap({
           championId: personId,
           contributorId: personId,

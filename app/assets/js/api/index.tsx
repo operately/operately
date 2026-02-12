@@ -1115,6 +1115,7 @@ export interface Company {
 }
 
 export interface CompanyPermissions {
+  canView: boolean;
   canEditTrustedEmailDomains: boolean;
   canInviteMembers: boolean;
   canRemoveMembers: boolean;
@@ -1161,6 +1162,11 @@ export interface Discussion {
   potentialSubscribers?: Subscriber[] | null;
   notifications?: Notification[] | null;
   permissions?: SpacePermissions | null;
+}
+
+export interface EditCompanyMemberPermissionsInput {
+  id: Id;
+  accessLevel: AccessOptions;
 }
 
 export interface EditMemberPermissionsInput {
@@ -2069,6 +2075,7 @@ export type UpdateContent =
 
 export type AccessOptions =
   | "no_access"
+  | "minimal_access"
   | "view_access"
   | "comment_access"
   | "edit_access"
@@ -3549,7 +3556,7 @@ export interface EditCompanyResult {
 }
 
 export interface EditCompanyMembersPermissionsInput {
-  members: EditMemberPermissionsInput[];
+  members: EditCompanyMemberPermissionsInput[];
 }
 
 export interface EditCompanyMembersPermissionsResult {

@@ -48,6 +48,10 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "people", person_id(person)])
   end
 
+  def profile_edit_path(company = %Company{}, person = %Person{}) do
+    create_path([company_id(company), "people", person_id(person), "profile", "edit"])
+  end
+
   def goal_path(company = %Company{}, goal = %Goal{}) do
     create_path([company_id(company), "goals", goal_id(goal)])
   end

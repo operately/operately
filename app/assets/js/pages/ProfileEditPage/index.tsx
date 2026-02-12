@@ -7,7 +7,7 @@ import { Timezones } from "./timezones";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { PageModule } from "@/routes/types";
-import { usePaths } from "@/routes/paths";
+import { compareIds, usePaths } from "@/routes/paths";
 import { emptyContent, parseContent, ProfileEditPage } from "turboui";
 import * as Blobs from "@/models/blobs";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
@@ -22,9 +22,28 @@ interface LoaderResult {
   from: FromLocation;
 }
 
+const fetchPersonWithFallback = async (personId: string) => {
+  try {
+    const person = await People.getPerson({ id: personId, includeManager: true });
+    return person.person!;
+  } catch (error) {
+    if (error.status === 404) {
+      const me = await People.getMe({ includeManager: true }).then((result) => result.me);
+
+      if (me && compareIds(me.id, personId)) {
+        return me;
+      } else {
+        throw error;
+      }
+    }
+
+    throw error;
+  }
+};
+
 async function loader({ request, params }): Promise<LoaderResult> {
   return {
-    person: await People.getPerson({ id: params.id, includeManager: true }).then((d) => d.person!),
+    person: await fetchPersonWithFallback(params.id),
     from: Pages.getSearchParam(request, "from") as FromLocation,
   };
 }
@@ -103,18 +122,7 @@ function Page() {
     } finally {
       setIsSubmitting(false);
     }
-  }, [
-    fullName,
-    title,
-    aboutMe,
-    timezone,
-    manager,
-    notifyAboutAssignments,
-    person.id,
-    isCurrentUser,
-    navigate,
-    paths,
-  ]);
+  }, [fullName, title, aboutMe, timezone, manager, notifyAboutAssignments, person.id, isCurrentUser, navigate, paths]);
 
   const displayPerson: ProfileEditPage.Person = {
     id: person.id,
@@ -158,7 +166,6 @@ function Page() {
     />
   );
 }
-
 
 function useAvatarHandlers(personId: string) {
   const MAX_AVATAR_FILE_BYTES = 12 * 1024 * 1024; // 12 MB

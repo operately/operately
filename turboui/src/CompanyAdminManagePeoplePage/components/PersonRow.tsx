@@ -4,7 +4,7 @@ import { Avatar } from "../../Avatar";
 import { BlackLink } from "../../Link";
 import { AccessLevelBadge } from "../../AccessLevelBadge";
 import { IconAlertTriangle } from "../../icons";
-import { CompanyAdminManagePerson, Permissions } from "../types";
+import { AccessOptions, CompanyAdminManagePerson, Permissions } from "../types";
 import { PersonOptions } from "./PersonOptions";
 import { createTestId } from "../../TestableElement";
 
@@ -17,9 +17,10 @@ interface Props {
   onOpenReissue: PersonHandler;
   onOpenView: PersonHandler;
   onOpenRenew: PersonHandler;
-  onChangeAccessLevel: (personId: string, accessLevel: number) => void;
+  onChangeAccessLevel: (personId: string, accessLevel: AccessOptions) => void;
   permissions?: Permissions;
   showConvertToGuest?: boolean;
+  allowMinimalAccess?: boolean;
 }
 
 export function PersonRow({
@@ -32,6 +33,7 @@ export function PersonRow({
   onChangeAccessLevel,
   permissions,
   showConvertToGuest,
+  allowMinimalAccess,
 }: Props) {
   return (
     <div
@@ -60,6 +62,7 @@ export function PersonRow({
           onChangeAccessLevel={onChangeAccessLevel}
           permissions={permissions}
           showConvertToGuest={showConvertToGuest}
+          allowMinimalAccess={allowMinimalAccess}
         />
       </div>
     </div>

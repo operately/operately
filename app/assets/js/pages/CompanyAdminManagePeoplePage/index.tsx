@@ -3,6 +3,7 @@ import { PageModule } from "@/routes/types";
 
 import * as Pages from "@/components/Pages";
 import * as Companies from "@/models/companies";
+import * as Permissions from "@/models/permissions";
 import * as People from "@/models/people";
 import * as Time from "@/utils/time";
 import * as React from "react";
@@ -101,7 +102,7 @@ function Page() {
   );
 
   const handleChangeAccessLevel = React.useCallback(
-    async (personId: string, accessLevel: number) => {
+    async (personId: string, accessLevel: Permissions.AccessOptions) => {
       await editPermissions({ members: [{ id: personId, accessLevel }] });
       refresh();
     },
@@ -121,7 +122,6 @@ function Page() {
       invitedPeople={invited}
       currentMembers={members}
       outsideCollaborators={collaborators}
-      showOutsideCollaborators={true}
       onRemovePerson={handleRemove}
       onConvertToGuest={handleConvertToGuest}
       onReissueInvitation={handleCreateInvite}

@@ -167,6 +167,20 @@ defmodule Operately.Support.Features.OutsideCollaboratorAccessSteps do
     |> UI.assert_page(Paths.home_path(ctx.company))
   end
 
+  step :assert_people_page_loads_with_no_people, ctx do
+    ctx
+    |> UI.assert_page(Paths.people_path(ctx.company))
+    |> UI.assert_text("Members of")
+    |> UI.refute_text(ctx.collaborator.full_name)
+  end
+
+  step :assert_org_chart_page_loads_with_no_people, ctx do
+    ctx
+    |> UI.assert_page(Paths.org_chart_path(ctx.company))
+    |> UI.assert_text("Org Chart")
+    |> UI.refute_text(ctx.collaborator.full_name)
+  end
+
   step :visit_new_space_page, ctx do
     ctx |> UI.visit(Paths.new_space_path(ctx.company))
   end
@@ -186,6 +200,132 @@ defmodule Operately.Support.Features.OutsideCollaboratorAccessSteps do
   end
 
   step :assert_permission_error_message, ctx do
-    ctx |> UI.assert_text("You don't have permission to perform this action")
+    ctx |> UI.assert_text("The requested resource was not found")
+  end
+
+  #
+  # Profile access
+  #
+
+  step :setup_collaborator_with_goals_and_projects, ctx do
+    ctx
+    |> Factory.setup()
+    |> Factory.add_company_owner(:owner)
+    |> Factory.add_space(:space, company_permissions: Binding.edit_access())
+    |> Factory.add_outside_collaborator(:collaborator, :owner)
+    |> Factory.add_goal(:goal, :space, name: "First Goal", company_access: Binding.edit_access(), space_access: Binding.edit_access())
+    |> Factory.add_project(:project, :space, name: "First Project", company_access_level: Binding.edit_access(), space_access_level: Binding.edit_access())
+  end
+
+  step :setup_collaborator_as_champion_of_goals_and_projects, ctx do
+    ctx
+    |> Factory.add_goal(:goal1, :space, name: "Goal 1", champion: :collaborator, company_access: Binding.edit_access(), space_access: Binding.edit_access())
+    |> Factory.add_goal(:goal2, :space, name: "Goal 2", champion: :collaborator, company_access: Binding.edit_access(), space_access: Binding.edit_access())
+    |> Factory.add_project(:project1, :space, name: "Project 1", champion: :collaborator, company_access_level: Binding.edit_access(), space_access_level: Binding.edit_access())
+    |> Factory.add_project(:project2, :space, name: "Project 2", champion: :collaborator, company_access_level: Binding.edit_access(), space_access_level: Binding.edit_access())
+  end
+
+  step :visit_profile_page, ctx do
+    ctx |> UI.visit(Paths.profile_path(ctx.company, ctx.collaborator))
+  end
+
+  step :click_my_work_link, ctx do
+    ctx |> UI.click(testid: "my-work-link")
+  end
+
+  step :assert_profile_page_loaded, ctx do
+    ctx
+    |> UI.sleep(200)
+    |> UI.assert_page(Paths.profile_path(ctx.company, ctx.collaborator))
+  end
+
+  step :click_assigned_tab, ctx do
+    ctx |> UI.click(testid: "tab-assigned")
+  end
+
+  step :assert_no_assignments_visible, ctx do
+    ctx |> UI.refute_text(ctx.goal.name)
+    ctx |> UI.refute_text(ctx.project.name)
+  end
+
+  step :assert_assignments_visible, ctx do
+    ctx
+    |> UI.assert_text(ctx.goal1.name)
+    |> UI.assert_text(ctx.goal2.name)
+    |> UI.assert_text(ctx.project1.name)
+    |> UI.assert_text(ctx.project2.name)
+  end
+
+  step :visit_profile_edit_page, ctx do
+    ctx |> UI.visit(Paths.profile_edit_path(ctx.company, ctx.collaborator))
+  end
+
+  step :fill_about_me, ctx, text: text do
+    UI.fill_rich_text(ctx, testid: "about-me", with: text)
+  end
+
+  step :submit_profile_changes, ctx do
+    ctx
+    |> UI.click(testid: "submit")
+    |> UI.assert_page(Paths.account_path(ctx.company))
+  end
+
+  step :assert_about_me_visible, ctx, text: text do
+    UI.assert_text(ctx, text)
+  end
+
+  step :click_about_tab, ctx do
+    ctx |> UI.click(testid: "tab-about")
+  end
+
+  step :assert_assignments_email_enabled, ctx do
+    ctx
+    |> UI.assert_has(testid: "disable-assignments-email-toggle")
+  end
+
+  step :disable_assignments_email, ctx do
+    ctx
+    |> UI.click(testid: "disable-assignments-email-toggle")
+    |> UI.sleep(100)
+    |> UI.click(testid: "submit")
+    |> UI.assert_page(Paths.account_path(ctx.company))
+  end
+
+  step :enable_assignments_email, ctx do
+    ctx
+    |> UI.click(testid: "enable-assignments-email-toggle")
+    |> UI.sleep(100)
+    |> UI.click(testid: "submit")
+    |> UI.assert_page(Paths.account_path(ctx.company))
+  end
+
+  step :assert_person_not_in_assignments_cron, ctx do
+    people = OperatelyEmail.Assignments.Cron.people_who_want_assignment_emails()
+
+    refute Enum.any?(people, fn person -> person.id == ctx.collaborator.id end)
+
+    ctx
+  end
+
+  step :assert_person_in_assignments_cron, ctx do
+    people = OperatelyEmail.Assignments.Cron.people_who_want_assignment_emails()
+
+    assert Enum.any?(people, fn person -> person.id == ctx.collaborator.id end)
+
+    ctx
+  end
+
+  step :visit_company_admin_page, ctx do
+    ctx
+    |> UI.visit(Paths.company_admin_path(ctx.company))
+    |> UI.assert_has(testid: "company-admin-page")
+  end
+
+  step :assert_cannot_see_owners_section, ctx do
+    UI.refute_has(ctx, testid: "account-owners-section")
+  end
+
+  step :assert_cannot_see_admin_section, ctx do
+    UI.refute_has(ctx, testid: "as-an-admin-or-owner-you-can--section")
   end
 end

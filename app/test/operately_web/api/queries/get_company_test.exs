@@ -90,4 +90,121 @@ defmodule OperatelyWeb.Api.Queries.GetCompanyTest do
       Enum.find(list, fn p -> p.id == Paths.person_id(person) end)
     end
   end
+
+  describe "guest access (minimal access level)" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+
+      ctx
+      |> Factory.add_company_member(:member_peter)
+      |> Factory.add_company_admin(:admin_susan)
+      |> Factory.add_outside_collaborator(:guest_bob, :admin_susan)
+    end
+
+    test "guest can fetch company without includes", ctx do
+      ctx = log_in_account(ctx, ctx.guest_bob)
+
+      assert {200, res} = query(ctx.conn, :get_company, %{id: Paths.company_id(ctx.company)})
+      assert res.company
+      refute res.company.people
+      refute res.company.admins
+      refute res.company.owners
+    end
+
+    test "guest can fetch company with include_permissions", ctx do
+      ctx = log_in_account(ctx, ctx.guest_bob)
+
+      assert {200, res} = query(ctx.conn, :get_company, %{
+        id: Paths.company_id(ctx.company),
+        include_permissions: true
+      })
+
+      assert res.company
+      assert res.company.permissions
+    end
+
+    test "guest cannot see people list", ctx do
+      ctx = log_in_account(ctx, ctx.guest_bob)
+
+      assert {200, res} = query(ctx.conn, :get_company, %{
+        id: Paths.company_id(ctx.company),
+        include_people: true
+      })
+
+      assert res.company
+      refute res.company.people
+    end
+
+    test "guest cannot see admins list", ctx do
+      ctx = log_in_account(ctx, ctx.guest_bob)
+
+      assert {200, res} = query(ctx.conn, :get_company, %{
+        id: Paths.company_id(ctx.company),
+        include_admins: true
+      })
+
+      assert res.company
+      refute res.company.admins
+    end
+
+    test "guest cannot see owners list", ctx do
+      ctx = log_in_account(ctx, ctx.guest_bob)
+
+      assert {200, res} = query(ctx.conn, :get_company, %{
+        id: Paths.company_id(ctx.company),
+        include_owners: true
+      })
+
+      assert res.company
+      refute res.company.owners
+    end
+
+    test "guest cannot see members access levels", ctx do
+      ctx = log_in_account(ctx, ctx.guest_bob)
+
+      assert {200, res} = query(ctx.conn, :get_company, %{
+        id: Paths.company_id(ctx.company),
+        include_people: true,
+        include_members_access_levels: true
+      })
+
+      assert res.company
+      refute res.company.people
+    end
+
+    test "guest requesting multiple includes only gets permissions", ctx do
+      ctx = log_in_account(ctx, ctx.guest_bob)
+
+      assert {200, res} = query(ctx.conn, :get_company, %{
+        id: Paths.company_id(ctx.company),
+        include_permissions: true,
+        include_people: true,
+        include_admins: true,
+        include_owners: true
+      })
+
+      assert res.company
+      assert res.company.permissions
+      refute res.company.people
+      refute res.company.admins
+      refute res.company.owners
+    end
+
+    test "regular member still gets full access with all includes", ctx do
+      ctx = log_in_account(ctx, ctx.member_peter)
+
+      assert {200, res} = query(ctx.conn, :get_company, %{
+        id: Paths.company_id(ctx.company),
+        include_people: true,
+        include_admins: true,
+        include_owners: true,
+        include_permissions: true
+      })
+
+      assert res.company.people
+      assert res.company.admins
+      assert res.company.owners
+      assert res.company.permissions
+    end
+  end
 end

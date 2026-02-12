@@ -51,7 +51,10 @@ defmodule Operately.Projects.Contributor do
     values = Repo.all(query)
 
     Enum.map(contributors, fn c ->
-      {_, _, level} = Enum.find(values, fn {person_id, project_id, _} -> c.person_id == person_id and c.project_id == project_id end)
+      level = case Enum.find(values, fn {person_id, project_id, _} -> c.person_id == person_id and c.project_id == project_id end) do
+        {_, _, access_level} -> access_level
+        nil -> 0
+      end
       Map.put(c, :access_level, level)
     end)
   end
