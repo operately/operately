@@ -9,11 +9,12 @@ import { useLoadedData } from "./loader";
 export function CompanyAdmins() {
   const { company } = useLoadedData();
 
-  if (company.admins?.length === 0) return null;
+  if (!company.admins) return null;
+  if (company.admins.length === 0) return null;
 
   return (
     <Paper.Section title="Administrators">
-      <PeopleList people={company.admins!} />
+      <PeopleList people={company.admins || []} />
     </Paper.Section>
   );
 }
@@ -21,11 +22,12 @@ export function CompanyAdmins() {
 export function CompanyOwners() {
   const { company } = useLoadedData();
 
-  if (company.owners?.length === 0) return null;
+  if (!company.owners) return null;
+  if (company.owners.length === 0) return null;
 
   return (
     <Paper.Section title="Account Owners">
-      <PeopleList people={company.owners!} />
+      <PeopleList people={company.owners || []} />
     </Paper.Section>
   );
 }
@@ -34,7 +36,7 @@ function PeopleList({ people }: { people: People.Person[] }) {
   return (
     <div className="flex flex-wrap gap-4">
       {people.map((owner) => (
-        <Person key={owner!.id} person={owner!} />
+        <Person key={owner.id} person={owner} />
       ))}
     </div>
   );

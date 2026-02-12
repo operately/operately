@@ -28,4 +28,22 @@ defmodule Operately.Features.PeoplePageTest do
     |> Steps.click_activity_tab()
     |> Steps.assert_activity_visible_on_feed(%{name: "Bob", project_name: "new_feature"})
   end
+
+  feature "People page displays all company members", ctx do
+    ctx
+    |> UI.login_as(ctx.creator)
+    |> Steps.visit_people_page()
+    |> Steps.assert_person_visible_in_list(ctx.creator)
+    |> Steps.assert_person_visible_in_list(ctx.bob)
+    |> Steps.assert_person_visible_in_list(ctx.john)
+  end
+
+  feature "Org chart page displays all company members", ctx do
+    ctx
+    |> UI.login_as(ctx.creator)
+    |> Steps.visit_org_chart_page()
+    |> Steps.assert_person_visible_in_list(ctx.creator)
+    |> Steps.assert_person_visible_in_list(ctx.bob)
+    |> Steps.assert_person_visible_in_list(ctx.john)
+  end
 end

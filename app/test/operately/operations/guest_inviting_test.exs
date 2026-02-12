@@ -68,7 +68,7 @@ defmodule Operately.Operations.GuestInvitingTest do
     binding = Access.get_binding(group_id: person_group.id, context_id: company_context.id)
 
     assert binding
-    assert binding.access_level == Access.Binding.view_access()
+    assert binding.access_level == Access.Binding.minimal_access()
   end
 
   test "GuestInviting operation does not create binding to company space context", ctx do

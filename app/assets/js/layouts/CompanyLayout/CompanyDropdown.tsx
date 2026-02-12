@@ -3,14 +3,11 @@ import * as React from "react";
 
 import { IconBuildingEstate, IconRss, IconUserCircle, IconBinaryTree2, IconCircleKey, IconSwitch } from "turboui";
 
-import { useMe } from "@/contexts/CurrentCompanyContext";
 import { Paths, usePaths } from "@/routes/paths";
 import { DropdownLinkItem, DropdownMenu, DropdownSeparator } from "./DropdownMenu";
 
 export function CompanyDropdown({ company }: { company: Companies.Company }) {
   const paths = usePaths();
-  const me = useMe();
-  const isGuest = me?.type === "guest";
 
   return (
     <DropdownMenu
@@ -31,14 +28,14 @@ export function CompanyDropdown({ company }: { company: Companies.Company }) {
         icon={IconUserCircle}
         title="People"
         testId="company-dropdown-people"
-        hidden={isGuest}
+        hidden={!company.permissions?.canView}
       />
       <DropdownLinkItem
         path={paths.orgChartPath()}
         icon={IconBinaryTree2}
         title="Org Chart"
         testId="company-dropdown-org-chart"
-        hidden={isGuest}
+        hidden={!company.permissions?.canView}
       />
 
       <DropdownSeparator />

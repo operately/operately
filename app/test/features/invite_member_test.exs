@@ -162,7 +162,6 @@ defmodule Operately.Features.InviteMemberTest do
       |> Steps.goto_invitation_page()
       |> Steps.submit_password(password)
       |> Steps.assert_password_set_for_new_member(%{email: params.email, password: password})
-      |> Steps.assert_guest_invited_feed_item()
       |> Steps.assert_guest_invited_notification()
     end
 

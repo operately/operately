@@ -1,6 +1,6 @@
 import React from "react";
 
-import { CompanyAdminManagePerson, Permissions } from "../types";
+import { AccessOptions, CompanyAdminManagePerson, Permissions } from "../types";
 import { PersonRow } from "./PersonRow";
 
 type PersonHandler = (person: CompanyAdminManagePerson) => void;
@@ -13,9 +13,10 @@ interface Props {
   onOpenReissue: PersonHandler;
   onOpenView: PersonHandler;
   onOpenRenew: PersonHandler;
-  onChangeAccessLevel: (personId: string, accessLevel: number) => void;
+  onChangeAccessLevel: (personId: string, accessLevel: AccessOptions) => void;
   permissions?: Permissions;
   showConvertToGuest?: boolean;
+  allowMinimalAccess?: boolean;
 }
 
 export function PeopleList({
@@ -29,6 +30,7 @@ export function PeopleList({
   onChangeAccessLevel,
   permissions,
   showConvertToGuest,
+  allowMinimalAccess,
 }: Props) {
   return (
     <div data-test-id={testId}>
@@ -44,6 +46,7 @@ export function PeopleList({
           onChangeAccessLevel={onChangeAccessLevel}
           permissions={permissions}
           showConvertToGuest={showConvertToGuest}
+          allowMinimalAccess={allowMinimalAccess}
         />
       ))}
     </div>

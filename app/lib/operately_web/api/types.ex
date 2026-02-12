@@ -1738,6 +1738,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :company_permissions do
+    field :can_view, :boolean, null: false
     field :can_edit_trusted_email_domains, :boolean, null: false
     field :can_invite_members, :boolean, null: false
     field :can_remove_members, :boolean, null: false
@@ -1996,6 +1997,11 @@ defmodule OperatelyWeb.Api.Types do
   object :edit_member_permissions_input do
     field? :id, :id, null: true
     field? :access_level, :integer, null: true
+  end
+
+  object :edit_company_member_permissions_input do
+    field :id, :id, null: false
+    field :access_level, :access_options, null: false
   end
 
   object :edit_project_timeline_milestone_update_input do
