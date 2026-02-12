@@ -134,7 +134,6 @@ export const WithOutsideCollaborators: Story = {
   args: {
     ...baseProps,
     outsideCollaborators,
-    showOutsideCollaborators: true,
   },
   render: (args) => <StoryWrapper args={args} />,
 };

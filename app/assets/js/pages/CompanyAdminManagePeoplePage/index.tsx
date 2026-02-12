@@ -122,7 +122,6 @@ function Page() {
       invitedPeople={invited}
       currentMembers={members}
       outsideCollaborators={collaborators}
-      showOutsideCollaborators={true}
       onRemovePerson={handleRemove}
       onConvertToGuest={handleConvertToGuest}
       onReissueInvitation={handleCreateInvite}

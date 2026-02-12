@@ -30,7 +30,6 @@ export interface CompanyAdminManagePeoplePageProps {
   invitedPeople: CompanyAdminManagePerson[];
   currentMembers: CompanyAdminManagePerson[];
   outsideCollaborators?: CompanyAdminManagePerson[];
-  showOutsideCollaborators?: boolean;
   onRemovePerson: (personId: string) => Promise<void> | void;
   onConvertToGuest: (personId: string) => Promise<void>;
   onReissueInvitation: (personId: string) => Promise<string>;
