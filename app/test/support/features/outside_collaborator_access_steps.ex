@@ -300,4 +300,18 @@ defmodule Operately.Support.Features.OutsideCollaboratorAccessSteps do
 
     ctx
   end
+
+  step :visit_company_admin_page, ctx do
+    ctx
+    |> UI.visit(Paths.company_admin_path(ctx.company))
+    |> UI.assert_has(testid: "company-admin-page")
+  end
+
+  step :assert_cannot_see_owners_section, ctx do
+    UI.refute_has(ctx, testid: "account-owners-section")
+  end
+
+  step :assert_cannot_see_admin_section, ctx do
+    UI.refute_has(ctx, testid: "as-an-admin-or-owner-you-can--section")
+  end
 end

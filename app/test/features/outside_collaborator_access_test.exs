@@ -143,9 +143,7 @@ defmodule Operately.Features.OutsideCollaboratorAccessTest do
   end
 
   describe "profile access for outside collaborators" do
-    setup ctx do
-      Steps.setup_collaborator_with_goals_and_projects(ctx)
-    end
+    setup ctx, do: Steps.setup_collaborator_with_goals_and_projects(ctx)
 
     feature "outside collaborator can open their profile page", ctx do
       ctx
@@ -195,6 +193,18 @@ defmodule Operately.Features.OutsideCollaboratorAccessTest do
       |> Steps.visit_profile_edit_page()
       |> Steps.enable_assignments_email()
       |> Steps.assert_person_in_assignments_cron()
+    end
+  end
+
+  describe "admin page access for outside collaborators" do
+    setup ctx, do: Steps.setup_collaborator_with_goals_and_projects(ctx)
+
+    feature "outside collaborator can open admin page but cannot see admin/owner sections", ctx do
+      ctx
+      |> Steps.log_in_as_collaborator()
+      |> Steps.visit_company_admin_page()
+      |> Steps.assert_cannot_see_owners_section()
+      |> Steps.assert_cannot_see_admin_section()
     end
   end
 end
