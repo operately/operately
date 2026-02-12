@@ -17,8 +17,8 @@ export async function loader({ params }): Promise<LoaderResult> {
 
   return {
     company: company,
-    adminIds: company!.admins!.map((a) => a.id!),
-    ownerIds: company!.owners!.map((o) => o.id!),
+    adminIds: company.admins?.map((a) => a.id) || [],
+    ownerIds: company.owners?.map((o) => o.id) || [],
   };
 }
 

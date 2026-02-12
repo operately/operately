@@ -56,8 +56,8 @@ function AdminsMenu() {
   const { adminIds, ownerIds, company } = useLoadedData();
 
   const me = useMe();
-  const amIAdmin = includesId(adminIds, me!.id);
-  const amIOwner = includesId(ownerIds, me!.id);
+  const amIAdmin = includesId(adminIds, me?.id);
+  const amIOwner = includesId(ownerIds, me?.id);
 
   // Don't show the menu at all if user is not an admin or owner
   if (!(amIAdmin || amIOwner)) {
