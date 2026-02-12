@@ -2,6 +2,7 @@ import * as People from "@/models/people";
 import * as WorkMap from "@/models/workMap";
 
 import { PageCache } from "@/routes/PageCache";
+import { compareIds } from "@/routes/paths";
 import { fetchAll } from "@/utils/async";
 
 interface LoaderResult {
@@ -27,7 +28,7 @@ const fetchPersonWithFallback = async (personId: string) => {
     if (error.status === 404) {
       const me = await People.getMe({}).then((result) => result.me);
 
-      if (me && me.id === personId) {
+      if (me && compareIds(me.id, personId)) {
         return me;
       } else {
         throw error;
