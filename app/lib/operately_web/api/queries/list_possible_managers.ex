@@ -6,6 +6,8 @@ defmodule OperatelyWeb.Api.Queries.ListPossibleManagers do
 
   alias Operately.Repo
   alias Operately.People.Person
+  alias Operately.Companies.Company
+  alias Operately.Access.Filters
 
   inputs do
     field? :user_id, :id
@@ -24,9 +26,9 @@ defmodule OperatelyWeb.Api.Queries.ListPossibleManagers do
 
   defp load_people(conn, inputs) do
     user_id = inputs[:user_id] || me(conn).id
-    company_id = me(conn).company_id
+    {:ok, me} = find_me(conn)
 
-    if !check_permissions(inputs, company_id) do
+    if !check_permissions(me, inputs) do
       []
     else
       # Build a recursive CTE to find all reports (direct and indirect)
@@ -47,7 +49,7 @@ defmodule OperatelyWeb.Api.Queries.ListPossibleManagers do
 
       from(p in Person,
         left_join: r in "reports_hierarchy", on: p.id == r.id,
-        where: p.company_id == ^company_id,
+        where: p.company_id == ^me.company_id,
         where: p.id != ^user_id,
         where: not p.suspended,
         where: is_nil(r.id) # Exclude all direct and indirect reports
@@ -63,19 +65,21 @@ defmodule OperatelyWeb.Api.Queries.ListPossibleManagers do
   defp filter_by_query(query, nil), do: query
   defp filter_by_query(query, search_query) do
     trimmed_query = String.trim(search_query)
-    
+
     case trimmed_query do
       "" -> query
       _ -> from p in query, where: ilike(p.full_name, ^"%#{trimmed_query}%") or ilike(p.title, ^"%#{trimmed_query}%")
     end
   end
 
-  defp check_permissions(inputs, company_id) do
+  defp check_permissions(me, inputs) do
     case inputs[:user_id] do
       nil -> true
 
       user_id ->
-        from(p in Person, where: p.id == ^user_id and p.company_id == ^company_id)
+        from(c in Company, where: c.id == ^me.company_id)
+        |> join(:inner, [c], p in Person, on: p.id == ^user_id and p.company_id == c.id)
+        |> Filters.filter_by_view_access(me.id)
         |> Repo.exists?()
     end
   end
