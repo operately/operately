@@ -109,8 +109,10 @@ defmodule Operately.Operations.CompanyMemberConvertingToGuestTest do
   end
 
   defp assert_member_has_view_access_to_company(ctx) do
-    company = Company.get!(ctx.member, id: ctx.company.id)
-    assert company.request_info.access_level == Binding.view_access()
+    company = Company.get!(ctx.member, id: ctx.company.id, opts: [
+      required_access_level: Binding.minimal_access()
+    ])
+    assert company.request_info.access_level == Binding.minimal_access()
   end
 
   defp assert_member_has_no_access_to_company_space(ctx) do

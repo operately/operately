@@ -4,6 +4,7 @@ defmodule OperatelyWeb.Api.Queries.GetCompany do
 
   alias OperatelyWeb.Api.Serializer
   alias Operately.Companies.Company
+  alias Operately.Access.Binding
 
   require Logger
 
@@ -26,9 +27,10 @@ defmodule OperatelyWeb.Api.Queries.GetCompany do
     Company.get(me(conn),
       short_id: inputs.id,
       opts: [
-        after_load: after_load_hooks(inputs)
+        required_access_level: Binding.minimal_access()
       ]
     )
+    |> apply_hooks(inputs)
     |> case do
       {:ok, company} -> {:ok, serialize(company)}
       {:error, :not_found} -> {:error, :not_found}
@@ -36,7 +38,28 @@ defmodule OperatelyWeb.Api.Queries.GetCompany do
     end
   end
 
-  def after_load_hooks(inputs) do
+  defp apply_hooks({:error, _} = error, _inputs), do: error
+
+  defp apply_hooks({:ok, company}, inputs) do
+    access_level = company.request_info.access_level
+
+    cond do
+      access_level >= Binding.view_access() ->
+        {:ok, run_after_load_hooks(company, full_hooks(inputs))}
+
+      access_level >= Binding.minimal_access() ->
+        {:ok, run_after_load_hooks(company, minimal_hooks(inputs))}
+
+      true ->
+        {:error, :not_found}
+    end
+  end
+
+  defp run_after_load_hooks(company, hooks) do
+    Enum.reduce(hooks, company, fn hook, acc -> hook.(acc) end)
+  end
+
+  defp full_hooks(inputs) do
     Inputs.parse_includes(inputs,
       include_people: &Company.load_people/1,
       include_admins: &Company.load_admins/1,
@@ -44,6 +67,12 @@ defmodule OperatelyWeb.Api.Queries.GetCompany do
       include_permissions: &Company.load_permissions/1,
       include_general_space: &Company.load_general_space/1,
       include_members_access_levels: &Company.preload_members_access_level/1
+    )
+  end
+
+  defp minimal_hooks(inputs) do
+    Inputs.parse_includes(inputs,
+      include_permissions: &Company.load_permissions/1
     )
   end
 

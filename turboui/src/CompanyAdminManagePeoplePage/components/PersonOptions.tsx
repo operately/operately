@@ -3,16 +3,9 @@ import React from "react";
 import { Menu, MenuActionItem, MenuLinkItem, SubMenu } from "../../Menu";
 import { IconId, IconLink, IconLock, IconPencil, IconRefresh, IconRotateDot, IconSwitch, IconUserX } from "../../icons";
 import { createTestId } from "../../TestableElement";
-import { CompanyAdminManagePerson, Permissions } from "../types";
+import { AccessOptions, CompanyAdminManagePerson, Permissions } from "../types";
 
 type PersonHandler = (person: CompanyAdminManagePerson) => void;
-
-const PERMISSION_LEVELS = {
-  VIEW_ACCESS: 10,
-  COMMENT_ACCESS: 40,
-  EDIT_ACCESS: 70,
-  FULL_ACCESS: 100,
-};
 
 interface Props {
   person: CompanyAdminManagePerson;
@@ -21,9 +14,10 @@ interface Props {
   onOpenReissue: PersonHandler;
   onOpenView: PersonHandler;
   onOpenRenew: PersonHandler;
-  onChangeAccessLevel: (personId: string, accessLevel: number) => void;
+  onChangeAccessLevel: (personId: string, accessLevel: AccessOptions) => void;
   permissions?: Permissions;
   showConvertToGuest?: boolean;
+  allowMinimalAccess?: boolean;
 }
 
 export function PersonOptions({
@@ -36,6 +30,7 @@ export function PersonOptions({
   onChangeAccessLevel,
   permissions,
   showConvertToGuest,
+  allowMinimalAccess = false,
 }: Props) {
   const testId = createTestId("person-options", person.id);
   const size = person.hasOpenInvitation ? "medium" : "small";
@@ -55,21 +50,28 @@ export function PersonOptions({
         <SubMenu icon={IconLock} label="Change access level" hidden={false}>
           <MenuActionItem
             testId={createTestId("edit-access", person.id)}
-            onClick={() => onChangeAccessLevel(person.id, PERMISSION_LEVELS.EDIT_ACCESS)}
+            onClick={() => onChangeAccessLevel(person.id, "edit_access")}
           >
             Edit access
           </MenuActionItem>
           <MenuActionItem
             testId={createTestId("comment-access", person.id)}
-            onClick={() => onChangeAccessLevel(person.id, PERMISSION_LEVELS.COMMENT_ACCESS)}
+            onClick={() => onChangeAccessLevel(person.id, "comment_access")}
           >
             Comment access
           </MenuActionItem>
           <MenuActionItem
             testId={createTestId("view-access", person.id)}
-            onClick={() => onChangeAccessLevel(person.id, PERMISSION_LEVELS.VIEW_ACCESS)}
+            onClick={() => onChangeAccessLevel(person.id, "view_access")}
           >
             View access
+          </MenuActionItem>
+          <MenuActionItem
+            testId={createTestId("no-access", person.id)}
+            onClick={() => onChangeAccessLevel(person.id, "minimal_access")}
+            hidden={!allowMinimalAccess}
+          >
+            No access
           </MenuActionItem>
         </SubMenu>
       )}

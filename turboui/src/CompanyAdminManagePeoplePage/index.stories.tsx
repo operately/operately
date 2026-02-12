@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import { CompanyAdminManagePeoplePage } from ".";
 import { genPeople } from "../utils/storybook/genPeople";
+import { AccessOptions } from "./types";
 
 const meta = {
   title: "Pages/CompanyAdminManagePeoplePage",
@@ -23,6 +24,13 @@ const navigationItems = [
 const inviteLink = "https://app.operately.com/join?token=demo-invite-token";
 
 const examplePeople = genPeople(10);
+
+const ACCESS_LEVEL_MAP: Record<AccessOptions, number> = {
+  minimal_access: 1,
+  view_access: 10,
+  comment_access: 40,
+  edit_access: 70,
+};
 
 function buildPerson(index: number, overrides: Partial<CompanyAdminManagePeoplePage.Person>): CompanyAdminManagePeoplePage.Person {
   const basePerson = examplePeople[index % examplePeople.length]!;
@@ -73,11 +81,12 @@ function StoryWrapper({ args }: { args: CompanyAdminManagePeoplePage.Props }) {
     collaborators: args.outsideCollaborators || [],
   });
 
-  const handleChangeAccessLevel = async (personId: string, accessLevel: number) => {
+  const handleChangeAccessLevel = async (personId: string, accessLevel: AccessOptions) => {
+    const numericAccessLevel = ACCESS_LEVEL_MAP[accessLevel];
     setPeople((prev) => ({
       ...prev,
-      members: prev.members.map((p) => (p.id === personId ? { ...p, accessLevel } : p)),
-      collaborators: prev.collaborators.map((p) => (p.id === personId ? { ...p, accessLevel } : p)),
+      members: prev.members.map((p) => (p.id === personId ? { ...p, accessLevel: numericAccessLevel } : p)),
+      collaborators: prev.collaborators.map((p) => (p.id === personId ? { ...p, accessLevel: numericAccessLevel } : p)),
     }));
     console.log(`Changed access level for person ${personId} to ${accessLevel}`);
   };
@@ -102,7 +111,7 @@ const baseProps = {
   onConvertToGuest: async () => {},
   onReissueInvitation: async () => inviteLink,
   onRenewInvitation: async () => inviteLink,
-  onChangeAccessLevel: async (personId: string, accessLevel: number) => {
+  onChangeAccessLevel: async (personId: string, accessLevel: AccessOptions) => {
     console.log(`Changed access level for person ${personId} to ${accessLevel}`);
   },
   permissions: {
@@ -125,7 +134,6 @@ export const WithOutsideCollaborators: Story = {
   args: {
     ...baseProps,
     outsideCollaborators,
-    showOutsideCollaborators: true,
   },
   render: (args) => <StoryWrapper args={args} />,
 };

@@ -7,6 +7,7 @@ const PERMISSION_LEVELS = {
   EDIT_ACCESS: 70,
   COMMENT_ACCESS: 40,
   VIEW_ACCESS: 10,
+  MINIMAL_ACCESS: 1,
 };
 
 const accessLevelData: Record<
@@ -35,6 +36,10 @@ const accessLevelData: Record<
   [PERMISSION_LEVELS.VIEW_ACCESS]: {
     title: "View Access",
     colors: "bg-callout-success-bg text-callout-success-content",
+  },
+  [PERMISSION_LEVELS.MINIMAL_ACCESS]: {
+    title: "No Access",
+    colors: "bg-callout-info-bg text-callout-info-content",
   },
 };
 
