@@ -58,8 +58,10 @@ defmodule OperatelyWeb.Api.Mutations.ConvertCompanyMemberToGuestTest do
       assert member.type == :guest
       assert res.person.id == Paths.person_id(member)
 
-      company = Operately.Companies.Company.get!(member, id: ctx.company.id)
-      assert company.request_info.access_level == Binding.view_access()
+      company = Operately.Companies.Company.get!(member, id: ctx.company.id, opts: [
+        required_access_level: Binding.minimal_access()
+      ])
+      assert company.request_info.access_level == Binding.minimal_access()
     end
 
     test "it doesn't allow converting your own account", ctx do
