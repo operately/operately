@@ -181,8 +181,8 @@ defmodule Operately.Repo.Getter do
 
     case requester do
       :system -> get_for_system(query, :system, args)
-      %{} -> get_for_person(query, requester, args)
-      requester_id when is_binary(requester_id) -> get_for_person_id(query, requester_id, args)
+      %{} -> get_for_person(query, requester.id, args)
+      requester_id when is_binary(requester_id) -> get_for_person(query, requester_id, args)
       _ -> {:error, :invalid_requester}
     end
   end
@@ -194,7 +194,7 @@ defmodule Operately.Repo.Getter do
     end
   end
 
-  def get_for_person_id(query, requester_id, args) do
+  def get_for_person(query, requester_id, args) do
     query =
       base_query(query, requester_id)
       |> group_by([resource: r, person: p], [r.id, p.id])
@@ -202,18 +202,6 @@ defmodule Operately.Repo.Getter do
 
     case load(query, args) do
       {:ok, {resource, access_level, requester}} -> process_resource(resource, requester, access_level, args)
-      {:error, :not_found} -> {:error, :not_found}
-    end
-  end
-
-  def get_for_person(query, requester, args) do
-    query =
-      base_query(query, requester.id)
-      |> group_by([resource: r], r.id)
-      |> select([resource: r, binding: b], {r, max(b.access_level)})
-
-    case load(query, args) do
-      {:ok, {resource, access_level}} -> process_resource(resource, requester, access_level, args)
       {:error, :not_found} -> {:error, :not_found}
     end
   end
