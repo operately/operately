@@ -9,7 +9,7 @@ import { ProfilePage } from "turboui";
 
 import { loader, useLoadedData } from "./loader";
 
-import { usePaths } from "@/routes/paths";
+import { compareIds, usePaths } from "@/routes/paths";
 import { convertToWorkMapItems } from "../../models/workMap";
 import { useMe, useMentionedPersonLookupFn } from "@/contexts/CurrentCompanyContext";
 
@@ -39,7 +39,7 @@ function Page() {
     workMap: convertToWorkMapItems(paths, workMap),
     reviewerWorkMap: convertToWorkMapItems(paths, reviewerWorkMap),
 
-    canEditProfile: !!person.permissions?.canEditProfile,
+    canEditProfile: canEditProfile(person, me),
     editProfilePath: paths.profileEditPath(person.id),
 
     activityFeed: <ActivityFeed personId={person.id} />,
@@ -57,4 +57,8 @@ function ActivityFeed({ personId }: { personId: string }) {
   if (error) return <div>Error</div>;
 
   return <Feed items={data!.activities!} testId="profile-feed" page="profile" />;
+}
+
+function canEditProfile(person: People.Person, me?: People.Person | null) {
+  return !!person.permissions?.canEditProfile || compareIds(me?.id, person.id);
 }

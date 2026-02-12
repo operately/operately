@@ -25,7 +25,7 @@ const fetchPersonWithFallback = async (personId: string) => {
     return person.person;
   } catch (error) {
     if (error.status === 404) {
-      const me = await People.getMe({ includeManager: true }).then((result) => result.me);
+      const me = await People.getMe({}).then((result) => result.me);
 
       if (me && me.id === personId) {
         return me;
