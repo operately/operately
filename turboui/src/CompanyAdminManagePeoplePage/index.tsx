@@ -31,7 +31,7 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
   const pageTitle = ["Manage Team Members", props.companyName];
   useHtmlTitle(pageTitle);
   const outsideCollaborators = props.outsideCollaborators ?? [];
-  const showOutsideCollaborators = props.showOutsideCollaborators && outsideCollaborators.length > 0;
+  const showOutsideCollaborators = outsideCollaborators.length > 0;
 
   const [activeModal, setActiveModal] = React.useState<ActiveModal | null>(null);
   const [removeLoading, setRemoveLoading] = React.useState(false);
@@ -161,7 +161,7 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
                 onOpenRenew={openRenewModal}
                 onChangeAccessLevel={props.onChangeAccessLevel}
                 permissions={props.permissions}
-                showConvertToGuest={true}
+                showConvertToGuest
               />
             </Section>
           )}
@@ -178,7 +178,7 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
                 onOpenRenew={openRenewModal}
                 onChangeAccessLevel={props.onChangeAccessLevel}
                 permissions={props.permissions}
-                showConvertToGuest={true}
+                showConvertToGuest
               />
             </Section>
           )}
@@ -195,6 +195,7 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
                 onOpenRenew={openRenewModal}
                 onChangeAccessLevel={props.onChangeAccessLevel}
                 permissions={props.permissions}
+                allowMinimalAccess
               />
             </Section>
           )}

@@ -22,13 +22,14 @@ defmodule Operately.Access.Binding do
   end
 
   @no_access 0
+  @minimal_access 1
   @view_access 10
   @comment_access 40
   @edit_access 70
   @admin_access 90
   @full_access 100
 
-  @valid_access_levels [@no_access, @view_access, @comment_access, @edit_access, @admin_access, @full_access]
+  @valid_access_levels [@no_access, @minimal_access, @view_access, @comment_access, @edit_access, @admin_access, @full_access]
 
   def changeset(attrs) do
     changeset(%__MODULE__{}, attrs)
@@ -43,6 +44,7 @@ defmodule Operately.Access.Binding do
   end
 
   def no_access, do: @no_access
+  def minimal_access, do: @minimal_access
   def view_access, do: @view_access
   def comment_access, do: @comment_access
   def edit_access, do: @edit_access
@@ -52,6 +54,7 @@ defmodule Operately.Access.Binding do
   def valid_access_levels(:as_atom), do: @valid_access_levels |> Enum.map(&to_atom/1)
 
   def from_atom(:no_access), do: @no_access
+  def from_atom(:minimal_access), do: @minimal_access
   def from_atom(:view_access), do: @view_access
   def from_atom(:comment_access), do: @comment_access
   def from_atom(:edit_access), do: @edit_access
@@ -59,6 +62,7 @@ defmodule Operately.Access.Binding do
   def from_atom(:full_access), do: @full_access
 
   def to_atom(@no_access), do: :no_access
+  def to_atom(@minimal_access), do: :minimal_access
   def to_atom(@view_access), do: :view_access
   def to_atom(@comment_access), do: :comment_access
   def to_atom(@edit_access), do: :edit_access
@@ -67,6 +71,8 @@ defmodule Operately.Access.Binding do
 
   def label(:no_access), do: "No Access"
   def label(@no_access), do: "No Access"
+  def label(:minimal_access), do: "No Access"
+  def label(@minimal_access), do: "No Access"
   def label(:view_access), do: "View Access"
   def label(@view_access), do: "View Access"
   def label(:comment_access), do: "Comment Access"
