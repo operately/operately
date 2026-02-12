@@ -132,16 +132,6 @@ defmodule Operately.Support.Features.InviteMemberSteps do
     |> Map.put(:person, ctx.guest)
   end
 
-  step :assert_guest_invited_feed_item, ctx do
-    guest_first_name = Operately.People.Person.first_name(ctx.guest)
-
-    ctx
-    |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.find(UI.query(testid: "company-feed"), fn el ->
-      FeedSteps.assert_feed_item_exists(el, ctx.admin, "invited #{guest_first_name} as an outside collaborator")
-    end)
-  end
-
   step :assert_guest_invited_notification, ctx do
     ctx
     |> NotificationsSteps.assert_activity_notification(%{

@@ -154,4 +154,15 @@ const permissionData: PermissionData = {
       ),
     },
   },
+
+  [PermissionLevels.NO_ACCESS]: {
+    testId: "no-access-badge",
+    title: "No Access",
+    colors: "bg-callout-error-bg text-callout-error-content",
+    description: {
+      project: "Cannot access the project.",
+      space: "Cannot access the space.",
+      goal: "Cannot access the goal.",
+    },
+  },
 };
