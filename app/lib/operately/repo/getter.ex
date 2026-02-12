@@ -91,6 +91,18 @@ defmodule Operately.Repo.Getter do
   Auth preloads are applied at the top level only; nested preloads are loaded
   normally. For `:system` requester, `:auth_preload` behaves like `:preload`.
 
+  ## Required access level
+
+  By default, the getter only returns resources where the requester has at
+  least `:view_access` (level 10). You can override this minimum by passing
+  the `:required_access_level` option with an integer from
+  `Operately.Access.Binding` (e.g. `Binding.edit_access()`).
+
+    MySchema.get(person, id: "123", opts: [required_access_level: Binding.edit_access()])
+
+  When the requester's highest access level for the resource is below the
+  required level, `{:error, :not_found}` is returned.
+
   ## Getting solf-deleted resources
 
   If you want to get soft-deleted resources, you can pass the `:with_deleted`
@@ -196,7 +208,7 @@ defmodule Operately.Repo.Getter do
 
   def get_for_person(query, requester_id, args) do
     query =
-      base_query(query, requester_id)
+      base_query(query, requester_id, args.required_access_level)
       |> group_by([resource: r, person: p], [r.id, p.id])
       |> select([resource: r, binding: b, person: p], {r, max(b.access_level), p})
 
@@ -206,7 +218,7 @@ defmodule Operately.Repo.Getter do
     end
   end
 
-  defp base_query(query, requester_id) do
+  defp base_query(query, requester_id, required_access_level \\ Binding.view_access()) do
     # Join the access graph and keep only bindings visible to the requester.
     from([resource: r] in query,
       join: c in assoc(r, :access_context),
@@ -216,7 +228,7 @@ defmodule Operately.Repo.Getter do
       join: p in assoc(m, :person), as: :person,
       where: m.person_id == ^requester_id,
       where: is_nil(p.suspended_at),
-      where: b.access_level >= ^Binding.view_access()
+      where: b.access_level >= ^required_access_level
     )
   end
 
@@ -402,10 +414,11 @@ defmodule Operately.Repo.Getter do
       preload: [],
       auth_preload: [],
       with_deleted: false,
-      after_load: []
+      after_load: [],
+      required_access_level: nil
     ]
 
-    @allowed_options [:preload, :auth_preload, :with_deleted, :after_load]
+    @allowed_options [:preload, :auth_preload, :with_deleted, :after_load, :required_access_level]
 
     def parse(args) do
       field_matchers = Keyword.delete(args, :opts)
@@ -418,7 +431,8 @@ defmodule Operately.Repo.Getter do
         preload: Keyword.get(opts, :preload, []),
         auth_preload: Keyword.get(opts, :auth_preload, []),
         with_deleted: Keyword.get(opts, :with_deleted, false),
-        after_load: Keyword.get(opts, :after_load, [])
+        after_load: Keyword.get(opts, :after_load, []),
+        required_access_level: Keyword.get(opts, :required_access_level, Binding.view_access())
       }
     end
 
