@@ -22,6 +22,7 @@ defmodule OperatelyWeb.Api.Mutations.EditCompanyMembersPermissions do
     :ok = authorize(company)
 
     members = parse_members(inputs.members)
+    :ok = validate_access_levels(company, members)
 
     {:ok, _} = CompanyMembersPermissionsEditing.run(me, members)
     {:ok, %{success: true}}
@@ -38,6 +39,18 @@ defmodule OperatelyWeb.Api.Mutations.EditCompanyMembersPermissions do
       {:ok, :allowed} -> :ok
       {:error, _} -> throw {:error, :forbidden}
     end
+  end
+
+  defp validate_access_levels(company, members) do
+    caller_access_level = company.request_info.access_level
+
+    Enum.each(members, fn member ->
+      if member.access_level > caller_access_level do
+        throw {:error, :forbidden}
+      end
+    end)
+
+    :ok
   end
 
   defp parse_members(members) do
