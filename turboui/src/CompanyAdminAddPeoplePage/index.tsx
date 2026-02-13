@@ -6,13 +6,36 @@ import { InviteLinkPanel } from "../InviteLinkPanel";
 import { InviteMemberForm } from "../InviteMemberForm";
 import { Navigation } from "../Page/Navigation";
 import { useHtmlTitle } from "../Page/useHtmlTitle";
+import { ResourceAccessForm } from "./ResourceAccessForm";
 
 export namespace CompanyAdminAddPeoplePage {
   export type PageState = PageStateForm | PageStateInvited | PageStateAdded;
   export type PageStateForm = { state: "form" };
-  export type PageStateInvited = { state: "invited"; inviteLink: string; fullName: string };
-  export type PageStateAdded = { state: "added"; fullName: string };
+  export type PageStateInvited = { state: "invited"; inviteLink: string; fullName: string; personId: string };
+  export type PageStateAdded = { state: "added"; fullName: string; personId: string };
   export type MemberType = "team_member" | "outside_collaborator";
+
+  export type ResourceType = "space" | "goal" | "project";
+
+  export interface ResourceOption {
+    id: string;
+    name: string;
+  }
+
+  type AccessOptions = "full_access" | "edit_access" | "comment_access" | "view_access" | "no_access";
+
+  export interface ResourceAccessEntry {
+    key: number;
+    resourceType: ResourceType;
+    resourceId: string;
+    resourceName: string;
+    accessLevel: AccessOptions;
+  }
+
+  export interface PermissionOption {
+    value: AccessOptions;
+    label: string;
+  }
 
   export interface Props {
     companyName: string;
@@ -29,6 +52,12 @@ export namespace CompanyAdminAddPeoplePage {
     goBackLabel?: string;
     isSubmitting?: boolean;
     memberType?: MemberType;
+    spaces?: ResourceOption[];
+    goals?: ResourceOption[];
+    projects?: ResourceOption[];
+    onGrantAccess?: (input: { personId: string; resources: Array<{ resourceType: ResourceType; resourceId: string; accessLevel: AccessOptions }> }) => Promise<any>;
+    isGrantingAccess?: boolean;
+    permissionOptions?: PermissionOption[];
   }
 }
 
@@ -137,11 +166,35 @@ export function CompanyAdminAddPeoplePage(props: CompanyAdminAddPeoplePage.Props
                   description="They've received an email with this link. You can copy it here to share again if they didn't get the email or prefer another channel."
                   footer="This link (including the one in their email) expires in 24 hours."
                 />
+
+                <ResourceAccessForm
+                  personId={state.personId}
+                  fullName={state.fullName}
+                  spaces={props.spaces}
+                  goals={props.goals}
+                  projects={props.projects}
+                  onGrantAccess={props.onGrantAccess}
+                  isGrantingAccess={props.isGrantingAccess}
+                  permissionOptions={props.permissionOptions}
+                />
               </div>
             ))
             .with({ state: "added" }, (state) => (
-              <div className="text-content-accent text-2xl font-extrabold">
-                {state.fullName} has been added
+              <div>
+                <div className="text-content-accent text-2xl font-extrabold">
+                  {state.fullName} has been added
+                </div>
+
+                <ResourceAccessForm
+                  personId={state.personId}
+                  fullName={state.fullName}
+                  spaces={props.spaces}
+                  goals={props.goals}
+                  projects={props.projects}
+                  onGrantAccess={props.onGrantAccess}
+                  isGrantingAccess={props.isGrantingAccess}
+                  permissionOptions={props.permissionOptions}
+                />
               </div>
             ))
             .exhaustive()}
