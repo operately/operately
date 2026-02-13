@@ -5,23 +5,23 @@ defmodule Operately.Operations.ResourceAccessGranting do
   alias Operately.Groups.Member
   alias Operately.Projects.Contributor
 
-  def run(admin, person_id, resources) do
+  def run(person_id, resources) do
     resources = deduplicate(resources)
 
     Multi.new()
-    |> grant_resources(admin, person_id, resources)
+    |> grant_resources(person_id, resources)
     |> Repo.transaction()
   end
 
-  defp grant_resources(multi, admin, person_id, resources) do
+  defp grant_resources(multi, person_id, resources) do
     resources
     |> Enum.with_index()
     |> Enum.reduce(multi, fn {resource, index}, multi ->
-      grant_resource(multi, admin, person_id, resource, index)
+      grant_resource(multi, person_id, resource, index)
     end)
   end
 
-  defp grant_resource(multi, _admin, person_id, resource, index) do
+  defp grant_resource(multi, person_id, resource, index) do
     prefix = "resource_#{index}"
     access_level = Binding.from_atom(resource.access_level)
 

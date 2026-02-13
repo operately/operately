@@ -21,7 +21,7 @@ defmodule Operately.Operations.ResourceAccessGrantingTest do
     test "creates access binding for the person on the space", ctx do
       resources = [%{resource_type: :space, resource_id: ctx.space.id, access_level: :edit_access}]
 
-      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.creator, ctx.guest.id, resources)
+      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.guest.id, resources)
 
       context = Access.get_context!(group_id: ctx.space.id)
       binding = Access.get_binding(context, person_id: ctx.guest.id)
@@ -33,7 +33,7 @@ defmodule Operately.Operations.ResourceAccessGrantingTest do
     test "adds the person as a space member", ctx do
       resources = [%{resource_type: :space, resource_id: ctx.space.id, access_level: :edit_access}]
 
-      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.creator, ctx.guest.id, resources)
+      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.guest.id, resources)
 
       members = Groups.list_members(ctx.space)
       member_ids = Enum.map(members, & &1.id)
@@ -44,8 +44,8 @@ defmodule Operately.Operations.ResourceAccessGrantingTest do
     test "does not duplicate space member if already exists", ctx do
       resources = [%{resource_type: :space, resource_id: ctx.space.id, access_level: :edit_access}]
 
-      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.creator, ctx.guest.id, resources)
-      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.creator, ctx.guest.id, resources)
+      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.guest.id, resources)
+      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.guest.id, resources)
 
       members = Groups.list_members(ctx.space)
       guest_count = Enum.count(members, fn m -> m.id == ctx.guest.id end)
@@ -58,7 +58,7 @@ defmodule Operately.Operations.ResourceAccessGrantingTest do
     test "creates access binding for the person on the goal", ctx do
       resources = [%{resource_type: :goal, resource_id: ctx.goal.id, access_level: :comment_access}]
 
-      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.creator, ctx.guest.id, resources)
+      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.guest.id, resources)
 
       context = Access.get_context!(goal_id: ctx.goal.id)
       binding = Access.get_binding(context, person_id: ctx.guest.id)
@@ -72,7 +72,7 @@ defmodule Operately.Operations.ResourceAccessGrantingTest do
     test "creates access binding for the person on the project", ctx do
       resources = [%{resource_type: :project, resource_id: ctx.project.id, access_level: :edit_access}]
 
-      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.creator, ctx.guest.id, resources)
+      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.guest.id, resources)
 
       context = Access.get_context!(project_id: ctx.project.id)
       binding = Access.get_binding(context, person_id: ctx.guest.id)
@@ -84,7 +84,7 @@ defmodule Operately.Operations.ResourceAccessGrantingTest do
     test "adds the person as a project contributor", ctx do
       resources = [%{resource_type: :project, resource_id: ctx.project.id, access_level: :edit_access}]
 
-      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.creator, ctx.guest.id, resources)
+      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.guest.id, resources)
 
       contributor = Repo.get_by(Contributor, project_id: ctx.project.id, person_id: ctx.guest.id)
 
@@ -95,8 +95,8 @@ defmodule Operately.Operations.ResourceAccessGrantingTest do
     test "does not duplicate contributor if already exists", ctx do
       resources = [%{resource_type: :project, resource_id: ctx.project.id, access_level: :edit_access}]
 
-      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.creator, ctx.guest.id, resources)
-      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.creator, ctx.guest.id, resources)
+      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.guest.id, resources)
+      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.guest.id, resources)
 
       contributors = Repo.all(from c in Contributor, where: c.project_id == ^ctx.project.id and c.person_id == ^ctx.guest.id)
 
@@ -112,7 +112,7 @@ defmodule Operately.Operations.ResourceAccessGrantingTest do
         %{resource_type: :project, resource_id: ctx.project.id, access_level: :full_access},
       ]
 
-      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.creator, ctx.guest.id, resources)
+      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.guest.id, resources)
 
       space_context = Access.get_context!(group_id: ctx.space.id)
       goal_context = Access.get_context!(goal_id: ctx.goal.id)
@@ -136,7 +136,7 @@ defmodule Operately.Operations.ResourceAccessGrantingTest do
         %{resource_type: :space, resource_id: ctx.space.id, access_level: :edit_access},
       ]
 
-      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.creator, ctx.guest.id, resources)
+      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.guest.id, resources)
 
       context = Access.get_context!(group_id: ctx.space.id)
       binding = Access.get_binding(context, person_id: ctx.guest.id)
@@ -152,7 +152,7 @@ defmodule Operately.Operations.ResourceAccessGrantingTest do
         %{resource_type: :goal, resource_id: ctx.goal.id, access_level: :full_access},
       ]
 
-      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.creator, ctx.guest.id, resources)
+      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.guest.id, resources)
 
       space_context = Access.get_context!(group_id: ctx.space.id)
       goal_context = Access.get_context!(goal_id: ctx.goal.id)
@@ -168,7 +168,7 @@ defmodule Operately.Operations.ResourceAccessGrantingTest do
         %{resource_type: :project, resource_id: ctx.project.id, access_level: :full_access},
       ]
 
-      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.creator, ctx.guest.id, resources)
+      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.guest.id, resources)
 
       space_context = Access.get_context!(group_id: ctx.space.id)
       goal_context = Access.get_context!(goal_id: ctx.goal.id)

@@ -18,7 +18,7 @@ defmodule OperatelyWeb.Api.Mutations.GrantResourceAccess do
     {:ok, me} = find_me(conn)
 
     if admin_has_edit_access?(me) do
-      process_grant(me, inputs)
+      process_grant(inputs)
     else
       {:error, :forbidden}
     end
@@ -30,8 +30,8 @@ defmodule OperatelyWeb.Api.Mutations.GrantResourceAccess do
     |> Repo.exists?()
   end
 
-  defp process_grant(admin, inputs) do
-    case Operately.Operations.ResourceAccessGranting.run(admin, inputs.person_id, inputs.resources) do
+  defp process_grant(inputs) do
+    case Operately.Operations.ResourceAccessGranting.run(inputs.person_id, inputs.resources) do
       {:ok, _} ->
         {:ok, %{success: true}}
 
