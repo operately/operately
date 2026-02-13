@@ -1,15 +1,8 @@
-import * as React from "react";
-import { IconPlus, IconX } from "../icons";
-import { PrimaryButton, SecondaryButton } from "../Button";
-import { Dropdown } from "../forms/Dropdown";
-import { CompanyAdminAddPeoplePage } from "./index";
-
-const DEFAULT_PERMISSION_OPTIONS: CompanyAdminAddPeoplePage.PermissionOption[] = [
-  { value: "full_access", label: "Full Access" },
-  { value: "edit_access", label: "Edit Access" },
-  { value: "comment_access", label: "Comment Access" },
-  { value: "view_access", label: "View Access" },
-];
+import React from "react";
+import { CompanyAdminAddPeoplePage } from "..";
+import { IconPlus, IconX } from "../../icons";
+import { Dropdown } from "../../forms/Dropdown";
+import { SecondaryButton } from "../../Button";
 
 const RESOURCE_TYPE_OPTIONS: { value: CompanyAdminAddPeoplePage.ResourceType; label: string }[] = [
   { value: "space", label: "Space" },
@@ -17,43 +10,34 @@ const RESOURCE_TYPE_OPTIONS: { value: CompanyAdminAddPeoplePage.ResourceType; la
   { value: "project", label: "Project" },
 ];
 
-function newResourceEntry(): CompanyAdminAddPeoplePage.ResourceAccessEntry {
-  return {
-    key: Math.random(),
-    resourceType: "space",
-    resourceId: "",
-    resourceName: "",
-    accessLevel: "edit_access",
-  };
-}
-
 interface Props {
-  personId: string;
   fullName: string;
+  entries: CompanyAdminAddPeoplePage.ResourceAccessEntry[];
+  errors: Record<number, string>;
+  onAddEntry: () => void;
+  onUpdateEntry: (key: number, updates: Partial<CompanyAdminAddPeoplePage.ResourceAccessEntry>) => void;
+  onRemoveEntry: (key: number) => void;
   spaces?: CompanyAdminAddPeoplePage.ResourceOption[];
   goals?: CompanyAdminAddPeoplePage.ResourceOption[];
   projects?: CompanyAdminAddPeoplePage.ResourceOption[];
-  onGrantAccess?: (input: { personId: string; resources: Array<{ resourceType: CompanyAdminAddPeoplePage.ResourceType; resourceId: string; accessLevel: "full_access" | "edit_access" | "comment_access" | "view_access" | "no_access" }> }) => Promise<any>;
-  isGrantingAccess?: boolean;
-  permissionOptions?: CompanyAdminAddPeoplePage.PermissionOption[];
+  permissionOptions: CompanyAdminAddPeoplePage.PermissionOption[];
+  accessGranted: boolean;
 }
 
-export function ResourceAccessForm({
-  personId,
+export function ResourceAccessContent({
   fullName,
+  entries,
+  errors,
+  onAddEntry,
+  onUpdateEntry,
+  onRemoveEntry,
   spaces,
   goals,
   projects,
-  onGrantAccess,
-  isGrantingAccess,
   permissionOptions,
+  accessGranted,
 }: Props) {
-  const [entries, setEntries] = React.useState<CompanyAdminAddPeoplePage.ResourceAccessEntry[]>([newResourceEntry()]);
-  const [granted, setGranted] = React.useState(false);
-  const options = permissionOptions ?? DEFAULT_PERMISSION_OPTIONS;
-
-  if (!onGrantAccess) return null;
-  if (granted) {
+  if (accessGranted) {
     return (
       <div className="mt-6 p-4 bg-surface-dimmed rounded-lg text-sm text-content-accent text-center">
         Access granted successfully.
@@ -61,36 +45,12 @@ export function ResourceAccessForm({
     );
   }
 
-  const addMore = () => setEntries((prev) => [...prev, newResourceEntry()]);
-
-  const updateEntry = (key: number, updates: Partial<CompanyAdminAddPeoplePage.ResourceAccessEntry>) => {
-    setEntries((prev) => prev.map((e) => (e.key === key ? { ...e, ...updates } : e)));
-  };
-
-  const removeEntry = (key: number) => {
-    setEntries((prev) => prev.filter((e) => e.key !== key));
-  };
-
-  const handleSubmit = async () => {
-    const validEntries = entries.filter((e) => e.resourceId);
-    if (validEntries.length === 0) return;
-
-    await onGrantAccess({
-      personId,
-      resources: validEntries.map((r) => ({
-        resourceType: r.resourceType,
-        resourceId: r.resourceId,
-        accessLevel: r.accessLevel,
-      })),
-    });
-    setGranted(true);
-  };
-
-  const hasValidEntries = entries.some((e) => e.resourceId);
-
   return (
-    <div className="mt-6">
-      <div className="text-sm font-bold mb-3">Grant {fullName} access to resources</div>
+    <div className="mt-12">
+      <div className="border-t border-surface-outline mb-12" />
+      <div className="text-sm font-bold mb-3">
+        Choose what spaces, goals and projects {fullName} should have access to:
+      </div>
 
       <div className="flex flex-col gap-3">
         {entries.map((entry, index) => (
@@ -98,26 +58,21 @@ export function ResourceAccessForm({
             key={entry.key}
             entry={entry}
             index={index}
-            permissionOptions={options}
+            permissionOptions={permissionOptions}
             spaces={spaces}
             goals={goals}
             projects={projects}
-            onUpdate={updateEntry}
-            onRemove={entries.length > 1 ? removeEntry : undefined}
+            onUpdate={onUpdateEntry}
+            onRemove={entries.length > 1 ? onRemoveEntry : undefined}
+            error={errors[entry.key]}
           />
         ))}
       </div>
 
       <div className="flex justify-center mt-1">
-        <SecondaryButton onClick={addMore} testId="add-more-resources">
+        <SecondaryButton onClick={onAddEntry} testId="add-more-resources">
           <IconPlus size={16} />
         </SecondaryButton>
-      </div>
-
-      <div className="flex justify-center mt-4">
-        <PrimaryButton onClick={handleSubmit} testId="grant-access-button" loading={isGrantingAccess}>
-          {hasValidEntries ? "Grant Access" : "Select resources first"}
-        </PrimaryButton>
       </div>
     </div>
   );
@@ -132,6 +87,7 @@ interface ResourceAccessRowProps {
   projects?: CompanyAdminAddPeoplePage.ResourceOption[];
   onUpdate: (key: number, updates: Partial<CompanyAdminAddPeoplePage.ResourceAccessEntry>) => void;
   onRemove?: (key: number) => void;
+  error?: string;
 }
 
 function ResourceAccessRow({
@@ -143,9 +99,9 @@ function ResourceAccessRow({
   projects,
   onUpdate,
   onRemove,
+  error,
 }: ResourceAccessRowProps) {
-  const resourceList =
-    entry.resourceType === "space" ? spaces : entry.resourceType === "goal" ? goals : projects;
+  const resourceList = entry.resourceType === "space" ? spaces : entry.resourceType === "goal" ? goals : projects;
 
   return (
     <div className="relative border border-surface-outline rounded-lg p-4" data-test-id={`resource-access-${index}`}>
@@ -164,6 +120,7 @@ function ResourceAccessRow({
             entry={entry}
             resources={resourceList}
             onSelect={(resource) => onUpdate(entry.key, { resourceId: resource.id, resourceName: resource.name })}
+            error={error}
           />
         </div>
 
@@ -233,10 +190,12 @@ function ResourceSelector({
   entry,
   resources,
   onSelect,
+  error,
 }: {
   entry: CompanyAdminAddPeoplePage.ResourceAccessEntry;
   resources?: CompanyAdminAddPeoplePage.ResourceOption[];
   onSelect: (resource: CompanyAdminAddPeoplePage.ResourceOption) => void;
+  error?: string;
 }) {
   const resourceItems = (resources || []).map((r) => ({ id: r.id, name: r.name }));
 
@@ -246,6 +205,7 @@ function ResourceSelector({
       value={entry.resourceId}
       onSelect={onSelect}
       placeholder={`Select ${entry.resourceType}...`}
+      error={error}
     />
   );
 }

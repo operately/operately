@@ -99,7 +99,7 @@ function useInviteFlow(targetState: "invited" | "added") {
   };
 }
 
-export const FormToInvited: Story = {
+export const TeamMemberFormToInvited: Story = {
   args: {} as any,
   render: () => {
     const flow = useInviteFlow("invited");
@@ -118,17 +118,12 @@ export const FormToInvited: Story = {
         goBackLabel="Back to Manage Team Members"
         onCancel={() => console.log("Cancel invite")}
         isSubmitting={flow.isSubmitting}
-        spaces={mockSpaces}
-        goals={mockGoals}
-        projects={mockProjects}
-        onGrantAccess={flow.handleGrantAccess}
-        isGrantingAccess={flow.isGrantingAccess}
       />
     );
   },
 };
 
-export const FormToAdded: Story = {
+export const TeamMemberFormToAdded: Story = {
   args: {} as any,
   render: () => {
     const flow = useInviteFlow("added");
@@ -147,17 +142,12 @@ export const FormToAdded: Story = {
         goBackLabel="Back to Manage Team Members"
         onCancel={() => console.log("Cancel invite")}
         isSubmitting={flow.isSubmitting}
-        spaces={mockSpaces}
-        goals={mockGoals}
-        projects={mockProjects}
-        onGrantAccess={flow.handleGrantAccess}
-        isGrantingAccess={flow.isGrantingAccess}
       />
     );
   },
 };
 
-export const OutsideCollaboratorForm: Story = {
+export const OutsideCollaboratorFormToInvited: Story = {
   args: {} as any,
   render: () => {
     const flow = useInviteFlow("invited");
@@ -181,13 +171,41 @@ export const OutsideCollaboratorForm: Story = {
         goals={mockGoals}
         projects={mockProjects}
         onGrantAccess={flow.handleGrantAccess}
-        isGrantingAccess={flow.isGrantingAccess}
       />
     );
   },
 };
 
-export const InvitedWithResourceAccess: Story = {
+export const OutsideCollaboratorFormToAdded: Story = {
+  args: {} as any,
+  render: () => {
+    const flow = useInviteFlow("added");
+
+    return (
+      <CompanyAdminAddPeoplePage
+        companyName="Operately"
+        navigationItems={navigationItems}
+        state={flow.state}
+        formValues={flow.values}
+        formErrors={flow.errors}
+        onFormChange={flow.handleFormChange}
+        onSubmit={flow.handleSubmit}
+        onInviteAnother={flow.handleInviteAnother}
+        onGoBack={() => console.log("Go back")}
+        goBackLabel="Back to Manage Team Members"
+        onCancel={() => console.log("Cancel invite")}
+        isSubmitting={flow.isSubmitting}
+        memberType="outside_collaborator"
+        spaces={mockSpaces}
+        goals={mockGoals}
+        projects={mockProjects}
+        onGrantAccess={flow.handleGrantAccess}
+      />
+    );
+  },
+};
+
+export const OutsideCollaboratorInvitedWithResourceAccess: Story = {
   args: {} as any,
   render: () => {
     const flow = useInviteFlow("invited");
@@ -210,17 +228,17 @@ export const InvitedWithResourceAccess: Story = {
         goBackLabel="Back to Manage Team Members"
         onCancel={() => console.log("Cancel invite")}
         isSubmitting={flow.isSubmitting}
+        memberType="outside_collaborator"
         spaces={mockSpaces}
         goals={mockGoals}
         projects={mockProjects}
         onGrantAccess={flow.handleGrantAccess}
-        isGrantingAccess={flow.isGrantingAccess}
       />
     );
   },
 };
 
-export const AddedWithResourceAccess: Story = {
+export const OutsideCollaboratorAddedWithResourceAccess: Story = {
   args: {} as any,
   render: () => {
     const flow = useInviteFlow("added");
@@ -243,11 +261,11 @@ export const AddedWithResourceAccess: Story = {
         goBackLabel="Back to Manage Team Members"
         onCancel={() => console.log("Cancel invite")}
         isSubmitting={flow.isSubmitting}
+        memberType="outside_collaborator"
         spaces={mockSpaces}
         goals={mockGoals}
         projects={mockProjects}
         onGrantAccess={flow.handleGrantAccess}
-        isGrantingAccess={flow.isGrantingAccess}
       />
     );
   },
