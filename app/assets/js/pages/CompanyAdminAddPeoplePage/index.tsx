@@ -133,16 +133,18 @@ function useInviteSubmit(
 
       const personId = res.personId || "";
 
-      // Load resources for the access granting form
-      const [spacesData, goalsData, projectsData] = await Promise.all([
-        Api.getSpaces({}),
-        Api.getGoals({ includeSpace: true }),
-        Api.getProjects({}),
-      ]);
+      // Load resources for the access granting form (only for outside collaborators)
+      if (memberType === "outside_collaborator") {
+        const [spacesData, goalsData, projectsData] = await Promise.all([
+          Api.getSpaces({}),
+          Api.getGoals({ includeSpace: true }),
+          Api.getProjects({}),
+        ]);
 
-      setSpaces((spacesData.spaces || []).map((s) => ({ id: s.id, name: s.name })));
-      setGoals((goalsData.goals || []).map((g) => ({ id: g.id, name: g.name })));
-      setProjects((projectsData.projects || []).map((p) => ({ id: p.id, name: p.name })));
+        setSpaces((spacesData.spaces || []).map((s) => ({ id: s.id, name: s.name })));
+        setGoals((goalsData.goals || []).map((g) => ({ id: g.id, name: g.name })));
+        setProjects((projectsData.projects || []).map((p) => ({ id: p.id, name: p.name })));
+      }
 
       if (res.newAccount && res.inviteLink?.token) {
         const url = Companies.createInvitationUrl(res.inviteLink.token);
