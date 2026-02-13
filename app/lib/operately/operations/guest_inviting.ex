@@ -15,11 +15,10 @@ defmodule Operately.Operations.GuestInviting do
     |> insert_invite_link(admin, skip_invitation)
     |> insert_activity(admin)
     |> Repo.transaction()
-    |> Repo.extract_result(:invite_link)
 
     case result do
-      {:ok, result} ->
-        {:ok, result}
+      {:ok, changes} ->
+        {:ok, changes}
       {:error, _, changeset, _} ->
         {:error, format_errors(changeset)}
     end

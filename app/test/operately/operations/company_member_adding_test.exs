@@ -99,12 +99,13 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
   end
 
   test "CompanyMemberAdding operation creates invite link for person", ctx do
-    {:ok, _invite_link} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
+    {:ok, changes} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
 
     person = People.get_person_by_email(ctx.company, @email)
 
     assert {:ok, invite_link} = InviteLinks.get_personal_invite_link_for_person(person.id)
     assert invite_link.person_id == person.id
+    assert changes[:invite_link].id == invite_link.id
   end
 
   test "CompanyMemberAdding operation creates company space member", ctx do
@@ -127,8 +128,8 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
       |> Company.changeset(%{company_space_id: nil})
       |> Repo.update()
 
-    {:ok, invite_link} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
-    assert invite_link
+    {:ok, changes} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
+    assert changes[:invite_link]
 
     person = People.get_person_by_email(ctx.company, @email)
 
@@ -142,18 +143,18 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
   end
 
   test "CompanyMemberAdding operation creates activity", ctx do
-    {:ok, invite_link} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
+    {:ok, changes} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
 
     activity = from(a in Activity, where: a.action == "company_member_added" and a.content["company_id"] == ^ctx.company.id) |> Repo.one()
 
-    assert activity.content["invite_link_id"] == invite_link.id
+    assert activity.content["invite_link_id"] == changes[:invite_link].id
     assert activity.content["name"] == "John Doe"
     assert activity.content["email"] == @email
     assert activity.content["title"] == "Developer"
   end
 
   test "CompanyMemberAdding operation creates notification for new member", ctx do
-    {:ok, _invite_link} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
+    {:ok, _changes} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
 
     person = People.get_person_by_email(ctx.company, @email)
     activity = from(a in Activity, where: a.action == "company_member_added" and a.content["email"] == ^person.email) |> Repo.one()

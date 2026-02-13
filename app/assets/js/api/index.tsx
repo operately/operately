@@ -3059,6 +3059,7 @@ export interface AddCompanyMemberInput {
 export interface AddCompanyMemberResult {
   inviteLink: InviteLink;
   newAccount: boolean;
+  personId?: string | null;
 }
 
 export interface AddCompanyOwnersInput {
@@ -3999,6 +4000,7 @@ export interface InviteGuestInput {
 export interface InviteGuestResult {
   inviteLink?: InviteLink | null;
   newAccount: boolean;
+  personId?: string | null;
 }
 
 export interface JoinCompanyInput {
