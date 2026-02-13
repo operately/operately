@@ -2,6 +2,7 @@ defmodule Operately.Operations.ResourceAccessGranting do
   alias Ecto.Multi
   alias Operately.{Access, Repo}
   alias Operately.Access.Binding
+  alias Operately.Access.GroupMembership
   alias Operately.Groups.Member
   alias Operately.Projects.Contributor
 
@@ -42,10 +43,26 @@ defmodule Operately.Operations.ResourceAccessGranting do
   defp get_context(:project, id), do: Access.get_context!(project_id: id)
 
   defp maybe_add_space_member(multi, prefix, person_id, %{resource_type: :space, resource_id: space_id}) do
-    Multi.run(multi, :"#{prefix}_space_member", fn repo, _ ->
+    multi
+    |> Multi.run(:"#{prefix}_space_member", fn repo, _ ->
       case repo.get_by(Member, group_id: space_id, person_id: person_id) do
         nil ->
           Member.changeset(%Member{}, %{group_id: space_id, person_id: person_id})
+          |> repo.insert()
+
+        existing ->
+          {:ok, existing}
+      end
+    end)
+    |> Multi.run(:"#{prefix}_space_membership", fn repo, _ ->
+      standard_group = Access.get_group!(group_id: space_id, tag: :standard)
+
+      case repo.get_by(GroupMembership, group_id: standard_group.id, person_id: person_id) do
+        nil ->
+          GroupMembership.changeset(%{
+            group_id: standard_group.id,
+            person_id: person_id,
+          })
           |> repo.insert()
 
         existing ->
