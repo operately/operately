@@ -219,6 +219,7 @@ defmodule OperatelyWeb.Api do
   mutation(:add_company_owners, M.AddCompanyOwners)
   mutation(:edit_company_members_permissions, M.EditCompanyMembersPermissions)
   mutation(:invite_guest, M.InviteGuest)
+  mutation(:grant_resource_access, M.GrantResourceAccess)
   mutation(:add_company_trusted_email_domain, M.AddCompanyTrustedEmailDomain)
   mutation(:add_first_company, M.AddFirstCompany)
   mutation(:complete_company_setup, M.CompleteCompanySetup)

@@ -22,6 +22,12 @@ defmodule Operately.Access.Filters do
     |> filter(person_id, Binding.edit_access())
   end
 
+  def filter_by_admin_access(query, person_id, opts \\ []) do
+    query
+    |> join_context(opts)
+    |> filter(person_id, Binding.admin_access())
+  end
+
   def filter_by_full_access(query, person_id, opts \\ []) do
     query
     |> join_context(opts)

@@ -28,6 +28,14 @@ defmodule OperatelyWeb.Api.Types do
 
   enum :access_options, values: Operately.Access.Binding.valid_access_levels(:as_atom)
 
+  enum :resource_access_types, values: [:space, :goal, :project]
+
+  object :resource_access_input do
+    field :resource_type, :resource_access_types
+    field :resource_id, :id
+    field :access_level, :access_options
+  end
+
   object :access_levels do
     field? :public, :integer, null: true
     field? :company, :integer, null: true
