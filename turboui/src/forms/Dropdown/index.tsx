@@ -27,14 +27,23 @@ export function Dropdown<T extends Dropdown.Item>({
   error,
 }: Dropdown.Props<T>) {
   const [isOpen, setIsOpen] = React.useState(false);
+  const [triggerWidth, setTriggerWidth] = React.useState<number | null>(null);
+  const triggerRef = React.useRef<HTMLButtonElement>(null);
   const selectedItem = items.find((item) => item.id === value);
   const selectedLabel = selectedItem?.name || placeholder;
+
+  React.useEffect(() => {
+    if (triggerRef.current) {
+      setTriggerWidth(triggerRef.current.offsetWidth);
+    }
+  }, []);
 
   return (
     <div>
       <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
         <Popover.Trigger asChild>
           <button
+            ref={triggerRef}
             type="button"
             className={`w-full text-left border rounded px-2 py-1.5 text-sm bg-surface-base text-content-base focus:outline-none focus:ring-0 hover:bg-surface-dimmed flex items-center justify-between ${
               error ? "border-content-error" : "border-surface-outline"
@@ -47,7 +56,8 @@ export function Dropdown<T extends Dropdown.Item>({
         </Popover.Trigger>
 
         <Popover.Content
-          className="z-50 bg-surface-base border border-surface-outline rounded shadow-lg p-1 w-[var(--radix-popover-trigger-width)]"
+          className="z-50 bg-surface-base border border-surface-outline rounded shadow-lg p-1"
+          style={{ width: triggerWidth ? `${triggerWidth}px` : "auto" }}
           side="bottom"
           align="start"
           sideOffset={4}
