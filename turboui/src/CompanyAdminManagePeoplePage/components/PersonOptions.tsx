@@ -17,7 +17,7 @@ interface Props {
   onChangeAccessLevel: (personId: string, accessLevel: AccessOptions) => void;
   permissions?: Permissions;
   showConvertToGuest?: boolean;
-  allowMinimalAccess?: boolean;
+  showAccessLevelOptions?: boolean;
 }
 
 export function PersonOptions({
@@ -30,7 +30,7 @@ export function PersonOptions({
   onChangeAccessLevel,
   permissions,
   showConvertToGuest,
-  allowMinimalAccess = false,
+  showAccessLevelOptions = true,
 }: Props) {
   const testId = createTestId("person-options", person.id);
   const size = person.hasOpenInvitation ? "medium" : "small";
@@ -46,7 +46,7 @@ export function PersonOptions({
         Edit Profile
       </MenuLinkItem>
 
-      {!isInvited && permissions?.canEditMembersAccessLevels && (
+      {!isInvited && permissions?.canEditMembersAccessLevels && showAccessLevelOptions && (
         <SubMenu icon={IconLock} label="Change access level" hidden={false}>
           <MenuActionItem
             testId={createTestId("edit-access", person.id)}
@@ -65,13 +65,6 @@ export function PersonOptions({
             onClick={() => onChangeAccessLevel(person.id, "view_access")}
           >
             View access
-          </MenuActionItem>
-          <MenuActionItem
-            testId={createTestId("no-access", person.id)}
-            onClick={() => onChangeAccessLevel(person.id, "minimal_access")}
-            hidden={!allowMinimalAccess}
-          >
-            No access
           </MenuActionItem>
         </SubMenu>
       )}
