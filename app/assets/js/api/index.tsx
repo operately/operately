@@ -1576,6 +1576,12 @@ export interface Reaction {
   person: Person | null;
 }
 
+export interface ResourceAccessInput {
+  resourceType: ResourceAccessTypes;
+  resourceId: Id;
+  accessLevel: AccessOptions;
+}
+
 export interface ResourceHub {
   id: string;
   name: string;
@@ -2150,6 +2156,8 @@ export type ReactionParentType =
   | "resource_hub_document"
   | "resource_hub_file"
   | "resource_hub_link";
+
+export type ResourceAccessTypes = "space" | "goal" | "project";
 
 export type ReviewAssignmentOriginTypes = "project" | "goal" | "space";
 
@@ -3936,6 +3944,15 @@ export interface GoalsUpdateTargetValueResult {
   success: boolean | null;
 }
 
+export interface GrantResourceAccessInput {
+  personId: string;
+  resources: ResourceAccessInput[];
+}
+
+export interface GrantResourceAccessResult {
+  success: boolean;
+}
+
 export interface InvitationsGetCompanyInviteLinkInput {}
 
 export interface InvitationsGetCompanyInviteLinkResult {
@@ -5048,6 +5065,10 @@ class ApiNamespaceRoot {
     return this.client.post("/edit_subscriptions_list", input);
   }
 
+  async grantResourceAccess(input: GrantResourceAccessInput): Promise<GrantResourceAccessResult> {
+    return this.client.post("/grant_resource_access", input);
+  }
+
   async inviteGuest(input: InviteGuestInput): Promise<InviteGuestResult> {
     return this.client.post("/invite_guest", input);
   }
@@ -6124,6 +6145,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.editSubscriptionsList(input);
   }
 
+  grantResourceAccess(input: GrantResourceAccessInput): Promise<GrantResourceAccessResult> {
+    return this.apiNamespaceRoot.grantResourceAccess(input);
+  }
+
   inviteGuest(input: InviteGuestInput): Promise<InviteGuestResult> {
     return this.apiNamespaceRoot.inviteGuest(input);
   }
@@ -6649,6 +6674,9 @@ export async function editSpacePermissions(input: EditSpacePermissionsInput): Pr
 }
 export async function editSubscriptionsList(input: EditSubscriptionsListInput): Promise<EditSubscriptionsListResult> {
   return defaultApiClient.editSubscriptionsList(input);
+}
+export async function grantResourceAccess(input: GrantResourceAccessInput): Promise<GrantResourceAccessResult> {
+  return defaultApiClient.grantResourceAccess(input);
 }
 export async function inviteGuest(input: InviteGuestInput): Promise<InviteGuestResult> {
   return defaultApiClient.inviteGuest(input);
@@ -7407,6 +7435,12 @@ export function useEditSubscriptionsList(): UseMutationHookResult<
   );
 }
 
+export function useGrantResourceAccess(): UseMutationHookResult<GrantResourceAccessInput, GrantResourceAccessResult> {
+  return useMutation<GrantResourceAccessInput, GrantResourceAccessResult>((input) =>
+    defaultApiClient.grantResourceAccess(input),
+  );
+}
+
 export function useInviteGuest(): UseMutationHookResult<InviteGuestInput, InviteGuestResult> {
   return useMutation<InviteGuestInput, InviteGuestResult>((input) => defaultApiClient.inviteGuest(input));
 }
@@ -7868,6 +7902,8 @@ export default {
   useEditSpacePermissions,
   editSubscriptionsList,
   useEditSubscriptionsList,
+  grantResourceAccess,
+  useGrantResourceAccess,
   inviteGuest,
   useInviteGuest,
   joinCompany,
