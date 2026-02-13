@@ -2,17 +2,40 @@ import React from "react";
 
 import { match } from "ts-pattern";
 import { PrimaryButton, SecondaryButton } from "../Button";
-import { InviteLinkPanel } from "../InviteLinkPanel";
 import { InviteMemberForm } from "../InviteMemberForm";
 import { Navigation } from "../Page/Navigation";
 import { useHtmlTitle } from "../Page/useHtmlTitle";
+import { AddedContent } from "./components/AddedContent";
+import { InvitedContent } from "./components/InvitedContent";
 
 export namespace CompanyAdminAddPeoplePage {
   export type PageState = PageStateForm | PageStateInvited | PageStateAdded;
   export type PageStateForm = { state: "form" };
-  export type PageStateInvited = { state: "invited"; inviteLink: string; fullName: string };
-  export type PageStateAdded = { state: "added"; fullName: string };
+  export type PageStateInvited = { state: "invited"; inviteLink: string; fullName: string; personId: string };
+  export type PageStateAdded = { state: "added"; fullName: string; personId: string };
   export type MemberType = "team_member" | "outside_collaborator";
+
+  export type ResourceType = "space" | "goal" | "project";
+
+  export interface ResourceOption {
+    id: string;
+    name: string;
+  }
+
+  type AccessOptions = "full_access" | "edit_access" | "comment_access" | "view_access" | "no_access";
+
+  export interface ResourceAccessEntry {
+    key: number;
+    resourceType: ResourceType;
+    resourceId: string;
+    resourceName: string;
+    accessLevel: AccessOptions;
+  }
+
+  export interface PermissionOption {
+    value: AccessOptions;
+    label: string;
+  }
 
   export interface Props {
     companyName: string;
@@ -29,6 +52,15 @@ export namespace CompanyAdminAddPeoplePage {
     goBackLabel?: string;
     isSubmitting?: boolean;
     memberType?: MemberType;
+    spaces?: ResourceOption[];
+    goals?: ResourceOption[];
+    projects?: ResourceOption[];
+    onGrantAccess?: (input: {
+      personId: string;
+      resources: Array<{ resourceType: ResourceType; resourceId: string; accessLevel: AccessOptions }>;
+    }) => Promise<any>;
+    isGrantingAccess?: boolean;
+    permissionOptions?: PermissionOption[];
   }
 }
 
@@ -75,9 +107,24 @@ const memberCopy: Record<CompanyAdminAddPeoplePage.MemberType, MemberCopy> = {
   },
 };
 
+const DEFAULT_PERMISSION_OPTIONS: CompanyAdminAddPeoplePage.PermissionOption[] = [
+  { value: "full_access", label: "Full Access" },
+  { value: "edit_access", label: "Edit Access" },
+  { value: "comment_access", label: "Comment Access" },
+  { value: "view_access", label: "View Access" },
+];
+
 export function CompanyAdminAddPeoplePage(props: CompanyAdminAddPeoplePage.Props) {
   const memberType = props.memberType ?? "team_member";
   const copy = memberCopy[memberType];
+  const isGuest = memberType === "outside_collaborator";
+
+  const resourceAccess = useResourceAccess();
+
+  const handleGrantAccessButtonClick = React.useCallback(async () => {
+    const personId = props.state.state === "invited" || props.state.state === "added" ? props.state.personId : "";
+    await resourceAccess.submitEntries(personId, props.onGrantAccess || (() => Promise.resolve()));
+  }, [resourceAccess, props.state, props.onGrantAccess]);
 
   const pageTitle = [copy.pageTitlePrefix, props.companyName];
   useHtmlTitle(pageTitle);
@@ -88,25 +135,9 @@ export function CompanyAdminAddPeoplePage(props: CompanyAdminAddPeoplePage.Props
   const helperText = copy.helperText;
   const inviteAnotherLabel = props.inviteAnotherLabel ?? copy.inviteAnotherLabel;
 
-  const belowCardContent = match(props.state)
-    .with({ state: "form" }, () => helperText)
-    .with({ state: "invited" }, () => (
-      <SuccessActions
-        onInviteAnother={props.onInviteAnother}
-        inviteAnotherLabel={inviteAnotherLabel}
-        onGoBack={props.onGoBack}
-        goBackLabel={props.goBackLabel}
-      />
-    ))
-    .with({ state: "added" }, () => (
-      <SuccessActions
-        onInviteAnother={props.onInviteAnother}
-        inviteAnotherLabel={inviteAnotherLabel}
-        onGoBack={props.onGoBack}
-        goBackLabel={props.goBackLabel}
-      />
-    ))
-    .exhaustive();
+  const showSuccessActions = props.state.state !== "form" && (!isGuest || resourceAccess.accessGranted);
+  const showGrantAccessButton = props.state.state !== "form" && isGuest && !resourceAccess.accessGranted;
+  const permissionOptions = props.permissionOptions ?? DEFAULT_PERMISSION_OPTIONS;
 
   return (
     <div className={`mx-auto relative sm:my-10 ${sizeClassName}`}>
@@ -127,27 +158,68 @@ export function CompanyAdminAddPeoplePage(props: CompanyAdminAddPeoplePage.Props
               />
             ))
             .with({ state: "invited" }, (state) => (
-              <div>
-                <div className="text-content-accent text-2xl font-extrabold">
-                  {state.fullName} has been invited by email
-                </div>
-
-                <InviteLinkPanel
-                  link={state.inviteLink}
-                  description="They've received an email with this link. You can copy it here to share again if they didn't get the email or prefer another channel."
-                  footer="This link (including the one in their email) expires in 24 hours."
-                />
-              </div>
+              <InvitedContent
+                fullName={state.fullName}
+                inviteLink={state.inviteLink}
+                isGuest={isGuest}
+                spaces={props.spaces}
+                goals={props.goals}
+                projects={props.projects}
+                entries={resourceAccess.entries}
+                errors={resourceAccess.errors}
+                onAddEntry={resourceAccess.addEntry}
+                onUpdateEntry={resourceAccess.updateEntry}
+                onRemoveEntry={resourceAccess.removeEntry}
+                permissionOptions={permissionOptions}
+                accessGranted={resourceAccess.accessGranted}
+              />
             ))
             .with({ state: "added" }, (state) => (
-              <div className="text-content-accent text-2xl font-extrabold">
-                {state.fullName} has been added
-              </div>
+              <AddedContent
+                fullName={state.fullName}
+                isGuest={isGuest}
+                spaces={props.spaces}
+                goals={props.goals}
+                projects={props.projects}
+                entries={resourceAccess.entries}
+                errors={resourceAccess.errors}
+                onAddEntry={resourceAccess.addEntry}
+                onUpdateEntry={resourceAccess.updateEntry}
+                onRemoveEntry={resourceAccess.removeEntry}
+                permissionOptions={permissionOptions}
+                accessGranted={resourceAccess.accessGranted}
+              />
             ))
             .exhaustive()}
         </div>
       </div>
-      {belowCardContent}
+      {match(props.state)
+        .with({ state: "form" }, () => helperText)
+        .otherwise(() =>
+          showSuccessActions ? (
+            <SuccessActions
+              onInviteAnother={() => {
+                resourceAccess.reset();
+                props.onInviteAnother?.();
+              }}
+              inviteAnotherLabel={inviteAnotherLabel}
+              onGoBack={props.onGoBack}
+              goBackLabel={props.goBackLabel}
+            />
+          ) : showGrantAccessButton ? (
+            <GrantAccessButton onClick={handleGrantAccessButtonClick} isLoading={props.isGrantingAccess} />
+          ) : null,
+        )}
+    </div>
+  );
+}
+
+function GrantAccessButton({ onClick, isLoading }: { onClick: () => void; isLoading?: boolean }) {
+  return (
+    <div className="flex justify-center mt-4">
+      <PrimaryButton onClick={onClick} testId="grant-access-button" loading={isLoading}>
+        Grant Access
+      </PrimaryButton>
     </div>
   );
 }
@@ -181,4 +253,96 @@ function SuccessActions({
       )}
     </div>
   );
+}
+
+function newResourceEntry(): CompanyAdminAddPeoplePage.ResourceAccessEntry {
+  return {
+    key: Math.random(),
+    resourceType: "space",
+    resourceId: "",
+    resourceName: "",
+    accessLevel: "edit_access",
+  };
+}
+
+function useResourceAccess() {
+  const [accessGranted, setAccessGranted] = React.useState(false);
+  const [entries, setEntries] = React.useState<CompanyAdminAddPeoplePage.ResourceAccessEntry[]>([newResourceEntry()]);
+  const [errors, setErrors] = React.useState<Record<number, string>>({});
+
+  const addEntry = React.useCallback(() => {
+    setEntries((prev) => [...prev, newResourceEntry()]);
+  }, []);
+
+  const updateEntry = React.useCallback(
+    (key: number, updates: Partial<CompanyAdminAddPeoplePage.ResourceAccessEntry>) => {
+      setEntries((prev) => prev.map((e) => (e.key === key ? { ...e, ...updates } : e)));
+      if (updates.resourceId) {
+        setErrors((prev) => {
+          const newErrors = { ...prev };
+          delete newErrors[key];
+          return newErrors;
+        });
+      }
+    },
+    [],
+  );
+
+  const removeEntry = React.useCallback((key: number) => {
+    setEntries((prev) => prev.filter((e) => e.key !== key));
+  }, []);
+
+  const submitEntries = React.useCallback(
+    async (
+      personId: string,
+      onGrantAccess: (input: {
+        personId: string;
+        resources: Array<{
+          resourceType: CompanyAdminAddPeoplePage.ResourceType;
+          resourceId: string;
+          accessLevel: CompanyAdminAddPeoplePage.ResourceAccessEntry["accessLevel"];
+        }>;
+      }) => Promise<any>,
+    ) => {
+      const newErrors: Record<number, string> = {};
+      entries.forEach((entry) => {
+        if (!entry.resourceId) {
+          newErrors[entry.key] = "Please select a resource";
+        }
+      });
+
+      if (Object.keys(newErrors).length > 0) {
+        setErrors(newErrors);
+        return;
+      }
+
+      await onGrantAccess({
+        personId,
+        resources: entries.map((r) => ({
+          resourceType: r.resourceType,
+          resourceId: r.resourceId,
+          accessLevel: r.accessLevel,
+        })),
+      });
+      setAccessGranted(true);
+    },
+    [entries],
+  );
+
+  const reset = React.useCallback(() => {
+    setEntries([newResourceEntry()]);
+    setErrors({});
+    setAccessGranted(false);
+  }, []);
+
+  return {
+    entries,
+    errors,
+    accessGranted,
+    addEntry,
+    updateEntry,
+    removeEntry,
+    reset,
+    submitEntries,
+  };
 }

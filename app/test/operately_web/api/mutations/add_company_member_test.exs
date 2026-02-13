@@ -31,6 +31,10 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMemberTest do
       assert {200, res} = mutation(ctx.conn, :add_company_member, @add_company_member_input)
 
       assert res.invite_link.token
+      assert res.person_id
+
+      person = People.get_person_by_email(ctx.company, @add_company_member_input[:email])
+      assert person.id == res.person_id
     end
 
     test "if account already exists, skips invitation and add account to company", ctx do
@@ -40,11 +44,15 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMemberTest do
 
       refute Enum.any?(people, fn p -> p.account_id == ctx.account.id end)
 
-      assert {200, _} = mutation(ctx.conn, :add_company_member, %{
+      assert {200, res} = mutation(ctx.conn, :add_company_member, %{
         full_name: @add_company_member_input.full_name,
         email: ctx.account.email,
         title: @add_company_member_input.title,
       })
+
+      refute res.new_account
+      refute res.invite_link
+      assert res.person_id
 
       people = Operately.People.list_people(ctx.company.id)
 
@@ -52,6 +60,7 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMemberTest do
       new_person = Enum.find(people, fn p -> p.account_id == ctx.account.id end)
       new_person = Operately.Repo.preload(new_person, :account)
       assert new_person.account.first_login_at
+      assert new_person.id == res.person_id
     end
 
     test "email already taken", ctx do

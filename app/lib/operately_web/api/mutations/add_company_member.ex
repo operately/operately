@@ -15,6 +15,7 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMember do
   outputs do
     field :invite_link, :invite_link, null: false
     field :new_account, :boolean, null: false
+    field? :person_id, :string, null: true
   end
 
   def call(conn, inputs) do
@@ -35,14 +36,16 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMember do
 
   defp process_member_creation(admin, inputs) do
     case create_person(admin, inputs) do
-      {:ok, nil} ->
-        {:ok, %{invite_link: nil, new_account: false}}
+      {:ok, changes} ->
+        invite_link = changes[:invite_link]
+        person = changes[:person]
+        new_account = !is_nil(invite_link)
 
-      {:ok, invite_link} ->
         {:ok,
          %{
-           invite_link: Serializer.serialize(invite_link, level: :full),
-           new_account: true
+           invite_link: invite_link && Serializer.serialize(invite_link, level: :full),
+           new_account: new_account,
+           person_id: person.id
          }}
 
       error ->
@@ -54,8 +57,8 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMember do
     skip_invitation = People.account_used?(inputs[:email])
 
     case Operately.Operations.CompanyMemberAdding.run(admin, inputs, skip_invitation) do
-      {:ok, invite_link} ->
-        {:ok, invite_link}
+      {:ok, changes} ->
+        {:ok, changes}
 
       {:error, [%{field: :email, message: message}]} ->
         {:error, :bad_request, "Email " <> message}
