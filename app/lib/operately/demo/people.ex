@@ -25,13 +25,13 @@ defmodule Operately.Demo.People do
     email = create_email(company, data)
     invited = data[:invited] == true
 
-    {:ok, invitation} = Operately.Operations.CompanyMemberAdding.run(owner, %{
+    {:ok, changes} = Operately.Operations.CompanyMemberAdding.run(owner, %{
       full_name: data.name,
       email: email,
       title: data.title,
     }, not invited)
 
-    person = fetch_member(company, invitation, email)
+    person = changes[:person]
 
     {:ok, person} = set_avatar(person, data.avatar)
     {:ok, person} = set_manager(person, resources, data[:reports_to])
@@ -41,25 +41,15 @@ defmodule Operately.Demo.People do
     person
   end
 
-  defp fetch_member(company, nil, email) do
-    case Operately.People.get_person_by_email(company, email) do
-      nil -> raise "Could not find person with email #{email}"
-      person -> person
-    end
-  end
-
-  defp fetch_member(_company, invitation, _email) do
-    Operately.Repo.preload(invitation, :person).person
-  end
-
   defp create_guest_person(owner, company, data) do
-    {:ok, invite_link} = Operately.Operations.GuestInviting.run(owner, %{
+    {:ok, changes} = Operately.Operations.GuestInviting.run(owner, %{
       full_name: data.name,
       email: create_email(company, data),
       title: data.title,
     })
 
-    person = Operately.Repo.preload(invite_link, :person).person
+    person = changes[:person]
+
     {:ok, person} = set_avatar(person, data.avatar)
     {:ok, person} = set_first_login(person, false)
 
@@ -99,7 +89,7 @@ defmodule Operately.Demo.People do
 
   defp create_email(company, data) do
     email_handle = String.replace(data.name, " ", "-") <> "-" <> to_string(company.short_id)
-    company_domain = String.replace(company.name, " ", "") |> String.downcase()
+    company_domain = String.replace(company.name, ~r/[^a-zA-Z0-9]/, "") |> String.downcase()
 
     "#{email_handle}@#{company_domain}.com"
   end

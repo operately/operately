@@ -91,12 +91,13 @@ defmodule Operately.Operations.GuestInvitingTest do
   end
 
   test "GuestInviting operation creates invite link when account unused", ctx do
-    {:ok, _invite_link} = Operately.Operations.GuestInviting.run(ctx.admin, @guest_attrs)
+    {:ok, changes} = Operately.Operations.GuestInviting.run(ctx.admin, @guest_attrs)
 
     person = People.get_person_by_email(ctx.company, @email)
 
     assert {:ok, invite_link} = InviteLinks.get_personal_invite_link_for_person(person.id)
     assert invite_link.person_id == person.id
+    assert changes[:invite_link].id == invite_link.id
   end
 
   test "GuestInviting operation skips invite link when account already used", ctx do
@@ -104,17 +105,18 @@ defmodule Operately.Operations.GuestInvitingTest do
     {:ok, _} = People.mark_account_first_login(account)
 
     attrs = Map.put(@guest_attrs, :email, account.email)
-    {:ok, invite_link} = Operately.Operations.GuestInviting.run(ctx.admin, attrs)
+    {:ok, changes} = Operately.Operations.GuestInviting.run(ctx.admin, attrs)
 
-    assert is_nil(invite_link)
+    assert is_nil(changes[:invite_link])
 
     person = People.get_person_by_email(ctx.company, account.email)
     assert {:error, :not_found} = InviteLinks.get_personal_invite_link_for_person(person.id)
+    assert changes[:person].id == person.id
   end
 
   test "GuestInviting operation creates activity and notifications", ctx do
     Oban.Testing.with_testing_mode(:manual, fn ->
-      {:ok, _invite_link} = Operately.Operations.GuestInviting.run(ctx.admin, @guest_attrs)
+      {:ok, _changes} = Operately.Operations.GuestInviting.run(ctx.admin, @guest_attrs)
     end)
 
     person = People.get_person_by_email(ctx.company, @email)

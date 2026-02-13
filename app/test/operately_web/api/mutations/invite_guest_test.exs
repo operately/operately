@@ -32,9 +32,11 @@ defmodule OperatelyWeb.Api.Mutations.InviteGuestTest do
 
       assert res.new_account
       assert res.invite_link.token
+      assert res.person_id
 
       person = People.get_person_by_email(ctx.company, @invite_guest_input[:email])
       assert person.type == :guest
+      assert person.id == res.person_id
     end
 
     test "skips invite link when account already used", ctx do
@@ -49,9 +51,11 @@ defmodule OperatelyWeb.Api.Mutations.InviteGuestTest do
 
       refute res.new_account
       refute res.invite_link
+      assert res.person_id
 
       person = People.get_person_by_email(ctx.company, ctx.account.email)
       assert person.type == :guest
+      assert person.id == res.person_id
     end
 
     test "email already taken", ctx do
