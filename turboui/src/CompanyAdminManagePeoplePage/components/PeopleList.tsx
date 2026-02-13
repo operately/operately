@@ -16,7 +16,7 @@ interface Props {
   onChangeAccessLevel: (personId: string, accessLevel: AccessOptions) => void;
   permissions?: Permissions;
   showConvertToGuest?: boolean;
-  allowMinimalAccess?: boolean;
+  showAccessLevelOptions?: boolean;
 }
 
 export function PeopleList({
@@ -30,7 +30,7 @@ export function PeopleList({
   onChangeAccessLevel,
   permissions,
   showConvertToGuest,
-  allowMinimalAccess,
+  showAccessLevelOptions,
 }: Props) {
   return (
     <div data-test-id={testId}>
@@ -46,7 +46,7 @@ export function PeopleList({
           onChangeAccessLevel={onChangeAccessLevel}
           permissions={permissions}
           showConvertToGuest={showConvertToGuest}
-          allowMinimalAccess={allowMinimalAccess}
+          showAccessLevelOptions={showAccessLevelOptions}
         />
       ))}
     </div>
