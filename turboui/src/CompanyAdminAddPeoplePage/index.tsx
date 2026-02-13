@@ -165,11 +165,11 @@ export function CompanyAdminAddPeoplePage(props: CompanyAdminAddPeoplePage.Props
                 spaces={props.spaces}
                 goals={props.goals}
                 projects={props.projects}
-                resourceEntries={resourceAccess.entries}
-                resourceErrors={resourceAccess.errors}
-                onAddResourceEntry={resourceAccess.addEntry}
-                onUpdateResourceEntry={resourceAccess.updateEntry}
-                onRemoveResourceEntry={resourceAccess.removeEntry}
+                entries={resourceAccess.entries}
+                errors={resourceAccess.errors}
+                onAddEntry={resourceAccess.addEntry}
+                onUpdateEntry={resourceAccess.updateEntry}
+                onRemoveEntry={resourceAccess.removeEntry}
                 permissionOptions={permissionOptions}
                 accessGranted={resourceAccess.accessGranted}
               />
@@ -181,11 +181,11 @@ export function CompanyAdminAddPeoplePage(props: CompanyAdminAddPeoplePage.Props
                 spaces={props.spaces}
                 goals={props.goals}
                 projects={props.projects}
-                resourceEntries={resourceAccess.entries}
-                resourceErrors={resourceAccess.errors}
-                onAddResourceEntry={resourceAccess.addEntry}
-                onUpdateResourceEntry={resourceAccess.updateEntry}
-                onRemoveResourceEntry={resourceAccess.removeEntry}
+                entries={resourceAccess.entries}
+                errors={resourceAccess.errors}
+                onAddEntry={resourceAccess.addEntry}
+                onUpdateEntry={resourceAccess.updateEntry}
+                onRemoveEntry={resourceAccess.removeEntry}
                 permissionOptions={permissionOptions}
                 accessGranted={resourceAccess.accessGranted}
               />

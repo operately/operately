@@ -10,7 +10,7 @@ const RESOURCE_TYPE_OPTIONS: { value: CompanyAdminAddPeoplePage.ResourceType; la
   { value: "project", label: "Project" },
 ];
 
-interface Props {
+export interface ResourceAccessContentProps {
   fullName: string;
   entries: CompanyAdminAddPeoplePage.ResourceAccessEntry[];
   errors: Record<number, string>;
@@ -36,7 +36,7 @@ export function ResourceAccessContent({
   projects,
   permissionOptions,
   accessGranted,
-}: Props) {
+}: ResourceAccessContentProps) {
   if (accessGranted) {
     return (
       <div className="mt-6 p-4 bg-surface-dimmed rounded-lg text-sm text-content-accent text-center">
