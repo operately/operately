@@ -3,6 +3,7 @@ defmodule Operately.Operations.ResourceAccessGrantingTest do
 
   alias Operately.Access
   alias Operately.Access.Binding
+  alias Operately.Access.GroupMembership
   alias Operately.Groups
   alias Operately.Projects.Contributor
   alias Operately.Support.Factory
@@ -51,6 +52,31 @@ defmodule Operately.Operations.ResourceAccessGrantingTest do
       guest_count = Enum.count(members, fn m -> m.id == ctx.guest.id end)
 
       assert guest_count == 1
+    end
+
+    test "creates a group membership in the standard access group", ctx do
+      resources = [%{resource_type: :space, resource_id: ctx.space.id, access_level: :edit_access}]
+
+      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.guest.id, resources)
+
+      standard_group = Access.get_group!(group_id: ctx.space.id, tag: :standard)
+      membership = Access.get_group_membership(group_id: standard_group.id, person_id: ctx.guest.id)
+
+      assert membership
+      assert membership.person_id == ctx.guest.id
+      assert membership.group_id == standard_group.id
+    end
+
+    test "does not duplicate group membership if already exists", ctx do
+      resources = [%{resource_type: :space, resource_id: ctx.space.id, access_level: :edit_access}]
+
+      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.guest.id, resources)
+      assert {:ok, _} = Operately.Operations.ResourceAccessGranting.run(ctx.guest.id, resources)
+
+      standard_group = Access.get_group!(group_id: ctx.space.id, tag: :standard)
+      memberships = Repo.all(from m in GroupMembership, where: m.group_id == ^standard_group.id and m.person_id == ^ctx.guest.id)
+
+      assert length(memberships) == 1
     end
   end
 
