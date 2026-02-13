@@ -1,6 +1,8 @@
+import * as React from "react";
+
 import Api from "@/api";
 import * as Companies from "@/models/companies";
-import * as React from "react";
+import * as Permissions from "@/models/permissions";
 
 import { PageModule } from "@/routes/types";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -25,16 +27,15 @@ function Page() {
   const navigate = useNavigate();
   const paths = usePaths();
   const [searchParams] = useSearchParams();
-  const [add] = Companies.useAddCompanyMember();
-  const [inviteGuest] = Api.useInviteGuest();
 
   const [state, setState] = React.useState<CompanyAdminAddPeoplePage.PageState>({ state: "form" });
   const [values, setValues] = React.useState<InviteMemberForm.Values>({ fullName: "", email: "", title: "" });
   const [errors, setErrors] = React.useState<InviteMemberForm.Errors>({});
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const memberTypeParam = searchParams.get("memberType");
   const memberType: CompanyAdminAddPeoplePage.MemberType =
     memberTypeParam === "outside_collaborator" ? "outside_collaborator" : "team_member";
+
+  const [grantAccess, { loading: isGrantingAccess }] = Permissions.useGrantResourceAccess();
 
   const navigationItems = React.useMemo(
     () => [
@@ -66,6 +67,51 @@ function Page() {
     navigate(-1);
   }, [navigate]);
 
+  const { handleSubmit, isSubmitting, spaces, goals, projects } = useInviteSubmit(
+    memberType,
+    values,
+    setErrors,
+    setState,
+  );
+
+  return (
+    <CompanyAdminAddPeoplePage
+      companyName={company.name || ""}
+      navigationItems={navigationItems}
+      state={state}
+      formValues={values}
+      formErrors={errors}
+      onFormChange={handleFormChange}
+      onSubmit={handleSubmit}
+      onCancel={handleCancel}
+      onInviteAnother={handleInviteAnother}
+      onGoBack={handleGoBack}
+      goBackLabel="Back"
+      isSubmitting={isSubmitting}
+      memberType={memberType}
+      spaces={spaces}
+      goals={goals}
+      projects={projects}
+      onGrantAccess={grantAccess}
+      isGrantingAccess={isGrantingAccess}
+    />
+  );
+}
+
+function useInviteSubmit(
+  memberType: CompanyAdminAddPeoplePage.MemberType,
+  values: InviteMemberForm.Values,
+  setErrors: React.Dispatch<React.SetStateAction<InviteMemberForm.Errors>>,
+  setState: React.Dispatch<React.SetStateAction<CompanyAdminAddPeoplePage.PageState>>,
+) {
+  const [add] = Companies.useAddCompanyMember();
+  const [inviteGuest] = Api.useInviteGuest();
+
+  const [spaces, setSpaces] = React.useState<CompanyAdminAddPeoplePage.ResourceOption[]>([]);
+  const [goals, setGoals] = React.useState<CompanyAdminAddPeoplePage.ResourceOption[]>([]);
+  const [projects, setProjects] = React.useState<CompanyAdminAddPeoplePage.ResourceOption[]>([]);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+
   const handleSubmit = React.useCallback(async () => {
     if (isSubmitting) return;
 
@@ -83,16 +129,28 @@ function Page() {
         email: values.email.trim(),
         title: values.title.trim(),
       };
-      const res =
-        memberType === "outside_collaborator"
-          ? await inviteGuest(payload)
-          : await add(payload);
+      const res = memberType === "outside_collaborator" ? await inviteGuest(payload) : await add(payload);
+
+      const personId = res.personId || "";
+
+      // Load resources for the access granting form (only for outside collaborators)
+      if (memberType === "outside_collaborator") {
+        const [spacesData, goalsData, projectsData] = await Promise.all([
+          Api.getSpaces({}),
+          Api.getGoals({ includeSpace: true }),
+          Api.getProjects({}),
+        ]);
+
+        setSpaces((spacesData.spaces || []).map((s) => ({ id: s.id, name: s.name })));
+        setGoals((goalsData.goals || []).map((g) => ({ id: g.id, name: g.name })));
+        setProjects((projectsData.projects || []).map((p) => ({ id: p.id, name: p.name })));
+      }
 
       if (res.newAccount && res.inviteLink?.token) {
         const url = Companies.createInvitationUrl(res.inviteLink.token);
-        setState({ state: "invited", inviteLink: url, fullName: values.fullName });
+        setState({ state: "invited", inviteLink: url, fullName: values.fullName, personId });
       } else {
-        setState({ state: "added", fullName: values.fullName });
+        setState({ state: "added", fullName: values.fullName, personId });
       }
 
       setErrors({});
@@ -108,31 +166,15 @@ function Page() {
         if (lower.includes("name")) nextErrors.fullName = message;
 
         if (Object.keys(nextErrors).length > 0) {
-          setErrors((prev) => ({ ...nextErrors, ...prev }));
+          setErrors((prev: InviteMemberForm.Errors) => ({ ...nextErrors, ...prev }));
         }
       }
     } finally {
       setIsSubmitting(false);
     }
-  }, [add, inviteGuest, isSubmitting, memberType, values]);
+  }, [add, inviteGuest, isSubmitting, memberType, values, setErrors, setState, setSpaces, setGoals, setProjects]);
 
-  return (
-    <CompanyAdminAddPeoplePage
-      companyName={company.name || ""}
-      navigationItems={navigationItems}
-      state={state}
-      formValues={values}
-      formErrors={errors}
-      onFormChange={handleFormChange}
-      onSubmit={handleSubmit}
-      onCancel={handleCancel}
-      onInviteAnother={handleInviteAnother}
-      onGoBack={handleGoBack}
-      goBackLabel="Back"
-      isSubmitting={isSubmitting}
-      memberType={memberType}
-    />
-  );
+  return { spaces, goals, projects, handleSubmit, isSubmitting };
 }
 
 function validateInvite(values: InviteMemberForm.Values): InviteMemberForm.Errors {
