@@ -21,7 +21,7 @@ defmodule Operately.Companies.Permissions do
       can_invite_members: access_level >= Binding.admin_access(),
       can_remove_members: access_level >= Binding.admin_access(),
       can_restore_members: access_level >= Binding.admin_access(),
-      can_edit_members_access_levels: access_level >= Binding.full_access(),
+      can_edit_members_access_levels: access_level >= Binding.admin_access(),
       can_create_space: access_level >= Binding.edit_access(),
       can_manage_admins: access_level >= Binding.full_access() || dev_env?(),
       can_manage_owners: access_level >= Binding.full_access() || dev_env?(),

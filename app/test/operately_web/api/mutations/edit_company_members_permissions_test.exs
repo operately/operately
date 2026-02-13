@@ -19,7 +19,7 @@ defmodule OperatelyWeb.Api.Mutations.EditCompanyMembersPermissionsTest do
       %{access_level: :no_access, expected: 404},
       %{access_level: :comment_access, expected: 403},
       %{access_level: :edit_access, expected: 403},
-      %{access_level: :admin_access, expected: 403},
+      %{access_level: :admin_access, expected: 200},
       %{access_level: :full_access, expected: 200}
     ]
 
@@ -104,6 +104,87 @@ defmodule OperatelyWeb.Api.Mutations.EditCompanyMembersPermissionsTest do
       assert_member_access_level(ctx.company, p1, Binding.view_access())
       assert_member_access_level(ctx.company, p2, Binding.edit_access())
       assert_member_access_level(ctx.company, p3, Binding.full_access())
+    end
+  end
+
+  describe "access level validation" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_company_admin(:admin)
+      |> Factory.add_company_member(:member)
+      |> Factory.log_in_person(:admin)
+    end
+
+    test "admin cannot grant access higher than admin", ctx do
+      assert {403, res} = mutation(ctx.conn, :edit_company_members_permissions, %{
+        members: [%{
+          id: Paths.person_id(ctx.member),
+          access_level: "full_access",
+        }],
+      })
+
+      assert res.message == "You don't have permission to perform this action"
+    end
+
+    test "admin can grant access equal to or lower than admin", ctx do
+      p1 = person_fixture(%{company_id: ctx.company.id})
+      p2 = person_fixture(%{company_id: ctx.company.id})
+      p3 = person_fixture(%{company_id: ctx.company.id})
+
+      assert {200, res} = mutation(ctx.conn, :edit_company_members_permissions, %{
+        members: [
+          %{id: Paths.person_id(p1), access_level: "view_access"},
+          %{id: Paths.person_id(p2), access_level: "comment_access"},
+          %{id: Paths.person_id(p3), access_level: "admin_access"},
+        ],
+      })
+
+      assert res.success
+
+      assert_member_access_level(ctx.company, p1, Binding.view_access())
+      assert_member_access_level(ctx.company, p2, Binding.comment_access())
+      assert_member_access_level(ctx.company, p3, Binding.admin_access())
+    end
+
+    test "full_access can grant any access level", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      p1 = person_fixture(%{company_id: ctx.company.id})
+      p2 = person_fixture(%{company_id: ctx.company.id})
+      p3 = person_fixture(%{company_id: ctx.company.id})
+      p4 = person_fixture(%{company_id: ctx.company.id})
+
+      assert {200, res} = mutation(ctx.conn, :edit_company_members_permissions, %{
+        members: [
+          %{id: Paths.person_id(p1), access_level: "view_access"},
+          %{id: Paths.person_id(p2), access_level: "comment_access"},
+          %{id: Paths.person_id(p3), access_level: "admin_access"},
+          %{id: Paths.person_id(p4), access_level: "full_access"},
+        ],
+      })
+
+      assert res.success
+
+      assert_member_access_level(ctx.company, p1, Binding.view_access())
+      assert_member_access_level(ctx.company, p2, Binding.comment_access())
+      assert_member_access_level(ctx.company, p3, Binding.admin_access())
+      assert_member_access_level(ctx.company, p4, Binding.full_access())
+    end
+
+    test "rejects when any member in batch has higher access than caller", ctx do
+      p1 = person_fixture(%{company_id: ctx.company.id})
+      p2 = person_fixture(%{company_id: ctx.company.id})
+      p3 = person_fixture(%{company_id: ctx.company.id})
+
+      assert {403, res} = mutation(ctx.conn, :edit_company_members_permissions, %{
+        members: [
+          %{id: Paths.person_id(p1), access_level: "view_access"},
+          %{id: Paths.person_id(p2), access_level: "full_access"},
+          %{id: Paths.person_id(p3), access_level: "edit_access"},
+        ],
+      })
+
+      assert res.message == "You don't have permission to perform this action"
     end
   end
 
