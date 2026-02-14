@@ -83,7 +83,7 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.assert_notification_and_email_sent_to_removed_owner()
   end
 
-  @tag role: :owner
+  @tag role: :admin
   feature "edit member's access levels", ctx do
     ctx
     |> Steps.given_a_company_owner_exists()
@@ -92,15 +92,6 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.assert_company_member_access_level_is_updated(:view_access)
     |> Steps.edit_company_member_access_level(:edit_access)
     |> Steps.assert_company_member_access_level_is_updated(:edit_access)
-  end
-
-  @tag role: :admin
-  feature "admin can't edit member's access levels", ctx do
-    ctx
-    |> Steps.given_a_company_member_exists()
-    |> Steps.assert_logged_in_user_has_admin_access_level()
-    |> Steps.open_company_team_page()
-    |> Steps.assert_admin_cant_edit_member_access_level()
   end
 
   @tag role: :admin

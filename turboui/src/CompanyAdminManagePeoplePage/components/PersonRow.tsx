@@ -20,7 +20,7 @@ interface Props {
   onChangeAccessLevel: (personId: string, accessLevel: AccessOptions) => void;
   permissions?: Permissions;
   showConvertToGuest?: boolean;
-  allowMinimalAccess?: boolean;
+  showAccessLevelOptions?: boolean;
 }
 
 export function PersonRow({
@@ -33,7 +33,7 @@ export function PersonRow({
   onChangeAccessLevel,
   permissions,
   showConvertToGuest,
-  allowMinimalAccess,
+  showAccessLevelOptions,
 }: Props) {
   return (
     <div
@@ -48,7 +48,7 @@ export function PersonRow({
       <div className="flex gap-2 items-center">
         <InvitationStatus person={person} />
 
-        {!person.hasOpenInvitation && person.accessLevel !== undefined && (
+        {!person.hasOpenInvitation && person.accessLevel !== undefined && showAccessLevelOptions && (
           <AccessLevelBadge accessLevel={person.accessLevel} />
         )}
 
@@ -62,7 +62,7 @@ export function PersonRow({
           onChangeAccessLevel={onChangeAccessLevel}
           permissions={permissions}
           showConvertToGuest={showConvertToGuest}
-          allowMinimalAccess={allowMinimalAccess}
+          showAccessLevelOptions={showAccessLevelOptions}
         />
       </div>
     </div>
