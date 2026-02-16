@@ -25,7 +25,7 @@ export function ReissueInvitationModal({
   if (!person) return null;
 
   return (
-    <LegacyModal title="Re-generate the invitation URL" isOpen={isOpen} onClose={onClose} size="lg">
+    <LegacyModal title="Regenerate the invitation URL" isOpen={isOpen} onClose={onClose} size="lg">
       <div>
         By clicking the button below:
         <ul className="list-disc list-inside mt-2 block">
@@ -44,7 +44,7 @@ function NewInvitationButton({ onClick, loading }: { onClick: () => void; loadin
   return (
     <div className="flex items-center mt-4">
       <PrimaryButton onClick={onClick} loading={loading} testId="confirm-reissue">
-        I understand, Create New Invitation
+        I understand, create new invitation
       </PrimaryButton>
     </div>
   );
