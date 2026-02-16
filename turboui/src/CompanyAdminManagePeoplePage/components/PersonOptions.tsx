@@ -105,7 +105,7 @@ export function PersonOptions({
           onClick={() => onOpenReissue(person)}
           testId={createTestId("reissue-token", person.id)}
         >
-          Re-Issue Invitation
+          Reissue Invitation
         </MenuActionItem>
       )}
 
