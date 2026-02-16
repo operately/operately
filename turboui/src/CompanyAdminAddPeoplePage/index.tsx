@@ -73,7 +73,7 @@ type MemberCopy = {
 };
 
 const helperTextWrapper = (content: React.ReactNode) => (
-  <div className="my-8 text-center px-20">
+  <div className="my-8 text-center px-8 sm:px-20">
     <span className="font-bold">What happens next?</span> {content}
   </div>
 );
@@ -130,7 +130,7 @@ export function CompanyAdminAddPeoplePage(props: CompanyAdminAddPeoplePage.Props
   useHtmlTitle(pageTitle);
 
   const sizeClassName = props.state.state === "form" ? "max-w-2xl" : "max-w-4xl";
-  const bodyClassName = props.state.state === "form" ? "px-10 py-8" : "px-12 py-10";
+  const bodyClassName = props.state.state === "form" ? "px-4 py-4 sm:px-10 sm:py-8" : "px-4 py-4 sm:px-12 sm:py-10";
 
   const helperText = copy.helperText;
   const inviteAnotherLabel = props.inviteAnotherLabel ?? copy.inviteAnotherLabel;
@@ -216,7 +216,7 @@ export function CompanyAdminAddPeoplePage(props: CompanyAdminAddPeoplePage.Props
 
 function GrantAccessButton({ onClick, isLoading }: { onClick: () => void; isLoading?: boolean }) {
   return (
-    <div className="flex justify-center mt-4">
+    <div className="flex justify-center mt-4 mb-16">
       <PrimaryButton onClick={onClick} testId="grant-access-button" loading={isLoading}>
         Grant Access
       </PrimaryButton>

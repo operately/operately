@@ -9,7 +9,7 @@ interface Props extends ResourceAccessContentProps {
 export function AddedContent(props: Props) {
   return (
     <div>
-      <div className="text-content-accent text-2xl font-extrabold">{props.fullName} has been added</div>
+      <div className="text-content-accent text-xl sm:text-2xl font-extrabold">{props.fullName} has been added</div>
 
       <div className="mt-4">
         {props.fullName} has been added to the company and an email has been sent to notify them.
