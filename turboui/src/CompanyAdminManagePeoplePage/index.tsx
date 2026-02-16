@@ -11,6 +11,7 @@ import { RemovePersonModal } from "./components/RemovePersonModal";
 import { InvitationUrl } from "./components/InvitationUrl";
 import { LegacyModal } from "./components/LegacyModal";
 import type { CompanyAdminManagePeoplePageProps, CompanyAdminManagePerson } from "./types";
+import { useWindowSizeBreakpoints } from "../utils/useWindowSizeBreakpoint";
 
 export namespace CompanyAdminManagePeoplePage {
   export type Person = CompanyAdminManagePerson;
@@ -28,6 +29,7 @@ const defaultReissueState = { inviteUrl: "", isGenerated: false, loading: false 
 const defaultRenewState = { inviteUrl: "", loading: false };
 
 export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage.Props) {
+  const windowSize = useWindowSizeBreakpoints();
   const pageTitle = ["Manage Team Members", props.companyName];
   useHtmlTitle(pageTitle);
   const outsideCollaborators = props.outsideCollaborators ?? [];
@@ -132,18 +134,18 @@ export function CompanyAdminManagePeoplePage(props: CompanyAdminManagePeoplePage
 
   return (
     <div
-      className="mx-auto relative sm:my-10 sm:max-w-[90%] lg:max-w-5xl"
+      className="mx-auto relative sm:my-10 sm:max-w-[100%] lg:max-w-5xl"
       data-test-id={props.testId ?? "manage-people-page"}
     >
       <Navigation items={props.navigationItems} />
 
       <div className="relative bg-surface-base min-h-dvh sm:min-h-0 sm:border sm:border-surface-outline sm:rounded-lg sm:shadow-xl">
-        <div className="px-4 sm:px-12 py-10">
+        <div className="px-4 lg:px-12 py-10">
           <PageHeader
             title="Manage Team Members"
             subtitle="Add new team members, update profiles, or remove access as needed."
             actions={
-              <PrimaryButton linkTo={props.addMemberPath} testId="add-person">
+              <PrimaryButton linkTo={props.addMemberPath} testId="add-person" className="whitespace-nowrap" size={windowSize === "xs" ? "sm" : "base"}>
                 Invite people
               </PrimaryButton>
             }
@@ -287,12 +289,14 @@ function PageHeader({
   actions?: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between mb-6">
+    <div className="grid grid-cols-[1fr_auto] sm:flex items-center justify-between mb-6">
       <div>
         <div className="text-content-accent text-lg md:text-2xl font-extrabold">{title}</div>
-        {subtitle && <div className="mt-2">{subtitle}</div>}
+        {subtitle && <div className="mt-2 sm:block hidden">{subtitle}</div>}
       </div>
       <div>{actions}</div>
+
+      {subtitle && <div className="mt-2 col-span-2 sm:hidden block">{subtitle}</div>}
     </div>
   );
 }
