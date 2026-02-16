@@ -13,7 +13,14 @@ const DiscordIcon = IconBrandDiscordFilled;
 
 export function HelpDropdown({ company }: { company: Companies.Company }) {
   return (
-    <DropdownMenu testId="help-dropdown" name="Help" icon={IconLifebuoy} align="center" minWidth={200}>
+    <DropdownMenu
+      testId="help-dropdown"
+      name="Help"
+      icon={IconLifebuoy}
+      align="center"
+      minWidth={200}
+      triggerClassName="hidden lg:flex"
+    >
       <DropdownLinkItem path={contactUsLink(company)} icon={IconMail} title="Contact us" />
       <DropdownLinkItem path={window.appConfig!.discordUrl} icon={DiscordIcon} title="Discord chat" target="_blank" />
       <DropdownLinkItem path={newsLink} icon={IconSpeakerphone} title="What's new" target="_blank" />

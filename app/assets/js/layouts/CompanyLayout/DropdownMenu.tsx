@@ -13,16 +13,6 @@ const contentClassName = classNames(
   "overflow-hidden",
 );
 
-const triggerClassName = classNames(
-  "font-semibold",
-  "flex items-center gap-1",
-  "cursor-pointer",
-  "group",
-  "hover:bg-surface-bg-highlight",
-  "px-1.5 py-0.5",
-  "rounded",
-);
-
 const itemClassName = classNames(
   "hover:bg-surface-highlight",
   "px-2 py-1.5",
@@ -40,6 +30,7 @@ interface DropdownMenuProps {
   align?: "start" | "center" | "end";
   showDropdownIcon?: boolean;
   minWidth?: number;
+  triggerClassName?: string;
 }
 
 export function DropdownMenu(props: DropdownMenuProps) {
@@ -57,6 +48,17 @@ export function DropdownMenu(props: DropdownMenuProps) {
       return !hidden;
     });
   }, [props.children]);
+
+  const triggerClassName = classNames(
+    "font-semibold whitespace-nowrap",
+    "flex items-center gap-1",
+    "cursor-pointer",
+    "group",
+    "hover:bg-surface-bg-highlight",
+    "px-1.5 py-0.5",
+    "rounded",
+    props.triggerClassName,
+  );
 
   if (!hasVisibleChildren) return null;
 
