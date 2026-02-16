@@ -11,7 +11,7 @@ interface Props extends ResourceAccessContentProps {
 export function InvitedContent(props: Props) {
   return (
     <div>
-      <div className="text-content-accent text-2xl font-extrabold">{props.fullName} has been invited by email</div>
+      <div className="text-content-accent text-xl sm:text-2xl font-extrabold">{props.fullName} has been invited by email</div>
 
       <InviteLinkPanel
         link={props.inviteLink}
