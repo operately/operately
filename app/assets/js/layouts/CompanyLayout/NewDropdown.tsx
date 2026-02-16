@@ -16,7 +16,7 @@ export function NewDropdown({ canAddGoal, canAddProject, canAddSpace, canInviteP
   const paths = usePaths();
 
   return (
-    <DropdownMenu testId="new-dropdown" name="New" icon={IconPlus} align="end">
+    <DropdownMenu testId="new-dropdown" name="New" icon={IconPlus} align="end" triggerClassName="hidden lg:flex">
       <DropdownLinkItem
         path={paths.newGoalPath()}
         icon={IconTargetArrow}
