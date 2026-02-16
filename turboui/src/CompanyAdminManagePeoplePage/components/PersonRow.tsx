@@ -37,19 +37,23 @@ export function PersonRow({
 }: Props) {
   return (
     <div
-      className="flex items-center justify-between border-t border-stroke-dimmed py-4 last:border-b"
+      className="flex items-start sm:items-center justify-between border-t border-stroke-dimmed py-4 last:border-b"
       data-test-id={createTestId("person-row", person.id)}
     >
-      <div className="flex items-center gap-4">
-        <Avatar person={person} size={48} />
+      <div className="flex items-start gap-2 sm:items-center sm:gap-4">
+        <Avatar className="mt-0.5 sm:mt-0" person={person} size={48} />
         <PersonInfo person={person} />
       </div>
 
-      <div className="flex gap-2 items-center">
-        <InvitationStatus person={person} />
+      <div className="flex gap-2 items-start sm:items-center">
+        <div className="hidden sm:block">
+          <InvitationStatus person={person} />
+        </div>
 
         {!person.hasOpenInvitation && person.accessLevel !== undefined && showAccessLevelOptions && (
-          <AccessLevelBadge accessLevel={person.accessLevel} />
+          <div className="hidden sm:block">
+            <AccessLevelBadge accessLevel={person.accessLevel} />
+          </div>
         )}
 
         <PersonOptions
@@ -76,9 +80,9 @@ function PersonInfo({ person }: { person: CompanyAdminManagePerson }) {
         {person.fullName}
       </BlackLink>
 
-      <div className="text-content-dimmed text-sm">
+      <div className="flex flex-col sm:block text-content-dimmed text-sm">
         <span className="text-sm">{person.title}</span>
-        <span className="text-sm"> &middot; </span>
+        <span className="text-sm hidden sm:inline"> &middot; </span>
         <span className="break-all mt-0.5">{person.email}</span>
       </div>
     </div>
