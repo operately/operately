@@ -42,7 +42,7 @@ export function InviteMemberForm(props: InviteMemberForm.Props) {
 
   return (
     <div>
-      {props.title && <div className="text-content-accent text-2xl font-extrabold mb-8">{props.title}</div>}
+      {props.title && <div className="text-content-accent text-xl sm:text-2xl font-extrabold mb-6 mt-2 sm:mt-0 sm:mb-8">{props.title}</div>}
 
       <form onSubmit={handleSubmit} data-test-id={props.testId}>
         <div className="flex flex-col gap-4">
@@ -127,7 +127,7 @@ function FormRow({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex gap-4 items-center">
+    <div className="flex sm:gap-4 items-center">
       <label htmlFor={htmlFor} className="w-1/4 shrink-0 font-semibold text-left">
         {label}
       </label>
