@@ -10,6 +10,12 @@ const PERMISSION_LEVELS = {
   MINIMAL_ACCESS: 1,
 };
 
+const sizeClasses = {
+  xs: "px-1.5 py-0.5 text-micro",
+  sm: "px-2 py-1 text-xxs",
+  base: "px-2.5 py-1.5 text-xs",
+};
+
 const accessLevelData: Record<
   number,
   {
@@ -43,7 +49,7 @@ const accessLevelData: Record<
   },
 };
 
-export function AccessLevelBadge({ accessLevel, className = "" }: AccessLevelBadge.Props) {
+export function AccessLevelBadge({ accessLevel, size = "base", className = "" }: AccessLevelBadge.Props) {
   const data = accessLevelData[accessLevel];
 
   if (!data) {
@@ -51,7 +57,8 @@ export function AccessLevelBadge({ accessLevel, className = "" }: AccessLevelBad
   }
 
   const badgeClassName = classNames(
-    "inline-flex items-center px-2.5 py-1.5 rounded-full text-xs font-semibold uppercase cursor-default",
+    "inline-flex items-center rounded-full font-semibold uppercase cursor-default",
+    sizeClasses[size],
     data.colors,
     className,
   );
@@ -62,6 +69,7 @@ export function AccessLevelBadge({ accessLevel, className = "" }: AccessLevelBad
 export namespace AccessLevelBadge {
   export interface Props {
     accessLevel: number;
+    size?: "xs" | "sm" | "base";
     className?: string;
   }
 }

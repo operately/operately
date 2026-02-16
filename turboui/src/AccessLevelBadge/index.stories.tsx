@@ -73,3 +73,25 @@ export const ViewAccess: Story = {
     accessLevel: 10,
   },
 };
+
+export const Sizes: Story = {
+  args: {
+    accessLevel: 100,
+  },
+  render: () => (
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center gap-4">
+        <span className="w-20 text-sm font-medium">XS:</span>
+        <AccessLevelBadge accessLevel={100} size="xs" />
+      </div>
+      <div className="flex items-center gap-4">
+        <span className="w-20 text-sm font-medium">SM:</span>
+        <AccessLevelBadge accessLevel={100} size="sm" />
+      </div>
+      <div className="flex items-center gap-4">
+        <span className="w-20 text-sm font-medium">Base:</span>
+        <AccessLevelBadge accessLevel={100} size="base" />
+      </div>
+    </div>
+  ),
+};

@@ -86,6 +86,10 @@ module.exports = {
           3: "rgba(255,255,255,0.25)",
         },
       },
+      fontSize: {
+        xxs: "0.625rem", // 10px
+        micro: "0.5rem", // 8px
+      },
     },
   },
   plugins: [
