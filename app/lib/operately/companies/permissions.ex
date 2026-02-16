@@ -3,6 +3,7 @@ defmodule Operately.Companies.Permissions do
 
   defstruct [
     :can_view,
+    :is_admin,
     :can_edit_trusted_email_domains,
     :can_invite_members,
     :can_remove_members,
@@ -17,6 +18,7 @@ defmodule Operately.Companies.Permissions do
   def calculate(access_level) when is_number(access_level) do
     %__MODULE__{
       can_view: access_level >= Binding.view_access(),
+      is_admin: access_level >= Binding.admin_access(),
       can_edit_details: access_level >= Binding.admin_access(),
       can_invite_members: access_level >= Binding.admin_access(),
       can_remove_members: access_level >= Binding.admin_access(),

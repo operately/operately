@@ -29,6 +29,10 @@ async function loader({ params }): Promise<LoaderResult> {
   );
   const { invitedPeople, currentMembers, guests } = People.separatePeople(people);
 
+  if (!company.permissions?.isAdmin) {
+    throw new Response("Not Found", { status: 404 });
+  }
+
   return {
     company: company,
     invitedPeople: People.sortByName(invitedPeople),
