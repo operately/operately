@@ -1116,6 +1116,7 @@ export interface Company {
 
 export interface CompanyPermissions {
   canView: boolean;
+  isAdmin: boolean;
   canEditTrustedEmailDomains: boolean;
   canInviteMembers: boolean;
   canRemoveMembers: boolean;

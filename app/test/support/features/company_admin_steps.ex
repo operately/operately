@@ -50,6 +50,10 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     |> UI.assert_has(testid: "company-admin-page")
   end
 
+  step :visit_company_manage_people_page, ctx do
+    UI.visit(ctx, Paths.company_manage_people_path(ctx.company))
+  end
+
   step :open_company_team_page, ctx do
     ctx
     |> UI.visit(Paths.company_admin_path(ctx.company))
@@ -225,6 +229,12 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     ctx
     |> UI.assert_has(testid: "account-owners-section")
     |> UI.refute_has(testid: "restore-access-for-deactivated-team-members")
+  end
+
+  step :assert_404, ctx do
+    ctx
+    |> UI.assert_text("404")
+    |> UI.assert_text("Page Not Found")
   end
 
   step :given_the_company_has_trusted_email_domains, ctx, domains do
