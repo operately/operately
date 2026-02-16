@@ -30,7 +30,7 @@ export function PersonOptions({
   onChangeAccessLevel,
   permissions,
   showConvertToGuest,
-  showAccessLevelOptions = true,
+  showAccessLevelOptions = false,
 }: Props) {
   const testId = createTestId("person-options", person.id);
   const size = person.hasOpenInvitation ? "medium" : "small";

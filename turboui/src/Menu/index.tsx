@@ -5,6 +5,7 @@ import { IconChevronRight, IconDots } from "../icons";
 
 import { TestableElement, createTestId } from "../TestableElement";
 import classNames from "../utils/classnames";
+import { useWindowSizeBreakpoints } from "../utils/useWindowSizeBreakpoint";
 
 type Size = "tiny" | "small" | "medium" | "large" | "xlarge" | "xxlarge" | "xxxlarge";
 
@@ -81,6 +82,8 @@ function Trigger(props: MenuProps) {
 }
 
 export function SubMenu({ label, icon, children, hidden }: SubMenuProps) {
+  const isXsScreen = useWindowSizeBreakpoints() === "xs";
+
   if (hidden) return null;
 
   return (
@@ -93,9 +96,15 @@ export function SubMenu({ label, icon, children, hidden }: SubMenuProps) {
       </DropdownMenu.SubTrigger>
 
       <DropdownMenu.Portal>
-        <DropdownMenu.SubContent className={menuContentClass} style={menuContentStyle()}>
-          {children}
-        </DropdownMenu.SubContent>
+        {isXsScreen ? (
+          <DropdownMenu.Content className={menuContentClass} sideOffset={6} align="start" alignOffset={-75} style={menuContentStyle()}>
+            {children}
+          </DropdownMenu.Content>
+        ) : (
+          <DropdownMenu.SubContent className={menuContentClass} style={menuContentStyle()}>
+            {children}
+          </DropdownMenu.SubContent>
+        )}
       </DropdownMenu.Portal>
     </DropdownMenu.Sub>
   );
