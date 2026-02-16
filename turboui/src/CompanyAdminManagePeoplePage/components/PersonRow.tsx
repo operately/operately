@@ -42,7 +42,7 @@ export function PersonRow({
     >
       <div className="flex items-start gap-2 sm:items-center sm:gap-4">
         <Avatar className="mt-0.5 sm:mt-0" person={person} size={48} />
-        <PersonInfo person={person} />
+        <PersonInfo person={person} showAccessLevelOptions={showAccessLevelOptions} />
       </div>
 
       <div className="flex gap-2 items-start sm:items-center">
@@ -51,9 +51,7 @@ export function PersonRow({
         </div>
 
         {!person.hasOpenInvitation && person.accessLevel !== undefined && showAccessLevelOptions && (
-          <div className="hidden sm:block">
-            <AccessLevelBadge accessLevel={person.accessLevel} />
-          </div>
+          <AccessLevelBadge accessLevel={person.accessLevel} className="hidden sm:block" />
         )}
 
         <PersonOptions
@@ -73,7 +71,13 @@ export function PersonRow({
   );
 }
 
-function PersonInfo({ person }: { person: CompanyAdminManagePerson }) {
+function PersonInfo({
+  person,
+  showAccessLevelOptions,
+}: {
+  person: CompanyAdminManagePerson;
+  showAccessLevelOptions?: boolean;
+}) {
   return (
     <div>
       <BlackLink to={person.profilePath} className="font-bold" underline="hover">
@@ -84,6 +88,11 @@ function PersonInfo({ person }: { person: CompanyAdminManagePerson }) {
         <span className="text-sm">{person.title}</span>
         <span className="text-sm hidden sm:inline"> &middot; </span>
         <span className="break-all mt-0.5">{person.email}</span>
+        {!person.hasOpenInvitation && person.accessLevel !== undefined && showAccessLevelOptions && (
+          <div>
+            <AccessLevelBadge accessLevel={person.accessLevel} size="xs" className="block mt-2 sm:hidden" />
+          </div>
+        )}
       </div>
     </div>
   );
