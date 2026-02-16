@@ -232,4 +232,12 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.when_i_open_the_company_admin_page()
     |> Steps.assert_delete_company_not_visible()
   end
+
+  @tag role: :member
+  feature "member gets 404 when manually navigates to manage-people page", ctx do
+    ctx
+    |> Steps.assert_logged_in_user_has_edit_access_level()
+    |> Steps.visit_company_manage_people_page()
+    |> Steps.assert_404()
+  end
 end

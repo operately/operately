@@ -277,6 +277,10 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "admin"])
   end
 
+  def company_manage_people_path(company = %Company{}) do
+    create_path([company_id(company), "admin", "manage-people"])
+  end
+
   def company_manage_people_add_path(company = %Company{}) do
     create_path([company_id(company), "admin", "manage-people", "add"])
   end
