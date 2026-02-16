@@ -174,7 +174,7 @@ function DesktopNavigation({ company, canAddProject, canAddGoal }: NavigationPro
             <CompanyDropdown company={company} />
           </div>
 
-          <div className="flex items-center gap-2.5 border-l border-surface-outline px-4">
+          <div className="flex items-center gap-1 lg:gap-2.5 border-l border-surface-outline px-4">
             <SectionLink to={paths.homePath()} icon={IconHome2}>
               Home
             </SectionLink>
@@ -193,17 +193,17 @@ function DesktopNavigation({ company, canAddProject, canAddGoal }: NavigationPro
           </div>
         </div>
 
-        <div className="flex items-center gap-2 flex-row-reverse">
-          <User />
-          <Bell />
-          <HelpDropdown company={company} />
+        <div className="flex items-center gap-2">
+          <Search />
           <NewDropdown
             canAddGoal={canAddGoal}
             canAddProject={canAddProject}
             canAddSpace={company.permissions?.canCreateSpace || false}
             canInvitePeople={company.permissions?.canInviteMembers || false}
           />
-          <Search />
+          <HelpDropdown company={company} />
+          <Bell />
+          <User />
         </div>
       </div>
     </div>
@@ -221,7 +221,7 @@ function SectionLink({ to, children, icon: Icon, testId }: SectionLinkProps) {
   return (
     <DivLink
       to={to}
-      className="font-semibold flex items-center gap-1 cursor-pointer group hover:bg-surface-base px-1.5 py-0.5 rounded"
+      className="font-semibold flex items-center gap-1 cursor-pointer group hover:bg-surface-base px-1.5 py-0.5 rounded whitespace-nowrap"
       testId={testId}
     >
       <Icon size={16} />
@@ -254,5 +254,9 @@ function Search() {
   const navigate = useNavigate();
   const handleGlobalSearch = useGlobalSearchHandler();
 
-  return <GlobalSearch search={handleGlobalSearch} onNavigate={navigate} testId="header-global-search" />;
+  return (
+    <div className="hidden lg:block">
+      <GlobalSearch search={handleGlobalSearch} onNavigate={navigate} testId="header-global-search" />
+    </div>
+  );
 }
