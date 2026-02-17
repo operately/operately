@@ -80,7 +80,7 @@ defmodule OperatelyWeb.Api.Invitations do
           {:ok, %{invite_link: Serializer.serialize(invite_link, level: :full)}}
 
         {:error, :check_permissions, :forbidden, _} ->
-          {:error, :forbidden}
+          {:error, :not_found}
 
         e ->
           Logger.error("Failed to create invite link: #{inspect(e)}")

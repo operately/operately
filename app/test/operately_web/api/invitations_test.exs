@@ -32,9 +32,9 @@ defmodule OperatelyWeb.Api.InvitationsTest do
         |> Factory.add_company_member(:member)
         |> Factory.log_in_person(:member)
 
-      assert {403, %{message: message}} = execute(ctx)
+      assert {404, %{message: message}} = execute(ctx)
 
-      assert message == "You don't have permission to perform this action"
+      assert message == "The requested resource was not found"
     end
 
     test "if no active invite link exists, creates a new one", ctx do
