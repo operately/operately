@@ -248,4 +248,74 @@ defmodule Operately.Features.CompanyAdminTest do
     |> Steps.visit_company_invite_people_page()
     |> Steps.assert_404()
   end
+
+  describe "form validation" do
+    @tag role: :admin
+    feature "missing full name", ctx do
+      params = %{
+        full_name: "",
+        email: "m.scott@dmif.com",
+        title: "Regional Manager"
+      }
+      error = "Name is required"
+
+      ctx
+      |> Steps.assert_logged_in_user_has_admin_access_level()
+      |> Steps.open_company_team_page()
+      |> Steps.assert_error_message_not_visible(error)
+      |> Steps.invite_company_member(params)
+      |> Steps.assert_error_message(error)
+    end
+
+    @tag role: :admin
+    feature "missing email", ctx do
+      params = %{
+        full_name: "Michael Scott",
+        email: "",
+        title: "Regional Manager"
+      }
+      error = "Email is required"
+
+      ctx
+      |> Steps.assert_logged_in_user_has_admin_access_level()
+      |> Steps.open_company_team_page()
+      |> Steps.assert_error_message_not_visible(error)
+      |> Steps.invite_company_member(params)
+      |> Steps.assert_error_message(error)
+    end
+
+    @tag role: :admin
+    feature "missing title", ctx do
+      params = %{
+        full_name: "Michael Scott",
+        email: "m.scott@dmif.com",
+        title: ""
+      }
+      error = "Title is required"
+
+      ctx
+      |> Steps.assert_logged_in_user_has_admin_access_level()
+      |> Steps.open_company_team_page()
+      |> Steps.assert_error_message_not_visible(error)
+      |> Steps.invite_company_member(params)
+      |> Steps.assert_error_message(error)
+    end
+
+    @tag role: :admin
+    feature "invalid email", ctx do
+      params = %{
+        full_name: "Michael Scott",
+        email: "m.scott",
+        title: "Regional Manager"
+      }
+      error = "Enter a valid email address"
+
+      ctx
+      |> Steps.assert_logged_in_user_has_admin_access_level()
+      |> Steps.open_company_team_page()
+      |> Steps.assert_error_message_not_visible(error)
+      |> Steps.invite_company_member(params)
+      |> Steps.assert_error_message(error)
+    end
+  end
 end
