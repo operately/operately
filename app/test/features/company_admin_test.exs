@@ -242,10 +242,18 @@ defmodule Operately.Features.CompanyAdminTest do
   end
 
   @tag role: :member
-  feature "member gets 404 when manually navigates to invite-people page", ctx do
+  feature "member gets 404 when manually navigates to member type selection page", ctx do
     ctx
     |> Steps.assert_logged_in_user_has_edit_access_level()
-    |> Steps.visit_company_invite_people_page()
+    |> Steps.visit_company_member_type_selection_page()
+    |> Steps.assert_404()
+  end
+
+  @tag role: :member
+  feature "member gets 404 when manually navigates to invite person page", ctx do
+    ctx
+    |> Steps.assert_logged_in_user_has_edit_access_level()
+    |> Steps.visit_company_invite_person_page()
     |> Steps.assert_404()
   end
 
