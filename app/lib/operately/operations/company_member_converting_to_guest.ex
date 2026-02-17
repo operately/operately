@@ -42,7 +42,6 @@ defmodule Operately.Operations.CompanyMemberConvertingToGuest do
       person.company_id != admin.company_id -> {:error, :invalid_company}
       person.id == admin.id -> {:error, :cannot_convert_self}
       person.suspended -> {:error, :person_suspended}
-      person.type != :human -> {:error, :invalid_person_type}
       true -> :ok
     end
   end

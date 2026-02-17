@@ -43,7 +43,6 @@ defmodule OperatelyWeb.Api.Mutations.ConvertCompanyMemberToGuest do
       {:error, :operation, %{error: :invalid_company}} -> {:error, :not_found}
       {:error, :operation, %{error: :cannot_convert_self}} -> {:error, :bad_request, "You can't convert your own account to outside collaborator"}
       {:error, :operation, %{error: :person_suspended}} -> {:error, :bad_request, "Suspended accounts can't be converted to outside collaborator"}
-      {:error, :operation, %{error: :invalid_person_type}} -> {:error, :bad_request, "Only active team members can be converted to outside collaborator"}
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
     end
