@@ -54,8 +54,12 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     UI.visit(ctx, Paths.company_manage_people_path(ctx.company))
   end
 
-  step :visit_company_invite_people_page, ctx do
-    UI.visit(ctx, Paths.company_invite_people_path(ctx.company))
+  step :visit_company_member_type_selection_page, ctx do
+    UI.visit(ctx, Paths.company_member_type_selection_path(ctx.company))
+  end
+
+  step :visit_company_invite_person_page, ctx do
+    UI.visit(ctx, Paths.company_invite_person_path(ctx.company))
   end
 
   step :open_company_team_page, ctx do
