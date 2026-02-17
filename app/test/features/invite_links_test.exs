@@ -142,4 +142,20 @@ defmodule Operately.Features.InviteLinksTest do
     |> Steps.follow_invite_link()
     |> Steps.assert_invalid_invite_link_message()
   end
+
+  feature "invite-team page loads to admin user", ctx do
+    ctx
+    |> Steps.given_logged_in_user_is_admin()
+    |> Steps.assert_user_has_admin_access_level()
+    |> Steps.open_invite_team_page()
+    |> Steps.assert_invite_link_visible()
+  end
+
+  feature "invite-team page shows 404 to non-admin user", ctx do
+    ctx
+    |> Steps.given_logged_in_user_is_not_admin()
+    |> Steps.assert_user_has_edit_access_level()
+    |> Steps.visit_invite_team_page()
+    |> Steps.assert_404()
+  end
 end
