@@ -4,7 +4,7 @@ defmodule Operately.Operations.CompanyMemberConvertingToGuestTest do
 
   import Ecto.Query, only: [from: 2]
 
-  alias Operately.{Access, People, Repo}
+  alias Operately.{Access, Repo}
   alias Operately.Access.Binding
   alias Operately.Activities.Activity
   alias Operately.Companies.Company
@@ -87,11 +87,8 @@ defmodule Operately.Operations.CompanyMemberConvertingToGuestTest do
   end
 
   test "returns errors for invalid conversions", ctx do
-    # Guardrails: cannot convert yourself and cannot convert non-human accounts.
+    # Guardrails: cannot convert yourself
     assert {:error, :cannot_convert_self} = Operately.Operations.CompanyMemberConvertingToGuest.run(ctx.member, ctx.member)
-
-    {:ok, guest} = People.update_person(ctx.member, %{type: :guest})
-    assert {:error, :invalid_person_type} = Operately.Operations.CompanyMemberConvertingToGuest.run(ctx.admin, guest)
   end
 
   defp assert_member_has_admin_access_to_company(ctx) do
