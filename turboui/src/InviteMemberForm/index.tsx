@@ -56,6 +56,7 @@ export function InviteMemberForm(props: InviteMemberForm.Props) {
               testId="fullname"
               error={props.errors?.fullName}
               className="w-full"
+              autoFocus
             />
           </FormRow>
 

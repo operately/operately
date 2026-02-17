@@ -180,14 +180,18 @@ function useInviteSubmit(
 function validateInvite(values: InviteMemberForm.Values): InviteMemberForm.Errors {
   const errors: InviteMemberForm.Errors = {};
 
-  if (values.fullName.length < 3) {
-    errors.fullName = "Must be at least 3 characters long";
+  if (values.fullName.length < 1) {
+    errors.fullName = "Name is required";
   }
 
-  if (values.email.length < 3) {
-    errors.email = "Must be at least 3 characters long";
+  if (values.email.length < 1) {
+    errors.email = "Email is required";
   } else if (!values.email.includes("@")) {
-    errors.email = "Email must include '@'";
+    errors.email = "Enter a valid email address";
+  }
+
+  if (values.title.length < 1) {
+    errors.title = "Title is required";
   }
 
   return errors;
