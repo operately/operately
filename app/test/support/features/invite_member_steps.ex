@@ -46,18 +46,14 @@ defmodule Operately.Support.Features.InviteMemberSteps do
   end
 
   step :navigate_to_invitation_page, ctx do
-    path = Paths.company_manage_people_add_path(ctx.company)
-
     ctx
-    |> UI.visit(path)
-    |> UI.assert_page(path)
+    |> UI.visit(Paths.company_invite_person_path(ctx.company))
+    |> UI.assert_page(Paths.company_invite_person_path(ctx.company))
   end
 
   step :navigate_to_member_type_selection_page, ctx do
-    path = Paths.home_path(ctx.company) <> "/invite-people"
-
     ctx
-    |> UI.visit(path)
+    |> UI.visit(Paths.company_member_type_selection_path(ctx.company))
     |> UI.assert_has(testid: "member-type-selection-page")
   end
 
