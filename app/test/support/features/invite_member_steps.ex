@@ -15,7 +15,24 @@ defmodule Operately.Support.Features.InviteMemberSteps do
     company = company_fixture()
     creator = hd(Companies.list_owners(company))
 
-    Map.merge(ctx, %{company: company, admin: creator})
+    Map.merge(ctx, %{company: company, admin: creator, creator: creator})
+  end
+
+  step :given_multiple_spaces_goals_and_projects_exist, ctx do
+    ctx
+    |> Factory.add_space(:marketing, name: "Marketing")
+    |> Factory.add_space(:sales, name: "Sales")
+    |> Factory.add_space(:engineering, name: "Engineering")
+    |> Factory.add_goal(:goal1, :marketing, name: "Increase Brand Awareness")
+    |> Factory.add_goal(:goal2, :marketing, name: "Launch Q4 Campaign")
+    |> Factory.add_goal(:goal3, :sales, name: "Hit Revenue Target")
+    |> Factory.add_goal(:goal4, :engineering, name: "Reduce Tech Debt")
+    |> Factory.add_project(:project1, :marketing, name: "Website Redesign")
+    |> Factory.add_project(:project2, :marketing, name: "Social Media Strategy")
+    |> Factory.add_project(:project3, :sales, name: "CRM Integration")
+    |> Factory.add_project(:project4, :sales, name: "Partner Onboarding")
+    |> Factory.add_project(:project5, :engineering, name: "API Refactor")
+    |> Factory.add_project(:project6, :engineering, name: "Performance Optimization")
   end
 
   step :given_that_an_account_exists_in_another_company, ctx, attrs do
@@ -390,5 +407,87 @@ defmodule Operately.Support.Features.InviteMemberSteps do
     |> Map.put(:member, member)
     |> Map.put(:token, invite_link.token)
     |> Map.put(:person, member)
+  end
+
+  step :log_in_as_outside_collaborator, ctx, email do
+    person = Operately.People.get_person_by_email(ctx.company, email)
+    ctx |> UI.login_as(person)
+  end
+
+  step :give_collaborator_access_to_space, ctx do
+    ctx
+    |> UI.click(testid: "resource-selector-0")
+    |> UI.click_text(ctx.marketing.name)
+  end
+
+  step :give_collaborator_access_to_project, ctx do
+    ctx
+    |> UI.click(testid: "add-more-resources")
+    |> UI.click(testid: "resource-type-selector-1")
+    |> UI.click_text("Project")
+    |> UI.click(testid: "resource-selector-1")
+    |> UI.click_text(ctx.project3.name)
+  end
+
+  step :give_collaborator_access_to_goal, ctx do
+    ctx
+    |> UI.click(testid: "add-more-resources")
+    |> UI.click(testid: "resource-type-selector-2")
+    |> UI.click_text("Goal")
+    |> UI.click(testid: "resource-selector-2")
+    |> UI.click_text(ctx.goal4.name)
+  end
+
+  step :confirm_access_to_resources, ctx do
+    ctx
+    |> UI.click(testid: "grant-access-button")
+    |> UI.assert_text("Access granted successfully.")
+  end
+
+  step :assert_access_to_correct_spaces, ctx do
+    ctx
+    |> UI.visit(Paths.home_path(ctx.company))
+    |> UI.assert_text(ctx.marketing.name)
+    |> UI.refute_text(ctx.sales.name)
+    |> UI.refute_text(ctx.engineering.name)
+  end
+
+  step :assert_work_map_shows_correct_resources, ctx do
+    ctx
+    |> UI.visit(Paths.work_map_path(ctx.company))
+    |> UI.assert_text(ctx.project1.name) # access via marketing space
+    |> UI.assert_text(ctx.project2.name) # access via marketing space
+    |> UI.assert_text(ctx.project3.name) # direct access
+    |> UI.assert_text(ctx.goal1.name) # access via marketing space
+    |> UI.assert_text(ctx.goal2.name) # access via marketing space
+    |> UI.assert_text(ctx.goal4.name) # direct access
+    # No Access
+    |> UI.refute_text(ctx.project4.name)
+    |> UI.refute_text(ctx.project5.name)
+    |> UI.refute_text(ctx.project6.name)
+    |> UI.refute_text(ctx.goal3.name)
+  end
+
+  step :assert_all_spaces_hidden, ctx do
+    ctx
+    |> UI.visit(Paths.home_path(ctx.company))
+    |> UI.refute_text(ctx.marketing.name)
+    |> UI.refute_text(ctx.sales.name)
+    |> UI.refute_text(ctx.engineering.name)
+  end
+
+  step :assert_work_map_shows_no_resources, ctx do
+    ctx
+    |> UI.visit(Paths.work_map_path(ctx.company))
+    |> UI.refute_text(ctx.project1.name)
+    |> UI.refute_text(ctx.project2.name)
+    |> UI.refute_text(ctx.project3.name)
+    |> UI.refute_text(ctx.goal1.name)
+    |> UI.refute_text(ctx.goal2.name)
+    |> UI.refute_text(ctx.goal4.name)
+    |> UI.refute_text(ctx.project4.name)
+    |> UI.refute_text(ctx.project5.name)
+    |> UI.refute_text(ctx.project6.name)
+    |> UI.refute_text(ctx.goal3.name)
   end
 end

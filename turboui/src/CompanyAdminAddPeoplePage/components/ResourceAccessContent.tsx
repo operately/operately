@@ -111,6 +111,7 @@ function ResourceAccessRow({
           <TypeSelector
             value={entry.resourceType}
             onChange={(resourceType) => onUpdate(entry.key, { resourceType, resourceId: "", resourceName: "" })}
+            testId={`resource-type-selector-${index}`}
           />
         </div>
 
@@ -121,6 +122,7 @@ function ResourceAccessRow({
             resources={resourceList}
             onSelect={(resource) => onUpdate(entry.key, { resourceId: resource.id, resourceName: resource.name })}
             error={error}
+            testId={`resource-selector-${index}`}
           />
         </div>
 
@@ -130,6 +132,7 @@ function ResourceAccessRow({
             value={entry.accessLevel}
             options={permissionOptions}
             onChange={(accessLevel) => onUpdate(entry.key, { accessLevel })}
+            testId={`access-level-selector-${index}`}
           />
         </div>
       </div>
@@ -151,9 +154,11 @@ function ResourceAccessRow({
 function TypeSelector({
   value,
   onChange,
+  testId,
 }: {
   value: CompanyAdminAddPeoplePage.ResourceType;
   onChange: (type: CompanyAdminAddPeoplePage.ResourceType) => void;
+  testId?: string;
 }) {
   const typeItems = RESOURCE_TYPE_OPTIONS.map((opt) => ({ id: opt.value, name: opt.label }));
 
@@ -162,6 +167,7 @@ function TypeSelector({
       items={typeItems}
       value={value}
       onSelect={(item) => onChange(item.id as CompanyAdminAddPeoplePage.ResourceType)}
+      testId={testId}
     />
   );
 }
@@ -170,10 +176,12 @@ function AccessLevelSelector({
   value,
   options,
   onChange,
+  testId,
 }: {
   value: CompanyAdminAddPeoplePage.PermissionOption["value"];
   options: CompanyAdminAddPeoplePage.PermissionOption[];
   onChange: (level: CompanyAdminAddPeoplePage.ResourceAccessEntry["accessLevel"]) => void;
+  testId?: string;
 }) {
   const levelItems = options.map((opt) => ({ id: opt.value, name: opt.label }));
 
@@ -182,6 +190,7 @@ function AccessLevelSelector({
       items={levelItems}
       value={value}
       onSelect={(item) => onChange(item.id as CompanyAdminAddPeoplePage.ResourceAccessEntry["accessLevel"])}
+      testId={testId}
     />
   );
 }
@@ -191,11 +200,13 @@ function ResourceSelector({
   resources,
   onSelect,
   error,
+  testId,
 }: {
   entry: CompanyAdminAddPeoplePage.ResourceAccessEntry;
   resources?: CompanyAdminAddPeoplePage.ResourceOption[];
   onSelect: (resource: CompanyAdminAddPeoplePage.ResourceOption) => void;
   error?: string;
+  testId?: string;
 }) {
   const resourceItems = (resources || []).map((r) => ({ id: r.id, name: r.name }));
 
@@ -206,6 +217,7 @@ function ResourceSelector({
       onSelect={onSelect}
       placeholder={`Select ${entry.resourceType}...`}
       error={error}
+      testId={testId}
     />
   );
 }
