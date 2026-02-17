@@ -74,14 +74,14 @@ export function InviteLinkSection({
       </div>
 
       <div className="mt-6 space-y-2">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-stretch">
+        <div className="flex gap-2 flex-row items-stretch">
           <input
             className={classNames(
               "flex-1 rounded-lg border border-surface-outline bg-surface-base px-3 py-2 text-sm text-content-base focus:border-brand-1 focus:outline-none",
               !linkEnabled && "opacity-60",
             )}
             value={linkEnabled ? (invitationLink ?? "") : ""}
-            placeholder={linkEnabled ? "Generating invite link…" : "Invite link disabled"}
+            placeholder={linkEnabled ? "Generating invite link..." : "Invite link disabled"}
             readOnly
             disabled={!linkEnabled}
             data-test-id="invite-people-invite-link"

@@ -105,7 +105,7 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
     <div className="mx-auto relative sm:my-10 max-w-2xl" data-test-id={props.testId}>
       {props.navigationItems && <PageNavigation items={props.navigationItems} />}
       <div className="relative bg-surface-base min-h-dvh sm:min-h-0 sm:border sm:border-surface-outline sm:rounded-lg sm:shadow-xl">
-        <div className="px-10 py-8">
+        <div className="px-4 sm:px-10 py-8">
           <div className="text-content-accent text-2xl font-extrabold mb-8">Bring your team on board</div>
 
           {props.errorMessage ? (
