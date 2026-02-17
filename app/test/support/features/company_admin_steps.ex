@@ -614,4 +614,12 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     |> UI.refute_has(testid: "danger-zone--section")
     |> UI.refute_has(testid: "delete-this-company")
   end
+
+  step :assert_error_message, ctx, error do
+    UI.assert_text(ctx, error)
+  end
+
+  step :assert_error_message_not_visible, ctx, error do
+    UI.refute_text(ctx, error)
+  end
 end
