@@ -146,7 +146,48 @@ defmodule Operately.Features.InviteMemberTest do
       |> Steps.assert_guest_invited_email_sent(params[:email])
     end
 
-    feature "outside collaborator can accept invitation and see activity", ctx do
+    feature "invite outside collaborator and don't give access to resources", ctx do
+      params = %{
+        fullName: "Morgan Patel",
+        email: Operately.PeopleFixtures.unique_account_email("Morgan Patel"),
+        title: "Consultant",
+      }
+
+      ctx
+      |> Steps.given_multiple_spaces_goals_and_projects_exist()
+      |> Steps.log_in_as_admin()
+      |> Steps.navigate_to_member_type_selection_page()
+      |> Steps.select_outside_collaborator_type()
+      |> Steps.invite_collaborator(params)
+      |> Steps.assert_member_invited()
+      |> Steps.log_in_as_outside_collaborator(params.email)
+      |> Steps.assert_all_spaces_hidden()
+      |> Steps.assert_work_map_shows_no_resources()
+    end
+
+    feature "invite outside collaborator and give access to resources", ctx do
+      params = %{
+        fullName: "Morgan Patel",
+        email: Operately.PeopleFixtures.unique_account_email("Morgan Patel"),
+        title: "Consultant",
+      }
+
+      ctx
+      |> Steps.given_multiple_spaces_goals_and_projects_exist()
+      |> Steps.log_in_as_admin()
+      |> Steps.navigate_to_member_type_selection_page()
+      |> Steps.select_outside_collaborator_type()
+      |> Steps.invite_collaborator(params)
+      |> Steps.give_collaborator_access_to_space()
+      |> Steps.give_collaborator_access_to_project()
+      |> Steps.give_collaborator_access_to_goal()
+      |> Steps.confirm_access_to_resources()
+      |> Steps.log_in_as_outside_collaborator(params.email)
+      |> Steps.assert_access_to_correct_spaces()
+      |> Steps.assert_work_map_shows_correct_resources()
+    end
+
+    feature "outside collaborator can accept invitation", ctx do
       full_name = "Alex Parker"
       password = "Aa12345#&!123"
 
