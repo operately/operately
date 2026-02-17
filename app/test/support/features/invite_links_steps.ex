@@ -5,6 +5,7 @@ defmodule Operately.Support.Features.InviteLinksSteps do
   alias Operately.Groups
   alias Operately.PeopleFixtures
   alias Operately.Support.Factory
+  alias Operately.Access.Binding
   alias Operately.Support.Features.UI.Emails, as: Emails
 
   step :setup, ctx do
@@ -66,6 +67,34 @@ defmodule Operately.Support.Features.InviteLinksSteps do
     assert Enum.any?(members, fn member -> member.email == ctx.invited.email end)
 
     ctx |> Map.put(:new_member_email, ctx.invited.email)
+  end
+
+  step :given_logged_in_user_is_not_admin, ctx do
+    ctx
+    |> Factory.add_company_member(:member)
+    |> Factory.set_company_access_level(:member, Binding.edit_access())
+    |> Factory.log_in_person(:member)
+  end
+
+  step :given_logged_in_user_is_admin, ctx do
+    ctx
+    |> Factory.add_company_member(:admin)
+    |> Factory.set_company_access_level(:admin, Binding.admin_access())
+    |> Factory.log_in_person(:admin)
+  end
+
+  step :assert_user_has_edit_access_level, ctx do
+    company = Operately.Companies.Company.get!(ctx.member, id: ctx.company.id)
+    assert company.request_info.access_level == Binding.edit_access()
+
+    ctx
+  end
+
+  step :assert_user_has_admin_access_level, ctx do
+    company = Operately.Companies.Company.get!(ctx.admin, id: ctx.company.id)
+    assert company.request_info.access_level == Binding.admin_access()
+
+    ctx
   end
 
   step :follow_invite_link, ctx do
@@ -178,11 +207,13 @@ defmodule Operately.Support.Features.InviteLinksSteps do
     ctx |> UI.assert_text("Invalid Link")
   end
 
-  step :open_invite_team_page, ctx do
-    path = Paths.home_path(ctx.company) <> "/invite-team"
+  step :visit_invite_team_page, ctx do
+    UI.visit(ctx, Paths.company_invite_team_path(ctx.company))
+  end
 
+  step :open_invite_team_page, ctx do
     ctx
-    |> UI.visit(path)
+    |> UI.visit(Paths.company_invite_team_path(ctx.company))
     |> UI.assert_has(testid: "invite-team-page")
     |> UI.sleep(500)
   end
@@ -309,6 +340,12 @@ defmodule Operately.Support.Features.InviteLinksSteps do
   step :assert_email_delivery_not_configured_error, ctx do
     ctx
     |> UI.assert_text("Email signup isn't available because email delivery hasn't been configured. Please contact your organization administrator.")
+  end
+
+  step :assert_404, ctx do
+    ctx
+    |> UI.assert_text("404")
+    |> UI.assert_text("Page Not Found")
   end
 
   defp wait_for_signup_code(email) do
