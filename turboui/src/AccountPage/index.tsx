@@ -3,6 +3,7 @@ import { Page } from "../Page";
 import { Avatar } from "../Avatar";
 import { IconUserCircle, IconPalette, IconLockPassword, IconDoorExit } from "../icons";
 import classNames from "../utils/classnames";
+import { BlackLink } from "../Link";
 
 export namespace AccountPage {
   export interface Person {
@@ -145,9 +146,9 @@ function ActionButtonsGroup({ buttons }: { buttons: AccountPage.ActionButton[] }
 
 function ActionLinkItem({ icon, label, to, testId }: AccountPage.ActionLink) {
   return (
-    <a href={to} className={actionItemStyle} data-test-id={testId}>
+    <BlackLink to={to} className={actionItemStyle} testId={testId} underline="never">
       {React.createElement(icon, { size: 24 })} {label}
-    </a>
+    </BlackLink>
   );
 }
 
