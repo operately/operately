@@ -24,62 +24,111 @@ defmodule OperatelyEmail.CompanyMemberAddedEmailTest do
     {:ok, company: company, admin: admin}
   end
 
-  test "sends email to newly added company member", ctx do
-    {:ok, _invite_link} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
+  describe "with invite link" do
+    test "sends email to newly added company member", ctx do
+      {:ok, _invite_link} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
 
-    person = Operately.People.get_person_by_email(ctx.company, @member_attrs[:email])
+      person = Operately.People.get_person_by_email(ctx.company, @member_attrs[:email])
 
-    activity =
-      from(a in Activity, where: a.action == "company_member_added" and a.content["person_id"] == ^person.id)
-      |> Repo.one()
+      activity =
+        from(a in Activity, where: a.action == "company_member_added" and a.content["person_id"] == ^person.id)
+        |> Repo.one()
 
-    CompanyMemberAddedEmail.send(person, activity)
+      CompanyMemberAddedEmail.send(person, activity)
 
-    login_url = Paths.login_path() |> Paths.to_url()
+      assert_email_sent(fn email ->
+        [{_name, email_addr}] = email.to
+        assert email_addr == person.email
+        assert email.html_body =~ "/join?token="
+        assert email.text_body =~ "/join?token="
+        assert email.text_body =~ "company member"
+        true
+      end)
+    end
 
-    assert_email_sent(fn email ->
-      [{_name, email_addr}] = email.to
-      assert email_addr == person.email
-      assert email.html_body =~ login_url
-      assert email.text_body =~ login_url
-      assert email.text_body =~ "company member"
-      true
-    end)
+    test "email includes company name", ctx do
+      {:ok, _invite_link} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
+
+      person = Operately.People.get_person_by_email(ctx.company, @member_attrs[:email])
+
+      activity =
+        from(a in Activity, where: a.action == "company_member_added" and a.content["person_id"] == ^person.id)
+        |> Repo.one()
+
+      CompanyMemberAddedEmail.send(person, activity)
+
+      assert_email_sent(fn email ->
+        assert email.html_body =~ ctx.company.name
+        assert email.text_body =~ ctx.company.name
+        true
+      end)
+    end
+
+    test "email includes author name with invite message", ctx do
+      {:ok, _invite_link} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
+
+      person = Operately.People.get_person_by_email(ctx.company, @member_attrs[:email])
+
+      activity =
+        from(a in Activity, where: a.action == "company_member_added" and a.content["person_id"] == ^person.id)
+        |> Repo.one()
+
+      CompanyMemberAddedEmail.send(person, activity)
+
+      assert_email_sent(fn email ->
+        assert email.html_body =~ "invited you to join #{ctx.company.name}"
+        assert email.text_body =~ "invited you to join #{ctx.company.name}"
+        true
+      end)
+    end
   end
 
-  test "email includes company name", ctx do
-    {:ok, _invite_link} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
+  describe "without invite link" do
+    test "sends email with login link when no invite link exists", ctx do
+      person = person_fixture(%{company_id: ctx.company.id, email: @member_attrs[:email]})
 
-    person = Operately.People.get_person_by_email(ctx.company, @member_attrs[:email])
+      activity =
+        Activity.changeset(%Activity{}, %{
+          action: "company_member_added",
+          company_id: ctx.company.id,
+          author_id: ctx.admin.id,
+          content: %{"person_id" => person.id}
+        })
+        |> Repo.insert!()
 
-    activity =
-      from(a in Activity, where: a.action == "company_member_added" and a.content["person_id"] == ^person.id)
-      |> Repo.one()
+      CompanyMemberAddedEmail.send(person, activity)
 
-    CompanyMemberAddedEmail.send(person, activity)
+      login_url = Paths.login_path() |> Paths.to_url()
 
-    assert_email_sent(fn email ->
-      assert email.html_body =~ ctx.company.name
-      assert email.text_body =~ ctx.company.name
-      true
-    end)
-  end
+      assert_email_sent(fn email ->
+        [{_name, email_addr}] = email.to
+        assert email_addr == person.email
+        assert email.html_body =~ login_url
+        assert email.text_body =~ login_url
+        assert email.text_body =~ "company member"
+        true
+      end)
+    end
 
-  test "email includes author name", ctx do
-    {:ok, _invite_link} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
+    test "email includes author name with added message when no invite link", ctx do
+      person = person_fixture(%{company_id: ctx.company.id, email: @member_attrs[:email]})
 
-    person = Operately.People.get_person_by_email(ctx.company, @member_attrs[:email])
+      activity =
+        Activity.changeset(%Activity{}, %{
+          action: "company_member_added",
+          company_id: ctx.company.id,
+          author_id: ctx.admin.id,
+          content: %{"person_id" => person.id}
+        })
+        |> Repo.insert!()
 
-    activity =
-      from(a in Activity, where: a.action == "company_member_added" and a.content["person_id"] == ^person.id)
-      |> Repo.one()
+      CompanyMemberAddedEmail.send(person, activity)
 
-    CompanyMemberAddedEmail.send(person, activity)
-
-    assert_email_sent(fn email ->
-      assert email.html_body =~ "added you to #{ctx.company.name}"
-      assert email.text_body =~ "added you to #{ctx.company.name}"
-      true
-    end)
+      assert_email_sent(fn email ->
+        assert email.html_body =~ "added you as a company member"
+        assert email.text_body =~ "added you as a company member"
+        true
+      end)
+    end
   end
 end
