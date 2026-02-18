@@ -107,7 +107,7 @@ function ActivityFeed() {
   if (loading) return <ActivityFeedSkeleton />;
   if (error) return <div>Error</div>;
 
-  return <Feed items={data!.activities!} testId="company-feed" page="company" hideTopBorder paddedGroups />;
+  return <Feed items={data?.activities || []} testId="company-feed" page="company" hideTopBorder paddedGroups />;
 }
 
 function ActivityFeedSkeleton() {
