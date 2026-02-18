@@ -485,6 +485,19 @@ defmodule Operately.Support.Features.InviteMemberSteps do
     |> UI.refute_text(ctx.engineering.name)
   end
 
+  step :assert_items_in_feed, ctx do
+    ctx
+    |> UI.assert_has(testid: "company-feed")
+    |> UI.assert_text("created the #{ctx.marketing.name} space")
+    |> UI.refute_has(testid: "feed-zero-state")
+  end
+
+  step :assert_empty_feed, ctx do
+    ctx
+    |> UI.assert_has(testid: "feed-zero-state")
+    |> UI.assert_text("All quiet for now")
+  end
+
   step :assert_work_map_shows_no_resources, ctx do
     ctx
     |> UI.visit(Paths.work_map_path(ctx.company))

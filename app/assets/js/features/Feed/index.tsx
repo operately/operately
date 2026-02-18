@@ -9,6 +9,7 @@ import { DivLink } from "turboui";
 import Api from "@/api";
 import FormattedTime from "@/components/FormattedTime";
 import ActivityHandler, { DISPLAYED_IN_FEED } from "@/features/activities";
+import { FeedZeroState } from "@/features/Feed/FeedZeroState";
 import classNames from "classnames";
 import { Avatar } from "turboui";
 
@@ -41,19 +42,24 @@ const FEED_PROP_DEFAULTS = {
 
 export function Feed(props: FeedProps) {
   props = { ...FEED_PROP_DEFAULTS, ...props };
+  const groupedActivities = Activities.groupByDate(props.items);
 
   return (
     <ErrorBoundary fallback={<div>Ooops, something went wrong while loading the feed</div>}>
       <div className="w-full" data-test-id={props.testId}>
-        {Activities.groupByDate(props.items).map((group, index) => (
-          <ActivityGroup
-            key={index}
-            group={group}
-            page={props.page}
-            hideTopBorder={props.hideTopBorder}
-            paddedGroups={props.paddedGroups}
-          />
-        ))}
+        {groupedActivities.length === 0 ? (
+          <FeedZeroState page={props.page} />
+        ) : (
+          groupedActivities.map((group, index) => (
+            <ActivityGroup
+              key={index}
+              group={group}
+              page={props.page}
+              hideTopBorder={props.hideTopBorder}
+              paddedGroups={props.paddedGroups}
+            />
+          ))
+        )}
       </div>
     </ErrorBoundary>
   );

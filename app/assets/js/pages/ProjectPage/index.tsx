@@ -328,9 +328,8 @@ function ProjectFeedItems({ projectId }: { projectId: string }) {
 
   if (loading) return null;
   if (error) return null;
-  if (!data) return null;
 
-  return <Feed items={data!.activities!} page="project" testId="project-feed" />;
+  return <Feed items={data?.activities || []} page="project" testId="project-feed" />;
 }
 
 interface usePageFieldProps<T> {

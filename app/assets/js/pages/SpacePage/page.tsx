@@ -110,7 +110,7 @@ function SpaceActivity({ space }: { space: Spaces.Space }) {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error</div>;
 
-  return <Feed items={data!.activities!} testId="space-feed" page="space" />;
+  return <Feed items={data?.activities || []} testId="space-feed" page="space" />;
 }
 
 function JoinButton({ space }) {
