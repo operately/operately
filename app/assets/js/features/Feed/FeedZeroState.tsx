@@ -19,7 +19,7 @@ export function FeedZeroState({ page }: FeedZeroStateProps) {
     <div className="w-full p-8 sm:p-10 dark:bg-stone-900/20 dark:rounded-2xl" data-test-id="feed-zero-state">
       <div className="flex flex-col items-center text-center">
         <FeedZeroStateIllustration />
-        <h3 className="mt-1 text-xl font-bold text-content-accent dark:text-content-base">All quiet for now</h3>
+        <h3 className="mt-4 text-xl font-bold text-content-accent dark:text-content-base">All quiet for now</h3>
         <p className="mt-2 max-w-xl text-sm text-content-dimmed">{DESCRIPTION_BY_PAGE[page]}</p>
       </div>
     </div>
