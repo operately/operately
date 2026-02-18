@@ -23,6 +23,7 @@ defmodule Operately.Features.InviteMemberTest do
     |> Steps.navigate_to_invitation_page()
     |> Steps.invite_member(params)
     |> Steps.assert_member_invited()
+    |> Steps.assert_member_invited_email_sent(params.email)
   end
 
   feature "admin account can add members with existing account", ctx do
@@ -38,6 +39,7 @@ defmodule Operately.Features.InviteMemberTest do
     |> Steps.navigate_to_invitation_page()
     |> Steps.invite_member(params)
     |> Steps.assert_member_added(params.fullName)
+    |> Steps.assert_member_added_email_sent(params.email)
   end
 
   feature "joining a company and setting a password", ctx do
@@ -242,7 +244,7 @@ defmodule Operately.Features.InviteMemberTest do
       |> Steps.open_single_member_invite_form()
       |> Steps.invite_member(params)
       |> Steps.assert_member_invited()
-      |> Steps.assert_company_member_added_email_sent(params[:email])
+      |> Steps.assert_member_invited_email_sent(params[:email])
     end
   end
 end
