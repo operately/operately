@@ -1,5 +1,5 @@
-<%= short_name(@author) %> added you to <%= @company.name %>.
+<%= short_name(@author) %> <%= @action %>
 
 You now have access to <%= @company.name %> as a company member.
 
-Log in to Operately: <%= @login_url %>
+<%= @button_text %>: <%= @button_url %>

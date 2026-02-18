@@ -117,6 +117,32 @@ defmodule Operately.Support.Features.InviteMemberSteps do
     ctx |> UI.assert_text("/join?token=")
   end
 
+  step :assert_member_invited_email_sent, ctx, email do
+    person = Operately.People.get_person_by_email(ctx.company, email)
+    assert person
+
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.company.name,
+      to: person,
+      author: ctx.admin,
+      action: "invited you to join #{ctx.company.name}"
+    })
+  end
+
+  step :assert_member_added_email_sent, ctx, email do
+    person = Operately.People.get_person_by_email(ctx.company, email)
+    assert person
+
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.company.name,
+      to: person,
+      author: ctx.admin,
+      action: "added you as a company member"
+    })
+  end
+
   step :assert_guest_invited_email_sent, ctx, email do
     person = Operately.People.get_person_by_email(ctx.company, email)
     assert person
@@ -358,19 +384,6 @@ defmodule Operately.Support.Features.InviteMemberSteps do
     ctx
     |> UI.assert_text("Share this URL with #{person.full_name} to invite them to the company:")
     |> UI.assert_text("/join?token=")
-  end
-
-  step :assert_company_member_added_email_sent, ctx, email do
-    person = Operately.People.get_person_by_email(ctx.company, email)
-    assert person
-
-    ctx
-    |> EmailSteps.assert_activity_email_sent(%{
-      where: ctx.company.name,
-      to: person,
-      author: ctx.admin,
-      action: "added you as a company member"
-    })
   end
 
   step :assert_company_member_added_feed_item, ctx do
