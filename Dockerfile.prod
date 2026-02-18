@@ -83,6 +83,11 @@ COPY app/config/runtime.exs app/config/
 
 WORKDIR /src/app
 
+# Copy release templates to priv for runtime access
+RUN mkdir -p priv/rel/single-host/templates/operately_cmds && \
+    cp rel/single-host/templates/operately.eex priv/rel/single-host/templates/ && \
+    cp rel/single-host/templates/operately_cmds/*.eex priv/rel/single-host/templates/operately_cmds/
+
 # compile dependencies
 RUN mix deps.compile
 
