@@ -480,6 +480,7 @@ defmodule Operately.Support.Features.InviteMemberSteps do
   step :assert_all_spaces_hidden, ctx do
     ctx
     |> UI.visit(Paths.home_path(ctx.company))
+    |> UI.assert_has(testid: "spaces-zero-state")
     |> UI.refute_text(ctx.marketing.name)
     |> UI.refute_text(ctx.sales.name)
     |> UI.refute_text(ctx.engineering.name)
