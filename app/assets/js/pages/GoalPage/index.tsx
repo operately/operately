@@ -322,9 +322,8 @@ function GoalFeedItems({ goalId }: { goalId: string }) {
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
-  if (!data) return null;
 
-  return <Feed items={data.activities} page="goal" testId="goal-feed" />;
+  return <Feed items={data?.activities || []} page="goal" testId="goal-feed" />;
 }
 
 function prepareTargets(targets: Target[] | null | undefined): GoalPage.Props["targets"] {
