@@ -56,7 +56,7 @@ function ActivityFeed({ personId }: { personId: string }) {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error</div>;
 
-  return <Feed items={data!.activities!} testId="profile-feed" page="profile" />;
+  return <Feed items={data?.activities || []} testId="profile-feed" page="profile" />;
 }
 
 function canEditProfile(person: People.Person, me?: People.Person | null) {

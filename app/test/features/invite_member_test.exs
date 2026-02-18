@@ -164,6 +164,7 @@ defmodule Operately.Features.InviteMemberTest do
       |> Steps.assert_member_invited()
       |> Steps.log_in_as_outside_collaborator(params.email)
       |> Steps.assert_all_spaces_hidden()
+      |> Steps.assert_empty_feed()
       |> Steps.assert_work_map_shows_no_resources()
     end
 
@@ -186,6 +187,7 @@ defmodule Operately.Features.InviteMemberTest do
       |> Steps.confirm_access_to_resources()
       |> Steps.log_in_as_outside_collaborator(params.email)
       |> Steps.assert_access_to_correct_spaces()
+      |> Steps.assert_items_in_feed()
       |> Steps.assert_work_map_shows_correct_resources()
     end
 
