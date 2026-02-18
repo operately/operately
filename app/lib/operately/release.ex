@@ -28,6 +28,12 @@ defmodule Operately.Release do
     {:ok, _, _} = Ecto.Migrator.with_repo(repo(), &Ecto.Migrator.run(&1, :down, to: version))
   end
 
+  def generate_script do
+    version = Operately.version()
+    script_content = generate_operately_script(version)
+    IO.puts(script_content)
+  end
+
   #
   # Private
   #
@@ -66,5 +72,20 @@ defmodule Operately.Release do
     else
       :timeout
     end
+  end
+
+  defp generate_operately_script(version) do
+    priv_dir = :code.priv_dir(:operately) |> to_string()
+
+    template_path = Path.join([
+      priv_dir,
+      "rel",
+      "single-host",
+      "templates",
+      "operately.eex"
+    ])
+    templates_dir = Path.dirname(template_path)
+
+    EEx.eval_file(template_path, version: version, templates_dir: templates_dir)
   end
 end
