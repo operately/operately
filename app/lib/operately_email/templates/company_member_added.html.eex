@@ -1,4 +1,4 @@
-<%= title("#{short_name(@author)} added you to #{@company.name}") %>
+<%= title("#{short_name(@author)} #{@action}") %>
 
 <%= spacer() %>
 
@@ -9,5 +9,5 @@
 <%= spacer() %>
 
 <%= row do %>
-  <%= cta_button(@login_url, "Log in to Operately") %>
+  <%= cta_button(@button_url, @button_text) %>
 <% end %>
