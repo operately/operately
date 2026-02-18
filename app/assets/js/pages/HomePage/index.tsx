@@ -17,6 +17,7 @@ import { Feed, useItemsQuery } from "@/features/Feed";
 import { includesId, usePaths } from "@/routes/paths";
 import { GhostButton, PrimaryButton } from "turboui";
 import { Onboarding } from "./Onboarding";
+import { SpacesZeroState } from "./SpacesZeroState";
 
 interface LoaderData {
   company: Companies.Company;
@@ -69,6 +70,7 @@ function Page() {
 
 function SpacesSection() {
   const { spaces } = useLoadedData();
+  const isEmpty = spaces.length === 0;
 
   return (
     <div className="mt-8">
@@ -82,7 +84,7 @@ function SpacesSection() {
           </div>
         }
       >
-        <SpaceGrid spaces={spaces} />
+        {isEmpty ? <SpacesZeroState /> : <SpaceGrid spaces={spaces} />}
       </Paper.Section>
     </div>
   );
