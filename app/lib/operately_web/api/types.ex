@@ -1936,6 +1936,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :person, :person, null: true
     field :access_level, :integer, null: true
     field? :project, :project, null: true
+    field? :permissions, :project_permissions
   end
 
   object :create_target_input do

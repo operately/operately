@@ -1480,10 +1480,11 @@ export interface ProjectContributor {
   person?: Person | null;
   accessLevel: number | null;
   project?: Project | null;
+  permissions?: ProjectPermissions;
 }
 
 export interface ProjectContributorInput {
-  personId: string;
+  personId: Id;
   responsibility: string | null;
   accessLevel: AccessOptions;
 }
@@ -2531,12 +2532,13 @@ export interface GetProjectCheckInsResult {
 }
 
 export interface GetProjectContributorInput {
-  id?: string | null;
-  includeProject?: boolean | null;
+  id: string;
+  includeProject?: boolean;
+  includePermissions?: boolean;
 }
 
 export interface GetProjectContributorResult {
-  contributor?: ProjectContributor | null;
+  contributor: ProjectContributor;
 }
 
 export interface GetProjectRetrospectiveInput {
