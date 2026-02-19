@@ -19,7 +19,7 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectName do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:project_id, fn -> decode_id(inputs.project_id) end)
     |> run(:project, fn ctx -> Projects.get_project_with_access_level(ctx.project_id, ctx.me.id) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.project.requester_access_level, :can_edit_name) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.project.requester_access_level, :can_edit) end)
     |> run(:operation, fn ctx -> Projects.rename_project(ctx.me, ctx.project, inputs.name) end)
     |> run(:serialized, fn ctx -> {:ok, %{project: Serializer.serialize(ctx.operation)}} end)
     |> respond()
