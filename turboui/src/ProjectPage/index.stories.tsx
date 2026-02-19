@@ -463,12 +463,8 @@ export const ReadOnly: Story = {
         closedAt={null}
         permissions={generatePermissions(false, {
           canView: true,
-          canCommentOnMilestone: true,
-          canCommentOnCheckIn: true,
-          canCommentOnRetrospective: true,
-          canCommentOnTask: true,
-          canAcknowledgeCheckIn: true,
           canComment: true,
+          canEdit: true,
         })}
         updateProjectName={async () => true}
         onDescriptionChange={async () => true}
@@ -850,12 +846,8 @@ export const EmptyProjectReadOnly: Story = {
         closedAt={null}
         permissions={generatePermissions(false, {
           canView: true,
-          canCommentOnMilestone: true,
-          canCommentOnCheckIn: true,
-          canCommentOnRetrospective: true,
-          canCommentOnTask: true,
-          canAcknowledgeCheckIn: true,
           canComment: true,
+          canEdit: true,
         })}
         updateProjectName={async () => true}
         onDescriptionChange={async () => true}
@@ -1130,12 +1122,8 @@ export const ClosedProject: Story = {
         retrospectiveLink="/projects/work-map-ga/retrospective"
         permissions={generatePermissions(false, {
           canView: true,
-          canCommentOnMilestone: true,
-          canCommentOnCheckIn: true,
-          canCommentOnRetrospective: true,
-          canCommentOnTask: true,
-          canAcknowledgeCheckIn: true,
           canComment: true,
+          canEdit: true,
         })}
         updateProjectName={async () => true}
         onDescriptionChange={async () => true}

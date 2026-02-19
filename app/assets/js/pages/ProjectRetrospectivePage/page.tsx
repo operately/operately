@@ -57,7 +57,7 @@ function Options() {
 
   return (
     <PageOptions.Root testId="project-options-button">
-      {retrospective.permissions?.canEditRetrospective && (
+      {retrospective.permissions?.canEdit && (
         <PageOptions.Link
           icon={IconEdit}
           title="Edit retrospective"
@@ -118,13 +118,11 @@ function RetroReactions() {
   const entity = Reactions.entity(retrospective.id!, "project_retrospective");
   const addReactionForm = useReactionsForm(entity, reactions);
 
-  assertPresent(retrospective.permissions?.canCommentOnRetrospective, "permissions must be present in retrospective");
-
   return (
     <ReactionList
       size={24}
       form={addReactionForm}
-      canAddReaction={retrospective.permissions.canCommentOnRetrospective}
+      canAddReaction={retrospective.permissions.canComment}
     />
   );
 }
@@ -133,15 +131,13 @@ function Comments() {
   const { retrospective } = useLoadedData();
   const commentsForm = useComments({ retrospective: retrospective, parentType: "project_retrospective" });
 
-  assertPresent(retrospective.permissions?.canCommentOnRetrospective, "permissions must be present in retrospective");
-
   return (
     <>
       <div className="border-t border-stroke-base mt-8" />
       <CommentSection
         form={commentsForm}
         commentParentType="project_retrospective"
-        canComment={retrospective.permissions.canCommentOnRetrospective}
+        canComment={retrospective.permissions.canComment}
       />
     </>
   );
@@ -170,7 +166,7 @@ function Subscriptions() {
       <CurrentSubscriptions
         {...subscriptionsState}
         isCurrentUserSubscribed={isCurrentUserSubscribed}
-        canEditSubscribers={retrospective.permissions?.canEditRetrospective || false}
+        canEditSubscribers={retrospective.permissions?.canEdit || false}
       />
     </>
   );

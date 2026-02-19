@@ -47,7 +47,7 @@ defmodule OperatelyWeb.Api.Tasks do
       conn
       |> Steps.start_transaction()
       |> Steps.find_task(inputs.task_id, inputs.type, [:assigned_people])
-      |> Steps.check_task_permissions(:can_edit_task)
+      |> Steps.check_task_permissions(:can_edit)
       |> Steps.update_task_status(inputs.status)
       |> Steps.save_activity(:task_status_updating, &build_activity_content/1)
       |> Steps.commit()
@@ -108,7 +108,7 @@ defmodule OperatelyWeb.Api.Tasks do
       conn
       |> Steps.start_transaction()
       |> Steps.find_task(inputs.task_id, inputs.type)
-      |> Steps.check_task_permissions(:can_edit_task)
+      |> Steps.check_task_permissions(:can_edit)
       |> Steps.update_task_description(inputs.description)
       |> Steps.save_activity(:task_description_change, &build_activity_content(inputs, &1))
       |> Steps.commit()
@@ -164,7 +164,7 @@ defmodule OperatelyWeb.Api.Tasks do
       conn
       |> Steps.start_transaction()
       |> Steps.find_task(inputs.task_id, inputs.type)
-      |> Steps.check_task_permissions(:can_edit_task)
+      |> Steps.check_task_permissions(:can_edit)
       |> Steps.update_task_name(inputs.name)
       |> Steps.save_activity(:task_name_updating, &build_activity_content/1)
       |> Steps.commit()
@@ -217,7 +217,7 @@ defmodule OperatelyWeb.Api.Tasks do
       conn
       |> Steps.start_transaction()
       |> Steps.find_task(inputs.task_id, inputs.type)
-      |> Steps.check_task_permissions(:can_edit_task)
+      |> Steps.check_task_permissions(:can_edit)
       |> Steps.update_task_due_date(inputs.due_date)
       |> Steps.save_activity(:task_due_date_updating, &build_activity_content/1)
       |> Steps.commit()
@@ -271,7 +271,7 @@ defmodule OperatelyWeb.Api.Tasks do
       conn
       |> Steps.start_transaction()
       |> Steps.find_task(inputs.task_id, inputs.type, [:assigned_people])
-      |> Steps.check_task_permissions(:can_edit_task)
+      |> Steps.check_task_permissions(:can_edit)
       |> Steps.update_task_assignee(inputs.assignee_id)
       |> Steps.save_activity(:task_assignee_updating, &build_activity_content(inputs, &1))
       |> Steps.commit()
@@ -333,7 +333,7 @@ defmodule OperatelyWeb.Api.Tasks do
       conn
       |> Steps.start_transaction()
       |> Steps.find_task(inputs.task_id, :project)
-      |> Steps.check_task_permissions(:can_edit_task)
+      |> Steps.check_task_permissions(:can_edit)
       |> Steps.update_milestone_and_ordering(inputs.milestone_id, inputs.milestones_ordering_state)
       |> Steps.commit()
       |> Steps.respond(fn changes ->
@@ -362,7 +362,7 @@ defmodule OperatelyWeb.Api.Tasks do
       conn
       |> Steps.start_transaction()
       |> Steps.find_task(inputs.task_id, :project)
-      |> Steps.check_task_permissions(:can_edit_task)
+      |> Steps.check_task_permissions(:can_edit)
       |> Steps.validate_milestone_if_changed(inputs.milestone_id)
       |> Steps.update_task_milestone_if_changed(inputs.milestone_id)
       |> Steps.save_activity(:task_milestone_updating, fn changes ->
@@ -408,7 +408,7 @@ defmodule OperatelyWeb.Api.Tasks do
       conn
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.id)
-      |> Steps.check_permissions(:can_create_task)
+      |> Steps.check_permissions(:can_edit)
       |> Steps.validate_milestone_belongs_to_project(inputs.milestone_id)
       |> Steps.create_task(inputs)
       |> Steps.save_activity(:task_adding, fn changes ->
@@ -477,7 +477,7 @@ defmodule OperatelyWeb.Api.Tasks do
       conn
       |> Steps.start_transaction()
       |> Steps.find_task(inputs.task_id, inputs.type, [:assigned_people])
-      |> Steps.check_task_permissions(:can_edit_task)
+      |> Steps.check_task_permissions(:can_edit)
       |> Steps.delete_task()
       |> Steps.save_activity(:task_deleting, &build_activity_content/1)
       |> Steps.commit()

@@ -21,7 +21,7 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributor do
     with(
       {:ok, me} <- find_me(conn),
       {:ok, project} <- Project.get(me, id: inputs.project_id),
-      {:ok, :allowed} <- Permissions.check(project.request_info.access_level, :can_edit_contributors),
+      {:ok, :allowed} <- Permissions.check(project.request_info.access_level, :can_edit),
       {:ok, contributor} <- Operately.Operations.ProjectContributorAddition.run(me, inputs)
     ) do
       {:ok, %{contributor: Serializer.serialize(contributor, level: :essential)}}

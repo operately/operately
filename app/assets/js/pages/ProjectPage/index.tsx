@@ -90,7 +90,7 @@ function Page() {
   });
 
   assertPresent(project.state);
-  assertPresent(project.permissions?.canEditName);
+  assertPresent(project.permissions);
   assertPresent(project.contributors);
 
   const transformPerson = React.useCallback((p) => People.parsePersonForTurboUi(paths, p)!, [paths]);
@@ -207,8 +207,8 @@ function Page() {
     currentUser,
     tasks: baseTasks,
     commentEntityType: "project_task",
-    canEdit: Boolean(project.permissions?.canEditTask),
-    canComment: Boolean(project.permissions?.canCommentOnTask),
+    canEdit: Boolean(project.permissions?.canEdit),
+    canComment: Boolean(project.permissions?.canComment),
     onTaskNameChange: updateTaskName,
     onTaskAssigneeChange: updateTaskAssignee,
     onTaskDueDateChange: updateTaskDueDate,

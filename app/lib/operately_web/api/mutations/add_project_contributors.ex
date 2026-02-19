@@ -21,7 +21,7 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributors do
     |> run(:project_id, fn -> decode_id(inputs.project_id) end)
     |> run(:contribs, fn -> decode_contributors(inputs.contributors) end)
     |> run(:project, fn ctx -> Project.get(ctx.me, id: ctx.project_id) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.project.request_info.access_level, :can_edit_contributors) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.project.request_info.access_level, :can_edit) end)
     |> run(:operation, fn ctx -> Operation.run(ctx.me, ctx.project, ctx.contribs) end)
     |> run(:serialized, fn -> {:ok, %{success: true}} end)
     |> respond()
