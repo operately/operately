@@ -18,39 +18,47 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorTest do
   end
 
   describe "permissions" do
+    @table [
+      %{company: :no_access,      space: :no_access,      project: :no_access,      expected: 404},
+      %{company: :no_access,      space: :no_access,      project: :comment_access, expected: 403},
+      %{company: :no_access,      space: :no_access,      project: :edit_access,    expected: 200},
+      %{company: :no_access,      space: :no_access,      project: :full_access,    expected: 200},
+
+      %{company: :no_access,      space: :comment_access, project: :no_access,      expected: 403},
+      %{company: :no_access,      space: :edit_access,    project: :no_access,      expected: 200},
+      %{company: :no_access,      space: :full_access,    project: :no_access,      expected: 200},
+
+      %{company: :comment_access, space: :no_access,      project: :no_access,      expected: 403},
+      %{company: :edit_access,    space: :no_access,      project: :no_access,      expected: 200},
+      %{company: :full_access,    space: :no_access,      project: :no_access,      expected: 200},
+    ]
+
     setup ctx do
       ctx = register_and_log_in_account(ctx)
       creator = person_fixture(%{company_id: ctx.company.id})
-      space = group_fixture(creator, %{company_id: ctx.company.id})
-
-      Map.merge(ctx, %{creator: creator, creator_id: creator.id, space_id: space.id})
+      Map.merge(ctx, %{creator: creator})
     end
 
-    test "company members without view access can't see a project", ctx do
-      project = create_project(ctx, company_access_level: Binding.no_access())
-      contributor = person_fixture(%{company_id: ctx.company.id})
+    tabletest @table do
+      test "if caller has levels company=#{@test.company}, space=#{@test.space}, project=#{@test.project} on the project, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        project = create_project(ctx, space, @test.company, @test.space, @test.project)
+        contributor = person_fixture(%{company_id: ctx.company.id})
 
-      assert {404, %{message: message}} = request(ctx.conn, %{project: project, contributor: contributor})
-      assert message == "The requested resource was not found"
-    end
+        assert {code, res} = request(ctx.conn, %{project: project, contributor: contributor})
+        assert code == @test.expected
 
-    test "company members with edit access cannot add contributor to a project", ctx do
-      project = create_project(ctx, company_access_level: Binding.edit_access())
-      contributor = person_fixture(%{company_id: ctx.company.id})
-
-      assert {403, _} = request(ctx.conn, %{project: project, contributor: contributor})
-    end
-
-    test "company members with full access can add contributor to a project", ctx do
-      project = create_project(ctx, company_access_level: Binding.full_access())
-      contributor = person_fixture(%{company_id: ctx.company.id})
-
-      assert {200, res} = request(ctx.conn, %{project: project, contributor: contributor})
-      assert_contributor_created(res, contributor)
+        case @test.expected do
+          200 -> assert_contributor_created(res, contributor)
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "The requested resource was not found"
+        end
+      end
     end
 
     test "company admins can add contributor to a project", ctx do
-      project = create_project(ctx, company_access_level: Binding.view_access())
+      space = create_space(ctx)
+      project = create_project(ctx, space, :view_access, :no_access, :no_access)
       contributor = person_fixture(%{company_id: ctx.company.id})
 
       # Not admin
@@ -64,72 +72,34 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorTest do
       assert_contributor_created(res, contributor)
     end
 
-    test "space members without view access can't see a project", ctx do
-      add_person_to_space(ctx)
-      project = create_project(ctx, space_access_level: Binding.no_access())
-      contributor = person_fixture(%{company_id: ctx.company.id})
-
-      assert {404, %{message: message}} = request(ctx.conn, %{project: project, contributor: contributor})
-      assert message == "The requested resource was not found"
-    end
-
-    test "space members with edit access cannot add contributor to a project", ctx do
-      add_person_to_space(ctx)
-      project = create_project(ctx, space_access_level: Binding.edit_access())
-      contributor = person_fixture(%{company_id: ctx.company.id})
-
-      assert {403, _} = request(ctx.conn, %{project: project, contributor: contributor})
-    end
-
-    test "space members with full access can add contributor to a project", ctx do
-      add_person_to_space(ctx)
-      project = create_project(ctx, space_access_level: Binding.full_access())
-      contributor = person_fixture(%{company_id: ctx.company.id})
-
-      assert {200, res} = request(ctx.conn, %{project: project, contributor: contributor})
-      assert_contributor_created(res, contributor)
-    end
-
     test "space managers can add contributor to a project", ctx do
-      add_person_to_space(ctx)
-      project = create_project(ctx, space_access_level: Binding.view_access())
+      space = create_space(ctx)
+      project = create_project(ctx, space, :no_access, :view_access, :no_access)
       contributor = person_fixture(%{company_id: ctx.company.id})
 
       # Not manager
       assert {403, _} = request(ctx.conn, %{project: project, contributor: contributor})
 
       # Manager
-      add_manager_to_space(ctx)
+      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
+        id: ctx.person.id,
+        access_level: Binding.full_access(),
+      }])
       assert {200, res} = request(ctx.conn, %{project: project, contributor: contributor})
       assert_contributor_created(res, contributor)
     end
 
-    test "contributors with edit access cannot add contributor to a project", ctx do
-      project = create_project(ctx)
-      new_contributor = person_fixture(%{company_id: ctx.company.id})
-
-      contributor = create_contributor(ctx, project, Binding.edit_access())
-      account = Repo.preload(contributor, :account).account
-      conn = log_in_account(ctx.conn, account)
-
-      assert {403, _} = request(conn, %{project: project, contributor: new_contributor})
-    end
-
-    test "contributors with full access can add contributor to a project", ctx do
-      project = create_project(ctx)
-      new_contributor = person_fixture(%{company_id: ctx.company.id})
-
-      contributor = create_contributor(ctx, project, Binding.full_access())
-      account = Repo.preload(contributor, :account).account
-      conn = log_in_account(ctx.conn, account)
-
-      assert {200, res} = request(conn, %{project: project, contributor: new_contributor})
-      assert_contributor_created(res, new_contributor)
-    end
-
     test "champions can add contributor to a project", ctx do
       champion = person_fixture_with_account(%{company_id: ctx.company.id})
-      project = create_project(ctx, champion_id: champion.id, company_access_level: Binding.view_access())
+      space = create_space(ctx)
+      project = project_fixture(%{
+        company_id: ctx.company.id,
+        creator_id: ctx.creator.id,
+        group_id: space.id,
+        champion_id: champion.id,
+        company_access_level: Binding.view_access(),
+        space_access_level: Binding.no_access(),
+      })
       contributor = person_fixture(%{company_id: ctx.company.id})
 
       # another user's request
@@ -145,7 +115,15 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorTest do
 
     test "reviewers can add contributor to a project", ctx do
       reviewer = person_fixture_with_account(%{company_id: ctx.company.id})
-      project = create_project(ctx, reviewer_id: reviewer.id, company_access_level: Binding.view_access())
+      space = create_space(ctx)
+      project = project_fixture(%{
+        company_id: ctx.company.id,
+        creator_id: ctx.creator.id,
+        group_id: space.id,
+        reviewer_id: reviewer.id,
+        company_access_level: Binding.view_access(),
+        space_access_level: Binding.no_access(),
+      })
       contributor = person_fixture(%{company_id: ctx.company.id})
 
       # another user's request
@@ -158,13 +136,44 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorTest do
       assert {200, res} = request(conn, %{project: project, contributor: contributor})
       assert_contributor_created(res, contributor)
     end
+
+    test "contributors with edit access can add contributor to a project", ctx do
+      space = create_space(ctx)
+      project = create_project(ctx, space, :no_access, :no_access, :no_access)
+      new_contributor = person_fixture(%{company_id: ctx.company.id})
+
+      contributor = create_contributor(ctx, project, Binding.edit_access())
+      account = Repo.preload(contributor, :account).account
+      conn = log_in_account(ctx.conn, account)
+
+      assert {200, res} = request(conn, %{project: project, contributor: new_contributor})
+      assert_contributor_created(res, new_contributor)
+    end
+
+    test "contributors with full access can add contributor to a project", ctx do
+      space = create_space(ctx)
+      project = create_project(ctx, space, :no_access, :no_access, :no_access)
+      new_contributor = person_fixture(%{company_id: ctx.company.id})
+
+      contributor = create_contributor(ctx, project, Binding.full_access())
+      account = Repo.preload(contributor, :account).account
+      conn = log_in_account(ctx.conn, account)
+
+      assert {200, res} = request(conn, %{project: project, contributor: new_contributor})
+      assert_contributor_created(res, new_contributor)
+    end
   end
 
   describe "add_project_contributor functionality" do
-    setup :register_and_log_in_account
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+      Map.merge(ctx, %{creator: creator})
+    end
 
     test "adds contributor to a project", ctx do
-      project = create_project(ctx, company_access_level: Binding.full_access())
+      space = create_space(ctx)
+      project = create_project(ctx, space, :full_access, :no_access, :no_access)
       contributor = person_fixture(%{company_id: ctx.company.id})
 
       assert {200, res} = request(ctx.conn, %{project: project, contributor: contributor})
@@ -172,7 +181,8 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorTest do
     end
 
     test "creates a subscription for the added contributor", ctx do
-      project = create_project(ctx, company_access_level: Binding.full_access())
+      space = create_space(ctx)
+      project = create_project(ctx, space, :full_access, :no_access, :no_access)
       contributor = person_fixture(%{company_id: ctx.company.id})
 
       subscription_list_id = project.subscription_list_id
@@ -190,7 +200,8 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorTest do
     end
 
     test "reactivates an existing contributor subscription", ctx do
-      project = create_project(ctx, company_access_level: Binding.full_access())
+      space = create_space(ctx)
+      project = create_project(ctx, space, :full_access, :no_access, :no_access)
       contributor = person_fixture(%{company_id: ctx.company.id})
 
       subscription_list_id = project.subscription_list_id
@@ -238,20 +249,36 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorTest do
   # Helpers
   #
 
-  defp create_project(ctx, attrs \\ []) do
-    project_fixture(
-      Map.merge(
-        %{
-          company_id: ctx.company.id,
-          name: "Project 1",
-          creator_id: ctx[:creator_id] || ctx.person.id,
-          group_id: ctx[:space_id] || ctx.company.company_space_id,
-          company_access_level: Binding.no_access(),
-          space_access_level: Binding.no_access()
-        },
-        Enum.into(attrs, %{})
-      )
-    )
+  defp create_space(ctx) do
+    group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.no_access()})
+  end
+
+  defp create_project(ctx, space, company_members_level, space_members_level, project_member_level) do
+    project = project_fixture(%{
+      company_id: ctx.company.id,
+      creator_id: ctx.creator.id,
+      group_id: space.id,
+      company_access_level: Binding.from_atom(company_members_level),
+      space_access_level: Binding.from_atom(space_members_level),
+    })
+
+    if space_members_level != :no_access do
+      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
+        id: ctx.person.id,
+        access_level: Binding.from_atom(space_members_level)
+      }])
+    end
+
+    if project_member_level != :no_access do
+      {:ok, _} = Operately.Projects.create_contributor(ctx.creator, %{
+        project_id: project.id,
+        person_id: ctx.person.id,
+        permissions: Binding.from_atom(project_member_level),
+        responsibility: "some responsibility"
+      })
+    end
+
+    project
   end
 
   defp create_contributor(ctx, project, permissions) do
@@ -266,23 +293,5 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorTest do
       })
 
     contributor
-  end
-
-  defp add_person_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space_id, [
-      %{
-        id: ctx.person.id,
-        access_level: Binding.edit_access()
-      }
-    ])
-  end
-
-  defp add_manager_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space_id, [
-      %{
-        id: ctx.person.id,
-        access_level: Binding.full_access()
-      }
-    ])
   end
 end

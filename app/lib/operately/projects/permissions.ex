@@ -15,25 +15,15 @@ defmodule Operately.Projects.Permissions do
     :can_create_task,
     :can_create_discussion,
     :can_delete_milestone,
-    :can_edit_check_in,
-    :can_edit_contributors,
-    :can_edit_description,
-    :can_edit_goal,
-    :can_edit_milestone,
-    :can_edit_name,
+    :can_edit,
     :can_edit_permissions,
-    :can_edit_resources,
     :can_edit_space,
-    :can_edit_retrospective,
-    :can_edit_task,
-    :can_edit_statuses,
-    :can_edit_timeline,
-    :can_edit_subscriptions_list,
     :can_pause,
     :can_resume,
     :can_delete,
     :can_view,
-    :can_comment
+    :can_comment,
+    :has_full_access
   ]
 
   def calculate(access_level) when is_integer(access_level) do
@@ -48,28 +38,18 @@ defmodule Operately.Projects.Permissions do
       can_create_milestone: access_level >= Binding.edit_access(),
       can_create_task: access_level >= Binding.edit_access(),
       can_create_discussion: access_level >= Binding.edit_access(),
-      can_edit_milestone: access_level >= Binding.edit_access(),
-      can_delete_milestone: access_level >= Binding.edit_access(),
-      can_edit_check_in: access_level >= Binding.edit_access(),
-      can_edit_description: access_level >= Binding.edit_access(),
-      can_edit_timeline: access_level >= Binding.edit_access(),
-      can_edit_resources: access_level >= Binding.edit_access(),
-      can_edit_goal: access_level >= Binding.edit_access(),
-      can_edit_name: access_level >= Binding.edit_access(),
+      can_edit: access_level >= Binding.edit_access(),
       can_edit_space: access_level >= Binding.full_access(),
-      can_edit_retrospective: access_level >= Binding.edit_access(),
+      can_edit_permissions: access_level >= Binding.full_access(),
+      can_delete_milestone: access_level >= Binding.edit_access(),
       can_close: access_level >= Binding.edit_access(),
       can_pause: access_level >= Binding.edit_access(),
       can_resume: access_level >= Binding.edit_access(),
       can_check_in: access_level >= Binding.edit_access(),
-      can_edit_task: access_level >= Binding.edit_access(),
-      can_edit_statuses: access_level >= Binding.edit_access(),
       can_acknowledge_check_in: access_level >= Binding.edit_access(),
-      can_edit_subscriptions_list: access_level >= Binding.edit_access(),
-      can_edit_contributors: access_level >= Binding.full_access(),
-      can_edit_permissions: access_level >= Binding.full_access(),
       can_delete: access_level >= Binding.full_access(),
-      can_comment: access_level >= Binding.comment_access()
+      can_comment: access_level >= Binding.comment_access(),
+      has_full_access: access_level >= Binding.full_access()
     }
   end
 

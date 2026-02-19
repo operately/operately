@@ -10,21 +10,10 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Permissions do
       can_complete_milestone: permissions.can_complete_milestone,
       can_reopen_milestone: permissions.can_reopen_milestone,
       can_delete_milestone: permissions.can_delete_milestone,
-      can_edit_milestone: permissions.can_edit_milestone,
-      can_comment_on_check_in: permissions.can_comment_on_check_in,
-      can_edit_check_in: permissions.can_edit_check_in,
-      can_edit_description: permissions.can_edit_description,
-      can_edit_timeline: permissions.can_edit_timeline,
-      can_edit_resources: permissions.can_edit_resources,
-      can_edit_goal: permissions.can_edit_goal,
-      can_edit_name: permissions.can_edit_name,
+      can_edit: permissions.can_edit,
       can_edit_space: permissions.can_edit_space,
-      can_edit_retrospective: permissions.can_edit_retrospective,
-      can_edit_contributors: permissions.can_edit_contributors,
       can_edit_permissions: permissions.can_edit_permissions,
-      can_edit_subscriptions_list: permissions.can_edit_subscriptions_list,
-      can_edit_task: permissions.can_edit_task,
-      can_edit_statuses: permissions.can_edit_statuses,
+      can_comment_on_check_in: permissions.can_comment_on_check_in,
       can_close: permissions.can_close,
       can_pause: permissions.can_pause,
       can_resume: permissions.can_resume,
@@ -32,7 +21,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Permissions do
       can_acknowledge_check_in: permissions.can_acknowledge_check_in,
       can_comment_on_retrospective: permissions.can_comment_on_retrospective,
       can_comment: permissions.can_comment,
-      can_delete: permissions.can_delete
+      can_delete: permissions.can_delete,
+      has_full_access: permissions.has_full_access
     }
   end
 end
