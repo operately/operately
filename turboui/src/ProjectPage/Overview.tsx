@@ -116,7 +116,7 @@ function TimelineSection(props: ProjectPage.State) {
             </span>
           </div>
         )}
-        {props.permissions.canCreateMilestone && (
+        {props.permissions.canEdit && (
           <SecondaryButton size="xxs" onClick={() => setShowAddForm(true)} testId="add-milestone-button">
             Add milestone
           </SecondaryButton>
@@ -134,7 +134,7 @@ function TimelineSection(props: ProjectPage.State) {
         )}
 
         <EmptyState
-          canEdit={props.permissions.canCreateMilestone}
+          canEdit={props.permissions.canEdit}
           setShowAddForm={setShowAddForm}
           display={validMilestones.length === 0 && !showAddForm}
         />

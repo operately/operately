@@ -261,7 +261,7 @@ function MobileMeta(props: MilestonePage.State) {
   const { status, onStatusChange, permissions, dueDate, onDueDateChange, milestone } = props;
   const isCompleted = status === "done";
   const showOverdueWarning = !isCompleted;
-  const canEdit = permissions.canCompleteMilestone || permissions.canReopenMilestone;
+  const { canEdit } = permissions;
 
   const handleStatusToggle = () => {
     if (!canEdit) return;
@@ -338,7 +338,7 @@ function TimelineSection(props: MilestonePage.State) {
       <Timeline
         items={props.timelineItems}
         currentUser={props.currentUser}
-        canComment={props.permissions.canCommentOnMilestone}
+        canComment={props.permissions.canComment}
         commentParentType="milestone"
         onAddComment={props.onAddComment}
         onEditComment={props.onEditComment}

@@ -125,8 +125,8 @@ export function TasksSection({ state }: { state: ProjectPage.State }) {
         onFiltersChange={state.onFiltersChange}
         statuses={state.statuses}
         canManageStatuses={state.permissions.canEdit}
-        canCreateMilestone={state.permissions.canCreateMilestone}
-        canCreateTask={state.permissions.canCreateTask}
+        canCreateMilestone={state.permissions.canEdit}
+        canCreateTask={state.permissions.canEdit}
         onSaveCustomStatuses={state.onSaveCustomStatuses}
         displayMode={taskDisplayMode}
         onDisplayModeChange={handleDisplayModeChange}

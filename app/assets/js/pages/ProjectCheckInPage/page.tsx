@@ -69,7 +69,7 @@ function Comments() {
     <CommentSection
       form={commentsForm}
       commentParentType="project_check_in"
-      canComment={checkIn.project?.permissions?.canCommentOnCheckIn || false}
+      canComment={checkIn.project?.permissions?.canComment || false}
     />
   );
 }
@@ -80,7 +80,7 @@ function CheckInReactions() {
   const entity = Reactions.entity(checkIn.id!, "project_check_in");
   const form = useReactionsForm(entity, reactions);
 
-  return <ReactionList form={form} size={24} canAddReaction={checkIn.project?.permissions?.canCommentOnCheckIn || false} />;
+  return <ReactionList form={form} size={24} canAddReaction={checkIn.project?.permissions?.canComment || false} />;
 }
 
 function SubscriptionsSection() {

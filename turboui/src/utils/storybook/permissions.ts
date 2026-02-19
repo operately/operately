@@ -15,26 +15,8 @@ export function generatePermissions(
 ): ProjectPermissions {
   const permissions: ProjectPermissions = {
     canView: baseValue,
-    canCommentOnMilestone: baseValue,
-    canCommentOnCheckIn: baseValue,
-    canCommentOnRetrospective: baseValue,
-    canCommentOnTask: baseValue,
-    canCreateMilestone: baseValue,
-    canCreateTask: baseValue,
-    canCreateDiscussion: baseValue,
-    canCompleteMilestone: baseValue,
-    canReopenMilestone: baseValue,
-    canDeleteMilestone: baseValue,
-    canEdit: baseValue,
-    canEditSpace: baseValue,
-    canEditPermissions: baseValue,
-    canClose: baseValue,
-    canPause: baseValue,
-    canResume: baseValue,
-    canCheckIn: baseValue,
-    canAcknowledgeCheckIn: baseValue,
     canComment: baseValue,
-    canDelete: baseValue,
+    canEdit: baseValue,
     hasFullAccess: baseValue,
   };
 

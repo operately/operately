@@ -47,7 +47,7 @@ function CheckInsSection(props: ProjectPage.State) {
   const checkIns = props.checkIns || [];
   const isClosed = props.state === "closed";
   const lastCheckInState: "active" | "closed" | undefined = isClosed ? "closed" : "active";
-  const viewerCanCheckIn = props.permissions.canCheckIn && !isClosed;
+  const viewerCanCheckIn = props.permissions.canEdit && !isClosed;
   const isChampion = !!props.currentUser?.id && !!props.champion?.id && props.currentUser.id === props.champion.id;
   const championFirstName = props.champion?.fullName?.split(" ")[0];
 
@@ -267,7 +267,7 @@ function Actions(props: ProjectPage.State) {
       label: "Move to another space",
       onClick: props.openMoveModal,
       icon: IconCircleArrowRight,
-      hidden: !props.permissions.canEditSpace || !("space" in props),
+      hidden: !props.permissions.hasFullAccess || !("space" in props),
     },
     {
       type: "link" as const,
@@ -275,7 +275,7 @@ function Actions(props: ProjectPage.State) {
       link: props.pauseLink,
       icon: IconPlayerPause,
       testId: "pause-project",
-      hidden: !props.permissions.canPause || props.state === "closed" || props.state === "paused",
+      hidden: !props.permissions.canEdit || props.state === "closed" || props.state === "paused",
     },
     {
       type: "link" as const,
@@ -283,14 +283,14 @@ function Actions(props: ProjectPage.State) {
       link: props.closeLink,
       icon: IconCircleCheck,
       testId: "close-project",
-      hidden: !props.permissions.canClose || props.state === "closed",
+      hidden: !props.permissions.canEdit || props.state === "closed",
     },
     {
       type: "link" as const,
       label: "Resume project",
       link: props.reopenLink,
       icon: IconRotateDot,
-      hidden: !props.permissions.canResume || props.state !== "paused",
+      hidden: !props.permissions.canEdit || props.state !== "paused",
     },
     {
       type: "action" as const,
@@ -305,7 +305,7 @@ function Actions(props: ProjectPage.State) {
       label: "Delete",
       onClick: props.openDeleteModal,
       icon: IconTrash,
-      hidden: !props.permissions.canDelete,
+      hidden: !props.permissions.hasFullAccess,
       danger: true,
     },
   ];

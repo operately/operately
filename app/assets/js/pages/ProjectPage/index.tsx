@@ -208,7 +208,7 @@ function Page() {
     tasks: baseTasks,
     commentEntityType: "project_task",
     canEdit: Boolean(project.permissions?.canEdit),
-    canComment: Boolean(project.permissions?.canCommentOnTask),
+    canComment: Boolean(project.permissions?.canComment),
     onTaskNameChange: updateTaskName,
     onTaskAssigneeChange: updateTaskAssignee,
     onTaskDueDateChange: updateTaskDueDate,
