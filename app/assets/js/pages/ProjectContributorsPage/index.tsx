@@ -230,7 +230,7 @@ function Contributors() {
 
 function Contributor({ contributor }: { contributor: ProjectContributor }) {
   return (
-    <BorderedRow>
+    <BorderedRow testId={createTestId("contributor-row", contributor.person?.fullName!)}>
       <div className="flex items-center gap-2">
         <ContributorAvatar contributor={contributor} />
         <ContributotNameAndResponsibility contributor={contributor} />

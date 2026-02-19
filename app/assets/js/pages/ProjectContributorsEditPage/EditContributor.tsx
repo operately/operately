@@ -59,7 +59,7 @@ export function EditContributor() {
 
 interface FormContributor extends FieldObject {
   responsibility: string;
-  permissions: Permissions.AccessOptions;
+  permissions: Permissions.AccessOptions | null;
 }
 
 function useForm(contributor: ProjectContributors.ProjectContributor) {
@@ -69,7 +69,12 @@ function useForm(contributor: ProjectContributors.ProjectContributor) {
   const form = Forms.useForm<FormContributor>({
     fields: {
       responsibility: contributor.responsibility || "",
-      permissions: "edit_access",
+      permissions: null,
+    },
+    validate: async (addError) => {
+      if (!form.values.permissions) {
+        addError("permissions", "Please select an access level");
+      }
     },
     submit: async () => {
       await update({

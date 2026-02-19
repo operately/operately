@@ -205,7 +205,10 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     end)
   end
 
-  step :given_the_project_has_contributor, ctx, name: name do
+  step :given_the_project_has_contributor, ctx, attrs do
+    name = Keyword.get(attrs, :name)
+    access = Keyword.get(attrs, :access, Binding.edit_access())
+
     contrib = person_fixture_with_account(%{full_name: name, title: "Manager", company_id: ctx.company.id})
 
     {:ok, _} = Operately.Projects.create_contributor(contrib, %{
@@ -213,10 +216,39 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
       role: "contributor",
       project_id: ctx.project.id,
       responsibility: "Lead the backend implementation",
-      permissions: Binding.edit_access(),
+      permissions: access,
     })
 
     ctx
+  end
+
+  step :start_editing_contributor, ctx, name: name do
+    ctx
+    |> UI.click(testid: UI.testid(["contributor-menu", name]))
+    |> UI.click(testid: "edit-contributor")
+    |> UI.sleep(200)
+  end
+
+  step :edit_contributor, ctx, responsibility: responsibility, access: access do
+    ctx
+    |> UI.click(testid: "permissions")
+    |> UI.click_text(access)
+    |> UI.fill(testid: "responsibility", with: responsibility)
+    |> UI.click(testid: "submit")
+    |> UI.assert_has(testid: "project-contributors-page")
+  end
+
+  step :assert_contributor_attributes, ctx, attrs do
+    name = Keyword.get(attrs, :name)
+    responsibility = Keyword.get(attrs, :responsibility)
+    access = Keyword.get(attrs, :access)
+
+    ctx
+    |> UI.find(UI.query(testid: UI.testid(["contributor-row", name])), fn el ->
+      el
+      |> UI.assert_has(Query.text(responsibility))
+      |> UI.assert_has(Query.text(access))
+    end)
   end
 
   step :remove_contributor, ctx, name: name do
