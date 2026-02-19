@@ -7,14 +7,13 @@ import * as Permissions from "@/models/permissions";
 import { IconPlus, IconX, Link } from "turboui";
 
 import { useAddProjectContributors } from "@/models/projectContributors";
-import { PERMISSIONS_LIST_ATOMS } from "@/features/Permissions";
 
 import Forms from "@/components/Forms";
 import { FieldObject } from "@/components/Forms";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { createTestId } from "@/utils/testid";
 import { SecondaryButton } from "turboui";
-import { LoaderResult } from "./loader";
+import { useLoadedData } from "./loader";
 
 import { usePaths } from "@/routes/paths";
 
@@ -43,7 +42,7 @@ function newContributor(): ContributorFields {
 
 export function AddContributors() {
   const paths = usePaths();
-  const { project } = Pages.useLoadedData() as LoaderResult;
+  const { project } = useLoadedData();
   const gotoContribPage = useNavigateTo(paths.projectContributorsPath(project.id!));
   const [add] = useAddProjectContributors();
 
@@ -120,13 +119,38 @@ function Contributors({ project }) {
   );
 }
 
+const PERMISSIONS_LIST_COMPLETE = [
+  { value: "full_access", label: "Full Access" },
+  { value: "edit_access", label: "Edit Access" },
+  { value: "comment_access", label: "Comment Access" },
+  { value: "view_access", label: "View Access" },
+];
+
+const PERMISSIONS_LIST = [
+  { value: "edit_access", label: "Edit Access" },
+  { value: "comment_access", label: "Comment Access" },
+  { value: "view_access", label: "View Access" },
+];
+
 function Contributor({ field, search, index, last, addMore }) {
+  const { project } = useLoadedData();
+
+  const permissionsList = React.useMemo(() => {
+  if (project.permissions?.hasFullAccess) {
+    return PERMISSIONS_LIST_COMPLETE;
+  }
+  if (project.permissions?.canEdit) {
+    return PERMISSIONS_LIST;
+  }
+  return [];
+}, [project.permissions?.hasFullAccess, project.permissions?.canEdit]);
+
   return (
     <div data-test-id={`contributor-${index}`}>
       <Paper.Body>
         <Forms.FieldGroup layout="horizontal">
           <Forms.SelectPerson field={field + ".personId"} label="Contributor" searchFn={search} autoFocus />
-          <Forms.SelectBox field={field + ".accessLevel"} label="Access Level" options={PERMISSIONS_LIST_ATOMS} />
+          <Forms.SelectBox field={field + ".accessLevel"} label="Access Level" options={permissionsList} />
 
           <Forms.TextInput
             field={field + ".responsibility"}

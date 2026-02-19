@@ -273,6 +273,10 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "project-activities", activity_with_comment])
   end
 
+  def project_add_contributor_path(company = %Company{}, project = %Project{}) do
+    create_path([company_id(company), "projects", project_id(project), "add"]) <> "?tab=contributors"
+  end
+
   def company_admin_path(company = %Company{}) do
     create_path([company_id(company), "admin"])
   end

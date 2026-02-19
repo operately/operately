@@ -12,12 +12,21 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
   defdelegate login(ctx), to: ProjectSteps
   defdelegate visit_project_page(ctx), to: ProjectSteps
   defdelegate create_project(ctx, attrs), to: ProjectSteps
+  defdelegate setup_contributors(ctx), to: ProjectSteps
+  defdelegate assert_logged_in_contributor_has_edit_access(ctx), to: ProjectSteps
+  defdelegate assert_logged_in_contributor_has_comment_access(ctx), to: ProjectSteps
+  defdelegate assert_logged_in_contributor_has_view_access(ctx), to: ProjectSteps
 
   step :visit_project_contributors_page, ctx do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> UI.click(testid: "manage-team-button")
     |> UI.assert_has(testid: "project-contributors-page")
+  end
+
+  step :visit_project_contributors_page, ctx, :direct do
+    ctx
+    |> UI.visit(Paths.project_add_contributor_path(ctx.company, ctx.project))
   end
 
   step :given_a_person_exists, ctx, name: name do
@@ -44,6 +53,20 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     ctx
   end
 
+  step :assert_logged_in_champion_has_full_access, ctx do
+    {:ok, project} = Operately.Projects.Project.get(ctx.champion, id: ctx.project.id)
+
+    assert project.request_info.access_level == Binding.full_access()
+
+    UI.login_as(ctx, ctx.champion)
+  end
+
+  step :start_adding_contributors, ctx do
+    ctx
+    |> UI.click(testid: "manage-team-button")
+    |> UI.click(testid: "add-contributors-button")
+  end
+
   step :add_contributors, ctx, people do
     ctx
     |> UI.click(testid: "manage-team-button")
@@ -53,6 +76,15 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
       UI.find(ctx, UI.query(testid: "contributor-#{index}"), fn ctx ->
         ctx
         |> UI.select_person_in(testid: "contributors-#{index}-personid", name: person.name)
+        |> then(fn ctx ->
+          if person[:access] && person[:access] != "Edit Access" do # Edit Access is the default
+            ctx
+            |> UI.click(testid: "contributors-#{index}-accesslevel")
+            |> UI.click_text(person.access)
+          else
+            ctx
+          end
+        end)
         |> UI.fill(testid: "contributors-#{index}-responsibility", with: person.responsibility)
       end)
 
@@ -84,6 +116,28 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     end)
 
     ctx
+  end
+
+  step :assert_access_level_of_added_contributors, ctx, contribs do
+    Enum.map(contribs, fn contrib ->
+      person = Operately.People.get_person_by_name!(ctx.company, contrib.name)
+      access_level = contrib.access |> String.downcase() |> String.replace(" ", "_") |> String.to_atom()
+
+      project = Operately.Projects.Project.get!(person, id: ctx.project.id)
+
+      assert project.request_info.access_level == Binding.from_atom(access_level)
+    end)
+
+    ctx
+  end
+
+  step :assert_full_access_option_not_available, ctx do
+    ctx
+    |> UI.click(testid: "contributors-0-accesslevel")
+    |> UI.assert_text("View Access")
+    |> UI.assert_text("Comment Access")
+    |> UI.assert_text("Edit Access")
+    |> UI.refute_text("Full Access")
   end
 
   step :assert_contributors_added_feed_item_exists, ctx, contribs do
@@ -371,6 +425,12 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
 
   step :promote_contributor_to_reviewer, ctx, name: name do
     promote_to(ctx, name, "reviewer")
+  end
+
+  step :assert_404, ctx do
+    ctx
+    |> UI.assert_text("404")
+    |> UI.assert_text("Page Not Found")
   end
 
   #

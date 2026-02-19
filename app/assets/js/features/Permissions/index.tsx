@@ -36,13 +36,6 @@ export const PERMISSIONS_LIST = [
   VIEW_ACCESS,
 ];
 
-export const PERMISSIONS_LIST_ATOMS = [
-  { value: "full_access", label: "Full Access" },
-  { value: "edit_access", label: "Edit Access" },
-  { value: "comment_access", label: "Comment Access" },
-  { value: "view_access", label: "View Access" },
-];
-
 export function accessLevelAsString(permission: PermissionLevels) {
   return match(permission)
     .with(PermissionLevels.FULL_ACCESS, () => "Full Access")
