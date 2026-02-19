@@ -4552,15 +4552,15 @@ export interface UpdateProfilePictureResult {
 }
 
 export interface UpdateProjectContributorInput {
-  contribId?: string | null;
-  personId?: string | null;
+  contribId: string;
+  personId?: Id | null;
   responsibility?: string | null;
-  permissions?: number | null;
+  permissions?: AccessOptions | null;
   role?: string | null;
 }
 
 export interface UpdateProjectContributorResult {
-  contributor?: ProjectContributor | null;
+  contributor: ProjectContributor;
 }
 
 export interface UpdateProjectDescriptionInput {

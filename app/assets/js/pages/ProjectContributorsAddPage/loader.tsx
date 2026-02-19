@@ -17,7 +17,7 @@ export async function loader({ request, params }): Promise<LoaderResult> {
     id: params.projectID,
     includeSpace: true,
     includePermissions: true,
-  }).then((data) => data.project!);
+  }).then((data) => data.project);
 
   const type = Pages.getSearchParam(request, "type") as ContributorTypeParam;
 
