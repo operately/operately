@@ -64,7 +64,7 @@ function AddContribsButton() {
   const paths = usePaths();
   const { project } = useLoadedData();
 
-  if (!project.permissions?.canEditContributors) return null;
+  if (!project.permissions?.canEdit) return null;
   const path = paths.projectContributorsAddPath(project.id!, { type: "contributor" });
 
   return (
@@ -230,7 +230,7 @@ function Contributors() {
 
 function Contributor({ contributor }: { contributor: ProjectContributor }) {
   return (
-    <BorderedRow>
+    <BorderedRow testId={createTestId("contributor-row", contributor.person?.fullName!)}>
       <div className="flex items-center gap-2">
         <ContributorAvatar contributor={contributor} />
         <ContributotNameAndResponsibility contributor={contributor} />

@@ -20,7 +20,7 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectRetrospective do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:attrs, fn -> parse_inputs(inputs) end)
     |> run(:retrospective, fn ctx -> load(inputs.id, ctx.me) end)
-    |> run(:permissions, fn ctx -> Permissions.check(ctx.retrospective.request_info.access_level, :can_edit_retrospective) end)
+    |> run(:permissions, fn ctx -> Permissions.check(ctx.retrospective.request_info.access_level, :can_edit) end)
     |> run(:operation, fn ctx -> ProjectRetrospectiveEditing.run(ctx.me, ctx.retrospective, ctx.attrs)  end)
     |> run(:serialized, fn ctx -> {:ok, %{retrospective: Serializer.serialize(ctx.operation)}} end)
     |> respond()

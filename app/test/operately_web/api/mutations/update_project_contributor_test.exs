@@ -19,15 +19,15 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributorTest do
       %{company: :no_access, space: :no_access, project: :no_access, expected: 404},
       %{company: :no_access, space: :no_access, project: :view_access, expected: 403},
       %{company: :no_access, space: :no_access, project: :comment_access, expected: 403},
-      %{company: :no_access, space: :no_access, project: :edit_access, expected: 403},
+      %{company: :no_access, space: :no_access, project: :edit_access, expected: 200},
       %{company: :no_access, space: :no_access, project: :full_access, expected: 200},
       %{company: :no_access, space: :view_access, project: :no_access, expected: 403},
       %{company: :no_access, space: :comment_access, project: :no_access, expected: 403},
-      %{company: :no_access, space: :edit_access, project: :no_access, expected: 403},
+      %{company: :no_access, space: :edit_access, project: :no_access, expected: 200},
       %{company: :no_access, space: :full_access, project: :no_access, expected: 200},
       %{company: :view_access, space: :no_access, project: :no_access, expected: 403},
       %{company: :comment_access, space: :no_access, project: :no_access, expected: 403},
-      %{company: :edit_access, space: :no_access, project: :no_access, expected: 403},
+      %{company: :edit_access, space: :no_access, project: :no_access, expected: 200},
       %{company: :full_access, space: :no_access, project: :no_access, expected: 200}
     ]
 
@@ -41,14 +41,13 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributorTest do
       test "if caller has levels company=#{@test.company}, space=#{@test.space}, project=#{@test.project} on the project, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx)
         project = create_project(ctx, space, @test.company, @test.space, @test.project)
-        {person, contributor} = create_contributor(ctx, project)
+        contributor = create_contributor(ctx, project)
 
         assert {code, res} =
                  mutation(ctx.conn, :update_project_contributor, %{
                    contrib_id: contributor.id,
-                   person_id: Paths.person_id(person),
                    responsibility: "New responsibility",
-                   permissions: Binding.edit_access()
+                   permissions: "edit_access"
                  })
 
         assert code == @test.expected
@@ -73,18 +72,87 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributorTest do
 
     test "updates project contributor", ctx do
       project = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.person.id, group_id: ctx.company.company_space_id})
-      {person, contributor} = create_contributor(ctx, project)
+      contributor = create_contributor(ctx, project)
 
       assert {200, res} =
                mutation(ctx.conn, :update_project_contributor, %{
                  contrib_id: contributor.id,
-                 person_id: Paths.person_id(person),
                  responsibility: "New responsibility",
-                 permissions: Binding.edit_access()
+                 permissions: "edit_access"
                })
 
       contributor = Repo.reload(contributor)
       assert res.contributor == Serializer.serialize(contributor)
+    end
+  end
+
+  describe "permission level validation" do
+    @permission_table [
+      %{caller_access: :edit_access,    new_member_access: :full_access,    expected: 403},
+      %{caller_access: :edit_access,    new_member_access: :edit_access,    expected: 200},
+      %{caller_access: :edit_access,    new_member_access: :comment_access, expected: 200},
+      %{caller_access: :edit_access,    new_member_access: :view_access,    expected: 200},
+
+      %{caller_access: :full_access,    new_member_access: :full_access,    expected: 200},
+      %{caller_access: :full_access,    new_member_access: :edit_access,    expected: 200},
+      %{caller_access: :full_access,    new_member_access: :comment_access, expected: 200},
+      %{caller_access: :full_access,    new_member_access: :view_access,    expected: 200},
+    ]
+
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+      Map.merge(ctx, %{creator: creator})
+    end
+
+    tabletest @permission_table do
+      test "user with #{@test.caller_access} access can update member to #{@test.new_member_access} access, expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        project = create_project(ctx, space, :no_access, :no_access, :no_access)
+
+        {caller_person, _caller} = create_contributor_with_access(ctx, project, Binding.from_atom(@test.caller_access))
+        target = create_contributor(ctx, project)
+
+        account = Repo.preload(caller_person, :account).account
+        conn = log_in_account(ctx.conn, account)
+
+        assert {code, res} =
+          mutation(conn, :update_project_contributor, %{
+            contrib_id: target.id,
+            responsibility: "Updated responsibility",
+            permissions: Atom.to_string(@test.new_member_access)
+          })
+
+        assert code == @test.expected
+
+        case @test.expected do
+          200 ->
+            target = Repo.reload(target)
+            assert res.contributor == Serializer.serialize(target)
+          403 ->
+            assert res.message == "You don't have permission to perform this action"
+        end
+      end
+    end
+
+    test "fails if trying to update member to higher access than caller", ctx do
+      space = create_space(ctx)
+      project = create_project(ctx, space, :no_access, :no_access, :no_access)
+
+      {caller_person, _caller} = create_contributor_with_access(ctx, project, Binding.edit_access())
+      target = create_contributor(ctx, project)
+
+      account = Repo.preload(caller_person, :account).account
+      conn = log_in_account(ctx.conn, account)
+
+      assert {403, res} =
+        mutation(conn, :update_project_contributor, %{
+          contrib_id: target.id,
+          responsibility: "Updated responsibility",
+          permissions: "full_access"
+        })
+
+      assert res.message == "You don't have permission to perform this action"
     end
   end
 
@@ -105,6 +173,20 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributorTest do
         person_id: person.id,
         responsibility: "some responsibility",
         permissions: Binding.edit_access()
+      })
+
+    contributor
+  end
+
+  defp create_contributor_with_access(ctx, project, permissions) do
+    person = person_fixture_with_account(%{company_id: ctx.company.id})
+
+    {:ok, contributor} =
+      Projects.create_contributor(ctx[:creator] || ctx.person, %{
+        project_id: project.id,
+        person_id: person.id,
+        responsibility: "some responsibility",
+        permissions: permissions
       })
 
     {person, contributor}

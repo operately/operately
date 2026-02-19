@@ -121,7 +121,7 @@ defmodule OperatelyWeb.Api.Queries.GetMilestoneTest do
         include_permissions: true,
       })
 
-      assert res.milestone.permissions.can_edit_milestone
+      assert res.milestone.permissions.can_edit
     end
 
     test "include_comments", ctx do

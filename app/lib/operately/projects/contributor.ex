@@ -11,6 +11,8 @@ defmodule Operately.Projects.Contributor do
     field :responsibility, :string
     field :role, Ecto.Enum, values: [:champion, :reviewer, :contributor], default: :contributor
 
+    # populated with after load hooks
+    field :permissions, :any, virtual: true
     field :access_level, :integer, virtual: true
 
     timestamps()
@@ -34,6 +36,11 @@ defmodule Operately.Projects.Contributor do
     contributor
     |> cast(attrs, [:responsibility, :project_id, :person_id, :role])
     |> validate_required([:project_id, :person_id])
+  end
+
+  def set_permissions(contributor = %__MODULE__{}) do
+    perms = Operately.Projects.Permissions.calculate(contributor.request_info.access_level)
+    Map.put(contributor, :permissions, perms)
   end
 
   def load_project_access_levels(contributors) do

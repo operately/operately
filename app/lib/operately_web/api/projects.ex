@@ -98,7 +98,7 @@ defmodule OperatelyWeb.Api.Projects do
       conn
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.project_id)
-      |> Steps.check_permissions(:can_edit_timeline)
+      |> Steps.check_permissions(:can_edit)
       |> Steps.update_project_due_date(inputs.due_date)
       |> Steps.save_activity(:project_due_date_updating, fn changes ->
         %{
@@ -134,7 +134,7 @@ defmodule OperatelyWeb.Api.Projects do
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.project_id)
       |> Steps.find_task(inputs.task_id)
-      |> Steps.check_task_permissions(:can_edit_task)
+      |> Steps.check_task_permissions(:can_edit)
       |> Steps.update_kanban(inputs.status, inputs.kanban_state)
       |> Steps.commit()
       |> Steps.broadcast_review_count_update()
@@ -163,7 +163,7 @@ defmodule OperatelyWeb.Api.Projects do
       conn
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.project_id)
-      |> Steps.check_permissions(:can_edit_timeline)
+      |> Steps.check_permissions(:can_edit)
       |> Steps.update_project_start_date(inputs.start_date)
       |> Steps.save_activity(:project_start_date_updating, fn changes ->
         %{
@@ -198,7 +198,7 @@ defmodule OperatelyWeb.Api.Projects do
       conn
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.project_id)
-      |> Steps.check_permissions(:can_edit_statuses)
+      |> Steps.check_permissions(:can_edit)
       |> Steps.validate_status_replacements(inputs.task_statuses, replacements)
       |> Steps.update_task_statuses(inputs.task_statuses)
       |> Steps.replace_deleted_task_statuses(replacements)
@@ -223,7 +223,7 @@ defmodule OperatelyWeb.Api.Projects do
       conn
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.project_id)
-      |> Steps.check_permissions(:can_edit_contributors)
+      |> Steps.check_permissions(:has_full_access)
       |> Steps.update_project_champion(inputs.champion_id)
       |> Steps.create_subscription(inputs.champion_id)
       |> Steps.save_activity(:project_champion_updating, fn changes ->
@@ -257,7 +257,7 @@ defmodule OperatelyWeb.Api.Projects do
       conn
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.project_id, [:goal])
-      |> Steps.check_permissions(:can_edit_goal)
+      |> Steps.check_permissions(:can_edit)
       |> Steps.update_parent_goal(inputs.goal_id)
       |> Steps.find_previous_goal()
       |> Steps.save_activity(:project_goal_connection, fn changes ->
@@ -292,7 +292,7 @@ defmodule OperatelyWeb.Api.Projects do
       conn
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.project_id)
-      |> Steps.check_permissions(:can_edit_contributors)
+      |> Steps.check_permissions(:has_full_access)
       |> Steps.update_project_reviewer(inputs.reviewer_id)
       |> Steps.create_subscription(inputs.reviewer_id)
       |> Steps.save_activity(:project_reviewer_updating, fn changes ->
@@ -326,7 +326,7 @@ defmodule OperatelyWeb.Api.Projects do
       conn
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.project_id, [:champion])
-      |> Steps.check_permissions(:can_create_milestone)
+      |> Steps.check_permissions(:can_edit)
       |> Steps.create_milestone(inputs)
       |> Steps.add_milestone_to_ordering_state()
       |> Steps.save_activity(:project_milestone_creation, fn changes ->
@@ -364,7 +364,7 @@ defmodule OperatelyWeb.Api.Projects do
       conn
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.project_id)
-      |> Steps.check_permissions(:can_edit_milestone)
+      |> Steps.check_permissions(:can_edit)
       |> Steps.find_milestone(inputs.milestone_id)
       |> Ecto.Multi.run(:updated_milestone, fn _repo, %{milestone: milestone} ->
         tf = milestone.timeframe || %{}
@@ -412,7 +412,7 @@ defmodule OperatelyWeb.Api.Projects do
       conn
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.project_id)
-      |> Steps.check_permissions(:can_delete)
+      |> Steps.check_permissions(:has_full_access)
       |> Steps.delete_discussions(inputs.project_id)
       |> Steps.collect_check_ins(inputs.project_id)
       |> Steps.delete_comments()
