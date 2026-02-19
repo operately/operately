@@ -1,27 +1,31 @@
+import * as React from "react";
+
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Projects from "@/models/projects";
+import * as Permissions from "@/models/permissions";
 import { IconPlus, IconX, Link } from "turboui";
-import * as React from "react";
 
 import { useAddProjectContributors } from "@/models/projectContributors";
-import { PERMISSIONS_LIST, PermissionLevels } from "@/features/Permissions";
+import { PERMISSIONS_LIST_ATOMS } from "@/features/Permissions";
 
 import Forms from "@/components/Forms";
+import { FieldObject } from "@/components/Forms";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { createTestId } from "@/utils/testid";
 import { SecondaryButton } from "turboui";
 import { LoaderResult } from "./loader";
 
 import { usePaths } from "@/routes/paths";
-interface ContributorFields {
+
+interface ContributorFields extends FieldObject {
   key: number;
   personId: string;
   responsibility: string;
-  accessLevel: PermissionLevels;
+  accessLevel: Permissions.AccessOptions;
 }
 
-function newContributor() {
+function newContributor(): ContributorFields {
   //
   // used for unique key in React component list
   // index is not unique when removing items and causes rendering issues
@@ -33,7 +37,7 @@ function newContributor() {
     key: key,
     personId: "",
     responsibility: "",
-    accessLevel: PermissionLevels.EDIT_ACCESS,
+    accessLevel: "edit_access",
   };
 }
 
@@ -43,7 +47,7 @@ export function AddContributors() {
   const gotoContribPage = useNavigateTo(paths.projectContributorsPath(project.id!));
   const [add] = useAddProjectContributors();
 
-  const form = Forms.useForm({
+  const form = Forms.useForm<{ contributors: ContributorFields[] }>({
     fields: {
       contributors: [newContributor()],
     },
@@ -122,7 +126,7 @@ function Contributor({ field, search, index, last, addMore }) {
       <Paper.Body>
         <Forms.FieldGroup layout="horizontal">
           <Forms.SelectPerson field={field + ".personId"} label="Contributor" searchFn={search} autoFocus />
-          <Forms.SelectBox field={field + ".accessLevel"} label="Access Level" options={PERMISSIONS_LIST} />
+          <Forms.SelectBox field={field + ".accessLevel"} label="Access Level" options={PERMISSIONS_LIST_ATOMS} />
 
           <Forms.TextInput
             field={field + ".responsibility"}

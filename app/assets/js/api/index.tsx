@@ -1484,8 +1484,8 @@ export interface ProjectContributor {
 
 export interface ProjectContributorInput {
   personId: string;
-  responsibility?: string;
-  accessLevel: number;
+  responsibility: string | null;
+  accessLevel: AccessOptions;
 }
 
 export interface ProjectContributorsAdditionContributor {

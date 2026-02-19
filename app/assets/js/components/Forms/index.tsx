@@ -21,6 +21,7 @@ import { useForm } from "./useForm";
 import { useFieldError, useFieldValue } from "./FormContext";
 
 export type { FormState } from "./useForm";
+export type { FieldObject } from "./useForm/field";
 
 export default {
   useForm,

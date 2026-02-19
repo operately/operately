@@ -77,17 +77,17 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorsTest do
                    %{
                      person_id: OperatelyWeb.Paths.person_id(person1),
                      responsibility: "software development",
-                     access_level: Binding.edit_access()
+                     access_level: "edit_access"
                    },
                    %{
                      person_id: OperatelyWeb.Paths.person_id(person2),
                      responsibility: "software development",
-                     access_level: Binding.edit_access()
+                     access_level: "edit_access"
                    },
                    %{
                      person_id: OperatelyWeb.Paths.person_id(person3),
                      responsibility: "software development",
-                     access_level: Binding.edit_access()
+                     access_level: "edit_access"
                    }
                  ]
                })
@@ -114,7 +114,7 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorsTest do
             %{
               person_id: Paths.person_id(contributor),
               responsibility: "software development",
-              access_level: Binding.edit_access()
+              access_level: "edit_access"
             }
           ]
         })
@@ -150,7 +150,7 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorsTest do
             %{
               person_id: Paths.person_id(contributor),
               responsibility: "software development",
-              access_level: Binding.edit_access()
+              access_level: "edit_access"
             }
           ]
         })
@@ -176,16 +176,16 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorsTest do
                  contributors: [
                    %{
                      person_id: OperatelyWeb.Paths.person_id(person1),
-                     access_level: Binding.edit_access()
+                     access_level: "edit_access"
                    },
                    %{
                      person_id: OperatelyWeb.Paths.person_id(person2),
-                     access_level: Binding.edit_access()
+                     access_level: "edit_access"
                    },
                    %{
                      person_id: OperatelyWeb.Paths.person_id(person3),
                      responsibility: "software development",
-                     access_level: Binding.edit_access()
+                     access_level: "edit_access"
                    }
                  ]
                })
@@ -193,6 +193,101 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorsTest do
       assert_contributor_created(project, person1)
       assert_contributor_created(project, person2)
       assert_contributor_created(project, person3)
+    end
+  end
+
+  describe "permission level validation" do
+    @permission_table [
+      %{caller_access: :edit_access,    new_member_access: :full_access,    expected: 403},
+      %{caller_access: :edit_access,    new_member_access: :edit_access,    expected: 200},
+      %{caller_access: :edit_access,    new_member_access: :comment_access, expected: 200},
+      %{caller_access: :edit_access,    new_member_access: :view_access,    expected: 200},
+
+      %{caller_access: :full_access,    new_member_access: :full_access,    expected: 200},
+      %{caller_access: :full_access,    new_member_access: :edit_access,    expected: 200},
+      %{caller_access: :full_access,    new_member_access: :comment_access, expected: 200},
+      %{caller_access: :full_access,    new_member_access: :view_access,    expected: 200},
+    ]
+
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+      Map.merge(ctx, %{creator: creator})
+    end
+
+    tabletest @permission_table do
+      test "user with #{@test.caller_access} access can add members with #{@test.new_member_access} access, expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        project = create_project(ctx, space, :no_access, :no_access, :no_access)
+
+        contributor = create_contributor(ctx, project, Binding.from_atom(@test.caller_access))
+        account = Repo.preload(contributor, :account).account
+        conn = log_in_account(ctx.conn, account)
+
+        person1 = person_fixture(%{company_id: ctx.company.id})
+        person2 = person_fixture(%{company_id: ctx.company.id})
+
+        assert {code, res} =
+          request(conn, %{
+            project: project,
+            contributors: [
+              %{
+                person_id: Paths.person_id(person1),
+                responsibility: "software development",
+                access_level: Atom.to_string(@test.new_member_access)
+              },
+              %{
+                person_id: Paths.person_id(person2),
+                responsibility: "software development",
+                access_level: Atom.to_string(@test.new_member_access)
+              }
+            ]
+          })
+
+        assert code == @test.expected
+
+        case @test.expected do
+          200 ->
+            assert_contributor_created(project, person1)
+            assert_contributor_created(project, person2)
+          403 ->
+            assert res.message == "You don't have permission to perform this action"
+        end
+      end
+    end
+
+    test "fails if any contributor has higher access than caller", ctx do
+      space = create_space(ctx)
+      project = create_project(ctx, space, :no_access, :no_access, :no_access)
+
+      contributor = create_contributor(ctx, project, Binding.edit_access())
+      account = Repo.preload(contributor, :account).account
+      conn = log_in_account(ctx.conn, account)
+
+      person1 = person_fixture(%{company_id: ctx.company.id})
+      person2 = person_fixture(%{company_id: ctx.company.id})
+
+      assert {403, res} =
+        request(conn, %{
+          project: project,
+          contributors: [
+            %{
+              person_id: Paths.person_id(person1),
+              responsibility: "software development",
+              access_level: "comment_access"
+            },
+            %{
+              person_id: Paths.person_id(person2),
+              responsibility: "software development",
+              access_level: "full_access"
+            }
+          ]
+        })
+
+      assert res.message == "You don't have permission to perform this action"
+
+      refute_contributor_created(project, person1)
+      refute_contributor_created(project, person2)
     end
   end
 
@@ -214,6 +309,13 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorsTest do
     assert contributor
     assert contributor.person_id == person.id
     assert contributor.project_id == project.id
+  end
+
+  defp refute_contributor_created(project, person) do
+    constributors = Operately.Projects.list_project_contributors(project)
+    contributor = Enum.find(constributors, fn c -> c.person_id == person.id end)
+
+    refute contributor
   end
 
   #
@@ -250,5 +352,19 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorsTest do
     end
 
     project
+  end
+
+  defp create_contributor(ctx, project, permissions) do
+    contributor = person_fixture_with_account(%{company_id: ctx.company.id})
+
+    {:ok, _} =
+      Operately.Projects.create_contributor(ctx.creator, %{
+        project_id: project.id,
+        person_id: contributor.id,
+        responsibility: "some responsibility",
+        permissions: permissions
+      })
+
+    contributor
   end
 end
