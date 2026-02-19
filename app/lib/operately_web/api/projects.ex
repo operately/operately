@@ -326,7 +326,7 @@ defmodule OperatelyWeb.Api.Projects do
       conn
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.project_id, [:champion])
-      |> Steps.check_permissions(:can_create_milestone)
+      |> Steps.check_permissions(:can_edit)
       |> Steps.create_milestone(inputs)
       |> Steps.add_milestone_to_ordering_state()
       |> Steps.save_activity(:project_milestone_creation, fn changes ->
@@ -412,7 +412,7 @@ defmodule OperatelyWeb.Api.Projects do
       conn
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.project_id)
-      |> Steps.check_permissions(:can_delete)
+      |> Steps.check_permissions(:has_full_access)
       |> Steps.delete_discussions(inputs.project_id)
       |> Steps.collect_check_ins(inputs.project_id)
       |> Steps.delete_comments()

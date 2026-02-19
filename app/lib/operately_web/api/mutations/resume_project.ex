@@ -18,7 +18,7 @@ defmodule OperatelyWeb.Api.Mutations.ResumeProject do
     |> run(:attrs, fn -> parse_inputs(inputs) end)
     |> run(:me, fn -> find_me(conn) end)
     |> run(:project, fn ctx -> Operately.Projects.Project.get(ctx.me, id: inputs.project_id) end)
-    |> run(:check_permissions, fn ctx -> Operately.Projects.Permissions.check(ctx.project.request_info.access_level, :can_resume) end)
+    |> run(:check_permissions, fn ctx -> Operately.Projects.Permissions.check(ctx.project.request_info.access_level, :can_edit) end)
     |> run(:operation, fn ctx -> Operately.Operations.ProjectResuming.run(ctx.me, ctx.project, ctx.attrs) end)
     |> run(:serialized, fn ctx -> {:ok, %{project: OperatelyWeb.Api.Serializer.serialize(ctx.operation)}} end)
     |> respond()

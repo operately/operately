@@ -18,7 +18,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveKeyResource do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:id, fn -> decode_id(inputs.id) end)
     |> run(:resource, fn ctx -> fetch_key_resource(ctx) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.resource.request_info.access_level, :can_edit_resources) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.resource.request_info.access_level, :can_edit) end)
     |> run(:operation, fn ctx -> ProjectKeyResourceDeleting.run(ctx.me, ctx.resource) end)
     |> run(:serialized, fn ctx -> serialize(ctx.resource) end)
     |> respond()
