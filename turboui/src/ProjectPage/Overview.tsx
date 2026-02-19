@@ -48,7 +48,7 @@ function OverviewSection(props: ProjectPage.State) {
     <div data-test-id="description-section">
       <PageDescription
         {...props}
-        canEdit={props.permissions.canEditDescription}
+        canEdit={props.permissions.canEdit}
         label="Description"
         placeholder="Add a project description..."
         zeroStatePlaceholder="Add a project description..."
@@ -127,7 +127,7 @@ function TimelineSection(props: ProjectPage.State) {
         {validMilestones.length > 0 && (
           <MilestoneList
             milestones={validMilestones}
-            canEdit={props.permissions.canEditMilestone}
+            canEdit={props.permissions.canEdit}
             onMilestoneUpdate={props.onMilestoneUpdate}
             onMilestoneReorder={props.onMilestoneReorder}
           />
@@ -270,7 +270,7 @@ function ResourcesSection(props: ProjectPage.State) {
       onResourceAdd={props.onResourceAdd}
       onResourceEdit={props.onResourceEdit}
       onResourceRemove={props.onResourceRemove}
-      canEdit={props.permissions.canEditResources}
+      canEdit={props.permissions.canEdit}
     />
   );
 }

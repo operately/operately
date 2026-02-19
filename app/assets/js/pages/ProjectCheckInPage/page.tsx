@@ -103,7 +103,7 @@ function SubscriptionsSection() {
     <CurrentSubscriptions
       {...subscriptionsState}
       isCurrentUserSubscribed={isCurrentUserSubscribed}
-      canEditSubscribers={checkIn.project?.permissions?.canEditSubscriptionsList || false}
+      canEditSubscribers={checkIn.project?.permissions?.canEdit || false}
     />
   );
 }

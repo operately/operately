@@ -1197,36 +1197,9 @@ defmodule OperatelyWeb.Api.Types do
 
   object :project_permissions do
     field :can_view, :boolean, null: false
-    field :can_comment_on_milestone, :boolean, null: false
-    field :can_comment_on_check_in, :boolean, null: false
-    field :can_comment_on_retrospective, :boolean, null: false
-    field :can_comment_on_task, :boolean, null: false
-    field :can_create_milestone, :boolean, null: false
-    field :can_create_task, :boolean, null: false
-    field :can_create_discussion, :boolean, null: false
-    field :can_complete_milestone, :boolean, null: false
-    field :can_reopen_milestone, :boolean, null: false
-    field :can_delete_milestone, :boolean, null: false
-    field :can_edit_contributors, :boolean, null: false
-    field :can_edit_milestone, :boolean, null: false
-    field :can_edit_description, :boolean, null: false
-    field :can_edit_timeline, :boolean, null: false
-    field :can_edit_resources, :boolean, null: false
-    field :can_edit_goal, :boolean, null: false
-    field :can_edit_name, :boolean, null: false
-    field :can_edit_space, :boolean, null: false
-    field :can_edit_retrospective, :boolean, null: false
-    field :can_edit_permissions, :boolean, null: false
-    field :can_edit_subscriptions_list, :boolean, null: false
-    field :can_close, :boolean, null: false
-    field :can_pause, :boolean, null: false
-    field :can_resume, :boolean, null: false
-    field :can_check_in, :boolean, null: false
-    field :can_edit_task, :boolean, null: false
-    field :can_edit_statuses, :boolean, null: false
-    field :can_acknowledge_check_in, :boolean, null: false
     field :can_comment, :boolean, null: false
-    field :can_delete, :boolean, null: false
+    field :can_edit, :boolean, null: false
+    field :has_full_access, :boolean, null: false
   end
 
   object :space_permissions do

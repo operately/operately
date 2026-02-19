@@ -209,7 +209,7 @@ function Page() {
     childrenCount,
 
     permissions: task.permissions,
-    canEdit: Boolean(task.permissions.canEditTask),
+    canEdit: Boolean(task.permissions.canEdit),
     canComment: Boolean(task.permissions.canComment),
 
     assigneePersonSearch,

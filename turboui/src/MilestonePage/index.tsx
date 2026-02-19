@@ -214,7 +214,7 @@ export function MilestonePage(props: MilestonePage.Props) {
       <MainContainer>
         <Header
           title={title}
-          canEdit={permissions.canEditMilestone}
+          canEdit={permissions.canEdit}
           status={status}
           onMilestoneTitleChange={onMilestoneTitleChange}
         />
@@ -226,7 +226,7 @@ export function MilestonePage(props: MilestonePage.Props) {
           <div className="sm:col-span-8 sm:px-4 space-y-4">
             <PageDescription
               {...state}
-              canEdit={permissions.canEditMilestone}
+              canEdit={permissions.canEdit}
               label="Notes"
               placeholder="Describe the milestone..."
               zeroStatePlaceholder="Add details about this milestone..."

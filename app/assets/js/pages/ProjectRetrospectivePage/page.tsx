@@ -57,7 +57,7 @@ function Options() {
 
   return (
     <PageOptions.Root testId="project-options-button">
-      {retrospective.permissions?.canEditRetrospective && (
+      {retrospective.permissions?.canEdit && (
         <PageOptions.Link
           icon={IconEdit}
           title="Edit retrospective"
@@ -170,7 +170,7 @@ function Subscriptions() {
       <CurrentSubscriptions
         {...subscriptionsState}
         isCurrentUserSubscribed={isCurrentUserSubscribed}
-        canEditSubscribers={retrospective.permissions?.canEditRetrospective || false}
+        canEditSubscribers={retrospective.permissions?.canEdit || false}
       />
     </>
   );

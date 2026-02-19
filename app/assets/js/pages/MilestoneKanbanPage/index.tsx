@@ -143,7 +143,7 @@ function Page() {
     currentUser,
     tasks,
     commentEntityType: "project_task",
-    canEdit: milestone.permissions.canEditTask,
+    canEdit: milestone.permissions.canEdit,
     canComment: milestone.permissions.canComment,
     onTaskNameChange: updateTaskName,
     onTaskAssigneeChange: updateTaskAssignee,
@@ -179,7 +179,7 @@ function Page() {
     onTaskDescriptionChange: slideInModel.onTaskDescriptionChange,
     richTextHandlers: richEditorHandlers,
 
-    canManageStatuses: milestone.permissions.canEditStatuses,
+    canManageStatuses: milestone.permissions.canEdit,
     canCreateTask: milestone.permissions.canCreateTask,
     onStatusesChange: handleStatusesChange,
     onTaskKanbanChange: handleTaskKanbanChange,
