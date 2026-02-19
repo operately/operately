@@ -164,6 +164,46 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorTest do
     end
   end
 
+  describe "permission level validation" do
+    @permission_table [
+      %{caller_access: :edit_access,    new_member_access: :full_access,    expected: 403},
+      %{caller_access: :edit_access,    new_member_access: :edit_access,    expected: 200},
+      %{caller_access: :edit_access,    new_member_access: :comment_access, expected: 200},
+      %{caller_access: :edit_access,    new_member_access: :view_access,    expected: 200},
+
+      %{caller_access: :full_access,    new_member_access: :full_access,    expected: 200},
+      %{caller_access: :full_access,    new_member_access: :edit_access,    expected: 200},
+      %{caller_access: :full_access,    new_member_access: :comment_access, expected: 200},
+      %{caller_access: :full_access,    new_member_access: :view_access,    expected: 200},
+    ]
+
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+      Map.merge(ctx, %{creator: creator})
+    end
+
+    tabletest @permission_table do
+      test "user with #{@test.caller_access} access can add member with #{@test.new_member_access} access, expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        project = create_project(ctx, space, :no_access, :no_access, :no_access)
+        new_contributor = person_fixture(%{company_id: ctx.company.id})
+
+        contributor = create_contributor(ctx, project, Binding.from_atom(@test.caller_access))
+        account = Repo.preload(contributor, :account).account
+        conn = log_in_account(ctx.conn, account)
+
+        assert {code, res} = request(conn, %{project: project, contributor: new_contributor, permissions: Atom.to_string(@test.new_member_access)})
+        assert code == @test.expected
+
+        case @test.expected do
+          200 -> assert_contributor_created(res, new_contributor)
+          403 -> assert res.message == "You don't have permission to perform this action"
+        end
+      end
+    end
+  end
+
   describe "add_project_contributor functionality" do
     setup ctx do
       ctx = register_and_log_in_account(ctx)
@@ -230,12 +270,22 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorTest do
   # Steps
   #
 
+  defp request(conn, %{project: project, contributor: contributor, permissions: permissions}) do
+    mutation(conn, :add_project_contributor, %{
+      project_id: Paths.project_id(project),
+      person_id: Paths.person_id(contributor),
+      responsibility: "some role",
+      permissions: permissions,
+      role: "contributor"
+    })
+  end
+
   defp request(conn, %{project: project, contributor: contributor}) do
     mutation(conn, :add_project_contributor, %{
       project_id: Paths.project_id(project),
       person_id: Paths.person_id(contributor),
       responsibility: "some role",
-      permissions: Binding.view_access(),
+      permissions: "view_access",
       role: "contributor"
     })
   end

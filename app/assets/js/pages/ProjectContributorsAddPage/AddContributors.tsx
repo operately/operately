@@ -4,7 +4,7 @@ import * as Projects from "@/models/projects";
 import { IconPlus, IconX, Link } from "turboui";
 import * as React from "react";
 
-import { useAddProjectContributors } from "@/api";
+import { useAddProjectContributors } from "@/models/projectContributors";
 import { PERMISSIONS_LIST, PermissionLevels } from "@/features/Permissions";
 
 import Forms from "@/components/Forms";

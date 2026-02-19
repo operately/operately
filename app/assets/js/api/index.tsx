@@ -3078,9 +3078,9 @@ export interface AddKeyResourceResult {
 export interface AddProjectContributorInput {
   projectId: Id;
   personId: Id;
-  responsibility?: string | null;
-  permissions?: number | null;
-  role?: string | null;
+  responsibility: string;
+  permissions: AccessOptions;
+  role: string | null;
 }
 
 export interface AddProjectContributorResult {
