@@ -52,9 +52,9 @@ defmodule OperatelyWeb.Api.Mutations.PostMilestoneComment do
 
   defp check_permissions(milestone, action) do
     case action do
-      "none" -> Permissions.check(milestone.requester_access_level, :can_comment_on_milestone)
-      "reopen" -> Permissions.check(milestone.requester_access_level, :can_reopen_milestone)
-      "complete" -> Permissions.check(milestone.requester_access_level, :can_complete_milestone)
+      "none" -> Permissions.check(milestone.requester_access_level, :can_comment)
+      "reopen" -> Permissions.check(milestone.requester_access_level, :can_edit)
+      "complete" -> Permissions.check(milestone.requester_access_level, :can_edit)
     end
   end
 end

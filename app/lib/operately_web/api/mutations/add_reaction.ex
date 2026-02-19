@@ -66,8 +66,8 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
 
   defp check_permissions(parent, type, parent_type, me) do
     case type do
-      :project_check_in -> Projects.Permissions.check(parent.requester_access_level, :can_comment_on_check_in)
-      :project_retrospective -> Projects.Permissions.check(parent.request_info.access_level, :can_comment_on_retrospective)
+      :project_check_in -> Projects.Permissions.check(parent.requester_access_level, :can_comment)
+      :project_retrospective -> Projects.Permissions.check(parent.request_info.access_level, :can_comment)
       :comment_thread -> Activities.Permissions.check(parent.request_info.access_level, :can_comment_on_thread)
       :goal_update -> Goals.Update.Permissions.check(parent.request_info.access_level, parent, parent.request_info.requester.id, :can_comment)
       :message -> Groups.Permissions.check(parent.request_info.access_level, :can_comment)
@@ -80,13 +80,13 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
 
   defp check_comment_permissions(parent, type, me) do
     case type do
-      :project_check_in -> Projects.Permissions.check(parent.requester_access_level, :can_comment_on_check_in)
-      :project_retrospective -> Projects.Permissions.check(parent.requester_access_level, :can_comment_on_retrospective)
+      :project_check_in -> Projects.Permissions.check(parent.requester_access_level, :can_comment)
+      :project_retrospective -> Projects.Permissions.check(parent.requester_access_level, :can_comment)
       :comment_thread -> Activities.Permissions.check(parent.requester_access_level, :can_comment_on_thread)
       :goal_update -> Goals.Update.Permissions.check(parent.requester_access_level, parent.entity_id, me.id, :can_comment)
       :message -> Groups.Permissions.check(parent.requester_access_level, :can_comment)
-      :milestone -> Projects.Permissions.check(parent.requester_access_level, :can_comment_on_milestone)
-      :project_task -> Projects.Permissions.check(parent.requester_access_level, :can_comment_on_task)
+      :milestone -> Projects.Permissions.check(parent.requester_access_level, :can_comment)
+      :project_task -> Projects.Permissions.check(parent.requester_access_level, :can_comment)
       :space_task -> Groups.Permissions.check(parent.requester_access_level, :can_comment)
       :resource_hub_document -> ResourceHubs.Permissions.check(parent.requester_access_level, :can_comment_on_document)
       :resource_hub_file -> ResourceHubs.Permissions.check(parent.requester_access_level, :can_comment_on_file)

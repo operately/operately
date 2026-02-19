@@ -197,7 +197,7 @@ function Subscriptions() {
       <CurrentSubscriptions
         {...subscriptionsState}
         isCurrentUserSubscribed={isCurrentUserSubscribed}
-        canEditSubscribers={discussion.projectPermissions?.canEditSubscriptionsList || false}
+        canEditSubscribers={discussion.projectPermissions?.canEdit || false}
       />
     </div>
   );

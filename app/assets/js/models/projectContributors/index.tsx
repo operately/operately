@@ -1,6 +1,7 @@
 import { ProjectContributor, useUpdateProjectContributor, getProjectContributor } from "@/api";
 
 export type { ProjectContributor };
+export { useAddProjectContributor, useAddProjectContributors } from "@/api";
 export { useUpdateProjectContributor as useUpdateContributor, getProjectContributor as getContributor };
 
 export function splitByRole(contributors: ProjectContributor[]) {
