@@ -92,7 +92,7 @@ function CheckInsSection(props: ProjectPage.State) {
 }
 
 function ParentGoal(props: ProjectPage.State) {
-  if (!props.parentGoal && !props.permissions.canEditGoal) {
+  if (!props.parentGoal && !props.permissions.canEdit) {
     return null;
   }
 
@@ -103,7 +103,7 @@ function ParentGoal(props: ProjectPage.State) {
         goal={props.parentGoal}
         setGoal={props.setParentGoal}
         searchGoals={props.parentGoalSearch}
-        readonly={!props.permissions.canEditGoal}
+        readonly={!props.permissions.canEdit}
         emptyStateMessage="Set parent goal"
         emptyStateReadOnlyMessage="No parent goal"
       />
@@ -118,7 +118,7 @@ function ProjectDates(props: ProjectPage.State) {
         <DateField
           date={props.startedAt || null}
           onDateSelect={props.setStartedAt || (() => {})}
-          readonly={!props.permissions.canEditTimeline}
+          readonly={!props.permissions.canEdit}
           placeholder="Set start date"
           showOverdueWarning={false}
           useStartOfPeriod={true}
@@ -129,7 +129,7 @@ function ProjectDates(props: ProjectPage.State) {
         <DateField
           date={props.dueAt || null}
           onDateSelect={props.setDueAt || (() => {})}
-          readonly={!props.permissions.canEditTimeline}
+          readonly={!props.permissions.canEdit}
           placeholder="Set due date"
           testId="project-due-date"
           showOverdueWarning={props.state === "active"}
@@ -141,7 +141,7 @@ function ProjectDates(props: ProjectPage.State) {
 }
 
 function Champion(props: ProjectPage.State) {
-  const readonly = !props.permissions.canEditContributors || !("setChampion" in props) || !("championSearch" in props);
+  const readonly = !props.permissions.hasFullAccess || !("setChampion" in props) || !("championSearch" in props);
   return (
     <SidebarSection
       title={
@@ -186,7 +186,7 @@ function Champion(props: ProjectPage.State) {
 }
 
 function Reviewer(props: ProjectPage.State) {
-  const readonly = !props.permissions.canEditContributors || !("setReviewer" in props) || !("reviewerSearch" in props);
+  const readonly = !props.permissions.hasFullAccess || !("setReviewer" in props) || !("reviewerSearch" in props);
   return (
     <SidebarSection
       title={
@@ -242,7 +242,7 @@ function Contributors(props: ProjectPage.State) {
         ) : (
           <div className="text-sm text-content-dimmed">No contributors</div>
         )}
-        {props.permissions.canEditContributors && (
+        {props.permissions.canEdit && (
           <div className="mt-3">
             <SecondaryButton linkTo={props.manageTeamLink} size="xs" testId="manage-team-button">
               Manage team & access

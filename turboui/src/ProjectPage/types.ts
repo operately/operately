@@ -10,24 +10,15 @@ export interface ProjectPermissions {
   canCompleteMilestone: boolean;
   canReopenMilestone: boolean;
   canDeleteMilestone: boolean;
-  canEditContributors: boolean;
-  canEditMilestone: boolean;
-  canEditDescription: boolean;
-  canEditTimeline: boolean;
-  canEditResources: boolean;
-  canEditGoal: boolean;
-  canEditName: boolean;
+  canEdit: boolean;
   canEditSpace: boolean;
-  canEditRetrospective: boolean;
   canEditPermissions: boolean;
-  canEditSubscriptionsList: boolean;
   canClose: boolean;
   canPause: boolean;
   canResume: boolean;
   canCheckIn: boolean;
-  canEditTask: boolean;
-  canEditStatuses: boolean;
   canAcknowledgeCheckIn: boolean;
   canComment: boolean;
   canDelete: boolean;
+  hasFullAccess: boolean;
 }
