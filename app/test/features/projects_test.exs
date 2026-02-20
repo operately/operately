@@ -323,20 +323,12 @@ defmodule Operately.Features.ProjectsTest do
   describe "project page permissions" do
     setup ctx, do: Steps.setup(ctx)
 
-    feature "Person with full access can see all actions", ctx do
-      ctx
-      |> Steps.given_project_with_full_access_member_logged_in()
-      |> Steps.assert_member_has_full_access()
-      |> Steps.visit_project_page()
-      |> Steps.assert_manage_access_visible()
-    end
-
     feature "Person with edit access can see correct actions", ctx do
       ctx
       |> Steps.given_project_with_edit_access_member_logged_in()
       |> Steps.assert_member_has_edit_access()
       |> Steps.visit_project_page()
-      |> Steps.refute_manage_access_visible()
+      |> Steps.assert_manage_access_visible()
       |> Steps.assert_start_date_editable()
       |> Steps.assert_description_editable()
       |> Steps.assert_pause_and_close_actions_visible()
@@ -355,6 +347,7 @@ defmodule Operately.Features.ProjectsTest do
       |> Steps.visit_project_page()
       |> Steps.refute_description_editable()
       |> Steps.refute_pause_and_close_actions_visible()
+      |> Steps.refute_manage_access_visible()
       |> Steps.refute_add_milestone_visible()
       |> Steps.refute_add_resource_visible()
       |> Steps.refute_add_task_and_milestone_visible_in_tasks_tab()
