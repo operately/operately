@@ -38,7 +38,7 @@ function ProjectPausedBanner({ project }: { project: Projects.Project }) {
     <Paper.Banner testId="project-paused-banner">
       <div className="flex items-center gap-2">
         <div>This project is paused</div>
-        {project.permissions?.canPause && (
+        {project.permissions?.canEdit && (
           <PrimaryButton linkTo={resumePath} testId="resume-project-button" size="xs">
             Resume
           </PrimaryButton>

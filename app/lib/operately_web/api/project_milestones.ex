@@ -45,7 +45,7 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
       |> Steps.start_transaction()
       |> Steps.find_milestone(inputs.milestone_id)
       |> Steps.find_task(inputs.task_id)
-      |> Steps.check_task_permissions(:can_edit_task)
+      |> Steps.check_task_permissions(:can_edit)
       |> Steps.update_milestone_kanban_state(inputs.status, inputs.kanban_state)
       |> Steps.commit()
       |> Steps.broadcast_review_count_update()
@@ -71,7 +71,7 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
       conn
       |> Steps.start_transaction()
       |> Steps.find_milestone(inputs.milestone_id)
-      |> Steps.check_permissions(:can_edit_milestone)
+      |> Steps.check_permissions(:can_edit)
       |> Steps.update_milestone_title(inputs.title)
       |> Steps.save_activity(:milestone_title_updating, fn changes ->
         %{
@@ -106,7 +106,7 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
       conn
       |> Steps.start_transaction()
       |> Steps.find_milestone(inputs.milestone_id)
-      |> Steps.check_permissions(:can_edit_milestone)
+      |> Steps.check_permissions(:can_edit)
       |> Steps.update_milestone_description(inputs.description)
       |> Steps.save_activity(:milestone_description_updating, fn changes ->
         %{
@@ -142,7 +142,7 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
       conn
       |> Steps.start_transaction()
       |> Steps.find_milestone(inputs.milestone_id)
-      |> Steps.check_permissions(:can_edit_milestone)
+      |> Steps.check_permissions(:can_edit)
       |> Steps.update_milestone_due_date(inputs.due_date)
       |> Steps.save_activity(:milestone_due_date_updating, fn changes ->
         %{
@@ -178,7 +178,7 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
       conn
       |> Steps.start_transaction()
       |> Steps.find_milestone(inputs.milestone_id)
-      |> Steps.check_permissions(:can_edit_milestone)
+      |> Steps.check_permissions(:can_edit)
       |> Steps.save_activity(:milestone_deleting, fn changes ->
         %{
           company_id: changes.project.company_id,
@@ -212,7 +212,7 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
       conn
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.project_id)
-      |> Steps.check_project_permissions(:can_edit_milestone)
+      |> Steps.check_project_permissions(:can_edit)
       |> Steps.validate_ordering_state(inputs.ordering_state)
       |> Steps.update_project_ordering_state()
       |> Steps.commit()

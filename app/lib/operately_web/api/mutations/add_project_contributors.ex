@@ -4,6 +4,7 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributors do
 
   alias Operately.Projects.Project
   alias Operately.Projects.Permissions
+  alias Operately.Access.Binding
   alias Operately.Operations.ProjectContributorsAddition, as: Operation
 
   inputs do
@@ -21,7 +22,8 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributors do
     |> run(:project_id, fn -> decode_id(inputs.project_id) end)
     |> run(:contribs, fn -> decode_contributors(inputs.contributors) end)
     |> run(:project, fn ctx -> Project.get(ctx.me, id: ctx.project_id) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.project.request_info.access_level, :can_edit_contributors) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.project.request_info.access_level, :can_edit) end)
+    |> run(:validate_permission_levels, fn ctx -> validate_permission_levels(ctx.project.request_info.access_level, ctx.contribs) end)
     |> run(:operation, fn ctx -> Operation.run(ctx.me, ctx.project, ctx.contribs) end)
     |> run(:serialized, fn -> {:ok, %{success: true}} end)
     |> respond()
@@ -35,6 +37,7 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributors do
       {:error, :contribs, _} -> {:error, :bad_request}
       {:error, :project, _} -> {:error, :not_found}
       {:error, :check_permissions, _} -> {:error, :forbidden}
+      {:error, :validate_permission_levels, _} -> {:error, :forbidden}
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
     end
@@ -45,16 +48,19 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributors do
   defp decode_contributors([], acc), do: {:ok, acc}
 
   defp decode_contributors([contrib| rest], acc) do
-    case decode_contributor(contrib) do
-      {:ok, contrib} -> decode_contributors(rest, [contrib | acc])
-      _ -> {:error, :bad_request}
-    end
+    {:ok, contrib} = decode_contributor(contrib)
+    decode_contributors(rest, [contrib | acc])
   end
 
   defp decode_contributor(contributor) do
-    case decode_id(contributor.person_id) do
-      {:ok, person_id} -> {:ok, Map.merge(contributor, %{person_id: person_id, role: :contributor})}
-      _ -> {:error, :bad_request}
+    {:ok, Map.merge(contributor, %{access_level: Binding.from_atom(contributor.access_level), role: :contributor})}
+  end
+
+  defp validate_permission_levels(caller_access_level, contributors) do
+    if Enum.all?(contributors, fn contrib -> contrib.access_level <= caller_access_level end) do
+      {:ok, :allowed}
+    else
+      {:error, :forbidden}
     end
   end
 end

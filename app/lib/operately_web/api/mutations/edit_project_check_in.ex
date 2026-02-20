@@ -22,7 +22,7 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectCheckIn do
     |> run(:id, fn -> decode_id(inputs.check_in_id) end)
     |> run(:description, fn -> {:ok, Jason.decode!(inputs.description)} end)
     |> run(:check_in, fn ctx -> Projects.get_check_in_with_access_level(ctx.id, ctx.me.id) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.check_in.requester_access_level, :can_edit_check_in) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.check_in.requester_access_level, :can_edit) end)
     |> run(:operation, fn ctx -> ProjectCheckInEdit.run(ctx.me, ctx.check_in, inputs.status, ctx.description) end)
     |> run(:serialized, fn ctx -> {:ok, %{check_in: Serializer.serialize(ctx.operation, level: :essential)}} end)
     |> respond()
