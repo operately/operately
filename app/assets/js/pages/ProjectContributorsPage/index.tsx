@@ -338,6 +338,7 @@ function EditMenuItem({ contributor }: { contributor: ProjectContributor }) {
 }
 
 function RemoveContributorMenuItem({ contributor }: { contributor: ProjectContributor }) {
+  const { project } = useLoadedData();
   const refresh = Pages.useRefresh();
   const [remove] = Projects.useRemoveProjectContributor();
 
@@ -345,6 +346,10 @@ function RemoveContributorMenuItem({ contributor }: { contributor: ProjectContri
     await remove({ contribId: contributor.id });
     refresh();
   };
+
+  if (!project.permissions?.hasFullAccess) {
+    return null;
+  }
 
   return (
     <MenuActionItem danger={true} onClick={handleClick} testId="remove-contributor">

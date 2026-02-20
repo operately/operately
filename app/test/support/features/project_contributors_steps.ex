@@ -264,9 +264,15 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     |> UI.refute_has(testid: "edit-contributor")
   end
 
+  step :assert_cannot_remove_user, ctx, name: name do
+    ctx
+    |> UI.click(testid: UI.testid(["contributor-menu", name]))
+    |> UI.assert_has(testid: "promote-to-champion")
+    |> UI.refute_has(testid: "remove-contributor")
+  end
+
   step :remove_contributor, ctx, name: name do
     ctx
-    |> UI.click(testid: "manage-team-button")
     |> UI.click(testid: UI.testid(["contributor-menu", name]))
     |> UI.click(testid: "remove-contributor")
     |> UI.sleep(200)
