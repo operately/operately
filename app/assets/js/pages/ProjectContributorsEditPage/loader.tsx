@@ -16,15 +16,25 @@ export async function loader({ params, request }): Promise<LoaderResult> {
   const contributor = await ProjectContributors.getContributor({
     id: params.id,
     includeProject: true,
-  }).then((data) => data.contributor!);
+    includePermissions: true,
+    includeAccessLevel: true,
+  }).then((data) => data.contributor);
 
   const action = Pages.getSearchParam(request, "action") as UrlParams["action"];
 
-  return { contributor: contributor, action: action };
+  if (contributor.permissions?.canEdit || contributor.permissions?.hasFullAccess) {
+    return { contributor, action };
+  }
+
+  throw new Response("Not Found", { status: 404 });
 }
 
 export function useGotoProjectContributors() {
   const paths = usePaths();
   const { contributor } = Pages.useLoadedData() as LoaderResult;
   return useNavigateTo(paths.projectContributorsPath(contributor.project!.id!));
+}
+
+export function useLoadedData(): LoaderResult {
+  return Pages.useLoadedData() as LoaderResult;
 }

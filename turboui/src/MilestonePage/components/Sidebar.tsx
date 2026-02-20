@@ -23,14 +23,14 @@ export function MilestoneSidebar({
   return (
     <div className="sm:col-span-4 hidden sm:block sm:pl-8">
       <div className="space-y-6 mt-4" data-test-id="sidebar">
-        <SidebarDueDate milestone={milestone} onDueDateChange={onDueDateChange} canEdit={permissions.canEditMilestone} />
-        <SidebarStatus status={status} onStatusChange={onStatusChange} canEdit={permissions.canEditMilestone} />
+        <SidebarDueDate milestone={milestone} onDueDateChange={onDueDateChange} canEdit={permissions.canEdit} />
+        <SidebarStatus status={status} onStatusChange={onStatusChange} canEdit={permissions.canEdit} />
         {milestone.completedAt && milestone.status === "done" && (
           <SidebarCompletedOn completedAt={milestone.completedAt} />
         )}
         {createdBy && <SidebarCreatedBy createdBy={createdBy} createdAt={createdAt} />}
         <SidebarNotificationSection {...subscriptions} />
-        <SidebarActions onDelete={openDeleteModal} canEdit={permissions.canEditMilestone} />
+        <SidebarActions onDelete={openDeleteModal} canEdit={permissions.canEdit} />
       </div>
     </div>
   );

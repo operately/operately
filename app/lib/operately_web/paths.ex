@@ -273,6 +273,10 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "project-activities", activity_with_comment])
   end
 
+  def project_add_contributor_path(company = %Company{}, project = %Project{}) do
+    create_path([company_id(company), "projects", project_id(project), "add"]) <> "?tab=contributors"
+  end
+
   def company_admin_path(company = %Company{}) do
     create_path([company_id(company), "admin"])
   end
@@ -434,6 +438,10 @@ defmodule OperatelyWeb.Paths do
     id = Operately.ShortUuid.encode!(retrospective.id)
     date = retrospective.inserted_at |> NaiveDateTime.to_date() |> Date.to_string()
     OperatelyWeb.Api.Helpers.id_with_comments(date, id)
+  end
+
+  def project_contributor_id(contributor) do
+    Operately.ShortUuid.encode!(contributor.id)
   end
 
   def goal_update_id(update_id) when is_binary(update_id) do

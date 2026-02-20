@@ -22,6 +22,7 @@ import { OtherPeople } from "./OtherPeople";
 import { loader, useLoadedData } from "./loader";
 
 import { usePaths } from "@/routes/paths";
+import { PermissionLevels } from "@/features/Permissions";
 export default { name: "ProjectContributorsPage", loader, Page } as PageModule;
 
 function Page() {
@@ -64,7 +65,7 @@ function AddContribsButton() {
   const paths = usePaths();
   const { project } = useLoadedData();
 
-  if (!project.permissions?.canEditContributors) return null;
+  if (!project.permissions?.canEdit) return null;
   const path = paths.projectContributorsAddPath(project.id!, { type: "contributor" });
 
   return (
@@ -230,7 +231,7 @@ function Contributors() {
 
 function Contributor({ contributor }: { contributor: ProjectContributor }) {
   return (
-    <BorderedRow>
+    <BorderedRow testId={createTestId("contributor-row", contributor.person?.fullName!)}>
       <div className="flex items-center gap-2">
         <ContributorAvatar contributor={contributor} />
         <ContributotNameAndResponsibility contributor={contributor} />
@@ -316,8 +317,18 @@ function ChangeProjectReviewerMenuItem({ contributor }: { contributor: ProjectCo
 }
 
 function EditMenuItem({ contributor }: { contributor: ProjectContributor }) {
+  const { project } = useLoadedData();
   const paths = usePaths();
   const path = paths.projectContributorsEditPath(contributor.id!, { action: "edit-contributor" });
+
+  // User without full-access cannot edit contributors with full-access
+  const allowEdit =
+    (contributor.accessLevel && contributor.accessLevel < PermissionLevels.FULL_ACCESS) ||
+    project.permissions?.hasFullAccess;
+
+  if (!allowEdit) {
+    return null;
+  }
 
   return (
     <MenuLinkItem to={path} testId="edit-contributor">

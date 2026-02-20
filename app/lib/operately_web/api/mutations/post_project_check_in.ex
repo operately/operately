@@ -23,7 +23,7 @@ defmodule OperatelyWeb.Api.Mutations.PostProjectCheckIn do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:attrs, fn -> parse_inputs(inputs) end)
     |> run(:project, fn ctx -> Projects.get_project_with_access_level(ctx.attrs.project_id, ctx.me.id) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.project.requester_access_level, :can_check_in) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.project.requester_access_level, :can_edit) end)
     |> run(:operation, fn ctx -> ProjectCheckIn.run(ctx.me, ctx.project, ctx.attrs) end)
     |> run(:serialized, fn ctx -> {:ok, %{check_in: Serializer.serialize(ctx.operation, level: :essential)}} end)
     |> respond()

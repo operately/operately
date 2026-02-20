@@ -25,7 +25,7 @@ export function PageHeader(props: ProjectPageLayout.Props) {
             className="font-semibold text-lg"
             text={props.projectName}
             onChange={props.updateProjectName}
-            readonly={!props.permissions.canEditName}
+            readonly={!props.permissions.canEdit}
             trimBeforeSave
             testId="project-name-field"
           />
