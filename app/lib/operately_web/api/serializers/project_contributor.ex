@@ -1,7 +1,7 @@
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Contributor do
   def serialize(contributor, level: :essential) do
     %{
-      id: contributor.id,
+      id: OperatelyWeb.Paths.project_contributor_id(contributor),
       role: Atom.to_string(contributor.role),
       responsibility: contributor.responsibility,
       access_level: contributor.access_level,

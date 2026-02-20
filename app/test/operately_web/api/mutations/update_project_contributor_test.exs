@@ -45,7 +45,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributorTest do
 
         assert {code, res} =
                  mutation(ctx.conn, :update_project_contributor, %{
-                   contrib_id: contributor.id,
+                   contrib_id: Paths.project_contributor_id(contributor),
                    responsibility: "New responsibility",
                    permissions: "edit_access"
                  })
@@ -75,7 +75,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributorTest do
 
       assert {200, res} =
                mutation(ctx.conn, :update_project_contributor, %{
-                 contrib_id: contributor.id,
+                 contrib_id: Paths.project_contributor_id(contributor),
                  responsibility: "New responsibility",
                  permissions: "edit_access"
                })
@@ -116,7 +116,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributorTest do
 
         assert {code, res} =
           mutation(conn, :update_project_contributor, %{
-            contrib_id: target.id,
+            contrib_id: Paths.project_contributor_id(target),
             responsibility: "Updated responsibility",
             permissions: Atom.to_string(@test.new_member_access)
           })
@@ -142,7 +142,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributorTest do
 
       assert {403, res} =
         mutation(conn, :update_project_contributor, %{
-          contrib_id: target.id,
+          contrib_id: Paths.project_contributor_id(target),
           responsibility: "Updated responsibility",
           permissions: "full_access"
         })
@@ -183,7 +183,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributorTest do
 
         assert {code, res} =
           mutation(conn, :update_project_contributor, %{
-            contrib_id: target.id,
+            contrib_id: Paths.project_contributor_id(target),
             responsibility: "Updated responsibility",
             permissions: "view_access"
           })
@@ -208,7 +208,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributorTest do
       conn = log_in_account(ctx.conn, account)
 
       assert {200, res} = mutation(conn, :update_project_contributor, %{
-        contrib_id: target.id,
+        contrib_id: Paths.project_contributor_id(target),
         responsibility: "New responsibility"
       })
 

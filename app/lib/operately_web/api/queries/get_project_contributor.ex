@@ -6,7 +6,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectContributor do
   alias OperatelyWeb.Api.Serializer
 
   inputs do
-    field :id, :string, null: false
+    field :id, :id, null: false
     field? :include_project, :boolean, null: false
     field? :include_permissions, :boolean, null: false
   end
@@ -18,14 +18,13 @@ defmodule OperatelyWeb.Api.Queries.GetProjectContributor do
   def call(conn, inputs) do
     Action.new()
     |> Action.run(:me, fn -> find_me(conn) end)
-    |> Action.run(:id, fn -> decode_id(inputs[:id]) end)
     |> Action.run(:contrib, fn ctx -> load(ctx, inputs) end)
     |> Action.run(:serialized, fn ctx -> {:ok, %{contributor: Serializer.serialize(ctx.contrib, level: :full)}} end)
     |> respond()
   end
 
   defp load(ctx, inputs) do
-    Contributor.get(ctx.me, id: ctx.id, opts: [preload: preload(inputs), after_load: after_load(inputs)])
+    Contributor.get(ctx.me, id: inputs.id, opts: [preload: preload(inputs), after_load: after_load(inputs)])
   end
 
   defp preload(inputs) do

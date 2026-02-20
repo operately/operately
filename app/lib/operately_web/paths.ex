@@ -440,6 +440,10 @@ defmodule OperatelyWeb.Paths do
     OperatelyWeb.Api.Helpers.id_with_comments(date, id)
   end
 
+  def project_contributor_id(contributor) do
+    Operately.ShortUuid.encode!(contributor.id)
+  end
+
   def goal_update_id(update_id) when is_binary(update_id) do
     Operately.ShortUuid.encode!(update_id)
   end

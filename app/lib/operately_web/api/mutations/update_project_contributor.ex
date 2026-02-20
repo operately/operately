@@ -7,7 +7,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributor do
   alias Operately.Access.Binding
 
   inputs do
-    field :contrib_id, :string, null: false
+    field :contrib_id, :id, null: false
     field? :person_id, :id, null: true
 
     field? :responsibility, :string, null: true
@@ -25,8 +25,8 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributor do
     |> run(:attrs, fn -> parse_inputs(inputs) end)
     |> run(:contrib, fn ctx -> Contributor.get(ctx.me, id: ctx.attrs[:contrib_id], opts: [preload: :person]) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.contrib.request_info.access_level, :can_edit) end)
-    |> run(:contrib_project, fn ctx -> Project.get(ctx.contrib.person, id: ctx.contrib.project_id) end)
-    |> run(:validate_can_edit_permissions, fn ctx -> validate_can_edit_permissions(ctx.contrib.request_info.access_level, ctx.contrib_project.request_info.access_level, ctx.attrs[:permissions]) end)
+    |> run(:contrib_access_level, fn ctx -> get_contributor_current_access_level(ctx.contrib) end)
+    |> run(:validate_can_edit_permissions, fn ctx -> validate_can_edit_permissions(ctx.contrib.request_info.access_level, ctx.contrib_access_level, ctx.attrs[:permissions]) end)
     |> run(:validate_permission_level, fn ctx -> validate_permission_level(ctx.contrib.request_info.access_level, ctx.attrs[:permissions]) end)
     |> run(:operation, fn ctx -> ProjectContributorEdited.run(ctx.me, ctx.contrib, ctx.attrs) end)
     |> run(:serialized, fn ctx -> {:ok, %{contributor: Serializer.serialize(ctx.operation)}} end)
@@ -53,6 +53,15 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributor do
     else
       {:ok, inputs}
     end
+  end
+
+  defp get_contributor_current_access_level(contributor) do
+    access_level = case Project.get(contributor.person, id: contributor.project_id) do
+      {:ok, project} -> project.request_info.access_level
+      {:error, _} -> Binding.no_access()
+    end
+
+    {:ok, access_level}
   end
 
   # Validates that the caller can edit the contributor's permissions
