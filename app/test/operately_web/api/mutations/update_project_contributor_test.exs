@@ -54,8 +54,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributorTest do
 
         case @test.expected do
           200 ->
-            contributor = Repo.reload(contributor)
-            assert res.contributor == Serializer.serialize(contributor)
+            assert_result(res, contributor)
 
           403 ->
             assert res.message == "You don't have permission to perform this action"
@@ -81,8 +80,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributorTest do
                  permissions: "edit_access"
                })
 
-      contributor = Repo.reload(contributor)
-      assert res.contributor == Serializer.serialize(contributor)
+      assert_result(res, contributor)
     end
   end
 
@@ -126,11 +124,8 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributorTest do
         assert code == @test.expected
 
         case @test.expected do
-          200 ->
-            target = Repo.reload(target)
-            assert res.contributor == Serializer.serialize(target)
-          403 ->
-            assert res.message == "You don't have permission to perform this action"
+          200 -> assert_result(res, target)
+          403 -> assert res.message == "You don't have permission to perform this action"
         end
       end
     end
@@ -156,9 +151,82 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributorTest do
     end
   end
 
+  describe "can edit permissions validation" do
+    @can_edit_table [
+      %{caller_access: :edit_access,    contributor_access: :edit_access,    expected: 200},
+      %{caller_access: :edit_access,    contributor_access: :comment_access, expected: 200},
+      %{caller_access: :edit_access,    contributor_access: :view_access,    expected: 200},
+      %{caller_access: :edit_access,    contributor_access: :full_access,    expected: 403},
+
+      %{caller_access: :full_access,    contributor_access: :full_access,    expected: 200},
+      %{caller_access: :full_access,    contributor_access: :edit_access,    expected: 200},
+      %{caller_access: :full_access,    contributor_access: :comment_access, expected: 200},
+      %{caller_access: :full_access,    contributor_access: :view_access,    expected: 200},
+    ]
+
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+      Map.merge(ctx, %{creator: creator})
+    end
+
+    tabletest @can_edit_table do
+      test "user with #{@test.caller_access} can edit permissions of contributor with #{@test.contributor_access}, expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        project = create_project(ctx, space, :no_access, :no_access, :no_access)
+
+        {caller_person, _caller} = create_contributor_with_access(ctx, project, Binding.from_atom(@test.caller_access))
+        {_target_person, target} = create_contributor_with_access(ctx, project, Binding.from_atom(@test.contributor_access))
+
+        account = Repo.preload(caller_person, :account).account
+        conn = log_in_account(ctx.conn, account)
+
+        assert {code, res} =
+          mutation(conn, :update_project_contributor, %{
+            contrib_id: target.id,
+            responsibility: "Updated responsibility",
+            permissions: "view_access"
+          })
+
+        assert code == @test.expected
+
+        case @test.expected do
+          200 -> assert_result(res, target)
+          403 -> assert res.message == "You don't have permission to perform this action"
+        end
+      end
+    end
+
+    test "allows editing other fields without changing permissions", ctx do
+      space = create_space(ctx)
+      project = create_project(ctx, space, :no_access, :no_access, :no_access)
+
+      {caller_person, _caller} = create_contributor_with_access(ctx, project, Binding.edit_access())
+      {_target_person, target} = create_contributor_with_access(ctx, project, Binding.comment_access())
+
+      account = Repo.preload(caller_person, :account).account
+      conn = log_in_account(ctx.conn, account)
+
+      assert {200, res} = mutation(conn, :update_project_contributor, %{
+        contrib_id: target.id,
+        responsibility: "New responsibility"
+      })
+
+      assert_result(res, target)
+
+      target = Repo.reload(target)
+      assert target.responsibility == "New responsibility"
+    end
+  end
+
   #
   # Helpers
   #
+
+  defp assert_result(res, contributor) do
+    contributor = Repo.reload(contributor) |> Repo.preload(:person)
+    assert res.contributor == Serializer.serialize(contributor)
+  end
 
   defp create_space(ctx) do
     group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.no_access()})
