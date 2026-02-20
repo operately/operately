@@ -291,7 +291,9 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorTest do
   end
 
   defp assert_contributor_created(res, person) do
-    constributor = Operately.Projects.get_contributor!(res.contributor.id)
+    {:ok, contributor_id} = OperatelyWeb.Api.Helpers.decode_id(res.contributor.id)
+
+    constributor = Operately.Projects.get_contributor!(contributor_id)
     assert constributor.person_id == person.id
   end
 
