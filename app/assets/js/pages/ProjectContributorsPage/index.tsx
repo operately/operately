@@ -90,9 +90,11 @@ function GeneralAccess() {
           tense="present"
         />
 
-        <SecondaryButton linkTo={editPath} size="xs">
-          Edit
-        </SecondaryButton>
+        {project.permissions?.hasFullAccess && (
+          <SecondaryButton linkTo={editPath} size="xs">
+            Edit
+          </SecondaryButton>
+        )}
       </BorderedRow>
     </Paper.Section>
   );
@@ -245,31 +247,34 @@ function Contributor({ contributor }: { contributor: ProjectContributor }) {
 }
 
 function ContributorMenu({ contributor }: { contributor: ProjectContributor }) {
+  const { project, champion, reviewer } = useLoadedData();
+
+  const isChampion = contributor.role === "champion";
+  const isReviewer = contributor.role === "reviewer";
+  const isContributor = contributor.role === "contributor";
+
+  // Determine which items should be visible based on role and permissions
+  const showChangeChampion = isChampion && project.permissions?.hasFullAccess;
+  const showChangeReviewer = isReviewer && project.permissions?.hasFullAccess;
+  const showReassignAsContributor =
+    (isChampion || isReviewer) && project.permissions?.hasFullAccess;
+  const showEdit =
+    isContributor &&
+    ((contributor.accessLevel || PermissionLevels.NO_ACCESS) < PermissionLevels.FULL_ACCESS ||
+      project.permissions?.hasFullAccess);
+  const showPromoteToChampion = isContributor && champion && project.permissions?.hasFullAccess;
+  const showPromoteToReviewer = contributor.role === "contributor" && reviewer && project.permissions?.hasFullAccess;
+  const showRemove = project.permissions?.hasFullAccess;
+
   return (
-    <Menu testId={createTestId("contributor-menu", contributor.person!.fullName!)} size="medium">
-      {match(contributor.role)
-        .with("champion", () => (
-          <>
-            <ChangeProjectChampionMenuItem contributor={contributor} />
-            <ReassignAsContributorMenuItem contributor={contributor} />
-            <RemoveContributorMenuItem contributor={contributor} />
-          </>
-        ))
-        .with("reviewer", () => (
-          <>
-            <ChangeProjectReviewerMenuItem contributor={contributor} />
-            <ReassignAsContributorMenuItem contributor={contributor} />
-            <RemoveContributorMenuItem contributor={contributor} />
-          </>
-        ))
-        .otherwise(() => (
-          <>
-            <EditMenuItem contributor={contributor} />
-            <PromoteToChampionMenuItem contributor={contributor} />
-            <PromoteToReviewerMenuItem contributor={contributor} />
-            <RemoveContributorMenuItem contributor={contributor} />
-          </>
-        ))}
+    <Menu testId={createTestId("contributor-menu", contributor.person?.fullName || "")} size="medium">
+      {showChangeChampion && <ChangeProjectChampionMenuItem contributor={contributor} />}
+      {showChangeReviewer && <ChangeProjectReviewerMenuItem contributor={contributor} />}
+      {showReassignAsContributor && <ReassignAsContributorMenuItem contributor={contributor} />}
+      {showEdit && <EditMenuItem contributor={contributor} />}
+      {showPromoteToChampion && <PromoteToChampionMenuItem contributor={contributor} />}
+      {showPromoteToReviewer && <PromoteToReviewerMenuItem contributor={contributor} />}
+      {showRemove && <RemoveContributorMenuItem contributor={contributor} />}
     </Menu>
   );
 }
@@ -277,7 +282,7 @@ function ContributorMenu({ contributor }: { contributor: ProjectContributor }) {
 function ContributotNameAndResponsibility({ contributor }: { contributor: ProjectContributor }) {
   return (
     <div className="flex flex-col flex-1">
-      <div className="font-bold flex items-center gap-2">{contributor!.person!.fullName}</div>
+      <div className="font-bold flex items-center gap-2">{contributor.person?.fullName}</div>
       <div className="text-sm font-medium flex items-center">{contributor.responsibility}</div>
     </div>
   );
@@ -285,7 +290,7 @@ function ContributotNameAndResponsibility({ contributor }: { contributor: Projec
 
 function ReassignAsContributorMenuItem({ contributor }: { contributor: ProjectContributor }) {
   const paths = usePaths();
-  const path = paths.projectContributorsEditPath(contributor.id!, { action: "reassign-as-contributor" });
+  const path = paths.projectContributorsEditPath(contributor.id, { action: "reassign-as-contributor" });
 
   return (
     <MenuLinkItem to={path} testId="convert-to-contributor">
@@ -317,18 +322,8 @@ function ChangeProjectReviewerMenuItem({ contributor }: { contributor: ProjectCo
 }
 
 function EditMenuItem({ contributor }: { contributor: ProjectContributor }) {
-  const { project } = useLoadedData();
   const paths = usePaths();
   const path = paths.projectContributorsEditPath(contributor.id!, { action: "edit-contributor" });
-
-  // User without full-access cannot edit contributors with full-access
-  const allowEdit =
-    (contributor.accessLevel && contributor.accessLevel < PermissionLevels.FULL_ACCESS) ||
-    project.permissions?.hasFullAccess;
-
-  if (!allowEdit) {
-    return null;
-  }
 
   return (
     <MenuLinkItem to={path} testId="edit-contributor">
@@ -338,7 +333,6 @@ function EditMenuItem({ contributor }: { contributor: ProjectContributor }) {
 }
 
 function RemoveContributorMenuItem({ contributor }: { contributor: ProjectContributor }) {
-  const { project } = useLoadedData();
   const refresh = Pages.useRefresh();
   const [remove] = Projects.useRemoveProjectContributor();
 
@@ -346,10 +340,6 @@ function RemoveContributorMenuItem({ contributor }: { contributor: ProjectContri
     await remove({ contribId: contributor.id });
     refresh();
   };
-
-  if (!project.permissions?.hasFullAccess) {
-    return null;
-  }
 
   return (
     <MenuActionItem danger={true} onClick={handleClick} testId="remove-contributor">
@@ -362,8 +352,6 @@ function PromoteToChampionMenuItem({ contributor }: { contributor: ProjectContri
   const refresh = Pages.useRefresh();
   const [update] = ProjectContributors.useUpdateContributor();
   const { champion } = useLoadedData();
-
-  if (!champion) return null;
 
   const handleClick = async () => {
     await update({ contribId: champion!.id, role: "champion", personId: contributor.person!.id });
@@ -381,8 +369,6 @@ function PromoteToReviewerMenuItem({ contributor }: { contributor: ProjectContri
   const refresh = Pages.useRefresh();
   const [update] = ProjectContributors.useUpdateContributor();
   const { reviewer } = useLoadedData();
-
-  if (!reviewer) return null;
 
   const handleClick = async () => {
     await update({ contribId: reviewer!.id, role: "reviewer", personId: contributor.person!.id });
