@@ -53,6 +53,22 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     ctx
   end
 
+  step :given_project_doesnt_have_champion, ctx do
+    champion = Operately.Projects.get_contributor!(person_id: ctx.champion.id, project_id: ctx.project.id)
+
+    {:ok, _} = Operately.Operations.ProjectContributorRemoved.run(ctx.reviewer, champion)
+
+    ctx
+  end
+
+  step :given_project_doesnt_have_reviewer, ctx do
+    reviewer = Operately.Projects.get_contributor!(person_id: ctx.reviewer.id, project_id: ctx.project.id)
+
+    {:ok, _} = Operately.Operations.ProjectContributorRemoved.run(ctx.champion, reviewer)
+
+    ctx
+  end
+
   step :assert_logged_in_champion_has_full_access, ctx do
     {:ok, project} = Operately.Projects.Project.get(ctx.champion, id: ctx.project.id)
 
@@ -304,6 +320,18 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     |> UI.click(testid: UI.testid(["contributor-menu", name]))
     |> UI.assert_has(testid: "edit-contributor")
     |> UI.refute_has(testid: "promote-to-reviewer")
+  end
+
+  step :assert_cannot_add_champion, ctx do
+    ctx
+    |> UI.assert_text("The project doesn't have a champion yet")
+    |> UI.refute_has(testid: "add-champion-button")
+  end
+
+  step :assert_cannot_add_reviewer, ctx do
+    ctx
+    |> UI.assert_text("The project doesn't have a reviewer yet")
+    |> UI.refute_has(testid: "add-reviewer-button")
   end
 
   step :remove_contributor, ctx, name: name do

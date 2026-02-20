@@ -163,22 +163,26 @@ function ReviewerPlaceholder() {
   const paths = usePaths();
   const { project } = useLoadedData();
   const path = paths.projectContributorsAddPath(project.id!, { type: "reviewer" });
+  const canAddReviewer = project.permissions?.hasFullAccess;
+
+  const description = canAddReviewer
+    ? "Select a reviewer to get feedback and keep things moving smoothly"
+    : "The project doesn't have a reviewer yet";
 
   return (
     <Paper.Section title="Reviewer">
       <BorderedRow>
         <div className="flex items-center gap-2">
           <PlaceholderAvatar size="lg" />
-          <PlaceholderTitleAndDescription
-            title="No Reviewer"
-            description="Select a reviewer to get feedback and keep things moving smoothly"
-          />
+          <PlaceholderTitleAndDescription title="No Reviewer" description={description} />
         </div>
 
         <div className="flex items-center gap-4">
-          <SecondaryButton linkTo={path} testId="add-reviewer-button" size="sm">
-            Add reviewer
-          </SecondaryButton>
+          {canAddReviewer && (
+            <SecondaryButton linkTo={path} testId="add-reviewer-button" size="sm">
+              Add reviewer
+            </SecondaryButton>
+          )}
         </div>
       </BorderedRow>
     </Paper.Section>
@@ -198,19 +202,26 @@ function ChampionPlaceholder() {
   const paths = usePaths();
   const { project } = useLoadedData();
   const path = paths.projectContributorsAddPath(project.id!, { type: "champion" });
+  const canAddChampion = project.permissions?.hasFullAccess;
+
+  const description = canAddChampion
+    ? "Select a champion to lead the project"
+    : "The project doesn't have a champion yet";
 
   return (
     <Paper.Section title="Champion">
       <div className="flex items-center justify-between py-2 border-y border-stroke-dimmed">
         <div className="flex items-center gap-2">
           <PlaceholderAvatar size="lg" />
-          <PlaceholderTitleAndDescription title="No Champion" description="Select a champion to lead the project" />
+          <PlaceholderTitleAndDescription title="No Champion" description={description} />
         </div>
 
         <div className="flex items-center gap-4">
-          <SecondaryButton linkTo={path} testId="add-champion-button" size="sm">
-            Add champion
-          </SecondaryButton>
+          {canAddChampion && (
+            <SecondaryButton linkTo={path} testId="add-champion-button" size="sm">
+              Add champion
+            </SecondaryButton>
+          )}
         </div>
       </div>
     </Paper.Section>
@@ -256,8 +267,7 @@ function ContributorMenu({ contributor }: { contributor: ProjectContributor }) {
   // Determine which items should be visible based on role and permissions
   const showChangeChampion = isChampion && project.permissions?.hasFullAccess;
   const showChangeReviewer = isReviewer && project.permissions?.hasFullAccess;
-  const showReassignAsContributor =
-    (isChampion || isReviewer) && project.permissions?.hasFullAccess;
+  const showReassignAsContributor = (isChampion || isReviewer) && project.permissions?.hasFullAccess;
   const showEdit =
     isContributor &&
     ((contributor.accessLevel || PermissionLevels.NO_ACCESS) < PermissionLevels.FULL_ACCESS ||

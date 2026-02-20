@@ -122,6 +122,24 @@ defmodule Operately.Features.ProjectsContributorsTest do
       |> Steps.visit_project_contributors_page()
       |> Steps.assert_cannot_edit_reviewer()
     end
+
+    @tag login_as: :contributor
+    feature "user with edit-access doesn't see add-champion button and message", ctx do
+      ctx
+      |> Steps.given_project_doesnt_have_champion()
+      |> Steps.assert_logged_in_contributor_has_edit_access()
+      |> Steps.visit_project_contributors_page()
+      |> Steps.assert_cannot_add_champion()
+    end
+
+    @tag login_as: :contributor
+    feature "user with edit-access doesn't see add-reviewer button and message", ctx do
+      ctx
+      |> Steps.given_project_doesnt_have_reviewer()
+      |> Steps.assert_logged_in_contributor_has_edit_access()
+      |> Steps.visit_project_contributors_page()
+      |> Steps.assert_cannot_add_reviewer()
+    end
   end
 
   describe "editing project contributors" do
