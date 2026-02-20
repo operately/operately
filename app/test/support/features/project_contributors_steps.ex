@@ -251,6 +251,19 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     end)
   end
 
+  step :assert_can_edit_user, ctx, name: name do
+    ctx
+    |> UI.click(testid: UI.testid(["contributor-menu", name]))
+    |> UI.assert_has(testid: "edit-contributor")
+  end
+
+  step :assert_cannot_edit_user, ctx, name: name do
+    ctx
+    |> UI.click(testid: UI.testid(["contributor-menu", name]))
+    |> UI.assert_has(testid: "promote-to-champion")
+    |> UI.refute_has(testid: "edit-contributor")
+  end
+
   step :remove_contributor, ctx, name: name do
     ctx
     |> UI.click(testid: "manage-team-button")

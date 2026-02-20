@@ -22,6 +22,7 @@ import { OtherPeople } from "./OtherPeople";
 import { loader, useLoadedData } from "./loader";
 
 import { usePaths } from "@/routes/paths";
+import { PermissionLevels } from "@/features/Permissions";
 export default { name: "ProjectContributorsPage", loader, Page } as PageModule;
 
 function Page() {
@@ -316,8 +317,18 @@ function ChangeProjectReviewerMenuItem({ contributor }: { contributor: ProjectCo
 }
 
 function EditMenuItem({ contributor }: { contributor: ProjectContributor }) {
+  const { project } = useLoadedData();
   const paths = usePaths();
   const path = paths.projectContributorsEditPath(contributor.id!, { action: "edit-contributor" });
+
+  // User without full-access cannot edit contributors with full-access
+  const allowEdit =
+    (contributor.accessLevel && contributor.accessLevel < PermissionLevels.FULL_ACCESS) ||
+    project.permissions?.hasFullAccess;
+
+  if (!allowEdit) {
+    return null;
+  }
 
   return (
     <MenuLinkItem to={path} testId="edit-contributor">
