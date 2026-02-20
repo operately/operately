@@ -7,6 +7,7 @@ import * as Permissions from "@/models/permissions";
 import { IconPlus, IconX, Link } from "turboui";
 
 import { useAddProjectContributors } from "@/models/projectContributors";
+import { PERMISSIONS_LIST, PERMISSIONS_LIST_COMPLETE } from "@/models/permissions";
 
 import Forms from "@/components/Forms";
 import { FieldObject } from "@/components/Forms";
@@ -118,19 +119,6 @@ function Contributors({ project }) {
     </div>
   );
 }
-
-const PERMISSIONS_LIST_COMPLETE = [
-  { value: "full_access", label: "Full Access" },
-  { value: "edit_access", label: "Edit Access" },
-  { value: "comment_access", label: "Comment Access" },
-  { value: "view_access", label: "View Access" },
-];
-
-const PERMISSIONS_LIST = [
-  { value: "edit_access", label: "Edit Access" },
-  { value: "comment_access", label: "Comment Access" },
-  { value: "view_access", label: "View Access" },
-];
 
 function Contributor({ field, search, index, last, addMore }) {
   const { project } = useLoadedData();

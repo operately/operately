@@ -258,17 +258,26 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
   end
 
   step :assert_cannot_edit_user, ctx, name: name do
-    ctx
-    |> UI.click(testid: UI.testid(["contributor-menu", name]))
-    |> UI.assert_has(testid: "promote-to-champion")
-    |> UI.refute_has(testid: "edit-contributor")
+    UI.refute_has(ctx, testid: UI.testid(["contributor-menu", name]))
   end
 
   step :assert_cannot_remove_user, ctx, name: name do
     ctx
     |> UI.click(testid: UI.testid(["contributor-menu", name]))
-    |> UI.assert_has(testid: "promote-to-champion")
+    |> UI.assert_has(testid: "edit-contributor")
     |> UI.refute_has(testid: "remove-contributor")
+  end
+
+  step :assert_cannot_convert_reviewer_to_contributor, ctx, name: name do
+    ctx
+    |> UI.assert_has(testid: "reviewer-section")
+    |> UI.refute_has(testid: UI.testid(["contributor-menu", name]))
+  end
+
+  step :assert_cannot_convert_champion_to_contributor, ctx, name: name do
+    ctx
+    |> UI.assert_has(testid: "champion-section")
+    |> UI.refute_has(testid: UI.testid(["contributor-menu", name]))
   end
 
   step :remove_contributor, ctx, name: name do

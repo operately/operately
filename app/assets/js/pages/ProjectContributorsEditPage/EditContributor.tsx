@@ -10,19 +10,6 @@ import { PageTitle } from "./PageTitle";
 import { useGotoProjectContributors, useLoadedData } from "./loader";
 import { accessLevelAsEnumValue, PermissionLevels } from "@/features/Permissions";
 
-const PERMISSIONS_LIST_COMPLETE = [
-  { value: "full_access", label: "Full Access" },
-  { value: "edit_access", label: "Edit Access" },
-  { value: "comment_access", label: "Comment Access" },
-  { value: "view_access", label: "View Access" },
-];
-
-const PERMISSIONS_LIST = [
-  { value: "edit_access", label: "Edit Access" },
-  { value: "comment_access", label: "Comment Access" },
-  { value: "view_access", label: "View Access" },
-];
-
 export function EditContributor() {
   const { contributor } = useLoadedData();
 
@@ -34,10 +21,10 @@ export function EditContributor() {
 
   const permissionsList = React.useMemo(() => {
     if (contributor.permissions?.hasFullAccess) {
-      return PERMISSIONS_LIST_COMPLETE;
+      return Permissions.PERMISSIONS_LIST_COMPLETE;
     }
     if (contributor.permissions?.canEdit) {
-      return PERMISSIONS_LIST;
+      return Permissions.PERMISSIONS_LIST;
     }
     return [];
   }, [contributor.permissions?.hasFullAccess, contributor.permissions?.canEdit]);
