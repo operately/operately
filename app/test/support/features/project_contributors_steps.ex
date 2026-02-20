@@ -268,16 +268,42 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     |> UI.refute_has(testid: "remove-contributor")
   end
 
-  step :assert_cannot_convert_reviewer_to_contributor, ctx, name: name do
+  step :assert_cannot_convert_reviewer_to_contributor, ctx do
     ctx
     |> UI.assert_has(testid: "reviewer-section")
-    |> UI.refute_has(testid: UI.testid(["contributor-menu", name]))
+    |> UI.refute_has(testid: UI.testid(["contributor-menu", ctx.reviewer.full_name]))
   end
 
-  step :assert_cannot_convert_champion_to_contributor, ctx, name: name do
+  step :assert_cannot_convert_champion_to_contributor, ctx do
     ctx
     |> UI.assert_has(testid: "champion-section")
-    |> UI.refute_has(testid: UI.testid(["contributor-menu", name]))
+    |> UI.refute_has(testid: UI.testid(["contributor-menu", ctx.champion.full_name]))
+  end
+
+  step :assert_cannot_edit_champion, ctx do
+    ctx
+    |> UI.assert_has(testid: "champion-section")
+    |> UI.refute_has(testid: UI.testid(["contributor-menu", ctx.champion.full_name]))
+  end
+
+  step :assert_cannot_edit_reviewer, ctx do
+    ctx
+    |> UI.assert_has(testid: "reviewer-section")
+    |> UI.refute_has(testid: UI.testid(["contributor-menu", ctx.reviewer.full_name]))
+  end
+
+  step :assert_cannot_promote_contributor_to_champion, ctx, name: name do
+    ctx
+    |> UI.click(testid: UI.testid(["contributor-menu", name]))
+    |> UI.assert_has(testid: "edit-contributor")
+    |> UI.refute_has(testid: "promote-to-champion")
+  end
+
+  step :assert_cannot_promote_contributor_to_reviewer, ctx, name: name do
+    ctx
+    |> UI.click(testid: UI.testid(["contributor-menu", name]))
+    |> UI.assert_has(testid: "edit-contributor")
+    |> UI.refute_has(testid: "promote-to-reviewer")
   end
 
   step :remove_contributor, ctx, name: name do

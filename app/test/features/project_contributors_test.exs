@@ -84,6 +84,44 @@ defmodule Operately.Features.ProjectsContributorsTest do
       |> Steps.visit_project_contributors_page(:direct)
       |> Steps.assert_404()
     end
+
+    @tag login_as: :champion
+    feature "add a new champion", ctx do
+      ctx
+      |> Steps.assert_logged_in_champion_has_full_access()
+      |> Steps.visit_project_contributors_page()
+      |> Steps.choose_new_champion(name: "Michael Scottish")
+      |> Steps.assert_new_champion_is(name: "Michael Scottish")
+      |> Steps.assert_old_champion_is_contributor()
+      |> Steps.assert_new_champion_chosen_feed_item_exists(name: "Michael")
+    end
+
+    @tag login_as: :contributor
+    feature "user with edit-access cannot add a new champion", ctx do
+      ctx
+      |> Steps.assert_logged_in_contributor_has_edit_access()
+      |> Steps.visit_project_contributors_page()
+      |> Steps.assert_cannot_edit_champion()
+    end
+
+    @tag login_as: :champion
+    feature "add a new reviewer", ctx do
+      ctx
+      |> Steps.assert_logged_in_champion_has_full_access()
+      |> Steps.visit_project_contributors_page()
+      |> Steps.choose_new_reviewer(name: "Michael Scottish")
+      |> Steps.assert_new_reviewer_is(name: "Michael Scottish")
+      |> Steps.assert_old_reviewer_is_contributor()
+      |> Steps.assert_new_reviewer_chosen_feed_item_exists(name: "Michael")
+    end
+
+    @tag login_as: :contributor
+    feature "user with edit-access cannot add a new reviewer", ctx do
+      ctx
+      |> Steps.assert_logged_in_contributor_has_edit_access()
+      |> Steps.visit_project_contributors_page()
+      |> Steps.assert_cannot_edit_reviewer()
+    end
   end
 
   describe "editing project contributors" do
@@ -189,7 +227,7 @@ defmodule Operately.Features.ProjectsContributorsTest do
       ctx
       |> Steps.assert_logged_in_contributor_has_edit_access()
       |> Steps.visit_project_contributors_page()
-      |> Steps.assert_cannot_convert_reviewer_to_contributor(name: ctx.reviewer.full_name)
+      |> Steps.assert_cannot_convert_reviewer_to_contributor()
     end
 
     @tag login_as: :champion
@@ -209,56 +247,68 @@ defmodule Operately.Features.ProjectsContributorsTest do
       ctx
       |> Steps.assert_logged_in_contributor_has_edit_access()
       |> Steps.visit_project_contributors_page()
-      |> Steps.assert_cannot_convert_champion_to_contributor(name: ctx.champion.full_name)
+      |> Steps.assert_cannot_convert_champion_to_contributor()
+    end
+
+    @tag login_as: :champion
+    feature "promote a contributor to a champion", ctx do
+      ctx
+      |> Steps.assert_logged_in_champion_has_full_access()
+      |> Steps.given_a_contributor_exists(name: "Debbie Downer")
+      |> Steps.visit_project_contributors_page()
+      |> Steps.promote_contributor_to_champion(name: "Debbie Downer")
+      |> Steps.assert_new_champion_is(name: "Debbie Downer")
+      |> Steps.assert_new_champion_chosen_feed_item_exists(name: "Debbie")
+    end
+
+    @tag login_as: :contributor
+    feature "user with edit-access can't promote a contributor to a champion", ctx do
+      ctx
+      |> Steps.assert_logged_in_contributor_has_edit_access()
+      |> Steps.given_a_contributor_exists(name: "Debbie Downer")
+      |> Steps.visit_project_contributors_page()
+      |> Steps.assert_cannot_promote_contributor_to_champion(name: "Debbie Downer")
+    end
+
+    @tag login_as: :champion
+    feature "promote a contributor to a reviewer", ctx do
+      ctx
+      |> Steps.assert_logged_in_champion_has_full_access()
+      |> Steps.given_a_contributor_exists(name: "Debbie Downer")
+      |> Steps.visit_project_contributors_page()
+      |> Steps.promote_contributor_to_reviewer(name: "Debbie Downer")
+      |> Steps.assert_new_reviewer_is(name: "Debbie Downer")
+      |> Steps.assert_new_reviewer_chosen_feed_item_exists(name: "Debbie")
+    end
+
+    @tag login_as: :contributor
+    feature "user with edit-access can't promote a contributor to a reviewer", ctx do
+      ctx
+      |> Steps.assert_logged_in_contributor_has_edit_access()
+      |> Steps.given_a_contributor_exists(name: "Debbie Downer")
+      |> Steps.visit_project_contributors_page()
+      |> Steps.assert_cannot_promote_contributor_to_reviewer(name: "Debbie Downer")
     end
   end
 
-  @tag login_as: :champion
-  feature "listing all other people who can access the project", ctx do
-    ctx
-    |> Steps.given_company_members_have_access()
-    |> Steps.visit_project_contributors_page()
-    |> Steps.expand_show_other_people()
-    |> Steps.assert_other_people_listed()
-  end
+  describe "contributors page" do
+    @tag login_as: :contributor
+    feature "listing all other people who can access the project", ctx do
+      ctx
+      |> Steps.given_company_members_have_access()
+      |> Steps.assert_logged_in_contributor_has_edit_access()
+      |> Steps.visit_project_contributors_page()
+      |> Steps.expand_show_other_people()
+      |> Steps.assert_other_people_listed()
+    end
 
-  @tag login_as: :champion
-  feature "choosing a new champion for the project", ctx do
-    ctx
-    |> Steps.visit_project_contributors_page()
-    |> Steps.choose_new_champion(name: "Michael Scottish")
-    |> Steps.assert_new_champion_is(name: "Michael Scottish")
-    |> Steps.assert_old_champion_is_contributor()
-    |> Steps.assert_new_champion_chosen_feed_item_exists(name: "Michael")
-  end
-
-  @tag login_as: :champion
-  feature "choosing a new reviewer for the project", ctx do
-    ctx
-    |> Steps.visit_project_contributors_page()
-    |> Steps.choose_new_reviewer(name: "Michael Scottish")
-    |> Steps.assert_new_reviewer_is(name: "Michael Scottish")
-    |> Steps.assert_old_reviewer_is_contributor()
-    |> Steps.assert_new_reviewer_chosen_feed_item_exists(name: "Michael")
-  end
-
-  @tag login_as: :champion
-  feature "promote a contributor to a champion", ctx do
-    ctx
-    |> Steps.given_a_contributor_exists(name: "Debbie Downer")
-    |> Steps.visit_project_contributors_page()
-    |> Steps.promote_contributor_to_champion(name: "Debbie Downer")
-    |> Steps.assert_new_champion_is(name: "Debbie Downer")
-    |> Steps.assert_new_champion_chosen_feed_item_exists(name: "Debbie")
-  end
-
-  @tag login_as: :champion
-  feature "promote a contributor to a reviewer", ctx do
-    ctx
-    |> Steps.given_a_contributor_exists(name: "Debbie Downer")
-    |> Steps.visit_project_contributors_page()
-    |> Steps.promote_contributor_to_reviewer(name: "Debbie Downer")
-    |> Steps.assert_new_reviewer_is(name: "Debbie Downer")
-    |> Steps.assert_new_reviewer_chosen_feed_item_exists(name: "Debbie")
+    @tag login_as: :commenter
+    feature "user with comment-access gets 404", ctx do
+      ctx
+      |> Steps.given_company_members_have_access()
+      |> Steps.assert_logged_in_contributor_has_comment_access()
+      |> Steps.visit_project_contributors_page(:direct)
+      |> Steps.assert_404()
+    end
   end
 end
