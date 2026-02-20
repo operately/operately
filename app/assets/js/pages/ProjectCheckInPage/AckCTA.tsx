@@ -50,7 +50,7 @@ function showAcknowledgeButton(checkIn: ProjectCheckIns.ProjectCheckIn, me: Peop
   if (checkIn.acknowledgedAt) return false;
 
   const permissions = checkIn.project?.permissions;
-  if (!permissions?.canAcknowledgeCheckIn) return false;
+  if (!permissions?.canEdit) return false;
 
   const isAuthor = compareIds(checkIn.author!.id, me.id);
   if (isAuthor) return false;

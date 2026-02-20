@@ -48,7 +48,7 @@ function OverviewSection(props: ProjectPage.State) {
     <div data-test-id="description-section">
       <PageDescription
         {...props}
-        canEdit={props.permissions.canEditDescription}
+        canEdit={props.permissions.canEdit}
         label="Description"
         placeholder="Add a project description..."
         zeroStatePlaceholder="Add a project description..."
@@ -116,7 +116,7 @@ function TimelineSection(props: ProjectPage.State) {
             </span>
           </div>
         )}
-        {props.permissions.canCreateMilestone && (
+        {props.permissions.canEdit && (
           <SecondaryButton size="xxs" onClick={() => setShowAddForm(true)} testId="add-milestone-button">
             Add milestone
           </SecondaryButton>
@@ -127,14 +127,14 @@ function TimelineSection(props: ProjectPage.State) {
         {validMilestones.length > 0 && (
           <MilestoneList
             milestones={validMilestones}
-            canEdit={props.permissions.canEditMilestone}
+            canEdit={props.permissions.canEdit}
             onMilestoneUpdate={props.onMilestoneUpdate}
             onMilestoneReorder={props.onMilestoneReorder}
           />
         )}
 
         <EmptyState
-          canEdit={props.permissions.canCreateMilestone}
+          canEdit={props.permissions.canEdit}
           setShowAddForm={setShowAddForm}
           display={validMilestones.length === 0 && !showAddForm}
         />
@@ -270,7 +270,7 @@ function ResourcesSection(props: ProjectPage.State) {
       onResourceAdd={props.onResourceAdd}
       onResourceEdit={props.onResourceEdit}
       onResourceRemove={props.onResourceRemove}
-      canEdit={props.permissions.canEditResources}
+      canEdit={props.permissions.canEdit}
     />
   );
 }

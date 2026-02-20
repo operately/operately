@@ -11,6 +11,8 @@ defmodule Operately.Projects.Contributor do
     field :responsibility, :string
     field :role, Ecto.Enum, values: [:champion, :reviewer, :contributor], default: :contributor
 
+    # populated with after load hooks
+    field :permissions, :any, virtual: true
     field :access_level, :integer, virtual: true
 
     timestamps()
@@ -36,6 +38,11 @@ defmodule Operately.Projects.Contributor do
     |> validate_required([:project_id, :person_id])
   end
 
+  def set_permissions(contributor = %__MODULE__{}) do
+    perms = Operately.Projects.Permissions.calculate(contributor.request_info.access_level)
+    Map.put(contributor, :permissions, perms)
+  end
+
   def load_project_access_levels(contributors) do
     people_ids = Enum.map(contributors, fn c -> c.person_id end)
     project_ids = Enum.map(contributors, fn c -> c.project_id end)
@@ -57,6 +64,18 @@ defmodule Operately.Projects.Contributor do
       end
       Map.put(c, :access_level, level)
     end)
+  end
+
+  def load_access_level(contributor = %__MODULE__{}) do
+    query = from(group in Operately.Access.Group,
+      join: binding in assoc(group, :bindings),
+      join: context in assoc(binding, :context),
+      where: group.person_id == ^contributor.person_id and context.project_id == ^contributor.project_id,
+      select: max(binding.access_level)
+    )
+
+    level = Repo.one(query) || 0
+    Map.put(contributor, :access_level, level)
   end
 
 end

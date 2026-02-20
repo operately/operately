@@ -1,7 +1,6 @@
 defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckInTest do
   use OperatelyWeb.TurboCase
 
-  import Operately.PeopleFixtures
   import Operately.GroupsFixtures
   import Operately.ProjectsFixtures
 
@@ -16,102 +15,49 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckInTest do
   end
 
   describe "permissions" do
+    @table [
+      %{company: :no_access,      space: :no_access,      project: :no_access,      expected: 404},
+      %{company: :no_access,      space: :no_access,      project: :comment_access, expected: 403},
+      %{company: :no_access,      space: :no_access,      project: :edit_access,    expected: 200},
+      %{company: :no_access,      space: :no_access,      project: :full_access,    expected: 200},
+
+      %{company: :no_access,      space: :comment_access, project: :no_access,      expected: 403},
+      %{company: :no_access,      space: :edit_access,    project: :no_access,      expected: 200},
+      %{company: :no_access,      space: :full_access,    project: :no_access,      expected: 200},
+
+      %{company: :comment_access, space: :no_access,      project: :no_access,      expected: 403},
+      %{company: :edit_access,    space: :no_access,      project: :no_access,      expected: 200},
+      %{company: :full_access,    space: :no_access,      project: :no_access,      expected: 200},
+    ]
+
     setup ctx do
-      ctx = register_and_log_in_account(ctx)
-      creator = person_fixture(%{company_id: ctx.company.id})
-      space = group_fixture(creator, %{company_id: ctx.company.id})
-
-      Map.merge(ctx, %{creator: creator, space_id: space.id})
+      ctx
+      |> Factory.setup()
+      |> Factory.add_company_member(:person)
+      |> Factory.log_in_person(:person)
     end
 
-    test "company members without view access can't see a check-in", ctx do
-      check_in = create_project_and_check_ins(ctx, company_access_level: Binding.no_access())
+    tabletest @table do
+      test "if caller has levels company=#{@test.company}, space=#{@test.space}, project=#{@test.project} on the project, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        project = create_project(ctx, space, @test.company, @test.space, @test.project)
+        check_in = check_in_fixture(%{author_id: ctx.creator.id, project_id: project.id})
 
-      assert {404, res} = request(ctx.conn, check_in)
-      assert res.message == "The requested resource was not found"
+        assert {code, res} = request(ctx.conn, check_in)
+        assert code == @test.expected
+
+        case @test.expected do
+          200 -> assert_response(res, check_in)
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "The requested resource was not found"
+        end
+      end
     end
 
-    test "company members can't acknowledge a check-in", ctx do
-      check_in = create_project_and_check_ins(ctx, company_access_level: Binding.edit_access())
-
-      assert {403, res} = request(ctx.conn, check_in)
-      assert res.message == "You don't have permission to perform this action"
-    end
-
-    test "space members without view access can't see a check-in", ctx do
-      add_person_to_space(ctx)
-      check_in = create_project_and_check_ins(ctx, space_access_level: Binding.no_access())
-
-      assert {404, res} = request(ctx.conn, check_in)
-      assert res.message == "The requested resource was not found"
-    end
-
-    test "space members can't acknowledge a check-in", ctx do
-      add_person_to_space(ctx)
-      check_in = create_project_and_check_ins(ctx, space_access_level: Binding.edit_access())
-
-      assert {403, res} = request(ctx.conn, check_in)
-      assert res.message == "You don't have permission to perform this action"
-    end
-
-    test "reviewers can acknowledge a check-in", ctx do
-      check_in = create_project_and_check_ins(ctx, reviewer_id: ctx.person.id)
-
-      assert {200, res} = request(ctx.conn, check_in)
-      assert_response(res, check_in)
-    end
-
-    test "champions can acknowledge check-ins posted by reviewers", ctx do
-      # Create project where ctx.person is champion
-      # and ctx.creator is reviewer (who posts the check-in)
-      reviewer = person_fixture(%{company_id: ctx.company.id})
-
-      check_in =
-        create_project_and_check_ins(ctx,
-          champion_id: ctx.person.id,
-          reviewer_id: reviewer.id,
-          author_id: reviewer.id
-        )
-
-      assert {200, res} = request(ctx.conn, check_in)
-      assert_response(res, check_in)
-    end
-
-    test "reviewers can acknowledge check-ins posted by champions", ctx do
-      # Create project where ctx.person is reviewer
-      # and ctx.creator is champion (who posts the check-in)
-      champion = person_fixture(%{company_id: ctx.company.id})
-
-      check_in =
-        create_project_and_check_ins(ctx,
-          champion_id: champion.id,
-          reviewer_id: ctx.person.id,
-          author_id: champion.id
-        )
-
-      assert {200, res} = request(ctx.conn, check_in)
-      assert_response(res, check_in)
-    end
-
-    test "champions cannot acknowledge their own check-ins", ctx do
-      # ctx.person is the champion and also the author
-      check_in =
-        create_project_and_check_ins(ctx,
-          champion_id: ctx.person.id,
-          author_id: ctx.person.id
-        )
-
-      assert {400, res} = request(ctx.conn, check_in)
-      assert res.message == "Authors cannot acknowledge their own check-ins"
-    end
-
-    test "reviewers cannot acknowledge their own check-ins", ctx do
-      # ctx.person is the reviewer and also the author
-      check_in =
-        create_project_and_check_ins(ctx,
-          reviewer_id: ctx.person.id,
-          author_id: ctx.person.id
-        )
+    test "authors cannot acknowledge their own check-ins", ctx do
+      space = create_space(ctx)
+      project = create_project(ctx, space, :no_access, :no_access, :edit_access)
+      check_in = check_in_fixture(%{author_id: ctx.person.id, project_id: project.id})
 
       assert {400, res} = request(ctx.conn, check_in)
       assert res.message == "Authors cannot acknowledge their own check-ins"
@@ -120,14 +66,16 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckInTest do
 
   describe "acknowledge_project_check_in functionality" do
     setup ctx do
-      ctx = register_and_log_in_account(ctx)
-      creator = person_fixture(%{company_id: ctx.company.id})
-
-      Map.merge(ctx, %{creator: creator})
+      ctx
+      |> Factory.setup()
+      |> Factory.add_company_member(:person)
+      |> Factory.log_in_person(:person)
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
     end
 
     test "acknowledges check-in", ctx do
-      check_in = create_project_and_check_ins(ctx, reviewer_id: ctx.person.id)
+      check_in = check_in_fixture(%{author_id: ctx.creator.id, project_id: ctx.project.id})
 
       refute check_in.acknowledged_at
       refute check_in.acknowledged_by_id
@@ -137,7 +85,7 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckInTest do
     end
 
     test "idempontency: acknowledging the same check-in multiple times does not change the state", ctx do
-      check_in = create_project_and_check_ins(ctx, reviewer_id: ctx.person.id)
+      check_in = check_in_fixture(%{author_id: ctx.creator.id, project_id: ctx.project.id})
 
       assert {200, res} = request(ctx.conn, check_in)
       assert_response(res, check_in)
@@ -171,31 +119,41 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckInTest do
   # Helpers
   #
 
-  defp create_project_and_check_ins(ctx, opts) do
-    author_id = Keyword.get(opts, :author_id, ctx.creator.id)
-    opts = Keyword.delete(opts, :author_id)
-
-    project =
-      project_fixture(
-        Enum.into(opts, %{
-          company_id: ctx.company.id,
-          group_id: ctx[:space_id] || ctx.company.company_space_id,
-          creator_id: ctx.creator.id,
-          company_access_level: Keyword.get(opts, :company_access_level, Binding.no_access()),
-          space_access_level: Keyword.get(opts, :space_access_level, Binding.no_access())
-        })
-      )
-
-    check_in_fixture(%{author_id: author_id, project_id: project.id})
+  defp create_space(ctx) do
+    group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.no_access()})
   end
 
-  defp add_person_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space_id, [
-      %{
+  defp create_project(ctx, space, company_members_level, space_members_level, project_member_level) do
+    project = project_fixture(%{
+      company_id: ctx.company.id,
+      creator_id: ctx.creator.id,
+      group_id: space.id,
+      company_access_level: Binding.from_atom(company_members_level),
+      space_access_level: Binding.from_atom(space_members_level),
+    })
+
+    if company_members_level != :no_access do
+      context = Operately.Access.get_context(company_id: ctx.company.id)
+      Operately.Access.bind(context, person_id: ctx.person.id, level: Binding.from_atom(company_members_level))
+    end
+
+    if space_members_level != :no_access do
+      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
         id: ctx.person.id,
-        access_level: Binding.edit_access()
-      }
-    ])
+        access_level: Binding.from_atom(space_members_level)
+      }])
+    end
+
+    if project_member_level != :no_access do
+      {:ok, _} = Operately.Projects.create_contributor(ctx.creator, %{
+        project_id: project.id,
+        person_id: ctx.person.id,
+        permissions: Binding.from_atom(project_member_level),
+        responsibility: "some responsibility"
+      })
+    end
+
+    project
   end
 
   defp acknowledge_activity_count do

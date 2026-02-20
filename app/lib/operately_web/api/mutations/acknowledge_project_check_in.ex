@@ -19,10 +19,9 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckIn do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:check_in, fn ctx -> CheckIn.get(ctx.me, id: inputs.id, opts: [preload: [project: [:champion, :reviewer]]]) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.check_in.request_info.access_level, :can_acknowledge_check_in) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.check_in.request_info.access_level, :can_edit) end)
     |> run(:check_already_acknowledged, fn ctx -> check_already_acknowledged(ctx.check_in) end)
     |> run(:check_not_the_author, fn ctx -> check_not_the_author(ctx.me, ctx.check_in) end)
-    |> run(:check_role, fn ctx -> check_role(ctx.me, ctx.check_in) end)
     |> run(:operation, fn ctx -> Operately.Operations.ProjectCheckInAcknowledgement.run(ctx.me, ctx.check_in) end)
     |> respond()
   end
@@ -39,9 +38,6 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckIn do
         {:error, :not_found}
 
       {:error, :check_permissions, _} ->
-        {:error, :forbidden}
-
-      {:error, :check_role, _} ->
         {:error, :forbidden}
 
       {:error, :operation, _} ->
@@ -69,19 +65,6 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckIn do
       {:error, :cant_acknowledge_own_check_in}
     else
       {:ok, :not_the_author}
-    end
-  end
-
-  defp check_role(me, check_in) do
-    cond do
-      check_in.project.champion && me.id == check_in.project.champion.id ->
-        {:ok, :has_role}
-
-      check_in.project.reviewer && me.id == check_in.project.reviewer.id ->
-        {:ok, :has_role}
-
-      true ->
-        {:error, :forbidden}
     end
   end
 end
