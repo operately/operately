@@ -1,27 +1,31 @@
+import * as React from "react";
+
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Projects from "@/models/projects";
+import * as Permissions from "@/models/permissions";
 import { IconPlus, IconX, Link } from "turboui";
-import * as React from "react";
 
-import { useAddProjectContributors } from "@/api";
-import { PERMISSIONS_LIST, PermissionLevels } from "@/features/Permissions";
+import { useAddProjectContributors } from "@/models/projectContributors";
+import { PERMISSIONS_LIST, PERMISSIONS_LIST_COMPLETE } from "@/models/permissions";
 
 import Forms from "@/components/Forms";
+import { FieldObject } from "@/components/Forms";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { createTestId } from "@/utils/testid";
 import { SecondaryButton } from "turboui";
-import { LoaderResult } from "./loader";
+import { useLoadedData } from "./loader";
 
 import { usePaths } from "@/routes/paths";
-interface ContributorFields {
+
+interface ContributorFields extends FieldObject {
   key: number;
   personId: string;
   responsibility: string;
-  accessLevel: PermissionLevels;
+  accessLevel: Permissions.AccessOptions;
 }
 
-function newContributor() {
+function newContributor(): ContributorFields {
   //
   // used for unique key in React component list
   // index is not unique when removing items and causes rendering issues
@@ -33,17 +37,17 @@ function newContributor() {
     key: key,
     personId: "",
     responsibility: "",
-    accessLevel: PermissionLevels.EDIT_ACCESS,
+    accessLevel: "edit_access",
   };
 }
 
 export function AddContributors() {
   const paths = usePaths();
-  const { project } = Pages.useLoadedData() as LoaderResult;
+  const { project } = useLoadedData();
   const gotoContribPage = useNavigateTo(paths.projectContributorsPath(project.id!));
   const [add] = useAddProjectContributors();
 
-  const form = Forms.useForm({
+  const form = Forms.useForm<{ contributors: ContributorFields[] }>({
     fields: {
       contributors: [newContributor()],
     },
@@ -117,12 +121,24 @@ function Contributors({ project }) {
 }
 
 function Contributor({ field, search, index, last, addMore }) {
+  const { project } = useLoadedData();
+
+  const permissionsList = React.useMemo(() => {
+  if (project.permissions?.hasFullAccess) {
+    return PERMISSIONS_LIST_COMPLETE;
+  }
+  if (project.permissions?.canEdit) {
+    return PERMISSIONS_LIST;
+  }
+  return [];
+}, [project.permissions?.hasFullAccess, project.permissions?.canEdit]);
+
   return (
     <div data-test-id={`contributor-${index}`}>
       <Paper.Body>
         <Forms.FieldGroup layout="horizontal">
           <Forms.SelectPerson field={field + ".personId"} label="Contributor" searchFn={search} autoFocus />
-          <Forms.SelectBox field={field + ".accessLevel"} label="Access Level" options={PERMISSIONS_LIST} />
+          <Forms.SelectBox field={field + ".accessLevel"} label="Access Level" options={permissionsList} />
 
           <Forms.TextInput
             field={field + ".responsibility"}
