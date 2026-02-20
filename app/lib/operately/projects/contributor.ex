@@ -66,4 +66,16 @@ defmodule Operately.Projects.Contributor do
     end)
   end
 
+  def load_access_level(contributor = %__MODULE__{}) do
+    query = from(group in Operately.Access.Group,
+      join: binding in assoc(group, :bindings),
+      join: context in assoc(binding, :context),
+      where: group.person_id == ^contributor.person_id and context.project_id == ^contributor.project_id,
+      select: max(binding.access_level)
+    )
+
+    level = Repo.one(query) || 0
+    Map.put(contributor, :access_level, level)
+  end
+
 end

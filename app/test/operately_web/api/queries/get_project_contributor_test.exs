@@ -93,5 +93,16 @@ defmodule Operately.Api.Queries.GetProjectContributorTest do
       })
       assert res.contributor.permissions == Map.from_struct(Operately.Projects.Permissions.calculate(Operately.Access.Binding.full_access()))
     end
+
+    test "include_access_level", ctx do
+      assert {200, res} = query(ctx.conn, :get_project_contributor, %{id: Paths.project_contributor_id(ctx.contributor)})
+      assert res.contributor.access_level == nil
+
+      assert {200, res} = query(ctx.conn, :get_project_contributor, %{
+        id: Paths.project_contributor_id(ctx.contributor),
+        include_access_level: true,
+      })
+      assert res.contributor.access_level == Operately.Access.Binding.edit_access()
+    end
   end
 end

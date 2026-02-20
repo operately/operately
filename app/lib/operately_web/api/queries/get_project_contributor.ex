@@ -9,6 +9,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectContributor do
     field :id, :id, null: false
     field? :include_project, :boolean, null: false
     field? :include_permissions, :boolean, null: false
+    field? :include_access_level, :boolean, null: true
   end
 
   outputs do
@@ -36,7 +37,8 @@ defmodule OperatelyWeb.Api.Queries.GetProjectContributor do
 
   defp after_load(inputs) do
     Inputs.parse_includes(inputs,
-      include_permissions: &Contributor.set_permissions/1
+      include_permissions: &Contributor.set_permissions/1,
+      include_access_level: &Contributor.load_access_level/1
     )
   end
 
