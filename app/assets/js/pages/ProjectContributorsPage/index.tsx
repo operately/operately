@@ -22,6 +22,7 @@ import { OtherPeople } from "./OtherPeople";
 import { loader, useLoadedData } from "./loader";
 
 import { usePaths } from "@/routes/paths";
+import { PermissionLevels } from "@/features/Permissions";
 export default { name: "ProjectContributorsPage", loader, Page } as PageModule;
 
 function Page() {
@@ -64,7 +65,7 @@ function AddContribsButton() {
   const paths = usePaths();
   const { project } = useLoadedData();
 
-  if (!project.permissions?.canEditContributors) return null;
+  if (!project.permissions?.canEdit) return null;
   const path = paths.projectContributorsAddPath(project.id!, { type: "contributor" });
 
   return (
@@ -89,9 +90,11 @@ function GeneralAccess() {
           tense="present"
         />
 
-        <SecondaryButton linkTo={editPath} size="xs">
-          Edit
-        </SecondaryButton>
+        {project.permissions?.hasFullAccess && (
+          <SecondaryButton linkTo={editPath} size="xs">
+            Edit
+          </SecondaryButton>
+        )}
       </BorderedRow>
     </Paper.Section>
   );
@@ -160,22 +163,26 @@ function ReviewerPlaceholder() {
   const paths = usePaths();
   const { project } = useLoadedData();
   const path = paths.projectContributorsAddPath(project.id!, { type: "reviewer" });
+  const canAddReviewer = project.permissions?.hasFullAccess;
+
+  const description = canAddReviewer
+    ? "Select a reviewer to get feedback and keep things moving smoothly"
+    : "The project doesn't have a reviewer yet";
 
   return (
     <Paper.Section title="Reviewer">
       <BorderedRow>
         <div className="flex items-center gap-2">
           <PlaceholderAvatar size="lg" />
-          <PlaceholderTitleAndDescription
-            title="No Reviewer"
-            description="Select a reviewer to get feedback and keep things moving smoothly"
-          />
+          <PlaceholderTitleAndDescription title="No Reviewer" description={description} />
         </div>
 
         <div className="flex items-center gap-4">
-          <SecondaryButton linkTo={path} testId="add-reviewer-button" size="sm">
-            Add reviewer
-          </SecondaryButton>
+          {canAddReviewer && (
+            <SecondaryButton linkTo={path} testId="add-reviewer-button" size="sm">
+              Add reviewer
+            </SecondaryButton>
+          )}
         </div>
       </BorderedRow>
     </Paper.Section>
@@ -195,19 +202,26 @@ function ChampionPlaceholder() {
   const paths = usePaths();
   const { project } = useLoadedData();
   const path = paths.projectContributorsAddPath(project.id!, { type: "champion" });
+  const canAddChampion = project.permissions?.hasFullAccess;
+
+  const description = canAddChampion
+    ? "Select a champion to lead the project"
+    : "The project doesn't have a champion yet";
 
   return (
     <Paper.Section title="Champion">
       <div className="flex items-center justify-between py-2 border-y border-stroke-dimmed">
         <div className="flex items-center gap-2">
           <PlaceholderAvatar size="lg" />
-          <PlaceholderTitleAndDescription title="No Champion" description="Select a champion to lead the project" />
+          <PlaceholderTitleAndDescription title="No Champion" description={description} />
         </div>
 
         <div className="flex items-center gap-4">
-          <SecondaryButton linkTo={path} testId="add-champion-button" size="sm">
-            Add champion
-          </SecondaryButton>
+          {canAddChampion && (
+            <SecondaryButton linkTo={path} testId="add-champion-button" size="sm">
+              Add champion
+            </SecondaryButton>
+          )}
         </div>
       </div>
     </Paper.Section>
@@ -230,7 +244,7 @@ function Contributors() {
 
 function Contributor({ contributor }: { contributor: ProjectContributor }) {
   return (
-    <BorderedRow>
+    <BorderedRow testId={createTestId("contributor-row", contributor.person?.fullName!)}>
       <div className="flex items-center gap-2">
         <ContributorAvatar contributor={contributor} />
         <ContributotNameAndResponsibility contributor={contributor} />
@@ -244,31 +258,33 @@ function Contributor({ contributor }: { contributor: ProjectContributor }) {
 }
 
 function ContributorMenu({ contributor }: { contributor: ProjectContributor }) {
+  const { project, champion, reviewer } = useLoadedData();
+
+  const isChampion = contributor.role === "champion";
+  const isReviewer = contributor.role === "reviewer";
+  const isContributor = contributor.role === "contributor";
+
+  // Determine which items should be visible based on role and permissions
+  const showChangeChampion = isChampion && project.permissions?.hasFullAccess;
+  const showChangeReviewer = isReviewer && project.permissions?.hasFullAccess;
+  const showReassignAsContributor = (isChampion || isReviewer) && project.permissions?.hasFullAccess;
+  const showEdit =
+    isContributor &&
+    ((contributor.accessLevel || PermissionLevels.NO_ACCESS) < PermissionLevels.FULL_ACCESS ||
+      project.permissions?.hasFullAccess);
+  const showPromoteToChampion = isContributor && champion && project.permissions?.hasFullAccess;
+  const showPromoteToReviewer = contributor.role === "contributor" && reviewer && project.permissions?.hasFullAccess;
+  const showRemove = project.permissions?.hasFullAccess;
+
   return (
-    <Menu testId={createTestId("contributor-menu", contributor.person!.fullName!)} size="medium">
-      {match(contributor.role)
-        .with("champion", () => (
-          <>
-            <ChangeProjectChampionMenuItem contributor={contributor} />
-            <ReassignAsContributorMenuItem contributor={contributor} />
-            <RemoveContributorMenuItem contributor={contributor} />
-          </>
-        ))
-        .with("reviewer", () => (
-          <>
-            <ChangeProjectReviewerMenuItem contributor={contributor} />
-            <ReassignAsContributorMenuItem contributor={contributor} />
-            <RemoveContributorMenuItem contributor={contributor} />
-          </>
-        ))
-        .otherwise(() => (
-          <>
-            <EditMenuItem contributor={contributor} />
-            <PromoteToChampionMenuItem contributor={contributor} />
-            <PromoteToReviewerMenuItem contributor={contributor} />
-            <RemoveContributorMenuItem contributor={contributor} />
-          </>
-        ))}
+    <Menu testId={createTestId("contributor-menu", contributor.person?.fullName || "")} size="medium">
+      {showChangeChampion && <ChangeProjectChampionMenuItem contributor={contributor} />}
+      {showChangeReviewer && <ChangeProjectReviewerMenuItem contributor={contributor} />}
+      {showReassignAsContributor && <ReassignAsContributorMenuItem contributor={contributor} />}
+      {showEdit && <EditMenuItem contributor={contributor} />}
+      {showPromoteToChampion && <PromoteToChampionMenuItem contributor={contributor} />}
+      {showPromoteToReviewer && <PromoteToReviewerMenuItem contributor={contributor} />}
+      {showRemove && <RemoveContributorMenuItem contributor={contributor} />}
     </Menu>
   );
 }
@@ -276,7 +292,7 @@ function ContributorMenu({ contributor }: { contributor: ProjectContributor }) {
 function ContributotNameAndResponsibility({ contributor }: { contributor: ProjectContributor }) {
   return (
     <div className="flex flex-col flex-1">
-      <div className="font-bold flex items-center gap-2">{contributor!.person!.fullName}</div>
+      <div className="font-bold flex items-center gap-2">{contributor.person?.fullName}</div>
       <div className="text-sm font-medium flex items-center">{contributor.responsibility}</div>
     </div>
   );
@@ -284,7 +300,7 @@ function ContributotNameAndResponsibility({ contributor }: { contributor: Projec
 
 function ReassignAsContributorMenuItem({ contributor }: { contributor: ProjectContributor }) {
   const paths = usePaths();
-  const path = paths.projectContributorsEditPath(contributor.id!, { action: "reassign-as-contributor" });
+  const path = paths.projectContributorsEditPath(contributor.id, { action: "reassign-as-contributor" });
 
   return (
     <MenuLinkItem to={path} testId="convert-to-contributor">
@@ -347,8 +363,6 @@ function PromoteToChampionMenuItem({ contributor }: { contributor: ProjectContri
   const [update] = ProjectContributors.useUpdateContributor();
   const { champion } = useLoadedData();
 
-  if (!champion) return null;
-
   const handleClick = async () => {
     await update({ contribId: champion!.id, role: "champion", personId: contributor.person!.id });
     refresh();
@@ -365,8 +379,6 @@ function PromoteToReviewerMenuItem({ contributor }: { contributor: ProjectContri
   const refresh = Pages.useRefresh();
   const [update] = ProjectContributors.useUpdateContributor();
   const { reviewer } = useLoadedData();
-
-  if (!reviewer) return null;
 
   const handleClick = async () => {
     await update({ contribId: reviewer!.id, role: "reviewer", personId: contributor.person!.id });

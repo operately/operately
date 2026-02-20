@@ -1,7 +1,12 @@
 import React from "react";
 
-export function BorderedRow({ children }: { children: React.ReactNode }) {
+interface Props {
+  children: React.ReactNode;
+  testId?: string;
+}
+
+export function BorderedRow({ children, testId }: Props) {
   return (
-    <div className="flex items-center justify-between py-2 border-t last:border-b border-stroke-dimmed">{children}</div>
+    <div className="flex items-center justify-between py-2 border-t last:border-b border-stroke-dimmed" data-test-id={testId}>{children}</div>
   );
 }

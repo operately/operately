@@ -1159,18 +1159,6 @@ defmodule Operately.Support.Features.ProjectSteps do
   # Permissions
   #
 
-  step :given_project_with_full_access_member_logged_in, ctx do
-    ctx
-    |> Factory.add_project_contributor(:full_access_member, :project, permissions: :full_access)
-    |> then(fn ctx ->
-      contributor = Map.fetch!(ctx, :full_access_member)
-      member = Operately.Repo.preload(contributor, :person).person
-
-      Map.put(ctx, :member, member)
-    end)
-    |> Factory.log_in_person(:member)
-  end
-
   step :given_project_with_edit_access_member_logged_in, ctx do
     ctx
     |> Factory.add_project_contributor(:edit_access_member, :project, permissions: :edit_access)
@@ -1188,14 +1176,6 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> Factory.add_space_member(:member, :product)
     |> Factory.add_project(:project, :product, space_access_level: Binding.comment_access(), company_access_level: Binding.no_access())
     |> Factory.log_in_person(:member)
-  end
-
-  step :assert_member_has_full_access, ctx do
-    {:ok, project} = Operately.Projects.Project.get(ctx.member, id: ctx.project.id)
-
-    assert project.request_info.access_level == Binding.full_access()
-
-    ctx
   end
 
   step :assert_member_has_edit_access, ctx do

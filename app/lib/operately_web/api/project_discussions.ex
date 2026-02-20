@@ -123,7 +123,7 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
       conn
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.project_id)
-      |> Steps.check_project_permissions(:can_create_discussion)
+      |> Steps.check_project_permissions(:can_edit)
       |> Steps.create_discussion(inputs.title, inputs.message, inputs.subscriber_ids, inputs.send_notifications_to_everyone)
       |> Ecto.Multi.merge(fn changes ->
         Operately.Activities.insert_sync(Ecto.Multi.new(), changes.me.id, :project_discussion_submitted, fn _ ->
@@ -160,7 +160,7 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
       conn
       |> Steps.start_transaction()
       |> Steps.find_discussion(inputs.id)
-      |> Steps.check_discussion_permissions(:can_comment)
+      |> Steps.check_discussion_permissions(:can_edit)
       |> Steps.update_discussion(inputs.title, inputs.message, inputs.subscriber_ids)
       |> Steps.respond(fn changes ->
         %{discussion: Serializer.serialize(changes.updated_discussion, level: :essential)}
