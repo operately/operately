@@ -6,12 +6,13 @@ defmodule OperatelyWeb.Api.Queries.GetProjectContributor do
   alias OperatelyWeb.Api.Serializer
 
   inputs do
-    field? :id, :string, null: true
-    field? :include_project, :boolean, null: true
+    field :id, :string, null: false
+    field? :include_project, :boolean, null: false
+    field? :include_permissions, :boolean, null: false
   end
 
   outputs do
-    field? :contributor, :project_contributor, null: true
+    field :contributor, :project_contributor, null: false
   end
 
   def call(conn, inputs) do
@@ -23,15 +24,24 @@ defmodule OperatelyWeb.Api.Queries.GetProjectContributor do
     |> respond()
   end
 
-  def load(ctx, inputs) do
-    Contributor.get(ctx.me, id: ctx.id, opts: [preload: preloaded(inputs)])
+  defp load(ctx, inputs) do
+    Contributor.get(ctx.me, id: ctx.id, opts: [preload: preload(inputs), after_load: after_load(inputs)])
   end
 
-  def preloaded(inputs) do
-    [:person] ++ (if inputs[:include_project], do: [:project], else: [])
+  defp preload(inputs) do
+    Inputs.parse_includes(inputs,
+      include_project: [:project],
+      always_include: [:person]
+    )
   end
 
-  def respond(result) do
+  defp after_load(inputs) do
+    Inputs.parse_includes(inputs,
+      include_permissions: &Contributor.set_permissions/1
+    )
+  end
+
+  defp respond(result) do
     case result do
       {:ok, ctx} -> {:ok, ctx.serialized}
       {:error, :id, _} -> {:error, :bad_request}
@@ -39,5 +49,4 @@ defmodule OperatelyWeb.Api.Queries.GetProjectContributor do
       _ -> {:error, :not_found}
     end
   end
-
 end

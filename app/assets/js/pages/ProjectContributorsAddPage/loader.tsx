@@ -17,9 +17,17 @@ export async function loader({ request, params }): Promise<LoaderResult> {
     id: params.projectID,
     includeSpace: true,
     includePermissions: true,
-  }).then((data) => data.project!);
+  }).then((data) => data.project);
 
   const type = Pages.getSearchParam(request, "type") as ContributorTypeParam;
 
-  return { project: project, contribType: type };
+  if (project.permissions?.canEdit || project.permissions?.hasFullAccess) {
+    return { project: project, contribType: type };
+  }
+
+  throw new Response("Not Found", { status: 404 });
+}
+
+export function useLoadedData(): LoaderResult {
+  return Pages.useLoadedData() as LoaderResult;
 }

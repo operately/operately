@@ -19,7 +19,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveProjectContributor do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:id, fn -> decode_id(inputs[:contrib_id]) end)
     |> run(:contrib, fn ctx -> Contributor.get(ctx.me, id: ctx.id) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.contrib.request_info.access_level, :can_edit_contributors) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.contrib.request_info.access_level, :has_full_access) end)
     |> run(:operation, fn ctx -> ProjectContributorRemoved.run(ctx.me, ctx.contrib) end)
     |> run(:serialized, fn ctx -> {:ok, %{contributor: Serializer.serialize(ctx.operation, level: :essential)}} end)
     |> respond()

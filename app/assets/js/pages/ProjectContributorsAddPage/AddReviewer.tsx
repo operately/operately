@@ -3,9 +3,8 @@ import * as Paper from "@/components/PaperContainer";
 import * as Projects from "@/models/projects";
 import * as React from "react";
 
-import { useAddProjectContributor } from "@/api";
+import { useAddProjectContributor } from "@/models/projectContributors";
 import { ProjectContribsSubpageNavigation } from "@/components/ProjectPageNavigation";
-import { PermissionLevels } from "@/features/Permissions";
 
 import Forms from "@/components/Forms";
 import { useNavigateTo } from "@/routes/useNavigateTo";
@@ -55,7 +54,7 @@ function useForm() {
         projectId: project.id,
         personId: form.values.person,
         responsibility: "",
-        permissions: PermissionLevels.FULL_ACCESS,
+        permissions: "full_access",
         role: "reviewer",
       });
 

@@ -2,32 +2,139 @@ defmodule Operately.Features.ProjectsContributorsTest do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.ProjectContributorsSteps, as: Steps
+  alias Operately.Access.Binding
 
   setup ctx do
-    ctx = Steps.create_project(ctx, name: "Test Project")
-    ctx = Steps.login(ctx)
-
-    {:ok, ctx}
+    ctx
+    |> Steps.create_project(name: "Test Project")
+    |> Steps.setup_contributors()
+    |> Steps.login()
   end
 
-  @tag login_as: :champion
-  feature "adding project contributors", ctx do
-    contribs = [
-      %{name: "Michael Scott", responsibility: "Lead the backend implementation"},
-      %{name: "Dwight Schrute", responsibility: "Lead the frontend implementation"},
-      %{name: "Jim Halpert", responsibility: "Lead the design implementation"}
-    ]
+  describe "adding project contributors" do
+    setup ctx do
+      ctx
+      |> Steps.given_a_person_exists(name: "Michael Scott")
+      |> Steps.given_a_person_exists(name: "Dwight Schrute")
+      |> Steps.given_a_person_exists(name: "Jim Halpert")
+    end
 
-    ctx
-    |> Steps.given_a_person_exists(name: "Michael Scott")
-    |> Steps.given_a_person_exists(name: "Dwight Schrute")
-    |> Steps.given_a_person_exists(name: "Jim Halpert")
-    |> Steps.visit_project_page()
-    |> Steps.add_contributors(contribs)
-    |> Steps.assert_contributors_added(contribs)
-    |> Steps.assert_contributors_added_feed_item_exists(contribs)
-    |> Steps.assert_contributors_added_notification_sent(contribs)
-    |> Steps.assert_contributors_added_email_sent(contribs)
+    @tag login_as: :champion
+    feature "functionality", ctx do
+      contribs = [
+        %{name: "Michael Scott", responsibility: "Lead the backend implementation"},
+        %{name: "Dwight Schrute", responsibility: "Lead the frontend implementation"},
+        %{name: "Jim Halpert", responsibility: "Lead the design implementation"}
+      ]
+
+      ctx
+      |> Steps.visit_project_page()
+      |> Steps.add_contributors(contribs)
+      |> Steps.assert_contributors_added(contribs)
+      |> Steps.assert_contributors_added_feed_item_exists(contribs)
+      |> Steps.assert_contributors_added_notification_sent(contribs)
+      |> Steps.assert_contributors_added_email_sent(contribs)
+    end
+
+    @tag login_as: :champion
+    feature "full access", ctx do
+      contribs = [
+        %{name: "Michael Scott", access: "Edit Access", responsibility: "Lead the backend implementation"},
+        %{name: "Dwight Schrute", access: "Full Access", responsibility: "Lead the frontend implementation"},
+        %{name: "Jim Halpert", access: "Comment Access", responsibility: "Lead the design implementation"}
+      ]
+
+      ctx
+      |> Steps.assert_logged_in_champion_has_full_access()
+      |> Steps.visit_project_page()
+      |> Steps.add_contributors(contribs)
+      |> Steps.assert_contributors_added(contribs)
+      |> Steps.assert_access_level_of_added_contributors(contribs)
+    end
+
+    @tag login_as: :contributor
+    feature "edit access", ctx do
+      contribs = [
+        %{name: "Michael Scott", access: "Edit Access", responsibility: "Lead the backend implementation"},
+        %{name: "Dwight Schrute", access: "View Access", responsibility: "Lead the frontend implementation"},
+        %{name: "Jim Halpert", access: "Comment Access", responsibility: "Lead the design implementation"}
+      ]
+
+      ctx
+      |> Steps.assert_logged_in_contributor_has_edit_access()
+      |> Steps.visit_project_page()
+      |> Steps.add_contributors(contribs)
+      |> Steps.assert_contributors_added(contribs)
+      |> Steps.assert_access_level_of_added_contributors(contribs)
+    end
+
+    @tag login_as: :contributor
+    feature "contributor with edit access doesn't see full-access option", ctx do
+      ctx
+      |> Steps.assert_logged_in_contributor_has_edit_access()
+      |> Steps.visit_project_page()
+      |> Steps.start_adding_contributors()
+      |> Steps.assert_full_access_option_not_available()
+    end
+
+    @tag login_as: :commenter
+    feature "contributor with comment access gets 404", ctx do
+      ctx
+      |> Steps.assert_logged_in_contributor_has_comment_access()
+      |> Steps.visit_project_contributors_page(:direct)
+      |> Steps.assert_404()
+    end
+  end
+
+  describe "editing project contributors" do
+    @tag login_as: :champion
+    feature "full access", ctx do
+      ctx
+      |> Steps.given_the_project_has_contributor(name: "Michael Scott")
+      |> Steps.assert_logged_in_champion_has_full_access()
+      |> Steps.visit_project_contributors_page()
+      |> Steps.assert_contributor_attributes(name: "Michael Scott", responsibility: "Lead the backend implementation", access: "Edit Access")
+      |> Steps.start_editing_contributor(name: "Michael Scott")
+      |> Steps.edit_contributor(responsibility: "New responsibility", access: "Full Access")
+      |> Steps.assert_contributor_attributes(name: "Michael Scott", responsibility: "New responsibility", access: "Full Access")
+    end
+
+    @tag login_as: :champion
+    feature "User with full access can edit another user with full access", ctx do
+      ctx
+      |> Steps.given_the_project_has_contributor(name: "Michael Scott", access: Binding.full_access())
+      |> Steps.assert_logged_in_champion_has_full_access()
+      |> Steps.visit_project_contributors_page()
+      |> Steps.assert_contributor_attributes(name: "Michael Scott", responsibility: "Lead the backend implementation", access: "Full Access")
+      |> Steps.start_editing_contributor(name: "Michael Scott")
+      |> Steps.edit_contributor(responsibility: "New responsibility", access: "View Access")
+      |> Steps.assert_contributor_attributes(name: "Michael Scott", responsibility: "New responsibility", access: "View Access")
+    end
+
+    @tag login_as: :contributor
+    feature "edit access", ctx do
+      ctx
+      |> Steps.given_the_project_has_contributor(name: "Michael Scott", access: Binding.view_access())
+      |> Steps.assert_logged_in_contributor_has_edit_access()
+      |> Steps.visit_project_contributors_page()
+      |> Steps.assert_contributor_attributes(name: "Michael Scott", responsibility: "Lead the backend implementation", access: "View Access")
+      |> Steps.start_editing_contributor(name: "Michael Scott")
+      |> Steps.edit_contributor(responsibility: "New responsibility", access: "Edit Access")
+      |> Steps.assert_contributor_attributes(name: "Michael Scott", responsibility: "New responsibility", access: "Edit Access")
+    end
+
+    @tag login_as: :contributor
+    feature "User with edit access cannot edit another user with edit access", ctx do
+      ctx
+      |> Steps.given_the_project_has_contributor(name: "Michael Scott", access: Binding.edit_access())
+      |> Steps.given_the_project_has_contributor(name: "Dwight Schrute", access: Binding.full_access())
+      |> Steps.assert_logged_in_contributor_has_edit_access()
+      |> Steps.visit_project_contributors_page()
+      |> Steps.assert_contributor_attributes(name: "Michael Scott", responsibility: "Lead the backend implementation", access: "Edit Access")
+      |> Steps.assert_contributor_attributes(name: "Dwight Schrute", responsibility: "Lead the backend implementation", access: "Full Access")
+      |> Steps.assert_can_edit_user(name: "Michael Scott")
+      |> Steps.assert_cannot_edit_user(name: "Dwight Schrute")
+    end
   end
 
   @tag login_as: :champion

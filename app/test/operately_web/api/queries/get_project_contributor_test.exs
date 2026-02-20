@@ -61,4 +61,37 @@ defmodule Operately.Api.Queries.GetProjectContributorTest do
       assert {200, _} = query(ctx.conn, :get_project_contributor, %{id: ctx.developer.id})
     end
   end
+
+  describe "get_project_contributor functionality" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
+      |> Factory.add_project_contributor(:contributor, :project)
+      |> Factory.log_in_person(:creator)
+    end
+
+    test "include_project", ctx do
+      assert {200, res} = query(ctx.conn, :get_project_contributor, %{id: ctx.contributor.id})
+      assert res.contributor.project == nil
+
+      assert {200, res} = query(ctx.conn, :get_project_contributor, %{
+        id: ctx.contributor.id,
+        include_project: true,
+      })
+      assert res.contributor.project == Serializer.serialize(ctx.project, level: :essential)
+    end
+
+    test "include_permissions", ctx do
+      assert {200, res} = query(ctx.conn, :get_project_contributor, %{id: ctx.contributor.id})
+      assert res.contributor.permissions == nil
+
+      assert {200, res} = query(ctx.conn, :get_project_contributor, %{
+        id: ctx.contributor.id,
+        include_permissions: true,
+      })
+      assert res.contributor.permissions == Map.from_struct(Operately.Projects.Permissions.calculate(Operately.Access.Binding.full_access()))
+    end
+  end
 end

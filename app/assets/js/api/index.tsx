@@ -1480,12 +1480,13 @@ export interface ProjectContributor {
   person?: Person | null;
   accessLevel: number | null;
   project?: Project | null;
+  permissions?: ProjectPermissions;
 }
 
 export interface ProjectContributorInput {
-  personId: string;
-  responsibility?: string;
-  accessLevel: number;
+  personId: Id;
+  responsibility: string | null;
+  accessLevel: AccessOptions;
 }
 
 export interface ProjectContributorsAdditionContributor {
@@ -1516,36 +1517,9 @@ export interface ProjectKeyResource {
 
 export interface ProjectPermissions {
   canView: boolean;
-  canCommentOnMilestone: boolean;
-  canCommentOnCheckIn: boolean;
-  canCommentOnRetrospective: boolean;
-  canCommentOnTask: boolean;
-  canCreateMilestone: boolean;
-  canCreateTask: boolean;
-  canCreateDiscussion: boolean;
-  canCompleteMilestone: boolean;
-  canReopenMilestone: boolean;
-  canDeleteMilestone: boolean;
-  canEditContributors: boolean;
-  canEditMilestone: boolean;
-  canEditDescription: boolean;
-  canEditTimeline: boolean;
-  canEditResources: boolean;
-  canEditGoal: boolean;
-  canEditName: boolean;
-  canEditSpace: boolean;
-  canEditRetrospective: boolean;
-  canEditPermissions: boolean;
-  canEditSubscriptionsList: boolean;
-  canClose: boolean;
-  canPause: boolean;
-  canResume: boolean;
-  canCheckIn: boolean;
-  canEditTask: boolean;
-  canEditStatuses: boolean;
-  canAcknowledgeCheckIn: boolean;
   canComment: boolean;
-  canDelete: boolean;
+  canEdit: boolean;
+  hasFullAccess: boolean;
 }
 
 export interface ProjectRetrospective {
@@ -2558,12 +2532,13 @@ export interface GetProjectCheckInsResult {
 }
 
 export interface GetProjectContributorInput {
-  id?: string | null;
-  includeProject?: boolean | null;
+  id: string;
+  includeProject?: boolean;
+  includePermissions?: boolean;
 }
 
 export interface GetProjectContributorResult {
-  contributor?: ProjectContributor | null;
+  contributor: ProjectContributor;
 }
 
 export interface GetProjectRetrospectiveInput {
@@ -3105,9 +3080,9 @@ export interface AddKeyResourceResult {
 export interface AddProjectContributorInput {
   projectId: Id;
   personId: Id;
-  responsibility?: string | null;
-  permissions?: number | null;
-  role?: string | null;
+  responsibility: string;
+  permissions: AccessOptions;
+  role: string | null;
 }
 
 export interface AddProjectContributorResult {
@@ -4577,15 +4552,15 @@ export interface UpdateProfilePictureResult {
 }
 
 export interface UpdateProjectContributorInput {
-  contribId?: string | null;
-  personId?: string | null;
+  contribId: string;
+  personId?: Id | null;
   responsibility?: string | null;
-  permissions?: number | null;
+  permissions?: AccessOptions | null;
   role?: string | null;
 }
 
 export interface UpdateProjectContributorResult {
-  contributor?: ProjectContributor | null;
+  contributor: ProjectContributor;
 }
 
 export interface UpdateProjectDescriptionInput {
