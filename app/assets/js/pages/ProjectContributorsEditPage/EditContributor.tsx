@@ -8,6 +8,7 @@ import Forms from "@/components/Forms";
 import { FieldObject } from "@/components/Forms";
 import { PageTitle } from "./PageTitle";
 import { useGotoProjectContributors, useLoadedData } from "./loader";
+import { accessLevelAsEnumValue, PermissionLevels } from "@/features/Permissions";
 
 const PERMISSIONS_LIST_COMPLETE = [
   { value: "full_access", label: "Full Access" },
@@ -69,7 +70,7 @@ function useForm(contributor: ProjectContributors.ProjectContributor) {
   const form = Forms.useForm<FormContributor>({
     fields: {
       responsibility: contributor.responsibility || "",
-      permissions: null,
+      permissions: accessLevelAsEnumValue(contributor.accessLevel || PermissionLevels.NO_ACCESS),
     },
     validate: async (addError) => {
       if (!form.values.permissions) {

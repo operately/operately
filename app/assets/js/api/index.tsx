@@ -2532,9 +2532,10 @@ export interface GetProjectCheckInsResult {
 }
 
 export interface GetProjectContributorInput {
-  id: string;
+  id: Id;
   includeProject?: boolean;
   includePermissions?: boolean;
+  includeAccessLevel?: boolean | null;
 }
 
 export interface GetProjectContributorResult {
@@ -4552,7 +4553,7 @@ export interface UpdateProfilePictureResult {
 }
 
 export interface UpdateProjectContributorInput {
-  contribId: string;
+  contribId: Id;
   personId?: Id | null;
   responsibility?: string | null;
   permissions?: AccessOptions | null;

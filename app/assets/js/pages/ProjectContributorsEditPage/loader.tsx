@@ -17,6 +17,7 @@ export async function loader({ params, request }): Promise<LoaderResult> {
     id: params.id,
     includeProject: true,
     includePermissions: true,
+    includeAccessLevel: true,
   }).then((data) => data.contributor);
 
   const action = Pages.getSearchParam(request, "action") as UrlParams["action"];
