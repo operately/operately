@@ -91,6 +91,25 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     Map.put(ctx, :project, project)
   end
 
+  step :given_task_and_company_member_exist, ctx do
+    ctx =
+      ctx
+      |> Factory.add_company_member(:company_member)
+      |> Factory.add_project_task(:task, :milestone)
+
+    UI.login_as(ctx, ctx.company_member)
+  end
+
+  step :given_task_and_assignee_exist, ctx do
+    ctx =
+      ctx
+      |> Factory.add_company_member(:company_member)
+      |> Factory.add_project_task(:task, :milestone)
+      |> Factory.add_task_assignee(:assignee, :task, :company_member)
+
+    UI.login_as(ctx, ctx.company_member)
+  end
+
   step :visit_project_page, ctx do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
@@ -346,14 +365,34 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> UI.sleep(300)
   end
 
+  step :subscribe_to_task, ctx do
+    ctx
+    |> UI.click(testid: "project-subscribe-button")
+    |> UI.sleep(300)
+  end
+
+  step :unsubscribe_from_task, ctx do
+    ctx
+    |> UI.click(testid: "project-unsubscribe-button")
+    |> UI.sleep(300)
+  end
+
   #
   # Assertions
   #
 
   step :assert_subscribed_to_task, ctx do
     ctx
+    |> UI.assert_page(Paths.project_task_path(ctx.company, ctx.task))
     |> UI.assert_has(testid: "project-unsubscribe-button")
     |> UI.assert_text("You're receiving notifications because you're subscribed to this task.")
+  end
+
+  step :assert_unsubscribed_from_task, ctx do
+    ctx
+    |> UI.assert_page(Paths.project_task_path(ctx.company, ctx.task))
+    |> UI.assert_has(testid: "project-subscribe-button")
+    |> UI.assert_text("You're not receiving notifications from this task.")
   end
 
   step :assert_task_marked_completed, ctx do

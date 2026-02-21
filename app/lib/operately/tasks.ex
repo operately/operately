@@ -1,5 +1,6 @@
 defmodule Operately.Tasks do
   import Ecto.Query, warn: false
+  alias Ecto.Multi
   alias Operately.Repo
 
   alias Operately.Tasks.Task
@@ -11,7 +12,24 @@ defmodule Operately.Tasks do
 
   def update_task(task, attrs \\ %{}), do: Task.changeset(task, attrs) |> Repo.update()
 
-  def create_assignee(attrs \\ %{}), do: Assignee.changeset(attrs) |> Repo.insert()
+  def create_assignee(attrs \\ %{}) do
+    Multi.new()
+    |> Multi.insert(:assignee, Assignee.changeset(attrs))
+    |> Multi.run(:subscription, fn _repo, %{assignee: assignee} ->
+      task = Repo.get!(Task, assignee.task_id)
+      Operately.Notifications.create_subscription(%{
+        subscription_list_id: task.subscription_list_id,
+        person_id: assignee.person_id,
+        type: :invited,
+      })
+    end)
+    |> Repo.transaction()
+    |> case do
+      {:ok, %{assignee: assignee}} -> {:ok, assignee}
+      {:error, :assignee, changeset, _} -> {:error, changeset}
+      {:error, :subscription, _reason, _} -> {:error, :subscription_creation_failed}
+    end
+  end
 
   def list_tasks(params \\ %{}) do
     from(t in Task)

@@ -611,4 +611,30 @@ defmodule Operately.Features.ProjectTasksTest do
     |> Steps.visit_task_page()
     |> Steps.assert_page_loads_without_errors()
   end
+
+  @tag login_as: ""
+  feature "user can subscribe to task", ctx do
+    ctx
+    |> Steps.given_task_and_company_member_exist()
+    |> Steps.visit_task_page()
+    |> Steps.assert_unsubscribed_from_task()
+    |> Steps.subscribe_to_task()
+    |> Steps.assert_subscribed_to_task()
+    |> Steps.visit_project_page()
+    |> Steps.visit_task_page()
+    |> Steps.assert_subscribed_to_task()
+  end
+
+  @tag login_as: ""
+  feature "user can unsubscribe to task", ctx do
+    ctx
+    |> Steps.given_task_and_assignee_exist()
+    |> Steps.visit_task_page()
+    |> Steps.assert_subscribed_to_task()
+    |> Steps.unsubscribe_from_task()
+    |> Steps.assert_unsubscribed_from_task()
+    |> Steps.visit_project_page()
+    |> Steps.visit_task_page()
+    |> Steps.assert_unsubscribed_from_task()
+  end
 end
