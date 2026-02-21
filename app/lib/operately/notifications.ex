@@ -228,7 +228,8 @@ defmodule Operately.Notifications do
           where: s.id == ^id
         )
       :project_task ->
-        from(t in Operately.Tasks.Task, as: :resource,
+        from(t in Operately.Tasks.Task,
+          join: p in assoc(t, :project), as: :resource,
           join: s in assoc(t, :subscription_list),
           where: s.id == ^id
         )
