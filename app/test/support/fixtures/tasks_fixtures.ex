@@ -40,9 +40,7 @@ defmodule Operately.TasksFixtures do
   def assignee_fixture(attrs \\ %{}) do
     {:ok, assignee} =
       attrs
-      |> Enum.into(%{
-
-      })
+      |> Enum.into(%{})
       |> Operately.Tasks.create_assignee()
 
     assignee
