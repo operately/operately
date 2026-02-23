@@ -96,6 +96,42 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       assert open_task.parent_id == ctx.project.id
     end
 
+    test "prioritizes contributor_id over requester when include_tasks is true", ctx do
+      {:ok, work_map} =
+        GetWorkMapQuery.execute(ctx.assignee, %{
+          company_id: ctx.company.id,
+          include_tasks: true,
+          contributor_id: ctx.other_person.id
+        }, :flat)
+
+      items_by_id = index_work_map_by_id(work_map)
+
+      assert Map.has_key?(items_by_id, ctx.other_assignee_task.id)
+
+      refute Map.has_key?(items_by_id, ctx.open_task.id)
+      refute Map.has_key?(items_by_id, ctx.closed_task.id)
+
+      other_assignee_task = Map.fetch!(items_by_id, ctx.other_assignee_task.id)
+      assert other_assignee_task.type == :task
+      assert other_assignee_task.parent_id == ctx.project.id
+    end
+
+    test "uses contributor_id for system requester when include_tasks is true", ctx do
+      {:ok, work_map} =
+        GetWorkMapQuery.execute(:system, %{
+          company_id: ctx.company.id,
+          include_tasks: true,
+          contributor_id: ctx.assignee.id
+        }, :flat)
+
+      items_by_id = index_work_map_by_id(work_map)
+
+      assert Map.has_key?(items_by_id, ctx.open_task.id)
+
+      refute Map.has_key?(items_by_id, ctx.closed_task.id)
+      refute Map.has_key?(items_by_id, ctx.other_assignee_task.id)
+    end
+
     test "preloads project_space as nil when assignee has no access to the space", ctx do
       ctx =
         ctx

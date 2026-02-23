@@ -149,6 +149,7 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   defp get_tasks(person, args) do
     include_tasks = include_tasks?(args)
     company_id = args.company_id
+    contributor_id = Map.get(args, :contributor_id)
 
     cond do
       not include_tasks ->
@@ -158,25 +159,33 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
         Logger.warning("WorkMap get_tasks called with nil company_id")
         []
 
+      match?(%Operately.People.Person{}, person) ->
+        assignee_id = contributor_id || person.id
+        query_tasks(company_id, assignee_id, person)
+
+      match?(:system, person) and not is_nil(contributor_id) ->
+        query_tasks(company_id, contributor_id, person)
+
       match?(:system, person) ->
         []
-
-      match?(%Operately.People.Person{}, person) ->
-        from(t in Operately.Tasks.Task, as: :task)
-        |> join(:inner, [task: t], a in assoc(t, :assignees), as: :assignee)
-        |> join(:left, [task: t], p in assoc(t, :project), as: :project)
-        |> where([assignee: a], a.person_id == ^person.id)
-        |> Operately.Tasks.Task.scope_company(company_id)
-        |> where([project: p], is_nil(p.id) or p.status == "active")
-        |> where([task: t], fragment("COALESCE((?->>'closed')::boolean, false) = false", t.task_status))
-        |> preload([:project, :space, :company, :assigned_people])
-        |> preload_project_space_if_authorized(person)
-        |> Repo.all()
 
       true ->
         Logger.warning("Invalid person for tasks query: #{inspect(person)}")
         []
     end
+  end
+
+  defp query_tasks(company_id, assignee_id, person) do
+    from(t in Operately.Tasks.Task, as: :task)
+    |> join(:inner, [task: t], a in assoc(t, :assignees), as: :assignee)
+    |> join(:left, [task: t], p in assoc(t, :project), as: :project)
+    |> where([assignee: a], a.person_id == ^assignee_id)
+    |> Operately.Tasks.Task.scope_company(company_id)
+    |> where([project: p], is_nil(p.id) or p.status == "active")
+    |> where([task: t], fragment("COALESCE((?->>'closed')::boolean, false) = false", t.task_status))
+    |> preload([:project, :space, :company, :assigned_people])
+    |> preload_project_space_if_authorized(person)
+    |> Repo.all()
   end
 
   defp build_work_map(goals, projects, args) do
@@ -196,7 +205,7 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     |> WorkMap.build_hierarchy()
   end
 
-  defp maybe_add_contributor(item = %{type: :project, assignees: assignees}, contributor_id) when not is_nil(contributor_id) and not is_nil(assignees) do
+  defp maybe_add_contributor(item = %{type: type, assignees: assignees}, contributor_id) when type in [:project, :task] and not is_nil(contributor_id) and not is_nil(assignees) do
     contributor = Enum.find(assignees, fn person -> person && person.id == contributor_id end)
 
     Map.put(item, :contributor, contributor)
