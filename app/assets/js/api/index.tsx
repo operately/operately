@@ -914,6 +914,17 @@ export interface ActivityContentTaskMilestoneUpdating {
   newMilestone: Milestone | null;
 }
 
+export interface ActivityContentTaskMoving {
+  task: Task | null;
+  taskName: string;
+  originType: TaskType;
+  destinationType: TaskType;
+  originProject: Project | null;
+  originSpace: Space | null;
+  destinationProject: Project | null;
+  destinationSpace: Space | null;
+}
+
 export interface ActivityContentTaskNameEditing {
   companyId?: string | null;
   spaceId?: string | null;
@@ -2021,6 +2032,7 @@ export type ActivityContent =
   | ActivityContentTaskClosing
   | ActivityContentTaskDescriptionChange
   | ActivityContentTaskNameEditing
+  | ActivityContentTaskMoving
   | ActivityContentTaskPriorityChange
   | ActivityContentTaskReopening
   | ActivityContentTaskSizeChange
@@ -4019,6 +4031,18 @@ export interface MoveProjectToSpaceInput {
 
 export interface MoveProjectToSpaceResult {}
 
+export interface MoveTaskInput {
+  taskId: Id;
+  destinationType: TaskType;
+  destinationId: Id;
+}
+
+export interface MoveTaskResult {
+  task: Task;
+  destinationType: TaskType;
+  destinationId: Id;
+}
+
 export interface PauseProjectInput {
   projectId?: string | null;
 }
@@ -5074,6 +5098,10 @@ class ApiNamespaceRoot {
 
   async moveProjectToSpace(input: MoveProjectToSpaceInput): Promise<MoveProjectToSpaceResult> {
     return this.client.post("/move_project_to_space", input);
+  }
+
+  async moveTask(input: MoveTaskInput): Promise<MoveTaskResult> {
+    return this.client.post("/move_task", input);
   }
 
   async pauseProject(input: PauseProjectInput): Promise<PauseProjectResult> {
@@ -6156,6 +6184,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.moveProjectToSpace(input);
   }
 
+  moveTask(input: MoveTaskInput): Promise<MoveTaskResult> {
+    return this.apiNamespaceRoot.moveTask(input);
+  }
+
   pauseProject(input: PauseProjectInput): Promise<PauseProjectResult> {
     return this.apiNamespaceRoot.pauseProject(input);
   }
@@ -6683,6 +6715,9 @@ export async function markNotificationsAsRead(
 }
 export async function moveProjectToSpace(input: MoveProjectToSpaceInput): Promise<MoveProjectToSpaceResult> {
   return defaultApiClient.moveProjectToSpace(input);
+}
+export async function moveTask(input: MoveTaskInput): Promise<MoveTaskResult> {
+  return defaultApiClient.moveTask(input);
 }
 export async function pauseProject(input: PauseProjectInput): Promise<PauseProjectResult> {
   return defaultApiClient.pauseProject(input);
@@ -7465,6 +7500,10 @@ export function useMoveProjectToSpace(): UseMutationHookResult<MoveProjectToSpac
   );
 }
 
+export function useMoveTask(): UseMutationHookResult<MoveTaskInput, MoveTaskResult> {
+  return useMutation<MoveTaskInput, MoveTaskResult>((input) => defaultApiClient.moveTask(input));
+}
+
 export function usePauseProject(): UseMutationHookResult<PauseProjectInput, PauseProjectResult> {
   return useMutation<PauseProjectInput, PauseProjectResult>((input) => defaultApiClient.pauseProject(input));
 }
@@ -7897,6 +7936,8 @@ export default {
   useMarkNotificationsAsRead,
   moveProjectToSpace,
   useMoveProjectToSpace,
+  moveTask,
+  useMoveTask,
   pauseProject,
   usePauseProject,
   postDiscussion,
