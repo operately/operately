@@ -102,6 +102,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "task_description_change",
     "task_due_date_updating",
     "task_milestone_updating",
+    "task_moving",
     "task_name_editing",
     "task_name_updating",
     "task_priority_change",

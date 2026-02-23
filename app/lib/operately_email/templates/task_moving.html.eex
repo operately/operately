@@ -1,0 +1,13 @@
+<%= title("#{short_name(@author)} moved #{@task_name}") %>
+
+<%= spacer() %>
+
+<%= row do %>
+  The task is now in <%= @destination_name %>.
+<% end %>
+
+<%= spacer() %>
+
+<%= row do %>
+  <%= cta_button(@cta_url, "View Task") %>
+<% end %>
