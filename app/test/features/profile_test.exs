@@ -149,11 +149,22 @@ defmodule Operately.Features.ProfileTest do
     |> Steps.assert_item_visible(name: ctx.goal.name)
   end
 
-   feature "view tasks assigned to the person", ctx do
+  feature "view tasks assigned to yourself", ctx do
     task_name = "Prepare launch checklist"
 
     ctx
     |> Steps.given_task_assigned_to_person(task_name: task_name)
+    |> Steps.visit_profile_page()
+    |> Steps.click_tasks_tab()
+    |> Steps.assert_item_visible(name: task_name)
+  end
+
+  feature "view tasks assigned to another person", ctx do
+    task_name = "Prepare launch checklist"
+
+    ctx
+    |> Steps.given_task_assigned_to_person(task_name: task_name)
+    |> Steps.login_as_another_person()
     |> Steps.visit_profile_page()
     |> Steps.click_tasks_tab()
     |> Steps.assert_item_visible(name: task_name)
