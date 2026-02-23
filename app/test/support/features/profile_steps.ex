@@ -249,6 +249,12 @@ defmodule Operately.Support.Features.ProfileSteps do
     Factory.pause_project(ctx, project_key)
   end
 
+  step :login_as_another_person, ctx do
+    ctx = Factory.add_company_member(ctx, :other_person)
+
+    Operately.Support.Features.UI.login_as(ctx, ctx.other_person)
+  end
+
   step :click_about_tab, ctx do
     UI.click(ctx, testid: "tab-about")
   end
