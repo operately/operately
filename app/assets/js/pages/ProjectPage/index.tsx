@@ -17,7 +17,7 @@ import { fetchAll } from "../../utils/async";
 
 import { parseMilestoneForTurboUi, parseMilestonesForTurboUi } from "@/models/milestones";
 import { parseCheckInsForTurboUi, ProjectCheckIn } from "@/models/projectCheckIns";
-import { parseSpaceForTurboUI } from "@/models/spaces";
+import { parseSpaceForTurboUI, useSpaceSearch as useTaskDestinationSpaceSearch } from "@/models/spaces";
 import { Paths, usePaths } from "@/routes/paths";
 import { useAiSidebar } from "../../features/AiSidebar";
 import { parseContextualDate, serializeContextualDate } from "../../models/contextualDates";
@@ -184,6 +184,23 @@ function Page() {
   });
 
   const { statuses, handleSaveStatuses } = Projects.useTaskStatuses(project.id, project.taskStatuses, refresh);
+  const taskProjectSearch = Projects.useProjectSearch({ accessLevel: "edit_access" });
+  const taskSpaceSearch = useTaskDestinationSpaceSearch({ accessLevel: "edit_access" });
+
+  const handleMoveTaskSuccess = React.useCallback(
+    async ({ destinationType, destinationId }: { destinationType: string; destinationId: string }) => {
+      PageCache.invalidate(pageCacheKey(project.id));
+
+      if (destinationType === "project") {
+        PageCache.invalidate(pageCacheKey(destinationId));
+      }
+
+      if (refresh) {
+        await refresh();
+      }
+    },
+    [project.id, refresh],
+  );
 
   const { kanbanState, handleTaskKanbanChange } = Tasks.useKanbanState({
     initialRawState: project.tasksKanbanState,
@@ -214,6 +231,9 @@ function Page() {
     onTaskDueDateChange: updateTaskDueDate,
     onTaskStatusChange: updateTaskStatus,
     onTaskDescriptionChange: updateTaskDescription,
+    onMoveTaskSuccess: handleMoveTaskSuccess,
+    projectSearch: taskProjectSearch,
+    spaceSearch: taskSpaceSearch,
   });
 
   const deleteProject = async () => {

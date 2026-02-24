@@ -4,6 +4,7 @@ import Api from "@/api";
 import * as Tasks from "@/models/tasks";
 import * as People from "@/models/people";
 import * as Spaces from "@/models/spaces";
+import * as Projects from "@/models/projects";
 
 import { PageCache } from "@/routes/PageCache";
 import { usePaths } from "@/routes/paths";
@@ -105,6 +106,24 @@ function Page() {
     cacheKey: pageCacheKey(space.id),
   });
 
+  const projectSearch = Projects.useProjectSearch({ accessLevel: "edit_access" });
+  const spaceSearch = Spaces.useSpaceSearch({ accessLevel: "edit_access" });
+
+  const handleMoveTaskSuccess = React.useCallback(
+    async ({ destinationType, destinationId }: { destinationType: string; destinationId: string }) => {
+      PageCache.invalidate(pageCacheKey(space.id));
+
+      if (destinationType === "space") {
+        PageCache.invalidate(pageCacheKey(destinationId));
+      }
+
+      if (pageData.refresh) {
+        await pageData.refresh();
+      }
+    },
+    [space.id, pageData],
+  );
+
   const slideInModel = Tasks.useTaskSlideInProps({
     backendTasks,
     paths,
@@ -119,6 +138,9 @@ function Page() {
     onTaskDueDateChange: updateTaskDueDate,
     onTaskStatusChange: updateTaskStatus,
     onTaskDescriptionChange: updateTaskDescription,
+    onMoveTaskSuccess: handleMoveTaskSuccess,
+    projectSearch,
+    spaceSearch,
   });
 
   const props: SpaceKanbanPage.Props = {
