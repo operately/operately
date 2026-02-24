@@ -1,7 +1,7 @@
 import React, { useMemo, useCallback } from "react";
 import Api from "@/api";
 
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import * as Tasks from "@/models/tasks";
 import * as Projects from "@/models/projects";
 import * as People from "@/models/people";
@@ -77,12 +77,12 @@ function pageCacheKey(id: string): string {
 function Page() {
   const paths = usePaths();
   const navigate = useNavigate();
-  const location = useLocation();
   const currentUser = useMe();
 
   const pageData = PageCache.useData(loader);
   const { data, refresh: refreshPageData } = pageData;
   const { task, childrenCount, activities } = data;
+
 
   assertPresent(task.project, "Task must have a project");
   assertPresent(task.permissions, "Task must have permissions");
@@ -99,6 +99,7 @@ function Page() {
     update: (v) => Api.editProjectName({ projectId: task.project!.id, name: v }),
     onError: (e: string) => showErrorToast(e, "Reverted the project name to its previous value."),
     validations: [(v) => (v.trim() === "" ? "Project name cannot be empty" : null)],
+    pageData,
     refreshPageData,
     clearProjectCache: true,
   });
@@ -108,6 +109,7 @@ function Page() {
     update: (v) => Api.tasks.updateName({ taskId: task.id, name: v, type: "project" }),
     onError: (e: string) => showErrorToast(e, "Failed to update task name."),
     validations: [(v) => (v.trim() === "" ? "Task name cannot be empty" : null)],
+    pageData,
     refreshPageData,
   });
 
@@ -115,6 +117,7 @@ function Page() {
     value: ({ task }) => task.description && JSON.parse(task.description),
     update: (v) => Api.tasks.updateDescription({ taskId: task.id, description: JSON.stringify(v), type: "project" }),
     onError: () => showErrorToast("Error", "Failed to update task description."),
+    pageData,
     refreshPageData,
   });
 
@@ -122,6 +125,7 @@ function Page() {
     value: ({ task }) => Tasks.parseTaskForTurboUi(paths, task, { type: "project" }).status,
     update: (v) => Api.tasks.updateStatus({ taskId: task.id, status: Tasks.serializeTaskStatus(v), type: "project" }),
     onError: () => showErrorToast("Error", "Failed to update task status."),
+    pageData,
     refreshPageData,
   });
 
@@ -129,6 +133,7 @@ function Page() {
     value: ({ task }) => parseContextualDate(task.dueDate),
     update: (v) => Api.tasks.updateDueDate({ taskId: task.id, dueDate: serializeContextualDate(v), type: "project" }),
     onError: () => showErrorToast("Error", "Failed to update due date."),
+    pageData,
     refreshPageData,
   });
 
@@ -136,6 +141,7 @@ function Page() {
     value: ({ task }) => People.parsePersonForTurboUi(paths, task.assignees?.[0] || null),
     update: (v) => Api.tasks.updateAssignee({ taskId: task.id, assigneeId: v?.id ?? null, type: "project" }),
     onError: () => showErrorToast("Error", "Failed to update assignees."),
+    pageData,
     refreshPageData,
   });
 
@@ -143,6 +149,7 @@ function Page() {
     value: ({ task }) => (task.milestone ? parseMilestoneForTurboUi(paths, task.milestone) : null),
     update: (v) => Api.tasks.updateMilestone({ taskId: task.id, milestoneId: v?.id ?? null }),
     onError: () => showErrorToast("Error", "Failed to update milestone."),
+    pageData,
     refreshPageData,
   });
 
@@ -189,7 +196,7 @@ function Page() {
 
   const projectSearch = Projects.useProjectSearch({ accessLevel: "edit_access" });
   const spaceSearch = useSpaceSearch({ accessLevel: "edit_access" });
-  const moveTask = useMoveTask(task);
+  const moveTask = useMoveTask(task, refreshPageData);
 
   const subscriptions = useSubscription({
     subscriptionList: task.subscriptionList,
@@ -262,14 +269,11 @@ function Page() {
     richTextHandlers: richEditorHandlers,
   };
 
-  // We need `location.state.reloadKey` present in the key to force a reload when
-  // the task is moved to a different project
-  const key = `${task.id}-${location.state?.reloadKey}`;
-
-  return <TaskPage key={key} {...props} />;
+  return <TaskPage key={task.id} {...props} />;
 }
 
 interface usePageFieldProps<T> {
+  pageData: { data: any; cacheVersion: number };
   value: (data: {
     task: Tasks.Task;
     childrenCount: { tasksCount: number; discussionsCount: number };
@@ -283,6 +287,7 @@ interface usePageFieldProps<T> {
 }
 
 function usePageField<T>({
+  pageData,
   value,
   update,
   onError,
@@ -290,7 +295,6 @@ function usePageField<T>({
   refreshPageData,
   clearProjectCache,
 }: usePageFieldProps<T>): [T, (v: T) => Promise<boolean>] {
-  const pageData = PageCache.useData(loader);
   const { cacheVersion, data } = pageData;
 
   const [state, setState] = React.useState<T>(() => value(data));
@@ -301,7 +305,7 @@ function usePageField<T>({
       setState(value(data));
       setStateVersion(cacheVersion);
     }
-  }, [value, cacheVersion, stateVersion]);
+  }, [value, cacheVersion, stateVersion, data]);
 
   const updateState = async (newVal: T): Promise<boolean> => {
     if (validations) {
@@ -351,7 +355,7 @@ function usePageField<T>({
   return [state, updateState];
 }
 
-function useMoveTask(task: Tasks.Task) {
+function useMoveTask(task: Tasks.Task, refreshPageData: (() => Promise<void>) | undefined) {
   const navigate = useNavigate();
   const paths = usePaths();
 
@@ -376,7 +380,8 @@ function useMoveTask(task: Tasks.Task) {
         if (resolvedDestinationType === "space") {
           navigate(paths.spaceKanbanPath(resolvedDestinationId, { taskId: movedTaskId }));
         } else {
-          navigate(paths.taskPath(movedTaskId), { state: { reloadKey: Date.now() } });
+          navigate(paths.taskPath(movedTaskId));
+          refreshPageData?.();
         }
 
         return true;
@@ -386,6 +391,6 @@ function useMoveTask(task: Tasks.Task) {
         return false;
       }
     },
-    [navigate, paths, task.id, task.project?.id],
+    [navigate, paths, task.id, task.project?.id, refreshPageData],
   );
 }
