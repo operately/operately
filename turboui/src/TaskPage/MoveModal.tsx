@@ -9,8 +9,8 @@ import { showErrorToast } from "../Toasts";
 import { TaskPage } from ".";
 
 const DESTINATION_TYPES = [
-  { id: "project", name: "Project" },
-  { id: "space", name: "Space" },
+  { id: "project", name: "Project", testId: "move-task-destination-project" },
+  { id: "space", name: "Space", testId: "move-task-destination-space" },
 ] as const;
 
 export function MoveModal(props: TaskPage.ContentState) {
