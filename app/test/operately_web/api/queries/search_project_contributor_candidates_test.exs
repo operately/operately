@@ -202,6 +202,28 @@ defmodule OperatelyWeb.Api.Queries.SearchProjectContributorCandidatesTest do
 
       assert res.people == []
     end
+
+    test "doesn't return AI agents", ctx do
+      project = project_fixture(%{
+        company_id: ctx.company.id,
+        creator_id: ctx.person.id,
+        group_id: ctx.company.company_space_id
+      })
+
+      ai_agent = person_fixture(%{
+        company_id: ctx.company.id,
+        full_name: "Test AI Agent",
+        title: "Assistant",
+        type: :ai
+      })
+
+      assert {200, res} = query(ctx.conn, :search_project_contributor_candidates, %{
+        project_id: Paths.project_id(project),
+        query: ai_agent.full_name
+      })
+
+      assert res.people == []
+    end
   end
 
   #
