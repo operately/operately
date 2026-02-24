@@ -2921,6 +2921,15 @@ export interface ProjectsParentGoalSearchResult {
   goals: Goal[];
 }
 
+export interface ProjectsSearchInput {
+  query: string;
+  accessLevel?: AccessOptions;
+}
+
+export interface ProjectsSearchResult {
+  projects: Project[];
+}
+
 export interface SearchPeopleInput {
   query?: string | null;
   ignoredIds?: string[] | null;
@@ -5384,6 +5393,10 @@ class ApiNamespaceProjects {
 
   async parentGoalSearch(input: ProjectsParentGoalSearchInput): Promise<ProjectsParentGoalSearchResult> {
     return this.client.get("/projects/parent_goal_search", input);
+  }
+
+  async search(input: ProjectsSearchInput): Promise<ProjectsSearchResult> {
+    return this.client.get("/projects/search", input);
   }
 
   async createMilestone(input: ProjectsCreateMilestoneInput): Promise<ProjectsCreateMilestoneResult> {
@@ -8182,6 +8195,10 @@ export default {
       defaultApiClient.apiNamespaceProjects.parentGoalSearch(input),
     useParentGoalSearch: (input: ProjectsParentGoalSearchInput) =>
       useQuery<ProjectsParentGoalSearchResult>(() => defaultApiClient.apiNamespaceProjects.parentGoalSearch(input)),
+
+    search: (input: ProjectsSearchInput) => defaultApiClient.apiNamespaceProjects.search(input),
+    useSearch: (input: ProjectsSearchInput) =>
+      useQuery<ProjectsSearchResult>(() => defaultApiClient.apiNamespaceProjects.search(input)),
 
     getMilestones: (input: ProjectsGetMilestonesInput) => defaultApiClient.apiNamespaceProjects.getMilestones(input),
     useGetMilestones: (input: ProjectsGetMilestonesInput) =>

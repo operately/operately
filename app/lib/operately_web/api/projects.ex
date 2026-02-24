@@ -32,6 +32,29 @@ defmodule OperatelyWeb.Api.Projects do
     end
   end
 
+  defmodule Search do
+    use TurboConnect.Query
+    use OperatelyWeb.Api.Helpers
+
+    alias Operately.Projects.Project
+
+    inputs do
+      field :query, :string, null: false
+      field? :access_level, :access_options, null: false
+    end
+
+    outputs do
+      field :projects, list_of(:project), null: false
+    end
+
+    def call(conn, inputs) do
+      person = me(conn)
+      projects = Project.search(person, inputs.query, inputs[:access_level])
+
+      {:ok, %{projects: Serializer.serialize(projects, level: :essential)}}
+    end
+  end
+
   defmodule ParentGoalSearch do
     use TurboConnect.Query
 
