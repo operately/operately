@@ -190,7 +190,7 @@ defmodule Operately.Projects.Project do
 
   # Scopes
 
-  import Operately.Access.Filters, only: [filter_by_view_access: 2]
+  import Operately.Access.Filters, only: [filter_by_access: 3, filter_by_view_access: 2]
   import Ecto.Query, only: [from: 2, from: 1, where: 3, limit: 2, order_by: 3]
 
   def scope_company(query, company_id) do
@@ -247,6 +247,18 @@ defmodule Operately.Projects.Project do
     |> maybe_exclude_goal_by_id(project.goal_id)
     |> order_by([g], asc: g.name)
     |> limit(10)
+    |> Operately.Repo.all()
+  end
+
+  def search(person, query, access_level \\ nil)
+  def search(person, query, nil), do: search(person, query, :view_access)
+
+  def search(person, query, access_level) do
+    from(p in __MODULE__)
+    |> where([p], p.company_id == ^person.company_id)
+    |> where([p], ilike(p.name, ^"%#{query}%"))
+    |> filter_by_access(person.id, access_level)
+    |> order_by([p], asc: p.name)
     |> Operately.Repo.all()
   end
 

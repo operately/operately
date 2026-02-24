@@ -83,6 +83,7 @@ defmodule OperatelyWeb.Api do
 
   namespace(:projects) do
     query(:parent_goal_search, OperatelyWeb.Api.Projects.ParentGoalSearch)
+    query(:search, OperatelyWeb.Api.Projects.Search)
     query(:get_milestones, OperatelyWeb.Api.Projects.GetMilestones)
     query(:get_contributors, OperatelyWeb.Api.Projects.GetContributors)
     query(:count_children, OperatelyWeb.Api.Projects.CountChildren)
