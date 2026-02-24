@@ -1,13 +1,13 @@
 import * as React from "react";
 
-import { DateField, TaskBoard, TaskPage } from "turboui";
+import { DateField, TaskBoard, TaskPage, showErrorToast } from "turboui";
 import { useOptimisticComments } from "@/models/comments/useOptimisticComments";
 import * as People from "@/models/people";
 import { compareIds, Paths } from "@/routes/paths";
 
 import { useTaskTimelineItems } from "./useTaskTimelineItems";
 import { prepareTaskTimelineItems } from "./prepareTaskTimelineItems";
-import type { Person as ApiPerson, Task as BackendTask } from "@/api";
+import Api, { type Person as ApiPerson, type Task as BackendTask } from "@/api";
 
 type TimelinePerson = NonNullable<TaskPage.ContentProps["currentUser"]>;
 
@@ -28,6 +28,9 @@ export function useTaskSlideInProps(opts: {
   onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => Promise<boolean> | boolean;
   onTaskStatusChange: (taskId: string, newStatus: TaskBoard.Status | null) => Promise<boolean> | boolean;
   onTaskDescriptionChange: (taskId: string, content: any) => Promise<boolean>;
+  onMoveTaskSuccess: (result: { movedTaskId: string; destinationType: string; destinationId: string }) => Promise<void>;
+  projectSearch: TaskPage.ContentProps["projectSearch"];
+  spaceSearch: TaskPage.ContentProps["spaceSearch"];
 }) {
   const { backendTasks, paths, currentUser, tasks, canEdit, canComment, hideMilestone, commentEntityType } = opts;
 
@@ -300,6 +303,28 @@ export function useTaskSlideInProps(opts: {
         onDelete: async () => {
           await ctx.onTaskDelete?.(taskId);
         },
+        onMoveTask: async ({ destinationType, destinationId }) => {
+          try {
+            const res = await Api.moveTask({ taskId, destinationType, destinationId });
+            const movedTaskId = res.task?.id ?? taskId;
+            const resolvedDestinationType = res.destinationType ?? destinationType;
+            const resolvedDestinationId = res.destinationId ?? destinationId;
+
+            await opts.onMoveTaskSuccess({
+              movedTaskId,
+              destinationType: resolvedDestinationType,
+              destinationId: resolvedDestinationId,
+            });
+
+            return true;
+          } catch (error) {
+            console.error("Failed to move task", error);
+            showErrorToast("Error", "Failed to move task.");
+            return false;
+          }
+        },
+        projectSearch: opts.projectSearch,
+        spaceSearch: opts.spaceSearch,
 
         assigneePersonSearch: ctx.assigneePersonSearch,
         richTextHandlers: ctx.richTextHandlers,
@@ -350,6 +375,9 @@ export function useTaskSlideInProps(opts: {
       paths,
       activities,
       comments,
+      opts.onMoveTaskSuccess,
+      opts.projectSearch,
+      opts.spaceSearch,
     ],
   );
 

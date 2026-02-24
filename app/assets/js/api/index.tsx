@@ -914,6 +914,17 @@ export interface ActivityContentTaskMilestoneUpdating {
   newMilestone: Milestone | null;
 }
 
+export interface ActivityContentTaskMoving {
+  task: Task | null;
+  taskName: string;
+  originType: TaskType;
+  destinationType: TaskType;
+  originProject: Project | null;
+  originSpace: Space | null;
+  destinationProject: Project | null;
+  destinationSpace: Space | null;
+}
+
 export interface ActivityContentTaskNameEditing {
   companyId?: string | null;
   spaceId?: string | null;
@@ -2021,6 +2032,7 @@ export type ActivityContent =
   | ActivityContentTaskClosing
   | ActivityContentTaskDescriptionChange
   | ActivityContentTaskNameEditing
+  | ActivityContentTaskMoving
   | ActivityContentTaskPriorityChange
   | ActivityContentTaskReopening
   | ActivityContentTaskSizeChange
@@ -2919,6 +2931,15 @@ export interface ProjectsParentGoalSearchInput {
 
 export interface ProjectsParentGoalSearchResult {
   goals: Goal[];
+}
+
+export interface ProjectsSearchInput {
+  query: string;
+  accessLevel?: AccessOptions;
+}
+
+export interface ProjectsSearchResult {
+  projects: Project[];
 }
 
 export interface SearchPeopleInput {
@@ -4019,6 +4040,18 @@ export interface MoveProjectToSpaceInput {
 
 export interface MoveProjectToSpaceResult {}
 
+export interface MoveTaskInput {
+  taskId: Id;
+  destinationType: TaskType;
+  destinationId: Id;
+}
+
+export interface MoveTaskResult {
+  task: Task;
+  destinationType: TaskType;
+  destinationId: Id;
+}
+
 export interface PauseProjectInput {
   projectId?: string | null;
 }
@@ -5076,6 +5109,10 @@ class ApiNamespaceRoot {
     return this.client.post("/move_project_to_space", input);
   }
 
+  async moveTask(input: MoveTaskInput): Promise<MoveTaskResult> {
+    return this.client.post("/move_task", input);
+  }
+
   async pauseProject(input: PauseProjectInput): Promise<PauseProjectResult> {
     return this.client.post("/pause_project", input);
   }
@@ -5384,6 +5421,10 @@ class ApiNamespaceProjects {
 
   async parentGoalSearch(input: ProjectsParentGoalSearchInput): Promise<ProjectsParentGoalSearchResult> {
     return this.client.get("/projects/parent_goal_search", input);
+  }
+
+  async search(input: ProjectsSearchInput): Promise<ProjectsSearchResult> {
+    return this.client.get("/projects/search", input);
   }
 
   async createMilestone(input: ProjectsCreateMilestoneInput): Promise<ProjectsCreateMilestoneResult> {
@@ -6156,6 +6197,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.moveProjectToSpace(input);
   }
 
+  moveTask(input: MoveTaskInput): Promise<MoveTaskResult> {
+    return this.apiNamespaceRoot.moveTask(input);
+  }
+
   pauseProject(input: PauseProjectInput): Promise<PauseProjectResult> {
     return this.apiNamespaceRoot.pauseProject(input);
   }
@@ -6683,6 +6728,9 @@ export async function markNotificationsAsRead(
 }
 export async function moveProjectToSpace(input: MoveProjectToSpaceInput): Promise<MoveProjectToSpaceResult> {
   return defaultApiClient.moveProjectToSpace(input);
+}
+export async function moveTask(input: MoveTaskInput): Promise<MoveTaskResult> {
+  return defaultApiClient.moveTask(input);
 }
 export async function pauseProject(input: PauseProjectInput): Promise<PauseProjectResult> {
   return defaultApiClient.pauseProject(input);
@@ -7465,6 +7513,10 @@ export function useMoveProjectToSpace(): UseMutationHookResult<MoveProjectToSpac
   );
 }
 
+export function useMoveTask(): UseMutationHookResult<MoveTaskInput, MoveTaskResult> {
+  return useMutation<MoveTaskInput, MoveTaskResult>((input) => defaultApiClient.moveTask(input));
+}
+
 export function usePauseProject(): UseMutationHookResult<PauseProjectInput, PauseProjectResult> {
   return useMutation<PauseProjectInput, PauseProjectResult>((input) => defaultApiClient.pauseProject(input));
 }
@@ -7897,6 +7949,8 @@ export default {
   useMarkNotificationsAsRead,
   moveProjectToSpace,
   useMoveProjectToSpace,
+  moveTask,
+  useMoveTask,
   pauseProject,
   usePauseProject,
   postDiscussion,
@@ -8182,6 +8236,10 @@ export default {
       defaultApiClient.apiNamespaceProjects.parentGoalSearch(input),
     useParentGoalSearch: (input: ProjectsParentGoalSearchInput) =>
       useQuery<ProjectsParentGoalSearchResult>(() => defaultApiClient.apiNamespaceProjects.parentGoalSearch(input)),
+
+    search: (input: ProjectsSearchInput) => defaultApiClient.apiNamespaceProjects.search(input),
+    useSearch: (input: ProjectsSearchInput) =>
+      useQuery<ProjectsSearchResult>(() => defaultApiClient.apiNamespaceProjects.search(input)),
 
     getMilestones: (input: ProjectsGetMilestonesInput) => defaultApiClient.apiNamespaceProjects.getMilestones(input),
     useGetMilestones: (input: ProjectsGetMilestonesInput) =>

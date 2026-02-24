@@ -1,5 +1,6 @@
 defmodule OperatelyWeb.Api.ProjectsTest do
   alias Operately.ContextualDates.{Timeframe, ContextualDate}
+  alias Operately.Access.Binding
 
   use OperatelyWeb.TurboCase
   use Operately.Support.Notifications
@@ -11,6 +12,77 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     |> Factory.add_project(:project, :engineering)
     |> Factory.add_space_member(:new_champion, :engineering)
     |> Factory.add_project_milestone(:milestone, :project)
+  end
+
+  describe "search" do
+    test "it requires authentication", ctx do
+      assert {401, _} = query(ctx.conn, [:projects, :search], %{})
+    end
+
+    test "it returns projects matching the query", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space(:product_space, name: "Product Space")
+        |> Factory.add_space(:marketing_space, name: "Marketing Space")
+        |> Factory.add_project(:product_project, :product_space, name: "Product Revamp")
+        |> Factory.add_project(:marketing_project, :marketing_space, name: "Marketing Campaign")
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = query(ctx.conn, [:projects, :search], %{query: "Product"})
+
+      assert Enum.map(res.projects, & &1.name) == ["Product Revamp"]
+    end
+
+    test "it filters projects by access_level", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:member)
+        |> Factory.add_space(:view_space, name: "View Space")
+        |> Factory.add_space(:edit_space, name: "Edit Space")
+        |> Factory.add_space(:full_space, name: "Full Space")
+        |> Factory.add_project(:view_project, :view_space,
+          name: "Alpha View",
+          company_access_level: Binding.view_access(),
+          space_access_level: Binding.view_access()
+        )
+        |> Factory.add_project(:edit_project, :edit_space,
+          name: "Alpha Edit",
+          company_access_level: Binding.edit_access(),
+          space_access_level: Binding.edit_access()
+        )
+        |> Factory.add_project(:full_project, :full_space,
+          name: "Alpha Full",
+          company_access_level: Binding.full_access(),
+          space_access_level: Binding.full_access()
+        )
+        |> Factory.log_in_person(:member)
+
+      assert {200, view_res} = query(ctx.conn, [:projects, :search], %{query: "Alpha", access_level: :view_access})
+      assert Enum.sort(Enum.map(view_res.projects, & &1.name)) == ["Alpha Edit", "Alpha Full", "Alpha View"]
+
+      assert {200, edit_res} = query(ctx.conn, [:projects, :search], %{query: "Alpha", access_level: :edit_access})
+      assert Enum.sort(Enum.map(edit_res.projects, & &1.name)) == ["Alpha Edit", "Alpha Full"]
+
+      assert {200, full_res} = query(ctx.conn, [:projects, :search], %{query: "Alpha", access_level: :full_access})
+      assert Enum.map(full_res.projects, & &1.name) == ["Alpha Full"]
+    end
+
+    test "it isolates projects by company", ctx do
+      other_ctx =
+        %{conn: ctx.conn}
+        |> Factory.setup()
+        |> Factory.add_space(:other_space, name: "Other Space")
+        |> Factory.add_project(:other_project, :other_space, name: "External Project")
+        |> Factory.log_in_person(:creator)
+
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = query(ctx.conn, [:projects, :search], %{query: "External"})
+      assert res.projects == []
+
+      assert {200, other_res} = query(other_ctx.conn, [:projects, :search], %{query: "External"})
+      assert Enum.map(other_res.projects, & &1.name) == ["External Project"]
+    end
   end
 
   describe "get milestones" do

@@ -725,6 +725,7 @@ defmodule OperatelyWeb.Api.Types do
       :activity_content_task_closing,
       :activity_content_task_description_change,
       :activity_content_task_name_editing,
+      :activity_content_task_moving,
       :activity_content_task_priority_change,
       :activity_content_task_reopening,
       :activity_content_task_size_change,
@@ -976,6 +977,17 @@ defmodule OperatelyWeb.Api.Types do
     field :task, :task, null: true
     field :old_assignee, :person
     field :new_assignee, :person
+  end
+
+  object :activity_content_task_moving do
+    field :task, :task, null: true
+    field :task_name, :string, null: false
+    field :origin_type, :task_type, null: false
+    field :destination_type, :task_type, null: false
+    field :origin_project, :project, null: true
+    field :origin_space, :space, null: true
+    field :destination_project, :project, null: true
+    field :destination_space, :space, null: true
   end
 
   object :activity_content_task_deleting do

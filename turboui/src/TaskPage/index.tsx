@@ -15,8 +15,18 @@ import { Overview } from "./Overview";
 import { Sidebar, MobileSidebar } from "./Sidebar";
 import { DeleteModal } from "./DeleteModal";
 import { ProjectPermissions } from "../ProjectPage/types";
+import { MoveModal } from "./MoveModal";
+import { SpaceField } from "../SpaceField";
+import { ProjectField } from "../ProjectField";
 
 export namespace TaskPage {
+  export type MoveDestinationType = "project" | "space";
+
+  export interface MoveTaskInput {
+    destinationType: MoveDestinationType;
+    destinationId: string;
+  }
+
   export interface Space {
     id: string;
     name: string;
@@ -94,6 +104,9 @@ export namespace TaskPage {
     onDelete: () => Promise<void>;
     onDuplicate?: () => void;
     onArchive?: () => void;
+    onMoveTask?: (input: MoveTaskInput) => Promise<boolean>;
+    spaceSearch?: SpaceField.SearchSpaceFn;
+    projectSearch?: ProjectField.SearchProjectFn;
 
     // Assignee selection
     assigneePersonSearch: PersonField.SearchData;
@@ -141,6 +154,9 @@ export namespace TaskPage {
     | "subscriptions"
     | "onDelete"
     | "onArchive"
+    | "onMoveTask"
+    | "spaceSearch"
+    | "projectSearch"
     | "assigneePersonSearch"
     | "richTextHandlers"
     | "canEdit"
@@ -160,6 +176,9 @@ export namespace TaskPage {
     isDeleteModalOpen: boolean;
     openDeleteModal: () => void;
     closeDeleteModal: () => void;
+    isMoveModalOpen: boolean;
+    openMoveModal: () => void;
+    closeMoveModal: () => void;
     useMinimalistDelete?: boolean;
   }
 
@@ -167,16 +186,26 @@ export namespace TaskPage {
     isDeleteModalOpen: boolean;
     openDeleteModal: () => void;
     closeDeleteModal: () => void;
+    isMoveModalOpen: boolean;
+    openMoveModal: () => void;
+    closeMoveModal: () => void;
   };
 }
 
 function useTaskPageState(props: TaskPage.Props): TaskPage.ContentState {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
+  const [isMoveModalOpen, setIsMoveModalOpen] = React.useState(false);
 
   const deleteModalState = {
     isDeleteModalOpen,
     openDeleteModal: () => setIsDeleteModalOpen(true),
     closeDeleteModal: () => setIsDeleteModalOpen(false),
+  };
+
+  const moveModalState = {
+    isMoveModalOpen,
+    openMoveModal: () => setIsMoveModalOpen(true),
+    closeMoveModal: () => setIsMoveModalOpen(false),
   };
 
   return {
@@ -200,6 +229,9 @@ function useTaskPageState(props: TaskPage.Props): TaskPage.ContentState {
     subscriptions: props.subscriptions,
     onDelete: props.onDelete,
     onArchive: props.onArchive,
+    onMoveTask: props.onMoveTask,
+    projectSearch: props.projectSearch,
+    spaceSearch: props.spaceSearch,
     assigneePersonSearch: props.assigneePersonSearch,
     richTextHandlers: props.richTextHandlers,
     canEdit: props.canEdit,
@@ -215,6 +247,7 @@ function useTaskPageState(props: TaskPage.Props): TaskPage.ContentState {
     timelineFilters: props.timelineFilters,
 
     ...deleteModalState,
+    ...moveModalState,
   };
 }
 
@@ -275,6 +308,7 @@ export function TaskContent(props: TaskPage.ContentState) {
         <Sidebar {...props} />
       </div>
 
+      <MoveModal {...props} />
       <DeleteModal {...props} />
     </>
   );

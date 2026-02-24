@@ -1,4 +1,4 @@
-import { IconArchive, IconCalendar, IconLink, IconTrash } from "../icons";
+import { IconArchive, IconCalendar, IconCircleArrowRight, IconLink, IconTrash } from "../icons";
 import React from "react";
 import { TaskPage } from ".";
 import { AvatarWithName } from "../Avatar";
@@ -153,6 +153,13 @@ function Actions(props: TaskPage.ContentState) {
       onClick: () => navigator.clipboard.writeText(window.location.href),
       icon: IconLink,
       show: true,
+    },
+    {
+      label: "Move task",
+      onClick: props.openMoveModal,
+      icon: IconCircleArrowRight,
+      show: Boolean(props.canEdit && props.onMoveTask && props.projectSearch && props.spaceSearch),
+      testId: "move-task",
     },
     {
       label: "Archive",
