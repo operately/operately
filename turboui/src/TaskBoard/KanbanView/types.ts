@@ -3,6 +3,8 @@ import type { TaskBoard } from "../components";
 import type { TaskBoardProps } from "../types";
 import type { RichEditorHandlers } from "../../RichEditor/useEditor";
 import type { TaskPage } from "../../TaskPage";
+import type { ProjectField } from "../../ProjectField";
+import type { SpaceField } from "../../SpaceField";
 
 export type KanbanStatus = string;
 
@@ -22,6 +24,9 @@ export interface TaskSlideInContext {
   onTaskDescriptionChange?: (taskId: string, description: any) => Promise<boolean>;
   onTaskNameChange?: (taskId: string, name: string) => void;
   onTaskDelete?: (taskId: string) => void | Promise<void>;
+  onMoveTask?: TaskPage.ContentProps["onMoveTask"];
+  projectSearch?: ProjectField.SearchProjectFn;
+  spaceSearch?: SpaceField.SearchSpaceFn;
   milestones?: TaskBoard.Milestone[];
   onMilestoneSearch?: (query: string) => Promise<void>;
   assigneePersonSearch?: TaskBoardProps["assigneePersonSearch"];
@@ -53,6 +58,9 @@ export interface KanbanBoardProps {
   onTaskDescriptionChange?: (taskId: string, description: any) => Promise<boolean>;
   onTaskNameChange?: (taskId: string, name: string) => void;
   onTaskDelete?: (taskId: string) => void | Promise<any>;
+  onMoveTask?: TaskPage.ContentProps["onMoveTask"];
+  projectSearch?: ProjectField.SearchProjectFn;
+  spaceSearch?: SpaceField.SearchSpaceFn;
   milestones?: TaskBoard.Milestone[];
   onMilestoneSearch?: (query: string) => Promise<void>;
   assigneePersonSearch?: TaskBoardProps["assigneePersonSearch"];

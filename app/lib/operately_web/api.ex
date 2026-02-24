@@ -83,6 +83,7 @@ defmodule OperatelyWeb.Api do
 
   namespace(:projects) do
     query(:parent_goal_search, OperatelyWeb.Api.Projects.ParentGoalSearch)
+    query(:search, OperatelyWeb.Api.Projects.Search)
     query(:get_milestones, OperatelyWeb.Api.Projects.GetMilestones)
     query(:get_contributors, OperatelyWeb.Api.Projects.GetContributors)
     query(:count_children, OperatelyWeb.Api.Projects.CountChildren)
@@ -289,6 +290,7 @@ defmodule OperatelyWeb.Api do
   mutation(:mark_notification_as_read, M.MarkNotificationAsRead)
   mutation(:mark_notifications_as_read, M.MarkNotificationsAsRead)
   mutation(:move_project_to_space, M.MoveProjectToSpace)
+  mutation(:move_task, M.MoveTask)
   mutation(:pause_project, M.PauseProject)
   mutation(:post_discussion, M.PostDiscussion)
   mutation(:publish_discussion, M.PublishDiscussion)

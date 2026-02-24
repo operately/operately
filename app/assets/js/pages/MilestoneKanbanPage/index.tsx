@@ -4,6 +4,8 @@ import Api from "@/api";
 import * as Milestones from "@/models/milestones";
 import * as Tasks from "@/models/tasks";
 import * as People from "@/models/people";
+import * as Projects from "@/models/projects";
+import * as Spaces from "@/models/spaces";
 
 import { MilestoneKanbanPage } from "turboui";
 import { usePaths } from "@/routes/paths";
@@ -112,6 +114,26 @@ function Page() {
   });
   const { milestones, search: searchMilestones } = useMilestones(milestone.project.id);
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: milestone.project.id } });
+  const projectSearch = Projects.useProjectSearch({ accessLevel: "edit_access" });
+  const spaceSearch = Spaces.useSpaceSearch({ accessLevel: "edit_access" });
+
+  const handleMoveTaskSuccess = React.useCallback(
+    async ({ destinationType, destinationId }: { destinationType: string; destinationId: string }) => {
+      PageCache.invalidate(pageCacheKey(milestone.id));
+      if (milestone.project?.id) {
+        PageCache.invalidate(projectPageCacheKey(milestone.project.id));
+      }
+
+      if (destinationType === "project") {
+        PageCache.invalidate(projectPageCacheKey(destinationId));
+      }
+
+      if (refresh) {
+        await refresh();
+      }
+    },
+    [milestone.id, milestone.project.id, refresh],
+  );
 
   const handleTaskMilestoneChange = React.useCallback(
     (taskId: string, milestone: MilestoneKanbanPage.Milestone | null) => {
@@ -150,6 +172,9 @@ function Page() {
     onTaskDueDateChange: updateTaskDueDate,
     onTaskStatusChange: updateTaskStatus,
     onTaskDescriptionChange: updateTaskDescription,
+    onMoveTaskSuccess: handleMoveTaskSuccess,
+    projectSearch,
+    spaceSearch,
   });
 
   const props: MilestoneKanbanPage.Props = {
