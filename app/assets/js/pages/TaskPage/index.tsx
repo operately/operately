@@ -1,7 +1,7 @@
 import React, { useMemo, useCallback } from "react";
 import Api from "@/api";
 
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import * as Tasks from "@/models/tasks";
 import * as Projects from "@/models/projects";
 import * as People from "@/models/people";
@@ -20,6 +20,7 @@ import { fetchAll } from "@/utils/async";
 import { assertPresent } from "@/utils/assertions";
 import { projectPageCacheKey } from "../ProjectPage";
 import { parseSpaceForTurboUI } from "@/models/spaces";
+import { useSpaceSearch } from "@/models/spaces";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useMilestones } from "@/models/milestones/useMilestones";
@@ -67,15 +68,16 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
   });
 }
 
+export default { name: "TaskPage", loader, Page } as PageModule;
+
 function pageCacheKey(id: string): string {
   return `v8-TaskV2Page.task-${id}`;
 }
 
-export default { name: "TaskPage", loader, Page } as PageModule;
-
 function Page() {
   const paths = usePaths();
   const navigate = useNavigate();
+  const location = useLocation();
   const currentUser = useMe();
 
   const pageData = PageCache.useData(loader);
@@ -144,23 +146,20 @@ function Page() {
     refreshPageData,
   });
 
-  const {
-    comments,
-    addComment,
-    editComment,
-    deleteComment,
-    addReaction,
-    removeReaction,
-  } = Comments.useOptimisticComments({
-    taskId: task.id,
-    parentType: "project_task",
-    initialComments: data.comments,
-    onAfterMutation: () => {
-      PageCache.invalidate(pageCacheKey(task.id));
-    },
-  });
+  const { comments, addComment, editComment, deleteComment, addReaction, removeReaction } =
+    Comments.useOptimisticComments({
+      taskId: task.id,
+      parentType: "project_task",
+      initialComments: data.comments,
+      onAfterMutation: () => {
+        PageCache.invalidate(pageCacheKey(task.id));
+      },
+    });
 
-  const timelineItems = useMemo(() => Tasks.prepareTaskTimelineItems(paths, activities, comments), [paths, activities, comments]);
+  const timelineItems = useMemo(
+    () => Tasks.prepareTaskTimelineItems(paths, activities, comments),
+    [paths, activities, comments],
+  );
 
   const handleDelete = async () => {
     try {
@@ -187,6 +186,10 @@ function Page() {
   });
   const { milestones, search: searchMilestones } = useMilestones(task.project.id);
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: task.project.id } });
+
+  const projectSearch = Projects.useProjectSearch({ accessLevel: "edit_access" });
+  const spaceSearch = useSpaceSearch({ accessLevel: "edit_access" });
+  const moveTask = useMoveTask(task);
 
   const subscriptions = useSubscription({
     subscriptionList: task.subscriptionList,
@@ -244,6 +247,9 @@ function Page() {
     onAssigneeChange: setAssignee,
 
     onDelete: handleDelete,
+    onMoveTask: moveTask,
+    projectSearch,
+    spaceSearch,
 
     // Metadata
     createdAt: new Date(task.insertedAt || Date.now()),
@@ -256,7 +262,11 @@ function Page() {
     richTextHandlers: richEditorHandlers,
   };
 
-  return <TaskPage key={task.id!} {...props} />;
+  // We need `location.state.reloadKey` present in the key to force a reload when
+  // the task is moved to a different project
+  const key = `${task.id}-${location.state?.reloadKey}`;
+
+  return <TaskPage key={key} {...props} />;
 }
 
 interface usePageFieldProps<T> {
@@ -339,4 +349,43 @@ function usePageField<T>({
   };
 
   return [state, updateState];
+}
+
+function useMoveTask(task: Tasks.Task) {
+  const navigate = useNavigate();
+  const paths = usePaths();
+
+  return useCallback(
+    async ({ destinationType, destinationId }: TaskPage.MoveTaskInput) => {
+      try {
+        const res = await Api.moveTask({ taskId: task.id, destinationType, destinationId });
+        const movedTaskId = res.task?.id ?? task.id;
+        const resolvedDestinationType = res.destinationType ?? destinationType;
+        const resolvedDestinationId = res.destinationId ?? destinationId;
+
+        PageCache.invalidate(pageCacheKey(task.id));
+
+        if (task.project?.id) {
+          PageCache.invalidate(projectPageCacheKey(task.project.id));
+        }
+
+        if (resolvedDestinationType !== "space") {
+          PageCache.invalidate(projectPageCacheKey(resolvedDestinationId));
+        }
+
+        if (resolvedDestinationType === "space") {
+          navigate(paths.spaceKanbanPath(resolvedDestinationId, { taskId: movedTaskId }));
+        } else {
+          navigate(paths.taskPath(movedTaskId), { state: { reloadKey: Date.now() } });
+        }
+
+        return true;
+      } catch (error) {
+        console.error("Failed to move task", error);
+        showErrorToast("Error", "Failed to move task.");
+        return false;
+      }
+    },
+    [navigate, paths, task.id, task.project?.id],
+  );
 }
