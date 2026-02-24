@@ -48,6 +48,12 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     )
   end
 
+  step :given_destination_project_exists, ctx do
+    ctx
+    |> Factory.add_space(:destination_project_space)
+    |> Factory.add_project(:destination_project, :destination_project_space, name: "Destination Project")
+  end
+
   step :given_task_assignee_exists, ctx do
     Factory.add_task_assignee(ctx, :assignee, :task, :champion)
   end
@@ -376,6 +382,21 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> UI.sleep(400)
   end
 
+  step :move_task_to_destination_project, ctx do
+    destination_project_result =
+      UI.testid(["move-task-project-field-search-result", ctx.destination_project.name])
+
+    ctx
+    |> UI.click(testid: "move-task")
+    |> UI.assert_has(testid: "move-task-modal")
+    |> UI.click(testid: "move-task-destination-type")
+    |> UI.click(testid: "move-task-destination-project")
+    |> UI.click(testid: "move-task-project-field")
+    |> UI.click(testid: destination_project_result)
+    |> UI.click(testid: "confirm-move-task")
+    |> UI.sleep(400)
+  end
+
   step :complete_task_from_header_checkbox, ctx do
     ctx
     |> UI.click(testid: "task-quick-complete")
@@ -570,6 +591,27 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
   step :assert_redirected_to_destination_space_kanban, ctx do
     task_path = Paths.space_kanban_path(ctx.company, ctx.destination_space)
     UI.assert_page(ctx, task_path)
+  end
+
+  step :assert_redirected_to_destination_project_task, ctx do
+    ctx
+    |> UI.assert_text(ctx.destination_project.name)
+    |> UI.assert_page(Paths.project_task_path(ctx.company, ctx.task))
+  end
+
+  step :visit_destination_project_page, ctx do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.destination_project))
+  end
+
+  step :assert_task_belongs_to_destination_project, ctx do
+    task = Repo.reload(ctx.task)
+
+    assert task.project_id == ctx.destination_project.id
+    assert task.space_id == nil
+    assert task.milestone_id == nil
+
+    ctx
   end
 
   step :assert_change_in_feed, ctx, title do
