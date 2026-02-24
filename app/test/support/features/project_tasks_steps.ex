@@ -27,15 +27,25 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     end)
   end
 
-  step :given_task_exists, ctx do
+  step :given_task_exists, ctx, attrs \\ [] do
+    name = Keyword.get(attrs, :name, "My task")
+
     ctx
     |> Factory.add_space_member(:creator, :group)
-    |> Factory.add_project_task(:task, :milestone, name: "My task")
+    |> Factory.add_project_task(:task, :milestone, name: name)
   end
 
   step :given_space_member_exists, ctx, opts \\ [] do
     ctx
     |> Factory.add_space_member(:space_member, :group, opts)
+  end
+
+  step :given_destination_space_exists, ctx do
+    ctx
+    |> Factory.add_space(:destination_space,
+      name: "Destination Space",
+      company_permissions: Binding.edit_access()
+    )
   end
 
   step :given_task_assignee_exists, ctx do
@@ -352,6 +362,20 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> UI.assert_page(Paths.project_path(ctx.company, ctx.project))
   end
 
+  step :move_task_to_destination_space, ctx do
+    destination_space_result =
+      UI.testid(["move-task-space-field-search-result", ctx.destination_space.name])
+
+    ctx
+    |> UI.click(testid: "move-task")
+    |> UI.assert_has(testid: "move-task-modal")
+    |> UI.select(testid: "move-task-destination-type", option: "Space")
+    |> UI.click(testid: "move-task-space-field")
+    |> UI.click(testid: destination_space_result)
+    |> UI.click(testid: "confirm-move-task")
+    |> UI.sleep(400)
+  end
+
   step :complete_task_from_header_checkbox, ctx do
     ctx
     |> UI.click(testid: "task-quick-complete")
@@ -533,10 +557,19 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     UI.refute_text(ctx, description)
   end
 
-  step :assert_task_not_in_list, ctx do
+  step :assert_task_not_present, ctx do
     ctx
     |> UI.click(testid: "tab-tasks")
     |> UI.refute_text(ctx.task.name)
+  end
+
+  step :assert_task_present, ctx do
+    UI.assert_text(ctx, ctx.task.name)
+  end
+
+  step :assert_redirected_to_destination_space_kanban, ctx do
+    task_path = Paths.space_kanban_path(ctx.company, ctx.destination_space)
+    UI.assert_page(ctx, task_path)
   end
 
   step :assert_change_in_feed, ctx, title do
