@@ -82,6 +82,9 @@ export function useEditor(props: UseEditorProps): EditorState {
     }
   }
 
+  const autosaveKey = `operately:richtext:${window.location.pathname}${window.location.search}`;
+  const hasRestoredAutosave = React.useRef(false);
+
   const [linkEditActive, setLinkEditActive] = React.useState(false);
   const [submittable, setSubmittable] = React.useState(true);
   const [focused, setFocused] = React.useState(false);
@@ -125,6 +128,16 @@ export function useEditor(props: UseEditorProps): EditorState {
       Highlight,
       FakeTextSelection,
     ],
+    onCreate({ editor }) {
+      // Restore autosaved content when editor is first created
+      if (!hasRestoredAutosave.current) {
+        const autosavedContent = getAutosavedContent(autosaveKey);
+        if (autosavedContent) {
+          editor.commands.setContent(autosavedContent);
+        }
+        hasRestoredAutosave.current = true;
+      }
+    },
     onFocus({ editor }) {
       editor.chain().unsetFakeTextSelection().run();
 
@@ -158,6 +171,8 @@ export function useEditor(props: UseEditorProps): EditorState {
           html: editor.getHTML(),
         });
       }
+
+      saveAutosavedContent(autosaveKey, editor.getJSON());
     },
   });
 
@@ -196,4 +211,39 @@ export function useEditor(props: UseEditorProps): EditorState {
     setFocused,
     getJson,
   };
+}
+
+const AUTOSAVE_TTL_MS = 1000 * 60 * 30; // 30 minutes
+
+function getAutosavedContent(autosaveKey: string): unknown | null {
+  try {
+    const stored = sessionStorage.getItem(autosaveKey);
+    if (!stored) return null;
+
+    const parsed = JSON.parse(stored) as { savedAt?: number; content?: unknown };
+    if (!parsed?.content) return null;
+
+    if (!parsed.savedAt || Date.now() - parsed.savedAt <= AUTOSAVE_TTL_MS) {
+      return parsed.content;
+    }
+
+    sessionStorage.removeItem(autosaveKey);
+    return null;
+  } catch (error) {
+    console.warn("Failed to restore rich text autosave state", error);
+    return null;
+  }
+}
+
+function saveAutosavedContent(autosaveKey: string, json: any): void {
+  try {
+    if (!json?.content?.[0]?.content?.length) {
+      sessionStorage.removeItem(autosaveKey);
+      return;
+    }
+
+    sessionStorage.setItem(autosaveKey, JSON.stringify({ savedAt: Date.now(), content: json }));
+  } catch (error) {
+    console.warn("Failed to store rich text autosave state", error);
+  }
 }
