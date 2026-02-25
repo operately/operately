@@ -194,7 +194,7 @@ function Page() {
   const { milestones, search: searchMilestones } = useMilestones(task.project.id);
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: task.project.id } });
 
-  const projectSearch = Projects.useProjectSearch({ accessLevel: "edit_access" });
+  const projectSearch = Projects.useProjectSearch({ accessLevel: "edit_access", ignoredIds: [task.project.id] });
   const spaceSearch = useSpaceSearch({ accessLevel: "edit_access" });
   const moveTask = useMoveTask(task, refreshPageData);
 

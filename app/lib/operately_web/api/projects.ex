@@ -41,6 +41,7 @@ defmodule OperatelyWeb.Api.Projects do
     inputs do
       field :query, :string, null: false
       field? :access_level, :access_options, null: false
+      field? :ignored_ids, list_of(:id), null: false
     end
 
     outputs do
@@ -49,7 +50,8 @@ defmodule OperatelyWeb.Api.Projects do
 
     def call(conn, inputs) do
       person = me(conn)
-      projects = Project.search(person, inputs.query, inputs[:access_level])
+      ignored_ids = inputs[:ignored_ids] || []
+      projects = Project.search(person, inputs.query, inputs[:access_level], ignored_ids)
 
       {:ok, %{projects: Serializer.serialize(projects, level: :essential)}}
     end

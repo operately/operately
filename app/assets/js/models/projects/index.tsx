@@ -60,11 +60,16 @@ export function useContributorSearchFn(project: Project) {
   };
 }
 
-export function useProjectSearch(attrs?: { accessLevel?: api.AccessOptions }): ProjectField.SearchProjectFn {
+interface ProjectSearchAttrs {
+  accessLevel?: api.AccessOptions;
+  ignoredIds?: string[];
+}
+
+export function useProjectSearch(attrs?: ProjectSearchAttrs): ProjectField.SearchProjectFn {
   const paths = usePaths();
 
   return async ({ query }: { query: string }): Promise<ProjectField.Project[]> => {
-    const data = await Api.projects.search({ query, accessLevel: attrs?.accessLevel });
+    const data = await Api.projects.search({ query, accessLevel: attrs?.accessLevel, ignoredIds: attrs?.ignoredIds || [] });
 
     return data.projects.flatMap((project) => {
       if (!project.id || !project.name) return [];
