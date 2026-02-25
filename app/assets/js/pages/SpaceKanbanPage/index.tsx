@@ -107,7 +107,7 @@ function Page() {
   });
 
   const projectSearch = Projects.useProjectSearch({ accessLevel: "edit_access" });
-  const spaceSearch = Spaces.useSpaceSearch({ accessLevel: "edit_access" });
+  const spaceSearch = Spaces.useSpaceSearch({ accessLevel: "edit_access", ignoreIds: [space.id] });
 
   const handleMoveTaskSuccess = React.useCallback(
     async ({ destinationType, destinationId }: { destinationType: string; destinationId: string }) => {

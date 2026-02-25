@@ -305,6 +305,24 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
     |> UI.sleep(400)
   end
 
+  step :open_move_task_modal, ctx do
+    ctx
+    |> UI.click(testid: "move-task")
+    |> UI.assert_has(testid: "move-task-modal")
+  end
+
+  step :assert_only_destination_space_shown, ctx do
+    destination_space_result = UI.testid(["move-task-space-field-search-result", ctx.destination_space.name])
+    original_space_result = UI.testid(["move-task-space-field-search-result", ctx.space.name])
+
+    ctx
+    |> UI.click(testid: "move-task-destination-type")
+    |> UI.click(testid: "move-task-destination-space")
+    |> UI.click(testid: "move-task-space-field")
+    |> UI.assert_has(testid: destination_space_result)
+    |> UI.refute_has(testid: original_space_result)
+  end
+
   step :visit_destination_space_kanban_page, ctx do
     ctx
     |> UI.visit(Paths.space_kanban_path(ctx.company, ctx.destination_space))
