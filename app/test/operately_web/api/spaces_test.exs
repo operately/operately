@@ -69,6 +69,60 @@ defmodule OperatelyWeb.Api.SpacesTest do
       assert length(res.spaces) == 1
       assert res.spaces |> hd() |> Map.get(:name) == "Full Space"
     end
+
+    test "it excludes spaces with IDs in ignored_ids", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space(:product, name: "Product Space")
+        |> Factory.add_space(:marketing, name: "Marketing Space")
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res1} = query(ctx.conn, [:spaces, :search], %{query: ""})
+      assert length(res1.spaces) >= 2
+      space_names = Enum.map(res1.spaces, & &1.name)
+      assert "Product Space" in space_names
+      assert "Marketing Space" in space_names
+
+      product_id = Paths.space_id(ctx.product)
+
+      assert {200, res2} = query(ctx.conn, [:spaces, :search], %{query: "", ignored_ids: [product_id]})
+      filtered_names = Enum.map(res2.spaces, & &1.name)
+      refute "Product Space" in filtered_names
+      assert "Marketing Space" in filtered_names
+    end
+
+    test "it excludes multiple spaces with ignored_ids", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space(:space1, name: "Space One")
+        |> Factory.add_space(:space2, name: "Space Two")
+        |> Factory.add_space(:space3, name: "Space Three")
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res1} = query(ctx.conn, [:spaces, :search], %{query: ""})
+      assert length(res1.spaces) >= 3
+
+      space1_id = Paths.space_id(ctx.space1)
+      space2_id = Paths.space_id(ctx.space2)
+
+      assert {200, res2} = query(ctx.conn, [:spaces, :search], %{query: "", ignored_ids: [space1_id, space2_id]})
+      filtered_names = Enum.map(res2.spaces, & &1.name)
+      refute "Space One" in filtered_names
+      refute "Space Two" in filtered_names
+      assert "Space Three" in filtered_names
+    end
+
+    test "it returns empty list when all matching spaces are ignored", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space(:unique, name: "Unique Space")
+        |> Factory.log_in_person(:creator)
+
+      unique_id = Paths.space_id(ctx.unique)
+
+      assert {200, res} = query(ctx.conn, [:spaces, :search], %{query: "Unique", ignored_ids: [unique_id]})
+      assert res.spaces == []
+    end
   end
 
   describe "count by access level" do

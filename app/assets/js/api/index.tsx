@@ -3003,6 +3003,7 @@ export interface SpacesListTasksResult {
 export interface SpacesSearchInput {
   query: string;
   accessLevel?: AccessOptions;
+  ignoredIds?: Id[];
 }
 
 export interface SpacesSearchResult {
