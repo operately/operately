@@ -2936,6 +2936,7 @@ export interface ProjectsParentGoalSearchResult {
 export interface ProjectsSearchInput {
   query: string;
   accessLevel?: AccessOptions;
+  ignoredIds?: Id[];
 }
 
 export interface ProjectsSearchResult {

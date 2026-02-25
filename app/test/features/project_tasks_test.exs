@@ -427,45 +427,6 @@ defmodule Operately.Features.ProjectTasksTest do
   end
 
   @tag login_as: :contributor
-  feature "move project task to a space from sidebar actions", ctx do
-    ctx
-    |> Steps.assert_contributor_has_edit_access()
-    |> Steps.given_task_exists(name: "Implement user authentication")
-    |> Steps.given_destination_space_exists()
-    |> Steps.visit_project_page()
-    |> Steps.go_to_tasks_tab()
-    |> Steps.assert_task_present()
-    |> Steps.visit_task_page()
-    |> Steps.move_task_to_destination_space()
-    |> Steps.assert_redirected_to_destination_space_kanban()
-    |> Steps.assert_task_present()
-    |> Steps.visit_project_page()
-    |> Steps.go_to_tasks_tab()
-    |> Steps.assert_task_not_present()
-  end
-
-  @tag login_as: :contributor
-  feature "move project task to another project from sidebar actions", ctx do
-    ctx
-    |> Steps.assert_contributor_has_edit_access()
-    |> Steps.given_task_exists(name: "Implement user authentication")
-    |> Steps.given_destination_project_exists()
-    |> Steps.visit_project_page()
-    |> Steps.go_to_tasks_tab()
-    |> Steps.assert_task_present()
-    |> Steps.visit_task_page()
-    |> Steps.move_task_to_destination_project()
-    |> Steps.assert_redirected_to_destination_project_task()
-    |> Steps.assert_task_belongs_to_destination_project()
-    |> Steps.visit_project_page()
-    |> Steps.go_to_tasks_tab()
-    |> Steps.assert_task_not_present()
-    |> Steps.visit_destination_project_page()
-    |> Steps.go_to_tasks_tab()
-    |> Steps.assert_task_present()
-  end
-
-  @tag login_as: :contributor
   feature "delete task", ctx do
     ctx
     |> Steps.assert_contributor_has_edit_access()
@@ -675,5 +636,57 @@ defmodule Operately.Features.ProjectTasksTest do
     |> Steps.visit_project_page()
     |> Steps.visit_task_page()
     |> Steps.assert_unsubscribed_from_task()
+  end
+
+  describe "move task" do
+    @tag login_as: :contributor
+    feature "move to a space from sidebar actions", ctx do
+      ctx
+      |> Steps.assert_contributor_has_edit_access()
+      |> Steps.given_task_exists(name: "Implement user authentication")
+      |> Steps.given_destination_space_exists()
+      |> Steps.visit_project_page()
+      |> Steps.go_to_tasks_tab()
+      |> Steps.assert_task_present()
+      |> Steps.visit_task_page()
+      |> Steps.move_task_to_destination_space()
+      |> Steps.assert_redirected_to_destination_space_kanban()
+      |> Steps.assert_task_present()
+      |> Steps.visit_project_page()
+      |> Steps.go_to_tasks_tab()
+      |> Steps.assert_task_not_present()
+    end
+
+    @tag login_as: :contributor
+    feature "move to another project from sidebar actions", ctx do
+      ctx
+      |> Steps.assert_contributor_has_edit_access()
+      |> Steps.given_task_exists(name: "Implement user authentication")
+      |> Steps.given_destination_project_exists()
+      |> Steps.visit_project_page()
+      |> Steps.go_to_tasks_tab()
+      |> Steps.assert_task_present()
+      |> Steps.visit_task_page()
+      |> Steps.move_task_to_destination_project()
+      |> Steps.assert_redirected_to_destination_project_task()
+      |> Steps.assert_task_belongs_to_destination_project()
+      |> Steps.visit_project_page()
+      |> Steps.go_to_tasks_tab()
+      |> Steps.assert_task_not_present()
+      |> Steps.visit_destination_project_page()
+      |> Steps.go_to_tasks_tab()
+      |> Steps.assert_task_present()
+    end
+
+    @tag login_as: :contributor
+    feature "current project not shown as option", ctx do
+      ctx
+      |> Steps.assert_contributor_has_edit_access()
+      |> Steps.given_task_exists(name: "Implement user authentication")
+      |> Steps.given_destination_project_exists()
+      |> Steps.visit_task_page()
+      |> Steps.open_move_task_modal()
+      |> Steps.assert_only_destination_project_shown()
+    end
   end
 end

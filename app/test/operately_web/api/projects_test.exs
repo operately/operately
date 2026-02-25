@@ -83,6 +83,63 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert {200, other_res} = query(other_ctx.conn, [:projects, :search], %{query: "External"})
       assert Enum.map(other_res.projects, & &1.name) == ["External Project"]
     end
+
+    test "it excludes projects with IDs in ignored_ids", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space(:space1, name: "Space 1")
+        |> Factory.add_space(:space2, name: "Space 2")
+        |> Factory.add_project(:project1, :space1, name: "Alpha Project")
+        |> Factory.add_project(:project2, :space2, name: "Alpha Beta")
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res1} = query(ctx.conn, [:projects, :search], %{query: "Alpha"})
+      assert length(res1.projects) == 2
+      project_names = Enum.map(res1.projects, & &1.name)
+      assert "Alpha Project" in project_names
+      assert "Alpha Beta" in project_names
+
+      project1_id = Paths.project_id(ctx.project1)
+
+      assert {200, res2} = query(ctx.conn, [:projects, :search], %{query: "Alpha", ignored_ids: [project1_id]})
+      assert length(res2.projects) == 1
+      assert hd(res2.projects).name == "Alpha Beta"
+    end
+
+    test "it excludes multiple projects with ignored_ids", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space(:space1, name: "Space 1")
+        |> Factory.add_space(:space2, name: "Space 2")
+        |> Factory.add_space(:space3, name: "Space 3")
+        |> Factory.add_project(:project1, :space1, name: "Test Alpha")
+        |> Factory.add_project(:project2, :space2, name: "Test Beta")
+        |> Factory.add_project(:project3, :space3, name: "Test Gamma")
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res1} = query(ctx.conn, [:projects, :search], %{query: "Test"})
+      assert length(res1.projects) == 3
+
+      project1_id = Paths.project_id(ctx.project1)
+      project2_id = Paths.project_id(ctx.project2)
+
+      assert {200, res2} = query(ctx.conn, [:projects, :search], %{query: "Test", ignored_ids: [project1_id, project2_id]})
+      assert length(res2.projects) == 1
+      assert hd(res2.projects).name == "Test Gamma"
+    end
+
+    test "it returns empty list when all matching projects are ignored", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space(:space1, name: "Space 1")
+        |> Factory.add_project(:project1, :space1, name: "Unique Project")
+        |> Factory.log_in_person(:creator)
+
+      project1_id = Paths.project_id(ctx.project1)
+
+      assert {200, res} = query(ctx.conn, [:projects, :search], %{query: "Unique", ignored_ids: [project1_id]})
+      assert res.projects == []
+    end
   end
 
   describe "get milestones" do

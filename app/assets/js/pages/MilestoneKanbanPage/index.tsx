@@ -114,7 +114,7 @@ function Page() {
   });
   const { milestones, search: searchMilestones } = useMilestones(milestone.project.id);
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: milestone.project.id } });
-  const projectSearch = Projects.useProjectSearch({ accessLevel: "edit_access" });
+  const projectSearch = Projects.useProjectSearch({ accessLevel: "edit_access", ignoredIds: [milestone.project.id] });
   const spaceSearch = Spaces.useSpaceSearch({ accessLevel: "edit_access" });
 
   const handleMoveTaskSuccess = React.useCallback(

@@ -397,6 +397,26 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> UI.sleep(400)
   end
 
+  step :open_move_task_modal, ctx do
+    ctx
+    |> UI.click(testid: "move-task")
+    |> UI.assert_has(testid: "move-task-modal")
+  end
+
+  step :assert_only_destination_project_shown, ctx do
+    destination_project_result =
+      UI.testid(["move-task-project-field-search-result", ctx.destination_project.name])
+    original_project_result =
+      UI.testid(["move-task-project-field-search-result", ctx.project.name])
+
+    ctx
+    |> UI.click(testid: "move-task-destination-type")
+    |> UI.click(testid: "move-task-destination-project")
+    |> UI.click(testid: "move-task-project-field")
+    |> UI.assert_has(testid: destination_project_result)
+    |> UI.refute_has(testid: original_project_result)
+  end
+
   step :complete_task_from_header_checkbox, ctx do
     ctx
     |> UI.click(testid: "task-quick-complete")
