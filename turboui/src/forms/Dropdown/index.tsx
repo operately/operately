@@ -6,6 +6,7 @@ export namespace Dropdown {
   export interface Item {
     id: string;
     name: string;
+    testId?: string;
   }
 
   export interface Props<T extends Item> {
@@ -74,6 +75,7 @@ export function Dropdown<T extends Dropdown.Item>({
                   onSelect(item);
                   setIsOpen(false);
                 }}
+                data-test-id={item.testId}
               >
                 {item.name}
               </button>

@@ -123,56 +123,20 @@ export const AllStates: Story = {
           </div>
 
           <div className="border-t border-stroke-base pt-12">
-            <h2 className="text-lg font-bold mb-8">Custom Width</h2>
+            <h2 className="text-lg font-bold mb-8">Long Project Names</h2>
             <div className="space-y-6">
               <div>
-                <Label>Inline - 200px width</Label>
-                <ComponentWrapper project={project} variant="inline" width="200px" />
-              </div>
-
-              <div>
-                <Label>Inline - 300px width</Label>
-                <ComponentWrapper project={project} variant="inline" width="300px" />
-              </div>
-
-              <div>
-                <Label>Form-Field - 250px width</Label>
-                <ComponentWrapper project={project} variant="form-field" width="250px" label="Custom Width" />
-              </div>
-
-              <div>
-                <Label>Form-Field - 400px width</Label>
-                <ComponentWrapper project={project} variant="form-field" width="400px" label="Custom Width" />
-              </div>
-            </div>
-          </div>
-
-          <div className="border-t border-stroke-base pt-12">
-            <h2 className="text-lg font-bold mb-8">Long Project Names (Truncated)</h2>
-            <div className="space-y-6">
-              <div>
-                <Label>Inline - Long name with 250px width</Label>
+                <Label>Inline</Label>
                 <ComponentWrapper
                   project={projects[6]}
                   variant="inline"
-                  width="250px"
                 />
               </div>
 
               <div>
-                <Label>Form-Field - Long name with 300px width</Label>
+                <Label>Form-Field</Label>
                 <ComponentWrapper
                   project={projects[7]}
-                  variant="form-field"
-                  width="300px"
-                  label="Long Project Name"
-                />
-              </div>
-
-              <div>
-                <Label>Form-Field - Long name with default width</Label>
-                <ComponentWrapper
-                  project={projects[6]}
                   variant="form-field"
                   label="Long Project Name"
                 />

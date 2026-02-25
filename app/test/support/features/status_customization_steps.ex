@@ -161,7 +161,9 @@ defmodule Operately.Support.Features.StatusCustomizationSteps do
   end
 
   step :refute_kanban_column_visible, ctx, status: status_value do
-    ctx |> UI.refute_has(testid: "kanban-column-#{status_value}")
+    ctx
+    |> UI.sleep(300)
+    |> UI.refute_has(testid: "kanban-column-#{status_value}")
   end
 
   step :assert_task_in_kanban_column, ctx, task: task_name, column: status_value do

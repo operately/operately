@@ -11,7 +11,7 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
 
   step :visit_kanban_page, ctx do
     ctx
-    |> UI.visit(Paths.space_path(ctx.company, ctx.space) <> "/kanban")
+    |> UI.visit(Paths.space_kanban_path(ctx.company, ctx.space))
     |> UI.assert_has(testid: page_testid(ctx.space))
   end
 
@@ -271,6 +271,46 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
     |> UI.sleep(400)
   end
 
+  step :move_task_to_project, ctx, opts do
+    project_name = Keyword.fetch!(opts, :project_name)
+    destination_project_result = UI.testid(["move-task-project-field-search-result", project_name])
+
+    ctx
+    |> UI.click(testid: "move-task")
+    |> UI.assert_has(testid: "move-task-modal")
+    |> UI.click(testid: "move-task-destination-type")
+    |> UI.click(testid: "move-task-destination-project")
+    |> UI.click(testid: "move-task-project-field")
+    |> UI.click(testid: destination_project_result)
+    |> UI.click(testid: "confirm-move-task")
+    |> UI.sleep(400)
+  end
+
+  step :visit_destination_project, ctx do
+    UI.visit(ctx, Paths.project_path(ctx.company, ctx.destination_project, tab: "tasks"))
+  end
+
+  step :move_task_to_space, ctx, opts do
+    space_name = Keyword.fetch!(opts, :space_name)
+    destination_space_result = UI.testid(["move-task-space-field-search-result", space_name])
+
+    ctx
+    |> UI.click(testid: "move-task")
+    |> UI.assert_has(testid: "move-task-modal")
+    |> UI.click(testid: "move-task-destination-type")
+    |> UI.click(testid: "move-task-destination-space")
+    |> UI.click(testid: "move-task-space-field")
+    |> UI.click(testid: destination_space_result)
+    |> UI.click(testid: "confirm-move-task")
+    |> UI.sleep(400)
+  end
+
+  step :visit_destination_space_kanban_page, ctx do
+    ctx
+    |> UI.visit(Paths.space_kanban_path(ctx.company, ctx.destination_space))
+    |> UI.assert_has(testid: page_testid(ctx.destination_space))
+  end
+
   step :assert_task_removed, ctx, opts do
     task = Map.fetch!(ctx, Keyword.fetch!(opts, :task_key))
     status_value = Keyword.fetch!(opts, :status_value)
@@ -279,6 +319,36 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
     |> UI.find([testid: UI.testid(["kanban-column", status_value])], fn ctx ->
       UI.refute_has(ctx, testid: card_testid(task))
     end)
+  end
+
+  step :assert_task_present, ctx, opts do
+    task = Map.fetch!(ctx, Keyword.fetch!(opts, :task_key))
+
+    ctx
+    |> UI.assert_has(testid: project_task_testid(task))
+    |> UI.assert_text(task.name)
+  end
+
+  step :assert_task_belongs_to_destination_project, ctx, opts do
+    task = Repo.get!(Task, Map.fetch!(ctx, Keyword.fetch!(opts, :task_key)).id)
+    destination_project = Map.fetch!(ctx, Keyword.fetch!(opts, :destination_project_key))
+
+    assert task.project_id == destination_project.id
+    assert task.space_id == nil
+    assert task.milestone_id == nil
+
+    ctx
+  end
+
+  step :assert_task_belongs_to_destination_space, ctx, opts do
+    task = Repo.get!(Task, Map.fetch!(ctx, Keyword.fetch!(opts, :task_key)).id)
+    destination_space = Map.fetch!(ctx, Keyword.fetch!(opts, :destination_space_key))
+
+    assert task.space_id == destination_space.id
+    assert task.project_id == nil
+    assert task.milestone_id == nil
+
+    ctx
   end
 
   step :add_comment_on_task, ctx, opts do
@@ -421,4 +491,5 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
   defp page_testid(space), do: UI.testid(["space-kanban-page", Paths.space_id(space)])
   defp card_testid(task), do: UI.testid(["kanban-card", Paths.task_id(task)])
   defp card_title_testid(task), do: UI.testid(["kanban-card-title", Paths.task_id(task)])
+  defp project_task_testid(task), do: UI.testid(["task", Paths.task_id(task)])
 end
