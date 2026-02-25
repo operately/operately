@@ -12,6 +12,7 @@ defmodule OperatelyWeb.Api.Spaces do
     inputs do
       field :query, :string, null: false
       field? :access_level, :access_options, null: false
+      field? :ignored_ids, list_of(:id), null: false
     end
 
     outputs do
@@ -20,7 +21,8 @@ defmodule OperatelyWeb.Api.Spaces do
 
     def call(conn, inputs) do
       person = me(conn)
-      spaces = Space.search(person, inputs.query, inputs[:access_level])
+      ignored_ids = inputs[:ignored_ids] || []
+      spaces = Space.search(person, inputs.query, inputs[:access_level], ignored_ids)
 
       {:ok, %{spaces: Serializer.serialize(spaces, level: :essential)}}
     end
