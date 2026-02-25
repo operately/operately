@@ -13,6 +13,8 @@ defmodule Operately.Features.SpaceKanbanTest do
       ctx
       |> Factory.setup()
       |> Factory.add_space(:space, name: "Kanban Space")
+      |> Factory.add_space(:destination_space, name: "Destination Space")
+      |> Factory.add_project(:destination_project, :destination_space, name: "Destination Project")
       |> Factory.create_space_task(:task, :space, name: "First Task")
       |> Factory.create_space_task(:second_task, :space, name: "Second Task")
       |> Factory.add_space_member(:teammate, :space, name: "Taylor Teammate")
@@ -93,6 +95,34 @@ defmodule Operately.Features.SpaceKanbanTest do
     |> Steps.change_task_status(prev_status: "Not started", next_status: new_status)
     |> Steps.delete_task()
     |> Steps.assert_task_removed(task_key: :second_task, status_value: new_status)
+  end
+
+  feature "move a space task to a project from the slide-in sidebar", ctx do
+    source_status = hd(ctx.status_values)
+
+    ctx
+    |> Steps.visit_kanban_page()
+    |> Steps.assert_task_in_status(task_key: :task, status_value: source_status)
+    |> Steps.open_task_slide_in(:task)
+    |> Steps.move_task_to_project(project_name: ctx.destination_project.name)
+    |> Steps.assert_task_removed(task_key: :task, status_value: source_status)
+    |> Steps.visit_destination_project()
+    |> Steps.assert_task_present(task_key: :task)
+    |> Steps.assert_task_belongs_to_destination_project(task_key: :task, destination_project_key: :destination_project)
+  end
+
+  feature "move a space task to another space from the slide-in sidebar", ctx do
+    source_status = hd(ctx.status_values)
+
+    ctx
+    |> Steps.visit_kanban_page()
+    |> Steps.assert_task_in_status(task_key: :task, status_value: source_status)
+    |> Steps.open_task_slide_in(:task)
+    |> Steps.move_task_to_space(space_name: ctx.destination_space.name)
+    |> Steps.assert_task_removed(task_key: :task, status_value: source_status)
+    |> Steps.visit_destination_space_kanban_page()
+    |> Steps.assert_task_in_status(task_key: :task, status_value: source_status)
+    |> Steps.assert_task_belongs_to_destination_space(task_key: :task, destination_space_key: :destination_space)
   end
 
   feature "cannot delete the last remaining status", ctx do
