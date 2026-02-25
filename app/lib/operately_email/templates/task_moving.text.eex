@@ -1,0 +1,5 @@
+<%= short_name(@author) %> moved <%= @task_name %>.
+
+The task is now in <%= @destination_name %>.
+
+Link: <%= @cta_url %>
