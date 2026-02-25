@@ -30,13 +30,11 @@ export namespace ProjectField {
     showIcon?: boolean;
     label?: string;
     error?: string;
-    width?: string | number;
   }
 
-  export interface State extends Required<Omit<Props, "label" | "error" | "width">> {
+  export interface State extends Required<Omit<Props, "label" | "error">> {
     label: string;
     error: string;
-    width: string | number | undefined;
     isOpen: boolean;
     setIsOpen: (isOpen: boolean) => void;
 
@@ -64,13 +62,17 @@ const DefaultProps = {
 export function ProjectField(props: ProjectField.Props) {
   const state = useProjectFieldState(props);
 
-  const containerClass = state.variant === "form-field" && !state.width ? "w-full" : undefined;
+  const containerClass = state.variant === "form-field" ? "w-full" : undefined;
 
   return (
     <div className={containerClass} >
       {state.label && <label className="font-bold text-sm mb-1 block text-left">{state.label}</label>}
       <Popover.Root open={state.isOpen} onOpenChange={state.setIsOpen}>
-        <Trigger state={state} />
+        <Popover.Anchor asChild>
+          <div className="w-full">
+            <Trigger state={state} />
+          </div>
+        </Popover.Anchor>
         <Dialog state={state} />
       </Popover.Root>
       {state.error && <div className="text-red-500 text-xs mt-1 mb-1">{state.error}</div>}
@@ -103,7 +105,6 @@ export function useProjectFieldState(p: ProjectField.Props): ProjectField.State 
     ...p,
     label: p.label || "",
     error: p.error || "",
-    width: p.width,
     isOpen,
     setIsOpen,
     dialogMode,
@@ -157,16 +158,13 @@ function getProjectFieldText(state: ProjectField.State) {
 }
 
 function Dialog({ state }: { state: ProjectField.State }) {
-  const dialogWidth = state.width || "220px";
-
   return (
     <Popover.Portal>
       <Popover.Content
-        className="bg-surface-base shadow rounded border border-stroke-base p-0.5 z-50"
-        style={{ width: dialogWidth }}
+        className="bg-surface-base shadow rounded border border-stroke-base p-0.5 z-50 w-[var(--radix-popover-trigger-width)]"
         sideOffset={4}
         align="start"
-        alignOffset={2}
+        alignOffset={0}
       >
         <DialogMenu state={state} />
         <Popover.Arrow className="fill-surface-base stroke-1 stroke-surface-outline" />
