@@ -139,6 +139,7 @@ export const DISPLAYED_IN_FEED = [
   "task_due_date_updating",
   "task_assignee_updating",
   "task_milestone_updating",
+  "task_moving",
   "milestone_title_updating",
   "milestone_due_date_updating",
   "milestone_description_updating",
@@ -224,6 +225,7 @@ import TaskDueDateUpdating from "@/features/activities/TaskDueDateUpdating";
 import TaskDeleting from "@/features/activities/TaskDeleting";
 import TaskAssigneeUpdating from "@/features/activities/TaskAssigneeUpdating";
 import TaskMilestoneUpdating from "@/features/activities/TaskMilestoneUpdating";
+import TaskMoving from "@/features/activities/TaskMoving";
 import MilestoneTitleUpdating from "@/features/activities/MilestoneTitleUpdating";
 import MilestoneDueDateUpdating from "@/features/activities/MilestoneDueDateUpdating";
 import MilestoneDescriptionUpdating from "@/features/activities/MilestoneDescriptionUpdating";
@@ -375,6 +377,7 @@ function handler(activity: Activity) {
     .with("task_due_date_updating", () => TaskDueDateUpdating)
     .with("task_assignee_updating", () => TaskAssigneeUpdating)
     .with("task_milestone_updating", () => TaskMilestoneUpdating)
+    .with("task_moving", () => TaskMoving)
     .with("milestone_title_updating", () => MilestoneTitleUpdating)
     .with("milestone_due_date_updating", () => MilestoneDueDateUpdating)
     .with("milestone_description_updating", () => MilestoneDescriptionUpdating)

@@ -20,6 +20,7 @@ import { fetchAll } from "@/utils/async";
 import { assertPresent } from "@/utils/assertions";
 import { projectPageCacheKey } from "../ProjectPage";
 import { parseSpaceForTurboUI } from "@/models/spaces";
+import { useSpaceSearch } from "@/models/spaces";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useMilestones } from "@/models/milestones/useMilestones";
@@ -67,11 +68,11 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
   });
 }
 
+export default { name: "TaskPage", loader, Page } as PageModule;
+
 function pageCacheKey(id: string): string {
   return `v8-TaskV2Page.task-${id}`;
 }
-
-export default { name: "TaskPage", loader, Page } as PageModule;
 
 function Page() {
   const paths = usePaths();
@@ -81,6 +82,7 @@ function Page() {
   const pageData = PageCache.useData(loader);
   const { data, refresh: refreshPageData } = pageData;
   const { task, childrenCount, activities } = data;
+
 
   assertPresent(task.project, "Task must have a project");
   assertPresent(task.permissions, "Task must have permissions");
@@ -97,6 +99,7 @@ function Page() {
     update: (v) => Api.editProjectName({ projectId: task.project!.id, name: v }),
     onError: (e: string) => showErrorToast(e, "Reverted the project name to its previous value."),
     validations: [(v) => (v.trim() === "" ? "Project name cannot be empty" : null)],
+    pageData,
     refreshPageData,
     clearProjectCache: true,
   });
@@ -106,6 +109,7 @@ function Page() {
     update: (v) => Api.tasks.updateName({ taskId: task.id, name: v, type: "project" }),
     onError: (e: string) => showErrorToast(e, "Failed to update task name."),
     validations: [(v) => (v.trim() === "" ? "Task name cannot be empty" : null)],
+    pageData,
     refreshPageData,
   });
 
@@ -113,6 +117,7 @@ function Page() {
     value: ({ task }) => task.description && JSON.parse(task.description),
     update: (v) => Api.tasks.updateDescription({ taskId: task.id, description: JSON.stringify(v), type: "project" }),
     onError: () => showErrorToast("Error", "Failed to update task description."),
+    pageData,
     refreshPageData,
   });
 
@@ -120,6 +125,7 @@ function Page() {
     value: ({ task }) => Tasks.parseTaskForTurboUi(paths, task, { type: "project" }).status,
     update: (v) => Api.tasks.updateStatus({ taskId: task.id, status: Tasks.serializeTaskStatus(v), type: "project" }),
     onError: () => showErrorToast("Error", "Failed to update task status."),
+    pageData,
     refreshPageData,
   });
 
@@ -127,6 +133,7 @@ function Page() {
     value: ({ task }) => parseContextualDate(task.dueDate),
     update: (v) => Api.tasks.updateDueDate({ taskId: task.id, dueDate: serializeContextualDate(v), type: "project" }),
     onError: () => showErrorToast("Error", "Failed to update due date."),
+    pageData,
     refreshPageData,
   });
 
@@ -134,6 +141,7 @@ function Page() {
     value: ({ task }) => People.parsePersonForTurboUi(paths, task.assignees?.[0] || null),
     update: (v) => Api.tasks.updateAssignee({ taskId: task.id, assigneeId: v?.id ?? null, type: "project" }),
     onError: () => showErrorToast("Error", "Failed to update assignees."),
+    pageData,
     refreshPageData,
   });
 
@@ -141,26 +149,24 @@ function Page() {
     value: ({ task }) => (task.milestone ? parseMilestoneForTurboUi(paths, task.milestone) : null),
     update: (v) => Api.tasks.updateMilestone({ taskId: task.id, milestoneId: v?.id ?? null }),
     onError: () => showErrorToast("Error", "Failed to update milestone."),
+    pageData,
     refreshPageData,
   });
 
-  const {
-    comments,
-    addComment,
-    editComment,
-    deleteComment,
-    addReaction,
-    removeReaction,
-  } = Comments.useOptimisticComments({
-    taskId: task.id,
-    parentType: "project_task",
-    initialComments: data.comments,
-    onAfterMutation: () => {
-      PageCache.invalidate(pageCacheKey(task.id));
-    },
-  });
+  const { comments, addComment, editComment, deleteComment, addReaction, removeReaction } =
+    Comments.useOptimisticComments({
+      taskId: task.id,
+      parentType: "project_task",
+      initialComments: data.comments,
+      onAfterMutation: () => {
+        PageCache.invalidate(pageCacheKey(task.id));
+      },
+    });
 
-  const timelineItems = useMemo(() => Tasks.prepareTaskTimelineItems(paths, activities, comments), [paths, activities, comments]);
+  const timelineItems = useMemo(
+    () => Tasks.prepareTaskTimelineItems(paths, activities, comments),
+    [paths, activities, comments],
+  );
 
   const handleDelete = async () => {
     try {
@@ -187,6 +193,10 @@ function Page() {
   });
   const { milestones, search: searchMilestones } = useMilestones(task.project.id);
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: task.project.id } });
+
+  const projectSearch = Projects.useProjectSearch({ accessLevel: "edit_access" });
+  const spaceSearch = useSpaceSearch({ accessLevel: "edit_access" });
+  const moveTask = useMoveTask(task, refreshPageData);
 
   const subscriptions = useSubscription({
     subscriptionList: task.subscriptionList,
@@ -244,6 +254,9 @@ function Page() {
     onAssigneeChange: setAssignee,
 
     onDelete: handleDelete,
+    onMoveTask: moveTask,
+    projectSearch,
+    spaceSearch,
 
     // Metadata
     createdAt: new Date(task.insertedAt || Date.now()),
@@ -256,10 +269,11 @@ function Page() {
     richTextHandlers: richEditorHandlers,
   };
 
-  return <TaskPage key={task.id!} {...props} />;
+  return <TaskPage key={task.id} {...props} />;
 }
 
 interface usePageFieldProps<T> {
+  pageData: { data: any; cacheVersion: number };
   value: (data: {
     task: Tasks.Task;
     childrenCount: { tasksCount: number; discussionsCount: number };
@@ -273,6 +287,7 @@ interface usePageFieldProps<T> {
 }
 
 function usePageField<T>({
+  pageData,
   value,
   update,
   onError,
@@ -280,7 +295,6 @@ function usePageField<T>({
   refreshPageData,
   clearProjectCache,
 }: usePageFieldProps<T>): [T, (v: T) => Promise<boolean>] {
-  const pageData = PageCache.useData(loader);
   const { cacheVersion, data } = pageData;
 
   const [state, setState] = React.useState<T>(() => value(data));
@@ -291,7 +305,7 @@ function usePageField<T>({
       setState(value(data));
       setStateVersion(cacheVersion);
     }
-  }, [value, cacheVersion, stateVersion]);
+  }, [value, cacheVersion, stateVersion, data]);
 
   const updateState = async (newVal: T): Promise<boolean> => {
     if (validations) {
@@ -339,4 +353,44 @@ function usePageField<T>({
   };
 
   return [state, updateState];
+}
+
+function useMoveTask(task: Tasks.Task, refreshPageData: (() => Promise<void>) | undefined) {
+  const navigate = useNavigate();
+  const paths = usePaths();
+
+  return useCallback(
+    async ({ destinationType, destinationId }: TaskPage.MoveTaskInput) => {
+      try {
+        const res = await Api.moveTask({ taskId: task.id, destinationType, destinationId });
+        const movedTaskId = res.task?.id ?? task.id;
+        const resolvedDestinationType = res.destinationType ?? destinationType;
+        const resolvedDestinationId = res.destinationId ?? destinationId;
+
+        PageCache.invalidate(pageCacheKey(task.id));
+
+        if (task.project?.id) {
+          PageCache.invalidate(projectPageCacheKey(task.project.id));
+        }
+
+        if (resolvedDestinationType !== "space") {
+          PageCache.invalidate(projectPageCacheKey(resolvedDestinationId));
+        }
+
+        if (resolvedDestinationType === "space") {
+          navigate(paths.spaceKanbanPath(resolvedDestinationId, { taskId: movedTaskId }));
+        } else {
+          navigate(paths.taskPath(movedTaskId));
+          refreshPageData?.();
+        }
+
+        return true;
+      } catch (error) {
+        console.error("Failed to move task", error);
+        showErrorToast("Error", "Failed to move task.");
+        return false;
+      }
+    },
+    [navigate, paths, task.id, task.project?.id, refreshPageData],
+  );
 }

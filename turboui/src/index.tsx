@@ -46,6 +46,7 @@ export { CompanyCreatorOnboardingWizard, CompanyMemberOnboardingWizard } from ".
 export { PrivacyField } from "./PrivacyField";
 export { ProfileEditPage } from "./ProfileEditPage";
 export { ProfilePage } from "./ProfilePage";
+export { ProjectField } from "./ProjectField";
 export { ProjectPage } from "./ProjectPage";
 export { ReviewPage } from "./ReviewPage";
 export { SidebarNotificationSection } from "./SidebarSection";

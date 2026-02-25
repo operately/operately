@@ -1,6 +1,8 @@
-import * as api from "@/api";
+import Api, * as api from "@/api";
 import { assertPresent } from "@/utils/assertions";
 import * as Time from "@/utils/time";
+import { usePaths } from "@/routes/paths";
+import { ProjectField } from "turboui/src/ProjectField";
 
 export { useProjectMilestoneOrdering } from "./useProjectMilestoneOrdering";
 export { useTaskStatuses } from "./useTaskStatuses";
@@ -55,5 +57,23 @@ export function useContributorSearchFn(project: Project) {
     });
 
     return res.people!.map((p) => p!);
+  };
+}
+
+export function useProjectSearch(attrs?: { accessLevel?: api.AccessOptions }): ProjectField.SearchProjectFn {
+  const paths = usePaths();
+
+  return async ({ query }: { query: string }): Promise<ProjectField.Project[]> => {
+    const data = await Api.projects.search({ query, accessLevel: attrs?.accessLevel });
+
+    return data.projects.flatMap((project) => {
+      if (!project.id || !project.name) return [];
+
+      return [{
+        id: project.id,
+        name: project.name,
+        link: paths.projectPath(project.id),
+      }];
+    });
   };
 }
