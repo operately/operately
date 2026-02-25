@@ -184,7 +184,7 @@ function Page() {
   });
 
   const { statuses, handleSaveStatuses } = Projects.useTaskStatuses(project.id, project.taskStatuses, refresh);
-  const taskProjectSearch = Projects.useProjectSearch({ accessLevel: "edit_access" });
+  const taskProjectSearch = Projects.useProjectSearch({ accessLevel: "edit_access", ignoredIds: [project.id] });
   const taskSpaceSearch = useTaskDestinationSpaceSearch({ accessLevel: "edit_access" });
 
   const handleMoveTaskSuccess = React.useCallback(
