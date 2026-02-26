@@ -16,7 +16,13 @@ defmodule OperatelyWeb.Api.Plugs.RequireApiToken do
   defp extract_token(conn) do
     case get_req_header(conn, "authorization") do
       [auth_header | _rest] ->
-        token = String.trim(auth_header)
+        token =
+          case String.split(String.trim(auth_header), " ", parts: 2) do
+            ["Bearer", t] -> String.trim(t)
+            [t] -> String.trim(t)
+            _ -> ""
+          end
+
         if token == "", do: :error, else: {:ok, token}
 
       _ ->
