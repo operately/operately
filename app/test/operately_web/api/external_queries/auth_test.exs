@@ -96,4 +96,5 @@ defmodule OperatelyWeb.Api.ExternalQueries.AuthTest do
 
   defp resolve_inputs(inputs, ctx) when is_function(inputs, 1), do: inputs.(ctx)
   defp resolve_inputs(inputs, _ctx) when is_map(inputs), do: inputs
+  defp resolve_inputs(nil, _ctx), do: %{}
 end

@@ -1,18 +1,11 @@
 defmodule OperatelyWeb.Api.ExternalQueries.Queries.GetDiscussions do
-  use Operately.Support.ExternalApi.QueryDefinition
-
-  import ExUnit.Assertions
+  use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
   alias OperatelyWeb.Paths
 
-  query :get_discussions do
-    setup &setup_discussion/1
-    inputs &get_discussions_inputs/1
-    assert &assert_get_discussions/2
-  end
-
-  def setup_discussion(ctx) do
+  @impl true
+  def setup(ctx) do
     ctx
     |> Factory.setup()
     |> Factory.add_space(:space)
@@ -20,11 +13,13 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.GetDiscussions do
     |> Factory.add_message(:message, :messages_board)
   end
 
-  def get_discussions_inputs(ctx) do
+  @impl true
+  def inputs(ctx) do
     %{space_id: Paths.space_id(ctx.space)}
   end
 
-  def assert_get_discussions(response, ctx) do
+  @impl true
+  def assert(response, ctx) do
     assert is_list(response.discussions)
     assert is_list(response.my_drafts)
     assert Enum.any?(response.discussions, fn discussion -> discussion.id == Paths.message_id(ctx.message) end)

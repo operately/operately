@@ -45,7 +45,7 @@ defmodule OperatelyWeb.Api.ExternalQueries.Coverage do
       %{
         query_name: query_name,
         setup: spec.setup,
-        inputs: Map.get(spec, :inputs, %{}),
+        inputs: Map.get(spec, :inputs),
         assert_fn: spec.assert
       }
     end
@@ -60,10 +60,23 @@ defmodule OperatelyWeb.Api.ExternalQueries.Coverage do
 
   defp get_specs do
     OperatelyWeb.Api.ExternalQueries.Queries.__spec_modules__()
-    |> Enum.reduce(%{}, fn module, acc ->
-      Map.merge(acc, module.specs())
+    |> Enum.map(fn module ->
+      query_name = module.query_name()
+
+      spec = %{
+        setup: &module.setup/1,
+        assert: &module.assert/2
+      }
+
+      spec =
+        if function_exported?(module, :inputs, 1) do
+          Map.put(spec, :inputs, &module.inputs/1)
+        else
+          spec
+        end
+
+      {normalize_query_name(query_name), spec}
     end)
-    |> Enum.map(fn {query_name, spec} -> {normalize_query_name(query_name), spec} end)
     |> Map.new()
   end
 

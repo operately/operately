@@ -1,16 +1,13 @@
 defmodule OperatelyWeb.Api.ExternalQueries.Queries.GetAccount do
-  use Operately.Support.ExternalApi.QueryDefinition
-
-  import ExUnit.Assertions
+  use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
 
-  query :get_account do
-    setup &Factory.setup/1
-    assert &assert_get_account/2
-  end
+  @impl true
+  def setup(ctx), do: Factory.setup(ctx)
 
-  def assert_get_account(response, ctx) do
+  @impl true
+  def assert(response, ctx) do
     account = Operately.People.get_account!(ctx.creator.account_id)
 
     assert response == %{

@@ -1,16 +1,13 @@
 defmodule OperatelyWeb.Api.ExternalQueries.Queries.GetFlatWorkMap do
-  use Operately.Support.ExternalApi.QueryDefinition
-
-  import ExUnit.Assertions
+  use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
 
-  query :get_flat_work_map do
-    setup &Factory.setup/1
-    assert &assert_get_flat_work_map/2
-  end
+  @impl true
+  def setup(ctx), do: Factory.setup(ctx)
 
-  def assert_get_flat_work_map(response, _ctx) do
+  @impl true
+  def assert(response, _ctx) do
     assert response.work_map == []
   end
 end

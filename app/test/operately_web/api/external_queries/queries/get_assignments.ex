@@ -1,16 +1,13 @@
 defmodule OperatelyWeb.Api.ExternalQueries.Queries.GetAssignments do
-  use Operately.Support.ExternalApi.QueryDefinition
-
-  import ExUnit.Assertions
+  use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
 
-  query :get_assignments do
-    setup &Factory.setup/1
-    assert &assert_get_assignments/2
-  end
+  @impl true
+  def setup(ctx), do: Factory.setup(ctx)
 
-  def assert_get_assignments(response, _ctx) do
+  @impl true
+  def assert(response, _ctx) do
     assert is_list(response.assignments)
   end
 end
