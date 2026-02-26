@@ -98,7 +98,7 @@ defmodule OperatelyWeb.ApiSocket do
 
     @impl true
     def join("api:" <> topic, payload, socket) do
-      subscriptions = OperatelyWeb.Api.__subscriptions__()
+      subscriptions = OperatelyWeb.Api.Internal.__subscriptions__()
 
       case Map.get(subscriptions, topic) do
         nil ->
