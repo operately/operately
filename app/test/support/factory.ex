@@ -32,6 +32,10 @@ defmodule Operately.Support.Factory do
   defdelegate enable_feature(ctx, feature_name), to: Factory.Companies
   defdelegate disable_feature(ctx, feature_name), to: Factory.Companies
 
+  # people
+  defdelegate add_api_token(ctx, testid, person_name, opts \\ []), to: Factory.People
+  defdelegate set_api_token_mode(ctx, token_testid, read_only), to: Factory.People
+
   # spaces
   defdelegate add_space(ctx, testid, opts \\ []), to: Factory.Spaces
   defdelegate add_space_member(ctx, testid, space_name, opts \\ []), to: Factory.Spaces
