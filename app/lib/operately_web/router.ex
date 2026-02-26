@@ -21,6 +21,10 @@ defmodule OperatelyWeb.Router do
     plug(:fetch_current_person)
   end
 
+  pipeline :api_external do
+    plug(:accepts, ["json"])
+  end
+
   #
   # Health check endpoint
   #
@@ -82,10 +86,16 @@ defmodule OperatelyWeb.Router do
     forward("/v1", OperatelyEE.AdminApi)
   end
 
+  scope "/api/external" do
+    pipe_through([:api_external])
+
+    forward("/v1", OperatelyWeb.Api.External)
+  end
+
   scope "/api" do
     pipe_through([:api])
 
-    forward("/v2", OperatelyWeb.Api)
+    forward("/v2", OperatelyWeb.Api.Internal)
   end
 
   scope "/analytics/beacons" do
