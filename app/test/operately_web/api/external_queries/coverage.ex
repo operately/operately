@@ -59,7 +59,10 @@ defmodule OperatelyWeb.Api.ExternalQueries.Coverage do
   end
 
   defp get_specs do
-    OperatelyWeb.Api.ExternalQueries.Specs.specs()
+    OperatelyWeb.Api.ExternalQueries.Queries.__spec_modules__()
+    |> Enum.reduce(%{}, fn module, acc ->
+      Map.merge(acc, module.specs())
+    end)
     |> Enum.map(fn {query_name, spec} -> {normalize_query_name(query_name), spec} end)
     |> Map.new()
   end

@@ -1,6 +1,3 @@
-Code.require_file("coverage.ex", __DIR__)
-Code.require_file("specs.ex", __DIR__)
-
 defmodule OperatelyWeb.Api.ExternalQueries.AuthTest do
   use OperatelyWeb.TurboCase, async: true
 

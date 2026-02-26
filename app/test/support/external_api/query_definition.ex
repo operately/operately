@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.ExternalQueries.SpecDefinition do
+defmodule Operately.Support.ExternalApi.QueryDefinition do
   defmacro __using__(_) do
     quote do
       import unquote(__MODULE__)
@@ -16,6 +16,8 @@ defmodule OperatelyWeb.Api.ExternalQueries.SpecDefinition do
 
   defmacro __before_compile__(_env) do
     quote do
+      def __external_query_spec_module__, do: true
+
       def specs do
         @external_query_specs
         |> Enum.reverse()
@@ -68,8 +70,6 @@ defmodule OperatelyWeb.Api.ExternalQueries.SpecDefinition do
   end
 
   defp qualify_function_capture({:&, meta, [{:/, _, [{name, _, nil}, arity]}]}) do
-    # Bare function capture like &assert_get_account/2
-    # Convert to &__MODULE__.assert_get_account/2
     {:&, meta, [{:/, [], [{{:., [], [{:__MODULE__, [], Elixir}, name]}, [], []}, arity]}]}
   end
 
