@@ -8,5 +8,5 @@ defmodule OperatelyWeb.Api.External do
 
   import OperatelyWeb.Api
 
-  define_all()
+  external_endpoints()
 end

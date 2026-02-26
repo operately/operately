@@ -1,5 +1,5 @@
 defmodule OperatelyWeb.Api do
-  defmacro define_all do
+  defmacro common_endpoints do
     quote do
       alias OperatelyWeb.Api.Queries, as: Q
       alias OperatelyWeb.Api.Mutations, as: M
@@ -121,21 +121,6 @@ defmodule OperatelyWeb.Api do
         mutation(:update_task_statuses, OperatelyWeb.Api.Spaces.UpdateTaskStatuses)
         mutation(:update_kanban, OperatelyWeb.Api.Spaces.UpdateKanban)
         mutation(:update_tools, OperatelyWeb.Api.Spaces.UpdateTools)
-      end
-
-      namespace(:invitations) do
-        # external: joining via invite link
-        query(:get_invite_link_by_token, OperatelyWeb.Api.Invitations.GetInviteLinkByToken)
-        mutation(:join_company_via_invite_link, OperatelyWeb.Api.Invitations.JoinCompanyViaInviteLink)
-
-        # internal: managing invite links and invitations
-        mutation(:get_company_invite_link, OperatelyWeb.Api.Invitations.GetCompanyInviteLink)
-        mutation(:update_company_invite_link, OperatelyWeb.Api.Invitations.UpdateCompanyInviteLink)
-        mutation(:reset_company_invite_link, OperatelyWeb.Api.Invitations.ResetCompanyInviteLink)
-
-        # single user invitations
-        query(:get_invitation, Q.GetInvitation)
-        mutation(:new_invitation_token, M.NewInvitationToken)
       end
 
       query(:get_account, Q.GetAccount)
@@ -302,6 +287,33 @@ defmodule OperatelyWeb.Api do
       subscription(:unread_notifications_count, S.UnreadNotificationsCount)
       subscription(:profile_updated, S.ProfileUpdated)
       subscription(:new_agent_message, S.NewAgentMessage)
+    end
+  end
+
+  defmacro internal_endpoints do
+    quote do
+      common_endpoints()
+
+      namespace(:invitations) do
+        # invitation endpoints are internal-only
+        query(:get_invite_link_by_token, OperatelyWeb.Api.Invitations.GetInviteLinkByToken)
+        mutation(:join_company_via_invite_link, OperatelyWeb.Api.Invitations.JoinCompanyViaInviteLink)
+
+        # internal: managing invite links and invitations
+        mutation(:get_company_invite_link, OperatelyWeb.Api.Invitations.GetCompanyInviteLink)
+        mutation(:update_company_invite_link, OperatelyWeb.Api.Invitations.UpdateCompanyInviteLink)
+        mutation(:reset_company_invite_link, OperatelyWeb.Api.Invitations.ResetCompanyInviteLink)
+
+        # single user invitations
+        query(:get_invitation, OperatelyWeb.Api.Queries.GetInvitation)
+        mutation(:new_invitation_token, OperatelyWeb.Api.Mutations.NewInvitationToken)
+      end
+    end
+  end
+
+  defmacro external_endpoints do
+    quote do
+      common_endpoints()
     end
   end
 end
