@@ -6,11 +6,11 @@ defmodule Operately.People do
   alias Operately.Access
   alias Operately.Companies
   alias Operately.Companies.Company
-  alias Operately.People.{Person, Account}
+  alias Operately.People.{Account, AccountToken, ApiToken, Person}
   alias Operately.Access.Binding
   alias Operately.Access.Fetch
-  alias Operately.People.Account
-  alias Operately.People.AccountToken
+
+  @api_token_touch_throttle_seconds 60
 
   def list_people(company_id) when is_binary(company_id) do
     Repo.all(from p in Person, where: p.company_id == ^company_id and not p.suspended)
@@ -206,6 +206,99 @@ defmodule Operately.People do
       {:error, :account, changeset, _} -> {:error, changeset}
     end
   end
+
+  def create_api_token(%Person{} = person, attrs \\ %{}) when is_map(attrs) do
+    raw_token = ApiToken.generate_raw_token()
+
+    %ApiToken{}
+    |> ApiToken.changeset(%{
+      person_id: person.id,
+      name: ApiToken.get_attr(attrs, :name),
+      token_hash: ApiToken.hash_token(raw_token),
+      read_only: ApiToken.get_attr(attrs, :read_only, true)
+    })
+    |> Repo.insert()
+    |> case do
+      {:ok, api_token} -> {:ok, api_token, raw_token}
+      {:error, changeset} -> {:error, changeset}
+    end
+  end
+
+  def list_api_tokens(%Person{} = person) do
+    Repo.all(
+      from(t in ApiToken,
+        where: t.person_id == ^person.id,
+        order_by: [desc: t.inserted_at, desc: t.id]
+      )
+    )
+  end
+
+  def delete_api_token(%Person{} = person, token_id) when is_binary(token_id) do
+    {count, _} =
+      from(t in ApiToken, where: t.id == ^token_id and t.person_id == ^person.id)
+      |> Repo.delete_all()
+
+    if count == 1 do
+      {:ok, :deleted}
+    else
+      {:error, :not_found}
+    end
+  end
+
+  def delete_api_token(%Person{}, _), do: {:error, :not_found}
+
+  def set_api_token_read_only(%Person{} = person, token_id, read_only) when is_binary(token_id) and is_boolean(read_only) do
+    case Repo.get_by(ApiToken, id: token_id, person_id: person.id) do
+      nil ->
+        {:error, :not_found}
+
+      token ->
+        token
+        |> ApiToken.changeset(%{read_only: read_only})
+        |> Repo.update()
+    end
+  end
+
+  def set_api_token_read_only(%Person{}, _token_id, _read_only), do: {:error, :not_found}
+
+  def authenticate_api_token(raw_token) when is_binary(raw_token) do
+    raw_token = String.trim(raw_token)
+
+    if raw_token == "" do
+      {:error, :unauthorized}
+    else
+      hash = ApiToken.hash_token(raw_token)
+
+      from(t in ApiToken,
+        join: p in assoc(t, :person),
+        join: a in assoc(p, :account),
+        join: c in assoc(p, :company),
+        where: t.token_hash == ^hash and p.suspended == false and is_nil(p.suspended_at),
+        select: %{token: t, person: p, account: a, company: c}
+      )
+      |> Repo.one()
+      |> case do
+        nil -> {:error, :unauthorized}
+        auth_context -> {:ok, auth_context}
+      end
+    end
+  end
+
+  def authenticate_api_token(_), do: {:error, :unauthorized}
+
+  def touch_last_used(%ApiToken{} = token) do
+    now = DateTime.utc_now() |> DateTime.truncate(:second)
+    threshold = DateTime.add(now, -@api_token_touch_throttle_seconds, :second)
+
+    from(t in ApiToken,
+      where: t.id == ^token.id and (is_nil(t.last_used_at) or t.last_used_at < ^threshold)
+    )
+    |> Repo.update_all(set: [last_used_at: now])
+
+    :ok
+  end
+
+  def touch_last_used(_), do: :ok
 
   def generate_account_session_token(account) do
     {token, account_token} = AccountToken.build_session_token(account)
