@@ -152,7 +152,6 @@ defmodule OperatelyWeb.Api do
       query(:get_spaces, Q.GetSpaces)
       query(:get_task, Q.GetTask)
       query(:get_tasks, Q.GetTasks)
-      query(:get_theme, Q.GetTheme)
       query(:get_binded_people, Q.GetBindedPeople)
       query(:get_unread_notification_count, Q.GetUnreadNotificationCount)
       query(:get_resource_hub, Q.GetResourceHub)
@@ -293,6 +292,8 @@ defmodule OperatelyWeb.Api do
   defmacro internal_endpoints do
     quote do
       common_endpoints()
+
+      query(:get_theme, OperatelyWeb.Api.Queries.GetTheme)
 
       namespace(:invitations) do
         # invitation endpoints are internal-only

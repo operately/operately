@@ -1,0 +1,19 @@
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.SpacesCountByAccessLevel do
+  use Operately.Support.ExternalApi.QuerySpec
+
+  alias Operately.Support.Factory
+
+  def query_name, do: "spaces/count_by_access_level"
+
+  @impl true
+  def setup(ctx) do
+    ctx
+    |> Factory.setup()
+    |> Factory.add_space(:space)
+  end
+
+  @impl true
+  def assert(res, _ctx) do
+    assert is_map(res)
+  end
+end

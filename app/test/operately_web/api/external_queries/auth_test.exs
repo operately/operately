@@ -8,32 +8,39 @@ defmodule OperatelyWeb.Api.ExternalQueries.AuthTest do
   @validation Coverage.validate_specs()
   @query_rows Coverage.build_query_rows(@validation.query_rows)
 
-  # describe "query spec coverage" do
-  #   for row <- @validation.missing_rows do
-  #     query_name = row.query_name
+  describe "query spec coverage" do
+    test "all external queries have valid specs" do
+      assert Enum.empty?(@validation.missing_rows), "Missing specs: #{inspect(@validation.missing_rows)}"
+      assert Enum.empty?(@validation.extra_rows), "Extra specs: #{inspect(@validation.extra_rows)}"
+      assert Enum.empty?(@validation.invalid_rows), "Invalid specs: #{inspect(@validation.invalid_rows)}"
+      assert length(@validation.query_rows) > 0, "No query specs found"
+    end
 
-  #     test "missing external auth spec for #{query_name}" do
-  #       flunk "Missing external query auth spec for #{unquote(query_name)}"
-  #     end
-  #   end
+    for row <- @validation.missing_rows do
+      query_name = row.query_name
 
-  #   for row <- @validation.extra_rows do
-  #     query_name = row.query_name
+      test "missing external auth spec for #{query_name}" do
+        flunk "Missing external query auth spec for #{unquote(query_name)}"
+      end
+    end
 
-  #     test "spec exists for removed query #{query_name}" do
-  #       flunk "External query auth spec exists for unknown query #{unquote(query_name)}"
-  #     end
-  #   end
+    for row <- @validation.extra_rows do
+      query_name = row.query_name
 
-  #   for row <- @validation.invalid_rows do
-  #     query_name = row.query_name
-  #     reasons = Enum.join(row.reasons, "; ")
+      test "spec exists for removed query #{query_name}" do
+        flunk "External query auth spec exists for unknown query #{unquote(query_name)}"
+      end
+    end
 
-  #     test "invalid external auth spec for #{query_name}" do
-  #       flunk "Invalid external query auth spec for #{unquote(query_name)}: #{unquote(reasons)}"
-  #     end
-  #   end
-  # end
+    for row <- @validation.invalid_rows do
+      query_name = row.query_name
+      reasons = Enum.join(row.reasons, "; ")
+
+      test "invalid external auth spec for #{query_name}" do
+        flunk "Invalid external query auth spec for #{unquote(query_name)}: #{unquote(reasons)}"
+      end
+    end
+  end
 
   describe "auth scenarios" do
     for row <- @query_rows do
