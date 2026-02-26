@@ -1,7 +1,7 @@
 defmodule OperatelyWeb.Api.ExternalQueries.Coverage do
-  def validate_specs(api_module, specs) when is_map(specs) do
-    discovered_queries = discovered_queries(api_module)
-    spec_by_query = normalize_specs(specs)
+  def validate_specs do
+    discovered_queries = discovered_queries()
+    spec_by_query = get_specs()
 
     discovered_set = MapSet.new(discovered_queries)
     spec_set = MapSet.new(Map.keys(spec_by_query))
@@ -51,15 +51,15 @@ defmodule OperatelyWeb.Api.ExternalQueries.Coverage do
     end
   end
 
-  defp discovered_queries(api_module) do
-    api_module.__queries__()
+  defp discovered_queries do
+    OperatelyWeb.Api.External.__queries__()
     |> Map.keys()
     |> Enum.map(&normalize_query_name/1)
     |> Enum.sort()
   end
 
-  defp normalize_specs(specs) do
-    specs
+  defp get_specs do
+    OperatelyWeb.Api.ExternalQueries.Specs.specs()
     |> Enum.map(fn {query_name, spec} -> {normalize_query_name(query_name), spec} end)
     |> Map.new()
   end

@@ -6,10 +6,9 @@ defmodule OperatelyWeb.Api.ExternalQueries.AuthTest do
 
   alias Operately.Support.Factory
   alias OperatelyWeb.Api.ExternalQueries.Coverage
-  alias OperatelyWeb.Api.ExternalQueries.Specs
   alias Plug.Conn
 
-  @validation Coverage.validate_specs(OperatelyWeb.Api.Internal, Specs.specs())
+  @validation Coverage.validate_specs()
   @query_rows Coverage.build_query_rows(@validation.query_rows)
 
   # describe "query spec coverage" do
