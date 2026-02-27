@@ -270,6 +270,30 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert contributor.role == :contributor
     end
 
+    test "it creates a subscription for the assignee to the task", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:space_member, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
+        id: Paths.project_id(ctx.project),
+        type: "project",
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        name: "Task with assignee",
+        assignee_id: Paths.person_id(ctx.space_member),
+        due_date: nil
+      })
+
+      {:ok, task_id} = OperatelyWeb.Api.Helpers.decode_id(res.task.id)
+      task = Operately.Tasks.Task.get!(:system, id: task_id)
+
+      # Verify subscription was created for the assignee on the task's subscription list
+      assert {:ok, subscription} = Operately.Notifications.Subscription.get(:system, subscription_list_id: task.subscription_list_id, person_id: ctx.space_member.id)
+      assert subscription.type == :invited
+      assert subscription.canceled == false
+    end
+
     test "it creates a subscription for the new contributor when assigning a task", ctx do
       ctx =
         ctx
