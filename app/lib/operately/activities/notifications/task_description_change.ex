@@ -1,18 +1,19 @@
 defmodule Operately.Activities.Notifications.TaskDescriptionChange do
   @moduledoc """
   Notifies the following people:
-  - People mentioned in the Task description
+  - People subscribed to the task
 
-  The person who authored the comment is excluded from notifications.
+  The author of the activity is excluded from notifications.
   """
 
-  alias Operately.RichContent
+  require Logger
+  alias Operately.Tasks.Notifications
 
   def dispatch(activity) do
-    people = RichContent.find_mentioned_ids(activity.content["description"], :decode_ids)
+    {:ok, task} = fetch_task(activity.content["task_id"])
+    task_subscribers = Notifications.get_subscribers(task, ignore: [activity.author_id])
 
-    people
-    |> Enum.reject(&(&1 == activity.author_id))
+    task_subscribers
     |> Enum.uniq()
     |> Enum.map(fn person_id ->
       %{
@@ -22,5 +23,19 @@ defmodule Operately.Activities.Notifications.TaskDescriptionChange do
       }
     end)
     |> Operately.Notifications.bulk_create()
+  end
+
+  defp fetch_task(task_id) do
+    case Operately.Tasks.Task.get(:system, id: task_id) do
+      {:ok, task} ->
+        {:ok, task}
+
+      {:error, reason} ->
+        Logger.warning(
+          "Unable to load task #{task_id} for description change notifications: #{inspect(reason)}"
+        )
+
+        {:error, reason}
+    end
   end
 end
