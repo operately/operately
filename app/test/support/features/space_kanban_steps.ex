@@ -469,7 +469,20 @@ defmodule Operately.Support.Features.SpaceKanbanSteps do
     })
   end
 
-  step :assert_description_change_email_sent, ctx, opts do
+  step :assert_description_change_mentioned_email_sent, ctx, opts do
+    recipient = Map.fetch!(ctx, Keyword.fetch!(opts, :to))
+    task_name = Keyword.fetch!(opts, :task_name)
+
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.space.name,
+      to: recipient,
+      action: "mentioned you in the description for \"#{task_name}\"",
+      author: ctx.creator
+    })
+  end
+
+  step :assert_description_change_updated_email_sent, ctx, opts do
     recipient = Map.fetch!(ctx, Keyword.fetch!(opts, :to))
     task_name = Keyword.fetch!(opts, :task_name)
 

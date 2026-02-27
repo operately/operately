@@ -487,7 +487,7 @@ defmodule Operately.Features.SpaceKanbanTest do
       |> Steps.assert_comment_email_sent(to: :teammate, task_name: ctx.task.name)
     end
 
-    feature "changing a task description sends notification and email to mentioned people", ctx do
+    feature "mentioning a person in task description sends notification and email with 'mentioned' subject", ctx do
       ctx
       |> Steps.visit_kanban_page()
       |> Steps.open_task_slide_in(:task)
@@ -498,7 +498,26 @@ defmodule Operately.Features.SpaceKanbanTest do
         long_title: "updated the description of #{ctx.task.name} in #{ctx.space.name}"
       )
       |> Steps.assert_description_change_notification_sent(to: :teammate, task_name: ctx.task.name)
-      |> Steps.assert_description_change_email_sent(to: :teammate, task_name: ctx.task.name)
+      |> Steps.assert_description_change_mentioned_email_sent(to: :teammate, task_name: ctx.task.name)
+    end
+
+    feature "updating task description for assigned person sends notification with 'updated' subject", ctx do
+      assignee_name = ctx.teammate.full_name
+
+      ctx
+      |> Steps.visit_kanban_page()
+      |> Steps.open_task_slide_in(:task)
+      |> Steps.change_task_assignee(assignee_name: assignee_name)
+      |> Steps.close_task_slide_in(:task)
+      |> Steps.open_task_slide_in(:task)
+      |> Steps.add_task_description(content: "Updated task description without mentions")
+      |> Steps.close_task_slide_in(:task)
+      |> Steps.assert_activity_in_space_and_company_feeds(
+        title: "updated the description of #{ctx.task.name}",
+        long_title: "updated the description of #{ctx.task.name} in #{ctx.space.name}"
+      )
+      |> Steps.assert_description_change_notification_sent(to: :teammate, task_name: ctx.task.name)
+      |> Steps.assert_description_change_updated_email_sent(to: :teammate, task_name: ctx.task.name)
     end
   end
 end
