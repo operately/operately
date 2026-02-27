@@ -1765,6 +1765,10 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert updated_task.description == description_map
     end
 
+    #
+    # Subscriptions
+    #
+
     test "it creates subscriptions for mentioned people", ctx do
       ctx =
         ctx
@@ -1824,6 +1828,176 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert subscription2.type == :mentioned
       refute subscription1.canceled
       refute subscription2.canceled
+    end
+
+    #
+    # Notifications
+    #
+
+    test "it sends notifications to mentioned people", ctx do
+      use Operately.Support.Notifications
+
+      ctx =
+        ctx
+        |> Factory.add_space_member(:mentioned_person, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      description = RichText.rich_text(mentioned_people: [ctx.mentioned_person])
+
+      {200, _} = Oban.Testing.with_testing_mode(:manual, fn ->
+        mutation(ctx.conn, [:tasks, :update_description], %{
+          task_id: Paths.task_id(ctx.task),
+          description: description,
+          type: "project"
+        })
+      end)
+
+      action = "task_description_change"
+      activity = get_activity(ctx.task.id, action)
+
+      assert 0 == notifications_count(action: action)
+
+      perform_job(activity.id)
+      notifications = fetch_notifications(activity.id, action: action)
+
+      assert 1 == notifications_count(action: action)
+      assert hd(notifications).person_id == ctx.mentioned_person.id
+    end
+
+    test "it sends notifications to multiple mentioned people", ctx do
+      use Operately.Support.Notifications
+
+      ctx =
+        ctx
+        |> Factory.add_space_member(:person1, :engineering)
+        |> Factory.add_space_member(:person2, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      description = RichText.rich_text(mentioned_people: [ctx.person1, ctx.person2])
+
+      {200, _} = Oban.Testing.with_testing_mode(:manual, fn ->
+        mutation(ctx.conn, [:tasks, :update_description], %{
+          task_id: Paths.task_id(ctx.task),
+          description: description,
+          type: "project"
+        })
+      end)
+
+      action = "task_description_change"
+      activity = get_activity(ctx.task.id, action)
+
+      assert 0 == notifications_count(action: action)
+
+      perform_job(activity.id)
+      notifications = fetch_notifications(activity.id, action: action)
+
+      assert 2 == notifications_count(action: action)
+
+      [ctx.person1, ctx.person2]
+      |> Enum.each(fn p ->
+        assert Enum.find(notifications, &(&1.person_id == p.id))
+      end)
+    end
+
+    test "it continues to notify subscribed people even when not mentioned", ctx do
+      use Operately.Support.Notifications
+
+      ctx = Factory.add_space_member(ctx, :mentioned_person, :engineering)
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      # First update: mention the person
+      description_with_mention = RichText.rich_text(mentioned_people: [ctx.mentioned_person])
+
+      {200, _} = Oban.Testing.with_testing_mode(:manual, fn ->
+        mutation(ctx.conn, [:tasks, :update_description], %{
+          task_id: Paths.task_id(ctx.task),
+          description: description_with_mention,
+          type: "project"
+        })
+      end)
+
+      action = "task_description_change"
+      activity = get_activity(ctx.task.id, action)
+
+      perform_job(activity.id)
+      notifications = fetch_notifications(activity.id, action: action)
+
+      assert 1 == notifications_count(action: action)
+      assert hd(notifications).person_id == ctx.mentioned_person.id
+
+      # Second update: don't mention the person, but they should still be notified
+      :timer.sleep(25)
+      description_without_mention = RichText.rich_text("Updated description without mentions", :as_string)
+
+      {200, _} = Oban.Testing.with_testing_mode(:manual, fn ->
+        mutation(ctx.conn, [:tasks, :update_description], %{
+          task_id: Paths.task_id(ctx.task),
+          description: description_without_mention,
+          type: "project"
+        })
+      end)
+
+      activity = get_activity(ctx.task.id, action)
+
+      perform_job(activity.id)
+      notifications = fetch_notifications(activity.id, action: action)
+
+      assert 2 == notifications_count(action: action)
+      assert Enum.find(notifications, &(&1.person_id == ctx.mentioned_person.id))
+    end
+
+    test "Person without permissions is not notified when mentioned", ctx do
+      use Operately.Support.Notifications
+      alias Operately.Access.Binding
+
+      # Without permissions
+      ctx =
+        ctx
+        |> Factory.log_in_person(:creator)
+        |> Factory.add_company_member(:person)
+        |> Factory.add_project(:project, :engineering, company_access_level: Binding.no_access())
+        |> Factory.add_project_milestone(:milestone, :project)
+        |> Factory.add_project_task(:task, :milestone)
+
+      description = RichText.rich_text(mentioned_people: [ctx.person])
+
+      {200, _} = Oban.Testing.with_testing_mode(:manual, fn ->
+        mutation(ctx.conn, [:tasks, :update_description], %{
+          task_id: Paths.task_id(ctx.task),
+          description: description,
+          type: "project"
+        })
+      end)
+
+      action = "task_description_change"
+      activity = get_activity(ctx.task.id, action)
+
+      perform_job(activity.id)
+
+      assert notifications_count(action: action) == 0
+      assert fetch_notifications(activity.id, action: action) == []
+
+      # With permissions
+      :timer.sleep(25)
+      {:ok, _} = Operately.Groups.add_members(ctx.creator, ctx.engineering.id, [
+        %{id: ctx.person.id, access_level: Operately.Access.Binding.view_access()}
+      ])
+
+      {200, _} = Oban.Testing.with_testing_mode(:manual, fn ->
+        mutation(ctx.conn, [:tasks, :update_description], %{
+          task_id: Paths.task_id(ctx.task),
+          description: description,
+          type: "project"
+        })
+      end)
+
+      activity = get_activity(ctx.task.id, action)
+
+      perform_job(activity.id)
+      notifications = fetch_notifications(activity.id, action: action)
+
+      assert notifications_count(action: action) == 1
+      assert hd(notifications).person_id == ctx.person.id
     end
   end
 
@@ -2068,6 +2242,15 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
   defp get_activity(task: task, action: action) do
     from(a in Operately.Activities.Activity,
       where: a.action == ^action and a.content["task_id"] == ^task.id
+    )
+    |> Repo.one()
+  end
+
+  defp get_activity(task_id, action) do
+    from(a in Operately.Activities.Activity,
+      where: a.action == ^action and a.content["task_id"] == ^task_id,
+      order_by: [desc: a.inserted_at],
+      limit: 1
     )
     |> Repo.one()
   end
