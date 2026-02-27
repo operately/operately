@@ -1764,6 +1764,67 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert updated_task.description == description_map
     end
+
+    test "it creates subscriptions for mentioned people", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:mentioned_person)
+        |> Factory.log_in_person(:creator)
+
+      description = RichText.rich_text(mentioned_people: [ctx.mentioned_person])
+
+      assert {200, _} = mutation(ctx.conn, [:tasks, :update_description], %{
+        task_id: Paths.task_id(ctx.task),
+        description: description,
+        type: "project"
+      })
+
+      task = Repo.reload(ctx.task)
+
+      {:ok, subscription} =
+        Operately.Notifications.Subscription.get(:system,
+          subscription_list_id: task.subscription_list_id,
+          person_id: ctx.mentioned_person.id
+        )
+
+      assert subscription.type == :mentioned
+      refute subscription.canceled
+    end
+
+    test "it creates subscriptions for multiple mentioned people", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:person1)
+        |> Factory.add_company_member(:person2)
+        |> Factory.log_in_person(:creator)
+
+      description = RichText.rich_text(mentioned_people: [ctx.person1, ctx.person2])
+
+      assert {200, _} = mutation(ctx.conn, [:tasks, :update_description], %{
+        task_id: Paths.task_id(ctx.task),
+        description: description,
+        type: "project"
+      })
+
+      task = Repo.reload(ctx.task)
+
+      {:ok, subscription1} =
+        Operately.Notifications.Subscription.get(:system,
+          subscription_list_id: task.subscription_list_id,
+          person_id: ctx.person1.id
+        )
+
+      {:ok, subscription2} =
+        Operately.Notifications.Subscription.get(:system,
+          subscription_list_id: task.subscription_list_id,
+          person_id: ctx.person2.id
+        )
+
+      assert subscription1.type == :mentioned
+      assert subscription2.type == :mentioned
+      refute subscription1.canceled
+      refute subscription2.canceled
+    end
   end
 
   describe "update task name" do
