@@ -523,6 +523,7 @@ defmodule OperatelyWeb.Api.Tasks do
     alias Operately.Access.Binding
     alias Operately.Projects.Contributor
     alias Operately.Notifications.Subscription
+    alias Operately.Operations.Notifications.Subscription, as: SubscriptionOps
 
     def start_transaction(conn) do
       Ecto.Multi.new()
@@ -652,8 +653,16 @@ defmodule OperatelyWeb.Api.Tasks do
     end
 
     def update_task_description(multi, description) do
-      Ecto.Multi.update(multi, :updated_task, fn %{task: task} ->
+      multi
+      |> Ecto.Multi.update(:updated_task, fn %{task: task} ->
         Operately.Tasks.Task.changeset(task, %{description: description})
+      end)
+      |> Ecto.Multi.merge(fn changes ->
+        Ecto.Multi.new()
+        |> Ecto.Multi.run(:subscription_list, fn _repo, _changes ->
+          Operately.Notifications.SubscriptionList.get(:system, id: changes.task.subscription_list_id)
+        end)
+        |> SubscriptionOps.insert(changes.me, %{content: description, subscriber_ids: []})
       end)
     end
 

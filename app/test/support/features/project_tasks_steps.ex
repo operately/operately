@@ -859,7 +859,17 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     })
   end
 
-  step :assert_space_member_task_description_email_sent, ctx do
+  step :assert_space_member_task_description_mentioned_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.space_member,
+      author: ctx.contributor,
+      action: "mentioned you in the description for \"#{ctx.task.name}\""
+    })
+  end
+
+  step :assert_space_member_task_description_updated_email_sent, ctx do
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
