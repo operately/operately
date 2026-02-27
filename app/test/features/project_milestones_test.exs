@@ -245,7 +245,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
       |> Steps.assert_due_date_changed_email_sent()
     end
 
-    feature "mentioning a person in a milestone description sends notification and email", ctx do
+    feature "mentioning a person in a milestone description sends notification and email with mention", ctx do
       ctx = Steps.given_space_member_exists(ctx)
 
       ctx
@@ -256,7 +256,28 @@ defmodule Operately.Features.ProjectMilestonesTest do
 
       ctx
       |> Steps.assert_space_member_milestone_description_notification_sent()
-      |> Steps.assert_space_member_milestone_description_email_sent()
+      |> Steps.assert_space_member_milestone_description_mentioned_email_sent()
+    end
+
+    feature "subscribed person receives notification when description is updated without mention", ctx do
+      ctx = Steps.given_space_member_exists(ctx)
+
+      # First, subscribe to the milestone
+      ctx
+      |> Steps.log_in_as_space_member()
+      |> Steps.visit_milestone_page()
+      |> Steps.subscribe_to_milestone()
+
+      # Then update the description without mentioning them
+      ctx
+      |> Steps.log_in_as_champion()
+      |> Steps.visit_milestone_page()
+      |> Steps.assert_empty_description()
+      |> Steps.edit_milestone_description("Updated description without mention")
+
+      ctx
+      |> Steps.assert_space_member_milestone_description_notification_sent()
+      |> Steps.assert_space_member_milestone_description_updated_email_sent()
     end
 
     feature "milestone shows description indicator when description is added", ctx do
