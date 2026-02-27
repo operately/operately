@@ -934,7 +934,7 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
       })
     end
 
-    test "it updates the milestone description for project creator", ctx do
+    test "Project creator can update milestone description", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
       description = RichText.rich_text("Updated milestone description")
@@ -951,7 +951,7 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
       assert updated_milestone.description == description
     end
 
-    test "it updates the milestone description for space members with full access", ctx do
+    test "Space members with full access can update milestone description", ctx do
       ctx =
         ctx
         |> Factory.edit_project_company_members_access(:project, :no_access)
@@ -971,7 +971,7 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
       assert updated_milestone.description == description
     end
 
-    test "it updates the milestone description for project champion", ctx do
+    test "Project champion can update milestone description", ctx do
       ctx =
         ctx
         |> Factory.add_project_contributor(:champion, :project, role: :champion, permissions: :full_access)
@@ -992,7 +992,7 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
       assert updated_milestone.description == description
     end
 
-    test "it updates the milestone description for project reviewer", ctx do
+    test "Project reviewer can update milestone description", ctx do
       ctx =
         ctx
         |> Factory.add_project_contributor(:reviewer, :project, role: :reviewer, permissions: :full_access)
@@ -1084,6 +1084,65 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
 
       activity = get_activity(ctx.milestone.id, "milestone_description_updating")
       assert activity.content["has_description"] == false
+    end
+
+    test "it creates subscriptions for mentioned people", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:mentioned_person)
+        |> Factory.log_in_person(:creator)
+
+      description = RichText.rich_text(mentioned_people: [ctx.mentioned_person])
+
+      assert {200, _} = mutation(ctx.conn, [:project_milestones, :update_description], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        description: description
+      })
+
+      milestone = Repo.reload(ctx.milestone)
+
+      {:ok, subscription} =
+        Operately.Notifications.Subscription.get(:system,
+          subscription_list_id: milestone.subscription_list_id,
+          person_id: ctx.mentioned_person.id
+        )
+
+      assert subscription.type == :mentioned
+      refute subscription.canceled
+    end
+
+    test "it creates subscriptions for multiple mentioned people", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:person1)
+        |> Factory.add_company_member(:person2)
+        |> Factory.log_in_person(:creator)
+
+      description = RichText.rich_text(mentioned_people: [ctx.person1, ctx.person2])
+
+      assert {200, _} = mutation(ctx.conn, [:project_milestones, :update_description], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        description: description
+      })
+
+      milestone = Repo.reload(ctx.milestone)
+
+      {:ok, subscription1} =
+        Operately.Notifications.Subscription.get(:system,
+          subscription_list_id: milestone.subscription_list_id,
+          person_id: ctx.person1.id
+        )
+
+      {:ok, subscription2} =
+        Operately.Notifications.Subscription.get(:system,
+          subscription_list_id: milestone.subscription_list_id,
+          person_id: ctx.person2.id
+        )
+
+      assert subscription1.type == :mentioned
+      assert subscription2.type == :mentioned
+      refute subscription1.canceled
+      refute subscription2.canceled
     end
   end
 
