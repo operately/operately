@@ -95,6 +95,23 @@ defmodule Operately.Features.ProjectMilestonesTest do
       |> Steps.assert_milestone_created(name: "My milestone", due_date: formatted_date)
     end
 
+    feature "creator is automatically subscribed to milestone", ctx do
+      name = "New Milestone"
+      ctx
+      |> Steps.log_in_as_contributor()
+      |> Steps.assert_contributor_has_edit_access()
+      |> Steps.visit_project_page()
+      |> Steps.add_milestone(name: name)
+      |> Steps.assert_add_milestone_form_closed()
+      |> Steps.assert_milestone_created(name: name)
+      |> then(fn ctx ->
+        milestone = Operately.Repo.get_by(Operately.Projects.Milestone, title: name)
+        Map.put(ctx, :milestone, milestone)
+      end)
+      |> Steps.visit_milestone_page()
+      |> Steps.assert_milestone_subscription_created()
+    end
+
     feature "edit a milestone from project timeline", ctx do
       next_friday = Operately.Support.Time.next_friday()
       formatted_date = Operately.Support.Time.format_month_day(next_friday)
