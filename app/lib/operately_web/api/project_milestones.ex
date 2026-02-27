@@ -227,6 +227,7 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
     require Logger
     alias Operately.Projects.OrderingState
     alias OperatelyWeb.Paths
+    alias Operately.Operations.Notifications.Subscription, as: SubscriptionOps
 
     def start_transaction(conn) do
       Ecto.Multi.new()
@@ -364,8 +365,16 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
     end
 
     def update_milestone_description(multi, new_description) do
-      Ecto.Multi.update(multi, :updated_milestone, fn %{milestone: milestone} ->
+      multi
+      |> Ecto.Multi.update(:updated_milestone, fn %{milestone: milestone} ->
         Operately.Projects.Milestone.changeset(milestone, %{description: new_description})
+      end)
+      |> Ecto.Multi.merge(fn changes ->
+        Ecto.Multi.new()
+        |> Ecto.Multi.run(:subscription_list, fn _repo, _changes ->
+          Operately.Notifications.SubscriptionList.get(:system, id: changes.milestone.subscription_list_id)
+        end)
+        |> SubscriptionOps.insert(changes.me, %{content: new_description, subscriber_ids: []})
       end)
     end
 
