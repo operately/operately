@@ -1,28 +1,41 @@
 defmodule Operately.Activities.Notifications.MilestoneDueDateUpdating do
   @moduledoc """
   Notifies the following people:
-  - Project champion
+  - People subscribed to the milestone
 
-  The person who authored the comment is excluded from notifications.
+  The author of the activity is excluded from notifications.
   """
 
-  alias Operately.Projects.Project
+  require Logger
+  alias Operately.Projects.Notifications
 
   def dispatch(activity) do
-    project = Project.get!(:system, id: activity.content["project_id"], opts: [preload: :champion_contributor])
+    {:ok, milestone} = fetch_milestone(activity.content["milestone_id"])
+    milestone_subscribers = Notifications.get_milestone_subscribers(milestone, ignore: [activity.author_id])
 
-    champion_id = if project.champion_contributor, do: project.champion_contributor.person_id, else: nil
-
-    [champion_id]
-    |> Enum.filter(fn id -> id != nil end)
-    |> Enum.filter(fn id -> id != activity.author_id end)
-    |> Enum.map(fn id ->
+    milestone_subscribers
+    |> Enum.uniq()
+    |> Enum.map(fn person_id ->
       %{
-        person_id: id,
+        person_id: person_id,
         activity_id: activity.id,
-        should_send_email: true,
+        should_send_email: true
       }
     end)
     |> Operately.Notifications.bulk_create()
+  end
+
+  defp fetch_milestone(milestone_id) do
+    case Operately.Projects.Milestone.get(:system, id: milestone_id, opts: [preload: [:project]]) do
+      {:ok, milestone} ->
+        {:ok, milestone}
+
+      {:error, reason} ->
+        Logger.warning(
+          "Unable to load milestone #{milestone_id} for due date update notifications: #{inspect(reason)}"
+        )
+
+        {:error, reason}
+    end
   end
 end
