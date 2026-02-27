@@ -250,7 +250,6 @@ defmodule OperatelyWeb.Api.Projects do
       |> Steps.find_project(inputs.project_id)
       |> Steps.check_permissions(:has_full_access)
       |> Steps.update_project_champion(inputs.champion_id)
-      |> Steps.create_subscription(inputs.champion_id)
       |> Steps.save_activity(:project_champion_updating, fn changes ->
         %{
           company_id: changes.project.company_id,
@@ -319,7 +318,6 @@ defmodule OperatelyWeb.Api.Projects do
       |> Steps.find_project(inputs.project_id)
       |> Steps.check_permissions(:has_full_access)
       |> Steps.update_project_reviewer(inputs.reviewer_id)
-      |> Steps.create_subscription(inputs.reviewer_id)
       |> Steps.save_activity(:project_reviewer_updating, fn changes ->
         %{
           company_id: changes.project.company_id,
@@ -830,6 +828,12 @@ defmodule OperatelyWeb.Api.Projects do
           _ -> Operately.Access.bind_person(project.access_context, new_champion_id, Binding.full_access(), :champion)
         end
       end)
+      |> Ecto.Multi.run(:project_subscription_list, fn _repo, %{project: project} ->
+        SubscriptionList.get(:system, parent_id: project.id)
+      end)
+      |> Ecto.Multi.merge(fn changes ->
+        ensure_subscription(Ecto.Multi.new(), changes.project_subscription_list.id, new_champion_id)
+      end)
     end
 
     def find_potential_parent_goals(multi, search_term) do
@@ -891,27 +895,30 @@ defmodule OperatelyWeb.Api.Projects do
           _ -> Operately.Access.bind_person(project.access_context, new_reviewer_id, Binding.full_access(), :reviewer)
         end
       end)
+      |> Ecto.Multi.run(:project_subscription_list, fn _repo, %{project: project} ->
+        SubscriptionList.get(:system, parent_id: project.id)
+      end)
+      |> Ecto.Multi.merge(fn changes ->
+        ensure_subscription(Ecto.Multi.new(), changes.project_subscription_list.id, new_reviewer_id)
+      end)
     end
 
-    def create_subscription(multi, nil), do: multi
+    defp ensure_subscription(multi, nil, _person_id), do: multi
+    defp ensure_subscription(multi, _subscription_list_id, nil), do: multi
 
-    def create_subscription(multi, person_id) do
-      multi
-      |> Ecto.Multi.run(:subscription_list, fn _repo, changes ->
-        SubscriptionList.get(:system, parent_id: changes.project.id)
-      end)
-      |> Ecto.Multi.run(:subscription, fn _repo, changes ->
-          case Subscription.get(:system, subscription_list_id: changes.subscription_list.id, person_id: person_id) do
-            {:error, :not_found} ->
-              Operately.Notifications.create_subscription(%{
-                subscription_list_id: changes.subscription_list.id,
-                person_id: person_id,
-                type: :invited,
-              })
+    defp ensure_subscription(multi, subscription_list_id, person_id) do
+      Ecto.Multi.run(multi, :ensure_subscription, fn _repo, _changes ->
+        case Subscription.get(:system, subscription_list_id: subscription_list_id, person_id: person_id) do
+          {:error, :not_found} ->
+            Operately.Notifications.create_subscription(%{
+              subscription_list_id: subscription_list_id,
+              person_id: person_id,
+              type: :invited
+            })
 
-            {:ok, subscription} ->
-              Operately.Notifications.update_subscription(subscription, %{canceled: false})
-          end
+          {:ok, subscription} ->
+            Operately.Notifications.update_subscription(subscription, %{canceled: false})
+        end
       end)
     end
 
@@ -931,6 +938,9 @@ defmodule OperatelyWeb.Api.Projects do
         })
       end)
       |> SubscriptionListOps.update(:milestone)
+      |> Ecto.Multi.merge(fn changes ->
+        ensure_subscription(Ecto.Multi.new(), changes.subscription_list.id, changes.me.id)
+      end)
     end
 
     def delete_discussions(multi, project_id) do
