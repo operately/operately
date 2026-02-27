@@ -21,6 +21,6 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.ProjectDiscussionsList do
 
   @impl true
   def assert(res, _ctx) do
-    assert is_list(res["discussions"])
+    assert is_list(res.discussions)
   end
 end

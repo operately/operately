@@ -16,11 +16,13 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.ProjectsCountChildren do
 
   @impl true
   def inputs(ctx) do
-    %{project_id: Paths.project_id(ctx.project)}
+    %{id: Paths.project_id(ctx.project)}
   end
 
   @impl true
   def assert(res, _ctx) do
-    assert is_integer(res["count"])
+    assert res.children_count.tasks_count == 0
+    assert res.children_count.discussions_count == 0
+    assert res.children_count.check_ins_count == 0
   end
 end

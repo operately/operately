@@ -20,6 +20,6 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.SpacesListTasks do
 
   @impl true
   def assert(res, _ctx) do
-    assert res["tasks"]
+    assert is_list(res.tasks)
   end
 end

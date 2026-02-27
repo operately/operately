@@ -13,7 +13,12 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.SpacesCountByAccessLevel do
   end
 
   @impl true
+  def inputs(_ctx) do
+    %{access_level: "view_access"}
+  end
+
+  @impl true
   def assert(res, _ctx) do
-    assert is_map(res)
+    assert is_integer(res.count)
   end
 end

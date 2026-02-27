@@ -3,13 +3,6 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries do
 
   def __spec_modules__ do
     [
-      Queries.AiGetAgent,
-      Queries.AiGetAgentRun,
-      Queries.AiGetConversationMessages,
-      Queries.AiGetConversations,
-      Queries.AiListAgentRuns,
-      Queries.AiListAgents,
-      Queries.AiPrompt,
       Queries.GetAccount,
       Queries.GetActivities,
       Queries.GetActivity,

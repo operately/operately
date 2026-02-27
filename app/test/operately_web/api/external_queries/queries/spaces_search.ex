@@ -14,11 +14,11 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.SpacesSearch do
 
   @impl true
   def inputs(_ctx) do
-    %{query: "test"}
+    %{query: ""}
   end
 
   @impl true
   def assert(res, _ctx) do
-    assert res["spaces"]
+    assert length(res.spaces) > 0
   end
 end

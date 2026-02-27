@@ -21,6 +21,6 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.GoalsListAccessMembers do
 
   @impl true
   def assert(res, _ctx) do
-    assert res["people"]
+    assert is_list(res.people)
   end
 end

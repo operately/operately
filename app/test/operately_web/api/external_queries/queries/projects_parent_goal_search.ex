@@ -11,15 +11,16 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.ProjectsParentGoalSearch do
     ctx
     |> Factory.setup()
     |> Factory.add_space(:space)
+    |> Factory.add_project(:project, :space)
   end
 
   @impl true
   def inputs(ctx) do
-    %{space_id: Paths.space_id(ctx.space), query: "test"}
+    %{project_id: Paths.project_id(ctx.project), query: "test"}
   end
 
   @impl true
   def assert(res, _ctx) do
-    assert res["goals"]
+    assert is_list(res.goals)
   end
 end

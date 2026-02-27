@@ -21,6 +21,6 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.ProjectsGetMilestones do
 
   @impl true
   def assert(res, _ctx) do
-    assert res["milestones"]
+    assert is_list(res.milestones)
   end
 end

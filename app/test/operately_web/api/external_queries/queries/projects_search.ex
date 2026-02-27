@@ -19,6 +19,6 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.ProjectsSearch do
 
   @impl true
   def assert(res, _ctx) do
-    assert res["projects"] == [] || is_list(res["projects"])
+    assert is_list(res.projects)
   end
 end

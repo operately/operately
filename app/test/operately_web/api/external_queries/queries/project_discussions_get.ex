@@ -22,6 +22,6 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.ProjectDiscussionsGet do
 
   @impl true
   def assert(res, _ctx) do
-    assert res["discussion"]
+    assert res.discussion
   end
 end

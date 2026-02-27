@@ -21,6 +21,6 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.ProjectsGetContributors do
 
   @impl true
   def assert(res, _ctx) do
-    assert is_list(res["contributors"])
+    assert is_list(res.contributors)
   end
 end
