@@ -371,6 +371,20 @@ defmodule Operately.Features.ProjectTasksTest do
   end
 
   @tag login_as: :contributor
+  feature "updating task assignee automatically subscribes assignee", ctx do
+    ctx
+    |> Steps.assert_contributor_has_edit_access()
+    |> Steps.given_task_exists()
+    |> Steps.visit_task_page()
+    |> Steps.assert_no_assignee()
+    |> Steps.edit_task_assignee(ctx.champion.full_name)
+    |> Steps.assert_assignee(ctx.champion.full_name)
+    |> Steps.login_as_champion()
+    |> Steps.visit_task_page()
+    |> Steps.assert_subscribed_to_task()
+  end
+
+  @tag login_as: :contributor
   feature "remove task assignee sends notification to assignee", ctx do
     ctx
     |> Steps.assert_contributor_has_edit_access()

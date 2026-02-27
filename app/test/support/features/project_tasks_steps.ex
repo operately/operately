@@ -557,6 +557,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> UI.find(UI.query(testid: "task-sidebar"), fn el ->
       UI.assert_text(el, name, testid: "assignee")
     end)
+    |> UI.sleep(300)
   end
 
   step :assert_no_assignee, ctx do
