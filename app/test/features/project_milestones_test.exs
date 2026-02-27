@@ -97,6 +97,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
 
     feature "creator is automatically subscribed to milestone", ctx do
       name = "New Milestone"
+
       ctx
       |> Steps.log_in_as_contributor()
       |> Steps.assert_contributor_has_edit_access()
@@ -108,6 +109,27 @@ defmodule Operately.Features.ProjectMilestonesTest do
         milestone = Operately.Repo.get_by(Operately.Projects.Milestone, title: name)
         Map.put(ctx, :milestone, milestone)
       end)
+      |> Steps.visit_milestone_page()
+      |> Steps.assert_milestone_subscription_created()
+    end
+
+    feature "champion is automatically subscribed to milestone", ctx do
+      name = "Champion Milestone"
+
+      ctx
+      |> Steps.log_in_as_contributor()
+      |> Steps.assert_contributor_has_edit_access()
+      |> Steps.visit_project_page()
+      |> Steps.add_milestone(name: name)
+      |> Steps.assert_add_milestone_form_closed()
+      |> Steps.assert_milestone_created(name: name)
+
+      ctx
+      |> then(fn ctx ->
+        milestone = Operately.Repo.get_by(Operately.Projects.Milestone, title: name)
+        Map.put(ctx, :milestone, milestone)
+      end)
+      |> UI.login_as(ctx.champion)
       |> Steps.visit_milestone_page()
       |> Steps.assert_milestone_subscription_created()
     end
