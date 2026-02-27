@@ -340,6 +340,23 @@ defmodule Operately.Features.ProjectTasksTest do
   end
 
   @tag login_as: :contributor
+  feature "mentioning a person in task description automatically subscribes them to task", ctx do
+    ctx =
+      ctx
+      |> Steps.given_task_exists()
+      |> Steps.given_space_member_exists()
+
+    ctx
+    |> Steps.login_as_contributor()
+    |> Steps.assert_contributor_has_edit_access()
+    |> Steps.visit_task_page()
+    |> Steps.edit_task_description_mentioning(ctx.space_member)
+    |> Steps.login_as_space_member()
+    |> Steps.visit_task_page()
+    |> Steps.assert_subscribed_to_task()
+  end
+
+  @tag login_as: :contributor
   feature "edit task assignee", ctx do
     feed_title = "assigned this task to #{Operately.People.Person.short_name(ctx.champion)}"
 
