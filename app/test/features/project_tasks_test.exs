@@ -321,7 +321,7 @@ defmodule Operately.Features.ProjectTasksTest do
   end
 
   @tag login_as: :contributor
-  feature "mentioning a person in a task description sends notification and email", ctx do
+  feature "mentioning a person in a task description sends notification and email with 'mentioned' subject", ctx do
     ctx =
       ctx
       |> Steps.given_task_exists()
@@ -336,7 +336,27 @@ defmodule Operately.Features.ProjectTasksTest do
 
     ctx
     |> Steps.assert_space_member_task_description_notification_sent()
-    |> Steps.assert_space_member_task_description_email_sent()
+    |> Steps.assert_space_member_task_description_mentioned_email_sent()
+  end
+
+  @tag login_as: :contributor
+  feature "updating task description for subscribed person sends notification with 'updated' subject", ctx do
+    ctx =
+      ctx
+      |> Steps.given_task_exists()
+      |> Steps.given_space_member_exists()
+
+    ctx
+    |> Steps.login_as_space_member()
+    |> Steps.visit_task_page()
+    |> Steps.subscribe_to_task()
+    |> Steps.login_as_contributor()
+    |> Steps.visit_task_page()
+    |> Steps.edit_task_description("Updated task description without mentions")
+
+    ctx
+    |> Steps.assert_space_member_task_description_notification_sent()
+    |> Steps.assert_space_member_task_description_updated_email_sent()
   end
 
   @tag login_as: :contributor
