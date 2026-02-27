@@ -1,31 +1,9 @@
 defmodule OperatelyWeb.Api do
-  defmacro define_all do
+  defmacro common_endpoints do
     quote do
       alias OperatelyWeb.Api.Queries, as: Q
       alias OperatelyWeb.Api.Mutations, as: M
       alias OperatelyWeb.Api.Subscriptions, as: S
-
-      namespace(:ai) do
-        query(:prompt, OperatelyWeb.Api.Ai.Prompt)
-        query(:get_agent, OperatelyWeb.Api.Ai.GetAgent)
-        query(:get_agent_run, OperatelyWeb.Api.Ai.GetAgentRun)
-        query(:list_agents, OperatelyWeb.Api.Ai.ListAgents)
-        query(:list_agent_runs, OperatelyWeb.Api.Ai.ListAgentRuns)
-        mutation(:add_agent, OperatelyWeb.Api.Ai.AddAgent)
-        mutation(:edit_agent_definition, OperatelyWeb.Api.Ai.EditAgentDefinition)
-        mutation(:edit_agent_sandbox_mode, OperatelyWeb.Api.Ai.EditAgentSandboxMode)
-        mutation(:run_agent, OperatelyWeb.Api.Ai.RunAgent)
-        mutation(:edit_agent_task_execution_instructions, OperatelyWeb.Api.Ai.EditAgentTaskExecutionInstructions)
-        mutation(:edit_agent_planning_instructions, OperatelyWeb.Api.Ai.EditAgentPlanningInstructions)
-        mutation(:edit_agent_daily_run, OperatelyWeb.Api.Ai.EditAgentDailyRun)
-        mutation(:edit_agent_verbosity, OperatelyWeb.Api.Ai.EditAgentVerbosity)
-        mutation(:edit_agent_provider, OperatelyWeb.Api.Ai.EditAgentProvider)
-
-        query(:get_conversation_messages, OperatelyWeb.Api.Ai.GetConversationMessages)
-        query(:get_conversations, OperatelyWeb.Api.Ai.GetConversations)
-        mutation(:create_conversation, OperatelyWeb.Api.Ai.CreateConversation)
-        mutation(:send_message, OperatelyWeb.Api.Ai.SendMessage)
-      end
 
       namespace(:goals) do
         query(:list_access_members, OperatelyWeb.Api.Goals.ListAccessMembers)
@@ -123,21 +101,6 @@ defmodule OperatelyWeb.Api do
         mutation(:update_tools, OperatelyWeb.Api.Spaces.UpdateTools)
       end
 
-      namespace(:invitations) do
-        # external: joining via invite link
-        query(:get_invite_link_by_token, OperatelyWeb.Api.Invitations.GetInviteLinkByToken)
-        mutation(:join_company_via_invite_link, OperatelyWeb.Api.Invitations.JoinCompanyViaInviteLink)
-
-        # internal: managing invite links and invitations
-        mutation(:get_company_invite_link, OperatelyWeb.Api.Invitations.GetCompanyInviteLink)
-        mutation(:update_company_invite_link, OperatelyWeb.Api.Invitations.UpdateCompanyInviteLink)
-        mutation(:reset_company_invite_link, OperatelyWeb.Api.Invitations.ResetCompanyInviteLink)
-
-        # single user invitations
-        query(:get_invitation, Q.GetInvitation)
-        mutation(:new_invitation_token, M.NewInvitationToken)
-      end
-
       query(:get_account, Q.GetAccount)
       query(:get_activities, Q.GetActivities)
       query(:get_activity, Q.GetActivity)
@@ -167,7 +130,6 @@ defmodule OperatelyWeb.Api do
       query(:get_spaces, Q.GetSpaces)
       query(:get_task, Q.GetTask)
       query(:get_tasks, Q.GetTasks)
-      query(:get_theme, Q.GetTheme)
       query(:get_binded_people, Q.GetBindedPeople)
       query(:get_unread_notification_count, Q.GetUnreadNotificationCount)
       query(:get_resource_hub, Q.GetResourceHub)
@@ -302,6 +264,57 @@ defmodule OperatelyWeb.Api do
       subscription(:unread_notifications_count, S.UnreadNotificationsCount)
       subscription(:profile_updated, S.ProfileUpdated)
       subscription(:new_agent_message, S.NewAgentMessage)
+    end
+  end
+
+  defmacro internal_endpoints do
+    quote do
+      common_endpoints()
+
+      query(:get_theme, OperatelyWeb.Api.Queries.GetTheme)
+
+      namespace(:ai) do
+        query(:prompt, OperatelyWeb.Api.Ai.Prompt)
+        query(:get_agent, OperatelyWeb.Api.Ai.GetAgent)
+        query(:get_agent_run, OperatelyWeb.Api.Ai.GetAgentRun)
+        query(:list_agents, OperatelyWeb.Api.Ai.ListAgents)
+        query(:list_agent_runs, OperatelyWeb.Api.Ai.ListAgentRuns)
+        mutation(:add_agent, OperatelyWeb.Api.Ai.AddAgent)
+        mutation(:edit_agent_definition, OperatelyWeb.Api.Ai.EditAgentDefinition)
+        mutation(:edit_agent_sandbox_mode, OperatelyWeb.Api.Ai.EditAgentSandboxMode)
+        mutation(:run_agent, OperatelyWeb.Api.Ai.RunAgent)
+        mutation(:edit_agent_task_execution_instructions, OperatelyWeb.Api.Ai.EditAgentTaskExecutionInstructions)
+        mutation(:edit_agent_planning_instructions, OperatelyWeb.Api.Ai.EditAgentPlanningInstructions)
+        mutation(:edit_agent_daily_run, OperatelyWeb.Api.Ai.EditAgentDailyRun)
+        mutation(:edit_agent_verbosity, OperatelyWeb.Api.Ai.EditAgentVerbosity)
+        mutation(:edit_agent_provider, OperatelyWeb.Api.Ai.EditAgentProvider)
+
+        query(:get_conversation_messages, OperatelyWeb.Api.Ai.GetConversationMessages)
+        query(:get_conversations, OperatelyWeb.Api.Ai.GetConversations)
+        mutation(:create_conversation, OperatelyWeb.Api.Ai.CreateConversation)
+        mutation(:send_message, OperatelyWeb.Api.Ai.SendMessage)
+      end
+
+      namespace(:invitations) do
+        # invitation endpoints are internal-only
+        query(:get_invite_link_by_token, OperatelyWeb.Api.Invitations.GetInviteLinkByToken)
+        mutation(:join_company_via_invite_link, OperatelyWeb.Api.Invitations.JoinCompanyViaInviteLink)
+
+        # internal: managing invite links and invitations
+        mutation(:get_company_invite_link, OperatelyWeb.Api.Invitations.GetCompanyInviteLink)
+        mutation(:update_company_invite_link, OperatelyWeb.Api.Invitations.UpdateCompanyInviteLink)
+        mutation(:reset_company_invite_link, OperatelyWeb.Api.Invitations.ResetCompanyInviteLink)
+
+        # single user invitations
+        query(:get_invitation, OperatelyWeb.Api.Queries.GetInvitation)
+        mutation(:new_invitation_token, OperatelyWeb.Api.Mutations.NewInvitationToken)
+      end
+    end
+  end
+
+  defmacro external_endpoints do
+    quote do
+      common_endpoints()
     end
   end
 end
