@@ -1492,6 +1492,28 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert Enum.any?(notifications, &(&1.person_id == ctx.subscriber.id))
       refute Enum.any?(notifications, &(&1.person_id == ctx.creator.id))
     end
+
+    test "it creates a subscription for the milestone creator", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = mutation(ctx.conn, [:projects, :create_milestone], %{
+        project_id: Paths.project_id(ctx.project),
+        name: "Test Milestone",
+        due_date: nil
+      })
+
+      {:ok, milestone_id} = OperatelyWeb.Api.Helpers.decode_id(res.milestone.id)
+      milestone = Operately.Projects.Milestone.get!(ctx.creator, id: milestone_id)
+
+      {:ok, subscription} =
+        Operately.Notifications.Subscription.get(:system,
+          subscription_list_id: milestone.subscription_list_id,
+          person_id: ctx.creator.id
+        )
+
+      assert subscription.type == :invited
+      refute subscription.canceled
+    end
   end
 
   describe "update milestone" do
