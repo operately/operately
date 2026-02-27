@@ -6,13 +6,14 @@ defmodule Operately.Activities.Notifications.MilestoneDescriptionUpdating do
   The author of the activity is excluded from notifications.
   """
 
-  alias Operately.RichContent
+  require Logger
+  alias Operately.Projects.Notifications
 
   def dispatch(activity) do
-    people = RichContent.find_mentioned_ids(activity.content["description"], :decode_ids)
+    {:ok, milestone} = fetch_milestone(activity.content["milestone_id"])
+    milestone_subscribers = Notifications.get_milestone_subscribers(milestone, ignore: [activity.author_id])
 
-    people
-    |> Enum.reject(&(&1 == activity.author_id))
+    milestone_subscribers
     |> Enum.uniq()
     |> Enum.map(fn person_id ->
       %{
@@ -22,5 +23,19 @@ defmodule Operately.Activities.Notifications.MilestoneDescriptionUpdating do
       }
     end)
     |> Operately.Notifications.bulk_create()
+  end
+
+  defp fetch_milestone(milestone_id) do
+    case Operately.Projects.Milestone.get(:system, id: milestone_id, opts: [preload: [:project]]) do
+      {:ok, milestone} ->
+        {:ok, milestone}
+
+      {:error, reason} ->
+        Logger.warning(
+          "Unable to load milestone #{milestone_id} for comment notifications: #{inspect(reason)}"
+        )
+
+        {:error, reason}
+    end
   end
 end
