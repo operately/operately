@@ -881,6 +881,175 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
       assert Operately.ContextualDates.Timeframe.end_date(updated_milestone1.timeframe) == ~D[2026-01-15]
       assert Operately.ContextualDates.Timeframe.end_date(updated_milestone2.timeframe) == ~D[2026-02-15]
     end
+
+    #
+    # Notifications
+    #
+
+    test "it sends notifications to subscribed people", ctx do
+      use Operately.Support.Notifications
+
+      ctx =
+        ctx
+        |> Factory.add_space_member(:subscriber, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      # Subscribe the person to the milestone
+      {:ok, _} = Operately.Notifications.create_subscription(%{
+        subscription_list_id: ctx.milestone.subscription_list_id,
+        person_id: ctx.subscriber.id,
+        type: :joined
+      })
+
+      due_date = %{date: "2026-03-15", date_type: "day", value: "Mar 15, 2026"}
+
+      {200, _} = Oban.Testing.with_testing_mode(:manual, fn ->
+        mutation(ctx.conn, [:project_milestones, :update_due_date], %{
+          milestone_id: Paths.milestone_id(ctx.milestone),
+          due_date: due_date
+        })
+      end)
+
+      action = "milestone_due_date_updating"
+      activity = get_activity(milestone: ctx.milestone, action: action)
+
+      assert 0 == notifications_count(action: action)
+
+      perform_job(activity.id)
+      notifications = fetch_notifications(activity.id, action: action)
+
+      assert 1 == notifications_count(action: action)
+      assert hd(notifications).person_id == ctx.subscriber.id
+    end
+
+    test "it sends notifications to multiple subscribed people", ctx do
+      use Operately.Support.Notifications
+
+      ctx =
+        ctx
+        |> Factory.add_space_member(:subscriber1, :engineering)
+        |> Factory.add_space_member(:subscriber2, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      # Subscribe both people to the milestone
+      {:ok, _} = Operately.Notifications.create_subscription(%{
+        subscription_list_id: ctx.milestone.subscription_list_id,
+        person_id: ctx.subscriber1.id,
+        type: :joined
+      })
+
+      {:ok, _} = Operately.Notifications.create_subscription(%{
+        subscription_list_id: ctx.milestone.subscription_list_id,
+        person_id: ctx.subscriber2.id,
+        type: :joined
+      })
+
+      due_date = %{date: "2026-04-20", date_type: "day", value: "Apr 20, 2026"}
+
+      {200, _} = Oban.Testing.with_testing_mode(:manual, fn ->
+        mutation(ctx.conn, [:project_milestones, :update_due_date], %{
+          milestone_id: Paths.milestone_id(ctx.milestone),
+          due_date: due_date
+        })
+      end)
+
+      action = "milestone_due_date_updating"
+      activity = get_activity(milestone: ctx.milestone, action: action)
+
+      assert 0 == notifications_count(action: action)
+
+      perform_job(activity.id)
+      notifications = fetch_notifications(activity.id, action: action)
+
+      assert 2 == notifications_count(action: action)
+
+      [ctx.subscriber1, ctx.subscriber2]
+      |> Enum.each(fn p ->
+        assert Enum.find(notifications, &(&1.person_id == p.id))
+      end)
+    end
+
+    test "it does not notify the author of the due date change", ctx do
+      use Operately.Support.Notifications
+
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      # Creator is already subscribed (milestone creator subscription)
+      due_date = %{date: "2026-05-10", date_type: "day", value: "May 10, 2026"}
+
+      {200, _} = Oban.Testing.with_testing_mode(:manual, fn ->
+        mutation(ctx.conn, [:project_milestones, :update_due_date], %{
+          milestone_id: Paths.milestone_id(ctx.milestone),
+          due_date: due_date
+        })
+      end)
+
+      action = "milestone_due_date_updating"
+      activity = get_activity(milestone: ctx.milestone, action: action)
+
+      perform_job(activity.id)
+
+      # Creator should not receive notification even though they're subscribed
+      assert notifications_count(action: action) == 0
+    end
+
+    test "Person without permissions is not notified even if subscribed", ctx do
+      use Operately.Support.Notifications
+      alias Operately.Access.Binding
+
+      # Without permissions
+      ctx =
+        ctx
+        |> Factory.log_in_person(:creator)
+        |> Factory.add_company_member(:person)
+        |> Factory.add_project(:project, :engineering, company_access_level: Binding.no_access())
+        |> Factory.add_project_milestone(:milestone, :project)
+
+      # Subscribe the person to the milestone
+      {:ok, _} = Operately.Notifications.create_subscription(%{
+        subscription_list_id: ctx.milestone.subscription_list_id,
+        person_id: ctx.person.id,
+        type: :joined
+      })
+
+      due_date = %{date: "2026-06-15", date_type: "day", value: "Jun 15, 2026"}
+
+      {200, _} = Oban.Testing.with_testing_mode(:manual, fn ->
+        mutation(ctx.conn, [:project_milestones, :update_due_date], %{
+          milestone_id: Paths.milestone_id(ctx.milestone),
+          due_date: due_date
+        })
+      end)
+
+      action = "milestone_due_date_updating"
+      activity = get_activity(milestone: ctx.milestone, action: action)
+
+      perform_job(activity.id)
+
+      assert notifications_count(action: action) == 0
+      assert fetch_notifications(activity.id, action: action) == []
+
+      # With permissions
+      :timer.sleep(25)
+      {:ok, _} = Operately.Groups.add_members(ctx.creator, ctx.engineering.id, [
+        %{id: ctx.person.id, access_level: Operately.Access.Binding.view_access()}
+      ])
+
+      {200, _} = Oban.Testing.with_testing_mode(:manual, fn ->
+        mutation(ctx.conn, [:project_milestones, :update_due_date], %{
+          milestone_id: Paths.milestone_id(ctx.milestone),
+          due_date: %{date: "2026-07-20", date_type: "day", value: "Jul 20, 2026"}
+        })
+      end)
+
+      activity = get_activity(milestone: ctx.milestone, action: action)
+
+      perform_job(activity.id)
+      notifications = fetch_notifications(activity.id, action: action)
+
+      assert notifications_count(action: action) == 1
+      assert hd(notifications).person_id == ctx.person.id
+    end
   end
 
   describe "update description" do
@@ -1662,6 +1831,15 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
   defp get_activity(milestone_id, action) do
     from(a in Operately.Activities.Activity,
       where: a.action == ^action and a.content["milestone_id"] == ^milestone_id,
+      order_by: [desc: a.inserted_at],
+      limit: 1
+    )
+    |> Repo.one()
+  end
+
+  defp get_activity(milestone: milestone, action: action) do
+    from(a in Operately.Activities.Activity,
+      where: a.action == ^action and a.content["milestone_id"] == ^milestone.id,
       order_by: [desc: a.inserted_at],
       limit: 1
     )
