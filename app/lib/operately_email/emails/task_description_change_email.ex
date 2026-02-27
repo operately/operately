@@ -11,16 +11,28 @@ defmodule OperatelyEmail.Emails.TaskDescriptionChangeEmail do
     {:ok, task} =
       Task.get(:system, id: activity.content["task_id"], opts: [preload: [:project, :space]])
 
+    action = get_action(person, activity, task)
+
     company
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: find_where_name(task), who: author, action: "updated the description for \"#{task.name}\"")
+    |> subject(where: find_where_name(task), who: author, action: action)
     |> assign(:author, author)
     |> assign(:task_name, task.name)
     |> assign(:description, decode_description(activity.content["description"]))
     |> assign(:cta_url, Paths.task_path(company, task) |> Paths.to_url())
     |> render("task_description_change")
+  end
+
+  defp get_action(person, activity, task) do
+    mentioned_ids = Operately.RichContent.find_mentioned_ids(activity.content["description"], :decode_ids)
+
+    if person.id in mentioned_ids do
+      "mentioned you in the description for \"#{task.name}\""
+    else
+      "updated the description for \"#{task.name}\""
+    end
   end
 
   defp decode_description(nil), do: nil
