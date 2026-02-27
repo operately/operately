@@ -365,6 +365,12 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
   # Assertions
   #
 
+  step :assert_milestone_subscription_created, ctx do
+    ctx
+    |> UI.assert_has(testid: "project-unsubscribe-button")
+    |> UI.assert_text("You're receiving notifications because you're subscribed to this milestone.")
+  end
+
   step :assert_redirected_to_project_page, ctx do
     UI.assert_page(ctx, Paths.project_path(ctx.company, ctx.project))
   end
