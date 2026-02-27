@@ -679,6 +679,9 @@ defmodule OperatelyWeb.Api.Tasks do
 
         {:ok, updated_task}
       end)
+      |> Ecto.Multi.run(:assignee_subscription, fn _repo, %{task: task} ->
+        ensure_subscription(task.subscription_list_id, new_assignee_id, :invited)
+      end)
       |> maybe_add_assignee_contributor(new_assignee_id)
     end
 
