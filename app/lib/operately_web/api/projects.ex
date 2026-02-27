@@ -908,18 +908,22 @@ defmodule OperatelyWeb.Api.Projects do
 
     defp ensure_subscription(multi, subscription_list_id, person_id) do
       Ecto.Multi.run(multi, :ensure_subscription, fn _repo, _changes ->
-        case Subscription.get(:system, subscription_list_id: subscription_list_id, person_id: person_id) do
-          {:error, :not_found} ->
-            Operately.Notifications.create_subscription(%{
-              subscription_list_id: subscription_list_id,
-              person_id: person_id,
-              type: :invited
-            })
-
-          {:ok, subscription} ->
-            Operately.Notifications.update_subscription(subscription, %{canceled: false})
-        end
+        ensure_person_subscription(subscription_list_id, person_id)
       end)
+    end
+
+    defp ensure_person_subscription(subscription_list_id, person_id) do
+      case Subscription.get(:system, subscription_list_id: subscription_list_id, person_id: person_id) do
+        {:error, :not_found} ->
+          Operately.Notifications.create_subscription(%{
+            subscription_list_id: subscription_list_id,
+            person_id: person_id,
+            type: :invited
+          })
+
+        {:ok, subscription} ->
+          Operately.Notifications.update_subscription(subscription, %{canceled: false})
+      end
     end
 
     def create_milestone(multi, inputs) do
@@ -938,10 +942,25 @@ defmodule OperatelyWeb.Api.Projects do
         })
       end)
       |> SubscriptionListOps.update(:milestone)
-      |> Ecto.Multi.merge(fn changes ->
-        ensure_subscription(Ecto.Multi.new(), changes.subscription_list.id, changes.me.id)
+      |> Ecto.Multi.run(:milestone_subscriptions, fn _repo, changes ->
+        subscription_list_id = changes.subscription_list.id
+        creator_id = changes.me.id
+        champion_id = get_champion_id(changes.project.champion)
+
+        # Subscribe creator
+        ensure_person_subscription(subscription_list_id, creator_id)
+
+        # Subscribe champion if different from creator
+        if champion_id && champion_id != creator_id do
+          ensure_person_subscription(subscription_list_id, champion_id)
+        end
+
+        {:ok, :subscriptions_created}
       end)
     end
+
+    defp get_champion_id(nil), do: nil
+    defp get_champion_id(champion), do: champion.id
 
     def delete_discussions(multi, project_id) do
       Ecto.Multi.run(multi, :discussions, fn _, _ ->
