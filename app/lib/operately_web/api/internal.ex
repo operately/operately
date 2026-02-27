@@ -25,5 +25,5 @@ defmodule OperatelyWeb.Api.Internal do
 
   import OperatelyWeb.Api
 
-  define_all()
+  internal_endpoints()
 end

@@ -75,6 +75,31 @@ defmodule OperatelyWeb.TurboCase do
     end
   end
 
+  def external_query(conn, token, query_name, inputs \\ %{}) do
+    conn =
+      if token do
+        Plug.Conn.put_req_header(conn, "authorization", "Bearer #{token}")
+      else
+        conn
+      end
+
+    query_name = if is_atom(query_name), do: Atom.to_string(query_name), else: query_name
+
+    conn =
+      Phoenix.ConnTest.dispatch(
+        conn,
+        OperatelyWeb.Endpoint,
+        :get,
+        "/api/external/v1/#{query_name}",
+        inputs
+      )
+
+    case Jason.decode(conn.resp_body, keys: :atoms) do
+      {:ok, res} -> {conn.status, res}
+      _ -> {conn.status, conn.resp_body}
+    end
+  end
+
   def mutation(conn, mutation_name, inputs) do
     conn =
       Phoenix.ConnTest.dispatch(
