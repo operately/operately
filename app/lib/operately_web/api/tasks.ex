@@ -790,6 +790,9 @@ defmodule OperatelyWeb.Api.Tasks do
             |> Repo.insert()
         end
       end)
+      |> Ecto.Multi.run(:assignee_subscription, fn _repo, %{subscription_list: subscription_list} ->
+        ensure_subscription(subscription_list.id, inputs.assignee_id, :invited)
+      end)
       |> maybe_add_assignee_contributor(inputs.assignee_id)
       |> Ecto.Multi.run(:task, fn _repo, changes ->
         task = Repo.preload(changes.new_task, :assigned_people)
@@ -853,6 +856,7 @@ defmodule OperatelyWeb.Api.Tasks do
     end
 
     defp ensure_subscription(nil, _person_id, _type), do: {:ok, nil}
+    defp ensure_subscription(_subscription_list_id, nil, _type), do: {:ok, nil}
 
     defp ensure_subscription(subscription_list_id, person_id, type) do
       case Subscription.get(:system, subscription_list_id: subscription_list_id, person_id: person_id) do
