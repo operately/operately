@@ -1,6 +1,9 @@
 defmodule OperatelyWeb.Api.ProjectMilestonesTest do
   use OperatelyWeb.TurboCase
+  use Operately.Support.Notifications
+
   alias Operately.Support.RichText
+  alias Operately.Access.Binding
 
   setup ctx do
     ctx
@@ -1052,6 +1055,10 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
       assert updated_milestone.description == empty_description
     end
 
+    #
+    # Activity
+    #
+
     test "it creates an activity when description is updated", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
@@ -1085,6 +1092,10 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
       activity = get_activity(ctx.milestone.id, "milestone_description_updating")
       assert activity.content["has_description"] == false
     end
+
+    #
+    # Subscriptions
+    #
 
     test "it creates subscriptions for mentioned people", ctx do
       ctx =
@@ -1143,6 +1154,160 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
       assert subscription2.type == :mentioned
       refute subscription1.canceled
       refute subscription2.canceled
+    end
+
+    #
+    # Notifications
+    #
+
+    test "it sends notifications to mentioned people", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:mentioned_person, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      description = RichText.rich_text(mentioned_people: [ctx.mentioned_person])
+
+      {200, _} = Oban.Testing.with_testing_mode(:manual, fn ->
+        mutation(ctx.conn, [:project_milestones, :update_description], %{
+          milestone_id: Paths.milestone_id(ctx.milestone),
+          description: description
+        })
+      end)
+
+      action = "milestone_description_updating"
+      activity = get_activity(ctx.milestone.id, action)
+
+      assert 0 == notifications_count(action: action)
+
+      perform_job(activity.id)
+      notifications = fetch_notifications(activity.id, action: action)
+
+      assert 1 == notifications_count(action: action)
+      assert hd(notifications).person_id == ctx.mentioned_person.id
+    end
+
+    test "it sends notifications to multiple mentioned people", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:person1, :engineering)
+        |> Factory.add_space_member(:person2, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      description = RichText.rich_text(mentioned_people: [ctx.person1, ctx.person2])
+
+      {200, _} = Oban.Testing.with_testing_mode(:manual, fn ->
+        mutation(ctx.conn, [:project_milestones, :update_description], %{
+          milestone_id: Paths.milestone_id(ctx.milestone),
+          description: description
+        })
+      end)
+
+      action = "milestone_description_updating"
+      activity = get_activity(ctx.milestone.id, action)
+
+      assert 0 == notifications_count(action: action)
+
+      perform_job(activity.id)
+      notifications = fetch_notifications(activity.id, action: action)
+
+      assert 2 == notifications_count(action: action)
+
+      [ctx.person1, ctx.person2]
+      |> Enum.each(fn p ->
+        assert Enum.find(notifications, &(&1.person_id == p.id))
+      end)
+    end
+
+    test "it continues to notify subscribed people even when not mentioned", ctx do
+      ctx = Factory.add_space_member(ctx, :mentioned_person, :engineering)
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      # First update: mention the person
+      description_with_mention = RichText.rich_text(mentioned_people: [ctx.mentioned_person])
+
+      {200, _} = Oban.Testing.with_testing_mode(:manual, fn ->
+        mutation(ctx.conn, [:project_milestones, :update_description], %{
+          milestone_id: Paths.milestone_id(ctx.milestone),
+          description: description_with_mention
+        })
+      end)
+
+      action = "milestone_description_updating"
+      activity = get_activity(ctx.milestone.id, action)
+
+      perform_job(activity.id)
+      notifications = fetch_notifications(activity.id, action: action)
+
+      assert 1 == notifications_count(action: action)
+      assert hd(notifications).person_id == ctx.mentioned_person.id
+
+      # Second update: don't mention the person, but they should still be notified
+      :timer.sleep(25)
+      description_without_mention = RichText.rich_text("Updated description without mentions", :as_string)
+
+      {200, _} = Oban.Testing.with_testing_mode(:manual, fn ->
+        mutation(ctx.conn, [:project_milestones, :update_description], %{
+          milestone_id: Paths.milestone_id(ctx.milestone),
+          description: description_without_mention
+        })
+      end)
+
+      activity = get_activity(ctx.milestone.id, action)
+
+      perform_job(activity.id)
+      notifications = fetch_notifications(activity.id, action: action)
+
+      assert 2 == notifications_count(action: action)
+      assert Enum.find(notifications, &(&1.person_id == ctx.mentioned_person.id))
+    end
+
+    test "Person without permissions is not notified when mentioned", ctx do
+      # Without permissions
+      ctx =
+        ctx
+        |> Factory.log_in_person(:creator)
+        |> Factory.add_company_member(:person)
+        |> Factory.add_project(:project, :engineering, company_access_level: Binding.no_access())
+        |> Factory.add_project_milestone(:milestone, :project)
+
+      description = RichText.rich_text(mentioned_people: [ctx.person])
+
+      {200, _} = Oban.Testing.with_testing_mode(:manual, fn ->
+        mutation(ctx.conn, [:project_milestones, :update_description], %{
+          milestone_id: Paths.milestone_id(ctx.milestone),
+          description: description
+        })
+      end)
+
+      action = "milestone_description_updating"
+      activity = get_activity(ctx.milestone.id, action)
+
+      perform_job(activity.id)
+
+      assert notifications_count(action: action) == 0
+      assert fetch_notifications(activity.id, action: action) == []
+
+      # With permissions
+      :timer.sleep(25)
+      {:ok, _} = Operately.Groups.add_members(ctx.creator, ctx.engineering.id, [
+        %{id: ctx.person.id, access_level: Operately.Access.Binding.view_access()}
+      ])
+
+      {200, _} = Oban.Testing.with_testing_mode(:manual, fn ->
+        mutation(ctx.conn, [:project_milestones, :update_description], %{
+          milestone_id: Paths.milestone_id(ctx.milestone),
+          description: description
+        })
+      end)
+
+      activity = get_activity(ctx.milestone.id, action)
+
+      perform_job(activity.id)
+      notifications = fetch_notifications(activity.id, action: action)
+
+      assert notifications_count(action: action) == 1
+      assert hd(notifications).person_id == ctx.person.id
     end
   end
 
@@ -1496,7 +1661,9 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
 
   defp get_activity(milestone_id, action) do
     from(a in Operately.Activities.Activity,
-      where: a.action == ^action and a.content["milestone_id"] == ^milestone_id
+      where: a.action == ^action and a.content["milestone_id"] == ^milestone_id,
+      order_by: [desc: a.inserted_at],
+      limit: 1
     )
     |> Repo.one()
   end

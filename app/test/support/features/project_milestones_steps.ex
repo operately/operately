@@ -99,6 +99,10 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     Factory.log_in_contributor(ctx, :viewer)
   end
 
+  step :log_in_as_space_member, ctx do
+    UI.login_as(ctx, ctx.space_member)
+  end
+
   step :assert_contributor_has_edit_access, ctx do
     {:ok, project} = Operately.Projects.Project.get(ctx.contributor.person, id: ctx.project.id)
 
@@ -358,6 +362,14 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     end)
     |> UI.assert_text("This action cannot be undone")
     |> UI.click_button("Delete Forever")
+    |> UI.sleep(300)
+  end
+
+  step :subscribe_to_milestone, ctx do
+    ctx
+    |> UI.assert_text("You're not receiving notifications from this milestone.")
+    |> UI.click_button("Subscribe")
+    |> UI.assert_text("You're receiving notifications because you're subscribed to this milestone.")
     |> UI.sleep(300)
   end
 
@@ -717,7 +729,17 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     })
   end
 
-  step :assert_space_member_milestone_description_email_sent, ctx do
+  step :assert_space_member_milestone_description_mentioned_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.space_member,
+      author: ctx.champion,
+      action: "mentioned you in the description for \"#{ctx.milestone.title}\""
+    })
+  end
+
+  step :assert_space_member_milestone_description_updated_email_sent, ctx do
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
