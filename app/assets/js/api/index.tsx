@@ -4616,6 +4616,128 @@ export interface UpdateThemeResult {
   success: boolean;
 }
 
+class ApiNamespaceInvitations {
+  constructor(private client: ApiClient) {}
+
+  async getInvitation(input: InvitationsGetInvitationInput): Promise<InvitationsGetInvitationResult> {
+    return this.client.get("/invitations/get_invitation", input);
+  }
+
+  async getInviteLinkByToken(
+    input: InvitationsGetInviteLinkByTokenInput,
+  ): Promise<InvitationsGetInviteLinkByTokenResult> {
+    return this.client.get("/invitations/get_invite_link_by_token", input);
+  }
+
+  async getCompanyInviteLink(
+    input: InvitationsGetCompanyInviteLinkInput,
+  ): Promise<InvitationsGetCompanyInviteLinkResult> {
+    return this.client.post("/invitations/get_company_invite_link", input);
+  }
+
+  async joinCompanyViaInviteLink(
+    input: InvitationsJoinCompanyViaInviteLinkInput,
+  ): Promise<InvitationsJoinCompanyViaInviteLinkResult> {
+    return this.client.post("/invitations/join_company_via_invite_link", input);
+  }
+
+  async newInvitationToken(input: InvitationsNewInvitationTokenInput): Promise<InvitationsNewInvitationTokenResult> {
+    return this.client.post("/invitations/new_invitation_token", input);
+  }
+
+  async resetCompanyInviteLink(
+    input: InvitationsResetCompanyInviteLinkInput,
+  ): Promise<InvitationsResetCompanyInviteLinkResult> {
+    return this.client.post("/invitations/reset_company_invite_link", input);
+  }
+
+  async updateCompanyInviteLink(
+    input: InvitationsUpdateCompanyInviteLinkInput,
+  ): Promise<InvitationsUpdateCompanyInviteLinkResult> {
+    return this.client.post("/invitations/update_company_invite_link", input);
+  }
+}
+
+class ApiNamespaceAi {
+  constructor(private client: ApiClient) {}
+
+  async getAgent(input: AiGetAgentInput): Promise<AiGetAgentResult> {
+    return this.client.get("/ai/get_agent", input);
+  }
+
+  async getAgentRun(input: AiGetAgentRunInput): Promise<AiGetAgentRunResult> {
+    return this.client.get("/ai/get_agent_run", input);
+  }
+
+  async getConversationMessages(input: AiGetConversationMessagesInput): Promise<AiGetConversationMessagesResult> {
+    return this.client.get("/ai/get_conversation_messages", input);
+  }
+
+  async getConversations(input: AiGetConversationsInput): Promise<AiGetConversationsResult> {
+    return this.client.get("/ai/get_conversations", input);
+  }
+
+  async listAgentRuns(input: AiListAgentRunsInput): Promise<AiListAgentRunsResult> {
+    return this.client.get("/ai/list_agent_runs", input);
+  }
+
+  async listAgents(input: AiListAgentsInput): Promise<AiListAgentsResult> {
+    return this.client.get("/ai/list_agents", input);
+  }
+
+  async prompt(input: AiPromptInput): Promise<AiPromptResult> {
+    return this.client.get("/ai/prompt", input);
+  }
+
+  async addAgent(input: AiAddAgentInput): Promise<AiAddAgentResult> {
+    return this.client.post("/ai/add_agent", input);
+  }
+
+  async createConversation(input: AiCreateConversationInput): Promise<AiCreateConversationResult> {
+    return this.client.post("/ai/create_conversation", input);
+  }
+
+  async editAgentDailyRun(input: AiEditAgentDailyRunInput): Promise<AiEditAgentDailyRunResult> {
+    return this.client.post("/ai/edit_agent_daily_run", input);
+  }
+
+  async editAgentDefinition(input: AiEditAgentDefinitionInput): Promise<AiEditAgentDefinitionResult> {
+    return this.client.post("/ai/edit_agent_definition", input);
+  }
+
+  async editAgentPlanningInstructions(
+    input: AiEditAgentPlanningInstructionsInput,
+  ): Promise<AiEditAgentPlanningInstructionsResult> {
+    return this.client.post("/ai/edit_agent_planning_instructions", input);
+  }
+
+  async editAgentProvider(input: AiEditAgentProviderInput): Promise<AiEditAgentProviderResult> {
+    return this.client.post("/ai/edit_agent_provider", input);
+  }
+
+  async editAgentSandboxMode(input: AiEditAgentSandboxModeInput): Promise<AiEditAgentSandboxModeResult> {
+    return this.client.post("/ai/edit_agent_sandbox_mode", input);
+  }
+
+  async editAgentTaskExecutionInstructions(
+    input: AiEditAgentTaskExecutionInstructionsInput,
+  ): Promise<AiEditAgentTaskExecutionInstructionsResult> {
+    return this.client.post("/ai/edit_agent_task_execution_instructions", input);
+  }
+
+  async editAgentVerbosity(input: AiEditAgentVerbosityInput): Promise<AiEditAgentVerbosityResult> {
+    return this.client.post("/ai/edit_agent_verbosity", input);
+  }
+
+  async runAgent(input: AiRunAgentInput): Promise<AiRunAgentResult> {
+    return this.client.post("/ai/run_agent", input);
+  }
+
+  async sendMessage(input: AiSendMessageInput): Promise<AiSendMessageResult> {
+    return this.client.post("/ai/send_message", input);
+  }
+}
+
 class ApiNamespaceRoot {
   constructor(private client: ApiClient) {}
 
@@ -5232,48 +5354,6 @@ class ApiNamespaceRoot {
   }
 }
 
-class ApiNamespaceInvitations {
-  constructor(private client: ApiClient) {}
-
-  async getInvitation(input: InvitationsGetInvitationInput): Promise<InvitationsGetInvitationResult> {
-    return this.client.get("/invitations/get_invitation", input);
-  }
-
-  async getInviteLinkByToken(
-    input: InvitationsGetInviteLinkByTokenInput,
-  ): Promise<InvitationsGetInviteLinkByTokenResult> {
-    return this.client.get("/invitations/get_invite_link_by_token", input);
-  }
-
-  async getCompanyInviteLink(
-    input: InvitationsGetCompanyInviteLinkInput,
-  ): Promise<InvitationsGetCompanyInviteLinkResult> {
-    return this.client.post("/invitations/get_company_invite_link", input);
-  }
-
-  async joinCompanyViaInviteLink(
-    input: InvitationsJoinCompanyViaInviteLinkInput,
-  ): Promise<InvitationsJoinCompanyViaInviteLinkResult> {
-    return this.client.post("/invitations/join_company_via_invite_link", input);
-  }
-
-  async newInvitationToken(input: InvitationsNewInvitationTokenInput): Promise<InvitationsNewInvitationTokenResult> {
-    return this.client.post("/invitations/new_invitation_token", input);
-  }
-
-  async resetCompanyInviteLink(
-    input: InvitationsResetCompanyInviteLinkInput,
-  ): Promise<InvitationsResetCompanyInviteLinkResult> {
-    return this.client.post("/invitations/reset_company_invite_link", input);
-  }
-
-  async updateCompanyInviteLink(
-    input: InvitationsUpdateCompanyInviteLinkInput,
-  ): Promise<InvitationsUpdateCompanyInviteLinkResult> {
-    return this.client.post("/invitations/update_company_invite_link", input);
-  }
-}
-
 class ApiNamespaceSpaces {
   constructor(private client: ApiClient) {}
 
@@ -5578,109 +5658,29 @@ class ApiNamespaceGoals {
   }
 }
 
-class ApiNamespaceAi {
-  constructor(private client: ApiClient) {}
-
-  async getAgent(input: AiGetAgentInput): Promise<AiGetAgentResult> {
-    return this.client.get("/ai/get_agent", input);
-  }
-
-  async getAgentRun(input: AiGetAgentRunInput): Promise<AiGetAgentRunResult> {
-    return this.client.get("/ai/get_agent_run", input);
-  }
-
-  async getConversationMessages(input: AiGetConversationMessagesInput): Promise<AiGetConversationMessagesResult> {
-    return this.client.get("/ai/get_conversation_messages", input);
-  }
-
-  async getConversations(input: AiGetConversationsInput): Promise<AiGetConversationsResult> {
-    return this.client.get("/ai/get_conversations", input);
-  }
-
-  async listAgentRuns(input: AiListAgentRunsInput): Promise<AiListAgentRunsResult> {
-    return this.client.get("/ai/list_agent_runs", input);
-  }
-
-  async listAgents(input: AiListAgentsInput): Promise<AiListAgentsResult> {
-    return this.client.get("/ai/list_agents", input);
-  }
-
-  async prompt(input: AiPromptInput): Promise<AiPromptResult> {
-    return this.client.get("/ai/prompt", input);
-  }
-
-  async addAgent(input: AiAddAgentInput): Promise<AiAddAgentResult> {
-    return this.client.post("/ai/add_agent", input);
-  }
-
-  async createConversation(input: AiCreateConversationInput): Promise<AiCreateConversationResult> {
-    return this.client.post("/ai/create_conversation", input);
-  }
-
-  async editAgentDailyRun(input: AiEditAgentDailyRunInput): Promise<AiEditAgentDailyRunResult> {
-    return this.client.post("/ai/edit_agent_daily_run", input);
-  }
-
-  async editAgentDefinition(input: AiEditAgentDefinitionInput): Promise<AiEditAgentDefinitionResult> {
-    return this.client.post("/ai/edit_agent_definition", input);
-  }
-
-  async editAgentPlanningInstructions(
-    input: AiEditAgentPlanningInstructionsInput,
-  ): Promise<AiEditAgentPlanningInstructionsResult> {
-    return this.client.post("/ai/edit_agent_planning_instructions", input);
-  }
-
-  async editAgentProvider(input: AiEditAgentProviderInput): Promise<AiEditAgentProviderResult> {
-    return this.client.post("/ai/edit_agent_provider", input);
-  }
-
-  async editAgentSandboxMode(input: AiEditAgentSandboxModeInput): Promise<AiEditAgentSandboxModeResult> {
-    return this.client.post("/ai/edit_agent_sandbox_mode", input);
-  }
-
-  async editAgentTaskExecutionInstructions(
-    input: AiEditAgentTaskExecutionInstructionsInput,
-  ): Promise<AiEditAgentTaskExecutionInstructionsResult> {
-    return this.client.post("/ai/edit_agent_task_execution_instructions", input);
-  }
-
-  async editAgentVerbosity(input: AiEditAgentVerbosityInput): Promise<AiEditAgentVerbosityResult> {
-    return this.client.post("/ai/edit_agent_verbosity", input);
-  }
-
-  async runAgent(input: AiRunAgentInput): Promise<AiRunAgentResult> {
-    return this.client.post("/ai/run_agent", input);
-  }
-
-  async sendMessage(input: AiSendMessageInput): Promise<AiSendMessageResult> {
-    return this.client.post("/ai/send_message", input);
-  }
-}
-
 export class ApiClient {
   private basePath: string;
   private headers: any;
-  public apiNamespaceRoot: ApiNamespaceRoot;
   public apiNamespaceInvitations: ApiNamespaceInvitations;
+  public apiNamespaceAi: ApiNamespaceAi;
+  public apiNamespaceRoot: ApiNamespaceRoot;
   public apiNamespaceSpaces: ApiNamespaceSpaces;
   public apiNamespaceProjectDiscussions: ApiNamespaceProjectDiscussions;
   public apiNamespaceTasks: ApiNamespaceTasks;
   public apiNamespaceProjectMilestones: ApiNamespaceProjectMilestones;
   public apiNamespaceProjects: ApiNamespaceProjects;
   public apiNamespaceGoals: ApiNamespaceGoals;
-  public apiNamespaceAi: ApiNamespaceAi;
 
   constructor() {
-    this.apiNamespaceRoot = new ApiNamespaceRoot(this);
     this.apiNamespaceInvitations = new ApiNamespaceInvitations(this);
+    this.apiNamespaceAi = new ApiNamespaceAi(this);
+    this.apiNamespaceRoot = new ApiNamespaceRoot(this);
     this.apiNamespaceSpaces = new ApiNamespaceSpaces(this);
     this.apiNamespaceProjectDiscussions = new ApiNamespaceProjectDiscussions(this);
     this.apiNamespaceTasks = new ApiNamespaceTasks(this);
     this.apiNamespaceProjectMilestones = new ApiNamespaceProjectMilestones(this);
     this.apiNamespaceProjects = new ApiNamespaceProjects(this);
     this.apiNamespaceGoals = new ApiNamespaceGoals(this);
-    this.apiNamespaceAi = new ApiNamespaceAi(this);
   }
 
   setBasePath(basePath: string) {
@@ -8059,6 +8059,102 @@ export default {
       ),
   },
 
+  ai: {
+    getConversations: (input: AiGetConversationsInput) => defaultApiClient.apiNamespaceAi.getConversations(input),
+    useGetConversations: (input: AiGetConversationsInput) =>
+      useQuery<AiGetConversationsResult>(() => defaultApiClient.apiNamespaceAi.getConversations(input)),
+
+    listAgents: (input: AiListAgentsInput) => defaultApiClient.apiNamespaceAi.listAgents(input),
+    useListAgents: (input: AiListAgentsInput) =>
+      useQuery<AiListAgentsResult>(() => defaultApiClient.apiNamespaceAi.listAgents(input)),
+
+    getAgent: (input: AiGetAgentInput) => defaultApiClient.apiNamespaceAi.getAgent(input),
+    useGetAgent: (input: AiGetAgentInput) =>
+      useQuery<AiGetAgentResult>(() => defaultApiClient.apiNamespaceAi.getAgent(input)),
+
+    getAgentRun: (input: AiGetAgentRunInput) => defaultApiClient.apiNamespaceAi.getAgentRun(input),
+    useGetAgentRun: (input: AiGetAgentRunInput) =>
+      useQuery<AiGetAgentRunResult>(() => defaultApiClient.apiNamespaceAi.getAgentRun(input)),
+
+    prompt: (input: AiPromptInput) => defaultApiClient.apiNamespaceAi.prompt(input),
+    usePrompt: (input: AiPromptInput) => useQuery<AiPromptResult>(() => defaultApiClient.apiNamespaceAi.prompt(input)),
+
+    listAgentRuns: (input: AiListAgentRunsInput) => defaultApiClient.apiNamespaceAi.listAgentRuns(input),
+    useListAgentRuns: (input: AiListAgentRunsInput) =>
+      useQuery<AiListAgentRunsResult>(() => defaultApiClient.apiNamespaceAi.listAgentRuns(input)),
+
+    getConversationMessages: (input: AiGetConversationMessagesInput) =>
+      defaultApiClient.apiNamespaceAi.getConversationMessages(input),
+    useGetConversationMessages: (input: AiGetConversationMessagesInput) =>
+      useQuery<AiGetConversationMessagesResult>(() => defaultApiClient.apiNamespaceAi.getConversationMessages(input)),
+
+    addAgent: (input: AiAddAgentInput) => defaultApiClient.apiNamespaceAi.addAgent(input),
+    useAddAgent: () =>
+      useMutation<AiAddAgentInput, AiAddAgentResult>((input) => defaultApiClient.apiNamespaceAi.addAgent(input)),
+
+    editAgentSandboxMode: (input: AiEditAgentSandboxModeInput) =>
+      defaultApiClient.apiNamespaceAi.editAgentSandboxMode(input),
+    useEditAgentSandboxMode: () =>
+      useMutation<AiEditAgentSandboxModeInput, AiEditAgentSandboxModeResult>((input) =>
+        defaultApiClient.apiNamespaceAi.editAgentSandboxMode(input),
+      ),
+
+    editAgentTaskExecutionInstructions: (input: AiEditAgentTaskExecutionInstructionsInput) =>
+      defaultApiClient.apiNamespaceAi.editAgentTaskExecutionInstructions(input),
+    useEditAgentTaskExecutionInstructions: () =>
+      useMutation<AiEditAgentTaskExecutionInstructionsInput, AiEditAgentTaskExecutionInstructionsResult>((input) =>
+        defaultApiClient.apiNamespaceAi.editAgentTaskExecutionInstructions(input),
+      ),
+
+    editAgentPlanningInstructions: (input: AiEditAgentPlanningInstructionsInput) =>
+      defaultApiClient.apiNamespaceAi.editAgentPlanningInstructions(input),
+    useEditAgentPlanningInstructions: () =>
+      useMutation<AiEditAgentPlanningInstructionsInput, AiEditAgentPlanningInstructionsResult>((input) =>
+        defaultApiClient.apiNamespaceAi.editAgentPlanningInstructions(input),
+      ),
+
+    createConversation: (input: AiCreateConversationInput) => defaultApiClient.apiNamespaceAi.createConversation(input),
+    useCreateConversation: () =>
+      useMutation<AiCreateConversationInput, AiCreateConversationResult>((input) =>
+        defaultApiClient.apiNamespaceAi.createConversation(input),
+      ),
+
+    sendMessage: (input: AiSendMessageInput) => defaultApiClient.apiNamespaceAi.sendMessage(input),
+    useSendMessage: () =>
+      useMutation<AiSendMessageInput, AiSendMessageResult>((input) =>
+        defaultApiClient.apiNamespaceAi.sendMessage(input),
+      ),
+
+    editAgentVerbosity: (input: AiEditAgentVerbosityInput) => defaultApiClient.apiNamespaceAi.editAgentVerbosity(input),
+    useEditAgentVerbosity: () =>
+      useMutation<AiEditAgentVerbosityInput, AiEditAgentVerbosityResult>((input) =>
+        defaultApiClient.apiNamespaceAi.editAgentVerbosity(input),
+      ),
+
+    runAgent: (input: AiRunAgentInput) => defaultApiClient.apiNamespaceAi.runAgent(input),
+    useRunAgent: () =>
+      useMutation<AiRunAgentInput, AiRunAgentResult>((input) => defaultApiClient.apiNamespaceAi.runAgent(input)),
+
+    editAgentDefinition: (input: AiEditAgentDefinitionInput) =>
+      defaultApiClient.apiNamespaceAi.editAgentDefinition(input),
+    useEditAgentDefinition: () =>
+      useMutation<AiEditAgentDefinitionInput, AiEditAgentDefinitionResult>((input) =>
+        defaultApiClient.apiNamespaceAi.editAgentDefinition(input),
+      ),
+
+    editAgentProvider: (input: AiEditAgentProviderInput) => defaultApiClient.apiNamespaceAi.editAgentProvider(input),
+    useEditAgentProvider: () =>
+      useMutation<AiEditAgentProviderInput, AiEditAgentProviderResult>((input) =>
+        defaultApiClient.apiNamespaceAi.editAgentProvider(input),
+      ),
+
+    editAgentDailyRun: (input: AiEditAgentDailyRunInput) => defaultApiClient.apiNamespaceAi.editAgentDailyRun(input),
+    useEditAgentDailyRun: () =>
+      useMutation<AiEditAgentDailyRunInput, AiEditAgentDailyRunResult>((input) =>
+        defaultApiClient.apiNamespaceAi.editAgentDailyRun(input),
+      ),
+  },
+
   spaces: {
     countByAccessLevel: (input: SpacesCountByAccessLevelInput) =>
       defaultApiClient.apiNamespaceSpaces.countByAccessLevel(input),
@@ -8467,102 +8563,6 @@ export default {
     useUpdateReviewer: () =>
       useMutation<GoalsUpdateReviewerInput, GoalsUpdateReviewerResult>((input) =>
         defaultApiClient.apiNamespaceGoals.updateReviewer(input),
-      ),
-  },
-
-  ai: {
-    getConversations: (input: AiGetConversationsInput) => defaultApiClient.apiNamespaceAi.getConversations(input),
-    useGetConversations: (input: AiGetConversationsInput) =>
-      useQuery<AiGetConversationsResult>(() => defaultApiClient.apiNamespaceAi.getConversations(input)),
-
-    listAgents: (input: AiListAgentsInput) => defaultApiClient.apiNamespaceAi.listAgents(input),
-    useListAgents: (input: AiListAgentsInput) =>
-      useQuery<AiListAgentsResult>(() => defaultApiClient.apiNamespaceAi.listAgents(input)),
-
-    getAgent: (input: AiGetAgentInput) => defaultApiClient.apiNamespaceAi.getAgent(input),
-    useGetAgent: (input: AiGetAgentInput) =>
-      useQuery<AiGetAgentResult>(() => defaultApiClient.apiNamespaceAi.getAgent(input)),
-
-    getAgentRun: (input: AiGetAgentRunInput) => defaultApiClient.apiNamespaceAi.getAgentRun(input),
-    useGetAgentRun: (input: AiGetAgentRunInput) =>
-      useQuery<AiGetAgentRunResult>(() => defaultApiClient.apiNamespaceAi.getAgentRun(input)),
-
-    prompt: (input: AiPromptInput) => defaultApiClient.apiNamespaceAi.prompt(input),
-    usePrompt: (input: AiPromptInput) => useQuery<AiPromptResult>(() => defaultApiClient.apiNamespaceAi.prompt(input)),
-
-    listAgentRuns: (input: AiListAgentRunsInput) => defaultApiClient.apiNamespaceAi.listAgentRuns(input),
-    useListAgentRuns: (input: AiListAgentRunsInput) =>
-      useQuery<AiListAgentRunsResult>(() => defaultApiClient.apiNamespaceAi.listAgentRuns(input)),
-
-    getConversationMessages: (input: AiGetConversationMessagesInput) =>
-      defaultApiClient.apiNamespaceAi.getConversationMessages(input),
-    useGetConversationMessages: (input: AiGetConversationMessagesInput) =>
-      useQuery<AiGetConversationMessagesResult>(() => defaultApiClient.apiNamespaceAi.getConversationMessages(input)),
-
-    addAgent: (input: AiAddAgentInput) => defaultApiClient.apiNamespaceAi.addAgent(input),
-    useAddAgent: () =>
-      useMutation<AiAddAgentInput, AiAddAgentResult>((input) => defaultApiClient.apiNamespaceAi.addAgent(input)),
-
-    editAgentSandboxMode: (input: AiEditAgentSandboxModeInput) =>
-      defaultApiClient.apiNamespaceAi.editAgentSandboxMode(input),
-    useEditAgentSandboxMode: () =>
-      useMutation<AiEditAgentSandboxModeInput, AiEditAgentSandboxModeResult>((input) =>
-        defaultApiClient.apiNamespaceAi.editAgentSandboxMode(input),
-      ),
-
-    editAgentTaskExecutionInstructions: (input: AiEditAgentTaskExecutionInstructionsInput) =>
-      defaultApiClient.apiNamespaceAi.editAgentTaskExecutionInstructions(input),
-    useEditAgentTaskExecutionInstructions: () =>
-      useMutation<AiEditAgentTaskExecutionInstructionsInput, AiEditAgentTaskExecutionInstructionsResult>((input) =>
-        defaultApiClient.apiNamespaceAi.editAgentTaskExecutionInstructions(input),
-      ),
-
-    editAgentPlanningInstructions: (input: AiEditAgentPlanningInstructionsInput) =>
-      defaultApiClient.apiNamespaceAi.editAgentPlanningInstructions(input),
-    useEditAgentPlanningInstructions: () =>
-      useMutation<AiEditAgentPlanningInstructionsInput, AiEditAgentPlanningInstructionsResult>((input) =>
-        defaultApiClient.apiNamespaceAi.editAgentPlanningInstructions(input),
-      ),
-
-    createConversation: (input: AiCreateConversationInput) => defaultApiClient.apiNamespaceAi.createConversation(input),
-    useCreateConversation: () =>
-      useMutation<AiCreateConversationInput, AiCreateConversationResult>((input) =>
-        defaultApiClient.apiNamespaceAi.createConversation(input),
-      ),
-
-    sendMessage: (input: AiSendMessageInput) => defaultApiClient.apiNamespaceAi.sendMessage(input),
-    useSendMessage: () =>
-      useMutation<AiSendMessageInput, AiSendMessageResult>((input) =>
-        defaultApiClient.apiNamespaceAi.sendMessage(input),
-      ),
-
-    editAgentVerbosity: (input: AiEditAgentVerbosityInput) => defaultApiClient.apiNamespaceAi.editAgentVerbosity(input),
-    useEditAgentVerbosity: () =>
-      useMutation<AiEditAgentVerbosityInput, AiEditAgentVerbosityResult>((input) =>
-        defaultApiClient.apiNamespaceAi.editAgentVerbosity(input),
-      ),
-
-    runAgent: (input: AiRunAgentInput) => defaultApiClient.apiNamespaceAi.runAgent(input),
-    useRunAgent: () =>
-      useMutation<AiRunAgentInput, AiRunAgentResult>((input) => defaultApiClient.apiNamespaceAi.runAgent(input)),
-
-    editAgentDefinition: (input: AiEditAgentDefinitionInput) =>
-      defaultApiClient.apiNamespaceAi.editAgentDefinition(input),
-    useEditAgentDefinition: () =>
-      useMutation<AiEditAgentDefinitionInput, AiEditAgentDefinitionResult>((input) =>
-        defaultApiClient.apiNamespaceAi.editAgentDefinition(input),
-      ),
-
-    editAgentProvider: (input: AiEditAgentProviderInput) => defaultApiClient.apiNamespaceAi.editAgentProvider(input),
-    useEditAgentProvider: () =>
-      useMutation<AiEditAgentProviderInput, AiEditAgentProviderResult>((input) =>
-        defaultApiClient.apiNamespaceAi.editAgentProvider(input),
-      ),
-
-    editAgentDailyRun: (input: AiEditAgentDailyRunInput) => defaultApiClient.apiNamespaceAi.editAgentDailyRun(input),
-    useEditAgentDailyRun: () =>
-      useMutation<AiEditAgentDailyRunInput, AiEditAgentDailyRunResult>((input) =>
-        defaultApiClient.apiNamespaceAi.editAgentDailyRun(input),
       ),
   },
 };
