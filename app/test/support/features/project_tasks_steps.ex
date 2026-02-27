@@ -361,6 +361,10 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     UI.login_as(ctx, ctx.commenter)
   end
 
+  step :login_as_space_member, ctx do
+    UI.login_as(ctx, ctx.space_member)
+  end
+
   step :delete_task, ctx do
     ctx
     |> UI.click(testid: "delete-task")
