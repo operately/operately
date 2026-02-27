@@ -222,9 +222,15 @@ defmodule Operately.Features.ProjectMilestonesTest do
       |> Steps.assert_milestone_due_date(formatted_date)
     end
 
-    feature "edit milestone due date sends notification to champion", ctx do
+    feature "edit milestone due date sends notification to subscribed people", ctx do
       next_friday = Operately.Support.Time.next_friday()
       formatted_date = Operately.Support.Time.format_month_day(next_friday)
+
+      ctx
+      |> Steps.log_in_as_champion()
+      |> Steps.visit_milestone_page()
+      |> Steps.subscribe_to_milestone()
+
 
       ctx
       |> UI.login_as(ctx.reviewer)
@@ -235,7 +241,12 @@ defmodule Operately.Features.ProjectMilestonesTest do
       |> Steps.assert_due_date_changed_email_sent()
     end
 
-    feature "remove milestone due date sends notification to champion", ctx do
+    feature "remove milestone due date sends notification to subscribed people", ctx do
+      ctx
+      |> Steps.log_in_as_champion()
+      |> Steps.visit_milestone_page()
+      |> Steps.subscribe_to_milestone()
+
       ctx
       |> UI.login_as(ctx.reviewer)
       |> Steps.visit_milestone_page()
