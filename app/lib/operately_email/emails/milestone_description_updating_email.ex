@@ -14,6 +14,8 @@ defmodule OperatelyEmail.Emails.MilestoneDescriptionUpdatingEmail do
         opts: [preload: [:project]]
       )
 
+    action = get_action(person, activity, milestone)
+
     company
     |> new()
     |> from(author)
@@ -21,13 +23,23 @@ defmodule OperatelyEmail.Emails.MilestoneDescriptionUpdatingEmail do
     |> subject(
       where: milestone.project.name,
       who: author,
-      action: "updated the description for \"#{milestone.title}\""
+      action: action
     )
     |> assign(:author, author)
     |> assign(:milestone_name, milestone.title)
     |> assign(:description, decode_description(activity.content["description"]))
     |> assign(:cta_url, Paths.project_milestone_path(company, milestone) |> Paths.to_url())
     |> render("milestone_description_updating")
+  end
+
+  defp get_action(person, activity, milestone) do
+    mentioned_ids = Operately.RichContent.find_mentioned_ids(activity.content["description"], :decode_ids)
+
+    if person.id in mentioned_ids do
+      "mentioned you in the description for \"#{milestone.title}\""
+    else
+      "updated the description for \"#{milestone.title}\""
+    end
   end
 
   defp decode_description(nil), do: nil
