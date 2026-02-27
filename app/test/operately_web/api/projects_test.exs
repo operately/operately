@@ -1514,6 +1514,50 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert subscription.type == :invited
       refute subscription.canceled
     end
+
+    test "it creates a subscription for the project champion", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:champion)
+        |> Factory.add_project(:project, :engineering, champion: :champion)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = mutation(ctx.conn, [:projects, :create_milestone], %{
+        project_id: Paths.project_id(ctx.project),
+        name: "Champion Milestone",
+        due_date: nil
+      })
+
+      {:ok, milestone_id} = OperatelyWeb.Api.Helpers.decode_id(res.milestone.id)
+      milestone = Operately.Projects.Milestone.get!(:system, id: milestone_id)
+
+      {:ok, subscription} =
+        Operately.Notifications.Subscription.get(:system,
+          subscription_list_id: milestone.subscription_list_id,
+          person_id: ctx.champion.id
+        )
+
+      assert subscription.type == :invited
+      refute subscription.canceled
+    end
+
+    test "it handles milestone creation when project has no champion", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = mutation(ctx.conn, [:projects, :create_milestone], %{
+        project_id: Paths.project_id(ctx.project),
+        name: "No Champion Milestone",
+        due_date: nil
+      })
+
+      {:ok, milestone_id} = OperatelyWeb.Api.Helpers.decode_id(res.milestone.id)
+      milestone = Operately.Projects.Milestone.get!(:system, id: milestone_id)
+
+      # Verify only creator is subscribed
+      subscriptions = Operately.Notifications.list_subscriptions(milestone.subscription_list_id)
+      assert length(subscriptions) == 1
+      assert hd(subscriptions).person_id == ctx.creator.id
+    end
   end
 
   describe "update milestone" do
