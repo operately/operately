@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.ProjectsParentGoalSearch do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.Projects.ParentGoalSearch do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory

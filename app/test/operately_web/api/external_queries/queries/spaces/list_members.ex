@@ -1,9 +1,10 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.ProjectsSearch do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.Spaces.ListMembers do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
+  alias OperatelyWeb.Paths
 
-  def query_name, do: "projects/search"
+  def query_name, do: "spaces/list_members"
 
   @impl true
   def setup(ctx) do
@@ -13,12 +14,12 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.ProjectsSearch do
   end
 
   @impl true
-  def inputs(_ctx) do
-    %{query: "test"}
+  def inputs(ctx) do
+    %{space_id: Paths.space_id(ctx.space)}
   end
 
   @impl true
   def assert(res, _ctx) do
-    assert is_list(res.projects)
+    assert is_list(res.people)
   end
 end

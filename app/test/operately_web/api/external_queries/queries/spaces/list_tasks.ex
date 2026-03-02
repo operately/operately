@@ -1,9 +1,10 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.SpacesCountByAccessLevel do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.Spaces.ListTasks do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
+  alias OperatelyWeb.Paths
 
-  def query_name, do: "spaces/count_by_access_level"
+  def query_name, do: "spaces/list_tasks"
 
   @impl true
   def setup(ctx) do
@@ -13,12 +14,12 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.SpacesCountByAccessLevel do
   end
 
   @impl true
-  def inputs(_ctx) do
-    %{access_level: "view_access"}
+  def inputs(ctx) do
+    %{space_id: Paths.space_id(ctx.space)}
   end
 
   @impl true
   def assert(res, _ctx) do
-    assert is_integer(res.count)
+    assert is_list(res.tasks)
   end
 end

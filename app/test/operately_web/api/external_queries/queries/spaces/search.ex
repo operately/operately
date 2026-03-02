@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.SpacesSearch do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.Spaces.Search do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory

@@ -1,21 +1,23 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.SpacesListTasks do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.ProjectMilestones.ListTasks do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
   alias OperatelyWeb.Paths
 
-  def query_name, do: "spaces/list_tasks"
+  def query_name, do: "project_milestones/list_tasks"
 
   @impl true
   def setup(ctx) do
     ctx
     |> Factory.setup()
     |> Factory.add_space(:space)
+    |> Factory.add_project(:project, :space)
+    |> Factory.add_project_milestone(:milestone, :project)
   end
 
   @impl true
   def inputs(ctx) do
-    %{space_id: Paths.space_id(ctx.space)}
+    %{milestone_id: Paths.milestone_id(ctx.milestone)}
   end
 
   @impl true

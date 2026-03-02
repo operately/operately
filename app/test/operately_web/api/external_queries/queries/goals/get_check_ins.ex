@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.GetGoalCheckIns do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.Goals.GetCheckIns do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory

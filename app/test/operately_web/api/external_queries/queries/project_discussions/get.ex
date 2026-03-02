@@ -1,10 +1,10 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.ProjectDiscussionsList do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.ProjectDiscussions.Get do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
   alias OperatelyWeb.Paths
 
-  def query_name, do: "project_discussions/list"
+  def query_name, do: "project_discussions/get"
 
   @impl true
   def setup(ctx) do
@@ -12,15 +12,16 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.ProjectDiscussionsList do
     |> Factory.setup()
     |> Factory.add_space(:space)
     |> Factory.add_project(:project, :space)
+    |> Factory.add_project_discussion(:discussion, :project)
   end
 
   @impl true
   def inputs(ctx) do
-    %{project_id: Paths.project_id(ctx.project)}
+    %{id: Paths.comment_thread_id(ctx.discussion)}
   end
 
   @impl true
   def assert(res, _ctx) do
-    assert is_list(res.discussions)
+    assert res.discussion
   end
 end
