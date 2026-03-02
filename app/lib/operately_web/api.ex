@@ -167,8 +167,6 @@ defmodule OperatelyWeb.Api do
       mutation(:remove_reaction, M.RemoveReaction)
 
       mutation(:copy_resource_hub_folder, M.CopyResourceHubFolder)
-      mutation(:create_blob, M.CreateBlob)
-      mutation(:create_avatar_blob, M.CreateAvatarBlob)
       mutation(:create_comment, M.CreateComment)
       mutation(:create_goal, M.CreateGoal)
       mutation(:create_goal_discussion, M.CreateGoalDiscussion)
@@ -259,6 +257,8 @@ defmodule OperatelyWeb.Api do
     quote do
       common_endpoints()
 
+      mutation(:create_blob, OperatelyWeb.Api.Mutations.CreateBlob)
+      mutation(:create_avatar_blob, OperatelyWeb.Api.Mutations.CreateAvatarBlob)
       mutation(:delete_company, OperatelyWeb.Api.Mutations.DeleteCompany)
       mutation(:add_company_owners, OperatelyWeb.Api.Mutations.AddCompanyOwners)
       mutation(:add_company_trusted_email_domain, OperatelyWeb.Api.Mutations.AddCompanyTrustedEmailDomain)
