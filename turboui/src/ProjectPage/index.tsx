@@ -119,7 +119,7 @@ export namespace ProjectPage {
     setDueAt?: (date: DateField.ContextualDate | null) => void;
 
     status: BadgeStatus;
-    state: "active" | "closed" | "paused";
+    state?: "active" | "closed" | "paused";
 
     closedAt: Date | null;
     retrospectiveLink?: string;

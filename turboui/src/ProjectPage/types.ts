@@ -1,6 +1,6 @@
 export interface ProjectPermissions {
-  canView: boolean;
-  canComment: boolean;
-  canEdit: boolean;
-  hasFullAccess: boolean;
+  canView?: boolean;
+  canComment?: boolean;
+  canEdit?: boolean;
+  hasFullAccess?: boolean;
 }
