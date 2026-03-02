@@ -100,6 +100,31 @@ defmodule OperatelyWeb.TurboCase do
     end
   end
 
+  def external_mutation(conn, token, mutation_name, inputs \\ %{}) do
+    conn =
+      if token do
+        Plug.Conn.put_req_header(conn, "authorization", "Bearer #{token}")
+      else
+        conn
+      end
+
+    mutation_name = if is_atom(mutation_name), do: Atom.to_string(mutation_name), else: mutation_name
+
+    conn =
+      Phoenix.ConnTest.dispatch(
+        conn,
+        OperatelyWeb.Endpoint,
+        :post,
+        "/api/external/v1/#{mutation_name}",
+        inputs
+      )
+
+    case Jason.decode(conn.resp_body, keys: :atoms) do
+      {:ok, res} -> {conn.status, res}
+      _ -> {conn.status, conn.resp_body}
+    end
+  end
+
   def mutation(conn, mutation_name, inputs) do
     conn =
       Phoenix.ConnTest.dispatch(
