@@ -127,14 +127,14 @@ function TimelineSection(props: ProjectPage.State) {
         {validMilestones.length > 0 && (
           <MilestoneList
             milestones={validMilestones}
-            canEdit={props.permissions.canEdit}
+            canEdit={props.permissions.canEdit || false}
             onMilestoneUpdate={props.onMilestoneUpdate}
             onMilestoneReorder={props.onMilestoneReorder}
           />
         )}
 
         <EmptyState
-          canEdit={props.permissions.canEdit}
+          canEdit={props.permissions.canEdit || false}
           setShowAddForm={setShowAddForm}
           display={validMilestones.length === 0 && !showAddForm}
         />
