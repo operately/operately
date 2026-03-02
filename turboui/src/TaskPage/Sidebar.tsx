@@ -9,6 +9,7 @@ import { MilestoneField } from "../MilestoneField";
 import { PersonField } from "../PersonField";
 import { durationHumanized, isOverdue } from "../utils/time";
 import { SidebarNotificationSection, SidebarSection } from "../SidebarSection";
+import { showSuccessToast, showErrorToast } from "../Toasts";
 
 export function Sidebar(props: TaskPage.ContentState) {
   return (
@@ -147,10 +148,19 @@ function Subscription(props: TaskPage.ContentState) {
 }
 
 function Actions(props: TaskPage.ContentState) {
+  const handleCopyURL = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      showSuccessToast("Success", "Task URL copied to clipboard");
+    } catch {
+      showErrorToast("Copy failed", "Unable to copy URL to clipboard");
+    }
+  };
+
   const actions = [
     {
       label: "Copy URL",
-      onClick: () => navigator.clipboard.writeText(window.location.href),
+      onClick: handleCopyURL,
       icon: IconLink,
       show: true,
     },

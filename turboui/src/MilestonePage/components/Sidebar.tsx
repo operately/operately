@@ -7,6 +7,7 @@ import { IconCalendar, IconCheck, IconLink, IconTrash, IconFlagFilled, IconFlag,
 import FormattedTime from "../../FormattedTime";
 import { MilestonePage } from "..";
 import { SidebarSection, SidebarNotificationSection } from "../../SidebarSection";
+import { showSuccessToast, showErrorToast } from "../../Toasts";
 import { launchConfetti } from "../../utils/confetti";
 
 export function MilestoneSidebar({
@@ -164,10 +165,19 @@ function SidebarCreatedBy({ createdBy, createdAt }: { createdBy: MilestonePage.P
 
 
 function SidebarActions({ onDelete, canEdit }: { onDelete?: () => void; canEdit: boolean }) {
+  const handleCopyURL = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      showSuccessToast("Success", "Milestone URL copied to clipboard");
+    } catch {
+      showErrorToast("Copy failed", "Unable to copy URL to clipboard");
+    }
+  };
+
   const actions = [
     {
       label: "Copy URL",
-      onClick: () => navigator.clipboard.writeText(window.location.href),
+      onClick: handleCopyURL,
       icon: IconLink,
       show: true,
     },
