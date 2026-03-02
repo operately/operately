@@ -39,7 +39,7 @@ function Page() {
         companyPermissions: form.values.access.companyMembers,
       });
 
-      navigate(paths.spacePath(res.group.id!));
+      navigate(paths.spacePath(res.space?.id));
     },
     onError: (error) => {
       const data = error.response?.data as { error?: string; message?: string } | undefined;

@@ -64,7 +64,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateSpaceTest do
   end
 
   defp assert_space_created(res) do
-    {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.group.id)
+    {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.space.id)
     assert Operately.Groups.get_group(id)
   end
 
