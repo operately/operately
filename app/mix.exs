@@ -25,7 +25,7 @@ defmodule Operately.MixProject do
   end
 
   # Specifies which paths to compile per environment.
-  defp elixirc_paths(:test), do: ["lib", "test/support", "test/operately_web/api/external_queries", "ee/lib", "ee/test"]
+  defp elixirc_paths(:test), do: ["lib", "test/support", "test/operately_web/api", "ee/lib", "ee/test"]
   defp elixirc_paths(_), do: ["lib", "ee/lib"]
 
   # Specifies your project dependencies.
