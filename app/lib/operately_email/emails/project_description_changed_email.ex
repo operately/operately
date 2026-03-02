@@ -9,16 +9,28 @@ defmodule OperatelyEmail.Emails.ProjectDescriptionChangedEmail do
 
     project = Projects.get_project!(activity.content["project_id"])
 
+    action = get_action(person, activity, project)
+
     company
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: project.name, who: author, action: "updated the project description")
+    |> subject(where: project.name, who: author, action: action)
     |> assign(:author, author)
     |> assign(:project_name, project.name)
     |> assign(:description, description(activity))
     |> assign(:cta_url, Paths.project_path(company, project) |> Paths.to_url())
     |> render("project_description_changed")
+  end
+
+  defp get_action(person, activity, project) do
+    mentioned_ids = Operately.RichContent.find_mentioned_ids(activity.content["description"], :decode_ids)
+
+    if person.id in mentioned_ids do
+      "mentioned you in the description for \"#{project.name}\""
+    else
+      "updated the description for \"#{project.name}\""
+    end
   end
 
   defp description(activity) do
