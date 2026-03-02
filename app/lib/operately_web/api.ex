@@ -150,20 +150,15 @@ defmodule OperatelyWeb.Api do
       query(:list_task_assignable_people, Q.ListTaskAssignablePeople)
       query(:is_subscribed_to_resource, Q.IsSubscribedToResource)
 
-      mutation(:delete_company, M.DeleteCompany)
       mutation(:archive_message, M.ArchiveMessage)
       mutation(:restore_company_member, M.RestoreCompanyMember)
       mutation(:convert_company_member_to_guest, M.ConvertCompanyMemberToGuest)
       mutation(:add_company, M.AddCompany)
       mutation(:add_company_admins, M.AddCompanyAdmins)
       mutation(:add_company_member, M.AddCompanyMember)
-      mutation(:add_company_owners, M.AddCompanyOwners)
       mutation(:edit_company_members_permissions, M.EditCompanyMembersPermissions)
       mutation(:invite_guest, M.InviteGuest)
       mutation(:grant_resource_access, M.GrantResourceAccess)
-      mutation(:add_company_trusted_email_domain, M.AddCompanyTrustedEmailDomain)
-      mutation(:add_first_company, M.AddFirstCompany)
-      mutation(:complete_company_setup, M.CompleteCompanySetup)
       mutation(:add_space_members, M.AddSpaceMembers)
       mutation(:add_key_resource, M.AddKeyResource)
       mutation(:add_project_contributor, M.AddProjectContributor)
@@ -172,7 +167,6 @@ defmodule OperatelyWeb.Api do
       mutation(:remove_reaction, M.RemoveReaction)
 
       mutation(:copy_resource_hub_folder, M.CopyResourceHubFolder)
-      mutation(:create_account, M.CreateAccount)
       mutation(:create_blob, M.CreateBlob)
       mutation(:create_avatar_blob, M.CreateAvatarBlob)
       mutation(:create_comment, M.CreateComment)
@@ -185,7 +179,6 @@ defmodule OperatelyWeb.Api do
       mutation(:create_resource_hub_file, M.CreateResourceHubFile)
       mutation(:create_resource_hub_folder, M.CreateResourceHubFolder)
       mutation(:create_resource_hub_link, M.CreateResourceHubLink)
-      mutation(:create_email_activation_code, M.CreateEmailActivationCode)
       mutation(:publish_resource_hub_document, M.PublishResourceHubDocument)
 
       mutation(:delete_goal, M.DeleteGoal)
@@ -225,7 +218,6 @@ defmodule OperatelyWeb.Api do
       mutation(:rename_resource_hub_folder, M.RenameResourceHubFolder)
 
       mutation(:join_space, M.JoinSpace)
-      mutation(:join_company, M.JoinCompany)
       mutation(:mark_all_notifications_as_read, M.MarkAllNotificationsAsRead)
       mutation(:mark_notification_as_read, M.MarkNotificationAsRead)
       mutation(:mark_notifications_as_read, M.MarkNotificationsAsRead)
@@ -242,10 +234,6 @@ defmodule OperatelyWeb.Api do
       mutation(:acknowledge_project_check_in, M.AcknowledgeProjectCheckIn)
       mutation(:close_goal, M.CloseGoal)
       mutation(:close_project, M.CloseProject)
-
-      mutation(:request_password_reset, M.RequestPasswordReset)
-      mutation(:reset_password, M.ResetPassword)
-      mutation(:change_password, M.ChangePassword)
 
       mutation(:change_goal_parent, M.ChangeGoalParent)
 
@@ -270,6 +258,18 @@ defmodule OperatelyWeb.Api do
   defmacro internal_endpoints do
     quote do
       common_endpoints()
+
+      mutation(:delete_company, OperatelyWeb.Api.Mutations.DeleteCompany)
+      mutation(:add_company_owners, OperatelyWeb.Api.Mutations.AddCompanyOwners)
+      mutation(:add_company_trusted_email_domain, OperatelyWeb.Api.Mutations.AddCompanyTrustedEmailDomain)
+      mutation(:add_first_company, OperatelyWeb.Api.Mutations.AddFirstCompany)
+      mutation(:complete_company_setup, OperatelyWeb.Api.Mutations.CompleteCompanySetup)
+      mutation(:request_password_reset, OperatelyWeb.Api.Mutations.RequestPasswordReset)
+      mutation(:reset_password, OperatelyWeb.Api.Mutations.ResetPassword)
+      mutation(:change_password, OperatelyWeb.Api.Mutations.ChangePassword)
+      mutation(:create_account, OperatelyWeb.Api.Mutations.CreateAccount)
+      mutation(:create_email_activation_code, OperatelyWeb.Api.Mutations.CreateEmailActivationCode)
+      mutation(:join_company, OperatelyWeb.Api.Mutations.JoinCompany)
 
       query(:get_theme, OperatelyWeb.Api.Queries.GetTheme)
 
