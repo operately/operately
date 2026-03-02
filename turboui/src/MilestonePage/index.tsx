@@ -214,7 +214,7 @@ export function MilestonePage(props: MilestonePage.Props) {
       <MainContainer>
         <Header
           title={title}
-          canEdit={permissions.canEdit}
+          canEdit={permissions.canEdit || false}
           status={status}
           onMilestoneTitleChange={onMilestoneTitleChange}
         />
@@ -338,7 +338,7 @@ function TimelineSection(props: MilestonePage.State) {
       <Timeline
         items={props.timelineItems}
         currentUser={props.currentUser}
-        canComment={props.permissions.canComment}
+        canComment={props.permissions.canComment || false}
         commentParentType="milestone"
         onAddComment={props.onAddComment}
         onEditComment={props.onEditComment}

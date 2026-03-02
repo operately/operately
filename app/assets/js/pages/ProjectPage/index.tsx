@@ -12,7 +12,6 @@ import * as Time from "@/utils/time";
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { PageCache } from "@/routes/PageCache";
 import { ProjectPage, showErrorToast } from "turboui";
-import { assertPresent } from "../../utils/assertions";
 import { fetchAll } from "../../utils/async";
 
 import { parseMilestoneForTurboUi, parseMilestonesForTurboUi } from "@/models/milestones";
@@ -88,10 +87,6 @@ function Page() {
       url: paths.projectPath(project.id!),
     },
   });
-
-  assertPresent(project.state);
-  assertPresent(project.permissions);
-  assertPresent(project.contributors);
 
   const transformPerson = React.useCallback((p) => People.parsePersonForTurboUi(paths, p)!, [paths]);
   const { spaceProps, champion, reviewer } = useSpaceProps({ project, paths, transformPerson });
@@ -293,7 +288,7 @@ function Page() {
     closedAt: Time.parse(project.closedAt),
     retrospectiveLink: paths.projectRetrospectivePath(project.id),
 
-    permissions: project.permissions,
+    permissions: project.permissions || {},
     manageTeamLink: paths.projectContributorsPath(project.id),
 
     onProjectDelete: deleteProject,
@@ -317,7 +312,7 @@ function Page() {
     onMilestoneCreate: createMilestone,
     onMilestoneUpdate: updateMilestone,
     onMilestoneReorder: reorderMilestones,
-    contributors: prepareContributors(paths, project.contributors),
+    contributors: prepareContributors(paths, project.contributors || []),
     checkIns: parseCheckInsForTurboUi(paths, checkIns),
     discussions: prepareDiscussions(paths, discussions),
     newCheckInLink: paths.projectCheckInNewPath(project.id),
@@ -548,12 +543,10 @@ function prepareContributor(
 
 function prepareDiscussions(paths: Paths, discussions: Projects.Discussion[]): ProjectPage.Discussion[] {
   return discussions.map((discussion) => {
-    assertPresent(discussion.title);
-
     return {
       id: discussion.id,
       date: Time.parse(discussion.insertedAt)!,
-      title: discussion.title,
+      title: discussion.title || "",
       author: People.parsePersonForTurboUi(paths, discussion.author)!,
       link: paths.projectDiscussionPath(discussion.id),
       content: JSON.parse(discussion.message || "{}"),
@@ -576,8 +569,7 @@ function prepareResource(resource: Projects.Resource): ProjectPage.Resource {
 }
 
 function useMilestones(paths: Paths, project: Projects.Project, refresh?: () => Promise<void>) {
-  assertPresent(project.milestones);
-  const parsedMilestones = parseMilestonesForTurboUi(paths, project.milestones, project.milestonesOrderingState || []);
+  const parsedMilestones = parseMilestonesForTurboUi(paths, project.milestones || [], project.milestonesOrderingState || []);
 
   const { milestones, setMilestones, reorderMilestones, orderingState } = Projects.useProjectMilestoneOrdering({
     projectId: project.id,
@@ -725,9 +717,9 @@ function useResources(project: Projects.Project) {
     return Api.removeKeyResource({ id })
       .then(() => {
         PageCache.invalidate(pageCacheKey(project.id));
-        assertPresent(project.keyResources);
+        const keyResources = project.keyResources || [];
 
-        const updatedResources = project.keyResources.filter((r) => r.id !== id);
+        const updatedResources = keyResources.filter((r) => r.id !== id);
         setResources(prepareResources(updatedResources));
 
         return { success: true };
