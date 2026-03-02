@@ -17,6 +17,7 @@ import { LastCheckIn } from "../LastCheckIn";
 import { PersonField } from "../PersonField";
 import { Tooltip } from "../Tooltip";
 import { SidebarNotificationSection, SidebarSection } from "../SidebarSection";
+import { showSuccessToast, showErrorToast } from "../Toasts";
 import { ProjectPage } from ".";
 
 export function OverviewSidebar(props: ProjectPage.State) {
@@ -255,11 +256,20 @@ function Contributors(props: ProjectPage.State) {
 }
 
 function Actions(props: ProjectPage.State) {
+  const handleCopyURL = async () => {
+    try {
+      await navigator.clipboard?.writeText(window.location.href);
+      showSuccessToast("Success", "Project URL copied to clipboard");
+    } catch {
+      showErrorToast("Copy failed", "Unable to copy URL to clipboard");
+    }
+  };
+
   const actions = [
     {
       type: "action" as const,
       label: "Copy URL",
-      onClick: () => navigator.clipboard?.writeText(window.location.href),
+      onClick: handleCopyURL,
       icon: IconCopy,
     },
     {
