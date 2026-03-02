@@ -23,7 +23,7 @@ defmodule OperatelyWeb.Api.Mutations.AddSpaceMembers do
 
   defp respond(result) do
     case result do
-      {:ok, _} -> {:ok, %{}}
+      {:ok, _} -> {:ok, %{success: true}}
       {:error, :space, _} -> {:error, :not_found}
       {:error, :check_permissions, _} -> {:error, :forbidden}
       {:error, :operation, _} -> {:error, :internal_server_error}
