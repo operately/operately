@@ -220,6 +220,10 @@ defmodule Operately.Support.Features.ProjectSteps do
     UI.login_as(ctx, ctx.space_member)
   end
 
+  step :login_as_champion, ctx do
+    UI.login_as(ctx, ctx.champion)
+  end
+
   step :open_ai_sidebar, ctx do
     ctx |> UI.click(css: "button[title*=\"Ask Alfred\"]")
   end
@@ -721,6 +725,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.click_text("Add a project description...")
     |> UI.fill_rich_text(description)
     |> UI.click_button("Save")
+    |> UI.sleep(300)
   end
 
   step :submit_project_description_mentioning, ctx, person do
@@ -748,7 +753,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> FeedSteps.assert_feed_item_exists(ctx.champion, "updated the project description", description)
   end
 
-  step :assert_space_member_project_description_notification_sent, ctx do
+  step :assert_space_member_project_description_mentioned_notification_sent, ctx do
     ctx
     |> UI.login_as(ctx.space_member)
     |> NotificationsSteps.assert_activity_notification(%{
@@ -757,21 +762,64 @@ defmodule Operately.Support.Features.ProjectSteps do
     })
   end
 
-  step :assert_space_member_project_description_email_sent, ctx do
+  step :assert_space_member_project_description_mentioned_email_sent, ctx do
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
       to: ctx.space_member,
       author: ctx.contributor,
-      action: "updated the project description"
+      action: "mentioned you in the description for \"#{ctx.project.name}\""
+    })
+  end
+
+  step :assert_space_member_project_description_updated_notification_sent, ctx do
+    ctx
+    |> UI.login_as(ctx.space_member)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.contributor,
+      action: "Project \"#{ctx.project.name}\" description was updated"
+    })
+  end
+
+  step :assert_another_space_member_project_description_mentioned_notification_sent, ctx do
+    ctx
+    |> UI.login_as(ctx.another_space_member)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.contributor,
+      action: "Project \"#{ctx.project.name}\" description was updated"
+    })
+  end
+
+  step :assert_champion_project_description_updated_notification_sent, ctx do
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.contributor,
+      action: "Project \"#{ctx.project.name}\" description was updated"
+    })
+  end
+
+  step :assert_champion_project_description_updated_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.champion,
+      author: ctx.contributor,
+      action: "updated the description for \"#{ctx.project.name}\""
     })
   end
 
   step :assert_author_not_notified_about_project_description, ctx do
     ctx
-    |> UI.login_as(ctx.champion)
+    |> UI.login_as(ctx.contributor)
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_no_unread_notifications()
+  end
+
+  step :mark_all_notifications_as_read, ctx do
+    ctx
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.click_on_first_mark_all_as_read()
   end
 
   step :given_project_has_description, ctx, description: description do
