@@ -1,18 +1,19 @@
 defmodule Operately.Activities.Notifications.ProjectDescriptionChanged do
   @moduledoc """
   Notifies the following people:
-  - People mentioned in the project description
+  - People subscribed to the project
 
   The author of the activity is excluded from notifications.
   """
 
-  alias Operately.RichContent
+  require Logger
+  alias Operately.Projects.Notifications
 
   def dispatch(activity) do
-    people = RichContent.find_mentioned_ids(activity.content["description"], :decode_ids)
+    {:ok, project} = fetch_project(activity.content["project_id"])
+    project_subscribers = Notifications.get_project_subscribers(project, ignore: [activity.author_id])
 
-    people
-    |> Enum.reject(&(&1 == activity.author_id))
+    project_subscribers
     |> Enum.uniq()
     |> Enum.map(fn person_id ->
       %{
@@ -22,5 +23,19 @@ defmodule Operately.Activities.Notifications.ProjectDescriptionChanged do
       }
     end)
     |> Operately.Notifications.bulk_create()
+  end
+
+  defp fetch_project(project_id) do
+    case Operately.Projects.Project.get(:system, id: project_id) do
+      {:ok, project} ->
+        {:ok, project}
+
+      {:error, reason} ->
+        Logger.warning(
+          "Unable to load project #{project_id} for description change notifications: #{inspect(reason)}"
+        )
+
+        {:error, reason}
+    end
   end
 end

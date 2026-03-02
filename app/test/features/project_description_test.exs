@@ -39,14 +39,28 @@ defmodule Operately.Features.ProjectsDescriptionTest do
 
     ctx
     |> Steps.assert_logged_in_contributor_has_edit_access()
+    |> Steps.mark_all_notifications_as_read()
     |> Steps.visit_project_page()
     |> Steps.assert_project_description_absent()
     |> Steps.submit_project_description_mentioning(ctx.space_member)
 
     ctx
-    |> Steps.assert_space_member_project_description_notification_sent()
-    |> Steps.assert_space_member_project_description_email_sent()
+    |> Steps.assert_space_member_project_description_mentioned_notification_sent()
+    |> Steps.assert_space_member_project_description_mentioned_email_sent()
     |> Steps.assert_author_not_notified_about_project_description()
+  end
+
+  @tag login_as: :contributor
+  feature "a subscribed user is notified even when not mentioned", ctx do
+    ctx
+    |> Steps.assert_logged_in_contributor_has_edit_access()
+    |> Steps.visit_project_page()
+    |> Steps.assert_project_description_absent()
+    |> Steps.submit_project_description(description: "Updated description without mentions")
+
+    ctx
+    |> Steps.assert_champion_project_description_updated_notification_sent()
+    |> Steps.assert_champion_project_description_updated_email_sent()
   end
 
   defp project_description() do
