@@ -22,6 +22,9 @@ defmodule OperatelyWeb.Api.Types do
   object :api_token do
     field :id, :id
     field :read_only, :boolean, null: false
+    field? :name, :string, null: true
+    field :inserted_at, :datetime, null: false
+    field? :last_used_at, :datetime, null: true
   end
 
   enum :account_theme, values: Operately.People.Account.valid_themes()
