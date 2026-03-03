@@ -74,7 +74,7 @@ defmodule OperatelyWeb.Api.ApiTokens do
     alias OperatelyWeb.Api.Serializer
 
     outputs do
-      field(:api_tokens, list_of(:api_token))
+      field :api_tokens, list_of(:api_token)
     end
 
     def call(conn, _inputs) do

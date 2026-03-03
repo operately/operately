@@ -19,6 +19,11 @@ defmodule OperatelyWeb.Api.Types do
     decode_with: &OperatelyWeb.Api.Types.Json.decode/1
   )
 
+  object :api_token do
+    field :id, :id
+    field :read_only, :boolean, null: false
+  end
+
   enum :account_theme, values: Operately.People.Account.valid_themes()
 
   object :account do

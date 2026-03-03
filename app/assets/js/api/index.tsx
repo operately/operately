@@ -1046,6 +1046,11 @@ export interface AgentRun {
   logs?: string;
 }
 
+export interface ApiToken {
+  id: Id;
+  readOnly: boolean;
+}
+
 export interface Assignment {
   type?: string | null;
   due?: string | null;
