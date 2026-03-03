@@ -1,14 +1,26 @@
 import React from "react";
 
-import { useMe } from "@/contexts/CurrentCompanyContext";
-import { Avatar, Menu, MenuLinkItem, MenuActionItem, IconUserCircle, IconPalette, IconLockPassword, IconDoorExit } from "turboui";
+import { useCurrentCompany, useMe } from "@/contexts/CurrentCompanyContext";
+import {
+  Avatar,
+  Menu,
+  MenuLinkItem,
+  MenuActionItem,
+  IconUserCircle,
+  IconPalette,
+  IconLockPassword,
+  IconCode,
+  IconDoorExit,
+} from "turboui";
 import { logOut } from "@/routes/auth";
+import { hasFeature } from "@/models/companies";
 
 import { usePaths } from "@/routes/paths";
 
 export function User() {
   const paths = usePaths();
   const me = useMe();
+  const company = useCurrentCompany();
 
   if (!me) return null;
 
@@ -48,6 +60,11 @@ export function User() {
       <MenuLinkItem icon={IconLockPassword} to={paths.accountSecurityPath()} testId="password-link">
         Password &amp; Security
       </MenuLinkItem>
+      {company && hasFeature(company, "api-tokens") && (
+        <MenuLinkItem icon={IconCode} to={paths.accountApiTokensPath()} testId="api-tokens-link">
+          API Tokens
+        </MenuLinkItem>
+      )}
       <MenuActionItem icon={IconDoorExit} onClick={handleLogOut} testId="log-out-button">
         Sign Out
       </MenuActionItem>
