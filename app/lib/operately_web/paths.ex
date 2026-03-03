@@ -545,6 +545,10 @@ defmodule OperatelyWeb.Paths do
     Operately.ShortUuid.encode!(blob.id)
   end
 
+  def token_id(token) do
+    Operately.ShortUuid.encode!(token.id)
+  end
+
   #
   # Path Construction Helpers
   #
