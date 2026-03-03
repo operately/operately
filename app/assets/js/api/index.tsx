@@ -1046,6 +1046,11 @@ export interface AgentRun {
   logs?: string;
 }
 
+export interface ApiToken {
+  id: Id;
+  readOnly: boolean;
+}
+
 export interface Assignment {
   type?: string | null;
   due?: string | null;
@@ -2240,6 +2245,12 @@ export interface AiPromptResult {
   result: string;
 }
 
+export interface ApiTokensListInput {}
+
+export interface ApiTokensListResult {
+  apiTokens: ApiToken[];
+}
+
 export interface GetAccountInput {}
 
 export interface GetAccountResult {
@@ -3241,6 +3252,32 @@ export interface AiSendMessageInput {
 export interface AiSendMessageResult {
   success: boolean;
   message: AgentMessage;
+}
+
+export interface ApiTokensCreateInput {
+  readOnly?: boolean;
+}
+
+export interface ApiTokensCreateResult {
+  apiToken: ApiToken;
+  token: string;
+}
+
+export interface ApiTokensDeleteInput {
+  id: string;
+}
+
+export interface ApiTokensDeleteResult {
+  success: boolean;
+}
+
+export interface ApiTokensSetReadOnlyInput {
+  id: string;
+  readOnly: boolean;
+}
+
+export interface ApiTokensSetReadOnlyResult {
+  apiToken: ApiToken;
 }
 
 export interface ArchiveMessageInput {
@@ -4616,6 +4653,26 @@ export interface UpdateThemeResult {
   success: boolean;
 }
 
+class ApiNamespaceApiTokens {
+  constructor(private client: ApiClient) {}
+
+  async list(input: ApiTokensListInput): Promise<ApiTokensListResult> {
+    return this.client.get("/api_tokens/list", input);
+  }
+
+  async create(input: ApiTokensCreateInput): Promise<ApiTokensCreateResult> {
+    return this.client.post("/api_tokens/create", input);
+  }
+
+  async delete(input: ApiTokensDeleteInput): Promise<ApiTokensDeleteResult> {
+    return this.client.post("/api_tokens/delete", input);
+  }
+
+  async setReadOnly(input: ApiTokensSetReadOnlyInput): Promise<ApiTokensSetReadOnlyResult> {
+    return this.client.post("/api_tokens/set_read_only", input);
+  }
+}
+
 class ApiNamespaceInvitations {
   constructor(private client: ApiClient) {}
 
@@ -5661,6 +5718,7 @@ class ApiNamespaceGoals {
 export class ApiClient {
   private basePath: string;
   private headers: any;
+  public apiNamespaceApiTokens: ApiNamespaceApiTokens;
   public apiNamespaceInvitations: ApiNamespaceInvitations;
   public apiNamespaceAi: ApiNamespaceAi;
   public apiNamespaceRoot: ApiNamespaceRoot;
@@ -5672,6 +5730,7 @@ export class ApiClient {
   public apiNamespaceGoals: ApiNamespaceGoals;
 
   constructor() {
+    this.apiNamespaceApiTokens = new ApiNamespaceApiTokens(this);
     this.apiNamespaceInvitations = new ApiNamespaceInvitations(this);
     this.apiNamespaceAi = new ApiNamespaceAi(this);
     this.apiNamespaceRoot = new ApiNamespaceRoot(this);
@@ -8009,6 +8068,30 @@ export default {
   useUpdateProjectDescription,
   updateTheme,
   useUpdateTheme,
+
+  api_tokens: {
+    list: (input: ApiTokensListInput) => defaultApiClient.apiNamespaceApiTokens.list(input),
+    useList: (input: ApiTokensListInput) =>
+      useQuery<ApiTokensListResult>(() => defaultApiClient.apiNamespaceApiTokens.list(input)),
+
+    create: (input: ApiTokensCreateInput) => defaultApiClient.apiNamespaceApiTokens.create(input),
+    useCreate: () =>
+      useMutation<ApiTokensCreateInput, ApiTokensCreateResult>((input) =>
+        defaultApiClient.apiNamespaceApiTokens.create(input),
+      ),
+
+    setReadOnly: (input: ApiTokensSetReadOnlyInput) => defaultApiClient.apiNamespaceApiTokens.setReadOnly(input),
+    useSetReadOnly: () =>
+      useMutation<ApiTokensSetReadOnlyInput, ApiTokensSetReadOnlyResult>((input) =>
+        defaultApiClient.apiNamespaceApiTokens.setReadOnly(input),
+      ),
+
+    delete: (input: ApiTokensDeleteInput) => defaultApiClient.apiNamespaceApiTokens.delete(input),
+    useDelete: () =>
+      useMutation<ApiTokensDeleteInput, ApiTokensDeleteResult>((input) =>
+        defaultApiClient.apiNamespaceApiTokens.delete(input),
+      ),
+  },
 
   invitations: {
     getInviteLinkByToken: (input: InvitationsGetInviteLinkByTokenInput) =>

@@ -309,6 +309,13 @@ defmodule OperatelyWeb.Api do
         query(:get_invitation, OperatelyWeb.Api.Queries.GetInvitation)
         mutation(:new_invitation_token, OperatelyWeb.Api.Mutations.NewInvitationToken)
       end
+
+      namespace(:api_tokens) do
+        query(:list, OperatelyWeb.Api.ApiTokens.List)
+        mutation(:create, OperatelyWeb.Api.ApiTokens.Create)
+        mutation(:set_read_only, OperatelyWeb.Api.ApiTokens.SetReadOnly)
+        mutation(:delete, OperatelyWeb.Api.ApiTokens.Delete)
+      end
     end
   end
 
