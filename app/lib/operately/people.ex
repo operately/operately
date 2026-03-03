@@ -261,6 +261,20 @@ defmodule Operately.People do
 
   def set_api_token_read_only(%Person{}, _token_id, _read_only), do: {:error, :not_found}
 
+  def set_api_token_name(%Person{} = person, token_id, name) when is_binary(token_id) do
+    case Repo.get_by(ApiToken, id: token_id, person_id: person.id) do
+      nil ->
+        {:error, :not_found}
+
+      token ->
+        token
+        |> ApiToken.changeset(%{name: name})
+        |> Repo.update()
+    end
+  end
+
+  def set_api_token_name(%Person{}, _token_id, _name), do: {:error, :not_found}
+
   def authenticate_api_token(raw_token) when is_binary(raw_token) do
     raw_token = String.trim(raw_token)
 

@@ -314,6 +314,7 @@ defmodule OperatelyWeb.Api do
         query(:list, OperatelyWeb.Api.ApiTokens.List)
         mutation(:create, OperatelyWeb.Api.ApiTokens.Create)
         mutation(:set_read_only, OperatelyWeb.Api.ApiTokens.SetReadOnly)
+        mutation(:update_name, OperatelyWeb.Api.ApiTokens.UpdateName)
         mutation(:delete, OperatelyWeb.Api.ApiTokens.Delete)
       end
     end
