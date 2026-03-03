@@ -15,10 +15,6 @@ export function listApiTokens() {
   return Api.api_tokens.list({});
 }
 
-export function useListApiTokens() {
-  return Api.api_tokens.useList({});
-}
-
 export function createApiToken(attrs: { readOnly?: boolean }) {
   return Api.api_tokens.create(attrs);
 }
@@ -34,8 +30,3 @@ export function setApiTokenReadOnly(id: string, readOnly: boolean) {
 export function updateApiTokenName(id: string, name?: string | null) {
   return Api.api_tokens.updateName({ id, name });
 }
-
-export const useCreateApiToken = Api.api_tokens.useCreate;
-export const useDeleteApiToken = Api.api_tokens.useDelete;
-export const useSetApiTokenReadOnly = Api.api_tokens.useSetReadOnly;
-export const useUpdateApiTokenName = Api.api_tokens.useUpdateName;
