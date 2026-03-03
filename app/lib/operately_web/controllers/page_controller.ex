@@ -17,6 +17,7 @@ defmodule OperatelyWeb.PageController do
   defp app_config(conn) do
     config = %{
       environment: Application.get_env(:operately, :app_env),
+      baseUrl: OperatelyWeb.Endpoint.url(),
       demoBuilder: Application.get_env(:operately, :demo_builder_allowed),
       showDevBar: Application.get_env(:operately, :app_env) == :dev,
       configured: Operately.Companies.count_companies() > 0,

@@ -18,6 +18,7 @@ declare global {
   interface AppConfig {
     configured: boolean;
     environment: string;
+    baseUrl?: string;
     demoBuilder: boolean;
 
     allowLoginWithEmail: boolean;
