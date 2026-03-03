@@ -1049,6 +1049,9 @@ export interface AgentRun {
 export interface ApiToken {
   id: Id;
   readOnly: boolean;
+  name?: string | null;
+  insertedAt: string;
+  lastUsedAt?: string | null;
 }
 
 export interface Assignment {
@@ -3264,7 +3267,7 @@ export interface ApiTokensCreateResult {
 }
 
 export interface ApiTokensDeleteInput {
-  id: string;
+  id: Id;
 }
 
 export interface ApiTokensDeleteResult {
@@ -3272,11 +3275,20 @@ export interface ApiTokensDeleteResult {
 }
 
 export interface ApiTokensSetReadOnlyInput {
-  id: string;
+  id: Id;
   readOnly: boolean;
 }
 
 export interface ApiTokensSetReadOnlyResult {
+  apiToken: ApiToken;
+}
+
+export interface ApiTokensUpdateNameInput {
+  id: Id;
+  name?: string | null;
+}
+
+export interface ApiTokensUpdateNameResult {
   apiToken: ApiToken;
 }
 
@@ -4670,6 +4682,10 @@ class ApiNamespaceApiTokens {
 
   async setReadOnly(input: ApiTokensSetReadOnlyInput): Promise<ApiTokensSetReadOnlyResult> {
     return this.client.post("/api_tokens/set_read_only", input);
+  }
+
+  async updateName(input: ApiTokensUpdateNameInput): Promise<ApiTokensUpdateNameResult> {
+    return this.client.post("/api_tokens/update_name", input);
   }
 }
 
@@ -8084,6 +8100,12 @@ export default {
     useSetReadOnly: () =>
       useMutation<ApiTokensSetReadOnlyInput, ApiTokensSetReadOnlyResult>((input) =>
         defaultApiClient.apiNamespaceApiTokens.setReadOnly(input),
+      ),
+
+    updateName: (input: ApiTokensUpdateNameInput) => defaultApiClient.apiNamespaceApiTokens.updateName(input),
+    useUpdateName: () =>
+      useMutation<ApiTokensUpdateNameInput, ApiTokensUpdateNameResult>((input) =>
+        defaultApiClient.apiNamespaceApiTokens.updateName(input),
       ),
 
     delete: (input: ApiTokensDeleteInput) => defaultApiClient.apiNamespaceApiTokens.delete(input),
