@@ -3250,12 +3250,12 @@ export interface AiSendMessageResult {
 }
 
 export interface ApiTokensCreateInput {
-  readOnly?: boolean | null;
+  readOnly?: boolean;
 }
 
 export interface ApiTokensCreateResult {
-  apiToken?: ApiToken | null;
-  token?: string | null;
+  apiToken: ApiToken;
+  token: string;
 }
 
 export interface ApiTokensDeleteInput {
@@ -3263,7 +3263,7 @@ export interface ApiTokensDeleteInput {
 }
 
 export interface ApiTokensDeleteResult {
-  error?: string | null;
+  success: boolean;
 }
 
 export interface ApiTokensSetReadOnlyInput {
@@ -3272,8 +3272,7 @@ export interface ApiTokensSetReadOnlyInput {
 }
 
 export interface ApiTokensSetReadOnlyResult {
-  apiToken?: ApiToken | null;
-  error?: string | null;
+  apiToken: ApiToken;
 }
 
 export interface ArchiveMessageInput {

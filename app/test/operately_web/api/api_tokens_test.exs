@@ -144,7 +144,7 @@ defmodule OperatelyWeb.Api.ApiTokensTest do
 
       assert {200, res} = mutation(ctx.conn, [:api_tokens, :delete], %{id: token.id})
 
-      assert res.error == nil
+      assert res.success == true
 
       assert_raise Ecto.NoResultsError, fn ->
         Operately.Repo.get!(Operately.People.ApiToken, token.id)
@@ -157,7 +157,7 @@ defmodule OperatelyWeb.Api.ApiTokensTest do
 
       assert {200, res} = mutation(ctx.conn, [:api_tokens, :delete], %{id: token_1.id})
 
-      assert res.error == nil
+      assert res.success == true
 
       tokens = Operately.People.list_api_tokens(ctx.creator)
       ids = Enum.map(tokens, & &1.id)

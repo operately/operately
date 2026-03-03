@@ -6,12 +6,12 @@ defmodule OperatelyWeb.Api.ApiTokens do
     alias OperatelyWeb.Api.Serializer
 
     inputs do
-      field? :read_only, :boolean, null: true
+      field? :read_only, :boolean, null: false
     end
 
     outputs do
-      field? :api_token, :api_token, null: true
-      field? :token, :string, null: true
+      field :api_token, :api_token, null: false
+      field :token, :string, null: false
     end
 
     def call(conn, inputs) do
@@ -44,7 +44,7 @@ defmodule OperatelyWeb.Api.ApiTokens do
     end
 
     outputs do
-      field? :error, :string, null: true
+      field :success, :boolean, null: false
     end
 
     def call(conn, inputs) do
@@ -55,7 +55,7 @@ defmodule OperatelyWeb.Api.ApiTokens do
 
         case Operately.People.delete_api_token(person, inputs.id) do
           {:ok, :deleted} ->
-            {:ok, %{error: nil}}
+            {:ok, %{success: true}}
 
           {:error, :not_found} ->
             {:error, :not_found}
@@ -100,8 +100,7 @@ defmodule OperatelyWeb.Api.ApiTokens do
     end
 
     outputs do
-      field? :api_token, :api_token, null: true
-      field? :error, :string, null: true
+      field :api_token, :api_token, null: false
     end
 
     def call(conn, inputs) do
@@ -114,7 +113,6 @@ defmodule OperatelyWeb.Api.ApiTokens do
           {:ok, api_token} ->
             {:ok, %{
               api_token: Serializer.serialize(api_token, level: :essential),
-              error: nil
             }}
 
           {:error, :not_found} ->
