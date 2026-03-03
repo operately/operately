@@ -71,6 +71,14 @@ export class Paths {
     return this.createCompanyPath(["account", "security"]);
   }
 
+  accountApiTokensPath() {
+    return this.createCompanyPath(["account", "security", "api-tokens"]);
+  }
+
+  accountApiTokensUsagePath() {
+    return this.createCompanyPath(["account", "security", "api-tokens", "usage"]);
+  }
+
   accountChangePasswordPath() {
     return this.createCompanyPath(["account", "security", "change-password"]);
   }
