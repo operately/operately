@@ -59,9 +59,6 @@ defmodule OperatelyWeb.Api.ApiTokens do
 
           {:error, :not_found} ->
             {:error, :not_found}
-
-          {:error, _} ->
-            {:error, :internal_server_error}
         end
       end
     end
