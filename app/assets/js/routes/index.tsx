@@ -83,6 +83,7 @@ export function createAppRoutes() {
         pageRoute("account/appearance", pages.AccountAppearancePage),
         pageRoute("account/security", pages.AccountSecurityPage),
         pageRoute("account/security/api-tokens", pages.AccountApiTokensPage),
+        pageRoute("account/security/api-tokens/usage", pages.AccountApiTokensUsagePage),
         pageRoute("account/security/change-password", pages.AccountChangePasswordPage),
 
         pageRoute("people", pages.PeoplePage),
