@@ -31,9 +31,19 @@ fi
 chmod 600 "${SSH_KEY_PATH}"
 mkdir -p "${HOME}/.ssh"
 touch "${HOME}/.ssh/known_hosts"
-ssh-keyscan -H github.com >> "${HOME}/.ssh/known_hosts" 2>/dev/null || true
+KNOWN_HOSTS_FILE="${HOME}/.ssh/known_hosts"
 
-export GIT_SSH_COMMAND="ssh -i ${SSH_KEY_PATH} -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes"
+if ! ssh-keygen -F github.com -f "${KNOWN_HOSTS_FILE}" >/dev/null; then
+  echo "Adding github.com SSH host keys"
+  ssh-keyscan -t rsa,ecdsa,ed25519 github.com >> "${KNOWN_HOSTS_FILE}" 2>/dev/null
+fi
+
+if ! ssh-keygen -F github.com -f "${KNOWN_HOSTS_FILE}" >/dev/null; then
+  echo "Failed to add github.com to known_hosts"
+  exit 1
+fi
+
+export GIT_SSH_COMMAND="ssh -i ${SSH_KEY_PATH} -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=${KNOWN_HOSTS_FILE}"
 
 OPERATELY_SHA="${SEMAPHORE_GIT_SHA:-$(git rev-parse HEAD)}"
 OPERATELY_SHORT_SHA="$(git rev-parse --short "${OPERATELY_SHA}")"
