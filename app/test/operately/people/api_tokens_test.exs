@@ -144,6 +144,53 @@ defmodule Operately.People.ApiTokensTest do
     end
   end
 
+  describe "set_api_token_name/3" do
+    setup do
+      ctx =
+        %{}
+        |> Factory.setup()
+        |> Factory.add_company_member(:member)
+        |> Factory.add_company_member(:other_member)
+
+      {:ok, ctx}
+    end
+
+    test "it updates token name for the owner", ctx do
+      assert {:ok, api_token, _raw_token} = People.create_api_token(ctx.member, %{name: "Old Name"})
+
+      assert {:ok, updated} = People.set_api_token_name(ctx.member, api_token.id, "Deploy Bot")
+      assert updated.name == "Deploy Bot"
+    end
+
+    test "it trims and normalizes blank names", ctx do
+      assert {:ok, api_token, _raw_token} = People.create_api_token(ctx.member, %{name: "Old Name"})
+
+      assert {:ok, updated} = People.set_api_token_name(ctx.member, api_token.id, "  Deploy Bot  ")
+      assert updated.name == "Deploy Bot"
+
+      assert {:ok, cleared} = People.set_api_token_name(ctx.member, api_token.id, "   ")
+      assert cleared.name == nil
+    end
+
+    test "it returns not_found for foreign token", ctx do
+      assert {:ok, api_token, _raw_token} = People.create_api_token(ctx.member, %{name: "Owned"})
+
+      assert {:error, :not_found} = People.set_api_token_name(ctx.other_member, api_token.id, "Deploy Bot")
+    end
+
+    test "it returns not_found for missing token", ctx do
+      assert {:error, :not_found} = People.set_api_token_name(ctx.member, Ecto.UUID.generate(), "Deploy Bot")
+    end
+
+    test "it returns changeset error for too long names", ctx do
+      assert {:ok, api_token, _raw_token} = People.create_api_token(ctx.member, %{name: "Owned"})
+      long_name = String.duplicate("a", 256)
+
+      assert {:error, changeset} = People.set_api_token_name(ctx.member, api_token.id, long_name)
+      assert {"should be at most %{count} character(s)", _} = changeset.errors[:name]
+    end
+  end
+
   describe "authenticate_api_token/1" do
     setup do
       ctx =
