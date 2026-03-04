@@ -19,6 +19,12 @@ gen:
 gen.api.docs:
 	./devenv bash -c "cd app && mix operately.gen.api.docs"
 
+gen.api.docs.ci:
+	$(MAKE) test.up
+	./devenv bash -c "cd app && mix local.hex --force --if-missing && mix local.rebar --force --if-missing"
+	./devenv bash -c "cd app && mix deps.get"
+	$(MAKE) gen.api.docs
+
 gen.migration:
 	./devenv bash -c "cd app && mix ecto.gen.migration $(NAME)"
 

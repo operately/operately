@@ -38,10 +38,8 @@ export GIT_SSH_COMMAND="ssh -i ${SSH_KEY_PATH} -o IdentitiesOnly=yes -o StrictHo
 OPERATELY_SHA="${SEMAPHORE_GIT_SHA:-$(git rev-parse HEAD)}"
 OPERATELY_SHORT_SHA="$(git rev-parse --short "${OPERATELY_SHA}")"
 
-make test.up
-
-echo "Generating API docs from operately@${OPERATELY_SHORT_SHA}"
-make gen.api.docs
+echo "Preparing environment and generating API docs from operately@${OPERATELY_SHORT_SHA}"
+make gen.api.docs.ci
 
 DOCS_SOURCE_DIR="$(pwd)/tmp/generated/api-docs/help/api"
 if [[ ! -d "${DOCS_SOURCE_DIR}" ]]; then
