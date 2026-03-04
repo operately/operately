@@ -4,11 +4,13 @@ import { DangerButton, PrimaryButton, SecondaryButton } from "../Button";
 import { WarningCallout } from "../Callouts";
 import { CopyToClipboard } from "../CopyToClipboard";
 import { FormattedTime } from "../FormattedTime";
+import { IconPencil, IconSwitch, IconTrash } from "../icons";
 import { Link } from "../Link";
 import { Menu, MenuActionItem } from "../Menu";
 import { Modal } from "../Modal";
 import { Page } from "../Page";
 import { SwitchToggle } from "../SwitchToggle";
+import { createTestId } from "../TestableElement";
 
 export namespace AccountApiTokensPage {
   export interface Token {
@@ -333,25 +335,27 @@ function TokenRow({
         <td className="px-3 py-3 text-right">
           <div className="inline-flex">
             <Menu align="end" testId={`api-token-actions-menu-${token.id}`}>
-              <MenuActionItem onClick={openRenameModal} testId={`update-api-token-name-${token.id}`}>
+              <MenuActionItem icon={IconPencil} onClick={openRenameModal} testId={createTestId("update-api-token-name", token.id)}>
                 Update name
               </MenuActionItem>
 
               <MenuActionItem
+                icon={IconSwitch}
                 onClick={() => {
                   if (!isPending) onToggleReadOnly(token.id, !token.readOnly);
                 }}
-                testId={`api-token-mode-toggle-${token.id}`}
+                testId={createTestId("api-token-mode-toggle", token.id)}
               >
                 {token.readOnly ? "Change to full access" : "Change to read-only"}
               </MenuActionItem>
 
               <MenuActionItem
+                icon={IconTrash}
                 onClick={() => {
                   openDeleteModal();
                 }}
                 danger
-                testId={`delete-api-token-${token.id}`}
+                testId={createTestId("delete-api-token", token.id)}
               >
                 Delete
               </MenuActionItem>
