@@ -5,14 +5,28 @@ agent:
     type: e1-standard-2
     os_image: ubuntu2004
 blocks:
-  - name: Deploy
+  - name: Trigger Production Deployment
+    dependencies: []
     run:
       when: "branch = 'main'"
     task:
       secrets:
         - name: prod-deployment-vars
       jobs:
-        - name: "Deploy"
+        - name: "Trigger"
           commands:
             - checkout
             - ruby scripts/deploy.rb
+
+  - name: Sync API Docs
+    dependencies: []
+    run:
+      when: "branch = 'main'"
+    task:
+      secrets:
+        - name: docs-sync
+      jobs:
+        - name: "Sync API Docs"
+          commands:
+            - checkout
+            - bash scripts/sync_api_docs_to_website.sh
