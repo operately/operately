@@ -334,7 +334,7 @@ function TokenRow({
 
         <td className="px-3 py-3 text-right">
           <div className="inline-flex">
-            <Menu align="end" testId={`api-token-actions-menu-${token.id}`}>
+            <Menu align="end" testId={createTestId("api-token-actions-menu", token.id)}>
               <MenuActionItem icon={IconPencil} onClick={openRenameModal} testId={createTestId("update-api-token-name", token.id)}>
                 Update name
               </MenuActionItem>

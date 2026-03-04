@@ -64,4 +64,10 @@ defmodule Operately.Features.AccountSettingsTest do
     |> Steps.assert_password_changed()
   end
 
+  feature "view api tokens usage instructions", ctx do
+    ctx
+    |> Steps.navigate_to_api_tokens_page()
+    |> Steps.navigate_to_api_tokens_usage_page()
+    |> Steps.assert_api_tokens_usage_page_content()
+  end
 end
