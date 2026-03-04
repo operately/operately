@@ -16,6 +16,18 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "account"])
   end
 
+  def account_security_path(company = %Company{}) do
+    create_path([company_id(company), "account", "security"])
+  end
+
+  def account_api_tokens_path(company = %Company{}) do
+    create_path([company_id(company), "account", "security", "api-tokens"])
+  end
+
+  def account_api_tokens_usage_path(company = %Company{}) do
+    create_path([company_id(company), "account", "security", "api-tokens", "usage"])
+  end
+
   def login_path do
     create_path(["log_in"])
   end
