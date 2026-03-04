@@ -48,8 +48,9 @@ defmodule Operately.ApiDocs.Generator do
     namespaces =
       endpoints_by_namespace
       |> Map.keys()
-      |> Enum.sort()
-      |> Enum.sort_by(fn namespace -> if namespace == "root", do: 0, else: 1 end)
+      |> Enum.sort_by(fn namespace ->
+        {if(namespace == "root", do: 0, else: 1), namespace}
+      end)
 
     %{
       types: api_module.__types__(),

@@ -177,7 +177,7 @@ defmodule Operately.ApiDocs.Markdown do
       |> Enum.map(fn {name, type, opts} ->
         default =
           if Keyword.has_key?(opts, :default) do
-            "<code>#{escape_html(inspect(Keyword.get(opts, :default)))}</code>"
+            "<code>#{TypeFormatter.escape_html(inspect(Keyword.get(opts, :default)))}</code>"
           else
             "-"
           end
@@ -187,7 +187,7 @@ defmodule Operately.ApiDocs.Markdown do
 
         """
         <tr>
-          <td style={{ whiteSpace: "nowrap" }}><code>#{escape_html(name)}</code></td>
+          <td style={{ whiteSpace: "nowrap" }}><code>#{TypeFormatter.escape_html(name)}</code></td>
           <td style={{ whiteSpace: "normal" }}>#{TypeFormatter.format_html(type, types)}</td>
           <td style={{ whiteSpace: "nowrap" }}>#{required}</td>
           <td style={{ whiteSpace: "nowrap" }}>#{nullable}</td>
@@ -257,14 +257,4 @@ defmodule Operately.ApiDocs.Markdown do
 
   defp yes_no(true), do: "Yes"
   defp yes_no(false), do: "No"
-
-  defp escape_html(value) do
-    value
-    |> to_string()
-    |> String.replace("&", "&amp;")
-    |> String.replace("<", "&lt;")
-    |> String.replace(">", "&gt;")
-    |> String.replace("\"", "&quot;")
-    |> String.replace("'", "&#39;")
-  end
 end

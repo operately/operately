@@ -76,7 +76,7 @@ defmodule Operately.ApiDocs.TypeFormatter do
   defp md_code(value), do: "`#{value}`"
   defp html_code(value), do: "<code>#{escape_html(value)}</code>"
 
-  defp escape_html(value) do
+  def escape_html(value) do
     value
     |> to_string()
     |> String.replace("&", "&amp;")
