@@ -18,6 +18,15 @@ SSH_KEY_PATH="${DOCS_DEPLOY_KEY_PATH:-${HOME}/.ssh/docs-deploy-key}"
 
 require_env "DOCS_WEBSITE_REPO"
 
+ensure_env_file() {
+  if [[ -f .env ]]; then
+    return 0
+  fi
+
+  echo ".env not found, creating test env file"
+  make test.seed.env
+}
+
 ensure_devenv_running() {
   for attempt in 1 2 3; do
     echo "Attempt ${attempt}: starting devenv"
@@ -56,6 +65,7 @@ export GIT_SSH_COMMAND="ssh -i ${SSH_KEY_PATH} -o IdentitiesOnly=yes -o StrictHo
 OPERATELY_SHA="${SEMAPHORE_GIT_SHA:-$(git rev-parse HEAD)}"
 OPERATELY_SHORT_SHA="$(git rev-parse --short "${OPERATELY_SHA}")"
 
+ensure_env_file
 ensure_devenv_running
 
 echo "Generating API docs from operately@${OPERATELY_SHORT_SHA}"
