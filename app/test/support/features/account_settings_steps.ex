@@ -4,6 +4,7 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
   step :setup, ctx do
     ctx
     |> Factory.setup()
+    |> Factory.enable_feature("api-tokens")
     |> Factory.add_company_member(:person, full_name: "John Johnson", email: "hello@localhost", password: "abcd1234ABCD")
     |> Factory.log_in_person(:person)
   end
@@ -154,6 +155,30 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
     assert Operately.People.Account.valid_password?(account, "new-password-123")
 
     ctx
+  end
+
+  step :navigate_to_api_tokens_page, ctx do
+    ctx
+    |> UI.click(testid: "account-menu")
+    |> UI.click(testid: "api-tokens-link")
+    |> UI.assert_has(testid: "account-api-tokens-page")
+  end
+
+  step :navigate_to_api_tokens_usage_page, ctx do
+    ctx
+    |> UI.click(testid: "view-api-token-usage")
+    |> UI.assert_has(testid: "account-api-tokens-usage-page")
+  end
+
+  step :assert_api_tokens_usage_page_content, ctx do
+    base_url = OperatelyWeb.Endpoint.url()
+
+    ctx
+    |> UI.assert_text("#{base_url}/api/external/v1/get_account")
+    |> UI.assert_has(testid: "copy-base-path")
+    |> UI.assert_has(testid: "copy-auth-header")
+    |> UI.assert_has(testid: "copy-query-snippet")
+    |> UI.assert_has(testid: "copy-mutation-snippet")
   end
 
 end
