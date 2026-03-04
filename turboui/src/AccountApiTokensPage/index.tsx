@@ -28,6 +28,7 @@ export namespace AccountApiTokensPage {
     setNewTokenReadOnly: (value: boolean) => void;
     creatingToken: boolean;
     onCreateToken: () => void;
+    onDismissNewlyCreatedToken: () => void;
 
     newlyCreatedToken: string | null;
 
@@ -43,6 +44,8 @@ export namespace AccountApiTokensPage {
 }
 
 export function AccountApiTokensPage(props: AccountApiTokensPage.Props) {
+  const [isCreateModalOpen, setIsCreateModalOpen] = React.useState(false);
+
   const navigation = React.useMemo(
     () => [
       { to: props.homePath, label: "Home" },
@@ -50,6 +53,15 @@ export function AccountApiTokensPage(props: AccountApiTokensPage.Props) {
     ],
     [props.homePath, props.securityPath],
   );
+
+  const openCreateModal = React.useCallback(() => {
+    setIsCreateModalOpen(true);
+  }, []);
+
+  const closeCreateModal = React.useCallback(() => {
+    setIsCreateModalOpen(false);
+    props.onDismissNewlyCreatedToken();
+  }, [props.onDismissNewlyCreatedToken]);
 
   return (
     <Page title="API Tokens" size="small" testId="account-api-tokens-page" navigation={navigation}>
@@ -67,33 +79,11 @@ export function AccountApiTokensPage(props: AccountApiTokensPage.Props) {
             Read-only tokens can call queries only. Full-access tokens can call both queries and mutations.
           </p>
 
-          <div className="rounded-md border border-stroke-base p-4 mt-3">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <div className="text-sm font-medium">Access mode for new token</div>
-                <div className="text-sm text-content-dimmed mt-1">
-                  {props.newTokenReadOnly ? "Read-only (queries only)" : "Full access (queries + mutations)"}
-                </div>
-              </div>
-
-              <SwitchToggle
-                label={props.newTokenReadOnly ? "Read-only" : "Full access"}
-                value={props.newTokenReadOnly}
-                setValue={props.setNewTokenReadOnly}
-                testId="new-api-token-read-only-toggle"
-              />
-            </div>
-
-            <div className="mt-4">
-              <PrimaryButton onClick={props.onCreateToken} loading={props.creatingToken} testId="create-api-token-button" size="sm">
-                Create API Token
-              </PrimaryButton>
-            </div>
+          <div className="mt-3">
+            <PrimaryButton onClick={openCreateModal} testId="open-create-api-token-modal" size="sm">
+              Create API Token
+            </PrimaryButton>
           </div>
-
-          {props.newlyCreatedToken && (
-            <NewlyCreatedTokenCard token={props.newlyCreatedToken} />
-          )}
 
           <div className="mt-4 text-xs">
             <Link to={props.usagePath} underline="hover" testId="view-api-token-usage">
@@ -107,7 +97,9 @@ export function AccountApiTokensPage(props: AccountApiTokensPage.Props) {
           <p className="text-sm text-content-dimmed mt-1">Manage and revoke your active API tokens.</p>
 
           {props.tokens.length === 0 ? (
-            <div className="text-sm text-content-dimmed rounded-md border border-stroke-base p-4 mt-3">No API tokens created yet.</div>
+            <div className="text-sm text-content-dimmed rounded-md border border-stroke-base p-4 mt-3">
+              No API tokens created yet.
+            </div>
           ) : (
             <TokenList
               tokens={props.tokens}
@@ -119,15 +111,82 @@ export function AccountApiTokensPage(props: AccountApiTokensPage.Props) {
           )}
         </section>
       </div>
+
+      <CreateTokenModal
+        isOpen={isCreateModalOpen}
+        onClose={closeCreateModal}
+        newTokenReadOnly={props.newTokenReadOnly}
+        setNewTokenReadOnly={props.setNewTokenReadOnly}
+        creatingToken={props.creatingToken}
+        onCreateToken={props.onCreateToken}
+        newlyCreatedToken={props.newlyCreatedToken}
+      />
     </Page>
+  );
+}
+
+function CreateTokenModal({
+  isOpen,
+  onClose,
+  newTokenReadOnly,
+  setNewTokenReadOnly,
+  creatingToken,
+  onCreateToken,
+  newlyCreatedToken,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  newTokenReadOnly: boolean;
+  setNewTokenReadOnly: (value: boolean) => void;
+  creatingToken: boolean;
+  onCreateToken: () => void;
+  newlyCreatedToken: string | null;
+}) {
+  const hasCreatedToken = Boolean(newlyCreatedToken);
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} size="small" title="Create API token" testId="create-api-token-modal">
+      <div className="space-y-6">
+        {!hasCreatedToken && (
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <div className="text-sm font-medium">Access mode for new token</div>
+              <div className="text-sm text-content-dimmed mt-1">
+                {newTokenReadOnly ? "Read-only (queries only)" : "Full access (queries + mutations)"}
+              </div>
+            </div>
+
+            <SwitchToggle
+              label={newTokenReadOnly ? "Read-only" : "Full access"}
+              value={newTokenReadOnly}
+              setValue={setNewTokenReadOnly}
+              testId="new-api-token-read-only-toggle"
+            />
+          </div>
+        )}
+
+        {newlyCreatedToken && <NewlyCreatedTokenCard token={newlyCreatedToken} />}
+
+        <div className="flex justify-end gap-4">
+          {!hasCreatedToken && (
+            <PrimaryButton size="sm" onClick={onCreateToken} loading={creatingToken} testId="create-api-token-button">
+              Create API Token
+            </PrimaryButton>
+          )}
+          <SecondaryButton size="sm" onClick={onClose} testId="close-create-api-token-modal">
+            Close
+          </SecondaryButton>
+        </div>
+      </div>
+    </Modal>
   );
 }
 
 function NewlyCreatedTokenCard({ token }: { token: string }) {
   return (
-    <div className="mt-4" data-test-id="new-api-token-card">
+    <div data-test-id="new-api-token-card">
       <WarningCallout
-        message="Copy this token now"
+        message="Copy the token"
         description="This is the only time this value will be shown. Copy and store it securely."
       />
 
@@ -194,7 +253,9 @@ function TokenList({
       </div>
 
       {!hasUsageMetadata && (
-        <div className="text-xs text-content-dimmed mt-2">Created and last-used timestamps will appear here once available.</div>
+        <div className="text-xs text-content-dimmed mt-2">
+          Created and last-used timestamps will appear here once available.
+        </div>
       )}
     </div>
   );
@@ -340,14 +401,20 @@ function RenameTokenModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="small" title="Update token name" testId="update-api-token-name-modal">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      size="small"
+      title="Update token name"
+      testId="update-api-token-name-modal"
+    >
       <form onSubmit={handleSubmit} className="space-y-4">
         <label className="block">
           <div className="font-bold text-sm mb-1 text-left">Token name</div>
           <input
             className="w-full border rounded-lg px-3 py-2 text-sm bg-surface-base border-surface-outline"
             value={name}
-            onChange={e => onChangeName(e.target.value)}
+            onChange={(e) => onChangeName(e.target.value)}
             placeholder="Enter token name"
             data-test-id="update-api-token-name-input"
             autoFocus
