@@ -18,24 +18,6 @@ SSH_KEY_PATH="${DOCS_DEPLOY_KEY_PATH:-${HOME}/.ssh/docs-deploy-key}"
 
 require_env "DOCS_WEBSITE_REPO"
 
-ensure_devenv_running() {
-  for attempt in 1 2 3; do
-    echo "Attempt ${attempt}: starting devenv"
-    if ./devenv up; then
-      echo "devenv is running"
-      return 0
-    fi
-
-    if [[ "${attempt}" -lt 3 ]]; then
-      echo "devenv start failed, retrying in 10s"
-      sleep 10
-    fi
-  done
-
-  echo "Failed to start devenv after 3 attempts"
-  exit 1
-}
-
 if [[ -n "${DOCS_DEPLOY_KEY:-}" ]]; then
   mkdir -p "$(dirname "${SSH_KEY_PATH}")"
   printf "%s\n" "${DOCS_DEPLOY_KEY}" > "${SSH_KEY_PATH}"
@@ -56,7 +38,7 @@ export GIT_SSH_COMMAND="ssh -i ${SSH_KEY_PATH} -o IdentitiesOnly=yes -o StrictHo
 OPERATELY_SHA="${SEMAPHORE_GIT_SHA:-$(git rev-parse HEAD)}"
 OPERATELY_SHORT_SHA="$(git rev-parse --short "${OPERATELY_SHA}")"
 
-ensure_devenv_running
+make test.up
 
 echo "Generating API docs from operately@${OPERATELY_SHORT_SHA}"
 make gen.api.docs
