@@ -169,6 +169,7 @@ function Page() {
       setNewTokenReadOnly={setNewTokenReadOnly}
       creatingToken={creatingToken}
       onCreateToken={handleCreateToken}
+      onDismissNewlyCreatedToken={() => setNewlyCreatedToken(null)}
       newlyCreatedToken={newlyCreatedToken}
       pendingTokenActions={pendingTokenActions}
       onToggleReadOnly={handleToggleReadOnly}

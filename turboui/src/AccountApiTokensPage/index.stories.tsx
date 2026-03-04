@@ -35,6 +35,7 @@ const defaultArgs: AccountApiTokensPage.Props = {
   setNewTokenReadOnly: () => {},
   creatingToken: false,
   onCreateToken: () => {},
+  onDismissNewlyCreatedToken: () => {},
   newlyCreatedToken: null,
   pendingTokenActions: {},
   onToggleReadOnly: () => {},
