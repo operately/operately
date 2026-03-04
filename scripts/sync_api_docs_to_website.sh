@@ -14,21 +14,24 @@ WEBSITE_BRANCH="main"
 WEBSITE_TARGET_DIR="src/content/docs/help/api"
 BOT_NAME="docs-robot"
 BOT_EMAIL="docs-robot@operately.com"
-SSH_KEY_PATH="${DOCS_DEPLOY_KEY_PATH:-${HOME}/.ssh/docs-deploy-key}"
+SSH_KEY_PATH="/home/semaphore/docs-deploy-key"
 
 require_env "DOCS_WEBSITE_REPO"
 
-if [[ -n "${DOCS_DEPLOY_KEY:-}" ]]; then
-  mkdir -p "$(dirname "${SSH_KEY_PATH}")"
-  printf "%s\n" "${DOCS_DEPLOY_KEY}" > "${SSH_KEY_PATH}"
-fi
-
 if [[ ! -f "${SSH_KEY_PATH}" ]]; then
-  echo "SSH key not found at ${SSH_KEY_PATH}. Set DOCS_DEPLOY_KEY or DOCS_DEPLOY_KEY_PATH."
+  echo "SSH key not found at ${SSH_KEY_PATH}."
   exit 1
 fi
 
-chmod 600 "${SSH_KEY_PATH}"
+if ! chmod 600 "${SSH_KEY_PATH}" 2>/dev/null; then
+  sudo chmod 600 "${SSH_KEY_PATH}"
+fi
+
+if ! ssh-keygen -y -f "${SSH_KEY_PATH}" >/dev/null 2>&1; then
+  echo "Invalid private key format at ${SSH_KEY_PATH}."
+  exit 1
+fi
+
 mkdir -p "${HOME}/.ssh"
 touch "${HOME}/.ssh/known_hosts"
 KNOWN_HOSTS_FILE="${HOME}/.ssh/known_hosts"
