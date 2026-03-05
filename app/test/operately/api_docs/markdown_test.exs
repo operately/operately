@@ -38,6 +38,14 @@ defmodule Operately.ApiDocs.MarkdownTest do
     assert page =~ ~s(<td style={{ whiteSpace: "nowrap" }}><code>:open</code></td>)
     assert page =~ ~s{array of <code>id</code> primitive (encoded as <code>string</code>)}
     assert page =~ "| `success` | `boolean` | Yes | No |"
+    assert page =~ ~s(import CurlExampleBlock from "@components/CurlExampleBlock.jsx")
+    assert page =~ "## cURL Example"
+    assert page =~ "<CurlExampleBlock client:load command={"
+    assert page =~ "curl --request POST"
+    assert page =~ "https://app.operately.com/api/external/v1/tasks/create"
+    assert page =~ "Authorization: Bearer ${OPERATELY_API_TOKEN}"
+    assert page =~ "Content-Type: application/json"
+    assert page =~ ~s(--data ')
   end
 
   test "renders root endpoints in api index without a root namespace section" do
