@@ -1,4 +1,5 @@
 defmodule Operately.ApiDocs.Markdown do
+  alias Operately.ApiDocs.CurlExample
   alias Operately.ApiDocs.TypeFormatter
 
   @moduledoc false
@@ -158,6 +159,10 @@ defmodule Operately.ApiDocs.Markdown do
     ## Authentication
 
     #{endpoint_auth_notes(endpoint.type)}
+
+    ## cURL Example
+
+    #{CurlExample.render(endpoint, types)}
 
     ## Inputs
 
