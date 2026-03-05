@@ -167,10 +167,6 @@ defmodule Operately.ApiDocs.Markdown do
 
     #{endpoint_auth_notes(endpoint.type)}
 
-    ## cURL Example
-
-    <CurlExampleBlock client:load command={#{curl_command}} />
-
     ## Inputs
 
     #{inputs_table(endpoint.inputs, types)}
@@ -178,6 +174,10 @@ defmodule Operately.ApiDocs.Markdown do
     ## Outputs
 
     #{outputs_table(endpoint.outputs, types)}
+
+    ## cURL Example
+
+    <CurlExampleBlock client:load command={#{curl_command}} />
     """
   end
 

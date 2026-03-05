@@ -1,7 +1,7 @@
 defmodule Operately.ApiDocs.CurlExample do
   @moduledoc false
 
-  @base_url "${OPERATELY_BASE_URL}"
+  @base_url "https://app.operately.com"
   @api_token "${OPERATELY_API_TOKEN}"
   @builtins [:string, :integer, :float, :boolean, :date, :time, :datetime]
 

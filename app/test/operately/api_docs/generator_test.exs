@@ -50,7 +50,7 @@ defmodule Operately.ApiDocs.GeneratorTest do
     assert root_page =~ "## cURL Example"
     assert root_page =~ "<CurlExampleBlock client:load command={"
     assert root_page =~ "curl --request GET"
-    assert root_page =~ "${OPERATELY_BASE_URL}/api/external/v1/get_account"
+    assert root_page =~ "https://app.operately.com/api/external/v1/get_account"
     assert root_page =~ "Authorization: Bearer ${OPERATELY_API_TOKEN}"
 
     assert namespaced_page =~ "| Type | `mutation` |"
@@ -59,7 +59,7 @@ defmodule Operately.ApiDocs.GeneratorTest do
     assert namespaced_page =~ "## cURL Example"
     assert namespaced_page =~ "<CurlExampleBlock client:load command={"
     assert namespaced_page =~ "curl --request POST"
-    assert namespaced_page =~ "${OPERATELY_BASE_URL}/api/external/v1/goals/update_name"
+    assert namespaced_page =~ "https://app.operately.com/api/external/v1/goals/update_name"
     assert namespaced_page =~ "Authorization: Bearer ${OPERATELY_API_TOKEN}"
     assert namespaced_page =~ "Content-Type: application/json"
     assert namespaced_page =~ ~s(--data ')

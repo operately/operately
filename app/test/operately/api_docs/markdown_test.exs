@@ -42,7 +42,7 @@ defmodule Operately.ApiDocs.MarkdownTest do
     assert page =~ "## cURL Example"
     assert page =~ "<CurlExampleBlock client:load command={"
     assert page =~ "curl --request POST"
-    assert page =~ "${OPERATELY_BASE_URL}/api/external/v1/tasks/create"
+    assert page =~ "https://app.operately.com/api/external/v1/tasks/create"
     assert page =~ "Authorization: Bearer ${OPERATELY_API_TOKEN}"
     assert page =~ "Content-Type: application/json"
     assert page =~ ~s(--data ')

@@ -35,7 +35,7 @@ defmodule Operately.ApiDocs.CurlExampleTest do
 
     assert output =~ "```bash"
     assert output =~ "curl --request GET"
-    assert output =~ ~s(--url "${OPERATELY_BASE_URL}/api/external/v1/tasks/list?)
+    assert output =~ ~s(--url "https://app.operately.com/api/external/v1/tasks/list?)
     assert output =~ "id=value"
     assert output =~ "filters[status]=open"
     assert output =~ "filters[limit]=123"
@@ -75,7 +75,7 @@ defmodule Operately.ApiDocs.CurlExampleTest do
     output = CurlExample.render(endpoint, types)
 
     assert output =~ "curl --request POST"
-    assert output =~ ~s(--url "${OPERATELY_BASE_URL}/api/external/v1/tasks/create")
+    assert output =~ ~s(--url "https://app.operately.com/api/external/v1/tasks/create")
     assert output =~ ~s(--header "Authorization: Bearer ${OPERATELY_API_TOKEN}")
     assert output =~ ~s(--header "Content-Type: application/json")
     assert output =~ ~s(--data ')
@@ -109,10 +109,10 @@ defmodule Operately.ApiDocs.CurlExampleTest do
         %{primitives: %{}, objects: %{}, unions: %{}, enums: %{}}
       )
 
-    assert query_output =~ ~s(--url "${OPERATELY_BASE_URL}/api/external/v1/get_account")
+    assert query_output =~ ~s(--url "https://app.operately.com/api/external/v1/get_account")
     refute query_output =~ "get_account?"
 
-    assert mutation_output =~ ~s(--url "${OPERATELY_BASE_URL}/api/external/v1/mark_all_notifications_as_read")
+    assert mutation_output =~ ~s(--url "https://app.operately.com/api/external/v1/mark_all_notifications_as_read")
     refute mutation_output =~ "--header \"Content-Type: application/json\""
     refute mutation_output =~ "--data "
   end
