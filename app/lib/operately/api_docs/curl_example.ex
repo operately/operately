@@ -5,7 +5,7 @@ defmodule Operately.ApiDocs.CurlExample do
   @api_token "${OPERATELY_API_TOKEN}"
   @builtins [:string, :integer, :float, :boolean, :date, :time, :datetime]
 
-  def render(endpoint, types) do
+  def command(endpoint, types) do
     inputs = build_inputs(endpoint.inputs, types)
 
     lines =
@@ -14,9 +14,15 @@ defmodule Operately.ApiDocs.CurlExample do
         :mutation -> build_mutation_lines(endpoint.path, inputs)
       end
 
+    Enum.join(lines, " \\\n")
+  end
+
+  def render(endpoint, types) do
+    curl_command = command(endpoint, types)
+
     """
     ```bash
-    #{Enum.join(lines, " \\\n")}
+    #{curl_command}
     ```
     """
   end
