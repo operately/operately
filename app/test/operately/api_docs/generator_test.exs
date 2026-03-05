@@ -46,10 +46,23 @@ defmodule Operately.ApiDocs.GeneratorTest do
     assert root_page =~ "| Type | `query` |"
     assert root_page =~ "| Method | `GET` |"
     assert root_page =~ "| Path | `/api/external/v1/get_account` |"
+    assert root_page =~ ~s(import CurlExampleBlock from "@components/CurlExampleBlock.jsx")
+    assert root_page =~ "## cURL Example"
+    assert root_page =~ "<CurlExampleBlock client:load command={"
+    assert root_page =~ "curl --request GET"
+    assert root_page =~ "${OPERATELY_BASE_URL}/api/external/v1/get_account"
+    assert root_page =~ "Authorization: Bearer ${OPERATELY_API_TOKEN}"
 
     assert namespaced_page =~ "| Type | `mutation` |"
     assert namespaced_page =~ "| Method | `POST` |"
     assert namespaced_page =~ "| Path | `/api/external/v1/goals/update_name` |"
+    assert namespaced_page =~ "## cURL Example"
+    assert namespaced_page =~ "<CurlExampleBlock client:load command={"
+    assert namespaced_page =~ "curl --request POST"
+    assert namespaced_page =~ "${OPERATELY_BASE_URL}/api/external/v1/goals/update_name"
+    assert namespaced_page =~ "Authorization: Bearer ${OPERATELY_API_TOKEN}"
+    assert namespaced_page =~ "Content-Type: application/json"
+    assert namespaced_page =~ ~s(--data ')
   end
 
   test "removes stale files when regenerating", %{out_dir: out_dir} do

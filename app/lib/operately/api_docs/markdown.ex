@@ -1,4 +1,5 @@
 defmodule Operately.ApiDocs.Markdown do
+  alias Operately.ApiDocs.CurlExample
   alias Operately.ApiDocs.TypeFormatter
 
   @moduledoc false
@@ -140,11 +141,18 @@ defmodule Operately.ApiDocs.Markdown do
   end
 
   def endpoint_page(endpoint, types) do
+    curl_command =
+      endpoint
+      |> CurlExample.command(types)
+      |> Jason.encode!()
+
     """
     ---
     title: "#{endpoint.full_name}"
     description: "Generated reference for the #{endpoint.type} endpoint #{endpoint.full_name}."
     ---
+
+    import CurlExampleBlock from "@components/CurlExampleBlock.jsx"
 
     ## Endpoint
 
@@ -158,6 +166,10 @@ defmodule Operately.ApiDocs.Markdown do
     ## Authentication
 
     #{endpoint_auth_notes(endpoint.type)}
+
+    ## cURL Example
+
+    <CurlExampleBlock client:load command={#{curl_command}} />
 
     ## Inputs
 
