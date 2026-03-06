@@ -250,23 +250,31 @@ defmodule Operately.Projects.Project do
     |> Operately.Repo.all()
   end
 
-  def search(person, query, access_level \\ nil, ignored_ids \\ [])
-  def search(person, query, nil, ignored_ids), do: search(person, query, :view_access, ignored_ids)
+  def search(person, query, access_level \\ nil, opts \\ [])
+  def search(person, query, nil, opts), do: search(person, query, :view_access, opts)
 
-  def search(person, query, access_level, ignored_ids) do
+  def search(person, query, access_level, opts) do
     from(p in __MODULE__)
     |> where([p], p.company_id == ^person.company_id)
     |> where([p], ilike(p.name, ^"%#{query}%"))
     |> filter_by_access(person.id, access_level)
-    |> exclude_ids(ignored_ids)
+    |> maybe_filter_active_only(opts[:active_only])
+    |> exclude_ids(opts[:ignored_ids])
     |> order_by([p], asc: p.name)
     |> Operately.Repo.all()
   end
 
+  defp exclude_ids(query, nil), do: query
   defp exclude_ids(query, []), do: query
   defp exclude_ids(query, ignored_ids) do
     from p in query, where: p.id not in ^ignored_ids
   end
+
+  defp maybe_filter_active_only(query, true) do
+    from p in query, where: p.status == "active"
+  end
+
+  defp maybe_filter_active_only(query, _), do: query
 
   defp maybe_exclude_goal_by_id(q, nil), do: q
   defp maybe_exclude_goal_by_id(q, goal_id), do: where(q, [g], g.id != ^goal_id)

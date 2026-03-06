@@ -29,13 +29,19 @@ export async function getSpaces(params: api.GetSpacesInput): Promise<api.Space[]
 interface SpaceSearchAttrs {
   accessLevel?: api.AccessOptions;
   ignoreIds?: string[];
+  withTasksEnabledOnly?: boolean;
 }
 
 export function useSpaceSearch(attrs?: SpaceSearchAttrs): SpaceField.SearchSpaceFn {
   const paths = usePaths();
 
   return async ({ query }: { query: string }): Promise<SpaceField.Space[]> => {
-    const data = await Api.spaces.search({ query: query, accessLevel: attrs?.accessLevel, ignoredIds: attrs?.ignoreIds || [] });
+    const data = await Api.spaces.search({
+      query: query,
+      accessLevel: attrs?.accessLevel,
+      ignoredIds: attrs?.ignoreIds || [],
+      withTasksEnabledOnly: attrs?.withTasksEnabledOnly,
+    });
 
     return data.spaces.map((space) => ({
       id: space.id,

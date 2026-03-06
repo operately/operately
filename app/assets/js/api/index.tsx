@@ -2951,6 +2951,7 @@ export interface ProjectsSearchInput {
   query: string;
   accessLevel?: AccessOptions;
   ignoredIds?: Id[];
+  activeOnly?: boolean;
 }
 
 export interface ProjectsSearchResult {
@@ -3018,6 +3019,7 @@ export interface SpacesSearchInput {
   query: string;
   accessLevel?: AccessOptions;
   ignoredIds?: Id[];
+  withTasksEnabledOnly?: boolean;
 }
 
 export interface SpacesSearchResult {
