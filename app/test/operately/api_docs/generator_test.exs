@@ -52,6 +52,8 @@ defmodule Operately.ApiDocs.GeneratorTest do
     assert root_page =~ "curl --request GET"
     assert root_page =~ "https://app.operately.com/api/external/v1/get_account"
     assert root_page =~ "Authorization: Bearer ${OPERATELY_API_TOKEN}"
+    assert root_page =~ "## Response Example"
+    assert root_page =~ "```json"
 
     assert namespaced_page =~ "| Type | `mutation` |"
     assert namespaced_page =~ "| Method | `POST` |"
@@ -63,6 +65,16 @@ defmodule Operately.ApiDocs.GeneratorTest do
     assert namespaced_page =~ "Authorization: Bearer ${OPERATELY_API_TOKEN}"
     assert namespaced_page =~ "Content-Type: application/json"
     assert namespaced_page =~ ~s(--data ')
+    assert namespaced_page =~ "## Response Example"
+    assert namespaced_page =~ "```json"
+
+    {root_curl_pos, _} = :binary.match(root_page, "## cURL Example")
+    {root_response_pos, _} = :binary.match(root_page, "## Response Example")
+    assert root_curl_pos < root_response_pos
+
+    {namespaced_curl_pos, _} = :binary.match(namespaced_page, "## cURL Example")
+    {namespaced_response_pos, _} = :binary.match(namespaced_page, "## Response Example")
+    assert namespaced_curl_pos < namespaced_response_pos
   end
 
   test "removes stale files when regenerating", %{out_dir: out_dir} do

@@ -1,5 +1,6 @@
 defmodule Operately.ApiDocs.Markdown do
   alias Operately.ApiDocs.CurlExample
+  alias Operately.ApiDocs.ResponseExample
   alias Operately.ApiDocs.TypeFormatter
 
   @moduledoc false
@@ -146,6 +147,8 @@ defmodule Operately.ApiDocs.Markdown do
       |> CurlExample.command(types)
       |> Jason.encode!()
 
+    response_example = response_example_section(endpoint, types)
+
     """
     ---
     title: "#{endpoint.full_name}"
@@ -178,6 +181,8 @@ defmodule Operately.ApiDocs.Markdown do
     ## cURL Example
 
     <CurlExampleBlock client:load command={#{curl_command}} />
+
+    #{response_example}
     """
   end
 
@@ -246,6 +251,20 @@ defmodule Operately.ApiDocs.Markdown do
     | Field | Type | Required | Nullable |
     | --- | --- | --- | --- |
     #{rows}
+    """
+  end
+
+  defp response_example_section(%{outputs: []}, _types), do: ""
+
+  defp response_example_section(endpoint, types) do
+    response_json = ResponseExample.render(endpoint, types)
+
+    """
+    ## Response Example
+
+    ```json
+    #{response_json}
+    ```
     """
   end
 
