@@ -179,8 +179,12 @@ function Page() {
   });
 
   const { statuses, handleSaveStatuses } = Projects.useTaskStatuses(project.id, project.taskStatuses, refresh);
-  const taskProjectSearch = Projects.useProjectSearch({ accessLevel: "edit_access", ignoredIds: [project.id] });
-  const taskSpaceSearch = useTaskDestinationSpaceSearch({ accessLevel: "edit_access" });
+  const taskProjectSearch = Projects.useProjectSearch({
+    accessLevel: "edit_access",
+    ignoredIds: [project.id],
+    activeOnly: true,
+  });
+  const taskSpaceSearch = useTaskDestinationSpaceSearch({ accessLevel: "edit_access", withTasksEnabledOnly: true });
 
   const handleMoveTaskSuccess = React.useCallback(
     async ({ destinationType, destinationId }: { destinationType: string; destinationId: string }) => {

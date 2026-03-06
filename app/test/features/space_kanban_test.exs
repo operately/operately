@@ -14,6 +14,7 @@ defmodule Operately.Features.SpaceKanbanTest do
       |> Factory.setup()
       |> Factory.add_space(:space, name: "Kanban Space")
       |> Factory.add_space(:destination_space, name: "Destination Space")
+      |> Factory.enable_space_tool(:destination_space, :tasks)
       |> Factory.add_project(:destination_project, :destination_space, name: "Destination Project")
       |> Factory.create_space_task(:task, :space, name: "First Task")
       |> Factory.create_space_task(:second_task, :space, name: "Second Task")
