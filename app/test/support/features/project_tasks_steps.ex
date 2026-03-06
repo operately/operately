@@ -46,6 +46,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
       name: "Destination Space",
       company_permissions: Binding.edit_access()
     )
+    |> Factory.enable_space_tool(:destination_space, :tasks)
   end
 
   step :given_destination_project_exists, ctx do
