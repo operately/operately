@@ -28,6 +28,7 @@ defmodule OperatelyWeb.Api.Mutations.MoveTask do
     |> run(:check_origin_permissions, fn ctx -> check_origin_permissions(ctx.task) end)
     |> run(:destination, fn ctx -> load_destination(ctx.me, inputs.destination_type, inputs.destination_id) end)
     |> run(:check_destination_permissions, fn ctx -> check_destination_permissions(inputs.destination_type, ctx.destination) end)
+    |> run(:validate_destination, fn ctx -> validate_destination(inputs.destination_type, ctx.destination) end)
     |> run(:operation, fn ctx -> TaskMoving.run(ctx.me, ctx.task, inputs.destination_type, ctx.destination) end)
     |> run(:serialized, fn ctx ->
       {:ok, %{
@@ -55,6 +56,9 @@ defmodule OperatelyWeb.Api.Mutations.MoveTask do
 
       {:error, :check_destination_permissions, _} ->
         {:error, :forbidden}
+
+      {:error, :validate_destination, _} ->
+        {:error, :bad_request}
 
       {:error, :operation, _} ->
         {:error, :bad_request}
@@ -100,6 +104,19 @@ defmodule OperatelyWeb.Api.Mutations.MoveTask do
   defp check_destination_permissions(:space, destination = %Group{}) do
     SpacePermissions.check(destination.request_info.access_level, :can_edit)
   end
+
+  defp validate_destination(:project, destination = %Project{}) do
+    if destination.status == "active", do: {:ok, destination}, else: {:error, :invalid_destination}
+  end
+
+  defp validate_destination(:space, destination = %Group{}) do
+    if tasks_enabled?(destination), do: {:ok, destination}, else: {:error, :invalid_destination}
+  end
+
+  defp validate_destination(_, _), do: {:error, :invalid_destination}
+
+  defp tasks_enabled?(%Group{tools: tools}) when not is_nil(tools), do: tools.tasks_enabled == true
+  defp tasks_enabled?(_), do: false
 
   defp destination_id(space = %Group{}), do: OperatelyWeb.Paths.space_id(space)
   defp destination_id(project = %Project{}), do: OperatelyWeb.Paths.project_id(project)

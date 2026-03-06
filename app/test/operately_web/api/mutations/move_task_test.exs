@@ -286,6 +286,35 @@ defmodule OperatelyWeb.Api.Mutations.MoveTaskTest do
       assert res.message == "The request was malformed"
     end
 
+    test "returns bad request when destination project is not active", ctx do
+      origin = create_task_context(ctx, :project, :full_access, :full_access, :full_access)
+      destination_space = create_space(ctx, :no_access)
+      destination_project = create_project(ctx, destination_space, :full_access, :full_access, :full_access)
+      {:ok, destination_project} = Operately.Projects.update_project(destination_project, %{status: "paused"})
+
+      assert {400, res} = mutation(ctx.conn, :move_task, %{
+        task_id: Paths.task_id(origin.task),
+        destination_type: "project",
+        destination_id: Paths.project_id(destination_project)
+      })
+
+      assert res.message == "The request was malformed"
+    end
+
+    test "returns bad request when destination space has tasks disabled", ctx do
+      origin = create_task_context(ctx, :project, :full_access, :full_access, :full_access)
+      destination_space = create_space_with_permissions(ctx, :full_access, :full_access)
+      {:ok, destination_space} = Operately.Groups.update_group(destination_space, %{tools: %{tasks_enabled: false}})
+
+      assert {400, res} = mutation(ctx.conn, :move_task, %{
+        task_id: Paths.task_id(origin.task),
+        destination_type: "space",
+        destination_id: Paths.space_id(destination_space)
+      })
+
+      assert res.message == "The request was malformed"
+    end
+
     test "creates task_moving activity with expected content", ctx do
       origin = create_task_context(ctx, :project, :full_access, :full_access, :full_access)
       destination_space = create_space_with_permissions(ctx, :full_access, :full_access)
@@ -429,6 +458,8 @@ defmodule OperatelyWeb.Api.Mutations.MoveTaskTest do
         access_level: Binding.from_atom(space_members_level)
       }])
     end
+
+    {:ok, space} = Operately.Groups.update_group(space, %{tools: %{tasks_enabled: true}})
 
     space
   end
