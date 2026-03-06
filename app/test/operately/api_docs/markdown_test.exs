@@ -46,6 +46,32 @@ defmodule Operately.ApiDocs.MarkdownTest do
     assert page =~ "Authorization: Bearer ${OPERATELY_API_TOKEN}"
     assert page =~ "Content-Type: application/json"
     assert page =~ ~s(--data ')
+    assert page =~ "## Response Example"
+    assert page =~ "```json"
+    assert page =~ ~s("success": true)
+
+    {curl_pos, _} = :binary.match(page, "## cURL Example")
+    {response_pos, _} = :binary.match(page, "## Response Example")
+    assert curl_pos < response_pos
+  end
+
+  test "does not render response example when endpoint has no outputs" do
+    endpoint = %{
+      full_name: "notifications/mark_all_as_read",
+      type: :mutation,
+      method: "POST",
+      path: "/api/external/v1/notifications/mark_all_as_read",
+      handler: "OperatelyWeb.Api.Notifications.MarkAllAsRead",
+      inputs: [],
+      outputs: []
+    }
+
+    types = %{primitives: %{}, objects: %{}, unions: %{}, enums: %{}}
+
+    page = Markdown.endpoint_page(endpoint, types)
+
+    refute page =~ "## Response Example"
+    refute page =~ "```json"
   end
 
   test "renders root endpoints in api index without a root namespace section" do
