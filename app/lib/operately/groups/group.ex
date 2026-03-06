@@ -130,23 +130,31 @@ defmodule Operately.Groups.Group do
     Map.put(space, :permissions, Operately.Groups.Permissions.calculate_permissions(space.request_info.access_level))
   end
 
-  def search(person, query, access_level \\ nil, ignored_ids \\ [])
-  def search(person, query, nil, ignored_ids), do: search(person, query, :view_access, ignored_ids)
+  def search(person, query, access_level \\ nil, opts \\ [])
+  def search(person, query, nil, opts), do: search(person, query, :view_access, opts)
 
-  def search(person, query, access_level, ignored_ids) do
+  def search(person, query, access_level, opts) do
     from(s in __MODULE__)
     |> where([s], s.company_id == ^person.company_id)
     |> where([s], ilike(s.name, ^"%#{query}%"))
     |> Filters.filter_by_access(person.id, access_level)
-    |> exclude_ids(ignored_ids)
+    |> maybe_filter_tasks_enabled_only(opts[:with_tasks_enabled_only])
+    |> exclude_ids(opts[:ignored_ids])
     |> order_by([s], asc: s.name)
     |> Operately.Repo.all()
   end
 
+  defp exclude_ids(query, nil), do: query
   defp exclude_ids(query, []), do: query
   defp exclude_ids(query, ignored_ids) do
     from s in query, where: s.id not in ^ignored_ids
   end
+
+  defp maybe_filter_tasks_enabled_only(query, true) do
+    from s in query, where: fragment("?->>'tasks_enabled' = 'true'", s.tools)
+  end
+
+  defp maybe_filter_tasks_enabled_only(query, _), do: query
 
   def count_by_access_level(person, access_level) do
     from(s in __MODULE__)

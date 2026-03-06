@@ -123,6 +123,34 @@ defmodule OperatelyWeb.Api.SpacesTest do
       assert {200, res} = query(ctx.conn, [:spaces, :search], %{query: "Unique", ignored_ids: [unique_id]})
       assert res.spaces == []
     end
+
+    test "it filters spaces by tasks-enabled flag when with_tasks_enabled_only is true", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space(:enabled_space, name: "Tasks Space Enabled")
+        |> Factory.enable_space_tool(:enabled_space, :tasks)
+        |> Factory.add_space(:enabled_space2, name: "Tasks Space Also Enabled")
+        |> Factory.enable_space_tool(:enabled_space2, :tasks)
+        |> Factory.add_space(:disabled_space, name: "Tasks Space Disabled")
+        |> Factory.disable_space_tool(:disabled_space, :tasks)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, all_res} = query(ctx.conn, [:spaces, :search], %{query: "Tasks Space"})
+      assert Enum.sort(Enum.map(all_res.spaces, & &1.name)) == ["Tasks Space Also Enabled", "Tasks Space Disabled", "Tasks Space Enabled"]
+
+      assert {200, filtered_res} = query(ctx.conn, [:spaces, :search], %{query: "Tasks Space", with_tasks_enabled_only: true})
+      assert Enum.sort(Enum.map(filtered_res.spaces, & &1.name)) == ["Tasks Space Also Enabled", "Tasks Space Enabled"]
+
+      enabled_space_id = Paths.space_id(ctx.enabled_space)
+
+      assert {200, filtered_with_ignored_ids} = query(ctx.conn, [:spaces, :search], %{
+        query: "Tasks Space",
+        with_tasks_enabled_only: true,
+        ignored_ids: [enabled_space_id]
+      })
+
+      assert Enum.map(filtered_with_ignored_ids.spaces, & &1.name) == ["Tasks Space Also Enabled"]
+    end
   end
 
   describe "count by access level" do

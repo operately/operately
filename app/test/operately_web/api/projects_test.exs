@@ -140,6 +140,35 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert {200, res} = query(ctx.conn, [:projects, :search], %{query: "Unique", ignored_ids: [project1_id]})
       assert res.projects == []
     end
+
+    test "it filters to active projects when active_only is true", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space(:work_space, name: "Work Space")
+        |> Factory.add_project(:active_project, :work_space, name: "Lifecycle Active")
+        |> Factory.add_project(:active_project2, :work_space, name: "Lifecycle Active Two")
+        |> Factory.add_project(:paused_project, :work_space, name: "Lifecycle Paused")
+        |> Factory.add_project(:closed_project, :work_space, name: "Lifecycle Closed")
+        |> Factory.pause_project(:paused_project)
+        |> Factory.close_project(:closed_project)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, all_res} = query(ctx.conn, [:projects, :search], %{query: "Lifecycle"})
+      assert Enum.sort(Enum.map(all_res.projects, & &1.name)) == ["Lifecycle Active", "Lifecycle Active Two", "Lifecycle Closed", "Lifecycle Paused"]
+
+      assert {200, active_res} = query(ctx.conn, [:projects, :search], %{query: "Lifecycle", active_only: true})
+      assert Enum.sort(Enum.map(active_res.projects, & &1.name)) == ["Lifecycle Active", "Lifecycle Active Two"]
+
+      active_project_id = Paths.project_id(ctx.active_project)
+
+      assert {200, filtered_with_ignored_ids} = query(ctx.conn, [:projects, :search], %{
+        query: "Lifecycle",
+        active_only: true,
+        ignored_ids: [active_project_id]
+      })
+
+      assert Enum.map(filtered_with_ignored_ids.projects, & &1.name) == ["Lifecycle Active Two"]
+    end
   end
 
   describe "get milestones" do
