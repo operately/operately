@@ -87,4 +87,33 @@ defmodule Operately.ApiDocs.GeneratorTest do
     Generator.generate(out_dir: out_dir)
     refute File.exists?(stale_file)
   end
+
+  test "generate/1 is docs-only and does not write catalog files", %{out_dir: out_dir} do
+    result = Generator.generate(out_dir: out_dir)
+
+    refute Map.has_key?(result, :catalog_path)
+    refute Map.has_key?(result, :cli_catalog_path)
+    refute File.exists?(Path.join(out_dir, "help/api/catalog.json"))
+  end
+
+  test "generate_catalog/1 writes docs and cli catalog files", %{out_dir: out_dir} do
+    cli_catalog_path = Path.join(out_dir, "cli/api-catalog.json") |> Path.expand()
+
+    result =
+      Generator.generate_catalog(
+        out_dir: out_dir,
+        cli_catalog_path: cli_catalog_path
+      )
+
+    assert result.catalog_path == Path.join(out_dir, "help/api/catalog.json")
+    assert result.cli_catalog_path == cli_catalog_path
+    assert File.exists?(result.catalog_path)
+    assert File.exists?(result.cli_catalog_path)
+
+    docs_catalog = result.catalog_path |> File.read!() |> Jason.decode!()
+    cli_catalog = result.cli_catalog_path |> File.read!() |> Jason.decode!()
+
+    assert docs_catalog == cli_catalog
+    assert docs_catalog["endpoint_count"] == result.endpoint_count
+  end
 end
