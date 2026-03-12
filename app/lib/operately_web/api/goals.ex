@@ -30,7 +30,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
   end
 
-  defmodule ParentGoalSearch do
+  defmodule SearchParentGoal do
     use TurboConnect.Query
 
     inputs do

@@ -2795,12 +2795,12 @@ export interface GoalsListDiscussionsResult {
   discussions: Discussion[];
 }
 
-export interface GoalsParentGoalSearchInput {
+export interface GoalsSearchParentGoalInput {
   query: string;
   goalId: Id;
 }
 
-export interface GoalsParentGoalSearchResult {
+export interface GoalsSearchParentGoalResult {
   goals: Goal[];
 }
 
@@ -5640,8 +5640,8 @@ class ApiNamespaceGoals {
     return this.client.get("/goals/list_discussions", input);
   }
 
-  async parentGoalSearch(input: GoalsParentGoalSearchInput): Promise<GoalsParentGoalSearchResult> {
-    return this.client.get("/goals/parent_goal_search", input);
+  async searchParentGoal(input: GoalsSearchParentGoalInput): Promise<GoalsSearchParentGoalResult> {
+    return this.client.get("/goals/search_parent_goal", input);
   }
 
   async addAccessMembers(input: GoalsAddAccessMembersInput): Promise<GoalsAddAccessMembersResult> {
@@ -8522,13 +8522,13 @@ export default {
     useListAccessMembers: (input: GoalsListAccessMembersInput) =>
       useQuery<GoalsListAccessMembersResult>(() => defaultApiClient.apiNamespaceGoals.listAccessMembers(input)),
 
-    parentGoalSearch: (input: GoalsParentGoalSearchInput) => defaultApiClient.apiNamespaceGoals.parentGoalSearch(input),
-    useParentGoalSearch: (input: GoalsParentGoalSearchInput) =>
-      useQuery<GoalsParentGoalSearchResult>(() => defaultApiClient.apiNamespaceGoals.parentGoalSearch(input)),
-
     listCheckIns: (input: GoalsListCheckInsInput) => defaultApiClient.apiNamespaceGoals.listCheckIns(input),
     useListCheckIns: (input: GoalsListCheckInsInput) =>
       useQuery<GoalsListCheckInsResult>(() => defaultApiClient.apiNamespaceGoals.listCheckIns(input)),
+
+    searchParentGoal: (input: GoalsSearchParentGoalInput) => defaultApiClient.apiNamespaceGoals.searchParentGoal(input),
+    useSearchParentGoal: (input: GoalsSearchParentGoalInput) =>
+      useQuery<GoalsSearchParentGoalResult>(() => defaultApiClient.apiNamespaceGoals.searchParentGoal(input)),
 
     listDiscussions: (input: GoalsListDiscussionsInput) => defaultApiClient.apiNamespaceGoals.listDiscussions(input),
     useListDiscussions: (input: GoalsListDiscussionsInput) =>

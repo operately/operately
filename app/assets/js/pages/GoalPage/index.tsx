@@ -463,7 +463,7 @@ function useParentGoalSearch(goal: Goal): GoalPage.Props["parentGoalSearch"] {
   const paths = usePaths();
 
   return async ({ query }: { query: string }): Promise<GoalPage.ParentGoal[]> => {
-    const data = await Api.goals.parentGoalSearch({ query: query.trim(), goalId: goal.id });
+    const data = await Api.goals.searchParentGoal({ query: query.trim(), goalId: goal.id });
     const goals = data.goals.map((g) => parseParentGoalForTurboUi(paths, g));
 
     return goals.map((g) => g!);

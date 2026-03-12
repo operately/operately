@@ -546,15 +546,15 @@ defmodule OperatelyWeb.Api.GoalsTest do
     end
   end
 
-  describe "parent goal search" do
+  describe "search parent goal" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, [:goals, :parent_goal_search], %{query: ""})
+      assert {401, _} = query(ctx.conn, [:goals, :search_parent_goal], %{query: ""})
     end
 
     test "it requires a goal_id and query", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = query(ctx.conn, [:goals, :parent_goal_search], %{})
+      assert {400, res} = query(ctx.conn, [:goals, :search_parent_goal], %{})
       assert res.message == "Missing required fields: query, goal_id"
     end
 
@@ -562,7 +562,7 @@ defmodule OperatelyWeb.Api.GoalsTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       goal_id = Ecto.UUID.generate() |> Paths.goal_id()
-      assert {404, res} = query(ctx.conn, [:goals, :parent_goal_search], %{goal_id: goal_id, query: ""})
+      assert {404, res} = query(ctx.conn, [:goals, :search_parent_goal], %{goal_id: goal_id, query: ""})
       assert res.message == "Goal not found"
     end
 
@@ -573,7 +573,7 @@ defmodule OperatelyWeb.Api.GoalsTest do
 
       inputs = %{goal_id: Paths.goal_id(ctx.goal), query: ""}
 
-      assert {200, res} = query(ctx.conn, [:goals, :parent_goal_search], inputs)
+      assert {200, res} = query(ctx.conn, [:goals, :search_parent_goal], inputs)
       assert length(res.goals) == 2
     end
 
@@ -584,7 +584,7 @@ defmodule OperatelyWeb.Api.GoalsTest do
 
       inputs = %{goal_id: Paths.goal_id(ctx.goal), query: "goal1"}
 
-      assert {200, res} = query(ctx.conn, [:goals, :parent_goal_search], inputs)
+      assert {200, res} = query(ctx.conn, [:goals, :search_parent_goal], inputs)
       assert length(res.goals) == 1
       assert hd(res.goals).id == Paths.goal_id(ctx.parent_goal1)
     end
