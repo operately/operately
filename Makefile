@@ -19,6 +19,9 @@ gen:
 gen.api.docs:
 	./devenv bash -c "cd app && mix operately.gen.api.docs"
 
+gen.api.catalog:
+	./devenv bash -c "cd app && mix operately.gen.api.catalog"
+
 gen.api.docs.ci:
 	$(MAKE) test.up
 	./devenv bash -c "cd app && mix local.hex --force --if-missing && mix local.rebar --force --if-missing"
@@ -81,6 +84,16 @@ turboui.build:
 
 turboui.test:
 	./devenv bash -c "cd turboui && npm install && npm run test"
+
+cli.build:
+	./devenv bash -c "cd cli && npm install && npm run build"
+
+cli.test:
+	./devenv bash -c "cd cli && npm install && npm run test"
+
+gen.cli.catalog:
+	$(MAKE) gen.api.catalog
+	./devenv bash -c "cd cli && npm install && npm run gen:commands"
 
 dev.shell:
 	./devenv shell
@@ -237,6 +250,10 @@ test.dialyzer:
 
 test.tsc.lint:
 	./devenv bash -c "cd app && npx tsc --noEmit -p tsconfig.lint.json"
+
+test.cli.catalog.sync:
+	$(MAKE) gen.api.catalog
+	./devenv bash -c "cd cli && npm install && npm run check:catalog"
 
 test.pr.name:
 	ruby scripts/pr-name-check
