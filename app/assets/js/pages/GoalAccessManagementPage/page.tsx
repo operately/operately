@@ -162,7 +162,7 @@ function MemberMenu({ member, role }: { member: People.Person; role: string | nu
   const { goal } = useLoadedData();
   const refresh = Pages.useRefresh();
   const [update] = Api.goals.useUpdateAccessMember();
-  const [remove] = Api.goals.useRemoveAccessMember();
+  const [remove] = Api.goals.useDeleteAccessMember();
 
   const canEdit = goal.permissions?.canEdit ?? false;
   if (!canEdit || role) return null;

@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Goals.RemoveAccessMember do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Goals.DeleteAccessMember do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "goals/remove_access_member"
+  def mutation_name, do: "goals/delete_access_member"
 
   @impl true
   def setup(ctx) do

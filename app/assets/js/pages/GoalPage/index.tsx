@@ -67,8 +67,8 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeChecklist: true,
         }).then((d) => d.goal),
         workMap: getWorkMap({ parentGoalId: params.id, includeAssignees: true }).then((d) => d.workMap),
-        checkIns: Api.goals.getCheckIns({ goalId: params.id }).then((d) => d.checkIns),
-        discussions: Api.goals.getDiscussions({ goalId: params.id }).then((d) => d.discussions),
+        checkIns: Api.goals.listCheckIns({ goalId: params.id }).then((d) => d.checkIns),
+        discussions: Api.goals.listDiscussions({ goalId: params.id }).then((d) => d.discussions),
       }),
   });
 }
@@ -463,7 +463,7 @@ function useParentGoalSearch(goal: Goal): GoalPage.Props["parentGoalSearch"] {
   const paths = usePaths();
 
   return async ({ query }: { query: string }): Promise<GoalPage.ParentGoal[]> => {
-    const data = await Api.goals.parentGoalSearch({ query: query.trim(), goalId: goal.id });
+    const data = await Api.goals.searchParentGoal({ query: query.trim(), goalId: goal.id });
     const goals = data.goals.map((g) => parseParentGoalForTurboUi(paths, g));
 
     return goals.map((g) => g!);

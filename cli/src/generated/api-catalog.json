@@ -14780,7 +14780,7 @@
           },
           "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "goals",
@@ -14886,7 +14886,7 @@
           },
           "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -14897,7 +14897,7 @@
           },
           "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "goals",
@@ -14962,6 +14962,52 @@
       "method": "POST"
     },
     {
+      "name": "delete_access_member",
+      "type": "mutation",
+      "path": "/api/external/v1/goals/delete_access_member",
+      "handler": "OperatelyWeb.Api.Goals.DeleteAccessMember",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "goals",
+      "inputs": [
+        {
+          "default": null,
+          "name": "goal_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "person_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "goals/delete_access_member",
+      "method": "POST"
+    },
+    {
       "name": "delete_check",
       "type": "mutation",
       "path": "/api/external/v1/goals/delete_check",
@@ -15022,7 +15068,7 @@
           },
           "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "goals",
@@ -15054,82 +15100,6 @@
       "method": "POST"
     },
     {
-      "name": "get_check_ins",
-      "type": "query",
-      "path": "/api/external/v1/goals/get_check_ins",
-      "handler": "OperatelyWeb.Api.Queries.GetGoalCheckIns",
-      "outputs": [
-        {
-          "default": null,
-          "name": "check_ins",
-          "type": {
-            "item": {
-              "name": "goal_progress_update",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": "goals",
-      "inputs": [
-        {
-          "default": null,
-          "name": "goal_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "goals/get_check_ins",
-      "method": "GET"
-    },
-    {
-      "name": "get_discussions",
-      "type": "query",
-      "path": "/api/external/v1/goals/get_discussions",
-      "handler": "OperatelyWeb.Api.Goals.GetDiscussions",
-      "outputs": [
-        {
-          "default": null,
-          "name": "discussions",
-          "type": {
-            "item": {
-              "name": "discussion",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": "goals",
-      "inputs": [
-        {
-          "default": null,
-          "name": "goal_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "goals/get_discussions",
-      "method": "GET"
-    },
-    {
       "name": "list_access_members",
       "type": "query",
       "path": "/api/external/v1/goals/list_access_members",
@@ -15147,7 +15117,7 @@
           },
           "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "goals",
@@ -15168,10 +15138,86 @@
       "method": "GET"
     },
     {
-      "name": "parent_goal_search",
+      "name": "list_check_ins",
       "type": "query",
-      "path": "/api/external/v1/goals/parent_goal_search",
-      "handler": "OperatelyWeb.Api.Goals.ParentGoalSearch",
+      "path": "/api/external/v1/goals/list_check_ins",
+      "handler": "OperatelyWeb.Api.Queries.ListGoalCheckIns",
+      "outputs": [
+        {
+          "default": null,
+          "name": "check_ins",
+          "type": {
+            "item": {
+              "name": "goal_progress_update",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "goals",
+      "inputs": [
+        {
+          "default": null,
+          "name": "goal_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "goals/list_check_ins",
+      "method": "GET"
+    },
+    {
+      "name": "list_discussions",
+      "type": "query",
+      "path": "/api/external/v1/goals/list_discussions",
+      "handler": "OperatelyWeb.Api.Goals.ListDiscussions",
+      "outputs": [
+        {
+          "default": null,
+          "name": "discussions",
+          "type": {
+            "item": {
+              "name": "discussion",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "goals",
+      "inputs": [
+        {
+          "default": null,
+          "name": "goal_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "goals/list_discussions",
+      "method": "GET"
+    },
+    {
+      "name": "search_parent_goal",
+      "type": "query",
+      "path": "/api/external/v1/goals/search_parent_goal",
+      "handler": "OperatelyWeb.Api.Goals.SearchParentGoal",
       "outputs": [
         {
           "default": null,
@@ -15213,54 +15259,8 @@
           "nullable": false
         }
       ],
-      "full_name": "goals/parent_goal_search",
+      "full_name": "goals/search_parent_goal",
       "method": "GET"
-    },
-    {
-      "name": "remove_access_member",
-      "type": "mutation",
-      "path": "/api/external/v1/goals/remove_access_member",
-      "handler": "OperatelyWeb.Api.Goals.RemoveAccessMember",
-      "outputs": [
-        {
-          "default": null,
-          "name": "success",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": "goals",
-      "inputs": [
-        {
-          "default": null,
-          "name": "goal_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "person_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "goals/remove_access_member",
-      "method": "POST"
     },
     {
       "name": "toggle_check",
@@ -15323,7 +15323,7 @@
           },
           "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "goals",
@@ -15369,7 +15369,7 @@
           },
           "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "goals",
@@ -15426,7 +15426,7 @@
           },
           "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "goals",
@@ -15586,7 +15586,7 @@
           },
           "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "goals",
@@ -15632,7 +15632,7 @@
           },
           "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "goals",
@@ -15678,7 +15678,7 @@
           },
           "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "goals",
@@ -15724,7 +15724,7 @@
           },
           "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "goals",
@@ -15770,7 +15770,7 @@
           },
           "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "goals",
@@ -15816,7 +15816,7 @@
           },
           "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "goals",
@@ -15862,7 +15862,7 @@
           },
           "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "goals",
@@ -15908,7 +15908,7 @@
           },
           "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "goals",
@@ -15998,7 +15998,7 @@
           },
           "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "goals",
@@ -16055,7 +16055,7 @@
           },
           "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "goals",
@@ -27647,6 +27647,6 @@
     }
   ],
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-12T15:22:51Z",
+  "generated_at": "2026-03-12T21:13:25Z",
   "schema_version": 1
 }
