@@ -30,17 +30,67 @@ When multiple options are used together, command flags win, then environment var
 
 ### Login
 
-Save a token (and optional base URL) to a profile:
+Save a token to a profile, and optionally set the API base URL for that profile:
 
 ```bash
 operately auth login --token <token> [--base-url <url>] [--profile <name>]
 ```
 
+Use `--base-url` when your token should talk to a non-default environment (for example staging or local).
+
+If you omit `--base-url`, the CLI uses the default production URL:
+
+`https://app.operately.com`
+
+Good pattern: one profile per environment.
+
+- `default` profile -> production URL
+- `staging` profile -> staging URL
+- `local` profile -> localhost URL
+
 Examples:
 
 ```bash
+# Production profile (default base URL)
 operately auth login --token op_live_xxx
-operately auth login --token op_live_xxx --profile staging --base-url https://staging.operately.com
+
+# Staging profile (custom base URL)
+operately auth login --token op_staging_xxx --profile staging --base-url https://staging.operately.com
+
+# Local profile
+operately auth login --token op_local_xxx --profile local --base-url http://localhost:4000
+```
+
+#### How Base URL Is Resolved
+
+For each command, the CLI resolves the Base URL in this order:
+
+1. `--base-url` passed on the command
+2. `OPERATELY_BASE_URL` environment variable
+3. Base URL saved in the selected profile
+4. Default: `https://app.operately.com`
+
+Profile selection also has an order (because profile affects step 3):
+
+1. `--profile` passed on the command
+2. `OPERATELY_PROFILE` environment variable
+3. Current active profile
+4. `default`
+
+Practical examples:
+
+```bash
+# Uses https://app.operately.com (if no env/profile base URL is set)
+operately get_me
+
+# Uses saved staging profile base URL
+operately get_me --profile staging
+
+# Uses env var, even if profile has another URL
+OPERATELY_BASE_URL=https://preview.operately.com operately get_me --profile staging
+
+# Uses explicit flag (highest priority)
+operately get_me --profile staging --base-url http://localhost:4000
 ```
 
 ### Status
