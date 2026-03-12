@@ -67,7 +67,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeChecklist: true,
         }).then((d) => d.goal),
         workMap: getWorkMap({ parentGoalId: params.id, includeAssignees: true }).then((d) => d.workMap),
-        checkIns: Api.goals.getCheckIns({ goalId: params.id }).then((d) => d.checkIns),
+        checkIns: Api.goals.listCheckIns({ goalId: params.id }).then((d) => d.checkIns),
         discussions: Api.goals.getDiscussions({ goalId: params.id }).then((d) => d.discussions),
       }),
   });

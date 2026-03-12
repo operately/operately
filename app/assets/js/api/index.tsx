@@ -2771,14 +2771,6 @@ export interface GlobalSearchResult {
   people: Person[];
 }
 
-export interface GoalsGetCheckInsInput {
-  goalId: Id;
-}
-
-export interface GoalsGetCheckInsResult {
-  checkIns?: GoalProgressUpdate[] | null;
-}
-
 export interface GoalsGetDiscussionsInput {
   goalId: Id;
 }
@@ -2793,6 +2785,14 @@ export interface GoalsListAccessMembersInput {
 
 export interface GoalsListAccessMembersResult {
   people: Person[] | null;
+}
+
+export interface GoalsListCheckInsInput {
+  goalId: Id;
+}
+
+export interface GoalsListCheckInsResult {
+  checkIns: GoalProgressUpdate[];
 }
 
 export interface GoalsParentGoalSearchInput {
@@ -5628,16 +5628,16 @@ class ApiNamespaceProjects {
 class ApiNamespaceGoals {
   constructor(private client: ApiClient) {}
 
-  async getCheckIns(input: GoalsGetCheckInsInput): Promise<GoalsGetCheckInsResult> {
-    return this.client.get("/goals/get_check_ins", input);
-  }
-
   async getDiscussions(input: GoalsGetDiscussionsInput): Promise<GoalsGetDiscussionsResult> {
     return this.client.get("/goals/get_discussions", input);
   }
 
   async listAccessMembers(input: GoalsListAccessMembersInput): Promise<GoalsListAccessMembersResult> {
     return this.client.get("/goals/list_access_members", input);
+  }
+
+  async listCheckIns(input: GoalsListCheckInsInput): Promise<GoalsListCheckInsResult> {
+    return this.client.get("/goals/list_check_ins", input);
   }
 
   async parentGoalSearch(input: GoalsParentGoalSearchInput): Promise<GoalsParentGoalSearchResult> {
@@ -8526,13 +8526,13 @@ export default {
     useParentGoalSearch: (input: GoalsParentGoalSearchInput) =>
       useQuery<GoalsParentGoalSearchResult>(() => defaultApiClient.apiNamespaceGoals.parentGoalSearch(input)),
 
+    listCheckIns: (input: GoalsListCheckInsInput) => defaultApiClient.apiNamespaceGoals.listCheckIns(input),
+    useListCheckIns: (input: GoalsListCheckInsInput) =>
+      useQuery<GoalsListCheckInsResult>(() => defaultApiClient.apiNamespaceGoals.listCheckIns(input)),
+
     getDiscussions: (input: GoalsGetDiscussionsInput) => defaultApiClient.apiNamespaceGoals.getDiscussions(input),
     useGetDiscussions: (input: GoalsGetDiscussionsInput) =>
       useQuery<GoalsGetDiscussionsResult>(() => defaultApiClient.apiNamespaceGoals.getDiscussions(input)),
-
-    getCheckIns: (input: GoalsGetCheckInsInput) => defaultApiClient.apiNamespaceGoals.getCheckIns(input),
-    useGetCheckIns: (input: GoalsGetCheckInsInput) =>
-      useQuery<GoalsGetCheckInsResult>(() => defaultApiClient.apiNamespaceGoals.getCheckIns(input)),
 
     updateName: (input: GoalsUpdateNameInput) => defaultApiClient.apiNamespaceGoals.updateName(input),
     useUpdateName: () =>
