@@ -2776,7 +2776,7 @@ export interface GoalsListAccessMembersInput {
 }
 
 export interface GoalsListAccessMembersResult {
-  people: Person[] | null;
+  people: Person[];
 }
 
 export interface GoalsListCheckInsInput {
@@ -3790,7 +3790,7 @@ export interface GoalsAddAccessMembersInput {
 }
 
 export interface GoalsAddAccessMembersResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 export interface GoalsAddCheckInput {
@@ -3812,8 +3812,8 @@ export interface GoalsAddTargetInput {
 }
 
 export interface GoalsAddTargetResult {
-  targetId: Id | null;
-  success: boolean | null;
+  targetId: Id;
+  success: boolean;
 }
 
 export interface GoalsDeleteCheckInput {
@@ -3831,7 +3831,7 @@ export interface GoalsDeleteTargetInput {
 }
 
 export interface GoalsDeleteTargetResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 export interface GoalsRemoveAccessMemberInput {
@@ -3840,7 +3840,7 @@ export interface GoalsRemoveAccessMemberInput {
 }
 
 export interface GoalsRemoveAccessMemberResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 export interface GoalsToggleCheckInput {
@@ -3858,7 +3858,7 @@ export interface GoalsUpdateAccessLevelsInput {
 }
 
 export interface GoalsUpdateAccessLevelsResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 export interface GoalsUpdateAccessMemberInput {
@@ -3868,7 +3868,7 @@ export interface GoalsUpdateAccessMemberInput {
 }
 
 export interface GoalsUpdateAccessMemberResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 export interface GoalsUpdateChampionInput {
@@ -3877,7 +3877,7 @@ export interface GoalsUpdateChampionInput {
 }
 
 export interface GoalsUpdateChampionResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 export interface GoalsUpdateCheckInput {
@@ -3906,7 +3906,7 @@ export interface GoalsUpdateDescriptionInput {
 }
 
 export interface GoalsUpdateDescriptionResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 export interface GoalsUpdateDueDateInput {
@@ -3915,7 +3915,7 @@ export interface GoalsUpdateDueDateInput {
 }
 
 export interface GoalsUpdateDueDateResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 export interface GoalsUpdateNameInput {
@@ -3924,7 +3924,7 @@ export interface GoalsUpdateNameInput {
 }
 
 export interface GoalsUpdateNameResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 export interface GoalsUpdateParentGoalInput {
@@ -3933,7 +3933,7 @@ export interface GoalsUpdateParentGoalInput {
 }
 
 export interface GoalsUpdateParentGoalResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 export interface GoalsUpdateReviewerInput {
@@ -3942,7 +3942,7 @@ export interface GoalsUpdateReviewerInput {
 }
 
 export interface GoalsUpdateReviewerResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 export interface GoalsUpdateSpaceInput {
@@ -3951,7 +3951,7 @@ export interface GoalsUpdateSpaceInput {
 }
 
 export interface GoalsUpdateSpaceResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 export interface GoalsUpdateStartDateInput {
@@ -3960,7 +3960,7 @@ export interface GoalsUpdateStartDateInput {
 }
 
 export interface GoalsUpdateStartDateResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 export interface GoalsUpdateTargetInput {
@@ -3973,7 +3973,7 @@ export interface GoalsUpdateTargetInput {
 }
 
 export interface GoalsUpdateTargetResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 export interface GoalsUpdateTargetIndexInput {
@@ -3983,7 +3983,7 @@ export interface GoalsUpdateTargetIndexInput {
 }
 
 export interface GoalsUpdateTargetIndexResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 export interface GoalsUpdateTargetValueInput {
@@ -3993,7 +3993,7 @@ export interface GoalsUpdateTargetValueInput {
 }
 
 export interface GoalsUpdateTargetValueResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 export interface GrantResourceAccessInput {
