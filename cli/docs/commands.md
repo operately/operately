@@ -101,13 +101,13 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `goals add_access_members` | `op goals add_access_members` | `POST` | `/api/external/v1/goals/add_access_members` |
 | `goals add_check` | `op goals add_check` | `POST` | `/api/external/v1/goals/add_check` |
 | `goals add_target` | `op goals add_target` | `POST` | `/api/external/v1/goals/add_target` |
+| `goals delete_access_member` | `op goals delete_access_member` | `POST` | `/api/external/v1/goals/delete_access_member` |
 | `goals delete_check` | `op goals delete_check` | `POST` | `/api/external/v1/goals/delete_check` |
 | `goals delete_target` | `op goals delete_target` | `POST` | `/api/external/v1/goals/delete_target` |
-| `goals get_check_ins` | `op goals get_check_ins` | `GET` | `/api/external/v1/goals/get_check_ins` |
-| `goals get_discussions` | `op goals get_discussions` | `GET` | `/api/external/v1/goals/get_discussions` |
 | `goals list_access_members` | `op goals list_access_members` | `GET` | `/api/external/v1/goals/list_access_members` |
-| `goals parent_goal_search` | `op goals parent_goal_search` | `GET` | `/api/external/v1/goals/parent_goal_search` |
-| `goals remove_access_member` | `op goals remove_access_member` | `POST` | `/api/external/v1/goals/remove_access_member` |
+| `goals list_check_ins` | `op goals list_check_ins` | `GET` | `/api/external/v1/goals/list_check_ins` |
+| `goals list_discussions` | `op goals list_discussions` | `GET` | `/api/external/v1/goals/list_discussions` |
+| `goals search_parent_goal` | `op goals search_parent_goal` | `GET` | `/api/external/v1/goals/search_parent_goal` |
 | `goals toggle_check` | `op goals toggle_check` | `POST` | `/api/external/v1/goals/toggle_check` |
 | `goals update_access_levels` | `op goals update_access_levels` | `POST` | `/api/external/v1/goals/update_access_levels` |
 | `goals update_access_member` | `op goals update_access_member` | `POST` | `/api/external/v1/goals/update_access_member` |

@@ -2771,36 +2771,36 @@ export interface GlobalSearchResult {
   people: Person[];
 }
 
-export interface GoalsGetCheckInsInput {
-  goalId: Id;
-}
-
-export interface GoalsGetCheckInsResult {
-  checkIns?: GoalProgressUpdate[] | null;
-}
-
-export interface GoalsGetDiscussionsInput {
-  goalId: Id;
-}
-
-export interface GoalsGetDiscussionsResult {
-  discussions: Discussion[] | null;
-}
-
 export interface GoalsListAccessMembersInput {
   goalId: Id;
 }
 
 export interface GoalsListAccessMembersResult {
-  people: Person[] | null;
+  people: Person[];
 }
 
-export interface GoalsParentGoalSearchInput {
+export interface GoalsListCheckInsInput {
+  goalId: Id;
+}
+
+export interface GoalsListCheckInsResult {
+  checkIns: GoalProgressUpdate[];
+}
+
+export interface GoalsListDiscussionsInput {
+  goalId: Id;
+}
+
+export interface GoalsListDiscussionsResult {
+  discussions: Discussion[];
+}
+
+export interface GoalsSearchParentGoalInput {
   query: string;
   goalId: Id;
 }
 
-export interface GoalsParentGoalSearchResult {
+export interface GoalsSearchParentGoalResult {
   goals: Goal[];
 }
 
@@ -3790,7 +3790,7 @@ export interface GoalsAddAccessMembersInput {
 }
 
 export interface GoalsAddAccessMembersResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 export interface GoalsAddCheckInput {
@@ -3812,8 +3812,17 @@ export interface GoalsAddTargetInput {
 }
 
 export interface GoalsAddTargetResult {
-  targetId: Id | null;
-  success: boolean | null;
+  targetId: Id;
+  success: boolean;
+}
+
+export interface GoalsDeleteAccessMemberInput {
+  goalId: Id;
+  personId: Id;
+}
+
+export interface GoalsDeleteAccessMemberResult {
+  success: boolean;
 }
 
 export interface GoalsDeleteCheckInput {
@@ -3831,16 +3840,7 @@ export interface GoalsDeleteTargetInput {
 }
 
 export interface GoalsDeleteTargetResult {
-  success: boolean | null;
-}
-
-export interface GoalsRemoveAccessMemberInput {
-  goalId: Id;
-  personId: Id;
-}
-
-export interface GoalsRemoveAccessMemberResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 export interface GoalsToggleCheckInput {
@@ -3858,7 +3858,7 @@ export interface GoalsUpdateAccessLevelsInput {
 }
 
 export interface GoalsUpdateAccessLevelsResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 export interface GoalsUpdateAccessMemberInput {
@@ -3868,7 +3868,7 @@ export interface GoalsUpdateAccessMemberInput {
 }
 
 export interface GoalsUpdateAccessMemberResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 export interface GoalsUpdateChampionInput {
@@ -3877,7 +3877,7 @@ export interface GoalsUpdateChampionInput {
 }
 
 export interface GoalsUpdateChampionResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 export interface GoalsUpdateCheckInput {
@@ -3906,7 +3906,7 @@ export interface GoalsUpdateDescriptionInput {
 }
 
 export interface GoalsUpdateDescriptionResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 export interface GoalsUpdateDueDateInput {
@@ -3915,7 +3915,7 @@ export interface GoalsUpdateDueDateInput {
 }
 
 export interface GoalsUpdateDueDateResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 export interface GoalsUpdateNameInput {
@@ -3924,7 +3924,7 @@ export interface GoalsUpdateNameInput {
 }
 
 export interface GoalsUpdateNameResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 export interface GoalsUpdateParentGoalInput {
@@ -3933,7 +3933,7 @@ export interface GoalsUpdateParentGoalInput {
 }
 
 export interface GoalsUpdateParentGoalResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 export interface GoalsUpdateReviewerInput {
@@ -3942,7 +3942,7 @@ export interface GoalsUpdateReviewerInput {
 }
 
 export interface GoalsUpdateReviewerResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 export interface GoalsUpdateSpaceInput {
@@ -3951,7 +3951,7 @@ export interface GoalsUpdateSpaceInput {
 }
 
 export interface GoalsUpdateSpaceResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 export interface GoalsUpdateStartDateInput {
@@ -3960,7 +3960,7 @@ export interface GoalsUpdateStartDateInput {
 }
 
 export interface GoalsUpdateStartDateResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 export interface GoalsUpdateTargetInput {
@@ -3973,7 +3973,7 @@ export interface GoalsUpdateTargetInput {
 }
 
 export interface GoalsUpdateTargetResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 export interface GoalsUpdateTargetIndexInput {
@@ -3983,7 +3983,7 @@ export interface GoalsUpdateTargetIndexInput {
 }
 
 export interface GoalsUpdateTargetIndexResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 export interface GoalsUpdateTargetValueInput {
@@ -3993,7 +3993,7 @@ export interface GoalsUpdateTargetValueInput {
 }
 
 export interface GoalsUpdateTargetValueResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 export interface GrantResourceAccessInput {
@@ -5628,20 +5628,20 @@ class ApiNamespaceProjects {
 class ApiNamespaceGoals {
   constructor(private client: ApiClient) {}
 
-  async getCheckIns(input: GoalsGetCheckInsInput): Promise<GoalsGetCheckInsResult> {
-    return this.client.get("/goals/get_check_ins", input);
-  }
-
-  async getDiscussions(input: GoalsGetDiscussionsInput): Promise<GoalsGetDiscussionsResult> {
-    return this.client.get("/goals/get_discussions", input);
-  }
-
   async listAccessMembers(input: GoalsListAccessMembersInput): Promise<GoalsListAccessMembersResult> {
     return this.client.get("/goals/list_access_members", input);
   }
 
-  async parentGoalSearch(input: GoalsParentGoalSearchInput): Promise<GoalsParentGoalSearchResult> {
-    return this.client.get("/goals/parent_goal_search", input);
+  async listCheckIns(input: GoalsListCheckInsInput): Promise<GoalsListCheckInsResult> {
+    return this.client.get("/goals/list_check_ins", input);
+  }
+
+  async listDiscussions(input: GoalsListDiscussionsInput): Promise<GoalsListDiscussionsResult> {
+    return this.client.get("/goals/list_discussions", input);
+  }
+
+  async searchParentGoal(input: GoalsSearchParentGoalInput): Promise<GoalsSearchParentGoalResult> {
+    return this.client.get("/goals/search_parent_goal", input);
   }
 
   async addAccessMembers(input: GoalsAddAccessMembersInput): Promise<GoalsAddAccessMembersResult> {
@@ -5656,16 +5656,16 @@ class ApiNamespaceGoals {
     return this.client.post("/goals/add_target", input);
   }
 
+  async deleteAccessMember(input: GoalsDeleteAccessMemberInput): Promise<GoalsDeleteAccessMemberResult> {
+    return this.client.post("/goals/delete_access_member", input);
+  }
+
   async deleteCheck(input: GoalsDeleteCheckInput): Promise<GoalsDeleteCheckResult> {
     return this.client.post("/goals/delete_check", input);
   }
 
   async deleteTarget(input: GoalsDeleteTargetInput): Promise<GoalsDeleteTargetResult> {
     return this.client.post("/goals/delete_target", input);
-  }
-
-  async removeAccessMember(input: GoalsRemoveAccessMemberInput): Promise<GoalsRemoveAccessMemberResult> {
-    return this.client.post("/goals/remove_access_member", input);
   }
 
   async toggleCheck(input: GoalsToggleCheckInput): Promise<GoalsToggleCheckResult> {
@@ -8522,17 +8522,17 @@ export default {
     useListAccessMembers: (input: GoalsListAccessMembersInput) =>
       useQuery<GoalsListAccessMembersResult>(() => defaultApiClient.apiNamespaceGoals.listAccessMembers(input)),
 
-    parentGoalSearch: (input: GoalsParentGoalSearchInput) => defaultApiClient.apiNamespaceGoals.parentGoalSearch(input),
-    useParentGoalSearch: (input: GoalsParentGoalSearchInput) =>
-      useQuery<GoalsParentGoalSearchResult>(() => defaultApiClient.apiNamespaceGoals.parentGoalSearch(input)),
+    listCheckIns: (input: GoalsListCheckInsInput) => defaultApiClient.apiNamespaceGoals.listCheckIns(input),
+    useListCheckIns: (input: GoalsListCheckInsInput) =>
+      useQuery<GoalsListCheckInsResult>(() => defaultApiClient.apiNamespaceGoals.listCheckIns(input)),
 
-    getDiscussions: (input: GoalsGetDiscussionsInput) => defaultApiClient.apiNamespaceGoals.getDiscussions(input),
-    useGetDiscussions: (input: GoalsGetDiscussionsInput) =>
-      useQuery<GoalsGetDiscussionsResult>(() => defaultApiClient.apiNamespaceGoals.getDiscussions(input)),
+    searchParentGoal: (input: GoalsSearchParentGoalInput) => defaultApiClient.apiNamespaceGoals.searchParentGoal(input),
+    useSearchParentGoal: (input: GoalsSearchParentGoalInput) =>
+      useQuery<GoalsSearchParentGoalResult>(() => defaultApiClient.apiNamespaceGoals.searchParentGoal(input)),
 
-    getCheckIns: (input: GoalsGetCheckInsInput) => defaultApiClient.apiNamespaceGoals.getCheckIns(input),
-    useGetCheckIns: (input: GoalsGetCheckInsInput) =>
-      useQuery<GoalsGetCheckInsResult>(() => defaultApiClient.apiNamespaceGoals.getCheckIns(input)),
+    listDiscussions: (input: GoalsListDiscussionsInput) => defaultApiClient.apiNamespaceGoals.listDiscussions(input),
+    useListDiscussions: (input: GoalsListDiscussionsInput) =>
+      useQuery<GoalsListDiscussionsResult>(() => defaultApiClient.apiNamespaceGoals.listDiscussions(input)),
 
     updateName: (input: GoalsUpdateNameInput) => defaultApiClient.apiNamespaceGoals.updateName(input),
     useUpdateName: () =>
@@ -8653,11 +8653,11 @@ export default {
         defaultApiClient.apiNamespaceGoals.updateChampion(input),
       ),
 
-    removeAccessMember: (input: GoalsRemoveAccessMemberInput) =>
-      defaultApiClient.apiNamespaceGoals.removeAccessMember(input),
-    useRemoveAccessMember: () =>
-      useMutation<GoalsRemoveAccessMemberInput, GoalsRemoveAccessMemberResult>((input) =>
-        defaultApiClient.apiNamespaceGoals.removeAccessMember(input),
+    deleteAccessMember: (input: GoalsDeleteAccessMemberInput) =>
+      defaultApiClient.apiNamespaceGoals.deleteAccessMember(input),
+    useDeleteAccessMember: () =>
+      useMutation<GoalsDeleteAccessMemberInput, GoalsDeleteAccessMemberResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.deleteAccessMember(input),
       ),
 
     addAccessMembers: (input: GoalsAddAccessMembersInput) => defaultApiClient.apiNamespaceGoals.addAccessMembers(input),

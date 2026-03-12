@@ -60,7 +60,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations do
       Mutations.Goals.AddTarget,
       Mutations.Goals.DeleteCheck,
       Mutations.Goals.DeleteTarget,
-      Mutations.Goals.RemoveAccessMember,
+      Mutations.Goals.DeleteAccessMember,
       Mutations.Goals.ToggleCheck,
       Mutations.Goals.UpdateAccessLevels,
       Mutations.Goals.UpdateAccessMember,
