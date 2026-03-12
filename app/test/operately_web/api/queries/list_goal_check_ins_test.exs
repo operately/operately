@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalCheckInsTest do
   alias Operately.Access.Binding
 
   defp request(ctx, params) do
-    query(ctx.conn, [:goals, :get_check_ins], params)
+    query(ctx.conn, [:goals, :list_check_ins], params)
   end
 
   describe "security" do

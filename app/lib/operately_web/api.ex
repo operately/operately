@@ -7,13 +7,13 @@ defmodule OperatelyWeb.Api do
 
       namespace(:goals) do
         query(:list_access_members, OperatelyWeb.Api.Goals.ListAccessMembers)
-        query(:get_check_ins, Q.GetGoalCheckIns)
-        query(:get_discussions, OperatelyWeb.Api.Goals.GetDiscussions)
-        query(:parent_goal_search, OperatelyWeb.Api.Goals.ParentGoalSearch)
+        query(:list_check_ins, Q.ListGoalCheckIns)
+        query(:list_discussions, OperatelyWeb.Api.Goals.ListDiscussions)
+        query(:search_parent_goal, OperatelyWeb.Api.Goals.SearchParentGoal)
 
         mutation(:add_access_members, OperatelyWeb.Api.Goals.AddAccessMembers)
         mutation(:update_access_member, OperatelyWeb.Api.Goals.UpdateAccessMember)
-        mutation(:remove_access_member, OperatelyWeb.Api.Goals.RemoveAccessMember)
+        mutation(:delete_access_member, OperatelyWeb.Api.Goals.DeleteAccessMember)
         mutation(:update_name, OperatelyWeb.Api.Goals.UpdateName)
         mutation(:update_description, OperatelyWeb.Api.Goals.UpdateDescription)
         mutation(:update_due_date, OperatelyWeb.Api.Goals.UpdateDueDate)

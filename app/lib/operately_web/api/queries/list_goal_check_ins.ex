@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetGoalCheckIns do
+defmodule OperatelyWeb.Api.Queries.ListGoalCheckIns do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
   alias Operately.Repo
@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalCheckIns do
   end
 
   outputs do
-    field? :check_ins, list_of(:goal_progress_update), null: true
+    field :check_ins, list_of(:goal_progress_update), null: false
   end
 
   def call(conn, inputs) do

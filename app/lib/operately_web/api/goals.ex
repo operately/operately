@@ -6,7 +6,7 @@ defmodule OperatelyWeb.Api.Goals do
   alias Operately.Access.Binding
   alias OperatelyWeb.Api.Serializer
 
-  defmodule GetDiscussions do
+  defmodule ListDiscussions do
     use TurboConnect.Query
 
     inputs do
@@ -14,7 +14,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field :discussions, list_of(:discussion), null: true
+      field :discussions, list_of(:discussion), null: false
     end
 
     def call(conn, inputs) do
@@ -30,7 +30,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
   end
 
-  defmodule ParentGoalSearch do
+  defmodule SearchParentGoal do
     use TurboConnect.Query
 
     inputs do
@@ -64,7 +64,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field :success, :boolean, null: true
+      field :success, :boolean, null: false
     end
 
     def call(conn, inputs) do
@@ -96,7 +96,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field :success, :boolean, null: true
+      field :success, :boolean, null: false
     end
 
     def call(conn, inputs) do
@@ -130,7 +130,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field :success, :boolean, null: true
+      field :success, :boolean, null: false
     end
 
     def call(conn, inputs) do
@@ -162,7 +162,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field :success, :boolean, null: true
+      field :success, :boolean, null: false
     end
 
     def call(conn, inputs) do
@@ -194,7 +194,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field :success, :boolean, null: true
+      field :success, :boolean, null: false
     end
 
     def call(conn, inputs) do
@@ -226,7 +226,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field :success, :boolean, null: true
+      field :success, :boolean, null: false
     end
 
     def call(conn, inputs) do
@@ -261,8 +261,8 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field :target_id, :id, null: true
-      field :success, :boolean, null: true
+      field :target_id, :id, null: false
+      field :success, :boolean, null: false
     end
 
     def call(conn, inputs) do
@@ -295,7 +295,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field :success, :boolean, null: true
+      field :success, :boolean, null: false
     end
 
     def call(conn, inputs) do
@@ -332,7 +332,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field :success, :boolean, null: true
+      field :success, :boolean, null: false
     end
 
     def call(conn, inputs) do
@@ -373,7 +373,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field :success, :boolean, null: true
+      field :success, :boolean, null: false
     end
 
     def call(conn, inputs) do
@@ -409,7 +409,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field :success, :boolean, null: true
+      field :success, :boolean, null: false
     end
 
     def call(conn, inputs) do
@@ -443,7 +443,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field :success, :boolean, null: true
+      field :success, :boolean, null: false
     end
 
     def call(conn, inputs) do
@@ -475,7 +475,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field :success, :boolean, null: true
+      field :success, :boolean, null: false
     end
 
     def call(conn, inputs) do
@@ -507,7 +507,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field :success, :boolean, null: true
+      field :success, :boolean, null: false
     end
 
     def call(conn, inputs) do
@@ -537,7 +537,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field :people, list_of(:person), null: true
+      field :people, list_of(:person), null: false
     end
 
     def call(conn, inputs) do
@@ -562,7 +562,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field :success, :boolean, null: true
+      field :success, :boolean, null: false
     end
 
     def call(conn, inputs) do
@@ -586,7 +586,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field :success, :boolean, null: true
+      field :success, :boolean, null: false
     end
 
     def call(conn, inputs) do
@@ -600,7 +600,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
   end
 
-  defmodule RemoveAccessMember do
+  defmodule DeleteAccessMember do
     use TurboConnect.Mutation
 
     inputs do
@@ -609,7 +609,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field :success, :boolean, null: true
+      field :success, :boolean, null: false
     end
 
     def call(conn, inputs) do
