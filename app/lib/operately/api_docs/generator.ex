@@ -1,4 +1,5 @@
 defmodule Operately.ApiDocs.Generator do
+  alias Operately.ApiDocs.Catalog
   alias Operately.ApiDocs.Markdown
 
   @moduledoc false
@@ -6,8 +7,13 @@ defmodule Operately.ApiDocs.Generator do
   @default_api_module OperatelyWeb.Api.External
   @default_api_base_path "/api/external/v1"
   @default_out_dir "../tmp/generated/api-docs"
+  @default_cli_catalog_path "../cli/src/generated/api-catalog.json"
 
   def generate(opts \\ []) do
+    generate_docs(opts)
+  end
+
+  def generate_docs(opts \\ []) do
     out_dir = opts |> Keyword.get(:out_dir, @default_out_dir) |> Path.expand()
     api_module = Keyword.get(opts, :api_module, @default_api_module)
     api_base_path = Keyword.get(opts, :api_base_path, @default_api_base_path)
@@ -18,6 +24,29 @@ defmodule Operately.ApiDocs.Generator do
     %{
       out_dir: out_dir,
       api_docs_dir: Path.join(out_dir, "help/api"),
+      endpoint_count: length(catalog.endpoints),
+      query_count: length(catalog.queries),
+      mutation_count: length(catalog.mutations)
+    }
+  end
+
+  def generate_catalog(opts \\ []) do
+    out_dir = opts |> Keyword.get(:out_dir, @default_out_dir) |> Path.expand()
+    api_module = Keyword.get(opts, :api_module, @default_api_module)
+    api_base_path = Keyword.get(opts, :api_base_path, @default_api_base_path)
+    cli_catalog_path = opts |> Keyword.get(:cli_catalog_path, @default_cli_catalog_path) |> resolve_optional_path()
+
+    catalog = build_catalog(api_module, api_base_path)
+    catalog_payload = Catalog.payload(catalog, api_base_path)
+    docs_dir = Path.join(out_dir, "help/api")
+
+    write_catalog_file!(docs_dir, catalog_payload)
+    write_cli_catalog(cli_catalog_path, catalog_payload)
+
+    %{
+      out_dir: out_dir,
+      catalog_path: Path.join(docs_dir, "catalog.json"),
+      cli_catalog_path: cli_catalog_path,
       endpoint_count: length(catalog.endpoints),
       query_count: length(catalog.queries),
       mutation_count: length(catalog.mutations)
@@ -112,8 +141,21 @@ defmodule Operately.ApiDocs.Generator do
     end)
   end
 
+  defp write_catalog_file!(docs_dir, catalog_payload) do
+    write_file!(Path.join(docs_dir, "catalog.json"), Catalog.encode(catalog_payload))
+  end
+
+  defp write_cli_catalog(nil, _catalog_payload), do: :ok
+
+  defp write_cli_catalog(path, catalog_payload) do
+    write_file!(path, Catalog.encode(catalog_payload))
+  end
+
   defp write_file!(path, content) do
     File.mkdir_p!(Path.dirname(path))
     File.write!(path, content)
   end
+
+  defp resolve_optional_path(nil), do: nil
+  defp resolve_optional_path(path), do: Path.expand(path)
 end
