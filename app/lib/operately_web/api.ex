@@ -8,7 +8,7 @@ defmodule OperatelyWeb.Api do
       namespace(:goals) do
         query(:list_access_members, OperatelyWeb.Api.Goals.ListAccessMembers)
         query(:list_check_ins, Q.ListGoalCheckIns)
-        query(:get_discussions, OperatelyWeb.Api.Goals.GetDiscussions)
+        query(:list_discussions, OperatelyWeb.Api.Goals.ListDiscussions)
         query(:parent_goal_search, OperatelyWeb.Api.Goals.ParentGoalSearch)
 
         mutation(:add_access_members, OperatelyWeb.Api.Goals.AddAccessMembers)

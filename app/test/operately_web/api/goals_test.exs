@@ -590,15 +590,15 @@ defmodule OperatelyWeb.Api.GoalsTest do
     end
   end
 
-  describe "get discussions" do
+  describe "list discussions" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, [:goals, :get_discussions], %{})
+      assert {401, _} = query(ctx.conn, [:goals, :list_discussions], %{})
     end
 
     test "it requires a goal_id", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = query(ctx.conn, [:goals, :get_discussions], %{})
+      assert {400, res} = query(ctx.conn, [:goals, :list_discussions], %{})
       assert res.message == "Missing required fields: goal_id"
     end
 
@@ -606,7 +606,7 @@ defmodule OperatelyWeb.Api.GoalsTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       goal_id = Ecto.UUID.generate() |> Paths.goal_id()
-      assert {404, res} = query(ctx.conn, [:goals, :get_discussions], %{goal_id: goal_id})
+      assert {404, res} = query(ctx.conn, [:goals, :list_discussions], %{goal_id: goal_id})
       assert res.message == "Goal not found"
     end
 
@@ -614,7 +614,7 @@ defmodule OperatelyWeb.Api.GoalsTest do
       ctx = Factory.log_in_person(ctx, :creator)
       ctx = Factory.add_goal_discussion(ctx, :discussion, :goal)
 
-      assert {200, res} = query(ctx.conn, [:goals, :get_discussions], %{goal_id: Paths.goal_id(ctx.goal)})
+      assert {200, res} = query(ctx.conn, [:goals, :list_discussions], %{goal_id: Paths.goal_id(ctx.goal)})
       assert length(res.discussions) == 1
     end
   end
