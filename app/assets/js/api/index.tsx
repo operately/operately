@@ -3816,6 +3816,15 @@ export interface GoalsAddTargetResult {
   success: boolean;
 }
 
+export interface GoalsDeleteAccessMemberInput {
+  goalId: Id;
+  personId: Id;
+}
+
+export interface GoalsDeleteAccessMemberResult {
+  success: boolean;
+}
+
 export interface GoalsDeleteCheckInput {
   goalId: Id;
   checkId: Id;
@@ -3831,15 +3840,6 @@ export interface GoalsDeleteTargetInput {
 }
 
 export interface GoalsDeleteTargetResult {
-  success: boolean;
-}
-
-export interface GoalsRemoveAccessMemberInput {
-  goalId: Id;
-  personId: Id;
-}
-
-export interface GoalsRemoveAccessMemberResult {
   success: boolean;
 }
 
@@ -5656,16 +5656,16 @@ class ApiNamespaceGoals {
     return this.client.post("/goals/add_target", input);
   }
 
+  async deleteAccessMember(input: GoalsDeleteAccessMemberInput): Promise<GoalsDeleteAccessMemberResult> {
+    return this.client.post("/goals/delete_access_member", input);
+  }
+
   async deleteCheck(input: GoalsDeleteCheckInput): Promise<GoalsDeleteCheckResult> {
     return this.client.post("/goals/delete_check", input);
   }
 
   async deleteTarget(input: GoalsDeleteTargetInput): Promise<GoalsDeleteTargetResult> {
     return this.client.post("/goals/delete_target", input);
-  }
-
-  async removeAccessMember(input: GoalsRemoveAccessMemberInput): Promise<GoalsRemoveAccessMemberResult> {
-    return this.client.post("/goals/remove_access_member", input);
   }
 
   async toggleCheck(input: GoalsToggleCheckInput): Promise<GoalsToggleCheckResult> {
@@ -8653,11 +8653,11 @@ export default {
         defaultApiClient.apiNamespaceGoals.updateChampion(input),
       ),
 
-    removeAccessMember: (input: GoalsRemoveAccessMemberInput) =>
-      defaultApiClient.apiNamespaceGoals.removeAccessMember(input),
-    useRemoveAccessMember: () =>
-      useMutation<GoalsRemoveAccessMemberInput, GoalsRemoveAccessMemberResult>((input) =>
-        defaultApiClient.apiNamespaceGoals.removeAccessMember(input),
+    deleteAccessMember: (input: GoalsDeleteAccessMemberInput) =>
+      defaultApiClient.apiNamespaceGoals.deleteAccessMember(input),
+    useDeleteAccessMember: () =>
+      useMutation<GoalsDeleteAccessMemberInput, GoalsDeleteAccessMemberResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.deleteAccessMember(input),
       ),
 
     addAccessMembers: (input: GoalsAddAccessMembersInput) => defaultApiClient.apiNamespaceGoals.addAccessMembers(input),

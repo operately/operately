@@ -600,7 +600,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
   end
 
-  defmodule RemoveAccessMember do
+  defmodule DeleteAccessMember do
     use TurboConnect.Mutation
 
     inputs do

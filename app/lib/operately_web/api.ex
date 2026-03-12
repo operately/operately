@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api do
 
         mutation(:add_access_members, OperatelyWeb.Api.Goals.AddAccessMembers)
         mutation(:update_access_member, OperatelyWeb.Api.Goals.UpdateAccessMember)
-        mutation(:remove_access_member, OperatelyWeb.Api.Goals.RemoveAccessMember)
+        mutation(:delete_access_member, OperatelyWeb.Api.Goals.DeleteAccessMember)
         mutation(:update_name, OperatelyWeb.Api.Goals.UpdateName)
         mutation(:update_description, OperatelyWeb.Api.Goals.UpdateDescription)
         mutation(:update_due_date, OperatelyWeb.Api.Goals.UpdateDueDate)

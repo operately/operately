@@ -326,7 +326,7 @@ defmodule OperatelyWeb.Api.GoalsTest do
     end
   end
 
-  describe "remove access member" do
+  describe "delete access member" do
     setup ctx do
       ctx =
         ctx
@@ -340,13 +340,13 @@ defmodule OperatelyWeb.Api.GoalsTest do
     end
 
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, [:goals, :remove_access_member], %{})
+      assert {401, _} = mutation(ctx.conn, [:goals, :delete_access_member], %{})
     end
 
     test "it requires a goal_id and person_id", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:goals, :remove_access_member], %{})
+      assert {400, res} = mutation(ctx.conn, [:goals, :delete_access_member], %{})
       assert res.message == "Missing required fields: goal_id, person_id"
     end
 
@@ -354,17 +354,17 @@ defmodule OperatelyWeb.Api.GoalsTest do
       ctx = Factory.log_in_person(ctx, :editor)
 
       assert {403, _} =
-               mutation(ctx.conn, [:goals, :remove_access_member], %{
+               mutation(ctx.conn, [:goals, :delete_access_member], %{
                  goal_id: Paths.goal_id(ctx.goal),
                  person_id: Paths.person_id(ctx.member)
                })
     end
 
-    test "it removes the access member", ctx do
+    test "it deletes the access member", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
       assert {200, res} =
-               mutation(ctx.conn, [:goals, :remove_access_member], %{
+               mutation(ctx.conn, [:goals, :delete_access_member], %{
                  goal_id: Paths.goal_id(ctx.goal),
                  person_id: Paths.person_id(ctx.member)
                })
@@ -374,7 +374,7 @@ defmodule OperatelyWeb.Api.GoalsTest do
     end
   end
 
-  describe "remove access member - permissions" do
+  describe "delete access member - permissions" do
     setup ctx do
       ctx = register_and_log_in_account(ctx)
       creator = person_fixture(%{company_id: ctx.company.id})
@@ -390,7 +390,7 @@ defmodule OperatelyWeb.Api.GoalsTest do
         context = Access.get_context!(goal_id: goal.id)
         {:ok, _} = Access.bind_person(context, ctx.member.id, Binding.comment_access())
 
-        assert {code, res} = mutation(ctx.conn, [:goals, :remove_access_member], %{
+        assert {code, res} = mutation(ctx.conn, [:goals, :delete_access_member], %{
           goal_id: Paths.goal_id(goal),
           person_id: Paths.person_id(ctx.member)
         })
