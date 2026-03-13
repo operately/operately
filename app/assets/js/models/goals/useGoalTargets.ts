@@ -140,7 +140,7 @@ export function useGoalTargets({
       applyTargetsState(optimisticTargetsList, optimisticOrdering);
 
       try {
-        const response = await Api.goals.addTarget({
+        const response = await Api.goals.createTarget({
           goalId,
           name: inputs.name,
           startValue: inputs.startValue,

@@ -1,7 +1,7 @@
+import Api, { Milestone, MilestoneComment } from "@/api";
 import * as People from "@/models/people";
 import * as ReactionsModel from "@/models/reactions";
 import * as Time from "@/utils/time";
-import { Milestone, MilestoneComment } from "@/api";
 import { Timeline, parseContent, richContentToString } from "turboui";
 import { Paths } from "@/routes/paths";
 import { parseContextualDate } from "../contextualDates";
@@ -13,7 +13,8 @@ interface ParsedMilestonesForTurboUi {
 }
 
 export type { Milestone, MilestoneComment };
-export { getMilestone, usePostMilestoneComment } from "@/api";
+export { usePostMilestoneComment } from "@/api";
+export const getMilestone = Api.project_milestones.get;
 
 export function parseMilestonesForTurboUi(
   paths: Paths,

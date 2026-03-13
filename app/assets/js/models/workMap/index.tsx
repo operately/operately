@@ -1,4 +1,4 @@
-import { WorkMapItem, getFlatWorkMap, getWorkMap, useCreateGoal, useCreateProject } from "@/api";
+import Api, { WorkMapItem, getFlatWorkMap, getWorkMap } from "@/api";
 import { Paths, usePaths } from "@/routes/paths";
 import React from "react";
 import { WorkMap } from "turboui";
@@ -46,8 +46,8 @@ export function useWorkMapItems(initialItems: WorkMapItem[] = []): [WorkMapItem[
   const [items, setItems] = React.useState<WorkMapItem[]>(initialItems);
   const inject = useItemInjector(setItems);
 
-  const [saveGoal] = useCreateGoal();
-  const [saveProject] = useCreateProject();
+  const [saveGoal] = Api.goals.useCreate();
+  const [saveProject] = Api.projects.useCreate();
 
   // If props change, update the items state
   React.useEffect(() => {

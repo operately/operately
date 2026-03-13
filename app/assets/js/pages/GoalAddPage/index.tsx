@@ -1,5 +1,5 @@
-import { useCreateGoal } from "@/api";
 import React from "react";
+import Api from "@/api";
 
 import { Paths, usePaths } from "@/routes/paths";
 import { GoalAddPage, SpaceField } from "turboui";
@@ -69,7 +69,7 @@ function Page() {
 
 function useSaveGoal(): (props: GoalAddForm.SaveProps) => Promise<{ id: string }> {
   const { parentGoal } = Pages.useLoadedData<LoaderResult>();
-  const [create] = useCreateGoal();
+  const [create] = Api.goals.useCreate();
 
   return (props: GoalAddForm.SaveProps) => {
     return create({

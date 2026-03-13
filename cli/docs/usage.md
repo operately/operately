@@ -5,18 +5,18 @@ Use the Operately CLI to call Operately API endpoints directly from your termina
 ## Command Naming
 
 - Root commands use the endpoint name directly:
-  - `edit_project_name`
+  - `get_me`
 - Namespaced commands use:
   - `<namespace> <endpoint_name>`
-  - Example: `goals update_target_value`
+  - Example: `projects edit_name`
 
 Command names are kept exactly as defined in the API.
 
 `operately` and `op` are equivalent:
 
 ```bash
-operately edit_project_name --project-id p1 --name "New Name"
-op edit_project_name --project-id p1 --name "New Name"
+operately get_me
+op projects edit_name --project-id p1 --name "New Name"
 ```
 
 ## Help and Discovery
@@ -30,7 +30,8 @@ operately help
 Endpoint-specific help:
 
 ```bash
-operately help edit_project_name
+operately help get_me
+operately help projects edit_name
 operately help goals update_target_value
 ```
 
@@ -133,8 +134,11 @@ operately get_project --project-id p1 --verbose
 operately get_me
 
 # Namespaced command
+operately projects edit_name --project-id p1 --name "Q2 Plan"
+
+# Nested input payload
 operately goals update_target_value --goal-id g1 --target-value 42.5
 
 # Mutation with auth override
-operately edit_project_name --project-id p1 --name "Q2 Plan" --token opk_xxx
+operately projects edit_name --project-id p1 --name "Q2 Plan" --token opk_xxx
 ```

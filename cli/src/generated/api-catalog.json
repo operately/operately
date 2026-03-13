@@ -14761,15 +14761,302 @@
       ]
     }
   },
-  "endpoint_count": 203,
-  "query_count": 65,
+  "endpoint_count": 202,
+  "query_count": 64,
   "mutation_count": 138,
   "endpoints": [
     {
-      "name": "add_access_members",
+      "name": "change_parent",
       "type": "mutation",
-      "path": "/api/external/v1/goals/add_access_members",
-      "handler": "OperatelyWeb.Api.Goals.AddAccessMembers",
+      "path": "/api/external/v1/goals/change_parent",
+      "handler": "OperatelyWeb.Api.Goals.ChangeParent",
+      "outputs": [
+        {
+          "default": null,
+          "name": "goal",
+          "type": {
+            "name": "goal",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "goals",
+      "inputs": [
+        {
+          "default": null,
+          "name": "goal_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "parent_goal_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "goals/change_parent",
+      "method": "POST"
+    },
+    {
+      "name": "close",
+      "type": "mutation",
+      "path": "/api/external/v1/goals/close",
+      "handler": "OperatelyWeb.Api.Goals.Close",
+      "outputs": [
+        {
+          "default": null,
+          "name": "goal",
+          "type": {
+            "name": "goal",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "goals",
+      "inputs": [
+        {
+          "default": null,
+          "name": "goal_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "retrospective",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "send_notifications_to_everyone",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "subscriber_ids",
+          "type": {
+            "item": {
+              "name": "id",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "success_status",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "goals/close",
+      "method": "POST"
+    },
+    {
+      "name": "create",
+      "type": "mutation",
+      "path": "/api/external/v1/goals/create",
+      "handler": "OperatelyWeb.Api.Goals.Create",
+      "outputs": [
+        {
+          "default": null,
+          "name": "goal",
+          "type": {
+            "name": "goal",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "goals",
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "champion_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "reviewer_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "timeframe",
+          "type": {
+            "name": "timeframe",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "targets",
+          "type": {
+            "item": {
+              "name": "create_target_input",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "description",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "parent_goal_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "anonymous_access_level",
+          "type": {
+            "name": "integer",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "company_access_level",
+          "type": {
+            "name": "integer",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "space_access_level",
+          "type": {
+            "name": "integer",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "goals/create",
+      "method": "POST"
+    },
+    {
+      "name": "create_access_members",
+      "type": "mutation",
+      "path": "/api/external/v1/goals/create_access_members",
+      "handler": "OperatelyWeb.Api.Goals.CreateAccessMembers",
       "outputs": [
         {
           "default": null,
@@ -14811,14 +15098,14 @@
           "nullable": false
         }
       ],
-      "full_name": "goals/add_access_members",
+      "full_name": "goals/create_access_members",
       "method": "POST"
     },
     {
-      "name": "add_check",
+      "name": "create_check",
       "type": "mutation",
-      "path": "/api/external/v1/goals/add_check",
-      "handler": "OperatelyWeb.Api.GoalChecks.Add",
+      "path": "/api/external/v1/goals/create_check",
+      "handler": "OperatelyWeb.Api.GoalChecks.Create",
       "outputs": [
         {
           "default": null,
@@ -14868,14 +15155,14 @@
           "nullable": false
         }
       ],
-      "full_name": "goals/add_check",
+      "full_name": "goals/create_check",
       "method": "POST"
     },
     {
-      "name": "add_target",
+      "name": "create_target",
       "type": "mutation",
-      "path": "/api/external/v1/goals/add_target",
-      "handler": "OperatelyWeb.Api.Goals.AddTarget",
+      "path": "/api/external/v1/goals/create_target",
+      "handler": "OperatelyWeb.Api.Goals.CreateTarget",
       "outputs": [
         {
           "default": null,
@@ -14958,7 +15245,42 @@
           "nullable": false
         }
       ],
-      "full_name": "goals/add_target",
+      "full_name": "goals/create_target",
+      "method": "POST"
+    },
+    {
+      "name": "delete",
+      "type": "mutation",
+      "path": "/api/external/v1/goals/delete",
+      "handler": "OperatelyWeb.Api.Goals.Delete",
+      "outputs": [
+        {
+          "default": null,
+          "name": "goal",
+          "type": {
+            "name": "goal",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "goals",
+      "inputs": [
+        {
+          "default": null,
+          "name": "goal_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "goals/delete",
       "method": "POST"
     },
     {
@@ -15100,6 +15422,310 @@
       "method": "POST"
     },
     {
+      "name": "get",
+      "type": "query",
+      "path": "/api/external/v1/goals/get",
+      "handler": "OperatelyWeb.Api.Goals.Get",
+      "outputs": [
+        {
+          "default": null,
+          "name": "goal",
+          "type": {
+            "name": "goal",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "markdown",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "goals",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_champion",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_closed_by",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_last_check_in",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_permissions",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_projects",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_reviewer",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_space",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_space_members",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_access_levels",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_privacy",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_potential_subscribers",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_unread_notifications",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_retrospective",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_checklist",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": "false",
+          "name": "include_markdown",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": true,
+          "nullable": false
+        }
+      ],
+      "full_name": "goals/get",
+      "method": "GET"
+    },
+    {
+      "name": "list",
+      "type": "query",
+      "path": "/api/external/v1/goals/list",
+      "handler": "OperatelyWeb.Api.Goals.List",
+      "outputs": [
+        {
+          "default": null,
+          "name": "goals",
+          "type": {
+            "item": {
+              "name": "goal",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "goals",
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_projects",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_space",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_last_check_in",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_champion",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_reviewer",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "goals/list",
+      "method": "GET"
+    },
+    {
       "name": "list_access_members",
       "type": "query",
       "path": "/api/external/v1/goals/list_access_members",
@@ -15176,6 +15802,44 @@
       "method": "GET"
     },
     {
+      "name": "list_contributors",
+      "type": "query",
+      "path": "/api/external/v1/goals/list_contributors",
+      "handler": "OperatelyWeb.Api.Goals.ListContributors",
+      "outputs": [
+        {
+          "default": null,
+          "name": "contributors",
+          "type": {
+            "item": {
+              "name": "person",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "goals",
+      "inputs": [
+        {
+          "default": null,
+          "name": "goal_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "goals/list_contributors",
+      "method": "GET"
+    },
+    {
       "name": "list_discussions",
       "type": "query",
       "path": "/api/external/v1/goals/list_discussions",
@@ -15212,6 +15876,77 @@
       ],
       "full_name": "goals/list_discussions",
       "method": "GET"
+    },
+    {
+      "name": "reopen",
+      "type": "mutation",
+      "path": "/api/external/v1/goals/reopen",
+      "handler": "OperatelyWeb.Api.Goals.Reopen",
+      "outputs": [
+        {
+          "default": null,
+          "name": "goal",
+          "type": {
+            "name": "goal",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "goals",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "message",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "send_notifications_to_everyone",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "subscriber_ids",
+          "type": {
+            "item": {
+              "name": "id",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "goals/reopen",
+      "method": "POST"
     },
     {
       "name": "search_parent_goal",
@@ -16180,77 +16915,6 @@
       "method": "POST"
     },
     {
-      "name": "edit",
-      "type": "mutation",
-      "path": "/api/external/v1/project_discussions/edit",
-      "handler": "OperatelyWeb.Api.ProjectDiscussions.Edit",
-      "outputs": [
-        {
-          "default": null,
-          "name": "discussion",
-          "type": {
-            "name": "update",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "project_discussions",
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "title",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "message",
-          "type": {
-            "name": "json",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": [],
-          "name": "subscriber_ids",
-          "type": {
-            "item": {
-              "name": "id",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": true,
-          "nullable": false
-        }
-      ],
-      "full_name": "project_discussions/edit",
-      "method": "POST"
-    },
-    {
       "name": "get",
       "type": "query",
       "path": "/api/external/v1/project_discussions/get",
@@ -16401,6 +17065,77 @@
       "method": "GET"
     },
     {
+      "name": "update",
+      "type": "mutation",
+      "path": "/api/external/v1/project_discussions/update",
+      "handler": "OperatelyWeb.Api.ProjectDiscussions.Update",
+      "outputs": [
+        {
+          "default": null,
+          "name": "discussion",
+          "type": {
+            "name": "update",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_discussions",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "title",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "message",
+          "type": {
+            "name": "json",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": [],
+          "name": "subscriber_ids",
+          "type": {
+            "item": {
+              "name": "id",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": true,
+          "nullable": false
+        }
+      ],
+      "full_name": "project_discussions/update",
+      "method": "POST"
+    },
+    {
       "name": "delete",
       "type": "mutation",
       "path": "/api/external/v1/project_milestones/delete",
@@ -16434,6 +17169,118 @@
       ],
       "full_name": "project_milestones/delete",
       "method": "POST"
+    },
+    {
+      "name": "get",
+      "type": "query",
+      "path": "/api/external/v1/project_milestones/get",
+      "handler": "OperatelyWeb.Api.ProjectMilestones.Get",
+      "outputs": [
+        {
+          "default": null,
+          "name": "milestone",
+          "type": {
+            "name": "milestone",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_milestones",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_comments",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_project",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_creator",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_permissions",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_space",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_subscription_list",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_available_statuses",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "project_milestones/get",
+      "method": "GET"
     },
     {
       "name": "list_tasks",
@@ -16729,6 +17576,88 @@
       "method": "POST"
     },
     {
+      "name": "close",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/close",
+      "handler": "OperatelyWeb.Api.Projects.Close",
+      "outputs": [
+        {
+          "default": null,
+          "name": "retrospective",
+          "type": {
+            "name": "project_retrospective",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "retrospective",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "success_status",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "send_notifications_to_everyone",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "subscriber_ids",
+          "type": {
+            "item": {
+              "name": "id",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "projects/close",
+      "method": "POST"
+    },
+    {
       "name": "count_children",
       "type": "query",
       "path": "/api/external/v1/projects/count_children",
@@ -16784,6 +17713,118 @@
       ],
       "full_name": "projects/count_children",
       "method": "GET"
+    },
+    {
+      "name": "create",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/create",
+      "handler": "OperatelyWeb.Api.Projects.Create",
+      "outputs": [
+        {
+          "default": null,
+          "name": "project",
+          "type": {
+            "name": "project",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "champion_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "reviewer_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "goal_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "anonymous_access_level",
+          "type": {
+            "name": "integer",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "company_access_level",
+          "type": {
+            "name": "integer",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "space_access_level",
+          "type": {
+            "name": "integer",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "projects/create",
+      "method": "POST"
     },
     {
       "name": "create_milestone",
@@ -16878,10 +17919,459 @@
       "method": "POST"
     },
     {
-      "name": "get_contributors",
+      "name": "delete_contributor",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/delete_contributor",
+      "handler": "OperatelyWeb.Api.Projects.DeleteContributor",
+      "outputs": [
+        {
+          "default": null,
+          "name": "project_contributor",
+          "type": {
+            "name": "project_contributor",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "contrib_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "projects/delete_contributor",
+      "method": "POST"
+    },
+    {
+      "name": "get",
       "type": "query",
-      "path": "/api/external/v1/projects/get_contributors",
-      "handler": "OperatelyWeb.Api.Projects.GetContributors",
+      "path": "/api/external/v1/projects/get",
+      "handler": "OperatelyWeb.Api.Projects.Get",
+      "outputs": [
+        {
+          "default": null,
+          "name": "project",
+          "type": {
+            "name": "project",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "markdown",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_contributors",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_goal",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_key_resources",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_last_check_in",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_milestones",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_permissions",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_champion",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_reviewer",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_space",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_contributors_access_levels",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_access_levels",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_privacy",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_retrospective",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_potential_subscribers",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_unread_notifications",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_subscription_list",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_markdown",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "projects/get",
+      "method": "GET"
+    },
+    {
+      "name": "list",
+      "type": "query",
+      "path": "/api/external/v1/projects/list",
+      "handler": "OperatelyWeb.Api.Projects.List",
+      "outputs": [
+        {
+          "default": null,
+          "name": "projects",
+          "type": {
+            "item": {
+              "name": "project",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "only_my_projects",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "only_reviewed_by_me",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "goal_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_space",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_milestones",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_contributors",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_last_check_in",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_champion",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_reviewer",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_goal",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_archived",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_privacy",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_retrospective",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "projects/list",
+      "method": "GET"
+    },
+    {
+      "name": "list_contributors",
+      "type": "query",
+      "path": "/api/external/v1/projects/list_contributors",
+      "handler": "OperatelyWeb.Api.Projects.ListContributors",
       "outputs": [
         {
           "default": null,
@@ -16937,14 +18427,14 @@
           "nullable": true
         }
       ],
-      "full_name": "projects/get_contributors",
+      "full_name": "projects/list_contributors",
       "method": "GET"
     },
     {
-      "name": "get_milestones",
+      "name": "list_milestones",
       "type": "query",
-      "path": "/api/external/v1/projects/get_milestones",
-      "handler": "OperatelyWeb.Api.Projects.GetMilestones",
+      "path": "/api/external/v1/projects/list_milestones",
+      "handler": "OperatelyWeb.Api.Projects.ListMilestones",
       "outputs": [
         {
           "default": null,
@@ -16986,24 +18476,90 @@
           "nullable": false
         }
       ],
-      "full_name": "projects/get_milestones",
+      "full_name": "projects/list_milestones",
       "method": "GET"
     },
     {
-      "name": "parent_goal_search",
-      "type": "query",
-      "path": "/api/external/v1/projects/parent_goal_search",
-      "handler": "OperatelyWeb.Api.Projects.ParentGoalSearch",
+      "name": "move_to_space",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/move_to_space",
+      "handler": "OperatelyWeb.Api.Projects.MoveToSpace",
+      "outputs": [],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "projects/move_to_space",
+      "method": "POST"
+    },
+    {
+      "name": "pause",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/pause",
+      "handler": "OperatelyWeb.Api.Projects.Pause",
       "outputs": [
         {
           "default": null,
-          "name": "goals",
+          "name": "project",
           "type": {
-            "item": {
-              "name": "goal",
-              "kind": "named"
-            },
-            "kind": "list"
+            "name": "project",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "projects/pause",
+      "method": "POST"
+    },
+    {
+      "name": "resume",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/resume",
+      "handler": "OperatelyWeb.Api.Projects.Resume",
+      "outputs": [
+        {
+          "default": null,
+          "name": "project",
+          "type": {
+            "name": "project",
+            "kind": "named"
           },
           "optional": false,
           "has_default": false,
@@ -17014,17 +18570,6 @@
       "inputs": [
         {
           "default": null,
-          "name": "query",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
           "name": "project_id",
           "type": {
             "name": "id",
@@ -17033,10 +18578,46 @@
           "optional": false,
           "has_default": false,
           "nullable": false
+        },
+        {
+          "default": null,
+          "name": "message",
+          "type": {
+            "name": "json",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "send_notifications_to_everyone",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "subscriber_ids",
+          "type": {
+            "item": {
+              "name": "id",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
         }
       ],
-      "full_name": "projects/parent_goal_search",
-      "method": "GET"
+      "full_name": "projects/resume",
+      "method": "POST"
     },
     {
       "name": "search",
@@ -17110,6 +18691,104 @@
         }
       ],
       "full_name": "projects/search",
+      "method": "GET"
+    },
+    {
+      "name": "search_parent_goal",
+      "type": "query",
+      "path": "/api/external/v1/projects/search_parent_goal",
+      "handler": "OperatelyWeb.Api.Projects.SearchParentGoal",
+      "outputs": [
+        {
+          "default": null,
+          "name": "goals",
+          "type": {
+            "item": {
+              "name": "goal",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "query",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "projects/search_parent_goal",
+      "method": "GET"
+    },
+    {
+      "name": "search_potential_contributors",
+      "type": "query",
+      "path": "/api/external/v1/projects/search_potential_contributors",
+      "handler": "OperatelyWeb.Api.Projects.SearchPotentialContributors",
+      "outputs": [
+        {
+          "default": null,
+          "name": "people",
+          "type": {
+            "item": {
+              "name": "person",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "query",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "projects/search_potential_contributors",
       "method": "GET"
     },
     {
@@ -17352,6 +19031,52 @@
       "method": "POST"
     },
     {
+      "name": "update_name",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/update_name",
+      "handler": "OperatelyWeb.Api.Projects.UpdateName",
+      "outputs": [
+        {
+          "default": null,
+          "name": "project",
+          "type": {
+            "name": "project",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "projects/update_name",
+      "method": "POST"
+    },
+    {
       "name": "update_parent_goal",
       "type": "mutation",
       "path": "/api/external/v1/projects/update_parent_goal",
@@ -17406,6 +19131,109 @@
         }
       ],
       "full_name": "projects/update_parent_goal",
+      "method": "POST"
+    },
+    {
+      "name": "update_permissions",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/update_permissions",
+      "handler": "OperatelyWeb.Api.Projects.UpdatePermissions",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "access_levels",
+          "type": {
+            "name": "access_levels",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "projects/update_permissions",
+      "method": "POST"
+    },
+    {
+      "name": "update_retrospective",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/update_retrospective",
+      "handler": "OperatelyWeb.Api.Projects.UpdateRetrospective",
+      "outputs": [
+        {
+          "default": null,
+          "name": "retrospective",
+          "type": {
+            "name": "project_retrospective",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "content",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "success_status",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "projects/update_retrospective",
       "method": "POST"
     },
     {
@@ -18060,299 +19888,6 @@
       "method": "POST"
     },
     {
-      "name": "add_space_members",
-      "type": "mutation",
-      "path": "/api/external/v1/add_space_members",
-      "handler": "OperatelyWeb.Api.Mutations.AddSpaceMembers",
-      "outputs": [
-        {
-          "default": null,
-          "name": "success",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "space_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "members",
-          "type": {
-            "item": {
-              "name": "add_member_input",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "add_space_members",
-      "method": "POST"
-    },
-    {
-      "name": "archive_message",
-      "type": "mutation",
-      "path": "/api/external/v1/archive_message",
-      "handler": "OperatelyWeb.Api.Mutations.ArchiveMessage",
-      "outputs": [],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "message_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "archive_message",
-      "method": "POST"
-    },
-    {
-      "name": "change_goal_parent",
-      "type": "mutation",
-      "path": "/api/external/v1/change_goal_parent",
-      "handler": "OperatelyWeb.Api.Mutations.ChangeGoalParent",
-      "outputs": [
-        {
-          "default": null,
-          "name": "goal",
-          "type": {
-            "name": "goal",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "goal_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "parent_goal_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "change_goal_parent",
-      "method": "POST"
-    },
-    {
-      "name": "close_goal",
-      "type": "mutation",
-      "path": "/api/external/v1/close_goal",
-      "handler": "OperatelyWeb.Api.Mutations.CloseGoal",
-      "outputs": [
-        {
-          "default": null,
-          "name": "goal",
-          "type": {
-            "name": "goal",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "goal_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "success",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "retrospective",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "send_notifications_to_everyone",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "subscriber_ids",
-          "type": {
-            "item": {
-              "name": "id",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "success_status",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "close_goal",
-      "method": "POST"
-    },
-    {
-      "name": "close_project",
-      "type": "mutation",
-      "path": "/api/external/v1/close_project",
-      "handler": "OperatelyWeb.Api.Mutations.CloseProject",
-      "outputs": [
-        {
-          "default": null,
-          "name": "retrospective",
-          "type": {
-            "name": "project_retrospective",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "project_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "retrospective",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "success_status",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "send_notifications_to_everyone",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "subscriber_ids",
-          "type": {
-            "item": {
-              "name": "id",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "close_project",
-      "method": "POST"
-    },
-    {
       "name": "convert_company_member_to_guest",
       "type": "mutation",
       "path": "/api/external/v1/convert_company_member_to_guest",
@@ -18513,154 +20048,6 @@
       "method": "POST"
     },
     {
-      "name": "create_goal",
-      "type": "mutation",
-      "path": "/api/external/v1/create_goal",
-      "handler": "OperatelyWeb.Api.Mutations.CreateGoal",
-      "outputs": [
-        {
-          "default": null,
-          "name": "goal",
-          "type": {
-            "name": "goal",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "space_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "name",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "champion_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "reviewer_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "timeframe",
-          "type": {
-            "name": "timeframe",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "targets",
-          "type": {
-            "item": {
-              "name": "create_target_input",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "description",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "parent_goal_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "anonymous_access_level",
-          "type": {
-            "name": "integer",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "company_access_level",
-          "type": {
-            "name": "integer",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "space_access_level",
-          "type": {
-            "name": "integer",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "create_goal",
-      "method": "POST"
-    },
-    {
       "name": "create_goal_discussion",
       "type": "mutation",
       "path": "/api/external/v1/create_goal_discussion",
@@ -18740,118 +20127,6 @@
         }
       ],
       "full_name": "create_goal_discussion",
-      "method": "POST"
-    },
-    {
-      "name": "create_project",
-      "type": "mutation",
-      "path": "/api/external/v1/create_project",
-      "handler": "OperatelyWeb.Api.Mutations.CreateProject",
-      "outputs": [
-        {
-          "default": null,
-          "name": "project",
-          "type": {
-            "name": "project",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "space_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "name",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "champion_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "reviewer_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "goal_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "anonymous_access_level",
-          "type": {
-            "name": "integer",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "company_access_level",
-          "type": {
-            "name": "integer",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "space_access_level",
-          "type": {
-            "name": "integer",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "create_project",
       "method": "POST"
     },
     {
@@ -19320,74 +20595,6 @@
       "method": "POST"
     },
     {
-      "name": "create_space",
-      "type": "mutation",
-      "path": "/api/external/v1/create_space",
-      "handler": "OperatelyWeb.Api.Mutations.CreateSpace",
-      "outputs": [
-        {
-          "default": null,
-          "name": "space",
-          "type": {
-            "name": "space",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "name",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "mission",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "company_permissions",
-          "type": {
-            "name": "integer",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "public_permissions",
-          "type": {
-            "name": "integer",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "create_space",
-      "method": "POST"
-    },
-    {
       "name": "delete_comment",
       "type": "mutation",
       "path": "/api/external/v1/delete_comment",
@@ -19431,41 +20638,6 @@
         }
       ],
       "full_name": "delete_comment",
-      "method": "POST"
-    },
-    {
-      "name": "delete_goal",
-      "type": "mutation",
-      "path": "/api/external/v1/delete_goal",
-      "handler": "OperatelyWeb.Api.Mutations.DeleteGoal",
-      "outputs": [
-        {
-          "default": null,
-          "name": "goal",
-          "type": {
-            "name": "goal",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "goal_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "delete_goal",
       "method": "POST"
     },
     {
@@ -19609,41 +20781,6 @@
       "method": "POST"
     },
     {
-      "name": "delete_space",
-      "type": "mutation",
-      "path": "/api/external/v1/delete_space",
-      "handler": "OperatelyWeb.Api.Mutations.DeleteSpace",
-      "outputs": [
-        {
-          "default": null,
-          "name": "space",
-          "type": {
-            "name": "space",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "space_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "delete_space",
-      "method": "POST"
-    },
-    {
       "name": "edit_comment",
       "type": "mutation",
       "path": "/api/external/v1/edit_comment",
@@ -19771,74 +20908,6 @@
         }
       ],
       "full_name": "edit_company_members_permissions",
-      "method": "POST"
-    },
-    {
-      "name": "edit_discussion",
-      "type": "mutation",
-      "path": "/api/external/v1/edit_discussion",
-      "handler": "OperatelyWeb.Api.Mutations.EditDiscussion",
-      "outputs": [
-        {
-          "default": null,
-          "name": "discussion",
-          "type": {
-            "name": "discussion",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "title",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "body",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "state",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "edit_discussion",
       "method": "POST"
     },
     {
@@ -20151,155 +21220,6 @@
       "method": "POST"
     },
     {
-      "name": "edit_project_name",
-      "type": "mutation",
-      "path": "/api/external/v1/edit_project_name",
-      "handler": "OperatelyWeb.Api.Mutations.EditProjectName",
-      "outputs": [
-        {
-          "default": null,
-          "name": "project",
-          "type": {
-            "name": "project",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "project_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "name",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "edit_project_name",
-      "method": "POST"
-    },
-    {
-      "name": "edit_project_permissions",
-      "type": "mutation",
-      "path": "/api/external/v1/edit_project_permissions",
-      "handler": "OperatelyWeb.Api.Mutations.EditProjectPermissions",
-      "outputs": [
-        {
-          "default": null,
-          "name": "success",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "project_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "access_levels",
-          "type": {
-            "name": "access_levels",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "edit_project_permissions",
-      "method": "POST"
-    },
-    {
-      "name": "edit_project_retrospective",
-      "type": "mutation",
-      "path": "/api/external/v1/edit_project_retrospective",
-      "handler": "OperatelyWeb.Api.Mutations.EditProjectRetrospective",
-      "outputs": [
-        {
-          "default": null,
-          "name": "retrospective",
-          "type": {
-            "name": "project_retrospective",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "content",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "success_status",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "edit_project_retrospective",
-      "method": "POST"
-    },
-    {
       "name": "edit_resource_hub_document",
       "type": "mutation",
       "path": "/api/external/v1/edit_resource_hub_document",
@@ -20515,158 +21435,6 @@
         }
       ],
       "full_name": "edit_resource_hub_link",
-      "method": "POST"
-    },
-    {
-      "name": "edit_space",
-      "type": "mutation",
-      "path": "/api/external/v1/edit_space",
-      "handler": "OperatelyWeb.Api.Mutations.EditSpace",
-      "outputs": [
-        {
-          "default": null,
-          "name": "space",
-          "type": {
-            "name": "space",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "name",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "mission",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "edit_space",
-      "method": "POST"
-    },
-    {
-      "name": "edit_space_members_permissions",
-      "type": "mutation",
-      "path": "/api/external/v1/edit_space_members_permissions",
-      "handler": "OperatelyWeb.Api.Mutations.EditSpaceMembersPermissions",
-      "outputs": [
-        {
-          "default": null,
-          "name": "success",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "space_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "members",
-          "type": {
-            "item": {
-              "name": "edit_member_permissions_input",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "edit_space_members_permissions",
-      "method": "POST"
-    },
-    {
-      "name": "edit_space_permissions",
-      "type": "mutation",
-      "path": "/api/external/v1/edit_space_permissions",
-      "handler": "OperatelyWeb.Api.Mutations.EditSpacePermissions",
-      "outputs": [
-        {
-          "default": null,
-          "name": "success",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "space_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "access_levels",
-          "type": {
-            "name": "access_levels",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "edit_space_permissions",
       "method": "POST"
     },
     {
@@ -21191,214 +21959,6 @@
       "method": "GET"
     },
     {
-      "name": "get_discussion",
-      "type": "query",
-      "path": "/api/external/v1/get_discussion",
-      "handler": "OperatelyWeb.Api.Queries.GetDiscussion",
-      "outputs": [
-        {
-          "default": null,
-          "name": "discussion",
-          "type": {
-            "name": "discussion",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_author",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_reactions",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_space",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_space_members",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_subscriptions_list",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_potential_subscribers",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_unread_notifications",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_permissions",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "get_discussion",
-      "method": "GET"
-    },
-    {
-      "name": "get_discussions",
-      "type": "query",
-      "path": "/api/external/v1/get_discussions",
-      "handler": "OperatelyWeb.Api.Queries.GetDiscussions",
-      "outputs": [
-        {
-          "default": null,
-          "name": "discussions",
-          "type": {
-            "item": {
-              "name": "discussion",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "my_drafts",
-          "type": {
-            "item": {
-              "name": "discussion",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "space_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_author",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_comments_count",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_my_drafts",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "get_discussions",
-      "method": "GET"
-    },
-    {
       "name": "get_flat_work_map",
       "type": "query",
       "path": "/api/external/v1/get_flat_work_map",
@@ -21522,217 +22082,6 @@
         }
       ],
       "full_name": "get_flat_work_map",
-      "method": "GET"
-    },
-    {
-      "name": "get_goal",
-      "type": "query",
-      "path": "/api/external/v1/get_goal",
-      "handler": "OperatelyWeb.Api.Queries.GetGoal",
-      "outputs": [
-        {
-          "default": null,
-          "name": "goal",
-          "type": {
-            "name": "goal",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "markdown",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_champion",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_closed_by",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_last_check_in",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_permissions",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_projects",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_reviewer",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_space",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_space_members",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_access_levels",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_privacy",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_potential_subscribers",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_unread_notifications",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_retrospective",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_checklist",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": "false",
-          "name": "include_markdown",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": true,
-          "nullable": false
-        }
-      ],
-      "full_name": "get_goal",
       "method": "GET"
     },
     {
@@ -21925,99 +22274,6 @@
       "method": "GET"
     },
     {
-      "name": "get_goals",
-      "type": "query",
-      "path": "/api/external/v1/get_goals",
-      "handler": "OperatelyWeb.Api.Queries.GetGoals",
-      "outputs": [
-        {
-          "default": null,
-          "name": "goals",
-          "type": {
-            "item": {
-              "name": "goal",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "space_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_projects",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_space",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_last_check_in",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_champion",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_reviewer",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "get_goals",
-      "method": "GET"
-    },
-    {
       "name": "get_key_resource",
       "type": "query",
       "path": "/api/external/v1/get_key_resource",
@@ -22085,118 +22341,6 @@
         }
       ],
       "full_name": "get_me",
-      "method": "GET"
-    },
-    {
-      "name": "get_milestone",
-      "type": "query",
-      "path": "/api/external/v1/get_milestone",
-      "handler": "OperatelyWeb.Api.Queries.GetMilestone",
-      "outputs": [
-        {
-          "default": null,
-          "name": "milestone",
-          "type": {
-            "name": "milestone",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_comments",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_project",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_creator",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_permissions",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_space",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_subscription_list",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_available_statuses",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "get_milestone",
       "method": "GET"
     },
     {
@@ -22429,239 +22573,6 @@
         }
       ],
       "full_name": "get_person",
-      "method": "GET"
-    },
-    {
-      "name": "get_project",
-      "type": "query",
-      "path": "/api/external/v1/get_project",
-      "handler": "OperatelyWeb.Api.Queries.GetProject",
-      "outputs": [
-        {
-          "default": null,
-          "name": "project",
-          "type": {
-            "name": "project",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "markdown",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_contributors",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_goal",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_key_resources",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_last_check_in",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_milestones",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_permissions",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_champion",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_reviewer",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_space",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_contributors_access_levels",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_access_levels",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_privacy",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_retrospective",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_potential_subscribers",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_unread_notifications",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_subscription_list",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_markdown",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "get_project",
       "method": "GET"
     },
     {
@@ -23047,187 +22958,6 @@
         }
       ],
       "full_name": "get_project_retrospective",
-      "method": "GET"
-    },
-    {
-      "name": "get_projects",
-      "type": "query",
-      "path": "/api/external/v1/get_projects",
-      "handler": "OperatelyWeb.Api.Queries.GetProjects",
-      "outputs": [
-        {
-          "default": null,
-          "name": "projects",
-          "type": {
-            "item": {
-              "name": "project",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "only_my_projects",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "only_reviewed_by_me",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "space_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "goal_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_space",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_milestones",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_contributors",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_last_check_in",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_champion",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_reviewer",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_goal",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_archived",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_privacy",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_retrospective",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "get_projects",
       "method": "GET"
     },
     {
@@ -23824,339 +23554,6 @@
       "method": "GET"
     },
     {
-      "name": "get_space",
-      "type": "query",
-      "path": "/api/external/v1/get_space",
-      "handler": "OperatelyWeb.Api.Queries.GetSpace",
-      "outputs": [
-        {
-          "default": null,
-          "name": "space",
-          "type": {
-            "name": "space",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_permissions",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_members",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_access_levels",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_members_access_levels",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_potential_subscribers",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_unread_notifications",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "get_space",
-      "method": "GET"
-    },
-    {
-      "name": "get_spaces",
-      "type": "query",
-      "path": "/api/external/v1/get_spaces",
-      "handler": "OperatelyWeb.Api.Queries.GetSpaces",
-      "outputs": [
-        {
-          "default": null,
-          "name": "spaces",
-          "type": {
-            "item": {
-              "name": "space",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "access_level",
-          "type": {
-            "name": "access_options",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_access_levels",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_members",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "get_spaces",
-      "method": "GET"
-    },
-    {
-      "name": "get_task",
-      "type": "query",
-      "path": "/api/external/v1/get_task",
-      "handler": "OperatelyWeb.Api.Queries.GetTask",
-      "outputs": [
-        {
-          "default": null,
-          "name": "task",
-          "type": {
-            "name": "task",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_assignees",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_milestone",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_project",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_creator",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_project_space",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_permissions",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_subscription_list",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_available_statuses",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "get_task",
-      "method": "GET"
-    },
-    {
-      "name": "get_tasks",
-      "type": "query",
-      "path": "/api/external/v1/get_tasks",
-      "handler": "OperatelyWeb.Api.Queries.GetTasks",
-      "outputs": [
-        {
-          "default": null,
-          "name": "tasks",
-          "type": {
-            "item": {
-              "name": "task",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "milestone_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_assignees",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "get_tasks",
-      "method": "GET"
-    },
-    {
       "name": "get_unread_notification_count",
       "type": "query",
       "path": "/api/external/v1/get_unread_notification_count",
@@ -24563,67 +23960,6 @@
       "method": "GET"
     },
     {
-      "name": "join_space",
-      "type": "mutation",
-      "path": "/api/external/v1/join_space",
-      "handler": "OperatelyWeb.Api.Mutations.JoinSpace",
-      "outputs": [],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "space_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "join_space",
-      "method": "POST"
-    },
-    {
-      "name": "list_goal_contributors",
-      "type": "query",
-      "path": "/api/external/v1/list_goal_contributors",
-      "handler": "OperatelyWeb.Api.Queries.ListGoalContributors",
-      "outputs": [
-        {
-          "default": null,
-          "name": "contributors",
-          "type": {
-            "item": {
-              "name": "person",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "goal_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "list_goal_contributors",
-      "method": "GET"
-    },
-    {
       "name": "list_possible_managers",
       "type": "query",
       "path": "/api/external/v1/list_possible_managers",
@@ -24758,115 +24094,6 @@
       "method": "GET"
     },
     {
-      "name": "list_space_tools",
-      "type": "query",
-      "path": "/api/external/v1/list_space_tools",
-      "handler": "OperatelyWeb.Api.Queries.ListSpaceTools",
-      "outputs": [
-        {
-          "default": null,
-          "name": "tools",
-          "type": {
-            "name": "space_tools",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "space_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "list_space_tools",
-      "method": "GET"
-    },
-    {
-      "name": "list_task_assignable_people",
-      "type": "query",
-      "path": "/api/external/v1/list_task_assignable_people",
-      "handler": "OperatelyWeb.Api.Queries.ListTaskAssignablePeople",
-      "outputs": [
-        {
-          "default": null,
-          "name": "people",
-          "type": {
-            "item": {
-              "name": "person",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "type",
-          "type": {
-            "name": "task_type",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "query",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "ignored_ids",
-          "type": {
-            "item": {
-              "name": "id",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "list_task_assignable_people",
-      "method": "GET"
-    },
-    {
       "name": "mark_all_notifications_as_read",
       "type": "mutation",
       "path": "/api/external/v1/mark_all_notifications_as_read",
@@ -24924,247 +24151,6 @@
         }
       ],
       "full_name": "mark_notifications_as_read",
-      "method": "POST"
-    },
-    {
-      "name": "move_project_to_space",
-      "type": "mutation",
-      "path": "/api/external/v1/move_project_to_space",
-      "handler": "OperatelyWeb.Api.Mutations.MoveProjectToSpace",
-      "outputs": [],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "project_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "space_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "move_project_to_space",
-      "method": "POST"
-    },
-    {
-      "name": "move_task",
-      "type": "mutation",
-      "path": "/api/external/v1/move_task",
-      "handler": "OperatelyWeb.Api.Mutations.MoveTask",
-      "outputs": [
-        {
-          "default": null,
-          "name": "task",
-          "type": {
-            "name": "task",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "destination_type",
-          "type": {
-            "name": "task_type",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "destination_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "task_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "destination_type",
-          "type": {
-            "name": "task_type",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "destination_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "move_task",
-      "method": "POST"
-    },
-    {
-      "name": "pause_project",
-      "type": "mutation",
-      "path": "/api/external/v1/pause_project",
-      "handler": "OperatelyWeb.Api.Mutations.PauseProject",
-      "outputs": [
-        {
-          "default": null,
-          "name": "project",
-          "type": {
-            "name": "project",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "project_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "pause_project",
-      "method": "POST"
-    },
-    {
-      "name": "post_discussion",
-      "type": "mutation",
-      "path": "/api/external/v1/post_discussion",
-      "handler": "OperatelyWeb.Api.Mutations.PostDiscussion",
-      "outputs": [
-        {
-          "default": null,
-          "name": "discussion",
-          "type": {
-            "name": "discussion",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "space_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "title",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "body",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "post_as_draft",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "send_notifications_to_everyone",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "subscriber_ids",
-          "type": {
-            "item": {
-              "name": "id",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "post_discussion",
       "method": "POST"
     },
     {
@@ -25425,41 +24411,6 @@
       "method": "POST"
     },
     {
-      "name": "publish_discussion",
-      "type": "mutation",
-      "path": "/api/external/v1/publish_discussion",
-      "handler": "OperatelyWeb.Api.Mutations.PublishDiscussion",
-      "outputs": [
-        {
-          "default": null,
-          "name": "discussion",
-          "type": {
-            "name": "discussion",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "publish_discussion",
-      "method": "POST"
-    },
-    {
       "name": "publish_resource_hub_document",
       "type": "mutation",
       "path": "/api/external/v1/publish_resource_hub_document",
@@ -25681,40 +24632,6 @@
       "method": "POST"
     },
     {
-      "name": "remove_group_member",
-      "type": "mutation",
-      "path": "/api/external/v1/remove_group_member",
-      "handler": "OperatelyWeb.Api.Mutations.RemoveGroupMember",
-      "outputs": [],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "group_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "member_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "remove_group_member",
-      "method": "POST"
-    },
-    {
       "name": "remove_key_resource",
       "type": "mutation",
       "path": "/api/external/v1/remove_key_resource",
@@ -25747,41 +24664,6 @@
         }
       ],
       "full_name": "remove_key_resource",
-      "method": "POST"
-    },
-    {
-      "name": "remove_project_contributor",
-      "type": "mutation",
-      "path": "/api/external/v1/remove_project_contributor",
-      "handler": "OperatelyWeb.Api.Mutations.RemoveProjectContributor",
-      "outputs": [
-        {
-          "default": null,
-          "name": "project_contributor",
-          "type": {
-            "name": "project_contributor",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "contrib_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "remove_project_contributor",
       "method": "POST"
     },
     {
@@ -25866,77 +24748,6 @@
       "method": "POST"
     },
     {
-      "name": "reopen_goal",
-      "type": "mutation",
-      "path": "/api/external/v1/reopen_goal",
-      "handler": "OperatelyWeb.Api.Mutations.ReopenGoal",
-      "outputs": [
-        {
-          "default": null,
-          "name": "goal",
-          "type": {
-            "name": "goal",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "message",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "send_notifications_to_everyone",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "subscriber_ids",
-          "type": {
-            "item": {
-              "name": "id",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "reopen_goal",
-      "method": "POST"
-    },
-    {
       "name": "restore_company_member",
       "type": "mutation",
       "path": "/api/external/v1/restore_company_member",
@@ -25957,77 +24768,6 @@
         }
       ],
       "full_name": "restore_company_member",
-      "method": "POST"
-    },
-    {
-      "name": "resume_project",
-      "type": "mutation",
-      "path": "/api/external/v1/resume_project",
-      "handler": "OperatelyWeb.Api.Mutations.ResumeProject",
-      "outputs": [
-        {
-          "default": null,
-          "name": "project",
-          "type": {
-            "name": "project",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "project_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "message",
-          "type": {
-            "name": "json",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "send_notifications_to_everyone",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "subscriber_ids",
-          "type": {
-            "item": {
-              "name": "id",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "resume_project",
       "method": "POST"
     },
     {
@@ -26102,129 +24842,6 @@
         }
       ],
       "full_name": "search_people",
-      "method": "GET"
-    },
-    {
-      "name": "search_potential_space_members",
-      "type": "query",
-      "path": "/api/external/v1/search_potential_space_members",
-      "handler": "OperatelyWeb.Api.Queries.SearchPotentialSpaceMembers",
-      "outputs": [
-        {
-          "default": null,
-          "name": "people",
-          "type": {
-            "item": {
-              "name": "person",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "group_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "query",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "exclude_ids",
-          "type": {
-            "item": {
-              "name": "string",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "limit",
-          "type": {
-            "name": "integer",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "search_potential_space_members",
-      "method": "GET"
-    },
-    {
-      "name": "search_project_contributor_candidates",
-      "type": "query",
-      "path": "/api/external/v1/search_project_contributor_candidates",
-      "handler": "OperatelyWeb.Api.Queries.SearchProjectContributorCandidates",
-      "outputs": [
-        {
-          "default": null,
-          "name": "people",
-          "type": {
-            "item": {
-              "name": "person",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "project_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "query",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "search_project_contributor_candidates",
       "method": "GET"
     },
     {
@@ -26614,6 +25231,482 @@
       "method": "POST"
     },
     {
+      "name": "archive",
+      "type": "mutation",
+      "path": "/api/external/v1/space_discussions/archive",
+      "handler": "OperatelyWeb.Api.SpaceDiscussions.Archive",
+      "outputs": [],
+      "namespace": "space_discussions",
+      "inputs": [
+        {
+          "default": null,
+          "name": "message_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "space_discussions/archive",
+      "method": "POST"
+    },
+    {
+      "name": "create",
+      "type": "mutation",
+      "path": "/api/external/v1/space_discussions/create",
+      "handler": "OperatelyWeb.Api.SpaceDiscussions.Create",
+      "outputs": [
+        {
+          "default": null,
+          "name": "discussion",
+          "type": {
+            "name": "discussion",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "space_discussions",
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "title",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "body",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "post_as_draft",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "send_notifications_to_everyone",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "subscriber_ids",
+          "type": {
+            "item": {
+              "name": "id",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "space_discussions/create",
+      "method": "POST"
+    },
+    {
+      "name": "get",
+      "type": "query",
+      "path": "/api/external/v1/space_discussions/get",
+      "handler": "OperatelyWeb.Api.SpaceDiscussions.Get",
+      "outputs": [
+        {
+          "default": null,
+          "name": "discussion",
+          "type": {
+            "name": "discussion",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "space_discussions",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_author",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_reactions",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_space",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_space_members",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_subscriptions_list",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_potential_subscribers",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_unread_notifications",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_permissions",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "space_discussions/get",
+      "method": "GET"
+    },
+    {
+      "name": "list",
+      "type": "query",
+      "path": "/api/external/v1/space_discussions/list",
+      "handler": "OperatelyWeb.Api.SpaceDiscussions.List",
+      "outputs": [
+        {
+          "default": null,
+          "name": "discussions",
+          "type": {
+            "item": {
+              "name": "discussion",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "my_drafts",
+          "type": {
+            "item": {
+              "name": "discussion",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "space_discussions",
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_author",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_comments_count",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_my_drafts",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "space_discussions/list",
+      "method": "GET"
+    },
+    {
+      "name": "publish",
+      "type": "mutation",
+      "path": "/api/external/v1/space_discussions/publish",
+      "handler": "OperatelyWeb.Api.SpaceDiscussions.Publish",
+      "outputs": [
+        {
+          "default": null,
+          "name": "discussion",
+          "type": {
+            "name": "discussion",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "space_discussions",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "space_discussions/publish",
+      "method": "POST"
+    },
+    {
+      "name": "update",
+      "type": "mutation",
+      "path": "/api/external/v1/space_discussions/update",
+      "handler": "OperatelyWeb.Api.SpaceDiscussions.Update",
+      "outputs": [
+        {
+          "default": null,
+          "name": "discussion",
+          "type": {
+            "name": "discussion",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "space_discussions",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "title",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "body",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "state",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "space_discussions/update",
+      "method": "POST"
+    },
+    {
+      "name": "add_members",
+      "type": "mutation",
+      "path": "/api/external/v1/spaces/add_members",
+      "handler": "OperatelyWeb.Api.Spaces.AddMembers",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "spaces",
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "members",
+          "type": {
+            "item": {
+              "name": "add_member_input",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "spaces/add_members",
+      "method": "POST"
+    },
+    {
       "name": "count_by_access_level",
       "type": "query",
       "path": "/api/external/v1/spaces/count_by_access_level",
@@ -26646,6 +25739,327 @@
         }
       ],
       "full_name": "spaces/count_by_access_level",
+      "method": "GET"
+    },
+    {
+      "name": "create",
+      "type": "mutation",
+      "path": "/api/external/v1/spaces/create",
+      "handler": "OperatelyWeb.Api.Spaces.Create",
+      "outputs": [
+        {
+          "default": null,
+          "name": "space",
+          "type": {
+            "name": "space",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "spaces",
+      "inputs": [
+        {
+          "default": null,
+          "name": "name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "mission",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "company_permissions",
+          "type": {
+            "name": "integer",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "public_permissions",
+          "type": {
+            "name": "integer",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "spaces/create",
+      "method": "POST"
+    },
+    {
+      "name": "delete",
+      "type": "mutation",
+      "path": "/api/external/v1/spaces/delete",
+      "handler": "OperatelyWeb.Api.Spaces.Delete",
+      "outputs": [
+        {
+          "default": null,
+          "name": "space",
+          "type": {
+            "name": "space",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "spaces",
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "spaces/delete",
+      "method": "POST"
+    },
+    {
+      "name": "delete_member",
+      "type": "mutation",
+      "path": "/api/external/v1/spaces/delete_member",
+      "handler": "OperatelyWeb.Api.Spaces.DeleteMember",
+      "outputs": [],
+      "namespace": "spaces",
+      "inputs": [
+        {
+          "default": null,
+          "name": "group_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "member_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "spaces/delete_member",
+      "method": "POST"
+    },
+    {
+      "name": "get",
+      "type": "query",
+      "path": "/api/external/v1/spaces/get",
+      "handler": "OperatelyWeb.Api.Spaces.Get",
+      "outputs": [
+        {
+          "default": null,
+          "name": "space",
+          "type": {
+            "name": "space",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "spaces",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_permissions",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_members",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_access_levels",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_members_access_levels",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_potential_subscribers",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_unread_notifications",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "spaces/get",
+      "method": "GET"
+    },
+    {
+      "name": "join",
+      "type": "mutation",
+      "path": "/api/external/v1/spaces/join",
+      "handler": "OperatelyWeb.Api.Spaces.Join",
+      "outputs": [],
+      "namespace": "spaces",
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "spaces/join",
+      "method": "POST"
+    },
+    {
+      "name": "list",
+      "type": "query",
+      "path": "/api/external/v1/spaces/list",
+      "handler": "OperatelyWeb.Api.Spaces.List",
+      "outputs": [
+        {
+          "default": null,
+          "name": "spaces",
+          "type": {
+            "item": {
+              "name": "space",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "spaces",
+      "inputs": [
+        {
+          "default": null,
+          "name": "access_level",
+          "type": {
+            "name": "access_options",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_access_levels",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_members",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "spaces/list",
       "method": "GET"
     },
     {
@@ -26750,6 +26164,41 @@
       "method": "GET"
     },
     {
+      "name": "list_tools",
+      "type": "query",
+      "path": "/api/external/v1/spaces/list_tools",
+      "handler": "OperatelyWeb.Api.Spaces.ListTools",
+      "outputs": [
+        {
+          "default": null,
+          "name": "tools",
+          "type": {
+            "name": "space_tools",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "spaces",
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "spaces/list_tools",
+      "method": "GET"
+    },
+    {
       "name": "search",
       "type": "query",
       "path": "/api/external/v1/spaces/search",
@@ -26824,6 +26273,137 @@
       "method": "GET"
     },
     {
+      "name": "search_potential_members",
+      "type": "query",
+      "path": "/api/external/v1/spaces/search_potential_members",
+      "handler": "OperatelyWeb.Api.Spaces.SearchPotentialMembers",
+      "outputs": [
+        {
+          "default": null,
+          "name": "people",
+          "type": {
+            "item": {
+              "name": "person",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "spaces",
+      "inputs": [
+        {
+          "default": null,
+          "name": "group_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "query",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "exclude_ids",
+          "type": {
+            "item": {
+              "name": "string",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "limit",
+          "type": {
+            "name": "integer",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "spaces/search_potential_members",
+      "method": "GET"
+    },
+    {
+      "name": "update",
+      "type": "mutation",
+      "path": "/api/external/v1/spaces/update",
+      "handler": "OperatelyWeb.Api.Spaces.Update",
+      "outputs": [
+        {
+          "default": null,
+          "name": "space",
+          "type": {
+            "name": "space",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "spaces",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "mission",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "spaces/update",
+      "method": "POST"
+    },
+    {
       "name": "update_kanban",
       "type": "mutation",
       "path": "/api/external/v1/spaces/update_kanban",
@@ -26889,6 +26469,101 @@
         }
       ],
       "full_name": "spaces/update_kanban",
+      "method": "POST"
+    },
+    {
+      "name": "update_members_permissions",
+      "type": "mutation",
+      "path": "/api/external/v1/spaces/update_members_permissions",
+      "handler": "OperatelyWeb.Api.Spaces.UpdateMembersPermissions",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "spaces",
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "members",
+          "type": {
+            "item": {
+              "name": "edit_member_permissions_input",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "spaces/update_members_permissions",
+      "method": "POST"
+    },
+    {
+      "name": "update_permissions",
+      "type": "mutation",
+      "path": "/api/external/v1/spaces/update_permissions",
+      "handler": "OperatelyWeb.Api.Spaces.UpdatePermissions",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "spaces",
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "access_levels",
+          "type": {
+            "name": "access_levels",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "spaces/update_permissions",
       "method": "POST"
     },
     {
@@ -27192,6 +26867,129 @@
       "method": "POST"
     },
     {
+      "name": "get",
+      "type": "query",
+      "path": "/api/external/v1/tasks/get",
+      "handler": "OperatelyWeb.Api.Tasks.Get",
+      "outputs": [
+        {
+          "default": null,
+          "name": "task",
+          "type": {
+            "name": "task",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "tasks",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_assignees",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_milestone",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_project",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_creator",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_project_space",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_permissions",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_subscription_list",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_available_statuses",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "tasks/get",
+      "method": "GET"
+    },
+    {
       "name": "list",
       "type": "query",
       "path": "/api/external/v1/tasks/list",
@@ -27228,6 +27026,159 @@
       ],
       "full_name": "tasks/list",
       "method": "GET"
+    },
+    {
+      "name": "list_potential_assignees",
+      "type": "query",
+      "path": "/api/external/v1/tasks/list_potential_assignees",
+      "handler": "OperatelyWeb.Api.Tasks.ListPotentialAssignees",
+      "outputs": [
+        {
+          "default": null,
+          "name": "people",
+          "type": {
+            "item": {
+              "name": "person",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "tasks",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "type",
+          "type": {
+            "name": "task_type",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "query",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "ignored_ids",
+          "type": {
+            "item": {
+              "name": "id",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "tasks/list_potential_assignees",
+      "method": "GET"
+    },
+    {
+      "name": "move",
+      "type": "mutation",
+      "path": "/api/external/v1/tasks/move",
+      "handler": "OperatelyWeb.Api.Tasks.Move",
+      "outputs": [
+        {
+          "default": null,
+          "name": "task",
+          "type": {
+            "name": "task",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "destination_type",
+          "type": {
+            "name": "task_type",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "destination_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "tasks",
+      "inputs": [
+        {
+          "default": null,
+          "name": "task_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "destination_type",
+          "type": {
+            "name": "task_type",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "destination_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "tasks/move",
+      "method": "POST"
     },
     {
       "name": "update_assignee",
@@ -27647,6 +27598,6 @@
     }
   ],
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-12T21:13:25Z",
+  "generated_at": "2026-03-13T20:23:34Z",
   "schema_version": 1
 }

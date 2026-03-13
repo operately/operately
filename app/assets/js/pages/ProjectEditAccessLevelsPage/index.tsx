@@ -1,12 +1,13 @@
+import * as React from "react";
+
+import Api from "@/api";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Projects from "@/models/projects";
 import * as Spaces from "@/models/spaces";
-import * as React from "react";
 
 import Forms from "@/components/Forms";
 
-import { useEditProjectPermissions } from "@/api";
 import { ProjectContribsSubpageNavigation } from "@/components/ProjectPageNavigation";
 import { applyAccessLevelConstraints, initialAccessLevels } from "@/features/Permissions/AccessFields";
 import { AccessSelectors } from "@/features/projects/AccessSelectors";
@@ -56,7 +57,7 @@ function Form() {
   const parentAccessLevel = space.accessLevels!;
 
   const navigateToContributorsPath = useNavigateTo(paths.projectContributorsPath(project.id!));
-  const [edit] = useEditProjectPermissions();
+  const [updatePermissions] = Api.projects.useUpdatePermissions();
 
   const form = Forms.useForm({
     fields: {
@@ -66,7 +67,7 @@ function Form() {
       newValues.access = applyAccessLevelConstraints(newValues.access, parentAccessLevel);
     },
     submit: async () => {
-      await edit({
+      await updatePermissions({
         projectId: project.id,
         accessLevels: {
           public: form.values.access.anonymous,
