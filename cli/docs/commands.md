@@ -43,7 +43,6 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `edit_comment` | `op edit_comment` | `POST` | `/api/external/v1/edit_comment` |
 | `edit_company` | `op edit_company` | `POST` | `/api/external/v1/edit_company` |
 | `edit_company_members_permissions` | `op edit_company_members_permissions` | `POST` | `/api/external/v1/edit_company_members_permissions` |
-| `edit_discussion` | `op edit_discussion` | `POST` | `/api/external/v1/edit_discussion` |
 | `edit_goal_discussion` | `op edit_goal_discussion` | `POST` | `/api/external/v1/edit_goal_discussion` |
 | `edit_goal_progress_update` | `op edit_goal_progress_update` | `POST` | `/api/external/v1/edit_goal_progress_update` |
 | `edit_key_resource` | `op edit_key_resource` | `POST` | `/api/external/v1/edit_key_resource` |
@@ -68,8 +67,6 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `get_comments` | `op get_comments` | `GET` | `/api/external/v1/get_comments` |
 | `get_companies` | `op get_companies` | `GET` | `/api/external/v1/get_companies` |
 | `get_company` | `op get_company` | `GET` | `/api/external/v1/get_company` |
-| `get_discussion` | `op get_discussion` | `GET` | `/api/external/v1/get_discussion` |
-| `get_discussions` | `op get_discussions` | `GET` | `/api/external/v1/get_discussions` |
 | `get_flat_work_map` | `op get_flat_work_map` | `GET` | `/api/external/v1/get_flat_work_map` |
 | `get_goal` | `op get_goal` | `GET` | `/api/external/v1/get_goal` |
 | `get_goal_progress_update` | `op get_goal_progress_update` | `GET` | `/api/external/v1/get_goal_progress_update` |
@@ -98,9 +95,9 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `get_unread_notification_count` | `op get_unread_notification_count` | `GET` | `/api/external/v1/get_unread_notification_count` |
 | `get_work_map` | `op get_work_map` | `GET` | `/api/external/v1/get_work_map` |
 | `global_search` | `op global_search` | `GET` | `/api/external/v1/global_search` |
-| `goals add_access_members` | `op goals add_access_members` | `POST` | `/api/external/v1/goals/add_access_members` |
-| `goals add_check` | `op goals add_check` | `POST` | `/api/external/v1/goals/add_check` |
-| `goals add_target` | `op goals add_target` | `POST` | `/api/external/v1/goals/add_target` |
+| `goals create_access_members` | `op goals create_access_members` | `POST` | `/api/external/v1/goals/create_access_members` |
+| `goals create_check` | `op goals create_check` | `POST` | `/api/external/v1/goals/create_check` |
+| `goals create_target` | `op goals create_target` | `POST` | `/api/external/v1/goals/create_target` |
 | `goals delete_access_member` | `op goals delete_access_member` | `POST` | `/api/external/v1/goals/delete_access_member` |
 | `goals delete_check` | `op goals delete_check` | `POST` | `/api/external/v1/goals/delete_check` |
 | `goals delete_target` | `op goals delete_target` | `POST` | `/api/external/v1/goals/delete_target` |
@@ -139,14 +136,13 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `move_project_to_space` | `op move_project_to_space` | `POST` | `/api/external/v1/move_project_to_space` |
 | `move_task` | `op move_task` | `POST` | `/api/external/v1/move_task` |
 | `pause_project` | `op pause_project` | `POST` | `/api/external/v1/pause_project` |
-| `post_discussion` | `op post_discussion` | `POST` | `/api/external/v1/post_discussion` |
 | `post_goal_progress_update` | `op post_goal_progress_update` | `POST` | `/api/external/v1/post_goal_progress_update` |
 | `post_milestone_comment` | `op post_milestone_comment` | `POST` | `/api/external/v1/post_milestone_comment` |
 | `post_project_check_in` | `op post_project_check_in` | `POST` | `/api/external/v1/post_project_check_in` |
 | `project_discussions create` | `op project_discussions create` | `POST` | `/api/external/v1/project_discussions/create` |
-| `project_discussions edit` | `op project_discussions edit` | `POST` | `/api/external/v1/project_discussions/edit` |
 | `project_discussions get` | `op project_discussions get` | `GET` | `/api/external/v1/project_discussions/get` |
 | `project_discussions list` | `op project_discussions list` | `GET` | `/api/external/v1/project_discussions/list` |
+| `project_discussions update` | `op project_discussions update` | `POST` | `/api/external/v1/project_discussions/update` |
 | `project_milestones delete` | `op project_milestones delete` | `POST` | `/api/external/v1/project_milestones/delete` |
 | `project_milestones list_tasks` | `op project_milestones list_tasks` | `GET` | `/api/external/v1/project_milestones/list_tasks` |
 | `project_milestones update_description` | `op project_milestones update_description` | `POST` | `/api/external/v1/project_milestones/update_description` |
@@ -157,10 +153,10 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `projects count_children` | `op projects count_children` | `GET` | `/api/external/v1/projects/count_children` |
 | `projects create_milestone` | `op projects create_milestone` | `POST` | `/api/external/v1/projects/create_milestone` |
 | `projects delete` | `op projects delete` | `POST` | `/api/external/v1/projects/delete` |
-| `projects get_contributors` | `op projects get_contributors` | `GET` | `/api/external/v1/projects/get_contributors` |
-| `projects get_milestones` | `op projects get_milestones` | `GET` | `/api/external/v1/projects/get_milestones` |
-| `projects parent_goal_search` | `op projects parent_goal_search` | `GET` | `/api/external/v1/projects/parent_goal_search` |
+| `projects list_contributors` | `op projects list_contributors` | `GET` | `/api/external/v1/projects/list_contributors` |
+| `projects list_milestones` | `op projects list_milestones` | `GET` | `/api/external/v1/projects/list_milestones` |
 | `projects search` | `op projects search` | `GET` | `/api/external/v1/projects/search` |
+| `projects search_parent_goal` | `op projects search_parent_goal` | `GET` | `/api/external/v1/projects/search_parent_goal` |
 | `projects update_champion` | `op projects update_champion` | `POST` | `/api/external/v1/projects/update_champion` |
 | `projects update_due_date` | `op projects update_due_date` | `POST` | `/api/external/v1/projects/update_due_date` |
 | `projects update_kanban` | `op projects update_kanban` | `POST` | `/api/external/v1/projects/update_kanban` |
@@ -169,7 +165,6 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `projects update_reviewer` | `op projects update_reviewer` | `POST` | `/api/external/v1/projects/update_reviewer` |
 | `projects update_start_date` | `op projects update_start_date` | `POST` | `/api/external/v1/projects/update_start_date` |
 | `projects update_task_statuses` | `op projects update_task_statuses` | `POST` | `/api/external/v1/projects/update_task_statuses` |
-| `publish_discussion` | `op publish_discussion` | `POST` | `/api/external/v1/publish_discussion` |
 | `publish_resource_hub_document` | `op publish_resource_hub_document` | `POST` | `/api/external/v1/publish_resource_hub_document` |
 | `remove_company_admin` | `op remove_company_admin` | `POST` | `/api/external/v1/remove_company_admin` |
 | `remove_company_member` | `op remove_company_member` | `POST` | `/api/external/v1/remove_company_member` |
@@ -186,6 +181,11 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `search_people` | `op search_people` | `GET` | `/api/external/v1/search_people` |
 | `search_potential_space_members` | `op search_potential_space_members` | `GET` | `/api/external/v1/search_potential_space_members` |
 | `search_project_contributor_candidates` | `op search_project_contributor_candidates` | `GET` | `/api/external/v1/search_project_contributor_candidates` |
+| `space_discussions create` | `op space_discussions create` | `POST` | `/api/external/v1/space_discussions/create` |
+| `space_discussions get` | `op space_discussions get` | `GET` | `/api/external/v1/space_discussions/get` |
+| `space_discussions list` | `op space_discussions list` | `GET` | `/api/external/v1/space_discussions/list` |
+| `space_discussions publish` | `op space_discussions publish` | `POST` | `/api/external/v1/space_discussions/publish` |
+| `space_discussions update` | `op space_discussions update` | `POST` | `/api/external/v1/space_discussions/update` |
 | `spaces count_by_access_level` | `op spaces count_by_access_level` | `GET` | `/api/external/v1/spaces/count_by_access_level` |
 | `spaces list_members` | `op spaces list_members` | `GET` | `/api/external/v1/spaces/list_members` |
 | `spaces list_tasks` | `op spaces list_tasks` | `GET` | `/api/external/v1/spaces/list_tasks` |

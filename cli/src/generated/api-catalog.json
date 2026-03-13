@@ -14766,10 +14766,10 @@
   "mutation_count": 138,
   "endpoints": [
     {
-      "name": "add_access_members",
+      "name": "create_access_members",
       "type": "mutation",
-      "path": "/api/external/v1/goals/add_access_members",
-      "handler": "OperatelyWeb.Api.Goals.AddAccessMembers",
+      "path": "/api/external/v1/goals/create_access_members",
+      "handler": "OperatelyWeb.Api.Goals.CreateAccessMembers",
       "outputs": [
         {
           "default": null,
@@ -14811,14 +14811,14 @@
           "nullable": false
         }
       ],
-      "full_name": "goals/add_access_members",
+      "full_name": "goals/create_access_members",
       "method": "POST"
     },
     {
-      "name": "add_check",
+      "name": "create_check",
       "type": "mutation",
-      "path": "/api/external/v1/goals/add_check",
-      "handler": "OperatelyWeb.Api.GoalChecks.Add",
+      "path": "/api/external/v1/goals/create_check",
+      "handler": "OperatelyWeb.Api.GoalChecks.Create",
       "outputs": [
         {
           "default": null,
@@ -14868,14 +14868,14 @@
           "nullable": false
         }
       ],
-      "full_name": "goals/add_check",
+      "full_name": "goals/create_check",
       "method": "POST"
     },
     {
-      "name": "add_target",
+      "name": "create_target",
       "type": "mutation",
-      "path": "/api/external/v1/goals/add_target",
-      "handler": "OperatelyWeb.Api.Goals.AddTarget",
+      "path": "/api/external/v1/goals/create_target",
+      "handler": "OperatelyWeb.Api.Goals.CreateTarget",
       "outputs": [
         {
           "default": null,
@@ -14958,7 +14958,7 @@
           "nullable": false
         }
       ],
-      "full_name": "goals/add_target",
+      "full_name": "goals/create_target",
       "method": "POST"
     },
     {
@@ -16180,77 +16180,6 @@
       "method": "POST"
     },
     {
-      "name": "edit",
-      "type": "mutation",
-      "path": "/api/external/v1/project_discussions/edit",
-      "handler": "OperatelyWeb.Api.ProjectDiscussions.Edit",
-      "outputs": [
-        {
-          "default": null,
-          "name": "discussion",
-          "type": {
-            "name": "update",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "project_discussions",
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "title",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "message",
-          "type": {
-            "name": "json",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": [],
-          "name": "subscriber_ids",
-          "type": {
-            "item": {
-              "name": "id",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": true,
-          "nullable": false
-        }
-      ],
-      "full_name": "project_discussions/edit",
-      "method": "POST"
-    },
-    {
       "name": "get",
       "type": "query",
       "path": "/api/external/v1/project_discussions/get",
@@ -16399,6 +16328,77 @@
       ],
       "full_name": "project_discussions/list",
       "method": "GET"
+    },
+    {
+      "name": "update",
+      "type": "mutation",
+      "path": "/api/external/v1/project_discussions/update",
+      "handler": "OperatelyWeb.Api.ProjectDiscussions.Update",
+      "outputs": [
+        {
+          "default": null,
+          "name": "discussion",
+          "type": {
+            "name": "update",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_discussions",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "title",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "message",
+          "type": {
+            "name": "json",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": [],
+          "name": "subscriber_ids",
+          "type": {
+            "item": {
+              "name": "id",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": true,
+          "nullable": false
+        }
+      ],
+      "full_name": "project_discussions/update",
+      "method": "POST"
     },
     {
       "name": "delete",
@@ -16878,10 +16878,10 @@
       "method": "POST"
     },
     {
-      "name": "get_contributors",
+      "name": "list_contributors",
       "type": "query",
-      "path": "/api/external/v1/projects/get_contributors",
-      "handler": "OperatelyWeb.Api.Projects.GetContributors",
+      "path": "/api/external/v1/projects/list_contributors",
+      "handler": "OperatelyWeb.Api.Projects.ListContributors",
       "outputs": [
         {
           "default": null,
@@ -16937,14 +16937,14 @@
           "nullable": true
         }
       ],
-      "full_name": "projects/get_contributors",
+      "full_name": "projects/list_contributors",
       "method": "GET"
     },
     {
-      "name": "get_milestones",
+      "name": "list_milestones",
       "type": "query",
-      "path": "/api/external/v1/projects/get_milestones",
-      "handler": "OperatelyWeb.Api.Projects.GetMilestones",
+      "path": "/api/external/v1/projects/list_milestones",
+      "handler": "OperatelyWeb.Api.Projects.ListMilestones",
       "outputs": [
         {
           "default": null,
@@ -16986,56 +16986,7 @@
           "nullable": false
         }
       ],
-      "full_name": "projects/get_milestones",
-      "method": "GET"
-    },
-    {
-      "name": "parent_goal_search",
-      "type": "query",
-      "path": "/api/external/v1/projects/parent_goal_search",
-      "handler": "OperatelyWeb.Api.Projects.ParentGoalSearch",
-      "outputs": [
-        {
-          "default": null,
-          "name": "goals",
-          "type": {
-            "item": {
-              "name": "goal",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "projects",
-      "inputs": [
-        {
-          "default": null,
-          "name": "query",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "project_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "projects/parent_goal_search",
+      "full_name": "projects/list_milestones",
       "method": "GET"
     },
     {
@@ -17110,6 +17061,55 @@
         }
       ],
       "full_name": "projects/search",
+      "method": "GET"
+    },
+    {
+      "name": "search_parent_goal",
+      "type": "query",
+      "path": "/api/external/v1/projects/search_parent_goal",
+      "handler": "OperatelyWeb.Api.Projects.SearchParentGoal",
+      "outputs": [
+        {
+          "default": null,
+          "name": "goals",
+          "type": {
+            "item": {
+              "name": "goal",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "query",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "projects/search_parent_goal",
       "method": "GET"
     },
     {
@@ -19774,74 +19774,6 @@
       "method": "POST"
     },
     {
-      "name": "edit_discussion",
-      "type": "mutation",
-      "path": "/api/external/v1/edit_discussion",
-      "handler": "OperatelyWeb.Api.Mutations.EditDiscussion",
-      "outputs": [
-        {
-          "default": null,
-          "name": "discussion",
-          "type": {
-            "name": "discussion",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "title",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "body",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "state",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "edit_discussion",
-      "method": "POST"
-    },
-    {
       "name": "edit_goal_discussion",
       "type": "mutation",
       "path": "/api/external/v1/edit_goal_discussion",
@@ -21188,214 +21120,6 @@
         }
       ],
       "full_name": "get_company",
-      "method": "GET"
-    },
-    {
-      "name": "get_discussion",
-      "type": "query",
-      "path": "/api/external/v1/get_discussion",
-      "handler": "OperatelyWeb.Api.Queries.GetDiscussion",
-      "outputs": [
-        {
-          "default": null,
-          "name": "discussion",
-          "type": {
-            "name": "discussion",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_author",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_reactions",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_space",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_space_members",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_subscriptions_list",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_potential_subscribers",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_unread_notifications",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_permissions",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "get_discussion",
-      "method": "GET"
-    },
-    {
-      "name": "get_discussions",
-      "type": "query",
-      "path": "/api/external/v1/get_discussions",
-      "handler": "OperatelyWeb.Api.Queries.GetDiscussions",
-      "outputs": [
-        {
-          "default": null,
-          "name": "discussions",
-          "type": {
-            "item": {
-              "name": "discussion",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "my_drafts",
-          "type": {
-            "item": {
-              "name": "discussion",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "space_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_author",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_comments_count",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_my_drafts",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "get_discussions",
       "method": "GET"
     },
     {
@@ -25075,99 +24799,6 @@
       "method": "POST"
     },
     {
-      "name": "post_discussion",
-      "type": "mutation",
-      "path": "/api/external/v1/post_discussion",
-      "handler": "OperatelyWeb.Api.Mutations.PostDiscussion",
-      "outputs": [
-        {
-          "default": null,
-          "name": "discussion",
-          "type": {
-            "name": "discussion",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "space_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "title",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "body",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "post_as_draft",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "send_notifications_to_everyone",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "subscriber_ids",
-          "type": {
-            "item": {
-              "name": "id",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "post_discussion",
-      "method": "POST"
-    },
-    {
       "name": "post_goal_progress_update",
       "type": "mutation",
       "path": "/api/external/v1/post_goal_progress_update",
@@ -25422,41 +25053,6 @@
         }
       ],
       "full_name": "post_project_check_in",
-      "method": "POST"
-    },
-    {
-      "name": "publish_discussion",
-      "type": "mutation",
-      "path": "/api/external/v1/publish_discussion",
-      "handler": "OperatelyWeb.Api.Mutations.PublishDiscussion",
-      "outputs": [
-        {
-          "default": null,
-          "name": "discussion",
-          "type": {
-            "name": "discussion",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "publish_discussion",
       "method": "POST"
     },
     {
@@ -26614,6 +26210,410 @@
       "method": "POST"
     },
     {
+      "name": "create",
+      "type": "mutation",
+      "path": "/api/external/v1/space_discussions/create",
+      "handler": "OperatelyWeb.Api.SpaceDiscussions.Create",
+      "outputs": [
+        {
+          "default": null,
+          "name": "discussion",
+          "type": {
+            "name": "discussion",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "space_discussions",
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "title",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "body",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "post_as_draft",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "send_notifications_to_everyone",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "subscriber_ids",
+          "type": {
+            "item": {
+              "name": "id",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "space_discussions/create",
+      "method": "POST"
+    },
+    {
+      "name": "get",
+      "type": "query",
+      "path": "/api/external/v1/space_discussions/get",
+      "handler": "OperatelyWeb.Api.SpaceDiscussions.Get",
+      "outputs": [
+        {
+          "default": null,
+          "name": "discussion",
+          "type": {
+            "name": "discussion",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "space_discussions",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_author",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_reactions",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_space",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_space_members",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_subscriptions_list",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_potential_subscribers",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_unread_notifications",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_permissions",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "space_discussions/get",
+      "method": "GET"
+    },
+    {
+      "name": "list",
+      "type": "query",
+      "path": "/api/external/v1/space_discussions/list",
+      "handler": "OperatelyWeb.Api.SpaceDiscussions.List",
+      "outputs": [
+        {
+          "default": null,
+          "name": "discussions",
+          "type": {
+            "item": {
+              "name": "discussion",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "my_drafts",
+          "type": {
+            "item": {
+              "name": "discussion",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "space_discussions",
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_author",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_comments_count",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_my_drafts",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "space_discussions/list",
+      "method": "GET"
+    },
+    {
+      "name": "publish",
+      "type": "mutation",
+      "path": "/api/external/v1/space_discussions/publish",
+      "handler": "OperatelyWeb.Api.SpaceDiscussions.Publish",
+      "outputs": [
+        {
+          "default": null,
+          "name": "discussion",
+          "type": {
+            "name": "discussion",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "space_discussions",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "space_discussions/publish",
+      "method": "POST"
+    },
+    {
+      "name": "update",
+      "type": "mutation",
+      "path": "/api/external/v1/space_discussions/update",
+      "handler": "OperatelyWeb.Api.SpaceDiscussions.Update",
+      "outputs": [
+        {
+          "default": null,
+          "name": "discussion",
+          "type": {
+            "name": "discussion",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "space_discussions",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "title",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "body",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "state",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "space_discussions/update",
+      "method": "POST"
+    },
+    {
       "name": "count_by_access_level",
       "type": "query",
       "path": "/api/external/v1/spaces/count_by_access_level",
@@ -27647,6 +27647,6 @@
     }
   ],
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-12T21:13:25Z",
+  "generated_at": "2026-03-13T16:57:45Z",
   "schema_version": 1
 }

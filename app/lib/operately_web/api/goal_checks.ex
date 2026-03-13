@@ -1,7 +1,7 @@
 defmodule OperatelyWeb.Api.GoalChecks do
   alias __MODULE__.SharedMultiSteps, as: Steps
 
-  defmodule Add do
+  defmodule Create do
     use TurboConnect.Mutation
 
     inputs do
