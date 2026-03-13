@@ -17,7 +17,7 @@ export { useTaskTimelineItems } from "./useTaskTimelineItems";
 export { useTaskSlideInProps } from "./useTaskSlideInProps";
 export { prepareTaskTimelineItems } from "./prepareTaskTimelineItems";
 
-export { getTask, getTasks, useGetTasks } from "@/api";
+export { getTask } from "@/api";
 
 type ParserOptions = { type: "project" } | { type: "space"; space: Space };
 

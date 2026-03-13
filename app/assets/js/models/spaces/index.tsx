@@ -18,12 +18,12 @@ export {
 
 export type { Space, SpaceTools } from "@/api";
 
-export async function getSpace(params: api.GetSpaceInput): Promise<api.Space> {
-  return await api.getSpace(params).then((res) => res.space!);
+export async function getSpace(params: api.SpacesGetInput): Promise<api.Space> {
+  return await Api.spaces.get(params).then((res) => res.space!);
 }
 
-export async function getSpaces(params: api.GetSpacesInput): Promise<api.Space[]> {
-  return await api.getSpaces(params).then((res) => res.spaces!);
+export async function getSpaces(params: api.SpacesListInput): Promise<api.Space[]> {
+  return await Api.spaces.list(params).then((res) => res.spaces!);
 }
 
 interface SpaceSearchAttrs {

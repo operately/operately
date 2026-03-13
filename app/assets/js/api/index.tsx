@@ -2351,30 +2351,6 @@ export interface GetFlatWorkMapResult {
   workMap?: WorkMapItem[] | null;
 }
 
-export interface GetGoalInput {
-  id: Id;
-  includeChampion?: boolean | null;
-  includeClosedBy?: boolean | null;
-  includeLastCheckIn?: boolean | null;
-  includePermissions?: boolean | null;
-  includeProjects?: boolean | null;
-  includeReviewer?: boolean | null;
-  includeSpace?: boolean | null;
-  includeSpaceMembers?: boolean | null;
-  includeAccessLevels?: boolean | null;
-  includePrivacy?: boolean | null;
-  includePotentialSubscribers?: boolean | null;
-  includeUnreadNotifications?: boolean | null;
-  includeRetrospective?: boolean | null;
-  includeChecklist?: boolean;
-  includeMarkdown?: boolean;
-}
-
-export interface GetGoalResult {
-  goal: Goal;
-  markdown?: string;
-}
-
 export interface GetGoalProgressUpdateInput {
   id: string;
   includeAuthor?: boolean | null;
@@ -2395,19 +2371,6 @@ export interface GetGoalProgressUpdateInput {
 
 export interface GetGoalProgressUpdateResult {
   update: GoalProgressUpdate;
-}
-
-export interface GetGoalsInput {
-  spaceId?: string | null;
-  includeProjects?: boolean | null;
-  includeSpace?: boolean | null;
-  includeLastCheckIn?: boolean | null;
-  includeChampion?: boolean | null;
-  includeReviewer?: boolean | null;
-}
-
-export interface GetGoalsResult {
-  goals?: Goal[] | null;
 }
 
 export interface GetKeyResourceInput {
@@ -2476,32 +2439,6 @@ export interface GetPersonResult {
   person?: Person | null;
 }
 
-export interface GetProjectInput {
-  id?: string | null;
-  includeContributors?: boolean | null;
-  includeGoal?: boolean | null;
-  includeKeyResources?: boolean | null;
-  includeLastCheckIn?: boolean | null;
-  includeMilestones?: boolean | null;
-  includePermissions?: boolean | null;
-  includeChampion?: boolean | null;
-  includeReviewer?: boolean | null;
-  includeSpace?: boolean | null;
-  includeContributorsAccessLevels?: boolean | null;
-  includeAccessLevels?: boolean | null;
-  includePrivacy?: boolean | null;
-  includeRetrospective?: boolean | null;
-  includePotentialSubscribers?: boolean | null;
-  includeUnreadNotifications?: boolean | null;
-  includeSubscriptionList?: boolean | null;
-  includeMarkdown?: boolean;
-}
-
-export interface GetProjectResult {
-  project: Project;
-  markdown?: string;
-}
-
 export interface GetProjectCheckInInput {
   id: string;
   includeAuthor?: boolean;
@@ -2554,27 +2491,6 @@ export interface GetProjectRetrospectiveInput {
 
 export interface GetProjectRetrospectiveResult {
   retrospective: ProjectRetrospective;
-}
-
-export interface GetProjectsInput {
-  onlyMyProjects?: boolean | null;
-  onlyReviewedByMe?: boolean | null;
-  spaceId?: string | null;
-  goalId?: string | null;
-  includeSpace?: boolean | null;
-  includeMilestones?: boolean | null;
-  includeContributors?: boolean | null;
-  includeLastCheckIn?: boolean | null;
-  includeChampion?: boolean | null;
-  includeReviewer?: boolean | null;
-  includeGoal?: boolean | null;
-  includeArchived?: boolean | null;
-  includePrivacy?: boolean | null;
-  includeRetrospective?: boolean | null;
-}
-
-export interface GetProjectsResult {
-  projects?: Project[] | null;
 }
 
 export interface GetResourceHubInput {
@@ -2655,30 +2571,6 @@ export interface GetResourceHubLinkResult {
   link: ResourceHubLink;
 }
 
-export interface GetSpaceInput {
-  id?: Id | null;
-  includePermissions?: boolean | null;
-  includeMembers?: boolean | null;
-  includeAccessLevels?: boolean | null;
-  includeMembersAccessLevels?: boolean | null;
-  includePotentialSubscribers?: boolean | null;
-  includeUnreadNotifications?: boolean | null;
-}
-
-export interface GetSpaceResult {
-  space?: Space | null;
-}
-
-export interface GetSpacesInput {
-  accessLevel?: AccessOptions;
-  includeAccessLevels?: boolean;
-  includeMembers?: boolean;
-}
-
-export interface GetSpacesResult {
-  spaces?: Space[] | null;
-}
-
 export interface GetTaskInput {
   id: Id;
   includeAssignees?: boolean;
@@ -2693,15 +2585,6 @@ export interface GetTaskInput {
 
 export interface GetTaskResult {
   task?: Task | null;
-}
-
-export interface GetTasksInput {
-  milestoneId?: string | null;
-  includeAssignees?: boolean | null;
-}
-
-export interface GetTasksResult {
-  tasks?: Task[] | null;
 }
 
 export interface GetThemeInput {}
@@ -2741,6 +2624,43 @@ export interface GlobalSearchResult {
   milestones: Milestone[];
   tasks: Task[];
   people: Person[];
+}
+
+export interface GoalsGetInput {
+  id: Id;
+  includeChampion?: boolean | null;
+  includeClosedBy?: boolean | null;
+  includeLastCheckIn?: boolean | null;
+  includePermissions?: boolean | null;
+  includeProjects?: boolean | null;
+  includeReviewer?: boolean | null;
+  includeSpace?: boolean | null;
+  includeSpaceMembers?: boolean | null;
+  includeAccessLevels?: boolean | null;
+  includePrivacy?: boolean | null;
+  includePotentialSubscribers?: boolean | null;
+  includeUnreadNotifications?: boolean | null;
+  includeRetrospective?: boolean | null;
+  includeChecklist?: boolean;
+  includeMarkdown?: boolean;
+}
+
+export interface GoalsGetResult {
+  goal: Goal;
+  markdown?: string;
+}
+
+export interface GoalsListInput {
+  spaceId?: string | null;
+  includeProjects?: boolean | null;
+  includeSpace?: boolean | null;
+  includeLastCheckIn?: boolean | null;
+  includeChampion?: boolean | null;
+  includeReviewer?: boolean | null;
+}
+
+export interface GoalsListResult {
+  goals?: Goal[] | null;
 }
 
 export interface GoalsListAccessMembersInput {
@@ -2891,6 +2811,53 @@ export interface ProjectsCountChildrenResult {
   childrenCount: ProjectChildrenCount;
 }
 
+export interface ProjectsGetInput {
+  id?: string | null;
+  includeContributors?: boolean | null;
+  includeGoal?: boolean | null;
+  includeKeyResources?: boolean | null;
+  includeLastCheckIn?: boolean | null;
+  includeMilestones?: boolean | null;
+  includePermissions?: boolean | null;
+  includeChampion?: boolean | null;
+  includeReviewer?: boolean | null;
+  includeSpace?: boolean | null;
+  includeContributorsAccessLevels?: boolean | null;
+  includeAccessLevels?: boolean | null;
+  includePrivacy?: boolean | null;
+  includeRetrospective?: boolean | null;
+  includePotentialSubscribers?: boolean | null;
+  includeUnreadNotifications?: boolean | null;
+  includeSubscriptionList?: boolean | null;
+  includeMarkdown?: boolean;
+}
+
+export interface ProjectsGetResult {
+  project: Project;
+  markdown?: string;
+}
+
+export interface ProjectsListInput {
+  onlyMyProjects?: boolean | null;
+  onlyReviewedByMe?: boolean | null;
+  spaceId?: string | null;
+  goalId?: string | null;
+  includeSpace?: boolean | null;
+  includeMilestones?: boolean | null;
+  includeContributors?: boolean | null;
+  includeLastCheckIn?: boolean | null;
+  includeChampion?: boolean | null;
+  includeReviewer?: boolean | null;
+  includeGoal?: boolean | null;
+  includeArchived?: boolean | null;
+  includePrivacy?: boolean | null;
+  includeRetrospective?: boolean | null;
+}
+
+export interface ProjectsListResult {
+  projects?: Project[] | null;
+}
+
 export interface ProjectsListContributorsInput {
   projectId: Id;
   query?: string | null;
@@ -2995,6 +2962,30 @@ export interface SpacesCountByAccessLevelInput {
 
 export interface SpacesCountByAccessLevelResult {
   count: number;
+}
+
+export interface SpacesGetInput {
+  id?: Id | null;
+  includePermissions?: boolean | null;
+  includeMembers?: boolean | null;
+  includeAccessLevels?: boolean | null;
+  includeMembersAccessLevels?: boolean | null;
+  includePotentialSubscribers?: boolean | null;
+  includeUnreadNotifications?: boolean | null;
+}
+
+export interface SpacesGetResult {
+  space?: Space | null;
+}
+
+export interface SpacesListInput {
+  accessLevel?: AccessOptions;
+  includeAccessLevels?: boolean;
+  includeMembers?: boolean;
+}
+
+export interface SpacesListResult {
+  spaces?: Space[] | null;
 }
 
 export interface SpacesListMembersInput {
@@ -4856,16 +4847,8 @@ class ApiNamespaceRoot {
     return this.client.get("/get_flat_work_map", input);
   }
 
-  async getGoal(input: GetGoalInput): Promise<GetGoalResult> {
-    return this.client.get("/get_goal", input);
-  }
-
   async getGoalProgressUpdate(input: GetGoalProgressUpdateInput): Promise<GetGoalProgressUpdateResult> {
     return this.client.get("/get_goal_progress_update", input);
-  }
-
-  async getGoals(input: GetGoalsInput): Promise<GetGoalsResult> {
-    return this.client.get("/get_goals", input);
   }
 
   async getKeyResource(input: GetKeyResourceInput): Promise<GetKeyResourceResult> {
@@ -4892,10 +4875,6 @@ class ApiNamespaceRoot {
     return this.client.get("/get_person", input);
   }
 
-  async getProject(input: GetProjectInput): Promise<GetProjectResult> {
-    return this.client.get("/get_project", input);
-  }
-
   async getProjectCheckIn(input: GetProjectCheckInInput): Promise<GetProjectCheckInResult> {
     return this.client.get("/get_project_check_in", input);
   }
@@ -4910,10 +4889,6 @@ class ApiNamespaceRoot {
 
   async getProjectRetrospective(input: GetProjectRetrospectiveInput): Promise<GetProjectRetrospectiveResult> {
     return this.client.get("/get_project_retrospective", input);
-  }
-
-  async getProjects(input: GetProjectsInput): Promise<GetProjectsResult> {
-    return this.client.get("/get_projects", input);
   }
 
   async getResourceHub(input: GetResourceHubInput): Promise<GetResourceHubResult> {
@@ -4936,20 +4911,8 @@ class ApiNamespaceRoot {
     return this.client.get("/get_resource_hub_link", input);
   }
 
-  async getSpace(input: GetSpaceInput): Promise<GetSpaceResult> {
-    return this.client.get("/get_space", input);
-  }
-
-  async getSpaces(input: GetSpacesInput): Promise<GetSpacesResult> {
-    return this.client.get("/get_spaces", input);
-  }
-
   async getTask(input: GetTaskInput): Promise<GetTaskResult> {
     return this.client.get("/get_task", input);
-  }
-
-  async getTasks(input: GetTasksInput): Promise<GetTasksResult> {
-    return this.client.get("/get_tasks", input);
   }
 
   async getTheme(input: GetThemeInput): Promise<GetThemeResult> {
@@ -5416,6 +5379,14 @@ class ApiNamespaceSpaces {
     return this.client.get("/spaces/count_by_access_level", input);
   }
 
+  async get(input: SpacesGetInput): Promise<SpacesGetResult> {
+    return this.client.get("/spaces/get", input);
+  }
+
+  async list(input: SpacesListInput): Promise<SpacesListResult> {
+    return this.client.get("/spaces/list", input);
+  }
+
   async listMembers(input: SpacesListMembersInput): Promise<SpacesListMembersResult> {
     return this.client.get("/spaces/list_members", input);
   }
@@ -5572,6 +5543,14 @@ class ApiNamespaceProjects {
     return this.client.get("/projects/count_children", input);
   }
 
+  async get(input: ProjectsGetInput): Promise<ProjectsGetResult> {
+    return this.client.get("/projects/get", input);
+  }
+
+  async list(input: ProjectsListInput): Promise<ProjectsListResult> {
+    return this.client.get("/projects/list", input);
+  }
+
   async listContributors(input: ProjectsListContributorsInput): Promise<ProjectsListContributorsResult> {
     return this.client.get("/projects/list_contributors", input);
   }
@@ -5631,6 +5610,14 @@ class ApiNamespaceProjects {
 
 class ApiNamespaceGoals {
   constructor(private client: ApiClient) {}
+
+  async get(input: GoalsGetInput): Promise<GoalsGetResult> {
+    return this.client.get("/goals/get", input);
+  }
+
+  async list(input: GoalsListInput): Promise<GoalsListResult> {
+    return this.client.get("/goals/list", input);
+  }
 
   async listAccessMembers(input: GoalsListAccessMembersInput): Promise<GoalsListAccessMembersResult> {
     return this.client.get("/goals/list_access_members", input);
@@ -5838,16 +5825,8 @@ export class ApiClient {
     return this.apiNamespaceRoot.getFlatWorkMap(input);
   }
 
-  getGoal(input: GetGoalInput): Promise<GetGoalResult> {
-    return this.apiNamespaceRoot.getGoal(input);
-  }
-
   getGoalProgressUpdate(input: GetGoalProgressUpdateInput): Promise<GetGoalProgressUpdateResult> {
     return this.apiNamespaceRoot.getGoalProgressUpdate(input);
-  }
-
-  getGoals(input: GetGoalsInput): Promise<GetGoalsResult> {
-    return this.apiNamespaceRoot.getGoals(input);
   }
 
   getKeyResource(input: GetKeyResourceInput): Promise<GetKeyResourceResult> {
@@ -5874,10 +5853,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.getPerson(input);
   }
 
-  getProject(input: GetProjectInput): Promise<GetProjectResult> {
-    return this.apiNamespaceRoot.getProject(input);
-  }
-
   getProjectCheckIn(input: GetProjectCheckInInput): Promise<GetProjectCheckInResult> {
     return this.apiNamespaceRoot.getProjectCheckIn(input);
   }
@@ -5892,10 +5867,6 @@ export class ApiClient {
 
   getProjectRetrospective(input: GetProjectRetrospectiveInput): Promise<GetProjectRetrospectiveResult> {
     return this.apiNamespaceRoot.getProjectRetrospective(input);
-  }
-
-  getProjects(input: GetProjectsInput): Promise<GetProjectsResult> {
-    return this.apiNamespaceRoot.getProjects(input);
   }
 
   getResourceHub(input: GetResourceHubInput): Promise<GetResourceHubResult> {
@@ -5918,20 +5889,8 @@ export class ApiClient {
     return this.apiNamespaceRoot.getResourceHubLink(input);
   }
 
-  getSpace(input: GetSpaceInput): Promise<GetSpaceResult> {
-    return this.apiNamespaceRoot.getSpace(input);
-  }
-
-  getSpaces(input: GetSpacesInput): Promise<GetSpacesResult> {
-    return this.apiNamespaceRoot.getSpaces(input);
-  }
-
   getTask(input: GetTaskInput): Promise<GetTaskResult> {
     return this.apiNamespaceRoot.getTask(input);
-  }
-
-  getTasks(input: GetTasksInput): Promise<GetTasksResult> {
-    return this.apiNamespaceRoot.getTasks(input);
   }
 
   getTheme(input: GetThemeInput): Promise<GetThemeResult> {
@@ -6413,14 +6372,8 @@ export async function getCompany(input: GetCompanyInput): Promise<GetCompanyResu
 export async function getFlatWorkMap(input: GetFlatWorkMapInput): Promise<GetFlatWorkMapResult> {
   return defaultApiClient.getFlatWorkMap(input);
 }
-export async function getGoal(input: GetGoalInput): Promise<GetGoalResult> {
-  return defaultApiClient.getGoal(input);
-}
 export async function getGoalProgressUpdate(input: GetGoalProgressUpdateInput): Promise<GetGoalProgressUpdateResult> {
   return defaultApiClient.getGoalProgressUpdate(input);
-}
-export async function getGoals(input: GetGoalsInput): Promise<GetGoalsResult> {
-  return defaultApiClient.getGoals(input);
 }
 export async function getKeyResource(input: GetKeyResourceInput): Promise<GetKeyResourceResult> {
   return defaultApiClient.getKeyResource(input);
@@ -6440,9 +6393,6 @@ export async function getPeople(input: GetPeopleInput): Promise<GetPeopleResult>
 export async function getPerson(input: GetPersonInput): Promise<GetPersonResult> {
   return defaultApiClient.getPerson(input);
 }
-export async function getProject(input: GetProjectInput): Promise<GetProjectResult> {
-  return defaultApiClient.getProject(input);
-}
 export async function getProjectCheckIn(input: GetProjectCheckInInput): Promise<GetProjectCheckInResult> {
   return defaultApiClient.getProjectCheckIn(input);
 }
@@ -6456,9 +6406,6 @@ export async function getProjectRetrospective(
   input: GetProjectRetrospectiveInput,
 ): Promise<GetProjectRetrospectiveResult> {
   return defaultApiClient.getProjectRetrospective(input);
-}
-export async function getProjects(input: GetProjectsInput): Promise<GetProjectsResult> {
-  return defaultApiClient.getProjects(input);
 }
 export async function getResourceHub(input: GetResourceHubInput): Promise<GetResourceHubResult> {
   return defaultApiClient.getResourceHub(input);
@@ -6477,17 +6424,8 @@ export async function getResourceHubFolder(input: GetResourceHubFolderInput): Pr
 export async function getResourceHubLink(input: GetResourceHubLinkInput): Promise<GetResourceHubLinkResult> {
   return defaultApiClient.getResourceHubLink(input);
 }
-export async function getSpace(input: GetSpaceInput): Promise<GetSpaceResult> {
-  return defaultApiClient.getSpace(input);
-}
-export async function getSpaces(input: GetSpacesInput): Promise<GetSpacesResult> {
-  return defaultApiClient.getSpaces(input);
-}
 export async function getTask(input: GetTaskInput): Promise<GetTaskResult> {
   return defaultApiClient.getTask(input);
-}
-export async function getTasks(input: GetTasksInput): Promise<GetTasksResult> {
-  return defaultApiClient.getTasks(input);
 }
 export async function getTheme(input: GetThemeInput): Promise<GetThemeResult> {
   return defaultApiClient.getTheme(input);
@@ -6925,18 +6863,10 @@ export function useGetFlatWorkMap(input: GetFlatWorkMapInput): UseQueryHookResul
   return useQuery<GetFlatWorkMapResult>(() => defaultApiClient.getFlatWorkMap(input));
 }
 
-export function useGetGoal(input: GetGoalInput): UseQueryHookResult<GetGoalResult> {
-  return useQuery<GetGoalResult>(() => defaultApiClient.getGoal(input));
-}
-
 export function useGetGoalProgressUpdate(
   input: GetGoalProgressUpdateInput,
 ): UseQueryHookResult<GetGoalProgressUpdateResult> {
   return useQuery<GetGoalProgressUpdateResult>(() => defaultApiClient.getGoalProgressUpdate(input));
-}
-
-export function useGetGoals(input: GetGoalsInput): UseQueryHookResult<GetGoalsResult> {
-  return useQuery<GetGoalsResult>(() => defaultApiClient.getGoals(input));
 }
 
 export function useGetKeyResource(input: GetKeyResourceInput): UseQueryHookResult<GetKeyResourceResult> {
@@ -6963,10 +6893,6 @@ export function useGetPerson(input: GetPersonInput): UseQueryHookResult<GetPerso
   return useQuery<GetPersonResult>(() => defaultApiClient.getPerson(input));
 }
 
-export function useGetProject(input: GetProjectInput): UseQueryHookResult<GetProjectResult> {
-  return useQuery<GetProjectResult>(() => defaultApiClient.getProject(input));
-}
-
 export function useGetProjectCheckIn(input: GetProjectCheckInInput): UseQueryHookResult<GetProjectCheckInResult> {
   return useQuery<GetProjectCheckInResult>(() => defaultApiClient.getProjectCheckIn(input));
 }
@@ -6985,10 +6911,6 @@ export function useGetProjectRetrospective(
   input: GetProjectRetrospectiveInput,
 ): UseQueryHookResult<GetProjectRetrospectiveResult> {
   return useQuery<GetProjectRetrospectiveResult>(() => defaultApiClient.getProjectRetrospective(input));
-}
-
-export function useGetProjects(input: GetProjectsInput): UseQueryHookResult<GetProjectsResult> {
-  return useQuery<GetProjectsResult>(() => defaultApiClient.getProjects(input));
 }
 
 export function useGetResourceHub(input: GetResourceHubInput): UseQueryHookResult<GetResourceHubResult> {
@@ -7015,20 +6937,8 @@ export function useGetResourceHubLink(input: GetResourceHubLinkInput): UseQueryH
   return useQuery<GetResourceHubLinkResult>(() => defaultApiClient.getResourceHubLink(input));
 }
 
-export function useGetSpace(input: GetSpaceInput): UseQueryHookResult<GetSpaceResult> {
-  return useQuery<GetSpaceResult>(() => defaultApiClient.getSpace(input));
-}
-
-export function useGetSpaces(input: GetSpacesInput): UseQueryHookResult<GetSpacesResult> {
-  return useQuery<GetSpacesResult>(() => defaultApiClient.getSpaces(input));
-}
-
 export function useGetTask(input: GetTaskInput): UseQueryHookResult<GetTaskResult> {
   return useQuery<GetTaskResult>(() => defaultApiClient.getTask(input));
-}
-
-export function useGetTasks(input: GetTasksInput): UseQueryHookResult<GetTasksResult> {
-  return useQuery<GetTasksResult>(() => defaultApiClient.getTasks(input));
 }
 
 export function useGetTheme(input: GetThemeInput): UseQueryHookResult<GetThemeResult> {
@@ -7759,12 +7669,8 @@ export default {
   useGetCompany,
   getFlatWorkMap,
   useGetFlatWorkMap,
-  getGoal,
-  useGetGoal,
   getGoalProgressUpdate,
   useGetGoalProgressUpdate,
-  getGoals,
-  useGetGoals,
   getKeyResource,
   useGetKeyResource,
   getMe,
@@ -7777,8 +7683,6 @@ export default {
   useGetPeople,
   getPerson,
   useGetPerson,
-  getProject,
-  useGetProject,
   getProjectCheckIn,
   useGetProjectCheckIn,
   getProjectCheckIns,
@@ -7787,8 +7691,6 @@ export default {
   useGetProjectContributor,
   getProjectRetrospective,
   useGetProjectRetrospective,
-  getProjects,
-  useGetProjects,
   getResourceHub,
   useGetResourceHub,
   getResourceHubDocument,
@@ -7799,14 +7701,8 @@ export default {
   useGetResourceHubFolder,
   getResourceHubLink,
   useGetResourceHubLink,
-  getSpace,
-  useGetSpace,
-  getSpaces,
-  useGetSpaces,
   getTask,
   useGetTask,
-  getTasks,
-  useGetTasks,
   getTheme,
   useGetTheme,
   getUnreadNotificationCount,
@@ -8207,9 +8103,16 @@ export default {
     useCountByAccessLevel: (input: SpacesCountByAccessLevelInput) =>
       useQuery<SpacesCountByAccessLevelResult>(() => defaultApiClient.apiNamespaceSpaces.countByAccessLevel(input)),
 
+    get: (input: SpacesGetInput) => defaultApiClient.apiNamespaceSpaces.get(input),
+    useGet: (input: SpacesGetInput) => useQuery<SpacesGetResult>(() => defaultApiClient.apiNamespaceSpaces.get(input)),
+
     search: (input: SpacesSearchInput) => defaultApiClient.apiNamespaceSpaces.search(input),
     useSearch: (input: SpacesSearchInput) =>
       useQuery<SpacesSearchResult>(() => defaultApiClient.apiNamespaceSpaces.search(input)),
+
+    list: (input: SpacesListInput) => defaultApiClient.apiNamespaceSpaces.list(input),
+    useList: (input: SpacesListInput) =>
+      useQuery<SpacesListResult>(() => defaultApiClient.apiNamespaceSpaces.list(input)),
 
     listMembers: (input: SpacesListMembersInput) => defaultApiClient.apiNamespaceSpaces.listMembers(input),
     useListMembers: (input: SpacesListMembersInput) =>
@@ -8399,6 +8302,10 @@ export default {
     useCountChildren: (input: ProjectsCountChildrenInput) =>
       useQuery<ProjectsCountChildrenResult>(() => defaultApiClient.apiNamespaceProjects.countChildren(input)),
 
+    list: (input: ProjectsListInput) => defaultApiClient.apiNamespaceProjects.list(input),
+    useList: (input: ProjectsListInput) =>
+      useQuery<ProjectsListResult>(() => defaultApiClient.apiNamespaceProjects.list(input)),
+
     searchParentGoal: (input: ProjectsSearchParentGoalInput) =>
       defaultApiClient.apiNamespaceProjects.searchParentGoal(input),
     useSearchParentGoal: (input: ProjectsSearchParentGoalInput) =>
@@ -8408,6 +8315,10 @@ export default {
       defaultApiClient.apiNamespaceProjects.listContributors(input),
     useListContributors: (input: ProjectsListContributorsInput) =>
       useQuery<ProjectsListContributorsResult>(() => defaultApiClient.apiNamespaceProjects.listContributors(input)),
+
+    get: (input: ProjectsGetInput) => defaultApiClient.apiNamespaceProjects.get(input),
+    useGet: (input: ProjectsGetInput) =>
+      useQuery<ProjectsGetResult>(() => defaultApiClient.apiNamespaceProjects.get(input)),
 
     listMilestones: (input: ProjectsListMilestonesInput) => defaultApiClient.apiNamespaceProjects.listMilestones(input),
     useListMilestones: (input: ProjectsListMilestonesInput) =>
@@ -8489,6 +8400,9 @@ export default {
     useListAccessMembers: (input: GoalsListAccessMembersInput) =>
       useQuery<GoalsListAccessMembersResult>(() => defaultApiClient.apiNamespaceGoals.listAccessMembers(input)),
 
+    list: (input: GoalsListInput) => defaultApiClient.apiNamespaceGoals.list(input),
+    useList: (input: GoalsListInput) => useQuery<GoalsListResult>(() => defaultApiClient.apiNamespaceGoals.list(input)),
+
     listCheckIns: (input: GoalsListCheckInsInput) => defaultApiClient.apiNamespaceGoals.listCheckIns(input),
     useListCheckIns: (input: GoalsListCheckInsInput) =>
       useQuery<GoalsListCheckInsResult>(() => defaultApiClient.apiNamespaceGoals.listCheckIns(input)),
@@ -8496,6 +8410,9 @@ export default {
     searchParentGoal: (input: GoalsSearchParentGoalInput) => defaultApiClient.apiNamespaceGoals.searchParentGoal(input),
     useSearchParentGoal: (input: GoalsSearchParentGoalInput) =>
       useQuery<GoalsSearchParentGoalResult>(() => defaultApiClient.apiNamespaceGoals.searchParentGoal(input)),
+
+    get: (input: GoalsGetInput) => defaultApiClient.apiNamespaceGoals.get(input),
+    useGet: (input: GoalsGetInput) => useQuery<GoalsGetResult>(() => defaultApiClient.apiNamespaceGoals.get(input)),
 
     listDiscussions: (input: GoalsListDiscussionsInput) => defaultApiClient.apiNamespaceGoals.listDiscussions(input),
     useListDiscussions: (input: GoalsListDiscussionsInput) =>
