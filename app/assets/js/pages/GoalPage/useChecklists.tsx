@@ -71,7 +71,7 @@ function useAddHandler(params: UseAddHandlerParams): Checklist.AddChecklistItemF
       params.setItems((prev) => [...prev, item]);
 
       Api.goals
-        .addCheck({ goalId: params.goalId, name: name })
+        .createCheck({ goalId: params.goalId, name: name })
         .then((res) => {
           if (res.success) {
             params.setItems((prev) => prev.map((i) => (i.id === tempId ? { ...i, id: res.checkId } : i)));

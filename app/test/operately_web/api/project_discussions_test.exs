@@ -206,15 +206,15 @@ defmodule OperatelyWeb.Api.ProjectDiscussionsTest do
     end
   end
 
-  describe "edit project discussion" do
+  describe "update project discussion" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, [:project_discussions, :edit], %{})
+      assert {401, _} = mutation(ctx.conn, [:project_discussions, :update], %{})
     end
 
     test "it requires id, title, and body", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:project_discussions, :edit], %{})
+      assert {400, res} = mutation(ctx.conn, [:project_discussions, :update], %{})
       assert res.message == "Missing required fields: id, title, message"
     end
 
@@ -229,7 +229,7 @@ defmodule OperatelyWeb.Api.ProjectDiscussionsTest do
         message: RichText.rich_text("Updated content", :as_string)
       }
 
-      assert {404, res} = mutation(ctx.conn, [:project_discussions, :edit], inputs)
+      assert {404, res} = mutation(ctx.conn, [:project_discussions, :update], inputs)
       assert res.message == "Discussion not found"
     end
 
@@ -243,7 +243,7 @@ defmodule OperatelyWeb.Api.ProjectDiscussionsTest do
         message: RichText.rich_text("Updated content", :as_string)
       }
 
-      assert {200, res} = mutation(ctx.conn, [:project_discussions, :edit], inputs)
+      assert {200, res} = mutation(ctx.conn, [:project_discussions, :update], inputs)
       assert res.discussion.title == "Updated Discussion Title"
 
       # Verify the discussion was updated in the database

@@ -144,9 +144,9 @@ function useInviteSubmit(
       // Load resources for the access granting form (only for outside collaborators)
       if (memberType === "outside_collaborator") {
         const [spacesData, goalsData, projectsData] = await Promise.all([
-          Api.getSpaces({}),
-          Api.getGoals({ includeSpace: true }),
-          Api.getProjects({}),
+          Api.spaces.list({}),
+          Api.goals.list({ includeSpace: true }),
+          Api.projects.list({}),
         ]);
 
         setSpaces((spacesData.spaces || []).map((s) => ({ id: s.id, name: s.name })));

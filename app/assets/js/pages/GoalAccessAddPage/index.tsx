@@ -54,7 +54,7 @@ function Page() {
   const goalName = goal.name ?? "Goal";
   const backPath = paths.goalAccessManagementPath(goal.id);
   const navigate = useNavigate();
-  const [add] = Api.goals.useAddAccessMembers();
+  const [add] = Api.goals.useCreateAccessMembers();
 
   const form = Forms.useForm({
     fields: {

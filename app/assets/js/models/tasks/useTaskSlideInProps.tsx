@@ -305,7 +305,7 @@ export function useTaskSlideInProps(opts: {
         },
         onMoveTask: async ({ destinationType, destinationId }) => {
           try {
-            const res = await Api.moveTask({ taskId, destinationType, destinationId });
+            const res = await Api.tasks.move({ taskId, destinationType, destinationId });
             const movedTaskId = res.task?.id ?? taskId;
             const resolvedDestinationType = res.destinationType ?? destinationType;
             const resolvedDestinationId = res.destinationId ?? destinationId;

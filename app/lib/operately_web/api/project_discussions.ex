@@ -142,7 +142,7 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
     end
   end
 
-  defmodule Edit do
+  defmodule Update do
     use TurboConnect.Mutation
 
     inputs do

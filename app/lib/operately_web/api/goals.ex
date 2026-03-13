@@ -249,7 +249,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
   end
 
-  defmodule AddTarget do
+  defmodule CreateTarget do
     use TurboConnect.Mutation
 
     inputs do
@@ -553,7 +553,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
   end
 
-  defmodule AddAccessMembers do
+  defmodule CreateAccessMembers do
     use TurboConnect.Mutation
 
     inputs do
