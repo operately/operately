@@ -1,6 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import * as Api from "@/api";
-import { Person } from "@/api";
+import Api, { Person } from "@/api";
 
 interface UseTaskAssigneeSearchParams<T> {
   id: string;
@@ -24,7 +23,7 @@ export function useTaskAssigneeSearch<T>(hookParams: UseTaskAssigneeSearchParams
       const ignoredIds = (hookParams.ignoredIds || []).filter((id): id is string => Boolean(id));
       const trimmedQuery = query.trim();
 
-      const result = await Api.listTaskAssignablePeople({
+      const result = await Api.tasks.listPotentialAssignees({
         id: hookParams.id,
         type: hookParams.type,
         ignoredIds,

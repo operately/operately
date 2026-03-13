@@ -51,7 +51,7 @@ export function isMilestoneOverdue(milestone: Pick<Milestone, "status" | "timefr
 
 export function useContributorSearchFn(project: Project) {
   return async (query: string) => {
-    const res = await api.searchProjectContributorCandidates({
+    const res = await Api.projects.searchPotentialContributors({
       projectId: project.id!,
       query,
     });

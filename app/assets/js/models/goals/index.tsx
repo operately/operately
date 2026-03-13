@@ -8,7 +8,6 @@ export type Check = api.GoalCheck;
 
 export {
   createGoalDiscussion,
-  listGoalContributors,
   useChangeGoalParent,
   useCloseGoal,
   useCreateGoal,
@@ -19,7 +18,6 @@ export {
 
 export { filterPossibleParentGoals } from "./filterPossibleParentGoals";
 export { useGoalTargets } from "./useGoalTargets";
-
 
 export const getGoal = Api.goals.get;
 export const getGoals = Api.goals.list;

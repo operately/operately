@@ -2,7 +2,7 @@
 
 This file is generated from `cli/src/generated/api-catalog.json`.
 
-- Endpoints: 203
+- Endpoints: 202
 - Mapping rule: root endpoint -> `<endpoint_name>`, namespaced endpoint -> `<namespace> <endpoint_name>`
 
 | Command | Shortcut | Method | Path |
@@ -68,30 +68,21 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `get_companies` | `op get_companies` | `GET` | `/api/external/v1/get_companies` |
 | `get_company` | `op get_company` | `GET` | `/api/external/v1/get_company` |
 | `get_flat_work_map` | `op get_flat_work_map` | `GET` | `/api/external/v1/get_flat_work_map` |
-| `get_goal` | `op get_goal` | `GET` | `/api/external/v1/get_goal` |
 | `get_goal_progress_update` | `op get_goal_progress_update` | `GET` | `/api/external/v1/get_goal_progress_update` |
-| `get_goals` | `op get_goals` | `GET` | `/api/external/v1/get_goals` |
 | `get_key_resource` | `op get_key_resource` | `GET` | `/api/external/v1/get_key_resource` |
 | `get_me` | `op get_me` | `GET` | `/api/external/v1/get_me` |
-| `project_milestones get` | `op project_milestones get` | `GET` | `/api/external/v1/project_milestones/get` |
 | `get_notifications` | `op get_notifications` | `GET` | `/api/external/v1/get_notifications` |
 | `get_people` | `op get_people` | `GET` | `/api/external/v1/get_people` |
 | `get_person` | `op get_person` | `GET` | `/api/external/v1/get_person` |
-| `get_project` | `op get_project` | `GET` | `/api/external/v1/get_project` |
 | `get_project_check_in` | `op get_project_check_in` | `GET` | `/api/external/v1/get_project_check_in` |
 | `get_project_check_ins` | `op get_project_check_ins` | `GET` | `/api/external/v1/get_project_check_ins` |
 | `get_project_contributor` | `op get_project_contributor` | `GET` | `/api/external/v1/get_project_contributor` |
 | `get_project_retrospective` | `op get_project_retrospective` | `GET` | `/api/external/v1/get_project_retrospective` |
-| `get_projects` | `op get_projects` | `GET` | `/api/external/v1/get_projects` |
 | `get_resource_hub` | `op get_resource_hub` | `GET` | `/api/external/v1/get_resource_hub` |
 | `get_resource_hub_document` | `op get_resource_hub_document` | `GET` | `/api/external/v1/get_resource_hub_document` |
 | `get_resource_hub_file` | `op get_resource_hub_file` | `GET` | `/api/external/v1/get_resource_hub_file` |
 | `get_resource_hub_folder` | `op get_resource_hub_folder` | `GET` | `/api/external/v1/get_resource_hub_folder` |
 | `get_resource_hub_link` | `op get_resource_hub_link` | `GET` | `/api/external/v1/get_resource_hub_link` |
-| `get_space` | `op get_space` | `GET` | `/api/external/v1/get_space` |
-| `get_spaces` | `op get_spaces` | `GET` | `/api/external/v1/get_spaces` |
-| `tasks get` | `op tasks get` | `GET` | `/api/external/v1/tasks/get` |
-| `get_tasks` | `op get_tasks` | `GET` | `/api/external/v1/get_tasks` |
 | `get_unread_notification_count` | `op get_unread_notification_count` | `GET` | `/api/external/v1/get_unread_notification_count` |
 | `get_work_map` | `op get_work_map` | `GET` | `/api/external/v1/get_work_map` |
 | `global_search` | `op global_search` | `GET` | `/api/external/v1/global_search` |
@@ -101,8 +92,11 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `goals delete_access_member` | `op goals delete_access_member` | `POST` | `/api/external/v1/goals/delete_access_member` |
 | `goals delete_check` | `op goals delete_check` | `POST` | `/api/external/v1/goals/delete_check` |
 | `goals delete_target` | `op goals delete_target` | `POST` | `/api/external/v1/goals/delete_target` |
+| `goals get` | `op goals get` | `GET` | `/api/external/v1/goals/get` |
+| `goals list` | `op goals list` | `GET` | `/api/external/v1/goals/list` |
 | `goals list_access_members` | `op goals list_access_members` | `GET` | `/api/external/v1/goals/list_access_members` |
 | `goals list_check_ins` | `op goals list_check_ins` | `GET` | `/api/external/v1/goals/list_check_ins` |
+| `goals list_contributors` | `op goals list_contributors` | `GET` | `/api/external/v1/goals/list_contributors` |
 | `goals list_discussions` | `op goals list_discussions` | `GET` | `/api/external/v1/goals/list_discussions` |
 | `goals search_parent_goal` | `op goals search_parent_goal` | `GET` | `/api/external/v1/goals/search_parent_goal` |
 | `goals toggle_check` | `op goals toggle_check` | `POST` | `/api/external/v1/goals/toggle_check` |
@@ -125,11 +119,8 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `invite_guest` | `op invite_guest` | `POST` | `/api/external/v1/invite_guest` |
 | `is_subscribed_to_resource` | `op is_subscribed_to_resource` | `GET` | `/api/external/v1/is_subscribed_to_resource` |
 | `join_space` | `op join_space` | `POST` | `/api/external/v1/join_space` |
-| `goals list_contributors` | `op goals list_contributors` | `GET` | `/api/external/v1/goals/list_contributors` |
 | `list_possible_managers` | `op list_possible_managers` | `GET` | `/api/external/v1/list_possible_managers` |
 | `list_resource_hub_nodes` | `op list_resource_hub_nodes` | `GET` | `/api/external/v1/list_resource_hub_nodes` |
-| `spaces list_tools` | `op spaces list_tools` | `GET` | `/api/external/v1/spaces/list_tools` |
-| `tasks list_potential_assignees` | `op tasks list_potential_assignees` | `GET` | `/api/external/v1/tasks/list_potential_assignees` |
 | `mark_all_notifications_as_read` | `op mark_all_notifications_as_read` | `POST` | `/api/external/v1/mark_all_notifications_as_read` |
 | `mark_notification_as_read` | `op mark_notification_as_read` | `POST` | `/api/external/v1/mark_notification_as_read` |
 | `mark_notifications_as_read` | `op mark_notifications_as_read` | `POST` | `/api/external/v1/mark_notifications_as_read` |
@@ -144,6 +135,7 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `project_discussions list` | `op project_discussions list` | `GET` | `/api/external/v1/project_discussions/list` |
 | `project_discussions update` | `op project_discussions update` | `POST` | `/api/external/v1/project_discussions/update` |
 | `project_milestones delete` | `op project_milestones delete` | `POST` | `/api/external/v1/project_milestones/delete` |
+| `project_milestones get` | `op project_milestones get` | `GET` | `/api/external/v1/project_milestones/get` |
 | `project_milestones list_tasks` | `op project_milestones list_tasks` | `GET` | `/api/external/v1/project_milestones/list_tasks` |
 | `project_milestones update_description` | `op project_milestones update_description` | `POST` | `/api/external/v1/project_milestones/update_description` |
 | `project_milestones update_due_date` | `op project_milestones update_due_date` | `POST` | `/api/external/v1/project_milestones/update_due_date` |
@@ -153,10 +145,13 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `projects count_children` | `op projects count_children` | `GET` | `/api/external/v1/projects/count_children` |
 | `projects create_milestone` | `op projects create_milestone` | `POST` | `/api/external/v1/projects/create_milestone` |
 | `projects delete` | `op projects delete` | `POST` | `/api/external/v1/projects/delete` |
+| `projects get` | `op projects get` | `GET` | `/api/external/v1/projects/get` |
+| `projects list` | `op projects list` | `GET` | `/api/external/v1/projects/list` |
 | `projects list_contributors` | `op projects list_contributors` | `GET` | `/api/external/v1/projects/list_contributors` |
 | `projects list_milestones` | `op projects list_milestones` | `GET` | `/api/external/v1/projects/list_milestones` |
 | `projects search` | `op projects search` | `GET` | `/api/external/v1/projects/search` |
 | `projects search_parent_goal` | `op projects search_parent_goal` | `GET` | `/api/external/v1/projects/search_parent_goal` |
+| `projects search_potential_contributors` | `op projects search_potential_contributors` | `GET` | `/api/external/v1/projects/search_potential_contributors` |
 | `projects update_champion` | `op projects update_champion` | `POST` | `/api/external/v1/projects/update_champion` |
 | `projects update_due_date` | `op projects update_due_date` | `POST` | `/api/external/v1/projects/update_due_date` |
 | `projects update_kanban` | `op projects update_kanban` | `POST` | `/api/external/v1/projects/update_kanban` |
@@ -179,24 +174,28 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `restore_company_member` | `op restore_company_member` | `POST` | `/api/external/v1/restore_company_member` |
 | `resume_project` | `op resume_project` | `POST` | `/api/external/v1/resume_project` |
 | `search_people` | `op search_people` | `GET` | `/api/external/v1/search_people` |
-| `spaces search_potential_members` | `op spaces search_potential_members` | `GET` | `/api/external/v1/spaces/search_potential_members` |
-| `projects search_potential_contributors` | `op projects search_potential_contributors` | `GET` | `/api/external/v1/projects/search_potential_contributors` |
 | `space_discussions create` | `op space_discussions create` | `POST` | `/api/external/v1/space_discussions/create` |
 | `space_discussions get` | `op space_discussions get` | `GET` | `/api/external/v1/space_discussions/get` |
 | `space_discussions list` | `op space_discussions list` | `GET` | `/api/external/v1/space_discussions/list` |
 | `space_discussions publish` | `op space_discussions publish` | `POST` | `/api/external/v1/space_discussions/publish` |
 | `space_discussions update` | `op space_discussions update` | `POST` | `/api/external/v1/space_discussions/update` |
 | `spaces count_by_access_level` | `op spaces count_by_access_level` | `GET` | `/api/external/v1/spaces/count_by_access_level` |
+| `spaces get` | `op spaces get` | `GET` | `/api/external/v1/spaces/get` |
+| `spaces list` | `op spaces list` | `GET` | `/api/external/v1/spaces/list` |
 | `spaces list_members` | `op spaces list_members` | `GET` | `/api/external/v1/spaces/list_members` |
 | `spaces list_tasks` | `op spaces list_tasks` | `GET` | `/api/external/v1/spaces/list_tasks` |
+| `spaces list_tools` | `op spaces list_tools` | `GET` | `/api/external/v1/spaces/list_tools` |
 | `spaces search` | `op spaces search` | `GET` | `/api/external/v1/spaces/search` |
+| `spaces search_potential_members` | `op spaces search_potential_members` | `GET` | `/api/external/v1/spaces/search_potential_members` |
 | `spaces update_kanban` | `op spaces update_kanban` | `POST` | `/api/external/v1/spaces/update_kanban` |
 | `spaces update_task_statuses` | `op spaces update_task_statuses` | `POST` | `/api/external/v1/spaces/update_task_statuses` |
 | `spaces update_tools` | `op spaces update_tools` | `POST` | `/api/external/v1/spaces/update_tools` |
 | `subscribe_to_notifications` | `op subscribe_to_notifications` | `POST` | `/api/external/v1/subscribe_to_notifications` |
 | `tasks create` | `op tasks create` | `POST` | `/api/external/v1/tasks/create` |
 | `tasks delete` | `op tasks delete` | `POST` | `/api/external/v1/tasks/delete` |
+| `tasks get` | `op tasks get` | `GET` | `/api/external/v1/tasks/get` |
 | `tasks list` | `op tasks list` | `GET` | `/api/external/v1/tasks/list` |
+| `tasks list_potential_assignees` | `op tasks list_potential_assignees` | `GET` | `/api/external/v1/tasks/list_potential_assignees` |
 | `tasks update_assignee` | `op tasks update_assignee` | `POST` | `/api/external/v1/tasks/update_assignee` |
 | `tasks update_description` | `op tasks update_description` | `POST` | `/api/external/v1/tasks/update_description` |
 | `tasks update_due_date` | `op tasks update_due_date` | `POST` | `/api/external/v1/tasks/update_due_date` |

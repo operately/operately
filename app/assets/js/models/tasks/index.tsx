@@ -1,4 +1,4 @@
-import { Task as BackendTask, TaskStatus } from "@/api";
+import Api, { Task as BackendTask, TaskStatus } from "@/api";
 import { parseContextualDate } from "../contextualDates";
 import { Paths } from "@/routes/paths";
 import { parseMilestoneForTurboUi } from "../milestones";
@@ -17,7 +17,7 @@ export { useTaskTimelineItems } from "./useTaskTimelineItems";
 export { useTaskSlideInProps } from "./useTaskSlideInProps";
 export { prepareTaskTimelineItems } from "./prepareTaskTimelineItems";
 
-export { getTask } from "@/api";
+export const getTask = Api.tasks.get;
 
 type ParserOptions = { type: "project" } | { type: "space"; space: Space };
 
