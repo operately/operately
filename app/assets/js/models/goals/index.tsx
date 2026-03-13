@@ -6,19 +6,15 @@ export type Target = api.Target;
 export type Timeframe = api.Timeframe;
 export type Check = api.GoalCheck;
 
-export {
-  createGoalDiscussion,
-  useChangeGoalParent,
-  useCloseGoal,
-  useEditGoalDiscussion,
-  useReopenGoal,
-} from "@/api";
+export { createGoalDiscussion, useEditGoalDiscussion } from "@/api";
 
 export { filterPossibleParentGoals } from "./filterPossibleParentGoals";
 export { useGoalTargets } from "./useGoalTargets";
 
 export const getGoal = Api.goals.get;
 export const getGoals = Api.goals.list;
+export const useCloseGoal = Api.goals.useClose;
+export const useReopenGoal = Api.goals.useReopen;
 
 export function targetProgressPercentage(target: Target, clamped: boolean = true): number {
   const from = target.from!;
@@ -33,7 +29,7 @@ export function targetProgressPercentage(target: Target, clamped: boolean = true
     // Ascending target: progress = (current - start) / (end - start) * 100
     percentage = ((value - from) / (to - from)) * 100;
   } else {
-    // Descending target: progress = (start - current) / (start - end) * 100  
+    // Descending target: progress = (start - current) / (start - end) * 100
     percentage = ((from - value) / (from - to)) * 100;
   }
 

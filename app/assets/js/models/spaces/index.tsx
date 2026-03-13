@@ -9,12 +9,11 @@ export const searchPotentialSpaceMembers = Api.spaces.searchPotentialMembers;
 export const useAddSpaceMembers = Api.spaces.useAddMembers;
 export const useCreateSpace = Api.spaces.useCreate;
 export const useDeleteSpace = Api.spaces.useDelete;
-export const useEditSpace = Api.spaces.useEdit;
-export const useEditSpaceMembersPermissions = Api.spaces.useEditMembersPermissions;
-export const useEditSpacePermissions = Api.spaces.useEditPermissions;
+export const useEditSpace = Api.spaces.useUpdate;
+export const useEditSpaceMembersPermissions = Api.spaces.useUpdateMembersPermissions;
+export const useEditSpacePermissions = Api.spaces.useUpdatePermissions;
 export const useJoinSpace = Api.spaces.useJoin;
 export const useRemoveGroupMember = Api.spaces.useDeleteMember;
-
 
 export async function getSpace(params: api.SpacesGetInput): Promise<api.Space> {
   return await Api.spaces.get(params).then((res) => res.space!);

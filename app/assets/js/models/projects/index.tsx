@@ -15,20 +15,16 @@ export type Discussion = api.CommentThread;
 export type Resource = api.ProjectKeyResource;
 export type ProjectChildrenCount = api.ProjectChildrenCount;
 
-export {
-  getProjectRetrospective,
-  useCloseProject,
-  usePauseProject,
-  useResumeProject,
-  useUpdateProjectContributor,
-  useUpdateProjectDescription,
-} from "@/api";
+export { getProjectRetrospective, useUpdateProjectContributor, useUpdateProjectDescription } from "@/api";
 
 export const getProject = Api.projects.get;
 export const getProjects = Api.projects.list;
 export const useCreateProject = Api.projects.useCreate;
-export const useEditProjectRetrospective = Api.projects.useEditRetrospective;
+export const useEditProjectRetrospective = Api.projects.useUpdateRetrospective;
 export const useRemoveProjectContributor = Api.projects.useDeleteContributor;
+export const useCloseProject = Api.projects.useClose;
+export const usePauseProject = Api.projects.usePause;
+export const useResumeProject = Api.projects.useResume;
 
 export function isOverdue(project: Pick<Project, "timeframe">) {
   assertPresent(project.timeframe, "project timeline must be defined");
@@ -78,11 +74,13 @@ export function useProjectSearch(attrs?: ProjectSearchAttrs): ProjectField.Searc
     return data.projects.flatMap((project) => {
       if (!project.id || !project.name) return [];
 
-      return [{
-        id: project.id,
-        name: project.name,
-        link: paths.projectPath(project.id),
-      }];
+      return [
+        {
+          id: project.id,
+          name: project.name,
+          link: paths.projectPath(project.id),
+        },
+      ];
     });
   };
 }

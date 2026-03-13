@@ -57,7 +57,7 @@ function Form() {
   const parentAccessLevel = space.accessLevels!;
 
   const navigateToContributorsPath = useNavigateTo(paths.projectContributorsPath(project.id!));
-  const [edit] = Api.projects.useEditPermissions();
+  const [updatePermissions] = Api.projects.useUpdatePermissions();
 
   const form = Forms.useForm({
     fields: {
@@ -67,7 +67,7 @@ function Form() {
       newValues.access = applyAccessLevelConstraints(newValues.access, parentAccessLevel);
     },
     submit: async () => {
-      await edit({
+      await updatePermissions({
         projectId: project.id,
         accessLevels: {
           public: form.values.access.anonymous,
