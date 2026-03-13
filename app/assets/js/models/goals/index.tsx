@@ -1,4 +1,4 @@
-import * as api from "@/api";
+import Api, * as api from "@/api";
 import { Paths } from "@/routes/paths";
 
 export type Goal = api.Goal;
@@ -8,20 +8,19 @@ export type Check = api.GoalCheck;
 
 export {
   createGoalDiscussion,
-  getGoal,
-  getGoals,
-  listGoalContributors,
   useChangeGoalParent,
   useCloseGoal,
   useCreateGoal,
   useDeleteGoal,
   useEditGoalDiscussion,
-  useGetGoals,
   useReopenGoal,
 } from "@/api";
 
 export { filterPossibleParentGoals } from "./filterPossibleParentGoals";
 export { useGoalTargets } from "./useGoalTargets";
+
+export const getGoal = Api.goals.get;
+export const getGoals = Api.goals.list;
 
 export function targetProgressPercentage(target: Target, clamped: boolean = true): number {
   const from = target.from!;

@@ -16,14 +16,11 @@ export type Resource = api.ProjectKeyResource;
 export type ProjectChildrenCount = api.ProjectChildrenCount;
 
 export {
-  getProject,
   getProjectRetrospective,
-  getProjects,
   useCloseProject,
   useCreateProject,
   useEditProjectName,
   useEditProjectRetrospective,
-  useGetProjects,
   useMoveProjectToSpace,
   usePauseProject,
   useRemoveProjectContributor,
@@ -31,6 +28,9 @@ export {
   useUpdateProjectContributor,
   useUpdateProjectDescription,
 } from "@/api";
+
+export const getProject = Api.projects.get;
+export const getProjects = Api.projects.list;
 
 export function isOverdue(project: Pick<Project, "timeframe">) {
   assertPresent(project.timeframe, "project timeline must be defined");
@@ -51,7 +51,7 @@ export function isMilestoneOverdue(milestone: Pick<Milestone, "status" | "timefr
 
 export function useContributorSearchFn(project: Project) {
   return async (query: string) => {
-    const res = await api.searchProjectContributorCandidates({
+    const res = await Api.projects.searchPotentialContributors({
       projectId: project.id!,
       query,
     });

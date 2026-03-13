@@ -1,0 +1,528 @@
+defmodule OperatelyWeb.Api.Projects.GetTest do
+  use OperatelyWeb.TurboCase
+
+  import Operately.ProjectsFixtures
+  import Operately.PeopleFixtures
+  import Operately.GoalsFixtures
+  import Operately.GroupsFixtures
+  import Operately.NotificationsFixtures
+  import Operately.ActivitiesFixtures
+
+  alias Operately.Repo
+  alias Operately.Access.Binding
+
+  describe "security" do
+    test "it requires authentication", ctx do
+      assert {401, _} = query(ctx.conn, [:projects, :get], %{})
+    end
+
+    test "it is not possible to get a project from another company", ctx do
+      ctx = register_and_log_in_account(ctx)
+      project = create_project(ctx)
+
+      other_ctx = register_and_log_in_account(ctx)
+      other_project = create_project(other_ctx, company_id: other_ctx.company.id, creator_id: other_ctx.person.id)
+
+      assert query(ctx.conn, [:projects, :get], %{id: Paths.project_id(other_project)}) == not_found_response()
+      assert {200, _} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project)})
+    end
+  end
+
+  describe "permissions" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+      space = group_fixture(creator, %{company_id: ctx.company.id})
+
+      Map.merge(ctx, %{space: space, space_id: space.id, creator_id: creator.id})
+    end
+
+    test "company members have no access", ctx do
+      p = create_project(ctx, company_access_level: Binding.no_access())
+
+      assert {404, %{message: msg} = _res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(p)})
+      assert msg == "The requested resource was not found"
+    end
+
+    test "company members have access", ctx do
+      p = create_project(ctx, company_access_level: Binding.view_access())
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(p)})
+      expected = Serializer.serialize(p, level: :full) |> normalize_serialized_project()
+      assert res.project == expected
+    end
+
+    test "space members have no access", ctx do
+      add_person_to_space(ctx)
+      p = create_project(ctx, space_access_level: Binding.no_access())
+
+      assert {404, %{message: msg} = _res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(p)})
+      assert msg == "The requested resource was not found"
+    end
+
+    test "space members have access", ctx do
+      add_person_to_space(ctx)
+      p = create_project(ctx, space_access_level: Binding.view_access())
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(p)})
+      expected = Serializer.serialize(p, level: :full) |> normalize_serialized_project()
+      assert res.project == expected
+    end
+
+    test "champions have access", ctx do
+      champion = person_fixture_with_account(%{company_id: ctx.company.id})
+      p = create_project(ctx, champion_id: champion.id)
+
+      # champion's request
+      account = Repo.preload(champion, :account).account
+      conn = log_in_account(ctx.conn, account)
+
+      assert {200, res} = query(conn, [:projects, :get], %{id: Paths.project_id(p)})
+      assert res.project.id == Serializer.serialize(p).id
+
+      # another user's request
+      assert {404, %{message: msg} = _res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(p)})
+      assert msg == "The requested resource was not found"
+    end
+
+    test "reviewers have access", ctx do
+      reviewer = person_fixture_with_account(%{company_id: ctx.company.id})
+      p = create_project(ctx, reviewer_id: reviewer.id)
+
+      # reviewer's request
+      account = Repo.preload(reviewer, :account).account
+      conn = log_in_account(ctx.conn, account)
+
+      assert {200, res} = query(conn, [:projects, :get], %{id: Paths.project_id(p)})
+      assert res.project.id == Serializer.serialize(p).id
+
+      # another user's request
+      assert {404, %{message: msg} = _res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(p)})
+      assert msg == "The requested resource was not found"
+    end
+
+    test "space is not loaded when requester cannot access it", ctx do
+      project = create_project(ctx, group_id: ctx.space.id, company_access_level: Binding.view_access())
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{
+        id: Paths.project_id(project),
+        include_space: true,
+      })
+
+      assert res.project.space == nil
+
+      space_member = person_fixture_with_account(%{company_id: ctx.company.id})
+
+      {:ok, _} = Operately.Groups.add_members(space_member, ctx.space.id, [
+        %{id: space_member.id, access_level: Binding.view_access()},
+      ])
+
+      account = Repo.preload(space_member, :account).account
+      conn = log_in_account(ctx.conn, account)
+
+      assert {200, res} = query(conn, [:projects, :get], %{
+        id: Paths.project_id(project),
+        include_space: true,
+      })
+
+      assert res.project.space == Serializer.serialize(ctx.space, level: :essential)
+    end
+
+    test "goal is not loaded when requester cannot access it", ctx do
+      project = create_project(ctx, group_id: ctx.space.id, company_access_level: Binding.view_access())
+      goal_champion = person_fixture_with_account(%{company_id: ctx.company.id})
+
+      goal = goal_fixture(goal_champion, %{
+        space_id: ctx.space.id,
+        champion_id: goal_champion.id,
+        reviewer_id: goal_champion.id,
+        company_access_level: Binding.no_access(),
+        space_access_level: Binding.no_access(),
+      })
+
+      {:ok, project} = Operately.Projects.update_project(project, %{goal_id: goal.id})
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{
+        id: Paths.project_id(project),
+        include_goal: true,
+      })
+
+      assert res.project.goal == nil
+
+      account = Repo.preload(goal_champion, :account).account
+      conn = log_in_account(ctx.conn, account)
+
+      assert {200, res} = query(conn, [:projects, :get], %{
+        id: Paths.project_id(project),
+        include_goal: true,
+      })
+
+      assert res.project.goal == Serializer.serialize(goal, level: :essential)
+    end
+  end
+
+  describe "projects/get functionality" do
+    setup :register_and_log_in_account
+
+    test "get a project with nothing included", ctx do
+      project = create_project(ctx)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project)})
+      expected = Serializer.serialize(project, level: :full) |> normalize_serialized_project()
+      assert res.project == expected
+    end
+
+    test "returns 400 if id is not provided", ctx do
+      assert query(ctx.conn, [:projects, :get], %{}) == {400, %{error: "Bad request", message: "id is required"}}
+    end
+
+    test "include_unread_notifications", ctx do
+      project = create_project(ctx)
+      a = activity_fixture(author_id: ctx.person.id, action: "project_created", content: %{project_id: project.id})
+      n = notification_fixture(person_id: ctx.person.id, read: false, activity_id: a.id)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project)})
+      assert res.project.notifications == []
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{
+        id: Paths.project_id(project),
+        include_unread_notifications: true,
+      })
+
+      assert length(res.project.notifications) == 1
+      assert Serializer.serialize(n) == hd(res.project.notifications)
+    end
+
+    test "include_space", ctx do
+      space = group_fixture(ctx.person, company_id: ctx.company.id)
+      project = create_project(ctx, group_id: space.id)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project), include_space: true})
+      assert res.project.space == Serializer.serialize(space, level: :essential)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project)})
+      assert res.project.space == nil
+    end
+
+    test "include_retrospective", ctx do
+      project = create_project(ctx)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project), include_retrospective: true})
+      refute res.project.retrospective
+
+      retrospective = retrospective_fixture(%{author_id: ctx.person.id, project_id: project.id})
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project), include_retrospective: true})
+      assert res.project.retrospective == Serializer.serialize(retrospective)
+    end
+
+    test "include_contributors", ctx do
+      project = create_project(ctx)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project), include_contributors: true})
+      assert length(res.project.contributors) == 1
+      assert res.project.contributors == Serializer.serialize(Operately.Projects.list_project_contributors(project), level: :essential)
+
+      dev = person_fixture(company_id: ctx.company.id)
+      {:ok, _} = Operately.Projects.create_contributor(dev, %{
+        person_id: dev.id,
+        responsibility: "some responsibility",
+        project_id: project.id,
+        permissions: Binding.edit_access()
+      })
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project), include_contributors: true})
+      assert length(res.project.contributors) == 2
+      assert res.project.contributors == Serializer.serialize(Operately.Projects.list_project_contributors(project), level: :essential)
+    end
+
+    test "include_contributors includes guests and excludes ai", ctx do
+      ctx = Factory.add_company_member(ctx, :creator)
+        |> Factory.add_space(:space)
+        |> Factory.add_project(:project, :space)
+        |> Factory.add_project_contributor(:contrib1, :project)
+        |> Factory.add_project_contributor(:contrib2, :project)
+        |> Factory.add_project_contributor(:guest, :project, person_type: :guest)
+        |> Factory.add_project_contributor(:ai, :project, person_type: :ai)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(ctx.project), include_contributors: true})
+
+      contributors = res.project.contributors
+
+      [ctx.contrib1, ctx.contrib2, ctx.guest]
+      |> Enum.each(fn contrib ->
+        assert Enum.find(contributors, &(equal_ids?(&1.person.id, contrib.person_id)))
+      end)
+
+      refute Enum.find(contributors, &(equal_ids?(&1.person.id, ctx.ai.person_id)))
+    end
+
+    test "include_goal", ctx do
+      project = create_project(ctx)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project), include_goal: true})
+      assert res.project.goal == nil
+
+      goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
+      {:ok, project} = Operately.Projects.update_project(project, %{goal_id: goal.id})
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project), include_goal: true})
+      assert res.project.goal == Serializer.serialize(goal, level: :essential)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project)})
+      assert res.project.goal == nil
+    end
+
+    test "include_champion", ctx do
+      project = create_project(ctx)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project)})
+      assert res.project.champion == nil
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project), include_champion: true})
+      assert res.project.champion == Serializer.serialize(ctx.person, level: :essential)
+    end
+
+    test "include_reviewer", ctx do
+      person = create_person(ctx)
+      project = create_project(ctx, reviewer_id: person.id)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project)})
+      assert res.project.reviewer == nil
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project), include_reviewer: true})
+      assert res.project.reviewer == Serializer.serialize(person, level: :essential)
+    end
+
+    test "include_archived", ctx do
+      project = create_project(ctx)
+      {:ok, project} = Operately.Projects.archive_project(ctx.person, project)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project)})
+      assert res.project.is_archived == true
+    end
+
+    test "include_permissions", ctx do
+      project = create_project(ctx)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project)})
+      assert res.project.permissions == nil
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project), include_permissions: true})
+      assert res.project.permissions == Map.from_struct(Operately.Projects.Permissions.calculate(Binding.full_access()))
+    end
+
+    test "include_key_resources", ctx do
+      project = create_project(ctx)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project)})
+      assert res.project.key_resources == nil
+
+      key_resource = key_resource_fixture(project_id: project.id)
+      key_resource = Operately.Repo.preload(key_resource, :project)
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project), include_key_resources: true})
+      assert res.project.key_resources == [Serializer.serialize(key_resource, level: :essential)]
+    end
+
+    test "include_access_levels", ctx do
+      space = group_fixture(ctx.person)
+      project = create_project(ctx, %{
+        group_id: space.id,
+        anonymous_access_level: Binding.view_access(),
+        company_access_level: Binding.edit_access(),
+        space_access_level: Binding.full_access(),
+      })
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project)})
+      refute res.project.access_levels
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project), include_access_levels: true})
+
+      assert res.project.access_levels.public == Binding.view_access()
+      assert res.project.access_levels.company == Binding.edit_access()
+      assert res.project.access_levels.space == Binding.full_access()
+    end
+
+    test "include_contributors_access_levels", ctx do
+      project = create_project(ctx)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project)})
+
+      refute Map.has_key?(res.project, :contributor)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{
+        id: Paths.project_id(project),
+        include_contributors: true,
+        include_contributors_access_levels: true
+      })
+
+      assert length(res.project.contributors) > 0
+
+      Enum.each(res.project.contributors, fn contributor ->
+        assert Map.has_key?(contributor, :access_level)
+      end)
+    end
+
+    test "include_potential_subscribers", ctx do
+      ctx = Factory.add_company_member(ctx, :creator)
+        |> Factory.add_space(:space)
+        |> Factory.add_project(:project, :space)
+        |> Factory.add_project_contributor(:champion, :project, role: :champion)
+        |> Factory.add_project_contributor(:reviewer, :project, role: :reviewer)
+        |> Factory.add_project_contributor(:contrib1, :project)
+        |> Factory.add_project_contributor(:contrib2, :project)
+        |> Factory.add_project_contributor(:contrib3, :project)
+
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(ctx.project)})
+
+      refute res.project.potential_subscribers
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(ctx.project), include_potential_subscribers: true})
+
+      [ctx.reviewer, ctx.champion]
+      |> Enum.each(fn contrib ->
+        candidate = Enum.find(res.project.potential_subscribers, &(equal_ids?(&1.person.id, contrib.person_id)))
+        assert candidate.priority
+      end)
+
+      [ctx.contrib1, ctx.contrib2, ctx.contrib3]
+      |> Enum.each(fn contrib ->
+        candidate = Enum.find(res.project.potential_subscribers, &(equal_ids?(&1.person.id, contrib.person_id)))
+        refute candidate.priority
+      end)
+    end
+
+    test "include_potential_subscribers includes guests and excludes ai", ctx do
+      ctx = Factory.add_company_member(ctx, :creator)
+        |> Factory.add_space(:space)
+        |> Factory.add_project(:project, :space)
+        |> Factory.add_project_contributor(:champion, :project, role: :champion)
+        |> Factory.add_project_contributor(:reviewer, :project, role: :reviewer)
+        |> Factory.add_project_contributor(:contrib1, :project)
+        |> Factory.add_project_contributor(:contrib2, :project)
+        |> Factory.add_project_contributor(:guest, :project, person_type: :guest)
+        |> Factory.add_project_contributor(:ai, :project, person_type: :ai)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(ctx.project), include_potential_subscribers: true})
+
+      subs = res.project.potential_subscribers
+
+      [ctx.reviewer, ctx.champion, ctx.contrib1, ctx.contrib2, ctx.guest]
+      |> Enum.each(fn contrib ->
+        candidate = Enum.find(subs, &(equal_ids?(&1.person.id, contrib.person_id)))
+        assert candidate
+      end)
+
+      refute Enum.find(subs, &(equal_ids?(&1.person.id, ctx.ai.person_id)))
+    end
+
+    test "include_milestones", ctx do
+      ctx = Factory.add_company_member(ctx, :creator)
+        |> Factory.add_space(:space)
+        |> Factory.add_project(:project, :space)
+        |> Factory.add_project_milestone(:milestone1, :project)
+        |> Factory.add_project_milestone(:milestone2, :project)
+
+      # doesn't include milestone
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(ctx.project)})
+
+      refute res.project.milestones
+
+      # include milestones
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{
+        id: Paths.project_id(ctx.project),
+        include_milestones: true,
+      })
+
+      assert length(res.project.milestones) == 2
+      assert Enum.find(res.project.milestones, &(&1.id == Paths.milestone_id(ctx.milestone1)))
+      assert Enum.find(res.project.milestones, &(&1.id == Paths.milestone_id(ctx.milestone2)))
+
+      # doesn't include archived milestones
+      {:ok, _} = Repo.soft_delete(ctx.milestone1)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{
+        id: Paths.project_id(ctx.project),
+        include_milestones: true,
+      })
+
+      assert length(res.project.milestones) == 1
+      assert Enum.find(res.project.milestones, &(&1.id == Paths.milestone_id(ctx.milestone2)))
+    end
+
+    test "include_milestones includes comments_count", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:creator)
+        |> Factory.add_space(:space)
+        |> Factory.add_project(:project, :space)
+        |> Factory.add_project_milestone(:milestone1, :project)
+        |> Factory.preload(:milestone1, :project)
+        |> Factory.add_project_milestone(:milestone2, :project)
+        |> Factory.add_comment(:comment1, :milestone1)
+        |> Factory.add_comment(:comment2, :milestone1)
+        |> Factory.add_comment(:comment3, :milestone1)
+
+      # include milestones with comments_count
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{
+        id: Paths.project_id(ctx.project),
+        include_milestones: true,
+      })
+
+      milestone1 = Enum.find(res.project.milestones, &(&1.id == Paths.milestone_id(ctx.milestone1)))
+      milestone2 = Enum.find(res.project.milestones, &(&1.id == Paths.milestone_id(ctx.milestone2)))
+
+      assert milestone1.comments_count == 3
+      assert milestone2.comments_count == 0
+    end
+  end
+
+  #
+  # Helpers
+  #
+
+  def create_project(ctx, attrs \\ %{}) do
+    attrs = Map.merge(%{
+      company_id: ctx.company.id,
+      name: "Project 1",
+      creator_id: ctx[:creator_id] || ctx.person.id,
+      reviewer_id: attrs[:reviewer_id],
+      group_id: ctx[:space_id] || ctx.company.company_space_id,
+      company_access_level: Binding.no_access(),
+      space_access_level: Binding.no_access(),
+    }, Enum.into(attrs, %{}))
+
+    project_fixture(attrs)
+  end
+
+  defp add_person_to_space(ctx) do
+    Operately.Groups.add_members(ctx.person, ctx.space.id, [%{
+      id: ctx.person.id,
+      access_level: Binding.edit_access(),
+    }])
+  end
+
+  defp create_person(ctx) do
+    person_fixture(company_id: ctx.company.id)
+  end
+
+  def equal_ids?(short_id, id) do
+    {:ok, decoded_id} = OperatelyWeb.Api.Helpers.decode_id(short_id)
+
+    decoded_id == id
+  end
+
+  defp normalize_serialized_project(project) when is_map(project) do
+    Map.update(project, :tasks_kanban_state, %{}, &normalize_tasks_kanban_state/1)
+  end
+
+  defp normalize_tasks_kanban_state(state) when is_map(state) do
+    Enum.into(state, %{}, fn {key, ids} ->
+      {normalize_tasks_kanban_state_key(key), ids}
+    end)
+  end
+
+  defp normalize_tasks_kanban_state_key(key) when is_atom(key), do: key
+  defp normalize_tasks_kanban_state_key(key) when is_binary(key), do: String.to_atom(key)
+end

@@ -33,7 +33,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
     refreshCache,
     fetchFn: () =>
       fetchAll({
-        space: Api.getSpace({ id: params.id, includePermissions: true }).then((d) => d.space!),
+        space: Api.spaces.get({ id: params.id, includePermissions: true }).then((d) => d.space!),
         tasks: Api.spaces.listTasks({ spaceId: params.id }).then((d) => d.tasks),
       }),
   });

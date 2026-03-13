@@ -3,8 +3,6 @@ import { SpaceField } from "turboui/src/SpaceField";
 import { Paths, usePaths } from "../../routes/paths";
 
 export {
-  listSpaceTools,
-  searchPotentialSpaceMembers,
   useAddSpaceMembers,
   useCreateSpace,
   useDeleteSpace,
@@ -13,17 +11,19 @@ export {
   useEditSpacePermissions,
   useJoinSpace,
   useRemoveGroupMember,
-  useSearchPotentialSpaceMembers,
 } from "@/api";
 
 export type { Space, SpaceTools } from "@/api";
 
-export async function getSpace(params: api.GetSpaceInput): Promise<api.Space> {
-  return await api.getSpace(params).then((res) => res.space!);
+export const listSpaceTools = Api.spaces.listTools;
+export const searchPotentialSpaceMembers = Api.spaces.searchPotentialMembers;
+
+export async function getSpace(params: api.SpacesGetInput): Promise<api.Space> {
+  return await Api.spaces.get(params).then((res) => res.space!);
 }
 
-export async function getSpaces(params: api.GetSpacesInput): Promise<api.Space[]> {
-  return await api.getSpaces(params).then((res) => res.spaces!);
+export async function getSpaces(params: api.SpacesListInput): Promise<api.Space[]> {
+  return await Api.spaces.list(params).then((res) => res.spaces!);
 }
 
 interface SpaceSearchAttrs {

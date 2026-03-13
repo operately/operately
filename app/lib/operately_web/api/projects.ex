@@ -6,7 +6,7 @@ defmodule OperatelyWeb.Api.Projects do
   alias Operately.Repo
   alias OperatelyWeb.Api.Serializer
 
-  defmodule GetContributors do
+  defmodule ListContributors do
     use TurboConnect.Query
 
     inputs do
@@ -62,7 +62,7 @@ defmodule OperatelyWeb.Api.Projects do
     end
   end
 
-  defmodule ParentGoalSearch do
+  defmodule SearchParentGoal do
     use TurboConnect.Query
 
     inputs do
@@ -87,7 +87,7 @@ defmodule OperatelyWeb.Api.Projects do
     end
   end
 
-  defmodule GetMilestones do
+  defmodule ListMilestones do
     use TurboConnect.Query
 
     inputs do
