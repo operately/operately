@@ -3276,15 +3276,6 @@ export interface ApiTokensUpdateNameResult {
   apiToken: ApiToken;
 }
 
-export interface ChangeGoalParentInput {
-  goalId?: string | null;
-  parentGoalId?: string | null;
-}
-
-export interface ChangeGoalParentResult {
-  goal?: Goal | null;
-}
-
 export interface ChangePasswordInput {
   currentPassword?: string | null;
   newPassword?: string | null;
@@ -3292,31 +3283,6 @@ export interface ChangePasswordInput {
 }
 
 export interface ChangePasswordResult {}
-
-export interface CloseGoalInput {
-  goalId: Id;
-  success: string;
-  retrospective: string;
-  sendNotificationsToEveryone?: boolean;
-  subscriberIds?: Id[];
-  successStatus: string;
-}
-
-export interface CloseGoalResult {
-  goal: Goal;
-}
-
-export interface CloseProjectInput {
-  projectId: Id;
-  retrospective: string;
-  successStatus: string;
-  sendNotificationsToEveryone?: boolean;
-  subscriberIds?: Id[];
-}
-
-export interface CloseProjectResult {
-  retrospective: ProjectRetrospective;
-}
 
 export interface CompleteCompanySetupInput {
   spaces: SpaceSetupInput[];
@@ -3633,6 +3599,28 @@ export interface EditSubscriptionsListInput {
 
 export interface EditSubscriptionsListResult {}
 
+export interface GoalsChangeParentInput {
+  goalId?: string | null;
+  parentGoalId?: string | null;
+}
+
+export interface GoalsChangeParentResult {
+  goal?: Goal | null;
+}
+
+export interface GoalsCloseInput {
+  goalId: Id;
+  success: string;
+  retrospective: string;
+  sendNotificationsToEveryone?: boolean;
+  subscriberIds?: Id[];
+  successStatus: string;
+}
+
+export interface GoalsCloseResult {
+  goal: Goal;
+}
+
 export interface GoalsCreateInput {
   spaceId: Id;
   name: string;
@@ -3716,6 +3704,17 @@ export interface GoalsDeleteTargetInput {
 
 export interface GoalsDeleteTargetResult {
   success: boolean;
+}
+
+export interface GoalsReopenInput {
+  id?: Id | null;
+  message?: string | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
+}
+
+export interface GoalsReopenResult {
+  goal?: Goal | null;
 }
 
 export interface GoalsToggleCheckInput {
@@ -3955,26 +3954,6 @@ export interface MarkNotificationsAsReadInput {
 
 export interface MarkNotificationsAsReadResult {}
 
-export interface MoveTaskInput {
-  taskId: Id;
-  destinationType: TaskType;
-  destinationId: Id;
-}
-
-export interface MoveTaskResult {
-  task: Task;
-  destinationType: TaskType;
-  destinationId: Id;
-}
-
-export interface PauseProjectInput {
-  projectId?: string | null;
-}
-
-export interface PauseProjectResult {
-  project?: Project | null;
-}
-
 export interface PostGoalProgressUpdateInput {
   goalId: Id;
   status: string;
@@ -4090,6 +4069,18 @@ export interface ProjectMilestonesUpdateTitleResult {
   milestone: Milestone;
 }
 
+export interface ProjectsCloseInput {
+  projectId: Id;
+  retrospective: string;
+  successStatus: string;
+  sendNotificationsToEveryone?: boolean;
+  subscriberIds?: Id[];
+}
+
+export interface ProjectsCloseResult {
+  retrospective: ProjectRetrospective;
+}
+
 export interface ProjectsCreateInput {
   spaceId: Id;
   name: string;
@@ -4131,40 +4122,31 @@ export interface ProjectsDeleteContributorResult {
   projectContributor?: ProjectContributor | null;
 }
 
-export interface ProjectsEditNameInput {
-  projectId?: string | null;
-  name?: string | null;
-}
-
-export interface ProjectsEditNameResult {
-  project?: Project | null;
-}
-
-export interface ProjectsEditPermissionsInput {
-  projectId?: string | null;
-  accessLevels?: AccessLevels | null;
-}
-
-export interface ProjectsEditPermissionsResult {
-  success?: boolean | null;
-}
-
-export interface ProjectsEditRetrospectiveInput {
-  id: Id;
-  content: string;
-  successStatus: string;
-}
-
-export interface ProjectsEditRetrospectiveResult {
-  retrospective: ProjectRetrospective;
-}
-
 export interface ProjectsMoveToSpaceInput {
   projectId?: string | null;
   spaceId?: string | null;
 }
 
 export interface ProjectsMoveToSpaceResult {}
+
+export interface ProjectsPauseInput {
+  projectId?: string | null;
+}
+
+export interface ProjectsPauseResult {
+  project?: Project | null;
+}
+
+export interface ProjectsResumeInput {
+  projectId: Id;
+  message: Json;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
+}
+
+export interface ProjectsResumeResult {
+  project: Project;
+}
 
 export interface ProjectsUpdateChampionInput {
   projectId: Id;
@@ -4207,6 +4189,15 @@ export interface ProjectsUpdateMilestoneResult {
   milestone: Milestone;
 }
 
+export interface ProjectsUpdateNameInput {
+  projectId?: string | null;
+  name?: string | null;
+}
+
+export interface ProjectsUpdateNameResult {
+  project?: Project | null;
+}
+
 export interface ProjectsUpdateParentGoalInput {
   projectId: Id;
   goalId: Id | null;
@@ -4215,6 +4206,25 @@ export interface ProjectsUpdateParentGoalInput {
 
 export interface ProjectsUpdateParentGoalResult {
   success: boolean | null;
+}
+
+export interface ProjectsUpdatePermissionsInput {
+  projectId?: string | null;
+  accessLevels?: AccessLevels | null;
+}
+
+export interface ProjectsUpdatePermissionsResult {
+  success?: boolean | null;
+}
+
+export interface ProjectsUpdateRetrospectiveInput {
+  id: Id;
+  content: string;
+  successStatus: string;
+}
+
+export interface ProjectsUpdateRetrospectiveResult {
+  retrospective: ProjectRetrospective;
 }
 
 export interface ProjectsUpdateReviewerInput {
@@ -4313,17 +4323,6 @@ export interface RenameResourceHubFolderResult {
   success?: boolean | null;
 }
 
-export interface ReopenGoalInput {
-  id?: Id | null;
-  message?: string | null;
-  sendNotificationsToEveryone?: boolean | null;
-  subscriberIds?: Id[] | null;
-}
-
-export interface ReopenGoalResult {
-  goal?: Goal | null;
-}
-
 export interface RequestPasswordResetInput {
   email?: string | null;
 }
@@ -4344,17 +4343,6 @@ export interface RestoreCompanyMemberInput {
 }
 
 export interface RestoreCompanyMemberResult {}
-
-export interface ResumeProjectInput {
-  projectId: Id;
-  message: Json;
-  sendNotificationsToEveryone?: boolean | null;
-  subscriberIds?: Id[] | null;
-}
-
-export interface ResumeProjectResult {
-  project: Project;
-}
 
 export interface SpaceDiscussionsArchiveInput {
   messageId?: Id | null;
@@ -4429,39 +4417,21 @@ export interface SpacesDeleteMemberInput {
 
 export interface SpacesDeleteMemberResult {}
 
-export interface SpacesEditInput {
-  id: Id;
-  name: string;
-  mission: string;
-}
-
-export interface SpacesEditResult {
-  space: Space;
-}
-
-export interface SpacesEditMembersPermissionsInput {
-  spaceId: Id;
-  members: EditMemberPermissionsInput[];
-}
-
-export interface SpacesEditMembersPermissionsResult {
-  success: boolean;
-}
-
-export interface SpacesEditPermissionsInput {
-  spaceId: string;
-  accessLevels: AccessLevels;
-}
-
-export interface SpacesEditPermissionsResult {
-  success: boolean;
-}
-
 export interface SpacesJoinInput {
   spaceId?: Id | null;
 }
 
 export interface SpacesJoinResult {}
+
+export interface SpacesUpdateInput {
+  id: Id;
+  name: string;
+  mission: string;
+}
+
+export interface SpacesUpdateResult {
+  space: Space;
+}
 
 export interface SpacesUpdateKanbanInput {
   spaceId: Id;
@@ -4472,6 +4442,24 @@ export interface SpacesUpdateKanbanInput {
 
 export interface SpacesUpdateKanbanResult {
   task: Task;
+}
+
+export interface SpacesUpdateMembersPermissionsInput {
+  spaceId: Id;
+  members: EditMemberPermissionsInput[];
+}
+
+export interface SpacesUpdateMembersPermissionsResult {
+  success: boolean;
+}
+
+export interface SpacesUpdatePermissionsInput {
+  spaceId: string;
+  accessLevels: AccessLevels;
+}
+
+export interface SpacesUpdatePermissionsResult {
+  success: boolean;
 }
 
 export interface SpacesUpdateTaskStatusesInput {
@@ -4525,6 +4513,18 @@ export interface TasksDeleteInput {
 export interface TasksDeleteResult {
   success: boolean;
   updatedMilestone: Milestone | null;
+}
+
+export interface TasksMoveInput {
+  taskId: Id;
+  destinationType: TaskType;
+  destinationId: Id;
+}
+
+export interface TasksMoveResult {
+  task: Task;
+  destinationType: TaskType;
+  destinationId: Id;
 }
 
 export interface TasksUpdateAssigneeInput {
@@ -4991,20 +4991,8 @@ class ApiNamespaceRoot {
     return this.client.post("/add_reaction", input);
   }
 
-  async changeGoalParent(input: ChangeGoalParentInput): Promise<ChangeGoalParentResult> {
-    return this.client.post("/change_goal_parent", input);
-  }
-
   async changePassword(input: ChangePasswordInput): Promise<ChangePasswordResult> {
     return this.client.post("/change_password", input);
-  }
-
-  async closeGoal(input: CloseGoalInput): Promise<CloseGoalResult> {
-    return this.client.post("/close_goal", input);
-  }
-
-  async closeProject(input: CloseProjectInput): Promise<CloseProjectResult> {
-    return this.client.post("/close_project", input);
   }
 
   async completeCompanySetup(input: CompleteCompanySetupInput): Promise<CompleteCompanySetupResult> {
@@ -5165,14 +5153,6 @@ class ApiNamespaceRoot {
     return this.client.post("/mark_notifications_as_read", input);
   }
 
-  async moveTask(input: MoveTaskInput): Promise<MoveTaskResult> {
-    return this.client.post("/move_task", input);
-  }
-
-  async pauseProject(input: PauseProjectInput): Promise<PauseProjectResult> {
-    return this.client.post("/pause_project", input);
-  }
-
   async postGoalProgressUpdate(input: PostGoalProgressUpdateInput): Promise<PostGoalProgressUpdateResult> {
     return this.client.post("/post_goal_progress_update", input);
   }
@@ -5219,10 +5199,6 @@ class ApiNamespaceRoot {
     return this.client.post("/rename_resource_hub_folder", input);
   }
 
-  async reopenGoal(input: ReopenGoalInput): Promise<ReopenGoalResult> {
-    return this.client.post("/reopen_goal", input);
-  }
-
   async requestPasswordReset(input: RequestPasswordResetInput): Promise<RequestPasswordResetResult> {
     return this.client.post("/request_password_reset", input);
   }
@@ -5233,10 +5209,6 @@ class ApiNamespaceRoot {
 
   async restoreCompanyMember(input: RestoreCompanyMemberInput): Promise<RestoreCompanyMemberResult> {
     return this.client.post("/restore_company_member", input);
-  }
-
-  async resumeProject(input: ResumeProjectInput): Promise<ResumeProjectResult> {
-    return this.client.post("/resume_project", input);
   }
 
   async subscribeToNotifications(input: SubscribeToNotificationsInput): Promise<SubscribeToNotificationsResult> {
@@ -5321,24 +5293,26 @@ class ApiNamespaceSpaces {
     return this.client.post("/spaces/delete_member", input);
   }
 
-  async edit(input: SpacesEditInput): Promise<SpacesEditResult> {
-    return this.client.post("/spaces/edit", input);
-  }
-
-  async editMembersPermissions(input: SpacesEditMembersPermissionsInput): Promise<SpacesEditMembersPermissionsResult> {
-    return this.client.post("/spaces/edit_members_permissions", input);
-  }
-
-  async editPermissions(input: SpacesEditPermissionsInput): Promise<SpacesEditPermissionsResult> {
-    return this.client.post("/spaces/edit_permissions", input);
-  }
-
   async join(input: SpacesJoinInput): Promise<SpacesJoinResult> {
     return this.client.post("/spaces/join", input);
   }
 
+  async update(input: SpacesUpdateInput): Promise<SpacesUpdateResult> {
+    return this.client.post("/spaces/update", input);
+  }
+
   async updateKanban(input: SpacesUpdateKanbanInput): Promise<SpacesUpdateKanbanResult> {
     return this.client.post("/spaces/update_kanban", input);
+  }
+
+  async updateMembersPermissions(
+    input: SpacesUpdateMembersPermissionsInput,
+  ): Promise<SpacesUpdateMembersPermissionsResult> {
+    return this.client.post("/spaces/update_members_permissions", input);
+  }
+
+  async updatePermissions(input: SpacesUpdatePermissionsInput): Promise<SpacesUpdatePermissionsResult> {
+    return this.client.post("/spaces/update_permissions", input);
   }
 
   async updateTaskStatuses(input: SpacesUpdateTaskStatusesInput): Promise<SpacesUpdateTaskStatusesResult> {
@@ -5419,6 +5393,10 @@ class ApiNamespaceTasks {
 
   async delete(input: TasksDeleteInput): Promise<TasksDeleteResult> {
     return this.client.post("/tasks/delete", input);
+  }
+
+  async move(input: TasksMoveInput): Promise<TasksMoveResult> {
+    return this.client.post("/tasks/move", input);
   }
 
   async updateAssignee(input: TasksUpdateAssigneeInput): Promise<TasksUpdateAssigneeResult> {
@@ -5527,6 +5505,10 @@ class ApiNamespaceProjects {
     return this.client.get("/projects/search_potential_contributors", input);
   }
 
+  async close(input: ProjectsCloseInput): Promise<ProjectsCloseResult> {
+    return this.client.post("/projects/close", input);
+  }
+
   async create(input: ProjectsCreateInput): Promise<ProjectsCreateResult> {
     return this.client.post("/projects/create", input);
   }
@@ -5543,20 +5525,16 @@ class ApiNamespaceProjects {
     return this.client.post("/projects/delete_contributor", input);
   }
 
-  async editName(input: ProjectsEditNameInput): Promise<ProjectsEditNameResult> {
-    return this.client.post("/projects/edit_name", input);
-  }
-
-  async editPermissions(input: ProjectsEditPermissionsInput): Promise<ProjectsEditPermissionsResult> {
-    return this.client.post("/projects/edit_permissions", input);
-  }
-
-  async editRetrospective(input: ProjectsEditRetrospectiveInput): Promise<ProjectsEditRetrospectiveResult> {
-    return this.client.post("/projects/edit_retrospective", input);
-  }
-
   async moveToSpace(input: ProjectsMoveToSpaceInput): Promise<ProjectsMoveToSpaceResult> {
     return this.client.post("/projects/move_to_space", input);
+  }
+
+  async pause(input: ProjectsPauseInput): Promise<ProjectsPauseResult> {
+    return this.client.post("/projects/pause", input);
+  }
+
+  async resume(input: ProjectsResumeInput): Promise<ProjectsResumeResult> {
+    return this.client.post("/projects/resume", input);
   }
 
   async updateChampion(input: ProjectsUpdateChampionInput): Promise<ProjectsUpdateChampionResult> {
@@ -5575,8 +5553,20 @@ class ApiNamespaceProjects {
     return this.client.post("/projects/update_milestone", input);
   }
 
+  async updateName(input: ProjectsUpdateNameInput): Promise<ProjectsUpdateNameResult> {
+    return this.client.post("/projects/update_name", input);
+  }
+
   async updateParentGoal(input: ProjectsUpdateParentGoalInput): Promise<ProjectsUpdateParentGoalResult> {
     return this.client.post("/projects/update_parent_goal", input);
+  }
+
+  async updatePermissions(input: ProjectsUpdatePermissionsInput): Promise<ProjectsUpdatePermissionsResult> {
+    return this.client.post("/projects/update_permissions", input);
+  }
+
+  async updateRetrospective(input: ProjectsUpdateRetrospectiveInput): Promise<ProjectsUpdateRetrospectiveResult> {
+    return this.client.post("/projects/update_retrospective", input);
   }
 
   async updateReviewer(input: ProjectsUpdateReviewerInput): Promise<ProjectsUpdateReviewerResult> {
@@ -5623,6 +5613,14 @@ class ApiNamespaceGoals {
     return this.client.get("/goals/search_parent_goal", input);
   }
 
+  async changeParent(input: GoalsChangeParentInput): Promise<GoalsChangeParentResult> {
+    return this.client.post("/goals/change_parent", input);
+  }
+
+  async close(input: GoalsCloseInput): Promise<GoalsCloseResult> {
+    return this.client.post("/goals/close", input);
+  }
+
   async create(input: GoalsCreateInput): Promise<GoalsCreateResult> {
     return this.client.post("/goals/create", input);
   }
@@ -5653,6 +5651,10 @@ class ApiNamespaceGoals {
 
   async deleteTarget(input: GoalsDeleteTargetInput): Promise<GoalsDeleteTargetResult> {
     return this.client.post("/goals/delete_target", input);
+  }
+
+  async reopen(input: GoalsReopenInput): Promise<GoalsReopenResult> {
+    return this.client.post("/goals/reopen", input);
   }
 
   async toggleCheck(input: GoalsToggleCheckInput): Promise<GoalsToggleCheckResult> {
@@ -5963,20 +5965,8 @@ export class ApiClient {
     return this.apiNamespaceRoot.addReaction(input);
   }
 
-  changeGoalParent(input: ChangeGoalParentInput): Promise<ChangeGoalParentResult> {
-    return this.apiNamespaceRoot.changeGoalParent(input);
-  }
-
   changePassword(input: ChangePasswordInput): Promise<ChangePasswordResult> {
     return this.apiNamespaceRoot.changePassword(input);
-  }
-
-  closeGoal(input: CloseGoalInput): Promise<CloseGoalResult> {
-    return this.apiNamespaceRoot.closeGoal(input);
-  }
-
-  closeProject(input: CloseProjectInput): Promise<CloseProjectResult> {
-    return this.apiNamespaceRoot.closeProject(input);
   }
 
   completeCompanySetup(input: CompleteCompanySetupInput): Promise<CompleteCompanySetupResult> {
@@ -6135,14 +6125,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.markNotificationsAsRead(input);
   }
 
-  moveTask(input: MoveTaskInput): Promise<MoveTaskResult> {
-    return this.apiNamespaceRoot.moveTask(input);
-  }
-
-  pauseProject(input: PauseProjectInput): Promise<PauseProjectResult> {
-    return this.apiNamespaceRoot.pauseProject(input);
-  }
-
   postGoalProgressUpdate(input: PostGoalProgressUpdateInput): Promise<PostGoalProgressUpdateResult> {
     return this.apiNamespaceRoot.postGoalProgressUpdate(input);
   }
@@ -6189,10 +6171,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.renameResourceHubFolder(input);
   }
 
-  reopenGoal(input: ReopenGoalInput): Promise<ReopenGoalResult> {
-    return this.apiNamespaceRoot.reopenGoal(input);
-  }
-
   requestPasswordReset(input: RequestPasswordResetInput): Promise<RequestPasswordResetResult> {
     return this.apiNamespaceRoot.requestPasswordReset(input);
   }
@@ -6203,10 +6181,6 @@ export class ApiClient {
 
   restoreCompanyMember(input: RestoreCompanyMemberInput): Promise<RestoreCompanyMemberResult> {
     return this.apiNamespaceRoot.restoreCompanyMember(input);
-  }
-
-  resumeProject(input: ResumeProjectInput): Promise<ResumeProjectResult> {
-    return this.apiNamespaceRoot.resumeProject(input);
   }
 
   subscribeToNotifications(input: SubscribeToNotificationsInput): Promise<SubscribeToNotificationsResult> {
@@ -6391,17 +6365,8 @@ export async function addProjectContributors(
 export async function addReaction(input: AddReactionInput): Promise<AddReactionResult> {
   return defaultApiClient.addReaction(input);
 }
-export async function changeGoalParent(input: ChangeGoalParentInput): Promise<ChangeGoalParentResult> {
-  return defaultApiClient.changeGoalParent(input);
-}
 export async function changePassword(input: ChangePasswordInput): Promise<ChangePasswordResult> {
   return defaultApiClient.changePassword(input);
-}
-export async function closeGoal(input: CloseGoalInput): Promise<CloseGoalResult> {
-  return defaultApiClient.closeGoal(input);
-}
-export async function closeProject(input: CloseProjectInput): Promise<CloseProjectResult> {
-  return defaultApiClient.closeProject(input);
 }
 export async function completeCompanySetup(input: CompleteCompanySetupInput): Promise<CompleteCompanySetupResult> {
   return defaultApiClient.completeCompanySetup(input);
@@ -6543,12 +6508,6 @@ export async function markNotificationsAsRead(
 ): Promise<MarkNotificationsAsReadResult> {
   return defaultApiClient.markNotificationsAsRead(input);
 }
-export async function moveTask(input: MoveTaskInput): Promise<MoveTaskResult> {
-  return defaultApiClient.moveTask(input);
-}
-export async function pauseProject(input: PauseProjectInput): Promise<PauseProjectResult> {
-  return defaultApiClient.pauseProject(input);
-}
 export async function postGoalProgressUpdate(
   input: PostGoalProgressUpdateInput,
 ): Promise<PostGoalProgressUpdateResult> {
@@ -6590,9 +6549,6 @@ export async function renameResourceHubFolder(
 ): Promise<RenameResourceHubFolderResult> {
   return defaultApiClient.renameResourceHubFolder(input);
 }
-export async function reopenGoal(input: ReopenGoalInput): Promise<ReopenGoalResult> {
-  return defaultApiClient.reopenGoal(input);
-}
 export async function requestPasswordReset(input: RequestPasswordResetInput): Promise<RequestPasswordResetResult> {
   return defaultApiClient.requestPasswordReset(input);
 }
@@ -6601,9 +6557,6 @@ export async function resetPassword(input: ResetPasswordInput): Promise<ResetPas
 }
 export async function restoreCompanyMember(input: RestoreCompanyMemberInput): Promise<RestoreCompanyMemberResult> {
   return defaultApiClient.restoreCompanyMember(input);
-}
-export async function resumeProject(input: ResumeProjectInput): Promise<ResumeProjectResult> {
-  return defaultApiClient.resumeProject(input);
 }
 export async function subscribeToNotifications(
   input: SubscribeToNotificationsInput,
@@ -6864,22 +6817,8 @@ export function useAddReaction(): UseMutationHookResult<AddReactionInput, AddRea
   return useMutation<AddReactionInput, AddReactionResult>((input) => defaultApiClient.addReaction(input));
 }
 
-export function useChangeGoalParent(): UseMutationHookResult<ChangeGoalParentInput, ChangeGoalParentResult> {
-  return useMutation<ChangeGoalParentInput, ChangeGoalParentResult>((input) =>
-    defaultApiClient.changeGoalParent(input),
-  );
-}
-
 export function useChangePassword(): UseMutationHookResult<ChangePasswordInput, ChangePasswordResult> {
   return useMutation<ChangePasswordInput, ChangePasswordResult>((input) => defaultApiClient.changePassword(input));
-}
-
-export function useCloseGoal(): UseMutationHookResult<CloseGoalInput, CloseGoalResult> {
-  return useMutation<CloseGoalInput, CloseGoalResult>((input) => defaultApiClient.closeGoal(input));
-}
-
-export function useCloseProject(): UseMutationHookResult<CloseProjectInput, CloseProjectResult> {
-  return useMutation<CloseProjectInput, CloseProjectResult>((input) => defaultApiClient.closeProject(input));
 }
 
 export function useCompleteCompanySetup(): UseMutationHookResult<
@@ -7153,14 +7092,6 @@ export function useMarkNotificationsAsRead(): UseMutationHookResult<
   );
 }
 
-export function useMoveTask(): UseMutationHookResult<MoveTaskInput, MoveTaskResult> {
-  return useMutation<MoveTaskInput, MoveTaskResult>((input) => defaultApiClient.moveTask(input));
-}
-
-export function usePauseProject(): UseMutationHookResult<PauseProjectInput, PauseProjectResult> {
-  return useMutation<PauseProjectInput, PauseProjectResult>((input) => defaultApiClient.pauseProject(input));
-}
-
 export function usePostGoalProgressUpdate(): UseMutationHookResult<
   PostGoalProgressUpdateInput,
   PostGoalProgressUpdateResult
@@ -7240,10 +7171,6 @@ export function useRenameResourceHubFolder(): UseMutationHookResult<
   );
 }
 
-export function useReopenGoal(): UseMutationHookResult<ReopenGoalInput, ReopenGoalResult> {
-  return useMutation<ReopenGoalInput, ReopenGoalResult>((input) => defaultApiClient.reopenGoal(input));
-}
-
 export function useRequestPasswordReset(): UseMutationHookResult<
   RequestPasswordResetInput,
   RequestPasswordResetResult
@@ -7264,10 +7191,6 @@ export function useRestoreCompanyMember(): UseMutationHookResult<
   return useMutation<RestoreCompanyMemberInput, RestoreCompanyMemberResult>((input) =>
     defaultApiClient.restoreCompanyMember(input),
   );
-}
-
-export function useResumeProject(): UseMutationHookResult<ResumeProjectInput, ResumeProjectResult> {
-  return useMutation<ResumeProjectInput, ResumeProjectResult>((input) => defaultApiClient.resumeProject(input));
 }
 
 export function useSubscribeToNotifications(): UseMutationHookResult<
@@ -7416,14 +7339,8 @@ export default {
   useAddProjectContributors,
   addReaction,
   useAddReaction,
-  changeGoalParent,
-  useChangeGoalParent,
   changePassword,
   useChangePassword,
-  closeGoal,
-  useCloseGoal,
-  closeProject,
-  useCloseProject,
   completeCompanySetup,
   useCompleteCompanySetup,
   convertCompanyMemberToGuest,
@@ -7500,10 +7417,6 @@ export default {
   useMarkNotificationAsRead,
   markNotificationsAsRead,
   useMarkNotificationsAsRead,
-  moveTask,
-  useMoveTask,
-  pauseProject,
-  usePauseProject,
   postGoalProgressUpdate,
   usePostGoalProgressUpdate,
   postMilestoneComment,
@@ -7526,16 +7439,12 @@ export default {
   useRemoveReaction,
   renameResourceHubFolder,
   useRenameResourceHubFolder,
-  reopenGoal,
-  useReopenGoal,
   requestPasswordReset,
   useRequestPasswordReset,
   resetPassword,
   useResetPassword,
   restoreCompanyMember,
   useRestoreCompanyMember,
-  resumeProject,
-  useResumeProject,
   subscribeToNotifications,
   useSubscribeToNotifications,
   unsubscribeFromNotifications,
@@ -7762,11 +7671,18 @@ export default {
     useListTasks: (input: SpacesListTasksInput) =>
       useQuery<SpacesListTasksResult>(() => defaultApiClient.apiNamespaceSpaces.listTasks(input)),
 
-    editMembersPermissions: (input: SpacesEditMembersPermissionsInput) =>
-      defaultApiClient.apiNamespaceSpaces.editMembersPermissions(input),
-    useEditMembersPermissions: () =>
-      useMutation<SpacesEditMembersPermissionsInput, SpacesEditMembersPermissionsResult>((input) =>
-        defaultApiClient.apiNamespaceSpaces.editMembersPermissions(input),
+    updateMembersPermissions: (input: SpacesUpdateMembersPermissionsInput) =>
+      defaultApiClient.apiNamespaceSpaces.updateMembersPermissions(input),
+    useUpdateMembersPermissions: () =>
+      useMutation<SpacesUpdateMembersPermissionsInput, SpacesUpdateMembersPermissionsResult>((input) =>
+        defaultApiClient.apiNamespaceSpaces.updateMembersPermissions(input),
+      ),
+
+    updatePermissions: (input: SpacesUpdatePermissionsInput) =>
+      defaultApiClient.apiNamespaceSpaces.updatePermissions(input),
+    useUpdatePermissions: () =>
+      useMutation<SpacesUpdatePermissionsInput, SpacesUpdatePermissionsResult>((input) =>
+        defaultApiClient.apiNamespaceSpaces.updatePermissions(input),
       ),
 
     updateTools: (input: SpacesUpdateToolsInput) => defaultApiClient.apiNamespaceSpaces.updateTools(input),
@@ -7775,11 +7691,9 @@ export default {
         defaultApiClient.apiNamespaceSpaces.updateTools(input),
       ),
 
-    editPermissions: (input: SpacesEditPermissionsInput) => defaultApiClient.apiNamespaceSpaces.editPermissions(input),
-    useEditPermissions: () =>
-      useMutation<SpacesEditPermissionsInput, SpacesEditPermissionsResult>((input) =>
-        defaultApiClient.apiNamespaceSpaces.editPermissions(input),
-      ),
+    update: (input: SpacesUpdateInput) => defaultApiClient.apiNamespaceSpaces.update(input),
+    useUpdate: () =>
+      useMutation<SpacesUpdateInput, SpacesUpdateResult>((input) => defaultApiClient.apiNamespaceSpaces.update(input)),
 
     create: (input: SpacesCreateInput) => defaultApiClient.apiNamespaceSpaces.create(input),
     useCreate: () =>
@@ -7810,10 +7724,6 @@ export default {
       useMutation<SpacesDeleteMemberInput, SpacesDeleteMemberResult>((input) =>
         defaultApiClient.apiNamespaceSpaces.deleteMember(input),
       ),
-
-    edit: (input: SpacesEditInput) => defaultApiClient.apiNamespaceSpaces.edit(input),
-    useEdit: () =>
-      useMutation<SpacesEditInput, SpacesEditResult>((input) => defaultApiClient.apiNamespaceSpaces.edit(input)),
 
     updateTaskStatuses: (input: SpacesUpdateTaskStatusesInput) =>
       defaultApiClient.apiNamespaceSpaces.updateTaskStatuses(input),
@@ -7933,6 +7843,10 @@ export default {
         defaultApiClient.apiNamespaceTasks.updateStatus(input),
       ),
 
+    move: (input: TasksMoveInput) => defaultApiClient.apiNamespaceTasks.move(input),
+    useMove: () =>
+      useMutation<TasksMoveInput, TasksMoveResult>((input) => defaultApiClient.apiNamespaceTasks.move(input)),
+
     updateDueDate: (input: TasksUpdateDueDateInput) => defaultApiClient.apiNamespaceTasks.updateDueDate(input),
     useUpdateDueDate: () =>
       useMutation<TasksUpdateDueDateInput, TasksUpdateDueDateResult>((input) =>
@@ -8043,11 +7957,23 @@ export default {
         defaultApiClient.apiNamespaceProjects.updateParentGoal(input),
       ),
 
+    updateName: (input: ProjectsUpdateNameInput) => defaultApiClient.apiNamespaceProjects.updateName(input),
+    useUpdateName: () =>
+      useMutation<ProjectsUpdateNameInput, ProjectsUpdateNameResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.updateName(input),
+      ),
+
     createMilestone: (input: ProjectsCreateMilestoneInput) =>
       defaultApiClient.apiNamespaceProjects.createMilestone(input),
     useCreateMilestone: () =>
       useMutation<ProjectsCreateMilestoneInput, ProjectsCreateMilestoneResult>((input) =>
         defaultApiClient.apiNamespaceProjects.createMilestone(input),
+      ),
+
+    pause: (input: ProjectsPauseInput) => defaultApiClient.apiNamespaceProjects.pause(input),
+    usePause: () =>
+      useMutation<ProjectsPauseInput, ProjectsPauseResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.pause(input),
       ),
 
     deleteContributor: (input: ProjectsDeleteContributorInput) =>
@@ -8063,23 +7989,30 @@ export default {
         defaultApiClient.apiNamespaceProjects.updateDueDate(input),
       ),
 
+    updateRetrospective: (input: ProjectsUpdateRetrospectiveInput) =>
+      defaultApiClient.apiNamespaceProjects.updateRetrospective(input),
+    useUpdateRetrospective: () =>
+      useMutation<ProjectsUpdateRetrospectiveInput, ProjectsUpdateRetrospectiveResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.updateRetrospective(input),
+      ),
+
     moveToSpace: (input: ProjectsMoveToSpaceInput) => defaultApiClient.apiNamespaceProjects.moveToSpace(input),
     useMoveToSpace: () =>
       useMutation<ProjectsMoveToSpaceInput, ProjectsMoveToSpaceResult>((input) =>
         defaultApiClient.apiNamespaceProjects.moveToSpace(input),
       ),
 
-    editName: (input: ProjectsEditNameInput) => defaultApiClient.apiNamespaceProjects.editName(input),
-    useEditName: () =>
-      useMutation<ProjectsEditNameInput, ProjectsEditNameResult>((input) =>
-        defaultApiClient.apiNamespaceProjects.editName(input),
+    close: (input: ProjectsCloseInput) => defaultApiClient.apiNamespaceProjects.close(input),
+    useClose: () =>
+      useMutation<ProjectsCloseInput, ProjectsCloseResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.close(input),
       ),
 
-    editRetrospective: (input: ProjectsEditRetrospectiveInput) =>
-      defaultApiClient.apiNamespaceProjects.editRetrospective(input),
-    useEditRetrospective: () =>
-      useMutation<ProjectsEditRetrospectiveInput, ProjectsEditRetrospectiveResult>((input) =>
-        defaultApiClient.apiNamespaceProjects.editRetrospective(input),
+    updatePermissions: (input: ProjectsUpdatePermissionsInput) =>
+      defaultApiClient.apiNamespaceProjects.updatePermissions(input),
+    useUpdatePermissions: () =>
+      useMutation<ProjectsUpdatePermissionsInput, ProjectsUpdatePermissionsResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.updatePermissions(input),
       ),
 
     updateStartDate: (input: ProjectsUpdateStartDateInput) =>
@@ -8087,6 +8020,12 @@ export default {
     useUpdateStartDate: () =>
       useMutation<ProjectsUpdateStartDateInput, ProjectsUpdateStartDateResult>((input) =>
         defaultApiClient.apiNamespaceProjects.updateStartDate(input),
+      ),
+
+    resume: (input: ProjectsResumeInput) => defaultApiClient.apiNamespaceProjects.resume(input),
+    useResume: () =>
+      useMutation<ProjectsResumeInput, ProjectsResumeResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.resume(input),
       ),
 
     updateKanban: (input: ProjectsUpdateKanbanInput) => defaultApiClient.apiNamespaceProjects.updateKanban(input),
@@ -8131,13 +8070,6 @@ export default {
     useDelete: () =>
       useMutation<ProjectsDeleteInput, ProjectsDeleteResult>((input) =>
         defaultApiClient.apiNamespaceProjects.delete(input),
-      ),
-
-    editPermissions: (input: ProjectsEditPermissionsInput) =>
-      defaultApiClient.apiNamespaceProjects.editPermissions(input),
-    useEditPermissions: () =>
-      useMutation<ProjectsEditPermissionsInput, ProjectsEditPermissionsResult>((input) =>
-        defaultApiClient.apiNamespaceProjects.editPermissions(input),
       ),
   },
 
@@ -8196,6 +8128,12 @@ export default {
         defaultApiClient.apiNamespaceGoals.updateAccessLevels(input),
       ),
 
+    changeParent: (input: GoalsChangeParentInput) => defaultApiClient.apiNamespaceGoals.changeParent(input),
+    useChangeParent: () =>
+      useMutation<GoalsChangeParentInput, GoalsChangeParentResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.changeParent(input),
+      ),
+
     create: (input: GoalsCreateInput) => defaultApiClient.apiNamespaceGoals.create(input),
     useCreate: () =>
       useMutation<GoalsCreateInput, GoalsCreateResult>((input) => defaultApiClient.apiNamespaceGoals.create(input)),
@@ -8211,6 +8149,10 @@ export default {
       useMutation<GoalsUpdateTargetInput, GoalsUpdateTargetResult>((input) =>
         defaultApiClient.apiNamespaceGoals.updateTarget(input),
       ),
+
+    close: (input: GoalsCloseInput) => defaultApiClient.apiNamespaceGoals.close(input),
+    useClose: () =>
+      useMutation<GoalsCloseInput, GoalsCloseResult>((input) => defaultApiClient.apiNamespaceGoals.close(input)),
 
     createTarget: (input: GoalsCreateTargetInput) => defaultApiClient.apiNamespaceGoals.createTarget(input),
     useCreateTarget: () =>
@@ -8309,6 +8251,10 @@ export default {
       useMutation<GoalsDeleteAccessMemberInput, GoalsDeleteAccessMemberResult>((input) =>
         defaultApiClient.apiNamespaceGoals.deleteAccessMember(input),
       ),
+
+    reopen: (input: GoalsReopenInput) => defaultApiClient.apiNamespaceGoals.reopen(input),
+    useReopen: () =>
+      useMutation<GoalsReopenInput, GoalsReopenResult>((input) => defaultApiClient.apiNamespaceGoals.reopen(input)),
 
     updateReviewer: (input: GoalsUpdateReviewerInput) => defaultApiClient.apiNamespaceGoals.updateReviewer(input),
     useUpdateReviewer: () =>
