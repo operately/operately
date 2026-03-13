@@ -94,7 +94,7 @@ function Page() {
 
   const [projectName, setProjectName] = usePageField({
     value: (data) => data.project.name!,
-    update: (v) => Api.editProjectName({ projectId: project.id, name: v }).then(() => true),
+    update: (v) => Api.projects.editName({ projectId: project.id, name: v }).then(() => true),
     onError: (e: string) => showErrorToast(e, "Reverted the project name to its previous value."),
     validations: [(v) => (v.trim() === "" ? "Project name cannot be empty" : null)],
   });
@@ -434,7 +434,7 @@ function useSpaceProps({
 } {
   const [space, setSpace] = usePageField({
     value: (data) => (data.project.space ? parseSpaceForTurboUI(paths, data.project.space) : null),
-    update: (v) => Api.moveProjectToSpace({ projectId: project.id, spaceId: v!.id }).then(() => true),
+    update: (v) => Api.projects.moveToSpace({ projectId: project.id, spaceId: v!.id }).then(() => true),
     onError: () => showErrorToast("Network Error", "Reverted the space to its previous value."),
   });
 

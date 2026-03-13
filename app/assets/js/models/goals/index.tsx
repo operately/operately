@@ -10,8 +10,6 @@ export {
   createGoalDiscussion,
   useChangeGoalParent,
   useCloseGoal,
-  useCreateGoal,
-  useDeleteGoal,
   useEditGoalDiscussion,
   useReopenGoal,
 } from "@/api";

@@ -1,4 +1,4 @@
-import Api, { useArchiveMessage } from "@/api";
+import Api from "@/api";
 
 export type { Discussion } from "@/api";
 
@@ -7,4 +7,4 @@ export const getDiscussions = Api.space_discussions.list;
 export const usePostDiscussion = Api.space_discussions.useCreate;
 export const usePublishDiscussion = Api.space_discussions.usePublish;
 export const useEditDiscussion = Api.space_discussions.useUpdate;
-export { useArchiveMessage };
+export const useArchiveMessage = Api.space_discussions.useArchive;
