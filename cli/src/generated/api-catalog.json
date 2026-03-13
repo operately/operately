@@ -21812,10 +21812,10 @@
       "method": "GET"
     },
     {
-      "name": "get_milestone",
+      "name": "get",
       "type": "query",
-      "path": "/api/external/v1/get_milestone",
-      "handler": "OperatelyWeb.Api.Queries.GetMilestone",
+      "path": "/api/external/v1/project_milestones/get",
+      "handler": "OperatelyWeb.Api.ProjectMilestones.Get",
       "outputs": [
         {
           "default": null,
@@ -21829,7 +21829,7 @@
           "nullable": false
         }
       ],
-      "namespace": null,
+      "namespace": "project_milestones",
       "inputs": [
         {
           "default": null,
@@ -21920,7 +21920,7 @@
           "nullable": false
         }
       ],
-      "full_name": "get_milestone",
+      "full_name": "project_milestones/get",
       "method": "GET"
     },
     {
@@ -23709,10 +23709,10 @@
       "method": "GET"
     },
     {
-      "name": "get_task",
+      "name": "get",
       "type": "query",
-      "path": "/api/external/v1/get_task",
-      "handler": "OperatelyWeb.Api.Queries.GetTask",
+      "path": "/api/external/v1/tasks/get",
+      "handler": "OperatelyWeb.Api.Tasks.Get",
       "outputs": [
         {
           "default": null,
@@ -23726,7 +23726,7 @@
           "nullable": true
         }
       ],
-      "namespace": null,
+      "namespace": "tasks",
       "inputs": [
         {
           "default": null,
@@ -23828,7 +23828,7 @@
           "nullable": false
         }
       ],
-      "full_name": "get_task",
+      "full_name": "tasks/get",
       "method": "GET"
     },
     {
@@ -24310,10 +24310,10 @@
       "method": "POST"
     },
     {
-      "name": "list_goal_contributors",
+      "name": "list_contributors",
       "type": "query",
-      "path": "/api/external/v1/list_goal_contributors",
-      "handler": "OperatelyWeb.Api.Queries.ListGoalContributors",
+      "path": "/api/external/v1/goals/list_contributors",
+      "handler": "OperatelyWeb.Api.Goals.ListContributors",
       "outputs": [
         {
           "default": null,
@@ -24330,7 +24330,7 @@
           "nullable": true
         }
       ],
-      "namespace": null,
+      "namespace": "goals",
       "inputs": [
         {
           "default": null,
@@ -24344,7 +24344,7 @@
           "nullable": true
         }
       ],
-      "full_name": "list_goal_contributors",
+      "full_name": "goals/list_contributors",
       "method": "GET"
     },
     {
@@ -24482,10 +24482,10 @@
       "method": "GET"
     },
     {
-      "name": "list_space_tools",
+      "name": "list_tools",
       "type": "query",
-      "path": "/api/external/v1/list_space_tools",
-      "handler": "OperatelyWeb.Api.Queries.ListSpaceTools",
+      "path": "/api/external/v1/spaces/list_tools",
+      "handler": "OperatelyWeb.Api.Spaces.ListTools",
       "outputs": [
         {
           "default": null,
@@ -24499,7 +24499,7 @@
           "nullable": false
         }
       ],
-      "namespace": null,
+      "namespace": "spaces",
       "inputs": [
         {
           "default": null,
@@ -24513,14 +24513,14 @@
           "nullable": false
         }
       ],
-      "full_name": "list_space_tools",
+      "full_name": "spaces/list_tools",
       "method": "GET"
     },
     {
-      "name": "list_task_assignable_people",
+      "name": "list_potential_assignees",
       "type": "query",
-      "path": "/api/external/v1/list_task_assignable_people",
-      "handler": "OperatelyWeb.Api.Queries.ListTaskAssignablePeople",
+      "path": "/api/external/v1/tasks/list_potential_assignees",
+      "handler": "OperatelyWeb.Api.Tasks.ListPotentialAssignees",
       "outputs": [
         {
           "default": null,
@@ -24537,7 +24537,7 @@
           "nullable": true
         }
       ],
-      "namespace": null,
+      "namespace": "tasks",
       "inputs": [
         {
           "default": null,
@@ -24587,7 +24587,7 @@
           "nullable": true
         }
       ],
-      "full_name": "list_task_assignable_people",
+      "full_name": "tasks/list_potential_assignees",
       "method": "GET"
     },
     {
@@ -25701,10 +25701,10 @@
       "method": "GET"
     },
     {
-      "name": "search_potential_space_members",
+      "name": "search_potential_members",
       "type": "query",
-      "path": "/api/external/v1/search_potential_space_members",
-      "handler": "OperatelyWeb.Api.Queries.SearchPotentialSpaceMembers",
+      "path": "/api/external/v1/spaces/search_potential_members",
+      "handler": "OperatelyWeb.Api.Spaces.SearchPotentialMembers",
       "outputs": [
         {
           "default": null,
@@ -25721,7 +25721,7 @@
           "nullable": true
         }
       ],
-      "namespace": null,
+      "namespace": "spaces",
       "inputs": [
         {
           "default": null,
@@ -25771,14 +25771,14 @@
           "nullable": true
         }
       ],
-      "full_name": "search_potential_space_members",
+      "full_name": "spaces/search_potential_members",
       "method": "GET"
     },
     {
-      "name": "search_project_contributor_candidates",
+      "name": "search_potential_contributors",
       "type": "query",
-      "path": "/api/external/v1/search_project_contributor_candidates",
-      "handler": "OperatelyWeb.Api.Queries.SearchProjectContributorCandidates",
+      "path": "/api/external/v1/projects/search_potential_contributors",
+      "handler": "OperatelyWeb.Api.Projects.SearchPotentialContributors",
       "outputs": [
         {
           "default": null,
@@ -25795,7 +25795,7 @@
           "nullable": true
         }
       ],
-      "namespace": null,
+      "namespace": "projects",
       "inputs": [
         {
           "default": null,
@@ -25820,7 +25820,7 @@
           "nullable": true
         }
       ],
-      "full_name": "search_project_contributor_candidates",
+      "full_name": "projects/search_potential_contributors",
       "method": "GET"
     },
     {

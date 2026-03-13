@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.ListTaskAssignablePeople do
+defmodule OperatelyWeb.Api.Tasks.ListPotentialAssignees do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 

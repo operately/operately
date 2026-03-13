@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.ListGoalContributorsTest do
+defmodule OperatelyWeb.Api.Goals.ListContributorsTest do
   use OperatelyWeb.TurboCase
 
   import Operately.GroupsFixtures
@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Api.Queries.ListGoalContributorsTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, :list_goal_contributors, %{})
+      assert {401, _} = query(ctx.conn, [:goals, :list_contributors], %{})
     end
   end
 
@@ -46,7 +46,7 @@ defmodule OperatelyWeb.Api.Queries.ListGoalContributorsTest do
         project = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.creator.id, group_id: space.id, goal_id: goal.id})
         contributor_fixture(ctx.creator, %{project_id: project.id, person_id: ctx.contrib.id})
 
-        assert {200, res} = query(ctx.conn, :list_goal_contributors, %{goal_id: Paths.goal_id(goal)})
+        assert {200, res} = query(ctx.conn, [:goals, :list_contributors], %{goal_id: Paths.goal_id(goal)})
 
         case @test.expected do
           :forbidden ->
@@ -58,7 +58,7 @@ defmodule OperatelyWeb.Api.Queries.ListGoalContributorsTest do
     end
   end
 
-  describe "list_goal_contributors functionality" do
+  describe "goals/list_contributors functionality" do
     setup ctx do
       ctx
       |> Factory.setup()
@@ -78,7 +78,7 @@ defmodule OperatelyWeb.Api.Queries.ListGoalContributorsTest do
     end
 
     test "returns contributors for goal with child goals", ctx do
-      assert {200, res} = query(ctx.conn, :list_goal_contributors, %{goal_id: Paths.goal_id(ctx.parent_goal)})
+      assert {200, res} = query(ctx.conn, [:goals, :list_contributors], %{goal_id: Paths.goal_id(ctx.parent_goal)})
 
       people = [ctx.creator, ctx.contrib1, ctx.contrib2, ctx.contrib3, ctx.contrib4, ctx.contrib5]
 
@@ -90,7 +90,7 @@ defmodule OperatelyWeb.Api.Queries.ListGoalContributorsTest do
     end
 
     test "returns contributors for goal without child goals", ctx do
-      assert {200, res} = query(ctx.conn, :list_goal_contributors, %{goal_id: Paths.goal_id(ctx.child_goal)})
+      assert {200, res} = query(ctx.conn, [:goals, :list_contributors], %{goal_id: Paths.goal_id(ctx.child_goal)})
 
       people = [ctx.creator, ctx.contrib3, ctx.contrib4, ctx.contrib5]
 

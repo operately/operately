@@ -1,8 +1,10 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.GetTask do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.Tasks.Get do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
   alias OperatelyWeb.Paths
+
+  def query_name, do: "tasks/get"
 
   @impl true
   def setup(ctx) do

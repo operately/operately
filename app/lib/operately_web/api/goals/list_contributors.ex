@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.ListGoalContributors do
+defmodule OperatelyWeb.Api.Goals.ListContributors do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 

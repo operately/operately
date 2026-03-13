@@ -1,8 +1,10 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.ListTaskAssignablePeople do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.Tasks.ListPotentialAssignees do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
   alias OperatelyWeb.Paths
+
+  def query_name, do: "tasks/list_potential_assignees"
 
   @impl true
   def setup(ctx) do

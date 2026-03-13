@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.SearchProjectContributorCandidatesTest do
+defmodule OperatelyWeb.Api.Projects.SearchPotentialContributorsTest do
   use OperatelyWeb.TurboCase
 
   import Operately.PeopleFixtures
@@ -10,7 +10,7 @@ defmodule OperatelyWeb.Api.Queries.SearchProjectContributorCandidatesTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, :search_project_contributor_candidates, %{})
+      assert {401, _} = query(ctx.conn, [:projects, :search_potential_contributors], %{})
     end
 
     test "doesn't show people from other companies", ctx do
@@ -25,7 +25,7 @@ defmodule OperatelyWeb.Api.Queries.SearchProjectContributorCandidatesTest do
       project1 = project_fixture(%{company_id: ctx1.company.id, creator_id: ctx1.person.id, group_id: ctx1.company.company_space_id})
       project2 = project_fixture(%{company_id: ctx2.company.id, creator_id: ctx2.person.id, group_id: ctx2.company.company_space_id})
 
-      assert {200, res} = query(ctx1.conn, :search_project_contributor_candidates, %{
+      assert {200, res} = query(ctx1.conn, [:projects, :search_potential_contributors], %{
         project_id: Paths.project_id(project1),
         query: "",
       })
@@ -35,7 +35,7 @@ defmodule OperatelyWeb.Api.Queries.SearchProjectContributorCandidatesTest do
         assert Enum.find(res.people, &(&1.id == Paths.person_id(p)))
       end)
 
-      assert {200, res} = query(ctx2.conn, :search_project_contributor_candidates, %{
+      assert {200, res} = query(ctx2.conn, [:projects, :search_potential_contributors], %{
         project_id: Paths.project_id(project2),
         query: "",
       })
@@ -60,7 +60,7 @@ defmodule OperatelyWeb.Api.Queries.SearchProjectContributorCandidatesTest do
     test "company members have no access", ctx do
       project = create_project(ctx, company_access: Binding.no_access())
 
-      assert {200, res} = query(ctx.conn, :search_project_contributor_candidates, %{
+      assert {200, res} = query(ctx.conn, [:projects, :search_potential_contributors], %{
         project_id: Paths.project_id(project),
         query: "",
       })
@@ -70,7 +70,7 @@ defmodule OperatelyWeb.Api.Queries.SearchProjectContributorCandidatesTest do
     test "company members have access", ctx do
       project = create_project(ctx, company_access: Binding.view_access())
 
-      assert {200, res} = query(ctx.conn, :search_project_contributor_candidates, %{
+      assert {200, res} = query(ctx.conn, [:projects, :search_potential_contributors], %{
         project_id: Paths.project_id(project),
         query: "",
       })
@@ -81,7 +81,7 @@ defmodule OperatelyWeb.Api.Queries.SearchProjectContributorCandidatesTest do
       add_person_to_space(ctx)
       project = create_project(ctx, space_access: Binding.no_access())
 
-      assert {200, res} = query(ctx.conn, :search_project_contributor_candidates, %{
+      assert {200, res} = query(ctx.conn, [:projects, :search_potential_contributors], %{
         project_id: Paths.project_id(project),
         query: "",
       })
@@ -92,7 +92,7 @@ defmodule OperatelyWeb.Api.Queries.SearchProjectContributorCandidatesTest do
       add_person_to_space(ctx)
       project = create_project(ctx, space_access: Binding.view_access())
 
-      assert {200, res} = query(ctx.conn, :search_project_contributor_candidates, %{
+      assert {200, res} = query(ctx.conn, [:projects, :search_potential_contributors], %{
         project_id: Paths.project_id(project),
         query: "",
       })
@@ -107,14 +107,14 @@ defmodule OperatelyWeb.Api.Queries.SearchProjectContributorCandidatesTest do
       account = Repo.preload(champion, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, res} = query(conn, :search_project_contributor_candidates, %{
+      assert {200, res} = query(conn, [:projects, :search_potential_contributors], %{
         project_id: Paths.project_id(project),
         query: "",
       })
       assert_response(res, ctx)
 
       # another user's request
-      assert {200, res} = query(ctx.conn, :search_project_contributor_candidates, %{
+      assert {200, res} = query(ctx.conn, [:projects, :search_potential_contributors], %{
         project_id: Paths.project_id(project),
         query: "",
       })
@@ -129,14 +129,14 @@ defmodule OperatelyWeb.Api.Queries.SearchProjectContributorCandidatesTest do
       account = Repo.preload(reviewer, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, res} = query(conn, :search_project_contributor_candidates, %{
+      assert {200, res} = query(conn, [:projects, :search_potential_contributors], %{
         project_id: Paths.project_id(project),
         query: "",
       })
       assert_response(res, ctx)
 
       # another user's request
-      assert {200, res} = query(ctx.conn, :search_project_contributor_candidates, %{
+      assert {200, res} = query(ctx.conn, [:projects, :search_potential_contributors], %{
         project_id: Paths.project_id(project),
         query: "",
       })
@@ -146,7 +146,7 @@ defmodule OperatelyWeb.Api.Queries.SearchProjectContributorCandidatesTest do
     test "suspended people don't have access", ctx do
       project = create_project(ctx, company_access: Binding.view_access())
 
-      assert {200, res} = query(ctx.conn, :search_project_contributor_candidates, %{
+      assert {200, res} = query(ctx.conn, [:projects, :search_potential_contributors], %{
         project_id: Paths.project_id(project),
         query: "",
       })
@@ -154,7 +154,7 @@ defmodule OperatelyWeb.Api.Queries.SearchProjectContributorCandidatesTest do
 
       People.update_person(ctx.person, %{suspended_at: DateTime.utc_now()})
 
-      assert {200, res} = query(ctx.conn, :search_project_contributor_candidates, %{
+      assert {200, res} = query(ctx.conn, [:projects, :search_potential_contributors], %{
         project_id: Paths.project_id(project),
         query: "",
       })
@@ -162,7 +162,7 @@ defmodule OperatelyWeb.Api.Queries.SearchProjectContributorCandidatesTest do
     end
   end
 
-  describe "search_project_contributor_candidates functionality" do
+  describe "projects/search_potential_contributors functionality" do
     setup :register_and_log_in_account
 
     test "returns people based on query", ctx do
@@ -174,7 +174,7 @@ defmodule OperatelyWeb.Api.Queries.SearchProjectContributorCandidatesTest do
 
       person = person_fixture(company_id: ctx.company.id)
 
-      assert {200, res} = query(ctx.conn, :search_project_contributor_candidates, %{
+      assert {200, res} = query(ctx.conn, [:projects, :search_potential_contributors], %{
         project_id: Paths.project_id(project),
         query: person.full_name
       })
@@ -195,7 +195,7 @@ defmodule OperatelyWeb.Api.Queries.SearchProjectContributorCandidatesTest do
         suspended_at: DateTime.utc_now()
       })
 
-      assert {200, res} = query(ctx.conn, :search_project_contributor_candidates, %{
+      assert {200, res} = query(ctx.conn, [:projects, :search_potential_contributors], %{
         project_id: Paths.project_id(project),
         query: suspended_person.full_name
       })

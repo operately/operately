@@ -1,8 +1,10 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.GetMilestone do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.ProjectMilestones.Get do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
   alias OperatelyWeb.Paths
+
+  def query_name, do: "project_milestones/get"
 
   @impl true
   def setup(ctx) do

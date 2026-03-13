@@ -1,8 +1,10 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.ListGoalContributors do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.Goals.ListContributors do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
   alias OperatelyWeb.Paths
+
+  def query_name, do: "goals/list_contributors"
 
   @impl true
   def setup(ctx) do

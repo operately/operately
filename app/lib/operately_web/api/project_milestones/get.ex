@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetMilestone do
+defmodule OperatelyWeb.Api.ProjectMilestones.Get do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 

@@ -1,8 +1,10 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.ListSpaceTools do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.Spaces.ListTools do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
   alias OperatelyWeb.Paths
+
+  def query_name, do: "spaces/list_tools"
 
   @impl true
   def setup(ctx) do

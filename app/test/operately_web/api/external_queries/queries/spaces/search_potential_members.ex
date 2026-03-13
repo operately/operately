@@ -1,8 +1,10 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.SearchPotentialSpaceMembers do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.Spaces.SearchPotentialMembers do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
   alias OperatelyWeb.Paths
+
+  def query_name, do: "spaces/search_potential_members"
 
   @impl true
   def setup(ctx) do

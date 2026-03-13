@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.SearchPotentialSpaceMembers do
+defmodule OperatelyWeb.Api.Spaces.SearchPotentialMembers do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 

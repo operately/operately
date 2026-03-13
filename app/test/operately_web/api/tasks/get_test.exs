@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetTaskTest do
+defmodule OperatelyWeb.Api.Tasks.GetTest do
   use OperatelyWeb.TurboCase
 
   import Operately.PeopleFixtures
@@ -12,7 +12,7 @@ defmodule OperatelyWeb.Api.Queries.GetTaskTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, :get_task, %{})
+      assert {401, _} = query(ctx.conn, [:tasks, :get], %{})
     end
   end
 
@@ -28,14 +28,14 @@ defmodule OperatelyWeb.Api.Queries.GetTaskTest do
     test "company members have no access", ctx do
       task = create_task(ctx, company_access: Binding.no_access())
 
-      assert {404, res} = query(ctx.conn, :get_task, %{id: Paths.task_id(task)})
+      assert {404, res} = query(ctx.conn, [:tasks, :get], %{id: Paths.task_id(task)})
       assert res.message == "The requested resource was not found"
     end
 
     test "company members have access", ctx do
       task = create_task(ctx, company_access: Binding.view_access())
 
-      assert {200, res} = query(ctx.conn, :get_task, %{id: Paths.task_id(task)})
+      assert {200, res} = query(ctx.conn, [:tasks, :get], %{id: Paths.task_id(task)})
       assert res.task == Serializer.serialize(task, level: :full)
     end
 
@@ -43,7 +43,7 @@ defmodule OperatelyWeb.Api.Queries.GetTaskTest do
       add_person_to_space(ctx)
       task = create_task(ctx, space_access: Binding.no_access())
 
-      assert {404, res} = query(ctx.conn, :get_task, %{id: Paths.task_id(task)})
+      assert {404, res} = query(ctx.conn, [:tasks, :get], %{id: Paths.task_id(task)})
       assert res.message == "The requested resource was not found"
     end
 
@@ -51,7 +51,7 @@ defmodule OperatelyWeb.Api.Queries.GetTaskTest do
       add_person_to_space(ctx)
       task = create_task(ctx, space_access: Binding.view_access())
 
-      assert {200, res} = query(ctx.conn, :get_task, %{id: Paths.task_id(task)})
+      assert {200, res} = query(ctx.conn, [:tasks, :get], %{id: Paths.task_id(task)})
       assert res.task == Serializer.serialize(task, level: :full)
     end
 
@@ -63,11 +63,11 @@ defmodule OperatelyWeb.Api.Queries.GetTaskTest do
       account = Repo.preload(champion, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, res} = query(conn, :get_task, %{id: Paths.task_id(task)})
+      assert {200, res} = query(conn, [:tasks, :get], %{id: Paths.task_id(task)})
       assert res.task == Serializer.serialize(task, level: :full)
 
       # another user's request
-      assert {404, res} = query(ctx.conn, :get_task, %{id: Paths.task_id(task)})
+      assert {404, res} = query(ctx.conn, [:tasks, :get], %{id: Paths.task_id(task)})
       assert res.message == "The requested resource was not found"
     end
 
@@ -79,16 +79,16 @@ defmodule OperatelyWeb.Api.Queries.GetTaskTest do
       account = Repo.preload(reviewer, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, res} = query(conn, :get_task, %{id: Paths.task_id(task)})
+      assert {200, res} = query(conn, [:tasks, :get], %{id: Paths.task_id(task)})
       assert res.task == Serializer.serialize(task, level: :full)
 
       # another user's request
-      assert {404, res} = query(ctx.conn, :get_task, %{id: Paths.task_id(task)})
+      assert {404, res} = query(ctx.conn, [:tasks, :get], %{id: Paths.task_id(task)})
       assert res.message == "The requested resource was not found"
     end
   end
 
-  describe "get_task functionality" do
+  describe "tasks/get functionality" do
     setup ctx do
       ctx = register_and_log_in_account(ctx)
       creator = person_fixture(%{company_id: ctx.company.id})
@@ -100,7 +100,7 @@ defmodule OperatelyWeb.Api.Queries.GetTaskTest do
     test "get a task with nothing included", ctx do
       task = create_task(ctx, company_access: Binding.view_access())
 
-      assert {200, res} = query(ctx.conn, :get_task, %{id: Paths.task_id(task)})
+      assert {200, res} = query(ctx.conn, [:tasks, :get], %{id: Paths.task_id(task)})
       assert res.task == Serializer.serialize(task, level: :full)
     end
 
@@ -108,10 +108,10 @@ defmodule OperatelyWeb.Api.Queries.GetTaskTest do
       task = create_task(ctx, company_access: Binding.view_access())
       assignee_fixture(task_id: task.id, person_id: ctx.person.id)
 
-      assert {200, res} = query(ctx.conn, :get_task, %{id: Paths.task_id(task), include_assignees: true})
+      assert {200, res} = query(ctx.conn, [:tasks, :get], %{id: Paths.task_id(task), include_assignees: true})
       assert res.task.assignees == [Serializer.serialize(ctx.person)]
 
-      assert {200, res} = query(ctx.conn, :get_task, %{id: Paths.task_id(task)})
+      assert {200, res} = query(ctx.conn, [:tasks, :get], %{id: Paths.task_id(task)})
       refute res.task.assignees
     end
 
@@ -119,11 +119,11 @@ defmodule OperatelyWeb.Api.Queries.GetTaskTest do
       task = create_task(ctx, company_access: Binding.view_access())
       milestone = Repo.preload(task, milestone: :project).milestone
 
-      assert {200, res} = query(ctx.conn, :get_task, %{id: Paths.task_id(task), include_milestone: true})
+      assert {200, res} = query(ctx.conn, [:tasks, :get], %{id: Paths.task_id(task), include_milestone: true})
       m = %{res.task.milestone | status: to_string(res.task.milestone.status)}
       assert m == serialize_milestone(milestone)
 
-      assert {200, res} = query(ctx.conn, :get_task, %{id: Paths.task_id(task)})
+      assert {200, res} = query(ctx.conn, [:tasks, :get], %{id: Paths.task_id(task)})
       refute res.task.milestone
     end
 
@@ -131,10 +131,10 @@ defmodule OperatelyWeb.Api.Queries.GetTaskTest do
       task = create_task(ctx, company_access: Binding.view_access())
       project = Repo.preload(task, :project).project
 
-      assert {200, res} = query(ctx.conn, :get_task, %{id: Paths.task_id(task), include_project: true})
+      assert {200, res} = query(ctx.conn, [:tasks, :get], %{id: Paths.task_id(task), include_project: true})
       assert res.task.project == Serializer.serialize(project)
 
-      assert {200, res} = query(ctx.conn, :get_task, %{id: Paths.task_id(task)})
+      assert {200, res} = query(ctx.conn, [:tasks, :get], %{id: Paths.task_id(task)})
       refute res.task.project
     end
   end

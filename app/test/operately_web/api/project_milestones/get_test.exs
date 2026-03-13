@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetMilestoneTest do
+defmodule OperatelyWeb.Api.ProjectMilestones.GetTest do
   use OperatelyWeb.TurboCase
 
   import Operately.ProjectsFixtures
@@ -11,7 +11,7 @@ defmodule OperatelyWeb.Api.Queries.GetMilestoneTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, :get_milestone, %{})
+      assert {401, _} = query(ctx.conn, [:project_milestones, :get], %{})
     end
   end
 
@@ -27,14 +27,14 @@ defmodule OperatelyWeb.Api.Queries.GetMilestoneTest do
     test "company members have no access", ctx do
       m = create_milestone(ctx, company_access: Binding.no_access())
 
-      assert {404, res} = query(ctx.conn, :get_milestone, %{id: m.id})
+      assert {404, res} = query(ctx.conn, [:project_milestones, :get], %{id: m.id})
       assert res.message == "The requested resource was not found"
     end
 
     test "company members have access", ctx do
       m = create_milestone(ctx, company_access: Binding.view_access())
 
-      assert {200, res} = query(ctx.conn, :get_milestone, %{id: m.id})
+      assert {200, res} = query(ctx.conn, [:project_milestones, :get], %{id: m.id})
       assert_response(res, m)
     end
 
@@ -42,7 +42,7 @@ defmodule OperatelyWeb.Api.Queries.GetMilestoneTest do
       add_person_to_space(ctx)
       m = create_milestone(ctx, space_access: Binding.no_access())
 
-      assert {404, res} = query(ctx.conn, :get_milestone, %{id: m.id})
+      assert {404, res} = query(ctx.conn, [:project_milestones, :get], %{id: m.id})
       assert res.message == "The requested resource was not found"
     end
 
@@ -50,7 +50,7 @@ defmodule OperatelyWeb.Api.Queries.GetMilestoneTest do
       add_person_to_space(ctx)
       m = create_milestone(ctx, space_access: Binding.view_access())
 
-      assert {200, res} = query(ctx.conn, :get_milestone, %{id: m.id})
+      assert {200, res} = query(ctx.conn, [:project_milestones, :get], %{id: m.id})
       assert_response(res, m)
     end
 
@@ -62,11 +62,11 @@ defmodule OperatelyWeb.Api.Queries.GetMilestoneTest do
       account = Repo.preload(champion, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, res} = query(conn, :get_milestone, %{id: m.id})
+      assert {200, res} = query(conn, [:project_milestones, :get], %{id: m.id})
       assert_response(res, m)
 
       # another user's request
-      assert {404, res} = query(ctx.conn, :get_milestone, %{id: m.id})
+      assert {404, res} = query(ctx.conn, [:project_milestones, :get], %{id: m.id})
       assert res.message == "The requested resource was not found"
     end
 
@@ -78,17 +78,17 @@ defmodule OperatelyWeb.Api.Queries.GetMilestoneTest do
       account = Repo.preload(reviewer, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, res} = query(conn, :get_milestone, %{id: m.id})
+      assert {200, res} = query(conn, [:project_milestones, :get], %{id: m.id})
       assert_response(res, m)
 
       # another user's request
-      assert {404, res} = query(ctx.conn, :get_milestone, %{id: m.id})
+      assert {404, res} = query(ctx.conn, [:project_milestones, :get], %{id: m.id})
       assert res.message == "The requested resource was not found"
     end
   end
 
 
-  describe "get_milestone functionality" do
+  describe "project_milestones/get functionality" do
     setup ctx do
       ctx
       |> Factory.setup()
@@ -99,11 +99,11 @@ defmodule OperatelyWeb.Api.Queries.GetMilestoneTest do
     end
 
     test "include_project", ctx do
-      assert {200, res} = query(ctx.conn, :get_milestone, %{id: Paths.milestone_id(ctx.milestone)})
+      assert {200, res} = query(ctx.conn, [:project_milestones, :get], %{id: Paths.milestone_id(ctx.milestone)})
 
       refute res.milestone.project
 
-      assert {200, res} = query(ctx.conn, :get_milestone, %{
+      assert {200, res} = query(ctx.conn, [:project_milestones, :get], %{
         id: Paths.milestone_id(ctx.milestone),
         include_project: true,
       })
@@ -112,11 +112,11 @@ defmodule OperatelyWeb.Api.Queries.GetMilestoneTest do
     end
 
     test "include_permissions", ctx do
-      assert {200, res} = query(ctx.conn, :get_milestone, %{id: Paths.milestone_id(ctx.milestone)})
+      assert {200, res} = query(ctx.conn, [:project_milestones, :get], %{id: Paths.milestone_id(ctx.milestone)})
 
       refute res.milestone.permissions
 
-      assert {200, res} = query(ctx.conn, :get_milestone, %{
+      assert {200, res} = query(ctx.conn, [:project_milestones, :get], %{
         id: Paths.milestone_id(ctx.milestone),
         include_permissions: true,
       })
@@ -131,11 +131,11 @@ defmodule OperatelyWeb.Api.Queries.GetMilestoneTest do
         author_id: person.id,
       })
 
-      assert {200, res} = query(ctx.conn, :get_milestone, %{id: Paths.milestone_id(ctx.milestone)})
+      assert {200, res} = query(ctx.conn, [:project_milestones, :get], %{id: Paths.milestone_id(ctx.milestone)})
 
       refute res.milestone.comments
 
-      assert {200, res} = query(ctx.conn, :get_milestone, %{
+      assert {200, res} = query(ctx.conn, [:project_milestones, :get], %{
         id: Paths.milestone_id(ctx.milestone),
         include_comments: true,
       })

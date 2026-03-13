@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
+defmodule OperatelyWeb.Api.Spaces.ListToolsTest do
   use OperatelyWeb.TurboCase
 
   import Operately.GroupsFixtures
@@ -12,7 +12,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, :list_space_tools, %{})
+      assert {401, _} = query(ctx.conn, [:spaces, :list_tools], %{})
     end
   end
 
@@ -25,7 +25,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
     end
 
     test "it returns 404 invalid id", ctx do
-      assert {404, %{message: "The requested resource was not found"}} = query(ctx.conn, :list_space_tools, %{space_id: "a;b;c"})
+      assert {404, %{message: "The requested resource was not found"}} = query(ctx.conn, [:spaces, :list_tools], %{space_id: "a;b;c"})
     end
   end
 
@@ -71,7 +71,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
         resource_hub_fixture(ctx.creator, space)
         resource_hub_fixture(ctx.creator, space)
 
-        assert {200, res} = query(ctx.conn, :list_space_tools, %{space_id: Paths.space_id(space)})
+        assert {200, res} = query(ctx.conn, [:spaces, :list_tools], %{space_id: Paths.space_id(space)})
 
         case @test.expected do
           :forbidden ->
@@ -90,7 +90,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
         messages_board_fixture(space.id)
         messages_board_fixture(space.id)
 
-        assert {200, res} = query(ctx.conn, :list_space_tools, %{space_id: Paths.space_id(space)})
+        assert {200, res} = query(ctx.conn, [:spaces, :list_tools], %{space_id: Paths.space_id(space)})
 
         case @test.expected do
           :forbidden ->
@@ -109,7 +109,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
         create_project(ctx, space, @test.company, @test.space, @test.project)
         create_project(ctx, space, @test.company, @test.space, @test.project)
 
-        assert {200, res} = query(ctx.conn, :list_space_tools, %{space_id: Paths.space_id(space)})
+        assert {200, res} = query(ctx.conn, [:spaces, :list_tools], %{space_id: Paths.space_id(space)})
 
         case @test.expected do
           :forbidden ->
@@ -127,7 +127,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
         create_goal(ctx, space, @test.company, @test.space)
         create_goal(ctx, space, @test.company, @test.space)
 
-        assert {200, res} = query(ctx.conn, :list_space_tools, %{space_id: Paths.space_id(space)})
+        assert {200, res} = query(ctx.conn, [:spaces, :list_tools], %{space_id: Paths.space_id(space)})
 
         case @test.expected do
           :forbidden ->
@@ -149,7 +149,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
         task_fixture(%{creator_id: ctx.creator.id, space_id: ctx.space.id, name: "Task 1"})
         task_fixture(%{creator_id: ctx.creator.id, space_id: ctx.space.id, name: "Task 2"})
 
-        assert {200, res} = query(ctx.conn, :list_space_tools, %{space_id: Paths.space_id(ctx.space)})
+        assert {200, res} = query(ctx.conn, [:spaces, :list_tools], %{space_id: Paths.space_id(ctx.space)})
 
         case @test.expected do
           :forbidden ->
@@ -162,7 +162,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
     end
   end
 
-  describe "list_space_tools functionality" do
+  describe "spaces/list_tools functionality" do
     setup ctx do
       ctx
       |> Factory.setup()
@@ -193,7 +193,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
     end
 
     test "list projects", ctx do
-      assert {200, res} = query(ctx.conn, :list_space_tools, %{space_id: Paths.space_id(ctx.space)})
+      assert {200, res} = query(ctx.conn, [:spaces, :list_tools], %{space_id: Paths.space_id(ctx.space)})
 
       assert length(res.tools.projects) == 2
       assert Enum.find(res.tools.projects, &(&1.id == Paths.project_id(ctx.project1)))
@@ -201,7 +201,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
     end
 
     test "list goals", ctx do
-      assert {200, res} = query(ctx.conn, :list_space_tools, %{space_id: Paths.space_id(ctx.space)})
+      assert {200, res} = query(ctx.conn, [:spaces, :list_tools], %{space_id: Paths.space_id(ctx.space)})
 
       assert length(res.tools.goals) == 2
       assert Enum.find(res.tools.goals, &(&1 == Serializer.serialize(ctx.goal1, level: :full)))
@@ -209,7 +209,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
     end
 
     test "list messages boards", ctx do
-      assert {200, res} = query(ctx.conn, :list_space_tools, %{space_id: Paths.space_id(ctx.space)})
+      assert {200, res} = query(ctx.conn, [:spaces, :list_tools], %{space_id: Paths.space_id(ctx.space)})
 
       # 2 munually created + 1 created with space
       assert length(res.tools.messages_boards) == 3
@@ -225,7 +225,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
     end
 
     test "list resource hubs", ctx do
-      assert {200, res} = query(ctx.conn, :list_space_tools, %{space_id: Paths.space_id(ctx.space)})
+      assert {200, res} = query(ctx.conn, [:spaces, :list_tools], %{space_id: Paths.space_id(ctx.space)})
 
       assert length(res.tools.resource_hubs) == 3
 
@@ -237,7 +237,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
     end
 
     test "list tasks", ctx do
-      assert {200, res} = query(ctx.conn, :list_space_tools, %{space_id: Paths.space_id(ctx.space)})
+      assert {200, res} = query(ctx.conn, [:spaces, :list_tools], %{space_id: Paths.space_id(ctx.space)})
 
       assert length(res.tools.tasks) == 2
       assert Enum.find(res.tools.tasks, &(&1.id == Paths.task_id(ctx.task1)))
@@ -250,7 +250,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
         |> Factory.add_project(:project_paused, :space, name: "Paused Project")
         |> Factory.pause_project(:project_paused)
 
-      assert {200, res} = query(ctx.conn, :list_space_tools, %{space_id: Paths.space_id(ctx.space)})
+      assert {200, res} = query(ctx.conn, [:spaces, :list_tools], %{space_id: Paths.space_id(ctx.space)})
 
       # Should include only active projects
       assert length(res.tools.projects) == 2
@@ -275,7 +275,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
         |> Factory.create_space_task(:task1, :space)
         |> Factory.create_space_task(:task2, :space)
 
-      assert {200, res} = query(ctx.conn, :list_space_tools, %{space_id: Paths.space_id(ctx.space)})
+      assert {200, res} = query(ctx.conn, [:spaces, :list_tools], %{space_id: Paths.space_id(ctx.space)})
       assert length(res.tools.tasks) == 0
     end
 
@@ -286,7 +286,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
         |> Factory.add_messages_board(:board1, :space)
         |> Factory.add_messages_board(:board2, :space)
 
-      assert {200, res} = query(ctx.conn, :list_space_tools, %{space_id: Paths.space_id(ctx.space)})
+      assert {200, res} = query(ctx.conn, [:spaces, :list_tools], %{space_id: Paths.space_id(ctx.space)})
       assert length(res.tools.messages_boards) == 0
     end
 
@@ -297,7 +297,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
         |> Factory.add_resource_hub(:hub1, :space, :creator)
         |> Factory.add_resource_hub(:hub2, :space, :creator)
 
-      assert {200, res} = query(ctx.conn, :list_space_tools, %{space_id: Paths.space_id(ctx.space)})
+      assert {200, res} = query(ctx.conn, [:spaces, :list_tools], %{space_id: Paths.space_id(ctx.space)})
       assert length(res.tools.resource_hubs) == 0
     end
   end

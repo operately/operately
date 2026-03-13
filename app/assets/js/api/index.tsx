@@ -2389,21 +2389,6 @@ export interface GetMeResult {
   me?: Person | null;
 }
 
-export interface GetMilestoneInput {
-  id: Id;
-  includeComments?: boolean;
-  includeProject?: boolean;
-  includeCreator?: boolean;
-  includePermissions?: boolean;
-  includeSpace?: boolean;
-  includeSubscriptionList?: boolean;
-  includeAvailableStatuses?: boolean;
-}
-
-export interface GetMilestoneResult {
-  milestone: Milestone;
-}
-
 export interface GetNotificationsInput {
   page?: number | null;
   perPage?: number | null;
@@ -2571,22 +2556,6 @@ export interface GetResourceHubLinkResult {
   link: ResourceHubLink;
 }
 
-export interface GetTaskInput {
-  id: Id;
-  includeAssignees?: boolean;
-  includeMilestone?: boolean;
-  includeProject?: boolean;
-  includeCreator?: boolean;
-  includeProjectSpace?: boolean;
-  includePermissions?: boolean;
-  includeSubscriptionList?: boolean;
-  includeAvailableStatuses?: boolean;
-}
-
-export interface GetTaskResult {
-  task?: Task | null;
-}
-
 export interface GetThemeInput {}
 
 export interface GetThemeResult {
@@ -2679,6 +2648,14 @@ export interface GoalsListCheckInsResult {
   checkIns: GoalProgressUpdate[];
 }
 
+export interface GoalsListContributorsInput {
+  goalId?: Id | null;
+}
+
+export interface GoalsListContributorsResult {
+  contributors?: Person[] | null;
+}
+
 export interface GoalsListDiscussionsInput {
   goalId: Id;
 }
@@ -2722,14 +2699,6 @@ export interface IsSubscribedToResourceResult {
   subscribed: boolean;
 }
 
-export interface ListGoalContributorsInput {
-  goalId?: Id | null;
-}
-
-export interface ListGoalContributorsResult {
-  contributors?: Person[] | null;
-}
-
 export interface ListPossibleManagersInput {
   userId?: Id;
   query?: string | null;
@@ -2749,25 +2718,6 @@ export interface ListResourceHubNodesInput {
 export interface ListResourceHubNodesResult {
   nodes?: ResourceHubNode[] | null;
   draftNodes?: ResourceHubNode[] | null;
-}
-
-export interface ListSpaceToolsInput {
-  spaceId: Id;
-}
-
-export interface ListSpaceToolsResult {
-  tools: SpaceTools;
-}
-
-export interface ListTaskAssignablePeopleInput {
-  id: Id;
-  type: TaskType;
-  query?: string | null;
-  ignoredIds?: Id[] | null;
-}
-
-export interface ListTaskAssignablePeopleResult {
-  people: Person[] | null;
 }
 
 export interface ProjectDiscussionsGetInput {
@@ -2791,6 +2741,21 @@ export interface ProjectDiscussionsListInput {
 
 export interface ProjectDiscussionsListResult {
   discussions: CommentThread[];
+}
+
+export interface ProjectMilestonesGetInput {
+  id: Id;
+  includeComments?: boolean;
+  includeProject?: boolean;
+  includeCreator?: boolean;
+  includePermissions?: boolean;
+  includeSpace?: boolean;
+  includeSubscriptionList?: boolean;
+  includeAvailableStatuses?: boolean;
+}
+
+export interface ProjectMilestonesGetResult {
+  milestone: Milestone;
 }
 
 export interface ProjectMilestonesListTasksInput {
@@ -2897,6 +2862,15 @@ export interface ProjectsSearchParentGoalResult {
   goals: Goal[];
 }
 
+export interface ProjectsSearchPotentialContributorsInput {
+  projectId?: string | null;
+  query?: string | null;
+}
+
+export interface ProjectsSearchPotentialContributorsResult {
+  people?: Person[] | null;
+}
+
 export interface SearchPeopleInput {
   query?: string | null;
   ignoredIds?: string[] | null;
@@ -2905,26 +2879,6 @@ export interface SearchPeopleInput {
 }
 
 export interface SearchPeopleResult {
-  people?: Person[] | null;
-}
-
-export interface SearchPotentialSpaceMembersInput {
-  groupId?: string | null;
-  query?: string | null;
-  excludeIds?: string[] | null;
-  limit?: number | null;
-}
-
-export interface SearchPotentialSpaceMembersResult {
-  people?: Person[] | null;
-}
-
-export interface SearchProjectContributorCandidatesInput {
-  projectId?: string | null;
-  query?: string | null;
-}
-
-export interface SearchProjectContributorCandidatesResult {
   people?: Person[] | null;
 }
 
@@ -3006,6 +2960,14 @@ export interface SpacesListTasksResult {
   tasks: Task[];
 }
 
+export interface SpacesListToolsInput {
+  spaceId: Id;
+}
+
+export interface SpacesListToolsResult {
+  tools: SpaceTools;
+}
+
 export interface SpacesSearchInput {
   query: string;
   accessLevel?: AccessOptions;
@@ -3017,12 +2979,50 @@ export interface SpacesSearchResult {
   spaces: Space[];
 }
 
+export interface SpacesSearchPotentialMembersInput {
+  groupId?: string | null;
+  query?: string | null;
+  excludeIds?: string[] | null;
+  limit?: number | null;
+}
+
+export interface SpacesSearchPotentialMembersResult {
+  people?: Person[] | null;
+}
+
+export interface TasksGetInput {
+  id: Id;
+  includeAssignees?: boolean;
+  includeMilestone?: boolean;
+  includeProject?: boolean;
+  includeCreator?: boolean;
+  includeProjectSpace?: boolean;
+  includePermissions?: boolean;
+  includeSubscriptionList?: boolean;
+  includeAvailableStatuses?: boolean;
+}
+
+export interface TasksGetResult {
+  task?: Task | null;
+}
+
 export interface TasksListInput {
   projectId: Id;
 }
 
 export interface TasksListResult {
   tasks: Task[];
+}
+
+export interface TasksListPotentialAssigneesInput {
+  id: Id;
+  type: TaskType;
+  query?: string | null;
+  ignoredIds?: Id[] | null;
+}
+
+export interface TasksListPotentialAssigneesResult {
+  people: Person[] | null;
 }
 
 export interface AcknowledgeGoalProgressUpdateInput {
@@ -4859,10 +4859,6 @@ class ApiNamespaceRoot {
     return this.client.get("/get_me", input);
   }
 
-  async getMilestone(input: GetMilestoneInput): Promise<GetMilestoneResult> {
-    return this.client.get("/get_milestone", input);
-  }
-
   async getNotifications(input: GetNotificationsInput): Promise<GetNotificationsResult> {
     return this.client.get("/get_notifications", input);
   }
@@ -4911,10 +4907,6 @@ class ApiNamespaceRoot {
     return this.client.get("/get_resource_hub_link", input);
   }
 
-  async getTask(input: GetTaskInput): Promise<GetTaskResult> {
-    return this.client.get("/get_task", input);
-  }
-
   async getTheme(input: GetThemeInput): Promise<GetThemeResult> {
     return this.client.get("/get_theme", input);
   }
@@ -4935,10 +4927,6 @@ class ApiNamespaceRoot {
     return this.client.get("/is_subscribed_to_resource", input);
   }
 
-  async listGoalContributors(input: ListGoalContributorsInput): Promise<ListGoalContributorsResult> {
-    return this.client.get("/list_goal_contributors", input);
-  }
-
   async listPossibleManagers(input: ListPossibleManagersInput): Promise<ListPossibleManagersResult> {
     return this.client.get("/list_possible_managers", input);
   }
@@ -4947,28 +4935,8 @@ class ApiNamespaceRoot {
     return this.client.get("/list_resource_hub_nodes", input);
   }
 
-  async listSpaceTools(input: ListSpaceToolsInput): Promise<ListSpaceToolsResult> {
-    return this.client.get("/list_space_tools", input);
-  }
-
-  async listTaskAssignablePeople(input: ListTaskAssignablePeopleInput): Promise<ListTaskAssignablePeopleResult> {
-    return this.client.get("/list_task_assignable_people", input);
-  }
-
   async searchPeople(input: SearchPeopleInput): Promise<SearchPeopleResult> {
     return this.client.get("/search_people", input);
-  }
-
-  async searchPotentialSpaceMembers(
-    input: SearchPotentialSpaceMembersInput,
-  ): Promise<SearchPotentialSpaceMembersResult> {
-    return this.client.get("/search_potential_space_members", input);
-  }
-
-  async searchProjectContributorCandidates(
-    input: SearchProjectContributorCandidatesInput,
-  ): Promise<SearchProjectContributorCandidatesResult> {
-    return this.client.get("/search_project_contributor_candidates", input);
   }
 
   async acknowledgeGoalProgressUpdate(
@@ -5395,8 +5363,16 @@ class ApiNamespaceSpaces {
     return this.client.get("/spaces/list_tasks", input);
   }
 
+  async listTools(input: SpacesListToolsInput): Promise<SpacesListToolsResult> {
+    return this.client.get("/spaces/list_tools", input);
+  }
+
   async search(input: SpacesSearchInput): Promise<SpacesSearchResult> {
     return this.client.get("/spaces/search", input);
+  }
+
+  async searchPotentialMembers(input: SpacesSearchPotentialMembersInput): Promise<SpacesSearchPotentialMembersResult> {
+    return this.client.get("/spaces/search_potential_members", input);
   }
 
   async updateKanban(input: SpacesUpdateKanbanInput): Promise<SpacesUpdateKanbanResult> {
@@ -5459,8 +5435,16 @@ class ApiNamespaceProjectDiscussions {
 class ApiNamespaceTasks {
   constructor(private client: ApiClient) {}
 
+  async get(input: TasksGetInput): Promise<TasksGetResult> {
+    return this.client.get("/tasks/get", input);
+  }
+
   async list(input: TasksListInput): Promise<TasksListResult> {
     return this.client.get("/tasks/list", input);
+  }
+
+  async listPotentialAssignees(input: TasksListPotentialAssigneesInput): Promise<TasksListPotentialAssigneesResult> {
+    return this.client.get("/tasks/list_potential_assignees", input);
   }
 
   async create(input: TasksCreateInput): Promise<TasksCreateResult> {
@@ -5504,6 +5488,10 @@ class ApiNamespaceTasks {
 
 class ApiNamespaceProjectMilestones {
   constructor(private client: ApiClient) {}
+
+  async get(input: ProjectMilestonesGetInput): Promise<ProjectMilestonesGetResult> {
+    return this.client.get("/project_milestones/get", input);
+  }
 
   async listTasks(input: ProjectMilestonesListTasksInput): Promise<ProjectMilestonesListTasksResult> {
     return this.client.get("/project_milestones/list_tasks", input);
@@ -5567,6 +5555,12 @@ class ApiNamespaceProjects {
     return this.client.get("/projects/search_parent_goal", input);
   }
 
+  async searchPotentialContributors(
+    input: ProjectsSearchPotentialContributorsInput,
+  ): Promise<ProjectsSearchPotentialContributorsResult> {
+    return this.client.get("/projects/search_potential_contributors", input);
+  }
+
   async createMilestone(input: ProjectsCreateMilestoneInput): Promise<ProjectsCreateMilestoneResult> {
     return this.client.post("/projects/create_milestone", input);
   }
@@ -5625,6 +5619,10 @@ class ApiNamespaceGoals {
 
   async listCheckIns(input: GoalsListCheckInsInput): Promise<GoalsListCheckInsResult> {
     return this.client.get("/goals/list_check_ins", input);
+  }
+
+  async listContributors(input: GoalsListContributorsInput): Promise<GoalsListContributorsResult> {
+    return this.client.get("/goals/list_contributors", input);
   }
 
   async listDiscussions(input: GoalsListDiscussionsInput): Promise<GoalsListDiscussionsResult> {
@@ -5837,10 +5835,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.getMe(input);
   }
 
-  getMilestone(input: GetMilestoneInput): Promise<GetMilestoneResult> {
-    return this.apiNamespaceRoot.getMilestone(input);
-  }
-
   getNotifications(input: GetNotificationsInput): Promise<GetNotificationsResult> {
     return this.apiNamespaceRoot.getNotifications(input);
   }
@@ -5889,10 +5883,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.getResourceHubLink(input);
   }
 
-  getTask(input: GetTaskInput): Promise<GetTaskResult> {
-    return this.apiNamespaceRoot.getTask(input);
-  }
-
   getTheme(input: GetThemeInput): Promise<GetThemeResult> {
     return this.apiNamespaceRoot.getTheme(input);
   }
@@ -5913,10 +5903,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.isSubscribedToResource(input);
   }
 
-  listGoalContributors(input: ListGoalContributorsInput): Promise<ListGoalContributorsResult> {
-    return this.apiNamespaceRoot.listGoalContributors(input);
-  }
-
   listPossibleManagers(input: ListPossibleManagersInput): Promise<ListPossibleManagersResult> {
     return this.apiNamespaceRoot.listPossibleManagers(input);
   }
@@ -5925,26 +5911,8 @@ export class ApiClient {
     return this.apiNamespaceRoot.listResourceHubNodes(input);
   }
 
-  listSpaceTools(input: ListSpaceToolsInput): Promise<ListSpaceToolsResult> {
-    return this.apiNamespaceRoot.listSpaceTools(input);
-  }
-
-  listTaskAssignablePeople(input: ListTaskAssignablePeopleInput): Promise<ListTaskAssignablePeopleResult> {
-    return this.apiNamespaceRoot.listTaskAssignablePeople(input);
-  }
-
   searchPeople(input: SearchPeopleInput): Promise<SearchPeopleResult> {
     return this.apiNamespaceRoot.searchPeople(input);
-  }
-
-  searchPotentialSpaceMembers(input: SearchPotentialSpaceMembersInput): Promise<SearchPotentialSpaceMembersResult> {
-    return this.apiNamespaceRoot.searchPotentialSpaceMembers(input);
-  }
-
-  searchProjectContributorCandidates(
-    input: SearchProjectContributorCandidatesInput,
-  ): Promise<SearchProjectContributorCandidatesResult> {
-    return this.apiNamespaceRoot.searchProjectContributorCandidates(input);
   }
 
   acknowledgeGoalProgressUpdate(
@@ -6381,9 +6349,6 @@ export async function getKeyResource(input: GetKeyResourceInput): Promise<GetKey
 export async function getMe(input: GetMeInput): Promise<GetMeResult> {
   return defaultApiClient.getMe(input);
 }
-export async function getMilestone(input: GetMilestoneInput): Promise<GetMilestoneResult> {
-  return defaultApiClient.getMilestone(input);
-}
 export async function getNotifications(input: GetNotificationsInput): Promise<GetNotificationsResult> {
   return defaultApiClient.getNotifications(input);
 }
@@ -6424,9 +6389,6 @@ export async function getResourceHubFolder(input: GetResourceHubFolderInput): Pr
 export async function getResourceHubLink(input: GetResourceHubLinkInput): Promise<GetResourceHubLinkResult> {
   return defaultApiClient.getResourceHubLink(input);
 }
-export async function getTask(input: GetTaskInput): Promise<GetTaskResult> {
-  return defaultApiClient.getTask(input);
-}
 export async function getTheme(input: GetThemeInput): Promise<GetThemeResult> {
   return defaultApiClient.getTheme(input);
 }
@@ -6446,35 +6408,14 @@ export async function isSubscribedToResource(
 ): Promise<IsSubscribedToResourceResult> {
   return defaultApiClient.isSubscribedToResource(input);
 }
-export async function listGoalContributors(input: ListGoalContributorsInput): Promise<ListGoalContributorsResult> {
-  return defaultApiClient.listGoalContributors(input);
-}
 export async function listPossibleManagers(input: ListPossibleManagersInput): Promise<ListPossibleManagersResult> {
   return defaultApiClient.listPossibleManagers(input);
 }
 export async function listResourceHubNodes(input: ListResourceHubNodesInput): Promise<ListResourceHubNodesResult> {
   return defaultApiClient.listResourceHubNodes(input);
 }
-export async function listSpaceTools(input: ListSpaceToolsInput): Promise<ListSpaceToolsResult> {
-  return defaultApiClient.listSpaceTools(input);
-}
-export async function listTaskAssignablePeople(
-  input: ListTaskAssignablePeopleInput,
-): Promise<ListTaskAssignablePeopleResult> {
-  return defaultApiClient.listTaskAssignablePeople(input);
-}
 export async function searchPeople(input: SearchPeopleInput): Promise<SearchPeopleResult> {
   return defaultApiClient.searchPeople(input);
-}
-export async function searchPotentialSpaceMembers(
-  input: SearchPotentialSpaceMembersInput,
-): Promise<SearchPotentialSpaceMembersResult> {
-  return defaultApiClient.searchPotentialSpaceMembers(input);
-}
-export async function searchProjectContributorCandidates(
-  input: SearchProjectContributorCandidatesInput,
-): Promise<SearchProjectContributorCandidatesResult> {
-  return defaultApiClient.searchProjectContributorCandidates(input);
 }
 export async function acknowledgeGoalProgressUpdate(
   input: AcknowledgeGoalProgressUpdateInput,
@@ -6877,10 +6818,6 @@ export function useGetMe(input: GetMeInput): UseQueryHookResult<GetMeResult> {
   return useQuery<GetMeResult>(() => defaultApiClient.getMe(input));
 }
 
-export function useGetMilestone(input: GetMilestoneInput): UseQueryHookResult<GetMilestoneResult> {
-  return useQuery<GetMilestoneResult>(() => defaultApiClient.getMilestone(input));
-}
-
 export function useGetNotifications(input: GetNotificationsInput): UseQueryHookResult<GetNotificationsResult> {
   return useQuery<GetNotificationsResult>(() => defaultApiClient.getNotifications(input));
 }
@@ -6937,10 +6874,6 @@ export function useGetResourceHubLink(input: GetResourceHubLinkInput): UseQueryH
   return useQuery<GetResourceHubLinkResult>(() => defaultApiClient.getResourceHubLink(input));
 }
 
-export function useGetTask(input: GetTaskInput): UseQueryHookResult<GetTaskResult> {
-  return useQuery<GetTaskResult>(() => defaultApiClient.getTask(input));
-}
-
 export function useGetTheme(input: GetThemeInput): UseQueryHookResult<GetThemeResult> {
   return useQuery<GetThemeResult>(() => defaultApiClient.getTheme(input));
 }
@@ -6965,12 +6898,6 @@ export function useIsSubscribedToResource(
   return useQuery<IsSubscribedToResourceResult>(() => defaultApiClient.isSubscribedToResource(input));
 }
 
-export function useListGoalContributors(
-  input: ListGoalContributorsInput,
-): UseQueryHookResult<ListGoalContributorsResult> {
-  return useQuery<ListGoalContributorsResult>(() => defaultApiClient.listGoalContributors(input));
-}
-
 export function useListPossibleManagers(
   input: ListPossibleManagersInput,
 ): UseQueryHookResult<ListPossibleManagersResult> {
@@ -6983,32 +6910,8 @@ export function useListResourceHubNodes(
   return useQuery<ListResourceHubNodesResult>(() => defaultApiClient.listResourceHubNodes(input));
 }
 
-export function useListSpaceTools(input: ListSpaceToolsInput): UseQueryHookResult<ListSpaceToolsResult> {
-  return useQuery<ListSpaceToolsResult>(() => defaultApiClient.listSpaceTools(input));
-}
-
-export function useListTaskAssignablePeople(
-  input: ListTaskAssignablePeopleInput,
-): UseQueryHookResult<ListTaskAssignablePeopleResult> {
-  return useQuery<ListTaskAssignablePeopleResult>(() => defaultApiClient.listTaskAssignablePeople(input));
-}
-
 export function useSearchPeople(input: SearchPeopleInput): UseQueryHookResult<SearchPeopleResult> {
   return useQuery<SearchPeopleResult>(() => defaultApiClient.searchPeople(input));
-}
-
-export function useSearchPotentialSpaceMembers(
-  input: SearchPotentialSpaceMembersInput,
-): UseQueryHookResult<SearchPotentialSpaceMembersResult> {
-  return useQuery<SearchPotentialSpaceMembersResult>(() => defaultApiClient.searchPotentialSpaceMembers(input));
-}
-
-export function useSearchProjectContributorCandidates(
-  input: SearchProjectContributorCandidatesInput,
-): UseQueryHookResult<SearchProjectContributorCandidatesResult> {
-  return useQuery<SearchProjectContributorCandidatesResult>(() =>
-    defaultApiClient.searchProjectContributorCandidates(input),
-  );
 }
 
 export function useAcknowledgeGoalProgressUpdate(): UseMutationHookResult<
@@ -7675,8 +7578,6 @@ export default {
   useGetKeyResource,
   getMe,
   useGetMe,
-  getMilestone,
-  useGetMilestone,
   getNotifications,
   useGetNotifications,
   getPeople,
@@ -7701,8 +7602,6 @@ export default {
   useGetResourceHubFolder,
   getResourceHubLink,
   useGetResourceHubLink,
-  getTask,
-  useGetTask,
   getTheme,
   useGetTheme,
   getUnreadNotificationCount,
@@ -7713,22 +7612,12 @@ export default {
   useGlobalSearch,
   isSubscribedToResource,
   useIsSubscribedToResource,
-  listGoalContributors,
-  useListGoalContributors,
   listPossibleManagers,
   useListPossibleManagers,
   listResourceHubNodes,
   useListResourceHubNodes,
-  listSpaceTools,
-  useListSpaceTools,
-  listTaskAssignablePeople,
-  useListTaskAssignablePeople,
   searchPeople,
   useSearchPeople,
-  searchPotentialSpaceMembers,
-  useSearchPotentialSpaceMembers,
-  searchProjectContributorCandidates,
-  useSearchProjectContributorCandidates,
   acknowledgeGoalProgressUpdate,
   useAcknowledgeGoalProgressUpdate,
   acknowledgeProjectCheckIn,
@@ -8114,9 +8003,20 @@ export default {
     useList: (input: SpacesListInput) =>
       useQuery<SpacesListResult>(() => defaultApiClient.apiNamespaceSpaces.list(input)),
 
+    listTools: (input: SpacesListToolsInput) => defaultApiClient.apiNamespaceSpaces.listTools(input),
+    useListTools: (input: SpacesListToolsInput) =>
+      useQuery<SpacesListToolsResult>(() => defaultApiClient.apiNamespaceSpaces.listTools(input)),
+
     listMembers: (input: SpacesListMembersInput) => defaultApiClient.apiNamespaceSpaces.listMembers(input),
     useListMembers: (input: SpacesListMembersInput) =>
       useQuery<SpacesListMembersResult>(() => defaultApiClient.apiNamespaceSpaces.listMembers(input)),
+
+    searchPotentialMembers: (input: SpacesSearchPotentialMembersInput) =>
+      defaultApiClient.apiNamespaceSpaces.searchPotentialMembers(input),
+    useSearchPotentialMembers: (input: SpacesSearchPotentialMembersInput) =>
+      useQuery<SpacesSearchPotentialMembersResult>(() =>
+        defaultApiClient.apiNamespaceSpaces.searchPotentialMembers(input),
+      ),
 
     listTasks: (input: SpacesListTasksInput) => defaultApiClient.apiNamespaceSpaces.listTasks(input),
     useListTasks: (input: SpacesListTasksInput) =>
@@ -8193,6 +8093,16 @@ export default {
   },
 
   tasks: {
+    listPotentialAssignees: (input: TasksListPotentialAssigneesInput) =>
+      defaultApiClient.apiNamespaceTasks.listPotentialAssignees(input),
+    useListPotentialAssignees: (input: TasksListPotentialAssigneesInput) =>
+      useQuery<TasksListPotentialAssigneesResult>(() =>
+        defaultApiClient.apiNamespaceTasks.listPotentialAssignees(input),
+      ),
+
+    get: (input: TasksGetInput) => defaultApiClient.apiNamespaceTasks.get(input),
+    useGet: (input: TasksGetInput) => useQuery<TasksGetResult>(() => defaultApiClient.apiNamespaceTasks.get(input)),
+
     list: (input: TasksListInput) => defaultApiClient.apiNamespaceTasks.list(input),
     useList: (input: TasksListInput) => useQuery<TasksListResult>(() => defaultApiClient.apiNamespaceTasks.list(input)),
 
@@ -8255,6 +8165,10 @@ export default {
     useListTasks: (input: ProjectMilestonesListTasksInput) =>
       useQuery<ProjectMilestonesListTasksResult>(() => defaultApiClient.apiNamespaceProjectMilestones.listTasks(input)),
 
+    get: (input: ProjectMilestonesGetInput) => defaultApiClient.apiNamespaceProjectMilestones.get(input),
+    useGet: (input: ProjectMilestonesGetInput) =>
+      useQuery<ProjectMilestonesGetResult>(() => defaultApiClient.apiNamespaceProjectMilestones.get(input)),
+
     delete: (input: ProjectMilestonesDeleteInput) => defaultApiClient.apiNamespaceProjectMilestones.delete(input),
     useDelete: () =>
       useMutation<ProjectMilestonesDeleteInput, ProjectMilestonesDeleteResult>((input) =>
@@ -8298,6 +8212,13 @@ export default {
   },
 
   projects: {
+    searchPotentialContributors: (input: ProjectsSearchPotentialContributorsInput) =>
+      defaultApiClient.apiNamespaceProjects.searchPotentialContributors(input),
+    useSearchPotentialContributors: (input: ProjectsSearchPotentialContributorsInput) =>
+      useQuery<ProjectsSearchPotentialContributorsResult>(() =>
+        defaultApiClient.apiNamespaceProjects.searchPotentialContributors(input),
+      ),
+
     countChildren: (input: ProjectsCountChildrenInput) => defaultApiClient.apiNamespaceProjects.countChildren(input),
     useCountChildren: (input: ProjectsCountChildrenInput) =>
       useQuery<ProjectsCountChildrenResult>(() => defaultApiClient.apiNamespaceProjects.countChildren(input)),
@@ -8402,6 +8323,10 @@ export default {
 
     list: (input: GoalsListInput) => defaultApiClient.apiNamespaceGoals.list(input),
     useList: (input: GoalsListInput) => useQuery<GoalsListResult>(() => defaultApiClient.apiNamespaceGoals.list(input)),
+
+    listContributors: (input: GoalsListContributorsInput) => defaultApiClient.apiNamespaceGoals.listContributors(input),
+    useListContributors: (input: GoalsListContributorsInput) =>
+      useQuery<GoalsListContributorsResult>(() => defaultApiClient.apiNamespaceGoals.listContributors(input)),
 
     listCheckIns: (input: GoalsListCheckInsInput) => defaultApiClient.apiNamespaceGoals.listCheckIns(input),
     useListCheckIns: (input: GoalsListCheckInsInput) =>

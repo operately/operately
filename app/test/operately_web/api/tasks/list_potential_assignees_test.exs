@@ -1,11 +1,11 @@
-defmodule OperatelyWeb.Api.Queries.ListTaskAssignablePeopleTest do
+defmodule OperatelyWeb.Api.Tasks.ListPotentialAssigneesTest do
   use OperatelyWeb.TurboCase
 
   alias Operately.Support.Factory
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, :list_task_assignable_people, %{id: "123", type: "project"})
+      assert {401, _} = query(ctx.conn, [:tasks, :list_potential_assignees], %{id: "123", type: "project"})
     end
   end
 
@@ -24,7 +24,7 @@ defmodule OperatelyWeb.Api.Queries.ListTaskAssignablePeopleTest do
         |> Factory.add_space_member(:alice, :marketing, name: "Alice Johnson")
         |> Factory.add_space_member(:bob, :marketing, name: "Bob Smith")
 
-      assert {200, res} = query(ctx.conn, :list_task_assignable_people, %{id: Paths.project_id(ctx.website), type: "project"})
+      assert {200, res} = query(ctx.conn, [:tasks, :list_potential_assignees], %{id: Paths.project_id(ctx.website), type: "project"})
 
       # Should include the creator and the two space members
       assert length(res.people) == 3
@@ -36,7 +36,7 @@ defmodule OperatelyWeb.Api.Queries.ListTaskAssignablePeopleTest do
     test "returns not found for non-existent project", ctx do
       fake_id = Ecto.UUID.generate()
       assert {404, %{message: "The requested resource was not found"}} =
-        query(ctx.conn, :list_task_assignable_people, %{id: fake_id, type: "project"})
+        query(ctx.conn, [:tasks, :list_potential_assignees], %{id: fake_id, type: "project"})
     end
 
     test "returns not found if user doesn't have access to project", ctx do
@@ -49,7 +49,7 @@ defmodule OperatelyWeb.Api.Queries.ListTaskAssignablePeopleTest do
 
       # Current user (creator) should not have access to other company's project
       assert {404, %{message: "The requested resource was not found"}} =
-        query(ctx.conn, :list_task_assignable_people, %{
+        query(ctx.conn, [:tasks, :list_potential_assignees], %{
           id: Paths.project_id(other_ctx.private_project),
           type: "project"
         })
@@ -64,7 +64,7 @@ defmodule OperatelyWeb.Api.Queries.ListTaskAssignablePeopleTest do
         |> Factory.add_space_member(:suspended_person, :marketing, name: "Suspended Person")
         |> Factory.suspend_company_member(:suspended_person)
 
-      assert {200, res} = query(ctx.conn, :list_task_assignable_people, %{id: Paths.project_id(ctx.website), type: "project"})
+      assert {200, res} = query(ctx.conn, [:tasks, :list_potential_assignees], %{id: Paths.project_id(ctx.website), type: "project"})
 
       # Should only include creator and active_person, not suspended_person
       assert length(res.people) == 2
@@ -87,7 +87,7 @@ defmodule OperatelyWeb.Api.Queries.ListTaskAssignablePeopleTest do
     end
 
     test "returns all people with access to the project", ctx do
-      assert {200, res} = query(ctx.conn, :list_task_assignable_people, %{id: Paths.project_id(ctx.website), type: "project"})
+      assert {200, res} = query(ctx.conn, [:tasks, :list_potential_assignees], %{id: Paths.project_id(ctx.website), type: "project"})
 
       # Should include creator + 3 space members
       assert length(res.people) == 4
@@ -98,7 +98,7 @@ defmodule OperatelyWeb.Api.Queries.ListTaskAssignablePeopleTest do
     end
 
     test "filters people by name", ctx do
-      assert {200, res} = query(ctx.conn, :list_task_assignable_people, %{
+      assert {200, res} = query(ctx.conn, [:tasks, :list_potential_assignees], %{
         id: Paths.project_id(ctx.website),
         type: "project",
         query: "Mike"
@@ -109,7 +109,7 @@ defmodule OperatelyWeb.Api.Queries.ListTaskAssignablePeopleTest do
     end
 
     test "filters people by partial name match", ctx do
-      assert {200, res} = query(ctx.conn, :list_task_assignable_people, %{
+      assert {200, res} = query(ctx.conn, [:tasks, :list_potential_assignees], %{
         id: Paths.project_id(ctx.website),
         type: "project",
         query: "Smith"
@@ -120,7 +120,7 @@ defmodule OperatelyWeb.Api.Queries.ListTaskAssignablePeopleTest do
     end
 
     test "query is case insensitive", ctx do
-      assert {200, res} = query(ctx.conn, :list_task_assignable_people, %{
+      assert {200, res} = query(ctx.conn, [:tasks, :list_potential_assignees], %{
         id: Paths.project_id(ctx.website),
         type: "project",
         query: "doe"
@@ -131,7 +131,7 @@ defmodule OperatelyWeb.Api.Queries.ListTaskAssignablePeopleTest do
     end
 
     test "query matches partial names", ctx do
-      assert {200, res} = query(ctx.conn, :list_task_assignable_people, %{
+      assert {200, res} = query(ctx.conn, [:tasks, :list_potential_assignees], %{
         id: Paths.project_id(ctx.website),
         type: "project",
         query: "John"
@@ -144,7 +144,7 @@ defmodule OperatelyWeb.Api.Queries.ListTaskAssignablePeopleTest do
     end
 
     test "ignored_ids excludes people from results", ctx do
-      assert {200, res} = query(ctx.conn, :list_task_assignable_people, %{
+      assert {200, res} = query(ctx.conn, [:tasks, :list_potential_assignees], %{
         id: Paths.project_id(ctx.website),
         type: "project",
         ignored_ids: [Paths.person_id(ctx.john), Paths.person_id(ctx.mike)]
@@ -159,7 +159,7 @@ defmodule OperatelyWeb.Api.Queries.ListTaskAssignablePeopleTest do
     end
 
     test "combines query and ignored_ids filters", ctx do
-      assert {200, res} = query(ctx.conn, :list_task_assignable_people, %{
+      assert {200, res} = query(ctx.conn, [:tasks, :list_potential_assignees], %{
         id: Paths.project_id(ctx.website),
         type: "project",
         query: "John",
@@ -172,14 +172,14 @@ defmodule OperatelyWeb.Api.Queries.ListTaskAssignablePeopleTest do
     end
 
     test "returns people ordered by full name", ctx do
-      assert {200, res} = query(ctx.conn, :list_task_assignable_people, %{id: Paths.project_id(ctx.website), type: "project"})
+      assert {200, res} = query(ctx.conn, [:tasks, :list_potential_assignees], %{id: Paths.project_id(ctx.website), type: "project"})
 
       names = Enum.map(res.people, & &1.full_name)
       assert names == Enum.sort(names)
     end
 
     test "returns empty list when query matches no one", ctx do
-      assert {200, res} = query(ctx.conn, :list_task_assignable_people, %{
+      assert {200, res} = query(ctx.conn, [:tasks, :list_potential_assignees], %{
         id: Paths.project_id(ctx.website),
         type: "project",
         query: "NonExistentName"
@@ -200,7 +200,7 @@ defmodule OperatelyWeb.Api.Queries.ListTaskAssignablePeopleTest do
     end
 
     test "returns people with access to the space", ctx do
-      assert {200, res} = query(ctx.conn, :list_task_assignable_people, %{id: Paths.space_id(ctx.space), type: "space"})
+      assert {200, res} = query(ctx.conn, [:tasks, :list_potential_assignees], %{id: Paths.space_id(ctx.space), type: "space"})
 
       # Should include creator + 2 space members
       assert length(res.people) == 3
@@ -210,7 +210,7 @@ defmodule OperatelyWeb.Api.Queries.ListTaskAssignablePeopleTest do
     end
 
     test "filters people by name in space", ctx do
-      assert {200, res} = query(ctx.conn, :list_task_assignable_people, %{
+      assert {200, res} = query(ctx.conn, [:tasks, :list_potential_assignees], %{
         id: Paths.space_id(ctx.space),
         type: "space",
         query: "John"

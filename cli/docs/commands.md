@@ -73,7 +73,7 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `get_goals` | `op get_goals` | `GET` | `/api/external/v1/get_goals` |
 | `get_key_resource` | `op get_key_resource` | `GET` | `/api/external/v1/get_key_resource` |
 | `get_me` | `op get_me` | `GET` | `/api/external/v1/get_me` |
-| `get_milestone` | `op get_milestone` | `GET` | `/api/external/v1/get_milestone` |
+| `project_milestones get` | `op project_milestones get` | `GET` | `/api/external/v1/project_milestones/get` |
 | `get_notifications` | `op get_notifications` | `GET` | `/api/external/v1/get_notifications` |
 | `get_people` | `op get_people` | `GET` | `/api/external/v1/get_people` |
 | `get_person` | `op get_person` | `GET` | `/api/external/v1/get_person` |
@@ -90,7 +90,7 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `get_resource_hub_link` | `op get_resource_hub_link` | `GET` | `/api/external/v1/get_resource_hub_link` |
 | `get_space` | `op get_space` | `GET` | `/api/external/v1/get_space` |
 | `get_spaces` | `op get_spaces` | `GET` | `/api/external/v1/get_spaces` |
-| `get_task` | `op get_task` | `GET` | `/api/external/v1/get_task` |
+| `tasks get` | `op tasks get` | `GET` | `/api/external/v1/tasks/get` |
 | `get_tasks` | `op get_tasks` | `GET` | `/api/external/v1/get_tasks` |
 | `get_unread_notification_count` | `op get_unread_notification_count` | `GET` | `/api/external/v1/get_unread_notification_count` |
 | `get_work_map` | `op get_work_map` | `GET` | `/api/external/v1/get_work_map` |
@@ -125,11 +125,11 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `invite_guest` | `op invite_guest` | `POST` | `/api/external/v1/invite_guest` |
 | `is_subscribed_to_resource` | `op is_subscribed_to_resource` | `GET` | `/api/external/v1/is_subscribed_to_resource` |
 | `join_space` | `op join_space` | `POST` | `/api/external/v1/join_space` |
-| `list_goal_contributors` | `op list_goal_contributors` | `GET` | `/api/external/v1/list_goal_contributors` |
+| `goals list_contributors` | `op goals list_contributors` | `GET` | `/api/external/v1/goals/list_contributors` |
 | `list_possible_managers` | `op list_possible_managers` | `GET` | `/api/external/v1/list_possible_managers` |
 | `list_resource_hub_nodes` | `op list_resource_hub_nodes` | `GET` | `/api/external/v1/list_resource_hub_nodes` |
-| `list_space_tools` | `op list_space_tools` | `GET` | `/api/external/v1/list_space_tools` |
-| `list_task_assignable_people` | `op list_task_assignable_people` | `GET` | `/api/external/v1/list_task_assignable_people` |
+| `spaces list_tools` | `op spaces list_tools` | `GET` | `/api/external/v1/spaces/list_tools` |
+| `tasks list_potential_assignees` | `op tasks list_potential_assignees` | `GET` | `/api/external/v1/tasks/list_potential_assignees` |
 | `mark_all_notifications_as_read` | `op mark_all_notifications_as_read` | `POST` | `/api/external/v1/mark_all_notifications_as_read` |
 | `mark_notification_as_read` | `op mark_notification_as_read` | `POST` | `/api/external/v1/mark_notification_as_read` |
 | `mark_notifications_as_read` | `op mark_notifications_as_read` | `POST` | `/api/external/v1/mark_notifications_as_read` |
@@ -179,8 +179,8 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `restore_company_member` | `op restore_company_member` | `POST` | `/api/external/v1/restore_company_member` |
 | `resume_project` | `op resume_project` | `POST` | `/api/external/v1/resume_project` |
 | `search_people` | `op search_people` | `GET` | `/api/external/v1/search_people` |
-| `search_potential_space_members` | `op search_potential_space_members` | `GET` | `/api/external/v1/search_potential_space_members` |
-| `search_project_contributor_candidates` | `op search_project_contributor_candidates` | `GET` | `/api/external/v1/search_project_contributor_candidates` |
+| `spaces search_potential_members` | `op spaces search_potential_members` | `GET` | `/api/external/v1/spaces/search_potential_members` |
+| `projects search_potential_contributors` | `op projects search_potential_contributors` | `GET` | `/api/external/v1/projects/search_potential_contributors` |
 | `space_discussions create` | `op space_discussions create` | `POST` | `/api/external/v1/space_discussions/create` |
 | `space_discussions get` | `op space_discussions get` | `GET` | `/api/external/v1/space_discussions/get` |
 | `space_discussions list` | `op space_discussions list` | `GET` | `/api/external/v1/space_discussions/list` |

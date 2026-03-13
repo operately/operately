@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.ListSpaceTools do
+defmodule OperatelyWeb.Api.Spaces.ListTools do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 

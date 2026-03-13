@@ -10,6 +10,7 @@ defmodule OperatelyWeb.Api do
         query(:list, OperatelyWeb.Api.Goals.List)
         query(:list_access_members, OperatelyWeb.Api.Goals.ListAccessMembers)
         query(:list_check_ins, Q.ListGoalCheckIns)
+        query(:list_contributors, OperatelyWeb.Api.Goals.ListContributors)
         query(:list_discussions, OperatelyWeb.Api.Goals.ListDiscussions)
         query(:search_parent_goal, OperatelyWeb.Api.Goals.SearchParentGoal)
 
@@ -43,6 +44,7 @@ defmodule OperatelyWeb.Api do
         query(:get, OperatelyWeb.Api.Projects.Get)
         query(:list, OperatelyWeb.Api.Projects.List)
         query(:search_parent_goal, OperatelyWeb.Api.Projects.SearchParentGoal)
+        query(:search_potential_contributors, OperatelyWeb.Api.Projects.SearchPotentialContributors)
         query(:search, OperatelyWeb.Api.Projects.Search)
         query(:list_milestones, OperatelyWeb.Api.Projects.ListMilestones)
         query(:list_contributors, OperatelyWeb.Api.Projects.ListContributors)
@@ -61,6 +63,7 @@ defmodule OperatelyWeb.Api do
       end
 
       namespace(:project_milestones) do
+        query(:get, OperatelyWeb.Api.ProjectMilestones.Get)
         query(:list_tasks, OperatelyWeb.Api.ProjectMilestones.ListTasks)
 
         mutation(:update_title, OperatelyWeb.Api.ProjectMilestones.UpdateTitle)
@@ -72,7 +75,9 @@ defmodule OperatelyWeb.Api do
       end
 
       namespace(:tasks) do
+        query(:get, OperatelyWeb.Api.Tasks.Get)
         query(:list, OperatelyWeb.Api.Tasks.List)
+        query(:list_potential_assignees, OperatelyWeb.Api.Tasks.ListPotentialAssignees)
 
         mutation(:create, OperatelyWeb.Api.Tasks.Create)
         mutation(:delete, OperatelyWeb.Api.Tasks.Delete)
@@ -110,9 +115,11 @@ defmodule OperatelyWeb.Api do
         query(:get, OperatelyWeb.Api.Spaces.Get)
         query(:list, OperatelyWeb.Api.Spaces.List)
         query(:search, OperatelyWeb.Api.Spaces.Search)
+        query(:search_potential_members, OperatelyWeb.Api.Spaces.SearchPotentialMembers)
         query(:count_by_access_level, OperatelyWeb.Api.Spaces.CountByAccessLevel)
         query(:list_members, OperatelyWeb.Api.Spaces.ListMembers)
         query(:list_tasks, OperatelyWeb.Api.Spaces.ListTasks)
+        query(:list_tools, OperatelyWeb.Api.Spaces.ListTools)
         mutation(:update_task_statuses, OperatelyWeb.Api.Spaces.UpdateTaskStatuses)
         mutation(:update_kanban, OperatelyWeb.Api.Spaces.UpdateKanban)
         mutation(:update_tools, OperatelyWeb.Api.Spaces.UpdateTools)
@@ -129,7 +136,6 @@ defmodule OperatelyWeb.Api do
       query(:get_goal_progress_update, Q.GetGoalProgressUpdate)
       query(:get_key_resource, Q.GetKeyResource)
       query(:get_me, Q.GetMe)
-      query(:get_milestone, Q.GetMilestone)
       query(:get_notifications, Q.GetNotifications)
       query(:get_people, Q.GetPeople)
       query(:get_person, Q.GetPerson)
@@ -137,7 +143,6 @@ defmodule OperatelyWeb.Api do
       query(:get_project_check_ins, Q.GetProjectCheckIns)
       query(:get_project_contributor, Q.GetProjectContributor)
       query(:get_project_retrospective, Q.GetProjectRetrospective)
-      query(:get_task, Q.GetTask)
       query(:get_binded_people, Q.GetBindedPeople)
       query(:get_unread_notification_count, Q.GetUnreadNotificationCount)
       query(:get_resource_hub, Q.GetResourceHub)
@@ -145,17 +150,12 @@ defmodule OperatelyWeb.Api do
       query(:get_resource_hub_file, Q.GetResourceHubFile)
       query(:get_resource_hub_folder, Q.GetResourceHubFolder)
       query(:get_resource_hub_link, Q.GetResourceHubLink)
-      query(:list_goal_contributors, Q.ListGoalContributors)
       query(:list_resource_hub_nodes, Q.ListResourceHubNodes)
-      query(:list_space_tools, Q.ListSpaceTools)
       query(:search_people, Q.SearchPeople)
-      query(:search_potential_space_members, Q.SearchPotentialSpaceMembers)
-      query(:search_project_contributor_candidates, Q.SearchProjectContributorCandidates)
       query(:list_possible_managers, Q.ListPossibleManagers)
       query(:get_work_map, Q.GetWorkMap)
       query(:get_flat_work_map, Q.GetFlatWorkMap)
       query(:global_search, Q.GlobalSearch)
-      query(:list_task_assignable_people, Q.ListTaskAssignablePeople)
       query(:is_subscribed_to_resource, Q.IsSubscribedToResource)
 
       mutation(:archive_message, M.ArchiveMessage)
