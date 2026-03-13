@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetGoalTest do
+defmodule OperatelyWeb.Api.Goals.GetTest do
   alias Operately.Support.RichText
   alias Operately.Access.Binding
   alias OperatelyWeb.Paths
@@ -15,7 +15,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, :get_goal, %{})
+      assert {401, _} = query(ctx.conn, [:goals, :get], %{})
     end
   end
 
@@ -37,7 +37,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
 
       goal_id = Paths.goal_id(goal)
 
-      assert {404, %{message: msg} = _res} = query(ctx.conn, :get_goal, %{id: goal_id})
+      assert {404, %{message: msg} = _res} = query(ctx.conn, [:goals, :get], %{id: goal_id})
       assert msg == "The requested resource was not found"
     end
 
@@ -50,7 +50,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
 
       goal_id = Paths.goal_id(goal)
 
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: goal_id})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: goal_id})
       assert res.goal.id == goal_id
     end
 
@@ -66,7 +66,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
 
       goal_id = Paths.goal_id(goal)
 
-      assert {404, %{message: msg} = _res} = query(ctx.conn, :get_goal, %{id: goal_id})
+      assert {404, %{message: msg} = _res} = query(ctx.conn, [:goals, :get], %{id: goal_id})
       assert msg == "The requested resource was not found"
     end
 
@@ -82,7 +82,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
 
       goal_id = Paths.goal_id(goal)
 
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: goal_id})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: goal_id})
       assert res.goal.id == goal_id
     end
 
@@ -102,8 +102,8 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       account = Repo.preload(champion, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {404, _} = query(ctx.conn, :get_goal, %{id: goal_id})
-      assert {200, res} = query(conn, :get_goal, %{id: goal_id})
+      assert {404, _} = query(ctx.conn, [:goals, :get], %{id: goal_id})
+      assert {200, res} = query(conn, [:goals, :get], %{id: goal_id})
       assert res.goal.id == goal_id
     end
 
@@ -123,23 +123,23 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       account = Repo.preload(reviewer, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {404, _} = query(ctx.conn, :get_goal, %{id: goal_id})
-      assert {200, res} = query(conn, :get_goal, %{id: goal_id})
+      assert {404, _} = query(ctx.conn, [:goals, :get], %{id: goal_id})
+      assert {200, res} = query(conn, [:goals, :get], %{id: goal_id})
       assert res.goal.id == goal_id
     end
   end
 
-  describe "get_goals functionality" do
+  describe "goals/get functionality" do
     setup :register_and_log_in_account
 
     test "when id is not provided", ctx do
-      assert query(ctx.conn, :get_goal, %{}) == {400, %{error: "Bad request", message: "Missing required fields: id"}}
+      assert query(ctx.conn, [:goals, :get], %{}) == {400, %{error: "Bad request", message: "Missing required fields: id"}}
     end
 
     test "when goal does not exist", ctx do
       id = "goal-abc-#{Operately.ShortUuid.encode!(Ecto.UUID.generate())}"
 
-      assert query(ctx.conn, :get_goal, %{id: id}) == not_found_response()
+      assert query(ctx.conn, [:goals, :get], %{id: id}) == not_found_response()
     end
 
     test "include_unread_notifications", ctx do
@@ -147,11 +147,11 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       a = activity_fixture(author_id: ctx.person.id, action: "goal_created", content: %{goal_id: goal.id})
       n = notification_fixture(person_id: ctx.person.id, read: false, activity_id: a.id)
 
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal)})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(goal)})
       assert res.goal.notifications == []
 
       assert {200, res} =
-               query(ctx.conn, :get_goal, %{
+               query(ctx.conn, [:goals, :get], %{
                  id: Paths.goal_id(goal),
                  include_unread_notifications: true
                })
@@ -164,17 +164,17 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
       goal = Operately.Repo.preload(goal, [:parent_goal, :targets, :checks])
 
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal)})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(goal)})
       assert res.goal == Serializer.serialize(goal, level: :full)
     end
 
     test "include_champion", ctx do
       goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
 
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal)})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(goal)})
       assert res.goal.champion == nil
 
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_champion: true})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(goal), include_champion: true})
       assert res.goal.champion == Serializer.serialize(ctx.person, level: :essential)
     end
 
@@ -182,11 +182,11 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
 
       # not requested
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal)})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(goal)})
       assert res.goal.closed_by == nil
 
       # requested, but the goal is not closed
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_closed_by: true})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(goal), include_closed_by: true})
       assert res.goal.closed_by == nil
 
       retrospective = RichText.rich_text("Writing a retrospective")
@@ -201,7 +201,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
           subscription_parent_type: :comment_thread
         })
 
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_closed_by: true})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(goal), include_closed_by: true})
       assert res.goal.closed_by == Serializer.serialize(ctx.person, level: :essential)
     end
 
@@ -209,11 +209,11 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
 
       # not requested
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal)})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(goal)})
       assert res.goal.last_check_in == nil
 
       # requested, but the goal has no check-ins
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_last_check_in: true})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(goal), include_last_check_in: true})
       assert res.goal.last_check_in == nil
 
       update = goal_update_fixture(ctx.person, goal)
@@ -222,7 +222,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
 
       goal = Operately.Goals.Goal.changeset(goal, %{last_update_id: update.id}) |> Operately.Repo.update!()
 
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_last_check_in: true})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(goal), include_last_check_in: true})
       assert res.goal.last_check_in == Serializer.serialize(update, level: :full)
     end
 
@@ -230,10 +230,10 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
 
       # not requested
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal)})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(goal)})
       assert res.goal.permissions == nil
 
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_permissions: true})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(goal), include_permissions: true})
       assert res.goal.permissions == Map.from_struct(Operately.Goals.Permissions.calculate(Binding.full_access()))
     end
 
@@ -241,11 +241,11 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
 
       # not requested
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal)})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(goal)})
       assert res.goal.projects == nil
 
       # requested, but the goal has no projects
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_projects: true})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(goal), include_projects: true})
       assert res.goal.projects == []
 
       project1 = project_fixture(company_id: ctx.company.id, name: "Project 1", creator_id: ctx.person.id, group_id: ctx.company.company_space_id)
@@ -258,7 +258,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       project2 = Operately.Repo.one(from p in Operately.Projects.Project, where: p.id == ^project2.id, preload: [:champion, :reviewer])
 
       # requested, but the goal has no projects
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_projects: true})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(goal), include_projects: true})
       assert length(res.goal.projects) == 2
       expected1 = Serializer.serialize(project1, level: :full) |> normalize_serialized_project()
       expected2 = Serializer.serialize(project2, level: :full) |> normalize_serialized_project()
@@ -270,10 +270,10 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
 
       # not requested
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal)})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(goal)})
       assert res.goal.reviewer == nil
 
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_reviewer: true})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(goal), include_reviewer: true})
       assert res.goal.reviewer == Serializer.serialize(ctx.person, level: :essential)
     end
 
@@ -281,12 +281,12 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
 
       # not requested
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal)})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(goal)})
       assert res.goal.space == nil
 
       space = Operately.Groups.get_group!(ctx.company.company_space_id)
 
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_space: true})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(goal), include_space: true})
       assert res.goal.space == Serializer.serialize(space, level: :essential)
     end
 
@@ -295,7 +295,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
 
       goal = Operately.Repo.preload(goal, :targets)
 
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal)})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(goal)})
       assert res.goal.targets == Serializer.serialize(goal.targets, level: :essential)
     end
 
@@ -312,10 +312,10 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
         })
 
       # not requested
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal)})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(goal)})
       refute res.goal.access_levels
 
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_access_levels: true})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(goal), include_access_levels: true})
 
       assert res.goal.access_levels.public == Binding.view_access()
       assert res.goal.access_levels.company == Binding.edit_access()
@@ -362,20 +362,20 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
         })
 
       # not requested
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(public_goal)})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(public_goal)})
       refute res.goal.privacy
 
       # requested
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(public_goal), include_privacy: true})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(public_goal), include_privacy: true})
       assert res.goal.privacy == "public"
 
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(internal_goal), include_privacy: true})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(internal_goal), include_privacy: true})
       assert res.goal.privacy == "internal"
 
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(confidential_goal), include_privacy: true})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(confidential_goal), include_privacy: true})
       assert res.goal.privacy == "confidential"
 
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(secret_goal), include_privacy: true})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(secret_goal), include_privacy: true})
       assert res.goal.privacy == "secret"
     end
 
@@ -391,11 +391,11 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
         |> Factory.add_space_member(:member3, :space)
         |> Factory.log_in_person(:creator)
 
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(ctx.goal)})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(ctx.goal)})
 
       refute res.goal.potential_subscribers
 
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(ctx.goal), include_potential_subscribers: true})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(ctx.goal), include_potential_subscribers: true})
       subs = res.goal.potential_subscribers
 
       assert length(subs) == 5
@@ -426,7 +426,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
         |> Factory.add_space_member(:ai, :space, person_type: :ai)
         |> Factory.log_in_person(:creator)
 
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(ctx.goal), include_potential_subscribers: true})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(ctx.goal), include_potential_subscribers: true})
 
       subs = res.goal.potential_subscribers
 
@@ -451,7 +451,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
         |> Factory.add_space_member(:ai, :space, person_type: :ai)
         |> Factory.log_in_person(:creator)
 
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(ctx.goal), include_space_members: true})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(ctx.goal), include_space_members: true})
       members = res.goal.space.members
 
       [ctx.creator, ctx.member1, ctx.member2, ctx.guest]
@@ -481,7 +481,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
 
       ctx_creator = Factory.log_in_person(ctx, :creator)
 
-      assert {200, res} = query(ctx_creator.conn, :get_goal, %{
+      assert {200, res} = query(ctx_creator.conn, [:goals, :get], %{
         id: Paths.goal_id(ctx.goal),
         include_space: true,
         include_space_members: true,
@@ -496,7 +496,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
 
       ctx_champion = Factory.log_in_person(ctx, :champion)
 
-      assert {200, res} = query(ctx_champion.conn, :get_goal, %{
+      assert {200, res} = query(ctx_champion.conn, [:goals, :get], %{
         id: Paths.goal_id(ctx.goal),
         include_space: true,
         include_space_members: true,
@@ -532,7 +532,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
           company_access_level: Binding.view_access()
         })
 
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(child_goal)})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(child_goal)})
       assert res.goal.parent_goal.id == Paths.goal_id(parent_goal)
     end
 
@@ -556,7 +556,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       assert child_goal.parent_goal_id == parent_goal.id
 
       # But the API should not return the parent goal since user has no access
-      assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(child_goal)})
+      assert {200, res} = query(ctx.conn, [:goals, :get], %{id: Paths.goal_id(child_goal)})
       assert res.goal.parent_goal == nil
     end
   end

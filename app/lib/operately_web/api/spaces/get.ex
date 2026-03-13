@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetSpace do
+defmodule OperatelyWeb.Api.Spaces.Get do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 

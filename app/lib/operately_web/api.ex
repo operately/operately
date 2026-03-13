@@ -6,6 +6,8 @@ defmodule OperatelyWeb.Api do
       alias OperatelyWeb.Api.Subscriptions, as: S
 
       namespace(:goals) do
+        query(:get, OperatelyWeb.Api.Goals.Get)
+        query(:list, OperatelyWeb.Api.Goals.List)
         query(:list_access_members, OperatelyWeb.Api.Goals.ListAccessMembers)
         query(:list_check_ins, Q.ListGoalCheckIns)
         query(:list_discussions, OperatelyWeb.Api.Goals.ListDiscussions)
@@ -38,6 +40,8 @@ defmodule OperatelyWeb.Api do
       end
 
       namespace(:projects) do
+        query(:get, OperatelyWeb.Api.Projects.Get)
+        query(:list, OperatelyWeb.Api.Projects.List)
         query(:search_parent_goal, OperatelyWeb.Api.Projects.SearchParentGoal)
         query(:search, OperatelyWeb.Api.Projects.Search)
         query(:list_milestones, OperatelyWeb.Api.Projects.ListMilestones)
@@ -103,6 +107,8 @@ defmodule OperatelyWeb.Api do
       end
 
       namespace(:spaces) do
+        query(:get, OperatelyWeb.Api.Spaces.Get)
+        query(:list, OperatelyWeb.Api.Spaces.List)
         query(:search, OperatelyWeb.Api.Spaces.Search)
         query(:count_by_access_level, OperatelyWeb.Api.Spaces.CountByAccessLevel)
         query(:list_members, OperatelyWeb.Api.Spaces.ListMembers)
@@ -120,23 +126,17 @@ defmodule OperatelyWeb.Api do
       query(:get_comments, Q.GetComments)
       query(:get_companies, Q.GetCompanies)
       query(:get_company, Q.GetCompany)
-      query(:get_goal, Q.GetGoal)
       query(:get_goal_progress_update, Q.GetGoalProgressUpdate)
-      query(:get_goals, Q.GetGoals)
       query(:get_key_resource, Q.GetKeyResource)
       query(:get_me, Q.GetMe)
       query(:get_milestone, Q.GetMilestone)
       query(:get_notifications, Q.GetNotifications)
       query(:get_people, Q.GetPeople)
       query(:get_person, Q.GetPerson)
-      query(:get_project, Q.GetProject)
       query(:get_project_check_in, Q.GetProjectCheckIn)
       query(:get_project_check_ins, Q.GetProjectCheckIns)
-      query(:get_projects, Q.GetProjects)
       query(:get_project_contributor, Q.GetProjectContributor)
       query(:get_project_retrospective, Q.GetProjectRetrospective)
-      query(:get_space, Q.GetSpace)
-      query(:get_spaces, Q.GetSpaces)
       query(:get_task, Q.GetTask)
       query(:get_tasks, Q.GetTasks)
       query(:get_binded_people, Q.GetBindedPeople)

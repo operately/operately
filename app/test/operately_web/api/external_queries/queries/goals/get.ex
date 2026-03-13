@@ -1,8 +1,10 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.GetGoal do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.Goals.Get do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
   alias OperatelyWeb.Paths
+
+  def query_name, do: "goals/get"
 
   @impl true
   def setup(ctx) do

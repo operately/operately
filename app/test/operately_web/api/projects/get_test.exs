@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetProjectTest do
+defmodule OperatelyWeb.Api.Projects.GetTest do
   use OperatelyWeb.TurboCase
 
   import Operately.ProjectsFixtures
@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, :get_projects, %{})
+      assert {401, _} = query(ctx.conn, [:projects, :get], %{})
     end
 
     test "it is not possible to get a project from another company", ctx do
@@ -23,8 +23,8 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       other_ctx = register_and_log_in_account(ctx)
       other_project = create_project(other_ctx, company_id: other_ctx.company.id, creator_id: other_ctx.person.id)
 
-      assert query(ctx.conn, :get_project, %{id: Paths.project_id(other_project)}) == not_found_response()
-      assert {200, _} = query(ctx.conn, :get_project, %{id: Paths.project_id(project)})
+      assert query(ctx.conn, [:projects, :get], %{id: Paths.project_id(other_project)}) == not_found_response()
+      assert {200, _} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project)})
     end
   end
 
@@ -40,14 +40,14 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
     test "company members have no access", ctx do
       p = create_project(ctx, company_access_level: Binding.no_access())
 
-      assert {404, %{message: msg} = _res} = query(ctx.conn, :get_project, %{id: Paths.project_id(p)})
+      assert {404, %{message: msg} = _res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(p)})
       assert msg == "The requested resource was not found"
     end
 
     test "company members have access", ctx do
       p = create_project(ctx, company_access_level: Binding.view_access())
 
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(p)})
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(p)})
       expected = Serializer.serialize(p, level: :full) |> normalize_serialized_project()
       assert res.project == expected
     end
@@ -56,7 +56,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       add_person_to_space(ctx)
       p = create_project(ctx, space_access_level: Binding.no_access())
 
-      assert {404, %{message: msg} = _res} = query(ctx.conn, :get_project, %{id: Paths.project_id(p)})
+      assert {404, %{message: msg} = _res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(p)})
       assert msg == "The requested resource was not found"
     end
 
@@ -64,7 +64,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       add_person_to_space(ctx)
       p = create_project(ctx, space_access_level: Binding.view_access())
 
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(p)})
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(p)})
       expected = Serializer.serialize(p, level: :full) |> normalize_serialized_project()
       assert res.project == expected
     end
@@ -77,11 +77,11 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       account = Repo.preload(champion, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, res} = query(conn, :get_project, %{id: Paths.project_id(p)})
+      assert {200, res} = query(conn, [:projects, :get], %{id: Paths.project_id(p)})
       assert res.project.id == Serializer.serialize(p).id
 
       # another user's request
-      assert {404, %{message: msg} = _res} = query(ctx.conn, :get_project, %{id: Paths.project_id(p)})
+      assert {404, %{message: msg} = _res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(p)})
       assert msg == "The requested resource was not found"
     end
 
@@ -93,18 +93,18 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       account = Repo.preload(reviewer, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, res} = query(conn, :get_project, %{id: Paths.project_id(p)})
+      assert {200, res} = query(conn, [:projects, :get], %{id: Paths.project_id(p)})
       assert res.project.id == Serializer.serialize(p).id
 
       # another user's request
-      assert {404, %{message: msg} = _res} = query(ctx.conn, :get_project, %{id: Paths.project_id(p)})
+      assert {404, %{message: msg} = _res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(p)})
       assert msg == "The requested resource was not found"
     end
 
     test "space is not loaded when requester cannot access it", ctx do
       project = create_project(ctx, group_id: ctx.space.id, company_access_level: Binding.view_access())
 
-      assert {200, res} = query(ctx.conn, :get_project, %{
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{
         id: Paths.project_id(project),
         include_space: true,
       })
@@ -120,7 +120,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       account = Repo.preload(space_member, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, res} = query(conn, :get_project, %{
+      assert {200, res} = query(conn, [:projects, :get], %{
         id: Paths.project_id(project),
         include_space: true,
       })
@@ -142,7 +142,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
 
       {:ok, project} = Operately.Projects.update_project(project, %{goal_id: goal.id})
 
-      assert {200, res} = query(ctx.conn, :get_project, %{
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{
         id: Paths.project_id(project),
         include_goal: true,
       })
@@ -152,7 +152,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       account = Repo.preload(goal_champion, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, res} = query(conn, :get_project, %{
+      assert {200, res} = query(conn, [:projects, :get], %{
         id: Paths.project_id(project),
         include_goal: true,
       })
@@ -161,19 +161,19 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
     end
   end
 
-  describe "get_project functionality" do
+  describe "projects/get functionality" do
     setup :register_and_log_in_account
 
     test "get a project with nothing included", ctx do
       project = create_project(ctx)
 
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project)})
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project)})
       expected = Serializer.serialize(project, level: :full) |> normalize_serialized_project()
       assert res.project == expected
     end
 
     test "returns 400 if id is not provided", ctx do
-      assert query(ctx.conn, :get_project, %{}) == {400, %{error: "Bad request", message: "id is required"}}
+      assert query(ctx.conn, [:projects, :get], %{}) == {400, %{error: "Bad request", message: "id is required"}}
     end
 
     test "include_unread_notifications", ctx do
@@ -181,10 +181,10 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       a = activity_fixture(author_id: ctx.person.id, action: "project_created", content: %{project_id: project.id})
       n = notification_fixture(person_id: ctx.person.id, read: false, activity_id: a.id)
 
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project)})
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project)})
       assert res.project.notifications == []
 
-      assert {200, res} = query(ctx.conn, :get_project, %{
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{
         id: Paths.project_id(project),
         include_unread_notifications: true,
       })
@@ -197,29 +197,29 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       space = group_fixture(ctx.person, company_id: ctx.company.id)
       project = create_project(ctx, group_id: space.id)
 
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project), include_space: true})
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project), include_space: true})
       assert res.project.space == Serializer.serialize(space, level: :essential)
 
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project)})
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project)})
       assert res.project.space == nil
     end
 
     test "include_retrospective", ctx do
       project = create_project(ctx)
 
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project), include_retrospective: true})
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project), include_retrospective: true})
       refute res.project.retrospective
 
       retrospective = retrospective_fixture(%{author_id: ctx.person.id, project_id: project.id})
 
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project), include_retrospective: true})
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project), include_retrospective: true})
       assert res.project.retrospective == Serializer.serialize(retrospective)
     end
 
     test "include_contributors", ctx do
       project = create_project(ctx)
 
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project), include_contributors: true})
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project), include_contributors: true})
       assert length(res.project.contributors) == 1
       assert res.project.contributors == Serializer.serialize(Operately.Projects.list_project_contributors(project), level: :essential)
 
@@ -231,7 +231,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
         permissions: Binding.edit_access()
       })
 
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project), include_contributors: true})
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project), include_contributors: true})
       assert length(res.project.contributors) == 2
       assert res.project.contributors == Serializer.serialize(Operately.Projects.list_project_contributors(project), level: :essential)
     end
@@ -245,7 +245,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
         |> Factory.add_project_contributor(:guest, :project, person_type: :guest)
         |> Factory.add_project_contributor(:ai, :project, person_type: :ai)
 
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(ctx.project), include_contributors: true})
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(ctx.project), include_contributors: true})
 
       contributors = res.project.contributors
 
@@ -260,26 +260,26 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
     test "include_goal", ctx do
       project = create_project(ctx)
 
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project), include_goal: true})
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project), include_goal: true})
       assert res.project.goal == nil
 
       goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
       {:ok, project} = Operately.Projects.update_project(project, %{goal_id: goal.id})
 
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project), include_goal: true})
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project), include_goal: true})
       assert res.project.goal == Serializer.serialize(goal, level: :essential)
 
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project)})
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project)})
       assert res.project.goal == nil
     end
 
     test "include_champion", ctx do
       project = create_project(ctx)
 
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project)})
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project)})
       assert res.project.champion == nil
 
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project), include_champion: true})
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project), include_champion: true})
       assert res.project.champion == Serializer.serialize(ctx.person, level: :essential)
     end
 
@@ -287,10 +287,10 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       person = create_person(ctx)
       project = create_project(ctx, reviewer_id: person.id)
 
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project)})
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project)})
       assert res.project.reviewer == nil
 
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project), include_reviewer: true})
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project), include_reviewer: true})
       assert res.project.reviewer == Serializer.serialize(person, level: :essential)
     end
 
@@ -298,29 +298,29 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       project = create_project(ctx)
       {:ok, project} = Operately.Projects.archive_project(ctx.person, project)
 
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project)})
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project)})
       assert res.project.is_archived == true
     end
 
     test "include_permissions", ctx do
       project = create_project(ctx)
 
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project)})
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project)})
       assert res.project.permissions == nil
 
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project), include_permissions: true})
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project), include_permissions: true})
       assert res.project.permissions == Map.from_struct(Operately.Projects.Permissions.calculate(Binding.full_access()))
     end
 
     test "include_key_resources", ctx do
       project = create_project(ctx)
 
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project)})
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project)})
       assert res.project.key_resources == nil
 
       key_resource = key_resource_fixture(project_id: project.id)
       key_resource = Operately.Repo.preload(key_resource, :project)
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project), include_key_resources: true})
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project), include_key_resources: true})
       assert res.project.key_resources == [Serializer.serialize(key_resource, level: :essential)]
     end
 
@@ -333,10 +333,10 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
         space_access_level: Binding.full_access(),
       })
 
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project)})
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project)})
       refute res.project.access_levels
 
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project), include_access_levels: true})
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project), include_access_levels: true})
 
       assert res.project.access_levels.public == Binding.view_access()
       assert res.project.access_levels.company == Binding.edit_access()
@@ -346,11 +346,11 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
     test "include_contributors_access_levels", ctx do
       project = create_project(ctx)
 
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(project)})
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(project)})
 
       refute Map.has_key?(res.project, :contributor)
 
-      assert {200, res} = query(ctx.conn, :get_project, %{
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{
         id: Paths.project_id(project),
         include_contributors: true,
         include_contributors_access_levels: true
@@ -374,11 +374,11 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
         |> Factory.add_project_contributor(:contrib3, :project)
 
 
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(ctx.project)})
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(ctx.project)})
 
       refute res.project.potential_subscribers
 
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(ctx.project), include_potential_subscribers: true})
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(ctx.project), include_potential_subscribers: true})
 
       [ctx.reviewer, ctx.champion]
       |> Enum.each(fn contrib ->
@@ -404,7 +404,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
         |> Factory.add_project_contributor(:guest, :project, person_type: :guest)
         |> Factory.add_project_contributor(:ai, :project, person_type: :ai)
 
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(ctx.project), include_potential_subscribers: true})
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(ctx.project), include_potential_subscribers: true})
 
       subs = res.project.potential_subscribers
 
@@ -425,12 +425,12 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
         |> Factory.add_project_milestone(:milestone2, :project)
 
       # doesn't include milestone
-      assert {200, res} = query(ctx.conn, :get_project, %{id: Paths.project_id(ctx.project)})
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{id: Paths.project_id(ctx.project)})
 
       refute res.project.milestones
 
       # include milestones
-      assert {200, res} = query(ctx.conn, :get_project, %{
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{
         id: Paths.project_id(ctx.project),
         include_milestones: true,
       })
@@ -442,7 +442,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
       # doesn't include archived milestones
       {:ok, _} = Repo.soft_delete(ctx.milestone1)
 
-      assert {200, res} = query(ctx.conn, :get_project, %{
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{
         id: Paths.project_id(ctx.project),
         include_milestones: true,
       })
@@ -465,7 +465,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectTest do
         |> Factory.add_comment(:comment3, :milestone1)
 
       # include milestones with comments_count
-      assert {200, res} = query(ctx.conn, :get_project, %{
+      assert {200, res} = query(ctx.conn, [:projects, :get], %{
         id: Paths.project_id(ctx.project),
         include_milestones: true,
       })

@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
+defmodule OperatelyWeb.Api.Projects.ListTest do
   use OperatelyWeb.TurboCase
 
   import Operately.PeopleFixtures
@@ -12,7 +12,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, :get_projects, %{})
+      assert {401, _} = query(ctx.conn, [:projects, :list], %{})
     end
   end
 
@@ -31,12 +31,12 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
         create_project(ctx, company_access: Binding.no_access())
       end)
 
-      assert {200, res} = query(ctx.conn, :get_projects, %{space_id: ctx.space_id})
+      assert {200, res} = query(ctx.conn, [:projects, :list], %{space_id: ctx.space_id})
       assert length(res.projects) == 0
 
       project = create_project(ctx, company_access: Binding.view_access())
 
-      assert {200, res} = query(ctx.conn, :get_projects, %{space_id: ctx.space_id})
+      assert {200, res} = query(ctx.conn, [:projects, :list], %{space_id: ctx.space_id})
       assert_projects(res, [project])
     end
 
@@ -46,7 +46,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
         create_project(ctx, company_access: Binding.view_access())
       end)
 
-      assert {200, res} = query(ctx.conn, :get_projects, %{space_id: ctx.space_id})
+      assert {200, res} = query(ctx.conn, [:projects, :list], %{space_id: ctx.space_id})
       assert_projects(res, projects)
     end
 
@@ -57,12 +57,12 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
         create_project(ctx, space_access: Binding.no_access())
       end)
 
-      assert {200, res} = query(ctx.conn, :get_projects, %{space_id: ctx.space_id})
+      assert {200, res} = query(ctx.conn, [:projects, :list], %{space_id: ctx.space_id})
       assert length(res.projects) == 0
 
       project = create_project(ctx, space_access: Binding.view_access())
 
-      assert {200, res} = query(ctx.conn, :get_projects, %{space_id: ctx.space_id})
+      assert {200, res} = query(ctx.conn, [:projects, :list], %{space_id: ctx.space_id})
       assert_projects(res, [project])
     end
 
@@ -73,7 +73,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
         create_project(ctx, space_access: Binding.view_access())
       end)
 
-      assert {200, res} = query(ctx.conn, :get_projects, %{space_id: ctx.space_id})
+      assert {200, res} = query(ctx.conn, [:projects, :list], %{space_id: ctx.space_id})
       assert_projects(res, projects)
     end
 
@@ -85,11 +85,11 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
       account = Repo.preload(champion, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, res} = query(conn, :get_projects, %{space_id: ctx.space_id})
+      assert {200, res} = query(conn, [:projects, :list], %{space_id: ctx.space_id})
       assert_projects(res, [project])
 
       # another user's request
-      assert {200, res} = query(ctx.conn, :get_projects, %{space_id: ctx.space_id})
+      assert {200, res} = query(ctx.conn, [:projects, :list], %{space_id: ctx.space_id})
       assert length(res.projects) == 0
     end
 
@@ -101,16 +101,16 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
       account = Repo.preload(reviewer, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, res} = query(conn, :get_projects, %{space_id: ctx.space_id})
+      assert {200, res} = query(conn, [:projects, :list], %{space_id: ctx.space_id})
       assert_projects(res, [project])
 
       # another user's request
-      assert {200, res} = query(ctx.conn, :get_projects, %{space_id: ctx.space_id})
+      assert {200, res} = query(ctx.conn, [:projects, :list], %{space_id: ctx.space_id})
       assert length(res.projects) == 0
     end
   end
 
-  describe "get_projects functionality" do
+  describe "projects/list functionality" do
     setup :register_and_log_in_account
 
     test "calling with no input filters returns all projects from the company", ctx do
@@ -118,7 +118,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
       project2 = project_fixture(company_id: ctx.company.id, name: "Project 2", creator_id: ctx.person.id, group_id: ctx.company.company_space_id)
       project3 = project_fixture(company_id: ctx.company.id, name: "Project 3", creator_id: ctx.person.id, group_id: ctx.company.company_space_id)
 
-      assert {200, res} = query(ctx.conn, :get_projects, %{})
+      assert {200, res} = query(ctx.conn, [:projects, :list], %{})
       expected = serialize([project1, project2, project3], level: :full) |> normalize_serialized_projects()
       assert res.projects == expected
     end
@@ -128,7 +128,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
       project = Map.put(project, :champion_id, ctx.person.id)
       project = Map.put(project, :champion, ctx.person)
 
-      assert {200, res} = query(ctx.conn, :get_projects, %{include_champion: true})
+      assert {200, res} = query(ctx.conn, [:projects, :list], %{include_champion: true})
       expected = serialize([project], level: :full) |> normalize_serialized_projects()
       assert res.projects == expected
     end
@@ -136,12 +136,12 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
     test "include_reviewer", ctx do
       project_fixture(company_id: ctx.company.id, name: "Project 1", creator_id: ctx.person.id, reviewer_id: ctx.person.id, group_id: ctx.company.company_space_id)
 
-      assert {200, res} = query(ctx.conn, :get_projects, %{})
+      assert {200, res} = query(ctx.conn, [:projects, :list], %{})
 
       assert length(res.projects) == 1
       refute hd(res.projects).reviewer
 
-      assert {200, res} = query(ctx.conn, :get_projects, %{include_reviewer: true})
+      assert {200, res} = query(ctx.conn, [:projects, :list], %{include_reviewer: true})
 
       assert length(res.projects) == 1
       assert hd(res.projects).reviewer == serialize(ctx.person)
@@ -151,10 +151,10 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
       space = group_fixture(ctx.person, company_id: ctx.company.id, name: "Space 1")
       project_fixture(company_id: ctx.company.id, name: "Project 1", creator_id: ctx.person.id, group_id: space.id)
 
-      assert {200, res} = query(ctx.conn, :get_projects, %{})
+      assert {200, res} = query(ctx.conn, [:projects, :list], %{})
       assert res.projects |> hd() |> Map.get(:space) == nil
 
-      assert {200, res} = query(ctx.conn, :get_projects, %{include_space: true})
+      assert {200, res} = query(ctx.conn, [:projects, :list], %{include_space: true})
       assert res.projects |> hd() |> Map.get(:space) == serialize(space, level: :essential)
     end
 
@@ -163,7 +163,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
       project = project_fixture(company_id: ctx.company.id, name: "Project 1", creator_id: ctx.person.id, group_id: ctx.company.company_space_id, goal_id: goal.id)
       project = Map.put(project, :goal, goal)
 
-      assert {200, res} = query(ctx.conn, :get_projects, %{include_goal: true})
+      assert {200, res} = query(ctx.conn, [:projects, :list], %{include_goal: true})
       expected = serialize([project], level: :full) |> normalize_serialized_projects()
       assert res.projects == expected
     end
@@ -172,7 +172,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
       project = project_fixture(company_id: ctx.company.id, name: "Project 1", creator_id: ctx.person.id, group_id: ctx.company.company_space_id)
       project = Map.put(project, :milestones, [])
 
-      assert {200, res} = query(ctx.conn, :get_projects, %{include_milestones: true})
+      assert {200, res} = query(ctx.conn, [:projects, :list], %{include_milestones: true})
       expected = serialize([project], level: :full) |> normalize_serialized_projects()
       assert res.projects == expected
     end
@@ -180,7 +180,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
     test "if include_last_check_in is true, but there is no last check in, it returns nil", ctx do
       project = project_fixture(company_id: ctx.company.id, name: "Project 1", creator_id: ctx.person.id, group_id: ctx.company.company_space_id)
 
-      assert {200, res} = query(ctx.conn, :get_projects, %{include_last_check_in: true})
+      assert {200, res} = query(ctx.conn, [:projects, :list], %{include_last_check_in: true})
       expected = serialize([project], level: :full) |> normalize_serialized_projects()
       assert res.projects == expected
     end
@@ -190,7 +190,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectsTest do
       project1 = project_fixture(company_id: ctx.company.id, name: "Project 1", creator_id: ctx.person.id, group_id: space.id)
       _project2 = project_fixture(company_id: ctx.company.id, name: "Project 2", creator_id: ctx.person.id, group_id: ctx.company.company_space_id)
 
-      assert {200, res} = query(ctx.conn, :get_projects, %{space_id: Paths.space_id(space)})
+      assert {200, res} = query(ctx.conn, [:projects, :list], %{space_id: Paths.space_id(space)})
       expected = serialize([project1], level: :full) |> normalize_serialized_projects()
       assert res.projects == expected
     end

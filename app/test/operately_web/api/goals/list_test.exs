@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
+defmodule OperatelyWeb.Api.Goals.ListTest do
   use OperatelyWeb.TurboCase
 
   import Operately.GroupsFixtures
@@ -11,7 +11,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, :get_goals, %{})
+      assert {401, _} = query(ctx.conn, [:goals, :list], %{})
     end
   end
 
@@ -33,7 +33,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
         })
       end)
 
-      assert {200, res} = query(ctx.conn, :get_goals, %{space_id: ctx.space_id})
+      assert {200, res} = query(ctx.conn, [:goals, :list], %{space_id: ctx.space_id})
       assert length(res.goals) == 0
 
       goal_fixture(ctx.creator, %{
@@ -41,7 +41,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
         company_access_level: Binding.view_access(),
       })
 
-      assert {200, res} = query(ctx.conn, :get_goals, %{space_id: ctx.space_id})
+      assert {200, res} = query(ctx.conn, [:goals, :list], %{space_id: ctx.space_id})
       assert length(res.goals) == 1
     end
 
@@ -57,7 +57,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
         })
       end)
 
-      assert {200, res} = query(ctx.conn, :get_goals, %{space_id: ctx.space_id})
+      assert {200, res} = query(ctx.conn, [:goals, :list], %{space_id: ctx.space_id})
 
       assert_goals(res, goals)
     end
@@ -73,7 +73,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
         })
       end)
 
-      assert {200, res} = query(ctx.conn, :get_goals, %{space_id: ctx.space_id})
+      assert {200, res} = query(ctx.conn, [:goals, :list], %{space_id: ctx.space_id})
       assert length(res.goals) == 0
 
       goal_fixture(ctx.creator, %{
@@ -82,7 +82,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
         space_access_level: Binding.view_access(),
       })
 
-      assert {200, res} = query(ctx.conn, :get_goals, %{space_id: ctx.space_id})
+      assert {200, res} = query(ctx.conn, [:goals, :list], %{space_id: ctx.space_id})
       assert length(res.goals) == 1
     end
 
@@ -97,7 +97,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
         })
       end)
 
-      assert {200, res} = query(ctx.conn, :get_goals, %{space_id: ctx.space_id})
+      assert {200, res} = query(ctx.conn, [:goals, :list], %{space_id: ctx.space_id})
 
       assert_goals(res, goals)
     end
@@ -114,7 +114,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
       account = Repo.preload(champion, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, res} = query(conn, :get_goals, %{space_id: ctx.space_id})
+      assert {200, res} = query(conn, [:goals, :list], %{space_id: ctx.space_id})
 
       assert_goals(res, [goal])
     end
@@ -131,13 +131,13 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
       account = Repo.preload(reviewer, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, res} = query(conn, :get_goals, %{space_id: ctx.space_id})
+      assert {200, res} = query(conn, [:goals, :list], %{space_id: ctx.space_id})
 
       assert_goals(res, [goal])
     end
   end
 
-  describe "get_goals functionality" do
+  describe "goals/list functionality" do
     setup :register_and_log_in_account
 
     test "include_last_check_in", ctx do
@@ -153,7 +153,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalsTest do
       update1 = Operately.Repo.preload(update1, [:author, [reactions: :author]])
       update3 = Operately.Repo.preload(update3, [:author, [reactions: :author]])
 
-      assert {200, res} = query(ctx.conn, :get_goals, %{include_last_check_in: true})
+      assert {200, res} = query(ctx.conn, [:goals, :list], %{include_last_check_in: true})
       assert length(res.goals) == 2
 
       assert goal1_response = Enum.find(res.goals, &(&1.id == Paths.goal_id(goal1)))

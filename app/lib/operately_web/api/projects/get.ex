@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetProject do
+defmodule OperatelyWeb.Api.Projects.Get do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 

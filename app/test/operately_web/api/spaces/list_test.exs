@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetSpacesTest do
+defmodule OperatelyWeb.Api.Spaces.ListTest do
   use OperatelyWeb.TurboCase
 
   import Operately.CompaniesFixtures
@@ -11,7 +11,7 @@ defmodule OperatelyWeb.Api.Queries.GetSpacesTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, :get_space, %{id: "1"})
+      assert {401, _} = query(ctx.conn, [:spaces, :list], %{})
     end
 
     test "it returns only spaces from the user's company", ctx do
@@ -23,7 +23,7 @@ defmodule OperatelyWeb.Api.Queries.GetSpacesTest do
       other_company = company_fixture()
       other_space = group_fixture(person_fixture(company_id: other_company.id), company_id: other_company.id)
 
-      assert {200, res} = query(ctx.conn, :get_spaces, %{})
+      assert {200, res} = query(ctx.conn, [:spaces, :list], %{})
       assert Enum.find(res.spaces, fn s -> s.id == Paths.space_id(space) end) != nil
       assert Enum.find(res.spaces, fn s -> s.id == Paths.space_id(other_space) end) == nil
     end
@@ -45,7 +45,7 @@ defmodule OperatelyWeb.Api.Queries.GetSpacesTest do
 
       company_space = Groups.get_group!(ctx.company.company_space_id) |> Repo.preload(:company)
 
-      assert {200, res} = query(ctx.conn, :get_spaces, %{})
+      assert {200, res} = query(ctx.conn, [:spaces, :list], %{})
       assert length(spaces) == 4
       assert_spaces(res, [company_space], 1)
     end
@@ -60,7 +60,7 @@ defmodule OperatelyWeb.Api.Queries.GetSpacesTest do
         group_fixture(ctx.creator, company_id: ctx.company.id)
       end)
 
-      assert {200, res} = query(ctx.conn, :get_spaces, %{})
+      assert {200, res} = query(ctx.conn, [:spaces, :list], %{})
       assert_spaces(res, spaces, 4)
     end
 
@@ -76,12 +76,12 @@ defmodule OperatelyWeb.Api.Queries.GetSpacesTest do
         Repo.preload(space, :company)
       end)
 
-      assert {200, res} = query(ctx.conn, :get_spaces, %{})
+      assert {200, res} = query(ctx.conn, [:spaces, :list], %{})
       assert_spaces(res, spaces, 3)
     end
   end
 
-  describe "get_spaces functionality" do
+  describe "spaces/list functionality" do
     setup ctx do
       ctx
       |> Factory.setup()
@@ -94,7 +94,7 @@ defmodule OperatelyWeb.Api.Queries.GetSpacesTest do
         |> Factory.add_space(:space1, name: "Space 1")
         |> Factory.add_space(:space2, name: "Space 2")
 
-      assert {200, res} = query(ctx.conn, :get_spaces, %{})
+      assert {200, res} = query(ctx.conn, [:spaces, :list], %{})
 
       company_space = Operately.Groups.get_group!(ctx.company.company_space_id)
 
@@ -115,7 +115,7 @@ defmodule OperatelyWeb.Api.Queries.GetSpacesTest do
         |> Factory.add_space_member(:guest, :space, person_type: :guest)
         |> Factory.add_space_member(:ai, :space, person_type: :ai)
 
-      assert {200, res} = query(ctx.conn, :get_spaces, %{include_members: true})
+      assert {200, res} = query(ctx.conn, [:spaces, :list], %{include_members: true})
 
       assert space_res = Enum.find(res.spaces, &(&1.id == Paths.space_id(ctx.space)))
       assert length(space_res.members) == 3 # 1 creator (ctx.person) + 1 added human + 1 guest
@@ -130,7 +130,7 @@ defmodule OperatelyWeb.Api.Queries.GetSpacesTest do
           Factory.add_space(acc, String.to_atom("space#{i}"), name: "Space #{i}")
         end)
 
-      assert {200, res} = query(ctx.conn, :get_spaces, %{})
+      assert {200, res} = query(ctx.conn, [:spaces, :list], %{})
 
       assert length(res.spaces) == 16 # 15 created spaces + 1 company space
 
@@ -157,19 +157,19 @@ defmodule OperatelyWeb.Api.Queries.GetSpacesTest do
     end
 
     test "filters by view_access - shows all accessible spaces", ctx do
-      assert {200, res} = query(ctx.conn, :get_spaces, %{access_level: :view_access})
+      assert {200, res} = query(ctx.conn, [:spaces, :list], %{access_level: :view_access})
       assert length(res.spaces) == 4
       assert Enum.map(res.spaces, & &1.name) |> Enum.sort() == ["Edit Space", "Full Space", "General", "View Space"]
     end
 
     test "filters by edit_access - shows only edit and full spaces", ctx do
-      assert {200, res} = query(ctx.conn, :get_spaces, %{access_level: :edit_access})
+      assert {200, res} = query(ctx.conn, [:spaces, :list], %{access_level: :edit_access})
       assert length(res.spaces) == 3
       assert Enum.map(res.spaces, & &1.name) |> Enum.sort() == ["Edit Space", "Full Space", "General"]
     end
 
     test "filters by full_access - shows only full access spaces", ctx do
-      assert {200, res} = query(ctx.conn, :get_spaces, %{access_level: :full_access})
+      assert {200, res} = query(ctx.conn, [:spaces, :list], %{access_level: :full_access})
       assert length(res.spaces) == 1
       assert Enum.map(res.spaces, & &1.name) |> Enum.sort() == ["Full Space"]
     end

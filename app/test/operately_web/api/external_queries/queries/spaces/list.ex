@@ -1,8 +1,10 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.GetSpace do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.Spaces.List do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
   alias OperatelyWeb.Paths
+
+  def query_name, do: "spaces/list"
 
   @impl true
   def setup(ctx) do
@@ -12,13 +14,8 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.GetSpace do
   end
 
   @impl true
-  def inputs(ctx) do
-    %{id: Paths.space_id(ctx.space)}
-  end
-
-  @impl true
   def assert(response, ctx) do
-    assert response.space
-    assert response.space.id == Paths.space_id(ctx.space)
+    assert is_list(response.spaces)
+    assert Enum.any?(response.spaces, fn space -> space.id == Paths.space_id(ctx.space) end)
   end
 end

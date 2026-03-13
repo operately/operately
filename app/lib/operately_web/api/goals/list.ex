@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetGoals do
+defmodule OperatelyWeb.Api.Goals.List do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
