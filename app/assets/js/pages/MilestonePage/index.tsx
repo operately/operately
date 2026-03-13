@@ -91,7 +91,7 @@ function Page() {
 
   const [projectName, setProjectName] = usePageField(pageData, {
     value: ({ milestone }) => milestone.project?.name!,
-    update: (v) => Api.editProjectName({ projectId: milestone.project?.id, name: v }),
+    update: (v) => Api.projects.editName({ projectId: milestone.project?.id, name: v }),
     onError: (e: string) => showErrorToast(e, "Reverted the project name to its previous value."),
     validations: [(v) => (v?.trim() === "" ? "Project name cannot be empty" : null)],
   });

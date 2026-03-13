@@ -15,7 +15,7 @@ export function useMilestones(projectId: string): UseMilestonesResult {
 
   const search = useCallback(
     async (query: string) => {
-      const data = await Api.projects.getMilestones({
+      const data = await Api.projects.listMilestones({
         projectId,
         query: query.trim(),
       });

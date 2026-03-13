@@ -193,7 +193,7 @@ function Page() {
 
   const deleteGoal = async () => {
     try {
-      await Api.deleteGoal({ goalId: goal.id });
+      await Api.goals.delete({ goalId: goal.id });
       PageCache.invalidate(pageCacheKey(goal.id));
 
       if (space?.id) {

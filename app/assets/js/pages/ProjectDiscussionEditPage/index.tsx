@@ -165,7 +165,7 @@ function useForm({ discussion, subscriptionsState }: UseFormProps) {
       }
     },
     submit: async () => {
-      const res = await Api.project_discussions.edit({
+      const res = await Api.project_discussions.update({
         id: discussion.id,
         title: form.values.title,
         message: JSON.stringify(form.values.message),

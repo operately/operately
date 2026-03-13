@@ -45,7 +45,7 @@ defmodule Operately.AI.Tools.GetGoalDetails do
               include_markdown: true
             }
 
-            {:ok, data} = OperatelyWeb.Api.Queries.GetGoal.call(conn, args)
+            {:ok, data} = OperatelyWeb.Api.Goals.Get.call(conn, args)
             {:ok, data.markdown}
 
           {:error, _} ->

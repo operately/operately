@@ -171,22 +171,22 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     end
   end
 
-  describe "get milestones" do
+  describe "list milestones" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, [:projects, :get_milestones], %{})
+      assert {401, _} = query(ctx.conn, [:projects, :list_milestones], %{})
     end
 
     test "it requires a project_id", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = query(ctx.conn, [:projects, :get_milestones], %{})
+      assert {400, res} = query(ctx.conn, [:projects, :list_milestones], %{})
       assert res.message == "Missing required fields: project_id"
     end
 
     test "it returns not found for non-existent project", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {404, _} = query(ctx.conn, [:projects, :get_milestones], %{
+      assert {404, _} = query(ctx.conn, [:projects, :list_milestones], %{
         project_id: Ecto.UUID.generate()
       })
     end
@@ -198,7 +198,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.add_company_member(:member)
         |> Factory.log_in_person(:member)
 
-      assert {404, _} = query(ctx.conn, [:projects, :get_milestones], %{
+      assert {404, _} = query(ctx.conn, [:projects, :list_milestones], %{
         project_id: Paths.project_id(ctx.project)
       })
     end
@@ -206,7 +206,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     test "it returns milestones for project creator", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {200, res} = query(ctx.conn, [:projects, :get_milestones], %{
+      assert {200, res} = query(ctx.conn, [:projects, :list_milestones], %{
         project_id: Paths.project_id(ctx.project)
       })
 
@@ -223,7 +223,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.add_space_member(:space_member, :engineering)
         |> Factory.log_in_person(:space_member)
 
-      assert {200, res} = query(ctx.conn, [:projects, :get_milestones], %{
+      assert {200, res} = query(ctx.conn, [:projects, :list_milestones], %{
         project_id: Paths.project_id(ctx.project)
       })
 
@@ -237,7 +237,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.add_project(:empty_project, :engineering)
         |> Factory.log_in_person(:creator)
 
-      assert {200, res} = query(ctx.conn, [:projects, :get_milestones], %{
+      assert {200, res} = query(ctx.conn, [:projects, :list_milestones], %{
         project_id: Paths.project_id(ctx.empty_project)
       })
 
@@ -251,7 +251,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.add_project_milestone(:milestone3, :project)
         |> Factory.log_in_person(:creator)
 
-      assert {200, res} = query(ctx.conn, [:projects, :get_milestones], %{
+      assert {200, res} = query(ctx.conn, [:projects, :list_milestones], %{
         project_id: Paths.project_id(ctx.project)
       })
 
@@ -270,7 +270,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.add_project_milestone(:milestone3, :project)
         |> Factory.log_in_person(:creator)
 
-      assert {200, res} = query(ctx.conn, [:projects, :get_milestones], %{
+      assert {200, res} = query(ctx.conn, [:projects, :list_milestones], %{
         project_id: Paths.project_id(ctx.project)
       })
 
@@ -282,7 +282,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     test "it includes tasks_ordering_state in milestone data", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {200, res} = query(ctx.conn, [:projects, :get_milestones], %{
+      assert {200, res} = query(ctx.conn, [:projects, :list_milestones], %{
         project_id: Paths.project_id(ctx.project)
       })
 
@@ -292,22 +292,22 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     end
   end
 
-  describe "get contributors" do
+  describe "list contributors" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, [:projects, :get_contributors], %{})
+      assert {401, _} = query(ctx.conn, [:projects, :list_contributors], %{})
     end
 
     test "it requires a project_id", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = query(ctx.conn, [:projects, :get_contributors], %{})
+      assert {400, res} = query(ctx.conn, [:projects, :list_contributors], %{})
       assert res.message == "Missing required fields: project_id"
     end
 
     test "it returns not found for non-existent project", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {404, _} = query(ctx.conn, [:projects, :get_contributors], %{
+      assert {404, _} = query(ctx.conn, [:projects, :list_contributors], %{
         project_id: Ecto.UUID.generate()
       })
     end
@@ -319,7 +319,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.add_company_member(:member)
         |> Factory.log_in_person(:member)
 
-      assert {404, _} = query(ctx.conn, [:projects, :get_contributors], %{
+      assert {404, _} = query(ctx.conn, [:projects, :list_contributors], %{
         project_id: Paths.project_id(ctx.project)
       })
     end
@@ -327,7 +327,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     test "it returns contributors for project", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {200, res} = query(ctx.conn, [:projects, :get_contributors], %{
+      assert {200, res} = query(ctx.conn, [:projects, :list_contributors], %{
         project_id: Paths.project_id(ctx.project)
       })
 
@@ -345,7 +345,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.preload(:champion, :person)
         |> Factory.log_in_person(:creator)
 
-      assert {200, res} = query(ctx.conn, [:projects, :get_contributors], %{
+      assert {200, res} = query(ctx.conn, [:projects, :list_contributors], %{
         project_id: Paths.project_id(ctx.project)
       })
 
@@ -365,7 +365,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.preload(:another_contributor, :person)
         |> Factory.log_in_person(:creator)
 
-      assert {200, res1} = query(ctx.conn, [:projects, :get_contributors], %{
+      assert {200, res1} = query(ctx.conn, [:projects, :list_contributors], %{
         project_id: Paths.project_id(ctx.project),
         query: "Special"
       })
@@ -374,7 +374,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert hd(res1.contributors).id == Paths.person_id(ctx.special_contributor.person)
       assert hd(res1.contributors).full_name == "Special Person"
 
-      assert {200, res2} = query(ctx.conn, [:projects, :get_contributors], %{
+      assert {200, res2} = query(ctx.conn, [:projects, :list_contributors], %{
         project_id: Paths.project_id(ctx.project),
         query: "Person"
       })
@@ -385,7 +385,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert "Another Regular Person" in contributor_names
 
       # Test case insensitivity
-      assert {200, res3} = query(ctx.conn, [:projects, :get_contributors], %{
+      assert {200, res3} = query(ctx.conn, [:projects, :list_contributors], %{
         project_id: Paths.project_id(ctx.project),
         query: "special"
       })
@@ -397,7 +397,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     test "it returns empty list when query doesn't match any contributors", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {200, res} = query(ctx.conn, [:projects, :get_contributors], %{
+      assert {200, res} = query(ctx.conn, [:projects, :list_contributors], %{
         project_id: Paths.project_id(ctx.project),
         query: "NonExistentNameOrEmail"
       })
@@ -413,7 +413,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.log_in_person(:creator)
 
       # Get all contributors first
-      assert {200, res1} = query(ctx.conn, [:projects, :get_contributors], %{
+      assert {200, res1} = query(ctx.conn, [:projects, :list_contributors], %{
         project_id: Paths.project_id(ctx.project)
       })
 
@@ -423,7 +423,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert test_contributor_id in contributor_ids
 
       # Now exclude it using ignored_ids
-      assert {200, res2} = query(ctx.conn, [:projects, :get_contributors], %{
+      assert {200, res2} = query(ctx.conn, [:projects, :list_contributors], %{
         project_id: Paths.project_id(ctx.project),
         ignored_ids: [test_contributor_id]
       })
@@ -443,7 +443,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.log_in_person(:creator)
 
       # Get contributors for the first project
-      assert {200, res} = query(ctx.conn, [:projects, :get_contributors], %{
+      assert {200, res} = query(ctx.conn, [:projects, :list_contributors], %{
         project_id: Paths.project_id(ctx.project)
       })
 
@@ -453,7 +453,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       refute other_contributor_id in contributor_ids
 
       # Also verify we can get the other project's contributors separately
-      assert {200, other_res} = query(ctx.conn, [:projects, :get_contributors], %{
+      assert {200, other_res} = query(ctx.conn, [:projects, :list_contributors], %{
         project_id: Paths.project_id(ctx.other_project)
       })
 
@@ -465,7 +465,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       # Get all contributors first without query
-      assert {200, res1} = query(ctx.conn, [:projects, :get_contributors], %{
+      assert {200, res1} = query(ctx.conn, [:projects, :list_contributors], %{
         project_id: Paths.project_id(ctx.project)
       })
 
@@ -473,7 +473,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert all_contributors_count > 0
 
       # Test with empty query
-      assert {200, res2} = query(ctx.conn, [:projects, :get_contributors], %{
+      assert {200, res2} = query(ctx.conn, [:projects, :list_contributors], %{
         project_id: Paths.project_id(ctx.project),
         query: ""
       })
@@ -488,7 +488,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.preload(:champion, :person)
         |> Factory.log_in_person(:creator)
 
-      assert {200, res} = query(ctx.conn, [:projects, :get_contributors], %{
+      assert {200, res} = query(ctx.conn, [:projects, :list_contributors], %{
         project_id: Paths.project_id(ctx.project)
       })
 
@@ -1228,9 +1228,9 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     end
   end
 
-  describe "parent goal search" do
+  describe "search parent goal" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, [:projects, :parent_goal_search], %{})
+      assert {401, _} = query(ctx.conn, [:projects, :search_parent_goal], %{})
     end
 
     test "it requires view permission", ctx do
@@ -1241,7 +1241,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.log_in_person(:user)
 
 
-      assert {404, _} = query(ctx.conn, [:projects, :parent_goal_search], %{
+      assert {404, _} = query(ctx.conn, [:projects, :search_parent_goal], %{
         project_id: Paths.project_id(ctx.project),
         query: "test"
       })
@@ -1255,7 +1255,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.add_goal(:goal3, :engineering, name: "Another Goal")
         |> Factory.log_in_person(:creator)
 
-      assert {200, %{goals: goals}} = query(ctx.conn, [:projects, :parent_goal_search], %{
+      assert {200, %{goals: goals}} = query(ctx.conn, [:projects, :search_parent_goal], %{
         project_id: Paths.project_id(ctx.project),
         query: "test"
       })
@@ -1275,7 +1275,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.add_project(:another_project, :engineering, goal: :goal1)
         |> Factory.log_in_person(:creator)
 
-      assert {200, %{goals: goals}} = query(ctx.conn, [:projects, :parent_goal_search], %{
+      assert {200, %{goals: goals}} = query(ctx.conn, [:projects, :search_parent_goal], %{
         project_id: Paths.project_id(ctx.another_project),
         query: "test"
       })
