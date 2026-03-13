@@ -37,7 +37,6 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries do
       Queries.Spaces.Get,
       Queries.Spaces.List,
       Queries.GetTask,
-      Queries.GetTasks,
       Queries.GetUnreadNotificationCount,
       Queries.GetWorkMap,
       Queries.GlobalSearch,

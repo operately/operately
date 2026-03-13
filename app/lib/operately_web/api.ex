@@ -138,7 +138,6 @@ defmodule OperatelyWeb.Api do
       query(:get_project_contributor, Q.GetProjectContributor)
       query(:get_project_retrospective, Q.GetProjectRetrospective)
       query(:get_task, Q.GetTask)
-      query(:get_tasks, Q.GetTasks)
       query(:get_binded_people, Q.GetBindedPeople)
       query(:get_unread_notification_count, Q.GetUnreadNotificationCount)
       query(:get_resource_hub, Q.GetResourceHub)
