@@ -14766,6 +14766,145 @@
   "mutation_count": 138,
   "endpoints": [
     {
+      "name": "change_parent",
+      "type": "mutation",
+      "path": "/api/external/v1/goals/change_parent",
+      "handler": "OperatelyWeb.Api.Goals.ChangeParent",
+      "outputs": [
+        {
+          "default": null,
+          "name": "goal",
+          "type": {
+            "name": "goal",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "goals",
+      "inputs": [
+        {
+          "default": null,
+          "name": "goal_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "parent_goal_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "goals/change_parent",
+      "method": "POST"
+    },
+    {
+      "name": "close",
+      "type": "mutation",
+      "path": "/api/external/v1/goals/close",
+      "handler": "OperatelyWeb.Api.Goals.Close",
+      "outputs": [
+        {
+          "default": null,
+          "name": "goal",
+          "type": {
+            "name": "goal",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "goals",
+      "inputs": [
+        {
+          "default": null,
+          "name": "goal_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "retrospective",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "send_notifications_to_everyone",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "subscriber_ids",
+          "type": {
+            "item": {
+              "name": "id",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "success_status",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "goals/close",
+      "method": "POST"
+    },
+    {
       "name": "create",
       "type": "mutation",
       "path": "/api/external/v1/goals/create",
@@ -15737,6 +15876,77 @@
       ],
       "full_name": "goals/list_discussions",
       "method": "GET"
+    },
+    {
+      "name": "reopen",
+      "type": "mutation",
+      "path": "/api/external/v1/goals/reopen",
+      "handler": "OperatelyWeb.Api.Goals.Reopen",
+      "outputs": [
+        {
+          "default": null,
+          "name": "goal",
+          "type": {
+            "name": "goal",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "goals",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "message",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "send_notifications_to_everyone",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "subscriber_ids",
+          "type": {
+            "item": {
+              "name": "id",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "goals/reopen",
+      "method": "POST"
     },
     {
       "name": "search_parent_goal",
@@ -17366,6 +17576,88 @@
       "method": "POST"
     },
     {
+      "name": "close",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/close",
+      "handler": "OperatelyWeb.Api.Projects.Close",
+      "outputs": [
+        {
+          "default": null,
+          "name": "retrospective",
+          "type": {
+            "name": "project_retrospective",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "retrospective",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "success_status",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "send_notifications_to_everyone",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "subscriber_ids",
+          "type": {
+            "item": {
+              "name": "id",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "projects/close",
+      "method": "POST"
+    },
+    {
       "name": "count_children",
       "type": "query",
       "path": "/api/external/v1/projects/count_children",
@@ -17659,155 +17951,6 @@
         }
       ],
       "full_name": "projects/delete_contributor",
-      "method": "POST"
-    },
-    {
-      "name": "edit_name",
-      "type": "mutation",
-      "path": "/api/external/v1/projects/edit_name",
-      "handler": "OperatelyWeb.Api.Projects.EditName",
-      "outputs": [
-        {
-          "default": null,
-          "name": "project",
-          "type": {
-            "name": "project",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": "projects",
-      "inputs": [
-        {
-          "default": null,
-          "name": "project_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "name",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "projects/edit_name",
-      "method": "POST"
-    },
-    {
-      "name": "edit_permissions",
-      "type": "mutation",
-      "path": "/api/external/v1/projects/edit_permissions",
-      "handler": "OperatelyWeb.Api.Projects.EditPermissions",
-      "outputs": [
-        {
-          "default": null,
-          "name": "success",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": "projects",
-      "inputs": [
-        {
-          "default": null,
-          "name": "project_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "access_levels",
-          "type": {
-            "name": "access_levels",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "projects/edit_permissions",
-      "method": "POST"
-    },
-    {
-      "name": "edit_retrospective",
-      "type": "mutation",
-      "path": "/api/external/v1/projects/edit_retrospective",
-      "handler": "OperatelyWeb.Api.Projects.EditRetrospective",
-      "outputs": [
-        {
-          "default": null,
-          "name": "retrospective",
-          "type": {
-            "name": "project_retrospective",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "projects",
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "content",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "success_status",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "projects/edit_retrospective",
       "method": "POST"
     },
     {
@@ -18371,6 +18514,112 @@
       "method": "POST"
     },
     {
+      "name": "pause",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/pause",
+      "handler": "OperatelyWeb.Api.Projects.Pause",
+      "outputs": [
+        {
+          "default": null,
+          "name": "project",
+          "type": {
+            "name": "project",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "projects/pause",
+      "method": "POST"
+    },
+    {
+      "name": "resume",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/resume",
+      "handler": "OperatelyWeb.Api.Projects.Resume",
+      "outputs": [
+        {
+          "default": null,
+          "name": "project",
+          "type": {
+            "name": "project",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "message",
+          "type": {
+            "name": "json",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "send_notifications_to_everyone",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "subscriber_ids",
+          "type": {
+            "item": {
+              "name": "id",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "projects/resume",
+      "method": "POST"
+    },
+    {
       "name": "search",
       "type": "query",
       "path": "/api/external/v1/projects/search",
@@ -18782,6 +19031,52 @@
       "method": "POST"
     },
     {
+      "name": "update_name",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/update_name",
+      "handler": "OperatelyWeb.Api.Projects.UpdateName",
+      "outputs": [
+        {
+          "default": null,
+          "name": "project",
+          "type": {
+            "name": "project",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "projects/update_name",
+      "method": "POST"
+    },
+    {
       "name": "update_parent_goal",
       "type": "mutation",
       "path": "/api/external/v1/projects/update_parent_goal",
@@ -18836,6 +19131,109 @@
         }
       ],
       "full_name": "projects/update_parent_goal",
+      "method": "POST"
+    },
+    {
+      "name": "update_permissions",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/update_permissions",
+      "handler": "OperatelyWeb.Api.Projects.UpdatePermissions",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "access_levels",
+          "type": {
+            "name": "access_levels",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "projects/update_permissions",
+      "method": "POST"
+    },
+    {
+      "name": "update_retrospective",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/update_retrospective",
+      "handler": "OperatelyWeb.Api.Projects.UpdateRetrospective",
+      "outputs": [
+        {
+          "default": null,
+          "name": "retrospective",
+          "type": {
+            "name": "project_retrospective",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "content",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "success_status",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "projects/update_retrospective",
       "method": "POST"
     },
     {
@@ -19487,227 +19885,6 @@
         }
       ],
       "full_name": "add_reaction",
-      "method": "POST"
-    },
-    {
-      "name": "change_goal_parent",
-      "type": "mutation",
-      "path": "/api/external/v1/change_goal_parent",
-      "handler": "OperatelyWeb.Api.Mutations.ChangeGoalParent",
-      "outputs": [
-        {
-          "default": null,
-          "name": "goal",
-          "type": {
-            "name": "goal",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "goal_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "parent_goal_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "change_goal_parent",
-      "method": "POST"
-    },
-    {
-      "name": "close_goal",
-      "type": "mutation",
-      "path": "/api/external/v1/close_goal",
-      "handler": "OperatelyWeb.Api.Mutations.CloseGoal",
-      "outputs": [
-        {
-          "default": null,
-          "name": "goal",
-          "type": {
-            "name": "goal",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "goal_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "success",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "retrospective",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "send_notifications_to_everyone",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "subscriber_ids",
-          "type": {
-            "item": {
-              "name": "id",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "success_status",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "close_goal",
-      "method": "POST"
-    },
-    {
-      "name": "close_project",
-      "type": "mutation",
-      "path": "/api/external/v1/close_project",
-      "handler": "OperatelyWeb.Api.Mutations.CloseProject",
-      "outputs": [
-        {
-          "default": null,
-          "name": "retrospective",
-          "type": {
-            "name": "project_retrospective",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "project_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "retrospective",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "success_status",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "send_notifications_to_everyone",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "subscriber_ids",
-          "type": {
-            "item": {
-              "name": "id",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "close_project",
       "method": "POST"
     },
     {
@@ -23977,120 +24154,6 @@
       "method": "POST"
     },
     {
-      "name": "move_task",
-      "type": "mutation",
-      "path": "/api/external/v1/move_task",
-      "handler": "OperatelyWeb.Api.Mutations.MoveTask",
-      "outputs": [
-        {
-          "default": null,
-          "name": "task",
-          "type": {
-            "name": "task",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "destination_type",
-          "type": {
-            "name": "task_type",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "destination_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "task_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "destination_type",
-          "type": {
-            "name": "task_type",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "destination_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "move_task",
-      "method": "POST"
-    },
-    {
-      "name": "pause_project",
-      "type": "mutation",
-      "path": "/api/external/v1/pause_project",
-      "handler": "OperatelyWeb.Api.Mutations.PauseProject",
-      "outputs": [
-        {
-          "default": null,
-          "name": "project",
-          "type": {
-            "name": "project",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "project_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "pause_project",
-      "method": "POST"
-    },
-    {
       "name": "post_goal_progress_update",
       "type": "mutation",
       "path": "/api/external/v1/post_goal_progress_update",
@@ -24685,77 +24748,6 @@
       "method": "POST"
     },
     {
-      "name": "reopen_goal",
-      "type": "mutation",
-      "path": "/api/external/v1/reopen_goal",
-      "handler": "OperatelyWeb.Api.Mutations.ReopenGoal",
-      "outputs": [
-        {
-          "default": null,
-          "name": "goal",
-          "type": {
-            "name": "goal",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "message",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "send_notifications_to_everyone",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "subscriber_ids",
-          "type": {
-            "item": {
-              "name": "id",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "reopen_goal",
-      "method": "POST"
-    },
-    {
       "name": "restore_company_member",
       "type": "mutation",
       "path": "/api/external/v1/restore_company_member",
@@ -24776,77 +24768,6 @@
         }
       ],
       "full_name": "restore_company_member",
-      "method": "POST"
-    },
-    {
-      "name": "resume_project",
-      "type": "mutation",
-      "path": "/api/external/v1/resume_project",
-      "handler": "OperatelyWeb.Api.Mutations.ResumeProject",
-      "outputs": [
-        {
-          "default": null,
-          "name": "project",
-          "type": {
-            "name": "project",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "project_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "message",
-          "type": {
-            "name": "json",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "send_notifications_to_everyone",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "subscriber_ids",
-          "type": {
-            "item": {
-              "name": "id",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "resume_project",
       "method": "POST"
     },
     {
@@ -25958,158 +25879,6 @@
       "method": "POST"
     },
     {
-      "name": "edit",
-      "type": "mutation",
-      "path": "/api/external/v1/spaces/edit",
-      "handler": "OperatelyWeb.Api.Spaces.Edit",
-      "outputs": [
-        {
-          "default": null,
-          "name": "space",
-          "type": {
-            "name": "space",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "spaces",
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "name",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "mission",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "spaces/edit",
-      "method": "POST"
-    },
-    {
-      "name": "edit_members_permissions",
-      "type": "mutation",
-      "path": "/api/external/v1/spaces/edit_members_permissions",
-      "handler": "OperatelyWeb.Api.Spaces.EditMembersPermissions",
-      "outputs": [
-        {
-          "default": null,
-          "name": "success",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "spaces",
-      "inputs": [
-        {
-          "default": null,
-          "name": "space_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "members",
-          "type": {
-            "item": {
-              "name": "edit_member_permissions_input",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "spaces/edit_members_permissions",
-      "method": "POST"
-    },
-    {
-      "name": "edit_permissions",
-      "type": "mutation",
-      "path": "/api/external/v1/spaces/edit_permissions",
-      "handler": "OperatelyWeb.Api.Spaces.EditPermissions",
-      "outputs": [
-        {
-          "default": null,
-          "name": "success",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "spaces",
-      "inputs": [
-        {
-          "default": null,
-          "name": "space_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "access_levels",
-          "type": {
-            "name": "access_levels",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "spaces/edit_permissions",
-      "method": "POST"
-    },
-    {
       "name": "get",
       "type": "query",
       "path": "/api/external/v1/spaces/get",
@@ -26578,6 +26347,63 @@
       "method": "GET"
     },
     {
+      "name": "update",
+      "type": "mutation",
+      "path": "/api/external/v1/spaces/update",
+      "handler": "OperatelyWeb.Api.Spaces.Update",
+      "outputs": [
+        {
+          "default": null,
+          "name": "space",
+          "type": {
+            "name": "space",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "spaces",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "mission",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "spaces/update",
+      "method": "POST"
+    },
+    {
       "name": "update_kanban",
       "type": "mutation",
       "path": "/api/external/v1/spaces/update_kanban",
@@ -26643,6 +26469,101 @@
         }
       ],
       "full_name": "spaces/update_kanban",
+      "method": "POST"
+    },
+    {
+      "name": "update_members_permissions",
+      "type": "mutation",
+      "path": "/api/external/v1/spaces/update_members_permissions",
+      "handler": "OperatelyWeb.Api.Spaces.UpdateMembersPermissions",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "spaces",
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "members",
+          "type": {
+            "item": {
+              "name": "edit_member_permissions_input",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "spaces/update_members_permissions",
+      "method": "POST"
+    },
+    {
+      "name": "update_permissions",
+      "type": "mutation",
+      "path": "/api/external/v1/spaces/update_permissions",
+      "handler": "OperatelyWeb.Api.Spaces.UpdatePermissions",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "spaces",
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "access_levels",
+          "type": {
+            "name": "access_levels",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "spaces/update_permissions",
       "method": "POST"
     },
     {
@@ -27181,6 +27102,85 @@
       "method": "GET"
     },
     {
+      "name": "move",
+      "type": "mutation",
+      "path": "/api/external/v1/tasks/move",
+      "handler": "OperatelyWeb.Api.Tasks.Move",
+      "outputs": [
+        {
+          "default": null,
+          "name": "task",
+          "type": {
+            "name": "task",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "destination_type",
+          "type": {
+            "name": "task_type",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "destination_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "tasks",
+      "inputs": [
+        {
+          "default": null,
+          "name": "task_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "destination_type",
+          "type": {
+            "name": "task_type",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "destination_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "tasks/move",
+      "method": "POST"
+    },
+    {
       "name": "update_assignee",
       "type": "mutation",
       "path": "/api/external/v1/tasks/update_assignee",
@@ -27598,6 +27598,6 @@
     }
   ],
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-13T19:29:12Z",
+  "generated_at": "2026-03-13T20:23:34Z",
   "schema_version": 1
 }
