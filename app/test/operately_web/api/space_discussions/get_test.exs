@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
+defmodule OperatelyWeb.Api.SpaceDiscussions.GetTest do
   use OperatelyWeb.TurboCase
 
   import Operately.PeopleFixtures
@@ -12,7 +12,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, :get_people, %{})
+      assert {401, _} = query(ctx.conn, [:space_discussions, :get], %{})
     end
   end
 
@@ -27,7 +27,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
     test "(company space) - company members have access", ctx do
       message = create_message(ctx.creator.id,  ctx.company.company_space_id)
 
-      assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(message)})
+      assert {200, res} = query(ctx.conn, [:space_discussions, :get], %{id: Paths.message_id(message)})
       assert_message(res)
     end
 
@@ -35,7 +35,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
       space = create_space(ctx, company_access: Binding.no_access())
       message = create_message(ctx.creator.id,  space.id)
 
-      assert {404, %{message: msg} = _res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(message)})
+      assert {404, %{message: msg} = _res} = query(ctx.conn, [:space_discussions, :get], %{id: Paths.message_id(message)})
       assert msg == "The requested resource was not found"
     end
 
@@ -43,7 +43,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
       space = create_space(ctx, company_access: Binding.view_access())
       message = create_message(ctx.creator.id,  space.id)
 
-      assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(message)})
+      assert {200, res} = query(ctx.conn, [:space_discussions, :get], %{id: Paths.message_id(message)})
       assert_message(res)
     end
 
@@ -52,12 +52,12 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
       message = create_message(ctx.creator.id,  space.id)
       add_person_to_space(ctx, space)
 
-      assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(message)})
+      assert {200, res} = query(ctx.conn, [:space_discussions, :get], %{id: Paths.message_id(message)})
       assert_message(res)
     end
   end
 
-  describe "get_discussion functionality" do
+  describe "space_discussions/get functionality" do
     setup :register_and_log_in_account
 
     test "include_unread_notifications", ctx do
@@ -65,10 +65,10 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
       a = activity_fixture(author_id: ctx.person.id, action: "discussion_posting", content: %{discussion_id: message.id})
       n = notification_fixture(person_id: ctx.person.id, read: false, activity_id: a.id)
 
-      assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(message)})
+      assert {200, res} = query(ctx.conn, [:space_discussions, :get], %{id: Paths.message_id(message)})
       assert res.discussion.notifications == []
 
-      assert {200, res} = query(ctx.conn, :get_discussion, %{
+      assert {200, res} = query(ctx.conn, [:space_discussions, :get], %{
         id: Paths.message_id(message),
         include_unread_notifications: true,
       })
@@ -80,10 +80,10 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
     test "include_space", ctx do
       message = create_message(ctx.person.id, ctx.company.company_space_id)
 
-      assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(message)})
+      assert {200, res} = query(ctx.conn, [:space_discussions, :get], %{id: Paths.message_id(message)})
       assert res.discussion.space == nil
 
-      assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(message), include_space: true})
+      assert {200, res} = query(ctx.conn, [:space_discussions, :get], %{id: Paths.message_id(message), include_space: true})
 
       space = Operately.Groups.get_group!(ctx.company.company_space_id)
       assert res.discussion.space == Serializer.serialize(space, level: :essential)
@@ -92,20 +92,20 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
     test "include_author", ctx do
       message = create_message(ctx.person.id, ctx.company.company_space_id)
 
-      assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(message)})
+      assert {200, res} = query(ctx.conn, [:space_discussions, :get], %{id: Paths.message_id(message)})
       assert res.discussion.author == nil
 
-      assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(message), include_author: true})
+      assert {200, res} = query(ctx.conn, [:space_discussions, :get], %{id: Paths.message_id(message), include_author: true})
       assert res.discussion.author == Serializer.serialize(ctx.person, level: :essential)
     end
 
     test "include_reactions", ctx do
       message = create_message(ctx.person.id, ctx.company.company_space_id)
 
-      assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(message)})
+      assert {200, res} = query(ctx.conn, [:space_discussions, :get], %{id: Paths.message_id(message)})
       assert res.discussion.reactions == nil
 
-      assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(message), include_reactions: true})
+      assert {200, res} = query(ctx.conn, [:space_discussions, :get], %{id: Paths.message_id(message), include_reactions: true})
       assert res.discussion.reactions == []
 
       {:ok, reaction} = Operately.Updates.create_reaction(%{
@@ -117,7 +117,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
 
       reaction = Operately.Repo.preload(reaction, [:person])
 
-      assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(message), include_reactions: true})
+      assert {200, res} = query(ctx.conn, [:space_discussions, :get], %{id: Paths.message_id(message), include_reactions: true})
       assert res.discussion.reactions == [Serializer.serialize(reaction, level: :essential)]
     end
 
@@ -136,11 +136,11 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionTest do
       {:ok, list} = SubscriptionList.get(:system, parent_id: ctx.message.id)
       subscription_fixture(%{subscription_list_id: list.id, person_id: ctx.creator.id})
 
-      assert {200, res} = query(ctx.conn, :get_discussion, %{id: Paths.message_id(ctx.message)})
+      assert {200, res} = query(ctx.conn, [:space_discussions, :get], %{id: Paths.message_id(ctx.message)})
 
       refute res.discussion.potential_subscribers
 
-      assert {200, res} = query(ctx.conn, :get_discussion, %{
+      assert {200, res} = query(ctx.conn, [:space_discussions, :get], %{
         id: Paths.message_id(ctx.message),
         include_potential_subscribers: true,
       })

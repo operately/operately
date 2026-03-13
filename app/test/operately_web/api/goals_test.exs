@@ -169,15 +169,15 @@ defmodule OperatelyWeb.Api.GoalsTest do
     end
   end
 
-  describe "add access members" do
+  describe "create access members" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, [:goals, :add_access_members], %{})
+      assert {401, _} = mutation(ctx.conn, [:goals, :create_access_members], %{})
     end
 
     test "it requires a goal_id and members", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:goals, :add_access_members], %{})
+      assert {400, res} = mutation(ctx.conn, [:goals, :create_access_members], %{})
       assert res.message == "Missing required fields: goal_id, members"
     end
 
@@ -189,7 +189,7 @@ defmodule OperatelyWeb.Api.GoalsTest do
         |> Factory.log_in_person(:editor)
 
       assert {403, _} =
-               mutation(ctx.conn, [:goals, :add_access_members], %{
+               mutation(ctx.conn, [:goals, :create_access_members], %{
                  goal_id: Paths.goal_id(ctx.goal),
                  members: [%{id: Paths.person_id(ctx.member), access_level: Binding.edit_access()}]
                })
@@ -204,7 +204,7 @@ defmodule OperatelyWeb.Api.GoalsTest do
         |> Factory.log_in_person(:creator)
 
       assert {200, res} =
-               mutation(ctx.conn, [:goals, :add_access_members], %{
+               mutation(ctx.conn, [:goals, :create_access_members], %{
                  goal_id: Paths.goal_id(ctx.goal),
                  members: [%{id: Paths.person_id(ctx.member), access_level: Binding.edit_access()}]
                })
@@ -214,7 +214,7 @@ defmodule OperatelyWeb.Api.GoalsTest do
     end
   end
 
-  describe "add access members - permissions" do
+  describe "create access members - permissions" do
     setup ctx do
       ctx = register_and_log_in_account(ctx)
       creator = person_fixture(%{company_id: ctx.company.id})
@@ -227,7 +227,7 @@ defmodule OperatelyWeb.Api.GoalsTest do
         space = create_space(ctx)
         goal = create_goal(ctx, space, @test.company, @test.space, @test.goal)
 
-        assert {code, res} = mutation(ctx.conn, [:goals, :add_access_members], %{
+        assert {code, res} = mutation(ctx.conn, [:goals, :create_access_members], %{
           goal_id: Paths.goal_id(goal),
           members: [%{id: Paths.person_id(ctx.member), access_level: Binding.edit_access()}]
         })
@@ -885,15 +885,15 @@ defmodule OperatelyWeb.Api.GoalsTest do
     end
   end
 
-  describe "add target" do
+  describe "create target" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, [:goals, :add_target], %{})
+      assert {401, _} = mutation(ctx.conn, [:goals, :create_target], %{})
     end
 
     test "it fails if required fields are missing", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:goals, :add_target], %{})
+      assert {400, res} = mutation(ctx.conn, [:goals, :create_target], %{})
       assert res.message == "Missing required fields: goal_id, name, start_value, target_value, unit"
     end
 
@@ -908,7 +908,7 @@ defmodule OperatelyWeb.Api.GoalsTest do
         unit: "USD"
       }
 
-      assert {200, res} = mutation(ctx.conn, [:goals, :add_target], inputs)
+      assert {200, res} = mutation(ctx.conn, [:goals, :create_target], inputs)
       assert res.success == true
 
       target = Repo.get(Operately.Goals.Target, res.target_id)
@@ -922,7 +922,7 @@ defmodule OperatelyWeb.Api.GoalsTest do
     end
   end
 
-  describe "add target - permissions" do
+  describe "create target - permissions" do
     setup ctx do
       ctx = register_and_log_in_account(ctx)
       creator = person_fixture(%{company_id: ctx.company.id})
@@ -934,7 +934,7 @@ defmodule OperatelyWeb.Api.GoalsTest do
         space = create_space(ctx)
         goal = create_goal(ctx, space, @test.company, @test.space, @test.goal)
 
-        assert {code, res} = mutation(ctx.conn, [:goals, :add_target], %{
+        assert {code, res} = mutation(ctx.conn, [:goals, :create_target], %{
           goal_id: Paths.goal_id(goal),
           name: "New Target",
           start_value: 0,

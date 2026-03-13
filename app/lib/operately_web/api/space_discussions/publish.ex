@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.PublishDiscussion do
+defmodule OperatelyWeb.Api.SpaceDiscussions.Publish do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

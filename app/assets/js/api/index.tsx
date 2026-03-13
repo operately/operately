@@ -2335,34 +2335,6 @@ export interface GetCompanyResult {
   company: Company;
 }
 
-export interface GetDiscussionInput {
-  id: string;
-  includeAuthor?: boolean | null;
-  includeReactions?: boolean | null;
-  includeSpace?: boolean | null;
-  includeSpaceMembers?: boolean | null;
-  includeSubscriptionsList?: boolean | null;
-  includePotentialSubscribers?: boolean | null;
-  includeUnreadNotifications?: boolean | null;
-  includePermissions?: boolean | null;
-}
-
-export interface GetDiscussionResult {
-  discussion: Discussion;
-}
-
-export interface GetDiscussionsInput {
-  spaceId?: Id | null;
-  includeAuthor?: boolean | null;
-  includeCommentsCount?: boolean | null;
-  includeMyDrafts?: boolean | null;
-}
-
-export interface GetDiscussionsResult {
-  discussions?: Discussion[] | null;
-  myDrafts?: Discussion[] | null;
-}
-
 export interface GetFlatWorkMapInput {
   spaceId?: Id | null;
   parentGoalId?: Id | null;
@@ -2919,32 +2891,23 @@ export interface ProjectsCountChildrenResult {
   childrenCount: ProjectChildrenCount;
 }
 
-export interface ProjectsGetContributorsInput {
+export interface ProjectsListContributorsInput {
   projectId: Id;
   query?: string | null;
   ignoredIds?: Id[] | null;
 }
 
-export interface ProjectsGetContributorsResult {
+export interface ProjectsListContributorsResult {
   contributors: Person[] | null;
 }
 
-export interface ProjectsGetMilestonesInput {
+export interface ProjectsListMilestonesInput {
   projectId: Id;
   query?: string;
 }
 
-export interface ProjectsGetMilestonesResult {
+export interface ProjectsListMilestonesResult {
   milestones: Milestone[] | null;
-}
-
-export interface ProjectsParentGoalSearchInput {
-  query: string;
-  projectId: Id;
-}
-
-export interface ProjectsParentGoalSearchResult {
-  goals: Goal[];
 }
 
 export interface ProjectsSearchInput {
@@ -2956,6 +2919,15 @@ export interface ProjectsSearchInput {
 
 export interface ProjectsSearchResult {
   projects: Project[];
+}
+
+export interface ProjectsSearchParentGoalInput {
+  query: string;
+  projectId: Id;
+}
+
+export interface ProjectsSearchParentGoalResult {
+  goals: Goal[];
 }
 
 export interface SearchPeopleInput {
@@ -2987,6 +2959,34 @@ export interface SearchProjectContributorCandidatesInput {
 
 export interface SearchProjectContributorCandidatesResult {
   people?: Person[] | null;
+}
+
+export interface SpaceDiscussionsGetInput {
+  id: string;
+  includeAuthor?: boolean | null;
+  includeReactions?: boolean | null;
+  includeSpace?: boolean | null;
+  includeSpaceMembers?: boolean | null;
+  includeSubscriptionsList?: boolean | null;
+  includePotentialSubscribers?: boolean | null;
+  includeUnreadNotifications?: boolean | null;
+  includePermissions?: boolean | null;
+}
+
+export interface SpaceDiscussionsGetResult {
+  discussion: Discussion;
+}
+
+export interface SpaceDiscussionsListInput {
+  spaceId?: Id | null;
+  includeAuthor?: boolean | null;
+  includeCommentsCount?: boolean | null;
+  includeMyDrafts?: boolean | null;
+}
+
+export interface SpaceDiscussionsListResult {
+  discussions?: Discussion[] | null;
+  myDrafts?: Discussion[] | null;
 }
 
 export interface SpacesCountByAccessLevelInput {
@@ -3623,17 +3623,6 @@ export interface EditCompanyMembersPermissionsResult {
   success: boolean;
 }
 
-export interface EditDiscussionInput {
-  id: Id;
-  title?: string | null;
-  body?: string | null;
-  state?: string | null;
-}
-
-export interface EditDiscussionResult {
-  discussion: Discussion;
-}
-
 export interface EditGoalDiscussionInput {
   activityId?: Id | null;
   title?: string | null;
@@ -3784,26 +3773,26 @@ export interface EditSubscriptionsListInput {
 
 export interface EditSubscriptionsListResult {}
 
-export interface GoalsAddAccessMembersInput {
+export interface GoalsCreateAccessMembersInput {
   goalId: Id;
   members: AddMemberInput[];
 }
 
-export interface GoalsAddAccessMembersResult {
+export interface GoalsCreateAccessMembersResult {
   success: boolean;
 }
 
-export interface GoalsAddCheckInput {
+export interface GoalsCreateCheckInput {
   goalId: Id;
   name: string;
 }
 
-export interface GoalsAddCheckResult {
+export interface GoalsCreateCheckResult {
   checkId: Id;
   success: boolean;
 }
 
-export interface GoalsAddTargetInput {
+export interface GoalsCreateTargetInput {
   goalId: Id;
   name: string;
   startValue: number;
@@ -3811,7 +3800,7 @@ export interface GoalsAddTargetInput {
   unit: string;
 }
 
-export interface GoalsAddTargetResult {
+export interface GoalsCreateTargetResult {
   targetId: Id;
   success: boolean;
 }
@@ -4113,19 +4102,6 @@ export interface PauseProjectResult {
   project?: Project | null;
 }
 
-export interface PostDiscussionInput {
-  spaceId: Id;
-  title: string;
-  body?: string | null;
-  postAsDraft?: boolean | null;
-  sendNotificationsToEveryone?: boolean | null;
-  subscriberIds?: Id[] | null;
-}
-
-export interface PostDiscussionResult {
-  discussion: Discussion;
-}
-
 export interface PostGoalProgressUpdateInput {
   goalId: Id;
   status: string;
@@ -4175,14 +4151,14 @@ export interface ProjectDiscussionsCreateResult {
   discussion: CommentThread;
 }
 
-export interface ProjectDiscussionsEditInput {
+export interface ProjectDiscussionsUpdateInput {
   id: Id;
   title: string;
   message: Json;
   subscriberIds?: Id[];
 }
 
-export interface ProjectDiscussionsEditResult {
+export interface ProjectDiscussionsUpdateResult {
   discussion: Update;
 }
 
@@ -4338,14 +4314,6 @@ export interface ProjectsUpdateTaskStatusesResult {
   success: boolean | null;
 }
 
-export interface PublishDiscussionInput {
-  id?: Id | null;
-}
-
-export interface PublishDiscussionResult {
-  discussion?: Discussion | null;
-}
-
 export interface PublishResourceHubDocumentInput {
   documentId: Id;
   name?: string | null;
@@ -4470,6 +4438,38 @@ export interface ResumeProjectInput {
 
 export interface ResumeProjectResult {
   project: Project;
+}
+
+export interface SpaceDiscussionsCreateInput {
+  spaceId: Id;
+  title: string;
+  body?: string | null;
+  postAsDraft?: boolean | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
+}
+
+export interface SpaceDiscussionsCreateResult {
+  discussion: Discussion;
+}
+
+export interface SpaceDiscussionsPublishInput {
+  id?: Id | null;
+}
+
+export interface SpaceDiscussionsPublishResult {
+  discussion?: Discussion | null;
+}
+
+export interface SpaceDiscussionsUpdateInput {
+  id: Id;
+  title?: string | null;
+  body?: string | null;
+  state?: string | null;
+}
+
+export interface SpaceDiscussionsUpdateResult {
+  discussion: Discussion;
 }
 
 export interface SpacesUpdateKanbanInput {
@@ -4852,14 +4852,6 @@ class ApiNamespaceRoot {
     return this.client.get("/get_company", input);
   }
 
-  async getDiscussion(input: GetDiscussionInput): Promise<GetDiscussionResult> {
-    return this.client.get("/get_discussion", input);
-  }
-
-  async getDiscussions(input: GetDiscussionsInput): Promise<GetDiscussionsResult> {
-    return this.client.get("/get_discussions", input);
-  }
-
   async getFlatWorkMap(input: GetFlatWorkMapInput): Promise<GetFlatWorkMapResult> {
     return this.client.get("/get_flat_work_map", input);
   }
@@ -5208,10 +5200,6 @@ class ApiNamespaceRoot {
     return this.client.post("/edit_company_members_permissions", input);
   }
 
-  async editDiscussion(input: EditDiscussionInput): Promise<EditDiscussionResult> {
-    return this.client.post("/edit_discussion", input);
-  }
-
   async editGoalDiscussion(input: EditGoalDiscussionInput): Promise<EditGoalDiscussionResult> {
     return this.client.post("/edit_goal_discussion", input);
   }
@@ -5316,10 +5304,6 @@ class ApiNamespaceRoot {
     return this.client.post("/pause_project", input);
   }
 
-  async postDiscussion(input: PostDiscussionInput): Promise<PostDiscussionResult> {
-    return this.client.post("/post_discussion", input);
-  }
-
   async postGoalProgressUpdate(input: PostGoalProgressUpdateInput): Promise<PostGoalProgressUpdateResult> {
     return this.client.post("/post_goal_progress_update", input);
   }
@@ -5330,10 +5314,6 @@ class ApiNamespaceRoot {
 
   async postProjectCheckIn(input: PostProjectCheckInInput): Promise<PostProjectCheckInResult> {
     return this.client.post("/post_project_check_in", input);
-  }
-
-  async publishDiscussion(input: PublishDiscussionInput): Promise<PublishDiscussionResult> {
-    return this.client.post("/publish_discussion", input);
   }
 
   async publishResourceHubDocument(input: PublishResourceHubDocumentInput): Promise<PublishResourceHubDocumentResult> {
@@ -5461,6 +5441,30 @@ class ApiNamespaceSpaces {
   }
 }
 
+class ApiNamespaceSpaceDiscussions {
+  constructor(private client: ApiClient) {}
+
+  async get(input: SpaceDiscussionsGetInput): Promise<SpaceDiscussionsGetResult> {
+    return this.client.get("/space_discussions/get", input);
+  }
+
+  async list(input: SpaceDiscussionsListInput): Promise<SpaceDiscussionsListResult> {
+    return this.client.get("/space_discussions/list", input);
+  }
+
+  async create(input: SpaceDiscussionsCreateInput): Promise<SpaceDiscussionsCreateResult> {
+    return this.client.post("/space_discussions/create", input);
+  }
+
+  async publish(input: SpaceDiscussionsPublishInput): Promise<SpaceDiscussionsPublishResult> {
+    return this.client.post("/space_discussions/publish", input);
+  }
+
+  async update(input: SpaceDiscussionsUpdateInput): Promise<SpaceDiscussionsUpdateResult> {
+    return this.client.post("/space_discussions/update", input);
+  }
+}
+
 class ApiNamespaceProjectDiscussions {
   constructor(private client: ApiClient) {}
 
@@ -5476,8 +5480,8 @@ class ApiNamespaceProjectDiscussions {
     return this.client.post("/project_discussions/create", input);
   }
 
-  async edit(input: ProjectDiscussionsEditInput): Promise<ProjectDiscussionsEditResult> {
-    return this.client.post("/project_discussions/edit", input);
+  async update(input: ProjectDiscussionsUpdateInput): Promise<ProjectDiscussionsUpdateResult> {
+    return this.client.post("/project_discussions/update", input);
   }
 }
 
@@ -5568,20 +5572,20 @@ class ApiNamespaceProjects {
     return this.client.get("/projects/count_children", input);
   }
 
-  async getContributors(input: ProjectsGetContributorsInput): Promise<ProjectsGetContributorsResult> {
-    return this.client.get("/projects/get_contributors", input);
+  async listContributors(input: ProjectsListContributorsInput): Promise<ProjectsListContributorsResult> {
+    return this.client.get("/projects/list_contributors", input);
   }
 
-  async getMilestones(input: ProjectsGetMilestonesInput): Promise<ProjectsGetMilestonesResult> {
-    return this.client.get("/projects/get_milestones", input);
-  }
-
-  async parentGoalSearch(input: ProjectsParentGoalSearchInput): Promise<ProjectsParentGoalSearchResult> {
-    return this.client.get("/projects/parent_goal_search", input);
+  async listMilestones(input: ProjectsListMilestonesInput): Promise<ProjectsListMilestonesResult> {
+    return this.client.get("/projects/list_milestones", input);
   }
 
   async search(input: ProjectsSearchInput): Promise<ProjectsSearchResult> {
     return this.client.get("/projects/search", input);
+  }
+
+  async searchParentGoal(input: ProjectsSearchParentGoalInput): Promise<ProjectsSearchParentGoalResult> {
+    return this.client.get("/projects/search_parent_goal", input);
   }
 
   async createMilestone(input: ProjectsCreateMilestoneInput): Promise<ProjectsCreateMilestoneResult> {
@@ -5644,16 +5648,16 @@ class ApiNamespaceGoals {
     return this.client.get("/goals/search_parent_goal", input);
   }
 
-  async addAccessMembers(input: GoalsAddAccessMembersInput): Promise<GoalsAddAccessMembersResult> {
-    return this.client.post("/goals/add_access_members", input);
+  async createAccessMembers(input: GoalsCreateAccessMembersInput): Promise<GoalsCreateAccessMembersResult> {
+    return this.client.post("/goals/create_access_members", input);
   }
 
-  async addCheck(input: GoalsAddCheckInput): Promise<GoalsAddCheckResult> {
-    return this.client.post("/goals/add_check", input);
+  async createCheck(input: GoalsCreateCheckInput): Promise<GoalsCreateCheckResult> {
+    return this.client.post("/goals/create_check", input);
   }
 
-  async addTarget(input: GoalsAddTargetInput): Promise<GoalsAddTargetResult> {
-    return this.client.post("/goals/add_target", input);
+  async createTarget(input: GoalsCreateTargetInput): Promise<GoalsCreateTargetResult> {
+    return this.client.post("/goals/create_target", input);
   }
 
   async deleteAccessMember(input: GoalsDeleteAccessMemberInput): Promise<GoalsDeleteAccessMemberResult> {
@@ -5741,6 +5745,7 @@ export class ApiClient {
   public apiNamespaceAi: ApiNamespaceAi;
   public apiNamespaceRoot: ApiNamespaceRoot;
   public apiNamespaceSpaces: ApiNamespaceSpaces;
+  public apiNamespaceSpaceDiscussions: ApiNamespaceSpaceDiscussions;
   public apiNamespaceProjectDiscussions: ApiNamespaceProjectDiscussions;
   public apiNamespaceTasks: ApiNamespaceTasks;
   public apiNamespaceProjectMilestones: ApiNamespaceProjectMilestones;
@@ -5753,6 +5758,7 @@ export class ApiClient {
     this.apiNamespaceAi = new ApiNamespaceAi(this);
     this.apiNamespaceRoot = new ApiNamespaceRoot(this);
     this.apiNamespaceSpaces = new ApiNamespaceSpaces(this);
+    this.apiNamespaceSpaceDiscussions = new ApiNamespaceSpaceDiscussions(this);
     this.apiNamespaceProjectDiscussions = new ApiNamespaceProjectDiscussions(this);
     this.apiNamespaceTasks = new ApiNamespaceTasks(this);
     this.apiNamespaceProjectMilestones = new ApiNamespaceProjectMilestones(this);
@@ -5826,14 +5832,6 @@ export class ApiClient {
 
   getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
     return this.apiNamespaceRoot.getCompany(input);
-  }
-
-  getDiscussion(input: GetDiscussionInput): Promise<GetDiscussionResult> {
-    return this.apiNamespaceRoot.getDiscussion(input);
-  }
-
-  getDiscussions(input: GetDiscussionsInput): Promise<GetDiscussionsResult> {
-    return this.apiNamespaceRoot.getDiscussions(input);
   }
 
   getFlatWorkMap(input: GetFlatWorkMapInput): Promise<GetFlatWorkMapResult> {
@@ -6178,10 +6176,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.editCompanyMembersPermissions(input);
   }
 
-  editDiscussion(input: EditDiscussionInput): Promise<EditDiscussionResult> {
-    return this.apiNamespaceRoot.editDiscussion(input);
-  }
-
   editGoalDiscussion(input: EditGoalDiscussionInput): Promise<EditGoalDiscussionResult> {
     return this.apiNamespaceRoot.editGoalDiscussion(input);
   }
@@ -6284,10 +6278,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.pauseProject(input);
   }
 
-  postDiscussion(input: PostDiscussionInput): Promise<PostDiscussionResult> {
-    return this.apiNamespaceRoot.postDiscussion(input);
-  }
-
   postGoalProgressUpdate(input: PostGoalProgressUpdateInput): Promise<PostGoalProgressUpdateResult> {
     return this.apiNamespaceRoot.postGoalProgressUpdate(input);
   }
@@ -6298,10 +6288,6 @@ export class ApiClient {
 
   postProjectCheckIn(input: PostProjectCheckInInput): Promise<PostProjectCheckInResult> {
     return this.apiNamespaceRoot.postProjectCheckIn(input);
-  }
-
-  publishDiscussion(input: PublishDiscussionInput): Promise<PublishDiscussionResult> {
-    return this.apiNamespaceRoot.publishDiscussion(input);
   }
 
   publishResourceHubDocument(input: PublishResourceHubDocumentInput): Promise<PublishResourceHubDocumentResult> {
@@ -6423,12 +6409,6 @@ export async function getCompanies(input: GetCompaniesInput): Promise<GetCompani
 }
 export async function getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
   return defaultApiClient.getCompany(input);
-}
-export async function getDiscussion(input: GetDiscussionInput): Promise<GetDiscussionResult> {
-  return defaultApiClient.getDiscussion(input);
-}
-export async function getDiscussions(input: GetDiscussionsInput): Promise<GetDiscussionsResult> {
-  return defaultApiClient.getDiscussions(input);
 }
 export async function getFlatWorkMap(input: GetFlatWorkMapInput): Promise<GetFlatWorkMapResult> {
   return defaultApiClient.getFlatWorkMap(input);
@@ -6718,9 +6698,6 @@ export async function editCompanyMembersPermissions(
 ): Promise<EditCompanyMembersPermissionsResult> {
   return defaultApiClient.editCompanyMembersPermissions(input);
 }
-export async function editDiscussion(input: EditDiscussionInput): Promise<EditDiscussionResult> {
-  return defaultApiClient.editDiscussion(input);
-}
 export async function editGoalDiscussion(input: EditGoalDiscussionInput): Promise<EditGoalDiscussionResult> {
   return defaultApiClient.editGoalDiscussion(input);
 }
@@ -6814,9 +6791,6 @@ export async function moveTask(input: MoveTaskInput): Promise<MoveTaskResult> {
 export async function pauseProject(input: PauseProjectInput): Promise<PauseProjectResult> {
   return defaultApiClient.pauseProject(input);
 }
-export async function postDiscussion(input: PostDiscussionInput): Promise<PostDiscussionResult> {
-  return defaultApiClient.postDiscussion(input);
-}
 export async function postGoalProgressUpdate(
   input: PostGoalProgressUpdateInput,
 ): Promise<PostGoalProgressUpdateResult> {
@@ -6827,9 +6801,6 @@ export async function postMilestoneComment(input: PostMilestoneCommentInput): Pr
 }
 export async function postProjectCheckIn(input: PostProjectCheckInInput): Promise<PostProjectCheckInResult> {
   return defaultApiClient.postProjectCheckIn(input);
-}
-export async function publishDiscussion(input: PublishDiscussionInput): Promise<PublishDiscussionResult> {
-  return defaultApiClient.publishDiscussion(input);
 }
 export async function publishResourceHubDocument(
   input: PublishResourceHubDocumentInput,
@@ -6948,14 +6919,6 @@ export function useGetCompanies(input: GetCompaniesInput): UseQueryHookResult<Ge
 
 export function useGetCompany(input: GetCompanyInput): UseQueryHookResult<GetCompanyResult> {
   return useQuery<GetCompanyResult>(() => defaultApiClient.getCompany(input));
-}
-
-export function useGetDiscussion(input: GetDiscussionInput): UseQueryHookResult<GetDiscussionResult> {
-  return useQuery<GetDiscussionResult>(() => defaultApiClient.getDiscussion(input));
-}
-
-export function useGetDiscussions(input: GetDiscussionsInput): UseQueryHookResult<GetDiscussionsResult> {
-  return useQuery<GetDiscussionsResult>(() => defaultApiClient.getDiscussions(input));
 }
 
 export function useGetFlatWorkMap(input: GetFlatWorkMapInput): UseQueryHookResult<GetFlatWorkMapResult> {
@@ -7429,10 +7392,6 @@ export function useEditCompanyMembersPermissions(): UseMutationHookResult<
   );
 }
 
-export function useEditDiscussion(): UseMutationHookResult<EditDiscussionInput, EditDiscussionResult> {
-  return useMutation<EditDiscussionInput, EditDiscussionResult>((input) => defaultApiClient.editDiscussion(input));
-}
-
 export function useEditGoalDiscussion(): UseMutationHookResult<EditGoalDiscussionInput, EditGoalDiscussionResult> {
   return useMutation<EditGoalDiscussionInput, EditGoalDiscussionResult>((input) =>
     defaultApiClient.editGoalDiscussion(input),
@@ -7600,10 +7559,6 @@ export function usePauseProject(): UseMutationHookResult<PauseProjectInput, Paus
   return useMutation<PauseProjectInput, PauseProjectResult>((input) => defaultApiClient.pauseProject(input));
 }
 
-export function usePostDiscussion(): UseMutationHookResult<PostDiscussionInput, PostDiscussionResult> {
-  return useMutation<PostDiscussionInput, PostDiscussionResult>((input) => defaultApiClient.postDiscussion(input));
-}
-
 export function usePostGoalProgressUpdate(): UseMutationHookResult<
   PostGoalProgressUpdateInput,
   PostGoalProgressUpdateResult
@@ -7625,12 +7580,6 @@ export function usePostMilestoneComment(): UseMutationHookResult<
 export function usePostProjectCheckIn(): UseMutationHookResult<PostProjectCheckInInput, PostProjectCheckInResult> {
   return useMutation<PostProjectCheckInInput, PostProjectCheckInResult>((input) =>
     defaultApiClient.postProjectCheckIn(input),
-  );
-}
-
-export function usePublishDiscussion(): UseMutationHookResult<PublishDiscussionInput, PublishDiscussionResult> {
-  return useMutation<PublishDiscussionInput, PublishDiscussionResult>((input) =>
-    defaultApiClient.publishDiscussion(input),
   );
 }
 
@@ -7808,10 +7757,6 @@ export default {
   useGetCompanies,
   getCompany,
   useGetCompany,
-  getDiscussion,
-  useGetDiscussion,
-  getDiscussions,
-  useGetDiscussions,
   getFlatWorkMap,
   useGetFlatWorkMap,
   getGoal,
@@ -7980,8 +7925,6 @@ export default {
   useEditCompany,
   editCompanyMembersPermissions,
   useEditCompanyMembersPermissions,
-  editDiscussion,
-  useEditDiscussion,
   editGoalDiscussion,
   useEditGoalDiscussion,
   editGoalProgressUpdate,
@@ -8032,16 +7975,12 @@ export default {
   useMoveTask,
   pauseProject,
   usePauseProject,
-  postDiscussion,
-  usePostDiscussion,
   postGoalProgressUpdate,
   usePostGoalProgressUpdate,
   postMilestoneComment,
   usePostMilestoneComment,
   postProjectCheckIn,
   usePostProjectCheckIn,
-  publishDiscussion,
-  usePublishDiscussion,
   publishResourceHubDocument,
   usePublishResourceHubDocument,
   removeCompanyAdmin,
@@ -8300,6 +8239,34 @@ export default {
       ),
   },
 
+  space_discussions: {
+    get: (input: SpaceDiscussionsGetInput) => defaultApiClient.apiNamespaceSpaceDiscussions.get(input),
+    useGet: (input: SpaceDiscussionsGetInput) =>
+      useQuery<SpaceDiscussionsGetResult>(() => defaultApiClient.apiNamespaceSpaceDiscussions.get(input)),
+
+    list: (input: SpaceDiscussionsListInput) => defaultApiClient.apiNamespaceSpaceDiscussions.list(input),
+    useList: (input: SpaceDiscussionsListInput) =>
+      useQuery<SpaceDiscussionsListResult>(() => defaultApiClient.apiNamespaceSpaceDiscussions.list(input)),
+
+    create: (input: SpaceDiscussionsCreateInput) => defaultApiClient.apiNamespaceSpaceDiscussions.create(input),
+    useCreate: () =>
+      useMutation<SpaceDiscussionsCreateInput, SpaceDiscussionsCreateResult>((input) =>
+        defaultApiClient.apiNamespaceSpaceDiscussions.create(input),
+      ),
+
+    publish: (input: SpaceDiscussionsPublishInput) => defaultApiClient.apiNamespaceSpaceDiscussions.publish(input),
+    usePublish: () =>
+      useMutation<SpaceDiscussionsPublishInput, SpaceDiscussionsPublishResult>((input) =>
+        defaultApiClient.apiNamespaceSpaceDiscussions.publish(input),
+      ),
+
+    update: (input: SpaceDiscussionsUpdateInput) => defaultApiClient.apiNamespaceSpaceDiscussions.update(input),
+    useUpdate: () =>
+      useMutation<SpaceDiscussionsUpdateInput, SpaceDiscussionsUpdateResult>((input) =>
+        defaultApiClient.apiNamespaceSpaceDiscussions.update(input),
+      ),
+  },
+
   project_discussions: {
     list: (input: ProjectDiscussionsListInput) => defaultApiClient.apiNamespaceProjectDiscussions.list(input),
     useList: (input: ProjectDiscussionsListInput) =>
@@ -8309,16 +8276,16 @@ export default {
     useGet: (input: ProjectDiscussionsGetInput) =>
       useQuery<ProjectDiscussionsGetResult>(() => defaultApiClient.apiNamespaceProjectDiscussions.get(input)),
 
-    edit: (input: ProjectDiscussionsEditInput) => defaultApiClient.apiNamespaceProjectDiscussions.edit(input),
-    useEdit: () =>
-      useMutation<ProjectDiscussionsEditInput, ProjectDiscussionsEditResult>((input) =>
-        defaultApiClient.apiNamespaceProjectDiscussions.edit(input),
-      ),
-
     create: (input: ProjectDiscussionsCreateInput) => defaultApiClient.apiNamespaceProjectDiscussions.create(input),
     useCreate: () =>
       useMutation<ProjectDiscussionsCreateInput, ProjectDiscussionsCreateResult>((input) =>
         defaultApiClient.apiNamespaceProjectDiscussions.create(input),
+      ),
+
+    update: (input: ProjectDiscussionsUpdateInput) => defaultApiClient.apiNamespaceProjectDiscussions.update(input),
+    useUpdate: () =>
+      useMutation<ProjectDiscussionsUpdateInput, ProjectDiscussionsUpdateResult>((input) =>
+        defaultApiClient.apiNamespaceProjectDiscussions.update(input),
       ),
   },
 
@@ -8432,23 +8399,23 @@ export default {
     useCountChildren: (input: ProjectsCountChildrenInput) =>
       useQuery<ProjectsCountChildrenResult>(() => defaultApiClient.apiNamespaceProjects.countChildren(input)),
 
-    getContributors: (input: ProjectsGetContributorsInput) =>
-      defaultApiClient.apiNamespaceProjects.getContributors(input),
-    useGetContributors: (input: ProjectsGetContributorsInput) =>
-      useQuery<ProjectsGetContributorsResult>(() => defaultApiClient.apiNamespaceProjects.getContributors(input)),
+    searchParentGoal: (input: ProjectsSearchParentGoalInput) =>
+      defaultApiClient.apiNamespaceProjects.searchParentGoal(input),
+    useSearchParentGoal: (input: ProjectsSearchParentGoalInput) =>
+      useQuery<ProjectsSearchParentGoalResult>(() => defaultApiClient.apiNamespaceProjects.searchParentGoal(input)),
 
-    parentGoalSearch: (input: ProjectsParentGoalSearchInput) =>
-      defaultApiClient.apiNamespaceProjects.parentGoalSearch(input),
-    useParentGoalSearch: (input: ProjectsParentGoalSearchInput) =>
-      useQuery<ProjectsParentGoalSearchResult>(() => defaultApiClient.apiNamespaceProjects.parentGoalSearch(input)),
+    listContributors: (input: ProjectsListContributorsInput) =>
+      defaultApiClient.apiNamespaceProjects.listContributors(input),
+    useListContributors: (input: ProjectsListContributorsInput) =>
+      useQuery<ProjectsListContributorsResult>(() => defaultApiClient.apiNamespaceProjects.listContributors(input)),
+
+    listMilestones: (input: ProjectsListMilestonesInput) => defaultApiClient.apiNamespaceProjects.listMilestones(input),
+    useListMilestones: (input: ProjectsListMilestonesInput) =>
+      useQuery<ProjectsListMilestonesResult>(() => defaultApiClient.apiNamespaceProjects.listMilestones(input)),
 
     search: (input: ProjectsSearchInput) => defaultApiClient.apiNamespaceProjects.search(input),
     useSearch: (input: ProjectsSearchInput) =>
       useQuery<ProjectsSearchResult>(() => defaultApiClient.apiNamespaceProjects.search(input)),
-
-    getMilestones: (input: ProjectsGetMilestonesInput) => defaultApiClient.apiNamespaceProjects.getMilestones(input),
-    useGetMilestones: (input: ProjectsGetMilestonesInput) =>
-      useQuery<ProjectsGetMilestonesResult>(() => defaultApiClient.apiNamespaceProjects.getMilestones(input)),
 
     updateParentGoal: (input: ProjectsUpdateParentGoalInput) =>
       defaultApiClient.apiNamespaceProjects.updateParentGoal(input),
@@ -8554,12 +8521,6 @@ export default {
         defaultApiClient.apiNamespaceGoals.updateTargetIndex(input),
       ),
 
-    addTarget: (input: GoalsAddTargetInput) => defaultApiClient.apiNamespaceGoals.addTarget(input),
-    useAddTarget: () =>
-      useMutation<GoalsAddTargetInput, GoalsAddTargetResult>((input) =>
-        defaultApiClient.apiNamespaceGoals.addTarget(input),
-      ),
-
     updateAccessLevels: (input: GoalsUpdateAccessLevelsInput) =>
       defaultApiClient.apiNamespaceGoals.updateAccessLevels(input),
     useUpdateAccessLevels: () =>
@@ -8579,10 +8540,10 @@ export default {
         defaultApiClient.apiNamespaceGoals.updateTarget(input),
       ),
 
-    addCheck: (input: GoalsAddCheckInput) => defaultApiClient.apiNamespaceGoals.addCheck(input),
-    useAddCheck: () =>
-      useMutation<GoalsAddCheckInput, GoalsAddCheckResult>((input) =>
-        defaultApiClient.apiNamespaceGoals.addCheck(input),
+    createTarget: (input: GoalsCreateTargetInput) => defaultApiClient.apiNamespaceGoals.createTarget(input),
+    useCreateTarget: () =>
+      useMutation<GoalsCreateTargetInput, GoalsCreateTargetResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.createTarget(input),
       ),
 
     deleteTarget: (input: GoalsDeleteTargetInput) => defaultApiClient.apiNamespaceGoals.deleteTarget(input),
@@ -8601,6 +8562,19 @@ export default {
     useUpdateDueDate: () =>
       useMutation<GoalsUpdateDueDateInput, GoalsUpdateDueDateResult>((input) =>
         defaultApiClient.apiNamespaceGoals.updateDueDate(input),
+      ),
+
+    createAccessMembers: (input: GoalsCreateAccessMembersInput) =>
+      defaultApiClient.apiNamespaceGoals.createAccessMembers(input),
+    useCreateAccessMembers: () =>
+      useMutation<GoalsCreateAccessMembersInput, GoalsCreateAccessMembersResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.createAccessMembers(input),
+      ),
+
+    createCheck: (input: GoalsCreateCheckInput) => defaultApiClient.apiNamespaceGoals.createCheck(input),
+    useCreateCheck: () =>
+      useMutation<GoalsCreateCheckInput, GoalsCreateCheckResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.createCheck(input),
       ),
 
     updateCheck: (input: GoalsUpdateCheckInput) => defaultApiClient.apiNamespaceGoals.updateCheck(input),
@@ -8658,12 +8632,6 @@ export default {
     useDeleteAccessMember: () =>
       useMutation<GoalsDeleteAccessMemberInput, GoalsDeleteAccessMemberResult>((input) =>
         defaultApiClient.apiNamespaceGoals.deleteAccessMember(input),
-      ),
-
-    addAccessMembers: (input: GoalsAddAccessMembersInput) => defaultApiClient.apiNamespaceGoals.addAccessMembers(input),
-    useAddAccessMembers: () =>
-      useMutation<GoalsAddAccessMembersInput, GoalsAddAccessMembersResult>((input) =>
-        defaultApiClient.apiNamespaceGoals.addAccessMembers(input),
       ),
 
     updateReviewer: (input: GoalsUpdateReviewerInput) => defaultApiClient.apiNamespaceGoals.updateReviewer(input),

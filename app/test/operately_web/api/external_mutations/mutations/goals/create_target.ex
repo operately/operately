@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Goals.AddTarget do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Goals.CreateTarget do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "goals/add_target"
+  def mutation_name, do: "goals/create_target"
 
   @impl true
   def setup(ctx) do

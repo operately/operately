@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.EditDiscussion do
+defmodule OperatelyWeb.Api.SpaceDiscussions.Update do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

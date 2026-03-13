@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Goals.AddCheck do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Goals.CreateAccessMembers do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "goals/add_check"
+  def mutation_name, do: "goals/create_access_members"
 
   @impl true
   def setup(ctx) do
@@ -11,20 +11,20 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Goals.AddCheck do
     |> Factory.setup()
     |> Factory.add_space(:space)
     |> Factory.add_goal(:goal, :space)
+    |> Factory.add_company_member(:member)
   end
 
   @impl true
   def inputs(ctx) do
     %{
       goal_id: Paths.goal_id(ctx.goal),
-      name: "Updated Name"
+      members: [%{id: Paths.person_id(ctx.member), access_level: Operately.Access.Binding.edit_access()}]
     }
   end
 
   @impl true
   def assert(response, _ctx) do
     assert response.success
-    assert response.check_id
     refute Map.has_key?(response, :error)
   end
 end

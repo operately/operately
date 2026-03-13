@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
+defmodule OperatelyWeb.Api.SpaceDiscussions.CreateTest do
   use OperatelyWeb.TurboCase
 
   import Operately.GroupsFixtures
@@ -11,7 +11,7 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :post_discussion, %{})
+      assert {401, _} = mutation(ctx.conn, [:space_discussions, :create], %{})
     end
   end
 
@@ -82,7 +82,7 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
     end
   end
 
-  describe "post_discussion functionality" do
+  describe "space_discussions/create functionality" do
     setup ctx do
       ctx = register_and_log_in_account(ctx)
       Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
@@ -117,7 +117,7 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
     end
 
     test "creates subscription list for message", ctx do
-      assert {200, res} = mutation(ctx.conn, :post_discussion, %{
+      assert {200, res} = mutation(ctx.conn, [:space_discussions, :create], %{
         space_id: Paths.space_id(ctx.space),
         title: "Message",
         body: RichText.rich_text("Content", :as_string),
@@ -144,7 +144,7 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
       people = ctx.people ++ ctx.people ++ ctx.people
       content = RichText.rich_text(mentioned_people: people)
 
-      assert {200, res} = mutation(ctx.conn, :post_discussion, %{
+      assert {200, res} = mutation(ctx.conn, [:space_discussions, :create], %{
         space_id: Paths.space_id(ctx.space),
         title: "Message",
         body: content,
@@ -165,7 +165,7 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
       people = [ctx.person | ctx.people]
       content = RichText.rich_text(mentioned_people: people)
 
-      assert {200, res} = mutation(ctx.conn, :post_discussion, %{
+      assert {200, res} = mutation(ctx.conn, [:space_discussions, :create], %{
         space_id: Paths.space_id(ctx.space),
         title: "Message",
         body: content,
@@ -189,7 +189,7 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
   #
 
   defp request(conn, space) do
-    mutation(conn, :post_discussion, %{
+    mutation(conn, [:space_discussions, :create], %{
       space_id: Paths.space_id(space),
       title: "Message",
       body: RichText.rich_text("Content", :as_string),

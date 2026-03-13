@@ -1,10 +1,10 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.Projects.GetContributors do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.Projects.ListContributors do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
   alias OperatelyWeb.Paths
 
-  def query_name, do: "projects/get_contributors"
+  def query_name, do: "projects/list_contributors"
 
   @impl true
   def setup(ctx) do

@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.EditDiscussionTest do
+defmodule OperatelyWeb.Api.SpaceDiscussions.UpdateTest do
   use OperatelyWeb.TurboCase
 
   import Operately.PeopleFixtures
@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussionTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :edit_discussion, %{})
+      assert {401, _} = mutation(ctx.conn, [:space_discussions, :update], %{})
     end
   end
 
@@ -87,7 +87,7 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussionTest do
     end
   end
 
-  describe "edit_discussion functionality" do
+  describe "space_discussions/update functionality" do
     setup ctx do
       ctx = register_and_log_in_account(ctx)
       Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
@@ -112,7 +112,7 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussionTest do
       subscriptions = Enum.filter(list.subscriptions, &(&1.person_id != ctx.person.id))
       assert subscriptions == []
 
-      assert {200, _} = mutation(ctx.conn, :edit_discussion, %{
+      assert {200, _} = mutation(ctx.conn, [:space_discussions, :update], %{
         id: Paths.message_id(message),
         title: "New title",
         body: RichText.rich_text(mentioned_people: [ctx.company_creator]),
@@ -132,7 +132,7 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussionTest do
   #
 
   defp request(conn, message) do
-    mutation(conn, :edit_discussion, %{
+    mutation(conn, [:space_discussions, :update], %{
       id: Paths.message_id(message),
       title: "New title",
       body: RichText.rich_text("New body", :as_string),

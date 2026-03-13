@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetDiscussionsTest do
+defmodule OperatelyWeb.Api.SpaceDiscussions.ListTest do
   use OperatelyWeb.TurboCase
 
   import Operately.GroupsFixtures
@@ -10,7 +10,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionsTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, :get_discussions, %{})
+      assert {401, _} = query(ctx.conn, [:space_discussions, :list], %{})
     end
   end
 
@@ -28,7 +28,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionsTest do
       end)
       space = Operately.Groups.get_group!(ctx.company.company_space_id)
 
-      assert {200, res} = query(ctx.conn, :get_discussions, %{space_id: Paths.space_id(space)})
+      assert {200, res} = query(ctx.conn, [:space_discussions, :list], %{space_id: Paths.space_id(space)})
       assert_messages(res, messages)
     end
 
@@ -38,7 +38,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionsTest do
         create_message(ctx.creator.id, space.id)
       end)
 
-      assert {200, res} = query(ctx.conn, :get_discussions, %{space_id: Paths.space_id(space)})
+      assert {200, res} = query(ctx.conn, [:space_discussions, :list], %{space_id: Paths.space_id(space)})
       assert length(res.discussions) == 0
     end
 
@@ -48,7 +48,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionsTest do
         create_message(ctx.creator.id, space.id)
       end)
 
-      assert {200, res} = query(ctx.conn, :get_discussions, %{space_id: Paths.space_id(space)})
+      assert {200, res} = query(ctx.conn, [:space_discussions, :list], %{space_id: Paths.space_id(space)})
       assert_messages(res, messages)
     end
 
@@ -58,17 +58,17 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionsTest do
         create_message(ctx.creator.id, space.id)
       end)
 
-      assert {200, res} = query(ctx.conn, :get_discussions, %{space_id: Paths.space_id(space)})
+      assert {200, res} = query(ctx.conn, [:space_discussions, :list], %{space_id: Paths.space_id(space)})
       assert length(res.discussions) == 0
 
       add_person_to_space(ctx, space)
 
-      assert {200, res} = query(ctx.conn, :get_discussions, %{space_id: Paths.space_id(space)})
+      assert {200, res} = query(ctx.conn, [:space_discussions, :list], %{space_id: Paths.space_id(space)})
       assert_messages(res, messages)
     end
   end
 
-  describe "get_discussions functionality" do
+  describe "space_discussions/list functionality" do
     setup ctx do
       ctx
       |> Factory.setup()
@@ -88,7 +88,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionsTest do
       update_published_at(ctx.message2, Time.days_ago(2))
       update_published_at(ctx.message3, Time.days_ago(5))
 
-      assert {200, res} = query(ctx.conn, :get_discussions, %{space_id: Paths.space_id(ctx.space)})
+      assert {200, res} = query(ctx.conn, [:space_discussions, :list], %{space_id: Paths.space_id(ctx.space)})
 
       assert length(res.discussions) == 4
       assert Enum.at(res.discussions, 0).id == OperatelyWeb.Paths.message_id(ctx.message)
@@ -98,7 +98,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionsTest do
     end
 
     test "with no includes", ctx do
-      assert {200, res} = query(ctx.conn, :get_discussions, %{space_id: Paths.space_id(ctx.space)})
+      assert {200, res} = query(ctx.conn, [:space_discussions, :list], %{space_id: Paths.space_id(ctx.space)})
 
       assert length(res.discussions) == 1
 
@@ -109,7 +109,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionsTest do
     end
 
     test "include_author", ctx do
-      assert {200, res} = query(ctx.conn, :get_discussions, %{
+      assert {200, res} = query(ctx.conn, [:space_discussions, :list], %{
         space_id: Paths.space_id(ctx.space),
         include_author: true
       })
@@ -119,7 +119,7 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussionsTest do
     end
 
     test "include_comments_count", ctx do
-      assert {200, res} = query(ctx.conn, :get_discussions, %{
+      assert {200, res} = query(ctx.conn, [:space_discussions, :list], %{
         space_id: Paths.space_id(ctx.space),
         include_comments_count: true
       })

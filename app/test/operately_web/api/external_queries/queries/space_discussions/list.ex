@@ -1,8 +1,10 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.GetDiscussion do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.SpaceDiscussions.List do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
   alias OperatelyWeb.Paths
+
+  def query_name, do: "space_discussions/list"
 
   @impl true
   def setup(ctx) do
@@ -15,13 +17,13 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.GetDiscussion do
 
   @impl true
   def inputs(ctx) do
-    %{id: Paths.message_id(ctx.message)}
+    %{space_id: Paths.space_id(ctx.space)}
   end
 
   @impl true
-  def assert(response, _ctx) do
-    assert response.discussion
-    assert response.discussion.title
-    assert response.discussion.body
+  def assert(response, ctx) do
+    assert is_list(response.discussions)
+    assert is_list(response.my_drafts)
+    assert Enum.any?(response.discussions, fn discussion -> discussion.id == Paths.message_id(ctx.message) end)
   end
 end

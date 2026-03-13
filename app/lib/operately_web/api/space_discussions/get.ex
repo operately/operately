@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetDiscussion do
+defmodule OperatelyWeb.Api.SpaceDiscussions.Get do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 

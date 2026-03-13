@@ -1,10 +1,10 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.Projects.ParentGoalSearch do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.Projects.ListMilestones do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
   alias OperatelyWeb.Paths
 
-  def query_name, do: "projects/parent_goal_search"
+  def query_name, do: "projects/list_milestones"
 
   @impl true
   def setup(ctx) do
@@ -16,11 +16,11 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.Projects.ParentGoalSearch do
 
   @impl true
   def inputs(ctx) do
-    %{project_id: Paths.project_id(ctx.project), query: "test"}
+    %{project_id: Paths.project_id(ctx.project)}
   end
 
   @impl true
   def assert(res, _ctx) do
-    assert is_list(res.goals)
+    assert is_list(res.milestones)
   end
 end

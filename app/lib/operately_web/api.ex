@@ -11,7 +11,7 @@ defmodule OperatelyWeb.Api do
         query(:list_discussions, OperatelyWeb.Api.Goals.ListDiscussions)
         query(:search_parent_goal, OperatelyWeb.Api.Goals.SearchParentGoal)
 
-        mutation(:add_access_members, OperatelyWeb.Api.Goals.AddAccessMembers)
+        mutation(:create_access_members, OperatelyWeb.Api.Goals.CreateAccessMembers)
         mutation(:update_access_member, OperatelyWeb.Api.Goals.UpdateAccessMember)
         mutation(:delete_access_member, OperatelyWeb.Api.Goals.DeleteAccessMember)
         mutation(:update_name, OperatelyWeb.Api.Goals.UpdateName)
@@ -21,7 +21,7 @@ defmodule OperatelyWeb.Api do
         mutation(:update_parent_goal, OperatelyWeb.Api.Goals.UpdateParentGoal)
         mutation(:update_space, OperatelyWeb.Api.Goals.UpdateSpace)
 
-        mutation(:add_target, OperatelyWeb.Api.Goals.AddTarget)
+        mutation(:create_target, OperatelyWeb.Api.Goals.CreateTarget)
         mutation(:delete_target, OperatelyWeb.Api.Goals.DeleteTarget)
         mutation(:update_target, OperatelyWeb.Api.Goals.UpdateTarget)
         mutation(:update_target_value, OperatelyWeb.Api.Goals.UpdateTargetValue)
@@ -30,7 +30,7 @@ defmodule OperatelyWeb.Api do
         mutation(:update_reviewer, OperatelyWeb.Api.Goals.UpdateReviewer)
         mutation(:update_access_levels, OperatelyWeb.Api.Goals.UpdateAccessLevels)
 
-        mutation(:add_check, OperatelyWeb.Api.GoalChecks.Add)
+        mutation(:create_check, OperatelyWeb.Api.GoalChecks.Create)
         mutation(:delete_check, OperatelyWeb.Api.GoalChecks.Delete)
         mutation(:update_check, OperatelyWeb.Api.GoalChecks.Update)
         mutation(:update_check_index, OperatelyWeb.Api.GoalChecks.UpdateIndex)
@@ -38,10 +38,10 @@ defmodule OperatelyWeb.Api do
       end
 
       namespace(:projects) do
-        query(:parent_goal_search, OperatelyWeb.Api.Projects.ParentGoalSearch)
+        query(:search_parent_goal, OperatelyWeb.Api.Projects.SearchParentGoal)
         query(:search, OperatelyWeb.Api.Projects.Search)
-        query(:get_milestones, OperatelyWeb.Api.Projects.GetMilestones)
-        query(:get_contributors, OperatelyWeb.Api.Projects.GetContributors)
+        query(:list_milestones, OperatelyWeb.Api.Projects.ListMilestones)
+        query(:list_contributors, OperatelyWeb.Api.Projects.ListContributors)
         query(:count_children, OperatelyWeb.Api.Projects.CountChildren)
 
         mutation(:update_due_date, OperatelyWeb.Api.Projects.UpdateDueDate)
@@ -88,7 +88,18 @@ defmodule OperatelyWeb.Api do
         query(:list, ProjectDiscussions.List)
 
         mutation(:create, ProjectDiscussions.Create)
-        mutation(:edit, ProjectDiscussions.Edit)
+        mutation(:update, ProjectDiscussions.Update)
+      end
+
+      namespace(:space_discussions) do
+        alias OperatelyWeb.Api.SpaceDiscussions
+
+        query(:get, SpaceDiscussions.Get)
+        query(:list, SpaceDiscussions.List)
+
+        mutation(:update, SpaceDiscussions.Update)
+        mutation(:create, SpaceDiscussions.Create)
+        mutation(:publish, SpaceDiscussions.Publish)
       end
 
       namespace(:spaces) do
@@ -109,8 +120,6 @@ defmodule OperatelyWeb.Api do
       query(:get_comments, Q.GetComments)
       query(:get_companies, Q.GetCompanies)
       query(:get_company, Q.GetCompany)
-      query(:get_discussion, Q.GetDiscussion)
-      query(:get_discussions, Q.GetDiscussions)
       query(:get_goal, Q.GetGoal)
       query(:get_goal_progress_update, Q.GetGoalProgressUpdate)
       query(:get_goals, Q.GetGoals)
@@ -197,7 +206,6 @@ defmodule OperatelyWeb.Api do
 
       mutation(:edit_company, M.EditCompany)
       mutation(:edit_comment, M.EditComment)
-      mutation(:edit_discussion, M.EditDiscussion)
       mutation(:edit_goal_discussion, M.EditGoalDiscussion)
       mutation(:edit_goal_progress_update, M.EditGoalProgressUpdate)
       mutation(:edit_space, M.EditSpace)
@@ -222,8 +230,6 @@ defmodule OperatelyWeb.Api do
       mutation(:move_project_to_space, M.MoveProjectToSpace)
       mutation(:move_task, M.MoveTask)
       mutation(:pause_project, M.PauseProject)
-      mutation(:post_discussion, M.PostDiscussion)
-      mutation(:publish_discussion, M.PublishDiscussion)
       mutation(:post_goal_progress_update, M.PostGoalProgressUpdate)
       mutation(:post_milestone_comment, M.PostMilestoneComment)
       mutation(:post_project_check_in, M.PostProjectCheckIn)
