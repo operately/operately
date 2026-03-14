@@ -149,14 +149,28 @@ defmodule OperatelyWeb.Api do
         mutation(:update_tools, OperatelyWeb.Api.Spaces.UpdateTools)
       end
 
+      namespace(:companies) do
+        query(:list, OperatelyWeb.Api.Companies.List)
+        query(:get, OperatelyWeb.Api.Companies.Get)
+        mutation(:restore_member, OperatelyWeb.Api.Companies.RestoreMember)
+        mutation(:convert_member_to_guest, OperatelyWeb.Api.Companies.ConvertMemberToGuest)
+        mutation(:create, OperatelyWeb.Api.Companies.Create)
+        mutation(:create_admins, OperatelyWeb.Api.Companies.CreateAdmins)
+        mutation(:create_member, OperatelyWeb.Api.Companies.CreateMember)
+        mutation(:update_members_permissions, OperatelyWeb.Api.Companies.UpdateMembersPermissions)
+        mutation(:delete_admin, OperatelyWeb.Api.Companies.DeleteAdmin)
+        mutation(:delete_member, OperatelyWeb.Api.Companies.DeleteMember)
+        mutation(:delete_trusted_email_domain, OperatelyWeb.Api.Companies.DeleteTrustedEmailDomain)
+        mutation(:delete_owner, OperatelyWeb.Api.Companies.DeleteOwner)
+        mutation(:update, OperatelyWeb.Api.Companies.Update)
+      end
+
       query(:get_account, Q.GetAccount)
       query(:get_activities, Q.GetActivities)
       query(:get_activity, Q.GetActivity)
       query(:get_assignments_count, Q.GetAssignmentsCount)
       query(:get_assignments, Q.GetAssignments)
       query(:get_comments, Q.GetComments)
-      query(:get_companies, Q.GetCompanies)
-      query(:get_company, Q.GetCompany)
       query(:get_goal_progress_update, Q.GetGoalProgressUpdate)
       query(:get_key_resource, Q.GetKeyResource)
       query(:get_me, Q.GetMe)
@@ -182,12 +196,6 @@ defmodule OperatelyWeb.Api do
       query(:global_search, Q.GlobalSearch)
       query(:is_subscribed_to_resource, Q.IsSubscribedToResource)
 
-      mutation(:restore_company_member, M.RestoreCompanyMember)
-      mutation(:convert_company_member_to_guest, M.ConvertCompanyMemberToGuest)
-      mutation(:add_company, M.AddCompany)
-      mutation(:add_company_admins, M.AddCompanyAdmins)
-      mutation(:add_company_member, M.AddCompanyMember)
-      mutation(:edit_company_members_permissions, M.EditCompanyMembersPermissions)
       mutation(:invite_guest, M.InviteGuest)
       mutation(:grant_resource_access, M.GrantResourceAccess)
       mutation(:add_key_resource, M.AddKeyResource)
@@ -212,13 +220,8 @@ defmodule OperatelyWeb.Api do
       mutation(:delete_resource_hub_folder, M.DeleteResourceHubFolder)
       mutation(:delete_resource_hub_link, M.DeleteResourceHubLink)
 
-      mutation(:remove_company_admin, M.RemoveCompanyAdmin)
-      mutation(:remove_company_member, M.RemoveCompanyMember)
-      mutation(:remove_company_trusted_email_domain, M.RemoveCompanyTrustedEmailDomain)
       mutation(:remove_key_resource, M.RemoveKeyResource)
-      mutation(:remove_company_owner, M.RemoveCompanyOwner)
 
-      mutation(:edit_company, M.EditCompany)
       mutation(:edit_comment, M.EditComment)
       mutation(:edit_goal_discussion, M.EditGoalDiscussion)
       mutation(:edit_goal_progress_update, M.EditGoalProgressUpdate)
