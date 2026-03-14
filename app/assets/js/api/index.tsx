@@ -2254,6 +2254,28 @@ export interface ApiTokensListResult {
   apiTokens: ApiToken[];
 }
 
+export interface CompaniesGetInput {
+  id?: CompanyId;
+  includePermissions?: boolean;
+  includePeople?: boolean;
+  includeAdmins?: boolean;
+  includeOwners?: boolean;
+  includeGeneralSpace?: boolean;
+  includeMembersAccessLevels?: boolean;
+}
+
+export interface CompaniesGetResult {
+  company: Company;
+}
+
+export interface CompaniesListInput {
+  includeMemberCount?: boolean | null;
+}
+
+export interface CompaniesListResult {
+  companies?: Company[] | null;
+}
+
 export interface GetAccountInput {}
 
 export interface GetAccountResult {
@@ -2311,28 +2333,6 @@ export interface GetCommentsInput {
 
 export interface GetCommentsResult {
   comments: Comment[];
-}
-
-export interface GetCompaniesInput {
-  includeMemberCount?: boolean | null;
-}
-
-export interface GetCompaniesResult {
-  companies?: Company[] | null;
-}
-
-export interface GetCompanyInput {
-  id?: CompanyId;
-  includePermissions?: boolean;
-  includePeople?: boolean;
-  includeAdmins?: boolean;
-  includeOwners?: boolean;
-  includeGeneralSpace?: boolean;
-  includeMembersAccessLevels?: boolean;
-}
-
-export interface GetCompanyResult {
-  company: Company;
 }
 
 export interface GetFlatWorkMapInput {
@@ -3041,34 +3041,6 @@ export interface AcknowledgeProjectCheckInResult {
   checkIn?: ProjectCheckIn | null;
 }
 
-export interface AddCompanyInput {
-  companyName?: string | null;
-  title?: string | null;
-  isDemo?: boolean | null;
-}
-
-export interface AddCompanyResult {
-  company?: Company | null;
-}
-
-export interface AddCompanyAdminsInput {
-  peopleIds?: Id[] | null;
-}
-
-export interface AddCompanyAdminsResult {}
-
-export interface AddCompanyMemberInput {
-  fullName: string;
-  email: string;
-  title: string;
-}
-
-export interface AddCompanyMemberResult {
-  inviteLink: InviteLink;
-  newAccount: boolean;
-  personId?: string | null;
-}
-
 export interface AddCompanyOwnersInput {
   peopleIds?: Id[] | null;
 }
@@ -3284,19 +3256,100 @@ export interface ChangePasswordInput {
 
 export interface ChangePasswordResult {}
 
+export interface CompaniesConvertMemberToGuestInput {
+  personId: Id;
+}
+
+export interface CompaniesConvertMemberToGuestResult {
+  person: Person;
+}
+
+export interface CompaniesCreateInput {
+  companyName?: string | null;
+  title?: string | null;
+  isDemo?: boolean | null;
+}
+
+export interface CompaniesCreateResult {
+  company?: Company | null;
+}
+
+export interface CompaniesCreateAdminsInput {
+  peopleIds?: Id[] | null;
+}
+
+export interface CompaniesCreateAdminsResult {}
+
+export interface CompaniesCreateMemberInput {
+  fullName: string;
+  email: string;
+  title: string;
+}
+
+export interface CompaniesCreateMemberResult {
+  inviteLink: InviteLink;
+  newAccount: boolean;
+  personId?: string | null;
+}
+
+export interface CompaniesDeleteAdminInput {
+  personId?: Id | null;
+}
+
+export interface CompaniesDeleteAdminResult {
+  person?: Person | null;
+}
+
+export interface CompaniesDeleteMemberInput {
+  personId: string;
+}
+
+export interface CompaniesDeleteMemberResult {
+  person: Person;
+}
+
+export interface CompaniesDeleteOwnerInput {
+  personId?: Id | null;
+}
+
+export interface CompaniesDeleteOwnerResult {}
+
+export interface CompaniesDeleteTrustedEmailDomainInput {
+  companyId?: string | null;
+  domain?: string | null;
+}
+
+export interface CompaniesDeleteTrustedEmailDomainResult {
+  company?: Company | null;
+}
+
+export interface CompaniesRestoreMemberInput {
+  personId?: Id | null;
+}
+
+export interface CompaniesRestoreMemberResult {}
+
+export interface CompaniesUpdateInput {
+  name?: string | null;
+}
+
+export interface CompaniesUpdateResult {
+  company?: Company | null;
+}
+
+export interface CompaniesUpdateMembersPermissionsInput {
+  members: EditCompanyMemberPermissionsInput[];
+}
+
+export interface CompaniesUpdateMembersPermissionsResult {
+  success: boolean;
+}
+
 export interface CompleteCompanySetupInput {
   spaces: SpaceSetupInput[];
 }
 
 export interface CompleteCompanySetupResult {}
-
-export interface ConvertCompanyMemberToGuestInput {
-  personId: Id;
-}
-
-export interface ConvertCompanyMemberToGuestResult {
-  person: Person;
-}
 
 export interface CopyResourceHubFolderInput {
   folderName?: string | null;
@@ -3487,22 +3540,6 @@ export interface EditCommentInput {
 
 export interface EditCommentResult {
   comment: Comment;
-}
-
-export interface EditCompanyInput {
-  name?: string | null;
-}
-
-export interface EditCompanyResult {
-  company?: Company | null;
-}
-
-export interface EditCompanyMembersPermissionsInput {
-  members: EditCompanyMemberPermissionsInput[];
-}
-
-export interface EditCompanyMembersPermissionsResult {
-  success: boolean;
 }
 
 export interface EditGoalDiscussionInput {
@@ -4267,37 +4304,6 @@ export interface PublishResourceHubDocumentResult {
   document?: ResourceHubDocument | null;
 }
 
-export interface RemoveCompanyAdminInput {
-  personId?: Id | null;
-}
-
-export interface RemoveCompanyAdminResult {
-  person?: Person | null;
-}
-
-export interface RemoveCompanyMemberInput {
-  personId: string;
-}
-
-export interface RemoveCompanyMemberResult {
-  person: Person;
-}
-
-export interface RemoveCompanyOwnerInput {
-  personId?: Id | null;
-}
-
-export interface RemoveCompanyOwnerResult {}
-
-export interface RemoveCompanyTrustedEmailDomainInput {
-  companyId?: string | null;
-  domain?: string | null;
-}
-
-export interface RemoveCompanyTrustedEmailDomainResult {
-  company?: Company | null;
-}
-
 export interface RemoveKeyResourceInput {
   id: string;
 }
@@ -4337,12 +4343,6 @@ export interface ResetPasswordInput {
 }
 
 export interface ResetPasswordResult {}
-
-export interface RestoreCompanyMemberInput {
-  personId?: Id | null;
-}
-
-export interface RestoreCompanyMemberResult {}
 
 export interface SpaceDiscussionsArchiveInput {
   messageId?: Id | null;
@@ -4835,14 +4835,6 @@ class ApiNamespaceRoot {
     return this.client.get("/get_comments", input);
   }
 
-  async getCompanies(input: GetCompaniesInput): Promise<GetCompaniesResult> {
-    return this.client.get("/get_companies", input);
-  }
-
-  async getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
-    return this.client.get("/get_company", input);
-  }
-
   async getFlatWorkMap(input: GetFlatWorkMapInput): Promise<GetFlatWorkMapResult> {
     return this.client.get("/get_flat_work_map", input);
   }
@@ -4949,18 +4941,6 @@ class ApiNamespaceRoot {
     return this.client.post("/acknowledge_project_check_in", input);
   }
 
-  async addCompany(input: AddCompanyInput): Promise<AddCompanyResult> {
-    return this.client.post("/add_company", input);
-  }
-
-  async addCompanyAdmins(input: AddCompanyAdminsInput): Promise<AddCompanyAdminsResult> {
-    return this.client.post("/add_company_admins", input);
-  }
-
-  async addCompanyMember(input: AddCompanyMemberInput): Promise<AddCompanyMemberResult> {
-    return this.client.post("/add_company_member", input);
-  }
-
   async addCompanyOwners(input: AddCompanyOwnersInput): Promise<AddCompanyOwnersResult> {
     return this.client.post("/add_company_owners", input);
   }
@@ -4997,12 +4977,6 @@ class ApiNamespaceRoot {
 
   async completeCompanySetup(input: CompleteCompanySetupInput): Promise<CompleteCompanySetupResult> {
     return this.client.post("/complete_company_setup", input);
-  }
-
-  async convertCompanyMemberToGuest(
-    input: ConvertCompanyMemberToGuestInput,
-  ): Promise<ConvertCompanyMemberToGuestResult> {
-    return this.client.post("/convert_company_member_to_guest", input);
   }
 
   async copyResourceHubFolder(input: CopyResourceHubFolderInput): Promise<CopyResourceHubFolderResult> {
@@ -5079,16 +5053,6 @@ class ApiNamespaceRoot {
 
   async editComment(input: EditCommentInput): Promise<EditCommentResult> {
     return this.client.post("/edit_comment", input);
-  }
-
-  async editCompany(input: EditCompanyInput): Promise<EditCompanyResult> {
-    return this.client.post("/edit_company", input);
-  }
-
-  async editCompanyMembersPermissions(
-    input: EditCompanyMembersPermissionsInput,
-  ): Promise<EditCompanyMembersPermissionsResult> {
-    return this.client.post("/edit_company_members_permissions", input);
   }
 
   async editGoalDiscussion(input: EditGoalDiscussionInput): Promise<EditGoalDiscussionResult> {
@@ -5169,24 +5133,6 @@ class ApiNamespaceRoot {
     return this.client.post("/publish_resource_hub_document", input);
   }
 
-  async removeCompanyAdmin(input: RemoveCompanyAdminInput): Promise<RemoveCompanyAdminResult> {
-    return this.client.post("/remove_company_admin", input);
-  }
-
-  async removeCompanyMember(input: RemoveCompanyMemberInput): Promise<RemoveCompanyMemberResult> {
-    return this.client.post("/remove_company_member", input);
-  }
-
-  async removeCompanyOwner(input: RemoveCompanyOwnerInput): Promise<RemoveCompanyOwnerResult> {
-    return this.client.post("/remove_company_owner", input);
-  }
-
-  async removeCompanyTrustedEmailDomain(
-    input: RemoveCompanyTrustedEmailDomainInput,
-  ): Promise<RemoveCompanyTrustedEmailDomainResult> {
-    return this.client.post("/remove_company_trusted_email_domain", input);
-  }
-
   async removeKeyResource(input: RemoveKeyResourceInput): Promise<RemoveKeyResourceResult> {
     return this.client.post("/remove_key_resource", input);
   }
@@ -5205,10 +5151,6 @@ class ApiNamespaceRoot {
 
   async resetPassword(input: ResetPasswordInput): Promise<ResetPasswordResult> {
     return this.client.post("/reset_password", input);
-  }
-
-  async restoreCompanyMember(input: RestoreCompanyMemberInput): Promise<RestoreCompanyMemberResult> {
-    return this.client.post("/restore_company_member", input);
   }
 
   async subscribeToNotifications(input: SubscribeToNotificationsInput): Promise<SubscribeToNotificationsResult> {
@@ -5239,6 +5181,66 @@ class ApiNamespaceRoot {
 
   async updateTheme(input: UpdateThemeInput): Promise<UpdateThemeResult> {
     return this.client.post("/update_theme", input);
+  }
+}
+
+class ApiNamespaceCompanies {
+  constructor(private client: ApiClient) {}
+
+  async get(input: CompaniesGetInput): Promise<CompaniesGetResult> {
+    return this.client.get("/companies/get", input);
+  }
+
+  async list(input: CompaniesListInput): Promise<CompaniesListResult> {
+    return this.client.get("/companies/list", input);
+  }
+
+  async convertMemberToGuest(input: CompaniesConvertMemberToGuestInput): Promise<CompaniesConvertMemberToGuestResult> {
+    return this.client.post("/companies/convert_member_to_guest", input);
+  }
+
+  async create(input: CompaniesCreateInput): Promise<CompaniesCreateResult> {
+    return this.client.post("/companies/create", input);
+  }
+
+  async createAdmins(input: CompaniesCreateAdminsInput): Promise<CompaniesCreateAdminsResult> {
+    return this.client.post("/companies/create_admins", input);
+  }
+
+  async createMember(input: CompaniesCreateMemberInput): Promise<CompaniesCreateMemberResult> {
+    return this.client.post("/companies/create_member", input);
+  }
+
+  async deleteAdmin(input: CompaniesDeleteAdminInput): Promise<CompaniesDeleteAdminResult> {
+    return this.client.post("/companies/delete_admin", input);
+  }
+
+  async deleteMember(input: CompaniesDeleteMemberInput): Promise<CompaniesDeleteMemberResult> {
+    return this.client.post("/companies/delete_member", input);
+  }
+
+  async deleteOwner(input: CompaniesDeleteOwnerInput): Promise<CompaniesDeleteOwnerResult> {
+    return this.client.post("/companies/delete_owner", input);
+  }
+
+  async deleteTrustedEmailDomain(
+    input: CompaniesDeleteTrustedEmailDomainInput,
+  ): Promise<CompaniesDeleteTrustedEmailDomainResult> {
+    return this.client.post("/companies/delete_trusted_email_domain", input);
+  }
+
+  async restoreMember(input: CompaniesRestoreMemberInput): Promise<CompaniesRestoreMemberResult> {
+    return this.client.post("/companies/restore_member", input);
+  }
+
+  async update(input: CompaniesUpdateInput): Promise<CompaniesUpdateResult> {
+    return this.client.post("/companies/update", input);
+  }
+
+  async updateMembersPermissions(
+    input: CompaniesUpdateMembersPermissionsInput,
+  ): Promise<CompaniesUpdateMembersPermissionsResult> {
+    return this.client.post("/companies/update_members_permissions", input);
   }
 }
 
@@ -5729,6 +5731,7 @@ export class ApiClient {
   public apiNamespaceInvitations: ApiNamespaceInvitations;
   public apiNamespaceAi: ApiNamespaceAi;
   public apiNamespaceRoot: ApiNamespaceRoot;
+  public apiNamespaceCompanies: ApiNamespaceCompanies;
   public apiNamespaceSpaces: ApiNamespaceSpaces;
   public apiNamespaceSpaceDiscussions: ApiNamespaceSpaceDiscussions;
   public apiNamespaceProjectDiscussions: ApiNamespaceProjectDiscussions;
@@ -5742,6 +5745,7 @@ export class ApiClient {
     this.apiNamespaceInvitations = new ApiNamespaceInvitations(this);
     this.apiNamespaceAi = new ApiNamespaceAi(this);
     this.apiNamespaceRoot = new ApiNamespaceRoot(this);
+    this.apiNamespaceCompanies = new ApiNamespaceCompanies(this);
     this.apiNamespaceSpaces = new ApiNamespaceSpaces(this);
     this.apiNamespaceSpaceDiscussions = new ApiNamespaceSpaceDiscussions(this);
     this.apiNamespaceProjectDiscussions = new ApiNamespaceProjectDiscussions(this);
@@ -5809,14 +5813,6 @@ export class ApiClient {
 
   getComments(input: GetCommentsInput): Promise<GetCommentsResult> {
     return this.apiNamespaceRoot.getComments(input);
-  }
-
-  getCompanies(input: GetCompaniesInput): Promise<GetCompaniesResult> {
-    return this.apiNamespaceRoot.getCompanies(input);
-  }
-
-  getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
-    return this.apiNamespaceRoot.getCompany(input);
   }
 
   getFlatWorkMap(input: GetFlatWorkMapInput): Promise<GetFlatWorkMapResult> {
@@ -5925,18 +5921,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.acknowledgeProjectCheckIn(input);
   }
 
-  addCompany(input: AddCompanyInput): Promise<AddCompanyResult> {
-    return this.apiNamespaceRoot.addCompany(input);
-  }
-
-  addCompanyAdmins(input: AddCompanyAdminsInput): Promise<AddCompanyAdminsResult> {
-    return this.apiNamespaceRoot.addCompanyAdmins(input);
-  }
-
-  addCompanyMember(input: AddCompanyMemberInput): Promise<AddCompanyMemberResult> {
-    return this.apiNamespaceRoot.addCompanyMember(input);
-  }
-
   addCompanyOwners(input: AddCompanyOwnersInput): Promise<AddCompanyOwnersResult> {
     return this.apiNamespaceRoot.addCompanyOwners(input);
   }
@@ -5971,10 +5955,6 @@ export class ApiClient {
 
   completeCompanySetup(input: CompleteCompanySetupInput): Promise<CompleteCompanySetupResult> {
     return this.apiNamespaceRoot.completeCompanySetup(input);
-  }
-
-  convertCompanyMemberToGuest(input: ConvertCompanyMemberToGuestInput): Promise<ConvertCompanyMemberToGuestResult> {
-    return this.apiNamespaceRoot.convertCompanyMemberToGuest(input);
   }
 
   copyResourceHubFolder(input: CopyResourceHubFolderInput): Promise<CopyResourceHubFolderResult> {
@@ -6051,16 +6031,6 @@ export class ApiClient {
 
   editComment(input: EditCommentInput): Promise<EditCommentResult> {
     return this.apiNamespaceRoot.editComment(input);
-  }
-
-  editCompany(input: EditCompanyInput): Promise<EditCompanyResult> {
-    return this.apiNamespaceRoot.editCompany(input);
-  }
-
-  editCompanyMembersPermissions(
-    input: EditCompanyMembersPermissionsInput,
-  ): Promise<EditCompanyMembersPermissionsResult> {
-    return this.apiNamespaceRoot.editCompanyMembersPermissions(input);
   }
 
   editGoalDiscussion(input: EditGoalDiscussionInput): Promise<EditGoalDiscussionResult> {
@@ -6141,24 +6111,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.publishResourceHubDocument(input);
   }
 
-  removeCompanyAdmin(input: RemoveCompanyAdminInput): Promise<RemoveCompanyAdminResult> {
-    return this.apiNamespaceRoot.removeCompanyAdmin(input);
-  }
-
-  removeCompanyMember(input: RemoveCompanyMemberInput): Promise<RemoveCompanyMemberResult> {
-    return this.apiNamespaceRoot.removeCompanyMember(input);
-  }
-
-  removeCompanyOwner(input: RemoveCompanyOwnerInput): Promise<RemoveCompanyOwnerResult> {
-    return this.apiNamespaceRoot.removeCompanyOwner(input);
-  }
-
-  removeCompanyTrustedEmailDomain(
-    input: RemoveCompanyTrustedEmailDomainInput,
-  ): Promise<RemoveCompanyTrustedEmailDomainResult> {
-    return this.apiNamespaceRoot.removeCompanyTrustedEmailDomain(input);
-  }
-
   removeKeyResource(input: RemoveKeyResourceInput): Promise<RemoveKeyResourceResult> {
     return this.apiNamespaceRoot.removeKeyResource(input);
   }
@@ -6177,10 +6129,6 @@ export class ApiClient {
 
   resetPassword(input: ResetPasswordInput): Promise<ResetPasswordResult> {
     return this.apiNamespaceRoot.resetPassword(input);
-  }
-
-  restoreCompanyMember(input: RestoreCompanyMemberInput): Promise<RestoreCompanyMemberResult> {
-    return this.apiNamespaceRoot.restoreCompanyMember(input);
   }
 
   subscribeToNotifications(input: SubscribeToNotificationsInput): Promise<SubscribeToNotificationsResult> {
@@ -6234,12 +6182,6 @@ export async function getBindedPeople(input: GetBindedPeopleInput): Promise<GetB
 }
 export async function getComments(input: GetCommentsInput): Promise<GetCommentsResult> {
   return defaultApiClient.getComments(input);
-}
-export async function getCompanies(input: GetCompaniesInput): Promise<GetCompaniesResult> {
-  return defaultApiClient.getCompanies(input);
-}
-export async function getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
-  return defaultApiClient.getCompany(input);
 }
 export async function getFlatWorkMap(input: GetFlatWorkMapInput): Promise<GetFlatWorkMapResult> {
   return defaultApiClient.getFlatWorkMap(input);
@@ -6331,15 +6273,6 @@ export async function acknowledgeProjectCheckIn(
 ): Promise<AcknowledgeProjectCheckInResult> {
   return defaultApiClient.acknowledgeProjectCheckIn(input);
 }
-export async function addCompany(input: AddCompanyInput): Promise<AddCompanyResult> {
-  return defaultApiClient.addCompany(input);
-}
-export async function addCompanyAdmins(input: AddCompanyAdminsInput): Promise<AddCompanyAdminsResult> {
-  return defaultApiClient.addCompanyAdmins(input);
-}
-export async function addCompanyMember(input: AddCompanyMemberInput): Promise<AddCompanyMemberResult> {
-  return defaultApiClient.addCompanyMember(input);
-}
 export async function addCompanyOwners(input: AddCompanyOwnersInput): Promise<AddCompanyOwnersResult> {
   return defaultApiClient.addCompanyOwners(input);
 }
@@ -6370,11 +6303,6 @@ export async function changePassword(input: ChangePasswordInput): Promise<Change
 }
 export async function completeCompanySetup(input: CompleteCompanySetupInput): Promise<CompleteCompanySetupResult> {
   return defaultApiClient.completeCompanySetup(input);
-}
-export async function convertCompanyMemberToGuest(
-  input: ConvertCompanyMemberToGuestInput,
-): Promise<ConvertCompanyMemberToGuestResult> {
-  return defaultApiClient.convertCompanyMemberToGuest(input);
 }
 export async function copyResourceHubFolder(input: CopyResourceHubFolderInput): Promise<CopyResourceHubFolderResult> {
   return defaultApiClient.copyResourceHubFolder(input);
@@ -6442,14 +6370,6 @@ export async function deleteResourceHubLink(input: DeleteResourceHubLinkInput): 
 }
 export async function editComment(input: EditCommentInput): Promise<EditCommentResult> {
   return defaultApiClient.editComment(input);
-}
-export async function editCompany(input: EditCompanyInput): Promise<EditCompanyResult> {
-  return defaultApiClient.editCompany(input);
-}
-export async function editCompanyMembersPermissions(
-  input: EditCompanyMembersPermissionsInput,
-): Promise<EditCompanyMembersPermissionsResult> {
-  return defaultApiClient.editCompanyMembersPermissions(input);
 }
 export async function editGoalDiscussion(input: EditGoalDiscussionInput): Promise<EditGoalDiscussionResult> {
   return defaultApiClient.editGoalDiscussion(input);
@@ -6524,20 +6444,6 @@ export async function publishResourceHubDocument(
 ): Promise<PublishResourceHubDocumentResult> {
   return defaultApiClient.publishResourceHubDocument(input);
 }
-export async function removeCompanyAdmin(input: RemoveCompanyAdminInput): Promise<RemoveCompanyAdminResult> {
-  return defaultApiClient.removeCompanyAdmin(input);
-}
-export async function removeCompanyMember(input: RemoveCompanyMemberInput): Promise<RemoveCompanyMemberResult> {
-  return defaultApiClient.removeCompanyMember(input);
-}
-export async function removeCompanyOwner(input: RemoveCompanyOwnerInput): Promise<RemoveCompanyOwnerResult> {
-  return defaultApiClient.removeCompanyOwner(input);
-}
-export async function removeCompanyTrustedEmailDomain(
-  input: RemoveCompanyTrustedEmailDomainInput,
-): Promise<RemoveCompanyTrustedEmailDomainResult> {
-  return defaultApiClient.removeCompanyTrustedEmailDomain(input);
-}
 export async function removeKeyResource(input: RemoveKeyResourceInput): Promise<RemoveKeyResourceResult> {
   return defaultApiClient.removeKeyResource(input);
 }
@@ -6554,9 +6460,6 @@ export async function requestPasswordReset(input: RequestPasswordResetInput): Pr
 }
 export async function resetPassword(input: ResetPasswordInput): Promise<ResetPasswordResult> {
   return defaultApiClient.resetPassword(input);
-}
-export async function restoreCompanyMember(input: RestoreCompanyMemberInput): Promise<RestoreCompanyMemberResult> {
-  return defaultApiClient.restoreCompanyMember(input);
 }
 export async function subscribeToNotifications(
   input: SubscribeToNotificationsInput,
@@ -6614,14 +6517,6 @@ export function useGetBindedPeople(input: GetBindedPeopleInput): UseQueryHookRes
 
 export function useGetComments(input: GetCommentsInput): UseQueryHookResult<GetCommentsResult> {
   return useQuery<GetCommentsResult>(() => defaultApiClient.getComments(input));
-}
-
-export function useGetCompanies(input: GetCompaniesInput): UseQueryHookResult<GetCompaniesResult> {
-  return useQuery<GetCompaniesResult>(() => defaultApiClient.getCompanies(input));
-}
-
-export function useGetCompany(input: GetCompanyInput): UseQueryHookResult<GetCompanyResult> {
-  return useQuery<GetCompanyResult>(() => defaultApiClient.getCompany(input));
 }
 
 export function useGetFlatWorkMap(input: GetFlatWorkMapInput): UseQueryHookResult<GetFlatWorkMapResult> {
@@ -6756,22 +6651,6 @@ export function useAcknowledgeProjectCheckIn(): UseMutationHookResult<
   );
 }
 
-export function useAddCompany(): UseMutationHookResult<AddCompanyInput, AddCompanyResult> {
-  return useMutation<AddCompanyInput, AddCompanyResult>((input) => defaultApiClient.addCompany(input));
-}
-
-export function useAddCompanyAdmins(): UseMutationHookResult<AddCompanyAdminsInput, AddCompanyAdminsResult> {
-  return useMutation<AddCompanyAdminsInput, AddCompanyAdminsResult>((input) =>
-    defaultApiClient.addCompanyAdmins(input),
-  );
-}
-
-export function useAddCompanyMember(): UseMutationHookResult<AddCompanyMemberInput, AddCompanyMemberResult> {
-  return useMutation<AddCompanyMemberInput, AddCompanyMemberResult>((input) =>
-    defaultApiClient.addCompanyMember(input),
-  );
-}
-
 export function useAddCompanyOwners(): UseMutationHookResult<AddCompanyOwnersInput, AddCompanyOwnersResult> {
   return useMutation<AddCompanyOwnersInput, AddCompanyOwnersResult>((input) =>
     defaultApiClient.addCompanyOwners(input),
@@ -6827,15 +6706,6 @@ export function useCompleteCompanySetup(): UseMutationHookResult<
 > {
   return useMutation<CompleteCompanySetupInput, CompleteCompanySetupResult>((input) =>
     defaultApiClient.completeCompanySetup(input),
-  );
-}
-
-export function useConvertCompanyMemberToGuest(): UseMutationHookResult<
-  ConvertCompanyMemberToGuestInput,
-  ConvertCompanyMemberToGuestResult
-> {
-  return useMutation<ConvertCompanyMemberToGuestInput, ConvertCompanyMemberToGuestResult>((input) =>
-    defaultApiClient.convertCompanyMemberToGuest(input),
   );
 }
 
@@ -6972,19 +6842,6 @@ export function useDeleteResourceHubLink(): UseMutationHookResult<
 
 export function useEditComment(): UseMutationHookResult<EditCommentInput, EditCommentResult> {
   return useMutation<EditCommentInput, EditCommentResult>((input) => defaultApiClient.editComment(input));
-}
-
-export function useEditCompany(): UseMutationHookResult<EditCompanyInput, EditCompanyResult> {
-  return useMutation<EditCompanyInput, EditCompanyResult>((input) => defaultApiClient.editCompany(input));
-}
-
-export function useEditCompanyMembersPermissions(): UseMutationHookResult<
-  EditCompanyMembersPermissionsInput,
-  EditCompanyMembersPermissionsResult
-> {
-  return useMutation<EditCompanyMembersPermissionsInput, EditCompanyMembersPermissionsResult>((input) =>
-    defaultApiClient.editCompanyMembersPermissions(input),
-  );
 }
 
 export function useEditGoalDiscussion(): UseMutationHookResult<EditGoalDiscussionInput, EditGoalDiscussionResult> {
@@ -7125,33 +6982,6 @@ export function usePublishResourceHubDocument(): UseMutationHookResult<
   );
 }
 
-export function useRemoveCompanyAdmin(): UseMutationHookResult<RemoveCompanyAdminInput, RemoveCompanyAdminResult> {
-  return useMutation<RemoveCompanyAdminInput, RemoveCompanyAdminResult>((input) =>
-    defaultApiClient.removeCompanyAdmin(input),
-  );
-}
-
-export function useRemoveCompanyMember(): UseMutationHookResult<RemoveCompanyMemberInput, RemoveCompanyMemberResult> {
-  return useMutation<RemoveCompanyMemberInput, RemoveCompanyMemberResult>((input) =>
-    defaultApiClient.removeCompanyMember(input),
-  );
-}
-
-export function useRemoveCompanyOwner(): UseMutationHookResult<RemoveCompanyOwnerInput, RemoveCompanyOwnerResult> {
-  return useMutation<RemoveCompanyOwnerInput, RemoveCompanyOwnerResult>((input) =>
-    defaultApiClient.removeCompanyOwner(input),
-  );
-}
-
-export function useRemoveCompanyTrustedEmailDomain(): UseMutationHookResult<
-  RemoveCompanyTrustedEmailDomainInput,
-  RemoveCompanyTrustedEmailDomainResult
-> {
-  return useMutation<RemoveCompanyTrustedEmailDomainInput, RemoveCompanyTrustedEmailDomainResult>((input) =>
-    defaultApiClient.removeCompanyTrustedEmailDomain(input),
-  );
-}
-
 export function useRemoveKeyResource(): UseMutationHookResult<RemoveKeyResourceInput, RemoveKeyResourceResult> {
   return useMutation<RemoveKeyResourceInput, RemoveKeyResourceResult>((input) =>
     defaultApiClient.removeKeyResource(input),
@@ -7182,15 +7012,6 @@ export function useRequestPasswordReset(): UseMutationHookResult<
 
 export function useResetPassword(): UseMutationHookResult<ResetPasswordInput, ResetPasswordResult> {
   return useMutation<ResetPasswordInput, ResetPasswordResult>((input) => defaultApiClient.resetPassword(input));
-}
-
-export function useRestoreCompanyMember(): UseMutationHookResult<
-  RestoreCompanyMemberInput,
-  RestoreCompanyMemberResult
-> {
-  return useMutation<RestoreCompanyMemberInput, RestoreCompanyMemberResult>((input) =>
-    defaultApiClient.restoreCompanyMember(input),
-  );
 }
 
 export function useSubscribeToNotifications(): UseMutationHookResult<
@@ -7263,10 +7084,6 @@ export default {
   useGetBindedPeople,
   getComments,
   useGetComments,
-  getCompanies,
-  useGetCompanies,
-  getCompany,
-  useGetCompany,
   getFlatWorkMap,
   useGetFlatWorkMap,
   getGoalProgressUpdate,
@@ -7319,12 +7136,6 @@ export default {
   useAcknowledgeGoalProgressUpdate,
   acknowledgeProjectCheckIn,
   useAcknowledgeProjectCheckIn,
-  addCompany,
-  useAddCompany,
-  addCompanyAdmins,
-  useAddCompanyAdmins,
-  addCompanyMember,
-  useAddCompanyMember,
   addCompanyOwners,
   useAddCompanyOwners,
   addCompanyTrustedEmailDomain,
@@ -7343,8 +7154,6 @@ export default {
   useChangePassword,
   completeCompanySetup,
   useCompleteCompanySetup,
-  convertCompanyMemberToGuest,
-  useConvertCompanyMemberToGuest,
   copyResourceHubFolder,
   useCopyResourceHubFolder,
   createAccount,
@@ -7383,10 +7192,6 @@ export default {
   useDeleteResourceHubLink,
   editComment,
   useEditComment,
-  editCompany,
-  useEditCompany,
-  editCompanyMembersPermissions,
-  useEditCompanyMembersPermissions,
   editGoalDiscussion,
   useEditGoalDiscussion,
   editGoalProgressUpdate,
@@ -7425,14 +7230,6 @@ export default {
   usePostProjectCheckIn,
   publishResourceHubDocument,
   usePublishResourceHubDocument,
-  removeCompanyAdmin,
-  useRemoveCompanyAdmin,
-  removeCompanyMember,
-  useRemoveCompanyMember,
-  removeCompanyOwner,
-  useRemoveCompanyOwner,
-  removeCompanyTrustedEmailDomain,
-  useRemoveCompanyTrustedEmailDomain,
   removeKeyResource,
   useRemoveKeyResource,
   removeReaction,
@@ -7443,8 +7240,6 @@ export default {
   useRequestPasswordReset,
   resetPassword,
   useResetPassword,
-  restoreCompanyMember,
-  useRestoreCompanyMember,
   subscribeToNotifications,
   useSubscribeToNotifications,
   unsubscribeFromNotifications,
@@ -7632,6 +7427,85 @@ export default {
     useEditAgentDailyRun: () =>
       useMutation<AiEditAgentDailyRunInput, AiEditAgentDailyRunResult>((input) =>
         defaultApiClient.apiNamespaceAi.editAgentDailyRun(input),
+      ),
+  },
+
+  companies: {
+    list: (input: CompaniesListInput) => defaultApiClient.apiNamespaceCompanies.list(input),
+    useList: (input: CompaniesListInput) =>
+      useQuery<CompaniesListResult>(() => defaultApiClient.apiNamespaceCompanies.list(input)),
+
+    get: (input: CompaniesGetInput) => defaultApiClient.apiNamespaceCompanies.get(input),
+    useGet: (input: CompaniesGetInput) =>
+      useQuery<CompaniesGetResult>(() => defaultApiClient.apiNamespaceCompanies.get(input)),
+
+    deleteOwner: (input: CompaniesDeleteOwnerInput) => defaultApiClient.apiNamespaceCompanies.deleteOwner(input),
+    useDeleteOwner: () =>
+      useMutation<CompaniesDeleteOwnerInput, CompaniesDeleteOwnerResult>((input) =>
+        defaultApiClient.apiNamespaceCompanies.deleteOwner(input),
+      ),
+
+    createAdmins: (input: CompaniesCreateAdminsInput) => defaultApiClient.apiNamespaceCompanies.createAdmins(input),
+    useCreateAdmins: () =>
+      useMutation<CompaniesCreateAdminsInput, CompaniesCreateAdminsResult>((input) =>
+        defaultApiClient.apiNamespaceCompanies.createAdmins(input),
+      ),
+
+    deleteMember: (input: CompaniesDeleteMemberInput) => defaultApiClient.apiNamespaceCompanies.deleteMember(input),
+    useDeleteMember: () =>
+      useMutation<CompaniesDeleteMemberInput, CompaniesDeleteMemberResult>((input) =>
+        defaultApiClient.apiNamespaceCompanies.deleteMember(input),
+      ),
+
+    createMember: (input: CompaniesCreateMemberInput) => defaultApiClient.apiNamespaceCompanies.createMember(input),
+    useCreateMember: () =>
+      useMutation<CompaniesCreateMemberInput, CompaniesCreateMemberResult>((input) =>
+        defaultApiClient.apiNamespaceCompanies.createMember(input),
+      ),
+
+    create: (input: CompaniesCreateInput) => defaultApiClient.apiNamespaceCompanies.create(input),
+    useCreate: () =>
+      useMutation<CompaniesCreateInput, CompaniesCreateResult>((input) =>
+        defaultApiClient.apiNamespaceCompanies.create(input),
+      ),
+
+    updateMembersPermissions: (input: CompaniesUpdateMembersPermissionsInput) =>
+      defaultApiClient.apiNamespaceCompanies.updateMembersPermissions(input),
+    useUpdateMembersPermissions: () =>
+      useMutation<CompaniesUpdateMembersPermissionsInput, CompaniesUpdateMembersPermissionsResult>((input) =>
+        defaultApiClient.apiNamespaceCompanies.updateMembersPermissions(input),
+      ),
+
+    convertMemberToGuest: (input: CompaniesConvertMemberToGuestInput) =>
+      defaultApiClient.apiNamespaceCompanies.convertMemberToGuest(input),
+    useConvertMemberToGuest: () =>
+      useMutation<CompaniesConvertMemberToGuestInput, CompaniesConvertMemberToGuestResult>((input) =>
+        defaultApiClient.apiNamespaceCompanies.convertMemberToGuest(input),
+      ),
+
+    deleteAdmin: (input: CompaniesDeleteAdminInput) => defaultApiClient.apiNamespaceCompanies.deleteAdmin(input),
+    useDeleteAdmin: () =>
+      useMutation<CompaniesDeleteAdminInput, CompaniesDeleteAdminResult>((input) =>
+        defaultApiClient.apiNamespaceCompanies.deleteAdmin(input),
+      ),
+
+    deleteTrustedEmailDomain: (input: CompaniesDeleteTrustedEmailDomainInput) =>
+      defaultApiClient.apiNamespaceCompanies.deleteTrustedEmailDomain(input),
+    useDeleteTrustedEmailDomain: () =>
+      useMutation<CompaniesDeleteTrustedEmailDomainInput, CompaniesDeleteTrustedEmailDomainResult>((input) =>
+        defaultApiClient.apiNamespaceCompanies.deleteTrustedEmailDomain(input),
+      ),
+
+    update: (input: CompaniesUpdateInput) => defaultApiClient.apiNamespaceCompanies.update(input),
+    useUpdate: () =>
+      useMutation<CompaniesUpdateInput, CompaniesUpdateResult>((input) =>
+        defaultApiClient.apiNamespaceCompanies.update(input),
+      ),
+
+    restoreMember: (input: CompaniesRestoreMemberInput) => defaultApiClient.apiNamespaceCompanies.restoreMember(input),
+    useRestoreMember: () =>
+      useMutation<CompaniesRestoreMemberInput, CompaniesRestoreMemberResult>((input) =>
+        defaultApiClient.apiNamespaceCompanies.restoreMember(input),
       ),
   },
 

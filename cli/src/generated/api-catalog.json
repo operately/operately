@@ -14766,6 +14766,577 @@
   "mutation_count": 138,
   "endpoints": [
     {
+      "name": "convert_member_to_guest",
+      "type": "mutation",
+      "path": "/api/external/v1/companies/convert_member_to_guest",
+      "handler": "OperatelyWeb.Api.Companies.ConvertMemberToGuest",
+      "outputs": [
+        {
+          "default": null,
+          "name": "person",
+          "type": {
+            "name": "person",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "companies",
+      "inputs": [
+        {
+          "default": null,
+          "name": "person_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "companies/convert_member_to_guest",
+      "method": "POST"
+    },
+    {
+      "name": "create",
+      "type": "mutation",
+      "path": "/api/external/v1/companies/create",
+      "handler": "OperatelyWeb.Api.Companies.Create",
+      "outputs": [
+        {
+          "default": null,
+          "name": "company",
+          "type": {
+            "name": "company",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "companies",
+      "inputs": [
+        {
+          "default": null,
+          "name": "company_name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "title",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "is_demo",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "companies/create",
+      "method": "POST"
+    },
+    {
+      "name": "create_admins",
+      "type": "mutation",
+      "path": "/api/external/v1/companies/create_admins",
+      "handler": "OperatelyWeb.Api.Companies.CreateAdmins",
+      "outputs": [],
+      "namespace": "companies",
+      "inputs": [
+        {
+          "default": null,
+          "name": "people_ids",
+          "type": {
+            "item": {
+              "name": "id",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "companies/create_admins",
+      "method": "POST"
+    },
+    {
+      "name": "create_member",
+      "type": "mutation",
+      "path": "/api/external/v1/companies/create_member",
+      "handler": "OperatelyWeb.Api.Companies.CreateMember",
+      "outputs": [
+        {
+          "default": null,
+          "name": "invite_link",
+          "type": {
+            "name": "invite_link",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "new_account",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "person_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "companies",
+      "inputs": [
+        {
+          "default": null,
+          "name": "full_name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "email",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "title",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "companies/create_member",
+      "method": "POST"
+    },
+    {
+      "name": "delete_admin",
+      "type": "mutation",
+      "path": "/api/external/v1/companies/delete_admin",
+      "handler": "OperatelyWeb.Api.Companies.DeleteAdmin",
+      "outputs": [
+        {
+          "default": null,
+          "name": "person",
+          "type": {
+            "name": "person",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "companies",
+      "inputs": [
+        {
+          "default": null,
+          "name": "person_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "companies/delete_admin",
+      "method": "POST"
+    },
+    {
+      "name": "delete_member",
+      "type": "mutation",
+      "path": "/api/external/v1/companies/delete_member",
+      "handler": "OperatelyWeb.Api.Companies.DeleteMember",
+      "outputs": [
+        {
+          "default": null,
+          "name": "person",
+          "type": {
+            "name": "person",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "companies",
+      "inputs": [
+        {
+          "default": null,
+          "name": "person_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "companies/delete_member",
+      "method": "POST"
+    },
+    {
+      "name": "delete_owner",
+      "type": "mutation",
+      "path": "/api/external/v1/companies/delete_owner",
+      "handler": "OperatelyWeb.Api.Companies.DeleteOwner",
+      "outputs": [],
+      "namespace": "companies",
+      "inputs": [
+        {
+          "default": null,
+          "name": "person_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "companies/delete_owner",
+      "method": "POST"
+    },
+    {
+      "name": "delete_trusted_email_domain",
+      "type": "mutation",
+      "path": "/api/external/v1/companies/delete_trusted_email_domain",
+      "handler": "OperatelyWeb.Api.Companies.DeleteTrustedEmailDomain",
+      "outputs": [
+        {
+          "default": null,
+          "name": "company",
+          "type": {
+            "name": "company",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "companies",
+      "inputs": [
+        {
+          "default": null,
+          "name": "company_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "domain",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "companies/delete_trusted_email_domain",
+      "method": "POST"
+    },
+    {
+      "name": "get",
+      "type": "query",
+      "path": "/api/external/v1/companies/get",
+      "handler": "OperatelyWeb.Api.Companies.Get",
+      "outputs": [
+        {
+          "default": null,
+          "name": "company",
+          "type": {
+            "name": "company",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "companies",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "company_id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_permissions",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_people",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_admins",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_owners",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_general_space",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_members_access_levels",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "companies/get",
+      "method": "GET"
+    },
+    {
+      "name": "list",
+      "type": "query",
+      "path": "/api/external/v1/companies/list",
+      "handler": "OperatelyWeb.Api.Companies.List",
+      "outputs": [
+        {
+          "default": null,
+          "name": "companies",
+          "type": {
+            "item": {
+              "name": "company",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "companies",
+      "inputs": [
+        {
+          "default": null,
+          "name": "include_member_count",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "companies/list",
+      "method": "GET"
+    },
+    {
+      "name": "restore_member",
+      "type": "mutation",
+      "path": "/api/external/v1/companies/restore_member",
+      "handler": "OperatelyWeb.Api.Companies.RestoreMember",
+      "outputs": [],
+      "namespace": "companies",
+      "inputs": [
+        {
+          "default": null,
+          "name": "person_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "companies/restore_member",
+      "method": "POST"
+    },
+    {
+      "name": "update",
+      "type": "mutation",
+      "path": "/api/external/v1/companies/update",
+      "handler": "OperatelyWeb.Api.Companies.Update",
+      "outputs": [
+        {
+          "default": null,
+          "name": "company",
+          "type": {
+            "name": "company",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "companies",
+      "inputs": [
+        {
+          "default": null,
+          "name": "name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "companies/update",
+      "method": "POST"
+    },
+    {
+      "name": "update_members_permissions",
+      "type": "mutation",
+      "path": "/api/external/v1/companies/update_members_permissions",
+      "handler": "OperatelyWeb.Api.Companies.UpdateMembersPermissions",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "companies",
+      "inputs": [
+        {
+          "default": null,
+          "name": "members",
+          "type": {
+            "item": {
+              "name": "edit_company_member_permissions_input",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "companies/update_members_permissions",
+      "method": "POST"
+    },
+    {
       "name": "change_parent",
       "type": "mutation",
       "path": "/api/external/v1/goals/change_parent",
@@ -19462,168 +20033,6 @@
       "method": "POST"
     },
     {
-      "name": "add_company",
-      "type": "mutation",
-      "path": "/api/external/v1/add_company",
-      "handler": "OperatelyWeb.Api.Mutations.AddCompany",
-      "outputs": [
-        {
-          "default": null,
-          "name": "company",
-          "type": {
-            "name": "company",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "company_name",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "title",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "is_demo",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "add_company",
-      "method": "POST"
-    },
-    {
-      "name": "add_company_admins",
-      "type": "mutation",
-      "path": "/api/external/v1/add_company_admins",
-      "handler": "OperatelyWeb.Api.Mutations.AddCompanyAdmins",
-      "outputs": [],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "people_ids",
-          "type": {
-            "item": {
-              "name": "id",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "add_company_admins",
-      "method": "POST"
-    },
-    {
-      "name": "add_company_member",
-      "type": "mutation",
-      "path": "/api/external/v1/add_company_member",
-      "handler": "OperatelyWeb.Api.Mutations.AddCompanyMember",
-      "outputs": [
-        {
-          "default": null,
-          "name": "invite_link",
-          "type": {
-            "name": "invite_link",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "new_account",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "person_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "full_name",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "email",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "title",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "add_company_member",
-      "method": "POST"
-    },
-    {
       "name": "add_key_resource",
       "type": "mutation",
       "path": "/api/external/v1/add_key_resource",
@@ -19885,41 +20294,6 @@
         }
       ],
       "full_name": "add_reaction",
-      "method": "POST"
-    },
-    {
-      "name": "convert_company_member_to_guest",
-      "type": "mutation",
-      "path": "/api/external/v1/convert_company_member_to_guest",
-      "handler": "OperatelyWeb.Api.Mutations.ConvertCompanyMemberToGuest",
-      "outputs": [
-        {
-          "default": null,
-          "name": "person",
-          "type": {
-            "name": "person",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "person_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "convert_company_member_to_guest",
       "method": "POST"
     },
     {
@@ -20838,79 +21212,6 @@
       "method": "POST"
     },
     {
-      "name": "edit_company",
-      "type": "mutation",
-      "path": "/api/external/v1/edit_company",
-      "handler": "OperatelyWeb.Api.Mutations.EditCompany",
-      "outputs": [
-        {
-          "default": null,
-          "name": "company",
-          "type": {
-            "name": "company",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "name",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "edit_company",
-      "method": "POST"
-    },
-    {
-      "name": "edit_company_members_permissions",
-      "type": "mutation",
-      "path": "/api/external/v1/edit_company_members_permissions",
-      "handler": "OperatelyWeb.Api.Mutations.EditCompanyMembersPermissions",
-      "outputs": [
-        {
-          "default": null,
-          "name": "success",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "members",
-          "type": {
-            "item": {
-              "name": "edit_company_member_permissions_input",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "edit_company_members_permissions",
-      "method": "POST"
-    },
-    {
       "name": "edit_goal_discussion",
       "type": "mutation",
       "path": "/api/external/v1/edit_goal_discussion",
@@ -21817,145 +22118,6 @@
         }
       ],
       "full_name": "get_comments",
-      "method": "GET"
-    },
-    {
-      "name": "get_companies",
-      "type": "query",
-      "path": "/api/external/v1/get_companies",
-      "handler": "OperatelyWeb.Api.Queries.GetCompanies",
-      "outputs": [
-        {
-          "default": null,
-          "name": "companies",
-          "type": {
-            "item": {
-              "name": "company",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "include_member_count",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "get_companies",
-      "method": "GET"
-    },
-    {
-      "name": "get_company",
-      "type": "query",
-      "path": "/api/external/v1/get_company",
-      "handler": "OperatelyWeb.Api.Queries.GetCompany",
-      "outputs": [
-        {
-          "default": null,
-          "name": "company",
-          "type": {
-            "name": "company",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "company_id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_permissions",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_people",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_admins",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_owners",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_general_space",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_members_access_levels",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "get_company",
       "method": "GET"
     },
     {
@@ -24493,145 +24655,6 @@
       "method": "POST"
     },
     {
-      "name": "remove_company_admin",
-      "type": "mutation",
-      "path": "/api/external/v1/remove_company_admin",
-      "handler": "OperatelyWeb.Api.Mutations.RemoveCompanyAdmin",
-      "outputs": [
-        {
-          "default": null,
-          "name": "person",
-          "type": {
-            "name": "person",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "person_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "remove_company_admin",
-      "method": "POST"
-    },
-    {
-      "name": "remove_company_member",
-      "type": "mutation",
-      "path": "/api/external/v1/remove_company_member",
-      "handler": "OperatelyWeb.Api.Mutations.RemoveCompanyMember",
-      "outputs": [
-        {
-          "default": null,
-          "name": "person",
-          "type": {
-            "name": "person",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "person_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "remove_company_member",
-      "method": "POST"
-    },
-    {
-      "name": "remove_company_owner",
-      "type": "mutation",
-      "path": "/api/external/v1/remove_company_owner",
-      "handler": "OperatelyWeb.Api.Mutations.RemoveCompanyOwner",
-      "outputs": [],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "person_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "remove_company_owner",
-      "method": "POST"
-    },
-    {
-      "name": "remove_company_trusted_email_domain",
-      "type": "mutation",
-      "path": "/api/external/v1/remove_company_trusted_email_domain",
-      "handler": "OperatelyWeb.Api.Mutations.RemoveCompanyTrustedEmailDomain",
-      "outputs": [
-        {
-          "default": null,
-          "name": "company",
-          "type": {
-            "name": "company",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "company_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "domain",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "remove_company_trusted_email_domain",
-      "method": "POST"
-    },
-    {
       "name": "remove_key_resource",
       "type": "mutation",
       "path": "/api/external/v1/remove_key_resource",
@@ -24745,29 +24768,6 @@
         }
       ],
       "full_name": "rename_resource_hub_folder",
-      "method": "POST"
-    },
-    {
-      "name": "restore_company_member",
-      "type": "mutation",
-      "path": "/api/external/v1/restore_company_member",
-      "handler": "OperatelyWeb.Api.Mutations.RestoreCompanyMember",
-      "outputs": [],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "person_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "restore_company_member",
       "method": "POST"
     },
     {
@@ -27598,6 +27598,6 @@
     }
   ],
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-13T20:23:34Z",
+  "generated_at": "2026-03-14T12:34:32Z",
   "schema_version": 1
 }
