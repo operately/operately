@@ -7,6 +7,7 @@ export type {
   ApiTokensListResult,
   ApiTokensSetReadOnlyResult,
   ApiTokensUpdateNameResult,
+  Account,
 } from "@/api";
 
 export { changePassword, getAccount, useJoinCompany } from "@/api";

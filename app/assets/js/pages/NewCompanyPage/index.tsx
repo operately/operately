@@ -1,4 +1,4 @@
-import * as Api from "@/api";
+import Api from "@/api";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
@@ -14,7 +14,7 @@ export default { name: "NewCompanyPage", loader: Pages.emptyLoader, Page } as Pa
 
 function Page() {
   const navigate = useNavigate();
-  const [add] = Api.useAddCompany();
+  const [add] = Api.companies.useCreate();
 
   const form = Forms.useForm({
     fields: {

@@ -1,4 +1,4 @@
-import * as Api from "@/api";
+import Api, { Account, Company } from "@/api";
 import * as Pages from "@/components/Pages";
 import * as People from "@/models/people";
 import * as React from "react";
@@ -15,14 +15,14 @@ import classnames from "classnames";
 export default { name: "LobbyPage", loader, Page } as PageModule;
 
 interface LoaderResult {
-  account: Api.Account;
-  companies: Api.Company[];
+  account: Account;
+  companies: Company[];
 }
 
 async function loader(): Promise<LoaderResult> {
   return {
     account: await Api.getAccount({}).then((res) => res.account!),
-    companies: await Api.getCompanies({
+    companies: await Api.companies.list({
       includeMemberCount: true,
     }).then((res) => res.companies!),
   };
@@ -61,7 +61,7 @@ function AdminsLink() {
   return <div className="font-medium mt-8">Or, visit the {adminLink}.</div>;
 }
 
-function CompanyCards({ companies }: { companies: Api.Company[] }) {
+function CompanyCards({ companies }: { companies: Company[] }) {
   return (
     <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-4 mt-8">
       {companies.map((company) => (
@@ -73,7 +73,7 @@ function CompanyCards({ companies }: { companies: Api.Company[] }) {
   );
 }
 
-function CompanyCard({ company }: { company: Api.Company }) {
+function CompanyCard({ company }: { company: Company }) {
   const className = classnames(
     "cursor-pointer",
     "rounded-lg",

@@ -2,7 +2,7 @@ import { getSpace, Space } from "@/models/spaces";
 import { getWorkMap, WorkMapItem } from "@/models/workMap";
 import { PageCache } from "@/routes/PageCache";
 import { fetchAll } from "@/utils/async";
-import { Company, getCompany } from "../../api";
+import Api, { Company } from "@/api";
 
 interface LoaderResult {
   data: {
@@ -21,7 +21,7 @@ export async function loader({ params, refreshCache = false }): Promise<LoaderRe
       fetchAll({
         workMap: getWorkMap({ spaceId: params.id }).then((d) => d.workMap),
         space: getSpace({ id: params.id, includeAccessLevels: true, includePermissions: true }),
-        company: getCompany({ id: params.companyId }).then((d) => d.company!),
+        company: Api.companies.get({ id: params.companyId }).then((d) => d.company!),
       }),
   });
 }

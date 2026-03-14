@@ -9,14 +9,23 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | --- | --- | --- | --- |
 | `acknowledge_goal_progress_update` | `op acknowledge_goal_progress_update` | `POST` | `/api/external/v1/acknowledge_goal_progress_update` |
 | `acknowledge_project_check_in` | `op acknowledge_project_check_in` | `POST` | `/api/external/v1/acknowledge_project_check_in` |
-| `add_company` | `op add_company` | `POST` | `/api/external/v1/add_company` |
-| `add_company_admins` | `op add_company_admins` | `POST` | `/api/external/v1/add_company_admins` |
-| `add_company_member` | `op add_company_member` | `POST` | `/api/external/v1/add_company_member` |
 | `add_key_resource` | `op add_key_resource` | `POST` | `/api/external/v1/add_key_resource` |
 | `add_project_contributor` | `op add_project_contributor` | `POST` | `/api/external/v1/add_project_contributor` |
 | `add_project_contributors` | `op add_project_contributors` | `POST` | `/api/external/v1/add_project_contributors` |
 | `add_reaction` | `op add_reaction` | `POST` | `/api/external/v1/add_reaction` |
-| `convert_company_member_to_guest` | `op convert_company_member_to_guest` | `POST` | `/api/external/v1/convert_company_member_to_guest` |
+| `companies convert_member_to_guest` | `op companies convert_member_to_guest` | `POST` | `/api/external/v1/companies/convert_member_to_guest` |
+| `companies create` | `op companies create` | `POST` | `/api/external/v1/companies/create` |
+| `companies create_admins` | `op companies create_admins` | `POST` | `/api/external/v1/companies/create_admins` |
+| `companies create_member` | `op companies create_member` | `POST` | `/api/external/v1/companies/create_member` |
+| `companies delete_admin` | `op companies delete_admin` | `POST` | `/api/external/v1/companies/delete_admin` |
+| `companies delete_member` | `op companies delete_member` | `POST` | `/api/external/v1/companies/delete_member` |
+| `companies delete_owner` | `op companies delete_owner` | `POST` | `/api/external/v1/companies/delete_owner` |
+| `companies delete_trusted_email_domain` | `op companies delete_trusted_email_domain` | `POST` | `/api/external/v1/companies/delete_trusted_email_domain` |
+| `companies get` | `op companies get` | `GET` | `/api/external/v1/companies/get` |
+| `companies list` | `op companies list` | `GET` | `/api/external/v1/companies/list` |
+| `companies restore_member` | `op companies restore_member` | `POST` | `/api/external/v1/companies/restore_member` |
+| `companies update` | `op companies update` | `POST` | `/api/external/v1/companies/update` |
+| `companies update_members_permissions` | `op companies update_members_permissions` | `POST` | `/api/external/v1/companies/update_members_permissions` |
 | `copy_resource_hub_folder` | `op copy_resource_hub_folder` | `POST` | `/api/external/v1/copy_resource_hub_folder` |
 | `create_comment` | `op create_comment` | `POST` | `/api/external/v1/create_comment` |
 | `create_goal_discussion` | `op create_goal_discussion` | `POST` | `/api/external/v1/create_goal_discussion` |
@@ -31,8 +40,6 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `delete_resource_hub_folder` | `op delete_resource_hub_folder` | `POST` | `/api/external/v1/delete_resource_hub_folder` |
 | `delete_resource_hub_link` | `op delete_resource_hub_link` | `POST` | `/api/external/v1/delete_resource_hub_link` |
 | `edit_comment` | `op edit_comment` | `POST` | `/api/external/v1/edit_comment` |
-| `edit_company` | `op edit_company` | `POST` | `/api/external/v1/edit_company` |
-| `edit_company_members_permissions` | `op edit_company_members_permissions` | `POST` | `/api/external/v1/edit_company_members_permissions` |
 | `edit_goal_discussion` | `op edit_goal_discussion` | `POST` | `/api/external/v1/edit_goal_discussion` |
 | `edit_goal_progress_update` | `op edit_goal_progress_update` | `POST` | `/api/external/v1/edit_goal_progress_update` |
 | `edit_key_resource` | `op edit_key_resource` | `POST` | `/api/external/v1/edit_key_resource` |
@@ -49,8 +56,6 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `get_assignments_count` | `op get_assignments_count` | `GET` | `/api/external/v1/get_assignments_count` |
 | `get_binded_people` | `op get_binded_people` | `GET` | `/api/external/v1/get_binded_people` |
 | `get_comments` | `op get_comments` | `GET` | `/api/external/v1/get_comments` |
-| `get_companies` | `op get_companies` | `GET` | `/api/external/v1/get_companies` |
-| `get_company` | `op get_company` | `GET` | `/api/external/v1/get_company` |
 | `get_flat_work_map` | `op get_flat_work_map` | `GET` | `/api/external/v1/get_flat_work_map` |
 | `get_goal_progress_update` | `op get_goal_progress_update` | `GET` | `/api/external/v1/get_goal_progress_update` |
 | `get_key_resource` | `op get_key_resource` | `GET` | `/api/external/v1/get_key_resource` |
@@ -155,14 +160,9 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `projects update_start_date` | `op projects update_start_date` | `POST` | `/api/external/v1/projects/update_start_date` |
 | `projects update_task_statuses` | `op projects update_task_statuses` | `POST` | `/api/external/v1/projects/update_task_statuses` |
 | `publish_resource_hub_document` | `op publish_resource_hub_document` | `POST` | `/api/external/v1/publish_resource_hub_document` |
-| `remove_company_admin` | `op remove_company_admin` | `POST` | `/api/external/v1/remove_company_admin` |
-| `remove_company_member` | `op remove_company_member` | `POST` | `/api/external/v1/remove_company_member` |
-| `remove_company_owner` | `op remove_company_owner` | `POST` | `/api/external/v1/remove_company_owner` |
-| `remove_company_trusted_email_domain` | `op remove_company_trusted_email_domain` | `POST` | `/api/external/v1/remove_company_trusted_email_domain` |
 | `remove_key_resource` | `op remove_key_resource` | `POST` | `/api/external/v1/remove_key_resource` |
 | `remove_reaction` | `op remove_reaction` | `POST` | `/api/external/v1/remove_reaction` |
 | `rename_resource_hub_folder` | `op rename_resource_hub_folder` | `POST` | `/api/external/v1/rename_resource_hub_folder` |
-| `restore_company_member` | `op restore_company_member` | `POST` | `/api/external/v1/restore_company_member` |
 | `search_people` | `op search_people` | `GET` | `/api/external/v1/search_people` |
 | `space_discussions archive` | `op space_discussions archive` | `POST` | `/api/external/v1/space_discussions/archive` |
 | `space_discussions create` | `op space_discussions create` | `POST` | `/api/external/v1/space_discussions/create` |
