@@ -48,8 +48,8 @@ function Page() {
   const refresh = Pages.useRefresh();
   const [remove] = Companies.useRemoveCompanyMember();
   const [createInvite] = Api.invitations.useNewInvitationToken();
-  const [convertToGuest] = Api.useConvertCompanyMemberToGuest();
-  const [editPermissions] = Api.useEditCompanyMembersPermissions();
+  const [convertToGuest] = Api.companies.useConvertMemberToGuest();
+  const [editPermissions] = Api.companies.useUpdateMembersPermissions();
 
   const buildPerson = React.useCallback(
     (person: People.Person): CompanyAdminManagePeoplePage.Person => {
