@@ -1,8 +1,10 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.GetProjectCheckIns do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.ProjectCheckIns.List do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
   alias OperatelyWeb.Paths
+
+  def query_name, do: "project_check_ins/list"
 
   @impl true
   def setup(ctx) do

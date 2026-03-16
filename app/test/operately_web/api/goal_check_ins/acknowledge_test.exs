@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.AcknowledgeGoalProgressUpdateTest do
+defmodule OperatelyWeb.Api.GoalCheckIns.AcknowledgeTest do
   use OperatelyWeb.TurboCase
 
   import Operately.PeopleFixtures
@@ -11,7 +11,7 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeGoalProgressUpdateTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :acknowledge_goal_progress_update, %{})
+      assert {401, _} = mutation(ctx.conn, [:goal_check_ins, :acknowledge], %{})
     end
   end
 
@@ -76,7 +76,7 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeGoalProgressUpdateTest do
       refute update.acknowledged_at
       refute update.acknowledged_by_id
 
-      assert {200, res} = mutation(ctx.conn, :acknowledge_goal_progress_update, %{id: Paths.goal_update_id(update)})
+      assert {200, res} = mutation(ctx.conn, [:goal_check_ins, :acknowledge], %{id: Paths.goal_update_id(update)})
       assert_response(res, update)
     end
   end
@@ -86,7 +86,7 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeGoalProgressUpdateTest do
   #
 
   defp request(conn, update) do
-    mutation(conn, :acknowledge_goal_progress_update, %{id: Paths.goal_update_id(update)})
+    mutation(conn, [:goal_check_ins, :acknowledge], %{id: Paths.goal_update_id(update)})
   end
 
   defp assert_response(res, update) do
@@ -96,10 +96,6 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeGoalProgressUpdateTest do
     assert update.acknowledged_by_id
     assert res.update == Serializer.serialize(update, level: :full)
   end
-
-  #
-  # Helpers
-  #
 
   defp create_update(ctx, opts) do
     goal =
@@ -116,11 +112,11 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeGoalProgressUpdateTest do
   end
 
   defp add_person_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space_id, [
-      %{
-        id: ctx.person.id,
-        access_level: Binding.edit_access()
-      }
-    ])
+    space = Operately.Groups.get_group!(ctx.space_id)
+
+    {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
+      id: ctx.person.id,
+      access_level: Binding.edit_access()
+    }])
   end
 end

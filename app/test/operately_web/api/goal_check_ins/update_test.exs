@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdateTest do
+defmodule OperatelyWeb.Api.GoalCheckIns.UpdateTest do
   use OperatelyWeb.TurboCase
 
   import Operately.GroupsFixtures
@@ -12,7 +12,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdateTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :edit_goal_progress_update, %{})
+      assert {401, _} = mutation(ctx.conn, [:goal_check_ins, :update], %{})
     end
   end
 
@@ -84,7 +84,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdateTest do
       update = create_goal_update(ctx)
 
       assert {200, _} =
-               mutation(ctx.conn, :edit_goal_progress_update, %{
+               mutation(ctx.conn, [:goal_check_ins, :update], %{
                  id: Paths.goal_update_id(update),
                  status: "off_track",
                  content: RichText.rich_text("content", :as_string),
@@ -105,7 +105,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdateTest do
       assert subscriptions == []
 
       assert {200, _} =
-               mutation(ctx.conn, :edit_goal_progress_update, %{
+               mutation(ctx.conn, [:goal_check_ins, :update], %{
                  id: Paths.goal_update_id(update),
                  status: "off_track",
                  content: RichText.rich_text(mentioned_people: [ctx.company_creator]),
@@ -123,6 +123,10 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdateTest do
     end
   end
 
+  #
+  # Helpers
+  #
+
   defp request(conn, update) do
     targets =
       Enum.map(Goals.list_targets(update.goal_id), fn t ->
@@ -130,7 +134,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdateTest do
       end)
       |> Jason.encode!()
 
-    mutation(conn, :edit_goal_progress_update, %{
+    mutation(conn, [:goal_check_ins, :update], %{
       id: Paths.goal_update_id(update),
       status: "on_track",
       content: RichText.rich_text("Edited content", :as_string),
@@ -139,26 +143,6 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdateTest do
       checklist: []
     })
   end
-
-  defp assert_update_edited(update) do
-    assert update.message == RichText.rich_text("Content")
-
-    Enum.each(update.targets, fn t ->
-      assert t.value == 50
-    end)
-
-    update = Repo.reload(update)
-
-    assert update.message == RichText.rich_text("Edited content")
-
-    Enum.each(update.targets, fn t ->
-      assert t.value == 75
-    end)
-  end
-
-  #
-  # Helpers
-  #
 
   defp create_goal_update(ctx, attrs \\ []) do
     goal =
@@ -192,5 +176,21 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdateTest do
         access_level: Binding.edit_access()
       }
     ])
+  end
+
+  defp assert_update_edited(update) do
+    assert update.message == RichText.rich_text("Content")
+
+    Enum.each(update.targets, fn t ->
+      assert t.value == 50
+    end)
+
+    update = Repo.reload(update)
+
+    assert update.message == RichText.rich_text("Edited content")
+
+    Enum.each(update.targets, fn t ->
+      assert t.value == 75
+    end)
   end
 end

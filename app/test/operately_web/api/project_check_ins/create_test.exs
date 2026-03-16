@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.PostProjectCheckInTest do
+defmodule OperatelyWeb.Api.ProjectCheckIns.CreateTest do
   use OperatelyWeb.TurboCase
 
   import Ecto.Query, only: [from: 1]
@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api.Mutations.PostProjectCheckInTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :post_project_check_in, %{})
+      assert {401, _} = mutation(ctx.conn, [:project_check_ins, :create], %{})
     end
   end
 
@@ -47,7 +47,7 @@ defmodule OperatelyWeb.Api.Mutations.PostProjectCheckInTest do
         space = create_space(ctx)
         project = create_project(ctx, space, @test.company, @test.space, @test.project)
 
-        assert {code, res} = mutation(ctx.conn, :post_project_check_in, %{
+        assert {code, res} = mutation(ctx.conn, [:project_check_ins, :create], %{
           project_id: Paths.project_id(project),
           status: "on_track",
           description: RichText.rich_text("Description", :as_string),
@@ -71,10 +71,9 @@ defmodule OperatelyWeb.Api.Mutations.PostProjectCheckInTest do
 
     test "creates project check-in", ctx do
       project = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.person.id, group_id: ctx.company.company_space_id})
-
       assert Repo.all(from(p in CheckIn)) == []
 
-      assert {200, res} = mutation(ctx.conn, :post_project_check_in, %{
+      assert {200, res} = mutation(ctx.conn, [:project_check_ins, :create], %{
         project_id: Paths.project_id(project),
         status: "on_track",
         description: RichText.rich_text("Description", :as_string),
@@ -97,7 +96,7 @@ defmodule OperatelyWeb.Api.Mutations.PostProjectCheckInTest do
     end
 
     test "creates subscription list for project check-in", ctx do
-      assert {200, res} = mutation(ctx.conn, :post_project_check_in, %{
+      assert {200, res} = mutation(ctx.conn, [:project_check_ins, :create], %{
         project_id: Paths.project_id(ctx.project),
         status: "on_track",
         description: RichText.rich_text("Description", :as_string),
@@ -120,7 +119,7 @@ defmodule OperatelyWeb.Api.Mutations.PostProjectCheckInTest do
       people = ctx.people ++ ctx.people ++ ctx.people
       description = RichText.rich_text(mentioned_people: people)
 
-      assert {200, res} = mutation(ctx.conn, :post_project_check_in, %{
+      assert {200, res} = mutation(ctx.conn, [:project_check_ins, :create], %{
         project_id: Paths.project_id(ctx.project),
         status: "on_track",
         description: description,
@@ -141,7 +140,7 @@ defmodule OperatelyWeb.Api.Mutations.PostProjectCheckInTest do
       people = [ctx.person | ctx.people]
       description = RichText.rich_text(mentioned_people: people)
 
-      assert {200, res} = mutation(ctx.conn, :post_project_check_in, %{
+      assert {200, res} = mutation(ctx.conn, [:project_check_ins, :create], %{
         project_id: Paths.project_id(ctx.project),
         status: "on_track",
         description: description,
@@ -153,7 +152,7 @@ defmodule OperatelyWeb.Api.Mutations.PostProjectCheckInTest do
 
       assert length(subscriptions) == 4
 
-      Enum.each(people, fn p ->
+      Enum.each([ctx.person | ctx.people], fn p ->
         assert Enum.filter(subscriptions, &(&1.person_id == p.id))
       end)
     end
@@ -166,7 +165,6 @@ defmodule OperatelyWeb.Api.Mutations.PostProjectCheckInTest do
   defp fetch_subscriptions(res) do
     {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.check_in.id)
     {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
-
     list.subscriptions
   end
 
@@ -177,6 +175,7 @@ defmodule OperatelyWeb.Api.Mutations.PostProjectCheckInTest do
   defp create_project(ctx, space, company_members_level, space_members_level, project_member_level) do
     project = project_fixture(%{
       company_id: ctx.company.id,
+      name: "Name",
       creator_id: ctx.creator.id,
       group_id: space.id,
       company_access_level: Binding.from_atom(company_members_level),
