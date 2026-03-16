@@ -81,6 +81,10 @@ defmodule OperatelyWeb.Api.GoalCheckIns.AcknowledgeTest do
     end
   end
 
+  #
+  # Steps
+  #
+
   defp request(conn, update) do
     mutation(conn, [:goal_check_ins, :acknowledge], %{id: Paths.goal_update_id(update)})
   end

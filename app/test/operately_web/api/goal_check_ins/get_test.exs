@@ -141,6 +141,10 @@ defmodule OperatelyWeb.Api.GoalCheckIns.GetTest do
     end
   end
 
+  #
+  # Helpers
+  #
+
   defp allowed_request(conn, update_id) do
     assert {200, %{update: update} = _res} = query(conn, [:goal_check_ins, :get], %{
       id: update_id,
