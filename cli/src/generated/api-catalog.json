@@ -14770,7 +14770,6 @@
       "type": "mutation",
       "path": "/api/external/v1/comments/create",
       "handler": "OperatelyWeb.Api.Comments.Create",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -14820,14 +14819,14 @@
           "nullable": false
         }
       ],
-      "full_name": "comments/create"
+      "full_name": "comments/create",
+      "method": "POST"
     },
     {
       "name": "delete",
       "type": "mutation",
       "path": "/api/external/v1/comments/delete",
       "handler": "OperatelyWeb.Api.Comments.Delete",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -14866,14 +14865,14 @@
           "nullable": false
         }
       ],
-      "full_name": "comments/delete"
+      "full_name": "comments/delete",
+      "method": "POST"
     },
     {
       "name": "list",
       "type": "query",
       "path": "/api/external/v1/comments/list",
       "handler": "OperatelyWeb.Api.Comments.List",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -14915,14 +14914,14 @@
           "nullable": false
         }
       ],
-      "full_name": "comments/list"
+      "full_name": "comments/list",
+      "method": "GET"
     },
     {
       "name": "update",
       "type": "mutation",
       "path": "/api/external/v1/comments/update",
       "handler": "OperatelyWeb.Api.Comments.Update",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -14972,14 +14971,14 @@
           "nullable": false
         }
       ],
-      "full_name": "comments/update"
+      "full_name": "comments/update",
+      "method": "POST"
     },
     {
       "name": "convert_member_to_guest",
       "type": "mutation",
       "path": "/api/external/v1/companies/convert_member_to_guest",
       "handler": "OperatelyWeb.Api.Companies.ConvertMemberToGuest",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -15007,14 +15006,14 @@
           "nullable": false
         }
       ],
-      "full_name": "companies/convert_member_to_guest"
+      "full_name": "companies/convert_member_to_guest",
+      "method": "POST"
     },
     {
       "name": "create",
       "type": "mutation",
       "path": "/api/external/v1/companies/create",
       "handler": "OperatelyWeb.Api.Companies.Create",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -15064,14 +15063,14 @@
           "nullable": true
         }
       ],
-      "full_name": "companies/create"
+      "full_name": "companies/create",
+      "method": "POST"
     },
     {
       "name": "create_admins",
       "type": "mutation",
       "path": "/api/external/v1/companies/create_admins",
       "handler": "OperatelyWeb.Api.Companies.CreateAdmins",
-      "method": "POST",
       "outputs": [],
       "namespace": "companies",
       "inputs": [
@@ -15090,14 +15089,14 @@
           "nullable": true
         }
       ],
-      "full_name": "companies/create_admins"
+      "full_name": "companies/create_admins",
+      "method": "POST"
     },
     {
       "name": "create_member",
       "type": "mutation",
       "path": "/api/external/v1/companies/create_member",
       "handler": "OperatelyWeb.Api.Companies.CreateMember",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -15169,14 +15168,14 @@
           "nullable": false
         }
       ],
-      "full_name": "companies/create_member"
+      "full_name": "companies/create_member",
+      "method": "POST"
     },
     {
       "name": "delete_admin",
       "type": "mutation",
       "path": "/api/external/v1/companies/delete_admin",
       "handler": "OperatelyWeb.Api.Companies.DeleteAdmin",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -15204,14 +15203,14 @@
           "nullable": true
         }
       ],
-      "full_name": "companies/delete_admin"
+      "full_name": "companies/delete_admin",
+      "method": "POST"
     },
     {
       "name": "delete_member",
       "type": "mutation",
       "path": "/api/external/v1/companies/delete_member",
       "handler": "OperatelyWeb.Api.Companies.DeleteMember",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -15239,14 +15238,14 @@
           "nullable": false
         }
       ],
-      "full_name": "companies/delete_member"
+      "full_name": "companies/delete_member",
+      "method": "POST"
     },
     {
       "name": "delete_owner",
       "type": "mutation",
       "path": "/api/external/v1/companies/delete_owner",
       "handler": "OperatelyWeb.Api.Companies.DeleteOwner",
-      "method": "POST",
       "outputs": [],
       "namespace": "companies",
       "inputs": [
@@ -15262,14 +15261,14 @@
           "nullable": true
         }
       ],
-      "full_name": "companies/delete_owner"
+      "full_name": "companies/delete_owner",
+      "method": "POST"
     },
     {
       "name": "delete_trusted_email_domain",
       "type": "mutation",
       "path": "/api/external/v1/companies/delete_trusted_email_domain",
       "handler": "OperatelyWeb.Api.Companies.DeleteTrustedEmailDomain",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -15308,14 +15307,14 @@
           "nullable": true
         }
       ],
-      "full_name": "companies/delete_trusted_email_domain"
+      "full_name": "companies/delete_trusted_email_domain",
+      "method": "POST"
     },
     {
       "name": "get",
       "type": "query",
       "path": "/api/external/v1/companies/get",
       "handler": "OperatelyWeb.Api.Companies.Get",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -15409,14 +15408,14 @@
           "nullable": false
         }
       ],
-      "full_name": "companies/get"
+      "full_name": "companies/get",
+      "method": "GET"
     },
     {
       "name": "list",
       "type": "query",
       "path": "/api/external/v1/companies/list",
       "handler": "OperatelyWeb.Api.Companies.List",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -15447,14 +15446,14 @@
           "nullable": true
         }
       ],
-      "full_name": "companies/list"
+      "full_name": "companies/list",
+      "method": "GET"
     },
     {
       "name": "restore_member",
       "type": "mutation",
       "path": "/api/external/v1/companies/restore_member",
       "handler": "OperatelyWeb.Api.Companies.RestoreMember",
-      "method": "POST",
       "outputs": [],
       "namespace": "companies",
       "inputs": [
@@ -15470,14 +15469,14 @@
           "nullable": true
         }
       ],
-      "full_name": "companies/restore_member"
+      "full_name": "companies/restore_member",
+      "method": "POST"
     },
     {
       "name": "update",
       "type": "mutation",
       "path": "/api/external/v1/companies/update",
       "handler": "OperatelyWeb.Api.Companies.Update",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -15505,14 +15504,14 @@
           "nullable": true
         }
       ],
-      "full_name": "companies/update"
+      "full_name": "companies/update",
+      "method": "POST"
     },
     {
       "name": "update_members_permissions",
       "type": "mutation",
       "path": "/api/external/v1/companies/update_members_permissions",
       "handler": "OperatelyWeb.Api.Companies.UpdateMembersPermissions",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -15543,14 +15542,449 @@
           "nullable": false
         }
       ],
-      "full_name": "companies/update_members_permissions"
+      "full_name": "companies/update_members_permissions",
+      "method": "POST"
+    },
+    {
+      "name": "acknowledge",
+      "type": "mutation",
+      "path": "/api/external/v1/goal_check_ins/acknowledge",
+      "handler": "OperatelyWeb.Api.GoalCheckIns.Acknowledge",
+      "outputs": [
+        {
+          "default": null,
+          "name": "update",
+          "type": {
+            "name": "goal_progress_update",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "goal_check_ins",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "goal_check_ins/acknowledge",
+      "method": "POST"
+    },
+    {
+      "name": "create",
+      "type": "mutation",
+      "path": "/api/external/v1/goal_check_ins/create",
+      "handler": "OperatelyWeb.Api.GoalCheckIns.Create",
+      "outputs": [
+        {
+          "default": null,
+          "name": "update",
+          "type": {
+            "name": "goal_progress_update",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "goal_check_ins",
+      "inputs": [
+        {
+          "default": null,
+          "name": "goal_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "status",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "due_date",
+          "type": {
+            "name": "contextual_date",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "checklist",
+          "type": {
+            "item": {
+              "name": "goal_check_update",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "content",
+          "type": {
+            "name": "json",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "new_target_values",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "send_notifications_to_everyone",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "subscriber_ids",
+          "type": {
+            "item": {
+              "name": "string",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "goal_check_ins/create",
+      "method": "POST"
+    },
+    {
+      "name": "get",
+      "type": "query",
+      "path": "/api/external/v1/goal_check_ins/get",
+      "handler": "OperatelyWeb.Api.GoalCheckIns.Get",
+      "outputs": [
+        {
+          "default": null,
+          "name": "update",
+          "type": {
+            "name": "goal_progress_update",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "goal_check_ins",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_author",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_acknowledged_by",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_reactions",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_goal",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_goal_targets",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_goal_checklist",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_reviewer",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_champion",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_space",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_space_members",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_subscriptions_list",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_potential_subscribers",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_unread_notifications",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_permissions",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "goal_check_ins/get",
+      "method": "GET"
+    },
+    {
+      "name": "update",
+      "type": "mutation",
+      "path": "/api/external/v1/goal_check_ins/update",
+      "handler": "OperatelyWeb.Api.GoalCheckIns.Update",
+      "outputs": [
+        {
+          "default": null,
+          "name": "update",
+          "type": {
+            "name": "goal_progress_update",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "goal_check_ins",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "due_date",
+          "type": {
+            "name": "contextual_date",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "status",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "content",
+          "type": {
+            "name": "json",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "new_target_values",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "checklist",
+          "type": {
+            "item": {
+              "name": "goal_check_update",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "goal_check_ins/update",
+      "method": "POST"
     },
     {
       "name": "change_parent",
       "type": "mutation",
       "path": "/api/external/v1/goals/change_parent",
       "handler": "OperatelyWeb.Api.Goals.ChangeParent",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -15589,14 +16023,14 @@
           "nullable": true
         }
       ],
-      "full_name": "goals/change_parent"
+      "full_name": "goals/change_parent",
+      "method": "POST"
     },
     {
       "name": "close",
       "type": "mutation",
       "path": "/api/external/v1/goals/close",
       "handler": "OperatelyWeb.Api.Goals.Close",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -15682,14 +16116,14 @@
           "nullable": false
         }
       ],
-      "full_name": "goals/close"
+      "full_name": "goals/close",
+      "method": "POST"
     },
     {
       "name": "create",
       "type": "mutation",
       "path": "/api/external/v1/goals/create",
       "handler": "OperatelyWeb.Api.Goals.Create",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -15830,14 +16264,14 @@
           "nullable": true
         }
       ],
-      "full_name": "goals/create"
+      "full_name": "goals/create",
+      "method": "POST"
     },
     {
       "name": "create_access_members",
       "type": "mutation",
       "path": "/api/external/v1/goals/create_access_members",
       "handler": "OperatelyWeb.Api.Goals.CreateAccessMembers",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -15879,14 +16313,14 @@
           "nullable": false
         }
       ],
-      "full_name": "goals/create_access_members"
+      "full_name": "goals/create_access_members",
+      "method": "POST"
     },
     {
       "name": "create_check",
       "type": "mutation",
       "path": "/api/external/v1/goals/create_check",
       "handler": "OperatelyWeb.Api.GoalChecks.Create",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -15936,14 +16370,14 @@
           "nullable": false
         }
       ],
-      "full_name": "goals/create_check"
+      "full_name": "goals/create_check",
+      "method": "POST"
     },
     {
       "name": "create_target",
       "type": "mutation",
       "path": "/api/external/v1/goals/create_target",
       "handler": "OperatelyWeb.Api.Goals.CreateTarget",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -16026,14 +16460,14 @@
           "nullable": false
         }
       ],
-      "full_name": "goals/create_target"
+      "full_name": "goals/create_target",
+      "method": "POST"
     },
     {
       "name": "delete",
       "type": "mutation",
       "path": "/api/external/v1/goals/delete",
       "handler": "OperatelyWeb.Api.Goals.Delete",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -16061,14 +16495,14 @@
           "nullable": true
         }
       ],
-      "full_name": "goals/delete"
+      "full_name": "goals/delete",
+      "method": "POST"
     },
     {
       "name": "delete_access_member",
       "type": "mutation",
       "path": "/api/external/v1/goals/delete_access_member",
       "handler": "OperatelyWeb.Api.Goals.DeleteAccessMember",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -16107,14 +16541,14 @@
           "nullable": false
         }
       ],
-      "full_name": "goals/delete_access_member"
+      "full_name": "goals/delete_access_member",
+      "method": "POST"
     },
     {
       "name": "delete_check",
       "type": "mutation",
       "path": "/api/external/v1/goals/delete_check",
       "handler": "OperatelyWeb.Api.GoalChecks.Delete",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -16153,14 +16587,14 @@
           "nullable": false
         }
       ],
-      "full_name": "goals/delete_check"
+      "full_name": "goals/delete_check",
+      "method": "POST"
     },
     {
       "name": "delete_target",
       "type": "mutation",
       "path": "/api/external/v1/goals/delete_target",
       "handler": "OperatelyWeb.Api.Goals.DeleteTarget",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -16199,14 +16633,14 @@
           "nullable": false
         }
       ],
-      "full_name": "goals/delete_target"
+      "full_name": "goals/delete_target",
+      "method": "POST"
     },
     {
       "name": "get",
       "type": "query",
       "path": "/api/external/v1/goals/get",
       "handler": "OperatelyWeb.Api.Goals.Get",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -16410,14 +16844,14 @@
           "nullable": false
         }
       ],
-      "full_name": "goals/get"
+      "full_name": "goals/get",
+      "method": "GET"
     },
     {
       "name": "list",
       "type": "query",
       "path": "/api/external/v1/goals/list",
       "handler": "OperatelyWeb.Api.Goals.List",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -16503,14 +16937,14 @@
           "nullable": true
         }
       ],
-      "full_name": "goals/list"
+      "full_name": "goals/list",
+      "method": "GET"
     },
     {
       "name": "list_access_members",
       "type": "query",
       "path": "/api/external/v1/goals/list_access_members",
       "handler": "OperatelyWeb.Api.Goals.ListAccessMembers",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -16541,14 +16975,14 @@
           "nullable": false
         }
       ],
-      "full_name": "goals/list_access_members"
+      "full_name": "goals/list_access_members",
+      "method": "GET"
     },
     {
       "name": "list_check_ins",
       "type": "query",
       "path": "/api/external/v1/goals/list_check_ins",
       "handler": "OperatelyWeb.Api.Queries.ListGoalCheckIns",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -16579,14 +17013,14 @@
           "nullable": false
         }
       ],
-      "full_name": "goals/list_check_ins"
+      "full_name": "goals/list_check_ins",
+      "method": "GET"
     },
     {
       "name": "list_contributors",
       "type": "query",
       "path": "/api/external/v1/goals/list_contributors",
       "handler": "OperatelyWeb.Api.Goals.ListContributors",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -16617,14 +17051,14 @@
           "nullable": true
         }
       ],
-      "full_name": "goals/list_contributors"
+      "full_name": "goals/list_contributors",
+      "method": "GET"
     },
     {
       "name": "list_discussions",
       "type": "query",
       "path": "/api/external/v1/goals/list_discussions",
       "handler": "OperatelyWeb.Api.Goals.ListDiscussions",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -16655,14 +17089,14 @@
           "nullable": false
         }
       ],
-      "full_name": "goals/list_discussions"
+      "full_name": "goals/list_discussions",
+      "method": "GET"
     },
     {
       "name": "reopen",
       "type": "mutation",
       "path": "/api/external/v1/goals/reopen",
       "handler": "OperatelyWeb.Api.Goals.Reopen",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -16726,14 +17160,14 @@
           "nullable": true
         }
       ],
-      "full_name": "goals/reopen"
+      "full_name": "goals/reopen",
+      "method": "POST"
     },
     {
       "name": "search_parent_goal",
       "type": "query",
       "path": "/api/external/v1/goals/search_parent_goal",
       "handler": "OperatelyWeb.Api.Goals.SearchParentGoal",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -16775,14 +17209,14 @@
           "nullable": false
         }
       ],
-      "full_name": "goals/search_parent_goal"
+      "full_name": "goals/search_parent_goal",
+      "method": "GET"
     },
     {
       "name": "toggle_check",
       "type": "mutation",
       "path": "/api/external/v1/goals/toggle_check",
       "handler": "OperatelyWeb.Api.GoalChecks.Toggle",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -16821,14 +17255,14 @@
           "nullable": false
         }
       ],
-      "full_name": "goals/toggle_check"
+      "full_name": "goals/toggle_check",
+      "method": "POST"
     },
     {
       "name": "update_access_levels",
       "type": "mutation",
       "path": "/api/external/v1/goals/update_access_levels",
       "handler": "OperatelyWeb.Api.Goals.UpdateAccessLevels",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -16867,14 +17301,14 @@
           "nullable": false
         }
       ],
-      "full_name": "goals/update_access_levels"
+      "full_name": "goals/update_access_levels",
+      "method": "POST"
     },
     {
       "name": "update_access_member",
       "type": "mutation",
       "path": "/api/external/v1/goals/update_access_member",
       "handler": "OperatelyWeb.Api.Goals.UpdateAccessMember",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -16924,14 +17358,14 @@
           "nullable": false
         }
       ],
-      "full_name": "goals/update_access_member"
+      "full_name": "goals/update_access_member",
+      "method": "POST"
     },
     {
       "name": "update_champion",
       "type": "mutation",
       "path": "/api/external/v1/goals/update_champion",
       "handler": "OperatelyWeb.Api.Goals.UpdateChampion",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -16970,14 +17404,14 @@
           "nullable": true
         }
       ],
-      "full_name": "goals/update_champion"
+      "full_name": "goals/update_champion",
+      "method": "POST"
     },
     {
       "name": "update_check",
       "type": "mutation",
       "path": "/api/external/v1/goals/update_check",
       "handler": "OperatelyWeb.Api.GoalChecks.Update",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -17027,14 +17461,14 @@
           "nullable": false
         }
       ],
-      "full_name": "goals/update_check"
+      "full_name": "goals/update_check",
+      "method": "POST"
     },
     {
       "name": "update_check_index",
       "type": "mutation",
       "path": "/api/external/v1/goals/update_check_index",
       "handler": "OperatelyWeb.Api.GoalChecks.UpdateIndex",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -17084,14 +17518,14 @@
           "nullable": false
         }
       ],
-      "full_name": "goals/update_check_index"
+      "full_name": "goals/update_check_index",
+      "method": "POST"
     },
     {
       "name": "update_description",
       "type": "mutation",
       "path": "/api/external/v1/goals/update_description",
       "handler": "OperatelyWeb.Api.Goals.UpdateDescription",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -17130,14 +17564,14 @@
           "nullable": false
         }
       ],
-      "full_name": "goals/update_description"
+      "full_name": "goals/update_description",
+      "method": "POST"
     },
     {
       "name": "update_due_date",
       "type": "mutation",
       "path": "/api/external/v1/goals/update_due_date",
       "handler": "OperatelyWeb.Api.Goals.UpdateDueDate",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -17176,14 +17610,14 @@
           "nullable": true
         }
       ],
-      "full_name": "goals/update_due_date"
+      "full_name": "goals/update_due_date",
+      "method": "POST"
     },
     {
       "name": "update_name",
       "type": "mutation",
       "path": "/api/external/v1/goals/update_name",
       "handler": "OperatelyWeb.Api.Goals.UpdateName",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -17222,14 +17656,14 @@
           "nullable": false
         }
       ],
-      "full_name": "goals/update_name"
+      "full_name": "goals/update_name",
+      "method": "POST"
     },
     {
       "name": "update_parent_goal",
       "type": "mutation",
       "path": "/api/external/v1/goals/update_parent_goal",
       "handler": "OperatelyWeb.Api.Goals.UpdateParentGoal",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -17268,14 +17702,14 @@
           "nullable": true
         }
       ],
-      "full_name": "goals/update_parent_goal"
+      "full_name": "goals/update_parent_goal",
+      "method": "POST"
     },
     {
       "name": "update_reviewer",
       "type": "mutation",
       "path": "/api/external/v1/goals/update_reviewer",
       "handler": "OperatelyWeb.Api.Goals.UpdateReviewer",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -17314,14 +17748,14 @@
           "nullable": true
         }
       ],
-      "full_name": "goals/update_reviewer"
+      "full_name": "goals/update_reviewer",
+      "method": "POST"
     },
     {
       "name": "update_space",
       "type": "mutation",
       "path": "/api/external/v1/goals/update_space",
       "handler": "OperatelyWeb.Api.Goals.UpdateSpace",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -17360,14 +17794,14 @@
           "nullable": false
         }
       ],
-      "full_name": "goals/update_space"
+      "full_name": "goals/update_space",
+      "method": "POST"
     },
     {
       "name": "update_start_date",
       "type": "mutation",
       "path": "/api/external/v1/goals/update_start_date",
       "handler": "OperatelyWeb.Api.Goals.UpdateStartDate",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -17406,14 +17840,14 @@
           "nullable": true
         }
       ],
-      "full_name": "goals/update_start_date"
+      "full_name": "goals/update_start_date",
+      "method": "POST"
     },
     {
       "name": "update_target",
       "type": "mutation",
       "path": "/api/external/v1/goals/update_target",
       "handler": "OperatelyWeb.Api.Goals.UpdateTarget",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -17496,14 +17930,14 @@
           "nullable": true
         }
       ],
-      "full_name": "goals/update_target"
+      "full_name": "goals/update_target",
+      "method": "POST"
     },
     {
       "name": "update_target_index",
       "type": "mutation",
       "path": "/api/external/v1/goals/update_target_index",
       "handler": "OperatelyWeb.Api.Goals.UpdateTargetIndex",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -17553,14 +17987,14 @@
           "nullable": false
         }
       ],
-      "full_name": "goals/update_target_index"
+      "full_name": "goals/update_target_index",
+      "method": "POST"
     },
     {
       "name": "update_target_value",
       "type": "mutation",
       "path": "/api/external/v1/goals/update_target_value",
       "handler": "OperatelyWeb.Api.Goals.UpdateTargetValue",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -17610,14 +18044,382 @@
           "nullable": false
         }
       ],
-      "full_name": "goals/update_target_value"
+      "full_name": "goals/update_target_value",
+      "method": "POST"
+    },
+    {
+      "name": "acknowledge",
+      "type": "mutation",
+      "path": "/api/external/v1/project_check_ins/acknowledge",
+      "handler": "OperatelyWeb.Api.ProjectCheckIns.Acknowledge",
+      "outputs": [
+        {
+          "default": null,
+          "name": "check_in",
+          "type": {
+            "name": "project_check_in",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "project_check_ins",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "project_check_ins/acknowledge",
+      "method": "POST"
+    },
+    {
+      "name": "create",
+      "type": "mutation",
+      "path": "/api/external/v1/project_check_ins/create",
+      "handler": "OperatelyWeb.Api.ProjectCheckIns.Create",
+      "outputs": [
+        {
+          "default": null,
+          "name": "check_in",
+          "type": {
+            "name": "project_check_in",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "project_check_ins",
+      "inputs": [
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "status",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "description",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "send_notifications_to_everyone",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "subscriber_ids",
+          "type": {
+            "item": {
+              "name": "string",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "project_check_ins/create",
+      "method": "POST"
+    },
+    {
+      "name": "get",
+      "type": "query",
+      "path": "/api/external/v1/project_check_ins/get",
+      "handler": "OperatelyWeb.Api.ProjectCheckIns.Get",
+      "outputs": [
+        {
+          "default": null,
+          "name": "project_check_in",
+          "type": {
+            "name": "project_check_in",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_check_ins",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_author",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_acknowledged_by",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_project",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_space",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_reactions",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_subscriptions_list",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_potential_subscribers",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_unread_notifications",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "project_check_ins/get",
+      "method": "GET"
+    },
+    {
+      "name": "list",
+      "type": "query",
+      "path": "/api/external/v1/project_check_ins/list",
+      "handler": "OperatelyWeb.Api.ProjectCheckIns.List",
+      "outputs": [
+        {
+          "default": null,
+          "name": "project_check_ins",
+          "type": {
+            "item": {
+              "name": "project_check_in",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "project_check_ins",
+      "inputs": [
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_author",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_project",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_reactions",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "project_check_ins/list",
+      "method": "GET"
+    },
+    {
+      "name": "update",
+      "type": "mutation",
+      "path": "/api/external/v1/project_check_ins/update",
+      "handler": "OperatelyWeb.Api.ProjectCheckIns.Update",
+      "outputs": [
+        {
+          "default": null,
+          "name": "check_in",
+          "type": {
+            "name": "project_check_in",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "project_check_ins",
+      "inputs": [
+        {
+          "default": null,
+          "name": "check_in_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "status",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "description",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "project_check_ins/update",
+      "method": "POST"
     },
     {
       "name": "create",
       "type": "mutation",
       "path": "/api/external/v1/project_discussions/create",
       "handler": "OperatelyWeb.Api.ProjectDiscussions.Create",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -17692,14 +18494,14 @@
           "nullable": false
         }
       ],
-      "full_name": "project_discussions/create"
+      "full_name": "project_discussions/create",
+      "method": "POST"
     },
     {
       "name": "get",
       "type": "query",
       "path": "/api/external/v1/project_discussions/get",
       "handler": "OperatelyWeb.Api.ProjectDiscussions.Get",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -17804,14 +18606,14 @@
           "nullable": false
         }
       ],
-      "full_name": "project_discussions/get"
+      "full_name": "project_discussions/get",
+      "method": "GET"
     },
     {
       "name": "list",
       "type": "query",
       "path": "/api/external/v1/project_discussions/list",
       "handler": "OperatelyWeb.Api.ProjectDiscussions.List",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -17842,14 +18644,14 @@
           "nullable": false
         }
       ],
-      "full_name": "project_discussions/list"
+      "full_name": "project_discussions/list",
+      "method": "GET"
     },
     {
       "name": "update",
       "type": "mutation",
       "path": "/api/external/v1/project_discussions/update",
       "handler": "OperatelyWeb.Api.ProjectDiscussions.Update",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -17913,14 +18715,14 @@
           "nullable": false
         }
       ],
-      "full_name": "project_discussions/update"
+      "full_name": "project_discussions/update",
+      "method": "POST"
     },
     {
       "name": "create_comment",
       "type": "mutation",
       "path": "/api/external/v1/project_milestones/create_comment",
       "handler": "OperatelyWeb.Api.ProjectMilestones.CreateComment",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -17970,14 +18772,14 @@
           "nullable": false
         }
       ],
-      "full_name": "project_milestones/create_comment"
+      "full_name": "project_milestones/create_comment",
+      "method": "POST"
     },
     {
       "name": "delete",
       "type": "mutation",
       "path": "/api/external/v1/project_milestones/delete",
       "handler": "OperatelyWeb.Api.ProjectMilestones.Delete",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -18005,14 +18807,14 @@
           "nullable": false
         }
       ],
-      "full_name": "project_milestones/delete"
+      "full_name": "project_milestones/delete",
+      "method": "POST"
     },
     {
       "name": "get",
       "type": "query",
       "path": "/api/external/v1/project_milestones/get",
       "handler": "OperatelyWeb.Api.ProjectMilestones.Get",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -18117,14 +18919,14 @@
           "nullable": false
         }
       ],
-      "full_name": "project_milestones/get"
+      "full_name": "project_milestones/get",
+      "method": "GET"
     },
     {
       "name": "list_tasks",
       "type": "query",
       "path": "/api/external/v1/project_milestones/list_tasks",
       "handler": "OperatelyWeb.Api.ProjectMilestones.ListTasks",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -18155,14 +18957,14 @@
           "nullable": false
         }
       ],
-      "full_name": "project_milestones/list_tasks"
+      "full_name": "project_milestones/list_tasks",
+      "method": "GET"
     },
     {
       "name": "update_description",
       "type": "mutation",
       "path": "/api/external/v1/project_milestones/update_description",
       "handler": "OperatelyWeb.Api.ProjectMilestones.UpdateDescription",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -18201,14 +19003,14 @@
           "nullable": false
         }
       ],
-      "full_name": "project_milestones/update_description"
+      "full_name": "project_milestones/update_description",
+      "method": "POST"
     },
     {
       "name": "update_due_date",
       "type": "mutation",
       "path": "/api/external/v1/project_milestones/update_due_date",
       "handler": "OperatelyWeb.Api.ProjectMilestones.UpdateDueDate",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -18247,14 +19049,14 @@
           "nullable": true
         }
       ],
-      "full_name": "project_milestones/update_due_date"
+      "full_name": "project_milestones/update_due_date",
+      "method": "POST"
     },
     {
       "name": "update_kanban",
       "type": "mutation",
       "path": "/api/external/v1/project_milestones/update_kanban",
       "handler": "OperatelyWeb.Api.ProjectMilestones.UpdateKanban",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -18315,14 +19117,14 @@
           "nullable": false
         }
       ],
-      "full_name": "project_milestones/update_kanban"
+      "full_name": "project_milestones/update_kanban",
+      "method": "POST"
     },
     {
       "name": "update_ordering",
       "type": "mutation",
       "path": "/api/external/v1/project_milestones/update_ordering",
       "handler": "OperatelyWeb.Api.ProjectMilestones.UpdateOrdering",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -18364,14 +19166,14 @@
           "nullable": false
         }
       ],
-      "full_name": "project_milestones/update_ordering"
+      "full_name": "project_milestones/update_ordering",
+      "method": "POST"
     },
     {
       "name": "update_title",
       "type": "mutation",
       "path": "/api/external/v1/project_milestones/update_title",
       "handler": "OperatelyWeb.Api.ProjectMilestones.UpdateTitle",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -18410,14 +19212,14 @@
           "nullable": false
         }
       ],
-      "full_name": "project_milestones/update_title"
+      "full_name": "project_milestones/update_title",
+      "method": "POST"
     },
     {
       "name": "close",
       "type": "mutation",
       "path": "/api/external/v1/projects/close",
       "handler": "OperatelyWeb.Api.Projects.Close",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -18492,14 +19294,14 @@
           "nullable": false
         }
       ],
-      "full_name": "projects/close"
+      "full_name": "projects/close",
+      "method": "POST"
     },
     {
       "name": "count_children",
       "type": "query",
       "path": "/api/external/v1/projects/count_children",
       "handler": "OperatelyWeb.Api.Projects.CountChildren",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -18549,14 +19351,14 @@
           "nullable": false
         }
       ],
-      "full_name": "projects/count_children"
+      "full_name": "projects/count_children",
+      "method": "GET"
     },
     {
       "name": "create",
       "type": "mutation",
       "path": "/api/external/v1/projects/create",
       "handler": "OperatelyWeb.Api.Projects.Create",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -18661,14 +19463,14 @@
           "nullable": true
         }
       ],
-      "full_name": "projects/create"
+      "full_name": "projects/create",
+      "method": "POST"
     },
     {
       "name": "create_contributor",
       "type": "mutation",
       "path": "/api/external/v1/projects/create_contributor",
       "handler": "OperatelyWeb.Api.Projects.CreateContributor",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -18740,14 +19542,14 @@
           "nullable": true
         }
       ],
-      "full_name": "projects/create_contributor"
+      "full_name": "projects/create_contributor",
+      "method": "POST"
     },
     {
       "name": "create_contributors",
       "type": "mutation",
       "path": "/api/external/v1/projects/create_contributors",
       "handler": "OperatelyWeb.Api.Projects.CreateContributors",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -18789,14 +19591,14 @@
           "nullable": false
         }
       ],
-      "full_name": "projects/create_contributors"
+      "full_name": "projects/create_contributors",
+      "method": "POST"
     },
     {
       "name": "create_key_resource",
       "type": "mutation",
       "path": "/api/external/v1/projects/create_key_resource",
       "handler": "OperatelyWeb.Api.Projects.CreateKeyResource",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -18857,14 +19659,14 @@
           "nullable": false
         }
       ],
-      "full_name": "projects/create_key_resource"
+      "full_name": "projects/create_key_resource",
+      "method": "POST"
     },
     {
       "name": "create_milestone",
       "type": "mutation",
       "path": "/api/external/v1/projects/create_milestone",
       "handler": "OperatelyWeb.Api.Projects.CreateMilestone",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -18914,14 +19716,14 @@
           "nullable": true
         }
       ],
-      "full_name": "projects/create_milestone"
+      "full_name": "projects/create_milestone",
+      "method": "POST"
     },
     {
       "name": "delete",
       "type": "mutation",
       "path": "/api/external/v1/projects/delete",
       "handler": "OperatelyWeb.Api.Projects.DeleteProject",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -18949,14 +19751,14 @@
           "nullable": false
         }
       ],
-      "full_name": "projects/delete"
+      "full_name": "projects/delete",
+      "method": "POST"
     },
     {
       "name": "delete_contributor",
       "type": "mutation",
       "path": "/api/external/v1/projects/delete_contributor",
       "handler": "OperatelyWeb.Api.Projects.DeleteContributor",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -18984,14 +19786,14 @@
           "nullable": true
         }
       ],
-      "full_name": "projects/delete_contributor"
+      "full_name": "projects/delete_contributor",
+      "method": "POST"
     },
     {
       "name": "delete_key_resource",
       "type": "mutation",
       "path": "/api/external/v1/projects/delete_key_resource",
       "handler": "OperatelyWeb.Api.Projects.DeleteKeyResource",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -19019,14 +19821,14 @@
           "nullable": false
         }
       ],
-      "full_name": "projects/delete_key_resource"
+      "full_name": "projects/delete_key_resource",
+      "method": "POST"
     },
     {
       "name": "get",
       "type": "query",
       "path": "/api/external/v1/projects/get",
       "handler": "OperatelyWeb.Api.Projects.Get",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -19252,14 +20054,14 @@
           "nullable": false
         }
       ],
-      "full_name": "projects/get"
+      "full_name": "projects/get",
+      "method": "GET"
     },
     {
       "name": "get_contributor",
       "type": "query",
       "path": "/api/external/v1/projects/get_contributor",
       "handler": "OperatelyWeb.Api.Projects.GetContributor",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -19320,14 +20122,14 @@
           "nullable": true
         }
       ],
-      "full_name": "projects/get_contributor"
+      "full_name": "projects/get_contributor",
+      "method": "GET"
     },
     {
       "name": "get_key_resource",
       "type": "query",
       "path": "/api/external/v1/projects/get_key_resource",
       "handler": "OperatelyWeb.Api.Projects.GetKeyResource",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -19355,14 +20157,14 @@
           "nullable": true
         }
       ],
-      "full_name": "projects/get_key_resource"
+      "full_name": "projects/get_key_resource",
+      "method": "GET"
     },
     {
       "name": "get_retrospective",
       "type": "query",
       "path": "/api/external/v1/projects/get_retrospective",
       "handler": "OperatelyWeb.Api.Projects.GetRetrospective",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -19478,14 +20280,14 @@
           "nullable": true
         }
       ],
-      "full_name": "projects/get_retrospective"
+      "full_name": "projects/get_retrospective",
+      "method": "GET"
     },
     {
       "name": "list",
       "type": "query",
       "path": "/api/external/v1/projects/list",
       "handler": "OperatelyWeb.Api.Projects.List",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -19659,14 +20461,14 @@
           "nullable": true
         }
       ],
-      "full_name": "projects/list"
+      "full_name": "projects/list",
+      "method": "GET"
     },
     {
       "name": "list_contributors",
       "type": "query",
       "path": "/api/external/v1/projects/list_contributors",
       "handler": "OperatelyWeb.Api.Projects.ListContributors",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -19722,14 +20524,14 @@
           "nullable": true
         }
       ],
-      "full_name": "projects/list_contributors"
+      "full_name": "projects/list_contributors",
+      "method": "GET"
     },
     {
       "name": "list_milestones",
       "type": "query",
       "path": "/api/external/v1/projects/list_milestones",
       "handler": "OperatelyWeb.Api.Projects.ListMilestones",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -19771,14 +20573,14 @@
           "nullable": false
         }
       ],
-      "full_name": "projects/list_milestones"
+      "full_name": "projects/list_milestones",
+      "method": "GET"
     },
     {
       "name": "move_to_space",
       "type": "mutation",
       "path": "/api/external/v1/projects/move_to_space",
       "handler": "OperatelyWeb.Api.Projects.MoveToSpace",
-      "method": "POST",
       "outputs": [],
       "namespace": "projects",
       "inputs": [
@@ -19805,14 +20607,14 @@
           "nullable": true
         }
       ],
-      "full_name": "projects/move_to_space"
+      "full_name": "projects/move_to_space",
+      "method": "POST"
     },
     {
       "name": "pause",
       "type": "mutation",
       "path": "/api/external/v1/projects/pause",
       "handler": "OperatelyWeb.Api.Projects.Pause",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -19840,14 +20642,14 @@
           "nullable": true
         }
       ],
-      "full_name": "projects/pause"
+      "full_name": "projects/pause",
+      "method": "POST"
     },
     {
       "name": "resume",
       "type": "mutation",
       "path": "/api/external/v1/projects/resume",
       "handler": "OperatelyWeb.Api.Projects.Resume",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -19911,14 +20713,14 @@
           "nullable": true
         }
       ],
-      "full_name": "projects/resume"
+      "full_name": "projects/resume",
+      "method": "POST"
     },
     {
       "name": "search",
       "type": "query",
       "path": "/api/external/v1/projects/search",
       "handler": "OperatelyWeb.Api.Projects.Search",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -19985,14 +20787,14 @@
           "nullable": false
         }
       ],
-      "full_name": "projects/search"
+      "full_name": "projects/search",
+      "method": "GET"
     },
     {
       "name": "search_parent_goal",
       "type": "query",
       "path": "/api/external/v1/projects/search_parent_goal",
       "handler": "OperatelyWeb.Api.Projects.SearchParentGoal",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -20034,14 +20836,14 @@
           "nullable": false
         }
       ],
-      "full_name": "projects/search_parent_goal"
+      "full_name": "projects/search_parent_goal",
+      "method": "GET"
     },
     {
       "name": "search_potential_contributors",
       "type": "query",
       "path": "/api/external/v1/projects/search_potential_contributors",
       "handler": "OperatelyWeb.Api.Projects.SearchPotentialContributors",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -20083,14 +20885,14 @@
           "nullable": true
         }
       ],
-      "full_name": "projects/search_potential_contributors"
+      "full_name": "projects/search_potential_contributors",
+      "method": "GET"
     },
     {
       "name": "update_champion",
       "type": "mutation",
       "path": "/api/external/v1/projects/update_champion",
       "handler": "OperatelyWeb.Api.Projects.UpdateChampion",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -20129,14 +20931,14 @@
           "nullable": true
         }
       ],
-      "full_name": "projects/update_champion"
+      "full_name": "projects/update_champion",
+      "method": "POST"
     },
     {
       "name": "update_contributor",
       "type": "mutation",
       "path": "/api/external/v1/projects/update_contributor",
       "handler": "OperatelyWeb.Api.Projects.UpdateContributor",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -20208,14 +21010,14 @@
           "nullable": true
         }
       ],
-      "full_name": "projects/update_contributor"
+      "full_name": "projects/update_contributor",
+      "method": "POST"
     },
     {
       "name": "update_description",
       "type": "mutation",
       "path": "/api/external/v1/projects/update_description",
       "handler": "OperatelyWeb.Api.Projects.UpdateDescription",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -20254,14 +21056,14 @@
           "nullable": false
         }
       ],
-      "full_name": "projects/update_description"
+      "full_name": "projects/update_description",
+      "method": "POST"
     },
     {
       "name": "update_due_date",
       "type": "mutation",
       "path": "/api/external/v1/projects/update_due_date",
       "handler": "OperatelyWeb.Api.Projects.UpdateDueDate",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -20300,14 +21102,14 @@
           "nullable": true
         }
       ],
-      "full_name": "projects/update_due_date"
+      "full_name": "projects/update_due_date",
+      "method": "POST"
     },
     {
       "name": "update_kanban",
       "type": "mutation",
       "path": "/api/external/v1/projects/update_kanban",
       "handler": "OperatelyWeb.Api.Projects.UpdateKanban",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -20379,14 +21181,14 @@
           "nullable": false
         }
       ],
-      "full_name": "projects/update_kanban"
+      "full_name": "projects/update_kanban",
+      "method": "POST"
     },
     {
       "name": "update_key_resource",
       "type": "mutation",
       "path": "/api/external/v1/projects/update_key_resource",
       "handler": "OperatelyWeb.Api.Projects.UpdateKeyResource",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -20436,14 +21238,14 @@
           "nullable": false
         }
       ],
-      "full_name": "projects/update_key_resource"
+      "full_name": "projects/update_key_resource",
+      "method": "POST"
     },
     {
       "name": "update_milestone",
       "type": "mutation",
       "path": "/api/external/v1/projects/update_milestone",
       "handler": "OperatelyWeb.Api.Projects.UpdateMilestone",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -20504,14 +21306,14 @@
           "nullable": true
         }
       ],
-      "full_name": "projects/update_milestone"
+      "full_name": "projects/update_milestone",
+      "method": "POST"
     },
     {
       "name": "update_name",
       "type": "mutation",
       "path": "/api/external/v1/projects/update_name",
       "handler": "OperatelyWeb.Api.Projects.UpdateName",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -20550,14 +21352,14 @@
           "nullable": true
         }
       ],
-      "full_name": "projects/update_name"
+      "full_name": "projects/update_name",
+      "method": "POST"
     },
     {
       "name": "update_parent_goal",
       "type": "mutation",
       "path": "/api/external/v1/projects/update_parent_goal",
       "handler": "OperatelyWeb.Api.Projects.UpdateParentGoal",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -20607,14 +21409,14 @@
           "nullable": true
         }
       ],
-      "full_name": "projects/update_parent_goal"
+      "full_name": "projects/update_parent_goal",
+      "method": "POST"
     },
     {
       "name": "update_permissions",
       "type": "mutation",
       "path": "/api/external/v1/projects/update_permissions",
       "handler": "OperatelyWeb.Api.Projects.UpdatePermissions",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -20653,14 +21455,14 @@
           "nullable": true
         }
       ],
-      "full_name": "projects/update_permissions"
+      "full_name": "projects/update_permissions",
+      "method": "POST"
     },
     {
       "name": "update_retrospective",
       "type": "mutation",
       "path": "/api/external/v1/projects/update_retrospective",
       "handler": "OperatelyWeb.Api.Projects.UpdateRetrospective",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -20710,14 +21512,14 @@
           "nullable": false
         }
       ],
-      "full_name": "projects/update_retrospective"
+      "full_name": "projects/update_retrospective",
+      "method": "POST"
     },
     {
       "name": "update_reviewer",
       "type": "mutation",
       "path": "/api/external/v1/projects/update_reviewer",
       "handler": "OperatelyWeb.Api.Projects.UpdateReviewer",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -20756,14 +21558,14 @@
           "nullable": true
         }
       ],
-      "full_name": "projects/update_reviewer"
+      "full_name": "projects/update_reviewer",
+      "method": "POST"
     },
     {
       "name": "update_start_date",
       "type": "mutation",
       "path": "/api/external/v1/projects/update_start_date",
       "handler": "OperatelyWeb.Api.Projects.UpdateStartDate",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -20802,14 +21604,14 @@
           "nullable": true
         }
       ],
-      "full_name": "projects/update_start_date"
+      "full_name": "projects/update_start_date",
+      "method": "POST"
     },
     {
       "name": "update_task_statuses",
       "type": "mutation",
       "path": "/api/external/v1/projects/update_task_statuses",
       "handler": "OperatelyWeb.Api.Projects.UpdateTaskStatuses",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -20865,14 +21667,14 @@
           "nullable": true
         }
       ],
-      "full_name": "projects/update_task_statuses"
+      "full_name": "projects/update_task_statuses",
+      "method": "POST"
     },
     {
       "name": "create",
       "type": "mutation",
       "path": "/api/external/v1/reactions/create",
       "handler": "OperatelyWeb.Api.Reactions.Create",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -20933,14 +21735,14 @@
           "nullable": false
         }
       ],
-      "full_name": "reactions/create"
+      "full_name": "reactions/create",
+      "method": "POST"
     },
     {
       "name": "delete",
       "type": "mutation",
       "path": "/api/external/v1/reactions/delete",
       "handler": "OperatelyWeb.Api.Reactions.Delete",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -20968,84 +21770,14 @@
           "nullable": false
         }
       ],
-      "full_name": "reactions/delete"
-    },
-    {
-      "name": "acknowledge_goal_progress_update",
-      "type": "mutation",
-      "path": "/api/external/v1/acknowledge_goal_progress_update",
-      "handler": "OperatelyWeb.Api.Mutations.AcknowledgeGoalProgressUpdate",
-      "method": "POST",
-      "outputs": [
-        {
-          "default": null,
-          "name": "update",
-          "type": {
-            "name": "goal_progress_update",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "acknowledge_goal_progress_update"
-    },
-    {
-      "name": "acknowledge_project_check_in",
-      "type": "mutation",
-      "path": "/api/external/v1/acknowledge_project_check_in",
-      "handler": "OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckIn",
-      "method": "POST",
-      "outputs": [
-        {
-          "default": null,
-          "name": "check_in",
-          "type": {
-            "name": "project_check_in",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "acknowledge_project_check_in"
+      "full_name": "reactions/delete",
+      "method": "POST"
     },
     {
       "name": "copy_resource_hub_folder",
       "type": "mutation",
       "path": "/api/external/v1/copy_resource_hub_folder",
       "handler": "OperatelyWeb.Api.Mutations.CopyResourceHubFolder",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -21106,14 +21838,14 @@
           "nullable": true
         }
       ],
-      "full_name": "copy_resource_hub_folder"
+      "full_name": "copy_resource_hub_folder",
+      "method": "POST"
     },
     {
       "name": "create_goal_discussion",
       "type": "mutation",
       "path": "/api/external/v1/create_goal_discussion",
       "handler": "OperatelyWeb.Api.Mutations.CreateGoalDiscussion",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -21188,14 +21920,14 @@
           "nullable": true
         }
       ],
-      "full_name": "create_goal_discussion"
+      "full_name": "create_goal_discussion",
+      "method": "POST"
     },
     {
       "name": "create_resource_hub",
       "type": "mutation",
       "path": "/api/external/v1/create_resource_hub",
       "handler": "OperatelyWeb.Api.Mutations.CreateResourceHub",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -21278,14 +22010,14 @@
           "nullable": true
         }
       ],
-      "full_name": "create_resource_hub"
+      "full_name": "create_resource_hub",
+      "method": "POST"
     },
     {
       "name": "create_resource_hub_document",
       "type": "mutation",
       "path": "/api/external/v1/create_resource_hub_document",
       "handler": "OperatelyWeb.Api.Mutations.CreateResourceHubDocument",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -21393,14 +22125,14 @@
           "nullable": true
         }
       ],
-      "full_name": "create_resource_hub_document"
+      "full_name": "create_resource_hub_document",
+      "method": "POST"
     },
     {
       "name": "create_resource_hub_file",
       "type": "mutation",
       "path": "/api/external/v1/create_resource_hub_file",
       "handler": "OperatelyWeb.Api.Mutations.CreateResourceHubFile",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -21481,14 +22213,14 @@
           "nullable": true
         }
       ],
-      "full_name": "create_resource_hub_file"
+      "full_name": "create_resource_hub_file",
+      "method": "POST"
     },
     {
       "name": "create_resource_hub_folder",
       "type": "mutation",
       "path": "/api/external/v1/create_resource_hub_folder",
       "handler": "OperatelyWeb.Api.Mutations.CreateResourceHubFolder",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -21538,14 +22270,14 @@
           "nullable": true
         }
       ],
-      "full_name": "create_resource_hub_folder"
+      "full_name": "create_resource_hub_folder",
+      "method": "POST"
     },
     {
       "name": "create_resource_hub_link",
       "type": "mutation",
       "path": "/api/external/v1/create_resource_hub_link",
       "handler": "OperatelyWeb.Api.Mutations.CreateResourceHubLink",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -21653,14 +22385,14 @@
           "nullable": true
         }
       ],
-      "full_name": "create_resource_hub_link"
+      "full_name": "create_resource_hub_link",
+      "method": "POST"
     },
     {
       "name": "delete_resource_hub_document",
       "type": "mutation",
       "path": "/api/external/v1/delete_resource_hub_document",
       "handler": "OperatelyWeb.Api.Mutations.DeleteResourceHubDocument",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -21688,14 +22420,14 @@
           "nullable": true
         }
       ],
-      "full_name": "delete_resource_hub_document"
+      "full_name": "delete_resource_hub_document",
+      "method": "POST"
     },
     {
       "name": "delete_resource_hub_file",
       "type": "mutation",
       "path": "/api/external/v1/delete_resource_hub_file",
       "handler": "OperatelyWeb.Api.Mutations.DeleteResourceHubFile",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -21723,14 +22455,14 @@
           "nullable": true
         }
       ],
-      "full_name": "delete_resource_hub_file"
+      "full_name": "delete_resource_hub_file",
+      "method": "POST"
     },
     {
       "name": "delete_resource_hub_folder",
       "type": "mutation",
       "path": "/api/external/v1/delete_resource_hub_folder",
       "handler": "OperatelyWeb.Api.Mutations.DeleteResourceHubFolder",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -21758,14 +22490,14 @@
           "nullable": true
         }
       ],
-      "full_name": "delete_resource_hub_folder"
+      "full_name": "delete_resource_hub_folder",
+      "method": "POST"
     },
     {
       "name": "delete_resource_hub_link",
       "type": "mutation",
       "path": "/api/external/v1/delete_resource_hub_link",
       "handler": "OperatelyWeb.Api.Mutations.DeleteResourceHubLink",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -21793,14 +22525,14 @@
           "nullable": true
         }
       ],
-      "full_name": "delete_resource_hub_link"
+      "full_name": "delete_resource_hub_link",
+      "method": "POST"
     },
     {
       "name": "edit_goal_discussion",
       "type": "mutation",
       "path": "/api/external/v1/edit_goal_discussion",
       "handler": "OperatelyWeb.Api.Mutations.EditGoalDiscussion",
-      "method": "POST",
       "outputs": [],
       "namespace": null,
       "inputs": [
@@ -21838,107 +22570,14 @@
           "nullable": true
         }
       ],
-      "full_name": "edit_goal_discussion"
-    },
-    {
-      "name": "edit_goal_progress_update",
-      "type": "mutation",
-      "path": "/api/external/v1/edit_goal_progress_update",
-      "handler": "OperatelyWeb.Api.Mutations.EditGoalProgressUpdate",
-      "method": "POST",
-      "outputs": [
-        {
-          "default": null,
-          "name": "update",
-          "type": {
-            "name": "goal_progress_update",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "due_date",
-          "type": {
-            "name": "contextual_date",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "status",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "content",
-          "type": {
-            "name": "json",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "new_target_values",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "checklist",
-          "type": {
-            "item": {
-              "name": "goal_check_update",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "edit_goal_progress_update"
+      "full_name": "edit_goal_discussion",
+      "method": "POST"
     },
     {
       "name": "edit_parent_folder_in_resource_hub",
       "type": "mutation",
       "path": "/api/external/v1/edit_parent_folder_in_resource_hub",
       "handler": "OperatelyWeb.Api.Mutations.EditParentFolderInResourceHub",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -21988,71 +22627,14 @@
           "nullable": true
         }
       ],
-      "full_name": "edit_parent_folder_in_resource_hub"
-    },
-    {
-      "name": "edit_project_check_in",
-      "type": "mutation",
-      "path": "/api/external/v1/edit_project_check_in",
-      "handler": "OperatelyWeb.Api.Mutations.EditProjectCheckIn",
-      "method": "POST",
-      "outputs": [
-        {
-          "default": null,
-          "name": "check_in",
-          "type": {
-            "name": "project_check_in",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "check_in_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "status",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "description",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "edit_project_check_in"
+      "full_name": "edit_parent_folder_in_resource_hub",
+      "method": "POST"
     },
     {
       "name": "edit_resource_hub_document",
       "type": "mutation",
       "path": "/api/external/v1/edit_resource_hub_document",
       "handler": "OperatelyWeb.Api.Mutations.EditResourceHubDocument",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -22127,14 +22709,14 @@
           "nullable": true
         }
       ],
-      "full_name": "edit_resource_hub_document"
+      "full_name": "edit_resource_hub_document",
+      "method": "POST"
     },
     {
       "name": "edit_resource_hub_file",
       "type": "mutation",
       "path": "/api/external/v1/edit_resource_hub_file",
       "handler": "OperatelyWeb.Api.Mutations.EditResourceHubFile",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -22184,14 +22766,14 @@
           "nullable": true
         }
       ],
-      "full_name": "edit_resource_hub_file"
+      "full_name": "edit_resource_hub_file",
+      "method": "POST"
     },
     {
       "name": "edit_resource_hub_link",
       "type": "mutation",
       "path": "/api/external/v1/edit_resource_hub_link",
       "handler": "OperatelyWeb.Api.Mutations.EditResourceHubLink",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -22263,14 +22845,14 @@
           "nullable": true
         }
       ],
-      "full_name": "edit_resource_hub_link"
+      "full_name": "edit_resource_hub_link",
+      "method": "POST"
     },
     {
       "name": "edit_subscriptions_list",
       "type": "mutation",
       "path": "/api/external/v1/edit_subscriptions_list",
       "handler": "OperatelyWeb.Api.Mutations.EditSubscriptionsList",
-      "method": "POST",
       "outputs": [],
       "namespace": null,
       "inputs": [
@@ -22322,14 +22904,14 @@
           "nullable": true
         }
       ],
-      "full_name": "edit_subscriptions_list"
+      "full_name": "edit_subscriptions_list",
+      "method": "POST"
     },
     {
       "name": "get_account",
       "type": "query",
       "path": "/api/external/v1/get_account",
       "handler": "OperatelyWeb.Api.Queries.GetAccount",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -22345,14 +22927,14 @@
       ],
       "namespace": null,
       "inputs": [],
-      "full_name": "get_account"
+      "full_name": "get_account",
+      "method": "GET"
     },
     {
       "name": "get_activities",
       "type": "query",
       "path": "/api/external/v1/get_activities",
       "handler": "OperatelyWeb.Api.Queries.GetActivities",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -22408,14 +22990,14 @@
           "nullable": false
         }
       ],
-      "full_name": "get_activities"
+      "full_name": "get_activities",
+      "method": "GET"
     },
     {
       "name": "get_activity",
       "type": "query",
       "path": "/api/external/v1/get_activity",
       "handler": "OperatelyWeb.Api.Queries.GetActivity",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -22498,14 +23080,14 @@
           "nullable": true
         }
       ],
-      "full_name": "get_activity"
+      "full_name": "get_activity",
+      "method": "GET"
     },
     {
       "name": "get_assignments",
       "type": "query",
       "path": "/api/external/v1/get_assignments",
       "handler": "OperatelyWeb.Api.Queries.GetAssignments",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -22524,14 +23106,14 @@
       ],
       "namespace": null,
       "inputs": [],
-      "full_name": "get_assignments"
+      "full_name": "get_assignments",
+      "method": "GET"
     },
     {
       "name": "get_assignments_count",
       "type": "query",
       "path": "/api/external/v1/get_assignments_count",
       "handler": "OperatelyWeb.Api.Queries.GetAssignmentsCount",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -22547,14 +23129,14 @@
       ],
       "namespace": null,
       "inputs": [],
-      "full_name": "get_assignments_count"
+      "full_name": "get_assignments_count",
+      "method": "GET"
     },
     {
       "name": "get_binded_people",
       "type": "query",
       "path": "/api/external/v1/get_binded_people",
       "handler": "OperatelyWeb.Api.Queries.GetBindedPeople",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -22596,14 +23178,14 @@
           "nullable": true
         }
       ],
-      "full_name": "get_binded_people"
+      "full_name": "get_binded_people",
+      "method": "GET"
     },
     {
       "name": "get_flat_work_map",
       "type": "query",
       "path": "/api/external/v1/get_flat_work_map",
       "handler": "OperatelyWeb.Api.Queries.GetFlatWorkMap",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -22722,203 +23304,14 @@
           "nullable": true
         }
       ],
-      "full_name": "get_flat_work_map"
-    },
-    {
-      "name": "get_goal_progress_update",
-      "type": "query",
-      "path": "/api/external/v1/get_goal_progress_update",
-      "handler": "OperatelyWeb.Api.Queries.GetGoalProgressUpdate",
-      "method": "GET",
-      "outputs": [
-        {
-          "default": null,
-          "name": "update",
-          "type": {
-            "name": "goal_progress_update",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_author",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_acknowledged_by",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_reactions",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_goal",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_goal_targets",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_goal_checklist",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_reviewer",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_champion",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_space",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_space_members",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_subscriptions_list",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_potential_subscribers",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_unread_notifications",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_permissions",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "get_goal_progress_update"
+      "full_name": "get_flat_work_map",
+      "method": "GET"
     },
     {
       "name": "get_me",
       "type": "query",
       "path": "/api/external/v1/get_me",
       "handler": "OperatelyWeb.Api.Queries.GetMe",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -22946,14 +23339,14 @@
           "nullable": true
         }
       ],
-      "full_name": "get_me"
+      "full_name": "get_me",
+      "method": "GET"
     },
     {
       "name": "get_notifications",
       "type": "query",
       "path": "/api/external/v1/get_notifications",
       "handler": "OperatelyWeb.Api.Queries.GetNotifications",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -22995,14 +23388,14 @@
           "nullable": true
         }
       ],
-      "full_name": "get_notifications"
+      "full_name": "get_notifications",
+      "method": "GET"
     },
     {
       "name": "get_people",
       "type": "query",
       "path": "/api/external/v1/get_people",
       "handler": "OperatelyWeb.Api.Queries.GetPeople",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -23088,14 +23481,14 @@
           "nullable": false
         }
       ],
-      "full_name": "get_people"
+      "full_name": "get_people",
+      "method": "GET"
     },
     {
       "name": "get_person",
       "type": "query",
       "path": "/api/external/v1/get_person",
       "handler": "OperatelyWeb.Api.Queries.GetPerson",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -23178,208 +23571,14 @@
           "nullable": false
         }
       ],
-      "full_name": "get_person"
-    },
-    {
-      "name": "get_project_check_in",
-      "type": "query",
-      "path": "/api/external/v1/get_project_check_in",
-      "handler": "OperatelyWeb.Api.Queries.GetProjectCheckIn",
-      "method": "GET",
-      "outputs": [
-        {
-          "default": null,
-          "name": "project_check_in",
-          "type": {
-            "name": "project_check_in",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_author",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_acknowledged_by",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_project",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_space",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_reactions",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_subscriptions_list",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_potential_subscribers",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_unread_notifications",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "get_project_check_in"
-    },
-    {
-      "name": "get_project_check_ins",
-      "type": "query",
-      "path": "/api/external/v1/get_project_check_ins",
-      "handler": "OperatelyWeb.Api.Queries.GetProjectCheckIns",
-      "method": "GET",
-      "outputs": [
-        {
-          "default": null,
-          "name": "project_check_ins",
-          "type": {
-            "item": {
-              "name": "project_check_in",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "project_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_author",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_project",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_reactions",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "get_project_check_ins"
+      "full_name": "get_person",
+      "method": "GET"
     },
     {
       "name": "get_resource_hub",
       "type": "query",
       "path": "/api/external/v1/get_resource_hub",
       "handler": "OperatelyWeb.Api.Queries.GetResourceHub",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -23451,14 +23650,14 @@
           "nullable": true
         }
       ],
-      "full_name": "get_resource_hub"
+      "full_name": "get_resource_hub",
+      "method": "GET"
     },
     {
       "name": "get_resource_hub_document",
       "type": "query",
       "path": "/api/external/v1/get_resource_hub_document",
       "handler": "OperatelyWeb.Api.Queries.GetResourceHubDocument",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -23596,14 +23795,14 @@
           "nullable": true
         }
       ],
-      "full_name": "get_resource_hub_document"
+      "full_name": "get_resource_hub_document",
+      "method": "GET"
     },
     {
       "name": "get_resource_hub_file",
       "type": "query",
       "path": "/api/external/v1/get_resource_hub_file",
       "handler": "OperatelyWeb.Api.Queries.GetResourceHubFile",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -23730,14 +23929,14 @@
           "nullable": true
         }
       ],
-      "full_name": "get_resource_hub_file"
+      "full_name": "get_resource_hub_file",
+      "method": "GET"
     },
     {
       "name": "get_resource_hub_folder",
       "type": "query",
       "path": "/api/external/v1/get_resource_hub_folder",
       "handler": "OperatelyWeb.Api.Queries.GetResourceHubFolder",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -23820,14 +24019,14 @@
           "nullable": true
         }
       ],
-      "full_name": "get_resource_hub_folder"
+      "full_name": "get_resource_hub_folder",
+      "method": "GET"
     },
     {
       "name": "get_resource_hub_link",
       "type": "query",
       "path": "/api/external/v1/get_resource_hub_link",
       "handler": "OperatelyWeb.Api.Queries.GetResourceHubLink",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -23965,14 +24164,14 @@
           "nullable": true
         }
       ],
-      "full_name": "get_resource_hub_link"
+      "full_name": "get_resource_hub_link",
+      "method": "GET"
     },
     {
       "name": "get_unread_notification_count",
       "type": "query",
       "path": "/api/external/v1/get_unread_notification_count",
       "handler": "OperatelyWeb.Api.Queries.GetUnreadNotificationCount",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -23988,14 +24187,14 @@
       ],
       "namespace": null,
       "inputs": [],
-      "full_name": "get_unread_notification_count"
+      "full_name": "get_unread_notification_count",
+      "method": "GET"
     },
     {
       "name": "get_work_map",
       "type": "query",
       "path": "/api/external/v1/get_work_map",
       "handler": "OperatelyWeb.Api.Queries.GetWorkMap",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -24103,14 +24302,14 @@
           "nullable": true
         }
       ],
-      "full_name": "get_work_map"
+      "full_name": "get_work_map",
+      "method": "GET"
     },
     {
       "name": "global_search",
       "type": "query",
       "path": "/api/external/v1/global_search",
       "handler": "OperatelyWeb.Api.Queries.GlobalSearch",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -24197,14 +24396,14 @@
           "nullable": false
         }
       ],
-      "full_name": "global_search"
+      "full_name": "global_search",
+      "method": "GET"
     },
     {
       "name": "grant_resource_access",
       "type": "mutation",
       "path": "/api/external/v1/grant_resource_access",
       "handler": "OperatelyWeb.Api.Mutations.GrantResourceAccess",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -24246,14 +24445,14 @@
           "nullable": false
         }
       ],
-      "full_name": "grant_resource_access"
+      "full_name": "grant_resource_access",
+      "method": "POST"
     },
     {
       "name": "invite_guest",
       "type": "mutation",
       "path": "/api/external/v1/invite_guest",
       "handler": "OperatelyWeb.Api.Mutations.InviteGuest",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -24325,14 +24524,14 @@
           "nullable": false
         }
       ],
-      "full_name": "invite_guest"
+      "full_name": "invite_guest",
+      "method": "POST"
     },
     {
       "name": "is_subscribed_to_resource",
       "type": "query",
       "path": "/api/external/v1/is_subscribed_to_resource",
       "handler": "OperatelyWeb.Api.Queries.IsSubscribedToResource",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -24371,14 +24570,14 @@
           "nullable": false
         }
       ],
-      "full_name": "is_subscribed_to_resource"
+      "full_name": "is_subscribed_to_resource",
+      "method": "GET"
     },
     {
       "name": "list_possible_managers",
       "type": "query",
       "path": "/api/external/v1/list_possible_managers",
       "handler": "OperatelyWeb.Api.Queries.ListPossibleManagers",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -24420,14 +24619,14 @@
           "nullable": true
         }
       ],
-      "full_name": "list_possible_managers"
+      "full_name": "list_possible_managers",
+      "method": "GET"
     },
     {
       "name": "list_resource_hub_nodes",
       "type": "query",
       "path": "/api/external/v1/list_resource_hub_nodes",
       "handler": "OperatelyWeb.Api.Queries.ListResourceHubNodes",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -24505,25 +24704,25 @@
           "nullable": true
         }
       ],
-      "full_name": "list_resource_hub_nodes"
+      "full_name": "list_resource_hub_nodes",
+      "method": "GET"
     },
     {
       "name": "mark_all_notifications_as_read",
       "type": "mutation",
       "path": "/api/external/v1/mark_all_notifications_as_read",
       "handler": "OperatelyWeb.Api.Mutations.MarkAllNotificationsAsRead",
-      "method": "POST",
       "outputs": [],
       "namespace": null,
       "inputs": [],
-      "full_name": "mark_all_notifications_as_read"
+      "full_name": "mark_all_notifications_as_read",
+      "method": "POST"
     },
     {
       "name": "mark_notification_as_read",
       "type": "mutation",
       "path": "/api/external/v1/mark_notification_as_read",
       "handler": "OperatelyWeb.Api.Mutations.MarkNotificationAsRead",
-      "method": "POST",
       "outputs": [],
       "namespace": null,
       "inputs": [
@@ -24539,14 +24738,14 @@
           "nullable": true
         }
       ],
-      "full_name": "mark_notification_as_read"
+      "full_name": "mark_notification_as_read",
+      "method": "POST"
     },
     {
       "name": "mark_notifications_as_read",
       "type": "mutation",
       "path": "/api/external/v1/mark_notifications_as_read",
       "handler": "OperatelyWeb.Api.Mutations.MarkNotificationsAsRead",
-      "method": "POST",
       "outputs": [],
       "namespace": null,
       "inputs": [
@@ -24565,214 +24764,14 @@
           "nullable": true
         }
       ],
-      "full_name": "mark_notifications_as_read"
-    },
-    {
-      "name": "post_goal_progress_update",
-      "type": "mutation",
-      "path": "/api/external/v1/post_goal_progress_update",
-      "handler": "OperatelyWeb.Api.Mutations.PostGoalProgressUpdate",
-      "method": "POST",
-      "outputs": [
-        {
-          "default": null,
-          "name": "update",
-          "type": {
-            "name": "goal_progress_update",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "goal_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "status",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "due_date",
-          "type": {
-            "name": "contextual_date",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "checklist",
-          "type": {
-            "item": {
-              "name": "goal_check_update",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "content",
-          "type": {
-            "name": "json",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "new_target_values",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "send_notifications_to_everyone",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "subscriber_ids",
-          "type": {
-            "item": {
-              "name": "string",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "post_goal_progress_update"
-    },
-    {
-      "name": "post_project_check_in",
-      "type": "mutation",
-      "path": "/api/external/v1/post_project_check_in",
-      "handler": "OperatelyWeb.Api.Mutations.PostProjectCheckIn",
-      "method": "POST",
-      "outputs": [
-        {
-          "default": null,
-          "name": "check_in",
-          "type": {
-            "name": "project_check_in",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "project_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "status",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "description",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "send_notifications_to_everyone",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "subscriber_ids",
-          "type": {
-            "item": {
-              "name": "string",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "post_project_check_in"
+      "full_name": "mark_notifications_as_read",
+      "method": "POST"
     },
     {
       "name": "publish_resource_hub_document",
       "type": "mutation",
       "path": "/api/external/v1/publish_resource_hub_document",
       "handler": "OperatelyWeb.Api.Mutations.PublishResourceHubDocument",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -24847,14 +24846,14 @@
           "nullable": true
         }
       ],
-      "full_name": "publish_resource_hub_document"
+      "full_name": "publish_resource_hub_document",
+      "method": "POST"
     },
     {
       "name": "rename_resource_hub_folder",
       "type": "mutation",
       "path": "/api/external/v1/rename_resource_hub_folder",
       "handler": "OperatelyWeb.Api.Mutations.RenameResourceHubFolder",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -24893,14 +24892,14 @@
           "nullable": true
         }
       ],
-      "full_name": "rename_resource_hub_folder"
+      "full_name": "rename_resource_hub_folder",
+      "method": "POST"
     },
     {
       "name": "search_people",
       "type": "query",
       "path": "/api/external/v1/search_people",
       "handler": "OperatelyWeb.Api.Queries.SearchPeople",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -24967,14 +24966,14 @@
           "nullable": true
         }
       ],
-      "full_name": "search_people"
+      "full_name": "search_people",
+      "method": "GET"
     },
     {
       "name": "subscribe_to_notifications",
       "type": "mutation",
       "path": "/api/external/v1/subscribe_to_notifications",
       "handler": "OperatelyWeb.Api.Mutations.SubscribeToNotifications",
-      "method": "POST",
       "outputs": [],
       "namespace": null,
       "inputs": [
@@ -25001,14 +25000,14 @@
           "nullable": false
         }
       ],
-      "full_name": "subscribe_to_notifications"
+      "full_name": "subscribe_to_notifications",
+      "method": "POST"
     },
     {
       "name": "unsubscribe_from_notifications",
       "type": "mutation",
       "path": "/api/external/v1/unsubscribe_from_notifications",
       "handler": "OperatelyWeb.Api.Mutations.UnsubscribeFromNotifications",
-      "method": "POST",
       "outputs": [],
       "namespace": null,
       "inputs": [
@@ -25024,14 +25023,14 @@
           "nullable": false
         }
       ],
-      "full_name": "unsubscribe_from_notifications"
+      "full_name": "unsubscribe_from_notifications",
+      "method": "POST"
     },
     {
       "name": "update_profile",
       "type": "mutation",
       "path": "/api/external/v1/update_profile",
       "handler": "OperatelyWeb.Api.Mutations.UpdateProfile",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -25136,14 +25135,14 @@
           "nullable": true
         }
       ],
-      "full_name": "update_profile"
+      "full_name": "update_profile",
+      "method": "POST"
     },
     {
       "name": "update_profile_picture",
       "type": "mutation",
       "path": "/api/external/v1/update_profile_picture",
       "handler": "OperatelyWeb.Api.Mutations.UpdateProfilePicture",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -25193,14 +25192,14 @@
           "nullable": true
         }
       ],
-      "full_name": "update_profile_picture"
+      "full_name": "update_profile_picture",
+      "method": "POST"
     },
     {
       "name": "update_theme",
       "type": "mutation",
       "path": "/api/external/v1/update_theme",
       "handler": "OperatelyWeb.Api.Mutations.UpdateTheme",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -25228,14 +25227,14 @@
           "nullable": false
         }
       ],
-      "full_name": "update_theme"
+      "full_name": "update_theme",
+      "method": "POST"
     },
     {
       "name": "archive",
       "type": "mutation",
       "path": "/api/external/v1/space_discussions/archive",
       "handler": "OperatelyWeb.Api.SpaceDiscussions.Archive",
-      "method": "POST",
       "outputs": [],
       "namespace": "space_discussions",
       "inputs": [
@@ -25251,14 +25250,14 @@
           "nullable": true
         }
       ],
-      "full_name": "space_discussions/archive"
+      "full_name": "space_discussions/archive",
+      "method": "POST"
     },
     {
       "name": "create",
       "type": "mutation",
       "path": "/api/external/v1/space_discussions/create",
       "handler": "OperatelyWeb.Api.SpaceDiscussions.Create",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -25344,14 +25343,14 @@
           "nullable": true
         }
       ],
-      "full_name": "space_discussions/create"
+      "full_name": "space_discussions/create",
+      "method": "POST"
     },
     {
       "name": "get",
       "type": "query",
       "path": "/api/external/v1/space_discussions/get",
       "handler": "OperatelyWeb.Api.SpaceDiscussions.Get",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -25467,14 +25466,14 @@
           "nullable": true
         }
       ],
-      "full_name": "space_discussions/get"
+      "full_name": "space_discussions/get",
+      "method": "GET"
     },
     {
       "name": "list",
       "type": "query",
       "path": "/api/external/v1/space_discussions/list",
       "handler": "OperatelyWeb.Api.SpaceDiscussions.List",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -25552,14 +25551,14 @@
           "nullable": true
         }
       ],
-      "full_name": "space_discussions/list"
+      "full_name": "space_discussions/list",
+      "method": "GET"
     },
     {
       "name": "publish",
       "type": "mutation",
       "path": "/api/external/v1/space_discussions/publish",
       "handler": "OperatelyWeb.Api.SpaceDiscussions.Publish",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -25587,14 +25586,14 @@
           "nullable": true
         }
       ],
-      "full_name": "space_discussions/publish"
+      "full_name": "space_discussions/publish",
+      "method": "POST"
     },
     {
       "name": "update",
       "type": "mutation",
       "path": "/api/external/v1/space_discussions/update",
       "handler": "OperatelyWeb.Api.SpaceDiscussions.Update",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -25655,14 +25654,14 @@
           "nullable": true
         }
       ],
-      "full_name": "space_discussions/update"
+      "full_name": "space_discussions/update",
+      "method": "POST"
     },
     {
       "name": "add_members",
       "type": "mutation",
       "path": "/api/external/v1/spaces/add_members",
       "handler": "OperatelyWeb.Api.Spaces.AddMembers",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -25704,14 +25703,14 @@
           "nullable": false
         }
       ],
-      "full_name": "spaces/add_members"
+      "full_name": "spaces/add_members",
+      "method": "POST"
     },
     {
       "name": "count_by_access_level",
       "type": "query",
       "path": "/api/external/v1/spaces/count_by_access_level",
       "handler": "OperatelyWeb.Api.Spaces.CountByAccessLevel",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -25739,14 +25738,14 @@
           "nullable": false
         }
       ],
-      "full_name": "spaces/count_by_access_level"
+      "full_name": "spaces/count_by_access_level",
+      "method": "GET"
     },
     {
       "name": "create",
       "type": "mutation",
       "path": "/api/external/v1/spaces/create",
       "handler": "OperatelyWeb.Api.Spaces.Create",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -25807,14 +25806,14 @@
           "nullable": true
         }
       ],
-      "full_name": "spaces/create"
+      "full_name": "spaces/create",
+      "method": "POST"
     },
     {
       "name": "delete",
       "type": "mutation",
       "path": "/api/external/v1/spaces/delete",
       "handler": "OperatelyWeb.Api.Spaces.Delete",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -25842,14 +25841,14 @@
           "nullable": false
         }
       ],
-      "full_name": "spaces/delete"
+      "full_name": "spaces/delete",
+      "method": "POST"
     },
     {
       "name": "delete_member",
       "type": "mutation",
       "path": "/api/external/v1/spaces/delete_member",
       "handler": "OperatelyWeb.Api.Spaces.DeleteMember",
-      "method": "POST",
       "outputs": [],
       "namespace": "spaces",
       "inputs": [
@@ -25876,14 +25875,14 @@
           "nullable": false
         }
       ],
-      "full_name": "spaces/delete_member"
+      "full_name": "spaces/delete_member",
+      "method": "POST"
     },
     {
       "name": "get",
       "type": "query",
       "path": "/api/external/v1/spaces/get",
       "handler": "OperatelyWeb.Api.Spaces.Get",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -25977,14 +25976,14 @@
           "nullable": true
         }
       ],
-      "full_name": "spaces/get"
+      "full_name": "spaces/get",
+      "method": "GET"
     },
     {
       "name": "join",
       "type": "mutation",
       "path": "/api/external/v1/spaces/join",
       "handler": "OperatelyWeb.Api.Spaces.Join",
-      "method": "POST",
       "outputs": [],
       "namespace": "spaces",
       "inputs": [
@@ -26000,14 +25999,14 @@
           "nullable": true
         }
       ],
-      "full_name": "spaces/join"
+      "full_name": "spaces/join",
+      "method": "POST"
     },
     {
       "name": "list",
       "type": "query",
       "path": "/api/external/v1/spaces/list",
       "handler": "OperatelyWeb.Api.Spaces.List",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -26060,14 +26059,14 @@
           "nullable": false
         }
       ],
-      "full_name": "spaces/list"
+      "full_name": "spaces/list",
+      "method": "GET"
     },
     {
       "name": "list_members",
       "type": "query",
       "path": "/api/external/v1/spaces/list_members",
       "handler": "OperatelyWeb.Api.Spaces.ListMembers",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -26123,14 +26122,14 @@
           "nullable": true
         }
       ],
-      "full_name": "spaces/list_members"
+      "full_name": "spaces/list_members",
+      "method": "GET"
     },
     {
       "name": "list_tasks",
       "type": "query",
       "path": "/api/external/v1/spaces/list_tasks",
       "handler": "OperatelyWeb.Api.Spaces.ListTasks",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -26161,14 +26160,14 @@
           "nullable": false
         }
       ],
-      "full_name": "spaces/list_tasks"
+      "full_name": "spaces/list_tasks",
+      "method": "GET"
     },
     {
       "name": "list_tools",
       "type": "query",
       "path": "/api/external/v1/spaces/list_tools",
       "handler": "OperatelyWeb.Api.Spaces.ListTools",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -26196,14 +26195,14 @@
           "nullable": false
         }
       ],
-      "full_name": "spaces/list_tools"
+      "full_name": "spaces/list_tools",
+      "method": "GET"
     },
     {
       "name": "search",
       "type": "query",
       "path": "/api/external/v1/spaces/search",
       "handler": "OperatelyWeb.Api.Spaces.Search",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -26270,14 +26269,14 @@
           "nullable": false
         }
       ],
-      "full_name": "spaces/search"
+      "full_name": "spaces/search",
+      "method": "GET"
     },
     {
       "name": "search_potential_members",
       "type": "query",
       "path": "/api/external/v1/spaces/search_potential_members",
       "handler": "OperatelyWeb.Api.Spaces.SearchPotentialMembers",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -26344,14 +26343,14 @@
           "nullable": true
         }
       ],
-      "full_name": "spaces/search_potential_members"
+      "full_name": "spaces/search_potential_members",
+      "method": "GET"
     },
     {
       "name": "update",
       "type": "mutation",
       "path": "/api/external/v1/spaces/update",
       "handler": "OperatelyWeb.Api.Spaces.Update",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -26401,14 +26400,14 @@
           "nullable": false
         }
       ],
-      "full_name": "spaces/update"
+      "full_name": "spaces/update",
+      "method": "POST"
     },
     {
       "name": "update_kanban",
       "type": "mutation",
       "path": "/api/external/v1/spaces/update_kanban",
       "handler": "OperatelyWeb.Api.Spaces.UpdateKanban",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -26469,14 +26468,14 @@
           "nullable": false
         }
       ],
-      "full_name": "spaces/update_kanban"
+      "full_name": "spaces/update_kanban",
+      "method": "POST"
     },
     {
       "name": "update_members_permissions",
       "type": "mutation",
       "path": "/api/external/v1/spaces/update_members_permissions",
       "handler": "OperatelyWeb.Api.Spaces.UpdateMembersPermissions",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -26518,14 +26517,14 @@
           "nullable": false
         }
       ],
-      "full_name": "spaces/update_members_permissions"
+      "full_name": "spaces/update_members_permissions",
+      "method": "POST"
     },
     {
       "name": "update_permissions",
       "type": "mutation",
       "path": "/api/external/v1/spaces/update_permissions",
       "handler": "OperatelyWeb.Api.Spaces.UpdatePermissions",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -26564,14 +26563,14 @@
           "nullable": false
         }
       ],
-      "full_name": "spaces/update_permissions"
+      "full_name": "spaces/update_permissions",
+      "method": "POST"
     },
     {
       "name": "update_task_statuses",
       "type": "mutation",
       "path": "/api/external/v1/spaces/update_task_statuses",
       "handler": "OperatelyWeb.Api.Spaces.UpdateTaskStatuses",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -26627,14 +26626,14 @@
           "nullable": true
         }
       ],
-      "full_name": "spaces/update_task_statuses"
+      "full_name": "spaces/update_task_statuses",
+      "method": "POST"
     },
     {
       "name": "update_tools",
       "type": "mutation",
       "path": "/api/external/v1/spaces/update_tools",
       "handler": "OperatelyWeb.Api.Spaces.UpdateTools",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -26684,14 +26683,14 @@
           "nullable": false
         }
       ],
-      "full_name": "spaces/update_tools"
+      "full_name": "spaces/update_tools",
+      "method": "POST"
     },
     {
       "name": "create",
       "type": "mutation",
       "path": "/api/external/v1/tasks/create",
       "handler": "OperatelyWeb.Api.Tasks.Create",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -26807,14 +26806,14 @@
           "nullable": false
         }
       ],
-      "full_name": "tasks/create"
+      "full_name": "tasks/create",
+      "method": "POST"
     },
     {
       "name": "delete",
       "type": "mutation",
       "path": "/api/external/v1/tasks/delete",
       "handler": "OperatelyWeb.Api.Tasks.Delete",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -26864,14 +26863,14 @@
           "nullable": false
         }
       ],
-      "full_name": "tasks/delete"
+      "full_name": "tasks/delete",
+      "method": "POST"
     },
     {
       "name": "get",
       "type": "query",
       "path": "/api/external/v1/tasks/get",
       "handler": "OperatelyWeb.Api.Tasks.Get",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -26987,14 +26986,14 @@
           "nullable": false
         }
       ],
-      "full_name": "tasks/get"
+      "full_name": "tasks/get",
+      "method": "GET"
     },
     {
       "name": "list",
       "type": "query",
       "path": "/api/external/v1/tasks/list",
       "handler": "OperatelyWeb.Api.Tasks.List",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -27025,14 +27024,14 @@
           "nullable": false
         }
       ],
-      "full_name": "tasks/list"
+      "full_name": "tasks/list",
+      "method": "GET"
     },
     {
       "name": "list_potential_assignees",
       "type": "query",
       "path": "/api/external/v1/tasks/list_potential_assignees",
       "handler": "OperatelyWeb.Api.Tasks.ListPotentialAssignees",
-      "method": "GET",
       "outputs": [
         {
           "default": null,
@@ -27099,14 +27098,14 @@
           "nullable": true
         }
       ],
-      "full_name": "tasks/list_potential_assignees"
+      "full_name": "tasks/list_potential_assignees",
+      "method": "GET"
     },
     {
       "name": "move",
       "type": "mutation",
       "path": "/api/external/v1/tasks/move",
       "handler": "OperatelyWeb.Api.Tasks.Move",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -27178,14 +27177,14 @@
           "nullable": false
         }
       ],
-      "full_name": "tasks/move"
+      "full_name": "tasks/move",
+      "method": "POST"
     },
     {
       "name": "update_assignee",
       "type": "mutation",
       "path": "/api/external/v1/tasks/update_assignee",
       "handler": "OperatelyWeb.Api.Tasks.UpdateAssignee",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -27235,14 +27234,14 @@
           "nullable": false
         }
       ],
-      "full_name": "tasks/update_assignee"
+      "full_name": "tasks/update_assignee",
+      "method": "POST"
     },
     {
       "name": "update_description",
       "type": "mutation",
       "path": "/api/external/v1/tasks/update_description",
       "handler": "OperatelyWeb.Api.Tasks.UpdateDescription",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -27292,14 +27291,14 @@
           "nullable": false
         }
       ],
-      "full_name": "tasks/update_description"
+      "full_name": "tasks/update_description",
+      "method": "POST"
     },
     {
       "name": "update_due_date",
       "type": "mutation",
       "path": "/api/external/v1/tasks/update_due_date",
       "handler": "OperatelyWeb.Api.Tasks.UpdateDueDate",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -27349,14 +27348,14 @@
           "nullable": false
         }
       ],
-      "full_name": "tasks/update_due_date"
+      "full_name": "tasks/update_due_date",
+      "method": "POST"
     },
     {
       "name": "update_milestone",
       "type": "mutation",
       "path": "/api/external/v1/tasks/update_milestone",
       "handler": "OperatelyWeb.Api.Tasks.UpdateMilestone",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -27395,14 +27394,14 @@
           "nullable": true
         }
       ],
-      "full_name": "tasks/update_milestone"
+      "full_name": "tasks/update_milestone",
+      "method": "POST"
     },
     {
       "name": "update_milestone_and_ordering",
       "type": "mutation",
       "path": "/api/external/v1/tasks/update_milestone_and_ordering",
       "handler": "OperatelyWeb.Api.Tasks.UpdateMilestoneAndOrdering",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -27469,14 +27468,14 @@
           "nullable": false
         }
       ],
-      "full_name": "tasks/update_milestone_and_ordering"
+      "full_name": "tasks/update_milestone_and_ordering",
+      "method": "POST"
     },
     {
       "name": "update_name",
       "type": "mutation",
       "path": "/api/external/v1/tasks/update_name",
       "handler": "OperatelyWeb.Api.Tasks.UpdateName",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -27526,14 +27525,14 @@
           "nullable": false
         }
       ],
-      "full_name": "tasks/update_name"
+      "full_name": "tasks/update_name",
+      "method": "POST"
     },
     {
       "name": "update_status",
       "type": "mutation",
       "path": "/api/external/v1/tasks/update_status",
       "handler": "OperatelyWeb.Api.Tasks.UpdateStatus",
-      "method": "POST",
       "outputs": [
         {
           "default": null,
@@ -27594,10 +27593,11 @@
           "nullable": false
         }
       ],
-      "full_name": "tasks/update_status"
+      "full_name": "tasks/update_status",
+      "method": "POST"
     }
   ],
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-16T18:15:43Z",
+  "generated_at": "2026-03-16T19:32:56Z",
   "schema_version": 1
 }

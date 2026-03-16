@@ -13,8 +13,9 @@ interface ParsedMilestonesForTurboUi {
 }
 
 export type { Milestone, MilestoneComment };
-export { usePostMilestoneComment } from "@/api";
+
 export const getMilestone = Api.project_milestones.get;
+export const usePostMilestoneComment = Api.project_milestones.useCreateComment;
 
 export function parseMilestonesForTurboUi(
   paths: Paths,
