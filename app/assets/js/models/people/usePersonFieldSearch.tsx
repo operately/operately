@@ -24,7 +24,7 @@ export function usePersonFieldSearch<T>(hookParams: UsePeopleSearch<T>): SearchD
       const ignoredIds = (hookParams.ignoredIds || []).filter((id): id is string => Boolean(id));
       const trimmedQuery = query.trim();
 
-      const result = await Api.searchPeople({
+      const result = await Api.people.search({
         query: trimmedQuery,
         ignoredIds,
         searchScopeType: hookParams.scope.type,

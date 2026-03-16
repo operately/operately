@@ -1,9 +1,9 @@
+import Api from "@/api";
 import * as Pages from "@/components/Pages";
 import * as Projects from "@/models/projects";
 import * as ProjectContributors from "@/models/projectContributors";
 import * as People from "@/models/people";
 
-import { useGetBindedPeople } from "@/api";
 import { compareIds } from "@/routes/paths";
 
 interface LoaderData {
@@ -38,7 +38,7 @@ export function useLoadedData(): LoaderData {
 
 export function useBindedPeopleList(): { people: People.Person[] | undefined; loading: boolean } {
   const { champion, reviewer, contributors, project } = useLoadedData();
-  const { data, loading } = useGetBindedPeople({ resourseType: "project", resourseId: project.id! });
+  const { data, loading } = Api.people.useGetBinded({ resourseType: "project", resourseId: project.id! });
 
   if (loading) return { people: undefined, loading: true };
 

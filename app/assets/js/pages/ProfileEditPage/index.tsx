@@ -11,7 +11,7 @@ import { compareIds, usePaths } from "@/routes/paths";
 import { emptyContent, parseContent, ProfileEditPage } from "turboui";
 import * as Blobs from "@/models/blobs";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
-import type { UpdateProfileInput } from "@/api";
+import type { PeopleUpdateInput } from "@/api";
 
 export default { name: "ProfileEditPage", loader, Page } as PageModule;
 
@@ -97,7 +97,7 @@ function Page() {
     setIsSubmitting(true);
 
     try {
-      const updateParams: UpdateProfileInput = {
+      const updateParams: PeopleUpdateInput = {
         id: person.id,
         fullName: fullName.trim(),
         title: title.trim(),

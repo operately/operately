@@ -20,7 +20,7 @@ export function useMentionedPersonSearch<T>(hookParams: UseContributorsSearch<T>
   return async (callParams: ContributorsSearchParams): Promise<T[]> => {
     const ignoredIds = (hookParams.ignoredIds || []).concat(callParams.ignoredIds || []);
 
-    const result = await Api.searchPeople({
+    const result = await Api.people.search({
       query: callParams.query?.trim(),
       ignoredIds,
       searchScopeType: hookParams.scope.type,

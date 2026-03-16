@@ -138,9 +138,9 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations do
       Mutations.Tasks.UpdateName,
       Mutations.Tasks.UpdateStatus,
       Mutations.UnsubscribeFromNotifications,
-      Mutations.UpdateProfile,
-      Mutations.UpdateProfilePicture,
-      Mutations.UpdateTheme
+      Mutations.People.Update,
+      Mutations.People.UpdatePicture,
+      Mutations.People.UpdateTheme
     ]
   end
 end

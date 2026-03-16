@@ -177,6 +177,22 @@ defmodule OperatelyWeb.Api do
         mutation(:update_tools, OperatelyWeb.Api.Spaces.UpdateTools)
       end
 
+      namespace(:people) do
+        query(:get_account, OperatelyWeb.Api.People.GetAccount)
+        query(:get_me, OperatelyWeb.Api.People.GetMe)
+        query(:list_assignments, OperatelyWeb.Api.People.ListAssignments)
+        query(:get_assignments_count, OperatelyWeb.Api.People.GetAssignmentsCount)
+        query(:list, OperatelyWeb.Api.People.List)
+        query(:get, OperatelyWeb.Api.People.Get)
+        query(:get_binded, OperatelyWeb.Api.People.GetBinded)
+        query(:search, OperatelyWeb.Api.People.Search)
+        query(:list_possible_managers, OperatelyWeb.Api.People.ListPossibleManagers)
+
+        mutation(:update, OperatelyWeb.Api.People.Update)
+        mutation(:update_theme, OperatelyWeb.Api.People.UpdateTheme)
+        mutation(:update_picture, OperatelyWeb.Api.People.UpdatePicture)
+      end
+
       namespace(:companies) do
         query(:list, OperatelyWeb.Api.Companies.List)
         query(:get, OperatelyWeb.Api.Companies.Get)
@@ -205,16 +221,9 @@ defmodule OperatelyWeb.Api do
         mutation(:delete, OperatelyWeb.Api.Reactions.Delete)
       end
 
-      query(:get_account, Q.GetAccount)
       query(:get_activities, Q.GetActivities)
       query(:get_activity, Q.GetActivity)
-      query(:get_assignments_count, Q.GetAssignmentsCount)
-      query(:get_assignments, Q.GetAssignments)
-      query(:get_me, Q.GetMe)
       query(:get_notifications, Q.GetNotifications)
-      query(:get_people, Q.GetPeople)
-      query(:get_person, Q.GetPerson)
-      query(:get_binded_people, Q.GetBindedPeople)
       query(:get_unread_notification_count, Q.GetUnreadNotificationCount)
       query(:get_resource_hub, Q.GetResourceHub)
       query(:get_resource_hub_document, Q.GetResourceHubDocument)
@@ -222,8 +231,6 @@ defmodule OperatelyWeb.Api do
       query(:get_resource_hub_folder, Q.GetResourceHubFolder)
       query(:get_resource_hub_link, Q.GetResourceHubLink)
       query(:list_resource_hub_nodes, Q.ListResourceHubNodes)
-      query(:search_people, Q.SearchPeople)
-      query(:list_possible_managers, Q.ListPossibleManagers)
       query(:get_work_map, Q.GetWorkMap)
       query(:get_flat_work_map, Q.GetFlatWorkMap)
       query(:global_search, Q.GlobalSearch)
@@ -260,9 +267,6 @@ defmodule OperatelyWeb.Api do
 
       mutation(:subscribe_to_notifications, M.SubscribeToNotifications)
       mutation(:unsubscribe_from_notifications, M.UnsubscribeFromNotifications)
-      mutation(:update_profile, M.UpdateProfile)
-      mutation(:update_theme, M.UpdateTheme)
-      mutation(:update_profile_picture, M.UpdateProfilePicture)
 
       subscription(:assignments_count, S.AssignmentsCount)
       subscription(:reload_comments, S.ReloadComments)

@@ -41,17 +41,10 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `edit_resource_hub_file` | `op edit_resource_hub_file` | `POST` | `/api/external/v1/edit_resource_hub_file` |
 | `edit_resource_hub_link` | `op edit_resource_hub_link` | `POST` | `/api/external/v1/edit_resource_hub_link` |
 | `edit_subscriptions_list` | `op edit_subscriptions_list` | `POST` | `/api/external/v1/edit_subscriptions_list` |
-| `get_account` | `op get_account` | `GET` | `/api/external/v1/get_account` |
 | `get_activities` | `op get_activities` | `GET` | `/api/external/v1/get_activities` |
 | `get_activity` | `op get_activity` | `GET` | `/api/external/v1/get_activity` |
-| `get_assignments` | `op get_assignments` | `GET` | `/api/external/v1/get_assignments` |
-| `get_assignments_count` | `op get_assignments_count` | `GET` | `/api/external/v1/get_assignments_count` |
-| `get_binded_people` | `op get_binded_people` | `GET` | `/api/external/v1/get_binded_people` |
 | `get_flat_work_map` | `op get_flat_work_map` | `GET` | `/api/external/v1/get_flat_work_map` |
-| `get_me` | `op get_me` | `GET` | `/api/external/v1/get_me` |
 | `get_notifications` | `op get_notifications` | `GET` | `/api/external/v1/get_notifications` |
-| `get_people` | `op get_people` | `GET` | `/api/external/v1/get_people` |
-| `get_person` | `op get_person` | `GET` | `/api/external/v1/get_person` |
 | `get_resource_hub` | `op get_resource_hub` | `GET` | `/api/external/v1/get_resource_hub` |
 | `get_resource_hub_document` | `op get_resource_hub_document` | `GET` | `/api/external/v1/get_resource_hub_document` |
 | `get_resource_hub_file` | `op get_resource_hub_file` | `GET` | `/api/external/v1/get_resource_hub_file` |
@@ -101,11 +94,22 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `grant_resource_access` | `op grant_resource_access` | `POST` | `/api/external/v1/grant_resource_access` |
 | `invite_guest` | `op invite_guest` | `POST` | `/api/external/v1/invite_guest` |
 | `is_subscribed_to_resource` | `op is_subscribed_to_resource` | `GET` | `/api/external/v1/is_subscribed_to_resource` |
-| `list_possible_managers` | `op list_possible_managers` | `GET` | `/api/external/v1/list_possible_managers` |
 | `list_resource_hub_nodes` | `op list_resource_hub_nodes` | `GET` | `/api/external/v1/list_resource_hub_nodes` |
 | `mark_all_notifications_as_read` | `op mark_all_notifications_as_read` | `POST` | `/api/external/v1/mark_all_notifications_as_read` |
 | `mark_notification_as_read` | `op mark_notification_as_read` | `POST` | `/api/external/v1/mark_notification_as_read` |
 | `mark_notifications_as_read` | `op mark_notifications_as_read` | `POST` | `/api/external/v1/mark_notifications_as_read` |
+| `people get` | `op people get` | `GET` | `/api/external/v1/people/get` |
+| `people get_account` | `op people get_account` | `GET` | `/api/external/v1/people/get_account` |
+| `people get_assignments_count` | `op people get_assignments_count` | `GET` | `/api/external/v1/people/get_assignments_count` |
+| `people get_binded` | `op people get_binded` | `GET` | `/api/external/v1/people/get_binded` |
+| `people get_me` | `op people get_me` | `GET` | `/api/external/v1/people/get_me` |
+| `people list` | `op people list` | `GET` | `/api/external/v1/people/list` |
+| `people list_assignments` | `op people list_assignments` | `GET` | `/api/external/v1/people/list_assignments` |
+| `people list_possible_managers` | `op people list_possible_managers` | `GET` | `/api/external/v1/people/list_possible_managers` |
+| `people search` | `op people search` | `GET` | `/api/external/v1/people/search` |
+| `people update` | `op people update` | `POST` | `/api/external/v1/people/update` |
+| `people update_picture` | `op people update_picture` | `POST` | `/api/external/v1/people/update_picture` |
+| `people update_theme` | `op people update_theme` | `POST` | `/api/external/v1/people/update_theme` |
 | `project_check_ins acknowledge` | `op project_check_ins acknowledge` | `POST` | `/api/external/v1/project_check_ins/acknowledge` |
 | `project_check_ins create` | `op project_check_ins create` | `POST` | `/api/external/v1/project_check_ins/create` |
 | `project_check_ins get` | `op project_check_ins get` | `GET` | `/api/external/v1/project_check_ins/get` |
@@ -165,7 +169,6 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `reactions create` | `op reactions create` | `POST` | `/api/external/v1/reactions/create` |
 | `reactions delete` | `op reactions delete` | `POST` | `/api/external/v1/reactions/delete` |
 | `rename_resource_hub_folder` | `op rename_resource_hub_folder` | `POST` | `/api/external/v1/rename_resource_hub_folder` |
-| `search_people` | `op search_people` | `GET` | `/api/external/v1/search_people` |
 | `space_discussions archive` | `op space_discussions archive` | `POST` | `/api/external/v1/space_discussions/archive` |
 | `space_discussions create` | `op space_discussions create` | `POST` | `/api/external/v1/space_discussions/create` |
 | `space_discussions get` | `op space_discussions get` | `GET` | `/api/external/v1/space_discussions/get` |
@@ -206,6 +209,3 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `tasks update_name` | `op tasks update_name` | `POST` | `/api/external/v1/tasks/update_name` |
 | `tasks update_status` | `op tasks update_status` | `POST` | `/api/external/v1/tasks/update_status` |
 | `unsubscribe_from_notifications` | `op unsubscribe_from_notifications` | `POST` | `/api/external/v1/unsubscribe_from_notifications` |
-| `update_profile` | `op update_profile` | `POST` | `/api/external/v1/update_profile` |
-| `update_profile_picture` | `op update_profile_picture` | `POST` | `/api/external/v1/update_profile_picture` |
-| `update_theme` | `op update_theme` | `POST` | `/api/external/v1/update_theme` |

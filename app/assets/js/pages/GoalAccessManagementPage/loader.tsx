@@ -2,7 +2,7 @@ import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
 import * as People from "@/models/people";
 
-import Api, { useGetBindedPeople } from "@/api";
+import Api from "@/api";
 import { compareIds } from "@/routes/paths";
 
 interface LoaderResult {
@@ -39,7 +39,7 @@ export function useLoadedData(): LoaderResult {
 
 export function useBindedPeopleList(): { people: People.Person[] | undefined; loading: boolean } {
   const { goal, accessMembers } = useLoadedData();
-  const { data, loading } = useGetBindedPeople({ resourseType: "goal", resourseId: goal.id });
+  const { data, loading } = Api.people.useGetBinded({ resourseType: "goal", resourseId: goal.id });
 
   if (loading) return { people: undefined, loading: true };
 
