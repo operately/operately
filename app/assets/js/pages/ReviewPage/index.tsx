@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as Pages from "@/components/Pages";
-import { ReviewAssignment, getAssignments } from "@/models/assignments";
+import { ReviewAssignment, listAssignments } from "@/models/assignments";
 import { PageModule } from "@/routes/types";
 import { ReviewPage } from "turboui";
 
@@ -18,6 +18,6 @@ interface LoaderResult {
 
 async function loader(): Promise<LoaderResult> {
   return {
-    assignments: await getAssignments({}).then((res) => res.assignments),
+    assignments: await listAssignments({}).then((res) => res.assignments),
   };
 }

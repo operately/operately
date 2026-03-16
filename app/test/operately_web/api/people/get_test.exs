@@ -1,0 +1,109 @@
+defmodule OperatelyWeb.Api.People.GetTest do
+  use OperatelyWeb.TurboCase
+
+  import Operately.CompaniesFixtures
+  import Operately.PeopleFixtures
+
+  alias Operately.People
+
+  describe "security" do
+    test "it requires authentication", ctx do
+      assert {401, _} = query(ctx.conn, [:people, :get], %{})
+    end
+
+    test "it doesn't return people from other companies", ctx do
+      ctx = register_and_log_in_account(ctx)
+
+      company2 = company_fixture(name: "Company 2")
+      person_from_other_company = person_fixture(%{company_id: company2.id})
+
+      assert query(ctx.conn, [:people, :get], %{id: Paths.person_id(person_from_other_company)}) == not_found_response()
+    end
+  end
+
+  describe "permissions" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      company_member =
+        person_fixture(%{company_id: ctx.company.id})
+        |> Serializer.serialize(level: :full)
+
+      Map.merge(ctx, %{company_member: company_member})
+    end
+
+    test "company member can query people from the same company", ctx do
+      assert {200, res} = query(ctx.conn, [:people, :get], %{id: ctx.company_member.id})
+      assert res.person == ctx.company_member
+    end
+
+    test "suspended people don't have access", ctx do
+      People.update_person(ctx.person, %{suspended_at: DateTime.utc_now()})
+
+      assert {404, res} = query(ctx.conn, [:people, :get], %{id: ctx.company_member.id})
+      assert res.message == "The requested resource was not found"
+    end
+  end
+
+  describe "get_person functionality" do
+    setup :register_and_log_in_account
+
+    test "returns the person", ctx do
+      person = person_fixture(company_id: ctx.company.id)
+      assert {200, res} = query(ctx.conn, [:people, :get], %{id: Paths.person_id(person)})
+      assert res.person == Serializer.serialize(person, level: :full)
+    end
+
+    test "include_manager", ctx do
+      manager = person_fixture(company_id: ctx.company.id)
+      person = person_fixture(company_id: ctx.company.id, manager_id: manager.id)
+      person = Operately.Repo.preload(person, [:manager])
+
+      assert {200, res} = query(ctx.conn, [:people, :get], %{id: Paths.person_id(person), include_manager: true})
+      assert res.person.manager == Serializer.serialize(manager, level: :essential)
+
+      assert {200, res} = query(ctx.conn, [:people, :get], %{id: Paths.person_id(manager), include_manager: true})
+      assert res.person.manager == nil
+    end
+
+    test "includes_reports", ctx do
+      person = person_fixture(company_id: ctx.company.id)
+      report1 = person_fixture(company_id: ctx.company.id, manager_id: person.id)
+      report2 = person_fixture(company_id: ctx.company.id, manager_id: person.id)
+
+      assert {200, res} = query(ctx.conn, [:people, :get], %{id: Paths.person_id(person), include_reports: true})
+      assert length(res.person.reports) == 2
+      assert Enum.find(res.person.reports, fn r -> r.id == Paths.person_id(report1) end) == Serializer.serialize(report1, level: :essential)
+      assert Enum.find(res.person.reports, fn r -> r.id == Paths.person_id(report2) end) == Serializer.serialize(report2, level: :essential)
+    end
+
+    test "includes_peers", ctx do
+      manager = person_fixture(company_id: ctx.company.id)
+      person = person_fixture(company_id: ctx.company.id, manager_id: manager.id)
+      peer1 = person_fixture(company_id: ctx.company.id, manager_id: manager.id)
+      peer2 = person_fixture(company_id: ctx.company.id, manager_id: manager.id)
+
+      assert {200, res} = query(ctx.conn, [:people, :get], %{id: Paths.person_id(person), include_peers: true})
+      assert length(res.person.peers) == 2
+      assert Enum.find(res.person.peers, fn p -> p.id == Paths.person_id(peer1) end) == Serializer.serialize(peer1, level: :essential)
+      assert Enum.find(res.person.peers, fn p -> p.id == Paths.person_id(peer2) end) == Serializer.serialize(peer2, level: :essential)
+    end
+
+    test "include_account populates has_open_invitation based on first_login_at", ctx do
+      invited = person_fixture_with_account(%{company_id: ctx.company.id, has_open_invitation: true})
+      active = person_fixture_with_account(%{company_id: ctx.company.id, has_open_invitation: false})
+
+      assert {200, res} = query(ctx.conn, [:people, :get], %{id: Paths.person_id(invited), include_account: true})
+      assert res.person.has_open_invitation == true
+
+      assert {200, res} = query(ctx.conn, [:people, :get], %{id: Paths.person_id(active), include_account: true})
+      assert res.person.has_open_invitation == false
+    end
+
+    test "omitting include_account leaves has_open_invitation unset", ctx do
+      invited = person_fixture_with_account(%{company_id: ctx.company.id, has_open_invitation: true})
+
+      assert {200, res} = query(ctx.conn, [:people, :get], %{id: Paths.person_id(invited)})
+      assert is_nil(res.person.has_open_invitation)
+    end
+  end
+end

@@ -1,8 +1,8 @@
-import { getAssignmentsCount, useQuery } from "@/api";
+import Api, { useQuery } from "@/api";
 import { useAssignmentsCount as useAssignmentCountChangeSignal } from "@/signals";
 
 export function useAssignmentsCount() {
-  const { data, refetch } = useQuery(() => getAssignmentsCount({}));
+  const { data, refetch } = useQuery(() => Api.people.getAssignmentsCount({}));
 
   useAssignmentCountChangeSignal(refetch);
 

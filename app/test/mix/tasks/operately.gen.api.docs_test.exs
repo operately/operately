@@ -22,7 +22,7 @@ defmodule Mix.Tasks.Operately.Gen.Api.DocsTest do
     assert output =~ "Manual copy example"
 
     assert File.exists?(Path.join(out_dir, "help/api/index.mdx"))
-    assert File.exists?(Path.join(out_dir, "help/api/get_account.mdx"))
+    assert File.exists?(Path.join(out_dir, "help/api/people/get_account.mdx"))
     refute File.exists?(Path.join(out_dir, "help/api/root/index.mdx"))
     refute File.exists?(Path.join(out_dir, "help/api/external/index.mdx"))
   end

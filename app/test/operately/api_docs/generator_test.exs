@@ -28,7 +28,7 @@ defmodule Operately.ApiDocs.GeneratorTest do
     assert length(endpoint_files) == expected_count
 
     assert File.exists?(Path.join(out_dir, "help/api/index.mdx"))
-    assert File.exists?(Path.join(out_dir, "help/api/get_account.mdx"))
+    assert File.exists?(Path.join(out_dir, "help/api/people/get_account.mdx"))
     assert File.exists?(Path.join(out_dir, "help/api/goals/index.mdx"))
     refute File.exists?(Path.join(out_dir, "help/api/root/index.mdx"))
     refute File.exists?(Path.join(out_dir, "help/api/external/index.mdx"))
@@ -37,44 +37,44 @@ defmodule Operately.ApiDocs.GeneratorTest do
   test "renders method and path for root and namespaced endpoints", %{out_dir: out_dir} do
     Generator.generate(out_dir: out_dir)
 
-    root_endpoint = Path.join(out_dir, "help/api/get_account.mdx")
-    namespaced_endpoint = Path.join(out_dir, "help/api/goals/update_name.mdx")
+    namespaced_endpoint_1 = Path.join(out_dir, "help/api/people/get_account.mdx")
+    namespaced_endpoint_2 = Path.join(out_dir, "help/api/goals/update_name.mdx")
 
-    root_page = File.read!(root_endpoint)
-    namespaced_page = File.read!(namespaced_endpoint)
+    page_1 = File.read!(namespaced_endpoint_1)
+    page_2 = File.read!(namespaced_endpoint_2)
 
-    assert root_page =~ "| Type | `query` |"
-    assert root_page =~ "| Method | `GET` |"
-    assert root_page =~ "| Path | `/api/external/v1/get_account` |"
-    assert root_page =~ ~s(import CurlExampleBlock from "@components/CurlExampleBlock.jsx")
-    assert root_page =~ "## cURL Example"
-    assert root_page =~ "<CurlExampleBlock client:load command={"
-    assert root_page =~ "curl --request GET"
-    assert root_page =~ "https://app.operately.com/api/external/v1/get_account"
-    assert root_page =~ "Authorization: Bearer ${OPERATELY_API_TOKEN}"
-    assert root_page =~ "## Response Example"
-    assert root_page =~ "```json"
+    assert page_1 =~ "| Type | `query` |"
+    assert page_1 =~ "| Method | `GET` |"
+    assert page_1 =~ "| Path | `/api/external/v1/people/get_account` |"
+    assert page_1 =~ ~s(import CurlExampleBlock from "@components/CurlExampleBlock.jsx")
+    assert page_1 =~ "## cURL Example"
+    assert page_1 =~ "<CurlExampleBlock client:load command={"
+    assert page_1 =~ "curl --request GET"
+    assert page_1 =~ "https://app.operately.com/api/external/v1/people/get_account"
+    assert page_1 =~ "Authorization: Bearer ${OPERATELY_API_TOKEN}"
+    assert page_1 =~ "## Response Example"
+    assert page_1 =~ "```json"
 
-    assert namespaced_page =~ "| Type | `mutation` |"
-    assert namespaced_page =~ "| Method | `POST` |"
-    assert namespaced_page =~ "| Path | `/api/external/v1/goals/update_name` |"
-    assert namespaced_page =~ "## cURL Example"
-    assert namespaced_page =~ "<CurlExampleBlock client:load command={"
-    assert namespaced_page =~ "curl --request POST"
-    assert namespaced_page =~ "https://app.operately.com/api/external/v1/goals/update_name"
-    assert namespaced_page =~ "Authorization: Bearer ${OPERATELY_API_TOKEN}"
-    assert namespaced_page =~ "Content-Type: application/json"
-    assert namespaced_page =~ ~s(--data ')
-    assert namespaced_page =~ "## Response Example"
-    assert namespaced_page =~ "```json"
+    assert page_2 =~ "| Type | `mutation` |"
+    assert page_2 =~ "| Method | `POST` |"
+    assert page_2 =~ "| Path | `/api/external/v1/goals/update_name` |"
+    assert page_2 =~ "## cURL Example"
+    assert page_2 =~ "<CurlExampleBlock client:load command={"
+    assert page_2 =~ "curl --request POST"
+    assert page_2 =~ "https://app.operately.com/api/external/v1/goals/update_name"
+    assert page_2 =~ "Authorization: Bearer ${OPERATELY_API_TOKEN}"
+    assert page_2 =~ "Content-Type: application/json"
+    assert page_2 =~ ~s(--data ')
+    assert page_2 =~ "## Response Example"
+    assert page_2 =~ "```json"
 
-    {root_curl_pos, _} = :binary.match(root_page, "## cURL Example")
-    {root_response_pos, _} = :binary.match(root_page, "## Response Example")
-    assert root_curl_pos < root_response_pos
+    {page_1_curl_pos, _} = :binary.match(page_1, "## cURL Example")
+    {page_1_response_pos, _} = :binary.match(page_1, "## Response Example")
+    assert page_1_curl_pos < page_1_response_pos
 
-    {namespaced_curl_pos, _} = :binary.match(namespaced_page, "## cURL Example")
-    {namespaced_response_pos, _} = :binary.match(namespaced_page, "## Response Example")
-    assert namespaced_curl_pos < namespaced_response_pos
+    {page_2_curl_pos, _} = :binary.match(page_2, "## cURL Example")
+    {page_2_response_pos, _} = :binary.match(page_2, "## Response Example")
+    assert page_2_curl_pos < page_2_response_pos
   end
 
   test "removes stale files when regenerating", %{out_dir: out_dir} do
