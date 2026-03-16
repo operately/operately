@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
+defmodule OperatelyWeb.Api.Comments.CreateTest do
   use OperatelyWeb.TurboCase
 
   import Ecto.Query, only: [from: 2]
@@ -18,7 +18,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :create_comment, %{})
+      assert {401, _} = mutation(ctx.conn, [:comments, :create], %{})
     end
   end
 
@@ -78,7 +78,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
         check_in = create_check_in(ctx.creator, project)
 
         assert {code, res} =
-                 mutation(ctx.conn, :create_comment, %{
+                 mutation(ctx.conn, [:comments, :create], %{
                    entity_id: Paths.project_check_in_id(check_in),
                    entity_type: "project_check_in",
                    content: RichText.rich_text("Content", :as_string)
@@ -107,7 +107,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
           })
 
         assert {code, res} =
-                 mutation(ctx.conn, :create_comment, %{
+                 mutation(ctx.conn, [:comments, :create], %{
                    entity_id: Paths.task_id(task),
                    entity_type: "space_task",
                    content: RichText.rich_text("Content", :as_string)
@@ -130,7 +130,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
         retrospective = retrospective_fixture(%{project_id: project.id, author_id: ctx.creator.id})
 
         assert {code, res} =
-                 mutation(ctx.conn, :create_comment, %{
+                 mutation(ctx.conn, [:comments, :create], %{
                    entity_id: Paths.project_retrospective_id(retrospective),
                    entity_type: "project_retrospective",
                    content: RichText.rich_text("Content", :as_string)
@@ -152,7 +152,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
         project = create_project(ctx, space, @test.company, @test.space, @test.project)
         task = create_task(ctx.creator, project)
 
-        assert {code, res} = mutation(ctx.conn, :create_comment, %{
+        assert {code, res} = mutation(ctx.conn, [:comments, :create], %{
           entity_id: Paths.task_id(task),
           entity_type: "project_task",
           content: RichText.rich_text("Content", :as_string)
@@ -175,7 +175,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
         doc = document_fixture(resource_hub.id, ctx.creator.id)
 
         assert {code, res} =
-                 mutation(ctx.conn, :create_comment, %{
+                 mutation(ctx.conn, [:comments, :create], %{
                    entity_id: Paths.document_id(doc),
                    entity_type: "resource_hub_document",
                    content: RichText.rich_text("Content", :as_string)
@@ -198,7 +198,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
         file = file_fixture(resource_hub, ctx.creator)
 
         assert {code, res} =
-                 mutation(ctx.conn, :create_comment, %{
+                 mutation(ctx.conn, [:comments, :create], %{
                    entity_id: Paths.file_id(file),
                    entity_type: "resource_hub_file",
                    content: RichText.rich_text("Content", :as_string)
@@ -221,7 +221,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
         link = link_fixture(resource_hub, ctx.creator)
 
         assert {code, res} =
-                 mutation(ctx.conn, :create_comment, %{
+                 mutation(ctx.conn, [:comments, :create], %{
                    entity_id: Paths.link_id(link),
                    entity_type: "resource_hub_link",
                    content: RichText.rich_text("Content", :as_string)
@@ -244,7 +244,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
         thread = create_comment_thread(goal)
 
         assert {code, res} =
-                 mutation(ctx.conn, :create_comment, %{
+                 mutation(ctx.conn, [:comments, :create], %{
                    entity_id: Paths.comment_thread_id(thread),
                    entity_type: "comment_thread",
                    content: RichText.rich_text("Content", :as_string)
@@ -267,7 +267,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
         update = create_goal_update(ctx, goal)
 
         assert {code, res} =
-                 mutation(ctx.conn, :create_comment, %{
+                 mutation(ctx.conn, [:comments, :create], %{
                    entity_id: Paths.goal_update_id(update),
                    entity_type: "goal_update",
                    content: RichText.rich_text("Content", :as_string)
@@ -290,7 +290,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
         message = message_fixture(ctx.creator.id, board.id)
 
         assert {code, res} =
-                 mutation(ctx.conn, :create_comment, %{
+                 mutation(ctx.conn, [:comments, :create], %{
                    entity_id: Paths.message_id(message),
                    entity_type: "message",
                    content: RichText.rich_text("Content", :as_string)
@@ -320,7 +320,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
       assert count_comments(ctx.check_in.id, :project_check_in) == 0
 
       assert {200, res} =
-               mutation(ctx.conn, :create_comment, %{
+               mutation(ctx.conn, [:comments, :create], %{
                  entity_id: Paths.project_check_in_id(ctx.check_in),
                  entity_type: "project_check_in",
                  content: RichText.rich_text("Content", :as_string)
@@ -346,7 +346,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
       assert list.subscriptions == []
 
       assert {200, _} =
-               mutation(ctx.conn, :create_comment, %{
+               mutation(ctx.conn, [:comments, :create], %{
                  entity_id: Paths.project_check_in_id(ctx.check_in),
                  entity_type: "project_check_in",
                  content: content
@@ -379,7 +379,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
       assert hd(subscriptions).person_id == ctx.person.id
 
       assert {200, _} =
-               mutation(ctx.conn, :create_comment, %{
+               mutation(ctx.conn, [:comments, :create], %{
                  entity_id: Paths.project_check_in_id(ctx.check_in),
                  entity_type: "project_check_in",
                  content: RichText.rich_text(mentioned_people: [ctx.person, another_person])

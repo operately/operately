@@ -2254,6 +2254,15 @@ export interface ApiTokensListResult {
   apiTokens: ApiToken[];
 }
 
+export interface CommentsListInput {
+  entityId: Id;
+  entityType: CommentParentType;
+}
+
+export interface CommentsListResult {
+  comments: Comment[];
+}
+
 export interface CompaniesGetInput {
   id?: CompanyId;
   includePermissions?: boolean;
@@ -2324,15 +2333,6 @@ export interface GetBindedPeopleInput {
 
 export interface GetBindedPeopleResult {
   people?: Person[] | null;
-}
-
-export interface GetCommentsInput {
-  entityId: Id;
-  entityType: CommentParentType;
-}
-
-export interface GetCommentsResult {
-  comments: Comment[];
 }
 
 export interface GetFlatWorkMapInput {
@@ -3101,17 +3101,6 @@ export interface AddProjectContributorsResult {
   success: boolean;
 }
 
-export interface AddReactionInput {
-  entityId: Id;
-  entityType: ReactionEntityType;
-  parentType?: ReactionParentType;
-  emoji: string;
-}
-
-export interface AddReactionResult {
-  reaction: Reaction;
-}
-
 export interface AiAddAgentInput {
   title: string;
   fullName: string;
@@ -3256,6 +3245,35 @@ export interface ChangePasswordInput {
 
 export interface ChangePasswordResult {}
 
+export interface CommentsCreateInput {
+  entityId: Id;
+  entityType: CommentParentType;
+  content: string;
+}
+
+export interface CommentsCreateResult {
+  comment: Comment;
+}
+
+export interface CommentsDeleteInput {
+  commentId: Id;
+  parentType: CommentParentType;
+}
+
+export interface CommentsDeleteResult {
+  comment: Comment;
+}
+
+export interface CommentsUpdateInput {
+  content: string;
+  commentId: Id;
+  parentType: CommentParentType;
+}
+
+export interface CommentsUpdateResult {
+  comment: Comment;
+}
+
 export interface CompaniesConvertMemberToGuestInput {
   personId: Id;
 }
@@ -3392,16 +3410,6 @@ export interface CreateBlobResult {
   blobs?: BlobCreationOutput[] | null;
 }
 
-export interface CreateCommentInput {
-  entityId: Id;
-  entityType: CommentParentType;
-  content: string;
-}
-
-export interface CreateCommentResult {
-  comment: Comment;
-}
-
 export interface CreateEmailActivationCodeInput {
   email?: string | null;
 }
@@ -3485,15 +3493,6 @@ export interface CreateResourceHubLinkResult {
   link?: ResourceHubLink | null;
 }
 
-export interface DeleteCommentInput {
-  commentId: Id;
-  parentType: CommentParentType;
-}
-
-export interface DeleteCommentResult {
-  comment: Comment;
-}
-
 export interface DeleteCompanyInput {}
 
 export interface DeleteCompanyResult {
@@ -3530,16 +3529,6 @@ export interface DeleteResourceHubLinkInput {
 
 export interface DeleteResourceHubLinkResult {
   success?: boolean | null;
-}
-
-export interface EditCommentInput {
-  content: string;
-  commentId: Id;
-  parentType: CommentParentType;
-}
-
-export interface EditCommentResult {
-  comment: Comment;
 }
 
 export interface EditGoalDiscussionInput {
@@ -4304,20 +4293,31 @@ export interface PublishResourceHubDocumentResult {
   document?: ResourceHubDocument | null;
 }
 
+export interface ReactionsCreateInput {
+  entityId: Id;
+  entityType: ReactionEntityType;
+  parentType?: ReactionParentType;
+  emoji: string;
+}
+
+export interface ReactionsCreateResult {
+  reaction: Reaction;
+}
+
+export interface ReactionsDeleteInput {
+  reactionId: Id;
+}
+
+export interface ReactionsDeleteResult {
+  success: boolean;
+}
+
 export interface RemoveKeyResourceInput {
   id: string;
 }
 
 export interface RemoveKeyResourceResult {
   keyResource: ProjectKeyResource;
-}
-
-export interface RemoveReactionInput {
-  reactionId: Id;
-}
-
-export interface RemoveReactionResult {
-  success: boolean;
 }
 
 export interface RenameResourceHubFolderInput {
@@ -4831,10 +4831,6 @@ class ApiNamespaceRoot {
     return this.client.get("/get_binded_people", input);
   }
 
-  async getComments(input: GetCommentsInput): Promise<GetCommentsResult> {
-    return this.client.get("/get_comments", input);
-  }
-
   async getFlatWorkMap(input: GetFlatWorkMapInput): Promise<GetFlatWorkMapResult> {
     return this.client.get("/get_flat_work_map", input);
   }
@@ -4967,10 +4963,6 @@ class ApiNamespaceRoot {
     return this.client.post("/add_project_contributors", input);
   }
 
-  async addReaction(input: AddReactionInput): Promise<AddReactionResult> {
-    return this.client.post("/add_reaction", input);
-  }
-
   async changePassword(input: ChangePasswordInput): Promise<ChangePasswordResult> {
     return this.client.post("/change_password", input);
   }
@@ -4993,10 +4985,6 @@ class ApiNamespaceRoot {
 
   async createBlob(input: CreateBlobInput): Promise<CreateBlobResult> {
     return this.client.post("/create_blob", input);
-  }
-
-  async createComment(input: CreateCommentInput): Promise<CreateCommentResult> {
-    return this.client.post("/create_comment", input);
   }
 
   async createEmailActivationCode(input: CreateEmailActivationCodeInput): Promise<CreateEmailActivationCodeResult> {
@@ -5027,10 +5015,6 @@ class ApiNamespaceRoot {
     return this.client.post("/create_resource_hub_link", input);
   }
 
-  async deleteComment(input: DeleteCommentInput): Promise<DeleteCommentResult> {
-    return this.client.post("/delete_comment", input);
-  }
-
   async deleteCompany(input: DeleteCompanyInput): Promise<DeleteCompanyResult> {
     return this.client.post("/delete_company", input);
   }
@@ -5049,10 +5033,6 @@ class ApiNamespaceRoot {
 
   async deleteResourceHubLink(input: DeleteResourceHubLinkInput): Promise<DeleteResourceHubLinkResult> {
     return this.client.post("/delete_resource_hub_link", input);
-  }
-
-  async editComment(input: EditCommentInput): Promise<EditCommentResult> {
-    return this.client.post("/edit_comment", input);
   }
 
   async editGoalDiscussion(input: EditGoalDiscussionInput): Promise<EditGoalDiscussionResult> {
@@ -5137,10 +5117,6 @@ class ApiNamespaceRoot {
     return this.client.post("/remove_key_resource", input);
   }
 
-  async removeReaction(input: RemoveReactionInput): Promise<RemoveReactionResult> {
-    return this.client.post("/remove_reaction", input);
-  }
-
   async renameResourceHubFolder(input: RenameResourceHubFolderInput): Promise<RenameResourceHubFolderResult> {
     return this.client.post("/rename_resource_hub_folder", input);
   }
@@ -5181,6 +5157,26 @@ class ApiNamespaceRoot {
 
   async updateTheme(input: UpdateThemeInput): Promise<UpdateThemeResult> {
     return this.client.post("/update_theme", input);
+  }
+}
+
+class ApiNamespaceComments {
+  constructor(private client: ApiClient) {}
+
+  async list(input: CommentsListInput): Promise<CommentsListResult> {
+    return this.client.get("/comments/list", input);
+  }
+
+  async create(input: CommentsCreateInput): Promise<CommentsCreateResult> {
+    return this.client.post("/comments/create", input);
+  }
+
+  async delete(input: CommentsDeleteInput): Promise<CommentsDeleteResult> {
+    return this.client.post("/comments/delete", input);
+  }
+
+  async update(input: CommentsUpdateInput): Promise<CommentsUpdateResult> {
+    return this.client.post("/comments/update", input);
   }
 }
 
@@ -5724,6 +5720,18 @@ class ApiNamespaceGoals {
   }
 }
 
+class ApiNamespaceReactions {
+  constructor(private client: ApiClient) {}
+
+  async create(input: ReactionsCreateInput): Promise<ReactionsCreateResult> {
+    return this.client.post("/reactions/create", input);
+  }
+
+  async delete(input: ReactionsDeleteInput): Promise<ReactionsDeleteResult> {
+    return this.client.post("/reactions/delete", input);
+  }
+}
+
 export class ApiClient {
   private basePath: string;
   private headers: any;
@@ -5731,6 +5739,7 @@ export class ApiClient {
   public apiNamespaceInvitations: ApiNamespaceInvitations;
   public apiNamespaceAi: ApiNamespaceAi;
   public apiNamespaceRoot: ApiNamespaceRoot;
+  public apiNamespaceComments: ApiNamespaceComments;
   public apiNamespaceCompanies: ApiNamespaceCompanies;
   public apiNamespaceSpaces: ApiNamespaceSpaces;
   public apiNamespaceSpaceDiscussions: ApiNamespaceSpaceDiscussions;
@@ -5739,12 +5748,14 @@ export class ApiClient {
   public apiNamespaceProjectMilestones: ApiNamespaceProjectMilestones;
   public apiNamespaceProjects: ApiNamespaceProjects;
   public apiNamespaceGoals: ApiNamespaceGoals;
+  public apiNamespaceReactions: ApiNamespaceReactions;
 
   constructor() {
     this.apiNamespaceApiTokens = new ApiNamespaceApiTokens(this);
     this.apiNamespaceInvitations = new ApiNamespaceInvitations(this);
     this.apiNamespaceAi = new ApiNamespaceAi(this);
     this.apiNamespaceRoot = new ApiNamespaceRoot(this);
+    this.apiNamespaceComments = new ApiNamespaceComments(this);
     this.apiNamespaceCompanies = new ApiNamespaceCompanies(this);
     this.apiNamespaceSpaces = new ApiNamespaceSpaces(this);
     this.apiNamespaceSpaceDiscussions = new ApiNamespaceSpaceDiscussions(this);
@@ -5753,6 +5764,7 @@ export class ApiClient {
     this.apiNamespaceProjectMilestones = new ApiNamespaceProjectMilestones(this);
     this.apiNamespaceProjects = new ApiNamespaceProjects(this);
     this.apiNamespaceGoals = new ApiNamespaceGoals(this);
+    this.apiNamespaceReactions = new ApiNamespaceReactions(this);
   }
 
   setBasePath(basePath: string) {
@@ -5809,10 +5821,6 @@ export class ApiClient {
 
   getBindedPeople(input: GetBindedPeopleInput): Promise<GetBindedPeopleResult> {
     return this.apiNamespaceRoot.getBindedPeople(input);
-  }
-
-  getComments(input: GetCommentsInput): Promise<GetCommentsResult> {
-    return this.apiNamespaceRoot.getComments(input);
   }
 
   getFlatWorkMap(input: GetFlatWorkMapInput): Promise<GetFlatWorkMapResult> {
@@ -5945,10 +5953,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.addProjectContributors(input);
   }
 
-  addReaction(input: AddReactionInput): Promise<AddReactionResult> {
-    return this.apiNamespaceRoot.addReaction(input);
-  }
-
   changePassword(input: ChangePasswordInput): Promise<ChangePasswordResult> {
     return this.apiNamespaceRoot.changePassword(input);
   }
@@ -5971,10 +5975,6 @@ export class ApiClient {
 
   createBlob(input: CreateBlobInput): Promise<CreateBlobResult> {
     return this.apiNamespaceRoot.createBlob(input);
-  }
-
-  createComment(input: CreateCommentInput): Promise<CreateCommentResult> {
-    return this.apiNamespaceRoot.createComment(input);
   }
 
   createEmailActivationCode(input: CreateEmailActivationCodeInput): Promise<CreateEmailActivationCodeResult> {
@@ -6005,10 +6005,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.createResourceHubLink(input);
   }
 
-  deleteComment(input: DeleteCommentInput): Promise<DeleteCommentResult> {
-    return this.apiNamespaceRoot.deleteComment(input);
-  }
-
   deleteCompany(input: DeleteCompanyInput): Promise<DeleteCompanyResult> {
     return this.apiNamespaceRoot.deleteCompany(input);
   }
@@ -6027,10 +6023,6 @@ export class ApiClient {
 
   deleteResourceHubLink(input: DeleteResourceHubLinkInput): Promise<DeleteResourceHubLinkResult> {
     return this.apiNamespaceRoot.deleteResourceHubLink(input);
-  }
-
-  editComment(input: EditCommentInput): Promise<EditCommentResult> {
-    return this.apiNamespaceRoot.editComment(input);
   }
 
   editGoalDiscussion(input: EditGoalDiscussionInput): Promise<EditGoalDiscussionResult> {
@@ -6115,10 +6107,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.removeKeyResource(input);
   }
 
-  removeReaction(input: RemoveReactionInput): Promise<RemoveReactionResult> {
-    return this.apiNamespaceRoot.removeReaction(input);
-  }
-
   renameResourceHubFolder(input: RenameResourceHubFolderInput): Promise<RenameResourceHubFolderResult> {
     return this.apiNamespaceRoot.renameResourceHubFolder(input);
   }
@@ -6179,9 +6167,6 @@ export async function getAssignmentsCount(input: GetAssignmentsCountInput): Prom
 }
 export async function getBindedPeople(input: GetBindedPeopleInput): Promise<GetBindedPeopleResult> {
   return defaultApiClient.getBindedPeople(input);
-}
-export async function getComments(input: GetCommentsInput): Promise<GetCommentsResult> {
-  return defaultApiClient.getComments(input);
 }
 export async function getFlatWorkMap(input: GetFlatWorkMapInput): Promise<GetFlatWorkMapResult> {
   return defaultApiClient.getFlatWorkMap(input);
@@ -6295,9 +6280,6 @@ export async function addProjectContributors(
 ): Promise<AddProjectContributorsResult> {
   return defaultApiClient.addProjectContributors(input);
 }
-export async function addReaction(input: AddReactionInput): Promise<AddReactionResult> {
-  return defaultApiClient.addReaction(input);
-}
 export async function changePassword(input: ChangePasswordInput): Promise<ChangePasswordResult> {
   return defaultApiClient.changePassword(input);
 }
@@ -6315,9 +6297,6 @@ export async function createAvatarBlob(input: CreateAvatarBlobInput): Promise<Cr
 }
 export async function createBlob(input: CreateBlobInput): Promise<CreateBlobResult> {
   return defaultApiClient.createBlob(input);
-}
-export async function createComment(input: CreateCommentInput): Promise<CreateCommentResult> {
-  return defaultApiClient.createComment(input);
 }
 export async function createEmailActivationCode(
   input: CreateEmailActivationCodeInput,
@@ -6346,9 +6325,6 @@ export async function createResourceHubFolder(
 export async function createResourceHubLink(input: CreateResourceHubLinkInput): Promise<CreateResourceHubLinkResult> {
   return defaultApiClient.createResourceHubLink(input);
 }
-export async function deleteComment(input: DeleteCommentInput): Promise<DeleteCommentResult> {
-  return defaultApiClient.deleteComment(input);
-}
 export async function deleteCompany(input: DeleteCompanyInput): Promise<DeleteCompanyResult> {
   return defaultApiClient.deleteCompany(input);
 }
@@ -6367,9 +6343,6 @@ export async function deleteResourceHubFolder(
 }
 export async function deleteResourceHubLink(input: DeleteResourceHubLinkInput): Promise<DeleteResourceHubLinkResult> {
   return defaultApiClient.deleteResourceHubLink(input);
-}
-export async function editComment(input: EditCommentInput): Promise<EditCommentResult> {
-  return defaultApiClient.editComment(input);
 }
 export async function editGoalDiscussion(input: EditGoalDiscussionInput): Promise<EditGoalDiscussionResult> {
   return defaultApiClient.editGoalDiscussion(input);
@@ -6447,9 +6420,6 @@ export async function publishResourceHubDocument(
 export async function removeKeyResource(input: RemoveKeyResourceInput): Promise<RemoveKeyResourceResult> {
   return defaultApiClient.removeKeyResource(input);
 }
-export async function removeReaction(input: RemoveReactionInput): Promise<RemoveReactionResult> {
-  return defaultApiClient.removeReaction(input);
-}
 export async function renameResourceHubFolder(
   input: RenameResourceHubFolderInput,
 ): Promise<RenameResourceHubFolderResult> {
@@ -6513,10 +6483,6 @@ export function useGetAssignmentsCount(input: GetAssignmentsCountInput): UseQuer
 
 export function useGetBindedPeople(input: GetBindedPeopleInput): UseQueryHookResult<GetBindedPeopleResult> {
   return useQuery<GetBindedPeopleResult>(() => defaultApiClient.getBindedPeople(input));
-}
-
-export function useGetComments(input: GetCommentsInput): UseQueryHookResult<GetCommentsResult> {
-  return useQuery<GetCommentsResult>(() => defaultApiClient.getComments(input));
 }
 
 export function useGetFlatWorkMap(input: GetFlatWorkMapInput): UseQueryHookResult<GetFlatWorkMapResult> {
@@ -6692,10 +6658,6 @@ export function useAddProjectContributors(): UseMutationHookResult<
   );
 }
 
-export function useAddReaction(): UseMutationHookResult<AddReactionInput, AddReactionResult> {
-  return useMutation<AddReactionInput, AddReactionResult>((input) => defaultApiClient.addReaction(input));
-}
-
 export function useChangePassword(): UseMutationHookResult<ChangePasswordInput, ChangePasswordResult> {
   return useMutation<ChangePasswordInput, ChangePasswordResult>((input) => defaultApiClient.changePassword(input));
 }
@@ -6730,10 +6692,6 @@ export function useCreateAvatarBlob(): UseMutationHookResult<CreateAvatarBlobInp
 
 export function useCreateBlob(): UseMutationHookResult<CreateBlobInput, CreateBlobResult> {
   return useMutation<CreateBlobInput, CreateBlobResult>((input) => defaultApiClient.createBlob(input));
-}
-
-export function useCreateComment(): UseMutationHookResult<CreateCommentInput, CreateCommentResult> {
-  return useMutation<CreateCommentInput, CreateCommentResult>((input) => defaultApiClient.createComment(input));
 }
 
 export function useCreateEmailActivationCode(): UseMutationHookResult<
@@ -6796,10 +6754,6 @@ export function useCreateResourceHubLink(): UseMutationHookResult<
   );
 }
 
-export function useDeleteComment(): UseMutationHookResult<DeleteCommentInput, DeleteCommentResult> {
-  return useMutation<DeleteCommentInput, DeleteCommentResult>((input) => defaultApiClient.deleteComment(input));
-}
-
 export function useDeleteCompany(): UseMutationHookResult<DeleteCompanyInput, DeleteCompanyResult> {
   return useMutation<DeleteCompanyInput, DeleteCompanyResult>((input) => defaultApiClient.deleteCompany(input));
 }
@@ -6838,10 +6792,6 @@ export function useDeleteResourceHubLink(): UseMutationHookResult<
   return useMutation<DeleteResourceHubLinkInput, DeleteResourceHubLinkResult>((input) =>
     defaultApiClient.deleteResourceHubLink(input),
   );
-}
-
-export function useEditComment(): UseMutationHookResult<EditCommentInput, EditCommentResult> {
-  return useMutation<EditCommentInput, EditCommentResult>((input) => defaultApiClient.editComment(input));
 }
 
 export function useEditGoalDiscussion(): UseMutationHookResult<EditGoalDiscussionInput, EditGoalDiscussionResult> {
@@ -6988,10 +6938,6 @@ export function useRemoveKeyResource(): UseMutationHookResult<RemoveKeyResourceI
   );
 }
 
-export function useRemoveReaction(): UseMutationHookResult<RemoveReactionInput, RemoveReactionResult> {
-  return useMutation<RemoveReactionInput, RemoveReactionResult>((input) => defaultApiClient.removeReaction(input));
-}
-
 export function useRenameResourceHubFolder(): UseMutationHookResult<
   RenameResourceHubFolderInput,
   RenameResourceHubFolderResult
@@ -7082,8 +7028,6 @@ export default {
   useGetAssignmentsCount,
   getBindedPeople,
   useGetBindedPeople,
-  getComments,
-  useGetComments,
   getFlatWorkMap,
   useGetFlatWorkMap,
   getGoalProgressUpdate,
@@ -7148,8 +7092,6 @@ export default {
   useAddProjectContributor,
   addProjectContributors,
   useAddProjectContributors,
-  addReaction,
-  useAddReaction,
   changePassword,
   useChangePassword,
   completeCompanySetup,
@@ -7162,8 +7104,6 @@ export default {
   useCreateAvatarBlob,
   createBlob,
   useCreateBlob,
-  createComment,
-  useCreateComment,
   createEmailActivationCode,
   useCreateEmailActivationCode,
   createGoalDiscussion,
@@ -7178,8 +7118,6 @@ export default {
   useCreateResourceHubFolder,
   createResourceHubLink,
   useCreateResourceHubLink,
-  deleteComment,
-  useDeleteComment,
   deleteCompany,
   useDeleteCompany,
   deleteResourceHubDocument,
@@ -7190,8 +7128,6 @@ export default {
   useDeleteResourceHubFolder,
   deleteResourceHubLink,
   useDeleteResourceHubLink,
-  editComment,
-  useEditComment,
   editGoalDiscussion,
   useEditGoalDiscussion,
   editGoalProgressUpdate,
@@ -7232,8 +7168,6 @@ export default {
   usePublishResourceHubDocument,
   removeKeyResource,
   useRemoveKeyResource,
-  removeReaction,
-  useRemoveReaction,
   renameResourceHubFolder,
   useRenameResourceHubFolder,
   requestPasswordReset,
@@ -7427,6 +7361,30 @@ export default {
     useEditAgentDailyRun: () =>
       useMutation<AiEditAgentDailyRunInput, AiEditAgentDailyRunResult>((input) =>
         defaultApiClient.apiNamespaceAi.editAgentDailyRun(input),
+      ),
+  },
+
+  comments: {
+    list: (input: CommentsListInput) => defaultApiClient.apiNamespaceComments.list(input),
+    useList: (input: CommentsListInput) =>
+      useQuery<CommentsListResult>(() => defaultApiClient.apiNamespaceComments.list(input)),
+
+    delete: (input: CommentsDeleteInput) => defaultApiClient.apiNamespaceComments.delete(input),
+    useDelete: () =>
+      useMutation<CommentsDeleteInput, CommentsDeleteResult>((input) =>
+        defaultApiClient.apiNamespaceComments.delete(input),
+      ),
+
+    update: (input: CommentsUpdateInput) => defaultApiClient.apiNamespaceComments.update(input),
+    useUpdate: () =>
+      useMutation<CommentsUpdateInput, CommentsUpdateResult>((input) =>
+        defaultApiClient.apiNamespaceComments.update(input),
+      ),
+
+    create: (input: CommentsCreateInput) => defaultApiClient.apiNamespaceComments.create(input),
+    useCreate: () =>
+      useMutation<CommentsCreateInput, CommentsCreateResult>((input) =>
+        defaultApiClient.apiNamespaceComments.create(input),
       ),
   },
 
@@ -8134,6 +8092,20 @@ export default {
     useUpdateReviewer: () =>
       useMutation<GoalsUpdateReviewerInput, GoalsUpdateReviewerResult>((input) =>
         defaultApiClient.apiNamespaceGoals.updateReviewer(input),
+      ),
+  },
+
+  reactions: {
+    delete: (input: ReactionsDeleteInput) => defaultApiClient.apiNamespaceReactions.delete(input),
+    useDelete: () =>
+      useMutation<ReactionsDeleteInput, ReactionsDeleteResult>((input) =>
+        defaultApiClient.apiNamespaceReactions.delete(input),
+      ),
+
+    create: (input: ReactionsCreateInput) => defaultApiClient.apiNamespaceReactions.create(input),
+    useCreate: () =>
+      useMutation<ReactionsCreateInput, ReactionsCreateResult>((input) =>
+        defaultApiClient.apiNamespaceReactions.create(input),
       ),
   },
 };

@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries do
       Queries.GetAssignments,
       Queries.GetAssignmentsCount,
       Queries.GetBindedPeople,
-      Queries.GetComments,
+      Queries.Comments.List,
       Queries.Companies.List,
       Queries.Companies.Get,
       Queries.GetFlatWorkMap,

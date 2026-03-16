@@ -1,8 +1,13 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.GetComments do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.Comments.List do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
   alias OperatelyWeb.Paths
+
+  @impl true
+  def query_name do
+    "comments/list"
+  end
 
   @impl true
   def setup(ctx) do

@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
+defmodule OperatelyWeb.Api.Reactions.CreateTest do
   use OperatelyWeb.TurboCase
 
   import Ecto.Query, only: [from: 2]
@@ -16,7 +16,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :add_reaction, %{})
+      assert {401, _} = mutation(ctx.conn, [:reactions, :create], %{})
     end
   end
 
@@ -76,7 +76,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         check_in = create_check_in(ctx.creator, project)
 
         assert {code, res} =
-                 mutation(ctx.conn, :add_reaction, %{
+                 mutation(ctx.conn, [:reactions, :create], %{
                    entity_id: Paths.project_check_in_id(check_in),
                    entity_type: "project_check_in",
                    emoji: "👍"
@@ -105,7 +105,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         retrospective = retrospective_fixture(%{project_id: project.id, author_id: ctx.creator.id})
 
         assert {code, res} =
-                 mutation(ctx.conn, :add_reaction, %{
+                 mutation(ctx.conn, [:reactions, :create], %{
                    entity_id: Paths.project_retrospective_id(retrospective),
                    entity_type: "project_retrospective",
                    emoji: "👍"
@@ -134,7 +134,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         doc = document_fixture(resource_hub.id, ctx.creator.id)
 
         assert {code, res} =
-                 mutation(ctx.conn, :add_reaction, %{
+                 mutation(ctx.conn, [:reactions, :create], %{
                    entity_id: Paths.document_id(doc),
                    entity_type: "resource_hub_document",
                    emoji: "👍"
@@ -163,7 +163,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         file = file_fixture(resource_hub, ctx.creator)
 
         assert {code, res} =
-                 mutation(ctx.conn, :add_reaction, %{
+                 mutation(ctx.conn, [:reactions, :create], %{
                    entity_id: Paths.file_id(file),
                    entity_type: "resource_hub_file",
                    emoji: "👍"
@@ -192,7 +192,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         link = link_fixture(resource_hub, ctx.creator)
 
         assert {code, res} =
-                 mutation(ctx.conn, :add_reaction, %{
+                 mutation(ctx.conn, [:reactions, :create], %{
                    entity_id: Paths.link_id(link),
                    entity_type: "resource_hub_link",
                    emoji: "👍"
@@ -221,7 +221,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         thread = create_comment_thread(goal)
 
         assert {code, res} =
-                 mutation(ctx.conn, :add_reaction, %{
+                 mutation(ctx.conn, [:reactions, :create], %{
                    entity_id: Paths.comment_thread_id(thread),
                    entity_type: "comment_thread",
                    emoji: "👍"
@@ -250,7 +250,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         update = create_goal_update(ctx, goal)
 
         assert {code, res} =
-                 mutation(ctx.conn, :add_reaction, %{
+                 mutation(ctx.conn, [:reactions, :create], %{
                    entity_id: Paths.goal_update_id(update),
                    entity_type: "goal_update",
                    emoji: "👍"
@@ -279,7 +279,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         message = message_fixture(ctx.creator.id, board.id)
 
         assert {code, res} =
-                 mutation(ctx.conn, :add_reaction, %{
+                 mutation(ctx.conn, [:reactions, :create], %{
                    entity_id: Paths.message_id(message),
                    entity_type: "message",
                    emoji: "👍"
@@ -309,7 +309,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         comment = create_comment(ctx, check_in, "project_check_in")
 
         assert {code, res} =
-                 mutation(ctx.conn, :add_reaction, %{
+                 mutation(ctx.conn, [:reactions, :create], %{
                    entity_id: Paths.comment_id(comment),
                    entity_type: "comment",
                    parent_type: "project_check_in",
@@ -340,7 +340,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         comment = create_comment(ctx, retrospective, "project_retrospective")
 
         assert {code, res} =
-                 mutation(ctx.conn, :add_reaction, %{
+                 mutation(ctx.conn, [:reactions, :create], %{
                    entity_id: Paths.comment_id(comment),
                    entity_type: "comment",
                    parent_type: "project_retrospective",
@@ -371,7 +371,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         comment = create_milestone_comment(ctx, milestone)
 
         assert {code, res} =
-                 mutation(ctx.conn, :add_reaction, %{
+                 mutation(ctx.conn, [:reactions, :create], %{
                    entity_id: Paths.comment_id(comment),
                    entity_type: "comment",
                    parent_type: "milestone",
@@ -402,7 +402,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         comment = create_comment(ctx, thread, "comment_thread")
 
         assert {code, res} =
-                 mutation(ctx.conn, :add_reaction, %{
+                 mutation(ctx.conn, [:reactions, :create], %{
                    entity_id: Paths.comment_id(comment),
                    entity_type: "comment",
                    parent_type: "comment_thread",
@@ -433,7 +433,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         comment = create_comment(ctx, update, "update")
 
         assert {code, res} =
-                 mutation(ctx.conn, :add_reaction, %{
+                 mutation(ctx.conn, [:reactions, :create], %{
                    entity_id: Paths.comment_id(comment),
                    entity_type: "comment",
                    parent_type: "goal_update",
@@ -464,7 +464,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         comment = create_comment(ctx, message, "message")
 
         assert {code, res} =
-                 mutation(ctx.conn, :add_reaction, %{
+                 mutation(ctx.conn, [:reactions, :create], %{
                    entity_id: Paths.comment_id(comment),
                    entity_type: "comment",
                    parent_type: "message",
@@ -495,7 +495,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         comment = create_comment(ctx, doc, "resource_hub_document")
 
         assert {code, res} =
-                 mutation(ctx.conn, :add_reaction, %{
+                 mutation(ctx.conn, [:reactions, :create], %{
                    entity_id: Paths.comment_id(comment),
                    entity_type: "comment",
                    parent_type: "resource_hub_document",
@@ -526,7 +526,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         comment = create_comment(ctx, file, "resource_hub_file")
 
         assert {code, res} =
-                 mutation(ctx.conn, :add_reaction, %{
+                 mutation(ctx.conn, [:reactions, :create], %{
                    entity_id: Paths.comment_id(comment),
                    entity_type: "comment",
                    parent_type: "resource_hub_file",
@@ -557,7 +557,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         comment = create_comment(ctx, link, "resource_hub_link")
 
         assert {code, res} =
-                 mutation(ctx.conn, :add_reaction, %{
+                 mutation(ctx.conn, [:reactions, :create], %{
                    entity_id: Paths.comment_id(comment),
                    entity_type: "comment",
                    parent_type: "resource_hub_link",
@@ -594,7 +594,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
 
     test "add reaction to a discussion", ctx do
       assert {200, res} =
-               mutation(ctx.conn, :add_reaction, %{
+               mutation(ctx.conn, [:reactions, :create], %{
                  entity_id: Paths.message_id(ctx.hello_message),
                  entity_type: "message",
                  emoji: "👍"

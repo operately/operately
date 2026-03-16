@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.DeleteComment do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Reactions.Delete do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "delete_comment"
+  def mutation_name, do: "reactions/delete"
 
   @impl true
   def setup(ctx) do
@@ -12,21 +12,19 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.DeleteComment do
     |> Factory.add_space(:space)
     |> Factory.add_messages_board(:messages_board, :space)
     |> Factory.add_message(:message, :messages_board)
-    |> Factory.preload(:message, :space)
-    |> Factory.add_comment(:comment, :message)
+    |> Factory.add_reactions(:reaction, :message)
   end
 
   @impl true
   def inputs(ctx) do
     %{
-      comment_id: Paths.comment_id(ctx.comment),
-      parent_type: "message"
+      reaction_id: Operately.ShortUuid.encode!(ctx.reaction.id)
     }
   end
 
   @impl true
   def assert(response, _ctx) do
-    assert response.comment
+    assert response.success
     refute Map.has_key?(response, :error)
   end
 end

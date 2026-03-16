@@ -60,7 +60,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           scopeType: "task",
           actions: TASK_ACTIVITY_TYPES,
         }).then((d) => d.activities!),
-        comments: Api.getComments({
+        comments: Api.comments.list({
           entityId: params.id,
           entityType: "project_task",
         }).then((d) => d.comments!),

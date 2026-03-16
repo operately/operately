@@ -1,12 +1,12 @@
 import React from "react";
-import * as api from "@/api";
+import Api, { CommentParentType } from "@/api";
 import { showErrorToast } from "turboui";
 import { compareIds } from "@/routes/paths";
 
 export function useDeleteComment<T extends { id?: string | null }>(
   comments: T[],
   setComments: React.Dispatch<React.SetStateAction<T[]>>,
-  parentType: api.CommentParentType,
+  parentType: CommentParentType,
   invalidateCache: () => void,
 ) {
   const handleDeleteComment = React.useCallback(
@@ -19,7 +19,7 @@ export function useDeleteComment<T extends { id?: string | null }>(
           setComments((prev) => prev.filter((c) => !compareIds(c.id, commentId)));
         }
 
-        await api.deleteComment({
+        await Api.comments.delete({
           commentId,
           parentType,
         });
