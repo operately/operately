@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetProjectRetrospectiveTest do
+defmodule OperatelyWeb.Api.Projects.GetRetrospectiveTest do
   use OperatelyWeb.TurboCase
 
   import Operately.NotificationsFixtures
@@ -8,7 +8,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectRetrospectiveTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, :get_project_retrospective, %{})
+      assert {401, _} = query(ctx.conn, [:projects, :get_retrospective], %{})
     end
   end
 
@@ -28,16 +28,16 @@ defmodule OperatelyWeb.Api.Queries.GetProjectRetrospectiveTest do
       ctx = log_in_account(ctx, ctx.company_member)
 
       ctx = Factory.edit_project_company_members_access(ctx, :project, :no_access)
-      assert {404, _} = query(ctx.conn, :get_project_retrospective, %{project_id: Paths.project_id(ctx.project)})
+      assert {404, _} = query(ctx.conn, [:projects, :get_retrospective], %{project_id: Paths.project_id(ctx.project)})
 
       ctx = Factory.edit_project_company_members_access(ctx, :project, :view_access)
-      assert {200, _} = query(ctx.conn, :get_project_retrospective, %{project_id: Paths.project_id(ctx.project)})
+      assert {200, _} = query(ctx.conn, [:projects, :get_retrospective], %{project_id: Paths.project_id(ctx.project)})
 
       ctx = Factory.edit_project_company_members_access(ctx, :project, :edit_access)
-      assert {200, _} = query(ctx.conn, :get_project_retrospective, %{project_id: Paths.project_id(ctx.project)})
+      assert {200, _} = query(ctx.conn, [:projects, :get_retrospective], %{project_id: Paths.project_id(ctx.project)})
 
       ctx = Factory.edit_project_company_members_access(ctx, :project, :full_access)
-      assert {200, _} = query(ctx.conn, :get_project_retrospective, %{project_id: Paths.project_id(ctx.project)})
+      assert {200, _} = query(ctx.conn, [:projects, :get_retrospective], %{project_id: Paths.project_id(ctx.project)})
     end
 
     test "space members", ctx do
@@ -46,16 +46,16 @@ defmodule OperatelyWeb.Api.Queries.GetProjectRetrospectiveTest do
       ctx = Factory.edit_project_company_members_access(ctx, :project, :no_access)
 
       ctx = Factory.edit_project_space_members_access(ctx, :project, :no_access)
-      assert {404, _} = query(ctx.conn, :get_project_retrospective, %{project_id: Paths.project_id(ctx.project)})
+      assert {404, _} = query(ctx.conn, [:projects, :get_retrospective], %{project_id: Paths.project_id(ctx.project)})
 
       ctx = Factory.edit_project_space_members_access(ctx, :project, :view_access)
-      assert {200, _} = query(ctx.conn, :get_project_retrospective, %{project_id: Paths.project_id(ctx.project)})
+      assert {200, _} = query(ctx.conn, [:projects, :get_retrospective], %{project_id: Paths.project_id(ctx.project)})
 
       ctx = Factory.edit_project_space_members_access(ctx, :project, :edit_access)
-      assert {200, _} = query(ctx.conn, :get_project_retrospective, %{project_id: Paths.project_id(ctx.project)})
+      assert {200, _} = query(ctx.conn, [:projects, :get_retrospective], %{project_id: Paths.project_id(ctx.project)})
 
       ctx = Factory.edit_project_space_members_access(ctx, :project, :full_access)
-      assert {200, _} = query(ctx.conn, :get_project_retrospective, %{project_id: Paths.project_id(ctx.project)})
+      assert {200, _} = query(ctx.conn, [:projects, :get_retrospective], %{project_id: Paths.project_id(ctx.project)})
     end
 
     test "project contributors", ctx do
@@ -64,12 +64,12 @@ defmodule OperatelyWeb.Api.Queries.GetProjectRetrospectiveTest do
       ctx = Factory.edit_project_company_members_access(ctx, :project, :no_access)
       ctx = Factory.edit_project_space_members_access(ctx, :project, :no_access)
 
-      assert {200, _} = query(ctx.conn, :get_project_retrospective, %{project_id: Paths.project_id(ctx.project)})
+      assert {200, _} = query(ctx.conn, [:projects, :get_retrospective], %{project_id: Paths.project_id(ctx.project)})
     end
   end
 
 
-  describe "get_project_retrospective functionality" do
+  describe "get_retrospective functionality" do
     setup :register_and_log_in_account
 
     setup ctx do
@@ -81,7 +81,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectRetrospectiveTest do
     end
 
     test "get a project retrospective with nothing included", ctx do
-      assert {200, res} = query(ctx.conn, :get_project_retrospective, %{project_id: Paths.project_id(ctx.project)})
+      assert {200, res} = query(ctx.conn, [:projects, :get_retrospective], %{project_id: Paths.project_id(ctx.project)})
 
       {:ok, retrospective} = Retrospective.get(:system, id: ctx.retrospective.id)
 
@@ -92,10 +92,10 @@ defmodule OperatelyWeb.Api.Queries.GetProjectRetrospectiveTest do
       a = activity_fixture(author_id: ctx.creator.id, action: "project_closed", content: %{retrospective_id: ctx.retrospective.id})
       n = notification_fixture(person_id: ctx.person.id, read: false, activity_id: a.id)
 
-      assert {200, res} = query(ctx.conn, :get_project_retrospective, %{project_id: Paths.project_id(ctx.project)})
+      assert {200, res} = query(ctx.conn, [:projects, :get_retrospective], %{project_id: Paths.project_id(ctx.project)})
       assert res.retrospective.notifications == []
 
-      assert {200, res} = query(ctx.conn, :get_project_retrospective, %{
+      assert {200, res} = query(ctx.conn, [:projects, :get_retrospective], %{
         project_id: Paths.project_id(ctx.project),
         include_unread_notifications: true,
       })
@@ -105,33 +105,33 @@ defmodule OperatelyWeb.Api.Queries.GetProjectRetrospectiveTest do
     end
 
     test "include_author", ctx do
-      assert {200, res} = query(ctx.conn, :get_project_retrospective, %{project_id: Paths.project_id(ctx.project)})
+      assert {200, res} = query(ctx.conn, [:projects, :get_retrospective], %{project_id: Paths.project_id(ctx.project)})
 
       refute res.retrospective.author
 
-      assert {200, res} = query(ctx.conn, :get_project_retrospective, %{project_id: Paths.project_id(ctx.project), include_author: true})
+      assert {200, res} = query(ctx.conn, [:projects, :get_retrospective], %{project_id: Paths.project_id(ctx.project), include_author: true})
 
       assert res.retrospective.author == Serializer.serialize(ctx.creator)
     end
 
     test "include_project", ctx do
-       assert {200, res} = query(ctx.conn, :get_project_retrospective, %{project_id: Paths.project_id(ctx.project)})
+       assert {200, res} = query(ctx.conn, [:projects, :get_retrospective], %{project_id: Paths.project_id(ctx.project)})
 
       refute res.retrospective.project
 
-      assert {200, res} = query(ctx.conn, :get_project_retrospective, %{project_id: Paths.project_id(ctx.project), include_project: true})
+      assert {200, res} = query(ctx.conn, [:projects, :get_retrospective], %{project_id: Paths.project_id(ctx.project), include_project: true})
 
       assert res.retrospective.project == Serializer.serialize(ctx.project)
     end
 
     test "include_permissions", ctx do
-      assert {200, res} = query(ctx.conn, :get_project_retrospective, %{
+      assert {200, res} = query(ctx.conn, [:projects, :get_retrospective], %{
         project_id: Paths.project_id(ctx.project),
       })
 
       refute res.retrospective.permissions
 
-      assert {200, res} = query(ctx.conn, :get_project_retrospective, %{
+      assert {200, res} = query(ctx.conn, [:projects, :get_retrospective], %{
         project_id: Paths.project_id(ctx.project),
         include_permissions: true,
       })
@@ -145,13 +145,13 @@ defmodule OperatelyWeb.Api.Queries.GetProjectRetrospectiveTest do
         |> Factory.add_project_contributor(:contrib1, :project, :as_person)
         |> Factory.add_project_contributor(:contrib2, :project, :as_person)
 
-      assert {200, res} = query(ctx.conn, :get_project_retrospective, %{
+      assert {200, res} = query(ctx.conn, [:projects, :get_retrospective], %{
         project_id: Paths.project_id(ctx.project),
       })
 
       refute res.retrospective.potential_subscribers
 
-      assert {200, res} = query(ctx.conn, :get_project_retrospective, %{
+      assert {200, res} = query(ctx.conn, [:projects, :get_retrospective], %{
         project_id: Paths.project_id(ctx.project),
         include_potential_subscribers: true,
       })

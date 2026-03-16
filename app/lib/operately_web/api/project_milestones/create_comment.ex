@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.PostMilestoneComment do
+defmodule OperatelyWeb.Api.ProjectMilestones.CreateComment do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

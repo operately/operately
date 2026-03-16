@@ -25,8 +25,6 @@ export const useRemoveProjectContributor = Api.projects.useDeleteContributor;
 export const useCloseProject = Api.projects.useClose;
 export const usePauseProject = Api.projects.usePause;
 export const useResumeProject = Api.projects.useResume;
-export const useUpdateProjectContributor = Api.projects.useUpdateContributor;
-export const useUpdateProjectDescription = Api.projects.useUpdateDescription;
 
 export function isOverdue(project: Pick<Project, "timeframe">) {
   assertPresent(project.timeframe, "project timeline must be defined");

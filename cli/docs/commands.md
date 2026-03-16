@@ -9,8 +9,6 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | --- | --- | --- | --- |
 | `acknowledge_goal_progress_update` | `op acknowledge_goal_progress_update` | `POST` | `/api/external/v1/acknowledge_goal_progress_update` |
 | `acknowledge_project_check_in` | `op acknowledge_project_check_in` | `POST` | `/api/external/v1/acknowledge_project_check_in` |
-| `add_project_contributor` | `op add_project_contributor` | `POST` | `/api/external/v1/add_project_contributor` |
-| `add_project_contributors` | `op add_project_contributors` | `POST` | `/api/external/v1/add_project_contributors` |
 | `comments create` | `op comments create` | `POST` | `/api/external/v1/comments/create` |
 | `comments delete` | `op comments delete` | `POST` | `/api/external/v1/comments/delete` |
 | `comments list` | `op comments list` | `GET` | `/api/external/v1/comments/list` |
@@ -61,8 +59,6 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `get_person` | `op get_person` | `GET` | `/api/external/v1/get_person` |
 | `get_project_check_in` | `op get_project_check_in` | `GET` | `/api/external/v1/get_project_check_in` |
 | `get_project_check_ins` | `op get_project_check_ins` | `GET` | `/api/external/v1/get_project_check_ins` |
-| `get_project_contributor` | `op get_project_contributor` | `GET` | `/api/external/v1/get_project_contributor` |
-| `get_project_retrospective` | `op get_project_retrospective` | `GET` | `/api/external/v1/get_project_retrospective` |
 | `get_resource_hub` | `op get_resource_hub` | `GET` | `/api/external/v1/get_resource_hub` |
 | `get_resource_hub_document` | `op get_resource_hub_document` | `GET` | `/api/external/v1/get_resource_hub_document` |
 | `get_resource_hub_file` | `op get_resource_hub_file` | `GET` | `/api/external/v1/get_resource_hub_file` |
@@ -114,12 +110,12 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `mark_notification_as_read` | `op mark_notification_as_read` | `POST` | `/api/external/v1/mark_notification_as_read` |
 | `mark_notifications_as_read` | `op mark_notifications_as_read` | `POST` | `/api/external/v1/mark_notifications_as_read` |
 | `post_goal_progress_update` | `op post_goal_progress_update` | `POST` | `/api/external/v1/post_goal_progress_update` |
-| `post_milestone_comment` | `op post_milestone_comment` | `POST` | `/api/external/v1/post_milestone_comment` |
 | `post_project_check_in` | `op post_project_check_in` | `POST` | `/api/external/v1/post_project_check_in` |
 | `project_discussions create` | `op project_discussions create` | `POST` | `/api/external/v1/project_discussions/create` |
 | `project_discussions get` | `op project_discussions get` | `GET` | `/api/external/v1/project_discussions/get` |
 | `project_discussions list` | `op project_discussions list` | `GET` | `/api/external/v1/project_discussions/list` |
 | `project_discussions update` | `op project_discussions update` | `POST` | `/api/external/v1/project_discussions/update` |
+| `project_milestones create_comment` | `op project_milestones create_comment` | `POST` | `/api/external/v1/project_milestones/create_comment` |
 | `project_milestones delete` | `op project_milestones delete` | `POST` | `/api/external/v1/project_milestones/delete` |
 | `project_milestones get` | `op project_milestones get` | `GET` | `/api/external/v1/project_milestones/get` |
 | `project_milestones list_tasks` | `op project_milestones list_tasks` | `GET` | `/api/external/v1/project_milestones/list_tasks` |
@@ -131,13 +127,17 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `projects close` | `op projects close` | `POST` | `/api/external/v1/projects/close` |
 | `projects count_children` | `op projects count_children` | `GET` | `/api/external/v1/projects/count_children` |
 | `projects create` | `op projects create` | `POST` | `/api/external/v1/projects/create` |
+| `projects create_contributor` | `op projects create_contributor` | `POST` | `/api/external/v1/projects/create_contributor` |
+| `projects create_contributors` | `op projects create_contributors` | `POST` | `/api/external/v1/projects/create_contributors` |
 | `projects create_key_resource` | `op projects create_key_resource` | `POST` | `/api/external/v1/projects/create_key_resource` |
 | `projects create_milestone` | `op projects create_milestone` | `POST` | `/api/external/v1/projects/create_milestone` |
 | `projects delete` | `op projects delete` | `POST` | `/api/external/v1/projects/delete` |
 | `projects delete_contributor` | `op projects delete_contributor` | `POST` | `/api/external/v1/projects/delete_contributor` |
 | `projects delete_key_resource` | `op projects delete_key_resource` | `POST` | `/api/external/v1/projects/delete_key_resource` |
 | `projects get` | `op projects get` | `GET` | `/api/external/v1/projects/get` |
+| `projects get_contributor` | `op projects get_contributor` | `GET` | `/api/external/v1/projects/get_contributor` |
 | `projects get_key_resource` | `op projects get_key_resource` | `GET` | `/api/external/v1/projects/get_key_resource` |
+| `projects get_retrospective` | `op projects get_retrospective` | `GET` | `/api/external/v1/projects/get_retrospective` |
 | `projects list` | `op projects list` | `GET` | `/api/external/v1/projects/list` |
 | `projects list_contributors` | `op projects list_contributors` | `GET` | `/api/external/v1/projects/list_contributors` |
 | `projects list_milestones` | `op projects list_milestones` | `GET` | `/api/external/v1/projects/list_milestones` |

@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.PostMilestoneCommentTest do
+defmodule OperatelyWeb.Api.ProjectMilestones.CreateCommentTest do
   use OperatelyWeb.TurboCase
 
   import Operately.ProjectsFixtures
@@ -11,7 +11,7 @@ defmodule OperatelyWeb.Api.Mutations.PostMilestoneCommentTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :post_milestone_comment, %{})
+      assert {401, _} = mutation(ctx.conn, [:project_milestones, :create_comment], %{})
     end
   end
 
@@ -78,7 +78,7 @@ defmodule OperatelyWeb.Api.Mutations.PostMilestoneCommentTest do
         project = create_project(ctx, space, @test.company, @test.space, @test.project)
         milestone = milestone_fixture(%{project_id: project.id})
 
-        assert {code, res} = mutation(ctx.conn, :post_milestone_comment, %{
+        assert {code, res} = mutation(ctx.conn, [:project_milestones, :create_comment], %{
           milestone_id: Paths.milestone_id(milestone),
           content: RichText.rich_text("Content", :as_string),
           action: @test.action,
@@ -95,7 +95,7 @@ defmodule OperatelyWeb.Api.Mutations.PostMilestoneCommentTest do
     end
   end
 
-  describe "post_milestone_comment functionality" do
+  describe "create_comment functionality" do
     @table [
       %{action: :complete, content: nil, result: nil},
       %{action: :reopen, content: nil, result: nil},
@@ -111,7 +111,7 @@ defmodule OperatelyWeb.Api.Mutations.PostMilestoneCommentTest do
 
         assert Comments.list_milestone_comments(milestone.id) == []
 
-        assert {200, _} = mutation(ctx.conn, :post_milestone_comment, %{
+        assert {200, _} = mutation(ctx.conn, [:project_milestones, :create_comment], %{
           milestone_id: Paths.milestone_id(milestone),
           content: @test.content,
           action: Atom.to_string(@test.action),

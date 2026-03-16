@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.AddProjectContributorsTest do
+defmodule OperatelyWeb.Api.Projects.CreateContributorsTest do
   use OperatelyWeb.TurboCase
 
   import Operately.PeopleFixtures
@@ -12,7 +12,7 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorsTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :add_project_contributors, %{})
+      assert {401, _} = mutation(ctx.conn, [:projects, :create_contributors], %{})
     end
   end
 
@@ -55,7 +55,7 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorsTest do
     end
   end
 
-  describe "add_project_contributors functionality" do
+  describe "create_contributors functionality" do
     setup ctx do
       ctx = register_and_log_in_account(ctx)
       creator = person_fixture(%{company_id: ctx.company.id})
@@ -296,7 +296,7 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorsTest do
   #
 
   defp request(conn, %{project: project, contributors: contributors}) do
-    mutation(conn, :add_project_contributors, %{
+    mutation(conn, [:projects, :create_contributors], %{
       project_id: Paths.project_id(project),
       contributors: contributors
     })

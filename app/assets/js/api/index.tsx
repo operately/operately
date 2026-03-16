@@ -2443,18 +2443,18 @@ export interface GetProjectCheckInsResult {
   projectCheckIns?: ProjectCheckIn[] | null;
 }
 
-export interface GetProjectContributorInput {
+export interface ProjectsGetContributorInput {
   id: Id;
   includeProject?: boolean;
   includePermissions?: boolean;
   includeAccessLevel?: boolean | null;
 }
 
-export interface GetProjectContributorResult {
+export interface ProjectsGetContributorResult {
   contributor: ProjectContributor;
 }
 
-export interface GetProjectRetrospectiveInput {
+export interface ProjectsGetRetrospectiveInput {
   projectId: Id;
   includeAuthor?: boolean | null;
   includeProject?: boolean | null;
@@ -2466,7 +2466,7 @@ export interface GetProjectRetrospectiveInput {
   includeUnreadNotifications?: boolean | null;
 }
 
-export interface GetProjectRetrospectiveResult {
+export interface ProjectsGetRetrospectiveResult {
   retrospective: ProjectRetrospective;
 }
 
@@ -3069,7 +3069,7 @@ export interface AddFirstCompanyResult {
   company?: Company | null;
 }
 
-export interface AddProjectContributorInput {
+export interface ProjectsCreateContributorInput {
   projectId: Id;
   personId: Id;
   responsibility: string;
@@ -3077,16 +3077,16 @@ export interface AddProjectContributorInput {
   role: string | null;
 }
 
-export interface AddProjectContributorResult {
+export interface ProjectsCreateContributorResult {
   projectContributor?: ProjectContributor | null;
 }
 
-export interface AddProjectContributorsInput {
+export interface ProjectsCreateContributorsInput {
   projectId: string;
   contributors: ProjectContributorInput[];
 }
 
-export interface AddProjectContributorsResult {
+export interface ProjectsCreateContributorsResult {
   success: boolean;
 }
 
@@ -3974,13 +3974,13 @@ export interface PostGoalProgressUpdateResult {
   update?: GoalProgressUpdate | null;
 }
 
-export interface PostMilestoneCommentInput {
+export interface ProjectMilestonesCreateCommentInput {
   milestoneId: Id;
   content: Json | null;
   action: string;
 }
 
-export interface PostMilestoneCommentResult {
+export interface ProjectMilestonesCreateCommentResult {
   comment: MilestoneComment;
 }
 
@@ -4863,12 +4863,12 @@ class ApiNamespaceRoot {
     return this.client.get("/get_project_check_ins", input);
   }
 
-  async getProjectContributor(input: GetProjectContributorInput): Promise<GetProjectContributorResult> {
-    return this.client.get("/get_project_contributor", input);
+  async getProjectContributor(input: ProjectsGetContributorInput): Promise<ProjectsGetContributorResult> {
+    return this.client.get("/projects/get_contributor", input);
   }
 
-  async getProjectRetrospective(input: GetProjectRetrospectiveInput): Promise<GetProjectRetrospectiveResult> {
-    return this.client.get("/get_project_retrospective", input);
+  async getProjectRetrospective(input: ProjectsGetRetrospectiveInput): Promise<ProjectsGetRetrospectiveResult> {
+    return this.client.get("/projects/get_retrospective", input);
   }
 
   async getResourceHub(input: GetResourceHubInput): Promise<GetResourceHubResult> {
@@ -4947,12 +4947,12 @@ class ApiNamespaceRoot {
     return this.client.post("/add_first_company", input);
   }
 
-  async addProjectContributor(input: AddProjectContributorInput): Promise<AddProjectContributorResult> {
-    return this.client.post("/add_project_contributor", input);
+  async addProjectContributor(input: ProjectsCreateContributorInput): Promise<ProjectsCreateContributorResult> {
+    return this.client.post("/projects/create_contributor", input);
   }
 
-  async addProjectContributors(input: AddProjectContributorsInput): Promise<AddProjectContributorsResult> {
-    return this.client.post("/add_project_contributors", input);
+  async addProjectContributors(input: ProjectsCreateContributorsInput): Promise<ProjectsCreateContributorsResult> {
+    return this.client.post("/projects/create_contributors", input);
   }
 
   async changePassword(input: ChangePasswordInput): Promise<ChangePasswordResult> {
@@ -5089,8 +5089,8 @@ class ApiNamespaceRoot {
     return this.client.post("/post_goal_progress_update", input);
   }
 
-  async postMilestoneComment(input: PostMilestoneCommentInput): Promise<PostMilestoneCommentResult> {
-    return this.client.post("/post_milestone_comment", input);
+  async postMilestoneComment(input: ProjectMilestonesCreateCommentInput): Promise<ProjectMilestonesCreateCommentResult> {
+    return this.client.post("/project_milestones/create_comment", input);
   }
 
   async postProjectCheckIn(input: PostProjectCheckInInput): Promise<PostProjectCheckInResult> {
@@ -5855,11 +5855,11 @@ export class ApiClient {
     return this.apiNamespaceRoot.getProjectCheckIns(input);
   }
 
-  getProjectContributor(input: GetProjectContributorInput): Promise<GetProjectContributorResult> {
+  getProjectContributor(input: ProjectsGetContributorInput): Promise<ProjectsGetContributorResult> {
     return this.apiNamespaceRoot.getProjectContributor(input);
   }
 
-  getProjectRetrospective(input: GetProjectRetrospectiveInput): Promise<GetProjectRetrospectiveResult> {
+  getProjectRetrospective(input: ProjectsGetRetrospectiveInput): Promise<ProjectsGetRetrospectiveResult> {
     return this.apiNamespaceRoot.getProjectRetrospective(input);
   }
 
@@ -5937,11 +5937,11 @@ export class ApiClient {
     return this.apiNamespaceRoot.addFirstCompany(input);
   }
 
-  addProjectContributor(input: AddProjectContributorInput): Promise<AddProjectContributorResult> {
+  addProjectContributor(input: ProjectsCreateContributorInput): Promise<ProjectsCreateContributorResult> {
     return this.apiNamespaceRoot.addProjectContributor(input);
   }
 
-  addProjectContributors(input: AddProjectContributorsInput): Promise<AddProjectContributorsResult> {
+  addProjectContributors(input: ProjectsCreateContributorsInput): Promise<ProjectsCreateContributorsResult> {
     return this.apiNamespaceRoot.addProjectContributors(input);
   }
 
@@ -6079,7 +6079,7 @@ export class ApiClient {
     return this.apiNamespaceRoot.postGoalProgressUpdate(input);
   }
 
-  postMilestoneComment(input: PostMilestoneCommentInput): Promise<PostMilestoneCommentResult> {
+  postMilestoneComment(input: ProjectMilestonesCreateCommentInput): Promise<ProjectMilestonesCreateCommentResult> {
     return this.apiNamespaceRoot.postMilestoneComment(input);
   }
 
@@ -6168,12 +6168,12 @@ export async function getProjectCheckIn(input: GetProjectCheckInInput): Promise<
 export async function getProjectCheckIns(input: GetProjectCheckInsInput): Promise<GetProjectCheckInsResult> {
   return defaultApiClient.getProjectCheckIns(input);
 }
-export async function getProjectContributor(input: GetProjectContributorInput): Promise<GetProjectContributorResult> {
+export async function getProjectContributor(input: ProjectsGetContributorInput): Promise<ProjectsGetContributorResult> {
   return defaultApiClient.getProjectContributor(input);
 }
 export async function getProjectRetrospective(
-  input: GetProjectRetrospectiveInput,
-): Promise<GetProjectRetrospectiveResult> {
+  input: ProjectsGetRetrospectiveInput,
+): Promise<ProjectsGetRetrospectiveResult> {
   return defaultApiClient.getProjectRetrospective(input);
 }
 export async function getResourceHub(input: GetResourceHubInput): Promise<GetResourceHubResult> {
@@ -6242,12 +6242,12 @@ export async function addCompanyTrustedEmailDomain(
 export async function addFirstCompany(input: AddFirstCompanyInput): Promise<AddFirstCompanyResult> {
   return defaultApiClient.addFirstCompany(input);
 }
-export async function addProjectContributor(input: AddProjectContributorInput): Promise<AddProjectContributorResult> {
+export async function addProjectContributor(input: ProjectsCreateContributorInput): Promise<ProjectsCreateContributorResult> {
   return defaultApiClient.addProjectContributor(input);
 }
 export async function addProjectContributors(
-  input: AddProjectContributorsInput,
-): Promise<AddProjectContributorsResult> {
+  input: ProjectsCreateContributorsInput,
+): Promise<ProjectsCreateContributorsResult> {
   return defaultApiClient.addProjectContributors(input);
 }
 export async function changePassword(input: ChangePasswordInput): Promise<ChangePasswordResult> {
@@ -6373,7 +6373,7 @@ export async function postGoalProgressUpdate(
 ): Promise<PostGoalProgressUpdateResult> {
   return defaultApiClient.postGoalProgressUpdate(input);
 }
-export async function postMilestoneComment(input: PostMilestoneCommentInput): Promise<PostMilestoneCommentResult> {
+export async function postMilestoneComment(input: ProjectMilestonesCreateCommentInput): Promise<ProjectMilestonesCreateCommentResult> {
   return defaultApiClient.postMilestoneComment(input);
 }
 export async function postProjectCheckIn(input: PostProjectCheckInInput): Promise<PostProjectCheckInResult> {
@@ -6474,15 +6474,15 @@ export function useGetProjectCheckIns(input: GetProjectCheckInsInput): UseQueryH
 }
 
 export function useGetProjectContributor(
-  input: GetProjectContributorInput,
-): UseQueryHookResult<GetProjectContributorResult> {
-  return useQuery<GetProjectContributorResult>(() => defaultApiClient.getProjectContributor(input));
+  input: ProjectsGetContributorInput,
+): UseQueryHookResult<ProjectsGetContributorResult> {
+  return useQuery<ProjectsGetContributorResult>(() => defaultApiClient.getProjectContributor(input));
 }
 
 export function useGetProjectRetrospective(
-  input: GetProjectRetrospectiveInput,
-): UseQueryHookResult<GetProjectRetrospectiveResult> {
-  return useQuery<GetProjectRetrospectiveResult>(() => defaultApiClient.getProjectRetrospective(input));
+  input: ProjectsGetRetrospectiveInput,
+): UseQueryHookResult<ProjectsGetRetrospectiveResult> {
+  return useQuery<ProjectsGetRetrospectiveResult>(() => defaultApiClient.getProjectRetrospective(input));
 }
 
 export function useGetResourceHub(input: GetResourceHubInput): UseQueryHookResult<GetResourceHubResult> {
@@ -6587,19 +6587,19 @@ export function useAddFirstCompany(): UseMutationHookResult<AddFirstCompanyInput
 }
 
 export function useAddProjectContributor(): UseMutationHookResult<
-  AddProjectContributorInput,
-  AddProjectContributorResult
+  ProjectsCreateContributorInput,
+  ProjectsCreateContributorResult
 > {
-  return useMutation<AddProjectContributorInput, AddProjectContributorResult>((input) =>
+  return useMutation<ProjectsCreateContributorInput, ProjectsCreateContributorResult>((input) =>
     defaultApiClient.addProjectContributor(input),
   );
 }
 
 export function useAddProjectContributors(): UseMutationHookResult<
-  AddProjectContributorsInput,
-  AddProjectContributorsResult
+  ProjectsCreateContributorsInput,
+  ProjectsCreateContributorsResult
 > {
-  return useMutation<AddProjectContributorsInput, AddProjectContributorsResult>((input) =>
+  return useMutation<ProjectsCreateContributorsInput, ProjectsCreateContributorsResult>((input) =>
     defaultApiClient.addProjectContributors(input),
   );
 }
@@ -6851,10 +6851,10 @@ export function usePostGoalProgressUpdate(): UseMutationHookResult<
 }
 
 export function usePostMilestoneComment(): UseMutationHookResult<
-  PostMilestoneCommentInput,
-  PostMilestoneCommentResult
+  ProjectMilestonesCreateCommentInput,
+  ProjectMilestonesCreateCommentResult
 > {
-  return useMutation<PostMilestoneCommentInput, PostMilestoneCommentResult>((input) =>
+  return useMutation<ProjectMilestonesCreateCommentInput, ProjectMilestonesCreateCommentResult>((input) =>
     defaultApiClient.postMilestoneComment(input),
   );
 }
