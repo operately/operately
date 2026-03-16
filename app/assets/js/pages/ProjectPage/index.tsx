@@ -64,7 +64,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeUnreadNotifications: true,
           includeSubscriptionList: true,
         }).then((d) => d.project!),
-        checkIns: Api.getProjectCheckIns({ projectId: params.id, includeAuthor: true }).then((d) => d.projectCheckIns!),
+        checkIns: Api.project_check_ins.list({ projectId: params.id, includeAuthor: true }).then((d) => d.projectCheckIns!),
         discussions: Api.project_discussions.list({ projectId: params.id }).then((d) => d.discussions!),
         backendTasks: Api.tasks.list({ projectId: params.id }).then((d) => d.tasks!),
         childrenCount: Api.projects.countChildren({ id: params.id }).then((d) => d.childrenCount),

@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
+defmodule OperatelyWeb.Api.GoalCheckIns.Get do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 

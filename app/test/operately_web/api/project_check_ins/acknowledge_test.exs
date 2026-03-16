@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckInTest do
+defmodule OperatelyWeb.Api.ProjectCheckIns.AcknowledgeTest do
   use OperatelyWeb.TurboCase
 
   import Operately.GroupsFixtures
@@ -10,7 +10,7 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckInTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :acknowledge_project_check_in, %{})
+      assert {401, _} = mutation(ctx.conn, [:project_check_ins, :acknowledge], %{})
     end
   end
 
@@ -103,7 +103,7 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckInTest do
   #
 
   defp request(conn, check_in) do
-    mutation(conn, :acknowledge_project_check_in, %{id: Paths.project_check_in_id(check_in)})
+    mutation(conn, [:project_check_ins, :acknowledge], %{id: Paths.project_check_in_id(check_in)})
   end
 
   defp assert_response(res, check_in) do
@@ -118,6 +118,13 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckInTest do
   #
   # Helpers
   #
+
+  defp acknowledge_activity_count do
+    import Ecto.Query, only: [from: 2]
+    query = from(a in Operately.Activities.Activity, where: a.action == "project_check_in_acknowledged")
+
+    Operately.Repo.aggregate(query, :count)
+  end
 
   defp create_space(ctx) do
     group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.no_access()})
@@ -154,13 +161,6 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckInTest do
     end
 
     project
-  end
-
-  defp acknowledge_activity_count do
-    import Ecto.Query, only: [from: 2]
-    query = from(a in Operately.Activities.Activity, where: a.action == "project_check_in_acknowledged")
-
-    Operately.Repo.aggregate(query, :count)
   end
 
   defp normalize_serialized_check_in(check_in) when is_map(check_in) do

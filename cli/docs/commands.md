@@ -7,8 +7,6 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 
 | Command | Shortcut | Method | Path |
 | --- | --- | --- | --- |
-| `acknowledge_goal_progress_update` | `op acknowledge_goal_progress_update` | `POST` | `/api/external/v1/acknowledge_goal_progress_update` |
-| `acknowledge_project_check_in` | `op acknowledge_project_check_in` | `POST` | `/api/external/v1/acknowledge_project_check_in` |
 | `comments create` | `op comments create` | `POST` | `/api/external/v1/comments/create` |
 | `comments delete` | `op comments delete` | `POST` | `/api/external/v1/comments/delete` |
 | `comments list` | `op comments list` | `GET` | `/api/external/v1/comments/list` |
@@ -38,9 +36,7 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `delete_resource_hub_folder` | `op delete_resource_hub_folder` | `POST` | `/api/external/v1/delete_resource_hub_folder` |
 | `delete_resource_hub_link` | `op delete_resource_hub_link` | `POST` | `/api/external/v1/delete_resource_hub_link` |
 | `edit_goal_discussion` | `op edit_goal_discussion` | `POST` | `/api/external/v1/edit_goal_discussion` |
-| `edit_goal_progress_update` | `op edit_goal_progress_update` | `POST` | `/api/external/v1/edit_goal_progress_update` |
 | `edit_parent_folder_in_resource_hub` | `op edit_parent_folder_in_resource_hub` | `POST` | `/api/external/v1/edit_parent_folder_in_resource_hub` |
-| `edit_project_check_in` | `op edit_project_check_in` | `POST` | `/api/external/v1/edit_project_check_in` |
 | `edit_resource_hub_document` | `op edit_resource_hub_document` | `POST` | `/api/external/v1/edit_resource_hub_document` |
 | `edit_resource_hub_file` | `op edit_resource_hub_file` | `POST` | `/api/external/v1/edit_resource_hub_file` |
 | `edit_resource_hub_link` | `op edit_resource_hub_link` | `POST` | `/api/external/v1/edit_resource_hub_link` |
@@ -52,13 +48,10 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `get_assignments_count` | `op get_assignments_count` | `GET` | `/api/external/v1/get_assignments_count` |
 | `get_binded_people` | `op get_binded_people` | `GET` | `/api/external/v1/get_binded_people` |
 | `get_flat_work_map` | `op get_flat_work_map` | `GET` | `/api/external/v1/get_flat_work_map` |
-| `get_goal_progress_update` | `op get_goal_progress_update` | `GET` | `/api/external/v1/get_goal_progress_update` |
 | `get_me` | `op get_me` | `GET` | `/api/external/v1/get_me` |
 | `get_notifications` | `op get_notifications` | `GET` | `/api/external/v1/get_notifications` |
 | `get_people` | `op get_people` | `GET` | `/api/external/v1/get_people` |
 | `get_person` | `op get_person` | `GET` | `/api/external/v1/get_person` |
-| `get_project_check_in` | `op get_project_check_in` | `GET` | `/api/external/v1/get_project_check_in` |
-| `get_project_check_ins` | `op get_project_check_ins` | `GET` | `/api/external/v1/get_project_check_ins` |
 | `get_resource_hub` | `op get_resource_hub` | `GET` | `/api/external/v1/get_resource_hub` |
 | `get_resource_hub_document` | `op get_resource_hub_document` | `GET` | `/api/external/v1/get_resource_hub_document` |
 | `get_resource_hub_file` | `op get_resource_hub_file` | `GET` | `/api/external/v1/get_resource_hub_file` |
@@ -67,6 +60,10 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `get_unread_notification_count` | `op get_unread_notification_count` | `GET` | `/api/external/v1/get_unread_notification_count` |
 | `get_work_map` | `op get_work_map` | `GET` | `/api/external/v1/get_work_map` |
 | `global_search` | `op global_search` | `GET` | `/api/external/v1/global_search` |
+| `goal_check_ins acknowledge` | `op goal_check_ins acknowledge` | `POST` | `/api/external/v1/goal_check_ins/acknowledge` |
+| `goal_check_ins create` | `op goal_check_ins create` | `POST` | `/api/external/v1/goal_check_ins/create` |
+| `goal_check_ins get` | `op goal_check_ins get` | `GET` | `/api/external/v1/goal_check_ins/get` |
+| `goal_check_ins update` | `op goal_check_ins update` | `POST` | `/api/external/v1/goal_check_ins/update` |
 | `goals change_parent` | `op goals change_parent` | `POST` | `/api/external/v1/goals/change_parent` |
 | `goals close` | `op goals close` | `POST` | `/api/external/v1/goals/close` |
 | `goals create` | `op goals create` | `POST` | `/api/external/v1/goals/create` |
@@ -109,8 +106,11 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `mark_all_notifications_as_read` | `op mark_all_notifications_as_read` | `POST` | `/api/external/v1/mark_all_notifications_as_read` |
 | `mark_notification_as_read` | `op mark_notification_as_read` | `POST` | `/api/external/v1/mark_notification_as_read` |
 | `mark_notifications_as_read` | `op mark_notifications_as_read` | `POST` | `/api/external/v1/mark_notifications_as_read` |
-| `post_goal_progress_update` | `op post_goal_progress_update` | `POST` | `/api/external/v1/post_goal_progress_update` |
-| `post_project_check_in` | `op post_project_check_in` | `POST` | `/api/external/v1/post_project_check_in` |
+| `project_check_ins acknowledge` | `op project_check_ins acknowledge` | `POST` | `/api/external/v1/project_check_ins/acknowledge` |
+| `project_check_ins create` | `op project_check_ins create` | `POST` | `/api/external/v1/project_check_ins/create` |
+| `project_check_ins get` | `op project_check_ins get` | `GET` | `/api/external/v1/project_check_ins/get` |
+| `project_check_ins list` | `op project_check_ins list` | `GET` | `/api/external/v1/project_check_ins/list` |
+| `project_check_ins update` | `op project_check_ins update` | `POST` | `/api/external/v1/project_check_ins/update` |
 | `project_discussions create` | `op project_discussions create` | `POST` | `/api/external/v1/project_discussions/create` |
 | `project_discussions get` | `op project_discussions get` | `GET` | `/api/external/v1/project_discussions/get` |
 | `project_discussions list` | `op project_discussions list` | `GET` | `/api/external/v1/project_discussions/list` |

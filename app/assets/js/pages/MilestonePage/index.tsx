@@ -353,7 +353,7 @@ function useStatusField(
 
       setComments((prev) => [...prev, Milestones.parseMilestoneCommentForTurboUi(paths, optimisticComment)]);
 
-      const res = await Api.postMilestoneComment({
+      const res = await Api.project_milestones.createComment({
         milestoneId: milestone.id,
         content: null,
         action: v === "done" ? "complete" : "reopen",

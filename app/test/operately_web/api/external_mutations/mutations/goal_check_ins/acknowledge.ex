@@ -1,9 +1,10 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.AcknowledgeGoalProgressUpdate do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.GoalCheckIns.Acknowledge do
   use Operately.Support.ExternalApi.MutationSpec
+
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "acknowledge_goal_progress_update"
+  def mutation_name, do: "goal_check_ins/acknowledge"
 
   @impl true
   def setup(ctx) do
