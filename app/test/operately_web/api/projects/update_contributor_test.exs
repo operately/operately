@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributorTest do
+defmodule OperatelyWeb.Api.Projects.UpdateContributorTest do
   use OperatelyWeb.TurboCase
 
   import Operately.PeopleFixtures
@@ -10,7 +10,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributorTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :update_project_contributor, %{})
+      assert {401, _} = mutation(ctx.conn, [:projects, :update_contributor], %{})
     end
   end
 
@@ -44,7 +44,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributorTest do
         contributor = create_contributor(ctx, project)
 
         assert {code, res} =
-                 mutation(ctx.conn, :update_project_contributor, %{
+                 mutation(ctx.conn, [:projects, :update_contributor], %{
                    contrib_id: Paths.project_contributor_id(contributor),
                    responsibility: "New responsibility",
                    permissions: "edit_access"
@@ -74,7 +74,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributorTest do
       contributor = create_contributor(ctx, project)
 
       assert {200, res} =
-               mutation(ctx.conn, :update_project_contributor, %{
+               mutation(ctx.conn, [:projects, :update_contributor], %{
                  contrib_id: Paths.project_contributor_id(contributor),
                  responsibility: "New responsibility",
                  permissions: "edit_access"
@@ -115,7 +115,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributorTest do
         conn = log_in_account(ctx.conn, account)
 
         assert {code, res} =
-          mutation(conn, :update_project_contributor, %{
+          mutation(conn, [:projects, :update_contributor], %{
             contrib_id: Paths.project_contributor_id(target),
             responsibility: "Updated responsibility",
             permissions: Atom.to_string(@test.new_member_access)
@@ -141,7 +141,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributorTest do
       conn = log_in_account(ctx.conn, account)
 
       assert {403, res} =
-        mutation(conn, :update_project_contributor, %{
+        mutation(conn, [:projects, :update_contributor], %{
           contrib_id: Paths.project_contributor_id(target),
           responsibility: "Updated responsibility",
           permissions: "full_access"
@@ -182,7 +182,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributorTest do
         conn = log_in_account(ctx.conn, account)
 
         assert {code, res} =
-          mutation(conn, :update_project_contributor, %{
+          mutation(conn, [:projects, :update_contributor], %{
             contrib_id: Paths.project_contributor_id(target),
             responsibility: "Updated responsibility",
             permissions: "view_access"
@@ -207,7 +207,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributorTest do
       account = Repo.preload(caller_person, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, res} = mutation(conn, :update_project_contributor, %{
+      assert {200, res} = mutation(conn, [:projects, :update_contributor], %{
         contrib_id: Paths.project_contributor_id(target),
         responsibility: "New responsibility"
       })

@@ -4181,6 +4181,27 @@ export interface ProjectsUpdateChampionResult {
   success: boolean | null;
 }
 
+export interface ProjectsUpdateContributorInput {
+  contribId: Id;
+  personId?: Id | null;
+  responsibility?: string | null;
+  permissions?: AccessOptions | null;
+  role?: string | null;
+}
+
+export interface ProjectsUpdateContributorResult {
+  contributor: ProjectContributor;
+}
+
+export interface ProjectsUpdateDescriptionInput {
+  projectId: Id;
+  description: Json;
+}
+
+export interface ProjectsUpdateDescriptionResult {
+  project: Project;
+}
+
 export interface ProjectsUpdateDueDateInput {
   projectId: Id;
   dueDate: ContextualDate | null;
@@ -4627,27 +4648,6 @@ export interface UpdateProfilePictureInput {
 
 export interface UpdateProfilePictureResult {
   person: Person | null;
-}
-
-export interface UpdateProjectContributorInput {
-  contribId: Id;
-  personId?: Id | null;
-  responsibility?: string | null;
-  permissions?: AccessOptions | null;
-  role?: string | null;
-}
-
-export interface UpdateProjectContributorResult {
-  contributor: ProjectContributor;
-}
-
-export interface UpdateProjectDescriptionInput {
-  projectId: Id;
-  description: Json;
-}
-
-export interface UpdateProjectDescriptionResult {
-  project: Project;
 }
 
 export interface UpdateThemeInput {
@@ -5131,14 +5131,6 @@ class ApiNamespaceRoot {
     return this.client.post("/update_profile_picture", input);
   }
 
-  async updateProjectContributor(input: UpdateProjectContributorInput): Promise<UpdateProjectContributorResult> {
-    return this.client.post("/update_project_contributor", input);
-  }
-
-  async updateProjectDescription(input: UpdateProjectDescriptionInput): Promise<UpdateProjectDescriptionResult> {
-    return this.client.post("/update_project_description", input);
-  }
-
   async updateTheme(input: UpdateThemeInput): Promise<UpdateThemeResult> {
     return this.client.post("/update_theme", input);
   }
@@ -5533,6 +5525,14 @@ class ApiNamespaceProjects {
 
   async updateChampion(input: ProjectsUpdateChampionInput): Promise<ProjectsUpdateChampionResult> {
     return this.client.post("/projects/update_champion", input);
+  }
+
+  async updateContributor(input: ProjectsUpdateContributorInput): Promise<ProjectsUpdateContributorResult> {
+    return this.client.post("/projects/update_contributor", input);
+  }
+
+  async updateDescription(input: ProjectsUpdateDescriptionInput): Promise<ProjectsUpdateDescriptionResult> {
+    return this.client.post("/projects/update_description", input);
   }
 
   async updateDueDate(input: ProjectsUpdateDueDateInput): Promise<ProjectsUpdateDueDateResult> {
@@ -6119,14 +6119,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.updateProfilePicture(input);
   }
 
-  updateProjectContributor(input: UpdateProjectContributorInput): Promise<UpdateProjectContributorResult> {
-    return this.apiNamespaceRoot.updateProjectContributor(input);
-  }
-
-  updateProjectDescription(input: UpdateProjectDescriptionInput): Promise<UpdateProjectDescriptionResult> {
-    return this.apiNamespaceRoot.updateProjectDescription(input);
-  }
-
   updateTheme(input: UpdateThemeInput): Promise<UpdateThemeResult> {
     return this.apiNamespaceRoot.updateTheme(input);
   }
@@ -6418,16 +6410,6 @@ export async function updateProfile(input: UpdateProfileInput): Promise<UpdatePr
 }
 export async function updateProfilePicture(input: UpdateProfilePictureInput): Promise<UpdateProfilePictureResult> {
   return defaultApiClient.updateProfilePicture(input);
-}
-export async function updateProjectContributor(
-  input: UpdateProjectContributorInput,
-): Promise<UpdateProjectContributorResult> {
-  return defaultApiClient.updateProjectContributor(input);
-}
-export async function updateProjectDescription(
-  input: UpdateProjectDescriptionInput,
-): Promise<UpdateProjectDescriptionResult> {
-  return defaultApiClient.updateProjectDescription(input);
 }
 export async function updateTheme(input: UpdateThemeInput): Promise<UpdateThemeResult> {
   return defaultApiClient.updateTheme(input);
@@ -6945,24 +6927,6 @@ export function useUpdateProfilePicture(): UseMutationHookResult<
   );
 }
 
-export function useUpdateProjectContributor(): UseMutationHookResult<
-  UpdateProjectContributorInput,
-  UpdateProjectContributorResult
-> {
-  return useMutation<UpdateProjectContributorInput, UpdateProjectContributorResult>((input) =>
-    defaultApiClient.updateProjectContributor(input),
-  );
-}
-
-export function useUpdateProjectDescription(): UseMutationHookResult<
-  UpdateProjectDescriptionInput,
-  UpdateProjectDescriptionResult
-> {
-  return useMutation<UpdateProjectDescriptionInput, UpdateProjectDescriptionResult>((input) =>
-    defaultApiClient.updateProjectDescription(input),
-  );
-}
-
 export function useUpdateTheme(): UseMutationHookResult<UpdateThemeInput, UpdateThemeResult> {
   return useMutation<UpdateThemeInput, UpdateThemeResult>((input) => defaultApiClient.updateTheme(input));
 }
@@ -7128,10 +7092,6 @@ export default {
   useUpdateProfile,
   updateProfilePicture,
   useUpdateProfilePicture,
-  updateProjectContributor,
-  useUpdateProjectContributor,
-  updateProjectDescription,
-  useUpdateProjectDescription,
   updateTheme,
   useUpdateTheme,
 
@@ -7765,6 +7725,13 @@ export default {
         defaultApiClient.apiNamespaceProjects.pause(input),
       ),
 
+    updateDescription: (input: ProjectsUpdateDescriptionInput) =>
+      defaultApiClient.apiNamespaceProjects.updateDescription(input),
+    useUpdateDescription: () =>
+      useMutation<ProjectsUpdateDescriptionInput, ProjectsUpdateDescriptionResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.updateDescription(input),
+      ),
+
     deleteContributor: (input: ProjectsDeleteContributorInput) =>
       defaultApiClient.apiNamespaceProjects.deleteContributor(input),
     useDeleteContributor: () =>
@@ -7795,6 +7762,13 @@ export default {
     useClose: () =>
       useMutation<ProjectsCloseInput, ProjectsCloseResult>((input) =>
         defaultApiClient.apiNamespaceProjects.close(input),
+      ),
+
+    updateContributor: (input: ProjectsUpdateContributorInput) =>
+      defaultApiClient.apiNamespaceProjects.updateContributor(input),
+    useUpdateContributor: () =>
+      useMutation<ProjectsUpdateContributorInput, ProjectsUpdateContributorResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.updateContributor(input),
       ),
 
     updatePermissions: (input: ProjectsUpdatePermissionsInput) =>

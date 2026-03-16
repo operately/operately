@@ -102,7 +102,7 @@ function Page() {
   const [description, setDescription] = usePageField({
     value: (data: { project: Projects.Project }) => data.project.description && JSON.parse(data.project.description),
     update: (v) =>
-      Api.updateProjectDescription({ projectId: project.id!, description: JSON.stringify(v) }).then(() => true),
+      Api.projects.updateDescription({ projectId: project.id, description: JSON.stringify(v) }).then(() => true),
     onError: () => showErrorToast("Network Error", "Reverted the description to its previous value."),
   });
 

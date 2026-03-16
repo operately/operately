@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.UpdateProjectContributor do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Projects.UpdateContributor do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "update_project_contributor"
+  def mutation_name, do: "projects/update_contributor"
 
   @impl true
   def setup(ctx) do

@@ -18607,6 +18607,74 @@
       "method": "POST"
     },
     {
+      "name": "create_key_resource",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/create_key_resource",
+      "handler": "OperatelyWeb.Api.Projects.CreateKeyResource",
+      "outputs": [
+        {
+          "default": null,
+          "name": "key_resource",
+          "type": {
+            "name": "project_key_resource",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "title",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "link",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "resource_type",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "projects/create_key_resource",
+      "method": "POST"
+    },
+    {
       "name": "create_milestone",
       "type": "mutation",
       "path": "/api/external/v1/projects/create_milestone",
@@ -18731,6 +18799,41 @@
         }
       ],
       "full_name": "projects/delete_contributor",
+      "method": "POST"
+    },
+    {
+      "name": "delete_key_resource",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/delete_key_resource",
+      "handler": "OperatelyWeb.Api.Projects.DeleteKeyResource",
+      "outputs": [
+        {
+          "default": null,
+          "name": "key_resource",
+          "type": {
+            "name": "project_key_resource",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "projects/delete_key_resource",
       "method": "POST"
     },
     {
@@ -18964,6 +19067,41 @@
         }
       ],
       "full_name": "projects/get",
+      "method": "GET"
+    },
+    {
+      "name": "get_key_resource",
+      "type": "query",
+      "path": "/api/external/v1/projects/get_key_resource",
+      "handler": "OperatelyWeb.Api.Projects.GetKeyResource",
+      "outputs": [
+        {
+          "default": null,
+          "name": "key_resource",
+          "type": {
+            "name": "project_key_resource",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "projects/get_key_resource",
       "method": "GET"
     },
     {
@@ -19618,6 +19756,131 @@
       "method": "POST"
     },
     {
+      "name": "update_contributor",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/update_contributor",
+      "handler": "OperatelyWeb.Api.Projects.UpdateContributor",
+      "outputs": [
+        {
+          "default": null,
+          "name": "contributor",
+          "type": {
+            "name": "project_contributor",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "contrib_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "person_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "responsibility",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "permissions",
+          "type": {
+            "name": "access_options",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "role",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "projects/update_contributor",
+      "method": "POST"
+    },
+    {
+      "name": "update_description",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/update_description",
+      "handler": "OperatelyWeb.Api.Projects.UpdateDescription",
+      "outputs": [
+        {
+          "default": null,
+          "name": "project",
+          "type": {
+            "name": "project",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "description",
+          "type": {
+            "name": "json",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "projects/update_description",
+      "method": "POST"
+    },
+    {
       "name": "update_due_date",
       "type": "mutation",
       "path": "/api/external/v1/projects/update_due_date",
@@ -19740,6 +20003,63 @@
         }
       ],
       "full_name": "projects/update_kanban",
+      "method": "POST"
+    },
+    {
+      "name": "update_key_resource",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/update_key_resource",
+      "handler": "OperatelyWeb.Api.Projects.UpdateKeyResource",
+      "outputs": [
+        {
+          "default": null,
+          "name": "key_resource",
+          "type": {
+            "name": "project_key_resource",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "title",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "link",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "projects/update_key_resource",
       "method": "POST"
     },
     {
@@ -20342,74 +20662,6 @@
         }
       ],
       "full_name": "acknowledge_project_check_in",
-      "method": "POST"
-    },
-    {
-      "name": "add_key_resource",
-      "type": "mutation",
-      "path": "/api/external/v1/add_key_resource",
-      "handler": "OperatelyWeb.Api.Mutations.AddKeyResource",
-      "outputs": [
-        {
-          "default": null,
-          "name": "key_resource",
-          "type": {
-            "name": "project_key_resource",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "project_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "title",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "link",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "resource_type",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "add_key_resource",
       "method": "POST"
     },
     {
@@ -21434,63 +21686,6 @@
       "method": "POST"
     },
     {
-      "name": "edit_key_resource",
-      "type": "mutation",
-      "path": "/api/external/v1/edit_key_resource",
-      "handler": "OperatelyWeb.Api.Mutations.EditKeyResource",
-      "outputs": [
-        {
-          "default": null,
-          "name": "key_resource",
-          "type": {
-            "name": "project_key_resource",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "title",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "link",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "edit_key_resource",
-      "method": "POST"
-    },
-    {
       "name": "edit_parent_folder_in_resource_hub",
       "type": "mutation",
       "path": "/api/external/v1/edit_parent_folder_in_resource_hub",
@@ -22468,41 +22663,6 @@
         }
       ],
       "full_name": "get_goal_progress_update",
-      "method": "GET"
-    },
-    {
-      "name": "get_key_resource",
-      "type": "query",
-      "path": "/api/external/v1/get_key_resource",
-      "handler": "OperatelyWeb.Api.Queries.GetKeyResource",
-      "outputs": [
-        {
-          "default": null,
-          "name": "key_resource",
-          "type": {
-            "name": "project_key_resource",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "get_key_resource",
       "method": "GET"
     },
     {
@@ -24690,41 +24850,6 @@
       "method": "POST"
     },
     {
-      "name": "remove_key_resource",
-      "type": "mutation",
-      "path": "/api/external/v1/remove_key_resource",
-      "handler": "OperatelyWeb.Api.Mutations.RemoveKeyResource",
-      "outputs": [
-        {
-          "default": null,
-          "name": "key_resource",
-          "type": {
-            "name": "project_key_resource",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "remove_key_resource",
-      "method": "POST"
-    },
-    {
       "name": "rename_resource_hub_folder",
       "type": "mutation",
       "path": "/api/external/v1/rename_resource_hub_folder",
@@ -25068,131 +25193,6 @@
         }
       ],
       "full_name": "update_profile_picture",
-      "method": "POST"
-    },
-    {
-      "name": "update_project_contributor",
-      "type": "mutation",
-      "path": "/api/external/v1/update_project_contributor",
-      "handler": "OperatelyWeb.Api.Mutations.UpdateProjectContributor",
-      "outputs": [
-        {
-          "default": null,
-          "name": "contributor",
-          "type": {
-            "name": "project_contributor",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "contrib_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "person_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "responsibility",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "permissions",
-          "type": {
-            "name": "access_options",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "role",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "update_project_contributor",
-      "method": "POST"
-    },
-    {
-      "name": "update_project_description",
-      "type": "mutation",
-      "path": "/api/external/v1/update_project_description",
-      "handler": "OperatelyWeb.Api.Mutations.UpdateProjectDescription",
-      "outputs": [
-        {
-          "default": null,
-          "name": "project",
-          "type": {
-            "name": "project",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "project_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "description",
-          "type": {
-            "name": "json",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "update_project_description",
       "method": "POST"
     },
     {
@@ -27598,6 +27598,6 @@
     }
   ],
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-16T11:19:11Z",
+  "generated_at": "2026-03-16T17:29:59Z",
   "schema_version": 1
 }

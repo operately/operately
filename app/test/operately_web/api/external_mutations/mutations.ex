@@ -100,6 +100,8 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations do
       Mutations.Projects.UpdateRetrospective,
       Mutations.Projects.UpdateStartDate,
       Mutations.Projects.UpdateTaskStatuses,
+      Mutations.Projects.UpdateContributor,
+      Mutations.Projects.UpdateDescription,
       Mutations.SpaceDiscussions.Archive,
       Mutations.SpaceDiscussions.Create,
       Mutations.SpaceDiscussions.Publish,
@@ -138,8 +140,6 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations do
       Mutations.UnsubscribeFromNotifications,
       Mutations.UpdateProfile,
       Mutations.UpdateProfilePicture,
-      Mutations.UpdateProjectContributor,
-      Mutations.UpdateProjectDescription,
       Mutations.UpdateTheme
     ]
   end

@@ -15,7 +15,7 @@ export type Discussion = api.CommentThread;
 export type Resource = api.ProjectKeyResource;
 export type ProjectChildrenCount = api.ProjectChildrenCount;
 
-export { getProjectRetrospective, useUpdateProjectContributor, useUpdateProjectDescription } from "@/api";
+export { getProjectRetrospective } from "@/api";
 
 export const getProject = Api.projects.get;
 export const getProjects = Api.projects.list;
@@ -25,6 +25,8 @@ export const useRemoveProjectContributor = Api.projects.useDeleteContributor;
 export const useCloseProject = Api.projects.useClose;
 export const usePauseProject = Api.projects.usePause;
 export const useResumeProject = Api.projects.useResume;
+export const useUpdateProjectContributor = Api.projects.useUpdateContributor;
+export const useUpdateProjectDescription = Api.projects.useUpdateDescription;
 
 export function isOverdue(project: Pick<Project, "timeframe">) {
   assertPresent(project.timeframe, "project timeline must be defined");

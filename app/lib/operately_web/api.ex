@@ -78,6 +78,8 @@ defmodule OperatelyWeb.Api do
         mutation(:create_key_resource, OperatelyWeb.Api.Projects.CreateKeyResource)
         mutation(:update_key_resource, OperatelyWeb.Api.Projects.UpdateKeyResource)
         mutation(:delete_key_resource, OperatelyWeb.Api.Projects.DeleteKeyResource)
+        mutation(:update_contributor, OperatelyWeb.Api.Projects.UpdateContributor)
+        mutation(:update_description, OperatelyWeb.Api.Projects.UpdateDescription)
       end
 
       namespace(:project_milestones) do
@@ -253,8 +255,6 @@ defmodule OperatelyWeb.Api do
       mutation(:update_profile, M.UpdateProfile)
       mutation(:update_theme, M.UpdateTheme)
       mutation(:update_profile_picture, M.UpdateProfilePicture)
-      mutation(:update_project_contributor, M.UpdateProjectContributor)
-      mutation(:update_project_description, M.UpdateProjectDescription)
 
       subscription(:assignments_count, S.AssignmentsCount)
       subscription(:reload_comments, S.ReloadComments)
