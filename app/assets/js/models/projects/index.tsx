@@ -15,7 +15,7 @@ export type Discussion = api.CommentThread;
 export type Resource = api.ProjectKeyResource;
 export type ProjectChildrenCount = api.ProjectChildrenCount;
 
-export { getProjectRetrospective, useUpdateProjectContributor, useUpdateProjectDescription } from "@/api";
+export { getProjectRetrospective } from "@/api";
 
 export const getProject = Api.projects.get;
 export const getProjects = Api.projects.list;
