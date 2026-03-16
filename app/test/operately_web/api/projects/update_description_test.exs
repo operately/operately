@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.UpdateProjectDescriptionTest do
+defmodule OperatelyWeb.Api.Projects.UpdateDescriptionTest do
   use OperatelyWeb.TurboCase
   use Operately.Support.Notifications
 
@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectDescriptionTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :update_project_description, %{})
+      assert {401, _} = mutation(ctx.conn, [:projects, :update_description], %{})
     end
   end
 
@@ -44,7 +44,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectDescriptionTest do
         space = create_space(ctx)
         project = create_project(ctx, space, @test.company, @test.space, @test.project)
 
-        assert {code, res} = mutation(ctx.conn, :update_project_description, %{
+        assert {code, res} = mutation(ctx.conn, [:projects, :update_description], %{
           project_id: Paths.project_id(project),
           description: RichText.rich_text("Hello", :as_string)
         })
@@ -94,7 +94,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectDescriptionTest do
       description = RichText.rich_text(mentioned_people: [ctx.mentioned_person])
 
       {200, _} = Oban.Testing.with_testing_mode(:manual, fn ->
-        mutation(ctx.conn, :update_project_description, %{
+        mutation(ctx.conn, [:projects, :update_description], %{
           project_id: Paths.project_id(ctx.project),
           description: description
         })
@@ -125,7 +125,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectDescriptionTest do
       description = RichText.rich_text(mentioned_people: [ctx.person1, ctx.person2])
 
       {200, _} = Oban.Testing.with_testing_mode(:manual, fn ->
-        mutation(ctx.conn, :update_project_description, %{
+        mutation(ctx.conn, [:projects, :update_description], %{
           project_id: Paths.project_id(ctx.project),
           description: description
         })
@@ -156,11 +156,10 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectDescriptionTest do
         |> Factory.add_space_member(:mentioned_person, :engineering)
         |> Factory.log_in_person(:creator)
 
-      # First update: mention the person
       description_with_mention = RichText.rich_text(mentioned_people: [ctx.mentioned_person])
 
       {200, _} = Oban.Testing.with_testing_mode(:manual, fn ->
-        mutation(ctx.conn, :update_project_description, %{
+        mutation(ctx.conn, [:projects, :update_description], %{
           project_id: Paths.project_id(ctx.project),
           description: description_with_mention
         })
@@ -175,12 +174,11 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectDescriptionTest do
       assert 1 == notifications_count(action: action)
       assert hd(notifications).person_id == ctx.mentioned_person.id
 
-      # Second update: don't mention the person, but they should still be notified
       :timer.sleep(25)
       description_without_mention = RichText.rich_text("Updated description without mentions", :as_string)
 
       {200, _} = Oban.Testing.with_testing_mode(:manual, fn ->
-        mutation(ctx.conn, :update_project_description, %{
+        mutation(ctx.conn, [:projects, :update_description], %{
           project_id: Paths.project_id(ctx.project),
           description: description_without_mention
         })
@@ -207,7 +205,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectDescriptionTest do
       description = RichText.rich_text(mentioned_people: [ctx.person])
 
       {200, _} = Oban.Testing.with_testing_mode(:manual, fn ->
-        mutation(ctx.conn, :update_project_description, %{
+        mutation(ctx.conn, [:projects, :update_description], %{
           project_id: Paths.project_id(ctx.project),
           description: description
         })
@@ -221,14 +219,13 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectDescriptionTest do
       assert notifications_count(action: action) == 0
       assert fetch_notifications(activity.id, action: action) == []
 
-      # With permissions
       :timer.sleep(25)
       {:ok, _} = Operately.Groups.add_members(ctx.creator, ctx.engineering.id, [
         %{id: ctx.person.id, access_level: Operately.Access.Binding.view_access()}
       ])
 
       {200, _} = Oban.Testing.with_testing_mode(:manual, fn ->
-        mutation(ctx.conn, :update_project_description, %{
+        mutation(ctx.conn, [:projects, :update_description], %{
           project_id: Paths.project_id(ctx.project),
           description: description
         })

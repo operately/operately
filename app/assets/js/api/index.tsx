@@ -2373,14 +2373,6 @@ export interface GetGoalProgressUpdateResult {
   update: GoalProgressUpdate;
 }
 
-export interface GetKeyResourceInput {
-  id?: string | null;
-}
-
-export interface GetKeyResourceResult {
-  keyResource?: ProjectKeyResource | null;
-}
-
 export interface GetMeInput {
   includeManager?: boolean | null;
 }
@@ -2802,6 +2794,14 @@ export interface ProjectsGetResult {
   markdown?: string;
 }
 
+export interface ProjectsGetKeyResourceInput {
+  id?: string | null;
+}
+
+export interface ProjectsGetKeyResourceResult {
+  keyResource?: ProjectKeyResource | null;
+}
+
 export interface ProjectsListInput {
   onlyMyProjects?: boolean | null;
   onlyReviewedByMe?: boolean | null;
@@ -3067,17 +3067,6 @@ export interface AddFirstCompanyInput {
 
 export interface AddFirstCompanyResult {
   company?: Company | null;
-}
-
-export interface AddKeyResourceInput {
-  projectId: Id;
-  title: string;
-  link: string;
-  resourceType?: string;
-}
-
-export interface AddKeyResourceResult {
-  keyResource: ProjectKeyResource;
 }
 
 export interface AddProjectContributorInput {
@@ -3550,16 +3539,6 @@ export interface EditGoalProgressUpdateInput {
 
 export interface EditGoalProgressUpdateResult {
   update?: GoalProgressUpdate | null;
-}
-
-export interface EditKeyResourceInput {
-  id: string;
-  title: string;
-  link: string;
-}
-
-export interface EditKeyResourceResult {
-  keyResource: ProjectKeyResource;
 }
 
 export interface EditParentFolderInResourceHubInput {
@@ -4122,6 +4101,17 @@ export interface ProjectsCreateResult {
   project?: Project | null;
 }
 
+export interface ProjectsCreateKeyResourceInput {
+  projectId: Id;
+  title: string;
+  link: string;
+  resourceType?: string;
+}
+
+export interface ProjectsCreateKeyResourceResult {
+  keyResource: ProjectKeyResource;
+}
+
 export interface ProjectsCreateMilestoneInput {
   projectId: Id;
   name: string;
@@ -4146,6 +4136,14 @@ export interface ProjectsDeleteContributorInput {
 
 export interface ProjectsDeleteContributorResult {
   projectContributor?: ProjectContributor | null;
+}
+
+export interface ProjectsDeleteKeyResourceInput {
+  id: string;
+}
+
+export interface ProjectsDeleteKeyResourceResult {
+  keyResource: ProjectKeyResource;
 }
 
 export interface ProjectsMoveToSpaceInput {
@@ -4183,6 +4181,27 @@ export interface ProjectsUpdateChampionResult {
   success: boolean | null;
 }
 
+export interface ProjectsUpdateContributorInput {
+  contribId: Id;
+  personId?: Id | null;
+  responsibility?: string | null;
+  permissions?: AccessOptions | null;
+  role?: string | null;
+}
+
+export interface ProjectsUpdateContributorResult {
+  contributor: ProjectContributor;
+}
+
+export interface ProjectsUpdateDescriptionInput {
+  projectId: Id;
+  description: Json;
+}
+
+export interface ProjectsUpdateDescriptionResult {
+  project: Project;
+}
+
 export interface ProjectsUpdateDueDateInput {
   projectId: Id;
   dueDate: ContextualDate | null;
@@ -4202,6 +4221,16 @@ export interface ProjectsUpdateKanbanInput {
 export interface ProjectsUpdateKanbanResult {
   project: Project;
   task: Task;
+}
+
+export interface ProjectsUpdateKeyResourceInput {
+  id: string;
+  title: string;
+  link: string;
+}
+
+export interface ProjectsUpdateKeyResourceResult {
+  keyResource: ProjectKeyResource;
 }
 
 export interface ProjectsUpdateMilestoneInput {
@@ -4310,14 +4339,6 @@ export interface ReactionsDeleteInput {
 
 export interface ReactionsDeleteResult {
   success: boolean;
-}
-
-export interface RemoveKeyResourceInput {
-  id: string;
-}
-
-export interface RemoveKeyResourceResult {
-  keyResource: ProjectKeyResource;
 }
 
 export interface RenameResourceHubFolderInput {
@@ -4629,27 +4650,6 @@ export interface UpdateProfilePictureResult {
   person: Person | null;
 }
 
-export interface UpdateProjectContributorInput {
-  contribId: Id;
-  personId?: Id | null;
-  responsibility?: string | null;
-  permissions?: AccessOptions | null;
-  role?: string | null;
-}
-
-export interface UpdateProjectContributorResult {
-  contributor: ProjectContributor;
-}
-
-export interface UpdateProjectDescriptionInput {
-  projectId: Id;
-  description: Json;
-}
-
-export interface UpdateProjectDescriptionResult {
-  project: Project;
-}
-
 export interface UpdateThemeInput {
   theme: AccountTheme;
 }
@@ -4839,10 +4839,6 @@ class ApiNamespaceRoot {
     return this.client.get("/get_goal_progress_update", input);
   }
 
-  async getKeyResource(input: GetKeyResourceInput): Promise<GetKeyResourceResult> {
-    return this.client.get("/get_key_resource", input);
-  }
-
   async getMe(input: GetMeInput): Promise<GetMeResult> {
     return this.client.get("/get_me", input);
   }
@@ -4951,10 +4947,6 @@ class ApiNamespaceRoot {
     return this.client.post("/add_first_company", input);
   }
 
-  async addKeyResource(input: AddKeyResourceInput): Promise<AddKeyResourceResult> {
-    return this.client.post("/add_key_resource", input);
-  }
-
   async addProjectContributor(input: AddProjectContributorInput): Promise<AddProjectContributorResult> {
     return this.client.post("/add_project_contributor", input);
   }
@@ -5043,10 +5035,6 @@ class ApiNamespaceRoot {
     return this.client.post("/edit_goal_progress_update", input);
   }
 
-  async editKeyResource(input: EditKeyResourceInput): Promise<EditKeyResourceResult> {
-    return this.client.post("/edit_key_resource", input);
-  }
-
   async editParentFolderInResourceHub(
     input: EditParentFolderInResourceHubInput,
   ): Promise<EditParentFolderInResourceHubResult> {
@@ -5113,10 +5101,6 @@ class ApiNamespaceRoot {
     return this.client.post("/publish_resource_hub_document", input);
   }
 
-  async removeKeyResource(input: RemoveKeyResourceInput): Promise<RemoveKeyResourceResult> {
-    return this.client.post("/remove_key_resource", input);
-  }
-
   async renameResourceHubFolder(input: RenameResourceHubFolderInput): Promise<RenameResourceHubFolderResult> {
     return this.client.post("/rename_resource_hub_folder", input);
   }
@@ -5145,14 +5129,6 @@ class ApiNamespaceRoot {
 
   async updateProfilePicture(input: UpdateProfilePictureInput): Promise<UpdateProfilePictureResult> {
     return this.client.post("/update_profile_picture", input);
-  }
-
-  async updateProjectContributor(input: UpdateProjectContributorInput): Promise<UpdateProjectContributorResult> {
-    return this.client.post("/update_project_contributor", input);
-  }
-
-  async updateProjectDescription(input: UpdateProjectDescriptionInput): Promise<UpdateProjectDescriptionResult> {
-    return this.client.post("/update_project_description", input);
   }
 
   async updateTheme(input: UpdateThemeInput): Promise<UpdateThemeResult> {
@@ -5477,6 +5453,10 @@ class ApiNamespaceProjects {
     return this.client.get("/projects/get", input);
   }
 
+  async getKeyResource(input: ProjectsGetKeyResourceInput): Promise<ProjectsGetKeyResourceResult> {
+    return this.client.get("/projects/get_key_resource", input);
+  }
+
   async list(input: ProjectsListInput): Promise<ProjectsListResult> {
     return this.client.get("/projects/list", input);
   }
@@ -5511,6 +5491,10 @@ class ApiNamespaceProjects {
     return this.client.post("/projects/create", input);
   }
 
+  async createKeyResource(input: ProjectsCreateKeyResourceInput): Promise<ProjectsCreateKeyResourceResult> {
+    return this.client.post("/projects/create_key_resource", input);
+  }
+
   async createMilestone(input: ProjectsCreateMilestoneInput): Promise<ProjectsCreateMilestoneResult> {
     return this.client.post("/projects/create_milestone", input);
   }
@@ -5521,6 +5505,10 @@ class ApiNamespaceProjects {
 
   async deleteContributor(input: ProjectsDeleteContributorInput): Promise<ProjectsDeleteContributorResult> {
     return this.client.post("/projects/delete_contributor", input);
+  }
+
+  async deleteKeyResource(input: ProjectsDeleteKeyResourceInput): Promise<ProjectsDeleteKeyResourceResult> {
+    return this.client.post("/projects/delete_key_resource", input);
   }
 
   async moveToSpace(input: ProjectsMoveToSpaceInput): Promise<ProjectsMoveToSpaceResult> {
@@ -5539,12 +5527,24 @@ class ApiNamespaceProjects {
     return this.client.post("/projects/update_champion", input);
   }
 
+  async updateContributor(input: ProjectsUpdateContributorInput): Promise<ProjectsUpdateContributorResult> {
+    return this.client.post("/projects/update_contributor", input);
+  }
+
+  async updateDescription(input: ProjectsUpdateDescriptionInput): Promise<ProjectsUpdateDescriptionResult> {
+    return this.client.post("/projects/update_description", input);
+  }
+
   async updateDueDate(input: ProjectsUpdateDueDateInput): Promise<ProjectsUpdateDueDateResult> {
     return this.client.post("/projects/update_due_date", input);
   }
 
   async updateKanban(input: ProjectsUpdateKanbanInput): Promise<ProjectsUpdateKanbanResult> {
     return this.client.post("/projects/update_kanban", input);
+  }
+
+  async updateKeyResource(input: ProjectsUpdateKeyResourceInput): Promise<ProjectsUpdateKeyResourceResult> {
+    return this.client.post("/projects/update_key_resource", input);
   }
 
   async updateMilestone(input: ProjectsUpdateMilestoneInput): Promise<ProjectsUpdateMilestoneResult> {
@@ -5831,10 +5831,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.getGoalProgressUpdate(input);
   }
 
-  getKeyResource(input: GetKeyResourceInput): Promise<GetKeyResourceResult> {
-    return this.apiNamespaceRoot.getKeyResource(input);
-  }
-
   getMe(input: GetMeInput): Promise<GetMeResult> {
     return this.apiNamespaceRoot.getMe(input);
   }
@@ -5941,10 +5937,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.addFirstCompany(input);
   }
 
-  addKeyResource(input: AddKeyResourceInput): Promise<AddKeyResourceResult> {
-    return this.apiNamespaceRoot.addKeyResource(input);
-  }
-
   addProjectContributor(input: AddProjectContributorInput): Promise<AddProjectContributorResult> {
     return this.apiNamespaceRoot.addProjectContributor(input);
   }
@@ -6033,10 +6025,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.editGoalProgressUpdate(input);
   }
 
-  editKeyResource(input: EditKeyResourceInput): Promise<EditKeyResourceResult> {
-    return this.apiNamespaceRoot.editKeyResource(input);
-  }
-
   editParentFolderInResourceHub(
     input: EditParentFolderInResourceHubInput,
   ): Promise<EditParentFolderInResourceHubResult> {
@@ -6103,10 +6091,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.publishResourceHubDocument(input);
   }
 
-  removeKeyResource(input: RemoveKeyResourceInput): Promise<RemoveKeyResourceResult> {
-    return this.apiNamespaceRoot.removeKeyResource(input);
-  }
-
   renameResourceHubFolder(input: RenameResourceHubFolderInput): Promise<RenameResourceHubFolderResult> {
     return this.apiNamespaceRoot.renameResourceHubFolder(input);
   }
@@ -6133,14 +6117,6 @@ export class ApiClient {
 
   updateProfilePicture(input: UpdateProfilePictureInput): Promise<UpdateProfilePictureResult> {
     return this.apiNamespaceRoot.updateProfilePicture(input);
-  }
-
-  updateProjectContributor(input: UpdateProjectContributorInput): Promise<UpdateProjectContributorResult> {
-    return this.apiNamespaceRoot.updateProjectContributor(input);
-  }
-
-  updateProjectDescription(input: UpdateProjectDescriptionInput): Promise<UpdateProjectDescriptionResult> {
-    return this.apiNamespaceRoot.updateProjectDescription(input);
   }
 
   updateTheme(input: UpdateThemeInput): Promise<UpdateThemeResult> {
@@ -6173,9 +6149,6 @@ export async function getFlatWorkMap(input: GetFlatWorkMapInput): Promise<GetFla
 }
 export async function getGoalProgressUpdate(input: GetGoalProgressUpdateInput): Promise<GetGoalProgressUpdateResult> {
   return defaultApiClient.getGoalProgressUpdate(input);
-}
-export async function getKeyResource(input: GetKeyResourceInput): Promise<GetKeyResourceResult> {
-  return defaultApiClient.getKeyResource(input);
 }
 export async function getMe(input: GetMeInput): Promise<GetMeResult> {
   return defaultApiClient.getMe(input);
@@ -6269,9 +6242,6 @@ export async function addCompanyTrustedEmailDomain(
 export async function addFirstCompany(input: AddFirstCompanyInput): Promise<AddFirstCompanyResult> {
   return defaultApiClient.addFirstCompany(input);
 }
-export async function addKeyResource(input: AddKeyResourceInput): Promise<AddKeyResourceResult> {
-  return defaultApiClient.addKeyResource(input);
-}
 export async function addProjectContributor(input: AddProjectContributorInput): Promise<AddProjectContributorResult> {
   return defaultApiClient.addProjectContributor(input);
 }
@@ -6352,9 +6322,6 @@ export async function editGoalProgressUpdate(
 ): Promise<EditGoalProgressUpdateResult> {
   return defaultApiClient.editGoalProgressUpdate(input);
 }
-export async function editKeyResource(input: EditKeyResourceInput): Promise<EditKeyResourceResult> {
-  return defaultApiClient.editKeyResource(input);
-}
 export async function editParentFolderInResourceHub(
   input: EditParentFolderInResourceHubInput,
 ): Promise<EditParentFolderInResourceHubResult> {
@@ -6417,9 +6384,6 @@ export async function publishResourceHubDocument(
 ): Promise<PublishResourceHubDocumentResult> {
   return defaultApiClient.publishResourceHubDocument(input);
 }
-export async function removeKeyResource(input: RemoveKeyResourceInput): Promise<RemoveKeyResourceResult> {
-  return defaultApiClient.removeKeyResource(input);
-}
 export async function renameResourceHubFolder(
   input: RenameResourceHubFolderInput,
 ): Promise<RenameResourceHubFolderResult> {
@@ -6446,16 +6410,6 @@ export async function updateProfile(input: UpdateProfileInput): Promise<UpdatePr
 }
 export async function updateProfilePicture(input: UpdateProfilePictureInput): Promise<UpdateProfilePictureResult> {
   return defaultApiClient.updateProfilePicture(input);
-}
-export async function updateProjectContributor(
-  input: UpdateProjectContributorInput,
-): Promise<UpdateProjectContributorResult> {
-  return defaultApiClient.updateProjectContributor(input);
-}
-export async function updateProjectDescription(
-  input: UpdateProjectDescriptionInput,
-): Promise<UpdateProjectDescriptionResult> {
-  return defaultApiClient.updateProjectDescription(input);
 }
 export async function updateTheme(input: UpdateThemeInput): Promise<UpdateThemeResult> {
   return defaultApiClient.updateTheme(input);
@@ -6493,10 +6447,6 @@ export function useGetGoalProgressUpdate(
   input: GetGoalProgressUpdateInput,
 ): UseQueryHookResult<GetGoalProgressUpdateResult> {
   return useQuery<GetGoalProgressUpdateResult>(() => defaultApiClient.getGoalProgressUpdate(input));
-}
-
-export function useGetKeyResource(input: GetKeyResourceInput): UseQueryHookResult<GetKeyResourceResult> {
-  return useQuery<GetKeyResourceResult>(() => defaultApiClient.getKeyResource(input));
 }
 
 export function useGetMe(input: GetMeInput): UseQueryHookResult<GetMeResult> {
@@ -6634,10 +6584,6 @@ export function useAddCompanyTrustedEmailDomain(): UseMutationHookResult<
 
 export function useAddFirstCompany(): UseMutationHookResult<AddFirstCompanyInput, AddFirstCompanyResult> {
   return useMutation<AddFirstCompanyInput, AddFirstCompanyResult>((input) => defaultApiClient.addFirstCompany(input));
-}
-
-export function useAddKeyResource(): UseMutationHookResult<AddKeyResourceInput, AddKeyResourceResult> {
-  return useMutation<AddKeyResourceInput, AddKeyResourceResult>((input) => defaultApiClient.addKeyResource(input));
 }
 
 export function useAddProjectContributor(): UseMutationHookResult<
@@ -6809,10 +6755,6 @@ export function useEditGoalProgressUpdate(): UseMutationHookResult<
   );
 }
 
-export function useEditKeyResource(): UseMutationHookResult<EditKeyResourceInput, EditKeyResourceResult> {
-  return useMutation<EditKeyResourceInput, EditKeyResourceResult>((input) => defaultApiClient.editKeyResource(input));
-}
-
 export function useEditParentFolderInResourceHub(): UseMutationHookResult<
   EditParentFolderInResourceHubInput,
   EditParentFolderInResourceHubResult
@@ -6932,12 +6874,6 @@ export function usePublishResourceHubDocument(): UseMutationHookResult<
   );
 }
 
-export function useRemoveKeyResource(): UseMutationHookResult<RemoveKeyResourceInput, RemoveKeyResourceResult> {
-  return useMutation<RemoveKeyResourceInput, RemoveKeyResourceResult>((input) =>
-    defaultApiClient.removeKeyResource(input),
-  );
-}
-
 export function useRenameResourceHubFolder(): UseMutationHookResult<
   RenameResourceHubFolderInput,
   RenameResourceHubFolderResult
@@ -6991,24 +6927,6 @@ export function useUpdateProfilePicture(): UseMutationHookResult<
   );
 }
 
-export function useUpdateProjectContributor(): UseMutationHookResult<
-  UpdateProjectContributorInput,
-  UpdateProjectContributorResult
-> {
-  return useMutation<UpdateProjectContributorInput, UpdateProjectContributorResult>((input) =>
-    defaultApiClient.updateProjectContributor(input),
-  );
-}
-
-export function useUpdateProjectDescription(): UseMutationHookResult<
-  UpdateProjectDescriptionInput,
-  UpdateProjectDescriptionResult
-> {
-  return useMutation<UpdateProjectDescriptionInput, UpdateProjectDescriptionResult>((input) =>
-    defaultApiClient.updateProjectDescription(input),
-  );
-}
-
 export function useUpdateTheme(): UseMutationHookResult<UpdateThemeInput, UpdateThemeResult> {
   return useMutation<UpdateThemeInput, UpdateThemeResult>((input) => defaultApiClient.updateTheme(input));
 }
@@ -7032,8 +6950,6 @@ export default {
   useGetFlatWorkMap,
   getGoalProgressUpdate,
   useGetGoalProgressUpdate,
-  getKeyResource,
-  useGetKeyResource,
   getMe,
   useGetMe,
   getNotifications,
@@ -7086,8 +7002,6 @@ export default {
   useAddCompanyTrustedEmailDomain,
   addFirstCompany,
   useAddFirstCompany,
-  addKeyResource,
-  useAddKeyResource,
   addProjectContributor,
   useAddProjectContributor,
   addProjectContributors,
@@ -7132,8 +7046,6 @@ export default {
   useEditGoalDiscussion,
   editGoalProgressUpdate,
   useEditGoalProgressUpdate,
-  editKeyResource,
-  useEditKeyResource,
   editParentFolderInResourceHub,
   useEditParentFolderInResourceHub,
   editProjectCheckIn,
@@ -7166,8 +7078,6 @@ export default {
   usePostProjectCheckIn,
   publishResourceHubDocument,
   usePublishResourceHubDocument,
-  removeKeyResource,
-  useRemoveKeyResource,
   renameResourceHubFolder,
   useRenameResourceHubFolder,
   requestPasswordReset,
@@ -7182,10 +7092,6 @@ export default {
   useUpdateProfile,
   updateProfilePicture,
   useUpdateProfilePicture,
-  updateProjectContributor,
-  useUpdateProjectContributor,
-  updateProjectDescription,
-  useUpdateProjectDescription,
   updateTheme,
   useUpdateTheme,
 
@@ -7756,6 +7662,10 @@ export default {
     useCountChildren: (input: ProjectsCountChildrenInput) =>
       useQuery<ProjectsCountChildrenResult>(() => defaultApiClient.apiNamespaceProjects.countChildren(input)),
 
+    getKeyResource: (input: ProjectsGetKeyResourceInput) => defaultApiClient.apiNamespaceProjects.getKeyResource(input),
+    useGetKeyResource: (input: ProjectsGetKeyResourceInput) =>
+      useQuery<ProjectsGetKeyResourceResult>(() => defaultApiClient.apiNamespaceProjects.getKeyResource(input)),
+
     list: (input: ProjectsListInput) => defaultApiClient.apiNamespaceProjects.list(input),
     useList: (input: ProjectsListInput) =>
       useQuery<ProjectsListResult>(() => defaultApiClient.apiNamespaceProjects.list(input)),
@@ -7782,6 +7692,13 @@ export default {
     useSearch: (input: ProjectsSearchInput) =>
       useQuery<ProjectsSearchResult>(() => defaultApiClient.apiNamespaceProjects.search(input)),
 
+    createKeyResource: (input: ProjectsCreateKeyResourceInput) =>
+      defaultApiClient.apiNamespaceProjects.createKeyResource(input),
+    useCreateKeyResource: () =>
+      useMutation<ProjectsCreateKeyResourceInput, ProjectsCreateKeyResourceResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.createKeyResource(input),
+      ),
+
     updateParentGoal: (input: ProjectsUpdateParentGoalInput) =>
       defaultApiClient.apiNamespaceProjects.updateParentGoal(input),
     useUpdateParentGoal: () =>
@@ -7806,6 +7723,13 @@ export default {
     usePause: () =>
       useMutation<ProjectsPauseInput, ProjectsPauseResult>((input) =>
         defaultApiClient.apiNamespaceProjects.pause(input),
+      ),
+
+    updateDescription: (input: ProjectsUpdateDescriptionInput) =>
+      defaultApiClient.apiNamespaceProjects.updateDescription(input),
+    useUpdateDescription: () =>
+      useMutation<ProjectsUpdateDescriptionInput, ProjectsUpdateDescriptionResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.updateDescription(input),
       ),
 
     deleteContributor: (input: ProjectsDeleteContributorInput) =>
@@ -7840,6 +7764,13 @@ export default {
         defaultApiClient.apiNamespaceProjects.close(input),
       ),
 
+    updateContributor: (input: ProjectsUpdateContributorInput) =>
+      defaultApiClient.apiNamespaceProjects.updateContributor(input),
+    useUpdateContributor: () =>
+      useMutation<ProjectsUpdateContributorInput, ProjectsUpdateContributorResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.updateContributor(input),
+      ),
+
     updatePermissions: (input: ProjectsUpdatePermissionsInput) =>
       defaultApiClient.apiNamespaceProjects.updatePermissions(input),
     useUpdatePermissions: () =>
@@ -7872,6 +7803,13 @@ export default {
         defaultApiClient.apiNamespaceProjects.create(input),
       ),
 
+    updateKeyResource: (input: ProjectsUpdateKeyResourceInput) =>
+      defaultApiClient.apiNamespaceProjects.updateKeyResource(input),
+    useUpdateKeyResource: () =>
+      useMutation<ProjectsUpdateKeyResourceInput, ProjectsUpdateKeyResourceResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.updateKeyResource(input),
+      ),
+
     updateReviewer: (input: ProjectsUpdateReviewerInput) => defaultApiClient.apiNamespaceProjects.updateReviewer(input),
     useUpdateReviewer: () =>
       useMutation<ProjectsUpdateReviewerInput, ProjectsUpdateReviewerResult>((input) =>
@@ -7902,6 +7840,13 @@ export default {
     useDelete: () =>
       useMutation<ProjectsDeleteInput, ProjectsDeleteResult>((input) =>
         defaultApiClient.apiNamespaceProjects.delete(input),
+      ),
+
+    deleteKeyResource: (input: ProjectsDeleteKeyResourceInput) =>
+      defaultApiClient.apiNamespaceProjects.deleteKeyResource(input),
+    useDeleteKeyResource: () =>
+      useMutation<ProjectsDeleteKeyResourceInput, ProjectsDeleteKeyResourceResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.deleteKeyResource(input),
       ),
   },
 

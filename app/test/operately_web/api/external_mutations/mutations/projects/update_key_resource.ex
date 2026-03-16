@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.RemoveKeyResource do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Projects.UpdateKeyResource do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "remove_key_resource"
+  def mutation_name, do: "projects/update_key_resource"
 
   @impl true
   def setup(ctx) do
@@ -17,7 +17,9 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.RemoveKeyResource do
   @impl true
   def inputs(ctx) do
     %{
-      id: Paths.key_resource_id(ctx.key_resource)
+      id: Paths.key_resource_id(ctx.key_resource),
+      title: "Updated Title",
+      link: "https://example.com"
     }
   end
 

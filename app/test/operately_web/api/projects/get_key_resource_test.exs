@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetKeyResourceTest do
+defmodule OperatelyWeb.Api.Projects.GetKeyResourceTest do
   use OperatelyWeb.TurboCase
 
   import Operately.PeopleFixtures
@@ -10,7 +10,7 @@ defmodule OperatelyWeb.Api.Queries.GetKeyResourceTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, :get_key_resource, %{})
+      assert {401, _} = query(ctx.conn, [:projects, :get_key_resource], %{})
     end
   end
 
@@ -25,14 +25,14 @@ defmodule OperatelyWeb.Api.Queries.GetKeyResourceTest do
     test "company members have no access", ctx do
       key_resource = create_key_resource(ctx, company_access: Binding.no_access())
 
-      assert {404, res} = query(ctx.conn, :get_key_resource, %{id: key_resource.id})
+      assert {404, res} = query(ctx.conn, [:projects, :get_key_resource], %{id: key_resource.id})
       assert res.message == "The requested resource was not found"
     end
 
     test "company members have access", ctx do
       key_resource = create_key_resource(ctx, company_access: Binding.view_access())
 
-      assert {200, res} = query(ctx.conn, :get_key_resource, %{id: key_resource.id})
+      assert {200, res} = query(ctx.conn, [:projects, :get_key_resource], %{id: key_resource.id})
       assert res.key_resource == key_resource
     end
 
@@ -40,7 +40,7 @@ defmodule OperatelyWeb.Api.Queries.GetKeyResourceTest do
       add_person_to_space(ctx)
       key_resource = create_key_resource(ctx, space_access: Binding.no_access())
 
-      assert {404, res} = query(ctx.conn, :get_key_resource, %{id: key_resource.id})
+      assert {404, res} = query(ctx.conn, [:projects, :get_key_resource], %{id: key_resource.id})
       assert res.message == "The requested resource was not found"
     end
 
@@ -48,7 +48,7 @@ defmodule OperatelyWeb.Api.Queries.GetKeyResourceTest do
       add_person_to_space(ctx)
       key_resource = create_key_resource(ctx, space_access: Binding.view_access())
 
-      assert {200, res} = query(ctx.conn, :get_key_resource, %{id: key_resource.id})
+      assert {200, res} = query(ctx.conn, [:projects, :get_key_resource], %{id: key_resource.id})
       assert res.key_resource == key_resource
     end
 
@@ -60,11 +60,11 @@ defmodule OperatelyWeb.Api.Queries.GetKeyResourceTest do
       account = Repo.preload(champion, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, res} = query(conn, :get_key_resource, %{id: key_resource.id})
+      assert {200, res} = query(conn, [:projects, :get_key_resource], %{id: key_resource.id})
       assert res.key_resource == key_resource
 
       # another user's request
-      assert {404, res} = query(ctx.conn, :get_key_resource, %{id: key_resource.id})
+      assert {404, res} = query(ctx.conn, [:projects, :get_key_resource], %{id: key_resource.id})
       assert res.message == "The requested resource was not found"
     end
 
@@ -76,23 +76,23 @@ defmodule OperatelyWeb.Api.Queries.GetKeyResourceTest do
       account = Repo.preload(reviewer, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, res} = query(conn, :get_key_resource, %{id: key_resource.id})
+      assert {200, res} = query(conn, [:projects, :get_key_resource], %{id: key_resource.id})
       assert res.key_resource == key_resource
 
       # another user's request
-      assert {404, res} = query(ctx.conn, :get_key_resource, %{id: key_resource.id})
+      assert {404, res} = query(ctx.conn, [:projects, :get_key_resource], %{id: key_resource.id})
       assert res.message == "The requested resource was not found"
     end
 
     test "suspended people don't have access", ctx do
       key_resource = create_key_resource(ctx, company_access: Binding.view_access())
 
-      assert {200, res} = query(ctx.conn, :get_key_resource, %{id: key_resource.id})
+      assert {200, res} = query(ctx.conn, [:projects, :get_key_resource], %{id: key_resource.id})
       assert res.key_resource == key_resource
 
       People.update_person(ctx.person, %{suspended_at: DateTime.utc_now()})
 
-      assert {404, res} = query(ctx.conn, :get_key_resource, %{id: key_resource.id})
+      assert {404, res} = query(ctx.conn, [:projects, :get_key_resource], %{id: key_resource.id})
       assert res.message == "The requested resource was not found"
     end
   end

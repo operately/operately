@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetKeyResource do
+defmodule OperatelyWeb.Api.Projects.GetKeyResource do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 

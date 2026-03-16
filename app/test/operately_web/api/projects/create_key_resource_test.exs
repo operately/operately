@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.AddKeyResourceTest do
+defmodule OperatelyWeb.Api.Projects.CreateKeyResourceTest do
   use OperatelyWeb.TurboCase
 
   import Operately.PeopleFixtures
@@ -11,7 +11,7 @@ defmodule OperatelyWeb.Api.Mutations.AddKeyResourceTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :add_key_resource, %{})
+      assert {401, _} = mutation(ctx.conn, [:projects, :create_key_resource], %{})
     end
   end
 
@@ -169,7 +169,7 @@ defmodule OperatelyWeb.Api.Mutations.AddKeyResourceTest do
     end
   end
 
-  describe "add_key_resource functionality" do
+  describe "create_key_resource functionality" do
     setup ctx do
       ctx = register_and_log_in_account(ctx)
       creator = person_fixture(%{company_id: ctx.company.id})
@@ -191,7 +191,7 @@ defmodule OperatelyWeb.Api.Mutations.AddKeyResourceTest do
   #
 
   defp request(conn, project) do
-    mutation(conn, :add_key_resource, %{
+    mutation(conn, [:projects, :create_key_resource], %{
       project_id: Paths.project_id(project),
       title: "some title",
       link: "http://some-link.com",

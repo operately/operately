@@ -54,6 +54,7 @@ defmodule OperatelyWeb.Api do
         query(:list_milestones, OperatelyWeb.Api.Projects.ListMilestones)
         query(:list_contributors, OperatelyWeb.Api.Projects.ListContributors)
         query(:count_children, OperatelyWeb.Api.Projects.CountChildren)
+        query(:get_key_resource, OperatelyWeb.Api.Projects.GetKeyResource)
 
         mutation(:create, OperatelyWeb.Api.Projects.Create)
         mutation(:close, OperatelyWeb.Api.Projects.Close)
@@ -74,6 +75,11 @@ defmodule OperatelyWeb.Api do
         mutation(:update_task_statuses, OperatelyWeb.Api.Projects.UpdateTaskStatuses)
         mutation(:update_kanban, OperatelyWeb.Api.Projects.UpdateKanban)
         mutation(:delete, OperatelyWeb.Api.Projects.DeleteProject)
+        mutation(:create_key_resource, OperatelyWeb.Api.Projects.CreateKeyResource)
+        mutation(:update_key_resource, OperatelyWeb.Api.Projects.UpdateKeyResource)
+        mutation(:delete_key_resource, OperatelyWeb.Api.Projects.DeleteKeyResource)
+        mutation(:update_contributor, OperatelyWeb.Api.Projects.UpdateContributor)
+        mutation(:update_description, OperatelyWeb.Api.Projects.UpdateDescription)
       end
 
       namespace(:project_milestones) do
@@ -183,7 +189,6 @@ defmodule OperatelyWeb.Api do
       query(:get_assignments_count, Q.GetAssignmentsCount)
       query(:get_assignments, Q.GetAssignments)
       query(:get_goal_progress_update, Q.GetGoalProgressUpdate)
-      query(:get_key_resource, Q.GetKeyResource)
       query(:get_me, Q.GetMe)
       query(:get_notifications, Q.GetNotifications)
       query(:get_people, Q.GetPeople)
@@ -209,7 +214,6 @@ defmodule OperatelyWeb.Api do
 
       mutation(:invite_guest, M.InviteGuest)
       mutation(:grant_resource_access, M.GrantResourceAccess)
-      mutation(:add_key_resource, M.AddKeyResource)
       mutation(:add_project_contributor, M.AddProjectContributor)
       mutation(:add_project_contributors, M.AddProjectContributors)
 
@@ -227,11 +231,8 @@ defmodule OperatelyWeb.Api do
       mutation(:delete_resource_hub_folder, M.DeleteResourceHubFolder)
       mutation(:delete_resource_hub_link, M.DeleteResourceHubLink)
 
-      mutation(:remove_key_resource, M.RemoveKeyResource)
-
       mutation(:edit_goal_discussion, M.EditGoalDiscussion)
       mutation(:edit_goal_progress_update, M.EditGoalProgressUpdate)
-      mutation(:edit_key_resource, M.EditKeyResource)
       mutation(:edit_project_check_in, M.EditProjectCheckIn)
       mutation(:edit_resource_hub_document, M.EditResourceHubDocument)
       mutation(:edit_resource_hub_file, M.EditResourceHubFile)
@@ -254,8 +255,6 @@ defmodule OperatelyWeb.Api do
       mutation(:update_profile, M.UpdateProfile)
       mutation(:update_theme, M.UpdateTheme)
       mutation(:update_profile_picture, M.UpdateProfilePicture)
-      mutation(:update_project_contributor, M.UpdateProjectContributor)
-      mutation(:update_project_description, M.UpdateProjectDescription)
 
       subscription(:assignments_count, S.AssignmentsCount)
       subscription(:reload_comments, S.ReloadComments)

@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.UpdateProjectDescription do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Projects.UpdateDescription do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "update_project_description"
+  def mutation_name, do: "projects/update_description"
 
   @impl true
   def setup(ctx) do

@@ -1,8 +1,10 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.GetKeyResource do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.Projects.GetKeyResource do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
   alias OperatelyWeb.Paths
+
+  def query_name, do: "projects/get_key_resource"
 
   @impl true
   def setup(ctx) do
