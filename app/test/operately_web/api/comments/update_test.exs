@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
+defmodule OperatelyWeb.Api.Comments.UpdateTest do
   use OperatelyWeb.TurboCase
 
   import Ecto.Query, only: [from: 2]
@@ -17,7 +17,7 @@ defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :edit_comment, %{})
+      assert {401, _} = mutation(ctx.conn, [:comments, :update], %{})
     end
   end
 
@@ -78,7 +78,7 @@ defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
         comment = create_comment(ctx, check_in, "project_check_in")
 
         assert {code, res} =
-                 mutation(ctx.conn, :edit_comment, %{
+                 mutation(ctx.conn, [:comments, :update], %{
                    comment_id: Paths.comment_id(comment),
                    content: RichText.rich_text("New content", :as_string),
                    parent_type: "project_check_in"
@@ -108,7 +108,7 @@ defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
         comment = create_comment(ctx, thread, "comment_thread")
 
         assert {code, res} =
-                 mutation(ctx.conn, :edit_comment, %{
+                 mutation(ctx.conn, [:comments, :update], %{
                    comment_id: Paths.comment_id(comment),
                    content: RichText.rich_text("New content", :as_string),
                    parent_type: "comment_thread"
@@ -138,7 +138,7 @@ defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
         comment = create_comment(ctx, update, "update")
 
         assert {code, res} =
-                 mutation(ctx.conn, :edit_comment, %{
+                 mutation(ctx.conn, [:comments, :update], %{
                    comment_id: Paths.comment_id(comment),
                    content: RichText.rich_text("New content", :as_string),
                    parent_type: "goal_update"
@@ -168,7 +168,7 @@ defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
         comment = create_comment(ctx, message, "message")
 
         assert {code, res} =
-                 mutation(ctx.conn, :edit_comment, %{
+                 mutation(ctx.conn, [:comments, :update], %{
                    comment_id: Paths.comment_id(comment),
                    content: RichText.rich_text("New content", :as_string),
                    parent_type: "message"
@@ -198,7 +198,7 @@ defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
         comment = create_milestone_comment(ctx, milestone)
 
         assert {code, res} =
-                 mutation(ctx.conn, :edit_comment, %{
+                 mutation(ctx.conn, [:comments, :update], %{
                    comment_id: Paths.comment_id(comment),
                    content: RichText.rich_text("New content", :as_string),
                    parent_type: "milestone"
@@ -228,7 +228,7 @@ defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
         comment = create_comment(ctx, task, "project_task")
 
         assert {code, res} =
-                 mutation(ctx.conn, :edit_comment, %{
+                 mutation(ctx.conn, [:comments, :update], %{
                    comment_id: Paths.comment_id(comment),
                    content: RichText.rich_text("New content", :as_string),
                    parent_type: "project_task"
@@ -262,7 +262,7 @@ defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
       assert comment.content["message"] == RichText.rich_text("Content")
 
       assert {200, res} =
-               mutation(ctx.conn, :edit_comment, %{
+               mutation(ctx.conn, [:comments, :update], %{
                  comment_id: Paths.comment_id(comment),
                  content: RichText.rich_text("New content", :as_string),
                  parent_type: "project_check_in"
@@ -317,7 +317,7 @@ defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
         assert subscriptions == []
 
         assert {200, _} =
-                 mutation(ctx.conn, :edit_comment, %{
+                 mutation(ctx.conn, [:comments, :update], %{
                    comment_id: Paths.comment_id(comment),
                    content: RichText.rich_text(mentioned_people: [ctx.person]),
                    parent_type: @test.resource_type

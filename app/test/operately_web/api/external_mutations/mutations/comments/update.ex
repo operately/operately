@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.RemoveReaction do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Comments.Update do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "remove_reaction"
+  def mutation_name, do: "comments/update"
 
   @impl true
   def setup(ctx) do
@@ -12,19 +12,24 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.RemoveReaction do
     |> Factory.add_space(:space)
     |> Factory.add_messages_board(:messages_board, :space)
     |> Factory.add_message(:message, :messages_board)
-    |> Factory.add_reactions(:reaction, :message)
+    |> Factory.preload(:message, :space)
+    |> Factory.add_comment(:comment, :message)
   end
 
   @impl true
   def inputs(ctx) do
     %{
-      reaction_id: Operately.ShortUuid.encode!(ctx.reaction.id)
+      content: rich_text_string("Updated content"),
+      comment_id: Paths.comment_id(ctx.comment),
+      parent_type: "message"
     }
   end
 
   @impl true
   def assert(response, _ctx) do
-    assert response.success
+    assert response.comment.id
     refute Map.has_key?(response, :error)
   end
+
+  defp rich_text_string(text), do: Operately.Support.RichText.rich_text(text, :as_string)
 end

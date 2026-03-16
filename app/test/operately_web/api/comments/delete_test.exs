@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.DeleteCommentTest do
+defmodule OperatelyWeb.Api.Comments.DeleteTest do
   use OperatelyWeb.TurboCase
 
   alias Operately.Repo
@@ -10,7 +10,7 @@ defmodule OperatelyWeb.Api.Mutations.DeleteCommentTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :delete_comment, %{})
+      assert {401, _} = mutation(ctx.conn, [:comments, :delete], %{})
     end
   end
 
@@ -30,7 +30,7 @@ defmodule OperatelyWeb.Api.Mutations.DeleteCommentTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       assert {200, res} =
-               mutation(ctx.conn, :delete_comment, %{
+               mutation(ctx.conn, [:comments, :delete], %{
                  comment_id: Paths.comment_id(ctx.comment),
                  parent_type: "project_check_in"
                })
@@ -43,7 +43,7 @@ defmodule OperatelyWeb.Api.Mutations.DeleteCommentTest do
       ctx = Factory.log_in_person(ctx, :member)
 
       assert {403, res} =
-               mutation(ctx.conn, :delete_comment, %{
+               mutation(ctx.conn, [:comments, :delete], %{
                  comment_id: Paths.comment_id(ctx.comment),
                  parent_type: "project_check_in"
                })
@@ -65,7 +65,7 @@ defmodule OperatelyWeb.Api.Mutations.DeleteCommentTest do
 
     test "returns not found when comment does not exist", ctx do
       assert {404, res} =
-               mutation(ctx.conn, :delete_comment, %{
+               mutation(ctx.conn, [:comments, :delete], %{
                  comment_id: Ecto.UUID.generate(),
                  parent_type: "project_check_in"
                })

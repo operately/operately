@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.RemoveReaction do
+defmodule OperatelyWeb.Api.Reactions.Delete do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

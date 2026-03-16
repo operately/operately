@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.AddReaction do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Comments.Create do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "add_reaction"
+  def mutation_name, do: "comments/create"
 
   @impl true
   def setup(ctx) do
@@ -19,13 +19,15 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.AddReaction do
     %{
       entity_id: Paths.message_id(ctx.message),
       entity_type: "message",
-      emoji: "value"
+      content: rich_text_string("Updated content")
     }
   end
 
   @impl true
   def assert(response, _ctx) do
-    assert response.reaction.id
+    assert response.comment.id
     refute Map.has_key?(response, :error)
   end
+
+  defp rich_text_string(text), do: Operately.Support.RichText.rich_text(text, :as_string)
 end
