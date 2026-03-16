@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
+defmodule OperatelyWeb.Api.ProjectCheckIns.Get do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
