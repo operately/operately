@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.PostMilestoneComment do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.ProjectMilestones.CreateComment do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "post_milestone_comment"
+  def mutation_name, do: "project_milestones/create_comment"
 
   @impl true
   def setup(ctx) do

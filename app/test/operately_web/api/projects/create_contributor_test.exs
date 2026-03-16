@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.AddProjectContributorTest do
+defmodule OperatelyWeb.Api.Projects.CreateContributorTest do
   use OperatelyWeb.TurboCase
 
   import Operately.PeopleFixtures
@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :add_project_contributor, %{})
+      assert {401, _} = mutation(ctx.conn, [:projects, :create_contributor], %{})
     end
   end
 
@@ -204,7 +204,7 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorTest do
     end
   end
 
-  describe "add_project_contributor functionality" do
+  describe "create_contributor functionality" do
     setup ctx do
       ctx = register_and_log_in_account(ctx)
       creator = person_fixture(%{company_id: ctx.company.id})
@@ -271,7 +271,7 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorTest do
   #
 
   defp request(conn, %{project: project, contributor: contributor, permissions: permissions}) do
-    mutation(conn, :add_project_contributor, %{
+    mutation(conn, [:projects, :create_contributor], %{
       project_id: Paths.project_id(project),
       person_id: Paths.person_id(contributor),
       responsibility: "some role",
@@ -281,7 +281,7 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributorTest do
   end
 
   defp request(conn, %{project: project, contributor: contributor}) do
-    mutation(conn, :add_project_contributor, %{
+    mutation(conn, [:projects, :create_contributor], %{
       project_id: Paths.project_id(project),
       person_id: Paths.person_id(contributor),
       responsibility: "some role",

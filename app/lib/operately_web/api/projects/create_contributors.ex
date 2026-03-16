@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.AddProjectContributors do
+defmodule OperatelyWeb.Api.Projects.CreateContributors do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

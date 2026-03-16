@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetProjectContributor do
+defmodule OperatelyWeb.Api.Projects.GetContributor do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 

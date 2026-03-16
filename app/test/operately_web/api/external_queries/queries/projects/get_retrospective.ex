@@ -1,10 +1,10 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.GetProjectRetrospective do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.Projects.GetRetrospective do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
   alias OperatelyWeb.Paths
 
-  def query_name, do: "get_project_retrospective"
+  def query_name, do: "projects/get_retrospective"
 
   @impl true
   def setup(ctx) do
