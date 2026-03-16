@@ -102,7 +102,7 @@ function Page() {
   const [description, setDescription] = usePageField({
     value: (data: { project: Projects.Project }) => data.project.description && JSON.parse(data.project.description),
     update: (v) =>
-      Api.updateProjectDescription({ projectId: project.id!, description: JSON.stringify(v) }).then(() => true),
+      Api.projects.updateDescription({ projectId: project.id, description: JSON.stringify(v) }).then(() => true),
     onError: () => showErrorToast("Network Error", "Reverted the description to its previous value."),
   });
 
@@ -670,7 +670,7 @@ function useResources(project: Projects.Project) {
   const [resources, setResources] = React.useState<ProjectPage.Resource[]>(prepareResources(project.keyResources!));
 
   const createResource = async (resource: ProjectPage.NewResourcePayload) => {
-    return Api.addKeyResource({
+    return Api.projects.createKeyResource({
       projectId: project.id,
       title: resource.name,
       link: resource.url,
@@ -691,7 +691,7 @@ function useResources(project: Projects.Project) {
   };
 
   const updateResource = async (resource: ProjectPage.UpdateResourcePayload) => {
-    return Api.editKeyResource({
+    return Api.projects.updateKeyResource({
       id: resource.id,
       title: resource.name,
       link: resource.url,
@@ -718,7 +718,7 @@ function useResources(project: Projects.Project) {
   };
 
   const removeResource = async (id: string) => {
-    return Api.removeKeyResource({ id })
+    return Api.projects.deleteKeyResource({ id })
       .then(() => {
         PageCache.invalidate(pageCacheKey(project.id));
         const keyResources = project.keyResources || [];

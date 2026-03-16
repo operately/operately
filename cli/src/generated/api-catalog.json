@@ -1,5 +1,188 @@
 {
   "types": {
+    "enums": {
+      "access_options": [
+        "no_access",
+        "minimal_access",
+        "view_access",
+        "comment_access",
+        "edit_access",
+        "admin_access",
+        "full_access"
+      ],
+      "account_theme": [
+        "dark",
+        "light",
+        "system"
+      ],
+      "activity_scope_type": [
+        "person",
+        "company",
+        "space",
+        "project",
+        "milestone",
+        "task",
+        "goal"
+      ],
+      "agent_message_sender": [
+        "user",
+        "ai"
+      ],
+      "agent_message_status": [
+        "pending",
+        "done"
+      ],
+      "comment_parent_type": [
+        "project_check_in",
+        "project_retrospective",
+        "comment_thread",
+        "goal_update",
+        "message",
+        "resource_hub_document",
+        "resource_hub_file",
+        "resource_hub_link",
+        "space_task",
+        "project_task",
+        "milestone"
+      ],
+      "contextual_date_type": [
+        "day",
+        "month",
+        "quarter",
+        "year"
+      ],
+      "create_conversation_context_type": [
+        "goal",
+        "project"
+      ],
+      "goal_privacy_values": [
+        "public",
+        "internal",
+        "confidential",
+        "secret"
+      ],
+      "goal_status": [
+        "on_track",
+        "achieved",
+        "missed",
+        "paused",
+        "caution",
+        "off_track",
+        "pending",
+        "outdated"
+      ],
+      "milestone_comment_action": [
+        "none",
+        "complete",
+        "reopen"
+      ],
+      "milestone_status": [
+        "pending",
+        "done"
+      ],
+      "project_check_in_status": [
+        "on_track",
+        "caution",
+        "off_track"
+      ],
+      "project_task_status_color": [
+        "gray",
+        "blue",
+        "green",
+        "red"
+      ],
+      "reaction_entity_type": [
+        "project_check_in",
+        "project_retrospective",
+        "comment_thread",
+        "goal_update",
+        "message",
+        "comment",
+        "resource_hub_document",
+        "resource_hub_file",
+        "resource_hub_link"
+      ],
+      "reaction_parent_type": [
+        "project_check_in",
+        "project_retrospective",
+        "comment_thread",
+        "goal_update",
+        "message",
+        "milestone",
+        "project_task",
+        "space_task",
+        "resource_hub_document",
+        "resource_hub_file",
+        "resource_hub_link"
+      ],
+      "resource_access_types": [
+        "space",
+        "goal",
+        "project"
+      ],
+      "review_assignment_origin_types": [
+        "project",
+        "goal",
+        "space"
+      ],
+      "review_assignment_roles": [
+        "owner",
+        "reviewer"
+      ],
+      "review_assignment_types": [
+        "check_in",
+        "goal_update",
+        "space_task",
+        "project_task",
+        "milestone"
+      ],
+      "subscription_parent_type": [
+        "project_check_in",
+        "project_retrospective",
+        "goal_update",
+        "message",
+        "resource_hub_document",
+        "resource_hub_file",
+        "resource_hub_link",
+        "comment_thread",
+        "project",
+        "milestone",
+        "project_task"
+      ],
+      "success_status": [
+        "achieved",
+        "missed"
+      ],
+      "task_type": [
+        "space",
+        "project"
+      ],
+      "work_map_item_privacy": [
+        "public",
+        "internal",
+        "confidential",
+        "secret"
+      ],
+      "work_map_item_state": [
+        "active",
+        "paused",
+        "closed"
+      ],
+      "work_map_item_status": [
+        "on_track",
+        "achieved",
+        "missed",
+        "paused",
+        "caution",
+        "off_track",
+        "pending",
+        "outdated"
+      ],
+      "work_map_item_type": [
+        "project",
+        "goal"
+      ]
+    },
     "primitives": {
       "company_id": {
         "encoded_type": "string"
@@ -10,6 +193,388 @@
       "json": {
         "encoded_type": "string"
       }
+    },
+    "unions": {
+      "activity_content": [
+        {
+          "name": "activity_content_company_owners_adding",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_company_admin_added",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_company_members_permissions_edited",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_company_member_added",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_company_member_converted_to_guest",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_guest_invited",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_company_editing",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_comment_added",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_discussion_comment_submitted",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_discussion_editing",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_discussion_posting",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_goal_archived",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_goal_check_in",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_goal_check_in_acknowledgement",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_goal_check_in_edit",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_goal_closing",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_goal_created",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_goal_discussion_creation",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_goal_discussion_editing",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_goal_editing",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_goal_reopening",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_goal_reparent",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_goal_timeframe_editing",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_group_edited",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_project_archived",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_project_check_in_acknowledged",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_project_check_in_commented",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_project_check_in_edit",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_project_check_in_submitted",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_project_closed",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_project_contributor_addition",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_project_contributors_addition",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_project_contributor_edited",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_project_contributor_removed",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_project_created",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_project_discussion_submitted",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_project_goal_connection",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_project_goal_disconnection",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_project_milestone_commented",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_project_description_changed",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_milestone_description_updating",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_goal_description_changed",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_project_moved",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_project_pausing",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_project_renamed",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_project_resuming",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_project_review_acknowledged",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_project_review_commented",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_project_review_request_submitted",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_project_due_date_updating",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_project_start_date_updating",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_project_champion_updating",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_project_reviewer_updating",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_project_review_submitted",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_project_timeline_edited",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_space_task_commented",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_space_joining",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_task_adding",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_task_assignee_assignment",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_task_closing",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_task_description_change",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_task_name_editing",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_task_moving",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_task_priority_change",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_task_reopening",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_task_size_change",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_task_status_change",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_task_status_updating",
+          "kind": "named"
+        },
+        {
+          "name": "activity_content_task_update",
+          "kind": "named"
+        }
+      ],
+      "activity_data_union": [
+        {
+          "name": "activity_event_data_project_create",
+          "kind": "named"
+        },
+        {
+          "name": "activity_event_data_milestone_create",
+          "kind": "named"
+        },
+        {
+          "name": "activity_event_data_comment_post",
+          "kind": "named"
+        }
+      ],
+      "activity_resource_union": [
+        {
+          "name": "project",
+          "kind": "named"
+        },
+        {
+          "name": "update",
+          "kind": "named"
+        },
+        {
+          "name": "milestone",
+          "kind": "named"
+        },
+        {
+          "name": "comment",
+          "kind": "named"
+        }
+      ],
+      "assignment_resource": [
+        {
+          "name": "project",
+          "kind": "named"
+        },
+        {
+          "name": "milestone",
+          "kind": "named"
+        }
+      ],
+      "panel_linked_resource": [
+        {
+          "name": "project",
+          "kind": "named"
+        }
+      ],
+      "update_content": [
+        {
+          "name": "update_content_project_created",
+          "kind": "named"
+        },
+        {
+          "name": "update_content_project_start_time_changed",
+          "kind": "named"
+        },
+        {
+          "name": "update_content_project_end_time_changed",
+          "kind": "named"
+        },
+        {
+          "name": "update_content_project_contributor_added",
+          "kind": "named"
+        },
+        {
+          "name": "update_content_project_contributor_removed",
+          "kind": "named"
+        },
+        {
+          "name": "update_content_project_milestone_created",
+          "kind": "named"
+        },
+        {
+          "name": "update_content_project_milestone_completed",
+          "kind": "named"
+        },
+        {
+          "name": "update_content_project_milestone_deadline_changed",
+          "kind": "named"
+        },
+        {
+          "name": "update_content_project_milestone_deleted",
+          "kind": "named"
+        },
+        {
+          "name": "update_content_status_update",
+          "kind": "named"
+        },
+        {
+          "name": "update_content_review",
+          "kind": "named"
+        },
+        {
+          "name": "update_content_project_discussion",
+          "kind": "named"
+        },
+        {
+          "name": "update_content_message",
+          "kind": "named"
+        }
+      ]
     },
     "objects": {
       "activity_content_task_update": {
@@ -14194,576 +14759,10 @@
           }
         ]
       }
-    },
-    "unions": {
-      "activity_content": [
-        {
-          "name": "activity_content_company_owners_adding",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_company_admin_added",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_company_members_permissions_edited",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_company_member_added",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_company_member_converted_to_guest",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_guest_invited",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_company_editing",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_comment_added",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_discussion_comment_submitted",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_discussion_editing",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_discussion_posting",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_goal_archived",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_goal_check_in",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_goal_check_in_acknowledgement",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_goal_check_in_edit",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_goal_closing",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_goal_created",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_goal_discussion_creation",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_goal_discussion_editing",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_goal_editing",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_goal_reopening",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_goal_reparent",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_goal_timeframe_editing",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_group_edited",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_project_archived",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_project_check_in_acknowledged",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_project_check_in_commented",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_project_check_in_edit",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_project_check_in_submitted",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_project_closed",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_project_contributor_addition",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_project_contributors_addition",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_project_contributor_edited",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_project_contributor_removed",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_project_created",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_project_discussion_submitted",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_project_goal_connection",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_project_goal_disconnection",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_project_milestone_commented",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_project_description_changed",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_milestone_description_updating",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_goal_description_changed",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_project_moved",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_project_pausing",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_project_renamed",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_project_resuming",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_project_review_acknowledged",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_project_review_commented",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_project_review_request_submitted",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_project_due_date_updating",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_project_start_date_updating",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_project_champion_updating",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_project_reviewer_updating",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_project_review_submitted",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_project_timeline_edited",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_space_task_commented",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_space_joining",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_task_adding",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_task_assignee_assignment",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_task_closing",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_task_description_change",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_task_name_editing",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_task_moving",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_task_priority_change",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_task_reopening",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_task_size_change",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_task_status_change",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_task_status_updating",
-          "kind": "named"
-        },
-        {
-          "name": "activity_content_task_update",
-          "kind": "named"
-        }
-      ],
-      "activity_data_union": [
-        {
-          "name": "activity_event_data_project_create",
-          "kind": "named"
-        },
-        {
-          "name": "activity_event_data_milestone_create",
-          "kind": "named"
-        },
-        {
-          "name": "activity_event_data_comment_post",
-          "kind": "named"
-        }
-      ],
-      "activity_resource_union": [
-        {
-          "name": "project",
-          "kind": "named"
-        },
-        {
-          "name": "update",
-          "kind": "named"
-        },
-        {
-          "name": "milestone",
-          "kind": "named"
-        },
-        {
-          "name": "comment",
-          "kind": "named"
-        }
-      ],
-      "assignment_resource": [
-        {
-          "name": "project",
-          "kind": "named"
-        },
-        {
-          "name": "milestone",
-          "kind": "named"
-        }
-      ],
-      "panel_linked_resource": [
-        {
-          "name": "project",
-          "kind": "named"
-        }
-      ],
-      "update_content": [
-        {
-          "name": "update_content_project_created",
-          "kind": "named"
-        },
-        {
-          "name": "update_content_project_start_time_changed",
-          "kind": "named"
-        },
-        {
-          "name": "update_content_project_end_time_changed",
-          "kind": "named"
-        },
-        {
-          "name": "update_content_project_contributor_added",
-          "kind": "named"
-        },
-        {
-          "name": "update_content_project_contributor_removed",
-          "kind": "named"
-        },
-        {
-          "name": "update_content_project_milestone_created",
-          "kind": "named"
-        },
-        {
-          "name": "update_content_project_milestone_completed",
-          "kind": "named"
-        },
-        {
-          "name": "update_content_project_milestone_deadline_changed",
-          "kind": "named"
-        },
-        {
-          "name": "update_content_project_milestone_deleted",
-          "kind": "named"
-        },
-        {
-          "name": "update_content_status_update",
-          "kind": "named"
-        },
-        {
-          "name": "update_content_review",
-          "kind": "named"
-        },
-        {
-          "name": "update_content_project_discussion",
-          "kind": "named"
-        },
-        {
-          "name": "update_content_message",
-          "kind": "named"
-        }
-      ]
-    },
-    "enums": {
-      "access_options": [
-        "no_access",
-        "minimal_access",
-        "view_access",
-        "comment_access",
-        "edit_access",
-        "admin_access",
-        "full_access"
-      ],
-      "account_theme": [
-        "dark",
-        "light",
-        "system"
-      ],
-      "activity_scope_type": [
-        "person",
-        "company",
-        "space",
-        "project",
-        "milestone",
-        "task",
-        "goal"
-      ],
-      "agent_message_sender": [
-        "user",
-        "ai"
-      ],
-      "agent_message_status": [
-        "pending",
-        "done"
-      ],
-      "comment_parent_type": [
-        "project_check_in",
-        "project_retrospective",
-        "comment_thread",
-        "goal_update",
-        "message",
-        "resource_hub_document",
-        "resource_hub_file",
-        "resource_hub_link",
-        "space_task",
-        "project_task",
-        "milestone"
-      ],
-      "contextual_date_type": [
-        "day",
-        "month",
-        "quarter",
-        "year"
-      ],
-      "create_conversation_context_type": [
-        "goal",
-        "project"
-      ],
-      "goal_privacy_values": [
-        "public",
-        "internal",
-        "confidential",
-        "secret"
-      ],
-      "goal_status": [
-        "on_track",
-        "achieved",
-        "missed",
-        "paused",
-        "caution",
-        "off_track",
-        "pending",
-        "outdated"
-      ],
-      "milestone_comment_action": [
-        "none",
-        "complete",
-        "reopen"
-      ],
-      "milestone_status": [
-        "pending",
-        "done"
-      ],
-      "project_check_in_status": [
-        "on_track",
-        "caution",
-        "off_track"
-      ],
-      "project_task_status_color": [
-        "gray",
-        "blue",
-        "green",
-        "red"
-      ],
-      "reaction_entity_type": [
-        "project_check_in",
-        "project_retrospective",
-        "comment_thread",
-        "goal_update",
-        "message",
-        "comment",
-        "resource_hub_document",
-        "resource_hub_file",
-        "resource_hub_link"
-      ],
-      "reaction_parent_type": [
-        "project_check_in",
-        "project_retrospective",
-        "comment_thread",
-        "goal_update",
-        "message",
-        "milestone",
-        "project_task",
-        "space_task",
-        "resource_hub_document",
-        "resource_hub_file",
-        "resource_hub_link"
-      ],
-      "resource_access_types": [
-        "space",
-        "goal",
-        "project"
-      ],
-      "review_assignment_origin_types": [
-        "project",
-        "goal",
-        "space"
-      ],
-      "review_assignment_roles": [
-        "owner",
-        "reviewer"
-      ],
-      "review_assignment_types": [
-        "check_in",
-        "goal_update",
-        "space_task",
-        "project_task",
-        "milestone"
-      ],
-      "subscription_parent_type": [
-        "project_check_in",
-        "project_retrospective",
-        "goal_update",
-        "message",
-        "resource_hub_document",
-        "resource_hub_file",
-        "resource_hub_link",
-        "comment_thread",
-        "project",
-        "milestone",
-        "project_task"
-      ],
-      "success_status": [
-        "achieved",
-        "missed"
-      ],
-      "task_type": [
-        "space",
-        "project"
-      ],
-      "work_map_item_privacy": [
-        "public",
-        "internal",
-        "confidential",
-        "secret"
-      ],
-      "work_map_item_state": [
-        "active",
-        "paused",
-        "closed"
-      ],
-      "work_map_item_status": [
-        "on_track",
-        "achieved",
-        "missed",
-        "paused",
-        "caution",
-        "off_track",
-        "pending",
-        "outdated"
-      ],
-      "work_map_item_type": [
-        "project",
-        "goal"
-      ]
     }
   },
+  "api_base_path": "/api/external/v1",
   "endpoint_count": 202,
-  "query_count": 64,
-  "mutation_count": 138,
   "endpoints": [
     {
       "name": "create",
@@ -17916,6 +17915,63 @@
       "method": "POST"
     },
     {
+      "name": "create_comment",
+      "type": "mutation",
+      "path": "/api/external/v1/project_milestones/create_comment",
+      "handler": "OperatelyWeb.Api.ProjectMilestones.CreateComment",
+      "outputs": [
+        {
+          "default": null,
+          "name": "comment",
+          "type": {
+            "name": "milestone_comment",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "project_milestones",
+      "inputs": [
+        {
+          "default": null,
+          "name": "milestone_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "content",
+          "type": {
+            "name": "json",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "action",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "project_milestones/create_comment",
+      "method": "POST"
+    },
+    {
       "name": "delete",
       "type": "mutation",
       "path": "/api/external/v1/project_milestones/delete",
@@ -18607,6 +18663,202 @@
       "method": "POST"
     },
     {
+      "name": "create_contributor",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/create_contributor",
+      "handler": "OperatelyWeb.Api.Projects.CreateContributor",
+      "outputs": [
+        {
+          "default": null,
+          "name": "project_contributor",
+          "type": {
+            "name": "project_contributor",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "person_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "responsibility",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "permissions",
+          "type": {
+            "name": "access_options",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "role",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "projects/create_contributor",
+      "method": "POST"
+    },
+    {
+      "name": "create_contributors",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/create_contributors",
+      "handler": "OperatelyWeb.Api.Projects.CreateContributors",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "contributors",
+          "type": {
+            "item": {
+              "name": "project_contributor_input",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "projects/create_contributors",
+      "method": "POST"
+    },
+    {
+      "name": "create_key_resource",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/create_key_resource",
+      "handler": "OperatelyWeb.Api.Projects.CreateKeyResource",
+      "outputs": [
+        {
+          "default": null,
+          "name": "key_resource",
+          "type": {
+            "name": "project_key_resource",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "title",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "link",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "resource_type",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "projects/create_key_resource",
+      "method": "POST"
+    },
+    {
       "name": "create_milestone",
       "type": "mutation",
       "path": "/api/external/v1/projects/create_milestone",
@@ -18731,6 +18983,41 @@
         }
       ],
       "full_name": "projects/delete_contributor",
+      "method": "POST"
+    },
+    {
+      "name": "delete_key_resource",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/delete_key_resource",
+      "handler": "OperatelyWeb.Api.Projects.DeleteKeyResource",
+      "outputs": [
+        {
+          "default": null,
+          "name": "key_resource",
+          "type": {
+            "name": "project_key_resource",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "projects/delete_key_resource",
       "method": "POST"
     },
     {
@@ -18964,6 +19251,232 @@
         }
       ],
       "full_name": "projects/get",
+      "method": "GET"
+    },
+    {
+      "name": "get_contributor",
+      "type": "query",
+      "path": "/api/external/v1/projects/get_contributor",
+      "handler": "OperatelyWeb.Api.Projects.GetContributor",
+      "outputs": [
+        {
+          "default": null,
+          "name": "contributor",
+          "type": {
+            "name": "project_contributor",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_project",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_permissions",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_access_level",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "projects/get_contributor",
+      "method": "GET"
+    },
+    {
+      "name": "get_key_resource",
+      "type": "query",
+      "path": "/api/external/v1/projects/get_key_resource",
+      "handler": "OperatelyWeb.Api.Projects.GetKeyResource",
+      "outputs": [
+        {
+          "default": null,
+          "name": "key_resource",
+          "type": {
+            "name": "project_key_resource",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "projects/get_key_resource",
+      "method": "GET"
+    },
+    {
+      "name": "get_retrospective",
+      "type": "query",
+      "path": "/api/external/v1/projects/get_retrospective",
+      "handler": "OperatelyWeb.Api.Projects.GetRetrospective",
+      "outputs": [
+        {
+          "default": null,
+          "name": "retrospective",
+          "type": {
+            "name": "project_retrospective",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_author",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_project",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_closed_at",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_permissions",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_reactions",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_subscriptions_list",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_potential_subscribers",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_unread_notifications",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "projects/get_retrospective",
       "method": "GET"
     },
     {
@@ -19618,6 +20131,131 @@
       "method": "POST"
     },
     {
+      "name": "update_contributor",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/update_contributor",
+      "handler": "OperatelyWeb.Api.Projects.UpdateContributor",
+      "outputs": [
+        {
+          "default": null,
+          "name": "contributor",
+          "type": {
+            "name": "project_contributor",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "contrib_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "person_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "responsibility",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "permissions",
+          "type": {
+            "name": "access_options",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "role",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "projects/update_contributor",
+      "method": "POST"
+    },
+    {
+      "name": "update_description",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/update_description",
+      "handler": "OperatelyWeb.Api.Projects.UpdateDescription",
+      "outputs": [
+        {
+          "default": null,
+          "name": "project",
+          "type": {
+            "name": "project",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "description",
+          "type": {
+            "name": "json",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "projects/update_description",
+      "method": "POST"
+    },
+    {
       "name": "update_due_date",
       "type": "mutation",
       "path": "/api/external/v1/projects/update_due_date",
@@ -19740,6 +20378,63 @@
         }
       ],
       "full_name": "projects/update_kanban",
+      "method": "POST"
+    },
+    {
+      "name": "update_key_resource",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/update_key_resource",
+      "handler": "OperatelyWeb.Api.Projects.UpdateKeyResource",
+      "outputs": [
+        {
+          "default": null,
+          "name": "key_resource",
+          "type": {
+            "name": "project_key_resource",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "title",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "link",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "projects/update_key_resource",
       "method": "POST"
     },
     {
@@ -20342,202 +21037,6 @@
         }
       ],
       "full_name": "acknowledge_project_check_in",
-      "method": "POST"
-    },
-    {
-      "name": "add_key_resource",
-      "type": "mutation",
-      "path": "/api/external/v1/add_key_resource",
-      "handler": "OperatelyWeb.Api.Mutations.AddKeyResource",
-      "outputs": [
-        {
-          "default": null,
-          "name": "key_resource",
-          "type": {
-            "name": "project_key_resource",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "project_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "title",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "link",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "resource_type",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "add_key_resource",
-      "method": "POST"
-    },
-    {
-      "name": "add_project_contributor",
-      "type": "mutation",
-      "path": "/api/external/v1/add_project_contributor",
-      "handler": "OperatelyWeb.Api.Mutations.AddProjectContributor",
-      "outputs": [
-        {
-          "default": null,
-          "name": "project_contributor",
-          "type": {
-            "name": "project_contributor",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "project_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "person_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "responsibility",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "permissions",
-          "type": {
-            "name": "access_options",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "role",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "add_project_contributor",
-      "method": "POST"
-    },
-    {
-      "name": "add_project_contributors",
-      "type": "mutation",
-      "path": "/api/external/v1/add_project_contributors",
-      "handler": "OperatelyWeb.Api.Mutations.AddProjectContributors",
-      "outputs": [
-        {
-          "default": null,
-          "name": "success",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "project_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "contributors",
-          "type": {
-            "item": {
-              "name": "project_contributor_input",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "add_project_contributors",
       "method": "POST"
     },
     {
@@ -21431,63 +21930,6 @@
         }
       ],
       "full_name": "edit_goal_progress_update",
-      "method": "POST"
-    },
-    {
-      "name": "edit_key_resource",
-      "type": "mutation",
-      "path": "/api/external/v1/edit_key_resource",
-      "handler": "OperatelyWeb.Api.Mutations.EditKeyResource",
-      "outputs": [
-        {
-          "default": null,
-          "name": "key_resource",
-          "type": {
-            "name": "project_key_resource",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "title",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "link",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "edit_key_resource",
       "method": "POST"
     },
     {
@@ -22471,41 +22913,6 @@
       "method": "GET"
     },
     {
-      "name": "get_key_resource",
-      "type": "query",
-      "path": "/api/external/v1/get_key_resource",
-      "handler": "OperatelyWeb.Api.Queries.GetKeyResource",
-      "outputs": [
-        {
-          "default": null,
-          "name": "key_resource",
-          "type": {
-            "name": "project_key_resource",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "get_key_resource",
-      "method": "GET"
-    },
-    {
       "name": "get_me",
       "type": "query",
       "path": "/api/external/v1/get_me",
@@ -22964,197 +23371,6 @@
         }
       ],
       "full_name": "get_project_check_ins",
-      "method": "GET"
-    },
-    {
-      "name": "get_project_contributor",
-      "type": "query",
-      "path": "/api/external/v1/get_project_contributor",
-      "handler": "OperatelyWeb.Api.Queries.GetProjectContributor",
-      "outputs": [
-        {
-          "default": null,
-          "name": "contributor",
-          "type": {
-            "name": "project_contributor",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_project",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_permissions",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_access_level",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "get_project_contributor",
-      "method": "GET"
-    },
-    {
-      "name": "get_project_retrospective",
-      "type": "query",
-      "path": "/api/external/v1/get_project_retrospective",
-      "handler": "OperatelyWeb.Api.Queries.GetProjectRetrospective",
-      "outputs": [
-        {
-          "default": null,
-          "name": "retrospective",
-          "type": {
-            "name": "project_retrospective",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "project_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_author",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_project",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_closed_at",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_permissions",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_reactions",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_subscriptions_list",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_potential_subscribers",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_unread_notifications",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "get_project_retrospective",
       "method": "GET"
     },
     {
@@ -24469,63 +24685,6 @@
       "method": "POST"
     },
     {
-      "name": "post_milestone_comment",
-      "type": "mutation",
-      "path": "/api/external/v1/post_milestone_comment",
-      "handler": "OperatelyWeb.Api.Mutations.PostMilestoneComment",
-      "outputs": [
-        {
-          "default": null,
-          "name": "comment",
-          "type": {
-            "name": "milestone_comment",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "milestone_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "content",
-          "type": {
-            "name": "json",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "action",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "post_milestone_comment",
-      "method": "POST"
-    },
-    {
       "name": "post_project_check_in",
       "type": "mutation",
       "path": "/api/external/v1/post_project_check_in",
@@ -24687,41 +24846,6 @@
         }
       ],
       "full_name": "publish_resource_hub_document",
-      "method": "POST"
-    },
-    {
-      "name": "remove_key_resource",
-      "type": "mutation",
-      "path": "/api/external/v1/remove_key_resource",
-      "handler": "OperatelyWeb.Api.Mutations.RemoveKeyResource",
-      "outputs": [
-        {
-          "default": null,
-          "name": "key_resource",
-          "type": {
-            "name": "project_key_resource",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "remove_key_resource",
       "method": "POST"
     },
     {
@@ -25068,131 +25192,6 @@
         }
       ],
       "full_name": "update_profile_picture",
-      "method": "POST"
-    },
-    {
-      "name": "update_project_contributor",
-      "type": "mutation",
-      "path": "/api/external/v1/update_project_contributor",
-      "handler": "OperatelyWeb.Api.Mutations.UpdateProjectContributor",
-      "outputs": [
-        {
-          "default": null,
-          "name": "contributor",
-          "type": {
-            "name": "project_contributor",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "contrib_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "person_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "responsibility",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "permissions",
-          "type": {
-            "name": "access_options",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "role",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "update_project_contributor",
-      "method": "POST"
-    },
-    {
-      "name": "update_project_description",
-      "type": "mutation",
-      "path": "/api/external/v1/update_project_description",
-      "handler": "OperatelyWeb.Api.Mutations.UpdateProjectDescription",
-      "outputs": [
-        {
-          "default": null,
-          "name": "project",
-          "type": {
-            "name": "project",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "project_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "description",
-          "type": {
-            "name": "json",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "update_project_description",
       "method": "POST"
     },
     {
@@ -27597,7 +27596,8 @@
       "method": "POST"
     }
   ],
-  "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-16T11:19:11Z",
-  "schema_version": 1
+  "query_count": 64,
+  "mutation_count": 138,
+  "schema_version": 1,
+  "generated_at": "2026-03-16T18:11:51Z"
 }
