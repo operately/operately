@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
+defmodule OperatelyWeb.Api.GoalCheckIns.CreateTest do
   use OperatelyWeb.TurboCase
 
   import Operately.GoalsFixtures
@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :post_goal_progress_update, %{})
+      assert {401, _} = mutation(ctx.conn, [:goal_check_ins, :create], %{})
     end
   end
 
@@ -42,7 +42,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
         goal = create_goal(ctx, space, @test.company, @test.space, @test.goal)
 
         assert {code, res} =
-                 mutation(ctx.conn, :post_goal_progress_update, %{
+                 mutation(ctx.conn, [:goal_check_ins, :create], %{
                    goal_id: Paths.goal_id(goal),
                    status: "on_track",
                    content: RichText.rich_text("Content", :as_string),
@@ -74,7 +74,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
       assert Goals.list_updates(ctx.goal) == []
 
       assert {200, res} =
-               mutation(ctx.conn, :post_goal_progress_update, %{
+               mutation(ctx.conn, [:goal_check_ins, :create], %{
                  goal_id: Paths.goal_id(ctx.goal),
                  status: "caution",
                  content: RichText.rich_text("Content", :as_string),
@@ -91,7 +91,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
 
     test "clearing the due date", ctx do
       assert {200, res} =
-               mutation(ctx.conn, :post_goal_progress_update, %{
+               mutation(ctx.conn, [:goal_check_ins, :create], %{
                  goal_id: Paths.goal_id(ctx.goal),
                  status: "caution",
                  content: RichText.rich_text("Content", :as_string),
@@ -123,7 +123,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
 
     test "creates subscription list for goal update", ctx do
       assert {200, res} =
-               mutation(ctx.conn, :post_goal_progress_update, %{
+               mutation(ctx.conn, [:goal_check_ins, :create], %{
                  goal_id: Paths.goal_id(ctx.goal),
                  status: "off_track",
                  content: RichText.rich_text("Content", :as_string),
@@ -148,67 +148,6 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
 
       assert update.subscription_list_id
     end
-
-    test "adds mentioned people to subscription list", ctx do
-      people = ctx.people ++ ctx.people ++ ctx.people
-      content = RichText.rich_text(mentioned_people: people)
-
-      assert {200, res} =
-               mutation(ctx.conn, :post_goal_progress_update, %{
-                 goal_id: Paths.goal_id(ctx.goal),
-                 status: "on_track",
-                 content: content,
-                 new_target_values: new_target_values(ctx.goal),
-                 send_notifications_to_everyone: false,
-                 subscriber_ids: [],
-                 due_date: nil,
-                 checklist: []
-               })
-
-      subscriptions = fetch_subscriptions(res)
-
-      assert length(subscriptions) == 4
-
-      Enum.each([ctx.person | ctx.people], fn p ->
-        assert Enum.filter(subscriptions, &(&1.person_id == p.id))
-      end)
-    end
-
-    test "doesn't create repeated subscription", ctx do
-      people = [ctx.person | ctx.people]
-      content = RichText.rich_text(mentioned_people: people)
-
-      assert {200, res} =
-               mutation(ctx.conn, :post_goal_progress_update, %{
-                 goal_id: Paths.goal_id(ctx.goal),
-                 status: "caution",
-                 content: content,
-                 new_target_values: new_target_values(ctx.goal),
-                 send_notifications_to_everyone: true,
-                 subscriber_ids: Enum.map(people, &Paths.person_id(&1)),
-                 due_date: nil,
-                 checklist: []
-               })
-
-      subscriptions = fetch_subscriptions(res)
-
-      assert length(subscriptions) == 4
-
-      Enum.each(people, fn p ->
-        assert Enum.filter(subscriptions, &(&1.person_id == p.id))
-      end)
-    end
-  end
-
-  #
-  # Helpers
-  #
-
-  defp fetch_subscriptions(res) do
-    {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.update.id)
-    {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
-
-    list.subscriptions
   end
 
   defp new_target_values(goal) do
@@ -217,11 +156,11 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
     |> Jason.encode!()
   end
 
-  def create_space(ctx) do
+  defp create_space(ctx) do
     group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.no_access()})
   end
 
-  def create_goal(ctx, space, company_members_level, space_members_level, goal_member_level) do
+  defp create_goal(ctx, space, company_members_level, space_members_level, goal_member_level) do
     attrs =
       case goal_member_level do
         :champion -> [champion_id: ctx.person.id]

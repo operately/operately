@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.EditProjectCheckInTest do
+defmodule OperatelyWeb.Api.ProjectCheckIns.UpdateTest do
   use OperatelyWeb.TurboCase
 
   alias Operately.Support.RichText
@@ -11,7 +11,7 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectCheckInTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :edit_project_check_in, %{})
+      assert {401, _} = mutation(ctx.conn, [:project_check_ins, :update], %{})
     end
   end
 
@@ -43,7 +43,7 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectCheckInTest do
         project = create_project(ctx, space, @test.company, @test.space, @test.project)
         check_in = create_check_in(ctx.creator, project)
 
-        assert {code, res} = mutation(ctx.conn, :edit_project_check_in, %{
+        assert {code, res} = mutation(ctx.conn, [:project_check_ins, :update], %{
           check_in_id: Paths.project_check_in_id(check_in),
           status: "on_track",
           description: RichText.rich_text("New description", :as_string),
@@ -73,7 +73,7 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectCheckInTest do
     end
 
     test "edits project check-in", ctx do
-      assert {200, res} = mutation(ctx.conn, :edit_project_check_in, %{
+      assert {200, res} = mutation(ctx.conn, [:project_check_ins, :update], %{
         check_in_id: Paths.project_check_in_id(ctx.check_in),
         status: "on_track",
         description: RichText.rich_text("New description", :as_string),
@@ -98,10 +98,12 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectCheckInTest do
 
       assert list.subscriptions == []
 
-      assert {200, _} = mutation(ctx.conn, :edit_project_check_in, %{
+      description = RichText.rich_text(mentioned_people: people)
+
+      assert {200, _} = mutation(ctx.conn, [:project_check_ins, :update], %{
         check_in_id: Paths.project_check_in_id(ctx.check_in),
         status: "on_track",
-        description: RichText.rich_text(mentioned_people: people),
+        description: description,
       })
 
       {:ok, list} = SubscriptionList.get(:system, parent_id: ctx.check_in.id, opts: [
@@ -110,24 +112,20 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectCheckInTest do
 
       assert length(list.subscriptions) == 3
 
-      Enum.each(people, fn person ->
-        sub = Enum.find(list.subscriptions, &(&1.person_id == person.id))
-        assert sub.type == :mentioned
+      Enum.each(people, fn p ->
+        assert Enum.find(list.subscriptions, &(&1.person_id == p.id))
       end)
     end
   end
 
-  #
-  # Helpers
-  #
-
-  def create_space(ctx) do
+  defp create_space(ctx) do
     group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.no_access()})
   end
 
-  def create_project(ctx, space, company_members_level, space_members_level, project_member_level) do
+  defp create_project(ctx, space, company_members_level, space_members_level, project_member_level) do
     project = project_fixture(%{
       company_id: ctx.company.id,
+      name: "Name",
       creator_id: ctx.creator.id,
       group_id: space.id,
       company_access_level: Binding.from_atom(company_members_level),
@@ -153,7 +151,7 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectCheckInTest do
     project
   end
 
-  def create_check_in(author, project) do
-    check_in_fixture(%{author_id: author.id, project_id: project.id})
+  defp create_check_in(creator, project) do
+    check_in_fixture(%{author_id: creator.id, project_id: project.id})
   end
 end

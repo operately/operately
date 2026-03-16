@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.AcknowledgeGoalProgressUpdate do
+defmodule OperatelyWeb.Api.GoalCheckIns.Acknowledge do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

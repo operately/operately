@@ -1,33 +1,33 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.PostGoalProgressUpdate do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.ProjectCheckIns.Create do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "post_goal_progress_update"
+  def mutation_name, do: "project_check_ins/create"
 
   @impl true
   def setup(ctx) do
     ctx
     |> Factory.setup()
     |> Factory.add_space(:space)
-    |> Factory.add_goal(:goal, :space)
+    |> Factory.add_project(:project, :space)
+    |> Factory.add_company_member(:member)
   end
 
   @impl true
   def inputs(ctx) do
     %{
-      goal_id: Paths.goal_id(ctx.goal),
+      project_id: Paths.project_id(ctx.project),
       status: "on_track",
-      due_date: nil,
-      checklist: [],
-      content: rich_text_string("Updated content"),
-      new_target_values: "[]"
+      description: rich_text_string("Updated content"),
+      send_notifications_to_everyone: false,
+      subscriber_ids: [Paths.person_id(ctx.member)]
     }
   end
 
   @impl true
   def assert(response, _ctx) do
-    assert response.update.id
+    assert response.check_in.id
     refute Map.has_key?(response, :error)
   end
 

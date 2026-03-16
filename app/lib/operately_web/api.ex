@@ -45,6 +45,14 @@ defmodule OperatelyWeb.Api do
         mutation(:toggle_check, OperatelyWeb.Api.GoalChecks.Toggle)
       end
 
+      namespace(:goal_check_ins) do
+        query(:get, OperatelyWeb.Api.GoalCheckIns.Get)
+
+        mutation(:create, OperatelyWeb.Api.GoalCheckIns.Create)
+        mutation(:update, OperatelyWeb.Api.GoalCheckIns.Update)
+        mutation(:acknowledge, OperatelyWeb.Api.GoalCheckIns.Acknowledge)
+      end
+
       namespace(:projects) do
         query(:get, OperatelyWeb.Api.Projects.Get)
         query(:list, OperatelyWeb.Api.Projects.List)
@@ -97,6 +105,15 @@ defmodule OperatelyWeb.Api do
         mutation(:update_ordering, OperatelyWeb.Api.ProjectMilestones.UpdateOrdering)
         mutation(:delete, OperatelyWeb.Api.ProjectMilestones.Delete)
         mutation(:create_comment, OperatelyWeb.Api.ProjectMilestones.CreateComment)
+      end
+
+      namespace(:project_check_ins) do
+        query(:get, OperatelyWeb.Api.ProjectCheckIns.Get)
+        query(:list, OperatelyWeb.Api.ProjectCheckIns.List)
+
+        mutation(:create, OperatelyWeb.Api.ProjectCheckIns.Create)
+        mutation(:update, OperatelyWeb.Api.ProjectCheckIns.Update)
+        mutation(:acknowledge, OperatelyWeb.Api.ProjectCheckIns.Acknowledge)
       end
 
       namespace(:tasks) do
@@ -193,13 +210,10 @@ defmodule OperatelyWeb.Api do
       query(:get_activity, Q.GetActivity)
       query(:get_assignments_count, Q.GetAssignmentsCount)
       query(:get_assignments, Q.GetAssignments)
-      query(:get_goal_progress_update, Q.GetGoalProgressUpdate)
       query(:get_me, Q.GetMe)
       query(:get_notifications, Q.GetNotifications)
       query(:get_people, Q.GetPeople)
       query(:get_person, Q.GetPerson)
-      query(:get_project_check_in, Q.GetProjectCheckIn)
-      query(:get_project_check_ins, Q.GetProjectCheckIns)
       query(:get_binded_people, Q.GetBindedPeople)
       query(:get_unread_notification_count, Q.GetUnreadNotificationCount)
       query(:get_resource_hub, Q.GetResourceHub)
@@ -233,8 +247,6 @@ defmodule OperatelyWeb.Api do
       mutation(:delete_resource_hub_link, M.DeleteResourceHubLink)
 
       mutation(:edit_goal_discussion, M.EditGoalDiscussion)
-      mutation(:edit_goal_progress_update, M.EditGoalProgressUpdate)
-      mutation(:edit_project_check_in, M.EditProjectCheckIn)
       mutation(:edit_resource_hub_document, M.EditResourceHubDocument)
       mutation(:edit_resource_hub_file, M.EditResourceHubFile)
       mutation(:edit_resource_hub_link, M.EditResourceHubLink)
@@ -245,11 +257,7 @@ defmodule OperatelyWeb.Api do
       mutation(:mark_all_notifications_as_read, M.MarkAllNotificationsAsRead)
       mutation(:mark_notification_as_read, M.MarkNotificationAsRead)
       mutation(:mark_notifications_as_read, M.MarkNotificationsAsRead)
-      mutation(:post_goal_progress_update, M.PostGoalProgressUpdate)
-      mutation(:post_project_check_in, M.PostProjectCheckIn)
 
-      mutation(:acknowledge_goal_progress_update, M.AcknowledgeGoalProgressUpdate)
-      mutation(:acknowledge_project_check_in, M.AcknowledgeProjectCheckIn)
       mutation(:subscribe_to_notifications, M.SubscribeToNotifications)
       mutation(:unsubscribe_from_notifications, M.UnsubscribeFromNotifications)
       mutation(:update_profile, M.UpdateProfile)
