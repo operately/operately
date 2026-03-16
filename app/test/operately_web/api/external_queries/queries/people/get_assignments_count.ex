@@ -1,0 +1,16 @@
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.People.GetAssignmentsCount do
+  use Operately.Support.ExternalApi.QuerySpec
+
+  alias Operately.Support.Factory
+
+  @impl true
+  def query_name, do: "people/get_assignments_count"
+
+  @impl true
+  def setup(ctx), do: Factory.setup(ctx)
+
+  @impl true
+  def assert(response, _ctx) do
+    assert is_integer(response.count)
+  end
+end

@@ -18048,6 +18048,672 @@
       "method": "POST"
     },
     {
+      "name": "get",
+      "type": "query",
+      "path": "/api/external/v1/people/get",
+      "handler": "OperatelyWeb.Api.People.Get",
+      "outputs": [
+        {
+          "default": null,
+          "name": "person",
+          "type": {
+            "name": "person",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "people",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_manager",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_reports",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_peers",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_permissions",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_account",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "people/get",
+      "method": "GET"
+    },
+    {
+      "name": "get_account",
+      "type": "query",
+      "path": "/api/external/v1/people/get_account",
+      "handler": "OperatelyWeb.Api.People.GetAccount",
+      "outputs": [
+        {
+          "default": null,
+          "name": "account",
+          "type": {
+            "name": "account",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "people",
+      "inputs": [],
+      "full_name": "people/get_account",
+      "method": "GET"
+    },
+    {
+      "name": "get_assignments_count",
+      "type": "query",
+      "path": "/api/external/v1/people/get_assignments_count",
+      "handler": "OperatelyWeb.Api.People.GetAssignmentsCount",
+      "outputs": [
+        {
+          "default": null,
+          "name": "count",
+          "type": {
+            "name": "integer",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "people",
+      "inputs": [],
+      "full_name": "people/get_assignments_count",
+      "method": "GET"
+    },
+    {
+      "name": "get_binded",
+      "type": "query",
+      "path": "/api/external/v1/people/get_binded",
+      "handler": "OperatelyWeb.Api.People.GetBinded",
+      "outputs": [
+        {
+          "default": null,
+          "name": "people",
+          "type": {
+            "item": {
+              "name": "person",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "people",
+      "inputs": [
+        {
+          "default": null,
+          "name": "resourse_type",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "resourse_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "people/get_binded",
+      "method": "GET"
+    },
+    {
+      "name": "get_me",
+      "type": "query",
+      "path": "/api/external/v1/people/get_me",
+      "handler": "OperatelyWeb.Api.People.GetMe",
+      "outputs": [
+        {
+          "default": null,
+          "name": "me",
+          "type": {
+            "name": "person",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "people",
+      "inputs": [
+        {
+          "default": null,
+          "name": "include_manager",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "people/get_me",
+      "method": "GET"
+    },
+    {
+      "name": "list",
+      "type": "query",
+      "path": "/api/external/v1/people/list",
+      "handler": "OperatelyWeb.Api.People.List",
+      "outputs": [
+        {
+          "default": null,
+          "name": "people",
+          "type": {
+            "item": {
+              "name": "person",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "people",
+      "inputs": [
+        {
+          "default": null,
+          "name": "only_suspended",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_suspended",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_manager",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_account",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_invite_link",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_company_access_levels",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "people/list",
+      "method": "GET"
+    },
+    {
+      "name": "list_assignments",
+      "type": "query",
+      "path": "/api/external/v1/people/list_assignments",
+      "handler": "OperatelyWeb.Api.People.ListAssignments",
+      "outputs": [
+        {
+          "default": null,
+          "name": "assignments",
+          "type": {
+            "item": {
+              "name": "review_assignment",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "people",
+      "inputs": [],
+      "full_name": "people/list_assignments",
+      "method": "GET"
+    },
+    {
+      "name": "list_possible_managers",
+      "type": "query",
+      "path": "/api/external/v1/people/list_possible_managers",
+      "handler": "OperatelyWeb.Api.People.ListPossibleManagers",
+      "outputs": [
+        {
+          "default": null,
+          "name": "people",
+          "type": {
+            "item": {
+              "name": "person",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "people",
+      "inputs": [
+        {
+          "default": null,
+          "name": "user_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "query",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "people/list_possible_managers",
+      "method": "GET"
+    },
+    {
+      "name": "search",
+      "type": "query",
+      "path": "/api/external/v1/people/search",
+      "handler": "OperatelyWeb.Api.People.Search",
+      "outputs": [
+        {
+          "default": null,
+          "name": "people",
+          "type": {
+            "item": {
+              "name": "person",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "people",
+      "inputs": [
+        {
+          "default": null,
+          "name": "query",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "ignored_ids",
+          "type": {
+            "item": {
+              "name": "string",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "search_scope_type",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "search_scope_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "people/search",
+      "method": "GET"
+    },
+    {
+      "name": "update",
+      "type": "mutation",
+      "path": "/api/external/v1/people/update",
+      "handler": "OperatelyWeb.Api.People.Update",
+      "outputs": [
+        {
+          "default": null,
+          "name": "person",
+          "type": {
+            "name": "person",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "people",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "full_name",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "title",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "timezone",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "manager_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "theme",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "notify_about_assignments",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "description",
+          "type": {
+            "name": "json",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "people/update",
+      "method": "POST"
+    },
+    {
+      "name": "update_picture",
+      "type": "mutation",
+      "path": "/api/external/v1/people/update_picture",
+      "handler": "OperatelyWeb.Api.People.UpdatePicture",
+      "outputs": [
+        {
+          "default": null,
+          "name": "person",
+          "type": {
+            "name": "person",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "people",
+      "inputs": [
+        {
+          "default": null,
+          "name": "person_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "avatar_blob_id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "avatar_url",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "people/update_picture",
+      "method": "POST"
+    },
+    {
+      "name": "update_theme",
+      "type": "mutation",
+      "path": "/api/external/v1/people/update_theme",
+      "handler": "OperatelyWeb.Api.People.UpdateTheme",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "people",
+      "inputs": [
+        {
+          "default": null,
+          "name": "theme",
+          "type": {
+            "name": "account_theme",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "people/update_theme",
+      "method": "POST"
+    },
+    {
       "name": "acknowledge",
       "type": "mutation",
       "path": "/api/external/v1/project_check_ins/acknowledge",
@@ -22908,29 +23574,6 @@
       "method": "POST"
     },
     {
-      "name": "get_account",
-      "type": "query",
-      "path": "/api/external/v1/get_account",
-      "handler": "OperatelyWeb.Api.Queries.GetAccount",
-      "outputs": [
-        {
-          "default": null,
-          "name": "account",
-          "type": {
-            "name": "account",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [],
-      "full_name": "get_account",
-      "method": "GET"
-    },
-    {
       "name": "get_activities",
       "type": "query",
       "path": "/api/external/v1/get_activities",
@@ -23084,104 +23727,6 @@
       "method": "GET"
     },
     {
-      "name": "get_assignments",
-      "type": "query",
-      "path": "/api/external/v1/get_assignments",
-      "handler": "OperatelyWeb.Api.Queries.GetAssignments",
-      "outputs": [
-        {
-          "default": null,
-          "name": "assignments",
-          "type": {
-            "item": {
-              "name": "review_assignment",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [],
-      "full_name": "get_assignments",
-      "method": "GET"
-    },
-    {
-      "name": "get_assignments_count",
-      "type": "query",
-      "path": "/api/external/v1/get_assignments_count",
-      "handler": "OperatelyWeb.Api.Queries.GetAssignmentsCount",
-      "outputs": [
-        {
-          "default": null,
-          "name": "count",
-          "type": {
-            "name": "integer",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [],
-      "full_name": "get_assignments_count",
-      "method": "GET"
-    },
-    {
-      "name": "get_binded_people",
-      "type": "query",
-      "path": "/api/external/v1/get_binded_people",
-      "handler": "OperatelyWeb.Api.Queries.GetBindedPeople",
-      "outputs": [
-        {
-          "default": null,
-          "name": "people",
-          "type": {
-            "item": {
-              "name": "person",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "resourse_type",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "resourse_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "get_binded_people",
-      "method": "GET"
-    },
-    {
       "name": "get_flat_work_map",
       "type": "query",
       "path": "/api/external/v1/get_flat_work_map",
@@ -23308,41 +23853,6 @@
       "method": "GET"
     },
     {
-      "name": "get_me",
-      "type": "query",
-      "path": "/api/external/v1/get_me",
-      "handler": "OperatelyWeb.Api.Queries.GetMe",
-      "outputs": [
-        {
-          "default": null,
-          "name": "me",
-          "type": {
-            "name": "person",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "include_manager",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "get_me",
-      "method": "GET"
-    },
-    {
       "name": "get_notifications",
       "type": "query",
       "path": "/api/external/v1/get_notifications",
@@ -23389,189 +23899,6 @@
         }
       ],
       "full_name": "get_notifications",
-      "method": "GET"
-    },
-    {
-      "name": "get_people",
-      "type": "query",
-      "path": "/api/external/v1/get_people",
-      "handler": "OperatelyWeb.Api.Queries.GetPeople",
-      "outputs": [
-        {
-          "default": null,
-          "name": "people",
-          "type": {
-            "item": {
-              "name": "person",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "only_suspended",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_suspended",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_manager",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_account",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_invite_link",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_company_access_levels",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "get_people",
-      "method": "GET"
-    },
-    {
-      "name": "get_person",
-      "type": "query",
-      "path": "/api/external/v1/get_person",
-      "handler": "OperatelyWeb.Api.Queries.GetPerson",
-      "outputs": [
-        {
-          "default": null,
-          "name": "person",
-          "type": {
-            "name": "person",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_manager",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_reports",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_peers",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_permissions",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_account",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "get_person",
       "method": "GET"
     },
     {
@@ -24574,55 +24901,6 @@
       "method": "GET"
     },
     {
-      "name": "list_possible_managers",
-      "type": "query",
-      "path": "/api/external/v1/list_possible_managers",
-      "handler": "OperatelyWeb.Api.Queries.ListPossibleManagers",
-      "outputs": [
-        {
-          "default": null,
-          "name": "people",
-          "type": {
-            "item": {
-              "name": "person",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "user_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "query",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "list_possible_managers",
-      "method": "GET"
-    },
-    {
       "name": "list_resource_hub_nodes",
       "type": "query",
       "path": "/api/external/v1/list_resource_hub_nodes",
@@ -24896,80 +25174,6 @@
       "method": "POST"
     },
     {
-      "name": "search_people",
-      "type": "query",
-      "path": "/api/external/v1/search_people",
-      "handler": "OperatelyWeb.Api.Queries.SearchPeople",
-      "outputs": [
-        {
-          "default": null,
-          "name": "people",
-          "type": {
-            "item": {
-              "name": "person",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "query",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "ignored_ids",
-          "type": {
-            "item": {
-              "name": "string",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "search_scope_type",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "search_scope_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "search_people",
-      "method": "GET"
-    },
-    {
       "name": "subscribe_to_notifications",
       "type": "mutation",
       "path": "/api/external/v1/subscribe_to_notifications",
@@ -25024,210 +25228,6 @@
         }
       ],
       "full_name": "unsubscribe_from_notifications",
-      "method": "POST"
-    },
-    {
-      "name": "update_profile",
-      "type": "mutation",
-      "path": "/api/external/v1/update_profile",
-      "handler": "OperatelyWeb.Api.Mutations.UpdateProfile",
-      "outputs": [
-        {
-          "default": null,
-          "name": "person",
-          "type": {
-            "name": "person",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "full_name",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "title",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "timezone",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "manager_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "theme",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "notify_about_assignments",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "description",
-          "type": {
-            "name": "json",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "update_profile",
-      "method": "POST"
-    },
-    {
-      "name": "update_profile_picture",
-      "type": "mutation",
-      "path": "/api/external/v1/update_profile_picture",
-      "handler": "OperatelyWeb.Api.Mutations.UpdateProfilePicture",
-      "outputs": [
-        {
-          "default": null,
-          "name": "person",
-          "type": {
-            "name": "person",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "person_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "avatar_blob_id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "avatar_url",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "update_profile_picture",
-      "method": "POST"
-    },
-    {
-      "name": "update_theme",
-      "type": "mutation",
-      "path": "/api/external/v1/update_theme",
-      "handler": "OperatelyWeb.Api.Mutations.UpdateTheme",
-      "outputs": [
-        {
-          "default": null,
-          "name": "success",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "theme",
-          "type": {
-            "name": "account_theme",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "update_theme",
       "method": "POST"
     },
     {
@@ -27598,6 +27598,6 @@
     }
   ],
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-16T19:32:56Z",
+  "generated_at": "2026-03-16T20:51:10Z",
   "schema_version": 1
 }

@@ -2285,12 +2285,6 @@ export interface CompaniesListResult {
   companies?: Company[] | null;
 }
 
-export interface GetAccountInput {}
-
-export interface GetAccountResult {
-  account?: Account | null;
-}
-
 export interface GetActivitiesInput {
   scopeId: string;
   scopeType: ActivityScopeType;
@@ -2314,27 +2308,6 @@ export interface GetActivityResult {
   activity?: Activity | null;
 }
 
-export interface GetAssignmentsInput {}
-
-export interface GetAssignmentsResult {
-  assignments: ReviewAssignment[];
-}
-
-export interface GetAssignmentsCountInput {}
-
-export interface GetAssignmentsCountResult {
-  count?: number | null;
-}
-
-export interface GetBindedPeopleInput {
-  resourseType?: string | null;
-  resourseId?: string | null;
-}
-
-export interface GetBindedPeopleResult {
-  people?: Person[] | null;
-}
-
 export interface GetFlatWorkMapInput {
   spaceId?: Id | null;
   parentGoalId?: Id | null;
@@ -2351,14 +2324,6 @@ export interface GetFlatWorkMapResult {
   workMap?: WorkMapItem[] | null;
 }
 
-export interface GetMeInput {
-  includeManager?: boolean | null;
-}
-
-export interface GetMeResult {
-  me?: Person | null;
-}
-
 export interface GetNotificationsInput {
   page?: number | null;
   perPage?: number | null;
@@ -2366,32 +2331,6 @@ export interface GetNotificationsInput {
 
 export interface GetNotificationsResult {
   notifications?: Notification[] | null;
-}
-
-export interface GetPeopleInput {
-  onlySuspended?: boolean;
-  includeSuspended?: boolean;
-  includeManager?: boolean;
-  includeAccount?: boolean;
-  includeInviteLink?: boolean;
-  includeCompanyAccessLevels?: boolean;
-}
-
-export interface GetPeopleResult {
-  people?: Person[] | null;
-}
-
-export interface GetPersonInput {
-  id: Id;
-  includeManager?: boolean;
-  includeReports?: boolean;
-  includePeers?: boolean;
-  includePermissions?: boolean;
-  includeAccount?: boolean;
-}
-
-export interface GetPersonResult {
-  person?: Person | null;
 }
 
 export interface GetResourceHubInput {
@@ -2637,15 +2576,6 @@ export interface IsSubscribedToResourceResult {
   subscribed: boolean;
 }
 
-export interface ListPossibleManagersInput {
-  userId?: Id;
-  query?: string | null;
-}
-
-export interface ListPossibleManagersResult {
-  people: Person[];
-}
-
 export interface ListResourceHubNodesInput {
   resourceHubId?: Id | null;
   folderId?: Id | null;
@@ -2656,6 +2586,87 @@ export interface ListResourceHubNodesInput {
 export interface ListResourceHubNodesResult {
   nodes?: ResourceHubNode[] | null;
   draftNodes?: ResourceHubNode[] | null;
+}
+
+export interface PeopleGetInput {
+  id: Id;
+  includeManager?: boolean;
+  includeReports?: boolean;
+  includePeers?: boolean;
+  includePermissions?: boolean;
+  includeAccount?: boolean;
+}
+
+export interface PeopleGetResult {
+  person?: Person | null;
+}
+
+export interface PeopleGetAccountInput {}
+
+export interface PeopleGetAccountResult {
+  account?: Account | null;
+}
+
+export interface PeopleGetAssignmentsCountInput {}
+
+export interface PeopleGetAssignmentsCountResult {
+  count?: number | null;
+}
+
+export interface PeopleGetBindedInput {
+  resourseType?: string | null;
+  resourseId?: string | null;
+}
+
+export interface PeopleGetBindedResult {
+  people?: Person[] | null;
+}
+
+export interface PeopleGetMeInput {
+  includeManager?: boolean | null;
+}
+
+export interface PeopleGetMeResult {
+  me?: Person | null;
+}
+
+export interface PeopleListInput {
+  onlySuspended?: boolean;
+  includeSuspended?: boolean;
+  includeManager?: boolean;
+  includeAccount?: boolean;
+  includeInviteLink?: boolean;
+  includeCompanyAccessLevels?: boolean;
+}
+
+export interface PeopleListResult {
+  people?: Person[] | null;
+}
+
+export interface PeopleListAssignmentsInput {}
+
+export interface PeopleListAssignmentsResult {
+  assignments: ReviewAssignment[];
+}
+
+export interface PeopleListPossibleManagersInput {
+  userId?: Id;
+  query?: string | null;
+}
+
+export interface PeopleListPossibleManagersResult {
+  people: Person[];
+}
+
+export interface PeopleSearchInput {
+  query?: string | null;
+  ignoredIds?: string[] | null;
+  searchScopeType?: string | null;
+  searchScopeId?: string | null;
+}
+
+export interface PeopleSearchResult {
+  people?: Person[] | null;
 }
 
 export interface ProjectCheckInsGetInput {
@@ -2868,17 +2879,6 @@ export interface ProjectsSearchPotentialContributorsInput {
 }
 
 export interface ProjectsSearchPotentialContributorsResult {
-  people?: Person[] | null;
-}
-
-export interface SearchPeopleInput {
-  query?: string | null;
-  ignoredIds?: string[] | null;
-  searchScopeType?: string | null;
-  searchScopeId?: string | null;
-}
-
-export interface SearchPeopleResult {
   people?: Person[] | null;
 }
 
@@ -3935,6 +3935,39 @@ export interface MarkNotificationsAsReadInput {
 
 export interface MarkNotificationsAsReadResult {}
 
+export interface PeopleUpdateInput {
+  id?: string | null;
+  fullName?: string | null;
+  title?: string | null;
+  timezone?: string | null;
+  managerId?: string | null;
+  theme?: string | null;
+  notifyAboutAssignments?: boolean;
+  description?: Json | null;
+}
+
+export interface PeopleUpdateResult {
+  person?: Person | null;
+}
+
+export interface PeopleUpdatePictureInput {
+  personId: string;
+  avatarBlobId?: string | null;
+  avatarUrl?: string | null;
+}
+
+export interface PeopleUpdatePictureResult {
+  person: Person | null;
+}
+
+export interface PeopleUpdateThemeInput {
+  theme: AccountTheme;
+}
+
+export interface PeopleUpdateThemeResult {
+  success: boolean;
+}
+
 export interface ProjectCheckInsAcknowledgeInput {
   id: Id;
 }
@@ -4625,39 +4658,6 @@ export interface UnsubscribeFromNotificationsInput {
 
 export interface UnsubscribeFromNotificationsResult {}
 
-export interface UpdateProfileInput {
-  id?: string | null;
-  fullName?: string | null;
-  title?: string | null;
-  timezone?: string | null;
-  managerId?: string | null;
-  theme?: string | null;
-  notifyAboutAssignments?: boolean;
-  description?: Json | null;
-}
-
-export interface UpdateProfileResult {
-  person?: Person | null;
-}
-
-export interface UpdateProfilePictureInput {
-  personId: string;
-  avatarBlobId?: string | null;
-  avatarUrl?: string | null;
-}
-
-export interface UpdateProfilePictureResult {
-  person: Person | null;
-}
-
-export interface UpdateThemeInput {
-  theme: AccountTheme;
-}
-
-export interface UpdateThemeResult {
-  success: boolean;
-}
-
 class ApiNamespaceApiTokens {
   constructor(private client: ApiClient) {}
 
@@ -4807,10 +4807,6 @@ class ApiNamespaceAi {
 class ApiNamespaceRoot {
   constructor(private client: ApiClient) {}
 
-  async getAccount(input: GetAccountInput): Promise<GetAccountResult> {
-    return this.client.get("/get_account", input);
-  }
-
   async getActivities(input: GetActivitiesInput): Promise<GetActivitiesResult> {
     return this.client.get("/get_activities", input);
   }
@@ -4819,36 +4815,12 @@ class ApiNamespaceRoot {
     return this.client.get("/get_activity", input);
   }
 
-  async getAssignments(input: GetAssignmentsInput): Promise<GetAssignmentsResult> {
-    return this.client.get("/get_assignments", input);
-  }
-
-  async getAssignmentsCount(input: GetAssignmentsCountInput): Promise<GetAssignmentsCountResult> {
-    return this.client.get("/get_assignments_count", input);
-  }
-
-  async getBindedPeople(input: GetBindedPeopleInput): Promise<GetBindedPeopleResult> {
-    return this.client.get("/get_binded_people", input);
-  }
-
   async getFlatWorkMap(input: GetFlatWorkMapInput): Promise<GetFlatWorkMapResult> {
     return this.client.get("/get_flat_work_map", input);
   }
 
-  async getMe(input: GetMeInput): Promise<GetMeResult> {
-    return this.client.get("/get_me", input);
-  }
-
   async getNotifications(input: GetNotificationsInput): Promise<GetNotificationsResult> {
     return this.client.get("/get_notifications", input);
-  }
-
-  async getPeople(input: GetPeopleInput): Promise<GetPeopleResult> {
-    return this.client.get("/get_people", input);
-  }
-
-  async getPerson(input: GetPersonInput): Promise<GetPersonResult> {
-    return this.client.get("/get_person", input);
   }
 
   async getResourceHub(input: GetResourceHubInput): Promise<GetResourceHubResult> {
@@ -4891,16 +4863,8 @@ class ApiNamespaceRoot {
     return this.client.get("/is_subscribed_to_resource", input);
   }
 
-  async listPossibleManagers(input: ListPossibleManagersInput): Promise<ListPossibleManagersResult> {
-    return this.client.get("/list_possible_managers", input);
-  }
-
   async listResourceHubNodes(input: ListResourceHubNodesInput): Promise<ListResourceHubNodesResult> {
     return this.client.get("/list_resource_hub_nodes", input);
-  }
-
-  async searchPeople(input: SearchPeopleInput): Promise<SearchPeopleResult> {
-    return this.client.get("/search_people", input);
   }
 
   async addCompanyOwners(input: AddCompanyOwnersInput): Promise<AddCompanyOwnersResult> {
@@ -5064,18 +5028,6 @@ class ApiNamespaceRoot {
   ): Promise<UnsubscribeFromNotificationsResult> {
     return this.client.post("/unsubscribe_from_notifications", input);
   }
-
-  async updateProfile(input: UpdateProfileInput): Promise<UpdateProfileResult> {
-    return this.client.post("/update_profile", input);
-  }
-
-  async updateProfilePicture(input: UpdateProfilePictureInput): Promise<UpdateProfilePictureResult> {
-    return this.client.post("/update_profile_picture", input);
-  }
-
-  async updateTheme(input: UpdateThemeInput): Promise<UpdateThemeResult> {
-    return this.client.post("/update_theme", input);
-  }
 }
 
 class ApiNamespaceComments {
@@ -5155,6 +5107,58 @@ class ApiNamespaceCompanies {
     input: CompaniesUpdateMembersPermissionsInput,
   ): Promise<CompaniesUpdateMembersPermissionsResult> {
     return this.client.post("/companies/update_members_permissions", input);
+  }
+}
+
+class ApiNamespacePeople {
+  constructor(private client: ApiClient) {}
+
+  async get(input: PeopleGetInput): Promise<PeopleGetResult> {
+    return this.client.get("/people/get", input);
+  }
+
+  async getAccount(input: PeopleGetAccountInput): Promise<PeopleGetAccountResult> {
+    return this.client.get("/people/get_account", input);
+  }
+
+  async getAssignmentsCount(input: PeopleGetAssignmentsCountInput): Promise<PeopleGetAssignmentsCountResult> {
+    return this.client.get("/people/get_assignments_count", input);
+  }
+
+  async getBinded(input: PeopleGetBindedInput): Promise<PeopleGetBindedResult> {
+    return this.client.get("/people/get_binded", input);
+  }
+
+  async getMe(input: PeopleGetMeInput): Promise<PeopleGetMeResult> {
+    return this.client.get("/people/get_me", input);
+  }
+
+  async list(input: PeopleListInput): Promise<PeopleListResult> {
+    return this.client.get("/people/list", input);
+  }
+
+  async listAssignments(input: PeopleListAssignmentsInput): Promise<PeopleListAssignmentsResult> {
+    return this.client.get("/people/list_assignments", input);
+  }
+
+  async listPossibleManagers(input: PeopleListPossibleManagersInput): Promise<PeopleListPossibleManagersResult> {
+    return this.client.get("/people/list_possible_managers", input);
+  }
+
+  async search(input: PeopleSearchInput): Promise<PeopleSearchResult> {
+    return this.client.get("/people/search", input);
+  }
+
+  async update(input: PeopleUpdateInput): Promise<PeopleUpdateResult> {
+    return this.client.post("/people/update", input);
+  }
+
+  async updatePicture(input: PeopleUpdatePictureInput): Promise<PeopleUpdatePictureResult> {
+    return this.client.post("/people/update_picture", input);
+  }
+
+  async updateTheme(input: PeopleUpdateThemeInput): Promise<PeopleUpdateThemeResult> {
+    return this.client.post("/people/update_theme", input);
   }
 }
 
@@ -5747,6 +5751,7 @@ export class ApiClient {
   public apiNamespaceRoot: ApiNamespaceRoot;
   public apiNamespaceComments: ApiNamespaceComments;
   public apiNamespaceCompanies: ApiNamespaceCompanies;
+  public apiNamespacePeople: ApiNamespacePeople;
   public apiNamespaceSpaces: ApiNamespaceSpaces;
   public apiNamespaceSpaceDiscussions: ApiNamespaceSpaceDiscussions;
   public apiNamespaceProjectDiscussions: ApiNamespaceProjectDiscussions;
@@ -5765,6 +5770,7 @@ export class ApiClient {
     this.apiNamespaceRoot = new ApiNamespaceRoot(this);
     this.apiNamespaceComments = new ApiNamespaceComments(this);
     this.apiNamespaceCompanies = new ApiNamespaceCompanies(this);
+    this.apiNamespacePeople = new ApiNamespacePeople(this);
     this.apiNamespaceSpaces = new ApiNamespaceSpaces(this);
     this.apiNamespaceSpaceDiscussions = new ApiNamespaceSpaceDiscussions(this);
     this.apiNamespaceProjectDiscussions = new ApiNamespaceProjectDiscussions(this);
@@ -5809,10 +5815,6 @@ export class ApiClient {
     return toCamel(response.data);
   }
 
-  getAccount(input: GetAccountInput): Promise<GetAccountResult> {
-    return this.apiNamespaceRoot.getAccount(input);
-  }
-
   getActivities(input: GetActivitiesInput): Promise<GetActivitiesResult> {
     return this.apiNamespaceRoot.getActivities(input);
   }
@@ -5821,36 +5823,12 @@ export class ApiClient {
     return this.apiNamespaceRoot.getActivity(input);
   }
 
-  getAssignments(input: GetAssignmentsInput): Promise<GetAssignmentsResult> {
-    return this.apiNamespaceRoot.getAssignments(input);
-  }
-
-  getAssignmentsCount(input: GetAssignmentsCountInput): Promise<GetAssignmentsCountResult> {
-    return this.apiNamespaceRoot.getAssignmentsCount(input);
-  }
-
-  getBindedPeople(input: GetBindedPeopleInput): Promise<GetBindedPeopleResult> {
-    return this.apiNamespaceRoot.getBindedPeople(input);
-  }
-
   getFlatWorkMap(input: GetFlatWorkMapInput): Promise<GetFlatWorkMapResult> {
     return this.apiNamespaceRoot.getFlatWorkMap(input);
   }
 
-  getMe(input: GetMeInput): Promise<GetMeResult> {
-    return this.apiNamespaceRoot.getMe(input);
-  }
-
   getNotifications(input: GetNotificationsInput): Promise<GetNotificationsResult> {
     return this.apiNamespaceRoot.getNotifications(input);
-  }
-
-  getPeople(input: GetPeopleInput): Promise<GetPeopleResult> {
-    return this.apiNamespaceRoot.getPeople(input);
-  }
-
-  getPerson(input: GetPersonInput): Promise<GetPersonResult> {
-    return this.apiNamespaceRoot.getPerson(input);
   }
 
   getResourceHub(input: GetResourceHubInput): Promise<GetResourceHubResult> {
@@ -5893,16 +5871,8 @@ export class ApiClient {
     return this.apiNamespaceRoot.isSubscribedToResource(input);
   }
 
-  listPossibleManagers(input: ListPossibleManagersInput): Promise<ListPossibleManagersResult> {
-    return this.apiNamespaceRoot.listPossibleManagers(input);
-  }
-
   listResourceHubNodes(input: ListResourceHubNodesInput): Promise<ListResourceHubNodesResult> {
     return this.apiNamespaceRoot.listResourceHubNodes(input);
-  }
-
-  searchPeople(input: SearchPeopleInput): Promise<SearchPeopleResult> {
-    return this.apiNamespaceRoot.searchPeople(input);
   }
 
   addCompanyOwners(input: AddCompanyOwnersInput): Promise<AddCompanyOwnersResult> {
@@ -6062,54 +6032,21 @@ export class ApiClient {
   unsubscribeFromNotifications(input: UnsubscribeFromNotificationsInput): Promise<UnsubscribeFromNotificationsResult> {
     return this.apiNamespaceRoot.unsubscribeFromNotifications(input);
   }
-
-  updateProfile(input: UpdateProfileInput): Promise<UpdateProfileResult> {
-    return this.apiNamespaceRoot.updateProfile(input);
-  }
-
-  updateProfilePicture(input: UpdateProfilePictureInput): Promise<UpdateProfilePictureResult> {
-    return this.apiNamespaceRoot.updateProfilePicture(input);
-  }
-
-  updateTheme(input: UpdateThemeInput): Promise<UpdateThemeResult> {
-    return this.apiNamespaceRoot.updateTheme(input);
-  }
 }
 
 const defaultApiClient = new ApiClient();
 
-export async function getAccount(input: GetAccountInput): Promise<GetAccountResult> {
-  return defaultApiClient.getAccount(input);
-}
 export async function getActivities(input: GetActivitiesInput): Promise<GetActivitiesResult> {
   return defaultApiClient.getActivities(input);
 }
 export async function getActivity(input: GetActivityInput): Promise<GetActivityResult> {
   return defaultApiClient.getActivity(input);
 }
-export async function getAssignments(input: GetAssignmentsInput): Promise<GetAssignmentsResult> {
-  return defaultApiClient.getAssignments(input);
-}
-export async function getAssignmentsCount(input: GetAssignmentsCountInput): Promise<GetAssignmentsCountResult> {
-  return defaultApiClient.getAssignmentsCount(input);
-}
-export async function getBindedPeople(input: GetBindedPeopleInput): Promise<GetBindedPeopleResult> {
-  return defaultApiClient.getBindedPeople(input);
-}
 export async function getFlatWorkMap(input: GetFlatWorkMapInput): Promise<GetFlatWorkMapResult> {
   return defaultApiClient.getFlatWorkMap(input);
 }
-export async function getMe(input: GetMeInput): Promise<GetMeResult> {
-  return defaultApiClient.getMe(input);
-}
 export async function getNotifications(input: GetNotificationsInput): Promise<GetNotificationsResult> {
   return defaultApiClient.getNotifications(input);
-}
-export async function getPeople(input: GetPeopleInput): Promise<GetPeopleResult> {
-  return defaultApiClient.getPeople(input);
-}
-export async function getPerson(input: GetPersonInput): Promise<GetPersonResult> {
-  return defaultApiClient.getPerson(input);
 }
 export async function getResourceHub(input: GetResourceHubInput): Promise<GetResourceHubResult> {
   return defaultApiClient.getResourceHub(input);
@@ -6147,14 +6084,8 @@ export async function isSubscribedToResource(
 ): Promise<IsSubscribedToResourceResult> {
   return defaultApiClient.isSubscribedToResource(input);
 }
-export async function listPossibleManagers(input: ListPossibleManagersInput): Promise<ListPossibleManagersResult> {
-  return defaultApiClient.listPossibleManagers(input);
-}
 export async function listResourceHubNodes(input: ListResourceHubNodesInput): Promise<ListResourceHubNodesResult> {
   return defaultApiClient.listResourceHubNodes(input);
-}
-export async function searchPeople(input: SearchPeopleInput): Promise<SearchPeopleResult> {
-  return defaultApiClient.searchPeople(input);
 }
 export async function addCompanyOwners(input: AddCompanyOwnersInput): Promise<AddCompanyOwnersResult> {
   return defaultApiClient.addCompanyOwners(input);
@@ -6303,19 +6234,6 @@ export async function unsubscribeFromNotifications(
 ): Promise<UnsubscribeFromNotificationsResult> {
   return defaultApiClient.unsubscribeFromNotifications(input);
 }
-export async function updateProfile(input: UpdateProfileInput): Promise<UpdateProfileResult> {
-  return defaultApiClient.updateProfile(input);
-}
-export async function updateProfilePicture(input: UpdateProfilePictureInput): Promise<UpdateProfilePictureResult> {
-  return defaultApiClient.updateProfilePicture(input);
-}
-export async function updateTheme(input: UpdateThemeInput): Promise<UpdateThemeResult> {
-  return defaultApiClient.updateTheme(input);
-}
-
-export function useGetAccount(input: GetAccountInput): UseQueryHookResult<GetAccountResult> {
-  return useQuery<GetAccountResult>(() => defaultApiClient.getAccount(input));
-}
 
 export function useGetActivities(input: GetActivitiesInput): UseQueryHookResult<GetActivitiesResult> {
   return useQuery<GetActivitiesResult>(() => defaultApiClient.getActivities(input));
@@ -6325,36 +6243,12 @@ export function useGetActivity(input: GetActivityInput): UseQueryHookResult<GetA
   return useQuery<GetActivityResult>(() => defaultApiClient.getActivity(input));
 }
 
-export function useGetAssignments(input: GetAssignmentsInput): UseQueryHookResult<GetAssignmentsResult> {
-  return useQuery<GetAssignmentsResult>(() => defaultApiClient.getAssignments(input));
-}
-
-export function useGetAssignmentsCount(input: GetAssignmentsCountInput): UseQueryHookResult<GetAssignmentsCountResult> {
-  return useQuery<GetAssignmentsCountResult>(() => defaultApiClient.getAssignmentsCount(input));
-}
-
-export function useGetBindedPeople(input: GetBindedPeopleInput): UseQueryHookResult<GetBindedPeopleResult> {
-  return useQuery<GetBindedPeopleResult>(() => defaultApiClient.getBindedPeople(input));
-}
-
 export function useGetFlatWorkMap(input: GetFlatWorkMapInput): UseQueryHookResult<GetFlatWorkMapResult> {
   return useQuery<GetFlatWorkMapResult>(() => defaultApiClient.getFlatWorkMap(input));
 }
 
-export function useGetMe(input: GetMeInput): UseQueryHookResult<GetMeResult> {
-  return useQuery<GetMeResult>(() => defaultApiClient.getMe(input));
-}
-
 export function useGetNotifications(input: GetNotificationsInput): UseQueryHookResult<GetNotificationsResult> {
   return useQuery<GetNotificationsResult>(() => defaultApiClient.getNotifications(input));
-}
-
-export function useGetPeople(input: GetPeopleInput): UseQueryHookResult<GetPeopleResult> {
-  return useQuery<GetPeopleResult>(() => defaultApiClient.getPeople(input));
-}
-
-export function useGetPerson(input: GetPersonInput): UseQueryHookResult<GetPersonResult> {
-  return useQuery<GetPersonResult>(() => defaultApiClient.getPerson(input));
 }
 
 export function useGetResourceHub(input: GetResourceHubInput): UseQueryHookResult<GetResourceHubResult> {
@@ -6405,20 +6299,10 @@ export function useIsSubscribedToResource(
   return useQuery<IsSubscribedToResourceResult>(() => defaultApiClient.isSubscribedToResource(input));
 }
 
-export function useListPossibleManagers(
-  input: ListPossibleManagersInput,
-): UseQueryHookResult<ListPossibleManagersResult> {
-  return useQuery<ListPossibleManagersResult>(() => defaultApiClient.listPossibleManagers(input));
-}
-
 export function useListResourceHubNodes(
   input: ListResourceHubNodesInput,
 ): UseQueryHookResult<ListResourceHubNodesResult> {
   return useQuery<ListResourceHubNodesResult>(() => defaultApiClient.listResourceHubNodes(input));
-}
-
-export function useSearchPeople(input: SearchPeopleInput): UseQueryHookResult<SearchPeopleResult> {
-  return useQuery<SearchPeopleResult>(() => defaultApiClient.searchPeople(input));
 }
 
 export function useAddCompanyOwners(): UseMutationHookResult<AddCompanyOwnersInput, AddCompanyOwnersResult> {
@@ -6711,48 +6595,17 @@ export function useUnsubscribeFromNotifications(): UseMutationHookResult<
   );
 }
 
-export function useUpdateProfile(): UseMutationHookResult<UpdateProfileInput, UpdateProfileResult> {
-  return useMutation<UpdateProfileInput, UpdateProfileResult>((input) => defaultApiClient.updateProfile(input));
-}
-
-export function useUpdateProfilePicture(): UseMutationHookResult<
-  UpdateProfilePictureInput,
-  UpdateProfilePictureResult
-> {
-  return useMutation<UpdateProfilePictureInput, UpdateProfilePictureResult>((input) =>
-    defaultApiClient.updateProfilePicture(input),
-  );
-}
-
-export function useUpdateTheme(): UseMutationHookResult<UpdateThemeInput, UpdateThemeResult> {
-  return useMutation<UpdateThemeInput, UpdateThemeResult>((input) => defaultApiClient.updateTheme(input));
-}
-
 export default {
   default: defaultApiClient,
 
-  getAccount,
-  useGetAccount,
   getActivities,
   useGetActivities,
   getActivity,
   useGetActivity,
-  getAssignments,
-  useGetAssignments,
-  getAssignmentsCount,
-  useGetAssignmentsCount,
-  getBindedPeople,
-  useGetBindedPeople,
   getFlatWorkMap,
   useGetFlatWorkMap,
-  getMe,
-  useGetMe,
   getNotifications,
   useGetNotifications,
-  getPeople,
-  useGetPeople,
-  getPerson,
-  useGetPerson,
   getResourceHub,
   useGetResourceHub,
   getResourceHubDocument,
@@ -6773,12 +6626,8 @@ export default {
   useGlobalSearch,
   isSubscribedToResource,
   useIsSubscribedToResource,
-  listPossibleManagers,
-  useListPossibleManagers,
   listResourceHubNodes,
   useListResourceHubNodes,
-  searchPeople,
-  useSearchPeople,
   addCompanyOwners,
   useAddCompanyOwners,
   addCompanyTrustedEmailDomain,
@@ -6857,12 +6706,6 @@ export default {
   useSubscribeToNotifications,
   unsubscribeFromNotifications,
   useUnsubscribeFromNotifications,
-  updateProfile,
-  useUpdateProfile,
-  updateProfilePicture,
-  useUpdateProfilePicture,
-  updateTheme,
-  useUpdateTheme,
 
   api_tokens: {
     list: (input: ApiTokensListInput) => defaultApiClient.apiNamespaceApiTokens.list(input),
@@ -7139,6 +6982,61 @@ export default {
     useRestoreMember: () =>
       useMutation<CompaniesRestoreMemberInput, CompaniesRestoreMemberResult>((input) =>
         defaultApiClient.apiNamespaceCompanies.restoreMember(input),
+      ),
+  },
+
+  people: {
+    search: (input: PeopleSearchInput) => defaultApiClient.apiNamespacePeople.search(input),
+    useSearch: (input: PeopleSearchInput) =>
+      useQuery<PeopleSearchResult>(() => defaultApiClient.apiNamespacePeople.search(input)),
+
+    list: (input: PeopleListInput) => defaultApiClient.apiNamespacePeople.list(input),
+    useList: (input: PeopleListInput) =>
+      useQuery<PeopleListResult>(() => defaultApiClient.apiNamespacePeople.list(input)),
+
+    getAccount: (input: PeopleGetAccountInput) => defaultApiClient.apiNamespacePeople.getAccount(input),
+    useGetAccount: (input: PeopleGetAccountInput) =>
+      useQuery<PeopleGetAccountResult>(() => defaultApiClient.apiNamespacePeople.getAccount(input)),
+
+    get: (input: PeopleGetInput) => defaultApiClient.apiNamespacePeople.get(input),
+    useGet: (input: PeopleGetInput) => useQuery<PeopleGetResult>(() => defaultApiClient.apiNamespacePeople.get(input)),
+
+    getBinded: (input: PeopleGetBindedInput) => defaultApiClient.apiNamespacePeople.getBinded(input),
+    useGetBinded: (input: PeopleGetBindedInput) =>
+      useQuery<PeopleGetBindedResult>(() => defaultApiClient.apiNamespacePeople.getBinded(input)),
+
+    listAssignments: (input: PeopleListAssignmentsInput) => defaultApiClient.apiNamespacePeople.listAssignments(input),
+    useListAssignments: (input: PeopleListAssignmentsInput) =>
+      useQuery<PeopleListAssignmentsResult>(() => defaultApiClient.apiNamespacePeople.listAssignments(input)),
+
+    listPossibleManagers: (input: PeopleListPossibleManagersInput) =>
+      defaultApiClient.apiNamespacePeople.listPossibleManagers(input),
+    useListPossibleManagers: (input: PeopleListPossibleManagersInput) =>
+      useQuery<PeopleListPossibleManagersResult>(() => defaultApiClient.apiNamespacePeople.listPossibleManagers(input)),
+
+    getAssignmentsCount: (input: PeopleGetAssignmentsCountInput) =>
+      defaultApiClient.apiNamespacePeople.getAssignmentsCount(input),
+    useGetAssignmentsCount: (input: PeopleGetAssignmentsCountInput) =>
+      useQuery<PeopleGetAssignmentsCountResult>(() => defaultApiClient.apiNamespacePeople.getAssignmentsCount(input)),
+
+    getMe: (input: PeopleGetMeInput) => defaultApiClient.apiNamespacePeople.getMe(input),
+    useGetMe: (input: PeopleGetMeInput) =>
+      useQuery<PeopleGetMeResult>(() => defaultApiClient.apiNamespacePeople.getMe(input)),
+
+    update: (input: PeopleUpdateInput) => defaultApiClient.apiNamespacePeople.update(input),
+    useUpdate: () =>
+      useMutation<PeopleUpdateInput, PeopleUpdateResult>((input) => defaultApiClient.apiNamespacePeople.update(input)),
+
+    updatePicture: (input: PeopleUpdatePictureInput) => defaultApiClient.apiNamespacePeople.updatePicture(input),
+    useUpdatePicture: () =>
+      useMutation<PeopleUpdatePictureInput, PeopleUpdatePictureResult>((input) =>
+        defaultApiClient.apiNamespacePeople.updatePicture(input),
+      ),
+
+    updateTheme: (input: PeopleUpdateThemeInput) => defaultApiClient.apiNamespacePeople.updateTheme(input),
+    useUpdateTheme: () =>
+      useMutation<PeopleUpdateThemeInput, PeopleUpdateThemeResult>((input) =>
+        defaultApiClient.apiNamespacePeople.updateTheme(input),
       ),
   },
 
