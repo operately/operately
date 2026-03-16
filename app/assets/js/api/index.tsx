@@ -2351,28 +2351,6 @@ export interface GetFlatWorkMapResult {
   workMap?: WorkMapItem[] | null;
 }
 
-export interface GetGoalProgressUpdateInput {
-  id: string;
-  includeAuthor?: boolean | null;
-  includeAcknowledgedBy?: boolean | null;
-  includeReactions?: boolean | null;
-  includeGoal?: boolean | null;
-  includeGoalTargets?: boolean | null;
-  includeGoalChecklist?: boolean | null;
-  includeReviewer?: boolean | null;
-  includeChampion?: boolean | null;
-  includeSpace?: boolean | null;
-  includeSpaceMembers?: boolean | null;
-  includeSubscriptionsList?: boolean | null;
-  includePotentialSubscribers?: boolean | null;
-  includeUnreadNotifications?: boolean | null;
-  includePermissions?: boolean | null;
-}
-
-export interface GetGoalProgressUpdateResult {
-  update: GoalProgressUpdate;
-}
-
 export interface GetMeInput {
   includeManager?: boolean | null;
 }
@@ -2414,60 +2392,6 @@ export interface GetPersonInput {
 
 export interface GetPersonResult {
   person?: Person | null;
-}
-
-export interface GetProjectCheckInInput {
-  id: string;
-  includeAuthor?: boolean;
-  includeAcknowledgedBy?: boolean;
-  includeProject?: boolean;
-  includeSpace?: boolean;
-  includeReactions?: boolean;
-  includeSubscriptionsList?: boolean;
-  includePotentialSubscribers?: boolean;
-  includeUnreadNotifications?: boolean | null;
-}
-
-export interface GetProjectCheckInResult {
-  projectCheckIn: ProjectCheckIn;
-}
-
-export interface GetProjectCheckInsInput {
-  projectId: string;
-  includeAuthor?: boolean;
-  includeProject?: boolean;
-  includeReactions?: boolean;
-}
-
-export interface GetProjectCheckInsResult {
-  projectCheckIns?: ProjectCheckIn[] | null;
-}
-
-export interface ProjectsGetContributorInput {
-  id: Id;
-  includeProject?: boolean;
-  includePermissions?: boolean;
-  includeAccessLevel?: boolean | null;
-}
-
-export interface ProjectsGetContributorResult {
-  contributor: ProjectContributor;
-}
-
-export interface ProjectsGetRetrospectiveInput {
-  projectId: Id;
-  includeAuthor?: boolean | null;
-  includeProject?: boolean | null;
-  includeClosedAt?: boolean | null;
-  includePermissions?: boolean | null;
-  includeReactions?: boolean | null;
-  includeSubscriptionsList?: boolean | null;
-  includePotentialSubscribers?: boolean | null;
-  includeUnreadNotifications?: boolean | null;
-}
-
-export interface ProjectsGetRetrospectiveResult {
-  retrospective: ProjectRetrospective;
 }
 
 export interface GetResourceHubInput {
@@ -2585,6 +2509,28 @@ export interface GlobalSearchResult {
   milestones: Milestone[];
   tasks: Task[];
   people: Person[];
+}
+
+export interface GoalCheckInsGetInput {
+  id: string;
+  includeAuthor?: boolean | null;
+  includeAcknowledgedBy?: boolean | null;
+  includeReactions?: boolean | null;
+  includeGoal?: boolean | null;
+  includeGoalTargets?: boolean | null;
+  includeGoalChecklist?: boolean | null;
+  includeReviewer?: boolean | null;
+  includeChampion?: boolean | null;
+  includeSpace?: boolean | null;
+  includeSpaceMembers?: boolean | null;
+  includeSubscriptionsList?: boolean | null;
+  includePotentialSubscribers?: boolean | null;
+  includeUnreadNotifications?: boolean | null;
+  includePermissions?: boolean | null;
+}
+
+export interface GoalCheckInsGetResult {
+  update: GoalProgressUpdate;
 }
 
 export interface GoalsGetInput {
@@ -2712,6 +2658,33 @@ export interface ListResourceHubNodesResult {
   draftNodes?: ResourceHubNode[] | null;
 }
 
+export interface ProjectCheckInsGetInput {
+  id: string;
+  includeAuthor?: boolean;
+  includeAcknowledgedBy?: boolean;
+  includeProject?: boolean;
+  includeSpace?: boolean;
+  includeReactions?: boolean;
+  includeSubscriptionsList?: boolean;
+  includePotentialSubscribers?: boolean;
+  includeUnreadNotifications?: boolean | null;
+}
+
+export interface ProjectCheckInsGetResult {
+  projectCheckIn: ProjectCheckIn;
+}
+
+export interface ProjectCheckInsListInput {
+  projectId: string;
+  includeAuthor?: boolean;
+  includeProject?: boolean;
+  includeReactions?: boolean;
+}
+
+export interface ProjectCheckInsListResult {
+  projectCheckIns?: ProjectCheckIn[] | null;
+}
+
 export interface ProjectDiscussionsGetInput {
   id: Id;
   includeUnreadNotifications?: boolean;
@@ -2794,12 +2767,39 @@ export interface ProjectsGetResult {
   markdown?: string;
 }
 
+export interface ProjectsGetContributorInput {
+  id: Id;
+  includeProject?: boolean;
+  includePermissions?: boolean;
+  includeAccessLevel?: boolean | null;
+}
+
+export interface ProjectsGetContributorResult {
+  contributor: ProjectContributor;
+}
+
 export interface ProjectsGetKeyResourceInput {
   id?: string | null;
 }
 
 export interface ProjectsGetKeyResourceResult {
   keyResource?: ProjectKeyResource | null;
+}
+
+export interface ProjectsGetRetrospectiveInput {
+  projectId: Id;
+  includeAuthor?: boolean | null;
+  includeProject?: boolean | null;
+  includeClosedAt?: boolean | null;
+  includePermissions?: boolean | null;
+  includeReactions?: boolean | null;
+  includeSubscriptionsList?: boolean | null;
+  includePotentialSubscribers?: boolean | null;
+  includeUnreadNotifications?: boolean | null;
+}
+
+export interface ProjectsGetRetrospectiveResult {
+  retrospective: ProjectRetrospective;
 }
 
 export interface ProjectsListInput {
@@ -3025,22 +3025,6 @@ export interface TasksListPotentialAssigneesResult {
   people: Person[] | null;
 }
 
-export interface AcknowledgeGoalProgressUpdateInput {
-  id?: string | null;
-}
-
-export interface AcknowledgeGoalProgressUpdateResult {
-  update?: GoalProgressUpdate | null;
-}
-
-export interface AcknowledgeProjectCheckInInput {
-  id: Id;
-}
-
-export interface AcknowledgeProjectCheckInResult {
-  checkIn?: ProjectCheckIn | null;
-}
-
 export interface AddCompanyOwnersInput {
   peopleIds?: Id[] | null;
 }
@@ -3067,27 +3051,6 @@ export interface AddFirstCompanyInput {
 
 export interface AddFirstCompanyResult {
   company?: Company | null;
-}
-
-export interface ProjectsCreateContributorInput {
-  projectId: Id;
-  personId: Id;
-  responsibility: string;
-  permissions: AccessOptions;
-  role: string | null;
-}
-
-export interface ProjectsCreateContributorResult {
-  projectContributor?: ProjectContributor | null;
-}
-
-export interface ProjectsCreateContributorsInput {
-  projectId: string;
-  contributors: ProjectContributorInput[];
-}
-
-export interface ProjectsCreateContributorsResult {
-  success: boolean;
 }
 
 export interface AiAddAgentInput {
@@ -3528,19 +3491,6 @@ export interface EditGoalDiscussionInput {
 
 export interface EditGoalDiscussionResult {}
 
-export interface EditGoalProgressUpdateInput {
-  id: Id;
-  dueDate: ContextualDate | null;
-  status?: string | null;
-  content?: Json | null;
-  newTargetValues?: string | null;
-  checklist?: GoalCheckUpdate[];
-}
-
-export interface EditGoalProgressUpdateResult {
-  update?: GoalProgressUpdate | null;
-}
-
 export interface EditParentFolderInResourceHubInput {
   resourceId?: Id | null;
   resourceType?: string | null;
@@ -3549,16 +3499,6 @@ export interface EditParentFolderInResourceHubInput {
 
 export interface EditParentFolderInResourceHubResult {
   success?: boolean | null;
-}
-
-export interface EditProjectCheckInInput {
-  checkInId?: string | null;
-  status?: string | null;
-  description?: string | null;
-}
-
-export interface EditProjectCheckInResult {
-  checkIn?: ProjectCheckIn | null;
 }
 
 export interface EditResourceHubDocumentInput {
@@ -3603,6 +3543,42 @@ export interface EditSubscriptionsListInput {
 }
 
 export interface EditSubscriptionsListResult {}
+
+export interface GoalCheckInsAcknowledgeInput {
+  id?: string | null;
+}
+
+export interface GoalCheckInsAcknowledgeResult {
+  update?: GoalProgressUpdate | null;
+}
+
+export interface GoalCheckInsCreateInput {
+  goalId: Id;
+  status: string;
+  dueDate: ContextualDate | null;
+  checklist: GoalCheckUpdate[];
+  content?: Json | null;
+  newTargetValues?: string | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: string[] | null;
+}
+
+export interface GoalCheckInsCreateResult {
+  update?: GoalProgressUpdate | null;
+}
+
+export interface GoalCheckInsUpdateInput {
+  id: Id;
+  dueDate: ContextualDate | null;
+  status?: string | null;
+  content?: Json | null;
+  newTargetValues?: string | null;
+  checklist?: GoalCheckUpdate[];
+}
+
+export interface GoalCheckInsUpdateResult {
+  update?: GoalProgressUpdate | null;
+}
 
 export interface GoalsChangeParentInput {
   goalId?: string | null;
@@ -3959,32 +3935,15 @@ export interface MarkNotificationsAsReadInput {
 
 export interface MarkNotificationsAsReadResult {}
 
-export interface PostGoalProgressUpdateInput {
-  goalId: Id;
-  status: string;
-  dueDate: ContextualDate | null;
-  checklist: GoalCheckUpdate[];
-  content?: Json | null;
-  newTargetValues?: string | null;
-  sendNotificationsToEveryone?: boolean | null;
-  subscriberIds?: string[] | null;
+export interface ProjectCheckInsAcknowledgeInput {
+  id: Id;
 }
 
-export interface PostGoalProgressUpdateResult {
-  update?: GoalProgressUpdate | null;
+export interface ProjectCheckInsAcknowledgeResult {
+  checkIn?: ProjectCheckIn | null;
 }
 
-export interface ProjectMilestonesCreateCommentInput {
-  milestoneId: Id;
-  content: Json | null;
-  action: string;
-}
-
-export interface ProjectMilestonesCreateCommentResult {
-  comment: MilestoneComment;
-}
-
-export interface PostProjectCheckInInput {
+export interface ProjectCheckInsCreateInput {
   projectId?: string | null;
   status?: string | null;
   description?: string | null;
@@ -3992,7 +3951,17 @@ export interface PostProjectCheckInInput {
   subscriberIds?: string[] | null;
 }
 
-export interface PostProjectCheckInResult {
+export interface ProjectCheckInsCreateResult {
+  checkIn?: ProjectCheckIn | null;
+}
+
+export interface ProjectCheckInsUpdateInput {
+  checkInId?: string | null;
+  status?: string | null;
+  description?: string | null;
+}
+
+export interface ProjectCheckInsUpdateResult {
   checkIn?: ProjectCheckIn | null;
 }
 
@@ -4017,6 +3986,16 @@ export interface ProjectDiscussionsUpdateInput {
 
 export interface ProjectDiscussionsUpdateResult {
   discussion: Update;
+}
+
+export interface ProjectMilestonesCreateCommentInput {
+  milestoneId: Id;
+  content: Json | null;
+  action: string;
+}
+
+export interface ProjectMilestonesCreateCommentResult {
+  comment: MilestoneComment;
 }
 
 export interface ProjectMilestonesDeleteInput {
@@ -4099,6 +4078,27 @@ export interface ProjectsCreateInput {
 
 export interface ProjectsCreateResult {
   project?: Project | null;
+}
+
+export interface ProjectsCreateContributorInput {
+  projectId: Id;
+  personId: Id;
+  responsibility: string;
+  permissions: AccessOptions;
+  role: string | null;
+}
+
+export interface ProjectsCreateContributorResult {
+  projectContributor?: ProjectContributor | null;
+}
+
+export interface ProjectsCreateContributorsInput {
+  projectId: string;
+  contributors: ProjectContributorInput[];
+}
+
+export interface ProjectsCreateContributorsResult {
+  success: boolean;
 }
 
 export interface ProjectsCreateKeyResourceInput {
@@ -4835,10 +4835,6 @@ class ApiNamespaceRoot {
     return this.client.get("/get_flat_work_map", input);
   }
 
-  async getGoalProgressUpdate(input: GetGoalProgressUpdateInput): Promise<GetGoalProgressUpdateResult> {
-    return this.client.get("/get_goal_progress_update", input);
-  }
-
   async getMe(input: GetMeInput): Promise<GetMeResult> {
     return this.client.get("/get_me", input);
   }
@@ -4853,22 +4849,6 @@ class ApiNamespaceRoot {
 
   async getPerson(input: GetPersonInput): Promise<GetPersonResult> {
     return this.client.get("/get_person", input);
-  }
-
-  async getProjectCheckIn(input: GetProjectCheckInInput): Promise<GetProjectCheckInResult> {
-    return this.client.get("/get_project_check_in", input);
-  }
-
-  async getProjectCheckIns(input: GetProjectCheckInsInput): Promise<GetProjectCheckInsResult> {
-    return this.client.get("/get_project_check_ins", input);
-  }
-
-  async getProjectContributor(input: ProjectsGetContributorInput): Promise<ProjectsGetContributorResult> {
-    return this.client.get("/projects/get_contributor", input);
-  }
-
-  async getProjectRetrospective(input: ProjectsGetRetrospectiveInput): Promise<ProjectsGetRetrospectiveResult> {
-    return this.client.get("/projects/get_retrospective", input);
   }
 
   async getResourceHub(input: GetResourceHubInput): Promise<GetResourceHubResult> {
@@ -4923,16 +4903,6 @@ class ApiNamespaceRoot {
     return this.client.get("/search_people", input);
   }
 
-  async acknowledgeGoalProgressUpdate(
-    input: AcknowledgeGoalProgressUpdateInput,
-  ): Promise<AcknowledgeGoalProgressUpdateResult> {
-    return this.client.post("/acknowledge_goal_progress_update", input);
-  }
-
-  async acknowledgeProjectCheckIn(input: AcknowledgeProjectCheckInInput): Promise<AcknowledgeProjectCheckInResult> {
-    return this.client.post("/acknowledge_project_check_in", input);
-  }
-
   async addCompanyOwners(input: AddCompanyOwnersInput): Promise<AddCompanyOwnersResult> {
     return this.client.post("/add_company_owners", input);
   }
@@ -4945,14 +4915,6 @@ class ApiNamespaceRoot {
 
   async addFirstCompany(input: AddFirstCompanyInput): Promise<AddFirstCompanyResult> {
     return this.client.post("/add_first_company", input);
-  }
-
-  async addProjectContributor(input: ProjectsCreateContributorInput): Promise<ProjectsCreateContributorResult> {
-    return this.client.post("/projects/create_contributor", input);
-  }
-
-  async addProjectContributors(input: ProjectsCreateContributorsInput): Promise<ProjectsCreateContributorsResult> {
-    return this.client.post("/projects/create_contributors", input);
   }
 
   async changePassword(input: ChangePasswordInput): Promise<ChangePasswordResult> {
@@ -5031,18 +4993,10 @@ class ApiNamespaceRoot {
     return this.client.post("/edit_goal_discussion", input);
   }
 
-  async editGoalProgressUpdate(input: EditGoalProgressUpdateInput): Promise<EditGoalProgressUpdateResult> {
-    return this.client.post("/edit_goal_progress_update", input);
-  }
-
   async editParentFolderInResourceHub(
     input: EditParentFolderInResourceHubInput,
   ): Promise<EditParentFolderInResourceHubResult> {
     return this.client.post("/edit_parent_folder_in_resource_hub", input);
-  }
-
-  async editProjectCheckIn(input: EditProjectCheckInInput): Promise<EditProjectCheckInResult> {
-    return this.client.post("/edit_project_check_in", input);
   }
 
   async editResourceHubDocument(input: EditResourceHubDocumentInput): Promise<EditResourceHubDocumentResult> {
@@ -5083,18 +5037,6 @@ class ApiNamespaceRoot {
 
   async markNotificationsAsRead(input: MarkNotificationsAsReadInput): Promise<MarkNotificationsAsReadResult> {
     return this.client.post("/mark_notifications_as_read", input);
-  }
-
-  async postGoalProgressUpdate(input: PostGoalProgressUpdateInput): Promise<PostGoalProgressUpdateResult> {
-    return this.client.post("/post_goal_progress_update", input);
-  }
-
-  async postMilestoneComment(input: ProjectMilestonesCreateCommentInput): Promise<ProjectMilestonesCreateCommentResult> {
-    return this.client.post("/project_milestones/create_comment", input);
-  }
-
-  async postProjectCheckIn(input: PostProjectCheckInInput): Promise<PostProjectCheckInResult> {
-    return this.client.post("/post_project_check_in", input);
   }
 
   async publishResourceHubDocument(input: PublishResourceHubDocumentInput): Promise<PublishResourceHubDocumentResult> {
@@ -5404,6 +5346,30 @@ class ApiNamespaceTasks {
   }
 }
 
+class ApiNamespaceProjectCheckIns {
+  constructor(private client: ApiClient) {}
+
+  async get(input: ProjectCheckInsGetInput): Promise<ProjectCheckInsGetResult> {
+    return this.client.get("/project_check_ins/get", input);
+  }
+
+  async list(input: ProjectCheckInsListInput): Promise<ProjectCheckInsListResult> {
+    return this.client.get("/project_check_ins/list", input);
+  }
+
+  async acknowledge(input: ProjectCheckInsAcknowledgeInput): Promise<ProjectCheckInsAcknowledgeResult> {
+    return this.client.post("/project_check_ins/acknowledge", input);
+  }
+
+  async create(input: ProjectCheckInsCreateInput): Promise<ProjectCheckInsCreateResult> {
+    return this.client.post("/project_check_ins/create", input);
+  }
+
+  async update(input: ProjectCheckInsUpdateInput): Promise<ProjectCheckInsUpdateResult> {
+    return this.client.post("/project_check_ins/update", input);
+  }
+}
+
 class ApiNamespaceProjectMilestones {
   constructor(private client: ApiClient) {}
 
@@ -5413,6 +5379,10 @@ class ApiNamespaceProjectMilestones {
 
   async listTasks(input: ProjectMilestonesListTasksInput): Promise<ProjectMilestonesListTasksResult> {
     return this.client.get("/project_milestones/list_tasks", input);
+  }
+
+  async createComment(input: ProjectMilestonesCreateCommentInput): Promise<ProjectMilestonesCreateCommentResult> {
+    return this.client.post("/project_milestones/create_comment", input);
   }
 
   async delete(input: ProjectMilestonesDeleteInput): Promise<ProjectMilestonesDeleteResult> {
@@ -5453,8 +5423,16 @@ class ApiNamespaceProjects {
     return this.client.get("/projects/get", input);
   }
 
+  async getContributor(input: ProjectsGetContributorInput): Promise<ProjectsGetContributorResult> {
+    return this.client.get("/projects/get_contributor", input);
+  }
+
   async getKeyResource(input: ProjectsGetKeyResourceInput): Promise<ProjectsGetKeyResourceResult> {
     return this.client.get("/projects/get_key_resource", input);
+  }
+
+  async getRetrospective(input: ProjectsGetRetrospectiveInput): Promise<ProjectsGetRetrospectiveResult> {
+    return this.client.get("/projects/get_retrospective", input);
   }
 
   async list(input: ProjectsListInput): Promise<ProjectsListResult> {
@@ -5489,6 +5467,14 @@ class ApiNamespaceProjects {
 
   async create(input: ProjectsCreateInput): Promise<ProjectsCreateResult> {
     return this.client.post("/projects/create", input);
+  }
+
+  async createContributor(input: ProjectsCreateContributorInput): Promise<ProjectsCreateContributorResult> {
+    return this.client.post("/projects/create_contributor", input);
+  }
+
+  async createContributors(input: ProjectsCreateContributorsInput): Promise<ProjectsCreateContributorsResult> {
+    return this.client.post("/projects/create_contributors", input);
   }
 
   async createKeyResource(input: ProjectsCreateKeyResourceInput): Promise<ProjectsCreateKeyResourceResult> {
@@ -5577,6 +5563,26 @@ class ApiNamespaceProjects {
 
   async updateTaskStatuses(input: ProjectsUpdateTaskStatusesInput): Promise<ProjectsUpdateTaskStatusesResult> {
     return this.client.post("/projects/update_task_statuses", input);
+  }
+}
+
+class ApiNamespaceGoalCheckIns {
+  constructor(private client: ApiClient) {}
+
+  async get(input: GoalCheckInsGetInput): Promise<GoalCheckInsGetResult> {
+    return this.client.get("/goal_check_ins/get", input);
+  }
+
+  async acknowledge(input: GoalCheckInsAcknowledgeInput): Promise<GoalCheckInsAcknowledgeResult> {
+    return this.client.post("/goal_check_ins/acknowledge", input);
+  }
+
+  async create(input: GoalCheckInsCreateInput): Promise<GoalCheckInsCreateResult> {
+    return this.client.post("/goal_check_ins/create", input);
+  }
+
+  async update(input: GoalCheckInsUpdateInput): Promise<GoalCheckInsUpdateResult> {
+    return this.client.post("/goal_check_ins/update", input);
   }
 }
 
@@ -5745,8 +5751,10 @@ export class ApiClient {
   public apiNamespaceSpaceDiscussions: ApiNamespaceSpaceDiscussions;
   public apiNamespaceProjectDiscussions: ApiNamespaceProjectDiscussions;
   public apiNamespaceTasks: ApiNamespaceTasks;
+  public apiNamespaceProjectCheckIns: ApiNamespaceProjectCheckIns;
   public apiNamespaceProjectMilestones: ApiNamespaceProjectMilestones;
   public apiNamespaceProjects: ApiNamespaceProjects;
+  public apiNamespaceGoalCheckIns: ApiNamespaceGoalCheckIns;
   public apiNamespaceGoals: ApiNamespaceGoals;
   public apiNamespaceReactions: ApiNamespaceReactions;
 
@@ -5761,8 +5769,10 @@ export class ApiClient {
     this.apiNamespaceSpaceDiscussions = new ApiNamespaceSpaceDiscussions(this);
     this.apiNamespaceProjectDiscussions = new ApiNamespaceProjectDiscussions(this);
     this.apiNamespaceTasks = new ApiNamespaceTasks(this);
+    this.apiNamespaceProjectCheckIns = new ApiNamespaceProjectCheckIns(this);
     this.apiNamespaceProjectMilestones = new ApiNamespaceProjectMilestones(this);
     this.apiNamespaceProjects = new ApiNamespaceProjects(this);
+    this.apiNamespaceGoalCheckIns = new ApiNamespaceGoalCheckIns(this);
     this.apiNamespaceGoals = new ApiNamespaceGoals(this);
     this.apiNamespaceReactions = new ApiNamespaceReactions(this);
   }
@@ -5827,10 +5837,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.getFlatWorkMap(input);
   }
 
-  getGoalProgressUpdate(input: GetGoalProgressUpdateInput): Promise<GetGoalProgressUpdateResult> {
-    return this.apiNamespaceRoot.getGoalProgressUpdate(input);
-  }
-
   getMe(input: GetMeInput): Promise<GetMeResult> {
     return this.apiNamespaceRoot.getMe(input);
   }
@@ -5845,22 +5851,6 @@ export class ApiClient {
 
   getPerson(input: GetPersonInput): Promise<GetPersonResult> {
     return this.apiNamespaceRoot.getPerson(input);
-  }
-
-  getProjectCheckIn(input: GetProjectCheckInInput): Promise<GetProjectCheckInResult> {
-    return this.apiNamespaceRoot.getProjectCheckIn(input);
-  }
-
-  getProjectCheckIns(input: GetProjectCheckInsInput): Promise<GetProjectCheckInsResult> {
-    return this.apiNamespaceRoot.getProjectCheckIns(input);
-  }
-
-  getProjectContributor(input: ProjectsGetContributorInput): Promise<ProjectsGetContributorResult> {
-    return this.apiNamespaceRoot.getProjectContributor(input);
-  }
-
-  getProjectRetrospective(input: ProjectsGetRetrospectiveInput): Promise<ProjectsGetRetrospectiveResult> {
-    return this.apiNamespaceRoot.getProjectRetrospective(input);
   }
 
   getResourceHub(input: GetResourceHubInput): Promise<GetResourceHubResult> {
@@ -5915,16 +5905,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.searchPeople(input);
   }
 
-  acknowledgeGoalProgressUpdate(
-    input: AcknowledgeGoalProgressUpdateInput,
-  ): Promise<AcknowledgeGoalProgressUpdateResult> {
-    return this.apiNamespaceRoot.acknowledgeGoalProgressUpdate(input);
-  }
-
-  acknowledgeProjectCheckIn(input: AcknowledgeProjectCheckInInput): Promise<AcknowledgeProjectCheckInResult> {
-    return this.apiNamespaceRoot.acknowledgeProjectCheckIn(input);
-  }
-
   addCompanyOwners(input: AddCompanyOwnersInput): Promise<AddCompanyOwnersResult> {
     return this.apiNamespaceRoot.addCompanyOwners(input);
   }
@@ -5935,14 +5915,6 @@ export class ApiClient {
 
   addFirstCompany(input: AddFirstCompanyInput): Promise<AddFirstCompanyResult> {
     return this.apiNamespaceRoot.addFirstCompany(input);
-  }
-
-  addProjectContributor(input: ProjectsCreateContributorInput): Promise<ProjectsCreateContributorResult> {
-    return this.apiNamespaceRoot.addProjectContributor(input);
-  }
-
-  addProjectContributors(input: ProjectsCreateContributorsInput): Promise<ProjectsCreateContributorsResult> {
-    return this.apiNamespaceRoot.addProjectContributors(input);
   }
 
   changePassword(input: ChangePasswordInput): Promise<ChangePasswordResult> {
@@ -6021,18 +5993,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.editGoalDiscussion(input);
   }
 
-  editGoalProgressUpdate(input: EditGoalProgressUpdateInput): Promise<EditGoalProgressUpdateResult> {
-    return this.apiNamespaceRoot.editGoalProgressUpdate(input);
-  }
-
   editParentFolderInResourceHub(
     input: EditParentFolderInResourceHubInput,
   ): Promise<EditParentFolderInResourceHubResult> {
     return this.apiNamespaceRoot.editParentFolderInResourceHub(input);
-  }
-
-  editProjectCheckIn(input: EditProjectCheckInInput): Promise<EditProjectCheckInResult> {
-    return this.apiNamespaceRoot.editProjectCheckIn(input);
   }
 
   editResourceHubDocument(input: EditResourceHubDocumentInput): Promise<EditResourceHubDocumentResult> {
@@ -6073,18 +6037,6 @@ export class ApiClient {
 
   markNotificationsAsRead(input: MarkNotificationsAsReadInput): Promise<MarkNotificationsAsReadResult> {
     return this.apiNamespaceRoot.markNotificationsAsRead(input);
-  }
-
-  postGoalProgressUpdate(input: PostGoalProgressUpdateInput): Promise<PostGoalProgressUpdateResult> {
-    return this.apiNamespaceRoot.postGoalProgressUpdate(input);
-  }
-
-  postMilestoneComment(input: ProjectMilestonesCreateCommentInput): Promise<ProjectMilestonesCreateCommentResult> {
-    return this.apiNamespaceRoot.postMilestoneComment(input);
-  }
-
-  postProjectCheckIn(input: PostProjectCheckInInput): Promise<PostProjectCheckInResult> {
-    return this.apiNamespaceRoot.postProjectCheckIn(input);
   }
 
   publishResourceHubDocument(input: PublishResourceHubDocumentInput): Promise<PublishResourceHubDocumentResult> {
@@ -6147,9 +6099,6 @@ export async function getBindedPeople(input: GetBindedPeopleInput): Promise<GetB
 export async function getFlatWorkMap(input: GetFlatWorkMapInput): Promise<GetFlatWorkMapResult> {
   return defaultApiClient.getFlatWorkMap(input);
 }
-export async function getGoalProgressUpdate(input: GetGoalProgressUpdateInput): Promise<GetGoalProgressUpdateResult> {
-  return defaultApiClient.getGoalProgressUpdate(input);
-}
 export async function getMe(input: GetMeInput): Promise<GetMeResult> {
   return defaultApiClient.getMe(input);
 }
@@ -6161,20 +6110,6 @@ export async function getPeople(input: GetPeopleInput): Promise<GetPeopleResult>
 }
 export async function getPerson(input: GetPersonInput): Promise<GetPersonResult> {
   return defaultApiClient.getPerson(input);
-}
-export async function getProjectCheckIn(input: GetProjectCheckInInput): Promise<GetProjectCheckInResult> {
-  return defaultApiClient.getProjectCheckIn(input);
-}
-export async function getProjectCheckIns(input: GetProjectCheckInsInput): Promise<GetProjectCheckInsResult> {
-  return defaultApiClient.getProjectCheckIns(input);
-}
-export async function getProjectContributor(input: ProjectsGetContributorInput): Promise<ProjectsGetContributorResult> {
-  return defaultApiClient.getProjectContributor(input);
-}
-export async function getProjectRetrospective(
-  input: ProjectsGetRetrospectiveInput,
-): Promise<ProjectsGetRetrospectiveResult> {
-  return defaultApiClient.getProjectRetrospective(input);
 }
 export async function getResourceHub(input: GetResourceHubInput): Promise<GetResourceHubResult> {
   return defaultApiClient.getResourceHub(input);
@@ -6221,16 +6156,6 @@ export async function listResourceHubNodes(input: ListResourceHubNodesInput): Pr
 export async function searchPeople(input: SearchPeopleInput): Promise<SearchPeopleResult> {
   return defaultApiClient.searchPeople(input);
 }
-export async function acknowledgeGoalProgressUpdate(
-  input: AcknowledgeGoalProgressUpdateInput,
-): Promise<AcknowledgeGoalProgressUpdateResult> {
-  return defaultApiClient.acknowledgeGoalProgressUpdate(input);
-}
-export async function acknowledgeProjectCheckIn(
-  input: AcknowledgeProjectCheckInInput,
-): Promise<AcknowledgeProjectCheckInResult> {
-  return defaultApiClient.acknowledgeProjectCheckIn(input);
-}
 export async function addCompanyOwners(input: AddCompanyOwnersInput): Promise<AddCompanyOwnersResult> {
   return defaultApiClient.addCompanyOwners(input);
 }
@@ -6241,14 +6166,6 @@ export async function addCompanyTrustedEmailDomain(
 }
 export async function addFirstCompany(input: AddFirstCompanyInput): Promise<AddFirstCompanyResult> {
   return defaultApiClient.addFirstCompany(input);
-}
-export async function addProjectContributor(input: ProjectsCreateContributorInput): Promise<ProjectsCreateContributorResult> {
-  return defaultApiClient.addProjectContributor(input);
-}
-export async function addProjectContributors(
-  input: ProjectsCreateContributorsInput,
-): Promise<ProjectsCreateContributorsResult> {
-  return defaultApiClient.addProjectContributors(input);
 }
 export async function changePassword(input: ChangePasswordInput): Promise<ChangePasswordResult> {
   return defaultApiClient.changePassword(input);
@@ -6317,18 +6234,10 @@ export async function deleteResourceHubLink(input: DeleteResourceHubLinkInput): 
 export async function editGoalDiscussion(input: EditGoalDiscussionInput): Promise<EditGoalDiscussionResult> {
   return defaultApiClient.editGoalDiscussion(input);
 }
-export async function editGoalProgressUpdate(
-  input: EditGoalProgressUpdateInput,
-): Promise<EditGoalProgressUpdateResult> {
-  return defaultApiClient.editGoalProgressUpdate(input);
-}
 export async function editParentFolderInResourceHub(
   input: EditParentFolderInResourceHubInput,
 ): Promise<EditParentFolderInResourceHubResult> {
   return defaultApiClient.editParentFolderInResourceHub(input);
-}
-export async function editProjectCheckIn(input: EditProjectCheckInInput): Promise<EditProjectCheckInResult> {
-  return defaultApiClient.editProjectCheckIn(input);
 }
 export async function editResourceHubDocument(
   input: EditResourceHubDocumentInput,
@@ -6367,17 +6276,6 @@ export async function markNotificationsAsRead(
   input: MarkNotificationsAsReadInput,
 ): Promise<MarkNotificationsAsReadResult> {
   return defaultApiClient.markNotificationsAsRead(input);
-}
-export async function postGoalProgressUpdate(
-  input: PostGoalProgressUpdateInput,
-): Promise<PostGoalProgressUpdateResult> {
-  return defaultApiClient.postGoalProgressUpdate(input);
-}
-export async function postMilestoneComment(input: ProjectMilestonesCreateCommentInput): Promise<ProjectMilestonesCreateCommentResult> {
-  return defaultApiClient.postMilestoneComment(input);
-}
-export async function postProjectCheckIn(input: PostProjectCheckInInput): Promise<PostProjectCheckInResult> {
-  return defaultApiClient.postProjectCheckIn(input);
 }
 export async function publishResourceHubDocument(
   input: PublishResourceHubDocumentInput,
@@ -6443,12 +6341,6 @@ export function useGetFlatWorkMap(input: GetFlatWorkMapInput): UseQueryHookResul
   return useQuery<GetFlatWorkMapResult>(() => defaultApiClient.getFlatWorkMap(input));
 }
 
-export function useGetGoalProgressUpdate(
-  input: GetGoalProgressUpdateInput,
-): UseQueryHookResult<GetGoalProgressUpdateResult> {
-  return useQuery<GetGoalProgressUpdateResult>(() => defaultApiClient.getGoalProgressUpdate(input));
-}
-
 export function useGetMe(input: GetMeInput): UseQueryHookResult<GetMeResult> {
   return useQuery<GetMeResult>(() => defaultApiClient.getMe(input));
 }
@@ -6463,26 +6355,6 @@ export function useGetPeople(input: GetPeopleInput): UseQueryHookResult<GetPeopl
 
 export function useGetPerson(input: GetPersonInput): UseQueryHookResult<GetPersonResult> {
   return useQuery<GetPersonResult>(() => defaultApiClient.getPerson(input));
-}
-
-export function useGetProjectCheckIn(input: GetProjectCheckInInput): UseQueryHookResult<GetProjectCheckInResult> {
-  return useQuery<GetProjectCheckInResult>(() => defaultApiClient.getProjectCheckIn(input));
-}
-
-export function useGetProjectCheckIns(input: GetProjectCheckInsInput): UseQueryHookResult<GetProjectCheckInsResult> {
-  return useQuery<GetProjectCheckInsResult>(() => defaultApiClient.getProjectCheckIns(input));
-}
-
-export function useGetProjectContributor(
-  input: ProjectsGetContributorInput,
-): UseQueryHookResult<ProjectsGetContributorResult> {
-  return useQuery<ProjectsGetContributorResult>(() => defaultApiClient.getProjectContributor(input));
-}
-
-export function useGetProjectRetrospective(
-  input: ProjectsGetRetrospectiveInput,
-): UseQueryHookResult<ProjectsGetRetrospectiveResult> {
-  return useQuery<ProjectsGetRetrospectiveResult>(() => defaultApiClient.getProjectRetrospective(input));
 }
 
 export function useGetResourceHub(input: GetResourceHubInput): UseQueryHookResult<GetResourceHubResult> {
@@ -6549,24 +6421,6 @@ export function useSearchPeople(input: SearchPeopleInput): UseQueryHookResult<Se
   return useQuery<SearchPeopleResult>(() => defaultApiClient.searchPeople(input));
 }
 
-export function useAcknowledgeGoalProgressUpdate(): UseMutationHookResult<
-  AcknowledgeGoalProgressUpdateInput,
-  AcknowledgeGoalProgressUpdateResult
-> {
-  return useMutation<AcknowledgeGoalProgressUpdateInput, AcknowledgeGoalProgressUpdateResult>((input) =>
-    defaultApiClient.acknowledgeGoalProgressUpdate(input),
-  );
-}
-
-export function useAcknowledgeProjectCheckIn(): UseMutationHookResult<
-  AcknowledgeProjectCheckInInput,
-  AcknowledgeProjectCheckInResult
-> {
-  return useMutation<AcknowledgeProjectCheckInInput, AcknowledgeProjectCheckInResult>((input) =>
-    defaultApiClient.acknowledgeProjectCheckIn(input),
-  );
-}
-
 export function useAddCompanyOwners(): UseMutationHookResult<AddCompanyOwnersInput, AddCompanyOwnersResult> {
   return useMutation<AddCompanyOwnersInput, AddCompanyOwnersResult>((input) =>
     defaultApiClient.addCompanyOwners(input),
@@ -6584,24 +6438,6 @@ export function useAddCompanyTrustedEmailDomain(): UseMutationHookResult<
 
 export function useAddFirstCompany(): UseMutationHookResult<AddFirstCompanyInput, AddFirstCompanyResult> {
   return useMutation<AddFirstCompanyInput, AddFirstCompanyResult>((input) => defaultApiClient.addFirstCompany(input));
-}
-
-export function useAddProjectContributor(): UseMutationHookResult<
-  ProjectsCreateContributorInput,
-  ProjectsCreateContributorResult
-> {
-  return useMutation<ProjectsCreateContributorInput, ProjectsCreateContributorResult>((input) =>
-    defaultApiClient.addProjectContributor(input),
-  );
-}
-
-export function useAddProjectContributors(): UseMutationHookResult<
-  ProjectsCreateContributorsInput,
-  ProjectsCreateContributorsResult
-> {
-  return useMutation<ProjectsCreateContributorsInput, ProjectsCreateContributorsResult>((input) =>
-    defaultApiClient.addProjectContributors(input),
-  );
 }
 
 export function useChangePassword(): UseMutationHookResult<ChangePasswordInput, ChangePasswordResult> {
@@ -6746,27 +6582,12 @@ export function useEditGoalDiscussion(): UseMutationHookResult<EditGoalDiscussio
   );
 }
 
-export function useEditGoalProgressUpdate(): UseMutationHookResult<
-  EditGoalProgressUpdateInput,
-  EditGoalProgressUpdateResult
-> {
-  return useMutation<EditGoalProgressUpdateInput, EditGoalProgressUpdateResult>((input) =>
-    defaultApiClient.editGoalProgressUpdate(input),
-  );
-}
-
 export function useEditParentFolderInResourceHub(): UseMutationHookResult<
   EditParentFolderInResourceHubInput,
   EditParentFolderInResourceHubResult
 > {
   return useMutation<EditParentFolderInResourceHubInput, EditParentFolderInResourceHubResult>((input) =>
     defaultApiClient.editParentFolderInResourceHub(input),
-  );
-}
-
-export function useEditProjectCheckIn(): UseMutationHookResult<EditProjectCheckInInput, EditProjectCheckInResult> {
-  return useMutation<EditProjectCheckInInput, EditProjectCheckInResult>((input) =>
-    defaultApiClient.editProjectCheckIn(input),
   );
 }
 
@@ -6838,30 +6659,6 @@ export function useMarkNotificationsAsRead(): UseMutationHookResult<
 > {
   return useMutation<MarkNotificationsAsReadInput, MarkNotificationsAsReadResult>((input) =>
     defaultApiClient.markNotificationsAsRead(input),
-  );
-}
-
-export function usePostGoalProgressUpdate(): UseMutationHookResult<
-  PostGoalProgressUpdateInput,
-  PostGoalProgressUpdateResult
-> {
-  return useMutation<PostGoalProgressUpdateInput, PostGoalProgressUpdateResult>((input) =>
-    defaultApiClient.postGoalProgressUpdate(input),
-  );
-}
-
-export function usePostMilestoneComment(): UseMutationHookResult<
-  ProjectMilestonesCreateCommentInput,
-  ProjectMilestonesCreateCommentResult
-> {
-  return useMutation<ProjectMilestonesCreateCommentInput, ProjectMilestonesCreateCommentResult>((input) =>
-    defaultApiClient.postMilestoneComment(input),
-  );
-}
-
-export function usePostProjectCheckIn(): UseMutationHookResult<PostProjectCheckInInput, PostProjectCheckInResult> {
-  return useMutation<PostProjectCheckInInput, PostProjectCheckInResult>((input) =>
-    defaultApiClient.postProjectCheckIn(input),
   );
 }
 
@@ -6948,8 +6745,6 @@ export default {
   useGetBindedPeople,
   getFlatWorkMap,
   useGetFlatWorkMap,
-  getGoalProgressUpdate,
-  useGetGoalProgressUpdate,
   getMe,
   useGetMe,
   getNotifications,
@@ -6958,14 +6753,6 @@ export default {
   useGetPeople,
   getPerson,
   useGetPerson,
-  getProjectCheckIn,
-  useGetProjectCheckIn,
-  getProjectCheckIns,
-  useGetProjectCheckIns,
-  getProjectContributor,
-  useGetProjectContributor,
-  getProjectRetrospective,
-  useGetProjectRetrospective,
   getResourceHub,
   useGetResourceHub,
   getResourceHubDocument,
@@ -6992,20 +6779,12 @@ export default {
   useListResourceHubNodes,
   searchPeople,
   useSearchPeople,
-  acknowledgeGoalProgressUpdate,
-  useAcknowledgeGoalProgressUpdate,
-  acknowledgeProjectCheckIn,
-  useAcknowledgeProjectCheckIn,
   addCompanyOwners,
   useAddCompanyOwners,
   addCompanyTrustedEmailDomain,
   useAddCompanyTrustedEmailDomain,
   addFirstCompany,
   useAddFirstCompany,
-  addProjectContributor,
-  useAddProjectContributor,
-  addProjectContributors,
-  useAddProjectContributors,
   changePassword,
   useChangePassword,
   completeCompanySetup,
@@ -7044,12 +6823,8 @@ export default {
   useDeleteResourceHubLink,
   editGoalDiscussion,
   useEditGoalDiscussion,
-  editGoalProgressUpdate,
-  useEditGoalProgressUpdate,
   editParentFolderInResourceHub,
   useEditParentFolderInResourceHub,
-  editProjectCheckIn,
-  useEditProjectCheckIn,
   editResourceHubDocument,
   useEditResourceHubDocument,
   editResourceHubFile,
@@ -7070,12 +6845,6 @@ export default {
   useMarkNotificationAsRead,
   markNotificationsAsRead,
   useMarkNotificationsAsRead,
-  postGoalProgressUpdate,
-  usePostGoalProgressUpdate,
-  postMilestoneComment,
-  usePostMilestoneComment,
-  postProjectCheckIn,
-  usePostProjectCheckIn,
   publishResourceHubDocument,
   usePublishResourceHubDocument,
   renameResourceHubFolder,
@@ -7598,6 +7367,35 @@ export default {
       ),
   },
 
+  project_check_ins: {
+    list: (input: ProjectCheckInsListInput) => defaultApiClient.apiNamespaceProjectCheckIns.list(input),
+    useList: (input: ProjectCheckInsListInput) =>
+      useQuery<ProjectCheckInsListResult>(() => defaultApiClient.apiNamespaceProjectCheckIns.list(input)),
+
+    get: (input: ProjectCheckInsGetInput) => defaultApiClient.apiNamespaceProjectCheckIns.get(input),
+    useGet: (input: ProjectCheckInsGetInput) =>
+      useQuery<ProjectCheckInsGetResult>(() => defaultApiClient.apiNamespaceProjectCheckIns.get(input)),
+
+    acknowledge: (input: ProjectCheckInsAcknowledgeInput) =>
+      defaultApiClient.apiNamespaceProjectCheckIns.acknowledge(input),
+    useAcknowledge: () =>
+      useMutation<ProjectCheckInsAcknowledgeInput, ProjectCheckInsAcknowledgeResult>((input) =>
+        defaultApiClient.apiNamespaceProjectCheckIns.acknowledge(input),
+      ),
+
+    create: (input: ProjectCheckInsCreateInput) => defaultApiClient.apiNamespaceProjectCheckIns.create(input),
+    useCreate: () =>
+      useMutation<ProjectCheckInsCreateInput, ProjectCheckInsCreateResult>((input) =>
+        defaultApiClient.apiNamespaceProjectCheckIns.create(input),
+      ),
+
+    update: (input: ProjectCheckInsUpdateInput) => defaultApiClient.apiNamespaceProjectCheckIns.update(input),
+    useUpdate: () =>
+      useMutation<ProjectCheckInsUpdateInput, ProjectCheckInsUpdateResult>((input) =>
+        defaultApiClient.apiNamespaceProjectCheckIns.update(input),
+      ),
+  },
+
   project_milestones: {
     listTasks: (input: ProjectMilestonesListTasksInput) =>
       defaultApiClient.apiNamespaceProjectMilestones.listTasks(input),
@@ -7619,6 +7417,13 @@ export default {
     useUpdateDescription: () =>
       useMutation<ProjectMilestonesUpdateDescriptionInput, ProjectMilestonesUpdateDescriptionResult>((input) =>
         defaultApiClient.apiNamespaceProjectMilestones.updateDescription(input),
+      ),
+
+    createComment: (input: ProjectMilestonesCreateCommentInput) =>
+      defaultApiClient.apiNamespaceProjectMilestones.createComment(input),
+    useCreateComment: () =>
+      useMutation<ProjectMilestonesCreateCommentInput, ProjectMilestonesCreateCommentResult>((input) =>
+        defaultApiClient.apiNamespaceProjectMilestones.createComment(input),
       ),
 
     updateDueDate: (input: ProjectMilestonesUpdateDueDateInput) =>
@@ -7684,9 +7489,18 @@ export default {
     useGet: (input: ProjectsGetInput) =>
       useQuery<ProjectsGetResult>(() => defaultApiClient.apiNamespaceProjects.get(input)),
 
+    getContributor: (input: ProjectsGetContributorInput) => defaultApiClient.apiNamespaceProjects.getContributor(input),
+    useGetContributor: (input: ProjectsGetContributorInput) =>
+      useQuery<ProjectsGetContributorResult>(() => defaultApiClient.apiNamespaceProjects.getContributor(input)),
+
     listMilestones: (input: ProjectsListMilestonesInput) => defaultApiClient.apiNamespaceProjects.listMilestones(input),
     useListMilestones: (input: ProjectsListMilestonesInput) =>
       useQuery<ProjectsListMilestonesResult>(() => defaultApiClient.apiNamespaceProjects.listMilestones(input)),
+
+    getRetrospective: (input: ProjectsGetRetrospectiveInput) =>
+      defaultApiClient.apiNamespaceProjects.getRetrospective(input),
+    useGetRetrospective: (input: ProjectsGetRetrospectiveInput) =>
+      useQuery<ProjectsGetRetrospectiveResult>(() => defaultApiClient.apiNamespaceProjects.getRetrospective(input)),
 
     search: (input: ProjectsSearchInput) => defaultApiClient.apiNamespaceProjects.search(input),
     useSearch: (input: ProjectsSearchInput) =>
@@ -7730,6 +7544,13 @@ export default {
     useUpdateDescription: () =>
       useMutation<ProjectsUpdateDescriptionInput, ProjectsUpdateDescriptionResult>((input) =>
         defaultApiClient.apiNamespaceProjects.updateDescription(input),
+      ),
+
+    createContributors: (input: ProjectsCreateContributorsInput) =>
+      defaultApiClient.apiNamespaceProjects.createContributors(input),
+    useCreateContributors: () =>
+      useMutation<ProjectsCreateContributorsInput, ProjectsCreateContributorsResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.createContributors(input),
       ),
 
     deleteContributor: (input: ProjectsDeleteContributorInput) =>
@@ -7847,6 +7668,37 @@ export default {
     useDeleteKeyResource: () =>
       useMutation<ProjectsDeleteKeyResourceInput, ProjectsDeleteKeyResourceResult>((input) =>
         defaultApiClient.apiNamespaceProjects.deleteKeyResource(input),
+      ),
+
+    createContributor: (input: ProjectsCreateContributorInput) =>
+      defaultApiClient.apiNamespaceProjects.createContributor(input),
+    useCreateContributor: () =>
+      useMutation<ProjectsCreateContributorInput, ProjectsCreateContributorResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.createContributor(input),
+      ),
+  },
+
+  goal_check_ins: {
+    get: (input: GoalCheckInsGetInput) => defaultApiClient.apiNamespaceGoalCheckIns.get(input),
+    useGet: (input: GoalCheckInsGetInput) =>
+      useQuery<GoalCheckInsGetResult>(() => defaultApiClient.apiNamespaceGoalCheckIns.get(input)),
+
+    update: (input: GoalCheckInsUpdateInput) => defaultApiClient.apiNamespaceGoalCheckIns.update(input),
+    useUpdate: () =>
+      useMutation<GoalCheckInsUpdateInput, GoalCheckInsUpdateResult>((input) =>
+        defaultApiClient.apiNamespaceGoalCheckIns.update(input),
+      ),
+
+    create: (input: GoalCheckInsCreateInput) => defaultApiClient.apiNamespaceGoalCheckIns.create(input),
+    useCreate: () =>
+      useMutation<GoalCheckInsCreateInput, GoalCheckInsCreateResult>((input) =>
+        defaultApiClient.apiNamespaceGoalCheckIns.create(input),
+      ),
+
+    acknowledge: (input: GoalCheckInsAcknowledgeInput) => defaultApiClient.apiNamespaceGoalCheckIns.acknowledge(input),
+    useAcknowledge: () =>
+      useMutation<GoalCheckInsAcknowledgeInput, GoalCheckInsAcknowledgeResult>((input) =>
+        defaultApiClient.apiNamespaceGoalCheckIns.acknowledge(input),
       ),
   },
 

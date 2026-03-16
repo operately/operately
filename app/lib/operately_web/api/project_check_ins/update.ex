@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.EditProjectCheckIn do
+defmodule OperatelyWeb.Api.ProjectCheckIns.Update do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

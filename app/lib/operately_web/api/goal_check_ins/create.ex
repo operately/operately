@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdate do
+defmodule OperatelyWeb.Api.GoalCheckIns.Create do
   use TurboConnect.Mutation
   require Logger
   use OperatelyWeb.Api.Helpers
