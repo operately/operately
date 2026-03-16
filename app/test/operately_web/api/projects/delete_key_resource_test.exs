@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.RemoveKeyResourceTest do
+defmodule OperatelyWeb.Api.Projects.DeleteKeyResourceTest do
   use OperatelyWeb.TurboCase
 
   alias Operately.Access.Binding
@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveKeyResourceTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :remove_key_resource, %{})
+      assert {401, _} = mutation(ctx.conn, [:projects, :delete_key_resource], %{})
     end
   end
 
@@ -41,7 +41,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveKeyResourceTest do
         project = create_project(ctx, space, @test.company, @test.space, @test.project)
         resource = create_key_resource(project)
 
-        assert {code, res} = mutation(ctx.conn, :remove_key_resource, %{id: Paths.key_resource_id(resource)})
+        assert {code, res} = mutation(ctx.conn, [:projects, :delete_key_resource], %{id: Paths.key_resource_id(resource)})
 
         assert code == @test.expected
 
@@ -54,7 +54,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveKeyResourceTest do
     end
   end
 
-  describe "remove_key_resource functionality" do
+  describe "delete_key_resource functionality" do
     setup ctx do
       ctx = register_and_log_in_account(ctx)
       project = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.person.id, group_id: ctx.company.company_space_id})
@@ -66,7 +66,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveKeyResourceTest do
       resource = key_resource_fixture(%{project_id: ctx.project.id})
       resource = Repo.reload(resource) |> Repo.preload(:project)
 
-      assert {200, res} = mutation(ctx.conn, :remove_key_resource, %{id: Paths.key_resource_id(resource)})
+      assert {200, res} = mutation(ctx.conn, [:projects, :delete_key_resource], %{id: Paths.key_resource_id(resource)})
       assert res.key_resource == Serializer.serialize(resource)
     end
   end
@@ -110,4 +110,4 @@ defmodule OperatelyWeb.Api.Mutations.RemoveKeyResourceTest do
   def create_key_resource(project) do
     key_resource_fixture(%{project_id: project.id})
   end
-end 
+end

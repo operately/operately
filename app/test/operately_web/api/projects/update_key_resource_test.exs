@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.EditKeyResourceTest do
+defmodule OperatelyWeb.Api.Projects.UpdateKeyResourceTest do
   use OperatelyWeb.TurboCase
 
   alias Operately.Access.Binding
@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Api.Mutations.EditKeyResourceTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :edit_key_resource, %{})
+      assert {401, _} = mutation(ctx.conn, [:projects, :update_key_resource], %{})
     end
   end
 
@@ -41,7 +41,7 @@ defmodule OperatelyWeb.Api.Mutations.EditKeyResourceTest do
         project = create_project(ctx, space, @test.company, @test.space, @test.project)
         resource = create_key_resource(project)
 
-        assert {code, res} = mutation(ctx.conn, :edit_key_resource, %{
+        assert {code, res} = mutation(ctx.conn, [:projects, :update_key_resource], %{
           id: Paths.key_resource_id(resource),
           title: "New title",
           link: "https://another-resource.com",
@@ -60,7 +60,7 @@ defmodule OperatelyWeb.Api.Mutations.EditKeyResourceTest do
     end
   end
 
-  describe "edit_key_resource functionality" do
+  describe "update_key_resource functionality" do
     setup ctx do
       ctx = register_and_log_in_account(ctx)
       project = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.person.id, group_id: ctx.company.company_space_id})
@@ -71,7 +71,7 @@ defmodule OperatelyWeb.Api.Mutations.EditKeyResourceTest do
     test "edits key resource", ctx do
       resource = key_resource_fixture(%{project_id: ctx.project.id})
 
-      assert {200, res} = mutation(ctx.conn, :edit_key_resource, %{
+      assert {200, res} = mutation(ctx.conn, [:projects, :update_key_resource], %{
         id: Paths.key_resource_id(resource),
         title: "New title",
         link: "https://another-resource.com",

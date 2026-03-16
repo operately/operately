@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.AddKeyResource do
+defmodule OperatelyWeb.Api.Projects.CreateKeyResource do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.RemoveKeyResource do
+defmodule OperatelyWeb.Api.Projects.DeleteKeyResource do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
