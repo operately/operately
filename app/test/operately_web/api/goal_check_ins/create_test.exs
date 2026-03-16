@@ -148,6 +148,68 @@ defmodule OperatelyWeb.Api.GoalCheckIns.CreateTest do
 
       assert update.subscription_list_id
     end
+
+
+    test "adds mentioned people to subscription list", ctx do
+      people = ctx.people ++ ctx.people ++ ctx.people
+      content = RichText.rich_text(mentioned_people: people)
+
+      assert {200, res} =
+               mutation(ctx.conn, [:goal_check_ins, :create], %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 status: "on_track",
+                 content: content,
+                 new_target_values: new_target_values(ctx.goal),
+                 send_notifications_to_everyone: false,
+                 subscriber_ids: [],
+                 due_date: nil,
+                 checklist: []
+               })
+
+      subscriptions = fetch_subscriptions(res)
+
+      assert length(subscriptions) == 4
+
+      Enum.each([ctx.person | ctx.people], fn p ->
+        assert Enum.filter(subscriptions, &(&1.person_id == p.id))
+      end)
+    end
+
+    test "doesn't create repeated subscription", ctx do
+      people = [ctx.person | ctx.people]
+      content = RichText.rich_text(mentioned_people: people)
+
+      assert {200, res} =
+               mutation(ctx.conn, [:goal_check_ins, :create], %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 status: "caution",
+                 content: content,
+                 new_target_values: new_target_values(ctx.goal),
+                 send_notifications_to_everyone: true,
+                 subscriber_ids: Enum.map(people, &Paths.person_id(&1)),
+                 due_date: nil,
+                 checklist: []
+               })
+
+      subscriptions = fetch_subscriptions(res)
+
+      assert length(subscriptions) == 4
+
+      Enum.each(people, fn p ->
+        assert Enum.filter(subscriptions, &(&1.person_id == p.id))
+      end)
+    end
+  end
+
+  #
+  # Helpers
+  #
+
+  defp fetch_subscriptions(res) do
+    {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.update.id)
+    {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
+
+    list.subscriptions
   end
 
   defp new_target_values(goal) do

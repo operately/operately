@@ -83,6 +83,10 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.ListTest do
     end
   end
 
+  #
+  # Helpers
+  #
+
   defp create_project_and_check_ins(ctx, opts) do
     project = project_fixture(%{
       company_id: ctx.company.id,

@@ -158,6 +158,10 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.CreateTest do
     end
   end
 
+  #
+  # Helpers
+  #
+
   defp fetch_subscriptions(res) do
     {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.check_in.id)
     {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])

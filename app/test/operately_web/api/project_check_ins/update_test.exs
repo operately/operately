@@ -118,6 +118,10 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.UpdateTest do
     end
   end
 
+  #
+  # Helpers
+  #
+
   defp create_space(ctx) do
     group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.no_access()})
   end

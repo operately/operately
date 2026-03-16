@@ -123,6 +123,10 @@ defmodule OperatelyWeb.Api.GoalCheckIns.UpdateTest do
     end
   end
 
+  #
+  # Helpers
+  #
+
   defp request(conn, update) do
     targets =
       Enum.map(Goals.list_targets(update.goal_id), fn t ->
