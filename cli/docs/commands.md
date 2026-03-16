@@ -12,7 +12,10 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `add_key_resource` | `op add_key_resource` | `POST` | `/api/external/v1/add_key_resource` |
 | `add_project_contributor` | `op add_project_contributor` | `POST` | `/api/external/v1/add_project_contributor` |
 | `add_project_contributors` | `op add_project_contributors` | `POST` | `/api/external/v1/add_project_contributors` |
-| `add_reaction` | `op add_reaction` | `POST` | `/api/external/v1/add_reaction` |
+| `comments create` | `op comments create` | `POST` | `/api/external/v1/comments/create` |
+| `comments delete` | `op comments delete` | `POST` | `/api/external/v1/comments/delete` |
+| `comments list` | `op comments list` | `GET` | `/api/external/v1/comments/list` |
+| `comments update` | `op comments update` | `POST` | `/api/external/v1/comments/update` |
 | `companies convert_member_to_guest` | `op companies convert_member_to_guest` | `POST` | `/api/external/v1/companies/convert_member_to_guest` |
 | `companies create` | `op companies create` | `POST` | `/api/external/v1/companies/create` |
 | `companies create_admins` | `op companies create_admins` | `POST` | `/api/external/v1/companies/create_admins` |
@@ -27,19 +30,16 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `companies update` | `op companies update` | `POST` | `/api/external/v1/companies/update` |
 | `companies update_members_permissions` | `op companies update_members_permissions` | `POST` | `/api/external/v1/companies/update_members_permissions` |
 | `copy_resource_hub_folder` | `op copy_resource_hub_folder` | `POST` | `/api/external/v1/copy_resource_hub_folder` |
-| `create_comment` | `op create_comment` | `POST` | `/api/external/v1/create_comment` |
 | `create_goal_discussion` | `op create_goal_discussion` | `POST` | `/api/external/v1/create_goal_discussion` |
 | `create_resource_hub` | `op create_resource_hub` | `POST` | `/api/external/v1/create_resource_hub` |
 | `create_resource_hub_document` | `op create_resource_hub_document` | `POST` | `/api/external/v1/create_resource_hub_document` |
 | `create_resource_hub_file` | `op create_resource_hub_file` | `POST` | `/api/external/v1/create_resource_hub_file` |
 | `create_resource_hub_folder` | `op create_resource_hub_folder` | `POST` | `/api/external/v1/create_resource_hub_folder` |
 | `create_resource_hub_link` | `op create_resource_hub_link` | `POST` | `/api/external/v1/create_resource_hub_link` |
-| `delete_comment` | `op delete_comment` | `POST` | `/api/external/v1/delete_comment` |
 | `delete_resource_hub_document` | `op delete_resource_hub_document` | `POST` | `/api/external/v1/delete_resource_hub_document` |
 | `delete_resource_hub_file` | `op delete_resource_hub_file` | `POST` | `/api/external/v1/delete_resource_hub_file` |
 | `delete_resource_hub_folder` | `op delete_resource_hub_folder` | `POST` | `/api/external/v1/delete_resource_hub_folder` |
 | `delete_resource_hub_link` | `op delete_resource_hub_link` | `POST` | `/api/external/v1/delete_resource_hub_link` |
-| `edit_comment` | `op edit_comment` | `POST` | `/api/external/v1/edit_comment` |
 | `edit_goal_discussion` | `op edit_goal_discussion` | `POST` | `/api/external/v1/edit_goal_discussion` |
 | `edit_goal_progress_update` | `op edit_goal_progress_update` | `POST` | `/api/external/v1/edit_goal_progress_update` |
 | `edit_key_resource` | `op edit_key_resource` | `POST` | `/api/external/v1/edit_key_resource` |
@@ -55,7 +55,6 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `get_assignments` | `op get_assignments` | `GET` | `/api/external/v1/get_assignments` |
 | `get_assignments_count` | `op get_assignments_count` | `GET` | `/api/external/v1/get_assignments_count` |
 | `get_binded_people` | `op get_binded_people` | `GET` | `/api/external/v1/get_binded_people` |
-| `get_comments` | `op get_comments` | `GET` | `/api/external/v1/get_comments` |
 | `get_flat_work_map` | `op get_flat_work_map` | `GET` | `/api/external/v1/get_flat_work_map` |
 | `get_goal_progress_update` | `op get_goal_progress_update` | `GET` | `/api/external/v1/get_goal_progress_update` |
 | `get_key_resource` | `op get_key_resource` | `GET` | `/api/external/v1/get_key_resource` |
@@ -160,8 +159,9 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `projects update_start_date` | `op projects update_start_date` | `POST` | `/api/external/v1/projects/update_start_date` |
 | `projects update_task_statuses` | `op projects update_task_statuses` | `POST` | `/api/external/v1/projects/update_task_statuses` |
 | `publish_resource_hub_document` | `op publish_resource_hub_document` | `POST` | `/api/external/v1/publish_resource_hub_document` |
+| `reactions create` | `op reactions create` | `POST` | `/api/external/v1/reactions/create` |
+| `reactions delete` | `op reactions delete` | `POST` | `/api/external/v1/reactions/delete` |
 | `remove_key_resource` | `op remove_key_resource` | `POST` | `/api/external/v1/remove_key_resource` |
-| `remove_reaction` | `op remove_reaction` | `POST` | `/api/external/v1/remove_reaction` |
 | `rename_resource_hub_folder` | `op rename_resource_hub_folder` | `POST` | `/api/external/v1/rename_resource_hub_folder` |
 | `search_people` | `op search_people` | `GET` | `/api/external/v1/search_people` |
 | `space_discussions archive` | `op space_discussions archive` | `POST` | `/api/external/v1/space_discussions/archive` |

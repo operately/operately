@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.AddReaction do
+defmodule OperatelyWeb.Api.Reactions.Create do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

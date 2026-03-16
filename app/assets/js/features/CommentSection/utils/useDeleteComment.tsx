@@ -34,7 +34,7 @@ export function useDeleteComment({ comments, setComments, parentType, refetch }:
       setLoading(true);
 
       try {
-        await Api.deleteComment({
+        await Api.comments.delete({
           commentId: commentID,
           parentType,
         });

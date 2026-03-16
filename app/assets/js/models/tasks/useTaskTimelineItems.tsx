@@ -27,7 +27,7 @@ export function useTaskTimelineItems(taskId: string | null, commentEntityType: C
         scopeType: "task",
         actions: TASK_ACTIVITY_TYPES,
       }).then((d) => d.activities ?? []),
-      Api.getComments({
+      Api.comments.list({
         entityId: taskId,
         entityType: commentEntityType,
       }).then((d) => d.comments ?? []),

@@ -165,12 +165,23 @@ defmodule OperatelyWeb.Api do
         mutation(:update, OperatelyWeb.Api.Companies.Update)
       end
 
+      namespace(:comments) do
+        query(:list, OperatelyWeb.Api.Comments.List)
+        mutation(:create, OperatelyWeb.Api.Comments.Create)
+        mutation(:delete, OperatelyWeb.Api.Comments.Delete)
+        mutation(:update, OperatelyWeb.Api.Comments.Update)
+      end
+
+      namespace(:reactions) do
+        mutation(:create, OperatelyWeb.Api.Reactions.Create)
+        mutation(:delete, OperatelyWeb.Api.Reactions.Delete)
+      end
+
       query(:get_account, Q.GetAccount)
       query(:get_activities, Q.GetActivities)
       query(:get_activity, Q.GetActivity)
       query(:get_assignments_count, Q.GetAssignmentsCount)
       query(:get_assignments, Q.GetAssignments)
-      query(:get_comments, Q.GetComments)
       query(:get_goal_progress_update, Q.GetGoalProgressUpdate)
       query(:get_key_resource, Q.GetKeyResource)
       query(:get_me, Q.GetMe)
@@ -201,11 +212,8 @@ defmodule OperatelyWeb.Api do
       mutation(:add_key_resource, M.AddKeyResource)
       mutation(:add_project_contributor, M.AddProjectContributor)
       mutation(:add_project_contributors, M.AddProjectContributors)
-      mutation(:add_reaction, M.AddReaction)
-      mutation(:remove_reaction, M.RemoveReaction)
 
       mutation(:copy_resource_hub_folder, M.CopyResourceHubFolder)
-      mutation(:create_comment, M.CreateComment)
       mutation(:create_goal_discussion, M.CreateGoalDiscussion)
       mutation(:create_resource_hub, M.CreateResourceHub)
       mutation(:create_resource_hub_document, M.CreateResourceHubDocument)
@@ -214,7 +222,6 @@ defmodule OperatelyWeb.Api do
       mutation(:create_resource_hub_link, M.CreateResourceHubLink)
       mutation(:publish_resource_hub_document, M.PublishResourceHubDocument)
 
-      mutation(:delete_comment, M.DeleteComment)
       mutation(:delete_resource_hub_document, M.DeleteResourceHubDocument)
       mutation(:delete_resource_hub_file, M.DeleteResourceHubFile)
       mutation(:delete_resource_hub_folder, M.DeleteResourceHubFolder)
@@ -222,7 +229,6 @@ defmodule OperatelyWeb.Api do
 
       mutation(:remove_key_resource, M.RemoveKeyResource)
 
-      mutation(:edit_comment, M.EditComment)
       mutation(:edit_goal_discussion, M.EditGoalDiscussion)
       mutation(:edit_goal_progress_update, M.EditGoalProgressUpdate)
       mutation(:edit_key_resource, M.EditKeyResource)
@@ -250,12 +256,6 @@ defmodule OperatelyWeb.Api do
       mutation(:update_profile_picture, M.UpdateProfilePicture)
       mutation(:update_project_contributor, M.UpdateProjectContributor)
       mutation(:update_project_description, M.UpdateProjectDescription)
-
-      subscription(:assignments_count, S.AssignmentsCount)
-      subscription(:reload_comments, S.ReloadComments)
-      subscription(:unread_notifications_count, S.UnreadNotificationsCount)
-      subscription(:profile_updated, S.ProfileUpdated)
-      subscription(:new_agent_message, S.NewAgentMessage)
     end
   end
 
@@ -323,6 +323,12 @@ defmodule OperatelyWeb.Api do
         mutation(:update_name, OperatelyWeb.Api.ApiTokens.UpdateName)
         mutation(:delete, OperatelyWeb.Api.ApiTokens.Delete)
       end
+
+      subscription(:assignments_count, S.AssignmentsCount)
+      subscription(:reload_comments, S.ReloadComments)
+      subscription(:unread_notifications_count, S.UnreadNotificationsCount)
+      subscription(:profile_updated, S.ProfileUpdated)
+      subscription(:new_agent_message, S.NewAgentMessage)
     end
   end
 

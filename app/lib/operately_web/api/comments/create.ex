@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.CreateComment do
+defmodule OperatelyWeb.Api.Comments.Create do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

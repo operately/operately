@@ -40,7 +40,7 @@ export function useOptimisticComments(opts: {
       setComments((prev) => [optimisticComment, ...prev]);
 
       try {
-        const res = await Api.createComment({
+        const res = await Api.comments.create({
           entityId: taskId,
           entityType: parentType,
           content: JSON.stringify(content),
@@ -79,7 +79,7 @@ export function useOptimisticComments(opts: {
       setComments((prev) => prev.map((c) => (c.id === commentId ? { ...c, content: nextContent } : c)));
 
       try {
-        await Api.editComment({
+        await Api.comments.update({
           commentId,
           parentType,
           content: JSON.stringify(content),
@@ -106,7 +106,7 @@ export function useOptimisticComments(opts: {
       setComments((prev) => prev.filter((c) => c.id !== commentId));
 
       try {
-        await Api.deleteComment({
+        await Api.comments.delete({
           commentId,
           parentType,
         });
@@ -145,7 +145,7 @@ export function useOptimisticComments(opts: {
       );
 
       try {
-        const { reaction } = await Api.addReaction({
+        const { reaction } = await Api.reactions.create({
           entityId: commentId,
           entityType: "comment",
           parentType,
@@ -219,7 +219,7 @@ export function useOptimisticComments(opts: {
       if (reactionId.startsWith("temp-")) return;
 
       try {
-        await Api.removeReaction({ reactionId });
+        await Api.reactions.delete({ reactionId: reactionId });
 
         onAfterMutation?.();
       } catch {

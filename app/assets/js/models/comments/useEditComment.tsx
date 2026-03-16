@@ -1,12 +1,12 @@
 import React from "react";
-import * as api from "@/api";
+import Api, { CommentParentType } from "@/api";
 import { showErrorToast } from "turboui";
 import { compareIds } from "@/routes/paths";
 
 export function useEditComment<T extends { id?: string | null; content?: any }>(
   comments: T[],
   setComments: React.Dispatch<React.SetStateAction<T[]>>,
-  parentType: api.CommentParentType,
+  parentType: CommentParentType,
   invalidateCache: () => void,
 ) {
   const handleEditComment = React.useCallback(
@@ -22,7 +22,7 @@ export function useEditComment<T extends { id?: string | null; content?: any }>(
           );
         }
 
-        await api.editComment({
+        await Api.comments.update({
           commentId,
           parentType,
           content: JSON.stringify(content),
