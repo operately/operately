@@ -256,6 +256,12 @@ defmodule OperatelyWeb.Api do
       mutation(:update_profile_picture, M.UpdateProfilePicture)
       mutation(:update_project_contributor, M.UpdateProjectContributor)
       mutation(:update_project_description, M.UpdateProjectDescription)
+
+      subscription(:assignments_count, S.AssignmentsCount)
+      subscription(:reload_comments, S.ReloadComments)
+      subscription(:unread_notifications_count, S.UnreadNotificationsCount)
+      subscription(:profile_updated, S.ProfileUpdated)
+      subscription(:new_agent_message, S.NewAgentMessage)
     end
   end
 
@@ -323,12 +329,6 @@ defmodule OperatelyWeb.Api do
         mutation(:update_name, OperatelyWeb.Api.ApiTokens.UpdateName)
         mutation(:delete, OperatelyWeb.Api.ApiTokens.Delete)
       end
-
-      subscription(:assignments_count, S.AssignmentsCount)
-      subscription(:reload_comments, S.ReloadComments)
-      subscription(:unread_notifications_count, S.UnreadNotificationsCount)
-      subscription(:profile_updated, S.ProfileUpdated)
-      subscription(:new_agent_message, S.NewAgentMessage)
     end
   end
 
