@@ -18,7 +18,7 @@ export function usePossibleManagersSearch<T = Person>(
 
   const onSearch = React.useCallback(
     async (query: string) => {
-      const res = await Api.listPossibleManagers({
+      const res = await Api.people.listPossibleManagers({
         userId: personId,
         query: query,
       });

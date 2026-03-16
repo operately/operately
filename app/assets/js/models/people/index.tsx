@@ -5,21 +5,20 @@ import Api from "@/api";
 import { Paths } from "../../routes/paths";
 export type Person = api.Person;
 
-export {
-  getPeople,
-  getPerson,
-  updateProfile,
-  updateProfilePicture,
-  getMe,
-  useGetMe,
-  useGetPeople,
-  updateTheme,
-  useGetTheme,
-} from "@/api";
+export { useGetTheme } from "@/api";
 export type { AccountTheme, InviteLink } from "@/api";
 export { usePersonFieldSearch } from "./usePersonFieldSearch";
 export { useMentionedPersonSearch } from "./useMentionedPersonSearch";
 export { usePossibleManagersSearch } from "./usePossibleManagersSearch";
+
+export const getPeople = Api.people.list;
+export const getPerson = Api.people.get;
+export const updateProfile = Api.people.update;
+export const updateProfilePicture = Api.people.updatePicture;
+export const getMe = Api.people.getMe;
+export const useGetMe = Api.people.useGetMe;
+export const useGetPeople = Api.people.useList;
+export const updateTheme = Api.people.updateTheme;
 
 export type SearchScope =
   | { type: "company"; id?: undefined }
@@ -55,7 +54,7 @@ export function usePeopleSearch(scope: SearchScope) {
       ignoredIds = arg.ignoredIds || [];
     }
 
-    const res = await Api.searchPeople({
+    const res = await Api.people.search({
       query,
       ignoredIds,
       searchScopeType: scope.type,

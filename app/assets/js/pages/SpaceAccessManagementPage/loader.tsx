@@ -1,9 +1,9 @@
+import Api from "@/api";
 import * as Pages from "@/components/Pages";
 import * as Spaces from "@/models/spaces";
 import * as People from "@/models/people";
 
 import { compareIds } from "@/routes/paths";
-import { useGetBindedPeople } from "@/api";
 import { assertPresent } from "@/utils/assertions";
 
 interface LoaderResult {
@@ -28,7 +28,7 @@ export function useLoadedData() {
 
 export function useBindedPeopleList(): { people: People.Person[] | undefined; loading: boolean } {
   const { space } = useLoadedData();
-  const { data, loading } = useGetBindedPeople({ resourseType: "space", resourseId: space.id! });
+  const { data, loading } = Api.people.useGetBinded({ resourseType: "space", resourseId: space.id! });
   if (loading) return { people: undefined, loading: true };
 
   assertPresent(space.members, "Space members are required");
