@@ -1,12 +1,12 @@
 import React from "react";
-import * as api from "@/api";
+import Api, { CommentParentType } from "@/api";
 import { showErrorToast } from "turboui";
 import { compareIds } from "@/routes/paths";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 
 export function useReactionHandlers<T extends { id?: string | null; reactions?: any[]; content?: any }>(
   setComments: React.Dispatch<React.SetStateAction<T[]>>,
-  parentType: api.CommentParentType,
+  parentType: CommentParentType,
   invalidateCache: () => void,
 ) {
   const currentUser = useMe();
@@ -46,7 +46,7 @@ export function useReactionHandlers<T extends { id?: string | null; reactions?: 
       }));
 
       try {
-        await api.addReaction({
+        await Api.reactions.create({
           entityId: commentId,
           entityType: "comment",
           parentType,
@@ -78,7 +78,7 @@ export function useReactionHandlers<T extends { id?: string | null; reactions?: 
       });
 
       try {
-        await api.removeReaction({ reactionId });
+        await Api.reactions.delete({ reactionId });
         invalidateCache();
       } catch (error) {
         // Rollback on error

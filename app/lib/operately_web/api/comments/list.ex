@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetComments do
+defmodule OperatelyWeb.Api.Comments.List do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 

@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.EditComment do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Comments.Delete do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "edit_comment"
+  def mutation_name, do: "comments/delete"
 
   @impl true
   def setup(ctx) do
@@ -19,7 +19,6 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.EditComment do
   @impl true
   def inputs(ctx) do
     %{
-      content: rich_text_string("Updated content"),
       comment_id: Paths.comment_id(ctx.comment),
       parent_type: "message"
     }
@@ -27,9 +26,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.EditComment do
 
   @impl true
   def assert(response, _ctx) do
-    assert response.comment.id
+    assert response.comment
     refute Map.has_key?(response, :error)
   end
-
-  defp rich_text_string(text), do: Operately.Support.RichText.rich_text(text, :as_string)
 end

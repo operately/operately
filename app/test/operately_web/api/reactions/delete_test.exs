@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.RemoveReactionTest do
+defmodule OperatelyWeb.Api.Reactions.DeleteTest do
   use OperatelyWeb.TurboCase
 
   import Operately.PeopleFixtures
@@ -6,7 +6,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveReactionTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :remove_reaction, %{})
+      assert {401, _} = mutation(ctx.conn, [:reactions, :delete], %{})
     end
   end
 
@@ -24,7 +24,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveReactionTest do
     test "removes user's own reaction from a message", ctx do
       # First add a reaction
       assert {200, add_res} =
-               mutation(ctx.conn, :add_reaction, %{
+               mutation(ctx.conn, [:reactions, :create], %{
                  entity_id: Paths.message_id(ctx.hello_message),
                  entity_type: "message",
                  emoji: "👍"
@@ -41,7 +41,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveReactionTest do
 
       # Remove the reaction using its ID
       assert {200, res} =
-               mutation(ctx.conn, :remove_reaction, %{
+               mutation(ctx.conn, [:reactions, :delete], %{
                  reaction_id: Operately.ShortUuid.encode!(reaction_id)
                })
 
@@ -80,14 +80,14 @@ defmodule OperatelyWeb.Api.Mutations.RemoveReactionTest do
     test "only removes the specific reaction by ID", ctx do
       # Add multiple reactions with different emojis
       assert {200, add_res1} =
-               mutation(ctx.conn, :add_reaction, %{
+               mutation(ctx.conn, [:reactions, :create], %{
                  entity_id: Paths.message_id(ctx.hello_message),
                  entity_type: "message",
                  emoji: "👍"
                })
 
       assert {200, add_res2} =
-               mutation(ctx.conn, :add_reaction, %{
+               mutation(ctx.conn, [:reactions, :create], %{
                  entity_id: Paths.message_id(ctx.hello_message),
                  entity_type: "message",
                  emoji: "❤️"
@@ -196,7 +196,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveReactionTest do
   end
 
   defp run(ctx, reaction_id) do
-    mutation(ctx.conn, :remove_reaction, %{
+    mutation(ctx.conn, [:reactions, :delete], %{
       reaction_id: Operately.ShortUuid.encode!(reaction_id)
     })
   end

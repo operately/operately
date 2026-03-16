@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
+defmodule OperatelyWeb.Api.Comments.ListTest do
   use OperatelyWeb.TurboCase
 
   import Ecto.Query, only: [from: 2]
@@ -17,7 +17,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, :get_comments, %{})
+      assert {401, _} = query(ctx.conn, [:comments, :list], %{})
     end
   end
 
@@ -38,7 +38,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
       end)
 
       assert {200, res} =
-               query(ctx.conn, :get_comments, %{
+               query(ctx.conn, [:comments, :list], %{
                  entity_id: Paths.project_check_in_id(check_in),
                  entity_type: "project_check_in"
                })
@@ -55,7 +55,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
         end)
 
       assert {200, res} =
-               query(ctx.conn, :get_comments, %{
+               query(ctx.conn, [:comments, :list], %{
                  entity_id: Paths.project_check_in_id(check_in),
                  entity_type: "project_check_in"
                })
@@ -72,7 +72,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
       end)
 
       assert {200, res} =
-               query(ctx.conn, :get_comments, %{
+               query(ctx.conn, [:comments, :list], %{
                  entity_id: Paths.project_check_in_id(check_in),
                  entity_type: "project_check_in"
                })
@@ -90,7 +90,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
         end)
 
       assert {200, res} =
-               query(ctx.conn, :get_comments, %{
+               query(ctx.conn, [:comments, :list], %{
                  entity_id: Paths.project_check_in_id(check_in),
                  entity_type: "project_check_in"
                })
@@ -112,7 +112,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
 
       # champion's request
       assert {200, res} =
-               query(conn, :get_comments, %{
+               query(conn, [:comments, :list], %{
                  entity_id: Paths.project_check_in_id(check_in),
                  entity_type: "project_check_in"
                })
@@ -121,7 +121,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
 
       # another user's request
       assert {200, res} =
-               query(ctx.conn, :get_comments, %{
+               query(ctx.conn, [:comments, :list], %{
                  entity_id: Paths.project_check_in_id(check_in),
                  entity_type: "project_check_in"
                })
@@ -143,7 +143,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
 
       # reviewer's request
       assert {200, res} =
-               query(conn, :get_comments, %{
+               query(conn, [:comments, :list], %{
                  entity_id: Paths.project_check_in_id(check_in),
                  entity_type: "project_check_in"
                })
@@ -152,7 +152,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
 
       # another user's request
       assert {200, res} =
-               query(ctx.conn, :get_comments, %{
+               query(ctx.conn, [:comments, :list], %{
                  entity_id: Paths.project_check_in_id(check_in),
                  entity_type: "project_check_in"
                })
@@ -178,7 +178,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
       end)
 
       assert {200, res} =
-               query(ctx.conn, :get_comments, %{
+               query(ctx.conn, [:comments, :list], %{
                  entity_id: Paths.goal_update_id(update),
                  entity_type: "goal_update"
                })
@@ -195,7 +195,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
         end)
 
       assert {200, res} =
-               query(ctx.conn, :get_comments, %{
+               query(ctx.conn, [:comments, :list], %{
                  entity_id: Paths.goal_update_id(update),
                  entity_type: "goal_update"
                })
@@ -212,7 +212,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
       end)
 
       assert {200, res} =
-               query(ctx.conn, :get_comments, %{
+               query(ctx.conn, [:comments, :list], %{
                  entity_id: Paths.goal_update_id(update),
                  entity_type: "goal_update"
                })
@@ -230,7 +230,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
         end)
 
       assert {200, res} =
-               query(ctx.conn, :get_comments, %{
+               query(ctx.conn, [:comments, :list], %{
                  entity_id: Paths.goal_update_id(update),
                  entity_type: "goal_update"
                })
@@ -252,7 +252,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
 
       # champion's request
       assert {200, res} =
-               query(conn, :get_comments, %{
+               query(conn, [:comments, :list], %{
                  entity_id: Paths.goal_update_id(update),
                  entity_type: "goal_update"
                })
@@ -261,7 +261,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
 
       # another user's request
       assert {200, res} =
-               query(ctx.conn, :get_comments, %{
+               query(ctx.conn, [:comments, :list], %{
                  entity_id: Paths.goal_update_id(update),
                  entity_type: "goal_update"
                })
@@ -283,7 +283,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
 
       # reviewer's request
       assert {200, res} =
-               query(conn, :get_comments, %{
+               query(conn, [:comments, :list], %{
                  entity_id: Paths.goal_update_id(update),
                  entity_type: "goal_update"
                })
@@ -292,7 +292,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
 
       # another user's request
       assert {200, res} =
-               query(ctx.conn, :get_comments, %{
+               query(ctx.conn, [:comments, :list], %{
                  entity_id: Paths.goal_update_id(update),
                  entity_type: "goal_update"
                })
@@ -318,7 +318,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
         end)
 
       assert {200, res} =
-               query(ctx.conn, :get_comments, %{
+               query(ctx.conn, [:comments, :list], %{
                  entity_id: Paths.message_id(message),
                  entity_type: "message"
                })
@@ -335,7 +335,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
       end)
 
       assert {200, res} =
-               query(ctx.conn, :get_comments, %{
+               query(ctx.conn, [:comments, :list], %{
                  entity_id: Paths.message_id(message),
                  entity_type: "message"
                })
@@ -353,7 +353,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
         end)
 
       assert {200, res} =
-               query(ctx.conn, :get_comments, %{
+               query(ctx.conn, [:comments, :list], %{
                  entity_id: Paths.message_id(message),
                  entity_type: "message"
                })
@@ -372,7 +372,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
 
       # Outside of space
       assert {200, res} =
-               query(ctx.conn, :get_comments, %{
+               query(ctx.conn, [:comments, :list], %{
                  entity_id: Paths.message_id(message),
                  entity_type: "message"
                })
@@ -383,7 +383,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
       add_person_to_space(ctx, space.id)
 
       assert {200, res} =
-               query(ctx.conn, :get_comments, %{
+               query(ctx.conn, [:comments, :list], %{
                  entity_id: Paths.message_id(message),
                  entity_type: "message"
                })
@@ -409,7 +409,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
       end)
 
       assert {200, res} =
-               query(ctx.conn, :get_comments, %{
+               query(ctx.conn, [:comments, :list], %{
                  entity_id: Paths.comment_thread_id(thread),
                  entity_type: "comment_thread"
                })
@@ -426,7 +426,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
         end)
 
       assert {200, res} =
-               query(ctx.conn, :get_comments, %{
+               query(ctx.conn, [:comments, :list], %{
                  entity_id: Paths.comment_thread_id(thread),
                  entity_type: "comment_thread"
                })
@@ -443,7 +443,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
       end)
 
       assert {200, res} =
-               query(ctx.conn, :get_comments, %{
+               query(ctx.conn, [:comments, :list], %{
                  entity_id: Paths.comment_thread_id(thread),
                  entity_type: "comment_thread"
                })
@@ -461,7 +461,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
         end)
 
       assert {200, res} =
-               query(ctx.conn, :get_comments, %{
+               query(ctx.conn, [:comments, :list], %{
                  entity_id: Paths.comment_thread_id(thread),
                  entity_type: "comment_thread"
                })
@@ -483,7 +483,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
 
       # champion's request
       assert {200, res} =
-               query(conn, :get_comments, %{
+               query(conn, [:comments, :list], %{
                  entity_id: Paths.comment_thread_id(thread),
                  entity_type: "comment_thread"
                })
@@ -492,7 +492,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
 
       # another user's request
       assert {200, res} =
-               query(ctx.conn, :get_comments, %{
+               query(ctx.conn, [:comments, :list], %{
                  entity_id: Paths.comment_thread_id(thread),
                  entity_type: "comment_thread"
                })
@@ -514,7 +514,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
 
       # reviewer's request
       assert {200, res} =
-               query(conn, :get_comments, %{
+               query(conn, [:comments, :list], %{
                  entity_id: Paths.comment_thread_id(thread),
                  entity_type: "comment_thread"
                })
@@ -523,7 +523,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
 
       # another user's request
       assert {200, res} =
-               query(ctx.conn, :get_comments, %{
+               query(ctx.conn, [:comments, :list], %{
                  entity_id: Paths.comment_thread_id(thread),
                  entity_type: "comment_thread"
                })

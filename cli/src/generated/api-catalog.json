@@ -14766,6 +14766,215 @@
   "mutation_count": 138,
   "endpoints": [
     {
+      "name": "create",
+      "type": "mutation",
+      "path": "/api/external/v1/comments/create",
+      "handler": "OperatelyWeb.Api.Comments.Create",
+      "outputs": [
+        {
+          "default": null,
+          "name": "comment",
+          "type": {
+            "name": "comment",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "comments",
+      "inputs": [
+        {
+          "default": null,
+          "name": "entity_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "entity_type",
+          "type": {
+            "name": "comment_parent_type",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "content",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "comments/create",
+      "method": "POST"
+    },
+    {
+      "name": "delete",
+      "type": "mutation",
+      "path": "/api/external/v1/comments/delete",
+      "handler": "OperatelyWeb.Api.Comments.Delete",
+      "outputs": [
+        {
+          "default": null,
+          "name": "comment",
+          "type": {
+            "name": "comment",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "comments",
+      "inputs": [
+        {
+          "default": null,
+          "name": "comment_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "parent_type",
+          "type": {
+            "name": "comment_parent_type",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "comments/delete",
+      "method": "POST"
+    },
+    {
+      "name": "list",
+      "type": "query",
+      "path": "/api/external/v1/comments/list",
+      "handler": "OperatelyWeb.Api.Comments.List",
+      "outputs": [
+        {
+          "default": null,
+          "name": "comments",
+          "type": {
+            "item": {
+              "name": "comment",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "comments",
+      "inputs": [
+        {
+          "default": null,
+          "name": "entity_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "entity_type",
+          "type": {
+            "name": "comment_parent_type",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "comments/list",
+      "method": "GET"
+    },
+    {
+      "name": "update",
+      "type": "mutation",
+      "path": "/api/external/v1/comments/update",
+      "handler": "OperatelyWeb.Api.Comments.Update",
+      "outputs": [
+        {
+          "default": null,
+          "name": "comment",
+          "type": {
+            "name": "comment",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "comments",
+      "inputs": [
+        {
+          "default": null,
+          "name": "content",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "comment_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "parent_type",
+          "type": {
+            "name": "comment_parent_type",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "comments/update",
+      "method": "POST"
+    },
+    {
       "name": "convert_member_to_guest",
       "type": "mutation",
       "path": "/api/external/v1/companies/convert_member_to_guest",
@@ -19963,6 +20172,109 @@
       "method": "POST"
     },
     {
+      "name": "create",
+      "type": "mutation",
+      "path": "/api/external/v1/reactions/create",
+      "handler": "OperatelyWeb.Api.Reactions.Create",
+      "outputs": [
+        {
+          "default": null,
+          "name": "reaction",
+          "type": {
+            "name": "reaction",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "reactions",
+      "inputs": [
+        {
+          "default": null,
+          "name": "entity_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "entity_type",
+          "type": {
+            "name": "reaction_entity_type",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "parent_type",
+          "type": {
+            "name": "reaction_parent_type",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "emoji",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "reactions/create",
+      "method": "POST"
+    },
+    {
+      "name": "delete",
+      "type": "mutation",
+      "path": "/api/external/v1/reactions/delete",
+      "handler": "OperatelyWeb.Api.Reactions.Delete",
+      "outputs": [
+        {
+          "default": null,
+          "name": "success",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "reactions",
+      "inputs": [
+        {
+          "default": null,
+          "name": "reaction_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "reactions/delete",
+      "method": "POST"
+    },
+    {
       "name": "acknowledge_goal_progress_update",
       "type": "mutation",
       "path": "/api/external/v1/acknowledge_goal_progress_update",
@@ -20229,74 +20541,6 @@
       "method": "POST"
     },
     {
-      "name": "add_reaction",
-      "type": "mutation",
-      "path": "/api/external/v1/add_reaction",
-      "handler": "OperatelyWeb.Api.Mutations.AddReaction",
-      "outputs": [
-        {
-          "default": null,
-          "name": "reaction",
-          "type": {
-            "name": "reaction",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "entity_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "entity_type",
-          "type": {
-            "name": "reaction_entity_type",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "parent_type",
-          "type": {
-            "name": "reaction_parent_type",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "emoji",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "add_reaction",
-      "method": "POST"
-    },
-    {
       "name": "copy_resource_hub_folder",
       "type": "mutation",
       "path": "/api/external/v1/copy_resource_hub_folder",
@@ -20362,63 +20606,6 @@
         }
       ],
       "full_name": "copy_resource_hub_folder",
-      "method": "POST"
-    },
-    {
-      "name": "create_comment",
-      "type": "mutation",
-      "path": "/api/external/v1/create_comment",
-      "handler": "OperatelyWeb.Api.Mutations.CreateComment",
-      "outputs": [
-        {
-          "default": null,
-          "name": "comment",
-          "type": {
-            "name": "comment",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "entity_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "entity_type",
-          "type": {
-            "name": "comment_parent_type",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "content",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "create_comment",
       "method": "POST"
     },
     {
@@ -20969,52 +21156,6 @@
       "method": "POST"
     },
     {
-      "name": "delete_comment",
-      "type": "mutation",
-      "path": "/api/external/v1/delete_comment",
-      "handler": "OperatelyWeb.Api.Mutations.DeleteComment",
-      "outputs": [
-        {
-          "default": null,
-          "name": "comment",
-          "type": {
-            "name": "comment",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "comment_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "parent_type",
-          "type": {
-            "name": "comment_parent_type",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "delete_comment",
-      "method": "POST"
-    },
-    {
       "name": "delete_resource_hub_document",
       "type": "mutation",
       "path": "/api/external/v1/delete_resource_hub_document",
@@ -21152,63 +21293,6 @@
         }
       ],
       "full_name": "delete_resource_hub_link",
-      "method": "POST"
-    },
-    {
-      "name": "edit_comment",
-      "type": "mutation",
-      "path": "/api/external/v1/edit_comment",
-      "handler": "OperatelyWeb.Api.Mutations.EditComment",
-      "outputs": [
-        {
-          "default": null,
-          "name": "comment",
-          "type": {
-            "name": "comment",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "content",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "comment_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "parent_type",
-          "type": {
-            "name": "comment_parent_type",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "edit_comment",
       "method": "POST"
     },
     {
@@ -22069,55 +22153,6 @@
         }
       ],
       "full_name": "get_binded_people",
-      "method": "GET"
-    },
-    {
-      "name": "get_comments",
-      "type": "query",
-      "path": "/api/external/v1/get_comments",
-      "handler": "OperatelyWeb.Api.Queries.GetComments",
-      "outputs": [
-        {
-          "default": null,
-          "name": "comments",
-          "type": {
-            "item": {
-              "name": "comment",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "entity_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "entity_type",
-          "type": {
-            "name": "comment_parent_type",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "get_comments",
       "method": "GET"
     },
     {
@@ -24687,41 +24722,6 @@
         }
       ],
       "full_name": "remove_key_resource",
-      "method": "POST"
-    },
-    {
-      "name": "remove_reaction",
-      "type": "mutation",
-      "path": "/api/external/v1/remove_reaction",
-      "handler": "OperatelyWeb.Api.Mutations.RemoveReaction",
-      "outputs": [
-        {
-          "default": null,
-          "name": "success",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "reaction_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "remove_reaction",
       "method": "POST"
     },
     {
@@ -27598,6 +27598,6 @@
     }
   ],
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-14T12:34:32Z",
+  "generated_at": "2026-03-16T11:19:11Z",
   "schema_version": 1
 }
