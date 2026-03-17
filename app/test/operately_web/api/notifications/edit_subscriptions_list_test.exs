@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsListTest do
+defmodule OperatelyWeb.Api.Notifications.EditSubscriptionsListTest do
   use OperatelyWeb.TurboCase
 
   import Operately.GroupsFixtures
@@ -12,7 +12,7 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsListTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :edit_subscriptions_list, %{})
+      assert {401, _} = mutation(ctx.conn, [:notifications, :edit_subscriptions_list], %{})
     end
   end
 
@@ -48,7 +48,7 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsListTest do
         check_in = check_in_fixture(%{author_id: ctx.creator.id, project_id: project.id})
         {:ok, subscription_list} = SubscriptionList.get(:system, parent_id: check_in.id)
 
-        assert {code, res} = mutation(ctx.conn, :edit_subscriptions_list, %{
+        assert {code, res} = mutation(ctx.conn, [:notifications, :edit_subscriptions_list], %{
           id: Paths.subscription_list_id(subscription_list),
           type: "project_check_in",
           send_notifications_to_everyone: true,
@@ -86,7 +86,7 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsListTest do
       subscriptions_list = Repo.reload(ctx.subscriptions_list)
       refute subscriptions_list.send_to_everyone
 
-      assert {200, _} = mutation(ctx.conn, :edit_subscriptions_list, %{
+      assert {200, _} = mutation(ctx.conn, [:notifications, :edit_subscriptions_list], %{
         id: Paths.subscription_list_id(subscriptions_list),
         type: "project_check_in",
         send_notifications_to_everyone: true,
@@ -96,7 +96,7 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsListTest do
       subscriptions_list = Repo.reload(ctx.subscriptions_list)
       assert subscriptions_list.send_to_everyone
 
-      assert {200, _} = mutation(ctx.conn, :edit_subscriptions_list, %{
+      assert {200, _} = mutation(ctx.conn, [:notifications, :edit_subscriptions_list], %{
         id: Paths.subscription_list_id(subscriptions_list),
         type: "project_check_in",
         send_notifications_to_everyone: false,
@@ -110,7 +110,7 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsListTest do
     test "adds new subscriptions", ctx do
       people = create_people(ctx)
 
-      assert {200, _} = mutation(ctx.conn, :edit_subscriptions_list, %{
+      assert {200, _} = mutation(ctx.conn, [:notifications, :edit_subscriptions_list], %{
         id: Paths.subscription_list_id(ctx.subscriptions_list),
         type: "project_check_in",
         send_notifications_to_everyone: true,
@@ -130,7 +130,7 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsListTest do
         assert Notifications.is_subscriber?(p.id, ctx.subscriptions_list.id)
       end)
 
-      assert {200, _} = mutation(ctx.conn, :edit_subscriptions_list, %{
+      assert {200, _} = mutation(ctx.conn, [:notifications, :edit_subscriptions_list], %{
         id: Paths.subscription_list_id(ctx.subscriptions_list),
         type: "project_check_in",
         send_notifications_to_everyone: true,
@@ -149,7 +149,7 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsListTest do
       assert Notifications.is_subscriber?(ctx.person.id, ctx.subscriptions_list.id)
       refute Notifications.is_subscriber?(another.id, ctx.subscriptions_list.id)
 
-      assert {200, _} = mutation(ctx.conn, :edit_subscriptions_list, %{
+      assert {200, _} = mutation(ctx.conn, [:notifications, :edit_subscriptions_list], %{
         id: Paths.subscription_list_id(ctx.subscriptions_list),
         type: "project_check_in",
         send_notifications_to_everyone: true,
@@ -167,7 +167,7 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsListTest do
       assert Notifications.is_subscriber?(ctx.person.id, ctx.subscriptions_list.id)
       assert Notifications.is_subscriber?(another.id, ctx.subscriptions_list.id)
 
-      assert {200, _} = mutation(ctx.conn, :edit_subscriptions_list, %{
+      assert {200, _} = mutation(ctx.conn, [:notifications, :edit_subscriptions_list], %{
         id: Paths.subscription_list_id(ctx.subscriptions_list),
         type: "project_check_in",
         send_notifications_to_everyone: true,
@@ -190,7 +190,7 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsListTest do
       refute Notifications.is_subscriber?(ctx.person.id, ctx.subscriptions_list.id)
       refute Notifications.is_subscriber?(another.id, ctx.subscriptions_list.id)
 
-      assert {200, _} = mutation(ctx.conn, :edit_subscriptions_list, %{
+      assert {200, _} = mutation(ctx.conn, [:notifications, :edit_subscriptions_list], %{
         id: Paths.subscription_list_id(ctx.subscriptions_list),
         type: "project_check_in",
         subscriber_ids: [Paths.person_id(ctx.person), Paths.person_id(another)],

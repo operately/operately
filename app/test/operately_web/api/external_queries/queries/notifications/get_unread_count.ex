@@ -1,7 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.GetUnreadNotificationCount do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.Notifications.GetUnreadCount do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
+
+  def query_name, do: "notifications/get_unread_count"
 
   @impl true
   def setup(ctx), do: Factory.setup(ctx)

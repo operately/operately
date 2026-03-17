@@ -1,29 +1,26 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.EditSubscriptionsList do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Notifications.Subscribe do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "edit_subscriptions_list"
+  def mutation_name, do: "notifications/subscribe"
 
   @impl true
   def setup(ctx) do
     ctx
     |> Factory.setup()
     |> Factory.add_space(:space)
-    |> Factory.add_space_member(:member, :space)
     |> Factory.add_project(:project, :space)
-    |> Factory.add_project_check_in(:check_in, :project, :creator)
+
   end
 
   @impl true
   def inputs(ctx) do
-    list = Repo.preload(ctx.check_in, :subscription_list).subscription_list
+    list = Repo.preload(ctx.project, :subscription_list).subscription_list
 
     %{
       id: Paths.subscription_list_id(list),
-      type: "project_check_in",
-      send_notifications_to_everyone: false,
-      subscriber_ids: [Paths.person_id(ctx.member)]
+      type: "project"
     }
   end
 

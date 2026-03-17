@@ -1,10 +1,10 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.MarkNotificationAsRead do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Notifications.MarkManyAsRead do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
   import Ecto.Query, only: [from: 2]
 
   @impl true
-  def mutation_name, do: "mark_notification_as_read"
+  def mutation_name, do: "notifications/mark_many_as_read"
 
   @impl true
   def setup(ctx) do
@@ -16,7 +16,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.MarkNotificationAsRead do
   @impl true
   def inputs(ctx) do
     %{
-      id: ctx.notification.id
+      ids: [ctx.notification.id]
     }
   end
 
@@ -33,7 +33,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.MarkNotificationAsRead do
           order_by: [desc: a.inserted_at],
           limit: 1
       )
-  
+
     {:ok, notification} =
       Operately.Notifications.create_notification(%{
         person_id: ctx.creator.id,
@@ -41,7 +41,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.MarkNotificationAsRead do
         should_send_email: false,
         read: false
       })
-  
+
     Map.put(ctx, :notification, notification)
   end
 end

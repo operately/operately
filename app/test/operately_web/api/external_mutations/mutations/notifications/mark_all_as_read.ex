@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.MarkAllNotificationsAsRead do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Notifications.MarkAllAsRead do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "mark_all_notifications_as_read"
+  def mutation_name, do: "notifications/mark_all_as_read"
 
   @impl true
   def setup(ctx) do

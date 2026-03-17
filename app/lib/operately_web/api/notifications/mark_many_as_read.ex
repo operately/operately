@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.MarkNotificationsAsRead do
+defmodule OperatelyWeb.Api.Notifications.MarkManyAsRead do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

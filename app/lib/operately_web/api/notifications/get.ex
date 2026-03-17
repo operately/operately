@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetNotifications do
+defmodule OperatelyWeb.Api.Notifications.Get do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 

@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.SubscribeToNotifications do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Notifications.Unsubscribe do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "subscribe_to_notifications"
+  def mutation_name, do: "notifications/unsubscribe"
 
   @impl true
   def setup(ctx) do
@@ -11,16 +11,15 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.SubscribeToNotifications 
     |> Factory.setup()
     |> Factory.add_space(:space)
     |> Factory.add_project(:project, :space)
-
+    |> Factory.add_project_discussion(:project_discussion, :project)
   end
 
   @impl true
   def inputs(ctx) do
-    list = Repo.preload(ctx.project, :subscription_list).subscription_list
+    list = Repo.preload(ctx.project_discussion, :subscription_list).subscription_list
 
     %{
-      id: Paths.subscription_list_id(list),
-      type: "project"
+      id: Paths.subscription_list_id(list)
     }
   end
 
