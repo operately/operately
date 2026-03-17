@@ -10,7 +10,7 @@ interface LoaderResult {
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
-  const document = await Hub.getResourceHubDocument({
+  const document = await Hub.documents.get({
     id: params.id,
     includeAuthor: true,
     includeReactions: true,
@@ -23,11 +23,11 @@ export async function loader({ params }): Promise<LoaderResult> {
 
   const [folder, resourceHub, subscriptionStatus] = await Promise.all([
     document.parentFolderId
-      ? Hub.getResourceHubFolder({ id: document.parentFolderId, includePotentialSubscribers: true }).then(
+      ? Hub.folders.get({ id: document.parentFolderId, includePotentialSubscribers: true }).then(
           (res) => res.folder!,
         )
       : undefined,
-    Hub.getResourceHub({ id: document.resourceHubId!, includePotentialSubscribers: true }).then(
+    Hub.resource_hubs.get({ id: document.resourceHubId!, includePotentialSubscribers: true }).then(
       (res) => res.resourceHub!,
     ),
     isSubscribedToResource({

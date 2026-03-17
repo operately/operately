@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { useCreateResourceHubLink } from "@/models/resourceHubs";
+import { links } from "@/models/resourceHubs";
 import { emptyContent, SubscribersSelector } from "turboui";
 
 import Forms from "@/components/Forms";
@@ -17,7 +17,7 @@ import { useLoadedData } from "./loader";
 export function Form() {
   const { resourceHub, folder, linkType } = useLoadedData();
   const navigate = useNavigate();
-  const [post] = useCreateResourceHubLink();
+  const [post] = links.useCreate();
   const paths = usePaths();
 
   assertPresent(resourceHub.potentialSubscribers, "potentialSubscribers must be present in resourceHub");

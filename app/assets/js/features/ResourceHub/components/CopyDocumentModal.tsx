@@ -19,7 +19,7 @@ export function CopyDocumentModal(props: FormProps) {
   const paths = usePaths();
   const { parent, resource, hideModal } = props;
 
-  const [post] = Hub.useCreateResourceHubDocument();
+  const [post] = Hub.documents.useCreate();
   const navigate = useNavigate();
 
   assertPresent(parent?.potentialSubscribers, "potentialSubscribers must be present in resourceHub or folder");

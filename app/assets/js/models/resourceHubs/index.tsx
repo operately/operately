@@ -1,6 +1,7 @@
 import { ResourceHubNode, ResourceHubFile, ResourceHubFolder, ResourceHubDocument, ResourceHubLink } from "@/api";
 import { assertPresent } from "@/utils/assertions";
 
+import Api from "@/api"
 export type {
   ResourceHub,
   ResourceHubNode,
@@ -11,30 +12,11 @@ export type {
   ResourceHubLink,
 } from "@/api";
 
-export {
-  getResourceHub,
-  getResourceHubDocument,
-  getResourceHubFile,
-  getResourceHubFolder,
-  getResourceHubLink,
-  createResourceHubFile,
-  listResourceHubNodes,
-  useCopyResourceHubFolder,
-  useCreateResourceHubFolder,
-  useCreateResourceHubDocument,
-  useCreateResourceHubFile,
-  useCreateResourceHubLink,
-  useEditParentFolderInResourceHub,
-  useEditResourceHubDocument,
-  useEditResourceHubFile,
-  useEditResourceHubLink,
-  useDeleteResourceHubDocument,
-  useDeleteResourceHubFile,
-  useDeleteResourceHubFolder,
-  useDeleteResourceHubLink,
-  usePublishResourceHubDocument,
-  useRenameResourceHubFolder,
-} from "@/api";
+export const resource_hubs = Api.resource_hubs;
+export const documents = Api.documents;
+export const files = Api.files;
+export const folders = Api.folders;
+export const links = Api.links;
 
 export type Resource = ResourceHubDocument | ResourceHubFile | ResourceHubFolder | ResourceHubLink;
 export type ResourceTypeName = "document" | "file" | "folder" | "link";

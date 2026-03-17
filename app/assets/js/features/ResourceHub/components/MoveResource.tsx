@@ -32,7 +32,7 @@ interface FormProps {
 
 export function MoveResourceModal({ resource, resourceType, isOpen, hideModal }: FormProps) {
   const { parent, refetch } = useNodesContext();
-  const [edit] = Hub.useEditParentFolderInResourceHub();
+  const [edit] = Hub.resource_hubs.useUpdateParentFolder();
 
   const locationChanged = () => {
     if (!resource.parentFolderId && !form.values.location.id) return false;
