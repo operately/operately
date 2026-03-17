@@ -34,7 +34,7 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries do
       Queries.Spaces.List,
       Queries.Tasks.Get,
       Queries.Notifications.GetUnreadCount,
-      Queries.Goals.ListDiscussions,
+      Queries.GoalDiscussions.List,
       Queries.Goals.ListAccessMembers,
       Queries.Goals.SearchParentGoal,
       Queries.Notifications.IsSubscribed,

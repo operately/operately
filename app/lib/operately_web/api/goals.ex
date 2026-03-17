@@ -6,30 +6,6 @@ defmodule OperatelyWeb.Api.Goals do
   alias Operately.Access.Binding
   alias OperatelyWeb.Api.Serializer
 
-  defmodule ListDiscussions do
-    use TurboConnect.Query
-
-    inputs do
-      field :goal_id, :id, null: false
-    end
-
-    outputs do
-      field :discussions, list_of(:discussion), null: false
-    end
-
-    def call(conn, inputs) do
-      conn
-      |> Steps.start_transaction()
-      |> Steps.find_goal(inputs.goal_id)
-      |> Steps.check_permissions(:can_view)
-      |> Steps.get_discussions()
-      |> Steps.commit()
-      |> Steps.respond(fn changes ->
-        %{discussions: Serializer.serialize(changes.discussions, level: :essential)}
-      end)
-    end
-  end
-
   defmodule SearchParentGoal do
     use TurboConnect.Query
 

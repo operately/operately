@@ -1,10 +1,10 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.Goals.ListDiscussions do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.GoalDiscussions.List do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
   alias OperatelyWeb.Paths
 
-  def query_name, do: "goals/list_discussions"
+  def query_name, do: "goal_discussions/list"
 
   @impl true
   def setup(ctx) do

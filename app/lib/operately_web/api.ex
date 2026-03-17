@@ -11,7 +11,6 @@ defmodule OperatelyWeb.Api do
         query(:list_access_members, OperatelyWeb.Api.Goals.ListAccessMembers)
         query(:list_check_ins, Q.ListGoalCheckIns)
         query(:list_contributors, OperatelyWeb.Api.Goals.ListContributors)
-        query(:list_discussions, OperatelyWeb.Api.Goals.ListDiscussions)
         query(:search_parent_goal, OperatelyWeb.Api.Goals.SearchParentGoal)
 
         mutation(:create, OperatelyWeb.Api.Goals.Create)
@@ -54,6 +53,8 @@ defmodule OperatelyWeb.Api do
       end
 
       namespace(:goal_discussions) do
+        query(:list, OperatelyWeb.Api.GoalDiscussions.List)
+
         mutation(:create, OperatelyWeb.Api.GoalDiscussions.Create)
         mutation(:update, OperatelyWeb.Api.GoalDiscussions.Update)
       end
