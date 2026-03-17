@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetWorkMap do
+defmodule OperatelyWeb.Api.Companies.GetWorkMap do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 

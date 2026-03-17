@@ -1,7 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.GetFlatWorkMap do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.Companies.GetFlatWorkMap do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
+
+  def query_name, do: "companies/get_flat_work_map"
 
   @impl true
   def setup(ctx), do: Factory.setup(ctx)

@@ -1,7 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.GlobalSearch do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.Companies.GlobalSearch do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
+
+  def query_name, do: "companies/global_search"
 
   @impl true
   def setup(ctx) do

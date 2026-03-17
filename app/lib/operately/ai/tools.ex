@@ -104,7 +104,7 @@ defmodule Operately.AI.Tools do
         if context.agent_run.sandbox_mode do
           {:ok, "posted"}
         else
-          {:ok, resp} = OperatelyWeb.Api.Mutations.CreateGoalDiscussion.call(conn, args)
+          {:ok, resp} = OperatelyWeb.Api.GoalDiscussions.Create.call(conn, args)
           Jason.encode(resp)
         end
       end

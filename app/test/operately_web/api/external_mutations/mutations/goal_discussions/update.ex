@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.EditGoalDiscussion do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.GoalDiscussions.Update do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
@@ -8,7 +8,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.EditGoalDiscussion do
   alias Operately.Support.RichText
 
   @impl true
-  def mutation_name, do: "edit_goal_discussion"
+  def mutation_name, do: "goal_discussions/update"
 
   @impl true
   def setup(ctx) do

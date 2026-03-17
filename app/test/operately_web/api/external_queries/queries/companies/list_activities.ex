@@ -1,8 +1,10 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.GetActivities do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.Companies.ListActivities do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
   alias OperatelyWeb.Paths
+
+  def query_name, do: "companies/list_activities"
 
   @impl true
   def setup(ctx) do

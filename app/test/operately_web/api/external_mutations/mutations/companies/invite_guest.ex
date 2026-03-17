@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.InviteGuest do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Companies.InviteGuest do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "invite_guest"
+  def mutation_name, do: "companies/invite_guest"
 
   @impl true
   def setup(ctx) do

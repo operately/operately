@@ -1,11 +1,11 @@
-defmodule OperatelyWeb.Api.Queries.GlobalSearchTest do
+defmodule OperatelyWeb.Api.Companies.GlobalSearchTest do
   use OperatelyWeb.TurboCase
 
   alias Operately.Support.Factory
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, :global_search, query: "test")
+      assert {401, _} = query(ctx.conn, [:companies, :global_search], query: "test")
     end
   end
 
@@ -20,7 +20,7 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearchTest do
     test "returns empty results for queries less than 2 characters", ctx do
       ctx = log_in(ctx)
 
-      assert {200, res} = query(ctx.conn, :global_search, query: "a")
+      assert {200, res} = query(ctx.conn, [:companies, :global_search], query: "a")
       assert res == %{projects: [], goals: [], milestones: [], tasks: [], people: []}
     end
 
@@ -31,7 +31,7 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearchTest do
         |> Factory.add_project(:website, :marketing, name: "Website Redesign")
         |> Factory.add_project(:mobile_app, :engineering, name: "Mobile App")
 
-      assert {200, res} = query(ctx.conn, :global_search, query: "Website")
+      assert {200, res} = query(ctx.conn, [:companies, :global_search], query: "Website")
 
       assert length(res.projects) == 1
       assert List.first(res.projects).name == "Website Redesign"
@@ -44,7 +44,7 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearchTest do
         |> Factory.add_project(:website, :marketing, name: "Website Redesign")
         |> Factory.close_project(:website)
 
-      assert {200, res} = query(ctx.conn, :global_search, query: "Website")
+      assert {200, res} = query(ctx.conn, [:companies, :global_search], query: "Website")
       assert res.projects == []
     end
 
@@ -55,7 +55,7 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearchTest do
         |> Factory.add_goal(:user_engagement, :marketing, name: "Increase User Engagement")
         |> Factory.add_goal(:performance, :engineering, name: "Improve Performance")
 
-      assert {200, res} = query(ctx.conn, :global_search, query: "User")
+      assert {200, res} = query(ctx.conn, [:companies, :global_search], query: "User")
 
       assert length(res.goals) == 1
       assert List.first(res.goals).name == "Increase User Engagement"
@@ -68,7 +68,7 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearchTest do
         |> Factory.add_goal(:user_engagement, :marketing, name: "Increase User Engagement")
         |> Factory.close_goal(:user_engagement)
 
-      assert {200, res} = query(ctx.conn, :global_search, query: "User")
+      assert {200, res} = query(ctx.conn, [:companies, :global_search], query: "User")
       assert res.goals == []
     end
 
@@ -81,7 +81,7 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearchTest do
         |> Factory.add_project_task(:auth_task, :launch, name: "Implement authentication")
         |> Factory.add_project_task(:design_task, :launch, name: "Design homepage")
 
-      assert {200, res} = query(ctx.conn, :global_search, query: "authentication")
+      assert {200, res} = query(ctx.conn, [:companies, :global_search], query: "authentication")
 
       assert length(res.tasks) == 1
       assert List.first(res.tasks).name == "Implement authentication"
@@ -96,7 +96,7 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearchTest do
         |> Factory.add_project_task(:auth_task, :launch, name: "Implement authentication")
         |> Factory.close_project(:website)
 
-      assert {200, res} = query(ctx.conn, :global_search, query: "authentication")
+      assert {200, res} = query(ctx.conn, [:companies, :global_search], query: "authentication")
       assert res.tasks == []
     end
 
@@ -107,7 +107,7 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearchTest do
         |> Factory.add_company_member(:john, full_name: "John Developer", title: "Senior Developer")
         |> Factory.add_company_member(:jane, full_name: "Jane Manager", title: "Product Manager")
 
-      assert {200, res} = query(ctx.conn, :global_search, query: "John")
+      assert {200, res} = query(ctx.conn, [:companies, :global_search], query: "John")
 
       assert length(res.people) == 1
       assert List.first(res.people).full_name == "John Developer"
@@ -120,7 +120,7 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearchTest do
         |> Factory.add_company_member(:john, full_name: "John Smith", title: "Backend Developer")
         |> Factory.add_company_member(:jane, full_name: "Jane Doe", title: "Frontend Developer")
 
-      assert {200, res} = query(ctx.conn, :global_search, query: "Developer")
+      assert {200, res} = query(ctx.conn, [:companies, :global_search], query: "Developer")
 
       assert length(res.people) == 2
       people_names = Enum.map(res.people, & &1.full_name)
@@ -131,7 +131,7 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearchTest do
     test "returns work map link", ctx do
       ctx = log_in(ctx)
 
-      assert {200, res} = query(ctx.conn, :global_search, query: "work")
+      assert {200, res} = query(ctx.conn, [:companies, :global_search], query: "work")
       refute Map.has_key?(res, :work_map_link)
     end
 
@@ -141,7 +141,7 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearchTest do
         |> log_in()
         |> add_multiple_projects(7, :marketing)
 
-      assert {200, res} = query(ctx.conn, :global_search, query: "Project")
+      assert {200, res} = query(ctx.conn, [:companies, :global_search], query: "Project")
       assert length(res.projects) == 5
     end
 
@@ -151,10 +151,10 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearchTest do
         |> log_in()
         |> Factory.add_project(:website, :marketing, name: "Website Redesign")
 
-      assert {200, res} = query(ctx.conn, :global_search, query: "website")
+      assert {200, res} = query(ctx.conn, [:companies, :global_search], query: "website")
       assert length(res.projects) == 1
 
-      assert {200, res} = query(ctx.conn, :global_search, query: "WEBSITE")
+      assert {200, res} = query(ctx.conn, [:companies, :global_search], query: "WEBSITE")
       assert length(res.projects) == 1
     end
 
@@ -165,7 +165,7 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearchTest do
         |> Factory.add_company_member(:john, full_name: "John Developer", suspended: false)
         |> Factory.add_company_member(:jane, full_name: "Jane Developer", suspended: true)
 
-      assert {200, res} = query(ctx.conn, :global_search, query: "Developer")
+      assert {200, res} = query(ctx.conn, [:companies, :global_search], query: "Developer")
 
       assert length(res.people) == 1
       assert List.first(res.people).full_name == "John Developer"
@@ -179,7 +179,7 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearchTest do
         |> log_in()
         |> Factory.add_project(:website, :marketing, name: "Public Website")
 
-      assert {200, res} = query(ctx.conn, :global_search, query: "Website")
+      assert {200, res} = query(ctx.conn, [:companies, :global_search], query: "Website")
       assert length(res.projects) == 1
     end
 
@@ -191,7 +191,7 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearchTest do
         |> Factory.add_goal(:test_goal, :marketing, name: "Test Goal")
         |> Factory.add_company_member(:tester, full_name: "Test User")
 
-      assert {200, res} = query(ctx.conn, :global_search, query: "test")
+      assert {200, res} = query(ctx.conn, [:companies, :global_search], query: "test")
 
       assert length(res.projects) == 1
       assert length(res.goals) == 1
@@ -206,7 +206,7 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearchTest do
         |> Factory.add_project_milestone(:launch, :website, title: "Launch Milestone")
         |> Factory.add_project_milestone(:beta, :website, title: "Beta Release")
 
-      assert {200, res} = query(ctx.conn, :global_search, query: "Launch")
+      assert {200, res} = query(ctx.conn, [:companies, :global_search], query: "Launch")
 
       assert length(res.milestones) == 1
       assert List.first(res.milestones).title == "Launch Milestone"
@@ -219,7 +219,7 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearchTest do
         |> Factory.add_project(:website, :marketing)
         |> Factory.add_project_milestone(:launch, :website, title: "Launch Milestone", status: :done)
 
-      assert {200, res} = query(ctx.conn, :global_search, query: "Launch")
+      assert {200, res} = query(ctx.conn, [:companies, :global_search], query: "Launch")
       assert res.milestones == []
     end
 
@@ -231,7 +231,7 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearchTest do
         |> Factory.add_project_milestone(:launch, :website, title: "Launch Milestone")
         |> Factory.close_project(:website)
 
-      assert {200, res} = query(ctx.conn, :global_search, query: "Launch")
+      assert {200, res} = query(ctx.conn, [:companies, :global_search], query: "Launch")
       assert res.milestones == []
     end
 
@@ -241,7 +241,7 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearchTest do
         |> log_in()
         |> Factory.create_space_task(:space_task, :marketing, name: "Marketing Strategy Task")
 
-      assert {200, res} = query(ctx.conn, :global_search, query: "Strategy")
+      assert {200, res} = query(ctx.conn, [:companies, :global_search], query: "Strategy")
 
       assert length(res.tasks) == 1
       assert List.first(res.tasks).name == "Marketing Strategy Task"
@@ -260,7 +260,7 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearchTest do
       closed_status = Operately.Tasks.Status.default_task_statuses() |> Enum.find(& &1.closed)
       {:ok, _} = Operately.Tasks.update_task(ctx.closed_task, %{task_status: Map.from_struct(closed_status)})
 
-      assert {200, res} = query(ctx.conn, :global_search, query: "Task")
+      assert {200, res} = query(ctx.conn, [:companies, :global_search], query: "Task")
 
       assert length(res.tasks) == 1
       assert List.first(res.tasks).name == "Open Task"

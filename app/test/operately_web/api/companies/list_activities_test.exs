@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
+defmodule OperatelyWeb.Api.Companies.ListActivitiesTest do
   use OperatelyWeb.TurboCase
 
   import Operately.GroupsFixtures
@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, :get_activities, %{})
+      assert {401, _} = query(ctx.conn, [:companies, :list_activities], %{})
     end
   end
 
@@ -40,7 +40,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
         company_access_level: Binding.no_access(),
       })
 
-      assert {200, res} = query(ctx.conn, :get_activities, ctx.attrs)
+      assert {200, res} = query(ctx.conn, [:companies, :list_activities], ctx.attrs)
 
       assert res.activities == []
     end
@@ -51,7 +51,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
         company_access_level: Binding.view_access(),
       })
 
-      assert {200, %{ activities: activities } = _res} = query(ctx.conn, :get_activities, ctx.attrs)
+      assert {200, %{ activities: activities } = _res} = query(ctx.conn, [:companies, :list_activities], ctx.attrs)
 
       assert length(activities) == 1
       assert Paths.goal_id(goal) == hd(activities).content.goal.id
@@ -65,7 +65,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
         company_access_level: Binding.no_access(),
       })
 
-      assert {200, res} = query(ctx.conn, :get_activities, ctx.attrs)
+      assert {200, res} = query(ctx.conn, [:companies, :list_activities], ctx.attrs)
 
       assert res.activities == []
     end
@@ -78,7 +78,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
         company_access_level: Binding.no_access(),
       })
 
-      assert {200, %{ activities: activities } = _res} = query(ctx.conn, :get_activities, ctx.attrs)
+      assert {200, %{ activities: activities } = _res} = query(ctx.conn, [:companies, :list_activities], ctx.attrs)
 
       assert length(activities) == 1
       assert Paths.goal_id(goal) == hd(activities).content.goal.id
@@ -95,7 +95,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
       account = Repo.preload(ctx.reviewer, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, %{ activities: activities } = _res} = query(conn, :get_activities, ctx.attrs)
+      assert {200, %{ activities: activities } = _res} = query(conn, [:companies, :list_activities], ctx.attrs)
 
       assert length(activities) == 1
       assert Paths.goal_id(goal) == hd(activities).content.goal.id
@@ -112,7 +112,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
       account = Repo.preload(ctx.champion, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, %{ activities: activities } = _res} = query(conn, :get_activities, ctx.attrs)
+      assert {200, %{ activities: activities } = _res} = query(conn, [:companies, :list_activities], ctx.attrs)
 
       assert length(activities) == 1
       assert Paths.goal_id(goal) == hd(activities).content.goal.id
@@ -136,7 +136,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
     end
 
     test "company scope includes all activities", ctx do
-      assert {200, res} = query(ctx.conn, :get_activities, %{
+      assert {200, res} = query(ctx.conn, [:companies, :list_activities], %{
         scope_type: :company,
         scope_id: Paths.company_id(ctx.company),
         actions: []
@@ -151,7 +151,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
     end
 
     test "space scope includes space, goal, project, and task activities", ctx do
-      assert {200, res} = query(ctx.conn, :get_activities, %{
+      assert {200, res} = query(ctx.conn, [:companies, :list_activities], %{
         scope_type: :space,
         scope_id: Paths.space_id(ctx.space),
         actions: []
@@ -166,7 +166,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
     end
 
     test "project scope includes project and task activities", ctx do
-      assert {200, res} = query(ctx.conn, :get_activities, %{
+      assert {200, res} = query(ctx.conn, [:companies, :list_activities], %{
         scope_type: :project,
         scope_id: Paths.project_id(ctx.project),
         actions: []
@@ -181,7 +181,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
     end
 
     test "goal scope includes only goal activities", ctx do
-      assert {200, res} = query(ctx.conn, :get_activities, %{
+      assert {200, res} = query(ctx.conn, [:companies, :list_activities], %{
         scope_type: :goal,
         scope_id: Paths.goal_id(ctx.goal),
         actions: []
@@ -196,7 +196,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
     end
 
     test "milestone scope includes only milestone activities", ctx do
-      assert {200, res} = query(ctx.conn, :get_activities, %{
+      assert {200, res} = query(ctx.conn, [:companies, :list_activities], %{
         scope_type: :milestone,
         scope_id: Paths.milestone_id(ctx.milestone),
         actions: []
@@ -211,7 +211,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
     end
 
     test "task scope includes only task activities", ctx do
-      assert {200, res} = query(ctx.conn, :get_activities, %{
+      assert {200, res} = query(ctx.conn, [:companies, :list_activities], %{
         scope_type: :task,
         scope_id: Paths.task_id(ctx.task),
         actions: []
