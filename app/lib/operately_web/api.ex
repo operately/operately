@@ -263,27 +263,29 @@ defmodule OperatelyWeb.Api do
         mutation(:rename, OperatelyWeb.Api.Folders.Rename)
       end
 
+      namespace(:notifications) do
+        query(:list, OperatelyWeb.Api.Notifications.List)
+        query(:get_unread_count, OperatelyWeb.Api.Notifications.GetUnreadCount)
+        query(:is_subscribed, OperatelyWeb.Api.Notifications.IsSubscribed)
+
+        mutation(:update_subscriptions_list, OperatelyWeb.Api.Notifications.UpdateSubscriptionsList)
+        mutation(:mark_all_as_read, OperatelyWeb.Api.Notifications.MarkAllAsRead)
+        mutation(:mark_as_read, OperatelyWeb.Api.Notifications.MarkAsRead)
+        mutation(:mark_many_as_read, OperatelyWeb.Api.Notifications.MarkManyAsRead)
+        mutation(:subscribe, OperatelyWeb.Api.Notifications.Subscribe)
+        mutation(:unsubscribe, OperatelyWeb.Api.Notifications.Unsubscribe)
+      end
+
       query(:get_activities, Q.GetActivities)
       query(:get_activity, Q.GetActivity)
-      query(:get_notifications, Q.GetNotifications)
-      query(:get_unread_notification_count, Q.GetUnreadNotificationCount)
       query(:get_work_map, Q.GetWorkMap)
       query(:get_flat_work_map, Q.GetFlatWorkMap)
       query(:global_search, Q.GlobalSearch)
-      query(:is_subscribed_to_resource, Q.IsSubscribedToResource)
 
       mutation(:invite_guest, M.InviteGuest)
       mutation(:grant_resource_access, M.GrantResourceAccess)
       mutation(:create_goal_discussion, M.CreateGoalDiscussion)
       mutation(:edit_goal_discussion, M.EditGoalDiscussion)
-      mutation(:edit_subscriptions_list, M.EditSubscriptionsList)
-
-      mutation(:mark_all_notifications_as_read, M.MarkAllNotificationsAsRead)
-      mutation(:mark_notification_as_read, M.MarkNotificationAsRead)
-      mutation(:mark_notifications_as_read, M.MarkNotificationsAsRead)
-
-      mutation(:subscribe_to_notifications, M.SubscribeToNotifications)
-      mutation(:unsubscribe_from_notifications, M.UnsubscribeFromNotifications)
 
       subscription(:assignments_count, S.AssignmentsCount)
       subscription(:reload_comments, S.ReloadComments)

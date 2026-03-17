@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.SubscribeToNotificationsTest do
+defmodule OperatelyWeb.Api.Notifications.SubscribeTest do
   use OperatelyWeb.TurboCase
 
   alias Operately.Notifications
@@ -11,7 +11,7 @@ defmodule OperatelyWeb.Api.Mutations.SubscribeToNotificationsTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :subscribe_to_notifications, %{})
+      assert {401, _} = mutation(ctx.conn, [:notifications, :subscribe], %{})
     end
   end
 
@@ -48,7 +48,7 @@ defmodule OperatelyWeb.Api.Mutations.SubscribeToNotificationsTest do
 
         {:ok, subscription_list} = SubscriptionList.get(:system, parent_id: check_in.id)
 
-        assert {code, res} = mutation(ctx.conn, :subscribe_to_notifications, %{
+        assert {code, res} = mutation(ctx.conn, [:notifications, :subscribe], %{
           id: Paths.subscription_list_id(subscription_list),
           type: "project_check_in",
         })
@@ -91,7 +91,7 @@ defmodule OperatelyWeb.Api.Mutations.SubscribeToNotificationsTest do
     test "subscribes to check-in notifications", ctx do
       refute Notifications.is_subscriber?(ctx.person.id, ctx.subscription_list.id)
 
-      assert {200, _} = mutation(ctx.conn, :subscribe_to_notifications, %{
+      assert {200, _} = mutation(ctx.conn, [:notifications, :subscribe], %{
         id: Paths.subscription_list_id(ctx.subscription_list),
         type: "project_check_in",
       })
@@ -113,7 +113,7 @@ defmodule OperatelyWeb.Api.Mutations.SubscribeToNotificationsTest do
 
       refute Notifications.is_subscriber?(ctx.person.id, ctx.subscription_list.id)
 
-      assert {200, _} = mutation(ctx.conn, :subscribe_to_notifications, %{
+      assert {200, _} = mutation(ctx.conn, [:notifications, :subscribe], %{
         id: Paths.subscription_list_id(ctx.subscription_list),
         type: "project_check_in",
       })
@@ -157,7 +157,7 @@ defmodule OperatelyWeb.Api.Mutations.SubscribeToNotificationsTest do
 
       refute Notifications.is_subscriber?(ctx.person.id, ctx.project_subscription_list.id)
 
-      assert {200, _} = mutation(ctx.conn, :subscribe_to_notifications, %{
+      assert {200, _} = mutation(ctx.conn, [:notifications, :subscribe], %{
         id: Paths.subscription_list_id(ctx.project_subscription_list),
         type: "project",
       })
@@ -168,7 +168,7 @@ defmodule OperatelyWeb.Api.Mutations.SubscribeToNotificationsTest do
     test "rejects when caller lacks project access", ctx do
       refute Notifications.is_subscriber?(ctx.person.id, ctx.restricted_project_subscription_list.id)
 
-      assert {404, _} = mutation(ctx.conn, :subscribe_to_notifications, %{
+      assert {404, _} = mutation(ctx.conn, [:notifications, :subscribe], %{
         id: Paths.subscription_list_id(ctx.restricted_project_subscription_list),
         type: "project",
       })

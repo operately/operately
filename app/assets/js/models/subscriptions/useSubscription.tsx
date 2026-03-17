@@ -39,9 +39,9 @@ export function useSubscription({
 
       try {
         if (notSubscribed) {
-          await Api.subscribeToNotifications({ id: subscriptionList.id, type: entityType });
+          await Api.notifications.subscribe({ id: subscriptionList.id, type: entityType });
         } else {
-          await Api.unsubscribeFromNotifications({ id: subscriptionList.id });
+          await Api.notifications.unsubscribe({ id: subscriptionList.id });
         }
 
         PageCache.invalidate(cacheKey);

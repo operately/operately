@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.UnsubscribeFromNotifications do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Notifications.Unsubscribe do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "unsubscribe_from_notifications"
+  def mutation_name, do: "notifications/unsubscribe"
 
   @impl true
   def setup(ctx) do

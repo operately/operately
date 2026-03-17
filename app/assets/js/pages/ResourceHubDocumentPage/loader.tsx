@@ -1,6 +1,6 @@
 import * as Pages from "@/components/Pages";
 import * as Hub from "@/models/resourceHubs";
-import { isSubscribedToResource } from "@/api";
+import Api from "@/api";
 
 interface LoaderResult {
   document: Hub.ResourceHubDocument;
@@ -30,7 +30,7 @@ export async function loader({ params }): Promise<LoaderResult> {
     Hub.resource_hubs.get({ id: document.resourceHubId!, includePotentialSubscribers: true }).then(
       (res) => res.resourceHub!,
     ),
-    isSubscribedToResource({
+    Api.notifications.isSubscribed({
       resourceId: document.id,
       resourceType: "resource_hub_document",
     }),

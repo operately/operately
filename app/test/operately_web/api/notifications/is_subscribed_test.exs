@@ -1,11 +1,11 @@
-defmodule OperatelyWeb.Api.Queries.IsSubscribedToResourceTest do
+defmodule OperatelyWeb.Api.Notifications.IsSubscribedTest do
   use OperatelyWeb.TurboCase
 
   alias Operately.Access.Binding
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, :is_subscribed_to_resource, %{
+      assert {401, _} = query(ctx.conn, [:notifications, :is_subscribed], %{
         resource_id: "test",
         resource_type: "goal_update"
       })
@@ -24,14 +24,14 @@ defmodule OperatelyWeb.Api.Queries.IsSubscribedToResourceTest do
     end
 
     test "returns 404 for non-existent resource", ctx do
-      assert {404, _} = query(ctx.conn, :is_subscribed_to_resource, %{
+      assert {404, _} = query(ctx.conn, [:notifications, :is_subscribed], %{
         resource_id: Paths.goal_update_id(%{id: Ecto.UUID.generate(), inserted_at: DateTime.utc_now()}),
         resource_type: "goal_update"
       })
     end
 
     test "returns 404 when user does not have access to the resource", ctx do
-      assert {404, _} = query(ctx.conn, :is_subscribed_to_resource, %{
+      assert {404, _} = query(ctx.conn, [:notifications, :is_subscribed], %{
         resource_id: Paths.goal_update_id(ctx.update1),
         resource_type: "goal_update"
       })
@@ -54,7 +54,7 @@ defmodule OperatelyWeb.Api.Queries.IsSubscribedToResourceTest do
     end
 
     test "returns false when user is not subscribed to goal update", ctx do
-      assert {200, res} = query(ctx.conn, :is_subscribed_to_resource, %{
+      assert {200, res} = query(ctx.conn, [:notifications, :is_subscribed], %{
         resource_id: Paths.goal_update_id(ctx.update1),
         resource_type: "goal_update"
       })
@@ -65,7 +65,7 @@ defmodule OperatelyWeb.Api.Queries.IsSubscribedToResourceTest do
     test "returns true when user is subscribed to goal update", ctx do
       Factory.add_subscription(ctx, :sub1, :update1, person: ctx.person, type: :joined)
 
-      assert {200, res} = query(ctx.conn, :is_subscribed_to_resource, %{
+      assert {200, res} = query(ctx.conn, [:notifications, :is_subscribed], %{
         resource_id: Paths.goal_update_id(ctx.update1),
         resource_type: "goal_update"
       })
@@ -76,7 +76,7 @@ defmodule OperatelyWeb.Api.Queries.IsSubscribedToResourceTest do
     test "returns false when subscription is canceled", ctx do
       Factory.add_subscription(ctx, :sub1, :update1, person: ctx.person, type: :joined, canceled: true)
 
-      assert {200, res} = query(ctx.conn, :is_subscribed_to_resource, %{
+      assert {200, res} = query(ctx.conn, [:notifications, :is_subscribed], %{
         resource_id: Paths.goal_update_id(ctx.update1),
         resource_type: "goal_update"
       })
@@ -85,7 +85,7 @@ defmodule OperatelyWeb.Api.Queries.IsSubscribedToResourceTest do
     end
 
     test "returns false when user is not subscribed to project check-in", ctx do
-      assert {200, res} = query(ctx.conn, :is_subscribed_to_resource, %{
+      assert {200, res} = query(ctx.conn, [:notifications, :is_subscribed], %{
         resource_id: Paths.project_check_in_id(ctx.check_in1),
         resource_type: "project_check_in"
       })
@@ -96,7 +96,7 @@ defmodule OperatelyWeb.Api.Queries.IsSubscribedToResourceTest do
     test "returns true when user is subscribed to project check-in", ctx do
       Factory.add_subscription(ctx, :sub1, :check_in1, person: ctx.person, type: :mentioned)
 
-      assert {200, res} = query(ctx.conn, :is_subscribed_to_resource, %{
+      assert {200, res} = query(ctx.conn, [:notifications, :is_subscribed], %{
         resource_id: Paths.project_check_in_id(ctx.check_in1),
         resource_type: "project_check_in"
       })
@@ -105,7 +105,7 @@ defmodule OperatelyWeb.Api.Queries.IsSubscribedToResourceTest do
     end
 
     test "returns false when user is not subscribed to message", ctx do
-      assert {200, res} = query(ctx.conn, :is_subscribed_to_resource, %{
+      assert {200, res} = query(ctx.conn, [:notifications, :is_subscribed], %{
         resource_id: Paths.message_id(ctx.message1),
         resource_type: "message"
       })
@@ -116,7 +116,7 @@ defmodule OperatelyWeb.Api.Queries.IsSubscribedToResourceTest do
     test "returns true when user is subscribed to message", ctx do
       Factory.add_subscription(ctx, :sub1, :message1, person: ctx.person, type: :invited)
 
-      assert {200, res} = query(ctx.conn, :is_subscribed_to_resource, %{
+      assert {200, res} = query(ctx.conn, [:notifications, :is_subscribed], %{
         resource_id: Paths.message_id(ctx.message1),
         resource_type: "message"
       })
@@ -125,14 +125,14 @@ defmodule OperatelyWeb.Api.Queries.IsSubscribedToResourceTest do
     end
 
     test "returns 400 for invalid resource type", ctx do
-      assert {400, _} = query(ctx.conn, :is_subscribed_to_resource, %{
+      assert {400, _} = query(ctx.conn, [:notifications, :is_subscribed], %{
         resource_id: Paths.goal_update_id(ctx.update1),
         resource_type: "invalid_type"
       })
     end
 
     test "returns 404 for non-existent resource", ctx do
-      assert {404, _} = query(ctx.conn, :is_subscribed_to_resource, %{
+      assert {404, _} = query(ctx.conn, [:notifications, :is_subscribed], %{
         resource_id: Paths.goal_update_id(%{id: Ecto.UUID.generate(), inserted_at: DateTime.utc_now()}),
         resource_type: "goal_update"
       })
@@ -141,7 +141,7 @@ defmodule OperatelyWeb.Api.Queries.IsSubscribedToResourceTest do
     test "subscription type doesn't matter, only canceled status", ctx do
       Factory.add_subscription(ctx, :sub1, :update1, person: ctx.person, type: :invited)
 
-      assert {200, res} = query(ctx.conn, :is_subscribed_to_resource, %{
+      assert {200, res} = query(ctx.conn, [:notifications, :is_subscribed], %{
         resource_id: Paths.goal_update_id(ctx.update1),
         resource_type: "goal_update"
       })
@@ -152,7 +152,7 @@ defmodule OperatelyWeb.Api.Queries.IsSubscribedToResourceTest do
     test "returns true when user is subscribed to project check-in with different subscription type", ctx do
       Factory.add_subscription(ctx, :sub1, :check_in1, person: ctx.person, type: :invited)
 
-      assert {200, res} = query(ctx.conn, :is_subscribed_to_resource, %{
+      assert {200, res} = query(ctx.conn, [:notifications, :is_subscribed], %{
         resource_id: Paths.project_check_in_id(ctx.check_in1),
         resource_type: "project_check_in"
       })
@@ -163,7 +163,7 @@ defmodule OperatelyWeb.Api.Queries.IsSubscribedToResourceTest do
     test "returns true when user is subscribed to message with different subscription type", ctx do
       Factory.add_subscription(ctx, :sub1, :message1, person: ctx.person, type: :mentioned)
 
-      assert {200, res} = query(ctx.conn, :is_subscribed_to_resource, %{
+      assert {200, res} = query(ctx.conn, [:notifications, :is_subscribed], %{
         resource_id: Paths.message_id(ctx.message1),
         resource_type: "message"
       })

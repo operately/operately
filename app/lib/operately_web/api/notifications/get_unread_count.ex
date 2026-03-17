@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetUnreadNotificationCount do
+defmodule OperatelyWeb.Api.Notifications.GetUnreadCount do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 

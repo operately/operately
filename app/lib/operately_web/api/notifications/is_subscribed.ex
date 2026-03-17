@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.IsSubscribedToResource do
+defmodule OperatelyWeb.Api.Notifications.IsSubscribed do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 

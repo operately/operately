@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.UnsubscribeFromNotificationsTest do
+defmodule OperatelyWeb.Api.Notifications.UnsubscribeTest do
   use OperatelyWeb.TurboCase
 
   import Operately.ProjectsFixtures
@@ -8,7 +8,7 @@ defmodule OperatelyWeb.Api.Mutations.UnsubscribeFromNotificationsTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :unsubscribe_from_notifications, %{})
+      assert {401, _} = mutation(ctx.conn, [:notifications, :unsubscribe], %{})
     end
   end
 
@@ -33,7 +33,7 @@ defmodule OperatelyWeb.Api.Mutations.UnsubscribeFromNotificationsTest do
 
       assert Notifications.is_subscriber?(ctx.person.id, ctx.subscription_list.id)
 
-      assert {200, _} = mutation(ctx.conn, :unsubscribe_from_notifications, %{
+      assert {200, _} = mutation(ctx.conn, [:notifications, :unsubscribe], %{
         id: Paths.subscription_list_id(ctx.subscription_list),
       })
 
@@ -55,7 +55,7 @@ defmodule OperatelyWeb.Api.Mutations.UnsubscribeFromNotificationsTest do
     test "unsubscribes from project notifications", ctx do
       assert Notifications.is_subscriber?(ctx.person.id, ctx.project_subscription_list.id)
 
-      assert {200, _} = mutation(ctx.conn, :unsubscribe_from_notifications, %{
+      assert {200, _} = mutation(ctx.conn, [:notifications, :unsubscribe], %{
         id: Paths.subscription_list_id(ctx.project_subscription_list),
       })
 
