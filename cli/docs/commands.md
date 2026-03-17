@@ -31,7 +31,6 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `documents publish` | `op documents publish` | `POST` | `/api/external/v1/documents/publish` |
 | `documents update` | `op documents update` | `POST` | `/api/external/v1/documents/update` |
 | `edit_goal_discussion` | `op edit_goal_discussion` | `POST` | `/api/external/v1/edit_goal_discussion` |
-| `edit_subscriptions_list` | `op edit_subscriptions_list` | `POST` | `/api/external/v1/edit_subscriptions_list` |
 | `files create` | `op files create` | `POST` | `/api/external/v1/files/create` |
 | `files delete` | `op files delete` | `POST` | `/api/external/v1/files/delete` |
 | `files get` | `op files get` | `GET` | `/api/external/v1/files/get` |
@@ -44,8 +43,6 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `get_activities` | `op get_activities` | `GET` | `/api/external/v1/get_activities` |
 | `get_activity` | `op get_activity` | `GET` | `/api/external/v1/get_activity` |
 | `get_flat_work_map` | `op get_flat_work_map` | `GET` | `/api/external/v1/get_flat_work_map` |
-| `get_notifications` | `op get_notifications` | `GET` | `/api/external/v1/get_notifications` |
-| `get_unread_notification_count` | `op get_unread_notification_count` | `GET` | `/api/external/v1/get_unread_notification_count` |
 | `get_work_map` | `op get_work_map` | `GET` | `/api/external/v1/get_work_map` |
 | `global_search` | `op global_search` | `GET` | `/api/external/v1/global_search` |
 | `goal_check_ins acknowledge` | `op goal_check_ins acknowledge` | `POST` | `/api/external/v1/goal_check_ins/acknowledge` |
@@ -88,14 +85,19 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `goals update_target_value` | `op goals update_target_value` | `POST` | `/api/external/v1/goals/update_target_value` |
 | `grant_resource_access` | `op grant_resource_access` | `POST` | `/api/external/v1/grant_resource_access` |
 | `invite_guest` | `op invite_guest` | `POST` | `/api/external/v1/invite_guest` |
-| `is_subscribed_to_resource` | `op is_subscribed_to_resource` | `GET` | `/api/external/v1/is_subscribed_to_resource` |
 | `links create` | `op links create` | `POST` | `/api/external/v1/links/create` |
 | `links delete` | `op links delete` | `POST` | `/api/external/v1/links/delete` |
 | `links get` | `op links get` | `GET` | `/api/external/v1/links/get` |
 | `links update` | `op links update` | `POST` | `/api/external/v1/links/update` |
-| `mark_all_notifications_as_read` | `op mark_all_notifications_as_read` | `POST` | `/api/external/v1/mark_all_notifications_as_read` |
-| `mark_notification_as_read` | `op mark_notification_as_read` | `POST` | `/api/external/v1/mark_notification_as_read` |
-| `mark_notifications_as_read` | `op mark_notifications_as_read` | `POST` | `/api/external/v1/mark_notifications_as_read` |
+| `notifications edit_subscriptions_list` | `op notifications edit_subscriptions_list` | `POST` | `/api/external/v1/notifications/edit_subscriptions_list` |
+| `notifications get` | `op notifications get` | `GET` | `/api/external/v1/notifications/get` |
+| `notifications get_unread_count` | `op notifications get_unread_count` | `GET` | `/api/external/v1/notifications/get_unread_count` |
+| `notifications is_subscribed` | `op notifications is_subscribed` | `GET` | `/api/external/v1/notifications/is_subscribed` |
+| `notifications mark_all_as_read` | `op notifications mark_all_as_read` | `POST` | `/api/external/v1/notifications/mark_all_as_read` |
+| `notifications mark_as_read` | `op notifications mark_as_read` | `POST` | `/api/external/v1/notifications/mark_as_read` |
+| `notifications mark_many_as_read` | `op notifications mark_many_as_read` | `POST` | `/api/external/v1/notifications/mark_many_as_read` |
+| `notifications subscribe` | `op notifications subscribe` | `POST` | `/api/external/v1/notifications/subscribe` |
+| `notifications unsubscribe` | `op notifications unsubscribe` | `POST` | `/api/external/v1/notifications/unsubscribe` |
 | `people get` | `op people get` | `GET` | `/api/external/v1/people/get` |
 | `people get_account` | `op people get_account` | `GET` | `/api/external/v1/people/get_account` |
 | `people get_assignments_count` | `op people get_assignments_count` | `GET` | `/api/external/v1/people/get_assignments_count` |
@@ -194,7 +196,6 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `spaces update_permissions` | `op spaces update_permissions` | `POST` | `/api/external/v1/spaces/update_permissions` |
 | `spaces update_task_statuses` | `op spaces update_task_statuses` | `POST` | `/api/external/v1/spaces/update_task_statuses` |
 | `spaces update_tools` | `op spaces update_tools` | `POST` | `/api/external/v1/spaces/update_tools` |
-| `subscribe_to_notifications` | `op subscribe_to_notifications` | `POST` | `/api/external/v1/subscribe_to_notifications` |
 | `tasks create` | `op tasks create` | `POST` | `/api/external/v1/tasks/create` |
 | `tasks delete` | `op tasks delete` | `POST` | `/api/external/v1/tasks/delete` |
 | `tasks get` | `op tasks get` | `GET` | `/api/external/v1/tasks/get` |
@@ -208,4 +209,3 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `tasks update_milestone_and_ordering` | `op tasks update_milestone_and_ordering` | `POST` | `/api/external/v1/tasks/update_milestone_and_ordering` |
 | `tasks update_name` | `op tasks update_name` | `POST` | `/api/external/v1/tasks/update_name` |
 | `tasks update_status` | `op tasks update_status` | `POST` | `/api/external/v1/tasks/update_status` |
-| `unsubscribe_from_notifications` | `op unsubscribe_from_notifications` | `POST` | `/api/external/v1/unsubscribe_from_notifications` |

@@ -2372,25 +2372,10 @@ export interface GetFlatWorkMapResult {
   workMap?: WorkMapItem[] | null;
 }
 
-export interface GetNotificationsInput {
-  page?: number | null;
-  perPage?: number | null;
-}
-
-export interface GetNotificationsResult {
-  notifications?: Notification[] | null;
-}
-
 export interface GetThemeInput {}
 
 export interface GetThemeResult {
   theme: AccountTheme;
-}
-
-export interface GetUnreadNotificationCountInput {}
-
-export interface GetUnreadNotificationCountResult {
-  unread?: number | null;
 }
 
 export interface GetWorkMapInput {
@@ -2537,15 +2522,6 @@ export interface InvitationsGetInviteLinkByTokenResult {
   inviteLink?: InviteLink | null;
 }
 
-export interface IsSubscribedToResourceInput {
-  resourceId: Id;
-  resourceType: SubscriptionParentType;
-}
-
-export interface IsSubscribedToResourceResult {
-  subscribed: boolean;
-}
-
 export interface LinksGetInput {
   id: Id;
   includeAuthor?: boolean | null;
@@ -2562,6 +2538,30 @@ export interface LinksGetInput {
 
 export interface LinksGetResult {
   link: ResourceHubLink;
+}
+
+export interface NotificationsGetInput {
+  page?: number | null;
+  perPage?: number | null;
+}
+
+export interface NotificationsGetResult {
+  notifications?: Notification[] | null;
+}
+
+export interface NotificationsGetUnreadCountInput {}
+
+export interface NotificationsGetUnreadCountResult {
+  unread?: number | null;
+}
+
+export interface NotificationsIsSubscribedInput {
+  resourceId: Id;
+  resourceType: SubscriptionParentType;
+}
+
+export interface NotificationsIsSubscribedResult {
+  subscribed: boolean;
 }
 
 export interface PeopleGetInput {
@@ -3430,15 +3430,6 @@ export interface EditGoalDiscussionInput {
 
 export interface EditGoalDiscussionResult {}
 
-export interface EditSubscriptionsListInput {
-  id?: string | null;
-  type?: string | null;
-  sendNotificationsToEveryone?: boolean | null;
-  subscriberIds?: string[] | null;
-}
-
-export interface EditSubscriptionsListResult {}
-
 export interface FilesCreateInput {
   resourceHubId?: Id | null;
   folderId?: Id | null;
@@ -3917,21 +3908,43 @@ export interface LinksUpdateResult {
   link?: ResourceHubLink | null;
 }
 
-export interface MarkAllNotificationsAsReadInput {}
+export interface NotificationsEditSubscriptionsListInput {
+  id?: string | null;
+  type?: string | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: string[] | null;
+}
 
-export interface MarkAllNotificationsAsReadResult {}
+export interface NotificationsEditSubscriptionsListResult {}
 
-export interface MarkNotificationAsReadInput {
+export interface NotificationsMarkAllAsReadInput {}
+
+export interface NotificationsMarkAllAsReadResult {}
+
+export interface NotificationsMarkAsReadInput {
   id?: string | null;
 }
 
-export interface MarkNotificationAsReadResult {}
+export interface NotificationsMarkAsReadResult {}
 
-export interface MarkNotificationsAsReadInput {
+export interface NotificationsMarkManyAsReadInput {
   ids?: string[] | null;
 }
 
-export interface MarkNotificationsAsReadResult {}
+export interface NotificationsMarkManyAsReadResult {}
+
+export interface NotificationsSubscribeInput {
+  id: Id;
+  type: SubscriptionParentType;
+}
+
+export interface NotificationsSubscribeResult {}
+
+export interface NotificationsUnsubscribeInput {
+  id: Id;
+}
+
+export interface NotificationsUnsubscribeResult {}
 
 export interface PeopleUpdateInput {
   id?: string | null;
@@ -4536,13 +4549,6 @@ export interface SpacesUpdateToolsResult {
   tools: SpaceTools | null;
 }
 
-export interface SubscribeToNotificationsInput {
-  id: Id;
-  type: SubscriptionParentType;
-}
-
-export interface SubscribeToNotificationsResult {}
-
 export interface TasksCreateInput {
   type: TaskType;
   id: Id;
@@ -4651,12 +4657,6 @@ export interface TasksUpdateStatusResult {
   task: Task;
   updatedMilestone: Milestone | null;
 }
-
-export interface UnsubscribeFromNotificationsInput {
-  id: Id;
-}
-
-export interface UnsubscribeFromNotificationsResult {}
 
 class ApiNamespaceApiTokens {
   constructor(private client: ApiClient) {}
@@ -4819,16 +4819,8 @@ class ApiNamespaceRoot {
     return this.client.get("/get_flat_work_map", input);
   }
 
-  async getNotifications(input: GetNotificationsInput): Promise<GetNotificationsResult> {
-    return this.client.get("/get_notifications", input);
-  }
-
   async getTheme(input: GetThemeInput): Promise<GetThemeResult> {
     return this.client.get("/get_theme", input);
-  }
-
-  async getUnreadNotificationCount(input: GetUnreadNotificationCountInput): Promise<GetUnreadNotificationCountResult> {
-    return this.client.get("/get_unread_notification_count", input);
   }
 
   async getWorkMap(input: GetWorkMapInput): Promise<GetWorkMapResult> {
@@ -4837,10 +4829,6 @@ class ApiNamespaceRoot {
 
   async globalSearch(input: GlobalSearchInput): Promise<GlobalSearchResult> {
     return this.client.get("/global_search", input);
-  }
-
-  async isSubscribedToResource(input: IsSubscribedToResourceInput): Promise<IsSubscribedToResourceResult> {
-    return this.client.get("/is_subscribed_to_resource", input);
   }
 
   async addCompanyOwners(input: AddCompanyOwnersInput): Promise<AddCompanyOwnersResult> {
@@ -4893,10 +4881,6 @@ class ApiNamespaceRoot {
     return this.client.post("/edit_goal_discussion", input);
   }
 
-  async editSubscriptionsList(input: EditSubscriptionsListInput): Promise<EditSubscriptionsListResult> {
-    return this.client.post("/edit_subscriptions_list", input);
-  }
-
   async grantResourceAccess(input: GrantResourceAccessInput): Promise<GrantResourceAccessResult> {
     return this.client.post("/grant_resource_access", input);
   }
@@ -4909,18 +4893,6 @@ class ApiNamespaceRoot {
     return this.client.post("/join_company", input);
   }
 
-  async markAllNotificationsAsRead(input: MarkAllNotificationsAsReadInput): Promise<MarkAllNotificationsAsReadResult> {
-    return this.client.post("/mark_all_notifications_as_read", input);
-  }
-
-  async markNotificationAsRead(input: MarkNotificationAsReadInput): Promise<MarkNotificationAsReadResult> {
-    return this.client.post("/mark_notification_as_read", input);
-  }
-
-  async markNotificationsAsRead(input: MarkNotificationsAsReadInput): Promise<MarkNotificationsAsReadResult> {
-    return this.client.post("/mark_notifications_as_read", input);
-  }
-
   async requestPasswordReset(input: RequestPasswordResetInput): Promise<RequestPasswordResetResult> {
     return this.client.post("/request_password_reset", input);
   }
@@ -4928,15 +4900,47 @@ class ApiNamespaceRoot {
   async resetPassword(input: ResetPasswordInput): Promise<ResetPasswordResult> {
     return this.client.post("/reset_password", input);
   }
+}
 
-  async subscribeToNotifications(input: SubscribeToNotificationsInput): Promise<SubscribeToNotificationsResult> {
-    return this.client.post("/subscribe_to_notifications", input);
+class ApiNamespaceNotifications {
+  constructor(private client: ApiClient) {}
+
+  async get(input: NotificationsGetInput): Promise<NotificationsGetResult> {
+    return this.client.get("/notifications/get", input);
   }
 
-  async unsubscribeFromNotifications(
-    input: UnsubscribeFromNotificationsInput,
-  ): Promise<UnsubscribeFromNotificationsResult> {
-    return this.client.post("/unsubscribe_from_notifications", input);
+  async getUnreadCount(input: NotificationsGetUnreadCountInput): Promise<NotificationsGetUnreadCountResult> {
+    return this.client.get("/notifications/get_unread_count", input);
+  }
+
+  async isSubscribed(input: NotificationsIsSubscribedInput): Promise<NotificationsIsSubscribedResult> {
+    return this.client.get("/notifications/is_subscribed", input);
+  }
+
+  async editSubscriptionsList(
+    input: NotificationsEditSubscriptionsListInput,
+  ): Promise<NotificationsEditSubscriptionsListResult> {
+    return this.client.post("/notifications/edit_subscriptions_list", input);
+  }
+
+  async markAllAsRead(input: NotificationsMarkAllAsReadInput): Promise<NotificationsMarkAllAsReadResult> {
+    return this.client.post("/notifications/mark_all_as_read", input);
+  }
+
+  async markAsRead(input: NotificationsMarkAsReadInput): Promise<NotificationsMarkAsReadResult> {
+    return this.client.post("/notifications/mark_as_read", input);
+  }
+
+  async markManyAsRead(input: NotificationsMarkManyAsReadInput): Promise<NotificationsMarkManyAsReadResult> {
+    return this.client.post("/notifications/mark_many_as_read", input);
+  }
+
+  async subscribe(input: NotificationsSubscribeInput): Promise<NotificationsSubscribeResult> {
+    return this.client.post("/notifications/subscribe", input);
+  }
+
+  async unsubscribe(input: NotificationsUnsubscribeInput): Promise<NotificationsUnsubscribeResult> {
+    return this.client.post("/notifications/unsubscribe", input);
   }
 }
 
@@ -5767,6 +5771,7 @@ export class ApiClient {
   public apiNamespaceInvitations: ApiNamespaceInvitations;
   public apiNamespaceAi: ApiNamespaceAi;
   public apiNamespaceRoot: ApiNamespaceRoot;
+  public apiNamespaceNotifications: ApiNamespaceNotifications;
   public apiNamespaceFolders: ApiNamespaceFolders;
   public apiNamespaceLinks: ApiNamespaceLinks;
   public apiNamespaceFiles: ApiNamespaceFiles;
@@ -5791,6 +5796,7 @@ export class ApiClient {
     this.apiNamespaceInvitations = new ApiNamespaceInvitations(this);
     this.apiNamespaceAi = new ApiNamespaceAi(this);
     this.apiNamespaceRoot = new ApiNamespaceRoot(this);
+    this.apiNamespaceNotifications = new ApiNamespaceNotifications(this);
     this.apiNamespaceFolders = new ApiNamespaceFolders(this);
     this.apiNamespaceLinks = new ApiNamespaceLinks(this);
     this.apiNamespaceFiles = new ApiNamespaceFiles(this);
@@ -5855,16 +5861,8 @@ export class ApiClient {
     return this.apiNamespaceRoot.getFlatWorkMap(input);
   }
 
-  getNotifications(input: GetNotificationsInput): Promise<GetNotificationsResult> {
-    return this.apiNamespaceRoot.getNotifications(input);
-  }
-
   getTheme(input: GetThemeInput): Promise<GetThemeResult> {
     return this.apiNamespaceRoot.getTheme(input);
-  }
-
-  getUnreadNotificationCount(input: GetUnreadNotificationCountInput): Promise<GetUnreadNotificationCountResult> {
-    return this.apiNamespaceRoot.getUnreadNotificationCount(input);
   }
 
   getWorkMap(input: GetWorkMapInput): Promise<GetWorkMapResult> {
@@ -5873,10 +5871,6 @@ export class ApiClient {
 
   globalSearch(input: GlobalSearchInput): Promise<GlobalSearchResult> {
     return this.apiNamespaceRoot.globalSearch(input);
-  }
-
-  isSubscribedToResource(input: IsSubscribedToResourceInput): Promise<IsSubscribedToResourceResult> {
-    return this.apiNamespaceRoot.isSubscribedToResource(input);
   }
 
   addCompanyOwners(input: AddCompanyOwnersInput): Promise<AddCompanyOwnersResult> {
@@ -5927,10 +5921,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.editGoalDiscussion(input);
   }
 
-  editSubscriptionsList(input: EditSubscriptionsListInput): Promise<EditSubscriptionsListResult> {
-    return this.apiNamespaceRoot.editSubscriptionsList(input);
-  }
-
   grantResourceAccess(input: GrantResourceAccessInput): Promise<GrantResourceAccessResult> {
     return this.apiNamespaceRoot.grantResourceAccess(input);
   }
@@ -5943,32 +5933,12 @@ export class ApiClient {
     return this.apiNamespaceRoot.joinCompany(input);
   }
 
-  markAllNotificationsAsRead(input: MarkAllNotificationsAsReadInput): Promise<MarkAllNotificationsAsReadResult> {
-    return this.apiNamespaceRoot.markAllNotificationsAsRead(input);
-  }
-
-  markNotificationAsRead(input: MarkNotificationAsReadInput): Promise<MarkNotificationAsReadResult> {
-    return this.apiNamespaceRoot.markNotificationAsRead(input);
-  }
-
-  markNotificationsAsRead(input: MarkNotificationsAsReadInput): Promise<MarkNotificationsAsReadResult> {
-    return this.apiNamespaceRoot.markNotificationsAsRead(input);
-  }
-
   requestPasswordReset(input: RequestPasswordResetInput): Promise<RequestPasswordResetResult> {
     return this.apiNamespaceRoot.requestPasswordReset(input);
   }
 
   resetPassword(input: ResetPasswordInput): Promise<ResetPasswordResult> {
     return this.apiNamespaceRoot.resetPassword(input);
-  }
-
-  subscribeToNotifications(input: SubscribeToNotificationsInput): Promise<SubscribeToNotificationsResult> {
-    return this.apiNamespaceRoot.subscribeToNotifications(input);
-  }
-
-  unsubscribeFromNotifications(input: UnsubscribeFromNotificationsInput): Promise<UnsubscribeFromNotificationsResult> {
-    return this.apiNamespaceRoot.unsubscribeFromNotifications(input);
   }
 }
 
@@ -5983,27 +5953,14 @@ export async function getActivity(input: GetActivityInput): Promise<GetActivityR
 export async function getFlatWorkMap(input: GetFlatWorkMapInput): Promise<GetFlatWorkMapResult> {
   return defaultApiClient.getFlatWorkMap(input);
 }
-export async function getNotifications(input: GetNotificationsInput): Promise<GetNotificationsResult> {
-  return defaultApiClient.getNotifications(input);
-}
 export async function getTheme(input: GetThemeInput): Promise<GetThemeResult> {
   return defaultApiClient.getTheme(input);
-}
-export async function getUnreadNotificationCount(
-  input: GetUnreadNotificationCountInput,
-): Promise<GetUnreadNotificationCountResult> {
-  return defaultApiClient.getUnreadNotificationCount(input);
 }
 export async function getWorkMap(input: GetWorkMapInput): Promise<GetWorkMapResult> {
   return defaultApiClient.getWorkMap(input);
 }
 export async function globalSearch(input: GlobalSearchInput): Promise<GlobalSearchResult> {
   return defaultApiClient.globalSearch(input);
-}
-export async function isSubscribedToResource(
-  input: IsSubscribedToResourceInput,
-): Promise<IsSubscribedToResourceResult> {
-  return defaultApiClient.isSubscribedToResource(input);
 }
 export async function addCompanyOwners(input: AddCompanyOwnersInput): Promise<AddCompanyOwnersResult> {
   return defaultApiClient.addCompanyOwners(input);
@@ -6045,9 +6002,6 @@ export async function deleteCompany(input: DeleteCompanyInput): Promise<DeleteCo
 export async function editGoalDiscussion(input: EditGoalDiscussionInput): Promise<EditGoalDiscussionResult> {
   return defaultApiClient.editGoalDiscussion(input);
 }
-export async function editSubscriptionsList(input: EditSubscriptionsListInput): Promise<EditSubscriptionsListResult> {
-  return defaultApiClient.editSubscriptionsList(input);
-}
 export async function grantResourceAccess(input: GrantResourceAccessInput): Promise<GrantResourceAccessResult> {
   return defaultApiClient.grantResourceAccess(input);
 }
@@ -6057,36 +6011,11 @@ export async function inviteGuest(input: InviteGuestInput): Promise<InviteGuestR
 export async function joinCompany(input: JoinCompanyInput): Promise<JoinCompanyResult> {
   return defaultApiClient.joinCompany(input);
 }
-export async function markAllNotificationsAsRead(
-  input: MarkAllNotificationsAsReadInput,
-): Promise<MarkAllNotificationsAsReadResult> {
-  return defaultApiClient.markAllNotificationsAsRead(input);
-}
-export async function markNotificationAsRead(
-  input: MarkNotificationAsReadInput,
-): Promise<MarkNotificationAsReadResult> {
-  return defaultApiClient.markNotificationAsRead(input);
-}
-export async function markNotificationsAsRead(
-  input: MarkNotificationsAsReadInput,
-): Promise<MarkNotificationsAsReadResult> {
-  return defaultApiClient.markNotificationsAsRead(input);
-}
 export async function requestPasswordReset(input: RequestPasswordResetInput): Promise<RequestPasswordResetResult> {
   return defaultApiClient.requestPasswordReset(input);
 }
 export async function resetPassword(input: ResetPasswordInput): Promise<ResetPasswordResult> {
   return defaultApiClient.resetPassword(input);
-}
-export async function subscribeToNotifications(
-  input: SubscribeToNotificationsInput,
-): Promise<SubscribeToNotificationsResult> {
-  return defaultApiClient.subscribeToNotifications(input);
-}
-export async function unsubscribeFromNotifications(
-  input: UnsubscribeFromNotificationsInput,
-): Promise<UnsubscribeFromNotificationsResult> {
-  return defaultApiClient.unsubscribeFromNotifications(input);
 }
 
 export function useGetActivities(input: GetActivitiesInput): UseQueryHookResult<GetActivitiesResult> {
@@ -6101,18 +6030,8 @@ export function useGetFlatWorkMap(input: GetFlatWorkMapInput): UseQueryHookResul
   return useQuery<GetFlatWorkMapResult>(() => defaultApiClient.getFlatWorkMap(input));
 }
 
-export function useGetNotifications(input: GetNotificationsInput): UseQueryHookResult<GetNotificationsResult> {
-  return useQuery<GetNotificationsResult>(() => defaultApiClient.getNotifications(input));
-}
-
 export function useGetTheme(input: GetThemeInput): UseQueryHookResult<GetThemeResult> {
   return useQuery<GetThemeResult>(() => defaultApiClient.getTheme(input));
-}
-
-export function useGetUnreadNotificationCount(
-  input: GetUnreadNotificationCountInput,
-): UseQueryHookResult<GetUnreadNotificationCountResult> {
-  return useQuery<GetUnreadNotificationCountResult>(() => defaultApiClient.getUnreadNotificationCount(input));
 }
 
 export function useGetWorkMap(input: GetWorkMapInput): UseQueryHookResult<GetWorkMapResult> {
@@ -6121,12 +6040,6 @@ export function useGetWorkMap(input: GetWorkMapInput): UseQueryHookResult<GetWor
 
 export function useGlobalSearch(input: GlobalSearchInput): UseQueryHookResult<GlobalSearchResult> {
   return useQuery<GlobalSearchResult>(() => defaultApiClient.globalSearch(input));
-}
-
-export function useIsSubscribedToResource(
-  input: IsSubscribedToResourceInput,
-): UseQueryHookResult<IsSubscribedToResourceResult> {
-  return useQuery<IsSubscribedToResourceResult>(() => defaultApiClient.isSubscribedToResource(input));
 }
 
 export function useAddCompanyOwners(): UseMutationHookResult<AddCompanyOwnersInput, AddCompanyOwnersResult> {
@@ -6203,15 +6116,6 @@ export function useEditGoalDiscussion(): UseMutationHookResult<EditGoalDiscussio
   );
 }
 
-export function useEditSubscriptionsList(): UseMutationHookResult<
-  EditSubscriptionsListInput,
-  EditSubscriptionsListResult
-> {
-  return useMutation<EditSubscriptionsListInput, EditSubscriptionsListResult>((input) =>
-    defaultApiClient.editSubscriptionsList(input),
-  );
-}
-
 export function useGrantResourceAccess(): UseMutationHookResult<GrantResourceAccessInput, GrantResourceAccessResult> {
   return useMutation<GrantResourceAccessInput, GrantResourceAccessResult>((input) =>
     defaultApiClient.grantResourceAccess(input),
@@ -6224,33 +6128,6 @@ export function useInviteGuest(): UseMutationHookResult<InviteGuestInput, Invite
 
 export function useJoinCompany(): UseMutationHookResult<JoinCompanyInput, JoinCompanyResult> {
   return useMutation<JoinCompanyInput, JoinCompanyResult>((input) => defaultApiClient.joinCompany(input));
-}
-
-export function useMarkAllNotificationsAsRead(): UseMutationHookResult<
-  MarkAllNotificationsAsReadInput,
-  MarkAllNotificationsAsReadResult
-> {
-  return useMutation<MarkAllNotificationsAsReadInput, MarkAllNotificationsAsReadResult>((input) =>
-    defaultApiClient.markAllNotificationsAsRead(input),
-  );
-}
-
-export function useMarkNotificationAsRead(): UseMutationHookResult<
-  MarkNotificationAsReadInput,
-  MarkNotificationAsReadResult
-> {
-  return useMutation<MarkNotificationAsReadInput, MarkNotificationAsReadResult>((input) =>
-    defaultApiClient.markNotificationAsRead(input),
-  );
-}
-
-export function useMarkNotificationsAsRead(): UseMutationHookResult<
-  MarkNotificationsAsReadInput,
-  MarkNotificationsAsReadResult
-> {
-  return useMutation<MarkNotificationsAsReadInput, MarkNotificationsAsReadResult>((input) =>
-    defaultApiClient.markNotificationsAsRead(input),
-  );
 }
 
 export function useRequestPasswordReset(): UseMutationHookResult<
@@ -6266,24 +6143,6 @@ export function useResetPassword(): UseMutationHookResult<ResetPasswordInput, Re
   return useMutation<ResetPasswordInput, ResetPasswordResult>((input) => defaultApiClient.resetPassword(input));
 }
 
-export function useSubscribeToNotifications(): UseMutationHookResult<
-  SubscribeToNotificationsInput,
-  SubscribeToNotificationsResult
-> {
-  return useMutation<SubscribeToNotificationsInput, SubscribeToNotificationsResult>((input) =>
-    defaultApiClient.subscribeToNotifications(input),
-  );
-}
-
-export function useUnsubscribeFromNotifications(): UseMutationHookResult<
-  UnsubscribeFromNotificationsInput,
-  UnsubscribeFromNotificationsResult
-> {
-  return useMutation<UnsubscribeFromNotificationsInput, UnsubscribeFromNotificationsResult>((input) =>
-    defaultApiClient.unsubscribeFromNotifications(input),
-  );
-}
-
 export default {
   default: defaultApiClient,
 
@@ -6293,18 +6152,12 @@ export default {
   useGetActivity,
   getFlatWorkMap,
   useGetFlatWorkMap,
-  getNotifications,
-  useGetNotifications,
   getTheme,
   useGetTheme,
-  getUnreadNotificationCount,
-  useGetUnreadNotificationCount,
   getWorkMap,
   useGetWorkMap,
   globalSearch,
   useGlobalSearch,
-  isSubscribedToResource,
-  useIsSubscribedToResource,
   addCompanyOwners,
   useAddCompanyOwners,
   addCompanyTrustedEmailDomain,
@@ -6329,28 +6182,16 @@ export default {
   useDeleteCompany,
   editGoalDiscussion,
   useEditGoalDiscussion,
-  editSubscriptionsList,
-  useEditSubscriptionsList,
   grantResourceAccess,
   useGrantResourceAccess,
   inviteGuest,
   useInviteGuest,
   joinCompany,
   useJoinCompany,
-  markAllNotificationsAsRead,
-  useMarkAllNotificationsAsRead,
-  markNotificationAsRead,
-  useMarkNotificationAsRead,
-  markNotificationsAsRead,
-  useMarkNotificationsAsRead,
   requestPasswordReset,
   useRequestPasswordReset,
   resetPassword,
   useResetPassword,
-  subscribeToNotifications,
-  useSubscribeToNotifications,
-  unsubscribeFromNotifications,
-  useUnsubscribeFromNotifications,
 
   api_tokens: {
     list: (input: ApiTokensListInput) => defaultApiClient.apiNamespaceApiTokens.list(input),
@@ -6524,6 +6365,64 @@ export default {
     useEditAgentDailyRun: () =>
       useMutation<AiEditAgentDailyRunInput, AiEditAgentDailyRunResult>((input) =>
         defaultApiClient.apiNamespaceAi.editAgentDailyRun(input),
+      ),
+  },
+
+  notifications: {
+    get: (input: NotificationsGetInput) => defaultApiClient.apiNamespaceNotifications.get(input),
+    useGet: (input: NotificationsGetInput) =>
+      useQuery<NotificationsGetResult>(() => defaultApiClient.apiNamespaceNotifications.get(input)),
+
+    isSubscribed: (input: NotificationsIsSubscribedInput) =>
+      defaultApiClient.apiNamespaceNotifications.isSubscribed(input),
+    useIsSubscribed: (input: NotificationsIsSubscribedInput) =>
+      useQuery<NotificationsIsSubscribedResult>(() => defaultApiClient.apiNamespaceNotifications.isSubscribed(input)),
+
+    getUnreadCount: (input: NotificationsGetUnreadCountInput) =>
+      defaultApiClient.apiNamespaceNotifications.getUnreadCount(input),
+    useGetUnreadCount: (input: NotificationsGetUnreadCountInput) =>
+      useQuery<NotificationsGetUnreadCountResult>(() =>
+        defaultApiClient.apiNamespaceNotifications.getUnreadCount(input),
+      ),
+
+    markAllAsRead: (input: NotificationsMarkAllAsReadInput) =>
+      defaultApiClient.apiNamespaceNotifications.markAllAsRead(input),
+    useMarkAllAsRead: () =>
+      useMutation<NotificationsMarkAllAsReadInput, NotificationsMarkAllAsReadResult>((input) =>
+        defaultApiClient.apiNamespaceNotifications.markAllAsRead(input),
+      ),
+
+    unsubscribe: (input: NotificationsUnsubscribeInput) =>
+      defaultApiClient.apiNamespaceNotifications.unsubscribe(input),
+    useUnsubscribe: () =>
+      useMutation<NotificationsUnsubscribeInput, NotificationsUnsubscribeResult>((input) =>
+        defaultApiClient.apiNamespaceNotifications.unsubscribe(input),
+      ),
+
+    markAsRead: (input: NotificationsMarkAsReadInput) => defaultApiClient.apiNamespaceNotifications.markAsRead(input),
+    useMarkAsRead: () =>
+      useMutation<NotificationsMarkAsReadInput, NotificationsMarkAsReadResult>((input) =>
+        defaultApiClient.apiNamespaceNotifications.markAsRead(input),
+      ),
+
+    editSubscriptionsList: (input: NotificationsEditSubscriptionsListInput) =>
+      defaultApiClient.apiNamespaceNotifications.editSubscriptionsList(input),
+    useEditSubscriptionsList: () =>
+      useMutation<NotificationsEditSubscriptionsListInput, NotificationsEditSubscriptionsListResult>((input) =>
+        defaultApiClient.apiNamespaceNotifications.editSubscriptionsList(input),
+      ),
+
+    markManyAsRead: (input: NotificationsMarkManyAsReadInput) =>
+      defaultApiClient.apiNamespaceNotifications.markManyAsRead(input),
+    useMarkManyAsRead: () =>
+      useMutation<NotificationsMarkManyAsReadInput, NotificationsMarkManyAsReadResult>((input) =>
+        defaultApiClient.apiNamespaceNotifications.markManyAsRead(input),
+      ),
+
+    subscribe: (input: NotificationsSubscribeInput) => defaultApiClient.apiNamespaceNotifications.subscribe(input),
+    useSubscribe: () =>
+      useMutation<NotificationsSubscribeInput, NotificationsSubscribeResult>((input) =>
+        defaultApiClient.apiNamespaceNotifications.subscribe(input),
       ),
   },
 
