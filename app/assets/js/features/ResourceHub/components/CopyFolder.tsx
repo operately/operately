@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-import { ResourceHubFolder, useCopyResourceHubFolder } from "@/models/resourceHubs";
+import { ResourceHubFolder, folders } from "@/models/resourceHubs";
 
 import Forms from "@/components/Forms";
 import { assertPresent } from "@/utils/assertions";
@@ -21,7 +21,7 @@ export function CopyFolderModal(props: FormProps) {
   const { resource, hideModal } = props;
   const { parent } = useNodesContext();
 
-  const [post] = useCopyResourceHubFolder();
+  const [post] = folders.useCopy();
   const navigate = useNavigate();
 
   assertPresent(resource.resourceHubId, "resourceHubId must be present in resource");

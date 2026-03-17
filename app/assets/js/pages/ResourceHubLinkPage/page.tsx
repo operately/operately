@@ -3,7 +3,7 @@ import React from "react";
 import { usePaths } from "@/routes/paths";
 import { useBoolState } from "@/hooks/useBoolState";
 import { useNavigate } from "react-router-dom";
-import { useDeleteResourceHubLink } from "@/models/resourceHubs";
+import { links } from "@/models/resourceHubs";
 
 import * as Reactions from "@/models/reactions";
 import * as Pages from "@/components/Pages";
@@ -161,7 +161,7 @@ interface DeleteLinkModalProps {
 function DeleteLinkModal({ isOpen, hideModal, linkName }: DeleteLinkModalProps) {
   const { link } = useLoadedData();
   const navigate = useNavigate();
-  const [remove] = useDeleteResourceHubLink();
+  const [remove] = links.useDelete();
   const paths = usePaths();
 
   const handleDeleteLink = async () => {

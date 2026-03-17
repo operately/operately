@@ -87,7 +87,7 @@ interface DeleteFileModalProps {
 
 function DeleteFileModal({ file, isOpen, hideModal }: DeleteFileModalProps) {
   const { refetch } = useNodesContext();
-  const [remove] = Hub.useDeleteResourceHubFile();
+  const [remove] = Hub.files.useDelete();
 
   const handleDelete = async () => {
     await remove({ fileId: file.id });

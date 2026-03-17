@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-import { ResourceHub, useCreateResourceHubDocument } from "@/models/resourceHubs";
+import { ResourceHub, documents } from "@/models/resourceHubs";
 
 import Forms from "@/components/Forms";
 import { useFormContext } from "@/components/Forms/FormContext";
@@ -17,7 +17,7 @@ import { useLoadedData } from "./loader";
 export function Form() {
   const { resourceHub, folder } = useLoadedData();
   const navigate = useNavigate();
-  const [post] = useCreateResourceHubDocument();
+  const [post] = documents.useCreate();
   const paths = usePaths();
 
   assertPresent(resourceHub.potentialSubscribers, "potentialSubscribers must be present in resourceHub");

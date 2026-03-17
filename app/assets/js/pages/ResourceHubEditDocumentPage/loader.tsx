@@ -1,5 +1,5 @@
 import * as Pages from "@/components/Pages";
-import { getResourceHubDocument, ResourceHubDocument } from "@/models/resourceHubs";
+import { documents, ResourceHubDocument } from "@/models/resourceHubs";
 
 interface LoaderResult {
   document: ResourceHubDocument;
@@ -7,7 +7,7 @@ interface LoaderResult {
 
 export async function loader({ params }): Promise<LoaderResult> {
   return {
-    document: await getResourceHubDocument({
+    document: await documents.get({
       id: params.id,
       includeSpace: true,
       includeResourceHub: true,

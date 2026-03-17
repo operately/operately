@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-import { ResourceHubDocument, useEditResourceHubDocument, usePublishResourceHubDocument } from "@/models/resourceHubs";
+import { ResourceHubDocument, documents } from "@/models/resourceHubs";
 
 import Forms from "@/components/Forms";
 import { useFormContext } from "@/components/Forms/FormContext";
@@ -15,8 +15,8 @@ import { assertPresent } from "@/utils/assertions";
 export function Form({ document }: { document: ResourceHubDocument }) {
   const paths = usePaths();
   const navigate = useNavigate();
-  const [edit] = useEditResourceHubDocument();
-  const [publish] = usePublishResourceHubDocument();
+  const [edit] = documents.useUpdate();
+  const [publish] = documents.usePublish();
 
   const isDraft = document.state === "draft";
 

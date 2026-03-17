@@ -2285,6 +2285,54 @@ export interface CompaniesListResult {
   companies?: Company[] | null;
 }
 
+export interface DocumentsGetInput {
+  id: Id;
+  includeAuthor?: boolean | null;
+  includeSpace?: boolean | null;
+  includeResourceHub?: boolean | null;
+  includeParentFolder?: boolean | null;
+  includeReactions?: boolean | null;
+  includePermissions?: boolean | null;
+  includeSubscriptionsList?: boolean | null;
+  includePotentialSubscribers?: boolean | null;
+  includeUnreadNotifications?: boolean | null;
+  includePathToDocument?: boolean | null;
+}
+
+export interface DocumentsGetResult {
+  document: ResourceHubDocument;
+}
+
+export interface FilesGetInput {
+  id: Id;
+  includeAuthor?: boolean | null;
+  includeResourceHub?: boolean | null;
+  includeSpace?: boolean | null;
+  includeParentFolder?: boolean | null;
+  includeReactions?: boolean | null;
+  includePermissions?: boolean | null;
+  includeSubscriptionsList?: boolean | null;
+  includePotentialSubscribers?: boolean | null;
+  includePathToFile?: boolean | null;
+}
+
+export interface FilesGetResult {
+  file: ResourceHubFile;
+}
+
+export interface FoldersGetInput {
+  id?: Id | null;
+  includeNodes?: boolean | null;
+  includeResourceHub?: boolean | null;
+  includePathToFolder?: boolean | null;
+  includePermissions?: boolean | null;
+  includePotentialSubscribers?: boolean | null;
+}
+
+export interface FoldersGetResult {
+  folder?: ResourceHubFolder | null;
+}
+
 export interface GetActivitiesInput {
   scopeId: string;
   scopeType: ActivityScopeType;
@@ -2331,84 +2379,6 @@ export interface GetNotificationsInput {
 
 export interface GetNotificationsResult {
   notifications?: Notification[] | null;
-}
-
-export interface GetResourceHubInput {
-  id?: Id | null;
-  includeSpace?: boolean | null;
-  includeNodes?: boolean | null;
-  includePotentialSubscribers?: boolean | null;
-  includePermissions?: boolean | null;
-}
-
-export interface GetResourceHubResult {
-  resourceHub?: ResourceHub | null;
-}
-
-export interface GetResourceHubDocumentInput {
-  id: Id;
-  includeAuthor?: boolean | null;
-  includeSpace?: boolean | null;
-  includeResourceHub?: boolean | null;
-  includeParentFolder?: boolean | null;
-  includeReactions?: boolean | null;
-  includePermissions?: boolean | null;
-  includeSubscriptionsList?: boolean | null;
-  includePotentialSubscribers?: boolean | null;
-  includeUnreadNotifications?: boolean | null;
-  includePathToDocument?: boolean | null;
-}
-
-export interface GetResourceHubDocumentResult {
-  document: ResourceHubDocument;
-}
-
-export interface GetResourceHubFileInput {
-  id: Id;
-  includeAuthor?: boolean | null;
-  includeResourceHub?: boolean | null;
-  includeSpace?: boolean | null;
-  includeParentFolder?: boolean | null;
-  includeReactions?: boolean | null;
-  includePermissions?: boolean | null;
-  includeSubscriptionsList?: boolean | null;
-  includePotentialSubscribers?: boolean | null;
-  includePathToFile?: boolean | null;
-}
-
-export interface GetResourceHubFileResult {
-  file: ResourceHubFile;
-}
-
-export interface GetResourceHubFolderInput {
-  id?: Id | null;
-  includeNodes?: boolean | null;
-  includeResourceHub?: boolean | null;
-  includePathToFolder?: boolean | null;
-  includePermissions?: boolean | null;
-  includePotentialSubscribers?: boolean | null;
-}
-
-export interface GetResourceHubFolderResult {
-  folder?: ResourceHubFolder | null;
-}
-
-export interface GetResourceHubLinkInput {
-  id: Id;
-  includeAuthor?: boolean | null;
-  includeSpace?: boolean | null;
-  includeResourceHub?: boolean | null;
-  includeParentFolder?: boolean | null;
-  includeReactions?: boolean | null;
-  includePermissions?: boolean | null;
-  includeSubscriptionsList?: boolean | null;
-  includePotentialSubscribers?: boolean | null;
-  includeUnreadNotifications?: boolean | null;
-  includePathToLink?: boolean | null;
-}
-
-export interface GetResourceHubLinkResult {
-  link: ResourceHubLink;
 }
 
 export interface GetThemeInput {}
@@ -2576,16 +2546,22 @@ export interface IsSubscribedToResourceResult {
   subscribed: boolean;
 }
 
-export interface ListResourceHubNodesInput {
-  resourceHubId?: Id | null;
-  folderId?: Id | null;
-  includeCommentsCount?: boolean | null;
-  includeChildrenCount?: boolean | null;
+export interface LinksGetInput {
+  id: Id;
+  includeAuthor?: boolean | null;
+  includeSpace?: boolean | null;
+  includeResourceHub?: boolean | null;
+  includeParentFolder?: boolean | null;
+  includeReactions?: boolean | null;
+  includePermissions?: boolean | null;
+  includeSubscriptionsList?: boolean | null;
+  includePotentialSubscribers?: boolean | null;
+  includeUnreadNotifications?: boolean | null;
+  includePathToLink?: boolean | null;
 }
 
-export interface ListResourceHubNodesResult {
-  nodes?: ResourceHubNode[] | null;
-  draftNodes?: ResourceHubNode[] | null;
+export interface LinksGetResult {
+  link: ResourceHubLink;
 }
 
 export interface PeopleGetInput {
@@ -2880,6 +2856,30 @@ export interface ProjectsSearchPotentialContributorsInput {
 
 export interface ProjectsSearchPotentialContributorsResult {
   people?: Person[] | null;
+}
+
+export interface ResourceHubsGetInput {
+  id?: Id | null;
+  includeSpace?: boolean | null;
+  includeNodes?: boolean | null;
+  includePotentialSubscribers?: boolean | null;
+  includePermissions?: boolean | null;
+}
+
+export interface ResourceHubsGetResult {
+  resourceHub?: ResourceHub | null;
+}
+
+export interface ResourceHubsListNodesInput {
+  resourceHubId?: Id | null;
+  folderId?: Id | null;
+  includeCommentsCount?: boolean | null;
+  includeChildrenCount?: boolean | null;
+}
+
+export interface ResourceHubsListNodesResult {
+  nodes?: ResourceHubNode[] | null;
+  draftNodes?: ResourceHubNode[] | null;
 }
 
 export interface SpaceDiscussionsGetInput {
@@ -3321,17 +3321,6 @@ export interface CompleteCompanySetupInput {
 
 export interface CompleteCompanySetupResult {}
 
-export interface CopyResourceHubFolderInput {
-  folderName?: string | null;
-  folderId?: Id | null;
-  destResourceHubId?: Id | null;
-  destParentFolderId?: Id | null;
-}
-
-export interface CopyResourceHubFolderResult {
-  folderId?: Id | null;
-}
-
 export interface CreateAccountInput {
   inviteToken?: string | null;
   code?: string | null;
@@ -3380,20 +3369,13 @@ export interface CreateGoalDiscussionResult {
   id?: string | null;
 }
 
-export interface CreateResourceHubInput {
-  spaceId?: string | null;
-  name?: string | null;
-  description?: string | null;
-  anonymousAccessLevel?: number | null;
-  companyAccessLevel?: number | null;
-  spaceAccessLevel?: number | null;
+export interface DeleteCompanyInput {}
+
+export interface DeleteCompanyResult {
+  success: boolean;
 }
 
-export interface CreateResourceHubResult {
-  resourceHub?: ResourceHub | null;
-}
-
-export interface CreateResourceHubDocumentInput {
+export interface DocumentsCreateInput {
   resourceHubId?: Id | null;
   folderId?: Id | null;
   name?: string | null;
@@ -3404,83 +3386,40 @@ export interface CreateResourceHubDocumentInput {
   copiedDocumentId?: Id | null;
 }
 
-export interface CreateResourceHubDocumentResult {
+export interface DocumentsCreateResult {
   document?: Document | null;
 }
 
-export interface CreateResourceHubFileInput {
-  resourceHubId?: Id | null;
-  folderId?: Id | null;
-  files?: ResourceHubUploadedFile[] | null;
-  sendNotificationsToEveryone?: boolean | null;
-  subscriberIds?: Id[] | null;
-}
-
-export interface CreateResourceHubFileResult {
-  files?: ResourceHubFile[] | null;
-}
-
-export interface CreateResourceHubFolderInput {
-  resourceHubId?: string | null;
-  folderId?: string | null;
-  name?: string | null;
-}
-
-export interface CreateResourceHubFolderResult {
-  folder?: ResourceHubFolder | null;
-}
-
-export interface CreateResourceHubLinkInput {
-  resourceHubId?: Id | null;
-  folderId?: Id | null;
-  name?: string | null;
-  url?: string | null;
-  description?: string | null;
-  type?: string | null;
-  sendNotificationsToEveryone?: boolean | null;
-  subscriberIds?: Id[] | null;
-}
-
-export interface CreateResourceHubLinkResult {
-  link?: ResourceHubLink | null;
-}
-
-export interface DeleteCompanyInput {}
-
-export interface DeleteCompanyResult {
-  success: boolean;
-}
-
-export interface DeleteResourceHubDocumentInput {
+export interface DocumentsDeleteInput {
   documentId?: Id | null;
 }
 
-export interface DeleteResourceHubDocumentResult {
+export interface DocumentsDeleteResult {
   document?: Document | null;
 }
 
-export interface DeleteResourceHubFileInput {
-  fileId?: Id | null;
+export interface DocumentsPublishInput {
+  documentId: Id;
+  name?: string | null;
+  content?: Json | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
 }
 
-export interface DeleteResourceHubFileResult {
-  file?: ResourceHubFile | null;
+export interface DocumentsPublishResult {
+  document?: ResourceHubDocument | null;
 }
 
-export interface DeleteResourceHubFolderInput {
-  folderId?: Id | null;
+export interface DocumentsUpdateInput {
+  documentId: Id;
+  name: string;
+  content: Json;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
 }
 
-export interface DeleteResourceHubFolderResult {
-  success?: boolean | null;
-}
-
-export interface DeleteResourceHubLinkInput {
-  linkId?: Id | null;
-}
-
-export interface DeleteResourceHubLinkResult {
-  success?: boolean | null;
+export interface DocumentsUpdateResult {
+  document?: ResourceHubDocument | null;
 }
 
 export interface EditGoalDiscussionInput {
@@ -3491,50 +3430,6 @@ export interface EditGoalDiscussionInput {
 
 export interface EditGoalDiscussionResult {}
 
-export interface EditParentFolderInResourceHubInput {
-  resourceId?: Id | null;
-  resourceType?: string | null;
-  newFolderId?: Id | null;
-}
-
-export interface EditParentFolderInResourceHubResult {
-  success?: boolean | null;
-}
-
-export interface EditResourceHubDocumentInput {
-  documentId: Id;
-  name: string;
-  content: Json;
-  sendNotificationsToEveryone?: boolean | null;
-  subscriberIds?: Id[] | null;
-}
-
-export interface EditResourceHubDocumentResult {
-  document?: ResourceHubDocument | null;
-}
-
-export interface EditResourceHubFileInput {
-  fileId?: Id | null;
-  name?: string | null;
-  description?: string | null;
-}
-
-export interface EditResourceHubFileResult {
-  file?: ResourceHubFile | null;
-}
-
-export interface EditResourceHubLinkInput {
-  linkId?: Id | null;
-  name?: string | null;
-  type?: string | null;
-  url?: string | null;
-  description?: string | null;
-}
-
-export interface EditResourceHubLinkResult {
-  link?: ResourceHubLink | null;
-}
-
 export interface EditSubscriptionsListInput {
   id?: string | null;
   type?: string | null;
@@ -3543,6 +3438,74 @@ export interface EditSubscriptionsListInput {
 }
 
 export interface EditSubscriptionsListResult {}
+
+export interface FilesCreateInput {
+  resourceHubId?: Id | null;
+  folderId?: Id | null;
+  files?: ResourceHubUploadedFile[] | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
+}
+
+export interface FilesCreateResult {
+  files?: ResourceHubFile[] | null;
+}
+
+export interface FilesDeleteInput {
+  fileId?: Id | null;
+}
+
+export interface FilesDeleteResult {
+  file?: ResourceHubFile | null;
+}
+
+export interface FilesUpdateInput {
+  fileId?: Id | null;
+  name?: string | null;
+  description?: string | null;
+}
+
+export interface FilesUpdateResult {
+  file?: ResourceHubFile | null;
+}
+
+export interface FoldersCopyInput {
+  folderName?: string | null;
+  folderId?: Id | null;
+  destResourceHubId?: Id | null;
+  destParentFolderId?: Id | null;
+}
+
+export interface FoldersCopyResult {
+  folderId?: Id | null;
+}
+
+export interface FoldersCreateInput {
+  resourceHubId?: string | null;
+  folderId?: string | null;
+  name?: string | null;
+}
+
+export interface FoldersCreateResult {
+  folder?: ResourceHubFolder | null;
+}
+
+export interface FoldersDeleteInput {
+  folderId?: Id | null;
+}
+
+export interface FoldersDeleteResult {
+  success?: boolean | null;
+}
+
+export interface FoldersRenameInput {
+  folderId?: Id | null;
+  newName?: string | null;
+}
+
+export interface FoldersRenameResult {
+  success?: boolean | null;
+}
 
 export interface GoalCheckInsAcknowledgeInput {
   id?: string | null;
@@ -3917,6 +3880,41 @@ export interface JoinCompanyInput {
 
 export interface JoinCompanyResult {
   result: string;
+}
+
+export interface LinksCreateInput {
+  resourceHubId?: Id | null;
+  folderId?: Id | null;
+  name?: string | null;
+  url?: string | null;
+  description?: string | null;
+  type?: string | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
+}
+
+export interface LinksCreateResult {
+  link?: ResourceHubLink | null;
+}
+
+export interface LinksDeleteInput {
+  linkId?: Id | null;
+}
+
+export interface LinksDeleteResult {
+  success?: boolean | null;
+}
+
+export interface LinksUpdateInput {
+  linkId?: Id | null;
+  name?: string | null;
+  type?: string | null;
+  url?: string | null;
+  description?: string | null;
+}
+
+export interface LinksUpdateResult {
+  link?: ResourceHubLink | null;
 }
 
 export interface MarkAllNotificationsAsReadInput {}
@@ -4343,18 +4341,6 @@ export interface ProjectsUpdateTaskStatusesResult {
   success: boolean | null;
 }
 
-export interface PublishResourceHubDocumentInput {
-  documentId: Id;
-  name?: string | null;
-  content?: Json | null;
-  sendNotificationsToEveryone?: boolean | null;
-  subscriberIds?: Id[] | null;
-}
-
-export interface PublishResourceHubDocumentResult {
-  document?: ResourceHubDocument | null;
-}
-
 export interface ReactionsCreateInput {
   entityId: Id;
   entityType: ReactionEntityType;
@@ -4374,15 +4360,6 @@ export interface ReactionsDeleteResult {
   success: boolean;
 }
 
-export interface RenameResourceHubFolderInput {
-  folderId?: Id | null;
-  newName?: string | null;
-}
-
-export interface RenameResourceHubFolderResult {
-  success?: boolean | null;
-}
-
 export interface RequestPasswordResetInput {
   email?: string | null;
 }
@@ -4397,6 +4374,29 @@ export interface ResetPasswordInput {
 }
 
 export interface ResetPasswordResult {}
+
+export interface ResourceHubsCreateInput {
+  spaceId?: string | null;
+  name?: string | null;
+  description?: string | null;
+  anonymousAccessLevel?: number | null;
+  companyAccessLevel?: number | null;
+  spaceAccessLevel?: number | null;
+}
+
+export interface ResourceHubsCreateResult {
+  resourceHub?: ResourceHub | null;
+}
+
+export interface ResourceHubsUpdateParentFolderInput {
+  resourceId?: Id | null;
+  resourceType?: string | null;
+  newFolderId?: Id | null;
+}
+
+export interface ResourceHubsUpdateParentFolderResult {
+  success?: boolean | null;
+}
 
 export interface SpaceDiscussionsArchiveInput {
   messageId?: Id | null;
@@ -4823,26 +4823,6 @@ class ApiNamespaceRoot {
     return this.client.get("/get_notifications", input);
   }
 
-  async getResourceHub(input: GetResourceHubInput): Promise<GetResourceHubResult> {
-    return this.client.get("/get_resource_hub", input);
-  }
-
-  async getResourceHubDocument(input: GetResourceHubDocumentInput): Promise<GetResourceHubDocumentResult> {
-    return this.client.get("/get_resource_hub_document", input);
-  }
-
-  async getResourceHubFile(input: GetResourceHubFileInput): Promise<GetResourceHubFileResult> {
-    return this.client.get("/get_resource_hub_file", input);
-  }
-
-  async getResourceHubFolder(input: GetResourceHubFolderInput): Promise<GetResourceHubFolderResult> {
-    return this.client.get("/get_resource_hub_folder", input);
-  }
-
-  async getResourceHubLink(input: GetResourceHubLinkInput): Promise<GetResourceHubLinkResult> {
-    return this.client.get("/get_resource_hub_link", input);
-  }
-
   async getTheme(input: GetThemeInput): Promise<GetThemeResult> {
     return this.client.get("/get_theme", input);
   }
@@ -4861,10 +4841,6 @@ class ApiNamespaceRoot {
 
   async isSubscribedToResource(input: IsSubscribedToResourceInput): Promise<IsSubscribedToResourceResult> {
     return this.client.get("/is_subscribed_to_resource", input);
-  }
-
-  async listResourceHubNodes(input: ListResourceHubNodesInput): Promise<ListResourceHubNodesResult> {
-    return this.client.get("/list_resource_hub_nodes", input);
   }
 
   async addCompanyOwners(input: AddCompanyOwnersInput): Promise<AddCompanyOwnersResult> {
@@ -4889,10 +4865,6 @@ class ApiNamespaceRoot {
     return this.client.post("/complete_company_setup", input);
   }
 
-  async copyResourceHubFolder(input: CopyResourceHubFolderInput): Promise<CopyResourceHubFolderResult> {
-    return this.client.post("/copy_resource_hub_folder", input);
-  }
-
   async createAccount(input: CreateAccountInput): Promise<CreateAccountResult> {
     return this.client.post("/create_account", input);
   }
@@ -4913,66 +4885,12 @@ class ApiNamespaceRoot {
     return this.client.post("/create_goal_discussion", input);
   }
 
-  async createResourceHub(input: CreateResourceHubInput): Promise<CreateResourceHubResult> {
-    return this.client.post("/create_resource_hub", input);
-  }
-
-  async createResourceHubDocument(input: CreateResourceHubDocumentInput): Promise<CreateResourceHubDocumentResult> {
-    return this.client.post("/create_resource_hub_document", input);
-  }
-
-  async createResourceHubFile(input: CreateResourceHubFileInput): Promise<CreateResourceHubFileResult> {
-    return this.client.post("/create_resource_hub_file", input);
-  }
-
-  async createResourceHubFolder(input: CreateResourceHubFolderInput): Promise<CreateResourceHubFolderResult> {
-    return this.client.post("/create_resource_hub_folder", input);
-  }
-
-  async createResourceHubLink(input: CreateResourceHubLinkInput): Promise<CreateResourceHubLinkResult> {
-    return this.client.post("/create_resource_hub_link", input);
-  }
-
   async deleteCompany(input: DeleteCompanyInput): Promise<DeleteCompanyResult> {
     return this.client.post("/delete_company", input);
   }
 
-  async deleteResourceHubDocument(input: DeleteResourceHubDocumentInput): Promise<DeleteResourceHubDocumentResult> {
-    return this.client.post("/delete_resource_hub_document", input);
-  }
-
-  async deleteResourceHubFile(input: DeleteResourceHubFileInput): Promise<DeleteResourceHubFileResult> {
-    return this.client.post("/delete_resource_hub_file", input);
-  }
-
-  async deleteResourceHubFolder(input: DeleteResourceHubFolderInput): Promise<DeleteResourceHubFolderResult> {
-    return this.client.post("/delete_resource_hub_folder", input);
-  }
-
-  async deleteResourceHubLink(input: DeleteResourceHubLinkInput): Promise<DeleteResourceHubLinkResult> {
-    return this.client.post("/delete_resource_hub_link", input);
-  }
-
   async editGoalDiscussion(input: EditGoalDiscussionInput): Promise<EditGoalDiscussionResult> {
     return this.client.post("/edit_goal_discussion", input);
-  }
-
-  async editParentFolderInResourceHub(
-    input: EditParentFolderInResourceHubInput,
-  ): Promise<EditParentFolderInResourceHubResult> {
-    return this.client.post("/edit_parent_folder_in_resource_hub", input);
-  }
-
-  async editResourceHubDocument(input: EditResourceHubDocumentInput): Promise<EditResourceHubDocumentResult> {
-    return this.client.post("/edit_resource_hub_document", input);
-  }
-
-  async editResourceHubFile(input: EditResourceHubFileInput): Promise<EditResourceHubFileResult> {
-    return this.client.post("/edit_resource_hub_file", input);
-  }
-
-  async editResourceHubLink(input: EditResourceHubLinkInput): Promise<EditResourceHubLinkResult> {
-    return this.client.post("/edit_resource_hub_link", input);
   }
 
   async editSubscriptionsList(input: EditSubscriptionsListInput): Promise<EditSubscriptionsListResult> {
@@ -5003,14 +4921,6 @@ class ApiNamespaceRoot {
     return this.client.post("/mark_notifications_as_read", input);
   }
 
-  async publishResourceHubDocument(input: PublishResourceHubDocumentInput): Promise<PublishResourceHubDocumentResult> {
-    return this.client.post("/publish_resource_hub_document", input);
-  }
-
-  async renameResourceHubFolder(input: RenameResourceHubFolderInput): Promise<RenameResourceHubFolderResult> {
-    return this.client.post("/rename_resource_hub_folder", input);
-  }
-
   async requestPasswordReset(input: RequestPasswordResetInput): Promise<RequestPasswordResetResult> {
     return this.client.post("/request_password_reset", input);
   }
@@ -5027,6 +4937,114 @@ class ApiNamespaceRoot {
     input: UnsubscribeFromNotificationsInput,
   ): Promise<UnsubscribeFromNotificationsResult> {
     return this.client.post("/unsubscribe_from_notifications", input);
+  }
+}
+
+class ApiNamespaceFolders {
+  constructor(private client: ApiClient) {}
+
+  async get(input: FoldersGetInput): Promise<FoldersGetResult> {
+    return this.client.get("/folders/get", input);
+  }
+
+  async copy(input: FoldersCopyInput): Promise<FoldersCopyResult> {
+    return this.client.post("/folders/copy", input);
+  }
+
+  async create(input: FoldersCreateInput): Promise<FoldersCreateResult> {
+    return this.client.post("/folders/create", input);
+  }
+
+  async delete(input: FoldersDeleteInput): Promise<FoldersDeleteResult> {
+    return this.client.post("/folders/delete", input);
+  }
+
+  async rename(input: FoldersRenameInput): Promise<FoldersRenameResult> {
+    return this.client.post("/folders/rename", input);
+  }
+}
+
+class ApiNamespaceLinks {
+  constructor(private client: ApiClient) {}
+
+  async get(input: LinksGetInput): Promise<LinksGetResult> {
+    return this.client.get("/links/get", input);
+  }
+
+  async create(input: LinksCreateInput): Promise<LinksCreateResult> {
+    return this.client.post("/links/create", input);
+  }
+
+  async delete(input: LinksDeleteInput): Promise<LinksDeleteResult> {
+    return this.client.post("/links/delete", input);
+  }
+
+  async update(input: LinksUpdateInput): Promise<LinksUpdateResult> {
+    return this.client.post("/links/update", input);
+  }
+}
+
+class ApiNamespaceFiles {
+  constructor(private client: ApiClient) {}
+
+  async get(input: FilesGetInput): Promise<FilesGetResult> {
+    return this.client.get("/files/get", input);
+  }
+
+  async create(input: FilesCreateInput): Promise<FilesCreateResult> {
+    return this.client.post("/files/create", input);
+  }
+
+  async delete(input: FilesDeleteInput): Promise<FilesDeleteResult> {
+    return this.client.post("/files/delete", input);
+  }
+
+  async update(input: FilesUpdateInput): Promise<FilesUpdateResult> {
+    return this.client.post("/files/update", input);
+  }
+}
+
+class ApiNamespaceDocuments {
+  constructor(private client: ApiClient) {}
+
+  async get(input: DocumentsGetInput): Promise<DocumentsGetResult> {
+    return this.client.get("/documents/get", input);
+  }
+
+  async create(input: DocumentsCreateInput): Promise<DocumentsCreateResult> {
+    return this.client.post("/documents/create", input);
+  }
+
+  async delete(input: DocumentsDeleteInput): Promise<DocumentsDeleteResult> {
+    return this.client.post("/documents/delete", input);
+  }
+
+  async publish(input: DocumentsPublishInput): Promise<DocumentsPublishResult> {
+    return this.client.post("/documents/publish", input);
+  }
+
+  async update(input: DocumentsUpdateInput): Promise<DocumentsUpdateResult> {
+    return this.client.post("/documents/update", input);
+  }
+}
+
+class ApiNamespaceResourceHubs {
+  constructor(private client: ApiClient) {}
+
+  async get(input: ResourceHubsGetInput): Promise<ResourceHubsGetResult> {
+    return this.client.get("/resource_hubs/get", input);
+  }
+
+  async listNodes(input: ResourceHubsListNodesInput): Promise<ResourceHubsListNodesResult> {
+    return this.client.get("/resource_hubs/list_nodes", input);
+  }
+
+  async create(input: ResourceHubsCreateInput): Promise<ResourceHubsCreateResult> {
+    return this.client.post("/resource_hubs/create", input);
+  }
+
+  async updateParentFolder(input: ResourceHubsUpdateParentFolderInput): Promise<ResourceHubsUpdateParentFolderResult> {
+    return this.client.post("/resource_hubs/update_parent_folder", input);
   }
 }
 
@@ -5749,6 +5767,11 @@ export class ApiClient {
   public apiNamespaceInvitations: ApiNamespaceInvitations;
   public apiNamespaceAi: ApiNamespaceAi;
   public apiNamespaceRoot: ApiNamespaceRoot;
+  public apiNamespaceFolders: ApiNamespaceFolders;
+  public apiNamespaceLinks: ApiNamespaceLinks;
+  public apiNamespaceFiles: ApiNamespaceFiles;
+  public apiNamespaceDocuments: ApiNamespaceDocuments;
+  public apiNamespaceResourceHubs: ApiNamespaceResourceHubs;
   public apiNamespaceComments: ApiNamespaceComments;
   public apiNamespaceCompanies: ApiNamespaceCompanies;
   public apiNamespacePeople: ApiNamespacePeople;
@@ -5768,6 +5791,11 @@ export class ApiClient {
     this.apiNamespaceInvitations = new ApiNamespaceInvitations(this);
     this.apiNamespaceAi = new ApiNamespaceAi(this);
     this.apiNamespaceRoot = new ApiNamespaceRoot(this);
+    this.apiNamespaceFolders = new ApiNamespaceFolders(this);
+    this.apiNamespaceLinks = new ApiNamespaceLinks(this);
+    this.apiNamespaceFiles = new ApiNamespaceFiles(this);
+    this.apiNamespaceDocuments = new ApiNamespaceDocuments(this);
+    this.apiNamespaceResourceHubs = new ApiNamespaceResourceHubs(this);
     this.apiNamespaceComments = new ApiNamespaceComments(this);
     this.apiNamespaceCompanies = new ApiNamespaceCompanies(this);
     this.apiNamespacePeople = new ApiNamespacePeople(this);
@@ -5831,26 +5859,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.getNotifications(input);
   }
 
-  getResourceHub(input: GetResourceHubInput): Promise<GetResourceHubResult> {
-    return this.apiNamespaceRoot.getResourceHub(input);
-  }
-
-  getResourceHubDocument(input: GetResourceHubDocumentInput): Promise<GetResourceHubDocumentResult> {
-    return this.apiNamespaceRoot.getResourceHubDocument(input);
-  }
-
-  getResourceHubFile(input: GetResourceHubFileInput): Promise<GetResourceHubFileResult> {
-    return this.apiNamespaceRoot.getResourceHubFile(input);
-  }
-
-  getResourceHubFolder(input: GetResourceHubFolderInput): Promise<GetResourceHubFolderResult> {
-    return this.apiNamespaceRoot.getResourceHubFolder(input);
-  }
-
-  getResourceHubLink(input: GetResourceHubLinkInput): Promise<GetResourceHubLinkResult> {
-    return this.apiNamespaceRoot.getResourceHubLink(input);
-  }
-
   getTheme(input: GetThemeInput): Promise<GetThemeResult> {
     return this.apiNamespaceRoot.getTheme(input);
   }
@@ -5869,10 +5877,6 @@ export class ApiClient {
 
   isSubscribedToResource(input: IsSubscribedToResourceInput): Promise<IsSubscribedToResourceResult> {
     return this.apiNamespaceRoot.isSubscribedToResource(input);
-  }
-
-  listResourceHubNodes(input: ListResourceHubNodesInput): Promise<ListResourceHubNodesResult> {
-    return this.apiNamespaceRoot.listResourceHubNodes(input);
   }
 
   addCompanyOwners(input: AddCompanyOwnersInput): Promise<AddCompanyOwnersResult> {
@@ -5895,10 +5899,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.completeCompanySetup(input);
   }
 
-  copyResourceHubFolder(input: CopyResourceHubFolderInput): Promise<CopyResourceHubFolderResult> {
-    return this.apiNamespaceRoot.copyResourceHubFolder(input);
-  }
-
   createAccount(input: CreateAccountInput): Promise<CreateAccountResult> {
     return this.apiNamespaceRoot.createAccount(input);
   }
@@ -5919,66 +5919,12 @@ export class ApiClient {
     return this.apiNamespaceRoot.createGoalDiscussion(input);
   }
 
-  createResourceHub(input: CreateResourceHubInput): Promise<CreateResourceHubResult> {
-    return this.apiNamespaceRoot.createResourceHub(input);
-  }
-
-  createResourceHubDocument(input: CreateResourceHubDocumentInput): Promise<CreateResourceHubDocumentResult> {
-    return this.apiNamespaceRoot.createResourceHubDocument(input);
-  }
-
-  createResourceHubFile(input: CreateResourceHubFileInput): Promise<CreateResourceHubFileResult> {
-    return this.apiNamespaceRoot.createResourceHubFile(input);
-  }
-
-  createResourceHubFolder(input: CreateResourceHubFolderInput): Promise<CreateResourceHubFolderResult> {
-    return this.apiNamespaceRoot.createResourceHubFolder(input);
-  }
-
-  createResourceHubLink(input: CreateResourceHubLinkInput): Promise<CreateResourceHubLinkResult> {
-    return this.apiNamespaceRoot.createResourceHubLink(input);
-  }
-
   deleteCompany(input: DeleteCompanyInput): Promise<DeleteCompanyResult> {
     return this.apiNamespaceRoot.deleteCompany(input);
   }
 
-  deleteResourceHubDocument(input: DeleteResourceHubDocumentInput): Promise<DeleteResourceHubDocumentResult> {
-    return this.apiNamespaceRoot.deleteResourceHubDocument(input);
-  }
-
-  deleteResourceHubFile(input: DeleteResourceHubFileInput): Promise<DeleteResourceHubFileResult> {
-    return this.apiNamespaceRoot.deleteResourceHubFile(input);
-  }
-
-  deleteResourceHubFolder(input: DeleteResourceHubFolderInput): Promise<DeleteResourceHubFolderResult> {
-    return this.apiNamespaceRoot.deleteResourceHubFolder(input);
-  }
-
-  deleteResourceHubLink(input: DeleteResourceHubLinkInput): Promise<DeleteResourceHubLinkResult> {
-    return this.apiNamespaceRoot.deleteResourceHubLink(input);
-  }
-
   editGoalDiscussion(input: EditGoalDiscussionInput): Promise<EditGoalDiscussionResult> {
     return this.apiNamespaceRoot.editGoalDiscussion(input);
-  }
-
-  editParentFolderInResourceHub(
-    input: EditParentFolderInResourceHubInput,
-  ): Promise<EditParentFolderInResourceHubResult> {
-    return this.apiNamespaceRoot.editParentFolderInResourceHub(input);
-  }
-
-  editResourceHubDocument(input: EditResourceHubDocumentInput): Promise<EditResourceHubDocumentResult> {
-    return this.apiNamespaceRoot.editResourceHubDocument(input);
-  }
-
-  editResourceHubFile(input: EditResourceHubFileInput): Promise<EditResourceHubFileResult> {
-    return this.apiNamespaceRoot.editResourceHubFile(input);
-  }
-
-  editResourceHubLink(input: EditResourceHubLinkInput): Promise<EditResourceHubLinkResult> {
-    return this.apiNamespaceRoot.editResourceHubLink(input);
   }
 
   editSubscriptionsList(input: EditSubscriptionsListInput): Promise<EditSubscriptionsListResult> {
@@ -6007,14 +5953,6 @@ export class ApiClient {
 
   markNotificationsAsRead(input: MarkNotificationsAsReadInput): Promise<MarkNotificationsAsReadResult> {
     return this.apiNamespaceRoot.markNotificationsAsRead(input);
-  }
-
-  publishResourceHubDocument(input: PublishResourceHubDocumentInput): Promise<PublishResourceHubDocumentResult> {
-    return this.apiNamespaceRoot.publishResourceHubDocument(input);
-  }
-
-  renameResourceHubFolder(input: RenameResourceHubFolderInput): Promise<RenameResourceHubFolderResult> {
-    return this.apiNamespaceRoot.renameResourceHubFolder(input);
   }
 
   requestPasswordReset(input: RequestPasswordResetInput): Promise<RequestPasswordResetResult> {
@@ -6048,23 +5986,6 @@ export async function getFlatWorkMap(input: GetFlatWorkMapInput): Promise<GetFla
 export async function getNotifications(input: GetNotificationsInput): Promise<GetNotificationsResult> {
   return defaultApiClient.getNotifications(input);
 }
-export async function getResourceHub(input: GetResourceHubInput): Promise<GetResourceHubResult> {
-  return defaultApiClient.getResourceHub(input);
-}
-export async function getResourceHubDocument(
-  input: GetResourceHubDocumentInput,
-): Promise<GetResourceHubDocumentResult> {
-  return defaultApiClient.getResourceHubDocument(input);
-}
-export async function getResourceHubFile(input: GetResourceHubFileInput): Promise<GetResourceHubFileResult> {
-  return defaultApiClient.getResourceHubFile(input);
-}
-export async function getResourceHubFolder(input: GetResourceHubFolderInput): Promise<GetResourceHubFolderResult> {
-  return defaultApiClient.getResourceHubFolder(input);
-}
-export async function getResourceHubLink(input: GetResourceHubLinkInput): Promise<GetResourceHubLinkResult> {
-  return defaultApiClient.getResourceHubLink(input);
-}
 export async function getTheme(input: GetThemeInput): Promise<GetThemeResult> {
   return defaultApiClient.getTheme(input);
 }
@@ -6084,9 +6005,6 @@ export async function isSubscribedToResource(
 ): Promise<IsSubscribedToResourceResult> {
   return defaultApiClient.isSubscribedToResource(input);
 }
-export async function listResourceHubNodes(input: ListResourceHubNodesInput): Promise<ListResourceHubNodesResult> {
-  return defaultApiClient.listResourceHubNodes(input);
-}
 export async function addCompanyOwners(input: AddCompanyOwnersInput): Promise<AddCompanyOwnersResult> {
   return defaultApiClient.addCompanyOwners(input);
 }
@@ -6103,9 +6021,6 @@ export async function changePassword(input: ChangePasswordInput): Promise<Change
 }
 export async function completeCompanySetup(input: CompleteCompanySetupInput): Promise<CompleteCompanySetupResult> {
   return defaultApiClient.completeCompanySetup(input);
-}
-export async function copyResourceHubFolder(input: CopyResourceHubFolderInput): Promise<CopyResourceHubFolderResult> {
-  return defaultApiClient.copyResourceHubFolder(input);
 }
 export async function createAccount(input: CreateAccountInput): Promise<CreateAccountResult> {
   return defaultApiClient.createAccount(input);
@@ -6124,62 +6039,11 @@ export async function createEmailActivationCode(
 export async function createGoalDiscussion(input: CreateGoalDiscussionInput): Promise<CreateGoalDiscussionResult> {
   return defaultApiClient.createGoalDiscussion(input);
 }
-export async function createResourceHub(input: CreateResourceHubInput): Promise<CreateResourceHubResult> {
-  return defaultApiClient.createResourceHub(input);
-}
-export async function createResourceHubDocument(
-  input: CreateResourceHubDocumentInput,
-): Promise<CreateResourceHubDocumentResult> {
-  return defaultApiClient.createResourceHubDocument(input);
-}
-export async function createResourceHubFile(input: CreateResourceHubFileInput): Promise<CreateResourceHubFileResult> {
-  return defaultApiClient.createResourceHubFile(input);
-}
-export async function createResourceHubFolder(
-  input: CreateResourceHubFolderInput,
-): Promise<CreateResourceHubFolderResult> {
-  return defaultApiClient.createResourceHubFolder(input);
-}
-export async function createResourceHubLink(input: CreateResourceHubLinkInput): Promise<CreateResourceHubLinkResult> {
-  return defaultApiClient.createResourceHubLink(input);
-}
 export async function deleteCompany(input: DeleteCompanyInput): Promise<DeleteCompanyResult> {
   return defaultApiClient.deleteCompany(input);
 }
-export async function deleteResourceHubDocument(
-  input: DeleteResourceHubDocumentInput,
-): Promise<DeleteResourceHubDocumentResult> {
-  return defaultApiClient.deleteResourceHubDocument(input);
-}
-export async function deleteResourceHubFile(input: DeleteResourceHubFileInput): Promise<DeleteResourceHubFileResult> {
-  return defaultApiClient.deleteResourceHubFile(input);
-}
-export async function deleteResourceHubFolder(
-  input: DeleteResourceHubFolderInput,
-): Promise<DeleteResourceHubFolderResult> {
-  return defaultApiClient.deleteResourceHubFolder(input);
-}
-export async function deleteResourceHubLink(input: DeleteResourceHubLinkInput): Promise<DeleteResourceHubLinkResult> {
-  return defaultApiClient.deleteResourceHubLink(input);
-}
 export async function editGoalDiscussion(input: EditGoalDiscussionInput): Promise<EditGoalDiscussionResult> {
   return defaultApiClient.editGoalDiscussion(input);
-}
-export async function editParentFolderInResourceHub(
-  input: EditParentFolderInResourceHubInput,
-): Promise<EditParentFolderInResourceHubResult> {
-  return defaultApiClient.editParentFolderInResourceHub(input);
-}
-export async function editResourceHubDocument(
-  input: EditResourceHubDocumentInput,
-): Promise<EditResourceHubDocumentResult> {
-  return defaultApiClient.editResourceHubDocument(input);
-}
-export async function editResourceHubFile(input: EditResourceHubFileInput): Promise<EditResourceHubFileResult> {
-  return defaultApiClient.editResourceHubFile(input);
-}
-export async function editResourceHubLink(input: EditResourceHubLinkInput): Promise<EditResourceHubLinkResult> {
-  return defaultApiClient.editResourceHubLink(input);
 }
 export async function editSubscriptionsList(input: EditSubscriptionsListInput): Promise<EditSubscriptionsListResult> {
   return defaultApiClient.editSubscriptionsList(input);
@@ -6207,16 +6071,6 @@ export async function markNotificationsAsRead(
   input: MarkNotificationsAsReadInput,
 ): Promise<MarkNotificationsAsReadResult> {
   return defaultApiClient.markNotificationsAsRead(input);
-}
-export async function publishResourceHubDocument(
-  input: PublishResourceHubDocumentInput,
-): Promise<PublishResourceHubDocumentResult> {
-  return defaultApiClient.publishResourceHubDocument(input);
-}
-export async function renameResourceHubFolder(
-  input: RenameResourceHubFolderInput,
-): Promise<RenameResourceHubFolderResult> {
-  return defaultApiClient.renameResourceHubFolder(input);
 }
 export async function requestPasswordReset(input: RequestPasswordResetInput): Promise<RequestPasswordResetResult> {
   return defaultApiClient.requestPasswordReset(input);
@@ -6251,30 +6105,6 @@ export function useGetNotifications(input: GetNotificationsInput): UseQueryHookR
   return useQuery<GetNotificationsResult>(() => defaultApiClient.getNotifications(input));
 }
 
-export function useGetResourceHub(input: GetResourceHubInput): UseQueryHookResult<GetResourceHubResult> {
-  return useQuery<GetResourceHubResult>(() => defaultApiClient.getResourceHub(input));
-}
-
-export function useGetResourceHubDocument(
-  input: GetResourceHubDocumentInput,
-): UseQueryHookResult<GetResourceHubDocumentResult> {
-  return useQuery<GetResourceHubDocumentResult>(() => defaultApiClient.getResourceHubDocument(input));
-}
-
-export function useGetResourceHubFile(input: GetResourceHubFileInput): UseQueryHookResult<GetResourceHubFileResult> {
-  return useQuery<GetResourceHubFileResult>(() => defaultApiClient.getResourceHubFile(input));
-}
-
-export function useGetResourceHubFolder(
-  input: GetResourceHubFolderInput,
-): UseQueryHookResult<GetResourceHubFolderResult> {
-  return useQuery<GetResourceHubFolderResult>(() => defaultApiClient.getResourceHubFolder(input));
-}
-
-export function useGetResourceHubLink(input: GetResourceHubLinkInput): UseQueryHookResult<GetResourceHubLinkResult> {
-  return useQuery<GetResourceHubLinkResult>(() => defaultApiClient.getResourceHubLink(input));
-}
-
 export function useGetTheme(input: GetThemeInput): UseQueryHookResult<GetThemeResult> {
   return useQuery<GetThemeResult>(() => defaultApiClient.getTheme(input));
 }
@@ -6297,12 +6127,6 @@ export function useIsSubscribedToResource(
   input: IsSubscribedToResourceInput,
 ): UseQueryHookResult<IsSubscribedToResourceResult> {
   return useQuery<IsSubscribedToResourceResult>(() => defaultApiClient.isSubscribedToResource(input));
-}
-
-export function useListResourceHubNodes(
-  input: ListResourceHubNodesInput,
-): UseQueryHookResult<ListResourceHubNodesResult> {
-  return useQuery<ListResourceHubNodesResult>(() => defaultApiClient.listResourceHubNodes(input));
 }
 
 export function useAddCompanyOwners(): UseMutationHookResult<AddCompanyOwnersInput, AddCompanyOwnersResult> {
@@ -6334,15 +6158,6 @@ export function useCompleteCompanySetup(): UseMutationHookResult<
 > {
   return useMutation<CompleteCompanySetupInput, CompleteCompanySetupResult>((input) =>
     defaultApiClient.completeCompanySetup(input),
-  );
-}
-
-export function useCopyResourceHubFolder(): UseMutationHookResult<
-  CopyResourceHubFolderInput,
-  CopyResourceHubFolderResult
-> {
-  return useMutation<CopyResourceHubFolderInput, CopyResourceHubFolderResult>((input) =>
-    defaultApiClient.copyResourceHubFolder(input),
   );
 }
 
@@ -6378,121 +6193,13 @@ export function useCreateGoalDiscussion(): UseMutationHookResult<
   );
 }
 
-export function useCreateResourceHub(): UseMutationHookResult<CreateResourceHubInput, CreateResourceHubResult> {
-  return useMutation<CreateResourceHubInput, CreateResourceHubResult>((input) =>
-    defaultApiClient.createResourceHub(input),
-  );
-}
-
-export function useCreateResourceHubDocument(): UseMutationHookResult<
-  CreateResourceHubDocumentInput,
-  CreateResourceHubDocumentResult
-> {
-  return useMutation<CreateResourceHubDocumentInput, CreateResourceHubDocumentResult>((input) =>
-    defaultApiClient.createResourceHubDocument(input),
-  );
-}
-
-export function useCreateResourceHubFile(): UseMutationHookResult<
-  CreateResourceHubFileInput,
-  CreateResourceHubFileResult
-> {
-  return useMutation<CreateResourceHubFileInput, CreateResourceHubFileResult>((input) =>
-    defaultApiClient.createResourceHubFile(input),
-  );
-}
-
-export function useCreateResourceHubFolder(): UseMutationHookResult<
-  CreateResourceHubFolderInput,
-  CreateResourceHubFolderResult
-> {
-  return useMutation<CreateResourceHubFolderInput, CreateResourceHubFolderResult>((input) =>
-    defaultApiClient.createResourceHubFolder(input),
-  );
-}
-
-export function useCreateResourceHubLink(): UseMutationHookResult<
-  CreateResourceHubLinkInput,
-  CreateResourceHubLinkResult
-> {
-  return useMutation<CreateResourceHubLinkInput, CreateResourceHubLinkResult>((input) =>
-    defaultApiClient.createResourceHubLink(input),
-  );
-}
-
 export function useDeleteCompany(): UseMutationHookResult<DeleteCompanyInput, DeleteCompanyResult> {
   return useMutation<DeleteCompanyInput, DeleteCompanyResult>((input) => defaultApiClient.deleteCompany(input));
-}
-
-export function useDeleteResourceHubDocument(): UseMutationHookResult<
-  DeleteResourceHubDocumentInput,
-  DeleteResourceHubDocumentResult
-> {
-  return useMutation<DeleteResourceHubDocumentInput, DeleteResourceHubDocumentResult>((input) =>
-    defaultApiClient.deleteResourceHubDocument(input),
-  );
-}
-
-export function useDeleteResourceHubFile(): UseMutationHookResult<
-  DeleteResourceHubFileInput,
-  DeleteResourceHubFileResult
-> {
-  return useMutation<DeleteResourceHubFileInput, DeleteResourceHubFileResult>((input) =>
-    defaultApiClient.deleteResourceHubFile(input),
-  );
-}
-
-export function useDeleteResourceHubFolder(): UseMutationHookResult<
-  DeleteResourceHubFolderInput,
-  DeleteResourceHubFolderResult
-> {
-  return useMutation<DeleteResourceHubFolderInput, DeleteResourceHubFolderResult>((input) =>
-    defaultApiClient.deleteResourceHubFolder(input),
-  );
-}
-
-export function useDeleteResourceHubLink(): UseMutationHookResult<
-  DeleteResourceHubLinkInput,
-  DeleteResourceHubLinkResult
-> {
-  return useMutation<DeleteResourceHubLinkInput, DeleteResourceHubLinkResult>((input) =>
-    defaultApiClient.deleteResourceHubLink(input),
-  );
 }
 
 export function useEditGoalDiscussion(): UseMutationHookResult<EditGoalDiscussionInput, EditGoalDiscussionResult> {
   return useMutation<EditGoalDiscussionInput, EditGoalDiscussionResult>((input) =>
     defaultApiClient.editGoalDiscussion(input),
-  );
-}
-
-export function useEditParentFolderInResourceHub(): UseMutationHookResult<
-  EditParentFolderInResourceHubInput,
-  EditParentFolderInResourceHubResult
-> {
-  return useMutation<EditParentFolderInResourceHubInput, EditParentFolderInResourceHubResult>((input) =>
-    defaultApiClient.editParentFolderInResourceHub(input),
-  );
-}
-
-export function useEditResourceHubDocument(): UseMutationHookResult<
-  EditResourceHubDocumentInput,
-  EditResourceHubDocumentResult
-> {
-  return useMutation<EditResourceHubDocumentInput, EditResourceHubDocumentResult>((input) =>
-    defaultApiClient.editResourceHubDocument(input),
-  );
-}
-
-export function useEditResourceHubFile(): UseMutationHookResult<EditResourceHubFileInput, EditResourceHubFileResult> {
-  return useMutation<EditResourceHubFileInput, EditResourceHubFileResult>((input) =>
-    defaultApiClient.editResourceHubFile(input),
-  );
-}
-
-export function useEditResourceHubLink(): UseMutationHookResult<EditResourceHubLinkInput, EditResourceHubLinkResult> {
-  return useMutation<EditResourceHubLinkInput, EditResourceHubLinkResult>((input) =>
-    defaultApiClient.editResourceHubLink(input),
   );
 }
 
@@ -6546,24 +6253,6 @@ export function useMarkNotificationsAsRead(): UseMutationHookResult<
   );
 }
 
-export function usePublishResourceHubDocument(): UseMutationHookResult<
-  PublishResourceHubDocumentInput,
-  PublishResourceHubDocumentResult
-> {
-  return useMutation<PublishResourceHubDocumentInput, PublishResourceHubDocumentResult>((input) =>
-    defaultApiClient.publishResourceHubDocument(input),
-  );
-}
-
-export function useRenameResourceHubFolder(): UseMutationHookResult<
-  RenameResourceHubFolderInput,
-  RenameResourceHubFolderResult
-> {
-  return useMutation<RenameResourceHubFolderInput, RenameResourceHubFolderResult>((input) =>
-    defaultApiClient.renameResourceHubFolder(input),
-  );
-}
-
 export function useRequestPasswordReset(): UseMutationHookResult<
   RequestPasswordResetInput,
   RequestPasswordResetResult
@@ -6606,16 +6295,6 @@ export default {
   useGetFlatWorkMap,
   getNotifications,
   useGetNotifications,
-  getResourceHub,
-  useGetResourceHub,
-  getResourceHubDocument,
-  useGetResourceHubDocument,
-  getResourceHubFile,
-  useGetResourceHubFile,
-  getResourceHubFolder,
-  useGetResourceHubFolder,
-  getResourceHubLink,
-  useGetResourceHubLink,
   getTheme,
   useGetTheme,
   getUnreadNotificationCount,
@@ -6626,8 +6305,6 @@ export default {
   useGlobalSearch,
   isSubscribedToResource,
   useIsSubscribedToResource,
-  listResourceHubNodes,
-  useListResourceHubNodes,
   addCompanyOwners,
   useAddCompanyOwners,
   addCompanyTrustedEmailDomain,
@@ -6638,8 +6315,6 @@ export default {
   useChangePassword,
   completeCompanySetup,
   useCompleteCompanySetup,
-  copyResourceHubFolder,
-  useCopyResourceHubFolder,
   createAccount,
   useCreateAccount,
   createAvatarBlob,
@@ -6650,36 +6325,10 @@ export default {
   useCreateEmailActivationCode,
   createGoalDiscussion,
   useCreateGoalDiscussion,
-  createResourceHub,
-  useCreateResourceHub,
-  createResourceHubDocument,
-  useCreateResourceHubDocument,
-  createResourceHubFile,
-  useCreateResourceHubFile,
-  createResourceHubFolder,
-  useCreateResourceHubFolder,
-  createResourceHubLink,
-  useCreateResourceHubLink,
   deleteCompany,
   useDeleteCompany,
-  deleteResourceHubDocument,
-  useDeleteResourceHubDocument,
-  deleteResourceHubFile,
-  useDeleteResourceHubFile,
-  deleteResourceHubFolder,
-  useDeleteResourceHubFolder,
-  deleteResourceHubLink,
-  useDeleteResourceHubLink,
   editGoalDiscussion,
   useEditGoalDiscussion,
-  editParentFolderInResourceHub,
-  useEditParentFolderInResourceHub,
-  editResourceHubDocument,
-  useEditResourceHubDocument,
-  editResourceHubFile,
-  useEditResourceHubFile,
-  editResourceHubLink,
-  useEditResourceHubLink,
   editSubscriptionsList,
   useEditSubscriptionsList,
   grantResourceAccess,
@@ -6694,10 +6343,6 @@ export default {
   useMarkNotificationAsRead,
   markNotificationsAsRead,
   useMarkNotificationsAsRead,
-  publishResourceHubDocument,
-  usePublishResourceHubDocument,
-  renameResourceHubFolder,
-  useRenameResourceHubFolder,
   requestPasswordReset,
   useRequestPasswordReset,
   resetPassword,
@@ -6879,6 +6524,121 @@ export default {
     useEditAgentDailyRun: () =>
       useMutation<AiEditAgentDailyRunInput, AiEditAgentDailyRunResult>((input) =>
         defaultApiClient.apiNamespaceAi.editAgentDailyRun(input),
+      ),
+  },
+
+  folders: {
+    get: (input: FoldersGetInput) => defaultApiClient.apiNamespaceFolders.get(input),
+    useGet: (input: FoldersGetInput) =>
+      useQuery<FoldersGetResult>(() => defaultApiClient.apiNamespaceFolders.get(input)),
+
+    rename: (input: FoldersRenameInput) => defaultApiClient.apiNamespaceFolders.rename(input),
+    useRename: () =>
+      useMutation<FoldersRenameInput, FoldersRenameResult>((input) =>
+        defaultApiClient.apiNamespaceFolders.rename(input),
+      ),
+
+    delete: (input: FoldersDeleteInput) => defaultApiClient.apiNamespaceFolders.delete(input),
+    useDelete: () =>
+      useMutation<FoldersDeleteInput, FoldersDeleteResult>((input) =>
+        defaultApiClient.apiNamespaceFolders.delete(input),
+      ),
+
+    copy: (input: FoldersCopyInput) => defaultApiClient.apiNamespaceFolders.copy(input),
+    useCopy: () =>
+      useMutation<FoldersCopyInput, FoldersCopyResult>((input) => defaultApiClient.apiNamespaceFolders.copy(input)),
+
+    create: (input: FoldersCreateInput) => defaultApiClient.apiNamespaceFolders.create(input),
+    useCreate: () =>
+      useMutation<FoldersCreateInput, FoldersCreateResult>((input) =>
+        defaultApiClient.apiNamespaceFolders.create(input),
+      ),
+  },
+
+  links: {
+    get: (input: LinksGetInput) => defaultApiClient.apiNamespaceLinks.get(input),
+    useGet: (input: LinksGetInput) => useQuery<LinksGetResult>(() => defaultApiClient.apiNamespaceLinks.get(input)),
+
+    create: (input: LinksCreateInput) => defaultApiClient.apiNamespaceLinks.create(input),
+    useCreate: () =>
+      useMutation<LinksCreateInput, LinksCreateResult>((input) => defaultApiClient.apiNamespaceLinks.create(input)),
+
+    update: (input: LinksUpdateInput) => defaultApiClient.apiNamespaceLinks.update(input),
+    useUpdate: () =>
+      useMutation<LinksUpdateInput, LinksUpdateResult>((input) => defaultApiClient.apiNamespaceLinks.update(input)),
+
+    delete: (input: LinksDeleteInput) => defaultApiClient.apiNamespaceLinks.delete(input),
+    useDelete: () =>
+      useMutation<LinksDeleteInput, LinksDeleteResult>((input) => defaultApiClient.apiNamespaceLinks.delete(input)),
+  },
+
+  files: {
+    get: (input: FilesGetInput) => defaultApiClient.apiNamespaceFiles.get(input),
+    useGet: (input: FilesGetInput) => useQuery<FilesGetResult>(() => defaultApiClient.apiNamespaceFiles.get(input)),
+
+    delete: (input: FilesDeleteInput) => defaultApiClient.apiNamespaceFiles.delete(input),
+    useDelete: () =>
+      useMutation<FilesDeleteInput, FilesDeleteResult>((input) => defaultApiClient.apiNamespaceFiles.delete(input)),
+
+    update: (input: FilesUpdateInput) => defaultApiClient.apiNamespaceFiles.update(input),
+    useUpdate: () =>
+      useMutation<FilesUpdateInput, FilesUpdateResult>((input) => defaultApiClient.apiNamespaceFiles.update(input)),
+
+    create: (input: FilesCreateInput) => defaultApiClient.apiNamespaceFiles.create(input),
+    useCreate: () =>
+      useMutation<FilesCreateInput, FilesCreateResult>((input) => defaultApiClient.apiNamespaceFiles.create(input)),
+  },
+
+  documents: {
+    get: (input: DocumentsGetInput) => defaultApiClient.apiNamespaceDocuments.get(input),
+    useGet: (input: DocumentsGetInput) =>
+      useQuery<DocumentsGetResult>(() => defaultApiClient.apiNamespaceDocuments.get(input)),
+
+    publish: (input: DocumentsPublishInput) => defaultApiClient.apiNamespaceDocuments.publish(input),
+    usePublish: () =>
+      useMutation<DocumentsPublishInput, DocumentsPublishResult>((input) =>
+        defaultApiClient.apiNamespaceDocuments.publish(input),
+      ),
+
+    update: (input: DocumentsUpdateInput) => defaultApiClient.apiNamespaceDocuments.update(input),
+    useUpdate: () =>
+      useMutation<DocumentsUpdateInput, DocumentsUpdateResult>((input) =>
+        defaultApiClient.apiNamespaceDocuments.update(input),
+      ),
+
+    delete: (input: DocumentsDeleteInput) => defaultApiClient.apiNamespaceDocuments.delete(input),
+    useDelete: () =>
+      useMutation<DocumentsDeleteInput, DocumentsDeleteResult>((input) =>
+        defaultApiClient.apiNamespaceDocuments.delete(input),
+      ),
+
+    create: (input: DocumentsCreateInput) => defaultApiClient.apiNamespaceDocuments.create(input),
+    useCreate: () =>
+      useMutation<DocumentsCreateInput, DocumentsCreateResult>((input) =>
+        defaultApiClient.apiNamespaceDocuments.create(input),
+      ),
+  },
+
+  resource_hubs: {
+    listNodes: (input: ResourceHubsListNodesInput) => defaultApiClient.apiNamespaceResourceHubs.listNodes(input),
+    useListNodes: (input: ResourceHubsListNodesInput) =>
+      useQuery<ResourceHubsListNodesResult>(() => defaultApiClient.apiNamespaceResourceHubs.listNodes(input)),
+
+    get: (input: ResourceHubsGetInput) => defaultApiClient.apiNamespaceResourceHubs.get(input),
+    useGet: (input: ResourceHubsGetInput) =>
+      useQuery<ResourceHubsGetResult>(() => defaultApiClient.apiNamespaceResourceHubs.get(input)),
+
+    updateParentFolder: (input: ResourceHubsUpdateParentFolderInput) =>
+      defaultApiClient.apiNamespaceResourceHubs.updateParentFolder(input),
+    useUpdateParentFolder: () =>
+      useMutation<ResourceHubsUpdateParentFolderInput, ResourceHubsUpdateParentFolderResult>((input) =>
+        defaultApiClient.apiNamespaceResourceHubs.updateParentFolder(input),
+      ),
+
+    create: (input: ResourceHubsCreateInput) => defaultApiClient.apiNamespaceResourceHubs.create(input),
+    useCreate: () =>
+      useMutation<ResourceHubsCreateInput, ResourceHubsCreateResult>((input) =>
+        defaultApiClient.apiNamespaceResourceHubs.create(input),
       ),
   },
 

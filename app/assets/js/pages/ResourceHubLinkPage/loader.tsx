@@ -1,5 +1,5 @@
 import * as Pages from "@/components/Pages";
-import { getResourceHubLink, ResourceHubLink } from "@/models/resourceHubs";
+import { links, ResourceHubLink } from "@/models/resourceHubs";
 import { isSubscribedToResource } from "@/models/subscriptions";
 
 interface LoaderResult {
@@ -9,7 +9,7 @@ interface LoaderResult {
 
 export async function loader({ params }): Promise<LoaderResult> {
   const [link, subscriptionStatus] = await Promise.all([
-    getResourceHubLink({
+    links.get({
       id: params.id,
       includeAuthor: true,
       includeSubscriptionsList: true,

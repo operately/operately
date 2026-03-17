@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-import { ResourceHubLink, useEditResourceHubLink } from "@/models/resourceHubs";
+import { ResourceHubLink, links } from "@/models/resourceHubs";
 
 import Forms from "@/components/Forms";
 import { assertPresent } from "@/utils/assertions";
@@ -15,7 +15,7 @@ export function Form() {
   const paths = usePaths();
   const { link } = useLoadedData();
   const navigate = useNavigate();
-  const [edit] = useEditResourceHubLink();
+  const [edit] = links.useUpdate();
 
   assertPresent(link.name, "name must be present in link");
   assertPresent(link.url, "url must be present in link");

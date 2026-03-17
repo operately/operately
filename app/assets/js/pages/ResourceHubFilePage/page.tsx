@@ -2,7 +2,7 @@ import React from "react";
 
 import { useBoolState } from "@/hooks/useBoolState";
 import { useNavigate } from "react-router-dom";
-import { useDeleteResourceHubFile } from "@/models/resourceHubs";
+import { files } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 
 import * as Reactions from "@/models/reactions";
@@ -170,7 +170,7 @@ interface DeleteFileModalProps {
 function DeleteFileModal({ isOpen, hideModal, fileName }: DeleteFileModalProps) {
   const { file } = useLoadedData();
   const navigate = useNavigate();
-  const [remove] = useDeleteResourceHubFile();
+  const [remove] = files.useDelete();
   const paths = usePaths();
 
   const handleDeleteFile = async () => {

@@ -129,7 +129,7 @@ class NodeLoader {
   }
 
   async loadFolderContent(): Promise<[ViewModelNode, ViewModelNode[]]> {
-    const res = await Hub.getResourceHubFolder({
+    const res = await Hub.folders.get({
       id: this.location.id,
       includeNodes: true,
       includePathToFolder: true,
@@ -143,7 +143,7 @@ class NodeLoader {
   }
 
   async loadResourceHubContent(): Promise<[ViewModelNode, ViewModelNode[]]> {
-    const res = await Hub.getResourceHub({ id: this.location.id, includeNodes: true });
+    const res = await Hub.resource_hubs.get({ id: this.location.id, includeNodes: true });
 
     const node = this.apiResourceHubToNode(res.resourceHub!);
     const subnodes = this.apiNodesToViewModelNodes(res.resourceHub!.nodes!);
