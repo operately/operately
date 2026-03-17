@@ -13,6 +13,7 @@ defmodule Operately.ApiDocs.MarkdownTest do
 
     endpoint = %{
       full_name: "tasks/create",
+      name: "create",
       type: :mutation,
       method: "POST",
       path: "/api/external/v1/tasks/create",
@@ -58,6 +59,7 @@ defmodule Operately.ApiDocs.MarkdownTest do
   test "does not render response example when endpoint has no outputs" do
     endpoint = %{
       full_name: "notifications/mark_all_as_read",
+      name: "mark_all_as_read",
       type: :mutation,
       method: "POST",
       path: "/api/external/v1/notifications/mark_all_as_read",
