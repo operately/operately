@@ -28,7 +28,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations do
       Mutations.Documents.Update,
       Mutations.Files.Update,
       Mutations.Links.Update,
-      Mutations.Notifications.EditSubscriptionsList,
+      Mutations.Notifications.UpdateSubscriptionsList,
       Mutations.Goals.Create,
       Mutations.Goals.CreateAccessMembers,
       Mutations.Goals.CreateCheck,

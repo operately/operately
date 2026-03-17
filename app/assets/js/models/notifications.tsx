@@ -7,7 +7,7 @@ export type { SubscriptionList, Subscription, Subscriber, Notification } from "@
 
 export const useSubscribeToNotifications = Api.notifications.useSubscribe;
 export const useUnsubscribeFromNotifications = Api.notifications.useUnsubscribe;
-export const useEditSubscriptionsList = Api.notifications.useEditSubscriptionsList;
+export const useEditSubscriptionsList = Api.notifications.useUpdateSubscriptionsList;
 export const useMarkAllNotificationsAsRead = Api.notifications.useMarkAllAsRead;
 export const useMarkNotificationAsRead = Api.notifications.useMarkAsRead;
 export const useMarkNotificationsAsRead = Api.notifications.useMarkManyAsRead;

@@ -89,15 +89,15 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `links delete` | `op links delete` | `POST` | `/api/external/v1/links/delete` |
 | `links get` | `op links get` | `GET` | `/api/external/v1/links/get` |
 | `links update` | `op links update` | `POST` | `/api/external/v1/links/update` |
-| `notifications edit_subscriptions_list` | `op notifications edit_subscriptions_list` | `POST` | `/api/external/v1/notifications/edit_subscriptions_list` |
-| `notifications get` | `op notifications get` | `GET` | `/api/external/v1/notifications/get` |
 | `notifications get_unread_count` | `op notifications get_unread_count` | `GET` | `/api/external/v1/notifications/get_unread_count` |
 | `notifications is_subscribed` | `op notifications is_subscribed` | `GET` | `/api/external/v1/notifications/is_subscribed` |
+| `notifications list` | `op notifications list` | `GET` | `/api/external/v1/notifications/list` |
 | `notifications mark_all_as_read` | `op notifications mark_all_as_read` | `POST` | `/api/external/v1/notifications/mark_all_as_read` |
 | `notifications mark_as_read` | `op notifications mark_as_read` | `POST` | `/api/external/v1/notifications/mark_as_read` |
 | `notifications mark_many_as_read` | `op notifications mark_many_as_read` | `POST` | `/api/external/v1/notifications/mark_many_as_read` |
 | `notifications subscribe` | `op notifications subscribe` | `POST` | `/api/external/v1/notifications/subscribe` |
 | `notifications unsubscribe` | `op notifications unsubscribe` | `POST` | `/api/external/v1/notifications/unsubscribe` |
+| `notifications update_subscriptions_list` | `op notifications update_subscriptions_list` | `POST` | `/api/external/v1/notifications/update_subscriptions_list` |
 | `people get` | `op people get` | `GET` | `/api/external/v1/people/get` |
 | `people get_account` | `op people get_account` | `GET` | `/api/external/v1/people/get_account` |
 | `people get_assignments_count` | `op people get_assignments_count` | `GET` | `/api/external/v1/people/get_assignments_count` |

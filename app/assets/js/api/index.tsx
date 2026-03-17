@@ -2540,15 +2540,6 @@ export interface LinksGetResult {
   link: ResourceHubLink;
 }
 
-export interface NotificationsGetInput {
-  page?: number | null;
-  perPage?: number | null;
-}
-
-export interface NotificationsGetResult {
-  notifications?: Notification[] | null;
-}
-
 export interface NotificationsGetUnreadCountInput {}
 
 export interface NotificationsGetUnreadCountResult {
@@ -2562,6 +2553,15 @@ export interface NotificationsIsSubscribedInput {
 
 export interface NotificationsIsSubscribedResult {
   subscribed: boolean;
+}
+
+export interface NotificationsListInput {
+  page?: number | null;
+  perPage?: number | null;
+}
+
+export interface NotificationsListResult {
+  notifications?: Notification[] | null;
 }
 
 export interface PeopleGetInput {
@@ -3908,15 +3908,6 @@ export interface LinksUpdateResult {
   link?: ResourceHubLink | null;
 }
 
-export interface NotificationsEditSubscriptionsListInput {
-  id?: string | null;
-  type?: string | null;
-  sendNotificationsToEveryone?: boolean | null;
-  subscriberIds?: string[] | null;
-}
-
-export interface NotificationsEditSubscriptionsListResult {}
-
 export interface NotificationsMarkAllAsReadInput {}
 
 export interface NotificationsMarkAllAsReadResult {}
@@ -3945,6 +3936,15 @@ export interface NotificationsUnsubscribeInput {
 }
 
 export interface NotificationsUnsubscribeResult {}
+
+export interface NotificationsUpdateSubscriptionsListInput {
+  id?: string | null;
+  type?: string | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: string[] | null;
+}
+
+export interface NotificationsUpdateSubscriptionsListResult {}
 
 export interface PeopleUpdateInput {
   id?: string | null;
@@ -4905,10 +4905,6 @@ class ApiNamespaceRoot {
 class ApiNamespaceNotifications {
   constructor(private client: ApiClient) {}
 
-  async get(input: NotificationsGetInput): Promise<NotificationsGetResult> {
-    return this.client.get("/notifications/get", input);
-  }
-
   async getUnreadCount(input: NotificationsGetUnreadCountInput): Promise<NotificationsGetUnreadCountResult> {
     return this.client.get("/notifications/get_unread_count", input);
   }
@@ -4917,10 +4913,8 @@ class ApiNamespaceNotifications {
     return this.client.get("/notifications/is_subscribed", input);
   }
 
-  async editSubscriptionsList(
-    input: NotificationsEditSubscriptionsListInput,
-  ): Promise<NotificationsEditSubscriptionsListResult> {
-    return this.client.post("/notifications/edit_subscriptions_list", input);
+  async list(input: NotificationsListInput): Promise<NotificationsListResult> {
+    return this.client.get("/notifications/list", input);
   }
 
   async markAllAsRead(input: NotificationsMarkAllAsReadInput): Promise<NotificationsMarkAllAsReadResult> {
@@ -4941,6 +4935,12 @@ class ApiNamespaceNotifications {
 
   async unsubscribe(input: NotificationsUnsubscribeInput): Promise<NotificationsUnsubscribeResult> {
     return this.client.post("/notifications/unsubscribe", input);
+  }
+
+  async updateSubscriptionsList(
+    input: NotificationsUpdateSubscriptionsListInput,
+  ): Promise<NotificationsUpdateSubscriptionsListResult> {
+    return this.client.post("/notifications/update_subscriptions_list", input);
   }
 }
 
@@ -6369,10 +6369,6 @@ export default {
   },
 
   notifications: {
-    get: (input: NotificationsGetInput) => defaultApiClient.apiNamespaceNotifications.get(input),
-    useGet: (input: NotificationsGetInput) =>
-      useQuery<NotificationsGetResult>(() => defaultApiClient.apiNamespaceNotifications.get(input)),
-
     isSubscribed: (input: NotificationsIsSubscribedInput) =>
       defaultApiClient.apiNamespaceNotifications.isSubscribed(input),
     useIsSubscribed: (input: NotificationsIsSubscribedInput) =>
@@ -6384,6 +6380,10 @@ export default {
       useQuery<NotificationsGetUnreadCountResult>(() =>
         defaultApiClient.apiNamespaceNotifications.getUnreadCount(input),
       ),
+
+    list: (input: NotificationsListInput) => defaultApiClient.apiNamespaceNotifications.list(input),
+    useList: (input: NotificationsListInput) =>
+      useQuery<NotificationsListResult>(() => defaultApiClient.apiNamespaceNotifications.list(input)),
 
     markAllAsRead: (input: NotificationsMarkAllAsReadInput) =>
       defaultApiClient.apiNamespaceNotifications.markAllAsRead(input),
@@ -6405,13 +6405,6 @@ export default {
         defaultApiClient.apiNamespaceNotifications.markAsRead(input),
       ),
 
-    editSubscriptionsList: (input: NotificationsEditSubscriptionsListInput) =>
-      defaultApiClient.apiNamespaceNotifications.editSubscriptionsList(input),
-    useEditSubscriptionsList: () =>
-      useMutation<NotificationsEditSubscriptionsListInput, NotificationsEditSubscriptionsListResult>((input) =>
-        defaultApiClient.apiNamespaceNotifications.editSubscriptionsList(input),
-      ),
-
     markManyAsRead: (input: NotificationsMarkManyAsReadInput) =>
       defaultApiClient.apiNamespaceNotifications.markManyAsRead(input),
     useMarkManyAsRead: () =>
@@ -6423,6 +6416,13 @@ export default {
     useSubscribe: () =>
       useMutation<NotificationsSubscribeInput, NotificationsSubscribeResult>((input) =>
         defaultApiClient.apiNamespaceNotifications.subscribe(input),
+      ),
+
+    updateSubscriptionsList: (input: NotificationsUpdateSubscriptionsListInput) =>
+      defaultApiClient.apiNamespaceNotifications.updateSubscriptionsList(input),
+    useUpdateSubscriptionsList: () =>
+      useMutation<NotificationsUpdateSubscriptionsListInput, NotificationsUpdateSubscriptionsListResult>((input) =>
+        defaultApiClient.apiNamespaceNotifications.updateSubscriptionsList(input),
       ),
   },
 

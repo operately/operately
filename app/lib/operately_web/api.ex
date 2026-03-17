@@ -264,11 +264,11 @@ defmodule OperatelyWeb.Api do
       end
 
       namespace(:notifications) do
-        query(:get, OperatelyWeb.Api.Notifications.Get)
+        query(:list, OperatelyWeb.Api.Notifications.List)
         query(:get_unread_count, OperatelyWeb.Api.Notifications.GetUnreadCount)
         query(:is_subscribed, OperatelyWeb.Api.Notifications.IsSubscribed)
 
-        mutation(:edit_subscriptions_list, OperatelyWeb.Api.Notifications.EditSubscriptionsList)
+        mutation(:update_subscriptions_list, OperatelyWeb.Api.Notifications.UpdateSubscriptionsList)
         mutation(:mark_all_as_read, OperatelyWeb.Api.Notifications.MarkAllAsRead)
         mutation(:mark_as_read, OperatelyWeb.Api.Notifications.MarkAsRead)
         mutation(:mark_many_as_read, OperatelyWeb.Api.Notifications.MarkManyAsRead)

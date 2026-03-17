@@ -23,7 +23,7 @@ interface LoaderResult {
 }
 
 async function loader(): Promise<LoaderResult> {
-  const data = await Api.notifications.get({
+  const data = await Api.notifications.list({
     page: 1,
     perPage: 100,
   });

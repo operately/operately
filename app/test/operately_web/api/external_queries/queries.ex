@@ -18,7 +18,7 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries do
       Queries.Goals.List,
       Queries.People.GetMe,
       Queries.ProjectMilestones.Get,
-      Queries.Notifications.Get,
+      Queries.Notifications.List,
       Queries.People.List,
       Queries.People.Get,
       Queries.Projects.Get,

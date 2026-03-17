@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Notifications.EditSubscriptionsList do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Notifications.UpdateSubscriptionsList do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "notifications/edit_subscriptions_list"
+  def mutation_name, do: "notifications/update_subscriptions_list"
 
   @impl true
   def setup(ctx) do
