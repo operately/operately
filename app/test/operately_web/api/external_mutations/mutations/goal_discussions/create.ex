@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.CreateGoalDiscussion do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.GoalDiscussions.Create do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "create_goal_discussion"
+  def mutation_name, do: "goal_discussions/create"
 
   @impl true
   def setup(ctx) do

@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetFlatWorkMapTest do
+defmodule OperatelyWeb.Api.Companies.GetFlatWorkMapTest do
   use OperatelyWeb.TurboCase
 
   alias OperatelyWeb.Paths
@@ -6,7 +6,7 @@ defmodule OperatelyWeb.Api.Queries.GetFlatWorkMapTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, :get_flat_work_map, %{})
+      assert {401, _} = query(ctx.conn, [:companies, :get_flat_work_map], %{})
     end
   end
 
@@ -46,7 +46,7 @@ defmodule OperatelyWeb.Api.Queries.GetFlatWorkMapTest do
         ctx = Factory.log_in_person(ctx, @test.person)
         expected_items = Enum.map(@test.expected_items, &Paths.goal_id(ctx[&1]))
 
-        assert {200, res} = query(ctx.conn, :get_flat_work_map, %{})
+        assert {200, res} = query(ctx.conn, [:companies, :get_flat_work_map], %{})
 
         # In flat list, items have no children field
         assert length(res.work_map) == @test.count
@@ -100,7 +100,7 @@ defmodule OperatelyWeb.Api.Queries.GetFlatWorkMapTest do
       test "#{@test.person} sees the correct items in flat list", ctx do
         ctx = Factory.log_in_person(ctx, @test.person)
 
-        assert {200, res} = query(ctx.conn, :get_flat_work_map, %{})
+        assert {200, res} = query(ctx.conn, [:companies, :get_flat_work_map], %{})
 
         # For flat list, we see all accessible items
         assert length(res.work_map) == @test.expected_items
@@ -134,7 +134,7 @@ defmodule OperatelyWeb.Api.Queries.GetFlatWorkMapTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       # Query with a non-existent space_id
-      assert {200, res} = query(ctx.conn, :get_flat_work_map, %{space_id: Paths.space_id(ctx.space3)})
+      assert {200, res} = query(ctx.conn, [:companies, :get_flat_work_map], %{space_id: Paths.space_id(ctx.space3)})
       assert res.work_map == []
     end
 
@@ -142,7 +142,7 @@ defmodule OperatelyWeb.Api.Queries.GetFlatWorkMapTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       # Query for space1
-      assert {200, res} = query(ctx.conn, :get_flat_work_map, %{space_id: Paths.space_id(ctx.space1)})
+      assert {200, res} = query(ctx.conn, [:companies, :get_flat_work_map], %{space_id: Paths.space_id(ctx.space1)})
 
       # Should return 3 items from space1
       assert length(res.work_map) == 3
@@ -152,7 +152,7 @@ defmodule OperatelyWeb.Api.Queries.GetFlatWorkMapTest do
       assert Paths.project_id(ctx.project1) in item_ids
 
       # Query for space2
-      assert {200, res} = query(ctx.conn, :get_flat_work_map, %{space_id: Paths.space_id(ctx.space2)})
+      assert {200, res} = query(ctx.conn, [:companies, :get_flat_work_map], %{space_id: Paths.space_id(ctx.space2)})
 
       # Should return 1 item from space2
       assert length(res.work_map) == 1
@@ -166,7 +166,7 @@ defmodule OperatelyWeb.Api.Queries.GetFlatWorkMapTest do
         |> Factory.log_in_person(:creator)
 
       # Query for children of goal1
-      assert {200, res} = query(ctx.conn, :get_flat_work_map, %{parent_goal_id: Paths.goal_id(ctx.goal1)})
+      assert {200, res} = query(ctx.conn, [:companies, :get_flat_work_map], %{parent_goal_id: Paths.goal_id(ctx.goal1)})
 
       # Should return only the child goal
       assert length(res.work_map) == 1
@@ -181,7 +181,7 @@ defmodule OperatelyWeb.Api.Queries.GetFlatWorkMapTest do
         |> Factory.log_in_person(:creator)
 
       # Query for items owned by other_member
-      assert {200, res} = query(ctx.conn, :get_flat_work_map, %{champion_id: Paths.person_id(ctx.other_member)})
+      assert {200, res} = query(ctx.conn, [:companies, :get_flat_work_map], %{champion_id: Paths.person_id(ctx.other_member)})
 
       # Should return only the owned goal
       assert length(res.work_map) == 1
@@ -191,14 +191,14 @@ defmodule OperatelyWeb.Api.Queries.GetFlatWorkMapTest do
     test "filters by only_completed", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {200, res} = query(ctx.conn, :get_flat_work_map, %{only_completed: true})
+      assert {200, res} = query(ctx.conn, [:companies, :get_flat_work_map], %{only_completed: true})
       assert length(res.work_map) == 0
 
       ctx
       |> Factory.close_goal(:goal1)
       |> Factory.close_project(:project1)
 
-      assert {200, res} = query(ctx.conn, :get_flat_work_map, %{only_completed: true})
+      assert {200, res} = query(ctx.conn, [:companies, :get_flat_work_map], %{only_completed: true})
       assert length(res.work_map) == 2
     end
 
@@ -210,7 +210,7 @@ defmodule OperatelyWeb.Api.Queries.GetFlatWorkMapTest do
         |> Factory.add_project(:child_project, :space1, goal: :child_goal)
         |> Factory.log_in_person(:creator)
 
-      assert {200, res} = query(ctx.conn, :get_flat_work_map, %{})
+      assert {200, res} = query(ctx.conn, [:companies, :get_flat_work_map], %{})
 
       # In a flat list, we should have all items
       assert length(res.work_map) >= 3
@@ -238,7 +238,7 @@ defmodule OperatelyWeb.Api.Queries.GetFlatWorkMapTest do
         |> Factory.add_space(:space4)
         |> Factory.add_project(:project3, :space4, champion: :champion)
 
-      assert {200, %{work_map: [item]}} = query(ctx.conn, :get_flat_work_map, %{space_id: Paths.space_id(ctx.space4)})
+      assert {200, %{work_map: [item]}} = query(ctx.conn, [:companies, :get_flat_work_map], %{space_id: Paths.space_id(ctx.space4)})
 
       assert item.id == Paths.project_id(ctx.project3)
       assert item.owner.id == Paths.person_id(ctx.champion)
@@ -246,7 +246,7 @@ defmodule OperatelyWeb.Api.Queries.GetFlatWorkMapTest do
 
       Factory.suspend_company_member(ctx, :champion)
 
-      assert {200, %{work_map: [item]}} = query(ctx.conn, :get_flat_work_map, %{space_id: Paths.space_id(ctx.space4)})
+      assert {200, %{work_map: [item]}} = query(ctx.conn, [:companies, :get_flat_work_map], %{space_id: Paths.space_id(ctx.space4)})
 
       assert item.id == Paths.project_id(ctx.project3)
       refute item.owner
@@ -282,14 +282,14 @@ defmodule OperatelyWeb.Api.Queries.GetFlatWorkMapTest do
     test "does not include tasks by default", ctx do
       ctx = Factory.log_in_person(ctx, :assignee)
 
-      assert {200, res} = query(ctx.conn, :get_flat_work_map, %{})
+      assert {200, res} = query(ctx.conn, [:companies, :get_flat_work_map], %{})
       refute Enum.any?(res.work_map, fn item -> item.type == "task" end)
     end
 
     test "includes only open tasks assigned to the requester when include_tasks is true", ctx do
       ctx = Factory.log_in_person(ctx, :assignee)
 
-      assert {200, res} = query(ctx.conn, :get_flat_work_map, %{include_tasks: true})
+      assert {200, res} = query(ctx.conn, [:companies, :get_flat_work_map], %{include_tasks: true})
 
       task_items = Enum.filter(res.work_map, fn item -> item.type == "task" end)
       assert length(task_items) == 2

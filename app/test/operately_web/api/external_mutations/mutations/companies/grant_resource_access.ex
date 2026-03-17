@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.GrantResourceAccess do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Companies.GrantResourceAccess do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "grant_resource_access"
+  def mutation_name, do: "companies/grant_resource_access"
 
   @impl true
   def setup(ctx) do

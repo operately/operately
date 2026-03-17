@@ -68,7 +68,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
         }).then((d) => d.goal),
         workMap: getWorkMap({ parentGoalId: params.id, includeAssignees: true }).then((d) => d.workMap),
         checkIns: Api.goals.listCheckIns({ goalId: params.id }).then((d) => d.checkIns),
-        discussions: Api.goals.listDiscussions({ goalId: params.id }).then((d) => d.discussions),
+        discussions: Api.goal_discussions.list({ goalId: params.id }).then((d) => d.discussions),
       }),
   });
 }

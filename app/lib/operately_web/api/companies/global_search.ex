@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GlobalSearch do
+defmodule OperatelyWeb.Api.Companies.GlobalSearch do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 

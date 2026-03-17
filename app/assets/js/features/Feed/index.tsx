@@ -18,7 +18,7 @@ type Page = "company" | "project" | "goal" | "space" | "profile";
 type ScopeType = "company" | "project" | "goal" | "space" | "person";
 
 export function useItemsQuery(scopeType: ScopeType, scopeId: string) {
-  return Api.useGetActivities({
+  return Api.companies.useListActivities({
     scopeType: scopeType,
     scopeId: scopeId,
     actions: DISPLAYED_IN_FEED,

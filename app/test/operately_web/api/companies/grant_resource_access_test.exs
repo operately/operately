@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.GrantResourceAccessTest do
+defmodule OperatelyWeb.Api.Companies.GrantResourceAccessTest do
   use OperatelyWeb.TurboCase
 
   alias Operately.Access
@@ -6,7 +6,7 @@ defmodule OperatelyWeb.Api.Mutations.GrantResourceAccessTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :grant_resource_access, %{})
+      assert {401, _} = mutation(ctx.conn, [:companies, :grant_resource_access], %{})
     end
   end
 
@@ -32,7 +32,7 @@ defmodule OperatelyWeb.Api.Mutations.GrantResourceAccessTest do
       test "if caller has company=#{@test.company}, then expect code=#{@test.expected}", ctx do
         ctx = Factory.set_company_access_level(ctx, :person, Binding.from_atom(@test.company))
 
-        assert {code, res} = mutation(ctx.conn, :grant_resource_access, %{
+        assert {code, res} = mutation(ctx.conn, [:companies, :grant_resource_access], %{
           person_id: ctx.guest.id,
           resources: [
             %{resource_type: "space", resource_id: Paths.space_id(ctx.space), access_level: "edit_access"},
@@ -62,7 +62,7 @@ defmodule OperatelyWeb.Api.Mutations.GrantResourceAccessTest do
     end
 
     test "grants access to a space", ctx do
-      assert {200, res} = mutation(ctx.conn, :grant_resource_access, %{
+      assert {200, res} = mutation(ctx.conn, [:companies, :grant_resource_access], %{
         person_id: ctx.guest.id,
         resources: [
           %{resource_type: "space", resource_id: Paths.space_id(ctx.space), access_level: "edit_access"},
@@ -79,7 +79,7 @@ defmodule OperatelyWeb.Api.Mutations.GrantResourceAccessTest do
     end
 
     test "grants access to a goal", ctx do
-      assert {200, res} = mutation(ctx.conn, :grant_resource_access, %{
+      assert {200, res} = mutation(ctx.conn, [:companies, :grant_resource_access], %{
         person_id: ctx.guest.id,
         resources: [
           %{resource_type: "goal", resource_id: Paths.goal_id(ctx.goal), access_level: "comment_access"},
@@ -96,7 +96,7 @@ defmodule OperatelyWeb.Api.Mutations.GrantResourceAccessTest do
     end
 
     test "grants access to a project", ctx do
-      assert {200, res} = mutation(ctx.conn, :grant_resource_access, %{
+      assert {200, res} = mutation(ctx.conn, [:companies, :grant_resource_access], %{
         person_id: ctx.guest.id,
         resources: [
           %{resource_type: "project", resource_id: Paths.project_id(ctx.project), access_level: "view_access"},
@@ -113,7 +113,7 @@ defmodule OperatelyWeb.Api.Mutations.GrantResourceAccessTest do
     end
 
     test "grants access to multiple resources at once", ctx do
-      assert {200, res} = mutation(ctx.conn, :grant_resource_access, %{
+      assert {200, res} = mutation(ctx.conn, [:companies, :grant_resource_access], %{
         person_id: ctx.guest.id,
         resources: [
           %{resource_type: "space", resource_id: Paths.space_id(ctx.space), access_level: "edit_access"},

@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
+defmodule OperatelyWeb.Api.Companies.GetWorkMapTest do
   use OperatelyWeb.TurboCase
 
   alias OperatelyWeb.Paths
@@ -6,7 +6,7 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, :get_work_map, %{})
+      assert {401, _} = query(ctx.conn, [:companies, :get_work_map], %{})
     end
   end
 
@@ -46,7 +46,7 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
         ctx = Factory.log_in_person(ctx, @test.person)
         expected_items = Enum.map(@test.expected_items, &Paths.goal_id(ctx[&1]))
 
-        assert {200, res} = query(ctx.conn, :get_work_map, %{})
+        assert {200, res} = query(ctx.conn, [:companies, :get_work_map], %{})
 
         assert length(res.work_map) == @test.count
         Enum.each(res.work_map, fn item ->
@@ -97,7 +97,7 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
         ctx = Factory.log_in_person(ctx, @test.person)
         expected_items = Enum.map(@test.expected_items, &Paths.goal_id(ctx[&1]))
 
-        assert {200, res} = query(ctx.conn, :get_work_map, %{})
+        assert {200, res} = query(ctx.conn, [:companies, :get_work_map], %{})
 
         # Find the parent goal in the result
         parent_item = Enum.find(res.work_map, &(&1.id == Paths.goal_id(ctx.parent_goal)))
@@ -150,7 +150,7 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
     test "company member has access to 2 public goals", ctx do
       ctx = Factory.log_in_person(ctx, :company_member)
 
-      assert {200, res} = query(ctx.conn, :get_work_map, %{})
+      assert {200, res} = query(ctx.conn, [:companies, :get_work_map], %{})
 
       # Should see only public1 at the root level
       assert length(res.work_map) == 1
@@ -167,7 +167,7 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
     test "space member has access to 4 public and internal goals", ctx do
       ctx = Factory.log_in_person(ctx, :space_member)
 
-      assert {200, res} = query(ctx.conn, :get_work_map, %{})
+      assert {200, res} = query(ctx.conn, [:companies, :get_work_map], %{})
 
       # Should see only public1 at the root level
       assert length(res.work_map) == 1
@@ -198,7 +198,7 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
       test "#{@test.person} has access to all 6 goals including secret ones", ctx do
         ctx = Factory.log_in_person(ctx, @test.person)
 
-        assert {200, res} = query(ctx.conn, :get_work_map, %{})
+        assert {200, res} = query(ctx.conn, [:companies, :get_work_map], %{})
 
         # Should see both public1 and secret1 at the root level
         assert length(res.work_map) == 2
@@ -247,7 +247,7 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       # Query with a non-existent space_id
-      assert {200, res} = query(ctx.conn, :get_work_map, %{space_id: Paths.space_id(ctx.space3)})
+      assert {200, res} = query(ctx.conn, [:companies, :get_work_map], %{space_id: Paths.space_id(ctx.space3)})
       assert res.work_map == []
     end
 
@@ -255,7 +255,7 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       # Query for space1
-      assert {200, res} = query(ctx.conn, :get_work_map, %{space_id: Paths.space_id(ctx.space1)})
+      assert {200, res} = query(ctx.conn, [:companies, :get_work_map], %{space_id: Paths.space_id(ctx.space1)})
 
       # Should return 3 items from space1
       assert length(res.work_map) == 3
@@ -264,7 +264,7 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
       assert Enum.any?(res.work_map, &(&1.id == Paths.project_id(ctx.project1)))
 
       # Query for space2
-      assert {200, res} = query(ctx.conn, :get_work_map, %{space_id: Paths.space_id(ctx.space2)})
+      assert {200, res} = query(ctx.conn, [:companies, :get_work_map], %{space_id: Paths.space_id(ctx.space2)})
 
       # Should return 1 item from space2
       assert length(res.work_map) == 1
@@ -278,7 +278,7 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
         |> Factory.log_in_person(:creator)
 
       # Query for children of goal1
-      assert {200, res} = query(ctx.conn, :get_work_map, %{parent_goal_id: Paths.goal_id(ctx.goal1)})
+      assert {200, res} = query(ctx.conn, [:companies, :get_work_map], %{parent_goal_id: Paths.goal_id(ctx.goal1)})
 
       # Should return only the child goal
       assert length(res.work_map) == 1
@@ -293,7 +293,7 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
         |> Factory.log_in_person(:creator)
 
       # Query for items owned by other_member
-      assert {200, res} = query(ctx.conn, :get_work_map, %{champion_id: Paths.person_id(ctx.other_member)})
+      assert {200, res} = query(ctx.conn, [:companies, :get_work_map], %{champion_id: Paths.person_id(ctx.other_member)})
 
       # Should return only the owned goal
       assert length(res.work_map) == 1
@@ -308,7 +308,7 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
         |> Factory.add_project(:child_project, :space1, goal: :child_goal)
         |> Factory.log_in_person(:creator)
 
-      assert {200, res} = query(ctx.conn, :get_work_map, %{})
+      assert {200, res} = query(ctx.conn, [:companies, :get_work_map], %{})
 
       # Find the parent goal in the result
       parent_item = Enum.find(res.work_map, &(&1.id == Paths.goal_id(ctx.parent_goal)))
@@ -331,7 +331,7 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
         |> Factory.add_task_assignee(:space_task_assignee, :space_task, :creator)
 
       # Test Goals and Projects via get_work_map
-      assert {200, res} = query(ctx.conn, :get_work_map, %{space_id: Paths.space_id(ctx.space1)})
+      assert {200, res} = query(ctx.conn, [:companies, :get_work_map], %{space_id: Paths.space_id(ctx.space1)})
 
       goal = Enum.find(res.work_map, &(&1.id == Paths.goal_id(ctx.goal1)))
       assert goal.item_path == Paths.goal_path(ctx.company, ctx.goal1)
@@ -340,7 +340,7 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
       assert project.item_path == Paths.project_path(ctx.company, ctx.project1)
 
       # Test Tasks via get_flat_work_map (since get_work_map doesn't return tasks)
-      assert {200, res} = query(ctx.conn, :get_flat_work_map, %{space_id: Paths.space_id(ctx.space1), include_tasks: true})
+      assert {200, res} = query(ctx.conn, [:companies, :get_flat_work_map], %{space_id: Paths.space_id(ctx.space1), include_tasks: true})
 
       project_task = Enum.find(res.work_map, &(&1.id == Paths.task_id(ctx.project_task)))
       assert project_task.item_path == Paths.project_task_path(ctx.company, ctx.project_task)
@@ -357,7 +357,7 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
         |> Factory.add_space(:space4)
         |> Factory.add_project(:project3, :space4, champion: :champion)
 
-      assert {200, %{ work_map: _ = [item] }} = query(ctx.conn, :get_work_map, %{space_id: Paths.space_id(ctx.space4)})
+      assert {200, %{ work_map: _ = [item] }} = query(ctx.conn, [:companies, :get_work_map], %{space_id: Paths.space_id(ctx.space4)})
 
       assert item.id == Paths.project_id(ctx.project3)
       assert item.owner.id == Paths.person_id(ctx.champion)
@@ -365,7 +365,7 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
 
       Factory.suspend_company_member(ctx, :champion)
 
-      assert {200, %{ work_map: _ = [item] }} = query(ctx.conn, :get_work_map, %{space_id: Paths.space_id(ctx.space4)})
+      assert {200, %{ work_map: _ = [item] }} = query(ctx.conn, [:companies, :get_work_map], %{space_id: Paths.space_id(ctx.space4)})
 
       assert item.id == Paths.project_id(ctx.project3)
       refute item.owner
@@ -385,7 +385,7 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
     end
 
     test "returns nil space fields when user cannot access the space", ctx do
-      assert {200, res} = query(ctx.conn, :get_work_map, %{})
+      assert {200, res} = query(ctx.conn, [:companies, :get_work_map], %{})
 
       goal = Enum.find(res.work_map, &(&1.id == Paths.goal_id(ctx.goal)))
       project = Enum.find(res.work_map, &(&1.id == Paths.project_id(ctx.project)))

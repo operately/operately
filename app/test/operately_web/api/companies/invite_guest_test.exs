@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.InviteGuestTest do
+defmodule OperatelyWeb.Api.Companies.InviteGuestTest do
   use OperatelyWeb.TurboCase
 
   alias Operately.People
@@ -11,13 +11,13 @@ defmodule OperatelyWeb.Api.Mutations.InviteGuestTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :invite_guest, %{})
+      assert {401, _} = mutation(ctx.conn, [:companies, :invite_guest], %{})
     end
 
     test "member account without edit access cannot invite guests", ctx do
       ctx = register_and_log_in_account(ctx)
 
-      assert {403, res} = mutation(ctx.conn, :invite_guest, @invite_guest_input)
+      assert {403, res} = mutation(ctx.conn, [:companies, :invite_guest], @invite_guest_input)
 
       assert res == %{:error => "Forbidden", :message => "You don't have permission to perform this action"}
     end
@@ -28,7 +28,7 @@ defmodule OperatelyWeb.Api.Mutations.InviteGuestTest do
     setup :promote_to_owner
 
     test "creates invite link for new guest", ctx do
-      assert {200, res} = mutation(ctx.conn, :invite_guest, @invite_guest_input)
+      assert {200, res} = mutation(ctx.conn, [:companies, :invite_guest], @invite_guest_input)
 
       assert res.new_account
       assert res.invite_link.token
@@ -43,7 +43,7 @@ defmodule OperatelyWeb.Api.Mutations.InviteGuestTest do
       ctx = Factory.add_account(ctx, :account)
       {:ok, _} = People.mark_account_first_login(ctx.account)
 
-      assert {200, res} = mutation(ctx.conn, :invite_guest, %{
+      assert {200, res} = mutation(ctx.conn, [:companies, :invite_guest], %{
         full_name: @invite_guest_input.full_name,
         email: ctx.account.email,
         title: @invite_guest_input.title,
@@ -59,8 +59,8 @@ defmodule OperatelyWeb.Api.Mutations.InviteGuestTest do
     end
 
     test "email already taken", ctx do
-      assert {200, _} = mutation(ctx.conn, :invite_guest, @invite_guest_input)
-      assert {400, res} = mutation(ctx.conn, :invite_guest, @invite_guest_input)
+      assert {200, _} = mutation(ctx.conn, [:companies, :invite_guest], @invite_guest_input)
+      assert {400, res} = mutation(ctx.conn, [:companies, :invite_guest], @invite_guest_input)
 
       assert res == %{:error => "Bad request", :message => "Email has already been taken"}
     end
@@ -68,14 +68,14 @@ defmodule OperatelyWeb.Api.Mutations.InviteGuestTest do
     test "email can't be blank", ctx do
       input = put_in(@invite_guest_input, [:email], "")
 
-      assert {400, res} = mutation(ctx.conn, :invite_guest, input)
+      assert {400, res} = mutation(ctx.conn, [:companies, :invite_guest], input)
       assert res == %{:error => "Bad request", :message => "Email can't be blank"}
     end
 
     test "full_name can't be blank", ctx do
       input = put_in(@invite_guest_input, [:full_name], "")
 
-      assert {400, res} = mutation(ctx.conn, :invite_guest, input)
+      assert {400, res} = mutation(ctx.conn, [:companies, :invite_guest], input)
       assert res == %{:error => "Bad request", :message => "Name can't be blank"}
     end
   end

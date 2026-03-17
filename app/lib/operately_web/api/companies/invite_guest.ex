@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.InviteGuest do
+defmodule OperatelyWeb.Api.Companies.InviteGuest do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

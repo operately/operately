@@ -1,4 +1,4 @@
-import * as Api from "@/api";
+import Api, { CompaniesGlobalSearchResult } from "@/api";
 import * as React from "react";
 
 import { Paths, usePaths } from "@/routes/paths";
@@ -12,7 +12,7 @@ export function useGlobalSearchHandler(): (params: SearchParams) => Promise<Glob
   return React.useCallback(
     async ({ query }: SearchParams) => {
       try {
-        const result = await Api.globalSearch({ query });
+        const result = await Api.companies.globalSearch({ query });
 
         return {
           projects: prepareProjects(paths, result),
@@ -30,7 +30,7 @@ export function useGlobalSearchHandler(): (params: SearchParams) => Promise<Glob
   );
 }
 
-function prepareProjects(paths: Paths, result: Api.GlobalSearchResult): GlobalSearch.Project[] {
+function prepareProjects(paths: Paths, result: CompaniesGlobalSearchResult): GlobalSearch.Project[] {
   return (
     result.projects?.map((project) => ({
       id: project.id!,
@@ -42,7 +42,7 @@ function prepareProjects(paths: Paths, result: Api.GlobalSearchResult): GlobalSe
   );
 }
 
-function prepareGoals(paths: Paths, result: Api.GlobalSearchResult): GlobalSearch.Goal[] {
+function prepareGoals(paths: Paths, result: CompaniesGlobalSearchResult): GlobalSearch.Goal[] {
   return (
     result.goals?.map((goal) => ({
       id: goal.id!,
@@ -54,7 +54,7 @@ function prepareGoals(paths: Paths, result: Api.GlobalSearchResult): GlobalSearc
   );
 }
 
-function prepareMilestones(paths: Paths, result: Api.GlobalSearchResult): GlobalSearch.Milestone[] {
+function prepareMilestones(paths: Paths, result: CompaniesGlobalSearchResult): GlobalSearch.Milestone[] {
   return (
     result.milestones?.map((milestone) => ({
       id: milestone.id!,
@@ -66,7 +66,7 @@ function prepareMilestones(paths: Paths, result: Api.GlobalSearchResult): Global
   );
 }
 
-function preparePeople(paths: Paths, result: Api.GlobalSearchResult): GlobalSearch.Person[] {
+function preparePeople(paths: Paths, result: CompaniesGlobalSearchResult): GlobalSearch.Person[] {
   return (
     result.people?.map((person) => ({
       id: person.id!,
@@ -78,7 +78,7 @@ function preparePeople(paths: Paths, result: Api.GlobalSearchResult): GlobalSear
   );
 }
 
-function prepareTasks(paths: Paths, result: Api.GlobalSearchResult): GlobalSearch.Task[] {
+function prepareTasks(paths: Paths, result: CompaniesGlobalSearchResult): GlobalSearch.Task[] {
   return (
     result.tasks?.map((task) => ({
       id: task.id,

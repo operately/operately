@@ -20,17 +20,22 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `companies delete_owner` | `op companies delete_owner` | `POST` | `/api/external/v1/companies/delete_owner` |
 | `companies delete_trusted_email_domain` | `op companies delete_trusted_email_domain` | `POST` | `/api/external/v1/companies/delete_trusted_email_domain` |
 | `companies get` | `op companies get` | `GET` | `/api/external/v1/companies/get` |
+| `companies get_activity` | `op companies get_activity` | `GET` | `/api/external/v1/companies/get_activity` |
+| `companies get_flat_work_map` | `op companies get_flat_work_map` | `GET` | `/api/external/v1/companies/get_flat_work_map` |
+| `companies get_work_map` | `op companies get_work_map` | `GET` | `/api/external/v1/companies/get_work_map` |
+| `companies global_search` | `op companies global_search` | `GET` | `/api/external/v1/companies/global_search` |
+| `companies grant_resource_access` | `op companies grant_resource_access` | `POST` | `/api/external/v1/companies/grant_resource_access` |
+| `companies invite_guest` | `op companies invite_guest` | `POST` | `/api/external/v1/companies/invite_guest` |
 | `companies list` | `op companies list` | `GET` | `/api/external/v1/companies/list` |
+| `companies list_activities` | `op companies list_activities` | `GET` | `/api/external/v1/companies/list_activities` |
 | `companies restore_member` | `op companies restore_member` | `POST` | `/api/external/v1/companies/restore_member` |
 | `companies update` | `op companies update` | `POST` | `/api/external/v1/companies/update` |
 | `companies update_members_permissions` | `op companies update_members_permissions` | `POST` | `/api/external/v1/companies/update_members_permissions` |
-| `create_goal_discussion` | `op create_goal_discussion` | `POST` | `/api/external/v1/create_goal_discussion` |
 | `documents create` | `op documents create` | `POST` | `/api/external/v1/documents/create` |
 | `documents delete` | `op documents delete` | `POST` | `/api/external/v1/documents/delete` |
 | `documents get` | `op documents get` | `GET` | `/api/external/v1/documents/get` |
 | `documents publish` | `op documents publish` | `POST` | `/api/external/v1/documents/publish` |
 | `documents update` | `op documents update` | `POST` | `/api/external/v1/documents/update` |
-| `edit_goal_discussion` | `op edit_goal_discussion` | `POST` | `/api/external/v1/edit_goal_discussion` |
 | `files create` | `op files create` | `POST` | `/api/external/v1/files/create` |
 | `files delete` | `op files delete` | `POST` | `/api/external/v1/files/delete` |
 | `files get` | `op files get` | `GET` | `/api/external/v1/files/get` |
@@ -40,15 +45,13 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `folders delete` | `op folders delete` | `POST` | `/api/external/v1/folders/delete` |
 | `folders get` | `op folders get` | `GET` | `/api/external/v1/folders/get` |
 | `folders rename` | `op folders rename` | `POST` | `/api/external/v1/folders/rename` |
-| `get_activities` | `op get_activities` | `GET` | `/api/external/v1/get_activities` |
-| `get_activity` | `op get_activity` | `GET` | `/api/external/v1/get_activity` |
-| `get_flat_work_map` | `op get_flat_work_map` | `GET` | `/api/external/v1/get_flat_work_map` |
-| `get_work_map` | `op get_work_map` | `GET` | `/api/external/v1/get_work_map` |
-| `global_search` | `op global_search` | `GET` | `/api/external/v1/global_search` |
 | `goal_check_ins acknowledge` | `op goal_check_ins acknowledge` | `POST` | `/api/external/v1/goal_check_ins/acknowledge` |
 | `goal_check_ins create` | `op goal_check_ins create` | `POST` | `/api/external/v1/goal_check_ins/create` |
 | `goal_check_ins get` | `op goal_check_ins get` | `GET` | `/api/external/v1/goal_check_ins/get` |
 | `goal_check_ins update` | `op goal_check_ins update` | `POST` | `/api/external/v1/goal_check_ins/update` |
+| `goal_discussions create` | `op goal_discussions create` | `POST` | `/api/external/v1/goal_discussions/create` |
+| `goal_discussions list` | `op goal_discussions list` | `GET` | `/api/external/v1/goal_discussions/list` |
+| `goal_discussions update` | `op goal_discussions update` | `POST` | `/api/external/v1/goal_discussions/update` |
 | `goals change_parent` | `op goals change_parent` | `POST` | `/api/external/v1/goals/change_parent` |
 | `goals close` | `op goals close` | `POST` | `/api/external/v1/goals/close` |
 | `goals create` | `op goals create` | `POST` | `/api/external/v1/goals/create` |
@@ -64,7 +67,6 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `goals list_access_members` | `op goals list_access_members` | `GET` | `/api/external/v1/goals/list_access_members` |
 | `goals list_check_ins` | `op goals list_check_ins` | `GET` | `/api/external/v1/goals/list_check_ins` |
 | `goals list_contributors` | `op goals list_contributors` | `GET` | `/api/external/v1/goals/list_contributors` |
-| `goals list_discussions` | `op goals list_discussions` | `GET` | `/api/external/v1/goals/list_discussions` |
 | `goals reopen` | `op goals reopen` | `POST` | `/api/external/v1/goals/reopen` |
 | `goals search_parent_goal` | `op goals search_parent_goal` | `GET` | `/api/external/v1/goals/search_parent_goal` |
 | `goals toggle_check` | `op goals toggle_check` | `POST` | `/api/external/v1/goals/toggle_check` |
@@ -83,8 +85,6 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `goals update_target` | `op goals update_target` | `POST` | `/api/external/v1/goals/update_target` |
 | `goals update_target_index` | `op goals update_target_index` | `POST` | `/api/external/v1/goals/update_target_index` |
 | `goals update_target_value` | `op goals update_target_value` | `POST` | `/api/external/v1/goals/update_target_value` |
-| `grant_resource_access` | `op grant_resource_access` | `POST` | `/api/external/v1/grant_resource_access` |
-| `invite_guest` | `op invite_guest` | `POST` | `/api/external/v1/invite_guest` |
 | `links create` | `op links create` | `POST` | `/api/external/v1/links/create` |
 | `links delete` | `op links delete` | `POST` | `/api/external/v1/links/delete` |
 | `links get` | `op links get` | `GET` | `/api/external/v1/links/get` |

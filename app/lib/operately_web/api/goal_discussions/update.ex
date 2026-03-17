@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.EditGoalDiscussion do
+defmodule OperatelyWeb.Api.GoalDiscussions.Update do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
