@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.PublishResourceHubDocument do
+defmodule OperatelyWeb.Api.Documents.Publish do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

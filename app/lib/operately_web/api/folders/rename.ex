@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.RenameResourceHubFolder do
+defmodule OperatelyWeb.Api.Folders.Rename do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

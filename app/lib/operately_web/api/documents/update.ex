@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.EditResourceHubDocument do
+defmodule OperatelyWeb.Api.Documents.Update do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

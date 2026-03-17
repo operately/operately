@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.EditResourceHubLink do
+defmodule OperatelyWeb.Api.Links.Update do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

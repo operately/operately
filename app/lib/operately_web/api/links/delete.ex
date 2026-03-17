@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.DeleteResourceHubLink do
+defmodule OperatelyWeb.Api.Links.Delete do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

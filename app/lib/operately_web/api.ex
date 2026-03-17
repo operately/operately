@@ -221,16 +221,52 @@ defmodule OperatelyWeb.Api do
         mutation(:delete, OperatelyWeb.Api.Reactions.Delete)
       end
 
+      namespace(:resource_hubs) do
+        query(:get, OperatelyWeb.Api.ResourceHubs.Get)
+        query(:list_nodes, OperatelyWeb.Api.ResourceHubs.ListNodes)
+
+        mutation(:create, OperatelyWeb.Api.ResourceHubs.Create)
+        mutation(:update_parent_folder, OperatelyWeb.Api.ResourceHubs.UpdateParentFolder)
+      end
+
+      namespace(:documents) do
+        query(:get, OperatelyWeb.Api.Documents.Get)
+
+        mutation(:create, OperatelyWeb.Api.Documents.Create)
+        mutation(:publish, OperatelyWeb.Api.Documents.Publish)
+        mutation(:delete, OperatelyWeb.Api.Documents.Delete)
+        mutation(:update, OperatelyWeb.Api.Documents.Update)
+      end
+
+      namespace(:files) do
+        query(:get, OperatelyWeb.Api.Files.Get)
+
+        mutation(:create, OperatelyWeb.Api.Files.Create)
+        mutation(:delete, OperatelyWeb.Api.Files.Delete)
+        mutation(:update, OperatelyWeb.Api.Files.Update)
+      end
+
+      namespace(:links) do
+        query(:get, OperatelyWeb.Api.Links.Get)
+
+        mutation(:create, OperatelyWeb.Api.Links.Create)
+        mutation(:delete, OperatelyWeb.Api.Links.Delete)
+        mutation(:update, OperatelyWeb.Api.Links.Update)
+      end
+
+      namespace(:folders) do
+        query(:get, OperatelyWeb.Api.Folders.Get)
+
+        mutation(:copy, OperatelyWeb.Api.Folders.Copy)
+        mutation(:create, OperatelyWeb.Api.Folders.Create)
+        mutation(:delete, OperatelyWeb.Api.Folders.Delete)
+        mutation(:rename, OperatelyWeb.Api.Folders.Rename)
+      end
+
       query(:get_activities, Q.GetActivities)
       query(:get_activity, Q.GetActivity)
       query(:get_notifications, Q.GetNotifications)
       query(:get_unread_notification_count, Q.GetUnreadNotificationCount)
-      query(:get_resource_hub, Q.GetResourceHub)
-      query(:get_resource_hub_document, Q.GetResourceHubDocument)
-      query(:get_resource_hub_file, Q.GetResourceHubFile)
-      query(:get_resource_hub_folder, Q.GetResourceHubFolder)
-      query(:get_resource_hub_link, Q.GetResourceHubLink)
-      query(:list_resource_hub_nodes, Q.ListResourceHubNodes)
       query(:get_work_map, Q.GetWorkMap)
       query(:get_flat_work_map, Q.GetFlatWorkMap)
       query(:global_search, Q.GlobalSearch)
@@ -238,28 +274,9 @@ defmodule OperatelyWeb.Api do
 
       mutation(:invite_guest, M.InviteGuest)
       mutation(:grant_resource_access, M.GrantResourceAccess)
-
-      mutation(:copy_resource_hub_folder, M.CopyResourceHubFolder)
       mutation(:create_goal_discussion, M.CreateGoalDiscussion)
-      mutation(:create_resource_hub, M.CreateResourceHub)
-      mutation(:create_resource_hub_document, M.CreateResourceHubDocument)
-      mutation(:create_resource_hub_file, M.CreateResourceHubFile)
-      mutation(:create_resource_hub_folder, M.CreateResourceHubFolder)
-      mutation(:create_resource_hub_link, M.CreateResourceHubLink)
-      mutation(:publish_resource_hub_document, M.PublishResourceHubDocument)
-
-      mutation(:delete_resource_hub_document, M.DeleteResourceHubDocument)
-      mutation(:delete_resource_hub_file, M.DeleteResourceHubFile)
-      mutation(:delete_resource_hub_folder, M.DeleteResourceHubFolder)
-      mutation(:delete_resource_hub_link, M.DeleteResourceHubLink)
-
       mutation(:edit_goal_discussion, M.EditGoalDiscussion)
-      mutation(:edit_resource_hub_document, M.EditResourceHubDocument)
-      mutation(:edit_resource_hub_file, M.EditResourceHubFile)
-      mutation(:edit_resource_hub_link, M.EditResourceHubLink)
       mutation(:edit_subscriptions_list, M.EditSubscriptionsList)
-      mutation(:edit_parent_folder_in_resource_hub, M.EditParentFolderInResourceHub)
-      mutation(:rename_resource_hub_folder, M.RenameResourceHubFolder)
 
       mutation(:mark_all_notifications_as_read, M.MarkAllNotificationsAsRead)
       mutation(:mark_notification_as_read, M.MarkNotificationAsRead)

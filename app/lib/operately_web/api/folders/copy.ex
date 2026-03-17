@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.CopyResourceHubFolder do
+defmodule OperatelyWeb.Api.Folders.Copy do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

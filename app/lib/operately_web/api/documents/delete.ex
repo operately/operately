@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.DeleteResourceHubDocument do
+defmodule OperatelyWeb.Api.Documents.Delete do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

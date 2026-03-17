@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.EditParentFolderInResourceHub do
+defmodule OperatelyWeb.Api.ResourceHubs.UpdateParentFolder do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

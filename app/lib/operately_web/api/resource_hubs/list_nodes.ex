@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.ListResourceHubNodes do
+defmodule OperatelyWeb.Api.ResourceHubs.ListNodes do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 

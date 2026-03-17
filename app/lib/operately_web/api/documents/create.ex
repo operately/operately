@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.CreateResourceHubDocument do
+defmodule OperatelyWeb.Api.Documents.Create do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
