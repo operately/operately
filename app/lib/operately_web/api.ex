@@ -11,7 +11,6 @@ defmodule OperatelyWeb.Api do
         query(:list_access_members, OperatelyWeb.Api.Goals.ListAccessMembers)
         query(:list_check_ins, Q.ListGoalCheckIns)
         query(:list_contributors, OperatelyWeb.Api.Goals.ListContributors)
-        query(:list_discussions, OperatelyWeb.Api.Goals.ListDiscussions)
         query(:search_parent_goal, OperatelyWeb.Api.Goals.SearchParentGoal)
 
         mutation(:create, OperatelyWeb.Api.Goals.Create)
@@ -51,6 +50,13 @@ defmodule OperatelyWeb.Api do
         mutation(:create, OperatelyWeb.Api.GoalCheckIns.Create)
         mutation(:update, OperatelyWeb.Api.GoalCheckIns.Update)
         mutation(:acknowledge, OperatelyWeb.Api.GoalCheckIns.Acknowledge)
+      end
+
+      namespace(:goal_discussions) do
+        query(:list, OperatelyWeb.Api.GoalDiscussions.List)
+
+        mutation(:create, OperatelyWeb.Api.GoalDiscussions.Create)
+        mutation(:update, OperatelyWeb.Api.GoalDiscussions.Update)
       end
 
       namespace(:projects) do
@@ -164,6 +170,7 @@ defmodule OperatelyWeb.Api do
         query(:list_members, OperatelyWeb.Api.Spaces.ListMembers)
         query(:list_tasks, OperatelyWeb.Api.Spaces.ListTasks)
         query(:list_tools, OperatelyWeb.Api.Spaces.ListTools)
+
         mutation(:add_members, OperatelyWeb.Api.Spaces.AddMembers)
         mutation(:create, OperatelyWeb.Api.Spaces.Create)
         mutation(:delete, OperatelyWeb.Api.Spaces.Delete)
@@ -196,6 +203,12 @@ defmodule OperatelyWeb.Api do
       namespace(:companies) do
         query(:list, OperatelyWeb.Api.Companies.List)
         query(:get, OperatelyWeb.Api.Companies.Get)
+        query(:list_activities, OperatelyWeb.Api.Companies.ListActivities)
+        query(:get_activity, OperatelyWeb.Api.Companies.GetActivity)
+        query(:get_work_map, OperatelyWeb.Api.Companies.GetWorkMap)
+        query(:get_flat_work_map, OperatelyWeb.Api.Companies.GetFlatWorkMap)
+        query(:global_search, OperatelyWeb.Api.Companies.GlobalSearch)
+
         mutation(:restore_member, OperatelyWeb.Api.Companies.RestoreMember)
         mutation(:convert_member_to_guest, OperatelyWeb.Api.Companies.ConvertMemberToGuest)
         mutation(:create, OperatelyWeb.Api.Companies.Create)
@@ -207,6 +220,8 @@ defmodule OperatelyWeb.Api do
         mutation(:delete_trusted_email_domain, OperatelyWeb.Api.Companies.DeleteTrustedEmailDomain)
         mutation(:delete_owner, OperatelyWeb.Api.Companies.DeleteOwner)
         mutation(:update, OperatelyWeb.Api.Companies.Update)
+        mutation(:invite_guest, OperatelyWeb.Api.Companies.InviteGuest)
+        mutation(:grant_resource_access, OperatelyWeb.Api.Companies.GrantResourceAccess)
       end
 
       namespace(:comments) do
@@ -275,17 +290,6 @@ defmodule OperatelyWeb.Api do
         mutation(:subscribe, OperatelyWeb.Api.Notifications.Subscribe)
         mutation(:unsubscribe, OperatelyWeb.Api.Notifications.Unsubscribe)
       end
-
-      query(:get_activities, Q.GetActivities)
-      query(:get_activity, Q.GetActivity)
-      query(:get_work_map, Q.GetWorkMap)
-      query(:get_flat_work_map, Q.GetFlatWorkMap)
-      query(:global_search, Q.GlobalSearch)
-
-      mutation(:invite_guest, M.InviteGuest)
-      mutation(:grant_resource_access, M.GrantResourceAccess)
-      mutation(:create_goal_discussion, M.CreateGoalDiscussion)
-      mutation(:edit_goal_discussion, M.EditGoalDiscussion)
 
       subscription(:assignments_count, S.AssignmentsCount)
       subscription(:reload_comments, S.ReloadComments)

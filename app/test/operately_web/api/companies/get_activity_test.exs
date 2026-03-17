@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetActivityTest do
+defmodule OperatelyWeb.Api.Companies.GetActivityTest do
   use OperatelyWeb.TurboCase
 
   import Ecto.Query, only: [from: 2]
@@ -12,7 +12,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivityTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, :get_activity, %{})
+      assert {401, _} = query(ctx.conn, [:companies, :get_activity], %{})
     end
   end
 
@@ -129,7 +129,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivityTest do
       })
       activity = fetch_activity("goal_closing")
 
-      assert {200, res} = query(ctx.conn, :get_activity, %{id: Paths.activity_id(activity)})
+      assert {200, res} = query(ctx.conn, [:companies, :get_activity], %{id: Paths.activity_id(activity)})
 
       assert res.activity.author == Serializer.serialize(ctx.creator)
       assert res.activity.action == "goal_closing"
@@ -148,10 +148,10 @@ defmodule OperatelyWeb.Api.Queries.GetActivityTest do
       })
       activity = fetch_activity("goal_closing")
 
-      assert {200, res} = query(ctx.conn, :get_activity, %{id: Paths.activity_id(activity)})
+      assert {200, res} = query(ctx.conn, [:companies, :get_activity], %{id: Paths.activity_id(activity)})
       assert res.activity.notifications == []
 
-      assert {200, res} = query(ctx.conn, :get_activity, %{
+      assert {200, res} = query(ctx.conn, [:companies, :get_activity], %{
         id: Paths.activity_id(activity),
         include_unread_goal_notifications: true,
       })
@@ -179,7 +179,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivityTest do
         from(a in Operately.Activities.Activity, where: a.action == "project_discussion_submitted")
         |> Repo.one!()
 
-      assert {200, _res} = query(ctx.conn, :get_activity, %{
+      assert {200, _res} = query(ctx.conn, [:companies, :get_activity], %{
         id: Paths.activity_id(activity),
         include_potential_subscribers: true,
       })
@@ -196,12 +196,12 @@ defmodule OperatelyWeb.Api.Queries.GetActivityTest do
   end
 
   defp refute_activity(conn, activity) do
-    assert {404, %{message: msg} = _res} = query(conn, :get_activity, %{id: activity.id})
+    assert {404, %{message: msg} = _res} = query(conn, [:companies, :get_activity], %{id: activity.id})
     assert msg == "The requested resource was not found"
   end
 
   defp assert_activity(conn, activity, goal) do
-    assert {200, res} = query(conn, :get_activity, %{id: activity.id})
+    assert {200, res} = query(conn, [:companies, :get_activity], %{id: activity.id})
 
     assert res.activity.id == Paths.activity_id(activity)
     assert res.activity.action == "goal_created"

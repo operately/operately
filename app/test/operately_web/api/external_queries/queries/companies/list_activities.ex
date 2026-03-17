@@ -1,10 +1,10 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.Goals.ListDiscussions do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.Companies.ListActivities do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
   alias OperatelyWeb.Paths
 
-  def query_name, do: "goals/list_discussions"
+  def query_name, do: "companies/list_activities"
 
   @impl true
   def setup(ctx) do
@@ -16,11 +16,15 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.Goals.ListDiscussions do
 
   @impl true
   def inputs(ctx) do
-    %{goal_id: Paths.goal_id(ctx.goal)}
+    %{
+      scope_type: :company,
+      scope_id: Paths.company_id(ctx.company),
+      actions: []
+    }
   end
 
   @impl true
-  def assert(res, _ctx) do
-    assert is_list(res.discussions)
+  def assert(response, _ctx) do
+    assert is_list(response.activities)
   end
 end

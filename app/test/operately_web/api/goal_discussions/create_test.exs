@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.CreateGoalDiscussionTest do
+defmodule OperatelyWeb.Api.GoalDiscussions.CreateTest do
   use OperatelyWeb.TurboCase
 
   import Operately.PeopleFixtures
@@ -14,7 +14,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalDiscussionTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :create_goal_discussion, %{})
+      assert {401, _} = mutation(ctx.conn, [:goal_discussions, :create], %{})
     end
   end
 
@@ -67,7 +67,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalDiscussionTest do
     end
 
     test "if goal does not exist, it returns an error", ctx do
-      assert mutation(ctx.conn, :create_goal_discussion, %{
+      assert mutation(ctx.conn, [:goal_discussions, :create], %{
         goal_id: "goal-abc-#{Operately.ShortUuid.encode!(Ecto.UUID.generate())}",
         title: "Some title",
         message: rich_text("Hello World") |> Jason.encode!()
@@ -152,7 +152,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalDiscussionTest do
   #
 
   defp request(conn, goal, attrs \\ %{}) do
-    mutation(conn, :create_goal_discussion, Map.merge(%{
+    mutation(conn, [:goal_discussions, :create], Map.merge(%{
       goal_id: Paths.goal_id(goal),
       title: "Some title",
       message: rich_text("Hello World") |> Jason.encode!()

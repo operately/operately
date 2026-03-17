@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.GetActivity do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.Companies.GetActivity do
   use Operately.Support.ExternalApi.QuerySpec
 
   import Ecto.Query, only: [from: 2]
@@ -6,6 +6,8 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.GetActivity do
   alias Operately.Activities.Activity
   alias Operately.Repo
   alias Operately.Support.Factory
+
+  def query_name, do: "companies/get_activity"
 
   @impl true
   def setup(ctx) do

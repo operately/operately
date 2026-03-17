@@ -55,7 +55,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeAvailableStatuses: true,
         }).then((d) => d.task!),
         childrenCount: Api.projects.countChildren({ id: params.id, useTaskId: true }).then((d) => d.childrenCount),
-        activities: Api.getActivities({
+        activities: Api.companies.listActivities({
           scopeId: params.id,
           scopeType: "task",
           actions: TASK_ACTIVITY_TYPES,

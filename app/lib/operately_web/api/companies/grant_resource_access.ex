@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.GrantResourceAccess do
+defmodule OperatelyWeb.Api.Companies.GrantResourceAccess do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

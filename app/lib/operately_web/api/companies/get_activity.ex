@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetActivity do
+defmodule OperatelyWeb.Api.Companies.GetActivity do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
