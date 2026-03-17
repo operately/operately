@@ -85,11 +85,7 @@ defmodule Operately.ApiDocs.Markdown do
 
     #{namespace_section}
 
-    ## Other Endpoints
-
-    These endpoints do not belong to a namespace and are available directly under `/help/api/*`.
-
-    #{root_endpoints_section}
+    #{other_endpoints_section(root_endpoints_section)}
     """
   end
 
@@ -151,7 +147,7 @@ defmodule Operately.ApiDocs.Markdown do
 
     """
     ---
-    title: "#{endpoint.full_name}"
+    title: "#{endpoint.name}"
     description: "Generated reference for the #{endpoint.type} endpoint #{endpoint.full_name}."
     ---
 
@@ -285,6 +281,21 @@ defmodule Operately.ApiDocs.Markdown do
 
   defp namespace_title("root"), do: "Root"
   defp namespace_title(namespace), do: namespace |> String.replace("_", " ") |> String.capitalize()
+
+  defp other_endpoints_section(root_endpoints_section) do
+    if root_endpoints_section == "There are currently no additional endpoints." do
+      ""
+    else
+      """
+
+      ## Other Endpoints
+
+      These endpoints do not belong to a namespace and are available directly under `/help/api/*`.
+
+      #{root_endpoints_section}
+      """
+    end
+  end
 
   defp yes_no(true), do: "Yes"
   defp yes_no(false), do: "No"
