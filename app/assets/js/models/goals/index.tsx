@@ -6,10 +6,11 @@ export type Target = api.Target;
 export type Timeframe = api.Timeframe;
 export type Check = api.GoalCheck;
 
-export { createGoalDiscussion, useEditGoalDiscussion } from "@/api";
-
 export { filterPossibleParentGoals } from "./filterPossibleParentGoals";
 export { useGoalTargets } from "./useGoalTargets";
+
+export const createGoalDiscussion = Api.goal_discussions.create;
+export const useEditGoalDiscussion = Api.goal_discussions.useUpdate;
 
 export const getGoal = Api.goals.get;
 export const getGoals = Api.goals.list;

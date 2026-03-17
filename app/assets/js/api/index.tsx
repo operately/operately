@@ -2277,12 +2277,78 @@ export interface CompaniesGetResult {
   company: Company;
 }
 
+export interface CompaniesGetActivityInput {
+  id?: string | null;
+  includeUnreadGoalNotifications?: boolean | null;
+  includeUnreadProjectNotifications?: boolean | null;
+  includePermissions?: boolean | null;
+  includeSubscriptionsList?: boolean | null;
+  includePotentialSubscribers?: boolean | null;
+}
+
+export interface CompaniesGetActivityResult {
+  activity?: Activity | null;
+}
+
+export interface CompaniesGetFlatWorkMapInput {
+  spaceId?: Id | null;
+  parentGoalId?: Id | null;
+  championId?: Id | null;
+  reviewerId?: Id | null;
+  contributorId?: Id | null;
+  onlyCompleted?: boolean | null;
+  includeAssignees?: boolean | null;
+  includeReviewer?: boolean | null;
+  includeTasks?: boolean | null;
+}
+
+export interface CompaniesGetFlatWorkMapResult {
+  workMap?: WorkMapItem[] | null;
+}
+
+export interface CompaniesGetWorkMapInput {
+  spaceId?: Id | null;
+  parentGoalId?: Id | null;
+  championId?: Id | null;
+  reviewerId?: Id | null;
+  contributorId?: Id | null;
+  onlyCompleted?: boolean | null;
+  includeAssignees?: boolean | null;
+  includeReviewer?: boolean | null;
+}
+
+export interface CompaniesGetWorkMapResult {
+  workMap?: WorkMapItem[] | null;
+}
+
+export interface CompaniesGlobalSearchInput {
+  query: string;
+}
+
+export interface CompaniesGlobalSearchResult {
+  projects: Project[];
+  goals: Goal[];
+  milestones: Milestone[];
+  tasks: Task[];
+  people: Person[];
+}
+
 export interface CompaniesListInput {
   includeMemberCount?: boolean | null;
 }
 
 export interface CompaniesListResult {
   companies?: Company[] | null;
+}
+
+export interface CompaniesListActivitiesInput {
+  scopeId: string;
+  scopeType: ActivityScopeType;
+  actions: string[];
+}
+
+export interface CompaniesListActivitiesResult {
+  activities: Activity[];
 }
 
 export interface DocumentsGetInput {
@@ -2333,76 +2399,10 @@ export interface FoldersGetResult {
   folder?: ResourceHubFolder | null;
 }
 
-export interface GetActivitiesInput {
-  scopeId: string;
-  scopeType: ActivityScopeType;
-  actions: string[];
-}
-
-export interface GetActivitiesResult {
-  activities: Activity[];
-}
-
-export interface GetActivityInput {
-  id?: string | null;
-  includeUnreadGoalNotifications?: boolean | null;
-  includeUnreadProjectNotifications?: boolean | null;
-  includePermissions?: boolean | null;
-  includeSubscriptionsList?: boolean | null;
-  includePotentialSubscribers?: boolean | null;
-}
-
-export interface GetActivityResult {
-  activity?: Activity | null;
-}
-
-export interface GetFlatWorkMapInput {
-  spaceId?: Id | null;
-  parentGoalId?: Id | null;
-  championId?: Id | null;
-  reviewerId?: Id | null;
-  contributorId?: Id | null;
-  onlyCompleted?: boolean | null;
-  includeAssignees?: boolean | null;
-  includeReviewer?: boolean | null;
-  includeTasks?: boolean | null;
-}
-
-export interface GetFlatWorkMapResult {
-  workMap?: WorkMapItem[] | null;
-}
-
 export interface GetThemeInput {}
 
 export interface GetThemeResult {
   theme: AccountTheme;
-}
-
-export interface GetWorkMapInput {
-  spaceId?: Id | null;
-  parentGoalId?: Id | null;
-  championId?: Id | null;
-  reviewerId?: Id | null;
-  contributorId?: Id | null;
-  onlyCompleted?: boolean | null;
-  includeAssignees?: boolean | null;
-  includeReviewer?: boolean | null;
-}
-
-export interface GetWorkMapResult {
-  workMap?: WorkMapItem[] | null;
-}
-
-export interface GlobalSearchInput {
-  query: string;
-}
-
-export interface GlobalSearchResult {
-  projects: Project[];
-  goals: Goal[];
-  milestones: Milestone[];
-  tasks: Task[];
-  people: Person[];
 }
 
 export interface GoalCheckInsGetInput {
@@ -2425,6 +2425,14 @@ export interface GoalCheckInsGetInput {
 
 export interface GoalCheckInsGetResult {
   update: GoalProgressUpdate;
+}
+
+export interface GoalDiscussionsListInput {
+  goalId: Id;
+}
+
+export interface GoalDiscussionsListResult {
+  discussions: Discussion[];
 }
 
 export interface GoalsGetInput {
@@ -2486,14 +2494,6 @@ export interface GoalsListContributorsInput {
 
 export interface GoalsListContributorsResult {
   contributors?: Person[] | null;
-}
-
-export interface GoalsListDiscussionsInput {
-  goalId: Id;
-}
-
-export interface GoalsListDiscussionsResult {
-  discussions: Discussion[];
 }
 
 export interface GoalsSearchParentGoalInput {
@@ -3293,6 +3293,27 @@ export interface CompaniesDeleteTrustedEmailDomainResult {
   company?: Company | null;
 }
 
+export interface CompaniesGrantResourceAccessInput {
+  personId: string;
+  resources: ResourceAccessInput[];
+}
+
+export interface CompaniesGrantResourceAccessResult {
+  success: boolean;
+}
+
+export interface CompaniesInviteGuestInput {
+  fullName: string;
+  email: string;
+  title: string;
+}
+
+export interface CompaniesInviteGuestResult {
+  inviteLink?: InviteLink | null;
+  newAccount: boolean;
+  personId?: string | null;
+}
+
 export interface CompaniesRestoreMemberInput {
   personId?: Id | null;
 }
@@ -3357,18 +3378,6 @@ export interface CreateEmailActivationCodeInput {
 
 export interface CreateEmailActivationCodeResult {}
 
-export interface CreateGoalDiscussionInput {
-  goalId?: Id | null;
-  title?: string | null;
-  message?: string | null;
-  sendNotificationsToEveryone?: boolean | null;
-  subscriberIds?: Id[] | null;
-}
-
-export interface CreateGoalDiscussionResult {
-  id?: string | null;
-}
-
 export interface DeleteCompanyInput {}
 
 export interface DeleteCompanyResult {
@@ -3421,14 +3430,6 @@ export interface DocumentsUpdateInput {
 export interface DocumentsUpdateResult {
   document?: ResourceHubDocument | null;
 }
-
-export interface EditGoalDiscussionInput {
-  activityId?: Id | null;
-  title?: string | null;
-  message?: string | null;
-}
-
-export interface EditGoalDiscussionResult {}
 
 export interface FilesCreateInput {
   resourceHubId?: Id | null;
@@ -3533,6 +3534,26 @@ export interface GoalCheckInsUpdateInput {
 export interface GoalCheckInsUpdateResult {
   update?: GoalProgressUpdate | null;
 }
+
+export interface GoalDiscussionsCreateInput {
+  goalId?: Id | null;
+  title?: string | null;
+  message?: string | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
+}
+
+export interface GoalDiscussionsCreateResult {
+  id?: string | null;
+}
+
+export interface GoalDiscussionsUpdateInput {
+  activityId?: Id | null;
+  title?: string | null;
+  message?: string | null;
+}
+
+export interface GoalDiscussionsUpdateResult {}
 
 export interface GoalsChangeParentInput {
   goalId?: string | null;
@@ -3805,15 +3826,6 @@ export interface GoalsUpdateTargetValueResult {
   success: boolean;
 }
 
-export interface GrantResourceAccessInput {
-  personId: string;
-  resources: ResourceAccessInput[];
-}
-
-export interface GrantResourceAccessResult {
-  success: boolean;
-}
-
 export interface InvitationsGetCompanyInviteLinkInput {}
 
 export interface InvitationsGetCompanyInviteLinkResult {
@@ -3849,18 +3861,6 @@ export interface InvitationsUpdateCompanyInviteLinkInput {
 
 export interface InvitationsUpdateCompanyInviteLinkResult {
   inviteLink?: InviteLink;
-}
-
-export interface InviteGuestInput {
-  fullName: string;
-  email: string;
-  title: string;
-}
-
-export interface InviteGuestResult {
-  inviteLink?: InviteLink | null;
-  newAccount: boolean;
-  personId?: string | null;
 }
 
 export interface JoinCompanyInput {
@@ -4807,28 +4807,8 @@ class ApiNamespaceAi {
 class ApiNamespaceRoot {
   constructor(private client: ApiClient) {}
 
-  async getActivities(input: GetActivitiesInput): Promise<GetActivitiesResult> {
-    return this.client.get("/get_activities", input);
-  }
-
-  async getActivity(input: GetActivityInput): Promise<GetActivityResult> {
-    return this.client.get("/get_activity", input);
-  }
-
-  async getFlatWorkMap(input: GetFlatWorkMapInput): Promise<GetFlatWorkMapResult> {
-    return this.client.get("/get_flat_work_map", input);
-  }
-
   async getTheme(input: GetThemeInput): Promise<GetThemeResult> {
     return this.client.get("/get_theme", input);
-  }
-
-  async getWorkMap(input: GetWorkMapInput): Promise<GetWorkMapResult> {
-    return this.client.get("/get_work_map", input);
-  }
-
-  async globalSearch(input: GlobalSearchInput): Promise<GlobalSearchResult> {
-    return this.client.get("/global_search", input);
   }
 
   async addCompanyOwners(input: AddCompanyOwnersInput): Promise<AddCompanyOwnersResult> {
@@ -4869,24 +4849,8 @@ class ApiNamespaceRoot {
     return this.client.post("/create_email_activation_code", input);
   }
 
-  async createGoalDiscussion(input: CreateGoalDiscussionInput): Promise<CreateGoalDiscussionResult> {
-    return this.client.post("/create_goal_discussion", input);
-  }
-
   async deleteCompany(input: DeleteCompanyInput): Promise<DeleteCompanyResult> {
     return this.client.post("/delete_company", input);
-  }
-
-  async editGoalDiscussion(input: EditGoalDiscussionInput): Promise<EditGoalDiscussionResult> {
-    return this.client.post("/edit_goal_discussion", input);
-  }
-
-  async grantResourceAccess(input: GrantResourceAccessInput): Promise<GrantResourceAccessResult> {
-    return this.client.post("/grant_resource_access", input);
-  }
-
-  async inviteGuest(input: InviteGuestInput): Promise<InviteGuestResult> {
-    return this.client.post("/invite_guest", input);
   }
 
   async joinCompany(input: JoinCompanyInput): Promise<JoinCompanyResult> {
@@ -5079,8 +5043,28 @@ class ApiNamespaceCompanies {
     return this.client.get("/companies/get", input);
   }
 
+  async getActivity(input: CompaniesGetActivityInput): Promise<CompaniesGetActivityResult> {
+    return this.client.get("/companies/get_activity", input);
+  }
+
+  async getFlatWorkMap(input: CompaniesGetFlatWorkMapInput): Promise<CompaniesGetFlatWorkMapResult> {
+    return this.client.get("/companies/get_flat_work_map", input);
+  }
+
+  async getWorkMap(input: CompaniesGetWorkMapInput): Promise<CompaniesGetWorkMapResult> {
+    return this.client.get("/companies/get_work_map", input);
+  }
+
+  async globalSearch(input: CompaniesGlobalSearchInput): Promise<CompaniesGlobalSearchResult> {
+    return this.client.get("/companies/global_search", input);
+  }
+
   async list(input: CompaniesListInput): Promise<CompaniesListResult> {
     return this.client.get("/companies/list", input);
+  }
+
+  async listActivities(input: CompaniesListActivitiesInput): Promise<CompaniesListActivitiesResult> {
+    return this.client.get("/companies/list_activities", input);
   }
 
   async convertMemberToGuest(input: CompaniesConvertMemberToGuestInput): Promise<CompaniesConvertMemberToGuestResult> {
@@ -5115,6 +5099,14 @@ class ApiNamespaceCompanies {
     input: CompaniesDeleteTrustedEmailDomainInput,
   ): Promise<CompaniesDeleteTrustedEmailDomainResult> {
     return this.client.post("/companies/delete_trusted_email_domain", input);
+  }
+
+  async grantResourceAccess(input: CompaniesGrantResourceAccessInput): Promise<CompaniesGrantResourceAccessResult> {
+    return this.client.post("/companies/grant_resource_access", input);
+  }
+
+  async inviteGuest(input: CompaniesInviteGuestInput): Promise<CompaniesInviteGuestResult> {
+    return this.client.post("/companies/invite_guest", input);
   }
 
   async restoreMember(input: CompaniesRestoreMemberInput): Promise<CompaniesRestoreMemberResult> {
@@ -5592,6 +5584,22 @@ class ApiNamespaceProjects {
   }
 }
 
+class ApiNamespaceGoalDiscussions {
+  constructor(private client: ApiClient) {}
+
+  async list(input: GoalDiscussionsListInput): Promise<GoalDiscussionsListResult> {
+    return this.client.get("/goal_discussions/list", input);
+  }
+
+  async create(input: GoalDiscussionsCreateInput): Promise<GoalDiscussionsCreateResult> {
+    return this.client.post("/goal_discussions/create", input);
+  }
+
+  async update(input: GoalDiscussionsUpdateInput): Promise<GoalDiscussionsUpdateResult> {
+    return this.client.post("/goal_discussions/update", input);
+  }
+}
+
 class ApiNamespaceGoalCheckIns {
   constructor(private client: ApiClient) {}
 
@@ -5633,10 +5641,6 @@ class ApiNamespaceGoals {
 
   async listContributors(input: GoalsListContributorsInput): Promise<GoalsListContributorsResult> {
     return this.client.get("/goals/list_contributors", input);
-  }
-
-  async listDiscussions(input: GoalsListDiscussionsInput): Promise<GoalsListDiscussionsResult> {
-    return this.client.get("/goals/list_discussions", input);
   }
 
   async searchParentGoal(input: GoalsSearchParentGoalInput): Promise<GoalsSearchParentGoalResult> {
@@ -5787,6 +5791,7 @@ export class ApiClient {
   public apiNamespaceProjectCheckIns: ApiNamespaceProjectCheckIns;
   public apiNamespaceProjectMilestones: ApiNamespaceProjectMilestones;
   public apiNamespaceProjects: ApiNamespaceProjects;
+  public apiNamespaceGoalDiscussions: ApiNamespaceGoalDiscussions;
   public apiNamespaceGoalCheckIns: ApiNamespaceGoalCheckIns;
   public apiNamespaceGoals: ApiNamespaceGoals;
   public apiNamespaceReactions: ApiNamespaceReactions;
@@ -5812,6 +5817,7 @@ export class ApiClient {
     this.apiNamespaceProjectCheckIns = new ApiNamespaceProjectCheckIns(this);
     this.apiNamespaceProjectMilestones = new ApiNamespaceProjectMilestones(this);
     this.apiNamespaceProjects = new ApiNamespaceProjects(this);
+    this.apiNamespaceGoalDiscussions = new ApiNamespaceGoalDiscussions(this);
     this.apiNamespaceGoalCheckIns = new ApiNamespaceGoalCheckIns(this);
     this.apiNamespaceGoals = new ApiNamespaceGoals(this);
     this.apiNamespaceReactions = new ApiNamespaceReactions(this);
@@ -5849,28 +5855,8 @@ export class ApiClient {
     return toCamel(response.data);
   }
 
-  getActivities(input: GetActivitiesInput): Promise<GetActivitiesResult> {
-    return this.apiNamespaceRoot.getActivities(input);
-  }
-
-  getActivity(input: GetActivityInput): Promise<GetActivityResult> {
-    return this.apiNamespaceRoot.getActivity(input);
-  }
-
-  getFlatWorkMap(input: GetFlatWorkMapInput): Promise<GetFlatWorkMapResult> {
-    return this.apiNamespaceRoot.getFlatWorkMap(input);
-  }
-
   getTheme(input: GetThemeInput): Promise<GetThemeResult> {
     return this.apiNamespaceRoot.getTheme(input);
-  }
-
-  getWorkMap(input: GetWorkMapInput): Promise<GetWorkMapResult> {
-    return this.apiNamespaceRoot.getWorkMap(input);
-  }
-
-  globalSearch(input: GlobalSearchInput): Promise<GlobalSearchResult> {
-    return this.apiNamespaceRoot.globalSearch(input);
   }
 
   addCompanyOwners(input: AddCompanyOwnersInput): Promise<AddCompanyOwnersResult> {
@@ -5909,24 +5895,8 @@ export class ApiClient {
     return this.apiNamespaceRoot.createEmailActivationCode(input);
   }
 
-  createGoalDiscussion(input: CreateGoalDiscussionInput): Promise<CreateGoalDiscussionResult> {
-    return this.apiNamespaceRoot.createGoalDiscussion(input);
-  }
-
   deleteCompany(input: DeleteCompanyInput): Promise<DeleteCompanyResult> {
     return this.apiNamespaceRoot.deleteCompany(input);
-  }
-
-  editGoalDiscussion(input: EditGoalDiscussionInput): Promise<EditGoalDiscussionResult> {
-    return this.apiNamespaceRoot.editGoalDiscussion(input);
-  }
-
-  grantResourceAccess(input: GrantResourceAccessInput): Promise<GrantResourceAccessResult> {
-    return this.apiNamespaceRoot.grantResourceAccess(input);
-  }
-
-  inviteGuest(input: InviteGuestInput): Promise<InviteGuestResult> {
-    return this.apiNamespaceRoot.inviteGuest(input);
   }
 
   joinCompany(input: JoinCompanyInput): Promise<JoinCompanyResult> {
@@ -5944,23 +5914,8 @@ export class ApiClient {
 
 const defaultApiClient = new ApiClient();
 
-export async function getActivities(input: GetActivitiesInput): Promise<GetActivitiesResult> {
-  return defaultApiClient.getActivities(input);
-}
-export async function getActivity(input: GetActivityInput): Promise<GetActivityResult> {
-  return defaultApiClient.getActivity(input);
-}
-export async function getFlatWorkMap(input: GetFlatWorkMapInput): Promise<GetFlatWorkMapResult> {
-  return defaultApiClient.getFlatWorkMap(input);
-}
 export async function getTheme(input: GetThemeInput): Promise<GetThemeResult> {
   return defaultApiClient.getTheme(input);
-}
-export async function getWorkMap(input: GetWorkMapInput): Promise<GetWorkMapResult> {
-  return defaultApiClient.getWorkMap(input);
-}
-export async function globalSearch(input: GlobalSearchInput): Promise<GlobalSearchResult> {
-  return defaultApiClient.globalSearch(input);
 }
 export async function addCompanyOwners(input: AddCompanyOwnersInput): Promise<AddCompanyOwnersResult> {
   return defaultApiClient.addCompanyOwners(input);
@@ -5993,20 +5948,8 @@ export async function createEmailActivationCode(
 ): Promise<CreateEmailActivationCodeResult> {
   return defaultApiClient.createEmailActivationCode(input);
 }
-export async function createGoalDiscussion(input: CreateGoalDiscussionInput): Promise<CreateGoalDiscussionResult> {
-  return defaultApiClient.createGoalDiscussion(input);
-}
 export async function deleteCompany(input: DeleteCompanyInput): Promise<DeleteCompanyResult> {
   return defaultApiClient.deleteCompany(input);
-}
-export async function editGoalDiscussion(input: EditGoalDiscussionInput): Promise<EditGoalDiscussionResult> {
-  return defaultApiClient.editGoalDiscussion(input);
-}
-export async function grantResourceAccess(input: GrantResourceAccessInput): Promise<GrantResourceAccessResult> {
-  return defaultApiClient.grantResourceAccess(input);
-}
-export async function inviteGuest(input: InviteGuestInput): Promise<InviteGuestResult> {
-  return defaultApiClient.inviteGuest(input);
 }
 export async function joinCompany(input: JoinCompanyInput): Promise<JoinCompanyResult> {
   return defaultApiClient.joinCompany(input);
@@ -6018,28 +5961,8 @@ export async function resetPassword(input: ResetPasswordInput): Promise<ResetPas
   return defaultApiClient.resetPassword(input);
 }
 
-export function useGetActivities(input: GetActivitiesInput): UseQueryHookResult<GetActivitiesResult> {
-  return useQuery<GetActivitiesResult>(() => defaultApiClient.getActivities(input));
-}
-
-export function useGetActivity(input: GetActivityInput): UseQueryHookResult<GetActivityResult> {
-  return useQuery<GetActivityResult>(() => defaultApiClient.getActivity(input));
-}
-
-export function useGetFlatWorkMap(input: GetFlatWorkMapInput): UseQueryHookResult<GetFlatWorkMapResult> {
-  return useQuery<GetFlatWorkMapResult>(() => defaultApiClient.getFlatWorkMap(input));
-}
-
 export function useGetTheme(input: GetThemeInput): UseQueryHookResult<GetThemeResult> {
   return useQuery<GetThemeResult>(() => defaultApiClient.getTheme(input));
-}
-
-export function useGetWorkMap(input: GetWorkMapInput): UseQueryHookResult<GetWorkMapResult> {
-  return useQuery<GetWorkMapResult>(() => defaultApiClient.getWorkMap(input));
-}
-
-export function useGlobalSearch(input: GlobalSearchInput): UseQueryHookResult<GlobalSearchResult> {
-  return useQuery<GlobalSearchResult>(() => defaultApiClient.globalSearch(input));
 }
 
 export function useAddCompanyOwners(): UseMutationHookResult<AddCompanyOwnersInput, AddCompanyOwnersResult> {
@@ -6097,33 +6020,8 @@ export function useCreateEmailActivationCode(): UseMutationHookResult<
   );
 }
 
-export function useCreateGoalDiscussion(): UseMutationHookResult<
-  CreateGoalDiscussionInput,
-  CreateGoalDiscussionResult
-> {
-  return useMutation<CreateGoalDiscussionInput, CreateGoalDiscussionResult>((input) =>
-    defaultApiClient.createGoalDiscussion(input),
-  );
-}
-
 export function useDeleteCompany(): UseMutationHookResult<DeleteCompanyInput, DeleteCompanyResult> {
   return useMutation<DeleteCompanyInput, DeleteCompanyResult>((input) => defaultApiClient.deleteCompany(input));
-}
-
-export function useEditGoalDiscussion(): UseMutationHookResult<EditGoalDiscussionInput, EditGoalDiscussionResult> {
-  return useMutation<EditGoalDiscussionInput, EditGoalDiscussionResult>((input) =>
-    defaultApiClient.editGoalDiscussion(input),
-  );
-}
-
-export function useGrantResourceAccess(): UseMutationHookResult<GrantResourceAccessInput, GrantResourceAccessResult> {
-  return useMutation<GrantResourceAccessInput, GrantResourceAccessResult>((input) =>
-    defaultApiClient.grantResourceAccess(input),
-  );
-}
-
-export function useInviteGuest(): UseMutationHookResult<InviteGuestInput, InviteGuestResult> {
-  return useMutation<InviteGuestInput, InviteGuestResult>((input) => defaultApiClient.inviteGuest(input));
 }
 
 export function useJoinCompany(): UseMutationHookResult<JoinCompanyInput, JoinCompanyResult> {
@@ -6146,18 +6044,8 @@ export function useResetPassword(): UseMutationHookResult<ResetPasswordInput, Re
 export default {
   default: defaultApiClient,
 
-  getActivities,
-  useGetActivities,
-  getActivity,
-  useGetActivity,
-  getFlatWorkMap,
-  useGetFlatWorkMap,
   getTheme,
   useGetTheme,
-  getWorkMap,
-  useGetWorkMap,
-  globalSearch,
-  useGlobalSearch,
   addCompanyOwners,
   useAddCompanyOwners,
   addCompanyTrustedEmailDomain,
@@ -6176,16 +6064,8 @@ export default {
   useCreateBlob,
   createEmailActivationCode,
   useCreateEmailActivationCode,
-  createGoalDiscussion,
-  useCreateGoalDiscussion,
   deleteCompany,
   useDeleteCompany,
-  editGoalDiscussion,
-  useEditGoalDiscussion,
-  grantResourceAccess,
-  useGrantResourceAccess,
-  inviteGuest,
-  useInviteGuest,
   joinCompany,
   useJoinCompany,
   requestPasswordReset,
@@ -6566,13 +6446,35 @@ export default {
   },
 
   companies: {
+    getActivity: (input: CompaniesGetActivityInput) => defaultApiClient.apiNamespaceCompanies.getActivity(input),
+    useGetActivity: (input: CompaniesGetActivityInput) =>
+      useQuery<CompaniesGetActivityResult>(() => defaultApiClient.apiNamespaceCompanies.getActivity(input)),
+
+    getFlatWorkMap: (input: CompaniesGetFlatWorkMapInput) =>
+      defaultApiClient.apiNamespaceCompanies.getFlatWorkMap(input),
+    useGetFlatWorkMap: (input: CompaniesGetFlatWorkMapInput) =>
+      useQuery<CompaniesGetFlatWorkMapResult>(() => defaultApiClient.apiNamespaceCompanies.getFlatWorkMap(input)),
+
     list: (input: CompaniesListInput) => defaultApiClient.apiNamespaceCompanies.list(input),
     useList: (input: CompaniesListInput) =>
       useQuery<CompaniesListResult>(() => defaultApiClient.apiNamespaceCompanies.list(input)),
 
+    globalSearch: (input: CompaniesGlobalSearchInput) => defaultApiClient.apiNamespaceCompanies.globalSearch(input),
+    useGlobalSearch: (input: CompaniesGlobalSearchInput) =>
+      useQuery<CompaniesGlobalSearchResult>(() => defaultApiClient.apiNamespaceCompanies.globalSearch(input)),
+
+    getWorkMap: (input: CompaniesGetWorkMapInput) => defaultApiClient.apiNamespaceCompanies.getWorkMap(input),
+    useGetWorkMap: (input: CompaniesGetWorkMapInput) =>
+      useQuery<CompaniesGetWorkMapResult>(() => defaultApiClient.apiNamespaceCompanies.getWorkMap(input)),
+
     get: (input: CompaniesGetInput) => defaultApiClient.apiNamespaceCompanies.get(input),
     useGet: (input: CompaniesGetInput) =>
       useQuery<CompaniesGetResult>(() => defaultApiClient.apiNamespaceCompanies.get(input)),
+
+    listActivities: (input: CompaniesListActivitiesInput) =>
+      defaultApiClient.apiNamespaceCompanies.listActivities(input),
+    useListActivities: (input: CompaniesListActivitiesInput) =>
+      useQuery<CompaniesListActivitiesResult>(() => defaultApiClient.apiNamespaceCompanies.listActivities(input)),
 
     deleteOwner: (input: CompaniesDeleteOwnerInput) => defaultApiClient.apiNamespaceCompanies.deleteOwner(input),
     useDeleteOwner: () =>
@@ -6602,6 +6504,12 @@ export default {
     useCreate: () =>
       useMutation<CompaniesCreateInput, CompaniesCreateResult>((input) =>
         defaultApiClient.apiNamespaceCompanies.create(input),
+      ),
+
+    inviteGuest: (input: CompaniesInviteGuestInput) => defaultApiClient.apiNamespaceCompanies.inviteGuest(input),
+    useInviteGuest: () =>
+      useMutation<CompaniesInviteGuestInput, CompaniesInviteGuestResult>((input) =>
+        defaultApiClient.apiNamespaceCompanies.inviteGuest(input),
       ),
 
     updateMembersPermissions: (input: CompaniesUpdateMembersPermissionsInput) =>
@@ -6641,6 +6549,13 @@ export default {
     useRestoreMember: () =>
       useMutation<CompaniesRestoreMemberInput, CompaniesRestoreMemberResult>((input) =>
         defaultApiClient.apiNamespaceCompanies.restoreMember(input),
+      ),
+
+    grantResourceAccess: (input: CompaniesGrantResourceAccessInput) =>
+      defaultApiClient.apiNamespaceCompanies.grantResourceAccess(input),
+    useGrantResourceAccess: () =>
+      useMutation<CompaniesGrantResourceAccessInput, CompaniesGrantResourceAccessResult>((input) =>
+        defaultApiClient.apiNamespaceCompanies.grantResourceAccess(input),
       ),
   },
 
@@ -7235,6 +7150,24 @@ export default {
       ),
   },
 
+  goal_discussions: {
+    list: (input: GoalDiscussionsListInput) => defaultApiClient.apiNamespaceGoalDiscussions.list(input),
+    useList: (input: GoalDiscussionsListInput) =>
+      useQuery<GoalDiscussionsListResult>(() => defaultApiClient.apiNamespaceGoalDiscussions.list(input)),
+
+    update: (input: GoalDiscussionsUpdateInput) => defaultApiClient.apiNamespaceGoalDiscussions.update(input),
+    useUpdate: () =>
+      useMutation<GoalDiscussionsUpdateInput, GoalDiscussionsUpdateResult>((input) =>
+        defaultApiClient.apiNamespaceGoalDiscussions.update(input),
+      ),
+
+    create: (input: GoalDiscussionsCreateInput) => defaultApiClient.apiNamespaceGoalDiscussions.create(input),
+    useCreate: () =>
+      useMutation<GoalDiscussionsCreateInput, GoalDiscussionsCreateResult>((input) =>
+        defaultApiClient.apiNamespaceGoalDiscussions.create(input),
+      ),
+  },
+
   goal_check_ins: {
     get: (input: GoalCheckInsGetInput) => defaultApiClient.apiNamespaceGoalCheckIns.get(input),
     useGet: (input: GoalCheckInsGetInput) =>
@@ -7282,10 +7215,6 @@ export default {
 
     get: (input: GoalsGetInput) => defaultApiClient.apiNamespaceGoals.get(input),
     useGet: (input: GoalsGetInput) => useQuery<GoalsGetResult>(() => defaultApiClient.apiNamespaceGoals.get(input)),
-
-    listDiscussions: (input: GoalsListDiscussionsInput) => defaultApiClient.apiNamespaceGoals.listDiscussions(input),
-    useListDiscussions: (input: GoalsListDiscussionsInput) =>
-      useQuery<GoalsListDiscussionsResult>(() => defaultApiClient.apiNamespaceGoals.listDiscussions(input)),
 
     updateName: (input: GoalsUpdateNameInput) => defaultApiClient.apiNamespaceGoals.updateName(input),
     useUpdateName: () =>

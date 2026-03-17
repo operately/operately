@@ -113,7 +113,7 @@ function useInviteSubmit(
   setState: React.Dispatch<React.SetStateAction<CompanyAdminAddPeoplePage.PageState>>,
 ) {
   const [add] = Companies.useAddCompanyMember();
-  const [inviteGuest] = Api.useInviteGuest();
+  const [inviteGuest] = Api.companies.useInviteGuest();
 
   const [spaces, setSpaces] = React.useState<CompanyAdminAddPeoplePage.ResourceOption[]>([]);
   const [goals, setGoals] = React.useState<CompanyAdminAddPeoplePage.ResourceOption[]>([]);

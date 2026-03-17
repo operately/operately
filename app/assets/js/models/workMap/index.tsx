@@ -1,4 +1,4 @@
-import Api, { WorkMapItem, getFlatWorkMap, getWorkMap } from "@/api";
+import Api, { WorkMapItem } from "@/api";
 import { Paths, usePaths } from "@/routes/paths";
 import React from "react";
 import { WorkMap } from "turboui";
@@ -6,6 +6,9 @@ import { accessLevelAsNumber } from "../goals";
 import { parseContextualDate } from "../contextualDates";
 import { parseTaskStatusForTurboUi } from "../tasks";
 import { parseSpaceForTurboUI } from "../spaces";
+
+export const getWorkMap = Api.companies.getWorkMap;
+export const getFlatWorkMap = Api.companies.getFlatWorkMap;
 
 /**
  * Converts an API WorkMapItem to the TurboUI WorkMap.Item type
@@ -37,7 +40,6 @@ const convertTimeframe = (timeframe: WorkMapItem["timeframe"]) => {
   };
 };
 
-export { getFlatWorkMap, getWorkMap };
 export type { WorkMapItem };
 
 export function useWorkMapItems(initialItems: WorkMapItem[] = []): [WorkMapItem[], WorkMap.AddNewItemFn] {

@@ -22,7 +22,7 @@ export function useTaskTimelineItems(taskId: string | null, commentEntityType: C
     setIsLoading(true);
 
     Promise.all([
-      Api.getActivities({
+      Api.companies.listActivities({
         scopeId: taskId,
         scopeType: "task",
         actions: TASK_ACTIVITY_TYPES,

@@ -56,7 +56,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
         }).then((d) => d.milestone),
         tasks: Api.project_milestones.listTasks({ milestoneId: params.id }).then((d) => d.tasks),
         childrenCount: Api.projects.countChildren({ id: params.id, useMilestoneId: true }).then((d) => d.childrenCount),
-        activities: Api.getActivities({
+        activities: Api.companies.listActivities({
           scopeId: params.id,
           scopeType: "milestone",
           actions: MILESTONE_ACTIVITY_TYPES,
