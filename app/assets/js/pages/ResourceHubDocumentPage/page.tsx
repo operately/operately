@@ -7,7 +7,7 @@ import * as Reactions from "@/models/reactions";
 import Modal from "@/components/Modal";
 import Forms from "@/components/Forms";
 
-import { usePublishResourceHubDocument, useDeleteResourceHubDocument } from "@/models/resourceHubs";
+import { documents } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 
 import { Spacer } from "@/components/Spacer";
@@ -142,7 +142,7 @@ interface DeleteDocumentModalProps {
 function DeleteDocumentModal({ isOpen, toggleModal }: DeleteDocumentModalProps) {
   const navigate = useNavigate();
   const { document, folder, resourceHub } = useLoadedData();
-  const [remove] = useDeleteResourceHubDocument();
+  const [remove] = documents.useDelete();
   const paths = usePaths();
 
   const form = Forms.useForm({
@@ -204,7 +204,7 @@ function ContinueEditingDraft() {
   const paths = usePaths();
   const { document } = useLoadedData();
 
-  const [publish] = usePublishResourceHubDocument();
+  const [publish] = documents.usePublish();
   const refresh = Pages.useRefresh();
   const editPath = paths.resourceHubEditDocumentPath(document.id!);
 

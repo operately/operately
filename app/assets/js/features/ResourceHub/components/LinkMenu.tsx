@@ -74,7 +74,7 @@ interface DeleteLinkModalProps {
 
 function DeleteLinkModal({ link, isOpen, hideModal }: DeleteLinkModalProps) {
   const { refetch } = useNodesContext();
-  const [remove] = Hub.useDeleteResourceHubLink();
+  const [remove] = Hub.links.useDelete();
 
   const handleDelete = async () => {
     await remove({ linkId: link.id });

@@ -1,6 +1,6 @@
 import * as Pages from "@/components/Pages";
 
-import { getResourceHub, listResourceHubNodes, ResourceHub, ResourceHubNode } from "@/models/resourceHubs";
+import { resource_hubs, ResourceHub, ResourceHubNode } from "@/models/resourceHubs";
 
 interface LoaderResult {
   resourceHub: ResourceHub;
@@ -9,13 +9,13 @@ interface LoaderResult {
 
 export async function loader({ params }): Promise<LoaderResult> {
   const [resourceHub, nodes] = await Promise.all([
-    getResourceHub({
+    resource_hubs.get({
       id: params.id,
       includeSpace: true,
       includePermissions: true,
       includePotentialSubscribers: true,
     }).then((res) => res.resourceHub!),
-    listResourceHubNodes({
+    resource_hubs.listNodes({
       resourceHubId: params.id,
       includeCommentsCount: true,
     }),

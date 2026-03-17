@@ -76,7 +76,7 @@ function DeleteDocumentMenuItem({ document, showConfirmModal }: { document: Hub.
 
 function DeleteDocumentModal({ document, isOpen, hideModal }: { document: Hub.ResourceHubDocument; isOpen: boolean; hideModal: () => void }) {
   const { refetch } = useNodesContext();
-  const [remove] = Hub.useDeleteResourceHubDocument();
+  const [remove] = Hub.documents.useDelete();
 
   const handleDelete = async () => {
     await remove({ documentId: document.id });

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import { emptyContent, IconX, SubscribersSelector } from "turboui";
 import { findFileSize, resizeImage, uploadFile } from "@/models/blobs";
-import { ResourceHub, ResourceHubFolder, createResourceHubFile } from "@/models/resourceHubs";
+import { ResourceHub, ResourceHubFolder, files } from "@/models/resourceHubs";
 
 import Forms from "@/components/Forms";
 import Modal from "@/components/Modal";
@@ -207,7 +207,7 @@ class FileUploader {
   }
 
   private async uploadFiles() {
-    await createResourceHubFile({
+    await files.create({
       files: this.items.map((item) => ({
         name: item.nameWithExtension,
         description: JSON.stringify(item.description),

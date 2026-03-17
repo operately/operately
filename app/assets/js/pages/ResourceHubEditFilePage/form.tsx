@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-import { ResourceHubFile, useEditResourceHubFile } from "@/models/resourceHubs";
+import { ResourceHubFile, files } from "@/models/resourceHubs";
 
 import Forms from "@/components/Forms";
 import { findNameAndExtension } from "@/features/ResourceHub";
@@ -12,7 +12,7 @@ import { areRichTextObjectsEqual } from "turboui";
 export function Form({ file }: { file: ResourceHubFile }) {
   const paths = usePaths();
   const navigate = useNavigate();
-  const [edit] = useEditResourceHubFile();
+  const [edit] = files.useUpdate();
 
   const { name, extension } = findNameAndExtension(file.name!);
 

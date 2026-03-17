@@ -24,32 +24,27 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `companies restore_member` | `op companies restore_member` | `POST` | `/api/external/v1/companies/restore_member` |
 | `companies update` | `op companies update` | `POST` | `/api/external/v1/companies/update` |
 | `companies update_members_permissions` | `op companies update_members_permissions` | `POST` | `/api/external/v1/companies/update_members_permissions` |
-| `copy_resource_hub_folder` | `op copy_resource_hub_folder` | `POST` | `/api/external/v1/copy_resource_hub_folder` |
 | `create_goal_discussion` | `op create_goal_discussion` | `POST` | `/api/external/v1/create_goal_discussion` |
-| `create_resource_hub` | `op create_resource_hub` | `POST` | `/api/external/v1/create_resource_hub` |
-| `create_resource_hub_document` | `op create_resource_hub_document` | `POST` | `/api/external/v1/create_resource_hub_document` |
-| `create_resource_hub_file` | `op create_resource_hub_file` | `POST` | `/api/external/v1/create_resource_hub_file` |
-| `create_resource_hub_folder` | `op create_resource_hub_folder` | `POST` | `/api/external/v1/create_resource_hub_folder` |
-| `create_resource_hub_link` | `op create_resource_hub_link` | `POST` | `/api/external/v1/create_resource_hub_link` |
-| `delete_resource_hub_document` | `op delete_resource_hub_document` | `POST` | `/api/external/v1/delete_resource_hub_document` |
-| `delete_resource_hub_file` | `op delete_resource_hub_file` | `POST` | `/api/external/v1/delete_resource_hub_file` |
-| `delete_resource_hub_folder` | `op delete_resource_hub_folder` | `POST` | `/api/external/v1/delete_resource_hub_folder` |
-| `delete_resource_hub_link` | `op delete_resource_hub_link` | `POST` | `/api/external/v1/delete_resource_hub_link` |
+| `documents create` | `op documents create` | `POST` | `/api/external/v1/documents/create` |
+| `documents delete` | `op documents delete` | `POST` | `/api/external/v1/documents/delete` |
+| `documents get` | `op documents get` | `GET` | `/api/external/v1/documents/get` |
+| `documents publish` | `op documents publish` | `POST` | `/api/external/v1/documents/publish` |
+| `documents update` | `op documents update` | `POST` | `/api/external/v1/documents/update` |
 | `edit_goal_discussion` | `op edit_goal_discussion` | `POST` | `/api/external/v1/edit_goal_discussion` |
-| `edit_parent_folder_in_resource_hub` | `op edit_parent_folder_in_resource_hub` | `POST` | `/api/external/v1/edit_parent_folder_in_resource_hub` |
-| `edit_resource_hub_document` | `op edit_resource_hub_document` | `POST` | `/api/external/v1/edit_resource_hub_document` |
-| `edit_resource_hub_file` | `op edit_resource_hub_file` | `POST` | `/api/external/v1/edit_resource_hub_file` |
-| `edit_resource_hub_link` | `op edit_resource_hub_link` | `POST` | `/api/external/v1/edit_resource_hub_link` |
 | `edit_subscriptions_list` | `op edit_subscriptions_list` | `POST` | `/api/external/v1/edit_subscriptions_list` |
+| `files create` | `op files create` | `POST` | `/api/external/v1/files/create` |
+| `files delete` | `op files delete` | `POST` | `/api/external/v1/files/delete` |
+| `files get` | `op files get` | `GET` | `/api/external/v1/files/get` |
+| `files update` | `op files update` | `POST` | `/api/external/v1/files/update` |
+| `folders copy` | `op folders copy` | `POST` | `/api/external/v1/folders/copy` |
+| `folders create` | `op folders create` | `POST` | `/api/external/v1/folders/create` |
+| `folders delete` | `op folders delete` | `POST` | `/api/external/v1/folders/delete` |
+| `folders get` | `op folders get` | `GET` | `/api/external/v1/folders/get` |
+| `folders rename` | `op folders rename` | `POST` | `/api/external/v1/folders/rename` |
 | `get_activities` | `op get_activities` | `GET` | `/api/external/v1/get_activities` |
 | `get_activity` | `op get_activity` | `GET` | `/api/external/v1/get_activity` |
 | `get_flat_work_map` | `op get_flat_work_map` | `GET` | `/api/external/v1/get_flat_work_map` |
 | `get_notifications` | `op get_notifications` | `GET` | `/api/external/v1/get_notifications` |
-| `get_resource_hub` | `op get_resource_hub` | `GET` | `/api/external/v1/get_resource_hub` |
-| `get_resource_hub_document` | `op get_resource_hub_document` | `GET` | `/api/external/v1/get_resource_hub_document` |
-| `get_resource_hub_file` | `op get_resource_hub_file` | `GET` | `/api/external/v1/get_resource_hub_file` |
-| `get_resource_hub_folder` | `op get_resource_hub_folder` | `GET` | `/api/external/v1/get_resource_hub_folder` |
-| `get_resource_hub_link` | `op get_resource_hub_link` | `GET` | `/api/external/v1/get_resource_hub_link` |
 | `get_unread_notification_count` | `op get_unread_notification_count` | `GET` | `/api/external/v1/get_unread_notification_count` |
 | `get_work_map` | `op get_work_map` | `GET` | `/api/external/v1/get_work_map` |
 | `global_search` | `op global_search` | `GET` | `/api/external/v1/global_search` |
@@ -94,7 +89,10 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `grant_resource_access` | `op grant_resource_access` | `POST` | `/api/external/v1/grant_resource_access` |
 | `invite_guest` | `op invite_guest` | `POST` | `/api/external/v1/invite_guest` |
 | `is_subscribed_to_resource` | `op is_subscribed_to_resource` | `GET` | `/api/external/v1/is_subscribed_to_resource` |
-| `list_resource_hub_nodes` | `op list_resource_hub_nodes` | `GET` | `/api/external/v1/list_resource_hub_nodes` |
+| `links create` | `op links create` | `POST` | `/api/external/v1/links/create` |
+| `links delete` | `op links delete` | `POST` | `/api/external/v1/links/delete` |
+| `links get` | `op links get` | `GET` | `/api/external/v1/links/get` |
+| `links update` | `op links update` | `POST` | `/api/external/v1/links/update` |
 | `mark_all_notifications_as_read` | `op mark_all_notifications_as_read` | `POST` | `/api/external/v1/mark_all_notifications_as_read` |
 | `mark_notification_as_read` | `op mark_notification_as_read` | `POST` | `/api/external/v1/mark_notification_as_read` |
 | `mark_notifications_as_read` | `op mark_notifications_as_read` | `POST` | `/api/external/v1/mark_notifications_as_read` |
@@ -165,10 +163,12 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `projects update_reviewer` | `op projects update_reviewer` | `POST` | `/api/external/v1/projects/update_reviewer` |
 | `projects update_start_date` | `op projects update_start_date` | `POST` | `/api/external/v1/projects/update_start_date` |
 | `projects update_task_statuses` | `op projects update_task_statuses` | `POST` | `/api/external/v1/projects/update_task_statuses` |
-| `publish_resource_hub_document` | `op publish_resource_hub_document` | `POST` | `/api/external/v1/publish_resource_hub_document` |
 | `reactions create` | `op reactions create` | `POST` | `/api/external/v1/reactions/create` |
 | `reactions delete` | `op reactions delete` | `POST` | `/api/external/v1/reactions/delete` |
-| `rename_resource_hub_folder` | `op rename_resource_hub_folder` | `POST` | `/api/external/v1/rename_resource_hub_folder` |
+| `resource_hubs create` | `op resource_hubs create` | `POST` | `/api/external/v1/resource_hubs/create` |
+| `resource_hubs get` | `op resource_hubs get` | `GET` | `/api/external/v1/resource_hubs/get` |
+| `resource_hubs list_nodes` | `op resource_hubs list_nodes` | `GET` | `/api/external/v1/resource_hubs/list_nodes` |
+| `resource_hubs update_parent_folder` | `op resource_hubs update_parent_folder` | `POST` | `/api/external/v1/resource_hubs/update_parent_folder` |
 | `space_discussions archive` | `op space_discussions archive` | `POST` | `/api/external/v1/space_discussions/archive` |
 | `space_discussions create` | `op space_discussions create` | `POST` | `/api/external/v1/space_discussions/create` |
 | `space_discussions get` | `op space_discussions get` | `GET` | `/api/external/v1/space_discussions/get` |

@@ -1,6 +1,6 @@
 import React from "react";
 
-import { ResourceHub, ResourceHubFolder, useCreateResourceHubFolder } from "@/models/resourceHubs";
+import { ResourceHub, ResourceHubFolder, folders } from "@/models/resourceHubs";
 import Modal from "@/components/Modal";
 import Forms from "@/components/Forms";
 import { useNewFileModalsContext } from "./contexts/NewFileModalsContext";
@@ -12,7 +12,7 @@ interface FormProps {
 }
 
 export function AddFolderModal({ resourceHub, refresh, folder }: FormProps) {
-  const [post] = useCreateResourceHubFolder();
+  const [post] = folders.useCreate();
   const { showAddFolder, toggleShowAddFolder } = useNewFileModalsContext();
 
   const form = Forms.useForm({

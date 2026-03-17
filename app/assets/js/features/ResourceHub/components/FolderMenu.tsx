@@ -103,7 +103,7 @@ function DeleteFolderModal({
   hideModal: () => void;
 }) {
   const { refetch } = useNodesContext();
-  const [remove] = Hub.useDeleteResourceHubFolder();
+  const [remove] = Hub.folders.useDelete();
 
   const handleDelete = async () => {
     await remove({ folderId: folder.id });
@@ -130,7 +130,7 @@ function DeleteFolderModal({
 }
 
 export function RenameFolderModal({ folder, showForm, toggleForm, onSave }: FormProps & { onSave: () => void }) {
-  const [rename] = Hub.useRenameResourceHubFolder();
+  const [rename] = Hub.folders.useRename();
 
   const form = Forms.useForm({
     fields: {

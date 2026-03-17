@@ -1,6 +1,6 @@
 import * as Pages from "@/components/Pages";
 import { LinkOptions } from "@/features/ResourceHub";
-import { getResourceHub, getResourceHubFolder, ResourceHub, ResourceHubFolder } from "@/models/resourceHubs";
+import { resource_hubs, folders, ResourceHub, ResourceHubFolder } from "@/models/resourceHubs";
 
 interface LoaderResult {
   resourceHub: ResourceHub;
@@ -13,13 +13,13 @@ export async function loader({ params, request }): Promise<LoaderResult> {
   const { folderId, type } = Object.fromEntries(url.searchParams.entries());
 
   const [resourceHub, folder] = await Promise.all([
-    getResourceHub({
+    resource_hubs.get({
       id: params.id,
       includeSpace: true,
       includePotentialSubscribers: true,
     }).then((res) => res.resourceHub!),
     folderId
-      ? getResourceHubFolder({
+      ? folders.get({
           id: folderId,
           includePathToFolder: true,
         }).then((res) => res.folder!)
