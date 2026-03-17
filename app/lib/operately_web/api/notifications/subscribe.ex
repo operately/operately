@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.SubscribeToNotifications do
+defmodule OperatelyWeb.Api.Notifications.Subscribe do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Mutations.MarkAllNotificationsAsReadTest do
+defmodule OperatelyWeb.Api.Notifications.MarkAllAsReadTest do
   use OperatelyWeb.TurboCase
 
   import Operately.ActivitiesFixtures
@@ -7,7 +7,7 @@ defmodule OperatelyWeb.Api.Mutations.MarkAllNotificationsAsReadTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, :mark_all_notifications_as_read, %{})
+      assert {401, _} = mutation(ctx.conn, [:notifications, :mark_all_as_read], %{})
     end
   end
 
@@ -21,7 +21,7 @@ defmodule OperatelyWeb.Api.Mutations.MarkAllNotificationsAsReadTest do
       n2 = notification_fixture(person_id: ctx.person.id, read: false, activity_id: activity.id)
       n3 = notification_fixture(person_id: ctx.person.id, read: true, activity_id: activity.id)
 
-      assert {200, %{}} = mutation(ctx.conn, :mark_all_notifications_as_read, %{})
+      assert {200, %{}} = mutation(ctx.conn, [:notifications, :mark_all_as_read], %{})
 
       assert Operately.Notifications.get_notification!(n1.id).read
       assert Operately.Notifications.get_notification!(n2.id).read
@@ -38,7 +38,7 @@ defmodule OperatelyWeb.Api.Mutations.MarkAllNotificationsAsReadTest do
       other_person = person_fixture(company_id: ctx.person.company_id)
       n4 = notification_fixture(person_id: other_person.id, read: false, activity_id: activity.id)
 
-      assert {200, %{}} = mutation(ctx.conn, :mark_all_notifications_as_read, %{})
+      assert {200, %{}} = mutation(ctx.conn, [:notifications, :mark_all_as_read], %{})
 
       assert Operately.Notifications.get_notification!(n1.id).read
       assert Operately.Notifications.get_notification!(n2.id).read
@@ -46,4 +46,4 @@ defmodule OperatelyWeb.Api.Mutations.MarkAllNotificationsAsReadTest do
       refute Operately.Notifications.get_notification!(n4.id).read
     end
   end
-end 
+end

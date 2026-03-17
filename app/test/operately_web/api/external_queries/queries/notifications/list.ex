@@ -1,7 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.GetNotifications do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.Notifications.List do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
+
+  def query_name, do: "notifications/list"
 
   @impl true
   def setup(ctx), do: Factory.setup(ctx)

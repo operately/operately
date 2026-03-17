@@ -1,8 +1,10 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.IsSubscribedToResource do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.Notifications.IsSubscribed do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
   alias OperatelyWeb.Paths
+
+  def query_name, do: "notifications/is_subscribed"
 
   @impl true
   def setup(ctx) do

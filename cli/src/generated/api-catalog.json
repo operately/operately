@@ -19491,6 +19491,300 @@
       "method": "POST"
     },
     {
+      "name": "get_unread_count",
+      "type": "query",
+      "path": "/api/external/v1/notifications/get_unread_count",
+      "handler": "OperatelyWeb.Api.Notifications.GetUnreadCount",
+      "outputs": [
+        {
+          "default": null,
+          "name": "unread",
+          "type": {
+            "name": "integer",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "notifications",
+      "inputs": [],
+      "full_name": "notifications/get_unread_count",
+      "method": "GET"
+    },
+    {
+      "name": "is_subscribed",
+      "type": "query",
+      "path": "/api/external/v1/notifications/is_subscribed",
+      "handler": "OperatelyWeb.Api.Notifications.IsSubscribed",
+      "outputs": [
+        {
+          "default": null,
+          "name": "subscribed",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "notifications",
+      "inputs": [
+        {
+          "default": null,
+          "name": "resource_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "resource_type",
+          "type": {
+            "name": "subscription_parent_type",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "notifications/is_subscribed",
+      "method": "GET"
+    },
+    {
+      "name": "list",
+      "type": "query",
+      "path": "/api/external/v1/notifications/list",
+      "handler": "OperatelyWeb.Api.Notifications.List",
+      "outputs": [
+        {
+          "default": null,
+          "name": "notifications",
+          "type": {
+            "item": {
+              "name": "notification",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "notifications",
+      "inputs": [
+        {
+          "default": null,
+          "name": "page",
+          "type": {
+            "name": "integer",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "per_page",
+          "type": {
+            "name": "integer",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "notifications/list",
+      "method": "GET"
+    },
+    {
+      "name": "mark_all_as_read",
+      "type": "mutation",
+      "path": "/api/external/v1/notifications/mark_all_as_read",
+      "handler": "OperatelyWeb.Api.Notifications.MarkAllAsRead",
+      "outputs": [],
+      "namespace": "notifications",
+      "inputs": [],
+      "full_name": "notifications/mark_all_as_read",
+      "method": "POST"
+    },
+    {
+      "name": "mark_as_read",
+      "type": "mutation",
+      "path": "/api/external/v1/notifications/mark_as_read",
+      "handler": "OperatelyWeb.Api.Notifications.MarkAsRead",
+      "outputs": [],
+      "namespace": "notifications",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "notifications/mark_as_read",
+      "method": "POST"
+    },
+    {
+      "name": "mark_many_as_read",
+      "type": "mutation",
+      "path": "/api/external/v1/notifications/mark_many_as_read",
+      "handler": "OperatelyWeb.Api.Notifications.MarkManyAsRead",
+      "outputs": [],
+      "namespace": "notifications",
+      "inputs": [
+        {
+          "default": null,
+          "name": "ids",
+          "type": {
+            "item": {
+              "name": "string",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "notifications/mark_many_as_read",
+      "method": "POST"
+    },
+    {
+      "name": "subscribe",
+      "type": "mutation",
+      "path": "/api/external/v1/notifications/subscribe",
+      "handler": "OperatelyWeb.Api.Notifications.Subscribe",
+      "outputs": [],
+      "namespace": "notifications",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "type",
+          "type": {
+            "name": "subscription_parent_type",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "notifications/subscribe",
+      "method": "POST"
+    },
+    {
+      "name": "unsubscribe",
+      "type": "mutation",
+      "path": "/api/external/v1/notifications/unsubscribe",
+      "handler": "OperatelyWeb.Api.Notifications.Unsubscribe",
+      "outputs": [],
+      "namespace": "notifications",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "full_name": "notifications/unsubscribe",
+      "method": "POST"
+    },
+    {
+      "name": "update_subscriptions_list",
+      "type": "mutation",
+      "path": "/api/external/v1/notifications/update_subscriptions_list",
+      "handler": "OperatelyWeb.Api.Notifications.UpdateSubscriptionsList",
+      "outputs": [],
+      "namespace": "notifications",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "type",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "send_notifications_to_everyone",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "subscriber_ids",
+          "type": {
+            "item": {
+              "name": "string",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "full_name": "notifications/update_subscriptions_list",
+      "method": "POST"
+    },
+    {
       "name": "get",
       "type": "query",
       "path": "/api/external/v1/people/get",
@@ -24321,65 +24615,6 @@
       "method": "POST"
     },
     {
-      "name": "edit_subscriptions_list",
-      "type": "mutation",
-      "path": "/api/external/v1/edit_subscriptions_list",
-      "handler": "OperatelyWeb.Api.Mutations.EditSubscriptionsList",
-      "outputs": [],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "type",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "send_notifications_to_everyone",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "subscriber_ids",
-          "type": {
-            "item": {
-              "name": "string",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "edit_subscriptions_list",
-      "method": "POST"
-    },
-    {
       "name": "get_activities",
       "type": "query",
       "path": "/api/external/v1/get_activities",
@@ -24656,78 +24891,6 @@
         }
       ],
       "full_name": "get_flat_work_map",
-      "method": "GET"
-    },
-    {
-      "name": "get_notifications",
-      "type": "query",
-      "path": "/api/external/v1/get_notifications",
-      "handler": "OperatelyWeb.Api.Queries.GetNotifications",
-      "outputs": [
-        {
-          "default": null,
-          "name": "notifications",
-          "type": {
-            "item": {
-              "name": "notification",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "page",
-          "type": {
-            "name": "integer",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "per_page",
-          "type": {
-            "name": "integer",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "get_notifications",
-      "method": "GET"
-    },
-    {
-      "name": "get_unread_notification_count",
-      "type": "query",
-      "path": "/api/external/v1/get_unread_notification_count",
-      "handler": "OperatelyWeb.Api.Queries.GetUnreadNotificationCount",
-      "outputs": [
-        {
-          "default": null,
-          "name": "unread",
-          "type": {
-            "name": "integer",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": null,
-      "inputs": [],
-      "full_name": "get_unread_notification_count",
       "method": "GET"
     },
     {
@@ -25065,169 +25228,6 @@
         }
       ],
       "full_name": "invite_guest",
-      "method": "POST"
-    },
-    {
-      "name": "is_subscribed_to_resource",
-      "type": "query",
-      "path": "/api/external/v1/is_subscribed_to_resource",
-      "handler": "OperatelyWeb.Api.Queries.IsSubscribedToResource",
-      "outputs": [
-        {
-          "default": null,
-          "name": "subscribed",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "resource_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "resource_type",
-          "type": {
-            "name": "subscription_parent_type",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "is_subscribed_to_resource",
-      "method": "GET"
-    },
-    {
-      "name": "mark_all_notifications_as_read",
-      "type": "mutation",
-      "path": "/api/external/v1/mark_all_notifications_as_read",
-      "handler": "OperatelyWeb.Api.Mutations.MarkAllNotificationsAsRead",
-      "outputs": [],
-      "namespace": null,
-      "inputs": [],
-      "full_name": "mark_all_notifications_as_read",
-      "method": "POST"
-    },
-    {
-      "name": "mark_notification_as_read",
-      "type": "mutation",
-      "path": "/api/external/v1/mark_notification_as_read",
-      "handler": "OperatelyWeb.Api.Mutations.MarkNotificationAsRead",
-      "outputs": [],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "mark_notification_as_read",
-      "method": "POST"
-    },
-    {
-      "name": "mark_notifications_as_read",
-      "type": "mutation",
-      "path": "/api/external/v1/mark_notifications_as_read",
-      "handler": "OperatelyWeb.Api.Mutations.MarkNotificationsAsRead",
-      "outputs": [],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "ids",
-          "type": {
-            "item": {
-              "name": "string",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "full_name": "mark_notifications_as_read",
-      "method": "POST"
-    },
-    {
-      "name": "subscribe_to_notifications",
-      "type": "mutation",
-      "path": "/api/external/v1/subscribe_to_notifications",
-      "handler": "OperatelyWeb.Api.Mutations.SubscribeToNotifications",
-      "outputs": [],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "type",
-          "type": {
-            "name": "subscription_parent_type",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "subscribe_to_notifications",
-      "method": "POST"
-    },
-    {
-      "name": "unsubscribe_from_notifications",
-      "type": "mutation",
-      "path": "/api/external/v1/unsubscribe_from_notifications",
-      "handler": "OperatelyWeb.Api.Mutations.UnsubscribeFromNotifications",
-      "outputs": [],
-      "namespace": null,
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "full_name": "unsubscribe_from_notifications",
       "method": "POST"
     },
     {
@@ -27598,6 +27598,6 @@
     }
   ],
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-17T10:28:46Z",
+  "generated_at": "2026-03-17T12:26:51Z",
   "schema_version": 1
 }

@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetUnreadNotificationCountTest do
+defmodule OperatelyWeb.Api.Notifications.GetUnreadCountTest do
   use OperatelyWeb.TurboCase
 
   import Operately.ActivitiesFixtures
@@ -6,7 +6,7 @@ defmodule OperatelyWeb.Api.Queries.GetUnreadNotificationCountTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, :get_unread_notification_count, %{})
+      assert {401, _} = query(ctx.conn, [:notifications, :get_unread_count], %{})
     end
   end
 
@@ -20,8 +20,8 @@ defmodule OperatelyWeb.Api.Queries.GetUnreadNotificationCountTest do
       notification_fixture(person_id: ctx.person.id, read: true, activity_id: activity.id)
       notification_fixture(person_id: ctx.person.id, read: true, activity_id: activity.id)
 
-      assert {200, res} = query(ctx.conn, :get_unread_notification_count, %{})
+      assert {200, res} = query(ctx.conn, [:notifications, :get_unread_count], %{})
       assert res == %{unread: 1}
     end
   end
-end 
+end

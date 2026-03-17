@@ -1,4 +1,4 @@
-import * as Api from "@/api";
+import Api, { Notification } from "@/api";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Notifications from "@/models/notifications";
@@ -19,17 +19,17 @@ import { usePaths } from "../../routes/paths";
 export default { name: "NotificationsPage", loader, Page } as PageModule;
 
 interface LoaderResult {
-  notifications: Api.Notification[];
+  notifications: Notification[];
 }
 
 async function loader(): Promise<LoaderResult> {
-  const data = await Api.getNotifications({
+  const data = await Api.notifications.list({
     page: 1,
     perPage: 100,
   });
 
   return {
-    notifications: data.notifications as Api.Notification[],
+    notifications: data.notifications as Notification[],
   };
 }
 
