@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Spaces.Get do
+  @moduledoc """
+  Retrieves a space by ID with optional related data.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
@@ -6,7 +10,7 @@ defmodule OperatelyWeb.Api.Spaces.Get do
   alias Operately.Notifications.UnreadNotificationsLoader
 
   inputs do
-    field? :id, :id, null: true
+    field :id, :id, null: false
     field? :include_permissions, :boolean, null: true
     field? :include_members, :boolean, null: true
     field? :include_access_levels, :boolean, null: true
@@ -16,7 +20,7 @@ defmodule OperatelyWeb.Api.Spaces.Get do
   end
 
   outputs do
-    field? :space, :space, null: true
+    field :space, :space, null: false
   end
 
   def call(conn, inputs) do

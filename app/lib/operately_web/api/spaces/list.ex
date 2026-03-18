@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Spaces.List do
+  @moduledoc """
+  Lists all spaces accessible to the current user.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
@@ -12,7 +16,7 @@ defmodule OperatelyWeb.Api.Spaces.List do
   end
 
   outputs do
-    field? :spaces, list_of(:space), null: true
+    field :spaces, list_of(:space), null: false
   end
 
   def call(conn, inputs) do
