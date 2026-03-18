@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Spaces.UpdatePermissions do
+  @moduledoc """
+  Updates permissions for a space.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -7,7 +11,7 @@ defmodule OperatelyWeb.Api.Spaces.UpdatePermissions do
   alias Operately.Operations.GroupPermissionsEditing
 
   inputs do
-    field :space_id, :string, null: false
+    field :space_id, :id, null: false
     field :access_levels, :access_levels, null: false
   end
 
@@ -18,8 +22,7 @@ defmodule OperatelyWeb.Api.Spaces.UpdatePermissions do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:space_id, fn -> decode_id(inputs.space_id) end)
-    |> run(:space, fn ctx -> Groups.get_group_with_access_level(ctx.space_id, ctx.me.id) end)
+    |> run(:space, fn ctx -> Groups.get_group_with_access_level(inputs.space_id, ctx.me.id) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.requester_access_level, :has_full_access) end)
     |> run(:operation, fn ctx -> GroupPermissionsEditing.run(ctx.me, ctx.space, inputs.access_levels) end)
     |> run(:serialized, fn -> {:ok, %{success: true}} end)
@@ -29,7 +32,6 @@ defmodule OperatelyWeb.Api.Spaces.UpdatePermissions do
   def respond(result) do
     case result do
       {:ok, ctx} -> {:ok, ctx.serialized}
-      {:error, :space_id, _} -> {:error, :bad_request}
       {:error, :space, _} -> {:error, :not_found}
       {:error, :check_permissions, _} -> {:error, :forbidden}
       {:error, :operation, _} -> {:error, :internal_server_error}

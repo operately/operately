@@ -62,6 +62,10 @@ defmodule OperatelyWeb.Api.Spaces do
   end
 
   defmodule UpdateKanban do
+    @moduledoc """
+    Updates the kanban state and status of a task in a space.
+    """
+
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
@@ -73,7 +77,7 @@ defmodule OperatelyWeb.Api.Spaces do
     end
 
     outputs do
-      field :task, :task
+      field :task, :task, null: false
     end
 
     def call(conn, inputs) do
@@ -198,6 +202,10 @@ defmodule OperatelyWeb.Api.Spaces do
   end
 
   defmodule UpdateTaskStatuses do
+    @moduledoc """
+    Updates task statuses for a space.
+    """
+
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
@@ -227,6 +235,10 @@ defmodule OperatelyWeb.Api.Spaces do
   end
 
   defmodule UpdateTools do
+    @moduledoc """
+    Updates the tools configuration for a space.
+    """
+
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
