@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.ProjectCheckIns.List do
+  @moduledoc """
+  Lists all project check-ins for a given project with optional related data.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
@@ -7,23 +11,19 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.List do
   alias Operately.Projects.CheckIn
 
   inputs do
-    field :project_id, :string
+    field :project_id, :id
     field? :include_author, :boolean
     field? :include_project, :boolean
     field? :include_reactions, :boolean
   end
 
   outputs do
-    field? :project_check_ins, list_of(:project_check_in), null: true
+    field :project_check_ins, list_of(:project_check_in), null: false
   end
 
   def call(conn, inputs) do
-    case decode_id(inputs[:project_id]) do
-      {:ok, id} ->
-        project_check_ins = load(me(conn), id, inputs)
-        {:ok, %{project_check_ins: Serializer.serialize(project_check_ins, level: :essential)}}
-      {:error, _} -> {:error, :bad_request}
-    end
+    project_check_ins = load(me(conn), inputs.project_id, inputs)
+    {:ok, %{project_check_ins: Serializer.serialize(project_check_ins, level: :essential)}}
   end
 
   defp load(person, id, inputs) do
