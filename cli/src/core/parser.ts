@@ -40,6 +40,14 @@ export function parseCommand(argv: string[], registry: EndpointRegistry, types: 
     return { kind: "version" };
   }
 
+  // Check for --help flag
+  const helpFlagIndex = argv.findIndex((arg) => arg === "--help");
+  if (helpFlagIndex !== -1) {
+    // Get command parts before --help flag
+    const commandParts = argv.slice(0, helpFlagIndex);
+    return { kind: "help", commandParts };
+  }
+
   if (argv[0] === "auth") {
     const action = argv[1];
 
@@ -153,7 +161,11 @@ function parseGlobalFlags(flags: Map<string, unknown[]>): GlobalFlags {
   return globalFlags;
 }
 
-function parseEndpointInputs(endpoint: CatalogEndpoint, flags: Map<string, unknown[]>, types: CatalogTypes): Record<string, unknown> {
+function parseEndpointInputs(
+  endpoint: CatalogEndpoint,
+  flags: Map<string, unknown[]>,
+  types: CatalogTypes,
+): Record<string, unknown> {
   const rawInputs: Record<string, unknown> = {};
   const fieldNames = new Set(endpoint.inputs.map((field) => field.name));
 
@@ -204,7 +216,11 @@ function setPathValue(currentValue: unknown, path: string[], newValue: unknown):
   return objectValue;
 }
 
-function coerceEndpointInputs(fields: CatalogField[], raw: Record<string, unknown>, types: CatalogTypes): Record<string, unknown> {
+function coerceEndpointInputs(
+  fields: CatalogField[],
+  raw: Record<string, unknown>,
+  types: CatalogTypes,
+): Record<string, unknown> {
   const output: Record<string, unknown> = {};
   const knownFields = new Set(fields.map((field) => field.name));
 
@@ -296,7 +312,9 @@ function coerceFieldValue(
 
   if (type.kind === "list") {
     const list = Array.isArray(value) ? value : [value];
-    return list.map((entry, index) => coerceFieldValue(type.item, entry, { nullable: false }, types, `${path}[${index}]`));
+    return list.map((entry, index) =>
+      coerceFieldValue(type.item, entry, { nullable: false }, types, `${path}[${index}]`),
+    );
   }
 
   const typeName = type.name;
@@ -321,7 +339,13 @@ function coerceFieldValue(
   if (types.primitives[typeName]) {
     const primitiveType = types.primitives[typeName];
     if (primitiveType.encoded_type) {
-      return coerceFieldValue({ kind: "named", name: primitiveType.encoded_type }, value, { nullable: false }, types, path);
+      return coerceFieldValue(
+        { kind: "named", name: primitiveType.encoded_type },
+        value,
+        { nullable: false },
+        types,
+        path,
+      );
     }
 
     return value;
