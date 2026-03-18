@@ -29,7 +29,7 @@ async function main(argv: string[]): Promise<number> {
 
   if (parsed.kind === "help") {
     if (parsed.commandParts.length === 0) {
-      printGeneralHelp(registry);
+      printGeneralHelp(registry, catalog.namespace_descriptions || {});
       return 0;
     }
 

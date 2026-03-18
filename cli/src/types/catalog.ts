@@ -57,4 +57,5 @@ export interface Catalog {
   mutation_count: number;
   types: CatalogTypes;
   endpoints: CatalogEndpoint[];
+  namespace_descriptions?: Record<string, string>;
 }

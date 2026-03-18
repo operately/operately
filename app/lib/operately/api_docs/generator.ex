@@ -81,13 +81,16 @@ defmodule Operately.ApiDocs.Generator do
         {if(namespace == "root", do: 0, else: 1), namespace}
       end)
 
+    namespace_descriptions = api_module.__namespace_descriptions__()
+
     %{
       types: api_module.__types__(),
       queries: queries,
       mutations: mutations,
       endpoints: endpoints,
       endpoints_by_namespace: endpoints_by_namespace,
-      namespaces: namespaces
+      namespaces: namespaces,
+      namespace_descriptions: namespace_descriptions
     }
   end
 

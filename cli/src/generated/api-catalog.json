@@ -27597,7 +27597,29 @@
       "method": "POST"
     }
   ],
+  "namespace_descriptions": {
+    "comments": "List, create and manage comments on resources",
+    "companies": "Get, list, update and manage company settings, members, and permissions",
+    "documents": "Get, create and manage documents in resource hubs",
+    "files": "Get, upload and manage files in resource hubs",
+    "folders": "Get, create and manage folders in resource hubs",
+    "goal_check_ins": "Get, list, create and manage goal check-ins",
+    "goal_discussions": "List, create and manage goal discussions",
+    "goals": "Get, list, create and manage goals",
+    "links": "Get, create and manage links in resource hubs",
+    "notifications": "List and manage notifications and subscriptions",
+    "people": "Get, list, update and manage user profiles and account settings",
+    "project_check_ins": "Get, list, create and manage project check-ins",
+    "project_discussions": "Get, list, create and manage project discussions",
+    "project_milestones": "Get, list, create and manage project milestones",
+    "projects": "Get, list, create and manage projects",
+    "reactions": "Add or remove emoji reactions to content",
+    "resource_hubs": "Get and create resource hubs",
+    "space_discussions": "Get, list, create and manage space discussions",
+    "spaces": "Get, list, create and manage spaces",
+    "tasks": "Get, list, create and manage tasks across projects and spaces"
+  },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-17T18:22:36Z",
+  "generated_at": "2026-03-18T10:45:31Z",
   "schema_version": 1
 }
