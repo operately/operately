@@ -110,6 +110,7 @@ defmodule TurboConnect.TsGenTest do
   @ts_imports """
   import React from "react";
   import axios from "axios";
+  import { handleStaleClientError } from "./staleClient";
   """
 
   @ts_types """
@@ -217,14 +218,24 @@ defmodule TurboConnect.TsGenTest do
 
     // @ts-ignore
     async post(path: string, data: any) {
-      const response = await axios.post(this.getBasePath() + path, toSnake(data), { headers: this.getHeaders() });
-      return toCamel(response.data);
+      try {
+        const response = await axios.post(this.getBasePath() + path, toSnake(data), { headers: this.getHeaders() });
+        return toCamel(response.data);
+      } catch (error) {
+        handleStaleClientError(error);
+        throw error;
+      }
     }
 
     // @ts-ignore
     async get(path: string, params: any) {
-      const response = await axios.get(this.getBasePath() + path, { params: toSnake(params), headers: this.getHeaders() });
-      return toCamel(response.data);
+      try {
+        const response = await axios.get(this.getBasePath() + path, { params: toSnake(params), headers: this.getHeaders() });
+        return toCamel(response.data);
+      } catch (error) {
+        handleStaleClientError(error);
+        throw error;
+      }
     }
 
     getUser(input: GetUserInput): Promise<GetUserResult> {

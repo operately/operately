@@ -34,6 +34,7 @@ defmodule TurboConnect.TsGen do
     """
     import React from "react";
     import axios from "axios";
+    import { handleStaleClientError } from "./staleClient";
     """
   end
 
@@ -105,19 +106,9 @@ defmodule TurboConnect.TsGen do
         return this.headers || {};
       }
 
-      // @ts-ignore
-      async post(path: string, data: any) {
-        const response = await axios.post(this.getBasePath() + path, toSnake(data), { headers: this.getHeaders() });
-        return toCamel(response.data);
-      }
-
-      // @ts-ignore
-      async get(path: string, params: any) {
-        const response = await axios.get(this.getBasePath() + path, { params: toSnake(params), headers: this.getHeaders() });
-        return toCamel(response.data);
-      }
-
-    #{generate_root_namespace_delegators(api_module)}
+#{generate_request_fn(:post)}
+#{generate_request_fn(:get)}
+#{generate_root_namespace_delegators(api_module)}
     }
     """
   end
@@ -146,6 +137,50 @@ defmodule TurboConnect.TsGen do
     #{Queries.generate_root_namespace_delegators(api_module.__queries__())}
     #{Mutations.generate_root_namespace_delegators(api_module.__mutations__())}
     """
+  end
+
+  defp generate_request_fn(method) do
+    response_line =
+      case method do
+        :post ->
+          "const response = await axios.post(this.getBasePath() + path, toSnake(data), { headers: this.getHeaders() });"
+
+        :get ->
+          "const response = await axios.get(this.getBasePath() + path, { params: toSnake(params), headers: this.getHeaders() });"
+      end
+
+    args =
+      case method do
+        :post -> "path: string, data: any"
+        :get -> "path: string, params: any"
+      end
+
+    block =
+      """
+      // @ts-ignore
+      async #{method}(#{args}) {
+        try {
+          #{response_line}
+          return toCamel(response.data);
+        } catch (error) {
+          handleStaleClientError(error);
+          throw error;
+        }
+      }
+      """
+
+    indent_block(block, 2)
+  end
+
+  defp indent_block(block, spaces) do
+    indent = String.duplicate(" ", spaces)
+
+    block
+    |> String.split("\n")
+    |> Enum.map_join("\n", fn
+      "" -> ""
+      line -> indent <> line
+    end)
   end
 
   def convert_objects(objects) do
