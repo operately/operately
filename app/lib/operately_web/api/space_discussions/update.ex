@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.SpaceDiscussions.Update do
+  @moduledoc """
+  Updates a space discussion.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
