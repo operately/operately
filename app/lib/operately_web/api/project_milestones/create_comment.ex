@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.ProjectMilestones.CreateComment do
+  @moduledoc """
+  Creates a comment on a project milestone with an optional action (none, reopen, complete).
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

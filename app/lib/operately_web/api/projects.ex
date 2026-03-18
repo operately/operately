@@ -7,6 +7,10 @@ defmodule OperatelyWeb.Api.Projects do
   alias OperatelyWeb.Api.Serializer
 
   defmodule ListContributors do
+    @moduledoc """
+    Lists contributors for a project.
+    """
+
     use TurboConnect.Query
 
     inputs do
@@ -33,6 +37,10 @@ defmodule OperatelyWeb.Api.Projects do
   end
 
   defmodule Search do
+    @moduledoc """
+    Searches for projects.
+    """
+
     use TurboConnect.Query
     use OperatelyWeb.Api.Helpers
 
@@ -63,6 +71,10 @@ defmodule OperatelyWeb.Api.Projects do
   end
 
   defmodule SearchParentGoal do
+    @moduledoc """
+    Searches for potential parent goals for a project.
+    """
+
     use TurboConnect.Query
 
     inputs do
@@ -88,6 +100,10 @@ defmodule OperatelyWeb.Api.Projects do
   end
 
   defmodule ListMilestones do
+    @moduledoc """
+    Lists milestones for a project.
+    """
+
     use TurboConnect.Query
 
     inputs do
@@ -113,6 +129,10 @@ defmodule OperatelyWeb.Api.Projects do
   end
 
   defmodule UpdateDueDate do
+    @moduledoc """
+    Updates the due date of a project.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
@@ -145,6 +165,10 @@ defmodule OperatelyWeb.Api.Projects do
   end
 
   defmodule UpdateKanban do
+    @moduledoc """
+    Updates the kanban state of a task in a project.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
@@ -178,6 +202,10 @@ defmodule OperatelyWeb.Api.Projects do
   end
 
   defmodule UpdateStartDate do
+    @moduledoc """
+    Updates the start date of a project.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
@@ -210,6 +238,10 @@ defmodule OperatelyWeb.Api.Projects do
   end
 
   defmodule UpdateTaskStatuses do
+    @moduledoc """
+    Updates the available task statuses for a project.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
@@ -238,6 +270,10 @@ defmodule OperatelyWeb.Api.Projects do
   end
 
   defmodule UpdateChampion do
+    @moduledoc """
+    Updates the champion of a project.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
@@ -270,6 +306,10 @@ defmodule OperatelyWeb.Api.Projects do
   end
 
   defmodule UpdateParentGoal do
+    @moduledoc """
+    Updates the parent goal of a project.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
@@ -306,6 +346,10 @@ defmodule OperatelyWeb.Api.Projects do
   end
 
   defmodule UpdateReviewer do
+    @moduledoc """
+    Updates the reviewer of a project.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
@@ -338,6 +382,10 @@ defmodule OperatelyWeb.Api.Projects do
   end
 
   defmodule CreateMilestone do
+    @moduledoc """
+    Creates a milestone for a project.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
@@ -375,6 +423,10 @@ defmodule OperatelyWeb.Api.Projects do
   end
 
   defmodule UpdateMilestone do
+    @moduledoc """
+    Updates a project milestone.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
@@ -425,6 +477,10 @@ defmodule OperatelyWeb.Api.Projects do
   end
 
   defmodule DeleteProject do
+    @moduledoc """
+    Deletes a project.
+    """
+
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
@@ -454,6 +510,10 @@ defmodule OperatelyWeb.Api.Projects do
   end
 
   defmodule CountChildren do
+    @moduledoc """
+    Counts discussions, tasks, and check-ins for a project.
+    """
+
     use TurboConnect.Query
 
     inputs do

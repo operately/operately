@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.ProjectCheckIns.Get do
+  @moduledoc """
+  Retrieves a single project check-in by ID with optional related data.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
@@ -6,7 +10,7 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.Get do
   alias Operately.Notifications.UnreadNotificationsLoader
 
   inputs do
-    field :id, :string, null: false
+    field :id, :id, null: false
     field? :include_author, :boolean, null: false
     field? :include_acknowledged_by, :boolean, null: false
     field? :include_project, :boolean, null: false
@@ -24,7 +28,6 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.Get do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:id, fn -> decode_id(inputs.id) end)
     |> run(:check_in, fn ctx -> load(ctx, inputs) end)
     |> run(:serialized, fn ctx -> {:ok, %{project_check_in: Serializer.serialize(ctx.check_in, level: :full)}} end)
     |> respond()
@@ -33,14 +36,13 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.Get do
   defp respond(result) do
     case result do
       {:ok, ctx} -> {:ok, ctx.serialized}
-      {:error, :id, _} -> {:error, :bad_request}
       {:error, :check_in, _} -> {:error, :not_found}
       _ -> {:error, :internal_server_error}
     end
   end
 
   defp load(ctx, inputs) do
-    CheckIn.get(ctx.me, id: ctx.id, opts: [
+    CheckIn.get(ctx.me, id: inputs.id, opts: [
       preload: preload(inputs),
       auth_preload: auth_preload(inputs),
       after_load: after_load(inputs, ctx.me),

@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Projects.UpdateDescription do
+  @moduledoc """
+  Updates the description of a project.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

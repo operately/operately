@@ -2646,7 +2646,7 @@ export interface PeopleSearchResult {
 }
 
 export interface ProjectCheckInsGetInput {
-  id: string;
+  id: Id;
   includeAuthor?: boolean;
   includeAcknowledgedBy?: boolean;
   includeProject?: boolean;
@@ -2662,14 +2662,14 @@ export interface ProjectCheckInsGetResult {
 }
 
 export interface ProjectCheckInsListInput {
-  projectId: string;
+  projectId: Id;
   includeAuthor?: boolean;
   includeProject?: boolean;
   includeReactions?: boolean;
 }
 
 export interface ProjectCheckInsListResult {
-  projectCheckIns?: ProjectCheckIn[] | null;
+  projectCheckIns: ProjectCheckIn[];
 }
 
 export interface ProjectDiscussionsGetInput {
@@ -2766,11 +2766,11 @@ export interface ProjectsGetContributorResult {
 }
 
 export interface ProjectsGetKeyResourceInput {
-  id?: string | null;
+  id: Id;
 }
 
 export interface ProjectsGetKeyResourceResult {
-  keyResource?: ProjectKeyResource | null;
+  keyResource: ProjectKeyResource;
 }
 
 export interface ProjectsGetRetrospectiveInput {
@@ -2792,8 +2792,8 @@ export interface ProjectsGetRetrospectiveResult {
 export interface ProjectsListInput {
   onlyMyProjects?: boolean | null;
   onlyReviewedByMe?: boolean | null;
-  spaceId?: string | null;
-  goalId?: string | null;
+  spaceId?: Id | null;
+  goalId?: Id | null;
   includeSpace?: boolean | null;
   includeMilestones?: boolean | null;
   includeContributors?: boolean | null;
@@ -2807,7 +2807,7 @@ export interface ProjectsListInput {
 }
 
 export interface ProjectsListResult {
-  projects?: Project[] | null;
+  projects: Project[];
 }
 
 export interface ProjectsListContributorsInput {
@@ -2850,12 +2850,12 @@ export interface ProjectsSearchParentGoalResult {
 }
 
 export interface ProjectsSearchPotentialContributorsInput {
-  projectId?: string | null;
+  projectId: Id;
   query?: string | null;
 }
 
 export interface ProjectsSearchPotentialContributorsResult {
-  people?: Person[] | null;
+  people: Person[];
 }
 
 export interface ResourceHubsGetInput {
@@ -3984,29 +3984,29 @@ export interface ProjectCheckInsAcknowledgeInput {
 }
 
 export interface ProjectCheckInsAcknowledgeResult {
-  checkIn?: ProjectCheckIn | null;
+  checkIn: ProjectCheckIn;
 }
 
 export interface ProjectCheckInsCreateInput {
-  projectId?: string | null;
-  status?: string | null;
-  description?: string | null;
+  projectId: Id;
+  status: string;
+  description: string;
   sendNotificationsToEveryone?: boolean | null;
-  subscriberIds?: string[] | null;
+  subscriberIds?: Id[] | null;
 }
 
 export interface ProjectCheckInsCreateResult {
-  checkIn?: ProjectCheckIn | null;
+  checkIn: ProjectCheckIn;
 }
 
 export interface ProjectCheckInsUpdateInput {
-  checkInId?: string | null;
-  status?: string | null;
-  description?: string | null;
+  checkInId: Id;
+  status: string;
+  description: string;
 }
 
 export interface ProjectCheckInsUpdateResult {
-  checkIn?: ProjectCheckIn | null;
+  checkIn: ProjectCheckIn;
 }
 
 export interface ProjectDiscussionsCreateInput {
@@ -4029,7 +4029,7 @@ export interface ProjectDiscussionsUpdateInput {
 }
 
 export interface ProjectDiscussionsUpdateResult {
-  discussion: Update;
+  discussion: CommentThread;
 }
 
 export interface ProjectMilestonesCreateCommentInput {
@@ -4101,8 +4101,8 @@ export interface ProjectsCloseInput {
   projectId: Id;
   retrospective: string;
   successStatus: string;
-  sendNotificationsToEveryone?: boolean;
-  subscriberIds?: Id[];
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
 }
 
 export interface ProjectsCloseResult {
@@ -4121,7 +4121,7 @@ export interface ProjectsCreateInput {
 }
 
 export interface ProjectsCreateResult {
-  project?: Project | null;
+  project: Project;
 }
 
 export interface ProjectsCreateContributorInput {
@@ -4133,11 +4133,11 @@ export interface ProjectsCreateContributorInput {
 }
 
 export interface ProjectsCreateContributorResult {
-  projectContributor?: ProjectContributor | null;
+  projectContributor: ProjectContributor;
 }
 
 export interface ProjectsCreateContributorsInput {
-  projectId: string;
+  projectId: Id;
   contributors: ProjectContributorInput[];
 }
 
@@ -4175,15 +4175,15 @@ export interface ProjectsDeleteResult {
 }
 
 export interface ProjectsDeleteContributorInput {
-  contribId?: string | null;
+  contribId: string;
 }
 
 export interface ProjectsDeleteContributorResult {
-  projectContributor?: ProjectContributor | null;
+  projectContributor: ProjectContributor;
 }
 
 export interface ProjectsDeleteKeyResourceInput {
-  id: string;
+  id: Id;
 }
 
 export interface ProjectsDeleteKeyResourceResult {
@@ -4191,18 +4191,18 @@ export interface ProjectsDeleteKeyResourceResult {
 }
 
 export interface ProjectsMoveToSpaceInput {
-  projectId?: string | null;
-  spaceId?: string | null;
+  projectId: Id;
+  spaceId: Id;
 }
 
 export interface ProjectsMoveToSpaceResult {}
 
 export interface ProjectsPauseInput {
-  projectId?: string | null;
+  projectId: Id;
 }
 
 export interface ProjectsPauseResult {
-  project?: Project | null;
+  project: Project;
 }
 
 export interface ProjectsResumeInput {
@@ -4268,7 +4268,7 @@ export interface ProjectsUpdateKanbanResult {
 }
 
 export interface ProjectsUpdateKeyResourceInput {
-  id: string;
+  id: Id;
   title: string;
   link: string;
 }
@@ -4289,12 +4289,12 @@ export interface ProjectsUpdateMilestoneResult {
 }
 
 export interface ProjectsUpdateNameInput {
-  projectId?: string | null;
-  name?: string | null;
+  projectId: Id;
+  name: string;
 }
 
 export interface ProjectsUpdateNameResult {
-  project?: Project | null;
+  project: Project;
 }
 
 export interface ProjectsUpdateParentGoalInput {
@@ -4308,12 +4308,12 @@ export interface ProjectsUpdateParentGoalResult {
 }
 
 export interface ProjectsUpdatePermissionsInput {
-  projectId?: string | null;
-  accessLevels?: AccessLevels | null;
+  projectId: Id;
+  accessLevels: AccessLevels;
 }
 
 export interface ProjectsUpdatePermissionsResult {
-  success?: boolean | null;
+  success: boolean;
 }
 
 export interface ProjectsUpdateRetrospectiveInput {

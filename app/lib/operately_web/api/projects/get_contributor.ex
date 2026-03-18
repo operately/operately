@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Projects.GetContributor do
+  @moduledoc """
+  Retrieves a project contributor by ID.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 

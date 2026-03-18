@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Projects.Create do
+  @moduledoc """
+  Creates a new project in a space.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -19,7 +23,7 @@ defmodule OperatelyWeb.Api.Projects.Create do
   end
 
   outputs do
-    field? :project, :project, null: true
+    field :project, :project, null: false
   end
 
   def call(conn, inputs) do

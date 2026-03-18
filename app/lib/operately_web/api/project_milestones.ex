@@ -3,6 +3,10 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
   alias OperatelyWeb.Api.Serializer
 
   defmodule ListTasks do
+    @moduledoc """
+    Lists all tasks associated with a project milestone.
+    """
+
     use TurboConnect.Query
 
     inputs do
@@ -27,6 +31,10 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
   end
 
   defmodule UpdateKanban do
+    @moduledoc """
+    Updates the kanban state for a task within a milestone and changes the task status.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
@@ -56,6 +64,10 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
   end
 
   defmodule UpdateTitle do
+    @moduledoc """
+    Updates the title of a project milestone.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
@@ -91,6 +103,10 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
   end
 
   defmodule UpdateDescription do
+    @moduledoc """
+    Updates the description of a project milestone.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
@@ -127,6 +143,10 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
   end
 
   defmodule UpdateDueDate do
+    @moduledoc """
+    Updates the due date of a project milestone.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
@@ -164,6 +184,10 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
   end
 
   defmodule Delete do
+    @moduledoc """
+    Deletes a project milestone.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
@@ -197,6 +221,10 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
   end
 
   defmodule UpdateOrdering do
+    @moduledoc """
+    Updates the ordering state of milestones within a project.
+    """
+
     use TurboConnect.Mutation
 
     inputs do

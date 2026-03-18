@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Projects.CreateKeyResource do
+  @moduledoc """
+  Creates a key resource for a project.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -9,7 +13,7 @@ defmodule OperatelyWeb.Api.Projects.CreateKeyResource do
     field :project_id, :id, null: false
     field :title, :string, null: false
     field :link, :string, null: false
-    field? :resource_type, :string
+    field? :resource_type, :string, null: false
   end
 
   outputs do

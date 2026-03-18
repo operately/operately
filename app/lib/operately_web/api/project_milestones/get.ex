@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.ProjectMilestones.Get do
+  @moduledoc """
+  Retrieves a project milestone by ID with optional related data.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
