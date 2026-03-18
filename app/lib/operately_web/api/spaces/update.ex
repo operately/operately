@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Spaces.Update do
+  @moduledoc """
+  Updates a space's name and mission.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

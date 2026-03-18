@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.SpaceDiscussions.Publish do
+  @moduledoc """
+  Publishes a space discussion draft.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -6,11 +10,11 @@ defmodule OperatelyWeb.Api.SpaceDiscussions.Publish do
   alias Operately.Operations.DiscussionPublishing
 
   inputs do
-    field? :id, :id, null: true
+    field :id, :id, null: false
   end
 
   outputs do
-    field? :discussion, :discussion, null: true
+    field :discussion, :discussion, null: false
   end
 
   def call(conn, inputs) do

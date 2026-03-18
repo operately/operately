@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Spaces.DeleteMember do
+  @moduledoc """
+  Removes a member from a space.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

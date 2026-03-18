@@ -151,14 +151,14 @@ defmodule OperatelyWeb.Api.Spaces.SearchPotentialMembersTest do
     test "exlude_ids excludes members from result", ctx do
       assert {200, res} = query(ctx.conn, [:spaces, :search_potential_members], %{
         group_id: Paths.space_id(ctx.space),
-        exclude_ids: [ctx.person1.id],
+        exclude_ids: [Paths.person_id(ctx.person1)],
       })
       assert length(res.people) == 1
       assert Enum.find(res.people, &(&1 == Serializer.serialize(ctx.person2)))
 
       assert {200, res} = query(ctx.conn, [:spaces, :search_potential_members], %{
         group_id: Paths.space_id(ctx.space),
-        exclude_ids: [ctx.person2.id],
+        exclude_ids: [Paths.person_id(ctx.person2)],
       })
       assert length(res.people) == 1
       assert Enum.find(res.people, &(&1 == Serializer.serialize(ctx.person1)))

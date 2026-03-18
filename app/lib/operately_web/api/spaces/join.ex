@@ -1,11 +1,15 @@
 defmodule OperatelyWeb.Api.Spaces.Join do
+  @moduledoc """
+  Joins a space.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
   alias Operately.Groups.{Permissions, Group}
 
   inputs do
-    field? :space_id, :id, null: true
+    field :space_id, :id, null: false
   end
 
   def call(conn, inputs) do

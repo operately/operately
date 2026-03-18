@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Spaces.SearchPotentialMembers do
+  @moduledoc """
+  Searches for potential members to add to a space.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
@@ -8,21 +12,19 @@ defmodule OperatelyWeb.Api.Spaces.SearchPotentialMembers do
   alias Operately.Groups.{Group, Member}
 
   inputs do
-    field? :group_id, :string, null: true
-    field? :query, :string, null: true
-    field? :exclude_ids, list_of(:string), null: true
-    field? :limit, :integer, null: true
+    field :group_id, :id, null: false
+    field? :query, :string, null: false
+    field? :exclude_ids, list_of(:id), null: false
+    field? :limit, :integer, null: false
   end
 
   outputs do
-    field? :people, list_of(:person), null: true
+    field :people, list_of(:person), null: false
   end
 
   def call(conn, inputs) do
-    {:ok, space_id} = decode_id(inputs.group_id)
-
-    if has_permissions?(me(conn), space_id) do
-      people = load_members(inputs, space_id, company(conn))
+    if has_permissions?(me(conn), inputs.group_id) do
+      people = load_members(inputs, inputs.group_id, company(conn))
       {:ok, %{people: Serializer.serialize(people)}}
     else
       {:ok, %{people: []}}

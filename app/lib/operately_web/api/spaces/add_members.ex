@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Spaces.AddMembers do
+  @moduledoc """
+  Adds members to a space.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
