@@ -54,6 +54,7 @@ defmodule OperatelyWeb.Endpoint do
   plug Plug.Session, @session_options
 
   plug OperatelyWeb.Logger
+  plug :put_version_header
 
   if Application.compile_env(:operately, :dev_routes) do
     plug :debug
@@ -87,5 +88,9 @@ defmodule OperatelyWeb.Endpoint do
       db_folder: Cert.folder(),
       directory_url: Cert.directory_url()
     )
+  end
+
+  defp put_version_header(conn, _opts) do
+    Plug.Conn.put_resp_header(conn, "x-operately-version", Operately.version())
   end
 end
