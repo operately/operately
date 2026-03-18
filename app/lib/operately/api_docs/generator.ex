@@ -135,7 +135,9 @@ defmodule Operately.ApiDocs.Generator do
       File.mkdir_p!(namespace_dir)
 
       namespace_endpoints = Map.get(catalog.endpoints_by_namespace, namespace, [])
-      write_file!(Path.join(namespace_dir, "index.mdx"), Markdown.namespace_index(namespace, namespace_endpoints))
+      namespace_atom = if is_binary(namespace), do: String.to_existing_atom(namespace), else: namespace
+      namespace_description = Map.get(catalog.namespace_descriptions, namespace_atom, "")
+      write_file!(Path.join(namespace_dir, "index.mdx"), Markdown.namespace_index(namespace, namespace_endpoints, namespace_description))
 
       Enum.each(namespace_endpoints, fn endpoint ->
         endpoint_file = Path.join(namespace_dir, "#{endpoint.name}.mdx")

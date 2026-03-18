@@ -89,7 +89,7 @@ defmodule Operately.ApiDocs.Markdown do
     """
   end
 
-  def namespace_index(namespace, endpoints) do
+  def namespace_index(namespace, endpoints, namespace_description \\ nil) do
     endpoint_rows =
       endpoints
       |> Enum.map(fn endpoint ->
@@ -127,12 +127,23 @@ defmodule Operately.ApiDocs.Markdown do
         """
       end
 
+    description_section =
+      if namespace_description && namespace_description != "" do
+        """
+        #{namespace_description}
+
+        """
+      else
+        ""
+      end
+
     """
     ---
     title: API #{namespace_title(namespace)}
     description: Generated endpoint reference for the #{namespace_title(namespace)} namespace.
     ---
 
+    #{description_section}
     #{endpoints_section}
     """
   end
