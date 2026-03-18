@@ -5,6 +5,10 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
   alias OperatelyWeb.Api.Serializer
 
   defmodule Get do
+    @moduledoc """
+    Retrieves a single project discussion by ID with optional related data.
+    """
+
     use TurboConnect.Query
     use OperatelyWeb.Api.Helpers
     alias Operately.Comments.CommentThread
@@ -82,6 +86,10 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
   end
 
   defmodule List do
+    @moduledoc """
+    Lists all discussions for a given project.
+    """
+
     use TurboConnect.Query
 
     inputs do
@@ -105,6 +113,10 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
   end
 
   defmodule Create do
+    @moduledoc """
+    Creates a new project discussion.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
@@ -143,6 +155,10 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
   end
 
   defmodule Update do
+    @moduledoc """
+    Updates an existing project discussion's title and/or message.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
@@ -153,7 +169,7 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
     end
 
     outputs do
-      field :discussion, :update
+      field :discussion, :comment_thread
     end
 
     def call(conn, inputs) do
