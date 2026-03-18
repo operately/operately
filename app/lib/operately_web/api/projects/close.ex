@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Projects.Close do
+  @moduledoc """
+  Closes a project with retrospective and success status.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -6,11 +10,11 @@ defmodule OperatelyWeb.Api.Projects.Close do
   alias Operately.Operations.ProjectClosed
 
   inputs do
-    field :project_id, :id
-    field :retrospective, :string
-    field :success_status, :string
-    field? :send_notifications_to_everyone, :boolean
-    field? :subscriber_ids, list_of(:id)
+    field :project_id, :id, null: false
+    field :retrospective, :string, null: false
+    field :success_status, :string, null: false
+    field? :send_notifications_to_everyone, :boolean, null: true
+    field? :subscriber_ids, list_of(:id), null: true
   end
 
   outputs do

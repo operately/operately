@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Projects.GetRetrospective do
+  @moduledoc """
+  Retrieves a project retrospective.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 

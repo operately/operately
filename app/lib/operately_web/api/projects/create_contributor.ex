@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Projects.CreateContributor do
+  @moduledoc """
+  Adds a contributor to a project.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -6,8 +10,8 @@ defmodule OperatelyWeb.Api.Projects.CreateContributor do
   alias Operately.Access.Binding
 
   inputs do
-    field :project_id, :id
-    field :person_id, :id
+    field :project_id, :id, null: false
+    field :person_id, :id, null: false
 
     field :responsibility, :string, null: false
     field :permissions, :access_options, null: false
@@ -15,7 +19,7 @@ defmodule OperatelyWeb.Api.Projects.CreateContributor do
   end
 
   outputs do
-    field? :project_contributor, :project_contributor, null: true
+    field :project_contributor, :project_contributor, null: false
   end
 
   def call(conn, inputs) do

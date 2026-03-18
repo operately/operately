@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Projects.Get do
+  @moduledoc """
+  Retrieves a project by ID with optional includes for related data.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
@@ -7,7 +11,7 @@ defmodule OperatelyWeb.Api.Projects.Get do
   alias Operately.Notifications.UnreadNotificationsLoader
 
   inputs do
-    field? :id, :string, null: true
+    field :id, :id, null: false
 
     field? :include_contributors, :boolean, null: true
     field? :include_goal, :boolean, null: true
@@ -36,8 +40,7 @@ defmodule OperatelyWeb.Api.Projects.Get do
 
   def call(conn, inputs) do
     with :ok <- check_inputs(inputs),
-         {:ok, id} <- decode_id(inputs[:id]),
-         {:ok, project} <- load(me(conn), id, inputs) do
+         {:ok, project} <- load(me(conn), inputs.id, inputs) do
       serialize(project, inputs[:include_markdown])
     end
   end

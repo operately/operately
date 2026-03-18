@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Projects.UpdateKeyResource do
+  @moduledoc """
+  Updates a project key resource.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -6,7 +10,7 @@ defmodule OperatelyWeb.Api.Projects.UpdateKeyResource do
   alias Operately.Projects.{Permissions, KeyResource}
 
   inputs do
-    field :id, :string, null: false
+    field :id, :id, null: false
     field :title, :string, null: false
     field :link, :string, null: false
   end
@@ -18,8 +22,7 @@ defmodule OperatelyWeb.Api.Projects.UpdateKeyResource do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:id, fn -> decode_id(inputs.id) end)
-    |> run(:resource, fn ctx -> fetch_key_resource(ctx) end)
+    |> run(:resource, fn ctx -> fetch_key_resource(ctx, inputs) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.resource.request_info.access_level, :can_edit) end)
     |> run(:operation, fn ctx -> Projects.update_key_resource(ctx.resource, inputs) end)
     |> run(:serialized, fn ctx -> serialize(ctx.operation) end)
@@ -37,8 +40,8 @@ defmodule OperatelyWeb.Api.Projects.UpdateKeyResource do
     end
   end
 
-  defp fetch_key_resource(ctx) do
-    KeyResource.get(ctx.me, id: ctx.id, opts: [preload: :project])
+  defp fetch_key_resource(ctx, inputs) do
+    KeyResource.get(ctx.me, id: inputs.id, opts: [preload: :project])
   end
 
   def serialize(resource) do

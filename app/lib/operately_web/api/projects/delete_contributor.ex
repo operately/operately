@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Projects.DeleteContributor do
+  @moduledoc """
+  Removes a contributor from a project.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -7,11 +11,11 @@ defmodule OperatelyWeb.Api.Projects.DeleteContributor do
   alias Operately.Operations.ProjectContributorRemoved
 
   inputs do
-    field? :contrib_id, :string, null: true
+    field :contrib_id, :string, null: false
   end
 
   outputs do
-    field? :project_contributor, :project_contributor, null: true
+    field :project_contributor, :project_contributor, null: false
   end
 
   def call(conn, inputs) do

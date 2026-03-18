@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Projects.UpdateContributor do
+  @moduledoc """
+  Updates a project contributor's details and permissions.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
