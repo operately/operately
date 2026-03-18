@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.SpaceDiscussions.List do
+  @moduledoc """
+  Lists space discussions for a space.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
@@ -6,14 +10,14 @@ defmodule OperatelyWeb.Api.SpaceDiscussions.List do
   alias Operately.Access.Filters
 
   inputs do
-    field? :space_id, :id, null: true
+    field :space_id, :id, null: false
     field? :include_author, :boolean, null: true
     field? :include_comments_count, :boolean, null: true
     field? :include_my_drafts, :boolean, null: true
   end
 
   outputs do
-    field? :discussions, list_of(:discussion), null: true
+    field :discussions, list_of(:discussion), null: false
     field? :my_drafts, list_of(:discussion), null: true
   end
 

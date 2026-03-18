@@ -5,6 +5,10 @@ defmodule OperatelyWeb.Api.Tasks do
   alias OperatelyWeb.Api.Serializer
 
   defmodule List do
+    @moduledoc """
+    Lists all tasks for a project.
+    """
+
     use TurboConnect.Query
 
     inputs do
@@ -29,6 +33,10 @@ defmodule OperatelyWeb.Api.Tasks do
   end
 
   defmodule UpdateStatus do
+    @moduledoc """
+    Updates the status of a task.
+    """
+
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
@@ -39,7 +47,7 @@ defmodule OperatelyWeb.Api.Tasks do
     end
 
     outputs do
-      field :task, :task
+      field :task, :task, null: false
       field :updated_milestone, :milestone, null: true
     end
 
@@ -91,6 +99,10 @@ defmodule OperatelyWeb.Api.Tasks do
   end
 
   defmodule UpdateDescription do
+    @moduledoc """
+    Updates the description of a task.
+    """
+
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
@@ -101,7 +113,7 @@ defmodule OperatelyWeb.Api.Tasks do
     end
 
     outputs do
-      field :task, :task
+      field :task, :task, null: false
     end
 
     def call(conn, inputs) do
@@ -147,6 +159,10 @@ defmodule OperatelyWeb.Api.Tasks do
   end
 
   defmodule UpdateName do
+    @moduledoc """
+    Updates the name of a task.
+    """
+
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
@@ -157,7 +173,7 @@ defmodule OperatelyWeb.Api.Tasks do
     end
 
     outputs do
-      field :task, :task
+      field :task, :task, null: false
     end
 
     def call(conn, inputs) do
@@ -200,6 +216,10 @@ defmodule OperatelyWeb.Api.Tasks do
   end
 
   defmodule UpdateDueDate do
+    @moduledoc """
+    Updates the due date of a task.
+    """
+
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
@@ -210,7 +230,7 @@ defmodule OperatelyWeb.Api.Tasks do
     end
 
     outputs do
-      field :task, :task
+      field :task, :task, null: false
     end
 
     def call(conn, inputs) do
@@ -254,6 +274,10 @@ defmodule OperatelyWeb.Api.Tasks do
   end
 
   defmodule UpdateAssignee do
+    @moduledoc """
+    Updates the assignee of a task.
+    """
+
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
@@ -264,7 +288,7 @@ defmodule OperatelyWeb.Api.Tasks do
     end
 
     outputs do
-      field :task, :task
+      field :task, :task, null: false
     end
 
     def call(conn, inputs) do
@@ -315,6 +339,10 @@ defmodule OperatelyWeb.Api.Tasks do
   end
 
   defmodule UpdateMilestoneAndOrdering do
+    @moduledoc """
+    Updates the milestone and ordering of a task.
+    """
+
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
@@ -325,8 +353,8 @@ defmodule OperatelyWeb.Api.Tasks do
     end
 
     outputs do
-      field :task, :task
-      field :updated_milestones, list_of(:milestone)
+      field :task, :task, null: false
+      field :updated_milestones, list_of(:milestone), null: false
     end
 
     def call(conn, inputs) do
@@ -346,6 +374,10 @@ defmodule OperatelyWeb.Api.Tasks do
   end
 
   defmodule UpdateMilestone do
+    @moduledoc """
+    Updates the milestone of a task.
+    """
+
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
@@ -355,7 +387,7 @@ defmodule OperatelyWeb.Api.Tasks do
     end
 
     outputs do
-      field :task, :task
+      field :task, :task, null: false
     end
 
     def call(conn, inputs) do
@@ -383,6 +415,10 @@ defmodule OperatelyWeb.Api.Tasks do
   end
 
   defmodule Create do
+    @moduledoc """
+    Creates a new task in a project or space.
+    """
+
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
@@ -460,6 +496,10 @@ defmodule OperatelyWeb.Api.Tasks do
   end
 
   defmodule Delete do
+    @moduledoc """
+    Deletes a task.
+    """
+
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 

@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Spaces.Create do
+  @moduledoc """
+  Creates a new space.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -6,15 +10,14 @@ defmodule OperatelyWeb.Api.Spaces.Create do
   alias Operately.Companies.Permissions
 
   inputs do
-    field? :name, :string, null: true
-    field? :mission, :string, null: true
-
-    field? :company_permissions, :integer, null: true
-    field? :public_permissions, :integer, null: true
+    field :name, :string, null: false
+    field :mission, :string, null: false
+    field :company_permissions, :integer, null: false
+    field :public_permissions, :integer, null: false
   end
 
   outputs do
-    field? :space, :space, null: true
+    field :space, :space, null: false
   end
 
   def call(conn, inputs) do

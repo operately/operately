@@ -2884,7 +2884,7 @@ export interface ResourceHubsListNodesResult {
 }
 
 export interface SpaceDiscussionsGetInput {
-  id: string;
+  id: Id;
   includeAuthor?: boolean | null;
   includeReactions?: boolean | null;
   includeSpace?: boolean | null;
@@ -2900,14 +2900,14 @@ export interface SpaceDiscussionsGetResult {
 }
 
 export interface SpaceDiscussionsListInput {
-  spaceId?: Id | null;
+  spaceId: Id;
   includeAuthor?: boolean | null;
   includeCommentsCount?: boolean | null;
   includeMyDrafts?: boolean | null;
 }
 
 export interface SpaceDiscussionsListResult {
-  discussions?: Discussion[] | null;
+  discussions: Discussion[];
   myDrafts?: Discussion[] | null;
 }
 
@@ -2920,7 +2920,7 @@ export interface SpacesCountByAccessLevelResult {
 }
 
 export interface SpacesGetInput {
-  id?: Id | null;
+  id: Id;
   includePermissions?: boolean | null;
   includeMembers?: boolean | null;
   includeAccessLevels?: boolean | null;
@@ -2930,7 +2930,7 @@ export interface SpacesGetInput {
 }
 
 export interface SpacesGetResult {
-  space?: Space | null;
+  space: Space;
 }
 
 export interface SpacesListInput {
@@ -2940,7 +2940,7 @@ export interface SpacesListInput {
 }
 
 export interface SpacesListResult {
-  spaces?: Space[] | null;
+  spaces: Space[];
 }
 
 export interface SpacesListMembersInput {
@@ -2950,7 +2950,7 @@ export interface SpacesListMembersInput {
 }
 
 export interface SpacesListMembersResult {
-  people: Person[] | null;
+  people: Person[];
 }
 
 export interface SpacesListTasksInput {
@@ -2981,14 +2981,14 @@ export interface SpacesSearchResult {
 }
 
 export interface SpacesSearchPotentialMembersInput {
-  groupId?: string | null;
-  query?: string | null;
-  excludeIds?: string[] | null;
-  limit?: number | null;
+  groupId: Id;
+  query?: string;
+  excludeIds?: Id[];
+  limit?: number;
 }
 
 export interface SpacesSearchPotentialMembersResult {
-  people?: Person[] | null;
+  people: Person[];
 }
 
 export interface TasksGetInput {
@@ -3023,7 +3023,7 @@ export interface TasksListPotentialAssigneesInput {
 }
 
 export interface TasksListPotentialAssigneesResult {
-  people: Person[] | null;
+  people: Person[];
 }
 
 export interface AddCompanyOwnersInput {
@@ -4413,7 +4413,7 @@ export interface ResourceHubsUpdateParentFolderResult {
 }
 
 export interface SpaceDiscussionsArchiveInput {
-  messageId?: Id | null;
+  messageId: Id;
 }
 
 export interface SpaceDiscussionsArchiveResult {}
@@ -4421,10 +4421,10 @@ export interface SpaceDiscussionsArchiveResult {}
 export interface SpaceDiscussionsCreateInput {
   spaceId: Id;
   title: string;
-  body?: string | null;
-  postAsDraft?: boolean | null;
-  sendNotificationsToEveryone?: boolean | null;
-  subscriberIds?: Id[] | null;
+  body?: string;
+  postAsDraft?: boolean;
+  sendNotificationsToEveryone?: boolean;
+  subscriberIds?: Id[];
 }
 
 export interface SpaceDiscussionsCreateResult {
@@ -4432,11 +4432,11 @@ export interface SpaceDiscussionsCreateResult {
 }
 
 export interface SpaceDiscussionsPublishInput {
-  id?: Id | null;
+  id: Id;
 }
 
 export interface SpaceDiscussionsPublishResult {
-  discussion?: Discussion | null;
+  discussion: Discussion;
 }
 
 export interface SpaceDiscussionsUpdateInput {
@@ -4460,14 +4460,14 @@ export interface SpacesAddMembersResult {
 }
 
 export interface SpacesCreateInput {
-  name?: string | null;
-  mission?: string | null;
-  companyPermissions?: number | null;
-  publicPermissions?: number | null;
+  name: string;
+  mission: string;
+  companyPermissions: number;
+  publicPermissions: number;
 }
 
 export interface SpacesCreateResult {
-  space?: Space | null;
+  space: Space;
 }
 
 export interface SpacesDeleteInput {
@@ -4486,7 +4486,7 @@ export interface SpacesDeleteMemberInput {
 export interface SpacesDeleteMemberResult {}
 
 export interface SpacesJoinInput {
-  spaceId?: Id | null;
+  spaceId: Id;
 }
 
 export interface SpacesJoinResult {}
@@ -4522,7 +4522,7 @@ export interface SpacesUpdateMembersPermissionsResult {
 }
 
 export interface SpacesUpdatePermissionsInput {
-  spaceId: string;
+  spaceId: Id;
   accessLevels: AccessLevels;
 }
 
@@ -4537,7 +4537,7 @@ export interface SpacesUpdateTaskStatusesInput {
 }
 
 export interface SpacesUpdateTaskStatusesResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 export interface SpacesUpdateToolsInput {
@@ -4546,8 +4546,8 @@ export interface SpacesUpdateToolsInput {
 }
 
 export interface SpacesUpdateToolsResult {
-  success: boolean | null;
-  tools: SpaceTools | null;
+  success: boolean;
+  tools: SpaceTools;
 }
 
 export interface TasksCreateInput {

@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.SpaceDiscussions.Create do
+  @moduledoc """
+  Creates a new space discussion.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -9,11 +13,11 @@ defmodule OperatelyWeb.Api.SpaceDiscussions.Create do
   inputs do
     field :space_id, :id, null: false
     field :title, :string, null: false
-    field? :body, :string, null: true
-    field? :post_as_draft, :boolean, null: true
+    field? :body, :string, null: false
+    field? :post_as_draft, :boolean, null: false
 
-    field? :send_notifications_to_everyone, :boolean, null: true
-    field? :subscriber_ids, list_of(:id), null: true
+    field? :send_notifications_to_everyone, :boolean, null: false
+    field? :subscriber_ids, list_of(:id), null: false
   end
 
   outputs do

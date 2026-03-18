@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.SpaceDiscussions.Get do
+  @moduledoc """
+  Retrieves a space discussion by ID with optional related data.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
@@ -7,7 +11,7 @@ defmodule OperatelyWeb.Api.SpaceDiscussions.Get do
   alias Operately.Notifications.UnreadNotificationsLoader
 
   inputs do
-    field :id, :string, null: false
+    field :id, :id, null: false
     field? :include_author, :boolean, null: true
     field? :include_reactions, :boolean, null: true
     field? :include_space, :boolean, null: true
@@ -25,7 +29,6 @@ defmodule OperatelyWeb.Api.SpaceDiscussions.Get do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:id, fn -> decode_id(inputs.id) end)
     |> run(:message, fn ctx -> load(ctx, inputs) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.message.request_info.access_level, :can_view) end)
     |> run(:serialized, fn ctx -> {:ok, %{discussion: OperatelyWeb.Api.Serializer.serialize(ctx.message, level: :full)}} end)
@@ -43,7 +46,7 @@ defmodule OperatelyWeb.Api.SpaceDiscussions.Get do
   end
 
   defp load(ctx, inputs) do
-    Message.get(ctx.me, id: ctx.id, opts: [
+    Message.get(ctx.me, id: inputs.id, opts: [
       preload: preload(inputs),
       after_load: after_load(inputs, ctx.me),
     ])
