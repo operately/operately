@@ -2,6 +2,10 @@ defmodule OperatelyWeb.Api.GoalChecks do
   alias __MODULE__.SharedMultiSteps, as: Steps
 
   defmodule Create do
+    @moduledoc """
+    Creates a checklist item (check) for a goal.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
@@ -34,11 +38,15 @@ defmodule OperatelyWeb.Api.GoalChecks do
   end
 
   defmodule Delete do
+    @moduledoc """
+    Deletes a checklist item from a goal.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
-      field :goal_id, :id
-      field :check_id, :id
+      field :goal_id, :id, null: false
+      field :check_id, :id, null: false
     end
 
     outputs do
@@ -66,12 +74,16 @@ defmodule OperatelyWeb.Api.GoalChecks do
   end
 
   defmodule Update do
+    @moduledoc """
+    Updates the name of a checklist item in a goal.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
-      field :goal_id, :id
-      field :check_id, :id
-      field :name, :string
+      field :goal_id, :id, null: false
+      field :check_id, :id, null: false
+      field :name, :string, null: false
     end
 
     outputs do
@@ -91,12 +103,16 @@ defmodule OperatelyWeb.Api.GoalChecks do
   end
 
   defmodule UpdateIndex do
+    @moduledoc """
+    Updates the order/index of a checklist item within a goal.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
-      field :goal_id, :id
-      field :check_id, :id
-      field :index, :integer
+      field :goal_id, :id, null: false
+      field :check_id, :id, null: false
+      field :index, :integer, null: false
     end
 
     outputs do
@@ -116,11 +132,15 @@ defmodule OperatelyWeb.Api.GoalChecks do
   end
 
   defmodule Toggle do
+    @moduledoc """
+    Toggles the completion status of a checklist item in a goal.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
-      field :goal_id, :id
-      field :check_id, :id
+      field :goal_id, :id, null: false
+      field :check_id, :id, null: false
     end
 
     outputs do
