@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.GoalCheckIns.Create do
+  @moduledoc """
+  Creates a new check-in for a goal.
+  """
+
   use TurboConnect.Mutation
   require Logger
   use OperatelyWeb.Api.Helpers
@@ -11,12 +15,12 @@ defmodule OperatelyWeb.Api.GoalCheckIns.Create do
     field :goal_id, :id, null: false
     field :status, :string, null: false
     field :due_date, :contextual_date, null: true
-    field :checklist, list_of(:goal_check_update)
+    field :checklist, list_of(:goal_check_update), null: false
 
     field? :content, :json, null: true
     field? :new_target_values, :string, null: true
     field? :send_notifications_to_everyone, :boolean, null: true
-    field? :subscriber_ids, list_of(:string), null: true
+    field? :subscriber_ids, list_of(:id), null: true
   end
 
   outputs do
@@ -57,8 +61,6 @@ defmodule OperatelyWeb.Api.GoalCheckIns.Create do
   end
 
   defp parse_inputs(inputs) do
-    {:ok, subscriber_ids} = decode_id(inputs[:subscriber_ids], :allow_nil)
-
     {:ok,
      %{
        target_values:
@@ -73,7 +75,7 @@ defmodule OperatelyWeb.Api.GoalCheckIns.Create do
        checklist: inputs.checklist,
        send_to_everyone: inputs[:send_notifications_to_everyone] || false,
        subscription_parent_type: :goal_update,
-       subscriber_ids: subscriber_ids || []
+       subscriber_ids: inputs[:subscriber_ids] || []
      }}
   end
 end

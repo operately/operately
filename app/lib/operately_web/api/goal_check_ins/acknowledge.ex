@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.GoalCheckIns.Acknowledge do
+  @moduledoc """
+  Acknowledges a goal check-in.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -7,7 +11,7 @@ defmodule OperatelyWeb.Api.GoalCheckIns.Acknowledge do
   alias Operately.Operations.GoalUpdateAcknowledging
 
   inputs do
-    field? :id, :string, null: true
+    field :id, :id, null: false
   end
 
   outputs do
@@ -16,9 +20,8 @@ defmodule OperatelyWeb.Api.GoalCheckIns.Acknowledge do
 
   def call(conn, inputs) do
     Action.new()
-    |> run(:id, fn -> decode_id(inputs.id) end)
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:update, fn ctx -> Update.get(ctx.me, id: ctx.id, opts: [preload: :goal]) end)
+    |> run(:update, fn ctx -> Update.get(ctx.me, id: inputs.id, opts: [preload: :goal]) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.update.request_info.access_level, ctx.update, ctx.me.id, :can_acknowledge) end)
     |> run(:operation, fn ctx -> GoalUpdateAcknowledging.run(ctx.me, ctx.update) end)
     |> run(:serialized, fn ctx -> {:ok, %{update: Serializer.serialize(ctx.operation, level: :full)}} end)
