@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Tasks.ListPotentialAssignees do
+  @moduledoc """
+  Lists potential assignees for a task in a project or space.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
@@ -18,7 +22,7 @@ defmodule OperatelyWeb.Api.Tasks.ListPotentialAssignees do
   end
 
   outputs do
-    field :people, list_of(:person), null: true
+    field :people, list_of(:person), null: false
   end
 
   def call(conn, inputs) do

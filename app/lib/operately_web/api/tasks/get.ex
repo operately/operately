@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Tasks.Get do
+  @moduledoc """
+  Retrieves a task by ID with optional related data.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
