@@ -6,6 +6,10 @@ defmodule OperatelyWeb.Api.Spaces do
   alias OperatelyWeb.Api.Serializer
 
   defmodule Search do
+    @moduledoc """
+    Searches for spaces.
+    """
+
     use TurboConnect.Query
     use OperatelyWeb.Api.Helpers
 
@@ -34,6 +38,10 @@ defmodule OperatelyWeb.Api.Spaces do
   end
 
   defmodule CountByAccessLevel do
+    @moduledoc """
+    Counts spaces by access level.
+    """
+
     use TurboConnect.Query
     use OperatelyWeb.Api.Helpers
 
@@ -54,6 +62,10 @@ defmodule OperatelyWeb.Api.Spaces do
   end
 
   defmodule UpdateKanban do
+    @moduledoc """
+    Updates the kanban state and status of a task in a space.
+    """
+
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
@@ -65,7 +77,7 @@ defmodule OperatelyWeb.Api.Spaces do
     end
 
     outputs do
-      field :task, :task
+      field :task, :task, null: false
     end
 
     def call(conn, inputs) do
@@ -84,6 +96,10 @@ defmodule OperatelyWeb.Api.Spaces do
   end
 
   defmodule ListMembers do
+    @moduledoc """
+    Lists members of a space.
+    """
+
     use TurboConnect.Query
     use OperatelyWeb.Api.Helpers
 
@@ -101,7 +117,7 @@ defmodule OperatelyWeb.Api.Spaces do
     end
 
     outputs do
-      field :people, list_of(:person), null: true
+      field :people, list_of(:person), null: false
     end
 
     def call(conn, inputs) do
@@ -157,6 +173,10 @@ defmodule OperatelyWeb.Api.Spaces do
   end
 
   defmodule ListTasks do
+    @moduledoc """
+    Lists tasks in a space.
+    """
+
     use TurboConnect.Query
     use OperatelyWeb.Api.Helpers
 
@@ -182,6 +202,10 @@ defmodule OperatelyWeb.Api.Spaces do
   end
 
   defmodule UpdateTaskStatuses do
+    @moduledoc """
+    Updates task statuses for a space.
+    """
+
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
@@ -192,7 +216,7 @@ defmodule OperatelyWeb.Api.Spaces do
     end
 
     outputs do
-      field :success, :boolean, null: true
+      field :success, :boolean, null: false
     end
 
     def call(conn, inputs) do
@@ -211,6 +235,10 @@ defmodule OperatelyWeb.Api.Spaces do
   end
 
   defmodule UpdateTools do
+    @moduledoc """
+    Updates the tools configuration for a space.
+    """
+
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
@@ -220,8 +248,8 @@ defmodule OperatelyWeb.Api.Spaces do
     end
 
     outputs do
-      field :success, :boolean, null: true
-      field :tools, :space_tools, null: true
+      field :success, :boolean, null: false
+      field :tools, :space_tools, null: false
     end
 
     def call(conn, inputs) do

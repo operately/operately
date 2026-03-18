@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Spaces.ListTools do
+  @moduledoc """
+  Lists all tools and their contents for a space.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 

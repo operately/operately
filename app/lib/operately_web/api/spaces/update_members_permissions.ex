@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Spaces.UpdateMembersPermissions do
+  @moduledoc """
+  Updates permissions for multiple members in a space.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

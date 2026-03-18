@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.SpaceDiscussions.Archive do
+  @moduledoc """
+  Archives a space discussion.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -7,7 +11,7 @@ defmodule OperatelyWeb.Api.SpaceDiscussions.Archive do
   alias Operately.Messages.Message
 
   inputs do
-    field? :message_id, :id, null: true
+    field :message_id, :id, null: false
   end
 
   def call(conn, inputs) do

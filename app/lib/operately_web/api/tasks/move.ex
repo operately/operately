@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Tasks.Move do
+  @moduledoc """
+  Moves a task from one project or space to another.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

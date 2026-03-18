@@ -15,7 +15,9 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Spaces.Create do
   def inputs(_) do
     %{
       name: "Updated Name",
-      mission: "Updated mission"
+      mission: "Updated mission",
+      company_permissions: 0,
+      public_permissions: 0
     }
   end
 
