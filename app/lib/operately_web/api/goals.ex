@@ -7,6 +7,10 @@ defmodule OperatelyWeb.Api.Goals do
   alias OperatelyWeb.Api.Serializer
 
   defmodule SearchParentGoal do
+    @moduledoc """
+    Searches for potential parent goals for a given goal.
+    """
+
     use TurboConnect.Query
 
     inputs do
@@ -506,6 +510,10 @@ defmodule OperatelyWeb.Api.Goals do
   end
 
   defmodule ListAccessMembers do
+    @moduledoc """
+    Lists people with access to a goal.
+    """
+
     use TurboConnect.Query
 
     inputs do

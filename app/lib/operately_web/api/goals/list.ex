@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Goals.List do
+  @moduledoc """
+  Lists goals with optional filtering by space and includes for related data.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
@@ -8,7 +12,7 @@ defmodule OperatelyWeb.Api.Goals.List do
   alias Operately.Goals.Goal
 
   inputs do
-    field? :space_id, :string, null: true
+    field? :space_id, :id, null: true
 
     field? :include_projects, :boolean, null: true
     field? :include_space, :boolean, null: true
@@ -23,9 +27,6 @@ defmodule OperatelyWeb.Api.Goals.List do
   end
 
   def call(conn, inputs) do
-    {:ok, space_id} = decode_id(inputs[:space_id], :allow_nil)
-    inputs = Map.put(inputs, :space_id, space_id)
-
     goals = load(me(conn), inputs)
     output = %{goals: Serializer.serialize(goals, level: :full)}
 

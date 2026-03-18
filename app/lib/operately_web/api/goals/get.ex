@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Goals.Get do
+  @moduledoc """
+  Retrieves a goal by ID with optional includes for related data.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
