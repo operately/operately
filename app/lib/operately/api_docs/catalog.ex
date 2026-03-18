@@ -12,12 +12,13 @@ defmodule Operately.ApiDocs.Catalog do
       query_count: length(catalog.queries),
       mutation_count: length(catalog.mutations),
       types: serialize_types(catalog.types),
-      endpoints: Enum.map(catalog.endpoints, &serialize_endpoint/1)
+      endpoints: Enum.map(catalog.endpoints, &serialize_endpoint/1),
+      namespace_descriptions: serialize_namespace_descriptions(catalog.namespace_descriptions)
     }
   end
 
   def encode(payload) do
-    Jason.encode!(payload, pretty: true)
+    Jason.encode!(payload, pretty: true, maps: :strict)
   end
 
   defp generated_at do
@@ -45,6 +46,7 @@ defmodule Operately.ApiDocs.Catalog do
 
       {to_string(name), %{encoded_type: encoded_type}}
     end)
+    |> Enum.sort_by(fn {name, _} -> name end)
     |> Enum.into(%{})
   end
 
@@ -58,6 +60,7 @@ defmodule Operately.ApiDocs.Catalog do
 
       {to_string(name), %{fields: fields}}
     end)
+    |> Enum.sort_by(fn {name, _} -> name end)
     |> Enum.into(%{})
   end
 
@@ -67,6 +70,7 @@ defmodule Operately.ApiDocs.Catalog do
       serialized_values = Enum.map(values, &serialize_enum_value/1)
       {to_string(name), serialized_values}
     end)
+    |> Enum.sort_by(fn {name, _} -> name end)
     |> Enum.into(%{})
   end
 
@@ -76,6 +80,16 @@ defmodule Operately.ApiDocs.Catalog do
       serialized_refs = Enum.map(type_refs, &serialize_type_ref/1)
       {to_string(name), serialized_refs}
     end)
+    |> Enum.sort_by(fn {name, _} -> name end)
+    |> Enum.into(%{})
+  end
+
+  defp serialize_namespace_descriptions(descriptions) do
+    descriptions
+    |> Enum.map(fn {namespace, desc} ->
+      {to_string(namespace), desc}
+    end)
+    |> Enum.sort_by(fn {namespace, _} -> namespace end)
     |> Enum.into(%{})
   end
 
@@ -144,6 +158,7 @@ defmodule Operately.ApiDocs.Catalog do
   defp serialize_literal(%{} = value) do
     value
     |> Enum.map(fn {key, nested_value} -> {serialize_map_key(key), serialize_literal(nested_value)} end)
+    |> Enum.sort_by(fn {key, _} -> key end)
     |> Enum.into(%{})
   end
 

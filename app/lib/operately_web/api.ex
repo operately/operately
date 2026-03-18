@@ -5,6 +5,7 @@ defmodule OperatelyWeb.Api do
       alias OperatelyWeb.Api.Mutations, as: M
       alias OperatelyWeb.Api.Subscriptions, as: S
 
+      @doc "Get, list, create and manage goals"
       namespace(:goals) do
         query(:get, OperatelyWeb.Api.Goals.Get)
         query(:list, OperatelyWeb.Api.Goals.List)
@@ -44,6 +45,7 @@ defmodule OperatelyWeb.Api do
         mutation(:toggle_check, OperatelyWeb.Api.GoalChecks.Toggle)
       end
 
+      @doc "Get, list, create and manage goal check-ins"
       namespace(:goal_check_ins) do
         query(:get, OperatelyWeb.Api.GoalCheckIns.Get)
 
@@ -52,6 +54,7 @@ defmodule OperatelyWeb.Api do
         mutation(:acknowledge, OperatelyWeb.Api.GoalCheckIns.Acknowledge)
       end
 
+      @doc "List, create and manage goal discussions"
       namespace(:goal_discussions) do
         query(:list, OperatelyWeb.Api.GoalDiscussions.List)
 
@@ -59,6 +62,7 @@ defmodule OperatelyWeb.Api do
         mutation(:update, OperatelyWeb.Api.GoalDiscussions.Update)
       end
 
+      @doc "Get, list, create and manage projects"
       namespace(:projects) do
         query(:get, OperatelyWeb.Api.Projects.Get)
         query(:list, OperatelyWeb.Api.Projects.List)
@@ -100,6 +104,7 @@ defmodule OperatelyWeb.Api do
         mutation(:create_contributors, OperatelyWeb.Api.Projects.CreateContributors)
       end
 
+      @doc "Get, list, create and manage project milestones"
       namespace(:project_milestones) do
         query(:get, OperatelyWeb.Api.ProjectMilestones.Get)
         query(:list_tasks, OperatelyWeb.Api.ProjectMilestones.ListTasks)
@@ -113,6 +118,7 @@ defmodule OperatelyWeb.Api do
         mutation(:create_comment, OperatelyWeb.Api.ProjectMilestones.CreateComment)
       end
 
+      @doc "Get, list, create and manage project check-ins"
       namespace(:project_check_ins) do
         query(:get, OperatelyWeb.Api.ProjectCheckIns.Get)
         query(:list, OperatelyWeb.Api.ProjectCheckIns.List)
@@ -122,6 +128,7 @@ defmodule OperatelyWeb.Api do
         mutation(:acknowledge, OperatelyWeb.Api.ProjectCheckIns.Acknowledge)
       end
 
+      @doc "Get, list, create and manage tasks across projects and spaces"
       namespace(:tasks) do
         query(:get, OperatelyWeb.Api.Tasks.Get)
         query(:list, OperatelyWeb.Api.Tasks.List)
@@ -139,28 +146,27 @@ defmodule OperatelyWeb.Api do
         mutation(:update_description, OperatelyWeb.Api.Tasks.UpdateDescription)
       end
 
+      @doc "Get, list, create and manage project discussions"
       namespace(:project_discussions) do
-        alias OperatelyWeb.Api.ProjectDiscussions
+        query(:get, OperatelyWeb.Api.ProjectDiscussions.Get)
+        query(:list, OperatelyWeb.Api.ProjectDiscussions.List)
 
-        query(:get, ProjectDiscussions.Get)
-        query(:list, ProjectDiscussions.List)
-
-        mutation(:create, ProjectDiscussions.Create)
-        mutation(:update, ProjectDiscussions.Update)
+        mutation(:create, OperatelyWeb.Api.ProjectDiscussions.Create)
+        mutation(:update, OperatelyWeb.Api.ProjectDiscussions.Update)
       end
 
+      @doc "Get, list, create and manage space discussions"
       namespace(:space_discussions) do
-        alias OperatelyWeb.Api.SpaceDiscussions
+        query(:get, OperatelyWeb.Api.SpaceDiscussions.Get)
+        query(:list, OperatelyWeb.Api.SpaceDiscussions.List)
 
-        query(:get, SpaceDiscussions.Get)
-        query(:list, SpaceDiscussions.List)
-
-        mutation(:archive, SpaceDiscussions.Archive)
-        mutation(:update, SpaceDiscussions.Update)
-        mutation(:create, SpaceDiscussions.Create)
-        mutation(:publish, SpaceDiscussions.Publish)
+        mutation(:archive, OperatelyWeb.Api.SpaceDiscussions.Archive)
+        mutation(:update, OperatelyWeb.Api.SpaceDiscussions.Update)
+        mutation(:create, OperatelyWeb.Api.SpaceDiscussions.Create)
+        mutation(:publish, OperatelyWeb.Api.SpaceDiscussions.Publish)
       end
 
+      @doc "Get, list, create and manage spaces"
       namespace(:spaces) do
         query(:get, OperatelyWeb.Api.Spaces.Get)
         query(:list, OperatelyWeb.Api.Spaces.List)
@@ -184,6 +190,7 @@ defmodule OperatelyWeb.Api do
         mutation(:update_tools, OperatelyWeb.Api.Spaces.UpdateTools)
       end
 
+      @doc "Get, list, update and manage user profiles and account settings"
       namespace(:people) do
         query(:get_account, OperatelyWeb.Api.People.GetAccount)
         query(:get_me, OperatelyWeb.Api.People.GetMe)
@@ -200,6 +207,7 @@ defmodule OperatelyWeb.Api do
         mutation(:update_picture, OperatelyWeb.Api.People.UpdatePicture)
       end
 
+      @doc "Get, list, update and manage company settings, members, and permissions"
       namespace(:companies) do
         query(:list, OperatelyWeb.Api.Companies.List)
         query(:get, OperatelyWeb.Api.Companies.Get)
@@ -224,6 +232,7 @@ defmodule OperatelyWeb.Api do
         mutation(:grant_resource_access, OperatelyWeb.Api.Companies.GrantResourceAccess)
       end
 
+      @doc "List, create and manage comments on resources"
       namespace(:comments) do
         query(:list, OperatelyWeb.Api.Comments.List)
         mutation(:create, OperatelyWeb.Api.Comments.Create)
@@ -231,11 +240,13 @@ defmodule OperatelyWeb.Api do
         mutation(:update, OperatelyWeb.Api.Comments.Update)
       end
 
+      @doc "Add or remove emoji reactions to content"
       namespace(:reactions) do
         mutation(:create, OperatelyWeb.Api.Reactions.Create)
         mutation(:delete, OperatelyWeb.Api.Reactions.Delete)
       end
 
+      @doc "Get and create resource hubs"
       namespace(:resource_hubs) do
         query(:get, OperatelyWeb.Api.ResourceHubs.Get)
         query(:list_nodes, OperatelyWeb.Api.ResourceHubs.ListNodes)
@@ -244,6 +255,7 @@ defmodule OperatelyWeb.Api do
         mutation(:update_parent_folder, OperatelyWeb.Api.ResourceHubs.UpdateParentFolder)
       end
 
+      @doc "Get, create and manage documents in resource hubs"
       namespace(:documents) do
         query(:get, OperatelyWeb.Api.Documents.Get)
 
@@ -253,6 +265,7 @@ defmodule OperatelyWeb.Api do
         mutation(:update, OperatelyWeb.Api.Documents.Update)
       end
 
+      @doc "Get, upload and manage files in resource hubs"
       namespace(:files) do
         query(:get, OperatelyWeb.Api.Files.Get)
 
@@ -261,6 +274,7 @@ defmodule OperatelyWeb.Api do
         mutation(:update, OperatelyWeb.Api.Files.Update)
       end
 
+      @doc "Get, create and manage links in resource hubs"
       namespace(:links) do
         query(:get, OperatelyWeb.Api.Links.Get)
 
@@ -269,6 +283,7 @@ defmodule OperatelyWeb.Api do
         mutation(:update, OperatelyWeb.Api.Links.Update)
       end
 
+      @doc "Get, create and manage folders in resource hubs"
       namespace(:folders) do
         query(:get, OperatelyWeb.Api.Folders.Get)
 
@@ -278,6 +293,7 @@ defmodule OperatelyWeb.Api do
         mutation(:rename, OperatelyWeb.Api.Folders.Rename)
       end
 
+      @doc "List and manage notifications and subscriptions"
       namespace(:notifications) do
         query(:list, OperatelyWeb.Api.Notifications.List)
         query(:get_unread_count, OperatelyWeb.Api.Notifications.GetUnreadCount)
