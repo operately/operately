@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Projects.SearchPotentialContributors do
+  @moduledoc """
+  Searches for potential contributors to add to a project.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
@@ -8,20 +12,19 @@ defmodule OperatelyWeb.Api.Projects.SearchPotentialContributors do
   alias Operately.Projects.Project
 
   inputs do
-    field? :project_id, :string, null: true
+    field :project_id, :id, null: false
     field? :query, :string, null: true
   end
 
   outputs do
-    field? :people, list_of(:person), null: true
+    field :people, list_of(:person), null: false
   end
 
   def call(conn, inputs) do
     person = me(conn)
-    {:ok, project_id} = decode_id(inputs.project_id)
 
-    if has_permissions?(me(conn), project_id) do
-      people = Projects.list_project_contributor_candidates(person.company_id, project_id, inputs.query, [], 10)
+    if has_permissions?(person, inputs.project_id) do
+      people = Projects.list_project_contributor_candidates(person.company_id, inputs.project_id, inputs.query, [], 10)
       {:ok, %{people: Serializer.serialize(people)}}
     else
       {:ok, %{people: []}}

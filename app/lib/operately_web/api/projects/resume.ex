@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Projects.Resume do
+  @moduledoc """
+  Resumes a paused project.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

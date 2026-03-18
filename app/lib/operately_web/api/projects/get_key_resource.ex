@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Projects.GetKeyResource do
+  @moduledoc """
+  Retrieves a project key resource by ID.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
@@ -8,17 +12,15 @@ defmodule OperatelyWeb.Api.Projects.GetKeyResource do
   alias Operately.Repo
 
   inputs do
-    field? :id, :string, null: true
+    field :id, :id, null: false
   end
 
   outputs do
-    field? :key_resource, :project_key_resource, null: true
+    field :key_resource, :project_key_resource, null: false
   end
 
   def call(conn, inputs) do
-    {:ok, id} = decode_id(inputs[:id])
-
-    case load(id, me(conn)) do
+    case load(inputs.id, me(conn)) do
       nil ->
         {:error, :not_found}
       resource ->

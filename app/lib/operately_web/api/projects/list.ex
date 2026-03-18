@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Projects.List do
+  @moduledoc """
+  Lists projects with optional filtering and includes.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
@@ -11,8 +15,8 @@ defmodule OperatelyWeb.Api.Projects.List do
     field? :only_my_projects, :boolean, null: true
     field? :only_reviewed_by_me, :boolean, null: true
 
-    field? :space_id, :string, null: true
-    field? :goal_id, :string, null: true
+    field? :space_id, :id, null: true
+    field? :goal_id, :id, null: true
 
     field? :include_space, :boolean, null: true
     field? :include_milestones, :boolean, null: true
@@ -27,7 +31,7 @@ defmodule OperatelyWeb.Api.Projects.List do
   end
 
   outputs do
-    field? :projects, list_of(:project), null: true
+    field :projects, list_of(:project), null: false
   end
 
   def call(conn, inputs) do
@@ -38,16 +42,13 @@ defmodule OperatelyWeb.Api.Projects.List do
   end
 
   defp load(person, inputs) do
-    {:ok, goal_id} = decode_id(inputs[:goal_id], :allow_nil)
-    {:ok, space_id} = decode_id(inputs[:space_id], :allow_nil)
-
     include_filters = extract_include_filters(inputs)
 
     (from p in Project, as: :project)
     |> Project.scope_company(person.company_id)
     |> Project.scope_visibility(person.id)
-    |> Project.scope_space(space_id)
-    |> Project.scope_goal(goal_id)
+    |> Project.scope_space(inputs[:space_id])
+    |> Project.scope_goal(inputs[:goal_id])
     |> filter_by_view_access(person.id)
     |> apply_role_filter(person, inputs)
     |> include_requested(include_filters)

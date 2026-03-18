@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.ProjectCheckIns.Acknowledge do
+  @moduledoc """
+  Acknowledges a project check-in.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -12,7 +16,7 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.Acknowledge do
   end
 
   outputs do
-    field? :check_in, :project_check_in, null: true
+    field :check_in, :project_check_in, null: false
   end
 
   def call(conn, inputs) do

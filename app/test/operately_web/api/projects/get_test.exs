@@ -173,7 +173,7 @@ defmodule OperatelyWeb.Api.Projects.GetTest do
     end
 
     test "returns 400 if id is not provided", ctx do
-      assert query(ctx.conn, [:projects, :get], %{}) == {400, %{error: "Bad request", message: "id is required"}}
+      assert query(ctx.conn, [:projects, :get], %{}) == {400, %{error: "Bad request", message: "Missing required fields: id"}}
     end
 
     test "include_unread_notifications", ctx do

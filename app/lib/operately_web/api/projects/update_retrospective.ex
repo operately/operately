@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Projects.UpdateRetrospective do
+  @moduledoc """
+  Updates a project retrospective.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -6,9 +10,9 @@ defmodule OperatelyWeb.Api.Projects.UpdateRetrospective do
   alias Operately.Operations.ProjectRetrospectiveEditing
 
   inputs do
-    field :id, :id
-    field :content, :string
-    field :success_status, :string
+    field :id, :id, null: false
+    field :content, :string, null: false
+    field :success_status, :string, null: false
   end
 
   outputs do
