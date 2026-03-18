@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.GoalCheckIns.Update do
+  @moduledoc """
+  Updates a goal check-in.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -13,7 +17,7 @@ defmodule OperatelyWeb.Api.GoalCheckIns.Update do
     field? :status, :string, null: true
     field? :content, :json, null: true
     field? :new_target_values, :string, null: true
-    field? :checklist, list_of(:goal_check_update)
+    field? :checklist, list_of(:goal_check_update), null: true
   end
 
   outputs do

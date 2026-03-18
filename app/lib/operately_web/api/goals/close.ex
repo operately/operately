@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Goals.Close do
+  @moduledoc """
+  Closes a goal with success status and retrospective.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -6,12 +10,12 @@ defmodule OperatelyWeb.Api.Goals.Close do
   alias Operately.Operations.GoalClosing
 
   inputs do
-    field :goal_id, :id
-    field :success, :string
-    field :retrospective, :string
-    field? :send_notifications_to_everyone, :boolean
-    field? :subscriber_ids, list_of(:id)
-    field :success_status, :string
+    field :goal_id, :id, null: false
+    field :success, :string, null: false
+    field :retrospective, :string, null: false
+    field :success_status, :string, null: false
+    field? :send_notifications_to_everyone, :boolean, null: true
+    field? :subscriber_ids, list_of(:id), null: true
   end
 
   outputs do

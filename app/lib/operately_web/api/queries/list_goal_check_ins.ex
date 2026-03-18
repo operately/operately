@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Queries.ListGoalCheckIns do
+  @moduledoc """
+  Lists check-ins for a goal.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
   alias Operately.Repo

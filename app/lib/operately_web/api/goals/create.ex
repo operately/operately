@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Goals.Create do
+  @moduledoc """
+  Creates a new goal in a space.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

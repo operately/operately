@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.GoalDiscussions.Update do
+  @moduledoc """
+  Updates a goal discussion.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -7,9 +11,9 @@ defmodule OperatelyWeb.Api.GoalDiscussions.Update do
   alias Operately.Operations.GoalDiscussionEditing
 
   inputs do
-    field? :activity_id, :id, null: true
-    field? :title, :string, null: true
-    field? :message, :string, null: true
+    field :activity_id, :id, null: false
+    field :title, :string, null: false
+    field :message, :string, null: false
   end
 
   def call(conn, inputs) do
