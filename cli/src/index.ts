@@ -3,7 +3,7 @@
 import catalogJson from "./generated/api-catalog.json";
 import type { Catalog } from "./types/catalog";
 import { createRegistry } from "./commands/registry";
-import { printEndpointHelp, printGeneralHelp } from "./commands/help";
+import { printEndpointHelp, printGeneralHelp, printNamespaceHelp } from "./commands/help";
 import { executeAuthCommand, executeEndpointCommand } from "./commands/executor";
 import { parseCommand, UsageError } from "./core/parser";
 import { printError } from "./core/output";
@@ -31,6 +31,17 @@ async function main(argv: string[]): Promise<number> {
     if (parsed.commandParts.length === 0) {
       printGeneralHelp(registry);
       return 0;
+    }
+
+    // Check if this is a namespace-specific help request (e.g., "projects help")
+    if (parsed.commandParts.length === 1) {
+      const namespace = parsed.commandParts[0];
+      const namespaces = new Set(registry.endpoints.filter((ep) => ep.namespace).map((ep) => ep.namespace));
+
+      if (namespaces.has(namespace)) {
+        printNamespaceHelp(namespace, registry);
+        return 0;
+      }
     }
 
     const endpoint = registry.find(parsed.commandParts);
