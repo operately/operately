@@ -23,7 +23,7 @@ ${commandLines}
 Use 'operately help ${namespace} <command>' for command-specific details.`);
 }
 
-export function printGeneralHelp(registry: EndpointRegistry): void {
+export function printGeneralHelp(registry: EndpointRegistry, namespaceDescriptions: Record<string, string>): void {
   const namespaces = new Set<string>();
   for (const endpoint of registry.endpoints) {
     if (endpoint.namespace) {
@@ -32,7 +32,10 @@ export function printGeneralHelp(registry: EndpointRegistry): void {
   }
 
   const sortedNamespaces = Array.from(namespaces).sort();
-  const namespaceLines = sortedNamespaces.map((ns) => `  ${ns.padEnd(16)} Manage ${ns}`).join("\n");
+  const namespaceLines = sortedNamespaces.map((ns) => {
+    const desc = namespaceDescriptions[ns] || `Manage ${ns}`;
+    return `  ${ns.padEnd(20)} ${desc}`;
+  }).join("\n");
 
   console.log(`Operately CLI
 
@@ -48,8 +51,6 @@ Utility commands:
   auth status [--profile <name>]
   auth whoami [--profile <name>]
   auth logout [--profile <name>]
-  help [command]
-  version
 
 Global flags:
   --token <token>
@@ -58,6 +59,8 @@ Global flags:
   --compact
   --output <file>
   --verbose
+  --version
+  --help
 
 Endpoint commands available: ${registry.endpoints.length}
 Use 'operately help <command>' for command-specific input flags.`);

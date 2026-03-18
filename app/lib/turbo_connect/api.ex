@@ -8,6 +8,7 @@ defmodule TurboConnect.Api do
       Module.register_attribute(__MODULE__, :queries, accumulate: true)
       Module.register_attribute(__MODULE__, :mutations, accumulate: true)
       Module.register_attribute(__MODULE__, :subscriptions, accumulate: true)
+      Module.register_attribute(__MODULE__, :namespace_descriptions, accumulate: true)
 
       @before_compile unquote(__MODULE__)
 
@@ -27,6 +28,11 @@ defmodule TurboConnect.Api do
 
   defmacro namespace(ns, do: block) do
     quote do
+      desc = Module.get_attribute(__MODULE__, :doc) || {nil, ""}
+      namespace_desc = if is_tuple(desc), do: elem(desc, 1), else: ""
+      Module.delete_attribute(__MODULE__, :doc)
+
+      @namespace_descriptions {unquote(ns), namespace_desc}
       @tc_namespace unquote(ns)
       unquote(block)
       @tc_namespace nil
@@ -127,6 +133,10 @@ defmodule TurboConnect.Api do
         all_namespaces = query_namespaces ++ mutuation_namespaces ++ subscription_namespaces
 
         Enum.uniq(all_namespaces)
+      end
+
+      def __namespace_descriptions__() do
+        Enum.into(@namespace_descriptions, %{})
       end
     end
   end
