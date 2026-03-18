@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Goals.ChangeParent do
+  @moduledoc """
+  Changes the parent goal of a goal.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -7,8 +11,8 @@ defmodule OperatelyWeb.Api.Goals.ChangeParent do
   alias Operately.Repo
 
   inputs do
-    field? :goal_id, :string, null: true
-    field? :parent_goal_id, :string, null: true
+    field :goal_id, :id, null: false
+    field :parent_goal_id, :id, null: true
   end
 
   outputs do
@@ -17,16 +21,14 @@ defmodule OperatelyWeb.Api.Goals.ChangeParent do
 
   def call(conn, inputs) do
     author = me(conn)
-    {:ok, goal_id} = decode_id(inputs.goal_id)
-    {:ok, parent_goal_id} = decode_id(inputs.parent_goal_id)
 
-    case load_goal(author, goal_id) do
+    case load_goal(author, inputs.goal_id) do
       nil ->
-        query(goal_id)
+        query(inputs.goal_id)
         |> forbidden_or_not_found(author.id)
 
       goal ->
-        {:ok, goal} = Operately.Operations.GoalReparent.run(author, goal, parent_goal_id)
+        {:ok, goal} = Operately.Operations.GoalReparent.run(author, goal, inputs.parent_goal_id)
         {:ok, %{goal: OperatelyWeb.Api.Serializer.serialize(goal)}}
     end
   end

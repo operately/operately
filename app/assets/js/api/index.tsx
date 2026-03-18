@@ -2406,7 +2406,7 @@ export interface GetThemeResult {
 }
 
 export interface GoalCheckInsGetInput {
-  id: string;
+  id: Id;
   includeAuthor?: boolean | null;
   includeAcknowledgedBy?: boolean | null;
   includeReactions?: boolean | null;
@@ -2460,7 +2460,7 @@ export interface GoalsGetResult {
 }
 
 export interface GoalsListInput {
-  spaceId?: string | null;
+  spaceId?: Id | null;
   includeProjects?: boolean | null;
   includeSpace?: boolean | null;
   includeLastCheckIn?: boolean | null;
@@ -2489,7 +2489,7 @@ export interface GoalsListCheckInsResult {
 }
 
 export interface GoalsListContributorsInput {
-  goalId?: Id | null;
+  goalId: Id;
 }
 
 export interface GoalsListContributorsResult {
@@ -2729,7 +2729,7 @@ export interface ProjectsCountChildrenResult {
 }
 
 export interface ProjectsGetInput {
-  id?: string | null;
+  id: Id;
   includeContributors?: boolean | null;
   includeGoal?: boolean | null;
   includeKeyResources?: boolean | null;
@@ -3500,7 +3500,7 @@ export interface FoldersRenameResult {
 }
 
 export interface GoalCheckInsAcknowledgeInput {
-  id?: string | null;
+  id: Id;
 }
 
 export interface GoalCheckInsAcknowledgeResult {
@@ -3515,7 +3515,7 @@ export interface GoalCheckInsCreateInput {
   content?: Json | null;
   newTargetValues?: string | null;
   sendNotificationsToEveryone?: boolean | null;
-  subscriberIds?: string[] | null;
+  subscriberIds?: Id[] | null;
 }
 
 export interface GoalCheckInsCreateResult {
@@ -3528,7 +3528,7 @@ export interface GoalCheckInsUpdateInput {
   status?: string | null;
   content?: Json | null;
   newTargetValues?: string | null;
-  checklist?: GoalCheckUpdate[];
+  checklist?: GoalCheckUpdate[] | null;
 }
 
 export interface GoalCheckInsUpdateResult {
@@ -3536,9 +3536,9 @@ export interface GoalCheckInsUpdateResult {
 }
 
 export interface GoalDiscussionsCreateInput {
-  goalId?: Id | null;
-  title?: string | null;
-  message?: string | null;
+  goalId: Id;
+  title: string;
+  message: string;
   sendNotificationsToEveryone?: boolean | null;
   subscriberIds?: Id[] | null;
 }
@@ -3548,16 +3548,16 @@ export interface GoalDiscussionsCreateResult {
 }
 
 export interface GoalDiscussionsUpdateInput {
-  activityId?: Id | null;
-  title?: string | null;
-  message?: string | null;
+  activityId: Id;
+  title: string;
+  message: string;
 }
 
 export interface GoalDiscussionsUpdateResult {}
 
 export interface GoalsChangeParentInput {
-  goalId?: string | null;
-  parentGoalId?: string | null;
+  goalId: Id;
+  parentGoalId: Id | null;
 }
 
 export interface GoalsChangeParentResult {
@@ -3568,9 +3568,9 @@ export interface GoalsCloseInput {
   goalId: Id;
   success: string;
   retrospective: string;
-  sendNotificationsToEveryone?: boolean;
-  subscriberIds?: Id[];
   successStatus: string;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
 }
 
 export interface GoalsCloseResult {
@@ -3628,7 +3628,7 @@ export interface GoalsCreateTargetResult {
 }
 
 export interface GoalsDeleteInput {
-  goalId?: Id | null;
+  goalId: Id;
 }
 
 export interface GoalsDeleteResult {

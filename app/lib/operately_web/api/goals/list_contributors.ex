@@ -1,11 +1,15 @@
 defmodule OperatelyWeb.Api.Goals.ListContributors do
+  @moduledoc """
+  Lists a goal's contributors.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
   alias Operately.Goals
 
   inputs do
-    field? :goal_id, :id, null: true
+    field :goal_id, :id, null: false
   end
 
   outputs do

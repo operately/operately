@@ -7,6 +7,10 @@ defmodule OperatelyWeb.Api.Goals do
   alias OperatelyWeb.Api.Serializer
 
   defmodule SearchParentGoal do
+    @moduledoc """
+    Searches for potential parent goals for a given goal.
+    """
+
     use TurboConnect.Query
 
     inputs do
@@ -32,6 +36,10 @@ defmodule OperatelyWeb.Api.Goals do
   end
 
   defmodule UpdateName do
+    @moduledoc """
+    Updates the name of a goal.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
@@ -64,6 +72,10 @@ defmodule OperatelyWeb.Api.Goals do
   end
 
   defmodule UpdateDescription do
+    @moduledoc """
+    Updates the description of a goal.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
@@ -98,6 +110,10 @@ defmodule OperatelyWeb.Api.Goals do
   end
 
   defmodule UpdateDueDate do
+    @moduledoc """
+    Updates the due date of a goal.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
@@ -130,6 +146,10 @@ defmodule OperatelyWeb.Api.Goals do
   end
 
   defmodule UpdateStartDate do
+    @moduledoc """
+    Updates the start date of a goal.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
@@ -162,6 +182,10 @@ defmodule OperatelyWeb.Api.Goals do
   end
 
   defmodule UpdateParentGoal do
+    @moduledoc """
+    Updates the parent goal of a goal.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
@@ -194,6 +218,10 @@ defmodule OperatelyWeb.Api.Goals do
   end
 
   defmodule UpdateSpace do
+    @moduledoc """
+    Moves a goal to a different space.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
@@ -226,6 +254,10 @@ defmodule OperatelyWeb.Api.Goals do
   end
 
   defmodule CreateTarget do
+    @moduledoc """
+    Creates a target for a goal.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
@@ -263,6 +295,10 @@ defmodule OperatelyWeb.Api.Goals do
   end
 
   defmodule DeleteTarget do
+    @moduledoc """
+    Deletes a target from a goal.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
@@ -295,6 +331,10 @@ defmodule OperatelyWeb.Api.Goals do
   end
 
   defmodule UpdateTarget do
+    @moduledoc """
+    Updates properties of a target for a goal.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
@@ -340,6 +380,10 @@ defmodule OperatelyWeb.Api.Goals do
   end
 
   defmodule UpdateTargetValue do
+    @moduledoc """
+    Updates the current value of a target for a goal.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
@@ -376,6 +420,10 @@ defmodule OperatelyWeb.Api.Goals do
   end
 
   defmodule UpdateTargetIndex do
+    @moduledoc """
+    Updates the order/index of a target within a goal.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
@@ -411,6 +459,10 @@ defmodule OperatelyWeb.Api.Goals do
   end
 
   defmodule UpdateChampion do
+    @moduledoc """
+    Updates the champion of a goal.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
@@ -443,6 +495,10 @@ defmodule OperatelyWeb.Api.Goals do
   end
 
   defmodule UpdateReviewer do
+    @moduledoc """
+    Updates the reviewer of a goal.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
@@ -475,11 +531,15 @@ defmodule OperatelyWeb.Api.Goals do
   end
 
   defmodule UpdateAccessLevels do
+    @moduledoc """
+    Updates the access levels for a goal.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
-      field :goal_id, :id
-      field :access_levels, :access_levels
+      field :goal_id, :id, null: false
+      field :access_levels, :access_levels, null: false
     end
 
     outputs do
@@ -506,6 +566,10 @@ defmodule OperatelyWeb.Api.Goals do
   end
 
   defmodule ListAccessMembers do
+    @moduledoc """
+    Lists people with access to a goal.
+    """
+
     use TurboConnect.Query
 
     inputs do
@@ -530,6 +594,10 @@ defmodule OperatelyWeb.Api.Goals do
   end
 
   defmodule CreateAccessMembers do
+    @moduledoc """
+    Gives access to a goal to specified members.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
@@ -553,6 +621,10 @@ defmodule OperatelyWeb.Api.Goals do
   end
 
   defmodule UpdateAccessMember do
+    @moduledoc """
+    Updates the access level of a member for a goal.
+    """
+
     use TurboConnect.Mutation
 
     inputs do
@@ -577,6 +649,10 @@ defmodule OperatelyWeb.Api.Goals do
   end
 
   defmodule DeleteAccessMember do
+    @moduledoc """
+    Removes access to a goal from a member.
+    """
+
     use TurboConnect.Mutation
 
     inputs do

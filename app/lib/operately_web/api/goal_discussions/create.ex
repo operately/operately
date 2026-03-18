@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.GoalDiscussions.Create do
+  @moduledoc """
+  Creates a new discussion for a goal.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -6,9 +10,9 @@ defmodule OperatelyWeb.Api.GoalDiscussions.Create do
   alias Operately.Operations.GoalDiscussionCreation
 
   inputs do
-    field? :goal_id, :id, null: true
-    field? :title, :string, null: true
-    field? :message, :string, null: true
+    field :goal_id, :id, null: false
+    field :title, :string, null: false
+    field :message, :string, null: false
     field? :send_notifications_to_everyone, :boolean, null: true
     field? :subscriber_ids, list_of(:id), null: true
   end

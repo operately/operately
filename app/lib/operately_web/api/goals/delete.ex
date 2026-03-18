@@ -1,11 +1,15 @@
 defmodule OperatelyWeb.Api.Goals.Delete do
+  @moduledoc """
+  Deletes a goal permanently.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
   alias Operately.Goals.{Permissions, Goal}
 
   inputs do
-    field? :goal_id, :id, null: true
+    field :goal_id, :id, null: false
   end
 
   outputs do

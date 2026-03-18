@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.GoalCheckIns.Get do
+  @moduledoc """
+  Retrieves a goal check-in by ID with optional includes for related data.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
@@ -7,7 +11,7 @@ defmodule OperatelyWeb.Api.GoalCheckIns.Get do
   alias Operately.Notifications.UnreadNotificationsLoader
 
   inputs do
-    field :id, :string, null: false
+    field :id, :id, null: false
     field? :include_author, :boolean, null: true
     field? :include_acknowledged_by, :boolean, null: true
     field? :include_reactions, :boolean, null: true
@@ -31,7 +35,6 @@ defmodule OperatelyWeb.Api.GoalCheckIns.Get do
   def call(conn, inputs) do
     Action.new()
     |> Action.run(:me, fn -> find_me(conn) end)
-    |> Action.run(:id, fn -> decode_id(inputs.id) end)
     |> Action.run(:update, fn ctx -> load(ctx, inputs) end)
     |> Action.run(:check_permissions, fn ctx -> Permissions.check(ctx.update.request_info.access_level, ctx.update, ctx.me.id, :can_view) end)
     |> Action.run(:serialized, fn ctx -> {:ok, %{update: OperatelyWeb.Api.Serializer.serialize(ctx.update, level: :full)}} end)
@@ -50,7 +53,7 @@ defmodule OperatelyWeb.Api.GoalCheckIns.Get do
 
   defp load(ctx, inputs) do
     Update.get(ctx.me,
-      id: ctx.id,
+      id: inputs.id,
       opts: [
         preload: preload(inputs),
         auth_preload: auth_preload(inputs),
