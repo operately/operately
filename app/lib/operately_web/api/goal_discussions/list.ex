@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.GoalDiscussions.List do
+  @moduledoc """
+  Lists discussions for a goal.
+  """
+
   use TurboConnect.Query
 
   alias OperatelyWeb.Api.Goals.SharedMultiSteps, as: Steps
