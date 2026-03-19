@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Comments.Update do
+  @moduledoc """
+  Updates a comment.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

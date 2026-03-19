@@ -1,15 +1,19 @@
 defmodule OperatelyWeb.Api.Reactions.Delete do
+  @moduledoc """
+  Deletes a reaction.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
   alias Operately.Updates.Reaction
 
   inputs do
-    field :reaction_id, :id
+    field :reaction_id, :id, null: false
   end
 
   outputs do
-    field :success, :boolean
+    field :success, :boolean, null: false
   end
 
   def call(conn, inputs) do
