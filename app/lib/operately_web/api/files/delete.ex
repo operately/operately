@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Files.Delete do
+  @moduledoc """
+  Deletes a file.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -6,11 +10,11 @@ defmodule OperatelyWeb.Api.Files.Delete do
   alias Operately.Operations.ResourceHubFileDeleting
 
   inputs do
-    field? :file_id, :id, null: true
+    field :file_id, :id, null: false
   end
 
   outputs do
-    field? :file, :resource_hub_file, null: true
+    field :file, :resource_hub_file, null: false
   end
 
   def call(conn, inputs) do
