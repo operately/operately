@@ -11,6 +11,26 @@ Official command-line interface for the Operately external API.
 npm install -g @operately/operately-cli
 ```
 
+## Updating
+
+To update to the latest version:
+
+```bash
+npm update -g @operately/operately-cli
+```
+
+Or:
+
+```bash
+npm install -g @operately/operately-cli@latest
+```
+
+Verify the installed version:
+
+```bash
+operately version
+```
+
 ## Quick Start
 
 ```bash

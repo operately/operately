@@ -1,13 +1,13 @@
 {
   "name": "@operately/operately-cli",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Official CLI for Operately external API",
   "license": "Apache-2.0",
   "type": "commonjs",
   "main": "./dist/index.js",
   "bin": {
-    "operately": "./dist/index.js",
-    "op": "./dist/index.js"
+    "operately": "dist/index.js",
+    "op": "dist/index.js"
   },
   "files": [
     "dist/**",
