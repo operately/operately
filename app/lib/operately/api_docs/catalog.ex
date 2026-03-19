@@ -103,7 +103,8 @@ defmodule Operately.ApiDocs.Catalog do
       path: endpoint.path,
       handler: endpoint.handler,
       inputs: Enum.map(endpoint.inputs, &serialize_field/1),
-      outputs: Enum.map(endpoint.outputs, &serialize_field/1)
+      outputs: Enum.map(endpoint.outputs, &serialize_field/1),
+      docstring: endpoint.docstring
     }
   end
 

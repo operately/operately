@@ -46,6 +46,7 @@ export interface CatalogEndpoint {
   handler: string;
   inputs: CatalogField[];
   outputs: CatalogField[];
+  docstring: string | null;
 }
 
 export interface Catalog {

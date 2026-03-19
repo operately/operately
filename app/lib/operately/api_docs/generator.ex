@@ -99,6 +99,7 @@ defmodule Operately.ApiDocs.Generator do
     endpoint_name = spec.name |> to_string()
     method = if type == :query, do: "GET", else: "POST"
     path = "#{api_base_path}/#{full_name}"
+    docstring = extract_module_docstring(spec.handler)
 
     %{
       full_name: full_name,
@@ -110,8 +111,24 @@ defmodule Operately.ApiDocs.Generator do
       path: path,
       handler: inspect(spec.handler),
       inputs: spec.inputs.fields,
-      outputs: spec.outputs.fields
+      outputs: spec.outputs.fields,
+      docstring: docstring
     }
+  end
+
+  defp extract_module_docstring(module) do
+    case Code.fetch_docs(module) do
+      {:docs_v1, _, _, _, %{"en" => moduledoc}, _, _} when is_binary(moduledoc) ->
+        String.trim(moduledoc)
+      {:docs_v1, _, _, _, :none, _, _} ->
+        nil
+      {:docs_v1, _, _, _, :hidden, _, _} ->
+        nil
+      {:error, _} ->
+        nil
+      _ ->
+        nil
+    end
   end
 
   defp write_docs(out_dir, catalog) do

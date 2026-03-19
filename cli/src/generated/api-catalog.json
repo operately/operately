@@ -828,9 +828,9 @@
               "name": "string",
               "kind": "named"
             },
-            "optional": true,
+            "optional": false,
             "has_default": false,
-            "nullable": true
+            "nullable": false
           },
           {
             "default": null,
@@ -839,9 +839,9 @@
               "name": "string",
               "kind": "named"
             },
-            "optional": true,
+            "optional": false,
             "has_default": false,
-            "nullable": true
+            "nullable": false
           },
           {
             "default": null,
@@ -861,9 +861,9 @@
               "name": "string",
               "kind": "named"
             },
-            "optional": true,
+            "optional": false,
             "has_default": false,
-            "nullable": true
+            "nullable": false
           },
           {
             "default": null,
@@ -2823,9 +2823,9 @@
               "name": "string",
               "kind": "named"
             },
-            "optional": true,
+            "optional": false,
             "has_default": false,
-            "nullable": true
+            "nullable": false
           },
           {
             "default": null,
@@ -6008,9 +6008,9 @@
               "name": "string",
               "kind": "named"
             },
-            "optional": true,
+            "optional": false,
             "has_default": false,
-            "nullable": true
+            "nullable": false
           },
           {
             "default": null,
@@ -8719,9 +8719,9 @@
               "name": "string",
               "kind": "named"
             },
-            "optional": true,
+            "optional": false,
             "has_default": false,
-            "nullable": true
+            "nullable": false
           },
           {
             "default": null,
@@ -8730,9 +8730,9 @@
               "name": "boolean",
               "kind": "named"
             },
-            "optional": true,
+            "optional": false,
             "has_default": false,
-            "nullable": true
+            "nullable": false
           },
           {
             "default": null,
@@ -8741,9 +8741,20 @@
               "name": "datetime",
               "kind": "named"
             },
-            "optional": true,
+            "optional": false,
             "has_default": false,
             "nullable": true
+          },
+          {
+            "default": null,
+            "name": "inserted_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
           },
           {
             "default": null,
@@ -14819,6 +14830,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Creates a new comment.",
       "full_name": "comments/create",
       "method": "POST"
     },
@@ -14865,6 +14877,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Deletes a comment.",
       "full_name": "comments/delete",
       "method": "POST"
     },
@@ -14914,6 +14927,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Lists comments for a resource.",
       "full_name": "comments/list",
       "method": "GET"
     },
@@ -14971,6 +14985,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Updates a comment.",
       "full_name": "comments/update",
       "method": "POST"
     },
@@ -15006,6 +15021,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Converts a company member to a guest.",
       "full_name": "companies/convert_member_to_guest",
       "method": "POST"
     },
@@ -15022,9 +15038,9 @@
             "name": "company",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "companies",
@@ -15036,9 +15052,9 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -15047,9 +15063,9 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -15060,9 +15076,10 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Creates a new company.",
       "full_name": "companies/create",
       "method": "POST"
     },
@@ -15084,11 +15101,12 @@
             },
             "kind": "list"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Creates admins for a company.",
       "full_name": "companies/create_admins",
       "method": "POST"
     },
@@ -15168,6 +15186,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Creates a new company member.",
       "full_name": "companies/create_member",
       "method": "POST"
     },
@@ -15184,9 +15203,9 @@
             "name": "person",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "companies",
@@ -15198,11 +15217,12 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Removes an admin from a company.",
       "full_name": "companies/delete_admin",
       "method": "POST"
     },
@@ -15230,7 +15250,7 @@
           "default": null,
           "name": "person_id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
           "optional": false,
@@ -15238,6 +15258,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Removes a member from a company.",
       "full_name": "companies/delete_member",
       "method": "POST"
     },
@@ -15256,11 +15277,12 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Removes an owner from a company.",
       "full_name": "companies/delete_owner",
       "method": "POST"
     },
@@ -15277,9 +15299,9 @@
             "name": "company",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "companies",
@@ -15291,9 +15313,9 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -15302,11 +15324,12 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Deletes a trusted email domain from a company.",
       "full_name": "companies/delete_trusted_email_domain",
       "method": "POST"
     },
@@ -15337,7 +15360,7 @@
             "name": "company_id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
           "nullable": false
         },
@@ -15408,6 +15431,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Retrieves a company by ID with optional related data.",
       "full_name": "companies/get",
       "method": "GET"
     },
@@ -15424,9 +15448,9 @@
             "name": "activity",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "companies",
@@ -15435,12 +15459,12 @@
           "default": null,
           "name": "id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -15451,7 +15475,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -15462,7 +15486,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -15473,7 +15497,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -15484,7 +15508,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -15495,9 +15519,10 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Retrieves an activity by ID with optional related data.",
       "full_name": "companies/get_activity",
       "method": "GET"
     },
@@ -15517,9 +15542,9 @@
             },
             "kind": "list"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "companies",
@@ -15624,6 +15649,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Retrieves the company's work map without hierarchy.",
       "full_name": "companies/get_flat_work_map",
       "method": "GET"
     },
@@ -15643,9 +15669,9 @@
             },
             "kind": "list"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "companies",
@@ -15739,6 +15765,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Retrieves the work map for a company.",
       "full_name": "companies/get_work_map",
       "method": "GET"
     },
@@ -15833,6 +15860,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Performs a global search across projects, goals, milestones, tasks, and people.",
       "full_name": "companies/global_search",
       "method": "GET"
     },
@@ -15882,6 +15910,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Grants resource access to a person.",
       "full_name": "companies/grant_resource_access",
       "method": "POST"
     },
@@ -15961,6 +15990,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Invites a guest to a company.",
       "full_name": "companies/invite_guest",
       "method": "POST"
     },
@@ -15980,9 +16010,9 @@
             },
             "kind": "list"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "companies",
@@ -15999,6 +16029,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Lists all companies for the current account.",
       "full_name": "companies/list",
       "method": "GET"
     },
@@ -16062,6 +16093,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Lists activities for a company.",
       "full_name": "companies/list_activities",
       "method": "GET"
     },
@@ -16080,11 +16112,12 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Restores a suspended company member.",
       "full_name": "companies/restore_member",
       "method": "POST"
     },
@@ -16101,9 +16134,9 @@
             "name": "company",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "companies",
@@ -16115,11 +16148,12 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Updates a company's information.",
       "full_name": "companies/update",
       "method": "POST"
     },
@@ -16158,6 +16192,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Updates permissions for multiple company members.",
       "full_name": "companies/update_members_permissions",
       "method": "POST"
     },
@@ -16174,9 +16209,9 @@
             "name": "document",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "documents",
@@ -16188,9 +16223,9 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -16210,9 +16245,9 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -16221,9 +16256,9 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -16273,6 +16308,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Creates a new document in a resource hub.",
       "full_name": "documents/create",
       "method": "POST"
     },
@@ -16289,9 +16325,9 @@
             "name": "document",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "documents",
@@ -16303,11 +16339,12 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Deletes a document.",
       "full_name": "documents/delete",
       "method": "POST"
     },
@@ -16453,6 +16490,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Retrieves a document by ID with optional related data.",
       "full_name": "documents/get",
       "method": "GET"
     },
@@ -16469,9 +16507,9 @@
             "name": "resource_hub_document",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "documents",
@@ -16535,6 +16573,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Publishes a draft document.",
       "full_name": "documents/publish",
       "method": "POST"
     },
@@ -16617,6 +16656,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Updates a document.",
       "full_name": "documents/update",
       "method": "POST"
     },
@@ -16636,9 +16676,9 @@
             },
             "kind": "list"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "files",
@@ -16650,9 +16690,9 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -16675,9 +16715,9 @@
             },
             "kind": "list"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -16705,6 +16745,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Creates new files in a resource hub.",
       "full_name": "files/create",
       "method": "POST"
     },
@@ -16721,9 +16762,9 @@
             "name": "resource_hub_file",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "files",
@@ -16735,11 +16776,12 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Deletes a file.",
       "full_name": "files/delete",
       "method": "POST"
     },
@@ -16783,7 +16825,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -16794,7 +16836,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -16805,7 +16847,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -16816,7 +16858,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -16827,7 +16869,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -16838,7 +16880,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -16849,7 +16891,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -16860,7 +16902,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -16871,9 +16913,10 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Retrieves a file by ID with optional related data.",
       "full_name": "files/get",
       "method": "GET"
     },
@@ -16890,9 +16933,9 @@
             "name": "resource_hub_file",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "files",
@@ -16904,9 +16947,9 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -16915,9 +16958,9 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -16928,9 +16971,10 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Updates a file.",
       "full_name": "files/update",
       "method": "POST"
     },
@@ -16947,9 +16991,9 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "folders",
@@ -16963,7 +17007,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -16972,9 +17016,9 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -16983,9 +17027,9 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -16999,6 +17043,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Copies a folder to another location.",
       "full_name": "folders/copy",
       "method": "POST"
     },
@@ -17015,9 +17060,9 @@
             "name": "resource_hub_folder",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "folders",
@@ -17026,18 +17071,18 @@
           "default": null,
           "name": "resource_hub_id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
           "name": "folder_id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
           "optional": true,
@@ -17051,11 +17096,12 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Creates a new folder in a resource hub.",
       "full_name": "folders/create",
       "method": "POST"
     },
@@ -17072,9 +17118,9 @@
             "name": "boolean",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "folders",
@@ -17086,11 +17132,12 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Deletes a folder.",
       "full_name": "folders/delete",
       "method": "POST"
     },
@@ -17107,9 +17154,9 @@
             "name": "resource_hub_folder",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "folders",
@@ -17121,9 +17168,9 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -17134,7 +17181,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -17145,7 +17192,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -17156,7 +17203,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -17167,7 +17214,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -17178,9 +17225,10 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Retrieves a folder by ID with optional related data.",
       "full_name": "folders/get",
       "method": "GET"
     },
@@ -17197,9 +17245,9 @@
             "name": "boolean",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "folders",
@@ -17211,9 +17259,9 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -17222,11 +17270,12 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Renames a folder.",
       "full_name": "folders/rename",
       "method": "POST"
     },
@@ -17254,14 +17303,15 @@
           "default": null,
           "name": "id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Acknowledges a goal check-in.",
       "full_name": "goal_check_ins/acknowledge",
       "method": "POST"
     },
@@ -17370,7 +17420,7 @@
           "name": "subscriber_ids",
           "type": {
             "item": {
-              "name": "string",
+              "name": "id",
               "kind": "named"
             },
             "kind": "list"
@@ -17380,6 +17430,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Creates a new check-in for a goal.",
       "full_name": "goal_check_ins/create",
       "method": "POST"
     },
@@ -17407,7 +17458,7 @@
           "default": null,
           "name": "id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
           "optional": false,
@@ -17569,6 +17620,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Retrieves a goal check-in by ID with optional includes for related data.",
       "full_name": "goal_check_ins/get",
       "method": "GET"
     },
@@ -17659,9 +17711,10 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": false
+          "nullable": true
         }
       ],
+      "docstring": "Updates a goal check-in.",
       "full_name": "goal_check_ins/update",
       "method": "POST"
     },
@@ -17692,9 +17745,9 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -17703,9 +17756,9 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -17714,9 +17767,9 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -17744,6 +17797,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Creates a new discussion for a goal.",
       "full_name": "goal_discussions/create",
       "method": "POST"
     },
@@ -17782,6 +17836,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Lists discussions for a goal.",
       "full_name": "goal_discussions/list",
       "method": "GET"
     },
@@ -17800,9 +17855,9 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -17811,9 +17866,9 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -17822,11 +17877,12 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Updates a goal discussion.",
       "full_name": "goal_discussions/update",
       "method": "POST"
     },
@@ -17854,25 +17910,26 @@
           "default": null,
           "name": "goal_id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
           "name": "parent_goal_id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
           "nullable": true
         }
       ],
+      "docstring": "Changes the parent goal of a goal.",
       "full_name": "goals/change_parent",
       "method": "POST"
     },
@@ -17931,6 +17988,17 @@
         },
         {
           "default": null,
+          "name": "success_status",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
           "name": "send_notifications_to_everyone",
           "type": {
             "name": "boolean",
@@ -17938,7 +18006,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": false
+          "nullable": true
         },
         {
           "default": null,
@@ -17952,20 +18020,10 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "success_status",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
+          "nullable": true
         }
       ],
+      "docstring": "Closes a goal with success status and retrospective.",
       "full_name": "goals/close",
       "method": "POST"
     },
@@ -18114,6 +18172,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Creates a new goal in a space.",
       "full_name": "goals/create",
       "method": "POST"
     },
@@ -18163,6 +18222,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Gives access to a goal to specified members.",
       "full_name": "goals/create_access_members",
       "method": "POST"
     },
@@ -18220,6 +18280,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Creates a checklist item (check) for a goal.",
       "full_name": "goals/create_check",
       "method": "POST"
     },
@@ -18310,6 +18371,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Creates a target for a goal.",
       "full_name": "goals/create_target",
       "method": "POST"
     },
@@ -18340,11 +18402,12 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Deletes a goal permanently.",
       "full_name": "goals/delete",
       "method": "POST"
     },
@@ -18391,6 +18454,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Removes access to a goal from a member.",
       "full_name": "goals/delete_access_member",
       "method": "POST"
     },
@@ -18437,6 +18501,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Deletes a checklist item from a goal.",
       "full_name": "goals/delete_check",
       "method": "POST"
     },
@@ -18483,6 +18548,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Deletes a target from a goal.",
       "full_name": "goals/delete_target",
       "method": "POST"
     },
@@ -18694,6 +18760,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Retrieves a goal by ID with optional includes for related data.",
       "full_name": "goals/get",
       "method": "GET"
     },
@@ -18724,7 +18791,7 @@
           "default": null,
           "name": "space_id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
           "optional": true,
@@ -18787,6 +18854,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Lists goals with optional filtering by space and includes for related data.",
       "full_name": "goals/list",
       "method": "GET"
     },
@@ -18825,6 +18893,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Lists people with access to a goal.",
       "full_name": "goals/list_access_members",
       "method": "GET"
     },
@@ -18863,6 +18932,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Lists check-ins for a goal.",
       "full_name": "goals/list_check_ins",
       "method": "GET"
     },
@@ -18896,11 +18966,12 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Lists a goal's contributors.",
       "full_name": "goals/list_contributors",
       "method": "GET"
     },
@@ -18917,9 +18988,9 @@
             "name": "goal",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "goals",
@@ -18931,9 +19002,9 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -18942,9 +19013,9 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -18972,6 +19043,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Reopens a closed goal.",
       "full_name": "goals/reopen",
       "method": "POST"
     },
@@ -19021,6 +19093,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Searches for potential parent goals for a given goal.",
       "full_name": "goals/search_parent_goal",
       "method": "GET"
     },
@@ -19067,6 +19140,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Toggles the completion status of a checklist item in a goal.",
       "full_name": "goals/toggle_check",
       "method": "POST"
     },
@@ -19113,6 +19187,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Updates the access levels for a goal.",
       "full_name": "goals/update_access_levels",
       "method": "POST"
     },
@@ -19170,6 +19245,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Updates the access level of a member for a goal.",
       "full_name": "goals/update_access_member",
       "method": "POST"
     },
@@ -19216,6 +19292,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Updates the champion of a goal.",
       "full_name": "goals/update_champion",
       "method": "POST"
     },
@@ -19273,6 +19350,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Updates the name of a checklist item in a goal.",
       "full_name": "goals/update_check",
       "method": "POST"
     },
@@ -19330,6 +19408,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Updates the order/index of a checklist item within a goal.",
       "full_name": "goals/update_check_index",
       "method": "POST"
     },
@@ -19376,6 +19455,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Updates the description of a goal.",
       "full_name": "goals/update_description",
       "method": "POST"
     },
@@ -19422,6 +19502,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Updates the due date of a goal.",
       "full_name": "goals/update_due_date",
       "method": "POST"
     },
@@ -19468,6 +19549,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Updates the name of a goal.",
       "full_name": "goals/update_name",
       "method": "POST"
     },
@@ -19514,6 +19596,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Updates the parent goal of a goal.",
       "full_name": "goals/update_parent_goal",
       "method": "POST"
     },
@@ -19560,6 +19643,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Updates the reviewer of a goal.",
       "full_name": "goals/update_reviewer",
       "method": "POST"
     },
@@ -19606,6 +19690,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Moves a goal to a different space.",
       "full_name": "goals/update_space",
       "method": "POST"
     },
@@ -19652,6 +19737,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Updates the start date of a goal.",
       "full_name": "goals/update_start_date",
       "method": "POST"
     },
@@ -19742,6 +19828,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Updates properties of a target for a goal.",
       "full_name": "goals/update_target",
       "method": "POST"
     },
@@ -19799,6 +19886,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Updates the order/index of a target within a goal.",
       "full_name": "goals/update_target_index",
       "method": "POST"
     },
@@ -19856,6 +19944,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Updates the current value of a target for a goal.",
       "full_name": "goals/update_target_value",
       "method": "POST"
     },
@@ -19872,9 +19961,9 @@
             "name": "resource_hub_link",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "links",
@@ -19886,9 +19975,9 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -19908,9 +19997,9 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -19919,9 +20008,9 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -19932,7 +20021,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -19941,9 +20030,9 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -19971,6 +20060,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Creates a new link in a resource hub.",
       "full_name": "links/create",
       "method": "POST"
     },
@@ -19987,9 +20077,9 @@
             "name": "boolean",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "links",
@@ -20001,11 +20091,12 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Deletes a link.",
       "full_name": "links/delete",
       "method": "POST"
     },
@@ -20049,7 +20140,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -20060,7 +20151,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -20071,7 +20162,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -20082,7 +20173,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -20093,7 +20184,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -20104,7 +20195,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -20115,7 +20206,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -20126,7 +20217,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -20137,7 +20228,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -20148,9 +20239,10 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Retrieves a link by ID with optional related data.",
       "full_name": "links/get",
       "method": "GET"
     },
@@ -20167,9 +20259,9 @@
             "name": "resource_hub_link",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "links",
@@ -20181,9 +20273,9 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -20192,9 +20284,9 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -20203,9 +20295,9 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -20214,9 +20306,9 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -20227,9 +20319,10 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Updates a link.",
       "full_name": "links/update",
       "method": "POST"
     },
@@ -20246,13 +20339,14 @@
             "name": "integer",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "notifications",
       "inputs": [],
+      "docstring": "Returns the count of unread notifications for the current user.",
       "full_name": "notifications/get_unread_count",
       "method": "GET"
     },
@@ -20299,6 +20393,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Checks if the current user is subscribed to notifications for a specific resource.",
       "full_name": "notifications/is_subscribed",
       "method": "GET"
     },
@@ -20318,9 +20413,9 @@
             },
             "kind": "list"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "notifications",
@@ -20334,7 +20429,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -20345,9 +20440,10 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Lists notifications for the current user.",
       "full_name": "notifications/list",
       "method": "GET"
     },
@@ -20359,6 +20455,7 @@
       "outputs": [],
       "namespace": "notifications",
       "inputs": [],
+      "docstring": "Marks all notifications as read for the current user.",
       "full_name": "notifications/mark_all_as_read",
       "method": "POST"
     },
@@ -20374,14 +20471,15 @@
           "default": null,
           "name": "id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Marks a notification as read for the current user.",
       "full_name": "notifications/mark_as_read",
       "method": "POST"
     },
@@ -20398,16 +20496,17 @@
           "name": "ids",
           "type": {
             "item": {
-              "name": "string",
+              "name": "id",
               "kind": "named"
             },
             "kind": "list"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Marks multiple notifications as read for the current user.",
       "full_name": "notifications/mark_many_as_read",
       "method": "POST"
     },
@@ -20442,6 +20541,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Subscribes the current user to notifications for a specific resource.",
       "full_name": "notifications/subscribe",
       "method": "POST"
     },
@@ -20465,6 +20565,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Unsubscribes the current user from notifications for a specific subscription list.",
       "full_name": "notifications/unsubscribe",
       "method": "POST"
     },
@@ -20480,12 +20581,12 @@
           "default": null,
           "name": "id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -20494,9 +20595,9 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -20514,7 +20615,7 @@
           "name": "subscriber_ids",
           "type": {
             "item": {
-              "name": "string",
+              "name": "id",
               "kind": "named"
             },
             "kind": "list"
@@ -20524,6 +20625,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Updates the subscriptions list for a resource.",
       "full_name": "notifications/update_subscriptions_list",
       "method": "POST"
     },
@@ -20540,9 +20642,9 @@
             "name": "person",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "people",
@@ -20614,6 +20716,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Retrieves a person by ID with optional related data.",
       "full_name": "people/get",
       "method": "GET"
     },
@@ -20630,13 +20733,14 @@
             "name": "account",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "people",
       "inputs": [],
+      "docstring": "Retrieves the current account information.",
       "full_name": "people/get_account",
       "method": "GET"
     },
@@ -20653,13 +20757,14 @@
             "name": "integer",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "people",
       "inputs": [],
+      "docstring": "Gets the count of assignments for the current user.",
       "full_name": "people/get_assignments_count",
       "method": "GET"
     },
@@ -20679,9 +20784,9 @@
             },
             "kind": "list"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "people",
@@ -20693,22 +20798,23 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
           "name": "resourse_id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Gets people bound to a resource.",
       "full_name": "people/get_binded",
       "method": "GET"
     },
@@ -20725,9 +20831,9 @@
             "name": "person",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "people",
@@ -20741,9 +20847,10 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Retrieves the current user's profile information.",
       "full_name": "people/get_me",
       "method": "GET"
     },
@@ -20763,9 +20870,9 @@
             },
             "kind": "list"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "people",
@@ -20837,6 +20944,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Lists people in the company.",
       "full_name": "people/list",
       "method": "GET"
     },
@@ -20863,6 +20971,7 @@
       ],
       "namespace": "people",
       "inputs": [],
+      "docstring": "Lists assignments for the current user.",
       "full_name": "people/list_assignments",
       "method": "GET"
     },
@@ -20912,6 +21021,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Lists possible managers for a person.",
       "full_name": "people/list_possible_managers",
       "method": "GET"
     },
@@ -20931,9 +21041,9 @@
             },
             "kind": "list"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "people",
@@ -20954,7 +21064,7 @@
           "name": "ignored_ids",
           "type": {
             "item": {
-              "name": "string",
+              "name": "id",
               "kind": "named"
             },
             "kind": "list"
@@ -20978,7 +21088,7 @@
           "default": null,
           "name": "search_scope_id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
           "optional": true,
@@ -20986,6 +21096,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Searches for people.",
       "full_name": "people/search",
       "method": "GET"
     },
@@ -21002,9 +21113,9 @@
             "name": "person",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "people",
@@ -21013,12 +21124,12 @@
           "default": null,
           "name": "id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -21029,7 +21140,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -21040,7 +21151,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -21051,13 +21162,13 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
           "name": "manager_id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
           "optional": true,
@@ -21073,7 +21184,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -21098,6 +21209,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Updates a person's profile information.",
       "full_name": "people/update",
       "method": "POST"
     },
@@ -21116,7 +21228,7 @@
           },
           "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "people",
@@ -21125,7 +21237,7 @@
           "default": null,
           "name": "person_id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
           "optional": false,
@@ -21136,10 +21248,10 @@
           "default": null,
           "name": "avatar_blob_id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
           "nullable": true
         },
@@ -21150,11 +21262,12 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
           "nullable": true
         }
       ],
+      "docstring": "Updates a person's profile picture.",
       "full_name": "people/update_picture",
       "method": "POST"
     },
@@ -21190,6 +21303,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Updates the theme preference for the current account.",
       "full_name": "people/update_theme",
       "method": "POST"
     },
@@ -21206,9 +21320,9 @@
             "name": "project_check_in",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "project_check_ins",
@@ -21225,6 +21339,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Acknowledges a project check-in.",
       "full_name": "project_check_ins/acknowledge",
       "method": "POST"
     },
@@ -21241,9 +21356,9 @@
             "name": "project_check_in",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "project_check_ins",
@@ -21252,12 +21367,12 @@
           "default": null,
           "name": "project_id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -21266,9 +21381,9 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -21277,9 +21392,9 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -21297,7 +21412,7 @@
           "name": "subscriber_ids",
           "type": {
             "item": {
-              "name": "string",
+              "name": "id",
               "kind": "named"
             },
             "kind": "list"
@@ -21307,6 +21422,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Creates a new project check-in.",
       "full_name": "project_check_ins/create",
       "method": "POST"
     },
@@ -21334,7 +21450,7 @@
           "default": null,
           "name": "id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
           "optional": false,
@@ -21430,6 +21546,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Retrieves a single project check-in by ID with optional related data.",
       "full_name": "project_check_ins/get",
       "method": "GET"
     },
@@ -21449,9 +21566,9 @@
             },
             "kind": "list"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "project_check_ins",
@@ -21460,7 +21577,7 @@
           "default": null,
           "name": "project_id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
           "optional": false,
@@ -21501,6 +21618,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Lists all project check-ins for a given project with optional related data.",
       "full_name": "project_check_ins/list",
       "method": "GET"
     },
@@ -21517,9 +21635,9 @@
             "name": "project_check_in",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "project_check_ins",
@@ -21528,12 +21646,12 @@
           "default": null,
           "name": "check_in_id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -21542,9 +21660,9 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -21553,11 +21671,12 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Updates an existing project check-in's status and/or description.",
       "full_name": "project_check_ins/update",
       "method": "POST"
     },
@@ -21640,6 +21759,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Creates a new project discussion.",
       "full_name": "project_discussions/create",
       "method": "POST"
     },
@@ -21752,6 +21872,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Retrieves a single project discussion by ID with optional related data.",
       "full_name": "project_discussions/get",
       "method": "GET"
     },
@@ -21790,6 +21911,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Lists all discussions for a given project.",
       "full_name": "project_discussions/list",
       "method": "GET"
     },
@@ -21803,7 +21925,7 @@
           "default": null,
           "name": "discussion",
           "type": {
-            "name": "update",
+            "name": "comment_thread",
             "kind": "named"
           },
           "optional": false,
@@ -21861,6 +21983,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Updates an existing project discussion's title and/or message.",
       "full_name": "project_discussions/update",
       "method": "POST"
     },
@@ -21918,6 +22041,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Creates a comment on a project milestone with an optional action (none, reopen, complete).",
       "full_name": "project_milestones/create_comment",
       "method": "POST"
     },
@@ -21953,6 +22077,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Deletes a project milestone.",
       "full_name": "project_milestones/delete",
       "method": "POST"
     },
@@ -22065,6 +22190,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Retrieves a project milestone by ID with optional related data.",
       "full_name": "project_milestones/get",
       "method": "GET"
     },
@@ -22103,6 +22229,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Lists all tasks associated with a project milestone.",
       "full_name": "project_milestones/list_tasks",
       "method": "GET"
     },
@@ -22149,6 +22276,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Updates the description of a project milestone.",
       "full_name": "project_milestones/update_description",
       "method": "POST"
     },
@@ -22195,6 +22323,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Updates the due date of a project milestone.",
       "full_name": "project_milestones/update_due_date",
       "method": "POST"
     },
@@ -22263,6 +22392,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Updates the kanban state for a task within a milestone and changes the task status.",
       "full_name": "project_milestones/update_kanban",
       "method": "POST"
     },
@@ -22312,6 +22442,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Updates the ordering state of milestones within a project.",
       "full_name": "project_milestones/update_ordering",
       "method": "POST"
     },
@@ -22358,6 +22489,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Updates the title of a project milestone.",
       "full_name": "project_milestones/update_title",
       "method": "POST"
     },
@@ -22423,7 +22555,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": false
+          "nullable": true
         },
         {
           "default": null,
@@ -22437,9 +22569,10 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": false
+          "nullable": true
         }
       ],
+      "docstring": "Closes a project with retrospective and success status.",
       "full_name": "projects/close",
       "method": "POST"
     },
@@ -22497,6 +22630,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Counts discussions, tasks, and check-ins for a project.",
       "full_name": "projects/count_children",
       "method": "GET"
     },
@@ -22513,9 +22647,9 @@
             "name": "project",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "projects",
@@ -22609,6 +22743,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Creates a new project in a space.",
       "full_name": "projects/create",
       "method": "POST"
     },
@@ -22625,9 +22760,9 @@
             "name": "project_contributor",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "projects",
@@ -22688,6 +22823,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Adds a contributor to a project.",
       "full_name": "projects/create_contributor",
       "method": "POST"
     },
@@ -22715,7 +22851,7 @@
           "default": null,
           "name": "project_id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
           "optional": false,
@@ -22737,6 +22873,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Adds multiple contributors to a project.",
       "full_name": "projects/create_contributors",
       "method": "POST"
     },
@@ -22805,6 +22942,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Creates a key resource for a project.",
       "full_name": "projects/create_key_resource",
       "method": "POST"
     },
@@ -22862,6 +23000,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Creates a milestone for a project.",
       "full_name": "projects/create_milestone",
       "method": "POST"
     },
@@ -22897,6 +23036,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Deletes a project.",
       "full_name": "projects/delete",
       "method": "POST"
     },
@@ -22913,9 +23053,9 @@
             "name": "project_contributor",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "projects",
@@ -22927,11 +23067,12 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Removes a contributor from a project.",
       "full_name": "projects/delete_contributor",
       "method": "POST"
     },
@@ -22959,7 +23100,7 @@
           "default": null,
           "name": "id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
           "optional": false,
@@ -22967,6 +23108,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Deletes a project key resource.",
       "full_name": "projects/delete_key_resource",
       "method": "POST"
     },
@@ -23005,12 +23147,12 @@
           "default": null,
           "name": "id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -23200,6 +23342,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Retrieves a project by ID with optional includes for related data.",
       "full_name": "projects/get",
       "method": "GET"
     },
@@ -23268,6 +23411,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Retrieves a project contributor by ID.",
       "full_name": "projects/get_contributor",
       "method": "GET"
     },
@@ -23284,9 +23428,9 @@
             "name": "project_key_resource",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "projects",
@@ -23295,14 +23439,15 @@
           "default": null,
           "name": "id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Retrieves a project key resource by ID.",
       "full_name": "projects/get_key_resource",
       "method": "GET"
     },
@@ -23426,6 +23571,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Retrieves a project retrospective.",
       "full_name": "projects/get_retrospective",
       "method": "GET"
     },
@@ -23445,9 +23591,9 @@
             },
             "kind": "list"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "projects",
@@ -23478,7 +23624,7 @@
           "default": null,
           "name": "space_id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
           "optional": true,
@@ -23489,7 +23635,7 @@
           "default": null,
           "name": "goal_id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
           "optional": true,
@@ -23607,6 +23753,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Lists projects with optional filtering and includes.",
       "full_name": "projects/list",
       "method": "GET"
     },
@@ -23670,6 +23817,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Lists contributors for a project.",
       "full_name": "projects/list_contributors",
       "method": "GET"
     },
@@ -23719,6 +23867,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Lists milestones for a project.",
       "full_name": "projects/list_milestones",
       "method": "GET"
     },
@@ -23734,25 +23883,26 @@
           "default": null,
           "name": "project_id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
           "name": "space_id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Moves a project to a different space.",
       "full_name": "projects/move_to_space",
       "method": "POST"
     },
@@ -23769,9 +23919,9 @@
             "name": "project",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "projects",
@@ -23780,14 +23930,15 @@
           "default": null,
           "name": "project_id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Pauses a project.",
       "full_name": "projects/pause",
       "method": "POST"
     },
@@ -23859,6 +24010,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Resumes a paused project.",
       "full_name": "projects/resume",
       "method": "POST"
     },
@@ -23933,6 +24085,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Searches for projects.",
       "full_name": "projects/search",
       "method": "GET"
     },
@@ -23982,6 +24135,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Searches for potential parent goals for a project.",
       "full_name": "projects/search_parent_goal",
       "method": "GET"
     },
@@ -24001,9 +24155,9 @@
             },
             "kind": "list"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "projects",
@@ -24012,12 +24166,12 @@
           "default": null,
           "name": "project_id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -24031,6 +24185,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Searches for potential contributors to add to a project.",
       "full_name": "projects/search_potential_contributors",
       "method": "GET"
     },
@@ -24077,6 +24232,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Updates the champion of a project.",
       "full_name": "projects/update_champion",
       "method": "POST"
     },
@@ -24156,6 +24312,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Updates a project contributor's details and permissions.",
       "full_name": "projects/update_contributor",
       "method": "POST"
     },
@@ -24202,6 +24359,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Updates the description of a project.",
       "full_name": "projects/update_description",
       "method": "POST"
     },
@@ -24248,6 +24406,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Updates the due date of a project.",
       "full_name": "projects/update_due_date",
       "method": "POST"
     },
@@ -24327,6 +24486,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Updates the kanban state of a task in a project.",
       "full_name": "projects/update_kanban",
       "method": "POST"
     },
@@ -24354,7 +24514,7 @@
           "default": null,
           "name": "id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
           "optional": false,
@@ -24384,6 +24544,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Updates a project key resource.",
       "full_name": "projects/update_key_resource",
       "method": "POST"
     },
@@ -24452,6 +24613,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Updates a project milestone.",
       "full_name": "projects/update_milestone",
       "method": "POST"
     },
@@ -24468,9 +24630,9 @@
             "name": "project",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "projects",
@@ -24479,12 +24641,12 @@
           "default": null,
           "name": "project_id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -24493,11 +24655,12 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Updates the name of a project.",
       "full_name": "projects/update_name",
       "method": "POST"
     },
@@ -24555,6 +24718,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Updates the parent goal of a project.",
       "full_name": "projects/update_parent_goal",
       "method": "POST"
     },
@@ -24571,9 +24735,9 @@
             "name": "boolean",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "projects",
@@ -24582,12 +24746,12 @@
           "default": null,
           "name": "project_id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -24596,11 +24760,12 @@
             "name": "access_levels",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Updates the access permissions for a project.",
       "full_name": "projects/update_permissions",
       "method": "POST"
     },
@@ -24658,6 +24823,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Updates a project retrospective.",
       "full_name": "projects/update_retrospective",
       "method": "POST"
     },
@@ -24704,6 +24870,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Updates the reviewer of a project.",
       "full_name": "projects/update_reviewer",
       "method": "POST"
     },
@@ -24750,6 +24917,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Updates the start date of a project.",
       "full_name": "projects/update_start_date",
       "method": "POST"
     },
@@ -24813,6 +24981,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Updates the available task statuses for a project.",
       "full_name": "projects/update_task_statuses",
       "method": "POST"
     },
@@ -24881,6 +25050,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Creates a reaction on an entity.",
       "full_name": "reactions/create",
       "method": "POST"
     },
@@ -24916,6 +25086,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Deletes a reaction.",
       "full_name": "reactions/delete",
       "method": "POST"
     },
@@ -24932,9 +25103,9 @@
             "name": "resource_hub",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "resource_hubs",
@@ -24943,12 +25114,12 @@
           "default": null,
           "name": "space_id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -24957,9 +25128,9 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -25006,6 +25177,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Creates a new resource hub in a space.",
       "full_name": "resource_hubs/create",
       "method": "POST"
     },
@@ -25022,9 +25194,9 @@
             "name": "resource_hub",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "resource_hubs",
@@ -25036,9 +25208,9 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -25085,6 +25257,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Retrieves a resource hub by ID with optional related data.",
       "full_name": "resource_hubs/get",
       "method": "GET"
     },
@@ -25104,9 +25277,9 @@
             },
             "kind": "list"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -25118,9 +25291,9 @@
             },
             "kind": "list"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "resource_hubs",
@@ -25170,6 +25343,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Lists nodes in a resource hub or folder.",
       "full_name": "resource_hubs/list_nodes",
       "method": "GET"
     },
@@ -25186,9 +25360,9 @@
             "name": "boolean",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "resource_hubs",
@@ -25200,9 +25374,9 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -25211,9 +25385,9 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -25227,6 +25401,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Updates the parent folder of a resource hub item.",
       "full_name": "resource_hubs/update_parent_folder",
       "method": "POST"
     },
@@ -25245,11 +25420,12 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Archives a space discussion.",
       "full_name": "space_discussions/archive",
       "method": "POST"
     },
@@ -25304,7 +25480,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -25315,7 +25491,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -25326,7 +25502,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -25340,9 +25516,10 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Creates a new space discussion.",
       "full_name": "space_discussions/create",
       "method": "POST"
     },
@@ -25370,7 +25547,7 @@
           "default": null,
           "name": "id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
           "optional": false,
@@ -25466,6 +25643,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Retrieves a space discussion by ID with optional related data.",
       "full_name": "space_discussions/get",
       "method": "GET"
     },
@@ -25485,9 +25663,9 @@
             },
             "kind": "list"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -25513,9 +25691,9 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -25551,6 +25729,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Lists space discussions for a space.",
       "full_name": "space_discussions/list",
       "method": "GET"
     },
@@ -25567,9 +25746,9 @@
             "name": "discussion",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "space_discussions",
@@ -25581,11 +25760,12 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Publishes a space discussion draft.",
       "full_name": "space_discussions/publish",
       "method": "POST"
     },
@@ -25654,6 +25834,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Updates a space discussion.",
       "full_name": "space_discussions/update",
       "method": "POST"
     },
@@ -25703,6 +25884,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Adds members to a space.",
       "full_name": "spaces/add_members",
       "method": "POST"
     },
@@ -25738,6 +25920,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Counts spaces by access level.",
       "full_name": "spaces/count_by_access_level",
       "method": "GET"
     },
@@ -25754,9 +25937,9 @@
             "name": "space",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "spaces",
@@ -25768,9 +25951,9 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -25779,9 +25962,9 @@
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -25790,9 +25973,9 @@
             "name": "integer",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -25801,11 +25984,12 @@
             "name": "integer",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Creates a new space.",
       "full_name": "spaces/create",
       "method": "POST"
     },
@@ -25841,6 +26025,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Deletes a space.",
       "full_name": "spaces/delete",
       "method": "POST"
     },
@@ -25875,6 +26060,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Removes a member from a space.",
       "full_name": "spaces/delete_member",
       "method": "POST"
     },
@@ -25891,9 +26077,9 @@
             "name": "space",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "spaces",
@@ -25905,9 +26091,9 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -25976,6 +26162,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Retrieves a space by ID with optional related data.",
       "full_name": "spaces/get",
       "method": "GET"
     },
@@ -25994,11 +26181,12 @@
             "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Joins a space.",
       "full_name": "spaces/join",
       "method": "POST"
     },
@@ -26018,9 +26206,9 @@
             },
             "kind": "list"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "spaces",
@@ -26059,6 +26247,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Lists all spaces accessible to the current user.",
       "full_name": "spaces/list",
       "method": "GET"
     },
@@ -26080,7 +26269,7 @@
           },
           "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "spaces",
@@ -26122,6 +26311,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Lists members of a space.",
       "full_name": "spaces/list_members",
       "method": "GET"
     },
@@ -26160,6 +26350,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Lists tasks in a space.",
       "full_name": "spaces/list_tasks",
       "method": "GET"
     },
@@ -26195,6 +26386,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Lists all tools and their contents for a space.",
       "full_name": "spaces/list_tools",
       "method": "GET"
     },
@@ -26269,6 +26461,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Searches for spaces.",
       "full_name": "spaces/search",
       "method": "GET"
     },
@@ -26288,9 +26481,9 @@
             },
             "kind": "list"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "spaces",
@@ -26299,12 +26492,12 @@
           "default": null,
           "name": "group_id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -26315,21 +26508,21 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
           "name": "exclude_ids",
           "type": {
             "item": {
-              "name": "string",
+              "name": "id",
               "kind": "named"
             },
             "kind": "list"
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -26340,9 +26533,10 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
+      "docstring": "Searches for potential members to add to a space.",
       "full_name": "spaces/search_potential_members",
       "method": "GET"
     },
@@ -26400,6 +26594,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Updates a space's name and mission.",
       "full_name": "spaces/update",
       "method": "POST"
     },
@@ -26468,6 +26663,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Updates the kanban state and status of a task in a space.",
       "full_name": "spaces/update_kanban",
       "method": "POST"
     },
@@ -26517,6 +26713,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Updates permissions for multiple members in a space.",
       "full_name": "spaces/update_members_permissions",
       "method": "POST"
     },
@@ -26544,7 +26741,7 @@
           "default": null,
           "name": "space_id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
           "optional": false,
@@ -26563,6 +26760,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Updates permissions for a space.",
       "full_name": "spaces/update_permissions",
       "method": "POST"
     },
@@ -26581,7 +26779,7 @@
           },
           "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "spaces",
@@ -26626,6 +26824,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Updates task statuses for a space.",
       "full_name": "spaces/update_task_statuses",
       "method": "POST"
     },
@@ -26644,7 +26843,7 @@
           },
           "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -26655,7 +26854,7 @@
           },
           "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "spaces",
@@ -26683,6 +26882,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Updates the tools configuration for a space.",
       "full_name": "spaces/update_tools",
       "method": "POST"
     },
@@ -26806,6 +27006,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Creates a new task in a project or space.",
       "full_name": "tasks/create",
       "method": "POST"
     },
@@ -26863,6 +27064,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Deletes a task.",
       "full_name": "tasks/delete",
       "method": "POST"
     },
@@ -26986,6 +27188,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Retrieves a task by ID with optional related data.",
       "full_name": "tasks/get",
       "method": "GET"
     },
@@ -27024,6 +27227,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Lists all tasks for a project.",
       "full_name": "tasks/list",
       "method": "GET"
     },
@@ -27045,7 +27249,7 @@
           },
           "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "tasks",
@@ -27098,6 +27302,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Lists potential assignees for a task in a project or space.",
       "full_name": "tasks/list_potential_assignees",
       "method": "GET"
     },
@@ -27177,6 +27382,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Moves a task from one project or space to another.",
       "full_name": "tasks/move",
       "method": "POST"
     },
@@ -27234,6 +27440,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Updates the assignee of a task.",
       "full_name": "tasks/update_assignee",
       "method": "POST"
     },
@@ -27291,6 +27498,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Updates the description of a task.",
       "full_name": "tasks/update_description",
       "method": "POST"
     },
@@ -27348,6 +27556,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Updates the due date of a task.",
       "full_name": "tasks/update_due_date",
       "method": "POST"
     },
@@ -27394,6 +27603,7 @@
           "nullable": true
         }
       ],
+      "docstring": "Updates the milestone of a task.",
       "full_name": "tasks/update_milestone",
       "method": "POST"
     },
@@ -27468,6 +27678,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Updates the milestone and ordering of a task.",
       "full_name": "tasks/update_milestone_and_ordering",
       "method": "POST"
     },
@@ -27525,6 +27736,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Updates the name of a task.",
       "full_name": "tasks/update_name",
       "method": "POST"
     },
@@ -27593,6 +27805,7 @@
           "nullable": false
         }
       ],
+      "docstring": "Updates the status of a task.",
       "full_name": "tasks/update_status",
       "method": "POST"
     }
@@ -27620,6 +27833,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-18T10:45:31Z",
+  "generated_at": "2026-03-19T14:01:37Z",
   "schema_version": 1
 }
