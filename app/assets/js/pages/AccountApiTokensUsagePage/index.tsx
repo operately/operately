@@ -1,22 +1,11 @@
 import React from "react";
 
+import * as Pages from "@/components/Pages";
 import { PageModule } from "@/routes/types";
-import { redirectIfFeatureNotEnabled } from "@/routes/redirectUtils";
-import { Paths, usePaths } from "@/routes/paths";
+import { usePaths } from "@/routes/paths";
 import { AccountApiTokensUsagePage } from "turboui";
 
-export default { name: "AccountApiTokensUsagePage", loader, Page } as PageModule;
-
-async function loader({ params }): Promise<{}> {
-  const paths = new Paths({ companyId: params.companyId! });
-
-  await redirectIfFeatureNotEnabled(params, {
-    feature: "api-tokens",
-    path: paths.homePath(),
-  });
-
-  return {};
-}
+export default { name: "AccountApiTokensUsagePage", loader: Pages.emptyLoader, Page } as PageModule;
 
 function Page() {
   const paths = usePaths();

@@ -4,7 +4,6 @@ defmodule Operately.Support.Features.ApiTokensSteps do
   step :setup, ctx do
     ctx
     |> Factory.setup()
-    |> Factory.enable_feature("api-tokens")
     |> Factory.log_in_person(:creator)
   end
 
