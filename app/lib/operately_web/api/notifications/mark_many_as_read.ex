@@ -1,9 +1,13 @@
 defmodule OperatelyWeb.Api.Notifications.MarkManyAsRead do
+  @moduledoc """
+  Marks multiple notifications as read for the current user.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
   inputs do
-    field? :ids, list_of(:string), null: true
+    field :ids, list_of(:id), null: false
   end
 
   def call(conn, inputs) do

@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Notifications.UpdateSubscriptionsList do
+  @moduledoc """
+  Updates the subscriptions list for a resource.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -6,10 +10,10 @@ defmodule OperatelyWeb.Api.Notifications.UpdateSubscriptionsList do
   alias Operately.Operations.SubscriptionsListEditing
 
   inputs do
-    field? :id, :string, null: true
-    field? :type, :string, null: true
+    field :id, :id, null: false
+    field :type, :string, null: false
     field? :send_notifications_to_everyone, :boolean, null: true
-    field? :subscriber_ids, list_of(:string), null: true
+    field? :subscriber_ids, list_of(:id), null: true
   end
 
   def call(conn, inputs) do
@@ -34,14 +38,11 @@ defmodule OperatelyWeb.Api.Notifications.UpdateSubscriptionsList do
   end
 
   defp parse_inputs(inputs) do
-    {:ok, id} = decode_id(inputs.id)
-    {:ok, subscriber_ids} = decode_id(inputs.subscriber_ids)
-
     {:ok, %{
-      id: id,
+      id: inputs.id,
       type: String.to_existing_atom(inputs.type),
       send_notifications_to_everyone: inputs[:send_notifications_to_everyone] || false,
-      subscriber_ids: subscriber_ids,
+      subscriber_ids: inputs[:subscriber_ids] || [],
     }}
   end
 

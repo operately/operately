@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Notifications.Subscribe do
+  @moduledoc """
+  Subscribes the current user to notifications for a specific resource.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
