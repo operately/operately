@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Documents.Get do
+  @moduledoc """
+  Retrieves a document by ID with optional related data.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 

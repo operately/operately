@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Documents.Publish do
+  @moduledoc """
+  Publishes a draft document.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -14,7 +18,7 @@ defmodule OperatelyWeb.Api.Documents.Publish do
   end
 
   outputs do
-    field? :document, :resource_hub_document, null: true
+    field :document, :resource_hub_document, null: false
   end
 
   def call(conn, inputs) do
