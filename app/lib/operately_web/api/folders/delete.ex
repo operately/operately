@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Folders.Delete do
+  @moduledoc """
+  Deletes a folder.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -6,11 +10,11 @@ defmodule OperatelyWeb.Api.Folders.Delete do
   alias Operately.Operations.ResourceHubFolderDeleting
 
   inputs do
-    field? :folder_id, :id, null: true
+    field :folder_id, :id, null: false
   end
 
   outputs do
-    field? :success, :boolean, null: true
+    field :success, :boolean, null: false
   end
 
   def call(conn, inputs) do

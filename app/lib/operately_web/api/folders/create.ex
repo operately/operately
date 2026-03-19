@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Folders.Create do
+  @moduledoc """
+  Creates a new folder in a resource hub.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -6,13 +10,13 @@ defmodule OperatelyWeb.Api.Folders.Create do
   alias Operately.Operations.ResourceHubFolderCreating
 
   inputs do
-    field? :resource_hub_id, :string, null: true
-    field? :folder_id, :string, null: true
-    field? :name, :string, null: true
+    field :resource_hub_id, :id, null: false
+    field? :folder_id, :id, null: true
+    field :name, :string, null: false
   end
 
   outputs do
-    field? :folder, :resource_hub_folder, null: true
+    field :folder, :resource_hub_folder, null: false
   end
 
   def call(conn, inputs) do
@@ -29,7 +33,6 @@ defmodule OperatelyWeb.Api.Folders.Create do
   defp respond(result) do
     case result do
       {:ok, ctx} -> {:ok, ctx.serialized}
-      {:error, :id, _} -> {:error, :bad_request}
       {:error, :attrs, _} -> {:error, :bad_request}
       {:error, :hub, _} -> {:error, :not_found}
       {:error, :permissions, _} -> {:error, :forbidden}
@@ -39,12 +42,8 @@ defmodule OperatelyWeb.Api.Folders.Create do
   end
 
   defp parse_inputs(inputs) do
-    {:ok, resource_hub_id} = decode_id(inputs.resource_hub_id)
-    {:ok, folder_id} = decode_id(inputs[:folder_id], :allow_nil)
-
     {:ok, Map.merge(inputs, %{
-      resource_hub_id: resource_hub_id,
-      parent_folder_id: folder_id,
+      parent_folder_id: inputs[:folder_id],
     })}
   end
 

@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Folders.Copy do
+  @moduledoc """
+  Copies a folder to another location.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -7,14 +11,14 @@ defmodule OperatelyWeb.Api.Folders.Copy do
   alias Operately.ResourceHubs.{Permissions, ResourceHub, Folder}
 
   inputs do
-    field? :folder_name, :string, null: true
-    field? :folder_id, :id, null: true
-    field? :dest_resource_hub_id, :id, null: true
+    field? :folder_name, :string, null: false
+    field :folder_id, :id, null: false
+    field :dest_resource_hub_id, :id, null: false
     field? :dest_parent_folder_id, :id, null: true
   end
 
   outputs do
-    field? :folder_id, :id, null: true
+    field :folder_id, :id, null: false
   end
 
   def call(conn, inputs) do

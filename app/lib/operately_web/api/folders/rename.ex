@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Folders.Rename do
+  @moduledoc """
+  Renames a folder.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -6,12 +10,12 @@ defmodule OperatelyWeb.Api.Folders.Rename do
   alias Operately.ResourceHubs.{Folder, Permissions}
 
   inputs do
-    field? :folder_id, :id, null: true
-    field? :new_name, :string, null: true
+    field :folder_id, :id, null: false
+    field :new_name, :string, null: false
   end
 
   outputs do
-    field? :success, :boolean, null: true
+    field :success, :boolean, null: false
   end
 
   def call(conn, inputs) do
