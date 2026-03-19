@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Companies.Update do
+  @moduledoc """
+  Updates a company's information.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -7,11 +11,11 @@ defmodule OperatelyWeb.Api.Companies.Update do
   alias Operately.Operations.CompanyEditing
 
   inputs do
-    field? :name, :string, null: true
+    field :name, :string, null: false
   end
 
   outputs do
-    field? :company, :company, null: true
+    field :company, :company, null: false
   end
 
   def call(conn, inputs) do
@@ -19,7 +23,7 @@ defmodule OperatelyWeb.Api.Companies.Update do
     company = Company.get(me, id: me.company_id) |> unwrap()
 
     authorize(company, :can_edit_details)
-    
+
     company = CompanyEditing.run(me, company, inputs.name) |> unwrap()
     serialized = Serializer.serialize(company, level: :essential)
 

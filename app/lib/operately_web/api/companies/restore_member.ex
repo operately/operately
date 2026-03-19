@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Companies.RestoreMember do
+  @moduledoc """
+  Restores a suspended company member.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -8,7 +12,7 @@ defmodule OperatelyWeb.Api.Companies.RestoreMember do
   alias Operately.People.Person
 
   inputs do
-    field? :person_id, :id, null: true
+    field :person_id, :id, null: false
   end
 
   def call(conn, inputs) do

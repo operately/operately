@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Companies.CreateAdmins do
+  @moduledoc """
+  Creates admins for a company.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -7,7 +11,7 @@ defmodule OperatelyWeb.Api.Companies.CreateAdmins do
   alias Operately.Companies.Company
 
   inputs do
-    field? :people_ids, list_of(:id), null: true
+    field :people_ids, list_of(:id), null: false
   end
 
   def call(conn, inputs) do

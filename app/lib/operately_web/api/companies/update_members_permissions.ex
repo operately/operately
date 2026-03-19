@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Companies.UpdateMembersPermissions do
+  @moduledoc """
+  Updates permissions for multiple company members.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

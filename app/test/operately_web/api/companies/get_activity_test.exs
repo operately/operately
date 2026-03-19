@@ -196,12 +196,12 @@ defmodule OperatelyWeb.Api.Companies.GetActivityTest do
   end
 
   defp refute_activity(conn, activity) do
-    assert {404, %{message: msg} = _res} = query(conn, [:companies, :get_activity], %{id: activity.id})
+    assert {404, %{message: msg} = _res} = query(conn, [:companies, :get_activity], %{id: Paths.activity_id(activity)})
     assert msg == "The requested resource was not found"
   end
 
   defp assert_activity(conn, activity, goal) do
-    assert {200, res} = query(conn, [:companies, :get_activity], %{id: activity.id})
+    assert {200, res} = query(conn, [:companies, :get_activity], %{id: Paths.activity_id(activity)})
 
     assert res.activity.id == Paths.activity_id(activity)
     assert res.activity.action == "goal_created"

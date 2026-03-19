@@ -11,7 +11,7 @@ defmodule OperatelyWeb.Api.Companies.DeleteOwnerTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = request(ctx, "")
+      assert {401, _} = request(ctx, ctx.owner)
     end
 
     test "regular members can't remove admins", ctx do
