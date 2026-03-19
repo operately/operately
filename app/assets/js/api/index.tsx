@@ -3665,14 +3665,14 @@ export interface GoalsDeleteTargetResult {
 }
 
 export interface GoalsReopenInput {
-  id?: Id | null;
-  message?: string | null;
+  id: Id;
+  message: string;
   sendNotificationsToEveryone?: boolean | null;
   subscriberIds?: Id[] | null;
 }
 
 export interface GoalsReopenResult {
-  goal?: Goal | null;
+  goal: Goal;
 }
 
 export interface GoalsToggleCheckInput {

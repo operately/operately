@@ -9,10 +9,16 @@ export function printNamespaceHelp(namespace: string, registry: EndpointRegistry
     return;
   }
 
-  const commandLines = endpoints
-    .map((ep) => ep.name)
-    .sort()
-    .map((name) => `  ${name}`)
+  const sortedEndpoints = endpoints.sort((a, b) => a.name.localeCompare(b.name));
+  const maxNameLength = Math.max(...sortedEndpoints.map((ep) => ep.name.length));
+  const padding = maxNameLength + 10;
+
+  const commandLines = sortedEndpoints
+    .map((ep) => {
+      const commandName = ep.name.padEnd(padding);
+      const description = ep.docstring || "";
+      return `  ${commandName}${description}`;
+    })
     .join("\n");
 
   console.log(`Operately CLI - ${namespace} namespace
@@ -67,14 +73,19 @@ Use 'operately help <command>' for command-specific input flags.`);
 }
 
 export function printEndpointHelp(endpoint: CatalogEndpoint, command: string): void {
-  const header = [
-    `Command: ${command}`,
-    `Type: ${endpoint.type}`,
-    `Method: ${endpoint.method}`,
-    `Path: ${endpoint.path}`,
-    "",
-    "Input flags:",
-  ];
+  const header = [`Command: ${command}`];
+
+  if (endpoint.docstring) {
+    header.push("");
+    header.push(endpoint.docstring);
+  }
+
+  header.push("");
+  header.push(`Type: ${endpoint.type}`);
+  header.push(`Method: ${endpoint.method}`);
+  header.push(`Path: ${endpoint.path}`);
+  header.push("");
+  header.push("Input flags:");
 
   const rows =
     endpoint.inputs.length === 0

@@ -64,6 +64,7 @@ export const fixtureCatalog: Catalog = {
         },
       ],
       outputs: [],
+      docstring: null,
     },
     {
       full_name: "goals/update_target_value",
@@ -103,6 +104,7 @@ export const fixtureCatalog: Catalog = {
         },
       ],
       outputs: [],
+      docstring: null,
     },
   ],
 };
