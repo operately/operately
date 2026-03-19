@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Companies.InviteGuest do
+  @moduledoc """
+  Invites a guest to a company.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

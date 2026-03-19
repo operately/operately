@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.People.Search do
+  @moduledoc """
+  Searches for people.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
@@ -12,21 +16,18 @@ defmodule OperatelyWeb.Api.People.Search do
 
   inputs do
     field? :query, :string, null: true
-    field? :ignored_ids, list_of(:string), null: true
-
+    field? :ignored_ids, list_of(:id), null: true
     field? :search_scope_type, :string, null: true
-    field? :search_scope_id, :string, null: true
+    field? :search_scope_id, :id, null: true
   end
 
   outputs do
-    field? :people, list_of(:person), null: true
+    field :people, list_of(:person), null: false
   end
 
   @limit 10
 
   def call(conn, inputs) do
-    inputs = parse_inputs(inputs)
-
     check_permissions(me(conn))
     |> load_people(inputs)
     |> serialize()
@@ -68,11 +69,6 @@ defmodule OperatelyWeb.Api.People.Search do
   end
 
   defp ignore_ids(query, ignored_ids) do
-    ignored_ids = Enum.map(ignored_ids, fn id ->
-      {:ok, decoded_id} = decode_id(id)
-      decoded_id
-    end)
-
     from p in query, where: p.id not in ^ignored_ids
   end
 
@@ -133,14 +129,5 @@ defmodule OperatelyWeb.Api.People.Search do
 
   def serialize(people) when is_list(people) do
     %{people: Serializer.serialize(people, level: :essential)}
-  end
-
-  def parse_inputs(inputs) do
-    if inputs[:search_scope_id] do
-      {:ok, search_scope_id} = decode_id(inputs[:search_scope_id])
-      %{inputs | search_scope_id: search_scope_id}
-    else
-      inputs
-    end
   end
 end

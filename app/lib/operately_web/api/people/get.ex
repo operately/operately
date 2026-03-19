@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.People.Get do
+  @moduledoc """
+  Retrieves a person by ID with optional related data.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
@@ -14,7 +18,7 @@ defmodule OperatelyWeb.Api.People.Get do
   end
 
   outputs do
-    field? :person, :person, null: true
+    field :person, :person, null: false
   end
 
   def call(conn, inputs) do

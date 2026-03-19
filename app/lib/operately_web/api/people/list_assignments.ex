@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.People.ListAssignments do
+  @moduledoc """
+  Lists assignments for the current user.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 

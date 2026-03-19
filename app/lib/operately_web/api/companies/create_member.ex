@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Companies.CreateMember do
+  @moduledoc """
+  Creates a new company member.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

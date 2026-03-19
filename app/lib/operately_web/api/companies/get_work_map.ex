@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Companies.GetWorkMap do
+  @moduledoc """
+  Retrieves the work map for a company.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
@@ -16,7 +20,7 @@ defmodule OperatelyWeb.Api.Companies.GetWorkMap do
   end
 
   outputs do
-    field? :work_map, list_of(:work_map_item), null: true
+    field :work_map, list_of(:work_map_item), null: false
   end
 
   def call(conn, inputs) do

@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Companies.Get do
+  @moduledoc """
+  Retrieves a company by ID with optional related data.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
@@ -9,8 +13,7 @@ defmodule OperatelyWeb.Api.Companies.Get do
   require Logger
 
   inputs do
-    field? :id, :company_id, null: false
-
+    field :id, :company_id, null: false
     field? :include_permissions, :boolean, null: false
     field? :include_people, :boolean, null: false
     field? :include_admins, :boolean, null: false

@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.People.Update do
+  @moduledoc """
+  Updates a person's profile information.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -6,27 +10,26 @@ defmodule OperatelyWeb.Api.People.Update do
   @updatable_fields_for_others [:full_name, :title, :timezone, :manager_id]
 
   inputs do
-    field? :id, :string, null: true
-    field? :full_name, :string, null: true
-    field? :title, :string, null: true
-    field? :timezone, :string, null: true
-    field? :manager_id, :string, null: true
-    field? :theme, :string, null: true
+    field :id, :id, null: false
+    field? :full_name, :string, null: false
+    field? :title, :string, null: false
+    field? :timezone, :string, null: false
+    field? :manager_id, :id, null: true
+    field? :theme, :string, null: false
     field? :notify_about_assignments, :boolean, null: false
     field? :description, :json, null: true
   end
 
   outputs do
-    field? :person, :person, null: true
+    field :person, :person, null: false
   end
 
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:inputs, fn -> decode_inputs(inputs) end)
-    |> run(:person, fn ctx -> Operately.People.get_person_with_access_level(ctx.inputs.id, ctx.me.id) end)
+    |> run(:person, fn ctx -> Operately.People.get_person_with_access_level(inputs.id, ctx.me.id) end)
     |> run(:check_permissions, fn ctx -> Operately.People.Permissions.check(ctx.person.requester_access_level, :can_edit_profile) end)
-    |> run(:updated_person, fn ctx -> update_profile(ctx.person, ctx.inputs, ctx.me.id) end)
+    |> run(:updated_person, fn ctx -> update_profile(ctx.person, inputs, ctx.me.id) end)
     |> respond()
   end
 
@@ -39,13 +42,6 @@ defmodule OperatelyWeb.Api.People.Update do
       {:error, :check_permissions, _} -> {:error, :forbidden}
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
-    end
-  end
-
-  defp decode_inputs(inputs) do
-    with {:ok, id} <- decode_id(inputs[:id]),
-         {:ok, manager_id} <- decode_id(inputs[:manager_id], :allow_nil) do
-      {:ok, Map.merge(inputs, %{id: id, manager_id: manager_id})}
     end
   end
 
