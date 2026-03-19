@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Goals.Reopen do
+  @moduledoc """
+  Reopens a closed goal.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -6,14 +10,14 @@ defmodule OperatelyWeb.Api.Goals.Reopen do
   alias Operately.Operations.GoalReopening
 
   inputs do
-    field? :id, :id, null: true
-    field? :message, :string, null: true
+    field :id, :id, null: false
+    field :message, :string, null: false
     field? :send_notifications_to_everyone, :boolean, null: true
     field? :subscriber_ids, list_of(:id), null: true
   end
 
   outputs do
-    field? :goal, :goal, null: true
+    field :goal, :goal, null: false
   end
 
   def call(conn, inputs) do

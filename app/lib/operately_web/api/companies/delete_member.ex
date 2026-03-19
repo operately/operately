@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Companies.DeleteMember do
+  @moduledoc """
+  Removes a member from a company.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
