@@ -1386,9 +1386,10 @@ export interface MilestoneComment {
 }
 
 export interface Notification {
-  id?: string | null;
-  read?: boolean | null;
-  readAt?: string | null;
+  id: string;
+  read: boolean;
+  readAt: string | null;
+  insertedAt: string;
   activity?: Activity | null;
 }
 
@@ -2544,7 +2545,7 @@ export interface LinksGetResult {
 export interface NotificationsGetUnreadCountInput {}
 
 export interface NotificationsGetUnreadCountResult {
-  unread?: number | null;
+  unread: number;
 }
 
 export interface NotificationsIsSubscribedInput {
@@ -2557,12 +2558,12 @@ export interface NotificationsIsSubscribedResult {
 }
 
 export interface NotificationsListInput {
-  page?: number | null;
-  perPage?: number | null;
+  page?: number;
+  perPage?: number;
 }
 
 export interface NotificationsListResult {
-  notifications?: Notification[] | null;
+  notifications: Notification[];
 }
 
 export interface PeopleGetInput {
@@ -3914,13 +3915,13 @@ export interface NotificationsMarkAllAsReadInput {}
 export interface NotificationsMarkAllAsReadResult {}
 
 export interface NotificationsMarkAsReadInput {
-  id?: string | null;
+  id: Id;
 }
 
 export interface NotificationsMarkAsReadResult {}
 
 export interface NotificationsMarkManyAsReadInput {
-  ids?: string[] | null;
+  ids: Id[];
 }
 
 export interface NotificationsMarkManyAsReadResult {}
@@ -3939,10 +3940,10 @@ export interface NotificationsUnsubscribeInput {
 export interface NotificationsUnsubscribeResult {}
 
 export interface NotificationsUpdateSubscriptionsListInput {
-  id?: string | null;
-  type?: string | null;
+  id: Id;
+  type: string;
   sendNotificationsToEveryone?: boolean | null;
-  subscriberIds?: string[] | null;
+  subscriberIds?: Id[] | null;
 }
 
 export interface NotificationsUpdateSubscriptionsListResult {}

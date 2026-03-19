@@ -1238,9 +1238,10 @@ defmodule OperatelyWeb.Api.Types do
   )
 
   object :notification do
-    field? :id, :string, null: true
-    field? :read, :boolean, null: true
-    field? :read_at, :datetime, null: true
+    field :id, :string, null: false
+    field :read, :boolean, null: false
+    field :read_at, :datetime, null: true
+    field :inserted_at, :datetime, null: false
     field? :activity, :activity, null: true
   end
 
