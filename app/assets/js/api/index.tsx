@@ -2265,7 +2265,7 @@ export interface CommentsListResult {
 }
 
 export interface CompaniesGetInput {
-  id?: CompanyId;
+  id: CompanyId;
   includePermissions?: boolean;
   includePeople?: boolean;
   includeAdmins?: boolean;
@@ -2279,16 +2279,16 @@ export interface CompaniesGetResult {
 }
 
 export interface CompaniesGetActivityInput {
-  id?: string | null;
-  includeUnreadGoalNotifications?: boolean | null;
-  includeUnreadProjectNotifications?: boolean | null;
-  includePermissions?: boolean | null;
-  includeSubscriptionsList?: boolean | null;
-  includePotentialSubscribers?: boolean | null;
+  id: Id;
+  includeUnreadGoalNotifications?: boolean;
+  includeUnreadProjectNotifications?: boolean;
+  includePermissions?: boolean;
+  includeSubscriptionsList?: boolean;
+  includePotentialSubscribers?: boolean;
 }
 
 export interface CompaniesGetActivityResult {
-  activity?: Activity | null;
+  activity: Activity;
 }
 
 export interface CompaniesGetFlatWorkMapInput {
@@ -2304,7 +2304,7 @@ export interface CompaniesGetFlatWorkMapInput {
 }
 
 export interface CompaniesGetFlatWorkMapResult {
-  workMap?: WorkMapItem[] | null;
+  workMap: WorkMapItem[];
 }
 
 export interface CompaniesGetWorkMapInput {
@@ -2319,7 +2319,7 @@ export interface CompaniesGetWorkMapInput {
 }
 
 export interface CompaniesGetWorkMapResult {
-  workMap?: WorkMapItem[] | null;
+  workMap: WorkMapItem[];
 }
 
 export interface CompaniesGlobalSearchInput {
@@ -2339,7 +2339,7 @@ export interface CompaniesListInput {
 }
 
 export interface CompaniesListResult {
-  companies?: Company[] | null;
+  companies: Company[];
 }
 
 export interface CompaniesListActivitiesInput {
@@ -2575,36 +2575,36 @@ export interface PeopleGetInput {
 }
 
 export interface PeopleGetResult {
-  person?: Person | null;
+  person: Person;
 }
 
 export interface PeopleGetAccountInput {}
 
 export interface PeopleGetAccountResult {
-  account?: Account | null;
+  account: Account;
 }
 
 export interface PeopleGetAssignmentsCountInput {}
 
 export interface PeopleGetAssignmentsCountResult {
-  count?: number | null;
+  count: number;
 }
 
 export interface PeopleGetBindedInput {
-  resourseType?: string | null;
-  resourseId?: string | null;
+  resourseType: string;
+  resourseId: Id;
 }
 
 export interface PeopleGetBindedResult {
-  people?: Person[] | null;
+  people: Person[];
 }
 
 export interface PeopleGetMeInput {
-  includeManager?: boolean | null;
+  includeManager?: boolean;
 }
 
 export interface PeopleGetMeResult {
-  me?: Person | null;
+  me: Person;
 }
 
 export interface PeopleListInput {
@@ -2617,7 +2617,7 @@ export interface PeopleListInput {
 }
 
 export interface PeopleListResult {
-  people?: Person[] | null;
+  people: Person[];
 }
 
 export interface PeopleListAssignmentsInput {}
@@ -2637,13 +2637,13 @@ export interface PeopleListPossibleManagersResult {
 
 export interface PeopleSearchInput {
   query?: string | null;
-  ignoredIds?: string[] | null;
+  ignoredIds?: Id[] | null;
   searchScopeType?: string | null;
-  searchScopeId?: string | null;
+  searchScopeId?: Id | null;
 }
 
 export interface PeopleSearchResult {
-  people?: Person[] | null;
+  people: Person[];
 }
 
 export interface ProjectCheckInsGetInput {
@@ -3236,17 +3236,17 @@ export interface CompaniesConvertMemberToGuestResult {
 }
 
 export interface CompaniesCreateInput {
-  companyName?: string | null;
-  title?: string | null;
-  isDemo?: boolean | null;
+  companyName: string;
+  title: string;
+  isDemo?: boolean;
 }
 
 export interface CompaniesCreateResult {
-  company?: Company | null;
+  company: Company;
 }
 
 export interface CompaniesCreateAdminsInput {
-  peopleIds?: Id[] | null;
+  peopleIds: Id[];
 }
 
 export interface CompaniesCreateAdminsResult {}
@@ -3264,15 +3264,15 @@ export interface CompaniesCreateMemberResult {
 }
 
 export interface CompaniesDeleteAdminInput {
-  personId?: Id | null;
+  personId: Id;
 }
 
 export interface CompaniesDeleteAdminResult {
-  person?: Person | null;
+  person: Person;
 }
 
 export interface CompaniesDeleteMemberInput {
-  personId: string;
+  personId: Id;
 }
 
 export interface CompaniesDeleteMemberResult {
@@ -3280,18 +3280,18 @@ export interface CompaniesDeleteMemberResult {
 }
 
 export interface CompaniesDeleteOwnerInput {
-  personId?: Id | null;
+  personId: Id;
 }
 
 export interface CompaniesDeleteOwnerResult {}
 
 export interface CompaniesDeleteTrustedEmailDomainInput {
-  companyId?: string | null;
-  domain?: string | null;
+  companyId: string;
+  domain: string;
 }
 
 export interface CompaniesDeleteTrustedEmailDomainResult {
-  company?: Company | null;
+  company: Company;
 }
 
 export interface CompaniesGrantResourceAccessInput {
@@ -3316,17 +3316,17 @@ export interface CompaniesInviteGuestResult {
 }
 
 export interface CompaniesRestoreMemberInput {
-  personId?: Id | null;
+  personId: Id;
 }
 
 export interface CompaniesRestoreMemberResult {}
 
 export interface CompaniesUpdateInput {
-  name?: string | null;
+  name: string;
 }
 
 export interface CompaniesUpdateResult {
-  company?: Company | null;
+  company: Company;
 }
 
 export interface CompaniesUpdateMembersPermissionsInput {
@@ -3948,28 +3948,28 @@ export interface NotificationsUpdateSubscriptionsListInput {
 export interface NotificationsUpdateSubscriptionsListResult {}
 
 export interface PeopleUpdateInput {
-  id?: string | null;
-  fullName?: string | null;
-  title?: string | null;
-  timezone?: string | null;
-  managerId?: string | null;
-  theme?: string | null;
+  id: Id;
+  fullName?: string;
+  title?: string;
+  timezone?: string;
+  managerId?: Id | null;
+  theme?: string;
   notifyAboutAssignments?: boolean;
   description?: Json | null;
 }
 
 export interface PeopleUpdateResult {
-  person?: Person | null;
+  person: Person;
 }
 
 export interface PeopleUpdatePictureInput {
-  personId: string;
-  avatarBlobId?: string | null;
-  avatarUrl?: string | null;
+  personId: Id;
+  avatarBlobId: Id | null;
+  avatarUrl: string | null;
 }
 
 export interface PeopleUpdatePictureResult {
-  person: Person | null;
+  person: Person;
 }
 
 export interface PeopleUpdateThemeInput {
