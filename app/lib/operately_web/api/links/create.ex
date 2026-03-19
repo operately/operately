@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Links.Create do
+  @moduledoc """
+  Creates a new link in a resource hub.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -6,18 +10,18 @@ defmodule OperatelyWeb.Api.Links.Create do
   alias Operately.ResourceHubs.{Permissions, ResourceHub}
 
   inputs do
-    field? :resource_hub_id, :id, null: true
+    field :resource_hub_id, :id, null: false
     field? :folder_id, :id, null: true
-    field? :name, :string, null: true
-    field? :url, :string, null: true
-    field? :description, :string, null: true
-    field? :type, :string, null: true
+    field :name, :string, null: false
+    field :url, :string, null: false
+    field? :description, :string, null: false
+    field :type, :string, null: false
     field? :send_notifications_to_everyone, :boolean, null: true
     field? :subscriber_ids, list_of(:id), null: true
   end
 
   outputs do
-    field? :link, :resource_hub_link, null: true
+    field :link, :resource_hub_link, null: false
   end
 
   def call(conn, inputs) do

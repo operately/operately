@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Links.Update do
+  @moduledoc """
+  Updates a link.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -6,15 +10,15 @@ defmodule OperatelyWeb.Api.Links.Update do
   alias Operately.Operations.ResourceHubLinkEditing
 
   inputs do
-    field? :link_id, :id, null: true
-    field? :name, :string, null: true
-    field? :type, :string, null: true
-    field? :url, :string, null: true
-    field? :description, :string, null: true
+    field :link_id, :id, null: false
+    field :name, :string, null: false
+    field :type, :string, null: false
+    field :url, :string, null: false
+    field? :description, :string, null: false
   end
 
   outputs do
-    field? :link, :resource_hub_link, null: true
+    field :link, :resource_hub_link, null: false
   end
 
   def call(conn, inputs) do
