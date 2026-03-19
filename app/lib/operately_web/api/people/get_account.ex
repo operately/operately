@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.People.GetAccount do
+  @moduledoc """
+  Retrieves the current account information.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
@@ -6,7 +10,7 @@ defmodule OperatelyWeb.Api.People.GetAccount do
   end
 
   outputs do
-    field? :account, :account, null: true
+    field :account, :account, null: false
   end
 
   def call(conn, _inputs) do
