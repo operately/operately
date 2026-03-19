@@ -1,14 +1,18 @@
 defmodule OperatelyWeb.Api.Companies.Create do
+  @moduledoc """
+  Creates a new company.
+  """
+
   use TurboConnect.Mutation
 
   inputs do
-    field? :company_name, :string, null: true
-    field? :title, :string, null: true
-    field? :is_demo, :boolean, null: true
+    field :company_name, :string, null: false
+    field :title, :string, null: false
+    field? :is_demo, :boolean, null: false
   end
 
   outputs do
-    field? :company, :company, null: true
+    field :company, :company, null: false
   end
 
   def call(conn, inputs) do

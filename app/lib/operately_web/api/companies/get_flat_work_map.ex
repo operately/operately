@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Companies.GetFlatWorkMap do
+  @moduledoc """
+  Retrieves the company's work map without hierarchy.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
@@ -17,7 +21,7 @@ defmodule OperatelyWeb.Api.Companies.GetFlatWorkMap do
   end
 
   outputs do
-    field? :work_map, list_of(:work_map_item), null: true
+    field :work_map, list_of(:work_map_item), null: false
   end
 
   def call(conn, inputs) do

@@ -21,7 +21,7 @@ const CurrentCompanyContext = React.createContext<CurrentCompanyContextProps | n
 
 export function CurrentCompanyProvider({ children }) {
   const params = useParams();
-  const company = Companies.useGetCompany({ id: params.companyId });
+  const company = Companies.useGetCompany({ id: params.companyId! });
 
   const { data: meData, refetch: meRefetch } = People.useGetMe({ includeManager: true });
   const {

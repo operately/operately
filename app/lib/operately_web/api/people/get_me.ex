@@ -1,15 +1,19 @@
 defmodule OperatelyWeb.Api.People.GetMe do
+  @moduledoc """
+  Retrieves the current user's profile information.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
   alias Operately.Repo
 
   inputs do
-    field? :include_manager, :boolean, null: true
+    field? :include_manager, :boolean, null: false
   end
 
   outputs do
-    field? :me, :person, null: true
+    field :me, :person, null: false
   end
 
   def call(conn, inputs) do

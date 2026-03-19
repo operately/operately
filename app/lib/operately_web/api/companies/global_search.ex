@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Companies.GlobalSearch do
+  @moduledoc """
+  Performs a global search across projects, goals, milestones, tasks, and people.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
@@ -13,15 +17,15 @@ defmodule OperatelyWeb.Api.Companies.GlobalSearch do
   alias OperatelyWeb.Api.Serializer
 
   inputs do
-    field :query, :string
+    field :query, :string, null: false
   end
 
   outputs do
-    field :projects, list_of(:project)
-    field :goals, list_of(:goal)
-    field :milestones, list_of(:milestone)
-    field :tasks, list_of(:task)
-    field :people, list_of(:person)
+    field :projects, list_of(:project), null: false
+    field :goals, list_of(:goal), null: false
+    field :milestones, list_of(:milestone), null: false
+    field :tasks, list_of(:task), null: false
+    field :people, list_of(:person), null: false
   end
 
   @limit 5

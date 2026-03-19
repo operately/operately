@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Companies.DeleteOwner do
+  @moduledoc """
+  Removes an owner from a company.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -7,7 +11,7 @@ defmodule OperatelyWeb.Api.Companies.DeleteOwner do
   alias Operately.Operations.CompanyOwnerRemoving
 
   inputs do
-    field? :person_id, :id, null: true
+    field :person_id, :id, null: false
   end
 
   def call(conn, inputs) do

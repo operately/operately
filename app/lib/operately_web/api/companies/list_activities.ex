@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Companies.ListActivities do
+  @moduledoc """
+  Lists activities for a company.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 

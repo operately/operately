@@ -18,7 +18,7 @@ defmodule OperatelyWeb.Api.Companies.UpdateTest do
 
     test "company members can't edit", ctx do
       ctx = Factory.log_in_person(ctx, :member)
-      assert {403, _} = mutation(ctx.conn, [:companies, :update], %{})
+      assert {403, _} = mutation(ctx.conn, [:companies, :update], %{name: "Hello"})
     end
 
     test "company admin can edit", ctx do

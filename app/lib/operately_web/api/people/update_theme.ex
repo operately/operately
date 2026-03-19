@@ -1,13 +1,17 @@
 defmodule OperatelyWeb.Api.People.UpdateTheme do
+  @moduledoc """
+  Updates the theme preference for the current account.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
   inputs do
-    field :theme, :account_theme
+    field :theme, :account_theme, null: false
   end
 
   outputs do
-    field :success, :boolean
+    field :success, :boolean, null: false
   end
 
   def call(conn, inputs) do
