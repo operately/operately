@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Documents.Create do
+  @moduledoc """
+  Creates a new document in a resource hub.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -6,10 +10,10 @@ defmodule OperatelyWeb.Api.Documents.Create do
   alias Operately.ResourceHubs.{Permissions, ResourceHub, Document}
 
   inputs do
-    field? :resource_hub_id, :id, null: true
+    field :resource_hub_id, :id, null: false
     field? :folder_id, :id, null: true
-    field? :name, :string, null: true
-    field? :content, :string, null: true
+    field :name, :string, null: false
+    field :content, :string, null: false
     field? :post_as_draft, :boolean, null: true
     field? :send_notifications_to_everyone, :boolean, null: true
     field? :subscriber_ids, list_of(:id), null: true
@@ -17,7 +21,7 @@ defmodule OperatelyWeb.Api.Documents.Create do
   end
 
   outputs do
-    field? :document, :document, null: true
+    field :document, :document, null: false
   end
 
   def call(conn, inputs) do

@@ -1120,7 +1120,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :resource_hub_folder do
-    field? :id, :string, null: true
+    field :id, :string, null: false
     field? :resource_hub_id, :string, null: true
     field? :resource_hub, :resource_hub, null: true
     field? :name, :string, null: true
@@ -1169,7 +1169,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :permissions, :resource_hub_permissions, null: true
     field? :reactions, list_of(:reaction), null: true
     field? :comments_count, :integer, null: true
-    field? :type, :string, null: true
+    field :type, :string, null: false
     field? :size, :integer, null: true
     field? :blob, :blob, null: true
     field? :path_to_file, list_of(:resource_hub_folder), null: true
@@ -1189,10 +1189,10 @@ defmodule OperatelyWeb.Api.Types do
     field? :resource_hub, :resource_hub, null: true
     field? :parent_folder, :resource_hub_folder, null: true
     field? :parent_folder_id, :string, null: true
-    field? :name, :string, null: true
-    field? :url, :string, null: true
+    field :name, :string, null: false
+    field :url, :string, null: false
     field? :description, :string, null: true
-    field? :type, :string, null: true
+    field :type, :string, null: false
     field? :potential_subscribers, list_of(:subscriber), null: true
     field? :subscription_list, :subscription_list, null: true
     field? :inserted_at, :string, null: true

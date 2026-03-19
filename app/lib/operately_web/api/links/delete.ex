@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Links.Delete do
+  @moduledoc """
+  Deletes a link.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -6,11 +10,11 @@ defmodule OperatelyWeb.Api.Links.Delete do
   alias Operately.Operations.ResourceHubLinkDeleting
 
   inputs do
-    field? :link_id, :id, null: true
+    field :link_id, :id, null: false
   end
 
   outputs do
-    field? :success, :boolean, null: true
+    field :success, :boolean, null: false
   end
 
   def call(conn, inputs) do

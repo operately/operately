@@ -39,7 +39,7 @@ export function CopyFolderModal(props: FormProps) {
       const res = await post({
         folderName: form.values.name,
         folderId: resource.id,
-        destResourceHubId: resource.resourceHubId,
+        destResourceHubId: resource.resourceHubId!,
         destParentFolderId: form.values.location.type == "folder" ? form.values.location.id : undefined,
       });
 

@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Documents.Delete do
+  @moduledoc """
+  Deletes a document.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -6,11 +10,11 @@ defmodule OperatelyWeb.Api.Documents.Delete do
   alias Operately.Operations.ResourceHubDocumentDeleting
 
   inputs do
-    field? :document_id, :id, null: true
+    field :document_id, :id, null: false
   end
 
   outputs do
-    field? :document, :document, null: true
+    field :document, :document, null: false
   end
 
   def call(conn, inputs) do

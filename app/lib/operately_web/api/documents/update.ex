@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Documents.Update do
+  @moduledoc """
+  Updates a document.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -41,8 +45,8 @@ defmodule OperatelyWeb.Api.Documents.Update do
 
   defp parse_attrs(inputs) do
     {:ok, Map.merge(inputs, %{
-      send_to_everyone: inputs[:send_notifications_to_everyone],
-      subscriber_ids: inputs[:subscriber_ids],
+      send_to_everyone: inputs[:send_notifications_to_everyone] || false,
+      subscriber_ids: inputs[:subscriber_ids] || []
     })}
   end
 

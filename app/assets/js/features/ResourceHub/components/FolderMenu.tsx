@@ -148,7 +148,7 @@ export function RenameFolderModal({ folder, showForm, toggleForm, onSave }: Form
       if (name !== folder.name) {
         await rename({
           folderId: folder.id,
-          newName: name,
+          newName: name!,
         });
         onSave();
       }

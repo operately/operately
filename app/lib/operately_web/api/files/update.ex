@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Files.Update do
+  @moduledoc """
+  Updates a file.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -6,13 +10,13 @@ defmodule OperatelyWeb.Api.Files.Update do
   alias Operately.Operations.ResourceHubFileEditing
 
   inputs do
-    field? :file_id, :id, null: true
-    field? :name, :string, null: true
-    field? :description, :string, null: true
+    field :file_id, :id, null: false
+    field :name, :string, null: false
+    field? :description, :string, null: false
   end
 
   outputs do
-    field? :file, :resource_hub_file, null: true
+    field :file, :resource_hub_file, null: false
   end
 
   def call(conn, inputs) do
