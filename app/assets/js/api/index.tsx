@@ -1625,14 +1625,14 @@ export interface ResourceHubFile {
   permissions?: ResourceHubPermissions | null;
   reactions?: Reaction[] | null;
   commentsCount?: number | null;
-  type?: string | null;
+  type: string;
   size?: number | null;
   blob?: Blob | null;
   pathToFile?: ResourceHubFolder[] | null;
 }
 
 export interface ResourceHubFolder {
-  id?: string | null;
+  id: string;
   resourceHubId?: string | null;
   resourceHub?: ResourceHub | null;
   name?: string | null;
@@ -1652,10 +1652,10 @@ export interface ResourceHubLink {
   resourceHub?: ResourceHub | null;
   parentFolder?: ResourceHubFolder | null;
   parentFolderId?: string | null;
-  name?: string | null;
-  url?: string | null;
+  name: string;
+  url: string;
   description?: string | null;
-  type?: string | null;
+  type: string;
   potentialSubscribers?: Subscriber[] | null;
   subscriptionList?: SubscriptionList | null;
   insertedAt?: string | null;
@@ -2372,15 +2372,15 @@ export interface DocumentsGetResult {
 
 export interface FilesGetInput {
   id: Id;
-  includeAuthor?: boolean | null;
-  includeResourceHub?: boolean | null;
-  includeSpace?: boolean | null;
-  includeParentFolder?: boolean | null;
-  includeReactions?: boolean | null;
-  includePermissions?: boolean | null;
-  includeSubscriptionsList?: boolean | null;
-  includePotentialSubscribers?: boolean | null;
-  includePathToFile?: boolean | null;
+  includeAuthor?: boolean;
+  includeResourceHub?: boolean;
+  includeSpace?: boolean;
+  includeParentFolder?: boolean;
+  includeReactions?: boolean;
+  includePermissions?: boolean;
+  includeSubscriptionsList?: boolean;
+  includePotentialSubscribers?: boolean;
+  includePathToFile?: boolean;
 }
 
 export interface FilesGetResult {
@@ -2388,16 +2388,16 @@ export interface FilesGetResult {
 }
 
 export interface FoldersGetInput {
-  id?: Id | null;
-  includeNodes?: boolean | null;
-  includeResourceHub?: boolean | null;
-  includePathToFolder?: boolean | null;
-  includePermissions?: boolean | null;
-  includePotentialSubscribers?: boolean | null;
+  id: Id;
+  includeNodes?: boolean;
+  includeResourceHub?: boolean;
+  includePathToFolder?: boolean;
+  includePermissions?: boolean;
+  includePotentialSubscribers?: boolean;
 }
 
 export interface FoldersGetResult {
-  folder?: ResourceHubFolder | null;
+  folder: ResourceHubFolder;
 }
 
 export interface GetThemeInput {}
@@ -2525,16 +2525,16 @@ export interface InvitationsGetInviteLinkByTokenResult {
 
 export interface LinksGetInput {
   id: Id;
-  includeAuthor?: boolean | null;
-  includeSpace?: boolean | null;
-  includeResourceHub?: boolean | null;
-  includeParentFolder?: boolean | null;
-  includeReactions?: boolean | null;
-  includePermissions?: boolean | null;
-  includeSubscriptionsList?: boolean | null;
-  includePotentialSubscribers?: boolean | null;
-  includeUnreadNotifications?: boolean | null;
-  includePathToLink?: boolean | null;
+  includeAuthor?: boolean;
+  includeSpace?: boolean;
+  includeResourceHub?: boolean;
+  includeParentFolder?: boolean;
+  includeReactions?: boolean;
+  includePermissions?: boolean;
+  includeSubscriptionsList?: boolean;
+  includePotentialSubscribers?: boolean;
+  includeUnreadNotifications?: boolean;
+  includePathToLink?: boolean;
 }
 
 export interface LinksGetResult {
@@ -2860,7 +2860,7 @@ export interface ProjectsSearchPotentialContributorsResult {
 }
 
 export interface ResourceHubsGetInput {
-  id?: Id | null;
+  id: Id;
   includeSpace?: boolean | null;
   includeNodes?: boolean | null;
   includePotentialSubscribers?: boolean | null;
@@ -2868,7 +2868,7 @@ export interface ResourceHubsGetInput {
 }
 
 export interface ResourceHubsGetResult {
-  resourceHub?: ResourceHub | null;
+  resourceHub: ResourceHub;
 }
 
 export interface ResourceHubsListNodesInput {
@@ -2879,8 +2879,8 @@ export interface ResourceHubsListNodesInput {
 }
 
 export interface ResourceHubsListNodesResult {
-  nodes?: ResourceHubNode[] | null;
-  draftNodes?: ResourceHubNode[] | null;
+  nodes: ResourceHubNode[];
+  draftNodes: ResourceHubNode[];
 }
 
 export interface SpaceDiscussionsGetInput {
@@ -3386,10 +3386,10 @@ export interface DeleteCompanyResult {
 }
 
 export interface DocumentsCreateInput {
-  resourceHubId?: Id | null;
+  resourceHubId: Id;
   folderId?: Id | null;
-  name?: string | null;
-  content?: string | null;
+  name: string;
+  content: string;
   postAsDraft?: boolean | null;
   sendNotificationsToEveryone?: boolean | null;
   subscriberIds?: Id[] | null;
@@ -3397,15 +3397,15 @@ export interface DocumentsCreateInput {
 }
 
 export interface DocumentsCreateResult {
-  document?: Document | null;
+  document: Document;
 }
 
 export interface DocumentsDeleteInput {
-  documentId?: Id | null;
+  documentId: Id;
 }
 
 export interface DocumentsDeleteResult {
-  document?: Document | null;
+  document: Document;
 }
 
 export interface DocumentsPublishInput {
@@ -3417,7 +3417,7 @@ export interface DocumentsPublishInput {
 }
 
 export interface DocumentsPublishResult {
-  document?: ResourceHubDocument | null;
+  document: ResourceHubDocument;
 }
 
 export interface DocumentsUpdateInput {
@@ -3433,71 +3433,71 @@ export interface DocumentsUpdateResult {
 }
 
 export interface FilesCreateInput {
-  resourceHubId?: Id | null;
+  resourceHubId: Id;
   folderId?: Id | null;
-  files?: ResourceHubUploadedFile[] | null;
+  files: ResourceHubUploadedFile[];
   sendNotificationsToEveryone?: boolean | null;
   subscriberIds?: Id[] | null;
 }
 
 export interface FilesCreateResult {
-  files?: ResourceHubFile[] | null;
+  files: ResourceHubFile[];
 }
 
 export interface FilesDeleteInput {
-  fileId?: Id | null;
+  fileId: Id;
 }
 
 export interface FilesDeleteResult {
-  file?: ResourceHubFile | null;
+  file: ResourceHubFile;
 }
 
 export interface FilesUpdateInput {
-  fileId?: Id | null;
-  name?: string | null;
-  description?: string | null;
+  fileId: Id;
+  name: string;
+  description?: string;
 }
 
 export interface FilesUpdateResult {
-  file?: ResourceHubFile | null;
+  file: ResourceHubFile;
 }
 
 export interface FoldersCopyInput {
-  folderName?: string | null;
-  folderId?: Id | null;
-  destResourceHubId?: Id | null;
+  folderName?: string;
+  folderId: Id;
+  destResourceHubId: Id;
   destParentFolderId?: Id | null;
 }
 
 export interface FoldersCopyResult {
-  folderId?: Id | null;
+  folderId: Id;
 }
 
 export interface FoldersCreateInput {
-  resourceHubId?: string | null;
-  folderId?: string | null;
-  name?: string | null;
+  resourceHubId: Id;
+  folderId?: Id | null;
+  name: string;
 }
 
 export interface FoldersCreateResult {
-  folder?: ResourceHubFolder | null;
+  folder: ResourceHubFolder;
 }
 
 export interface FoldersDeleteInput {
-  folderId?: Id | null;
+  folderId: Id;
 }
 
 export interface FoldersDeleteResult {
-  success?: boolean | null;
+  success: boolean;
 }
 
 export interface FoldersRenameInput {
-  folderId?: Id | null;
-  newName?: string | null;
+  folderId: Id;
+  newName: string;
 }
 
 export interface FoldersRenameResult {
-  success?: boolean | null;
+  success: boolean;
 }
 
 export interface GoalCheckInsAcknowledgeInput {
@@ -3875,38 +3875,38 @@ export interface JoinCompanyResult {
 }
 
 export interface LinksCreateInput {
-  resourceHubId?: Id | null;
+  resourceHubId: Id;
   folderId?: Id | null;
-  name?: string | null;
-  url?: string | null;
-  description?: string | null;
-  type?: string | null;
+  name: string;
+  url: string;
+  description?: string;
+  type: string;
   sendNotificationsToEveryone?: boolean | null;
   subscriberIds?: Id[] | null;
 }
 
 export interface LinksCreateResult {
-  link?: ResourceHubLink | null;
+  link: ResourceHubLink;
 }
 
 export interface LinksDeleteInput {
-  linkId?: Id | null;
+  linkId: Id;
 }
 
 export interface LinksDeleteResult {
-  success?: boolean | null;
+  success: boolean;
 }
 
 export interface LinksUpdateInput {
-  linkId?: Id | null;
-  name?: string | null;
-  type?: string | null;
-  url?: string | null;
-  description?: string | null;
+  linkId: Id;
+  name: string;
+  type: string;
+  url: string;
+  description?: string;
 }
 
 export interface LinksUpdateResult {
-  link?: ResourceHubLink | null;
+  link: ResourceHubLink;
 }
 
 export interface NotificationsMarkAllAsReadInput {}
@@ -4390,8 +4390,8 @@ export interface ResetPasswordInput {
 export interface ResetPasswordResult {}
 
 export interface ResourceHubsCreateInput {
-  spaceId?: string | null;
-  name?: string | null;
+  spaceId: Id;
+  name: string;
   description?: string | null;
   anonymousAccessLevel?: number | null;
   companyAccessLevel?: number | null;
@@ -4399,17 +4399,17 @@ export interface ResourceHubsCreateInput {
 }
 
 export interface ResourceHubsCreateResult {
-  resourceHub?: ResourceHub | null;
+  resourceHub: ResourceHub;
 }
 
 export interface ResourceHubsUpdateParentFolderInput {
-  resourceId?: Id | null;
-  resourceType?: string | null;
+  resourceId: Id;
+  resourceType: string;
   newFolderId?: Id | null;
 }
 
 export interface ResourceHubsUpdateParentFolderResult {
-  success?: boolean | null;
+  success: boolean;
 }
 
 export interface SpaceDiscussionsArchiveInput {
