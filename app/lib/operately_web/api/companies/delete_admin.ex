@@ -1,15 +1,19 @@
 defmodule OperatelyWeb.Api.Companies.DeleteAdmin do
+  @moduledoc """
+  Removes an admin from a company.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
   import Operately.Access.Filters, only: [filter_by_full_access: 3, forbidden_or_not_found: 3]
 
   inputs do
-    field? :person_id, :id, null: true
+    field :person_id, :id, null: false
   end
 
   outputs do
-    field? :person, :person, null: true
+    field :person, :person, null: false
   end
 
   def call(conn, inputs) do
@@ -35,7 +39,7 @@ defmodule OperatelyWeb.Api.Companies.DeleteAdmin do
     else
       if author.id == person_id do
         {:error, :bad_request, "Admins cannot remove themselves"}
-      else 
+      else
         query = from(p in Operately.People.Person, where: p.id == ^person_id)
 
         person = filter_by_full_access(query, author.id, join_parent: :company) |> Repo.one()

@@ -1,20 +1,23 @@
 defmodule OperatelyWeb.Api.People.GetBinded do
+  @moduledoc """
+  Gets people bound to a resource.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
   inputs do
-    field? :resourse_type, :string, null: true
-    field? :resourse_id, :string, null: true
+    field :resourse_type, :string, null: false
+    field :resourse_id, :id, null: false
   end
 
   outputs do
-    field? :people, list_of(:person), null: true
+    field :people, list_of(:person), null: false
   end
 
   def call(conn, inputs) do
     Action.new()
-    |> Action.run(:id, fn -> decode_id(inputs[:resourse_id]) end)
-    |> Action.run(:access_context, fn ctx -> load_access_context(inputs[:resourse_type], ctx.id) end)
+    |> Action.run(:access_context, fn -> load_access_context(inputs.resourse_type, inputs.resourse_id) end)
     |> Action.run(:people, fn ctx -> {:ok, Operately.Access.BindedPeopleLoader.load(ctx.access_context.id)} end)
     |> Action.run(:check_permissions, fn ctx -> check_permissions(ctx.people, me(conn)) end)
     |> Action.run(:serialized, fn ctx -> {:ok, %{people: Serializer.serialize(ctx.people, level: :essential)}} end)

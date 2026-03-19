@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Companies.ConvertMemberToGuest do
+  @moduledoc """
+  Converts a company member to a guest.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

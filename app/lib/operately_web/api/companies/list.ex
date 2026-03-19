@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Companies.List do
+  @moduledoc """
+  Lists all companies for the current account.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
   alias Operately.Companies.Company
@@ -8,7 +12,7 @@ defmodule OperatelyWeb.Api.Companies.List do
   end
 
   outputs do
-    field? :companies, list_of(:company), null: true
+    field :companies, list_of(:company), null: false
   end
 
   def call(conn, inputs) do

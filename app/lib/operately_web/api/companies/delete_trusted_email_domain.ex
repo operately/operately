@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Companies.DeleteTrustedEmailDomain do
+  @moduledoc """
+  Deletes a trusted email domain from a company.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -6,12 +10,12 @@ defmodule OperatelyWeb.Api.Companies.DeleteTrustedEmailDomain do
   alias Operately.Companies.Permissions
 
   inputs do
-    field? :company_id, :string, null: true
-    field? :domain, :string, null: true
+    field :company_id, :string, null: false
+    field :domain, :string, null: false
   end
 
   outputs do
-    field? :company, :company, null: true
+    field :company, :company, null: false
   end
 
   def call(conn, inputs) do

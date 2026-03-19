@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.People.ListPossibleManagers do
+  @moduledoc """
+  Lists possible managers for a person.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
@@ -10,12 +14,12 @@ defmodule OperatelyWeb.Api.People.ListPossibleManagers do
   alias Operately.Access.Filters
 
   inputs do
-    field? :user_id, :id
+    field? :user_id, :id, null: false
     field? :query, :string, null: true
   end
 
   outputs do
-    field :people, list_of(:person)
+    field :people, list_of(:person), null: false
   end
 
   def call(conn, inputs) do

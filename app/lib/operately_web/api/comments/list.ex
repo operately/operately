@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Comments.List do
+  @moduledoc """
+  Lists comments for a resource.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 

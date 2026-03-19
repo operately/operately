@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Comments.Delete do
+  @moduledoc """
+  Deletes a comment.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

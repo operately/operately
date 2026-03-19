@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Reactions.Create do
+  @moduledoc """
+  Creates a reaction on an entity.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

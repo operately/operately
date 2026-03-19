@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Comments.Create do
+  @moduledoc """
+  Creates a new comment.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

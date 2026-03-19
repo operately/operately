@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Companies.GrantResourceAccess do
+  @moduledoc """
+  Grants resource access to a person.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 

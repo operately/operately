@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Companies.GetActivity do
+  @moduledoc """
+  Retrieves an activity by ID with optional related data.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
@@ -7,22 +11,21 @@ defmodule OperatelyWeb.Api.Companies.GetActivity do
   alias Operately.Comments.CommentThread
 
   inputs do
-    field? :id, :string, null: true
-    field? :include_unread_goal_notifications, :boolean, null: true
-    field? :include_unread_project_notifications, :boolean, null: true
-    field? :include_permissions, :boolean, null: true
-    field? :include_subscriptions_list, :boolean, null: true
-    field? :include_potential_subscribers, :boolean, null: true
+    field :id, :id, null: false
+    field? :include_unread_goal_notifications, :boolean, null: false
+    field? :include_unread_project_notifications, :boolean, null: false
+    field? :include_permissions, :boolean, null: false
+    field? :include_subscriptions_list, :boolean, null: false
+    field? :include_potential_subscribers, :boolean, null: false
   end
 
   outputs do
-    field? :activity, :activity, null: true
+    field :activity, :activity, null: false
   end
 
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:id, fn -> decode_id(inputs.id) end)
     |> run(:activity, fn ctx -> load(ctx, inputs) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.activity.request_info.access_level, :can_view) end)
     |> run(:serialized, fn ctx -> {:ok, %{activity: serialize(ctx.activity)}} end)
@@ -32,7 +35,6 @@ defmodule OperatelyWeb.Api.Companies.GetActivity do
   defp respond(result) do
     case result do
       {:ok, ctx} -> {:ok, ctx.serialized}
-      {:error, :id, _} -> {:error, :bad_request}
       {:error, :activity, _} -> {:error, :not_found}
       {:error, :check_permissions, _} -> {:error, :not_found}
       _ -> {:error, :internal_server_error}
@@ -40,7 +42,7 @@ defmodule OperatelyWeb.Api.Companies.GetActivity do
   end
 
   defp load(ctx, inputs) do
-    Activity.get(ctx.me, id: ctx.id, opts: [
+    Activity.get(ctx.me, id: inputs.id, opts: [
       preload: preload(inputs),
       after_load: after_load(inputs, ctx.me),
     ])
