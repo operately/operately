@@ -3,8 +3,7 @@ import * as Pages from "@/components/Pages";
 import * as React from "react";
 
 import { PageModule } from "@/routes/types";
-import { redirectIfFeatureNotEnabled } from "@/routes/redirectUtils";
-import { Paths, usePaths } from "@/routes/paths";
+import { usePaths } from "@/routes/paths";
 import {
   AccountApiTokensPage,
   showErrorToast,
@@ -19,14 +18,7 @@ interface LoaderResult {
   apiTokens: Accounts.ApiToken[];
 }
 
-async function loader({ params }): Promise<LoaderResult> {
-  const paths = new Paths({ companyId: params.companyId! });
-
-  await redirectIfFeatureNotEnabled(params, {
-    feature: "api-tokens",
-    path: paths.homePath(),
-  });
-
+async function loader(): Promise<LoaderResult> {
   const data = await Accounts.listApiTokens();
 
   return {
