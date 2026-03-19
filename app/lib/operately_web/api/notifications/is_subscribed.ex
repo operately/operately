@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Notifications.IsSubscribed do
+  @moduledoc """
+  Checks if the current user is subscribed to notifications for a specific resource.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 

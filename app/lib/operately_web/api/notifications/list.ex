@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Notifications.List do
+  @moduledoc """
+  Lists notifications for the current user.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
@@ -9,12 +13,12 @@ defmodule OperatelyWeb.Api.Notifications.List do
   import Ecto.Query, only: [from: 2]
 
   inputs do
-    field? :page, :integer, null: true
-    field? :per_page, :integer, null: true
+    field? :page, :integer, null: false
+    field? :per_page, :integer, null: false
   end
 
   outputs do
-    field? :notifications, list_of(:notification), null: true
+    field :notifications, list_of(:notification), null: false
   end
 
   @default_per_page 100
