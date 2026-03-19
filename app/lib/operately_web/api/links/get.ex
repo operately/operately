@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Links.Get do
+  @moduledoc """
+  Retrieves a link by ID with optional related data.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
@@ -7,16 +11,16 @@ defmodule OperatelyWeb.Api.Links.Get do
 
   inputs do
     field :id, :id, null: false
-    field? :include_author, :boolean, null: true
-    field? :include_space, :boolean, null: true
-    field? :include_resource_hub, :boolean, null: true
-    field? :include_parent_folder, :boolean, null: true
-    field? :include_reactions, :boolean, null: true
-    field? :include_permissions, :boolean, null: true
-    field? :include_subscriptions_list, :boolean, null: true
-    field? :include_potential_subscribers, :boolean, null: true
-    field? :include_unread_notifications, :boolean, null: true
-    field? :include_path_to_link, :boolean, null: true
+    field? :include_author, :boolean, null: false
+    field? :include_space, :boolean, null: false
+    field? :include_resource_hub, :boolean, null: false
+    field? :include_parent_folder, :boolean, null: false
+    field? :include_reactions, :boolean, null: false
+    field? :include_permissions, :boolean, null: false
+    field? :include_subscriptions_list, :boolean, null: false
+    field? :include_potential_subscribers, :boolean, null: false
+    field? :include_unread_notifications, :boolean, null: false
+    field? :include_path_to_link, :boolean, null: false
   end
 
   outputs do

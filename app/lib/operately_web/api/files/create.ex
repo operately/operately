@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.Files.Create do
+  @moduledoc """
+  Creates new files in a resource hub.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -6,15 +10,15 @@ defmodule OperatelyWeb.Api.Files.Create do
   alias Operately.ResourceHubs.{Permissions, ResourceHub}
 
   inputs do
-    field? :resource_hub_id, :id, null: true
+    field :resource_hub_id, :id, null: false
     field? :folder_id, :id, null: true
-    field? :files, list_of(:resource_hub_uploaded_file), null: true
+    field :files, list_of(:resource_hub_uploaded_file), null: false
     field? :send_notifications_to_everyone, :boolean, null: true
     field? :subscriber_ids, list_of(:id), null: true
   end
 
   outputs do
-    field? :files, list_of(:resource_hub_file), null: true
+    field :files, list_of(:resource_hub_file), null: false
   end
 
   def call(conn, inputs) do

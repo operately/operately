@@ -1,20 +1,24 @@
 defmodule OperatelyWeb.Api.Folders.Get do
+  @moduledoc """
+  Retrieves a folder by ID with optional related data.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
   alias Operately.ResourceHubs.{Folder, Node}
 
   inputs do
-    field? :id, :id, null: true
-    field? :include_nodes, :boolean, null: true
-    field? :include_resource_hub, :boolean, null: true
-    field? :include_path_to_folder, :boolean, null: true
-    field? :include_permissions, :boolean, null: true
-    field? :include_potential_subscribers, :boolean, null: true
+    field :id, :id, null: false
+    field? :include_nodes, :boolean, null: false
+    field? :include_resource_hub, :boolean, null: false
+    field? :include_path_to_folder, :boolean, null: false
+    field? :include_permissions, :boolean, null: false
+    field? :include_potential_subscribers, :boolean, null: false
   end
 
   outputs do
-    field? :folder, :resource_hub_folder, null: true
+    field :folder, :resource_hub_folder, null: false
   end
 
   def call(conn, inputs) do
