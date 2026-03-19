@@ -4,7 +4,6 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
   step :setup, ctx do
     ctx
     |> Factory.setup()
-    |> Factory.enable_feature("api-tokens")
     |> Factory.add_company_member(:person, full_name: "John Johnson", email: "hello@localhost", password: "abcd1234ABCD")
     |> Factory.log_in_person(:person)
   end
