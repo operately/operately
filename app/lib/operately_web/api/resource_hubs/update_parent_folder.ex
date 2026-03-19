@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.ResourceHubs.UpdateParentFolder do
+  @moduledoc """
+  Updates the parent folder of a resource hub item.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -6,13 +10,13 @@ defmodule OperatelyWeb.Api.ResourceHubs.UpdateParentFolder do
   alias Operately.Operations.ResourceHubParentFolderEditing
 
   inputs do
-    field? :resource_id, :id, null: true
-    field? :resource_type, :string, null: true
+    field :resource_id, :id, null: false
+    field :resource_type, :string, null: false
     field? :new_folder_id, :id, null: true
   end
 
   outputs do
-    field? :success, :boolean, null: true
+    field :success, :boolean, null: false
   end
 
   def call(conn, inputs) do

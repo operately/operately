@@ -1,11 +1,15 @@
 defmodule OperatelyWeb.Api.ResourceHubs.Get do
+  @moduledoc """
+  Retrieves a resource hub by ID with optional related data.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
   alias Operately.ResourceHubs.{ResourceHub, Node}
 
   inputs do
-    field? :id, :id, null: true
+    field :id, :id, null: false
     field? :include_space, :boolean, null: true
     field? :include_nodes, :boolean, null: true
     field? :include_potential_subscribers, :boolean, null: true
@@ -13,7 +17,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.Get do
   end
 
   outputs do
-    field? :resource_hub, :resource_hub, null: true
+    field :resource_hub, :resource_hub, null: false
   end
 
   def call(conn, inputs) do

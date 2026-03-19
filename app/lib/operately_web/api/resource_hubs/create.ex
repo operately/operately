@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.ResourceHubs.Create do
+  @moduledoc """
+  Creates a new resource hub in a space.
+  """
+
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
@@ -6,8 +10,8 @@ defmodule OperatelyWeb.Api.ResourceHubs.Create do
   alias Operately.Operations.ResourceHubCreating
 
   inputs do
-    field? :space_id, :string, null: true
-    field? :name, :string, null: true
+    field :space_id, :id, null: false
+    field :name, :string, null: false
     field? :description, :string, null: true
     field? :anonymous_access_level, :integer, null: true
     field? :company_access_level, :integer, null: true
@@ -15,7 +19,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.Create do
   end
 
   outputs do
-    field? :resource_hub, :resource_hub, null: true
+    field :resource_hub, :resource_hub, null: false
   end
 
   def call(conn, inputs) do
@@ -41,9 +45,8 @@ defmodule OperatelyWeb.Api.ResourceHubs.Create do
   end
 
   defp parse_inputs(inputs) do
-    {:ok, id} = decode_id(inputs.space_id)
     description = inputs[:description] && Jason.decode!(inputs.description)
 
-    {:ok, Map.merge(inputs, %{id: id, description: description})}
+    {:ok, Map.merge(inputs, %{id: inputs.space_id, description: description})}
   end
 end

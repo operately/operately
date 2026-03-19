@@ -1,4 +1,8 @@
 defmodule OperatelyWeb.Api.ResourceHubs.ListNodes do
+  @moduledoc """
+  Lists nodes in a resource hub or folder.
+  """
+
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
@@ -13,8 +17,8 @@ defmodule OperatelyWeb.Api.ResourceHubs.ListNodes do
   end
 
   outputs do
-    field? :nodes, list_of(:resource_hub_node), null: true
-    field? :draft_nodes, list_of(:resource_hub_node), null: true
+    field :nodes, list_of(:resource_hub_node), null: false
+    field :draft_nodes, list_of(:resource_hub_node), null: false
   end
 
   def call(conn, inputs) do
