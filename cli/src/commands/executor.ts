@@ -138,9 +138,9 @@ function executeAuthLogout(flags: Map<string, unknown[]>, config: CliConfig): nu
 }
 
 async function executeAuthWhoami(flags: Map<string, unknown[]>, config: CliConfig, registry: EndpointRegistry): Promise<number> {
-  const getMe = registry.find(["get_me"]);
+  const getMe = registry.find(["people", "get_me"]);
   if (!getMe) {
-    printError("Endpoint 'get_me' is not present in the API catalog.");
+    printError("Endpoint 'people/get_me' is not present in the API catalog.");
     return 2;
   }
 
