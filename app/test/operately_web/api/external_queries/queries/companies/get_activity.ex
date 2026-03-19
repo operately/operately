@@ -27,7 +27,7 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.Companies.GetActivity do
       )
       |> Repo.one!()
 
-    %{id: activity.id}
+    %{id: OperatelyWeb.Paths.activity_id(activity)}
   end
 
   @impl true

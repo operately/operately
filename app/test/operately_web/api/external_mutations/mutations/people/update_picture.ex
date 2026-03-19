@@ -9,13 +9,15 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.People.UpdatePicture do
   def setup(ctx) do
     ctx
     |> Factory.setup()
-
+    |> Factory.add_blob(:blob)
   end
 
   @impl true
   def inputs(ctx) do
     %{
-      person_id: Paths.person_id(ctx.creator)
+      person_id: Paths.person_id(ctx.creator),
+      avatar_blob_id: Paths.blob_id(ctx.blob),
+      avatar_url: Operately.Blobs.Blob.url(ctx.blob)
     }
   end
 
