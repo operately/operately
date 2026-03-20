@@ -17,9 +17,9 @@ defmodule OperatelyWeb.Api.Projects.Create do
     field? :champion_id, :id, null: true
     field? :reviewer_id, :id, null: true
     field? :goal_id, :id, null: true
-    field? :anonymous_access_level, :integer, null: true
-    field? :company_access_level, :integer, null: true
-    field? :space_access_level, :integer, null: true
+    field :anonymous_access_level, :integer, null: false
+    field :company_access_level, :integer, null: false
+    field :space_access_level, :integer, null: false
   end
 
   outputs do

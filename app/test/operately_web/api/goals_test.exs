@@ -1163,6 +1163,27 @@ defmodule OperatelyWeb.Api.GoalsTest do
       assert target.to == 200
       assert target.unit == "EUR"
     end
+
+    test "it does not update the target when all attributes are nil", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      original_target = Repo.get(Operately.Goals.Target, ctx.target.id)
+
+      inputs = %{
+        goal_id: Paths.goal_id(ctx.goal),
+        target_id: Paths.target_id(ctx.target)
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:goals, :update_target], inputs)
+      assert res.success == true
+
+      target = Repo.get(Operately.Goals.Target, ctx.target.id)
+      assert target.name == original_target.name
+      assert target.from == original_target.from
+      assert target.to == original_target.to
+      assert target.unit == original_target.unit
+      assert target.updated_at == original_target.updated_at
+    end
   end
 
   describe "update target - permissions" do
