@@ -152,7 +152,7 @@ export namespace ProjectPage {
     onTaskStatusChange: (taskId: string, status: TaskBoardTypes.Status | null) => void;
     onTaskMilestoneChange?: (taskId: string, milestoneId: string, index: number) => void;
     onTaskDelete: (taskId: string) => void | Promise<{ success: boolean }>;
-    onMilestoneCreate: (milestone: NewMilestonePayload) => void;
+    onMilestoneCreate: (milestone: NewMilestonePayload) => void | Promise<{ success: boolean }>;
     onMilestoneUpdate: (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => void;
     onMilestoneReorder: (sourceId: string, destinationIndex: number) => Promise<void>;
     onMilestoneSearch: (query: string) => Promise<void>;
