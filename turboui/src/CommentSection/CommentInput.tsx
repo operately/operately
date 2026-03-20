@@ -172,7 +172,7 @@ function buildRecipientSummary(people: AvatarPerson[], entityLabel: "task" | "mi
     .map((person) => (person.fullName ? shortName(person.fullName) : null))
     .filter(Boolean) as string[];
 
-  if (people.length === 0) {
+  if (names.length === 0) {
     return {
       message: `Tip: @-mention someone to notify them about this ${entityLabel}.`,
       allNames: [],
