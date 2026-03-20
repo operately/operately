@@ -16,6 +16,7 @@ export interface GlobalFlags {
 
 export type ParsedCommand =
   | { kind: "help"; commandParts: string[] }
+  | { kind: "auth-help" }
   | { kind: "version" }
   | { kind: "auth"; action: AuthAction; flags: Map<string, unknown[]> }
   | {
@@ -40,23 +41,27 @@ export function parseCommand(argv: string[], registry: EndpointRegistry, types: 
     return { kind: "version" };
   }
 
+  if (argv[0] === "auth") {
+    const action = argv[1];
+
+    if (!action || action === "--help") {
+      return { kind: "auth-help" };
+    }
+
+    if (!["login", "status", "whoami", "logout"].includes(action)) {
+      throw new UsageError("Invalid auth command. Use: auth <login|status|whoami|logout>");
+    }
+
+    const flags = parseFlags(argv.slice(2));
+    return { kind: "auth", action: action as AuthAction, flags };
+  }
+
   // Check for --help flag
   const helpFlagIndex = argv.findIndex((arg) => arg === "--help");
   if (helpFlagIndex !== -1) {
     // Get command parts before --help flag
     const commandParts = argv.slice(0, helpFlagIndex);
     return { kind: "help", commandParts };
-  }
-
-  if (argv[0] === "auth") {
-    const action = argv[1];
-
-    if (!action || !["login", "status", "whoami", "logout"].includes(action)) {
-      throw new UsageError("Invalid auth command. Use: auth <login|status|whoami|logout>");
-    }
-
-    const flags = parseFlags(argv.slice(2));
-    return { kind: "auth", action: action as AuthAction, flags };
   }
 
   const { commandParts, flagTokens } = splitCommandAndFlagTokens(argv);

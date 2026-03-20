@@ -72,6 +72,27 @@ Endpoint commands available: ${registry.endpoints.length}
 Use 'operately help <command>' for command-specific input flags.`);
 }
 
+export function printAuthHelp(): void {
+  console.log(`Operately CLI - Authentication
+
+Usage:
+  operately auth <command> [flags]
+
+Available Commands:
+  login                Authenticate with an API token
+  status               Show authentication status for current profile
+  whoami               Display information about the authenticated user
+  logout               Remove authentication credentials from profile
+
+Examples:
+  operately auth login --token <token> [--base-url <url>] [--profile <name>]
+  operately auth status [--profile <name>]
+  operately auth whoami [--profile <name>]
+  operately auth logout [--profile <name>]
+
+Use 'operately help' to see all available commands.`);
+}
+
 export function printEndpointHelp(endpoint: CatalogEndpoint, command: string): void {
   const header = [`Command: ${command}`];
 
