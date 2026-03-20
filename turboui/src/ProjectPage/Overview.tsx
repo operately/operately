@@ -62,6 +62,7 @@ function TimelineSection(props: ProjectPage.State) {
   const [newMilestoneName, setNewMilestoneName] = useState("");
   const [newMilestoneDueDate, setNewMilestoneDueDate] = useState<DateField.ContextualDate | null>(null);
   const [addMore, setAddMore] = useState(false);
+  const nameInputRef = useRef<HTMLInputElement>(null);
 
   const milestones = props.milestones || [];
 
@@ -70,7 +71,14 @@ function TimelineSection(props: ProjectPage.State) {
     (m) => m.name !== "Empty Milestone" && !m.name.toLowerCase().includes("empty") && m.name.trim() !== "",
   );
 
-  const handleAddMilestone = () => {
+  const focusNameInput = () => {
+    requestAnimationFrame(() => {
+      nameInputRef.current?.focus();
+      nameInputRef.current?.select();
+    });
+  };
+
+  const handleAddMilestone = async () => {
     if (!newMilestoneName.trim()) return;
 
     const newMilestone: ProjectPage.NewMilestonePayload = {
@@ -79,13 +87,19 @@ function TimelineSection(props: ProjectPage.State) {
       status: "pending",
     };
 
-    props.onMilestoneCreate?.(newMilestone);
+    const result = await Promise.resolve(props.onMilestoneCreate?.(newMilestone));
+
+    if (result && !result.success) return;
+
     setNewMilestoneName("");
     setNewMilestoneDueDate(null);
 
     if (!addMore) {
       setShowAddForm(false);
+      return;
     }
+
+    focusNameInput();
   };
 
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -150,6 +164,7 @@ function TimelineSection(props: ProjectPage.State) {
           handleAddMilestone={handleAddMilestone}
           handleInputKeyDown={handleInputKeyDown}
           setShowAddForm={setShowAddForm}
+          nameInputRef={nameInputRef}
         />
       </div>
     </div>
@@ -283,9 +298,10 @@ interface AddMilestoneFormProps {
   setNewMilestoneDueDate: (date: DateField.ContextualDate | null) => void;
   addMore: boolean;
   setAddMore: (addMore: boolean) => void;
-  handleAddMilestone: () => void;
+  handleAddMilestone: () => void | Promise<void>;
   handleInputKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   setShowAddForm: (show: boolean) => void;
+  nameInputRef: React.Ref<HTMLInputElement>;
 }
 
 function AddMilestoneForm({
@@ -299,6 +315,7 @@ function AddMilestoneForm({
   handleAddMilestone,
   handleInputKeyDown,
   setShowAddForm,
+  nameInputRef,
 }: AddMilestoneFormProps) {
   if (!showAddForm) return null;
 
@@ -309,6 +326,7 @@ function AddMilestoneForm({
     >
       <div className="space-y-3">
         <input
+          ref={nameInputRef}
           type="text"
           placeholder="Milestone name"
           value={newMilestoneName}
