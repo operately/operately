@@ -202,6 +202,26 @@ defmodule OperatelyWeb.Api.Projects.SearchPotentialContributorsTest do
 
       assert res.people == []
     end
+
+    test "returns all potential contributors when query is omitted", ctx do
+      project = project_fixture(%{
+        company_id: ctx.company.id,
+        creator_id: ctx.person.id,
+        group_id: ctx.company.company_space_id
+      })
+
+      person1 = person_fixture(company_id: ctx.company.id)
+      person2 = person_fixture(company_id: ctx.company.id)
+
+      assert {200, res} = query(ctx.conn, [:projects, :search_potential_contributors], %{
+        project_id: Paths.project_id(project)
+      })
+
+      assert length(res.people) >= 2
+      person_ids = Enum.map(res.people, & &1.id)
+      assert Paths.person_id(person1) in person_ids
+      assert Paths.person_id(person2) in person_ids
+    end
   end
 
   #

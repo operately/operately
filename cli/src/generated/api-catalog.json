@@ -18145,9 +18145,9 @@
             "name": "integer",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -18156,9 +18156,9 @@
             "name": "integer",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -18167,9 +18167,9 @@
             "name": "integer",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "docstring": "Creates a new goal in a space.",
@@ -22716,9 +22716,9 @@
             "name": "integer",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -22727,9 +22727,9 @@
             "name": "integer",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -22738,9 +22738,9 @@
             "name": "integer",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "docstring": "Creates a new project in a space.",
@@ -24174,14 +24174,14 @@
           "nullable": false
         },
         {
-          "default": null,
+          "default": "",
           "name": "query",
           "type": {
             "name": "string",
             "kind": "named"
           },
           "optional": true,
-          "has_default": false,
+          "has_default": true,
           "nullable": true
         }
       ],
@@ -27833,6 +27833,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-19T14:01:37Z",
+  "generated_at": "2026-03-20T17:45:33Z",
   "schema_version": 1
 }
