@@ -1,6 +1,8 @@
 import { describe, it } from "node:test";
 import * as assert from "node:assert";
 import { spawn } from "child_process";
+import * as fs from "fs";
+import * as os from "os";
 import * as path from "path";
 
 interface CLIResult {
@@ -9,10 +11,20 @@ interface CLIResult {
   stderr: string;
 }
 
+const testHome = fs.mkdtempSync(path.join(os.tmpdir(), "operately-cli-test-"));
+
 async function runCLI(args: string[]): Promise<CLIResult> {
   return new Promise((resolve) => {
-    const cliPath = path.join(__dirname, "../src/index.js");
-    const child = spawn("node", [cliPath, ...args]);
+    const cliPath = path.join(__dirname, "../index.js");
+    const child = spawn("node", [cliPath, ...args], {
+      env: {
+        ...process.env,
+        HOME: testHome,
+        OPERATELY_API_TOKEN: "",
+        OPERATELY_BASE_URL: "",
+        OPERATELY_PROFILE: "",
+      },
+    });
 
     let stdout = "";
     let stderr = "";
@@ -64,10 +76,23 @@ describe("CLI Integration Tests", () => {
       assert.ok(result.stdout.includes("projects namespace"));
     });
 
+    it("shows namespace help with trailing help", async () => {
+      const result = await runCLI(["projects", "help"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("projects namespace"));
+    });
+
     it("shows command help with --help flag", async () => {
       const result = await runCLI(["projects", "list", "--help"]);
       assert.strictEqual(result.exitCode, 0);
       assert.ok(result.stdout.includes("Command: projects list"));
+      assert.ok(result.stdout.includes("Input flags:"));
+    });
+
+    it("shows command help with trailing help", async () => {
+      const result = await runCLI(["projects", "update_due_date", "help"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("Command: projects update_due_date"));
       assert.ok(result.stdout.includes("Input flags:"));
     });
 
@@ -87,6 +112,13 @@ describe("CLI Integration Tests", () => {
       assert.ok(result.stdout.includes("status"));
     });
 
+    it("shows auth help when 'auth help' is used", async () => {
+      const result = await runCLI(["auth", "help"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("Authentication"));
+      assert.ok(result.stdout.includes("login"));
+    });
+
     it("shows auth status with user-friendly format", async () => {
       const result = await runCLI(["auth", "status"]);
       assert.strictEqual(result.exitCode, 0);
@@ -104,6 +136,13 @@ describe("CLI Integration Tests", () => {
   });
 
   describe("Flag Parsing", () => {
+    it("accepts ISO date flags for contextual date inputs", async () => {
+      const result = await runCLI(["goals", "update_due_date", "--goal-id", "g1", "--due-date", "2026-03-20"]);
+      assert.strictEqual(result.exitCode, 3);
+      assert.ok(result.stderr.includes("Missing API token"));
+      assert.ok(!result.stderr.includes("Expected object for 'due_date'"));
+    });
+
     it("accepts boolean flag with =true", async () => {
       const result = await runCLI(["auth", "status", "--verbose=true"]);
       assert.strictEqual(result.exitCode, 0);
