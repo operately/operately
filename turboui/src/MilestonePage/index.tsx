@@ -350,6 +350,7 @@ function TimelineSection(props: MilestonePage.State) {
           entityLabel: "milestone",
           subscribedPeople: props.subscriptions.subscribedPeople ?? [],
           isCurrentUserSubscribed: props.subscriptions.isSubscribed,
+          currentUserId: props.currentUser.id,
         }}
       />
     </div>

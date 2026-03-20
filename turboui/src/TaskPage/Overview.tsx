@@ -39,6 +39,7 @@ function ActivitySection(props: TaskPage.ContentState) {
             entityLabel: "task",
             subscribedPeople: props.subscriptions.subscribedPeople ?? [],
             isCurrentUserSubscribed: props.subscriptions.isSubscribed,
+            currentUserId: props.currentUser.id,
           }}
         />
       </div>

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Avatar, AvatarList } from "../Avatar";
 import type { AvatarPerson } from "../Avatar";
+import { shortName } from "../Avatar/AvatarWithName";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { CommentInputProps, CommentNotificationInfo, Person } from "./types";
 import { Editor, useEditor } from "../RichEditor";
@@ -133,7 +134,7 @@ function CommentInputActive({
 }
 
 function CommentNotificationSummary({ info }: { info: CommentNotificationInfo }) {
-  const subscribedPeople = info.subscribedPeople ?? [];
+  const subscribedPeople = (info.subscribedPeople ?? []).filter((person) => person.id !== info.currentUserId);
   const [showAllRecipients, setShowAllRecipients] = useState(false);
   const recipientSummary = buildRecipientSummary(subscribedPeople, info.entityLabel);
 
@@ -167,9 +168,11 @@ function CommentNotificationSummary({ info }: { info: CommentNotificationInfo })
 }
 
 function buildRecipientSummary(people: AvatarPerson[], entityLabel: "task" | "milestone") {
-  const names = people.map((person) => person.fullName).filter(Boolean) as string[];
+  const names = people
+    .map((person) => (person.fullName ? shortName(person.fullName) : null))
+    .filter(Boolean) as string[];
 
-  if (people.length === 0) {
+  if (names.length === 0) {
     return {
       message: `Tip: @-mention someone to notify them about this ${entityLabel}.`,
       allNames: [],
@@ -179,7 +182,7 @@ function buildRecipientSummary(people: AvatarPerson[], entityLabel: "task" | "mi
 
   if (names.length === 1) {
     return {
-      message: `This comment will notify ${names[0]}.`,
+      message: withSentencePeriod(`This comment will notify ${names[0]}`),
       allNames: names,
       hasHiddenRecipients: false,
     };
@@ -187,7 +190,7 @@ function buildRecipientSummary(people: AvatarPerson[], entityLabel: "task" | "mi
 
   if (names.length === 2) {
     return {
-      message: `This comment will notify ${names[0]} and ${names[1]}.`,
+      message: withSentencePeriod(`This comment will notify ${names[0]} and ${names[1]}`),
       allNames: names,
       hasHiddenRecipients: false,
     };
@@ -195,8 +198,14 @@ function buildRecipientSummary(people: AvatarPerson[], entityLabel: "task" | "mi
 
   const remainingCount = names.length - 2;
   return {
-    message: `This comment will notify ${names[0]}, ${names[1]}, and ${remainingCount} other${remainingCount === 1 ? "" : "s"}.`,
+    message: withSentencePeriod(
+      `This comment will notify ${names[0]}, ${names[1]}, and ${remainingCount} other${remainingCount === 1 ? "" : "s"}`,
+    ),
     allNames: names,
     hasHiddenRecipients: true,
   };
+}
+
+function withSentencePeriod(text: string) {
+  return text.endsWith(".") ? text : `${text}.`;
 }
