@@ -445,7 +445,7 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.id)
       |> Steps.check_permissions(:can_edit)
-      |> Steps.validate_milestone_belongs_to_project(inputs.milestone_id)
+      |> Steps.validate_milestone_belongs_to_project(inputs[:milestone_id])
       |> Steps.create_task(inputs)
       |> Steps.save_activity(:task_adding, fn changes ->
         %{
@@ -813,7 +813,7 @@ defmodule OperatelyWeb.Api.Tasks do
       |> Ecto.Multi.run(:new_task, fn _repo, changes ->
         context = get_context_from_changes(changes)
         {project_id, space_id} = get_ids_from_context(changes)
-        milestone_id = if space_id, do: nil, else: inputs.milestone_id
+        milestone_id = if space_id, do: nil, else: inputs[:milestone_id]
 
         with {:ok, status} <- validate_or_get_default_status(context, inputs[:status]) do
           Operately.Tasks.Task.changeset(%{

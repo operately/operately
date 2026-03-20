@@ -926,10 +926,10 @@ defmodule OperatelyWeb.Api.Goals do
     def update_target(multi, attrs) do
       Ecto.Multi.update(multi, :updated_target, fn %{target: target} ->
         update_attrs = %{}
-        update_attrs = if attrs.name, do: Map.put(update_attrs, :name, attrs.name), else: update_attrs
-        update_attrs = if attrs.start_value, do: Map.put(update_attrs, :from, attrs.start_value), else: update_attrs
-        update_attrs = if attrs.target_value, do: Map.put(update_attrs, :to, attrs.target_value), else: update_attrs
-        update_attrs = if attrs.unit, do: Map.put(update_attrs, :unit, attrs.unit), else: update_attrs
+        update_attrs = if attrs[:name], do: Map.put(update_attrs, :name, attrs.name), else: update_attrs
+        update_attrs = if attrs[:start_value], do: Map.put(update_attrs, :from, attrs.start_value), else: update_attrs
+        update_attrs = if attrs[:target_value], do: Map.put(update_attrs, :to, attrs.target_value), else: update_attrs
+        update_attrs = if attrs[:unit], do: Map.put(update_attrs, :unit, attrs.unit), else: update_attrs
 
         Operately.Goals.Target.changeset(target, update_attrs)
       end)

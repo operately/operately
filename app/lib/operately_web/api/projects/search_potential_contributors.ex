@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api.Projects.SearchPotentialContributors do
 
   inputs do
     field :project_id, :id, null: false
-    field? :query, :string, null: true
+    field? :query, :string, null: true, default: ""
   end
 
   outputs do

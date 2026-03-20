@@ -414,6 +414,28 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       assert task.creator_id == ctx.creator.id
     end
 
+    test "it creates task when milestone_id is omitted", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = mutation(ctx.conn, [:tasks, :create], %{
+        id: Paths.project_id(ctx.project),
+        type: "project",
+        name: "Task with omitted milestone_id",
+        assignee_id: nil,
+        due_date: nil
+      })
+
+      assert res.task.name == "Task with omitted milestone_id"
+
+      {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.task.id)
+      task = Operately.Tasks.Task.get!(:system, id: id)
+
+      assert task.name == "Task with omitted milestone_id"
+      assert task.project_id == ctx.project.id
+      assert task.milestone_id == nil
+      assert task.creator_id == ctx.creator.id
+    end
+
     test "it doesn't create task if milestone doesn't belong to project", ctx do
       ctx =
         ctx

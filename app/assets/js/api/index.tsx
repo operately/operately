@@ -3588,9 +3588,9 @@ export interface GoalsCreateInput {
   targets?: CreateTargetInput[] | null;
   description?: string | null;
   parentGoalId?: Id | null;
-  anonymousAccessLevel?: number | null;
-  companyAccessLevel?: number | null;
-  spaceAccessLevel?: number | null;
+  anonymousAccessLevel: number;
+  companyAccessLevel: number;
+  spaceAccessLevel: number;
 }
 
 export interface GoalsCreateResult {
@@ -4117,9 +4117,9 @@ export interface ProjectsCreateInput {
   championId?: Id | null;
   reviewerId?: Id | null;
   goalId?: Id | null;
-  anonymousAccessLevel?: number | null;
-  companyAccessLevel?: number | null;
-  spaceAccessLevel?: number | null;
+  anonymousAccessLevel: number;
+  companyAccessLevel: number;
+  spaceAccessLevel: number;
 }
 
 export interface ProjectsCreateResult {
