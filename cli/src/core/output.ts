@@ -13,3 +13,7 @@ export function writeJsonFile(path: string, value: unknown, compact: boolean): v
 export function printError(message: string): void {
   console.error(message);
 }
+
+export function printSuccess(message: string): void {
+  console.log(message);
+}

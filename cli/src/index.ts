@@ -3,8 +3,9 @@
 import catalogJson from "./generated/api-catalog.json";
 import type { Catalog } from "./types/catalog";
 import { createRegistry } from "./commands/registry";
-import { printEndpointHelp, printGeneralHelp, printNamespaceHelp } from "./commands/help";
-import { executeAuthCommand, executeEndpointCommand } from "./commands/executor";
+import { printAuthHelp, printEndpointHelp, printGeneralHelp, printNamespaceHelp } from "./commands/help";
+import { executeAuthCommand } from "./commands/auth";
+import { executeEndpointCommand } from "./commands/executor";
 import { parseCommand, UsageError } from "./core/parser";
 import { printError } from "./core/output";
 import { CLI_VERSION } from "./version";
@@ -56,6 +57,11 @@ async function main(argv: string[]): Promise<number> {
 
   if (parsed.kind === "version") {
     console.log(CLI_VERSION);
+    return 0;
+  }
+
+  if (parsed.kind === "auth-help") {
+    printAuthHelp();
     return 0;
   }
 
