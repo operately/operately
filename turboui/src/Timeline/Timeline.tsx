@@ -5,7 +5,7 @@ import * as Types from "./types";
 import { TimelineSkeleton } from "./TimelineSkeleton";
 
 export namespace Timeline {
-  export type MilestoneActivity = Types.MilestoneActivity
+  export type MilestoneActivity = Types.MilestoneActivity;
 
   export type Comment = Types.Comment;
 
@@ -25,6 +25,7 @@ export function Timeline({
   onRemoveReaction,
   richTextHandlers,
   filters,
+  commentNotificationInfo,
 }: Timeline.Props) {
   if (isLoading) {
     return <TimelineSkeleton />;
@@ -101,6 +102,7 @@ export function Timeline({
           form={mockForm}
           currentUser={currentUser}
           richTextHandlers={richTextHandlers}
+          notificationInfo={commentNotificationInfo}
         />
       )}
     </div>

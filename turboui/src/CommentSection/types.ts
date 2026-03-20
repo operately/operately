@@ -1,6 +1,7 @@
 import { MilestoneActivity } from "../Timeline/types";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
 import { Reactions } from "../Reactions";
+import type { AvatarPerson } from "../Avatar";
 
 export interface Person {
   id: string;
@@ -59,4 +60,11 @@ export interface CommentInputProps {
   onSubmit?: () => void;
   onCancel?: () => void;
   richTextHandlers: RichEditorHandlers;
+  notificationInfo?: CommentNotificationInfo;
+}
+
+export interface CommentNotificationInfo {
+  entityLabel: "task" | "milestone";
+  subscribedPeople: AvatarPerson[];
+  isCurrentUserSubscribed: boolean;
 }

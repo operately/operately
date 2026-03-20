@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Avatar } from "../Avatar";
+import { Avatar, AvatarList } from "../Avatar";
+import type { AvatarPerson } from "../Avatar";
 import { PrimaryButton, SecondaryButton } from "../Button";
-import { CommentInputProps, Person } from "./types";
+import { CommentInputProps, CommentNotificationInfo, Person } from "./types";
 import { Editor, useEditor } from "../RichEditor";
 
 interface CommentInputActiveProps extends CommentInputProps {
@@ -19,6 +20,7 @@ export function CommentInput({
   form,
   currentUser,
   richTextHandlers,
+  notificationInfo,
 }: CommentInputProps & { currentUser: Person }) {
   const [active, setActive] = useState(false);
 
@@ -33,6 +35,7 @@ export function CommentInput({
         onBlur={handleDeactivate}
         onPost={handleDeactivate}
         richTextHandlers={richTextHandlers}
+        notificationInfo={notificationInfo}
       />
     );
   }
@@ -58,6 +61,7 @@ function CommentInputActive({
   onBlur,
   onPost,
   richTextHandlers,
+  notificationInfo,
 }: CommentInputActiveProps) {
   const [uploading] = useState(false);
 
@@ -120,8 +124,79 @@ function CommentInputActive({
               </SecondaryButton>
             </div>
           </div>
+
+          {notificationInfo && <CommentNotificationSummary info={notificationInfo} />}
         </div>
       </div>
     </div>
   );
+}
+
+function CommentNotificationSummary({ info }: { info: CommentNotificationInfo }) {
+  const subscribedPeople = info.subscribedPeople ?? [];
+  const [showAllRecipients, setShowAllRecipients] = useState(false);
+  const recipientSummary = buildRecipientSummary(subscribedPeople, info.entityLabel);
+
+  return (
+    <div className="border-t border-surface-outline px-4 py-3 bg-surface-dimmed/40">
+      <div className="flex items-center gap-3">
+        <AvatarList people={subscribedPeople} size="tiny" stacked maxElements={6} wrap={false} />
+        <div className="min-w-0">
+          <div className="text-xs text-content-base flex flex-wrap items-center gap-x-1 gap-y-1">
+            <span>{recipientSummary.message}</span>
+            {recipientSummary.hasHiddenRecipients && (
+              <button
+                type="button"
+                className="text-content-link hover:underline"
+                onClick={() => setShowAllRecipients((prev) => !prev)}
+              >
+                {showAllRecipients ? "Hide list" : "View all"}
+              </button>
+            )}
+          </div>
+          {showAllRecipients && recipientSummary.allNames.length > 0 && (
+            <div className="text-xs text-content-dimmed mt-1">{recipientSummary.allNames.join(", ")}</div>
+          )}
+          {!info.isCurrentUserSubscribed && subscribedPeople.length > 0 && (
+            <div className="text-xs text-content-dimmed mt-1">Tip: Subscribe if you want notifications too.</div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function buildRecipientSummary(people: AvatarPerson[], entityLabel: "task" | "milestone") {
+  const names = people.map((person) => person.fullName).filter(Boolean) as string[];
+
+  if (people.length === 0) {
+    return {
+      message: `Tip: @-mention someone to notify them about this ${entityLabel}.`,
+      allNames: [],
+      hasHiddenRecipients: false,
+    };
+  }
+
+  if (names.length === 1) {
+    return {
+      message: `This comment will notify ${names[0]}.`,
+      allNames: names,
+      hasHiddenRecipients: false,
+    };
+  }
+
+  if (names.length === 2) {
+    return {
+      message: `This comment will notify ${names[0]} and ${names[1]}.`,
+      allNames: names,
+      hasHiddenRecipients: false,
+    };
+  }
+
+  const remainingCount = names.length - 2;
+  return {
+    message: `This comment will notify ${names[0]}, ${names[1]}, and ${remainingCount} other${remainingCount === 1 ? "" : "s"}.`,
+    allNames: names,
+    hasHiddenRecipients: true,
+  };
 }
