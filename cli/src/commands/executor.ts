@@ -7,7 +7,7 @@ import {
   type CliConfig,
   type RuntimeOptions,
 } from "../core/config";
-import { printError, printJson, writeJsonFile } from "../core/output";
+import { printError, printJson, printSuccess, writeJsonFile } from "../core/output";
 import type { GlobalFlags } from "../core/parser";
 import type { EndpointRegistry } from "./registry";
 import type { CatalogEndpoint } from "../types/catalog";
@@ -74,7 +74,7 @@ export async function executeAuthCommand(input: AuthExecutionInput): Promise<num
   const config = readConfig();
 
   if (input.action === "login") {
-    return executeAuthLogin(input.flags, config);
+    return executeAuthLogin(input.flags, config, input.registry);
   }
 
   if (input.action === "status") {
@@ -88,7 +88,11 @@ export async function executeAuthCommand(input: AuthExecutionInput): Promise<num
   return executeAuthWhoami(input.flags, config, input.registry);
 }
 
-function executeAuthLogin(flags: Map<string, unknown[]>, config: CliConfig): number {
+async function executeAuthLogin(
+  flags: Map<string, unknown[]>,
+  config: CliConfig,
+  registry: EndpointRegistry,
+): Promise<number> {
   const token = readStringFlag(flags, "token");
   if (!token) {
     printError("Missing --token for auth login.");
@@ -98,14 +102,66 @@ function executeAuthLogin(flags: Map<string, unknown[]>, config: CliConfig): num
   const baseUrl = readStringFlag(flags, "base-url");
   const profile = readStringFlag(flags, "profile") ?? config.activeProfile ?? "default";
 
-  const updated = saveProfile(config, profile, {
-    token,
-    baseUrl: baseUrl ?? undefined,
-  });
-  writeConfig(updated);
+  const getMe = registry.find(["people", "get_me"]);
+  if (!getMe) {
+    printError("Endpoint 'people/get_me' is not present in the API catalog.");
+    return 2;
+  }
 
-  printJson({ ok: true, profile, base_url: updated.profiles[profile]?.baseUrl ?? null }, false);
-  return 0;
+  const runtime = resolveRuntimeOptions(config, {
+    token,
+    baseUrl: baseUrl ?? null,
+    profile: null,
+  });
+
+  if (!runtime.token) {
+    printError("Authentication failed: Token is required");
+    return 2;
+  }
+
+  try {
+    const payload = await callEndpoint({
+      endpoint: getMe,
+      baseUrl: runtime.baseUrl,
+      token: runtime.token,
+      inputs: {},
+      timeoutMs: runtime.timeoutMs,
+      verbose: false,
+    });
+
+    const updated = saveProfile(config, profile, {
+      token,
+      baseUrl: baseUrl ?? undefined,
+    });
+    writeConfig(updated);
+
+    const user = payload as { me?: { full_name?: string; email?: string } };
+    const userName = user.me?.full_name || user.me?.email;
+    const displayUrl = updated.profiles[profile]?.baseUrl || runtime.baseUrl;
+
+    printSuccess(`✓ Logged in to ${displayUrl} ${userName ? `as ${userName}` : ""}`);
+    return 0;
+  } catch (error) {
+    if (error instanceof ApiError) {
+      if (error.status === 401 || error.status === 403) {
+        printError(`Authentication failed: Invalid token for ${runtime.baseUrl}`);
+        printError("Please check your token and try again.");
+        return 4;
+      }
+
+      if (error.status >= 500 || error.status === 0) {
+        printError(`Authentication failed: Unable to connect to ${runtime.baseUrl}`);
+        printError("The server is not responding.");
+        return 5;
+      }
+
+      printError(`Authentication failed for ${runtime.baseUrl}: ${formatApiError(error)}`);
+      return 4;
+    }
+
+    printError(`Authentication failed for ${runtime.baseUrl}: Unexpected error occurred`);
+    return 5;
+  }
 }
 
 function executeAuthStatus(flags: Map<string, unknown[]>, config: CliConfig): number {
@@ -128,16 +184,26 @@ function executeAuthStatus(flags: Map<string, unknown[]>, config: CliConfig): nu
 function executeAuthLogout(flags: Map<string, unknown[]>, config: CliConfig): number {
   const profile = readStringFlag(flags, "profile") ?? config.activeProfile ?? "default";
   const existing = config.profiles[profile] ?? {};
+
+  if (!existing.token) {
+    printError(`Not logged in to profile '${profile}'`);
+    return 1;
+  }
+
   const updated = saveProfile(config, profile, {
     ...existing,
     token: "",
   });
   writeConfig(updated);
-  printJson({ ok: true, profile }, false);
+  printSuccess(`✓ Logged out from profile '${profile}'`);
   return 0;
 }
 
-async function executeAuthWhoami(flags: Map<string, unknown[]>, config: CliConfig, registry: EndpointRegistry): Promise<number> {
+async function executeAuthWhoami(
+  flags: Map<string, unknown[]>,
+  config: CliConfig,
+  registry: EndpointRegistry,
+): Promise<number> {
   const getMe = registry.find(["people", "get_me"]);
   if (!getMe) {
     printError("Endpoint 'people/get_me' is not present in the API catalog.");
