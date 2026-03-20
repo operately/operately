@@ -67,4 +67,5 @@ export interface CommentNotificationInfo {
   entityLabel: "task" | "milestone";
   subscribedPeople: AvatarPerson[];
   isCurrentUserSubscribed: boolean;
+  currentUserId: string;
 }
