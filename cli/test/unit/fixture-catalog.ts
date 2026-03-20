@@ -1,4 +1,4 @@
-import type { Catalog } from "../types/catalog";
+import type { Catalog } from "../../src/types/catalog";
 
 export const fixtureCatalog: Catalog = {
   schema_version: 1,
@@ -88,6 +88,25 @@ export const fixtureCatalog: Catalog = {
           type: { kind: "named", name: "float" },
           optional: false,
           nullable: false,
+          has_default: false,
+          default: null,
+        },
+        {
+          name: "send_notifications",
+          type: { kind: "named", name: "boolean" },
+          optional: true,
+          nullable: false,
+          has_default: false,
+          default: null,
+        },
+        {
+          name: "subscriber_ids",
+          type: {
+            kind: "list",
+            item: { kind: "named", name: "id" },
+          },
+          optional: true,
+          nullable: true,
           has_default: false,
           default: null,
         },
