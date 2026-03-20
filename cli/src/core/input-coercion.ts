@@ -108,6 +108,13 @@ function coerceObjectFields(
 
   const raw = value as Record<string, unknown>;
   const output: Record<string, unknown> = {};
+  const fieldByName = new Set(fields.map((field) => field.name));
+
+  for (const key of Object.keys(raw)) {
+    if (!fieldByName.has(key)) {
+      throw new UsageError(`Unknown nested field '${path}.${key}'.`);
+    }
+  }
 
   for (const field of fields) {
     const fieldValue = raw[field.name];
@@ -146,11 +153,8 @@ function coerceFieldValue(
   }
 
   if (typeRef.kind === "list") {
-    if (!Array.isArray(value)) {
-      throw new UsageError(`Expected array for '${path}', got ${typeof value}.`);
-    }
-
-    return value.map((item, i) =>
+    const list = Array.isArray(value) ? value : [value];
+    return list.map((item, i) =>
       coerceFieldValue(typeRef.item, item, { ...field, nullable: false }, types, `${path}[${i}]`),
     );
   }
