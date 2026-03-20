@@ -346,6 +346,11 @@ function TimelineSection(props: MilestonePage.State) {
         onAddReaction={props.onAddReaction}
         onRemoveReaction={props.onRemoveReaction}
         richTextHandlers={props.richTextHandlers}
+        commentNotificationInfo={{
+          entityLabel: "milestone",
+          subscribedPeople: props.subscriptions.subscribedPeople ?? [],
+          isCurrentUserSubscribed: props.subscriptions.isSubscribed,
+        }}
       />
     </div>
   );

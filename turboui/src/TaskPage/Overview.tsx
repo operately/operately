@@ -35,6 +35,11 @@ function ActivitySection(props: TaskPage.ContentState) {
           onRemoveReaction={props.onRemoveReaction}
           richTextHandlers={props.richTextHandlers}
           filters={props.timelineFilters}
+          commentNotificationInfo={{
+            entityLabel: "task",
+            subscribedPeople: props.subscriptions.subscribedPeople ?? [],
+            isCurrentUserSubscribed: props.subscriptions.isSubscribed,
+          }}
         />
       </div>
     );

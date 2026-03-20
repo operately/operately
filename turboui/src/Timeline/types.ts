@@ -1,5 +1,5 @@
 import { DateField } from "../DateField";
-import { Person, Comment } from "../CommentSection/types";
+import { Person, Comment, CommentNotificationInfo } from "../CommentSection/types";
 import { Status } from "../TaskBoard/types";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
 
@@ -170,6 +170,7 @@ export interface TimelineProps {
   onRemoveReaction?: (commentId: string, reactionId: string) => void | Promise<void>;
   filters?: TimelineFilters;
   richTextHandlers: RichEditorHandlers;
+  commentNotificationInfo?: CommentNotificationInfo;
 }
 
 export interface TimelineFilters {
