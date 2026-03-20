@@ -110,6 +110,23 @@ blocks:
             - "[ -f app/testreports/junit.xml ] && test-results publish app/testreports/junit.xml"
             - artifact push workflow screenshots
 
+  - name: CLI Tests
+    run:
+      when: "change_in('/cli', {default_branch: 'main'})"
+    dependencies: []
+    task:
+      secrets:
+        - name: ci-cache-credentials
+      prologue:
+        commands:
+          - checkout
+          - cache restore cli-node-modules
+
+      jobs:
+        - name: CLI Test
+          commands:
+            - make cli.test
+
   - name: Docker Build
     dependencies: []
     task:

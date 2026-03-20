@@ -89,7 +89,8 @@ cli.build:
 	./devenv bash -c "cd cli && npm install && npm run build"
 
 cli.test:
-	./devenv bash -c "cd cli && npm install && npm run test"
+	npm --prefix cli install
+	npm --prefix cli test
 
 gen.cli.catalog:
 	$(MAKE) gen.api.catalog
