@@ -21,6 +21,10 @@ export function useSubscription({
 }: UseSubscriptionOptions): SidebarNotificationSection.Props {
   const currentUser = useMe();
   const hidden = Boolean(!subscriptionList?.subscriptions || !currentUser);
+  const subscribedPeople =
+    subscriptionList?.subscriptions
+      ?.filter((subscription) => subscription.canceled !== true && subscription.person)
+      .map((subscription) => subscription.person!) ?? [];
 
   const [isSubscribed, setIsSubscribed] = React.useState(() => {
     if (!subscriptionList?.subscriptions || !currentUser) return false;
@@ -67,5 +71,6 @@ export function useSubscription({
     onToggle,
     hidden,
     entityType,
+    subscribedPeople,
   };
 }

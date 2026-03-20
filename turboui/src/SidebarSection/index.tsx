@@ -36,8 +36,15 @@ export function SidebarNotificationSection(props: SidebarNotificationSection.Pro
 }
 
 export namespace SidebarNotificationSection {
+  export interface SubscriberPerson {
+    id?: string | null;
+    fullName?: string | null;
+    avatarUrl?: string | null;
+  }
+
   export interface Props extends NotificationToggle.Props {
     hidden: boolean;
     className?: string;
+    subscribedPeople?: SubscriberPerson[];
   }
 }
