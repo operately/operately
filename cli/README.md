@@ -267,13 +267,13 @@ The CLI provides access to 202 API endpoints across the following namespaces:
 - `spaces` - Space (team/department) management
 - `tasks` - Task management
 
-For a complete list of commands, see [docs/commands.md](docs/commands.md).
+For a complete list of commands, see [docs/commands.md](https://github.com/operately/operately/blob/main/cli/docs/commands.md).
 
 ## Documentation
 
-- [Usage Guide](docs/usage.md) - Detailed usage instructions
-- [Authentication](docs/authentication.md) - Authentication setup and options
-- [Commands Reference](docs/commands.md) - Complete command catalog
+- [Usage Guide](https://github.com/operately/operately/blob/main/cli/docs/usage.md) - Detailed usage instructions
+- [Authentication](https://github.com/operately/operately/blob/main/cli/docs/authentication.md) - Authentication setup and options
+- [Commands Reference](https://github.com/operately/operately/blob/main/cli/docs/commands.md) - Complete command catalog
 
 ## API Token
 
