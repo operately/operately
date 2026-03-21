@@ -1,17 +1,45 @@
-import type { Catalog } from "../../src/types/catalog";
+import type { Catalog } from "../../types/catalog";
 
 export const fixtureCatalog: Catalog = {
   schema_version: 1,
   api_base_path: "/api/external/v1",
   generated_at: "2026-01-01T00:00:00Z",
-  endpoint_count: 2,
+  endpoint_count: 3,
   query_count: 1,
-  mutation_count: 1,
+  mutation_count: 2,
   types: {
     primitives: {
       id: { encoded_type: "string" },
     },
     objects: {
+      contextual_date: {
+        fields: [
+          {
+            name: "date_type",
+            type: { kind: "named", name: "contextual_date_type" },
+            optional: false,
+            nullable: false,
+            has_default: false,
+            default: null,
+          },
+          {
+            name: "value",
+            type: { kind: "named", name: "string" },
+            optional: false,
+            nullable: false,
+            has_default: false,
+            default: null,
+          },
+          {
+            name: "date",
+            type: { kind: "named", name: "date" },
+            optional: false,
+            nullable: false,
+            has_default: false,
+            default: null,
+          },
+        ],
+      },
       task_status: {
         fields: [
           {
@@ -33,7 +61,9 @@ export const fixtureCatalog: Catalog = {
         ],
       },
     },
-    enums: {},
+    enums: {
+      contextual_date_type: ["day", "month", "quarter", "year"],
+    },
     unions: {},
   },
   endpoints: [
@@ -59,6 +89,35 @@ export const fixtureCatalog: Catalog = {
           type: { kind: "named", name: "string" },
           optional: false,
           nullable: false,
+          has_default: false,
+          default: null,
+        },
+      ],
+      outputs: [],
+      docstring: null,
+    },
+    {
+      full_name: "goals/update_due_date",
+      namespace: "goals",
+      name: "update_due_date",
+      type: "mutation",
+      method: "POST",
+      path: "/api/external/v1/goals/update_due_date",
+      handler: "OperatelyWeb.Api.Goals.UpdateDueDate",
+      inputs: [
+        {
+          name: "goal_id",
+          type: { kind: "named", name: "id" },
+          optional: false,
+          nullable: false,
+          has_default: false,
+          default: null,
+        },
+        {
+          name: "due_date",
+          type: { kind: "named", name: "contextual_date" },
+          optional: false,
+          nullable: true,
           has_default: false,
           default: null,
         },

@@ -165,6 +165,10 @@ function coerceFieldValue(
     return coerceBuiltinType(typeName, value, path);
   }
 
+  if (typeName === "contextual_date") {
+    return coerceContextualDate(value, types, path);
+  }
+
   if (types.objects[typeName]) {
     return coerceObjectFields(types.objects[typeName].fields, value, types, path);
   }
@@ -232,4 +236,42 @@ function coerceBuiltinType(typeName: string, value: unknown, path: string): unkn
   }
 
   throw new UsageError(`Unknown builtin type '${typeName}'.`);
+}
+
+function coerceContextualDate(value: unknown, types: CatalogTypes, path: string): Record<string, unknown> {
+  if (typeof value !== "string") {
+    return coerceObjectFields(types.objects.contextual_date.fields, value, types, path);
+  }
+
+  const parsedDate = parseIsoDateString(value);
+  if (!parsedDate) {
+    throw new UsageError(`Expected ISO date string (YYYY-MM-DD) for '${path}', got '${value}'.`);
+  }
+
+  return {
+    date_type: "day",
+    value: formatDayDateValue(parsedDate),
+    date: value,
+  };
+}
+
+function parseIsoDateString(value: string): { year: number; month: number; day: number } | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return null;
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const date = new Date(Date.UTC(year, month - 1, day));
+
+  if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) {
+    return null;
+  }
+
+  return { year, month, day };
+}
+
+function formatDayDateValue(date: { year: number; month: number; day: number }): string {
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  return `${months[date.month - 1]} ${date.day}, ${date.year}`;
 }

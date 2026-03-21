@@ -5,7 +5,7 @@ import { parseFlags } from "./flags";
 export function parseAuthCommand(argv: string[]): ParsedCommand {
   const action = argv[1];
 
-  if (!action || action === "--help") {
+  if (!action || action === "--help" || action === "help") {
     return { kind: "auth-help" };
   }
 
@@ -26,11 +26,23 @@ export function checkForHelpFlag(argv: string[]): ParsedCommand | null {
   return null;
 }
 
+export function checkForTrailingHelp(argv: string[]): ParsedCommand | null {
+  if (argv.length === 0 || argv.at(-1) !== "help") {
+    return null;
+  }
+
+  if (argv.some((arg) => arg.startsWith("--"))) {
+    return null;
+  }
+
+  return { kind: "help", commandParts: argv.slice(0, -1) };
+}
+
 export function checkForNamespaceHelp(commandParts: string[], registry: EndpointRegistry): ParsedCommand | null {
   if (commandParts.length === 1) {
     const namespace = commandParts[0];
     const namespaces = new Set(registry.endpoints.filter((ep) => ep.namespace).map((ep) => ep.namespace));
-    
+
     if (namespaces.has(namespace)) {
       return { kind: "help", commandParts: [namespace] };
     }

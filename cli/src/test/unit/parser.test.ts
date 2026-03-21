@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import * as assert from "node:assert";
-import { createRegistry } from "../../src/commands/registry";
-import { parseCommand, UsageError } from "../../src/core/parser";
+import { createRegistry } from "../../commands/registry";
+import { parseCommand, UsageError } from "../../core/parser";
 import { fixtureCatalog } from "./fixture-catalog";
 
 test("parses required input flags", () => {
@@ -46,6 +46,27 @@ test("supports nested list object flags via dot-index notation", () => {
       goal_id: "g1",
       target_value: 10.5,
       task_statuses: [{ id: "s1", label: "Open" }],
+    });
+  }
+});
+
+test("coerces contextual date inputs from ISO date strings", () => {
+  const registry = createRegistry(fixtureCatalog);
+  const parsed = parseCommand(
+    ["goals", "update_due_date", "--goal-id", "g1", "--due-date", "2026-03-20"],
+    registry,
+    fixtureCatalog.types,
+  );
+
+  assert.equal(parsed.kind, "endpoint");
+  if (parsed.kind === "endpoint") {
+    assert.deepEqual(parsed.endpointInputs, {
+      goal_id: "g1",
+      due_date: {
+        date_type: "day",
+        value: "Mar 20, 2026",
+        date: "2026-03-20",
+      },
     });
   }
 });
