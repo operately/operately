@@ -3,7 +3,13 @@ import type { EndpointRegistry } from "../commands/registry";
 import { UsageError, type ParsedCommand } from "./parser-types";
 import { parseFlags, parseGlobalFlags } from "./flags";
 import { parseEndpointInputs } from "./input-coercion";
-import { parseAuthCommand, checkForHelpFlag, checkForNamespaceHelp, splitCommandAndFlagTokens } from "./command-routing";
+import {
+  parseAuthCommand,
+  checkForHelpFlag,
+  checkForNamespaceHelp,
+  checkForTrailingHelp,
+  splitCommandAndFlagTokens,
+} from "./command-routing";
 
 export { UsageError, type ParsedCommand, type GlobalFlags, type AuthAction } from "./parser-types";
 
@@ -24,6 +30,11 @@ export function parseCommand(argv: string[], registry: EndpointRegistry, types: 
     return parseAuthCommand(argv);
   }
 
+  const trailingHelpCommand = checkForTrailingHelp(argv);
+  if (trailingHelpCommand) {
+    return trailingHelpCommand;
+  }
+
   const helpCommand = checkForHelpFlag(argv);
   if (helpCommand) {
     return helpCommand;
@@ -42,7 +53,7 @@ export function parseCommand(argv: string[], registry: EndpointRegistry, types: 
         return namespaceHelp;
       }
     }
-    
+
     throw new UsageError(`Unknown command '${commandParts.join(" ")}'.`);
   }
 

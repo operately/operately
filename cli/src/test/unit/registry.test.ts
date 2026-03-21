@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import * as assert from "node:assert";
-import { createRegistry } from "../../src/commands/registry";
+import { createRegistry } from "../../commands/registry";
 import { fixtureCatalog } from "./fixture-catalog";
 
 test("root command is exactly endpoint name", () => {
