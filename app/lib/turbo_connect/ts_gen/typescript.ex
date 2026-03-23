@@ -14,10 +14,16 @@ defmodule TurboConnect.TsGen.Typescript do
   end
 
   def ts_enum(name, values) when length(values) > 0 do
-    values = Enum.map(values, fn v -> "\"#{Atom.to_string(v)}\"" end) |> Enum.join(" | ")
+    values_str = Enum.map(values, fn v ->
+      case v do
+        v when is_integer(v) -> to_string(v)
+        v when is_atom(v) -> "\"#{Atom.to_string(v)}\""
+        v -> "\"#{v}\""
+      end
+    end) |> Enum.join(" | ")
 
     """
-    export type #{ts_type(name)} = #{values};
+    export type #{ts_type(name)} = #{values_str};
     """
   end
 
