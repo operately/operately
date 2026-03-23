@@ -36,6 +36,8 @@ defmodule OperatelyWeb.Api.Types do
 
   enum :access_options, values: Operately.Access.Binding.valid_access_levels(:as_atom)
 
+  int_enum :access_options_int, values: Operately.Access.Binding.valid_access_levels()
+
   enum :resource_access_types, values: [:space, :goal, :project]
 
   object :resource_access_input do
@@ -281,9 +283,9 @@ defmodule OperatelyWeb.Api.Types do
   object :activity_content_company_members_permissions_edited_member do
     field :person_id, :string, null: false
     field :person, :person, null: false
-    field :previous_access_level, :integer, null: false
+    field :previous_access_level, :access_options_int, null: false
     field :previous_access_level_label, :string, null: false
-    field :updated_access_level, :integer, null: false
+    field :updated_access_level, :access_options_int, null: false
     field :updated_access_level_label, :string, null: false
   end
 
@@ -1553,7 +1555,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :manager, :person, null: true
     field? :reports, list_of(:person), null: true
     field? :peers, list_of(:person), null: true
-    field? :access_level, :integer, null: true
+    field? :access_level, :access_options_int, null: true
     field? :has_open_invitation, :boolean, null: true
     field? :invite_link, :invite_link, null: true
     field? :show_dev_bar, :boolean, null: true
@@ -1955,7 +1957,7 @@ defmodule OperatelyWeb.Api.Types do
     field :responsibility, :string, null: true
     field :role, :string, null: true
     field? :person, :person, null: true
-    field :access_level, :integer, null: true
+    field :access_level, :access_options_int, null: true
     field? :project, :project, null: true
     field? :permissions, :project_permissions
   end
@@ -1995,12 +1997,12 @@ defmodule OperatelyWeb.Api.Types do
 
   object :add_member_input do
     field? :id, :id, null: true
-    field? :access_level, :integer, null: true
+    field? :access_level, :access_options_int, null: true
   end
 
   object :edit_member_permissions_input do
     field? :id, :id, null: true
-    field? :access_level, :integer, null: true
+    field? :access_level, :access_options_int, null: true
   end
 
   object :edit_company_member_permissions_input do

@@ -14,6 +14,10 @@ defmodule Operately.ApiDocs.TypeFormatter do
         values = types.enums[type] |> Enum.map(&md_code/1) |> Enum.join(", ")
         "#{md_code(type)} enum (#{values})"
 
+      Map.has_key?(types.int_enums, type) ->
+        values = types.int_enums[type] |> Enum.map(&md_code/1) |> Enum.join(", ")
+        "#{md_code(type)} enum (#{values})"
+
       Map.has_key?(types.primitives, type) ->
         encoded = types.primitives[type] |> Keyword.get(:encoded_type)
 
@@ -48,6 +52,10 @@ defmodule Operately.ApiDocs.TypeFormatter do
 
       Map.has_key?(types.enums, type) ->
         values = types.enums[type] |> Enum.map(&html_code/1) |> Enum.join(", ")
+        "#{html_code(type)} enum (#{values})"
+
+      Map.has_key?(types.int_enums, type) ->
+        values = types.int_enums[type] |> Enum.map(&html_code/1) |> Enum.join(", ")
         "#{html_code(type)} enum (#{values})"
 
       Map.has_key?(types.primitives, type) ->

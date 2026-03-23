@@ -1054,7 +1054,7 @@
             "default": null,
             "name": "access_level",
             "type": {
-              "name": "integer",
+              "name": "access_options_int",
               "kind": "named"
             },
             "optional": false,
@@ -3007,7 +3007,7 @@
             "default": null,
             "name": "access_level",
             "type": {
-              "name": "integer",
+              "name": "access_options_int",
               "kind": "named"
             },
             "optional": true,
@@ -8642,7 +8642,7 @@
             "default": null,
             "name": "access_level",
             "type": {
-              "name": "integer",
+              "name": "access_options_int",
               "kind": "named"
             },
             "optional": true,
@@ -8968,7 +8968,7 @@
             "default": null,
             "name": "access_level",
             "type": {
-              "name": "integer",
+              "name": "access_options_int",
               "kind": "named"
             },
             "optional": true,
@@ -12406,7 +12406,7 @@
             "default": null,
             "name": "previous_access_level",
             "type": {
-              "name": "integer",
+              "name": "access_options_int",
               "kind": "named"
             },
             "optional": false,
@@ -12428,7 +12428,7 @@
             "default": null,
             "name": "updated_access_level",
             "type": {
-              "name": "integer",
+              "name": "access_options_int",
               "kind": "named"
             },
             "optional": false,
@@ -14769,6 +14769,17 @@
       "work_map_item_type": [
         "project",
         "goal"
+      ]
+    },
+    "int_enums": {
+      "access_options_int": [
+        "0",
+        "1",
+        "10",
+        "40",
+        "70",
+        "90",
+        "100"
       ]
     }
   },
@@ -18142,7 +18153,7 @@
           "default": null,
           "name": "anonymous_access_level",
           "type": {
-            "name": "integer",
+            "name": "access_options_int",
             "kind": "named"
           },
           "optional": false,
@@ -18153,7 +18164,7 @@
           "default": null,
           "name": "company_access_level",
           "type": {
-            "name": "integer",
+            "name": "access_options_int",
             "kind": "named"
           },
           "optional": false,
@@ -18164,7 +18175,7 @@
           "default": null,
           "name": "space_access_level",
           "type": {
-            "name": "integer",
+            "name": "access_options_int",
             "kind": "named"
           },
           "optional": false,
@@ -19237,7 +19248,7 @@
           "default": null,
           "name": "access_level",
           "type": {
-            "name": "integer",
+            "name": "access_options_int",
             "kind": "named"
           },
           "optional": false,
@@ -22713,7 +22724,7 @@
           "default": null,
           "name": "anonymous_access_level",
           "type": {
-            "name": "integer",
+            "name": "access_options_int",
             "kind": "named"
           },
           "optional": false,
@@ -22724,7 +22735,7 @@
           "default": null,
           "name": "company_access_level",
           "type": {
-            "name": "integer",
+            "name": "access_options_int",
             "kind": "named"
           },
           "optional": false,
@@ -22735,7 +22746,7 @@
           "default": null,
           "name": "space_access_level",
           "type": {
-            "name": "integer",
+            "name": "access_options_int",
             "kind": "named"
           },
           "optional": false,
@@ -25147,7 +25158,7 @@
           "default": null,
           "name": "anonymous_access_level",
           "type": {
-            "name": "integer",
+            "name": "access_options_int",
             "kind": "named"
           },
           "optional": true,
@@ -25158,7 +25169,7 @@
           "default": null,
           "name": "company_access_level",
           "type": {
-            "name": "integer",
+            "name": "access_options_int",
             "kind": "named"
           },
           "optional": true,
@@ -25169,7 +25180,7 @@
           "default": null,
           "name": "space_access_level",
           "type": {
-            "name": "integer",
+            "name": "access_options_int",
             "kind": "named"
           },
           "optional": true,
@@ -27833,6 +27844,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-20T17:45:33Z",
+  "generated_at": "2026-03-23T17:08:15Z",
   "schema_version": 1
 }
