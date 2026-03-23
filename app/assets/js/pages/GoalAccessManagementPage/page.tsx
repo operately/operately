@@ -3,6 +3,7 @@ import React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
+import { AccessOptionsInt } from "@/models/permissions";
 
 import Api from "@/api";
 import { GoalAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
@@ -168,7 +169,7 @@ function MemberMenu({ member, role }: { member: People.Person; role: string | nu
   if (!canEdit || role) return null;
   if (!member.id) return null;
 
-  const handleUpdate = async (accessLevel: number) => {
+  const handleUpdate = async (accessLevel: AccessOptionsInt) => {
     await update({ goalId: goal.id, personId: member.id, accessLevel });
     refresh();
   };

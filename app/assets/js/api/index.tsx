@@ -203,9 +203,9 @@ export interface ActivityContentCompanyMembersPermissionsEdited {
 export interface ActivityContentCompanyMembersPermissionsEditedMember {
   personId: string;
   person: Person;
-  previousAccessLevel: number;
+  previousAccessLevel: AccessOptionsInt;
   previousAccessLevelLabel: string;
-  updatedAccessLevel: number;
+  updatedAccessLevel: AccessOptionsInt;
   updatedAccessLevelLabel: string;
 }
 
@@ -1010,7 +1010,7 @@ export interface ActivityPermissions {
 
 export interface AddMemberInput {
   id?: Id | null;
-  accessLevel?: number | null;
+  accessLevel?: AccessOptionsInt | null;
 }
 
 export interface AgentConversation {
@@ -1192,7 +1192,7 @@ export interface EditCompanyMemberPermissionsInput {
 
 export interface EditMemberPermissionsInput {
   id?: Id | null;
-  accessLevel?: number | null;
+  accessLevel?: AccessOptionsInt | null;
 }
 
 export interface EditMilestoneOrderingStateInput {
@@ -1418,7 +1418,7 @@ export interface Person {
   manager?: Person | null;
   reports?: Person[] | null;
   peers?: Person[] | null;
-  accessLevel?: number | null;
+  accessLevel?: AccessOptionsInt | null;
   hasOpenInvitation?: boolean | null;
   inviteLink?: InviteLink | null;
   showDevBar?: boolean | null;
@@ -1499,7 +1499,7 @@ export interface ProjectContributor {
   responsibility: string | null;
   role: string | null;
   person?: Person | null;
-  accessLevel: number | null;
+  accessLevel: AccessOptionsInt | null;
   project?: Project | null;
   permissions?: ProjectPermissions;
 }
@@ -2194,6 +2194,8 @@ export type WorkMapItemStatus =
   | "outdated";
 
 export type WorkMapItemType = "project" | "goal";
+
+export type AccessOptionsInt = 0 | 1 | 10 | 40 | 70 | 90 | 100;
 
 export interface AiGetAgentInput {
   id: Id;
@@ -3588,9 +3590,9 @@ export interface GoalsCreateInput {
   targets?: CreateTargetInput[] | null;
   description?: string | null;
   parentGoalId?: Id | null;
-  anonymousAccessLevel: number;
-  companyAccessLevel: number;
-  spaceAccessLevel: number;
+  anonymousAccessLevel: AccessOptionsInt;
+  companyAccessLevel: AccessOptionsInt;
+  spaceAccessLevel: AccessOptionsInt;
 }
 
 export interface GoalsCreateResult {
@@ -3696,7 +3698,7 @@ export interface GoalsUpdateAccessLevelsResult {
 export interface GoalsUpdateAccessMemberInput {
   goalId: Id;
   personId: Id;
-  accessLevel: number;
+  accessLevel: AccessOptionsInt;
 }
 
 export interface GoalsUpdateAccessMemberResult {
@@ -4117,9 +4119,9 @@ export interface ProjectsCreateInput {
   championId?: Id | null;
   reviewerId?: Id | null;
   goalId?: Id | null;
-  anonymousAccessLevel: number;
-  companyAccessLevel: number;
-  spaceAccessLevel: number;
+  anonymousAccessLevel: AccessOptionsInt;
+  companyAccessLevel: AccessOptionsInt;
+  spaceAccessLevel: AccessOptionsInt;
 }
 
 export interface ProjectsCreateResult {
@@ -4394,9 +4396,9 @@ export interface ResourceHubsCreateInput {
   spaceId: Id;
   name: string;
   description?: string | null;
-  anonymousAccessLevel?: number | null;
-  companyAccessLevel?: number | null;
-  spaceAccessLevel?: number | null;
+  anonymousAccessLevel?: AccessOptionsInt | null;
+  companyAccessLevel?: AccessOptionsInt | null;
+  spaceAccessLevel?: AccessOptionsInt | null;
 }
 
 export interface ResourceHubsCreateResult {

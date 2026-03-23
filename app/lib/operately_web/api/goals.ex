@@ -630,7 +630,7 @@ defmodule OperatelyWeb.Api.Goals do
     inputs do
       field :goal_id, :id, null: false
       field :person_id, :id, null: false
-      field :access_level, :integer, null: false
+      field :access_level, :access_options_int, null: false
     end
 
     outputs do
