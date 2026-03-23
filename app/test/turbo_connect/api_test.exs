@@ -104,7 +104,8 @@ defmodule TurboConnect.ApiTest do
              unions: %{
                resource: [:user, :address]
              },
-             enums: %{}
+             enums: %{},
+             int_enums: %{}
            }
   end
 

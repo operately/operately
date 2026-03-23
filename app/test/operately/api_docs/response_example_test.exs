@@ -22,7 +22,8 @@ defmodule Operately.ApiDocs.ResponseExampleTest do
         }
       },
       unions: %{},
-      enums: %{status: [:open, :closed]}
+      enums: %{status: [:open, :closed]},
+      int_enums: %{}
     }
 
     endpoint = %{
@@ -56,7 +57,8 @@ defmodule Operately.ApiDocs.ResponseExampleTest do
         }
       },
       unions: %{},
-      enums: %{}
+      enums: %{},
+      int_enums: %{}
     }
 
     endpoint = %{
@@ -77,7 +79,8 @@ defmodule Operately.ApiDocs.ResponseExampleTest do
       primitives: %{},
       objects: %{},
       unions: %{search_result: [:task, :project]},
-      enums: %{}
+      enums: %{},
+      int_enums: %{}
     }
 
     endpoint = %{
@@ -112,7 +115,8 @@ defmodule Operately.ApiDocs.ResponseExampleTest do
         }
       },
       unions: %{},
-      enums: %{}
+      enums: %{},
+      int_enums: %{}
     }
 
     endpoint = %{

@@ -45,6 +45,7 @@ defmodule TurboConnect.TsGen do
         convert_objects(api_module.__types__().objects),
         convert_unions(api_module.__types__().unions),
         convert_enums(api_module.__types__().enums),
+        convert_int_enums(api_module.__types__().int_enums),
         Queries.generate_types(api_module.__queries__()),
         Mutations.generate_types(api_module.__mutations__())
       ],
@@ -199,6 +200,16 @@ defmodule TurboConnect.TsGen do
     enums
     |> Enum.sort_by(&elem(&1, 0))
     |> Enum.map_join("\n", fn {name, types} -> ts_enum(name, types) end)
+  end
+
+  def convert_int_enums(int_enums) do
+    int_enums
+    |> Enum.sort_by(&elem(&1, 0))
+    |> Enum.map_join("\n", fn {name, values} -> ts_int_enum(name, values) end)
+  end
+
+  defp ts_int_enum(name, values) do
+    ts_enum(name, values)
   end
 
   def convert_primitives(primitives) do

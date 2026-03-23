@@ -1,6 +1,6 @@
 import Api from "@/api";
 
-export type { AccessOptions } from "@/api";
+export type { AccessOptions, AccessOptionsInt } from "@/api";
 export const useGrantResourceAccess = Api.companies.useGrantResourceAccess;
 
 export const PERMISSIONS_LIST_COMPLETE = [

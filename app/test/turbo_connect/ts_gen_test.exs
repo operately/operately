@@ -20,10 +20,13 @@ defmodule TurboConnect.TsGenTest do
 
     enum(:post_status, values: [:draft, :published])
 
+    int_enum(:access_level, values: [0, 10, 40, 70, 90])
+
     object :post do
       field? :title, :string
       field? :content, :string
       field? :status, :post_status
+      field? :access_level, :access_level
     end
 
     object :event do
@@ -130,6 +133,7 @@ defmodule TurboConnect.TsGenTest do
     title?: string;
     content?: string;
     status?: PostStatus;
+    accessLevel?: AccessLevel;
   }
 
   export interface User {
@@ -149,6 +153,8 @@ defmodule TurboConnect.TsGenTest do
   export type EventContent = UserAddedEvent | UserRemovedEvent;
 
   export type PostStatus = "draft" | "published";
+
+  export type AccessLevel = 0 | 10 | 40 | 70 | 90;
 
   export interface GetUserInput {
     userId?: number;
