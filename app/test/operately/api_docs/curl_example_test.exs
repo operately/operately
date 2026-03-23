@@ -15,7 +15,8 @@ defmodule Operately.ApiDocs.CurlExampleTest do
         }
       },
       unions: %{search_filter: [:filters, :string]},
-      enums: %{status: [:open, :closed]}
+      enums: %{status: [:open, :closed]},
+      int_enums: %{}
     }
 
     endpoint = %{
@@ -58,7 +59,8 @@ defmodule Operately.ApiDocs.CurlExampleTest do
         }
       },
       unions: %{},
-      enums: %{priority: [:high, :medium, :low]}
+      enums: %{priority: [:high, :medium, :low]},
+      int_enums: %{}
     }
 
     endpoint = %{
@@ -96,7 +98,7 @@ defmodule Operately.ApiDocs.CurlExampleTest do
           path: "/api/external/v1/get_account",
           inputs: []
         },
-        %{primitives: %{}, objects: %{}, unions: %{}, enums: %{}}
+        %{primitives: %{}, objects: %{}, unions: %{}, enums: %{}, int_enums: %{}}
       )
 
     mutation_output =
@@ -106,7 +108,7 @@ defmodule Operately.ApiDocs.CurlExampleTest do
           path: "/api/external/v1/mark_all_notifications_as_read",
           inputs: []
         },
-        %{primitives: %{}, objects: %{}, unions: %{}, enums: %{}}
+        %{primitives: %{}, objects: %{}, unions: %{}, enums: %{}, int_enums: %{}}
       )
 
     assert query_output =~ ~s(--url "https://app.operately.com/api/external/v1/get_account")
@@ -129,7 +131,8 @@ defmodule Operately.ApiDocs.CurlExampleTest do
         }
       },
       unions: %{},
-      enums: %{}
+      enums: %{},
+      int_enums: %{}
     }
 
     endpoint = %{

@@ -8,6 +8,7 @@ defmodule TurboConnect.Types do
       Module.register_attribute(__MODULE__, :unions, accumulate: true)
       Module.register_attribute(__MODULE__, :primitives, accumulate: true)
       Module.register_attribute(__MODULE__, :enums, accumulate: true)
+      Module.register_attribute(__MODULE__, :int_enums, accumulate: true)
 
       @before_compile unquote(__MODULE__)
     end
@@ -39,12 +40,19 @@ defmodule TurboConnect.Types do
     end
   end
 
+  defmacro int_enum(name, values: values) do
+    quote do
+      @int_enums {unquote(name), unquote(values)}
+    end
+  end
+
   defmacro __before_compile__(_) do
     quote do
       def __primitives__(), do: Enum.reverse(@primitives) |> Enum.into(%{})
       def __objects__(), do: __fields__()
       def __unions__(), do: Enum.reverse(@unions) |> Enum.into(%{})
       def __enums__(), do: Enum.reverse(@enums) |> Enum.into(%{})
+      def __int_enums__(), do: Enum.reverse(@int_enums) |> Enum.into(%{})
     end
   end
 end

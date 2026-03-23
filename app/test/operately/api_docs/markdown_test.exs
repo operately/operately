@@ -8,7 +8,8 @@ defmodule Operately.ApiDocs.MarkdownTest do
       primitives: %{id: [encoded_type: :string]},
       objects: %{},
       unions: %{},
-      enums: %{status: [:open, :closed]}
+      enums: %{status: [:open, :closed]},
+      int_enums: %{}
     }
 
     endpoint = %{

@@ -32,6 +32,7 @@ defmodule Operately.ApiDocs.Catalog do
       primitives: serialize_primitives(types.primitives),
       objects: serialize_objects(types.objects),
       enums: serialize_enums(types.enums),
+      int_enums: serialize_enums(types.int_enums),
       unions: serialize_unions(types.unions)
     }
   end

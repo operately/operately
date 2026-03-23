@@ -250,7 +250,7 @@ function Contributor({ contributor }: { contributor: ProjectContributor }) {
         <ContributotNameAndResponsibility contributor={contributor} />
       </div>
       <div className="flex items-center gap-4">
-        <ProjectAccessLevelBadge accessLevel={contributor.accessLevel!} />
+        <ProjectAccessLevelBadge accessLevel={contributor.accessLevel ?? null} />
         <ContributorMenu contributor={contributor} />
       </div>
     </BorderedRow>

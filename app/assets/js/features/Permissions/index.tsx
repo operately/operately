@@ -2,7 +2,7 @@ import { match } from "ts-pattern";
 
 export { PermissionLevels } from "./PermissionLevels";
 
-import { AccessOptions } from "@/models/permissions";
+import { AccessOptions, AccessOptionsInt } from "@/models/permissions";
 import { PermissionLevels } from "./PermissionLevels";
 
 export const VIEW_ACCESS = {
@@ -47,7 +47,7 @@ export function accessLevelAsString(permission: PermissionLevels) {
     .run();
 }
 
-export function accessLevelAsEnumValue(permission: PermissionLevels): AccessOptions {
+export function accessLevelAsEnumValue(permission: PermissionLevels | AccessOptionsInt): AccessOptions {
   return match(permission)
     .with(PermissionLevels.FULL_ACCESS, () => "full_access" as const)
     .with(PermissionLevels.EDIT_ACCESS, () => "edit_access" as const)
