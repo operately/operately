@@ -8,6 +8,7 @@ import { SpaceAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
 import { BorderedRow } from "@/components/BorderedRow";
 import { PermissionLevels } from "@/features/Permissions";
 import { AccessLevel } from "@/features/spaces";
+import { AccessOptionsInt } from "@/models/permissions";
 import { Space } from "@/models/spaces";
 import { usePaths } from "@/routes/paths";
 import { Menu, MenuActionItem, PrimaryButton, SecondaryButton, SubMenu } from "turboui";
@@ -138,7 +139,7 @@ function Member({ member }: { member: People.Person }) {
         <MemberName member={member} />
       </div>
       <div className="flex items-center gap-4">
-        <SpaceAccessLevelBadge accessLevel={member.accessLevel!} />
+        <SpaceAccessLevelBadge accessLevel={member.accessLevel ?? null} />
         <MemberMenu member={member} />
       </div>
     </BorderedRow>
@@ -232,7 +233,7 @@ function ChangeAccessLevelMenuItem({ member, hidden }: { member: People.Person; 
   const refresh = Pages.useRefresh();
   const [edit] = useEditSpaceMembersPermissions();
 
-  const handleClick = async (accessLevel: number) => {
+  const handleClick = async (accessLevel: AccessOptionsInt) => {
     await edit({ spaceId: space.id, members: [{ id: member.id, accessLevel }] });
     refresh();
   };

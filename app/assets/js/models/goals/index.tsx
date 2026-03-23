@@ -71,7 +71,7 @@ function accessLevelAsString(level: number): "no_access" | "view" | "comment" | 
   }
 }
 
-export function accessLevelAsNumber(level: "no_access" | "view" | "comment" | "edit" | "full"): number {
+export function accessLevelAsNumber(level: "no_access" | "view" | "comment" | "edit" | "full"): api.AccessOptionsInt {
   switch (level) {
     case "no_access":
       return 0;
