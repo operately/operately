@@ -31,6 +31,7 @@ export interface CatalogTypes {
   primitives: Record<string, CatalogPrimitiveType>;
   objects: Record<string, CatalogObjectType>;
   enums: Record<string, string[]>;
+  int_enums: Record<string, string[]>;
   unions: Record<string, CatalogTypeRef[]>;
 }
 
