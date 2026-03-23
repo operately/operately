@@ -1,6 +1,7 @@
 import { UsageError } from "./parser-types";
 import type { CatalogEndpoint, CatalogField, CatalogTypeRef, CatalogTypes } from "../types/catalog";
 import { isGlobalFlag } from "./flags";
+import { parseContextualDateString } from "./contextual-date-parser";
 
 const BUILTIN_TYPES = new Set(["string", "integer", "float", "boolean", "date", "time", "datetime", "id"]);
 
@@ -238,40 +239,26 @@ function coerceBuiltinType(typeName: string, value: unknown, path: string): unkn
   throw new UsageError(`Unknown builtin type '${typeName}'.`);
 }
 
-function coerceContextualDate(value: unknown, types: CatalogTypes, path: string): Record<string, unknown> {
+function coerceContextualDate(value: unknown, types: CatalogTypes, path: string) {
+  if (value === null) {
+    return null;
+  }
+
   if (typeof value !== "string") {
     return coerceObjectFields(types.objects.contextual_date.fields, value, types, path);
   }
 
-  const parsedDate = parseIsoDateString(value);
-  if (!parsedDate) {
-    throw new UsageError(`Expected ISO date string (YYYY-MM-DD) for '${path}', got '${value}'.`);
-  }
-
-  return {
-    date_type: "day",
-    value: formatDayDateValue(parsedDate),
-    date: value,
-  };
-}
-
-function parseIsoDateString(value: string): { year: number; month: number; day: number } | null {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
-  if (!match) return null;
-
-  const year = Number(match[1]);
-  const month = Number(match[2]);
-  const day = Number(match[3]);
-  const date = new Date(Date.UTC(year, month - 1, day));
-
-  if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) {
+  if (value === "null") {
     return null;
   }
 
-  return { year, month, day };
-}
-
-function formatDayDateValue(date: { year: number; month: number; day: number }): string {
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  return `${months[date.month - 1]} ${date.day}, ${date.year}`;
+  try {
+    return parseContextualDateString(value);
+  } catch {
+    throw new UsageError(
+      `Invalid contextual date format for '${path}': '${value}'. ` +
+      `Supported formats: YYYY-MM-DD (day), YYYY (year end), YYYY^ (year start), ` +
+      `YYYY/q# (quarter end), YYYY/q#^ (quarter start), YYYY/MM (month end), YYYY/MM^ (month start), null`,
+    );
+  }
 }

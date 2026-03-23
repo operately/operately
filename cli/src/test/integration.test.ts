@@ -190,6 +190,24 @@ describe("CLI Integration Tests", () => {
       assert.strictEqual(result.exitCode, 0);
       assert.ok(result.stdout.includes("optional"));
     });
+
+    it("shows contextual date format information in help", async () => {
+      const result = await runCLI(["help", "projects", "update_due_date"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("--due-date"));
+      assert.ok(result.stdout.includes("Formats:"));
+      assert.ok(result.stdout.includes("YYYY-MM-DD"));
+      assert.ok(result.stdout.includes("YYYY/q#"));
+      assert.ok(result.stdout.includes("YYYY/MM"));
+    });
+
+    it("shows contextual date examples in help", async () => {
+      const result = await runCLI(["help", "projects", "update_due_date"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("2025-03-20"));
+      assert.ok(result.stdout.includes("2025/q1"));
+      assert.ok(result.stdout.includes("2025/01"));
+    });
   });
 
   describe("Backward Compatibility", () => {

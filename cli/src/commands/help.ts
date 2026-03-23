@@ -108,15 +108,39 @@ export function printEndpointHelp(endpoint: CatalogEndpoint, command: string): v
   header.push("");
   header.push("Input flags:");
 
-  const rows =
+  const rows: string[] =
     endpoint.inputs.length === 0
       ? ["  (none)"]
-      : endpoint.inputs.map((field) => {
+      : endpoint.inputs.flatMap((field) => {
           const flag = `--${field.name.replace(/_/g, "-")}`;
           const required = field.optional ? "optional" : "required";
           const nullable = field.nullable ? ", nullable" : "";
-          return `  ${flag} (${required}${nullable})`;
+          const lines: string[] = [];
+
+          lines.push(`  ${flag} (${required}${nullable})`);
+
+          if (field.type.kind === "named" && field.type.name === "contextual_date") {
+            lines.push(...formatContextualDateHelp(field.nullable));
+          }
+
+          return lines;
         });
 
   console.log([...header, ...rows].join("\n"));
+}
+
+function formatContextualDateHelp(isNullable: boolean): string[] {
+  const lines: string[] = [];
+  lines.push("    Contextual Date Formats:");
+  lines.push("      YYYY-MM-DD         Specific day (e.g., 2025-03-20)");
+  lines.push("      YYYY               Year end (e.g., 2025 → 31/12/2025)");
+  lines.push("      YYYY^              Year start (e.g., 2025^ → 01/01/2025)");
+  lines.push("      YYYY/q#            Quarter end (e.g., 2025/q1 → 31/03/2025)");
+  lines.push("      YYYY/q#^           Quarter start (e.g., 2025/q1^ → 01/01/2025)");
+  lines.push("      YYYY/MM            Month end (e.g., 2025/01 → 31/01/2025)");
+  lines.push("      YYYY/MM^           Month start (e.g., 2025/01^ → 01/01/2025)");
+  if (isNullable) {
+    lines.push("      null               Clear the date");
+  }
+  return lines;
 }
