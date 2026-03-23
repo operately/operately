@@ -1,4 +1,4 @@
-import type { CatalogEndpoint } from "../types/catalog";
+import type { CatalogEndpoint, CatalogTypeRef } from "../types/catalog";
 import type { EndpointRegistry } from "./registry";
 
 export function printNamespaceHelp(namespace: string, registry: EndpointRegistry): void {
@@ -93,6 +93,13 @@ Examples:
 Use 'operately help' to see all available commands.`);
 }
 
+function formatTypeHint(typeRef: CatalogTypeRef): string {
+  if (typeRef.kind === "list") {
+    return `[${formatTypeHint(typeRef.item)}]`;
+  }
+  return typeRef.name;
+}
+
 export function printEndpointHelp(endpoint: CatalogEndpoint, command: string): void {
   const header = [`Command: ${command}`];
 
@@ -115,9 +122,10 @@ export function printEndpointHelp(endpoint: CatalogEndpoint, command: string): v
           const flag = `--${field.name.replace(/_/g, "-")}`;
           const required = field.optional ? "optional" : "required";
           const nullable = field.nullable ? ", nullable" : "";
+          const typeHint = formatTypeHint(field.type);
           const lines: string[] = [];
 
-          lines.push(`  ${flag} (${required}${nullable})`);
+          lines.push(`  ${flag} <${typeHint}> (${required}${nullable})`);
 
           if (field.type.kind === "named" && field.type.name === "contextual_date") {
             lines.push(...formatContextualDateHelp(field.nullable));
