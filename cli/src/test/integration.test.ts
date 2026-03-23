@@ -208,6 +208,33 @@ describe("CLI Integration Tests", () => {
       assert.ok(result.stdout.includes("2025/q1"));
       assert.ok(result.stdout.includes("2025/01"));
     });
+
+    it("shows string enum values in help", async () => {
+      const result = await runCLI(["help", "comments", "create"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("--entity-type"));
+      assert.ok(result.stdout.includes("Allowed values:"));
+      assert.ok(result.stdout.includes("project_check_in"));
+      assert.ok(result.stdout.includes("goal_update"));
+      assert.ok(result.stdout.includes("milestone"));
+    });
+
+    it("shows integer enum values in help", async () => {
+      const result = await runCLI(["help", "projects", "create"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("--anonymous-access-level"));
+      assert.ok(result.stdout.includes("Allowed values:"));
+      assert.ok(result.stdout.includes("0"));
+      assert.ok(result.stdout.includes("100"));
+    });
+
+    it("shows type hints for all fields", async () => {
+      const result = await runCLI(["help", "projects", "create"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("<id>"));
+      assert.ok(result.stdout.includes("<string>"));
+      assert.ok(result.stdout.includes("<access_options_int>"));
+    });
   });
 
   describe("Backward Compatibility", () => {

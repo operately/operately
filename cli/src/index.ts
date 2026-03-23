@@ -51,7 +51,7 @@ async function main(argv: string[]): Promise<number> {
       return 2;
     }
 
-    printEndpointHelp(endpoint, registry.commandFor(endpoint));
+    printEndpointHelp(endpoint, registry.commandFor(endpoint), catalog.types);
     return 0;
   }
 

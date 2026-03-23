@@ -64,6 +64,7 @@ export const fixtureCatalog: Catalog = {
     enums: {
       contextual_date_type: ["day", "month", "quarter", "year"],
     },
+    int_enums: {},
     unions: {},
   },
   endpoints: [

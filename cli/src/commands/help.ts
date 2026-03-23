@@ -1,4 +1,4 @@
-import type { CatalogEndpoint, CatalogTypeRef } from "../types/catalog";
+import type { CatalogEndpoint, CatalogTypeRef, CatalogTypes } from "../types/catalog";
 import type { EndpointRegistry } from "./registry";
 
 export function printNamespaceHelp(namespace: string, registry: EndpointRegistry): void {
@@ -38,10 +38,12 @@ export function printGeneralHelp(registry: EndpointRegistry, namespaceDescriptio
   }
 
   const sortedNamespaces = Array.from(namespaces).sort();
-  const namespaceLines = sortedNamespaces.map((ns) => {
-    const desc = namespaceDescriptions[ns] || `Manage ${ns}`;
-    return `  ${ns.padEnd(20)} ${desc}`;
-  }).join("\n");
+  const namespaceLines = sortedNamespaces
+    .map((ns) => {
+      const desc = namespaceDescriptions[ns] || `Manage ${ns}`;
+      return `  ${ns.padEnd(20)} ${desc}`;
+    })
+    .join("\n");
 
   console.log(`Operately CLI
 
@@ -100,7 +102,7 @@ function formatTypeHint(typeRef: CatalogTypeRef): string {
   return typeRef.name;
 }
 
-export function printEndpointHelp(endpoint: CatalogEndpoint, command: string): void {
+export function printEndpointHelp(endpoint: CatalogEndpoint, command: string, types?: CatalogTypes): void {
   const header = [`Command: ${command}`];
 
   if (endpoint.docstring) {
@@ -131,6 +133,13 @@ export function printEndpointHelp(endpoint: CatalogEndpoint, command: string): v
             lines.push(...formatContextualDateHelp(field.nullable));
           }
 
+          if (types && field.type.kind === "named") {
+            const enumValues = types.enums[field.type.name] || types.int_enums[field.type.name];
+            if (enumValues) {
+              lines.push(...formatEnumHelp(field.type.name, enumValues));
+            }
+          }
+
           return lines;
         });
 
@@ -150,5 +159,16 @@ function formatContextualDateHelp(isNullable: boolean): string[] {
   if (isNullable) {
     lines.push("      null               Clear the date");
   }
+  return lines;
+}
+
+function formatEnumHelp(enumName: string, values: string[]): string[] {
+  const lines: string[] = [];
+  lines.push("    Allowed values:");
+
+  for (const value of values) {
+    lines.push(`      ${value}`);
+  }
+
   return lines;
 }
