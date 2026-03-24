@@ -1,10 +1,10 @@
-defmodule OperatelyWeb.Api.SpaceDiscussions.ArchiveTest do
+defmodule OperatelyWeb.Api.Spaces.ArchiveDiscussionTest do
   use OperatelyWeb.TurboCase
 
   alias Operately.Messages.Message
 
   setup ctx do
-    ctx 
+    ctx
     |> Factory.setup()
     |> Factory.add_space(:marketing_space)
     |> Factory.add_messages_board(:messages, :marketing_space)
@@ -35,7 +35,7 @@ defmodule OperatelyWeb.Api.SpaceDiscussions.ArchiveTest do
   end
 
   defp request(conn, message) do
-    mutation(conn, [:space_discussions, :archive], %{message_id: Paths.message_id(message)})
+    mutation(conn, [:spaces, :archive_discussion], %{message_id: Paths.message_id(message)})
   end
 
   defp assert_message_archived(message) do

@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.SpaceDiscussions.CreateTest do
+defmodule OperatelyWeb.Api.Spaces.CreateDiscussionTest do
   use OperatelyWeb.TurboCase
 
   import Operately.GroupsFixtures
@@ -11,7 +11,7 @@ defmodule OperatelyWeb.Api.SpaceDiscussions.CreateTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, [:space_discussions, :create], %{})
+      assert {401, _} = mutation(ctx.conn, [:spaces, :create_discussion], %{})
     end
   end
 
@@ -117,7 +117,7 @@ defmodule OperatelyWeb.Api.SpaceDiscussions.CreateTest do
     end
 
     test "creates subscription list for message", ctx do
-      assert {200, res} = mutation(ctx.conn, [:space_discussions, :create], %{
+      assert {200, res} = mutation(ctx.conn, [:spaces, :create_discussion], %{
         space_id: Paths.space_id(ctx.space),
         title: "Message",
         body: RichText.rich_text("Content", :as_string),
@@ -144,7 +144,7 @@ defmodule OperatelyWeb.Api.SpaceDiscussions.CreateTest do
       people = ctx.people ++ ctx.people ++ ctx.people
       content = RichText.rich_text(mentioned_people: people)
 
-      assert {200, res} = mutation(ctx.conn, [:space_discussions, :create], %{
+      assert {200, res} = mutation(ctx.conn, [:spaces, :create_discussion], %{
         space_id: Paths.space_id(ctx.space),
         title: "Message",
         body: content,
@@ -165,7 +165,7 @@ defmodule OperatelyWeb.Api.SpaceDiscussions.CreateTest do
       people = [ctx.person | ctx.people]
       content = RichText.rich_text(mentioned_people: people)
 
-      assert {200, res} = mutation(ctx.conn, [:space_discussions, :create], %{
+      assert {200, res} = mutation(ctx.conn, [:spaces, :create_discussion], %{
         space_id: Paths.space_id(ctx.space),
         title: "Message",
         body: content,
@@ -189,7 +189,7 @@ defmodule OperatelyWeb.Api.SpaceDiscussions.CreateTest do
   #
 
   defp request(conn, space) do
-    mutation(conn, [:space_discussions, :create], %{
+    mutation(conn, [:spaces, :create_discussion], %{
       space_id: Paths.space_id(space),
       title: "Message",
       body: RichText.rich_text("Content", :as_string),

@@ -2886,34 +2886,6 @@ export interface ResourceHubsListNodesResult {
   draftNodes: ResourceHubNode[];
 }
 
-export interface SpaceDiscussionsGetInput {
-  id: Id;
-  includeAuthor?: boolean | null;
-  includeReactions?: boolean | null;
-  includeSpace?: boolean | null;
-  includeSpaceMembers?: boolean | null;
-  includeSubscriptionsList?: boolean | null;
-  includePotentialSubscribers?: boolean | null;
-  includeUnreadNotifications?: boolean | null;
-  includePermissions?: boolean | null;
-}
-
-export interface SpaceDiscussionsGetResult {
-  discussion: Discussion;
-}
-
-export interface SpaceDiscussionsListInput {
-  spaceId: Id;
-  includeAuthor?: boolean | null;
-  includeCommentsCount?: boolean | null;
-  includeMyDrafts?: boolean | null;
-}
-
-export interface SpaceDiscussionsListResult {
-  discussions: Discussion[];
-  myDrafts?: Discussion[] | null;
-}
-
 export interface SpacesCountByAccessLevelInput {
   accessLevel: AccessOptions;
 }
@@ -2936,6 +2908,22 @@ export interface SpacesGetResult {
   space: Space;
 }
 
+export interface SpacesGetDiscussionInput {
+  id: Id;
+  includeAuthor?: boolean | null;
+  includeReactions?: boolean | null;
+  includeSpace?: boolean | null;
+  includeSpaceMembers?: boolean | null;
+  includeSubscriptionsList?: boolean | null;
+  includePotentialSubscribers?: boolean | null;
+  includeUnreadNotifications?: boolean | null;
+  includePermissions?: boolean | null;
+}
+
+export interface SpacesGetDiscussionResult {
+  discussion: Discussion;
+}
+
 export interface SpacesListInput {
   accessLevel?: AccessOptions;
   includeAccessLevels?: boolean;
@@ -2944,6 +2932,18 @@ export interface SpacesListInput {
 
 export interface SpacesListResult {
   spaces: Space[];
+}
+
+export interface SpacesListDiscussionsInput {
+  spaceId: Id;
+  includeAuthor?: boolean | null;
+  includeCommentsCount?: boolean | null;
+  includeMyDrafts?: boolean | null;
+}
+
+export interface SpacesListDiscussionsResult {
+  discussions: Discussion[];
+  myDrafts?: Discussion[] | null;
 }
 
 export interface SpacesListMembersInput {
@@ -4415,44 +4415,6 @@ export interface ResourceHubsUpdateParentFolderResult {
   success: boolean;
 }
 
-export interface SpaceDiscussionsArchiveInput {
-  messageId: Id;
-}
-
-export interface SpaceDiscussionsArchiveResult {}
-
-export interface SpaceDiscussionsCreateInput {
-  spaceId: Id;
-  title: string;
-  body?: Json;
-  postAsDraft?: boolean;
-  sendNotificationsToEveryone?: boolean;
-  subscriberIds?: Id[];
-}
-
-export interface SpaceDiscussionsCreateResult {
-  discussion: Discussion;
-}
-
-export interface SpaceDiscussionsPublishInput {
-  id: Id;
-}
-
-export interface SpaceDiscussionsPublishResult {
-  discussion: Discussion;
-}
-
-export interface SpaceDiscussionsUpdateInput {
-  id: Id;
-  title?: string | null;
-  body?: string | null;
-  state?: string | null;
-}
-
-export interface SpaceDiscussionsUpdateResult {
-  discussion: Discussion;
-}
-
 export interface SpacesAddMembersInput {
   spaceId: Id;
   members: AddMemberInput[];
@@ -4461,6 +4423,12 @@ export interface SpacesAddMembersInput {
 export interface SpacesAddMembersResult {
   success: boolean;
 }
+
+export interface SpacesArchiveDiscussionInput {
+  messageId: Id;
+}
+
+export interface SpacesArchiveDiscussionResult {}
 
 export interface SpacesCreateInput {
   name: string;
@@ -4471,6 +4439,19 @@ export interface SpacesCreateInput {
 
 export interface SpacesCreateResult {
   space: Space;
+}
+
+export interface SpacesCreateDiscussionInput {
+  spaceId: Id;
+  title: string;
+  body?: Json;
+  postAsDraft?: boolean;
+  sendNotificationsToEveryone?: boolean;
+  subscriberIds?: Id[];
+}
+
+export interface SpacesCreateDiscussionResult {
+  discussion: Discussion;
 }
 
 export interface SpacesDeleteInput {
@@ -4494,6 +4475,14 @@ export interface SpacesJoinInput {
 
 export interface SpacesJoinResult {}
 
+export interface SpacesPublishDiscussionInput {
+  id: Id;
+}
+
+export interface SpacesPublishDiscussionResult {
+  discussion: Discussion;
+}
+
 export interface SpacesUpdateInput {
   id: Id;
   name: string;
@@ -4502,6 +4491,17 @@ export interface SpacesUpdateInput {
 
 export interface SpacesUpdateResult {
   space: Space;
+}
+
+export interface SpacesUpdateDiscussionInput {
+  id: Id;
+  title?: string | null;
+  body?: string | null;
+  state?: string | null;
+}
+
+export interface SpacesUpdateDiscussionResult {
+  discussion: Discussion;
 }
 
 export interface SpacesUpdateKanbanInput {
@@ -5191,8 +5191,16 @@ class ApiNamespaceSpaces {
     return this.client.get("/spaces/get", input);
   }
 
+  async getDiscussion(input: SpacesGetDiscussionInput): Promise<SpacesGetDiscussionResult> {
+    return this.client.get("/spaces/get_discussion", input);
+  }
+
   async list(input: SpacesListInput): Promise<SpacesListResult> {
     return this.client.get("/spaces/list", input);
+  }
+
+  async listDiscussions(input: SpacesListDiscussionsInput): Promise<SpacesListDiscussionsResult> {
+    return this.client.get("/spaces/list_discussions", input);
   }
 
   async listMembers(input: SpacesListMembersInput): Promise<SpacesListMembersResult> {
@@ -5219,8 +5227,16 @@ class ApiNamespaceSpaces {
     return this.client.post("/spaces/add_members", input);
   }
 
+  async archiveDiscussion(input: SpacesArchiveDiscussionInput): Promise<SpacesArchiveDiscussionResult> {
+    return this.client.post("/spaces/archive_discussion", input);
+  }
+
   async create(input: SpacesCreateInput): Promise<SpacesCreateResult> {
     return this.client.post("/spaces/create", input);
+  }
+
+  async createDiscussion(input: SpacesCreateDiscussionInput): Promise<SpacesCreateDiscussionResult> {
+    return this.client.post("/spaces/create_discussion", input);
   }
 
   async delete(input: SpacesDeleteInput): Promise<SpacesDeleteResult> {
@@ -5235,8 +5251,16 @@ class ApiNamespaceSpaces {
     return this.client.post("/spaces/join", input);
   }
 
+  async publishDiscussion(input: SpacesPublishDiscussionInput): Promise<SpacesPublishDiscussionResult> {
+    return this.client.post("/spaces/publish_discussion", input);
+  }
+
   async update(input: SpacesUpdateInput): Promise<SpacesUpdateResult> {
     return this.client.post("/spaces/update", input);
+  }
+
+  async updateDiscussion(input: SpacesUpdateDiscussionInput): Promise<SpacesUpdateDiscussionResult> {
+    return this.client.post("/spaces/update_discussion", input);
   }
 
   async updateKanban(input: SpacesUpdateKanbanInput): Promise<SpacesUpdateKanbanResult> {
@@ -5259,34 +5283,6 @@ class ApiNamespaceSpaces {
 
   async updateTools(input: SpacesUpdateToolsInput): Promise<SpacesUpdateToolsResult> {
     return this.client.post("/spaces/update_tools", input);
-  }
-}
-
-class ApiNamespaceSpaceDiscussions {
-  constructor(private client: ApiClient) {}
-
-  async get(input: SpaceDiscussionsGetInput): Promise<SpaceDiscussionsGetResult> {
-    return this.client.get("/space_discussions/get", input);
-  }
-
-  async list(input: SpaceDiscussionsListInput): Promise<SpaceDiscussionsListResult> {
-    return this.client.get("/space_discussions/list", input);
-  }
-
-  async archive(input: SpaceDiscussionsArchiveInput): Promise<SpaceDiscussionsArchiveResult> {
-    return this.client.post("/space_discussions/archive", input);
-  }
-
-  async create(input: SpaceDiscussionsCreateInput): Promise<SpaceDiscussionsCreateResult> {
-    return this.client.post("/space_discussions/create", input);
-  }
-
-  async publish(input: SpaceDiscussionsPublishInput): Promise<SpaceDiscussionsPublishResult> {
-    return this.client.post("/space_discussions/publish", input);
-  }
-
-  async update(input: SpaceDiscussionsUpdateInput): Promise<SpaceDiscussionsUpdateResult> {
-    return this.client.post("/space_discussions/update", input);
   }
 }
 
@@ -5773,7 +5769,6 @@ export class ApiClient {
   public apiNamespaceCompanies: ApiNamespaceCompanies;
   public apiNamespacePeople: ApiNamespacePeople;
   public apiNamespaceSpaces: ApiNamespaceSpaces;
-  public apiNamespaceSpaceDiscussions: ApiNamespaceSpaceDiscussions;
   public apiNamespaceTasks: ApiNamespaceTasks;
   public apiNamespaceProjectMilestones: ApiNamespaceProjectMilestones;
   public apiNamespaceProjects: ApiNamespaceProjects;
@@ -5795,7 +5790,6 @@ export class ApiClient {
     this.apiNamespaceCompanies = new ApiNamespaceCompanies(this);
     this.apiNamespacePeople = new ApiNamespacePeople(this);
     this.apiNamespaceSpaces = new ApiNamespaceSpaces(this);
-    this.apiNamespaceSpaceDiscussions = new ApiNamespaceSpaceDiscussions(this);
     this.apiNamespaceTasks = new ApiNamespaceTasks(this);
     this.apiNamespaceProjectMilestones = new ApiNamespaceProjectMilestones(this);
     this.apiNamespaceProjects = new ApiNamespaceProjects(this);
@@ -6613,6 +6607,10 @@ export default {
     get: (input: SpacesGetInput) => defaultApiClient.apiNamespaceSpaces.get(input),
     useGet: (input: SpacesGetInput) => useQuery<SpacesGetResult>(() => defaultApiClient.apiNamespaceSpaces.get(input)),
 
+    listDiscussions: (input: SpacesListDiscussionsInput) => defaultApiClient.apiNamespaceSpaces.listDiscussions(input),
+    useListDiscussions: (input: SpacesListDiscussionsInput) =>
+      useQuery<SpacesListDiscussionsResult>(() => defaultApiClient.apiNamespaceSpaces.listDiscussions(input)),
+
     search: (input: SpacesSearchInput) => defaultApiClient.apiNamespaceSpaces.search(input),
     useSearch: (input: SpacesSearchInput) =>
       useQuery<SpacesSearchResult>(() => defaultApiClient.apiNamespaceSpaces.search(input)),
@@ -6629,6 +6627,10 @@ export default {
     useListMembers: (input: SpacesListMembersInput) =>
       useQuery<SpacesListMembersResult>(() => defaultApiClient.apiNamespaceSpaces.listMembers(input)),
 
+    getDiscussion: (input: SpacesGetDiscussionInput) => defaultApiClient.apiNamespaceSpaces.getDiscussion(input),
+    useGetDiscussion: (input: SpacesGetDiscussionInput) =>
+      useQuery<SpacesGetDiscussionResult>(() => defaultApiClient.apiNamespaceSpaces.getDiscussion(input)),
+
     searchPotentialMembers: (input: SpacesSearchPotentialMembersInput) =>
       defaultApiClient.apiNamespaceSpaces.searchPotentialMembers(input),
     useSearchPotentialMembers: (input: SpacesSearchPotentialMembersInput) =>
@@ -6639,6 +6641,13 @@ export default {
     listTasks: (input: SpacesListTasksInput) => defaultApiClient.apiNamespaceSpaces.listTasks(input),
     useListTasks: (input: SpacesListTasksInput) =>
       useQuery<SpacesListTasksResult>(() => defaultApiClient.apiNamespaceSpaces.listTasks(input)),
+
+    publishDiscussion: (input: SpacesPublishDiscussionInput) =>
+      defaultApiClient.apiNamespaceSpaces.publishDiscussion(input),
+    usePublishDiscussion: () =>
+      useMutation<SpacesPublishDiscussionInput, SpacesPublishDiscussionResult>((input) =>
+        defaultApiClient.apiNamespaceSpaces.publishDiscussion(input),
+      ),
 
     updateMembersPermissions: (input: SpacesUpdateMembersPermissionsInput) =>
       defaultApiClient.apiNamespaceSpaces.updateMembersPermissions(input),
@@ -6658,6 +6667,13 @@ export default {
     useUpdateTools: () =>
       useMutation<SpacesUpdateToolsInput, SpacesUpdateToolsResult>((input) =>
         defaultApiClient.apiNamespaceSpaces.updateTools(input),
+      ),
+
+    archiveDiscussion: (input: SpacesArchiveDiscussionInput) =>
+      defaultApiClient.apiNamespaceSpaces.archiveDiscussion(input),
+    useArchiveDiscussion: () =>
+      useMutation<SpacesArchiveDiscussionInput, SpacesArchiveDiscussionResult>((input) =>
+        defaultApiClient.apiNamespaceSpaces.archiveDiscussion(input),
       ),
 
     update: (input: SpacesUpdateInput) => defaultApiClient.apiNamespaceSpaces.update(input),
@@ -6694,45 +6710,25 @@ export default {
         defaultApiClient.apiNamespaceSpaces.deleteMember(input),
       ),
 
+    createDiscussion: (input: SpacesCreateDiscussionInput) =>
+      defaultApiClient.apiNamespaceSpaces.createDiscussion(input),
+    useCreateDiscussion: () =>
+      useMutation<SpacesCreateDiscussionInput, SpacesCreateDiscussionResult>((input) =>
+        defaultApiClient.apiNamespaceSpaces.createDiscussion(input),
+      ),
+
     updateTaskStatuses: (input: SpacesUpdateTaskStatusesInput) =>
       defaultApiClient.apiNamespaceSpaces.updateTaskStatuses(input),
     useUpdateTaskStatuses: () =>
       useMutation<SpacesUpdateTaskStatusesInput, SpacesUpdateTaskStatusesResult>((input) =>
         defaultApiClient.apiNamespaceSpaces.updateTaskStatuses(input),
       ),
-  },
 
-  space_discussions: {
-    get: (input: SpaceDiscussionsGetInput) => defaultApiClient.apiNamespaceSpaceDiscussions.get(input),
-    useGet: (input: SpaceDiscussionsGetInput) =>
-      useQuery<SpaceDiscussionsGetResult>(() => defaultApiClient.apiNamespaceSpaceDiscussions.get(input)),
-
-    list: (input: SpaceDiscussionsListInput) => defaultApiClient.apiNamespaceSpaceDiscussions.list(input),
-    useList: (input: SpaceDiscussionsListInput) =>
-      useQuery<SpaceDiscussionsListResult>(() => defaultApiClient.apiNamespaceSpaceDiscussions.list(input)),
-
-    archive: (input: SpaceDiscussionsArchiveInput) => defaultApiClient.apiNamespaceSpaceDiscussions.archive(input),
-    useArchive: () =>
-      useMutation<SpaceDiscussionsArchiveInput, SpaceDiscussionsArchiveResult>((input) =>
-        defaultApiClient.apiNamespaceSpaceDiscussions.archive(input),
-      ),
-
-    create: (input: SpaceDiscussionsCreateInput) => defaultApiClient.apiNamespaceSpaceDiscussions.create(input),
-    useCreate: () =>
-      useMutation<SpaceDiscussionsCreateInput, SpaceDiscussionsCreateResult>((input) =>
-        defaultApiClient.apiNamespaceSpaceDiscussions.create(input),
-      ),
-
-    publish: (input: SpaceDiscussionsPublishInput) => defaultApiClient.apiNamespaceSpaceDiscussions.publish(input),
-    usePublish: () =>
-      useMutation<SpaceDiscussionsPublishInput, SpaceDiscussionsPublishResult>((input) =>
-        defaultApiClient.apiNamespaceSpaceDiscussions.publish(input),
-      ),
-
-    update: (input: SpaceDiscussionsUpdateInput) => defaultApiClient.apiNamespaceSpaceDiscussions.update(input),
-    useUpdate: () =>
-      useMutation<SpaceDiscussionsUpdateInput, SpaceDiscussionsUpdateResult>((input) =>
-        defaultApiClient.apiNamespaceSpaceDiscussions.update(input),
+    updateDiscussion: (input: SpacesUpdateDiscussionInput) =>
+      defaultApiClient.apiNamespaceSpaces.updateDiscussion(input),
+    useUpdateDiscussion: () =>
+      useMutation<SpacesUpdateDiscussionInput, SpacesUpdateDiscussionResult>((input) =>
+        defaultApiClient.apiNamespaceSpaces.updateDiscussion(input),
       ),
   },
 

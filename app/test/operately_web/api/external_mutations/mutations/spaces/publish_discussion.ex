@@ -1,24 +1,24 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.SpaceDiscussions.Create do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Spaces.PublishDiscussion do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "space_discussions/create"
+  def mutation_name, do: "spaces/publish_discussion"
 
   @impl true
   def setup(ctx) do
     ctx
     |> Factory.setup()
     |> Factory.add_space(:space)
+    |> Factory.add_messages_board(:messages_board, :space)
+    |> Factory.add_draft_message(:draft_message, :messages_board)
 
   end
 
   @impl true
   def inputs(ctx) do
     %{
-      space_id: Paths.space_id(ctx.space),
-      title: "Updated Title",
-      body: rich_text_string("Updated content")
+      id: Paths.message_id(ctx.draft_message)
     }
   end
 
@@ -27,6 +27,4 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.SpaceDiscussions.Create d
     assert response.discussion.id
     refute Map.has_key?(response, :error)
   end
-
-  defp rich_text_string(text), do: Operately.Support.RichText.rich_text(text, :as_string)
 end

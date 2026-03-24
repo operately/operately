@@ -25417,439 +25417,6 @@
       "method": "POST"
     },
     {
-      "name": "archive",
-      "type": "mutation",
-      "path": "/api/external/v1/space_discussions/archive",
-      "handler": "OperatelyWeb.Api.SpaceDiscussions.Archive",
-      "outputs": [],
-      "namespace": "space_discussions",
-      "inputs": [
-        {
-          "default": null,
-          "name": "message_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "docstring": "Archives a space discussion.",
-      "full_name": "space_discussions/archive",
-      "method": "POST"
-    },
-    {
-      "name": "create",
-      "type": "mutation",
-      "path": "/api/external/v1/space_discussions/create",
-      "handler": "OperatelyWeb.Api.SpaceDiscussions.Create",
-      "outputs": [
-        {
-          "default": null,
-          "name": "discussion",
-          "type": {
-            "name": "discussion",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "space_discussions",
-      "inputs": [
-        {
-          "default": null,
-          "name": "space_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "title",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "body",
-          "type": {
-            "name": "json",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "post_as_draft",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "send_notifications_to_everyone",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "subscriber_ids",
-          "type": {
-            "item": {
-              "name": "id",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "docstring": "Creates a new space discussion.",
-      "full_name": "space_discussions/create",
-      "method": "POST"
-    },
-    {
-      "name": "get",
-      "type": "query",
-      "path": "/api/external/v1/space_discussions/get",
-      "handler": "OperatelyWeb.Api.SpaceDiscussions.Get",
-      "outputs": [
-        {
-          "default": null,
-          "name": "discussion",
-          "type": {
-            "name": "discussion",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "space_discussions",
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_author",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_reactions",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_space",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_space_members",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_subscriptions_list",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_potential_subscribers",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_unread_notifications",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_permissions",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "docstring": "Retrieves a space discussion by ID with optional related data.",
-      "full_name": "space_discussions/get",
-      "method": "GET"
-    },
-    {
-      "name": "list",
-      "type": "query",
-      "path": "/api/external/v1/space_discussions/list",
-      "handler": "OperatelyWeb.Api.SpaceDiscussions.List",
-      "outputs": [
-        {
-          "default": null,
-          "name": "discussions",
-          "type": {
-            "item": {
-              "name": "discussion",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "my_drafts",
-          "type": {
-            "item": {
-              "name": "discussion",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "namespace": "space_discussions",
-      "inputs": [
-        {
-          "default": null,
-          "name": "space_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_author",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_comments_count",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "include_my_drafts",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "docstring": "Lists space discussions for a space.",
-      "full_name": "space_discussions/list",
-      "method": "GET"
-    },
-    {
-      "name": "publish",
-      "type": "mutation",
-      "path": "/api/external/v1/space_discussions/publish",
-      "handler": "OperatelyWeb.Api.SpaceDiscussions.Publish",
-      "outputs": [
-        {
-          "default": null,
-          "name": "discussion",
-          "type": {
-            "name": "discussion",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "space_discussions",
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "docstring": "Publishes a space discussion draft.",
-      "full_name": "space_discussions/publish",
-      "method": "POST"
-    },
-    {
-      "name": "update",
-      "type": "mutation",
-      "path": "/api/external/v1/space_discussions/update",
-      "handler": "OperatelyWeb.Api.SpaceDiscussions.Update",
-      "outputs": [
-        {
-          "default": null,
-          "name": "discussion",
-          "type": {
-            "name": "discussion",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "space_discussions",
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "title",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "body",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "state",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "docstring": "Updates a space discussion.",
-      "full_name": "space_discussions/update",
-      "method": "POST"
-    },
-    {
       "name": "add_members",
       "type": "mutation",
       "path": "/api/external/v1/spaces/add_members",
@@ -25897,6 +25464,30 @@
       ],
       "docstring": "Adds members to a space.",
       "full_name": "spaces/add_members",
+      "method": "POST"
+    },
+    {
+      "name": "archive_discussion",
+      "type": "mutation",
+      "path": "/api/external/v1/spaces/archive_discussion",
+      "handler": "OperatelyWeb.Api.Spaces.ArchiveDiscussion",
+      "outputs": [],
+      "namespace": "spaces",
+      "inputs": [
+        {
+          "default": null,
+          "name": "message_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": "Archives a space discussion.",
+      "full_name": "spaces/archive_discussion",
       "method": "POST"
     },
     {
@@ -26002,6 +25593,100 @@
       ],
       "docstring": "Creates a new space.",
       "full_name": "spaces/create",
+      "method": "POST"
+    },
+    {
+      "name": "create_discussion",
+      "type": "mutation",
+      "path": "/api/external/v1/spaces/create_discussion",
+      "handler": "OperatelyWeb.Api.Spaces.CreateDiscussion",
+      "outputs": [
+        {
+          "default": null,
+          "name": "discussion",
+          "type": {
+            "name": "discussion",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "spaces",
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "title",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "body",
+          "type": {
+            "name": "json",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "post_as_draft",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "send_notifications_to_everyone",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "subscriber_ids",
+          "type": {
+            "item": {
+              "name": "id",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": "Creates a new space discussion.",
+      "full_name": "spaces/create_discussion",
       "method": "POST"
     },
     {
@@ -26178,6 +25863,130 @@
       "method": "GET"
     },
     {
+      "name": "get_discussion",
+      "type": "query",
+      "path": "/api/external/v1/spaces/get_discussion",
+      "handler": "OperatelyWeb.Api.Spaces.GetDiscussion",
+      "outputs": [
+        {
+          "default": null,
+          "name": "discussion",
+          "type": {
+            "name": "discussion",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "spaces",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_author",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_reactions",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_space",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_space_members",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_subscriptions_list",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_potential_subscribers",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_unread_notifications",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_permissions",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "docstring": "Retrieves a space discussion by ID with optional related data.",
+      "full_name": "spaces/get_discussion",
+      "method": "GET"
+    },
+    {
       "name": "join",
       "type": "mutation",
       "path": "/api/external/v1/spaces/join",
@@ -26260,6 +26069,92 @@
       ],
       "docstring": "Lists all spaces accessible to the current user.",
       "full_name": "spaces/list",
+      "method": "GET"
+    },
+    {
+      "name": "list_discussions",
+      "type": "query",
+      "path": "/api/external/v1/spaces/list_discussions",
+      "handler": "OperatelyWeb.Api.Spaces.ListDiscussions",
+      "outputs": [
+        {
+          "default": null,
+          "name": "discussions",
+          "type": {
+            "item": {
+              "name": "discussion",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "my_drafts",
+          "type": {
+            "item": {
+              "name": "discussion",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "namespace": "spaces",
+      "inputs": [
+        {
+          "default": null,
+          "name": "space_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_author",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_comments_count",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "include_my_drafts",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "docstring": "Lists space discussions for a space.",
+      "full_name": "spaces/list_discussions",
       "method": "GET"
     },
     {
@@ -26400,6 +26295,42 @@
       "docstring": "Lists all tools and their contents for a space.",
       "full_name": "spaces/list_tools",
       "method": "GET"
+    },
+    {
+      "name": "publish_discussion",
+      "type": "mutation",
+      "path": "/api/external/v1/spaces/publish_discussion",
+      "handler": "OperatelyWeb.Api.Spaces.PublishDiscussion",
+      "outputs": [
+        {
+          "default": null,
+          "name": "discussion",
+          "type": {
+            "name": "discussion",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "spaces",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": "Publishes a space discussion draft.",
+      "full_name": "spaces/publish_discussion",
+      "method": "POST"
     },
     {
       "name": "search",
@@ -26607,6 +26538,75 @@
       ],
       "docstring": "Updates a space's name and mission.",
       "full_name": "spaces/update",
+      "method": "POST"
+    },
+    {
+      "name": "update_discussion",
+      "type": "mutation",
+      "path": "/api/external/v1/spaces/update_discussion",
+      "handler": "OperatelyWeb.Api.Spaces.UpdateDiscussion",
+      "outputs": [
+        {
+          "default": null,
+          "name": "discussion",
+          "type": {
+            "name": "discussion",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "spaces",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "title",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "body",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "state",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "docstring": "Updates a space discussion.",
+      "full_name": "spaces/update_discussion",
       "method": "POST"
     },
     {
@@ -27835,11 +27835,10 @@
     "projects": "Get, list, create and manage projects",
     "reactions": "Add or remove emoji reactions to content",
     "resource_hubs": "Get and create resource hubs",
-    "space_discussions": "Get, list, create and manage space discussions",
     "spaces": "Get, list, create and manage spaces",
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-24T18:04:39Z",
+  "generated_at": "2026-03-24T19:35:38Z",
   "schema_version": 1
 }
