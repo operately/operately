@@ -28,8 +28,8 @@ interface LoaderResult {
 
 async function loader({ params }): Promise<LoaderResult> {
   const [discussion, subscriptionStatus] = await Promise.all([
-    Api.project_discussions
-      .get({
+    Api.projects
+      .getDiscussion({
         id: params.id,
         includeUnreadNotifications: true,
         includePermissions: true,

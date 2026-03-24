@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.ProjectCheckIns.UpdateTest do
+defmodule OperatelyWeb.Api.Projects.UpdateCheckInTest do
   use OperatelyWeb.TurboCase
 
   alias Operately.Support.RichText
@@ -11,7 +11,7 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.UpdateTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, [:project_check_ins, :update], %{})
+      assert {401, _} = mutation(ctx.conn, [:projects, :update_check_in], %{})
     end
   end
 
@@ -43,7 +43,7 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.UpdateTest do
         project = create_project(ctx, space, @test.company, @test.space, @test.project)
         check_in = create_check_in(ctx.creator, project)
 
-        assert {code, res} = mutation(ctx.conn, [:project_check_ins, :update], %{
+        assert {code, res} = mutation(ctx.conn, [:projects, :update_check_in], %{
           check_in_id: Paths.project_check_in_id(check_in),
           status: "on_track",
           description: RichText.rich_text("New description", :as_string),
@@ -73,7 +73,7 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.UpdateTest do
     end
 
     test "edits project check-in", ctx do
-      assert {200, res} = mutation(ctx.conn, [:project_check_ins, :update], %{
+      assert {200, res} = mutation(ctx.conn, [:projects, :update_check_in], %{
         check_in_id: Paths.project_check_in_id(ctx.check_in),
         status: "on_track",
         description: RichText.rich_text("New description", :as_string),
@@ -100,7 +100,7 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.UpdateTest do
 
       description = RichText.rich_text(mentioned_people: people)
 
-      assert {200, _} = mutation(ctx.conn, [:project_check_ins, :update], %{
+      assert {200, _} = mutation(ctx.conn, [:projects, :update_check_in], %{
         check_in_id: Paths.project_check_in_id(ctx.check_in),
         status: "on_track",
         description: description,

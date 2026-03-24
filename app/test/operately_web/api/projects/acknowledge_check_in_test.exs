@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.ProjectCheckIns.AcknowledgeTest do
+defmodule OperatelyWeb.Api.Projects.AcknowledgeCheckInTest do
   use OperatelyWeb.TurboCase
 
   import Operately.GroupsFixtures
@@ -10,7 +10,7 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.AcknowledgeTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, [:project_check_ins, :acknowledge], %{})
+      assert {401, _} = mutation(ctx.conn, [:projects, :acknowledge_check_in], %{})
     end
   end
 
@@ -103,7 +103,7 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.AcknowledgeTest do
   #
 
   defp request(conn, check_in) do
-    mutation(conn, [:project_check_ins, :acknowledge], %{id: Paths.project_check_in_id(check_in)})
+    mutation(conn, [:projects, :acknowledge_check_in], %{id: Paths.project_check_in_id(check_in)})
   end
 
   defp assert_response(res, check_in) do

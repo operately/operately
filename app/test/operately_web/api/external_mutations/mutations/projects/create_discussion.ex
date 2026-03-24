@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.ProjectCheckIns.Create do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Projects.Discussions.Create do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "project_check_ins/create"
+  def mutation_name, do: "projects/create_discussion"
 
   @impl true
   def setup(ctx) do
@@ -18,16 +18,15 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.ProjectCheckIns.Create do
   def inputs(ctx) do
     %{
       project_id: Paths.project_id(ctx.project),
-      status: "on_track",
-      description: rich_text_string("Updated content"),
-      send_notifications_to_everyone: false,
+      title: "Updated Title",
+      message: rich_text_string("Updated content"),
       subscriber_ids: [Paths.person_id(ctx.member)]
     }
   end
 
   @impl true
   def assert(response, _ctx) do
-    assert response.check_in.id
+    assert response.discussion.id
     refute Map.has_key?(response, :error)
   end
 

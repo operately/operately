@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.ProjectCheckIns.GetTest do
+defmodule OperatelyWeb.Api.Projects.GetCheckInTest do
   use OperatelyWeb.TurboCase
 
   import Operately.PeopleFixtures
@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.GetTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, [:project_check_ins, :get], %{})
+      assert {401, _} = query(ctx.conn, [:projects, :get_check_in], %{})
     end
   end
 
@@ -29,14 +29,14 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.GetTest do
     test "company members have no access", ctx do
       check_in = create_check_in(ctx, company_access: Binding.no_access())
 
-      assert {404, res} = query(ctx.conn, [:project_check_ins, :get], %{id: check_in.id})
+      assert {404, res} = query(ctx.conn, [:projects, :get_check_in], %{id: check_in.id})
       assert res.message == "The requested resource was not found"
     end
 
     test "company members have access", ctx do
       check_in = create_check_in(ctx, company_access: Binding.view_access())
 
-      assert {200, res} = query(ctx.conn, [:project_check_ins, :get], %{id: check_in.id})
+      assert {200, res} = query(ctx.conn, [:projects, :get_check_in], %{id: check_in.id})
       assert res.project_check_in == check_in
     end
 
@@ -44,7 +44,7 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.GetTest do
       add_person_to_space(ctx)
       check_in = create_check_in(ctx, space_access: Binding.no_access())
 
-      assert {404, res} = query(ctx.conn, [:project_check_ins, :get], %{id: check_in.id})
+      assert {404, res} = query(ctx.conn, [:projects, :get_check_in], %{id: check_in.id})
       assert res.message == "The requested resource was not found"
     end
 
@@ -52,7 +52,7 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.GetTest do
       add_person_to_space(ctx)
       check_in = create_check_in(ctx, space_access: Binding.view_access())
 
-      assert {200, res} = query(ctx.conn, [:project_check_ins, :get], %{id: check_in.id})
+      assert {200, res} = query(ctx.conn, [:projects, :get_check_in], %{id: check_in.id})
       assert res.project_check_in == check_in
     end
 
@@ -80,7 +80,7 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.GetTest do
       account = Repo.preload(contributor, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, res} = query(conn, [:project_check_ins, :get], %{id: serialized_check_in.id})
+      assert {200, res} = query(conn, [:projects, :get_check_in], %{id: serialized_check_in.id})
       assert res.project_check_in == serialized_check_in
     end
 
@@ -92,11 +92,11 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.GetTest do
       conn = log_in_account(ctx.conn, account)
 
       # champion's request
-      assert {200, res} = query(conn, [:project_check_ins, :get], %{id: check_in.id})
+      assert {200, res} = query(conn, [:projects, :get_check_in], %{id: check_in.id})
       assert res.project_check_in == check_in
 
       # another user's request
-      assert {404, res} = query(ctx.conn, [:project_check_ins, :get], %{id: check_in.id})
+      assert {404, res} = query(ctx.conn, [:projects, :get_check_in], %{id: check_in.id})
       assert res.message == "The requested resource was not found"
     end
 
@@ -108,18 +108,18 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.GetTest do
       conn = log_in_account(ctx.conn, account)
 
       # reviewer's request
-      assert {200, res} = query(conn, [:project_check_ins, :get], %{id: check_in.id})
+      assert {200, res} = query(conn, [:projects, :get_check_in], %{id: check_in.id})
       assert res.project_check_in == check_in
 
       # another user's request
-      assert {404, res} = query(ctx.conn, [:project_check_ins, :get], %{id: check_in.id})
+      assert {404, res} = query(ctx.conn, [:projects, :get_check_in], %{id: check_in.id})
       assert res.message == "The requested resource was not found"
     end
 
     test "space is not loaded when requester cannot access it", ctx do
       check_in = create_check_in(ctx, company_access: Binding.view_access())
 
-      assert {200, res} = query(ctx.conn, [:project_check_ins, :get], %{
+      assert {200, res} = query(ctx.conn, [:projects, :get_check_in], %{
         id: check_in.id,
         include_space: true,
       })
@@ -135,7 +135,7 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.GetTest do
       account = Repo.preload(space_member, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, res} = query(conn, [:project_check_ins, :get], %{
+      assert {200, res} = query(conn, [:projects, :get_check_in], %{
         id: check_in.id,
         include_space: true,
       })
@@ -158,10 +158,10 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.GetTest do
       a = activity_fixture(author_id: ctx.creator.id, action: "project_check_in_submitted", content: %{check_in_id: ctx.check_in.id})
       n = notification_fixture(person_id: ctx.creator.id, read: false, activity_id: a.id)
 
-      assert {200, res} = query(ctx.conn, [:project_check_ins, :get], %{id: Paths.project_check_in_id(ctx.check_in)})
+      assert {200, res} = query(ctx.conn, [:projects, :get_check_in], %{id: Paths.project_check_in_id(ctx.check_in)})
       assert res.project_check_in.notifications == []
 
-      assert {200, res} = query(ctx.conn, [:project_check_ins, :get], %{
+      assert {200, res} = query(ctx.conn, [:projects, :get_check_in], %{
         id: Paths.project_check_in_id(ctx.check_in),
         include_unread_notifications: true,
       })
@@ -171,13 +171,13 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.GetTest do
     end
 
     test "include_author", ctx do
-      assert {200, res} = query(ctx.conn, [:project_check_ins, :get], %{
+      assert {200, res} = query(ctx.conn, [:projects, :get_check_in], %{
         id: Paths.project_check_in_id(ctx.check_in),
       })
 
       refute res.project_check_in.author
 
-      assert {200, res} = query(ctx.conn, [:project_check_ins, :get], %{
+      assert {200, res} = query(ctx.conn, [:projects, :get_check_in], %{
         id: Paths.project_check_in_id(ctx.check_in),
         include_author: true,
       })
@@ -194,13 +194,13 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.GetTest do
       })
       reaction = Repo.preload(reaction, :person)
 
-      assert {200, res} = query(ctx.conn, [:project_check_ins, :get], %{
+      assert {200, res} = query(ctx.conn, [:projects, :get_check_in], %{
         id: Paths.project_check_in_id(ctx.check_in),
       })
 
       refute res.project_check_in.reactions
 
-      assert {200, res} = query(ctx.conn, [:project_check_ins, :get], %{
+      assert {200, res} = query(ctx.conn, [:projects, :get_check_in], %{
         id: Paths.project_check_in_id(ctx.check_in),
         include_reactions: true,
       })
@@ -209,13 +209,13 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.GetTest do
     end
 
     test "include_project", ctx do
-      assert {200, res} = query(ctx.conn, [:project_check_ins, :get], %{
+      assert {200, res} = query(ctx.conn, [:projects, :get_check_in], %{
         id: Paths.project_check_in_id(ctx.check_in),
       })
 
       refute res.project_check_in.project
 
-      assert {200, res} = query(ctx.conn, [:project_check_ins, :get], %{
+      assert {200, res} = query(ctx.conn, [:projects, :get_check_in], %{
         id: Paths.project_check_in_id(ctx.check_in),
         include_project: true,
       })
@@ -225,10 +225,10 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.GetTest do
     end
 
     test "include_subscriptions_list", ctx do
-      assert {200, res} = query(ctx.conn, [:project_check_ins, :get], %{id: Paths.project_check_in_id(ctx.check_in)})
+      assert {200, res} = query(ctx.conn, [:projects, :get_check_in], %{id: Paths.project_check_in_id(ctx.check_in)})
       refute res.project_check_in.subscription_list
 
-      assert {200, res} = query(ctx.conn, [:project_check_ins, :get], %{
+      assert {200, res} = query(ctx.conn, [:projects, :get_check_in], %{
         id: Paths.project_check_in_id(ctx.check_in),
         include_subscriptions_list: true,
       })
@@ -247,13 +247,13 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.GetTest do
       subscription_fixture(%{subscription_list_id: list.id, person_id: ctx.person.id})
       subscription_fixture(%{subscription_list_id: list.id, person_id: ctx.contrib1.person_id})
 
-      assert {200, res} = query(ctx.conn, [:project_check_ins, :get], %{
+      assert {200, res} = query(ctx.conn, [:projects, :get_check_in], %{
         id: Paths.project_check_in_id(ctx.check_in),
       })
 
       refute res.project_check_in.potential_subscribers
 
-      assert {200, res} = query(ctx.conn, [:project_check_ins, :get], %{
+      assert {200, res} = query(ctx.conn, [:projects, :get_check_in], %{
         id: Paths.project_check_in_id(ctx.check_in),
         include_potential_subscribers: true,
       })
