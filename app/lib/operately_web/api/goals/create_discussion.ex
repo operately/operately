@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.GoalDiscussions.Create do
+defmodule OperatelyWeb.Api.Goals.CreateDiscussion do
   @moduledoc """
   Creates a new discussion for a goal.
   """

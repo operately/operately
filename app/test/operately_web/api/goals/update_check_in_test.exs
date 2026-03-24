@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.GoalCheckIns.UpdateTest do
+defmodule OperatelyWeb.Api.Goals.UpdateCheckInTest do
   use OperatelyWeb.TurboCase
 
   import Operately.GroupsFixtures
@@ -12,7 +12,7 @@ defmodule OperatelyWeb.Api.GoalCheckIns.UpdateTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, [:goal_check_ins, :update], %{})
+      assert {401, _} = mutation(ctx.conn, [:goals, :update_check_in], %{})
     end
   end
 
@@ -84,7 +84,7 @@ defmodule OperatelyWeb.Api.GoalCheckIns.UpdateTest do
       update = create_goal_update(ctx)
 
       assert {200, _} =
-               mutation(ctx.conn, [:goal_check_ins, :update], %{
+               mutation(ctx.conn, [:goals, :update_check_in], %{
                  id: Paths.goal_update_id(update),
                  status: "off_track",
                  content: RichText.rich_text("content", :as_string),
@@ -105,7 +105,7 @@ defmodule OperatelyWeb.Api.GoalCheckIns.UpdateTest do
       assert subscriptions == []
 
       assert {200, _} =
-               mutation(ctx.conn, [:goal_check_ins, :update], %{
+               mutation(ctx.conn, [:goals, :update_check_in], %{
                  id: Paths.goal_update_id(update),
                  status: "off_track",
                  content: RichText.rich_text(mentioned_people: [ctx.company_creator]),
@@ -134,7 +134,7 @@ defmodule OperatelyWeb.Api.GoalCheckIns.UpdateTest do
       end)
       |> Jason.encode!()
 
-    mutation(conn, [:goal_check_ins, :update], %{
+    mutation(conn, [:goals, :update_check_in], %{
       id: Paths.goal_update_id(update),
       status: "on_track",
       content: RichText.rich_text("Edited content", :as_string),

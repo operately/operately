@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.GoalDiscussions.Update do
+defmodule OperatelyWeb.Api.Goals.UpdateDiscussion do
   @moduledoc """
   Updates a goal discussion.
   """

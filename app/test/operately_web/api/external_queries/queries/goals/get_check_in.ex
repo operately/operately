@@ -1,10 +1,10 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.GoalCheckIns.Get do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.Goals.GetCheckIn do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
   alias OperatelyWeb.Paths
 
-  def query_name, do: "goal_check_ins/get"
+  def query_name, do: "goals/get_check_in"
 
   @impl true
   def setup(ctx) do

@@ -13,6 +13,8 @@ defmodule OperatelyWeb.Api do
         query(:list_check_ins, Q.ListGoalCheckIns)
         query(:list_contributors, OperatelyWeb.Api.Goals.ListContributors)
         query(:search_parent_goal, OperatelyWeb.Api.Goals.SearchParentGoal)
+        query(:get_check_in, OperatelyWeb.Api.Goals.GetCheckIn)
+        query(:list_discussions, OperatelyWeb.Api.Goals.ListDiscussions)
 
         mutation(:create, OperatelyWeb.Api.Goals.Create)
         mutation(:change_parent, OperatelyWeb.Api.Goals.ChangeParent)
@@ -43,23 +45,12 @@ defmodule OperatelyWeb.Api do
         mutation(:update_check, OperatelyWeb.Api.GoalChecks.Update)
         mutation(:update_check_index, OperatelyWeb.Api.GoalChecks.UpdateIndex)
         mutation(:toggle_check, OperatelyWeb.Api.GoalChecks.Toggle)
-      end
 
-      @doc "Get, list, create and manage goal check-ins"
-      namespace(:goal_check_ins) do
-        query(:get, OperatelyWeb.Api.GoalCheckIns.Get)
-
-        mutation(:create, OperatelyWeb.Api.GoalCheckIns.Create)
-        mutation(:update, OperatelyWeb.Api.GoalCheckIns.Update)
-        mutation(:acknowledge, OperatelyWeb.Api.GoalCheckIns.Acknowledge)
-      end
-
-      @doc "List, create and manage goal discussions"
-      namespace(:goal_discussions) do
-        query(:list, OperatelyWeb.Api.GoalDiscussions.List)
-
-        mutation(:create, OperatelyWeb.Api.GoalDiscussions.Create)
-        mutation(:update, OperatelyWeb.Api.GoalDiscussions.Update)
+        mutation(:create_check_in, OperatelyWeb.Api.Goals.CreateCheckIn)
+        mutation(:update_check_in, OperatelyWeb.Api.Goals.UpdateCheckIn)
+        mutation(:acknowledge_check_in, OperatelyWeb.Api.Goals.AcknowledgeCheckIn)
+        mutation(:create_discussion, OperatelyWeb.Api.Goals.CreateDiscussion)
+        mutation(:update_discussion, OperatelyWeb.Api.Goals.UpdateDiscussion)
       end
 
       @doc "Get, list, create and manage projects"

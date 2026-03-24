@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.GoalCheckIns.Create do
+defmodule OperatelyWeb.Api.Goals.CreateCheckIn do
   @moduledoc """
   Creates a new check-in for a goal.
   """
