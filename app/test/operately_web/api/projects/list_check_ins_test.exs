@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.ProjectCheckIns.ListTest do
+defmodule OperatelyWeb.Api.Projects.ListCheckInsTest do
   use OperatelyWeb.TurboCase
 
   import Operately.PeopleFixtures
@@ -10,7 +10,7 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.ListTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, [:project_check_ins, :list], %{})
+      assert {401, _} = query(ctx.conn, [:projects, :list_check_ins], %{})
     end
   end
 
@@ -27,14 +27,14 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.ListTest do
     test "company members have no access", ctx do
       {project_id, _} = create_project_and_check_ins(ctx, company_access: Binding.no_access())
 
-      assert {200, res} = query(ctx.conn, [:project_check_ins, :list], %{project_id: project_id})
+      assert {200, res} = query(ctx.conn, [:projects, :list_check_ins], %{project_id: project_id})
       assert length(res.project_check_ins) == 0
     end
 
     test "company members have access", ctx do
       {project_id, check_ins} = create_project_and_check_ins(ctx, company_access: Binding.view_access())
 
-      assert {200, res} = query(ctx.conn, [:project_check_ins, :list], %{project_id: project_id})
+      assert {200, res} = query(ctx.conn, [:projects, :list_check_ins], %{project_id: project_id})
       assert_check_ins(res, check_ins)
     end
 
@@ -42,7 +42,7 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.ListTest do
       add_person_to_space(ctx)
       {project_id, _} = create_project_and_check_ins(ctx, space_access: Binding.no_access())
 
-      assert {200, res} = query(ctx.conn, [:project_check_ins, :list], %{project_id: project_id})
+      assert {200, res} = query(ctx.conn, [:projects, :list_check_ins], %{project_id: project_id})
       assert length(res.project_check_ins) == 0
     end
 
@@ -50,7 +50,7 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.ListTest do
       add_person_to_space(ctx)
       {project_id, check_ins} = create_project_and_check_ins(ctx, space_access: Binding.view_access())
 
-      assert {200, res} = query(ctx.conn, [:project_check_ins, :list], %{project_id: project_id})
+      assert {200, res} = query(ctx.conn, [:projects, :list_check_ins], %{project_id: project_id})
       assert_check_ins(res, check_ins)
     end
 
@@ -61,10 +61,10 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.ListTest do
       account = Repo.preload(champion, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, res} = query(conn, [:project_check_ins, :list], %{project_id: project_id})
+      assert {200, res} = query(conn, [:projects, :list_check_ins], %{project_id: project_id})
       assert assert_check_ins(res, check_ins)
 
-      assert {200, res} = query(ctx.conn, [:project_check_ins, :list], %{project_id: project_id})
+      assert {200, res} = query(ctx.conn, [:projects, :list_check_ins], %{project_id: project_id})
       assert length(res.project_check_ins) == 0
     end
 
@@ -75,10 +75,10 @@ defmodule OperatelyWeb.Api.ProjectCheckIns.ListTest do
       account = Repo.preload(reviewer, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, res} = query(conn, [:project_check_ins, :list], %{project_id: project_id})
+      assert {200, res} = query(conn, [:projects, :list_check_ins], %{project_id: project_id})
       assert assert_check_ins(res, check_ins)
 
-      assert {200, res} = query(ctx.conn, [:project_check_ins, :list], %{project_id: project_id})
+      assert {200, res} = query(ctx.conn, [:projects, :list_check_ins], %{project_id: project_id})
       assert length(res.project_check_ins) == 0
     end
   end

@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.ProjectCheckIns.Get do
+defmodule OperatelyWeb.Api.Projects.GetCheckIn do
   @moduledoc """
   Retrieves a single project check-in by ID with optional related data.
   """

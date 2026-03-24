@@ -14,7 +14,6 @@ import { usePaths } from "../../routes/paths";
 
 import { useNavigate } from "react-router-dom";
 
-
 export default { name: "ProjectDiscussionEditPage", loader, Page } as PageModule;
 
 interface LoaderResult {
@@ -23,8 +22,8 @@ interface LoaderResult {
 
 async function loader({ params }): Promise<LoaderResult> {
   return {
-    discussion: await Api.project_discussions
-      .get({
+    discussion: await Api.projects
+      .getDiscussion({
         id: params.id,
         includeUnreadNotifications: true,
         includePermissions: true,
@@ -165,7 +164,7 @@ function useForm({ discussion, subscriptionsState }: UseFormProps) {
       }
     },
     submit: async () => {
-      const res = await Api.project_discussions.update({
+      const res = await Api.projects.updateDiscussion({
         id: discussion.id,
         title: form.values.title,
         message: JSON.stringify(form.values.message),

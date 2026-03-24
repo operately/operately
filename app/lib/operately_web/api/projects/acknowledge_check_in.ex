@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.ProjectCheckIns.Acknowledge do
+defmodule OperatelyWeb.Api.Projects.AcknowledgeCheckIn do
   @moduledoc """
   Acknowledges a project check-in.
   """

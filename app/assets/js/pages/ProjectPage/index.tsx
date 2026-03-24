@@ -64,8 +64,10 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeUnreadNotifications: true,
           includeSubscriptionList: true,
         }).then((d) => d.project!),
-        checkIns: Api.project_check_ins.list({ projectId: params.id, includeAuthor: true }).then((d) => d.projectCheckIns!),
-        discussions: Api.project_discussions.list({ projectId: params.id }).then((d) => d.discussions!),
+        checkIns: Api.projects
+          .listCheckIns({ projectId: params.id, includeAuthor: true })
+          .then((d) => d.projectCheckIns!),
+        discussions: Api.projects.listDiscussions({ projectId: params.id }).then((d) => d.discussions!),
         backendTasks: Api.tasks.list({ projectId: params.id }).then((d) => d.tasks!),
         childrenCount: Api.projects.countChildren({ id: params.id }).then((d) => d.childrenCount),
       }),
@@ -170,7 +172,6 @@ function Page() {
 
   const parentGoalSearch = useParentGoalSearch(project);
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: project.id } });
-
 
   const assigneePersonSearch = Tasks.useTaskAssigneeSearch({
     id: project.id,
@@ -573,7 +574,11 @@ function prepareResource(resource: Projects.Resource): ProjectPage.Resource {
 }
 
 function useMilestones(paths: Paths, project: Projects.Project, refresh?: () => Promise<void>) {
-  const parsedMilestones = parseMilestonesForTurboUi(paths, project.milestones || [], project.milestonesOrderingState || []);
+  const parsedMilestones = parseMilestonesForTurboUi(
+    paths,
+    project.milestones || [],
+    project.milestonesOrderingState || [],
+  );
 
   const { milestones, setMilestones, reorderMilestones, orderingState } = Projects.useProjectMilestoneOrdering({
     projectId: project.id,
@@ -670,12 +675,13 @@ function useResources(project: Projects.Project) {
   const [resources, setResources] = React.useState<ProjectPage.Resource[]>(prepareResources(project.keyResources!));
 
   const createResource = async (resource: ProjectPage.NewResourcePayload) => {
-    return Api.projects.createKeyResource({
-      projectId: project.id,
-      title: resource.name,
-      link: resource.url,
-      resourceType: resource.type,
-    })
+    return Api.projects
+      .createKeyResource({
+        projectId: project.id,
+        title: resource.name,
+        link: resource.url,
+        resourceType: resource.type,
+      })
       .then((data) => {
         PageCache.invalidate(pageCacheKey(project.id));
         setResources((prev) => [...prev, prepareResource(data.keyResource)]);
@@ -691,11 +697,12 @@ function useResources(project: Projects.Project) {
   };
 
   const updateResource = async (resource: ProjectPage.UpdateResourcePayload) => {
-    return Api.projects.updateKeyResource({
-      id: resource.id,
-      title: resource.name,
-      link: resource.url,
-    })
+    return Api.projects
+      .updateKeyResource({
+        id: resource.id,
+        title: resource.name,
+        link: resource.url,
+      })
       .then((data) => {
         PageCache.invalidate(pageCacheKey(project.id));
         setResources((prev) =>
@@ -718,7 +725,8 @@ function useResources(project: Projects.Project) {
   };
 
   const removeResource = async (id: string) => {
-    return Api.projects.deleteKeyResource({ id })
+    return Api.projects
+      .deleteKeyResource({ id })
       .then(() => {
         PageCache.invalidate(pageCacheKey(project.id));
         const keyResources = project.keyResources || [];

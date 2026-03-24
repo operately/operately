@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.ProjectCheckIns.Update do
+defmodule OperatelyWeb.Api.Projects.UpdateCheckIn do
   @moduledoc """
   Updates an existing project check-in's status and/or description.
   """

@@ -1,5 +1,5 @@
-defmodule OperatelyWeb.Api.ProjectDiscussions do
-  alias __MODULE__.SharedMultiSteps, as: Steps
+defmodule OperatelyWeb.Api.Projects.Discussions do
+  alias OperatelyWeb.Api.Projects.Discussions.SharedMultiSteps, as: Steps
 
   alias Operately.Projects.Project
   alias OperatelyWeb.Api.Serializer

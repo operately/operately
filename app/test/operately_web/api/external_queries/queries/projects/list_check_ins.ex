@@ -1,10 +1,10 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.ProjectCheckIns.Get do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.Projects.ListCheckIns do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
   alias OperatelyWeb.Paths
 
-  def query_name, do: "project_check_ins/get"
+  def query_name, do: "projects/list_check_ins"
 
   @impl true
   def setup(ctx) do
@@ -17,12 +17,12 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.ProjectCheckIns.Get do
 
   @impl true
   def inputs(ctx) do
-    %{id: Paths.project_check_in_id(ctx.check_in)}
+    %{project_id: Paths.project_id(ctx.project)}
   end
 
   @impl true
   def assert(response, ctx) do
-    assert response.project_check_in
-    assert response.project_check_in.id == Paths.project_check_in_id(ctx.check_in)
+    assert is_list(response.project_check_ins)
+    assert Enum.any?(response.project_check_ins, fn check_in -> check_in.id == Paths.project_check_in_id(ctx.check_in) end)
   end
 end

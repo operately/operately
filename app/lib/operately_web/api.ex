@@ -93,6 +93,17 @@ defmodule OperatelyWeb.Api do
         mutation(:update_description, OperatelyWeb.Api.Projects.UpdateDescription)
         mutation(:create_contributor, OperatelyWeb.Api.Projects.CreateContributor)
         mutation(:create_contributors, OperatelyWeb.Api.Projects.CreateContributors)
+
+        query(:get_check_in, OperatelyWeb.Api.Projects.GetCheckIn)
+        query(:list_check_ins, OperatelyWeb.Api.Projects.ListCheckIns)
+        query(:get_discussion, OperatelyWeb.Api.Projects.Discussions.Get)
+        query(:list_discussions, OperatelyWeb.Api.Projects.Discussions.List)
+
+        mutation(:create_check_in, OperatelyWeb.Api.Projects.CreateCheckIn)
+        mutation(:update_check_in, OperatelyWeb.Api.Projects.UpdateCheckIn)
+        mutation(:acknowledge_check_in, OperatelyWeb.Api.Projects.AcknowledgeCheckIn)
+        mutation(:create_discussion, OperatelyWeb.Api.Projects.Discussions.Create)
+        mutation(:update_discussion, OperatelyWeb.Api.Projects.Discussions.Update)
       end
 
       @doc "Get, list, create and manage project milestones"
@@ -107,16 +118,6 @@ defmodule OperatelyWeb.Api do
         mutation(:update_ordering, OperatelyWeb.Api.ProjectMilestones.UpdateOrdering)
         mutation(:delete, OperatelyWeb.Api.ProjectMilestones.Delete)
         mutation(:create_comment, OperatelyWeb.Api.ProjectMilestones.CreateComment)
-      end
-
-      @doc "Get, list, create and manage project check-ins"
-      namespace(:project_check_ins) do
-        query(:get, OperatelyWeb.Api.ProjectCheckIns.Get)
-        query(:list, OperatelyWeb.Api.ProjectCheckIns.List)
-
-        mutation(:create, OperatelyWeb.Api.ProjectCheckIns.Create)
-        mutation(:update, OperatelyWeb.Api.ProjectCheckIns.Update)
-        mutation(:acknowledge, OperatelyWeb.Api.ProjectCheckIns.Acknowledge)
       end
 
       @doc "Get, list, create and manage tasks across projects and spaces"
@@ -135,15 +136,6 @@ defmodule OperatelyWeb.Api do
         mutation(:update_milestone, OperatelyWeb.Api.Tasks.UpdateMilestone)
         mutation(:update_milestone_and_ordering, OperatelyWeb.Api.Tasks.UpdateMilestoneAndOrdering)
         mutation(:update_description, OperatelyWeb.Api.Tasks.UpdateDescription)
-      end
-
-      @doc "Get, list, create and manage project discussions"
-      namespace(:project_discussions) do
-        query(:get, OperatelyWeb.Api.ProjectDiscussions.Get)
-        query(:list, OperatelyWeb.Api.ProjectDiscussions.List)
-
-        mutation(:create, OperatelyWeb.Api.ProjectDiscussions.Create)
-        mutation(:update, OperatelyWeb.Api.ProjectDiscussions.Update)
       end
 
       @doc "Get, list, create and manage space discussions"

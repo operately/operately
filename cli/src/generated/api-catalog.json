@@ -21319,686 +21319,6 @@
       "method": "POST"
     },
     {
-      "name": "acknowledge",
-      "type": "mutation",
-      "path": "/api/external/v1/project_check_ins/acknowledge",
-      "handler": "OperatelyWeb.Api.ProjectCheckIns.Acknowledge",
-      "outputs": [
-        {
-          "default": null,
-          "name": "check_in",
-          "type": {
-            "name": "project_check_in",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "project_check_ins",
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "docstring": "Acknowledges a project check-in.",
-      "full_name": "project_check_ins/acknowledge",
-      "method": "POST"
-    },
-    {
-      "name": "create",
-      "type": "mutation",
-      "path": "/api/external/v1/project_check_ins/create",
-      "handler": "OperatelyWeb.Api.ProjectCheckIns.Create",
-      "outputs": [
-        {
-          "default": null,
-          "name": "check_in",
-          "type": {
-            "name": "project_check_in",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "project_check_ins",
-      "inputs": [
-        {
-          "default": null,
-          "name": "project_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "status",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "description",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "send_notifications_to_everyone",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        },
-        {
-          "default": null,
-          "name": "subscriber_ids",
-          "type": {
-            "item": {
-              "name": "id",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "docstring": "Creates a new project check-in.",
-      "full_name": "project_check_ins/create",
-      "method": "POST"
-    },
-    {
-      "name": "get",
-      "type": "query",
-      "path": "/api/external/v1/project_check_ins/get",
-      "handler": "OperatelyWeb.Api.ProjectCheckIns.Get",
-      "outputs": [
-        {
-          "default": null,
-          "name": "project_check_in",
-          "type": {
-            "name": "project_check_in",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "project_check_ins",
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_author",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_acknowledged_by",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_project",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_space",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_reactions",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_subscriptions_list",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_potential_subscribers",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_unread_notifications",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": true
-        }
-      ],
-      "docstring": "Retrieves a single project check-in by ID with optional related data.",
-      "full_name": "project_check_ins/get",
-      "method": "GET"
-    },
-    {
-      "name": "list",
-      "type": "query",
-      "path": "/api/external/v1/project_check_ins/list",
-      "handler": "OperatelyWeb.Api.ProjectCheckIns.List",
-      "outputs": [
-        {
-          "default": null,
-          "name": "project_check_ins",
-          "type": {
-            "item": {
-              "name": "project_check_in",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "project_check_ins",
-      "inputs": [
-        {
-          "default": null,
-          "name": "project_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_author",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_project",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "include_reactions",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "docstring": "Lists all project check-ins for a given project with optional related data.",
-      "full_name": "project_check_ins/list",
-      "method": "GET"
-    },
-    {
-      "name": "update",
-      "type": "mutation",
-      "path": "/api/external/v1/project_check_ins/update",
-      "handler": "OperatelyWeb.Api.ProjectCheckIns.Update",
-      "outputs": [
-        {
-          "default": null,
-          "name": "check_in",
-          "type": {
-            "name": "project_check_in",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "project_check_ins",
-      "inputs": [
-        {
-          "default": null,
-          "name": "check_in_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "status",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "description",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "docstring": "Updates an existing project check-in's status and/or description.",
-      "full_name": "project_check_ins/update",
-      "method": "POST"
-    },
-    {
-      "name": "create",
-      "type": "mutation",
-      "path": "/api/external/v1/project_discussions/create",
-      "handler": "OperatelyWeb.Api.ProjectDiscussions.Create",
-      "outputs": [
-        {
-          "default": null,
-          "name": "discussion",
-          "type": {
-            "name": "comment_thread",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "project_discussions",
-      "inputs": [
-        {
-          "default": null,
-          "name": "project_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "title",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "message",
-          "type": {
-            "name": "json",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": "false",
-          "name": "send_notifications_to_everyone",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": true,
-          "nullable": false
-        },
-        {
-          "default": [],
-          "name": "subscriber_ids",
-          "type": {
-            "item": {
-              "name": "id",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": true,
-          "nullable": false
-        }
-      ],
-      "docstring": "Creates a new project discussion.",
-      "full_name": "project_discussions/create",
-      "method": "POST"
-    },
-    {
-      "name": "get",
-      "type": "query",
-      "path": "/api/external/v1/project_discussions/get",
-      "handler": "OperatelyWeb.Api.ProjectDiscussions.Get",
-      "outputs": [
-        {
-          "default": null,
-          "name": "discussion",
-          "type": {
-            "name": "comment_thread",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "project_discussions",
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": "false",
-          "name": "include_unread_notifications",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": true,
-          "nullable": false
-        },
-        {
-          "default": "true",
-          "name": "include_permissions",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": true,
-          "nullable": false
-        },
-        {
-          "default": "false",
-          "name": "include_subscriptions_list",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": true,
-          "nullable": false
-        },
-        {
-          "default": "false",
-          "name": "include_potential_subscribers",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": true,
-          "nullable": false
-        },
-        {
-          "default": "false",
-          "name": "include_unread_project_notifications",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": true,
-          "nullable": false
-        },
-        {
-          "default": "false",
-          "name": "include_project",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": true,
-          "nullable": false
-        },
-        {
-          "default": "false",
-          "name": "include_space",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": true,
-          "nullable": false
-        }
-      ],
-      "docstring": "Retrieves a single project discussion by ID with optional related data.",
-      "full_name": "project_discussions/get",
-      "method": "GET"
-    },
-    {
-      "name": "list",
-      "type": "query",
-      "path": "/api/external/v1/project_discussions/list",
-      "handler": "OperatelyWeb.Api.ProjectDiscussions.List",
-      "outputs": [
-        {
-          "default": null,
-          "name": "discussions",
-          "type": {
-            "item": {
-              "name": "comment_thread",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "project_discussions",
-      "inputs": [
-        {
-          "default": null,
-          "name": "project_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "docstring": "Lists all discussions for a given project.",
-      "full_name": "project_discussions/list",
-      "method": "GET"
-    },
-    {
-      "name": "update",
-      "type": "mutation",
-      "path": "/api/external/v1/project_discussions/update",
-      "handler": "OperatelyWeb.Api.ProjectDiscussions.Update",
-      "outputs": [
-        {
-          "default": null,
-          "name": "discussion",
-          "type": {
-            "name": "comment_thread",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "project_discussions",
-      "inputs": [
-        {
-          "default": null,
-          "name": "id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "title",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "message",
-          "type": {
-            "name": "json",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": [],
-          "name": "subscriber_ids",
-          "type": {
-            "item": {
-              "name": "id",
-              "kind": "named"
-            },
-            "kind": "list"
-          },
-          "optional": true,
-          "has_default": true,
-          "nullable": false
-        }
-      ],
-      "docstring": "Updates an existing project discussion's title and/or message.",
-      "full_name": "project_discussions/update",
-      "method": "POST"
-    },
-    {
       "name": "create_comment",
       "type": "mutation",
       "path": "/api/external/v1/project_milestones/create_comment",
@@ -22505,6 +21825,42 @@
       "method": "POST"
     },
     {
+      "name": "acknowledge_check_in",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/acknowledge_check_in",
+      "handler": "OperatelyWeb.Api.Projects.AcknowledgeCheckIn",
+      "outputs": [
+        {
+          "default": null,
+          "name": "check_in",
+          "type": {
+            "name": "project_check_in",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": "Acknowledges a project check-in.",
+      "full_name": "projects/acknowledge_check_in",
+      "method": "POST"
+    },
+    {
       "name": "close",
       "type": "mutation",
       "path": "/api/external/v1/projects/close",
@@ -22759,6 +22115,89 @@
       "method": "POST"
     },
     {
+      "name": "create_check_in",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/create_check_in",
+      "handler": "OperatelyWeb.Api.Projects.CreateCheckIn",
+      "outputs": [
+        {
+          "default": null,
+          "name": "check_in",
+          "type": {
+            "name": "project_check_in",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "status",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "description",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "send_notifications_to_everyone",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        },
+        {
+          "default": null,
+          "name": "subscriber_ids",
+          "type": {
+            "item": {
+              "name": "id",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "docstring": "Creates a new project check-in.",
+      "full_name": "projects/create_check_in",
+      "method": "POST"
+    },
+    {
       "name": "create_contributor",
       "type": "mutation",
       "path": "/api/external/v1/projects/create_contributor",
@@ -22886,6 +22325,89 @@
       ],
       "docstring": "Adds multiple contributors to a project.",
       "full_name": "projects/create_contributors",
+      "method": "POST"
+    },
+    {
+      "name": "create_discussion",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/create_discussion",
+      "handler": "OperatelyWeb.Api.Projects.Discussions.Create",
+      "outputs": [
+        {
+          "default": null,
+          "name": "discussion",
+          "type": {
+            "name": "comment_thread",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "title",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "message",
+          "type": {
+            "name": "json",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": "false",
+          "name": "send_notifications_to_everyone",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": true,
+          "nullable": false
+        },
+        {
+          "default": [],
+          "name": "subscriber_ids",
+          "type": {
+            "item": {
+              "name": "id",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": true,
+          "nullable": false
+        }
+      ],
+      "docstring": "Creates a new project discussion.",
+      "full_name": "projects/create_discussion",
       "method": "POST"
     },
     {
@@ -23358,6 +22880,130 @@
       "method": "GET"
     },
     {
+      "name": "get_check_in",
+      "type": "query",
+      "path": "/api/external/v1/projects/get_check_in",
+      "handler": "OperatelyWeb.Api.Projects.GetCheckIn",
+      "outputs": [
+        {
+          "default": null,
+          "name": "project_check_in",
+          "type": {
+            "name": "project_check_in",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_author",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_acknowledged_by",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_project",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_space",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_reactions",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_subscriptions_list",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_potential_subscribers",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_unread_notifications",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": true
+        }
+      ],
+      "docstring": "Retrieves a single project check-in by ID with optional related data.",
+      "full_name": "projects/get_check_in",
+      "method": "GET"
+    },
+    {
       "name": "get_contributor",
       "type": "query",
       "path": "/api/external/v1/projects/get_contributor",
@@ -23424,6 +23070,119 @@
       ],
       "docstring": "Retrieves a project contributor by ID.",
       "full_name": "projects/get_contributor",
+      "method": "GET"
+    },
+    {
+      "name": "get_discussion",
+      "type": "query",
+      "path": "/api/external/v1/projects/get_discussion",
+      "handler": "OperatelyWeb.Api.Projects.Discussions.Get",
+      "outputs": [
+        {
+          "default": null,
+          "name": "discussion",
+          "type": {
+            "name": "comment_thread",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": "false",
+          "name": "include_unread_notifications",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": true,
+          "nullable": false
+        },
+        {
+          "default": "true",
+          "name": "include_permissions",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": true,
+          "nullable": false
+        },
+        {
+          "default": "false",
+          "name": "include_subscriptions_list",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": true,
+          "nullable": false
+        },
+        {
+          "default": "false",
+          "name": "include_potential_subscribers",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": true,
+          "nullable": false
+        },
+        {
+          "default": "false",
+          "name": "include_unread_project_notifications",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": true,
+          "nullable": false
+        },
+        {
+          "default": "false",
+          "name": "include_project",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": true,
+          "nullable": false
+        },
+        {
+          "default": "false",
+          "name": "include_space",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": true,
+          "nullable": false
+        }
+      ],
+      "docstring": "Retrieves a single project discussion by ID with optional related data.",
+      "full_name": "projects/get_discussion",
       "method": "GET"
     },
     {
@@ -23769,6 +23528,78 @@
       "method": "GET"
     },
     {
+      "name": "list_check_ins",
+      "type": "query",
+      "path": "/api/external/v1/projects/list_check_ins",
+      "handler": "OperatelyWeb.Api.Projects.ListCheckIns",
+      "outputs": [
+        {
+          "default": null,
+          "name": "project_check_ins",
+          "type": {
+            "item": {
+              "name": "project_check_in",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_author",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_project",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "include_reactions",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": "Lists all project check-ins for a given project with optional related data.",
+      "full_name": "projects/list_check_ins",
+      "method": "GET"
+    },
+    {
       "name": "list_contributors",
       "type": "query",
       "path": "/api/external/v1/projects/list_contributors",
@@ -23830,6 +23661,45 @@
       ],
       "docstring": "Lists contributors for a project.",
       "full_name": "projects/list_contributors",
+      "method": "GET"
+    },
+    {
+      "name": "list_discussions",
+      "type": "query",
+      "path": "/api/external/v1/projects/list_discussions",
+      "handler": "OperatelyWeb.Api.Projects.Discussions.List",
+      "outputs": [
+        {
+          "default": null,
+          "name": "discussions",
+          "type": {
+            "item": {
+              "name": "comment_thread",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "project_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": "Lists all discussions for a given project.",
+      "full_name": "projects/list_discussions",
       "method": "GET"
     },
     {
@@ -24248,6 +24118,64 @@
       "method": "POST"
     },
     {
+      "name": "update_check_in",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/update_check_in",
+      "handler": "OperatelyWeb.Api.Projects.UpdateCheckIn",
+      "outputs": [
+        {
+          "default": null,
+          "name": "check_in",
+          "type": {
+            "name": "project_check_in",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "check_in_id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "status",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "description",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "docstring": "Updates an existing project check-in's status and/or description.",
+      "full_name": "projects/update_check_in",
+      "method": "POST"
+    },
+    {
       "name": "update_contributor",
       "type": "mutation",
       "path": "/api/external/v1/projects/update_contributor",
@@ -24372,6 +24300,78 @@
       ],
       "docstring": "Updates the description of a project.",
       "full_name": "projects/update_description",
+      "method": "POST"
+    },
+    {
+      "name": "update_discussion",
+      "type": "mutation",
+      "path": "/api/external/v1/projects/update_discussion",
+      "handler": "OperatelyWeb.Api.Projects.Discussions.Update",
+      "outputs": [
+        {
+          "default": null,
+          "name": "discussion",
+          "type": {
+            "name": "comment_thread",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        }
+      ],
+      "namespace": "projects",
+      "inputs": [
+        {
+          "default": null,
+          "name": "id",
+          "type": {
+            "name": "id",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "title",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "message",
+          "type": {
+            "name": "json",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": [],
+          "name": "subscriber_ids",
+          "type": {
+            "item": {
+              "name": "id",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": true,
+          "has_default": true,
+          "nullable": false
+        }
+      ],
+      "docstring": "Updates an existing project discussion's title and/or message.",
+      "full_name": "projects/update_discussion",
       "method": "POST"
     },
     {
@@ -27831,8 +27831,6 @@
     "links": "Get, create and manage links in resource hubs",
     "notifications": "List and manage notifications and subscriptions",
     "people": "Get, list, update and manage user profiles and account settings",
-    "project_check_ins": "Get, list, create and manage project check-ins",
-    "project_discussions": "Get, list, create and manage project discussions",
     "project_milestones": "Get, list, create and manage project milestones",
     "projects": "Get, list, create and manage projects",
     "reactions": "Add or remove emoji reactions to content",
@@ -27842,6 +27840,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-24T17:03:20Z",
+  "generated_at": "2026-03-24T18:04:39Z",
   "schema_version": 1
 }
