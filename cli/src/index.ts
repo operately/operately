@@ -10,8 +10,23 @@ import { parseCommand, UsageError } from "./core/parser";
 import { printError } from "./core/output";
 import { CLI_VERSION } from "./version";
 
+function loadCatalog(rawCatalog: any): Catalog {
+  const intEnums: Record<string, number[]> = {};
+  for (const [key, values] of Object.entries(rawCatalog.types.int_enums || {})) {
+    intEnums[key] = (values as string[]).map(Number);
+  }
+
+  return {
+    ...rawCatalog,
+    types: {
+      ...rawCatalog.types,
+      int_enums: intEnums,
+    },
+  } as Catalog;
+}
+
 async function main(argv: string[]): Promise<number> {
-  const catalog = catalogJson as Catalog;
+  const catalog = loadCatalog(catalogJson);
   const registry = createRegistry(catalog);
 
   let parsed;

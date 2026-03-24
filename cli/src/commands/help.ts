@@ -99,6 +99,9 @@ function formatTypeHint(typeRef: CatalogTypeRef): string {
   if (typeRef.kind === "list") {
     return `[${formatTypeHint(typeRef.item)}]`;
   }
+  if (typeRef.name === "json") {
+    return "markdown";
+  }
   return typeRef.name;
 }
 
@@ -140,6 +143,10 @@ export function printEndpointHelp(endpoint: CatalogEndpoint, command: string, ty
             }
           }
 
+          if (field.type.kind === "named" && field.type.name === "json") {
+            lines.push(...formatMarkdownHelp());
+          }
+
           return lines;
         });
 
@@ -170,5 +177,17 @@ function formatEnumHelp(enumName: string, values: string[]): string[] {
     lines.push(`      ${value}`);
   }
 
+  return lines;
+}
+
+function formatMarkdownHelp(): string[] {
+  const lines: string[] = [];
+  lines.push("    Markdown Format:");
+  lines.push("      Supports standard markdown syntax");
+  lines.push("      Headings: # H1, ## H2, ### H3");
+  lines.push("      Bold: **text**, Italic: *text*");
+  lines.push("      Lists: - item or 1. item");
+  lines.push("      Links: [text](url)");
+  lines.push("      Code: `inline` or ```block```");
   return lines;
 }
