@@ -25,7 +25,7 @@ defmodule OperatelyWeb.Api.Comments.Create do
   inputs do
     field :entity_id, :id, null: false
     field :entity_type, :comment_parent_type, null: false
-    field :content, :string, null: false
+    field :content, :json, null: false
   end
 
   outputs do
@@ -35,7 +35,6 @@ defmodule OperatelyWeb.Api.Comments.Create do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:content, fn -> Jason.decode(inputs.content) end)
     |> run(:parent, fn ctx -> fetch_parent(ctx.me, inputs.entity_id, inputs.entity_type) end)
     |> run(:check_permissions, fn ctx -> check_permissions(ctx.parent, inputs.entity_type) end)
     |> run(:operation, fn ctx -> execute(ctx, inputs) end)
@@ -47,7 +46,6 @@ defmodule OperatelyWeb.Api.Comments.Create do
     case result do
       {:ok, ctx} -> {:ok, ctx.serialized}
       {:error, :id, _} -> {:error, :bad_request}
-      {:error, :content, _} -> {:error, :bad_request}
       {:error, :parent, _} -> {:error, :not_found}
       {:error, :check_permissions, _} -> {:error, :forbidden}
       {:error, :operation, _} -> {:error, :internal_server_error}
@@ -86,6 +84,6 @@ defmodule OperatelyWeb.Api.Comments.Create do
   end
 
   defp execute(ctx, inputs) do
-    CommentAdding.run(ctx.me, ctx.parent, inputs.entity_type, ctx.content)
+    CommentAdding.run(ctx.me, ctx.parent, inputs.entity_type, inputs.content)
   end
 end
