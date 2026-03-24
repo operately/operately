@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.GoalCheckIns.Create do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Goals.UpdateCheckIn do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "goal_check_ins/create"
+  def mutation_name, do: "goals/update_check_in"
 
   @impl true
   def setup(ctx) do
@@ -11,17 +11,18 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.GoalCheckIns.Create do
     |> Factory.setup()
     |> Factory.add_space(:space)
     |> Factory.add_goal(:goal, :space)
+    |> Factory.add_goal_update(:goal_update, :goal, :creator)
   end
 
   @impl true
   def inputs(ctx) do
     %{
-      goal_id: Paths.goal_id(ctx.goal),
-      status: "on_track",
+      id: Paths.goal_update_id(ctx.goal_update),
       due_date: nil,
-      checklist: [],
+      status: "on_track",
       content: rich_text_string("Updated content"),
-      new_target_values: "[]"
+      new_target_values: "[]",
+      checklist: []
     }
   end
 

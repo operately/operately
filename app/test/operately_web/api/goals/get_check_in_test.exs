@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.GoalCheckIns.GetTest do
+defmodule OperatelyWeb.Api.Goals.GetCheckInTest do
   use OperatelyWeb.TurboCase
 
   import Operately.GroupsFixtures
@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api.GoalCheckIns.GetTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, [:goal_check_ins, :get], %{})
+      assert {401, _} = query(ctx.conn, [:goals, :get_check_in], %{})
     end
   end
 
@@ -95,10 +95,10 @@ defmodule OperatelyWeb.Api.GoalCheckIns.GetTest do
     end
 
     test "include_potential_subscribers", ctx do
-      assert {200, res} = query(ctx.conn, [:goal_check_ins, :get], %{id: Paths.goal_update_id(ctx.update)})
+      assert {200, res} = query(ctx.conn, [:goals, :get_check_in], %{id: Paths.goal_update_id(ctx.update)})
       refute res.update.potential_subscribers
 
-      assert {200, res} = query(ctx.conn, [:goal_check_ins, :get], %{
+      assert {200, res} = query(ctx.conn, [:goals, :get_check_in], %{
         id: Paths.goal_update_id(ctx.update),
         include_potential_subscribers: true,
       })
@@ -128,10 +128,10 @@ defmodule OperatelyWeb.Api.GoalCheckIns.GetTest do
       a = activity_fixture(author_id: ctx.reviewer.id, action: "goal_check_in", content: %{update_id: ctx.update.id})
       n = notification_fixture(person_id: ctx.champion.id, read: false, activity_id: a.id)
 
-      assert {200, res} = query(ctx.conn, [:goal_check_ins, :get], %{id: Paths.goal_update_id(ctx.update)})
+      assert {200, res} = query(ctx.conn, [:goals, :get_check_in], %{id: Paths.goal_update_id(ctx.update)})
       assert res.update.notifications == []
 
-      assert {200, res} = query(ctx.conn, [:goal_check_ins, :get], %{
+      assert {200, res} = query(ctx.conn, [:goals, :get_check_in], %{
         id: Paths.goal_update_id(ctx.update),
         include_unread_notifications: true,
       })
@@ -146,7 +146,7 @@ defmodule OperatelyWeb.Api.GoalCheckIns.GetTest do
   #
 
   defp allowed_request(conn, update_id) do
-    assert {200, %{update: update} = _res} = query(conn, [:goal_check_ins, :get], %{
+    assert {200, %{update: update} = _res} = query(conn, [:goals, :get_check_in], %{
       id: update_id,
       include_goal_targets: true,
       include_author: true,
@@ -161,7 +161,7 @@ defmodule OperatelyWeb.Api.GoalCheckIns.GetTest do
   end
 
   defp forbidden_request(conn, update_id) do
-    assert {404, %{message: msg} = _res} = query(conn, [:goal_check_ins, :get], %{id: update_id})
+    assert {404, %{message: msg} = _res} = query(conn, [:goals, :get_check_in], %{id: update_id})
     assert msg == "The requested resource was not found"
   end
 

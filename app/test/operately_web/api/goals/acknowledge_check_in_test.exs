@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.GoalCheckIns.AcknowledgeTest do
+defmodule OperatelyWeb.Api.Goals.AcknowledgeCheckInTest do
   use OperatelyWeb.TurboCase
 
   import Operately.PeopleFixtures
@@ -11,7 +11,7 @@ defmodule OperatelyWeb.Api.GoalCheckIns.AcknowledgeTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, [:goal_check_ins, :acknowledge], %{})
+      assert {401, _} = mutation(ctx.conn, [:goals, :acknowledge_check_in], %{})
     end
   end
 
@@ -76,7 +76,7 @@ defmodule OperatelyWeb.Api.GoalCheckIns.AcknowledgeTest do
       refute update.acknowledged_at
       refute update.acknowledged_by_id
 
-      assert {200, res} = mutation(ctx.conn, [:goal_check_ins, :acknowledge], %{id: Paths.goal_update_id(update)})
+      assert {200, res} = mutation(ctx.conn, [:goals, :acknowledge_check_in], %{id: Paths.goal_update_id(update)})
       assert_response(res, update)
     end
   end
@@ -86,7 +86,7 @@ defmodule OperatelyWeb.Api.GoalCheckIns.AcknowledgeTest do
   #
 
   defp request(conn, update) do
-    mutation(conn, [:goal_check_ins, :acknowledge], %{id: Paths.goal_update_id(update)})
+    mutation(conn, [:goals, :acknowledge_check_in], %{id: Paths.goal_update_id(update)})
   end
 
   defp assert_response(res, update) do

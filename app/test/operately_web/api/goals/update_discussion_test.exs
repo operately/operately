@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.GoalDiscussions.UpdateTest do
+defmodule OperatelyWeb.Api.Goals.UpdateDiscussionTest do
   use OperatelyWeb.TurboCase
 
   import Operately.Support.RichText
@@ -10,7 +10,7 @@ defmodule OperatelyWeb.Api.GoalDiscussions.UpdateTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, [:goal_discussions, :update], %{})
+      assert {401, _} = mutation(ctx.conn, [:goals, :update_discussion], %{})
     end
   end
 
@@ -71,7 +71,7 @@ defmodule OperatelyWeb.Api.GoalDiscussions.UpdateTest do
   defp request(conn, discussion) do
     discussion = Repo.preload(discussion, :comment_thread)
 
-    mutation(conn, [:goal_discussions, :update], %{
+    mutation(conn, [:goals, :update_discussion], %{
       activity_id: Paths.activity_id(discussion),
       title: "Edited title",
       message: rich_text("Edited content") |> Jason.encode!(),

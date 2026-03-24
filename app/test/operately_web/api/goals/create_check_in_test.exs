@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.GoalCheckIns.CreateTest do
+defmodule OperatelyWeb.Api.Goals.CreateCheckInTest do
   use OperatelyWeb.TurboCase
 
   import Operately.GoalsFixtures
@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api.GoalCheckIns.CreateTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, [:goal_check_ins, :create], %{})
+      assert {401, _} = mutation(ctx.conn, [:goals, :create_check_in], %{})
     end
   end
 
@@ -42,7 +42,7 @@ defmodule OperatelyWeb.Api.GoalCheckIns.CreateTest do
         goal = create_goal(ctx, space, @test.company, @test.space, @test.goal)
 
         assert {code, res} =
-                 mutation(ctx.conn, [:goal_check_ins, :create], %{
+                 mutation(ctx.conn, [:goals, :create_check_in], %{
                    goal_id: Paths.goal_id(goal),
                    status: "on_track",
                    content: RichText.rich_text("Content", :as_string),
@@ -74,7 +74,7 @@ defmodule OperatelyWeb.Api.GoalCheckIns.CreateTest do
       assert Goals.list_updates(ctx.goal) == []
 
       assert {200, res} =
-               mutation(ctx.conn, [:goal_check_ins, :create], %{
+               mutation(ctx.conn, [:goals, :create_check_in], %{
                  goal_id: Paths.goal_id(ctx.goal),
                  status: "caution",
                  content: RichText.rich_text("Content", :as_string),
@@ -91,7 +91,7 @@ defmodule OperatelyWeb.Api.GoalCheckIns.CreateTest do
 
     test "clearing the due date", ctx do
       assert {200, res} =
-               mutation(ctx.conn, [:goal_check_ins, :create], %{
+               mutation(ctx.conn, [:goals, :create_check_in], %{
                  goal_id: Paths.goal_id(ctx.goal),
                  status: "caution",
                  content: RichText.rich_text("Content", :as_string),
@@ -123,7 +123,7 @@ defmodule OperatelyWeb.Api.GoalCheckIns.CreateTest do
 
     test "creates subscription list for goal update", ctx do
       assert {200, res} =
-               mutation(ctx.conn, [:goal_check_ins, :create], %{
+               mutation(ctx.conn, [:goals, :create_check_in], %{
                  goal_id: Paths.goal_id(ctx.goal),
                  status: "off_track",
                  content: RichText.rich_text("Content", :as_string),
@@ -155,7 +155,7 @@ defmodule OperatelyWeb.Api.GoalCheckIns.CreateTest do
       content = RichText.rich_text(mentioned_people: people)
 
       assert {200, res} =
-               mutation(ctx.conn, [:goal_check_ins, :create], %{
+               mutation(ctx.conn, [:goals, :create_check_in], %{
                  goal_id: Paths.goal_id(ctx.goal),
                  status: "on_track",
                  content: content,
@@ -180,7 +180,7 @@ defmodule OperatelyWeb.Api.GoalCheckIns.CreateTest do
       content = RichText.rich_text(mentioned_people: people)
 
       assert {200, res} =
-               mutation(ctx.conn, [:goal_check_ins, :create], %{
+               mutation(ctx.conn, [:goals, :create_check_in], %{
                  goal_id: Paths.goal_id(ctx.goal),
                  status: "caution",
                  content: content,

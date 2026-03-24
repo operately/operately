@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.GoalCheckIns.Update do
+defmodule OperatelyWeb.Api.Goals.UpdateCheckIn do
   @moduledoc """
   Updates a goal check-in.
   """

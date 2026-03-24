@@ -5,10 +5,10 @@ import { isPresent } from "@/utils/isPresent";
 export type Update = api.GoalProgressUpdate;
 export type Target = api.GoalTargetUpdates;
 
-export const getGoalProgressUpdate = Api.goal_check_ins.get;
-export const useAcknowledgeGoalProgressUpdate = Api.goal_check_ins.useAcknowledge;
-export const useEditGoalProgressUpdate = Api.goal_check_ins.useUpdate;
-export const usePostGoalProgressUpdate = Api.goal_check_ins.useCreate;
+export const getGoalProgressUpdate = Api.goals.getCheckIn;
+export const useAcknowledgeGoalProgressUpdate = Api.goals.useAcknowledgeCheckIn;
+export const useEditGoalProgressUpdate = Api.goals.useUpdateCheckIn;
+export const usePostGoalProgressUpdate = Api.goals.useCreateCheckIn;
 
 export function targetChangeSentiment(target: Target): "positive" | "negative" | "neutral" {
   if (!isPresent(target.value)) return "neutral";

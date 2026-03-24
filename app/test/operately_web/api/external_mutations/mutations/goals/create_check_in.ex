@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.GoalDiscussions.Create do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Goals.CreateCheckIn do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "goal_discussions/create"
+  def mutation_name, do: "goals/create_check_in"
 
   @impl true
   def setup(ctx) do
@@ -17,14 +17,17 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.GoalDiscussions.Create do
   def inputs(ctx) do
     %{
       goal_id: Paths.goal_id(ctx.goal),
-      title: "Updated Title",
-      message: rich_text_string("Updated content")
+      status: "on_track",
+      due_date: nil,
+      checklist: [],
+      content: rich_text_string("Updated content"),
+      new_target_values: "[]"
     }
   end
 
   @impl true
   def assert(response, _ctx) do
-    assert response.id
+    assert response.update.id
     refute Map.has_key?(response, :error)
   end
 
