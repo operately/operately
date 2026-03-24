@@ -69,7 +69,7 @@ export function useKanbanState(options: UseKanbanStateOptions) {
 
       try {
         if (type === "milestone") {
-          await Api.project_milestones.updateKanban({
+          await Api.projects.updateMilestoneKanban({
             milestoneId: options.milestoneId,
             taskId: event.taskId,
             status: backendStatus,
