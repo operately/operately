@@ -2,8 +2,9 @@ import { UsageError } from "./parser-types";
 import type { CatalogEndpoint, CatalogField, CatalogTypeRef, CatalogTypes } from "../types/catalog";
 import { isGlobalFlag } from "./flags";
 import { parseContextualDateString } from "./contextual-date-parser";
+import { convertMarkdownToTiptap } from "./markdown-to-tiptap";
 
-const BUILTIN_TYPES = new Set(["string", "integer", "float", "boolean", "date", "time", "datetime", "id"]);
+const BUILTIN_TYPES = new Set(["string", "integer", "float", "boolean", "date", "time", "datetime", "id", "json"]);
 
 export function parseEndpointInputs(
   endpoint: CatalogEndpoint,
@@ -236,7 +237,27 @@ function coerceBuiltinType(typeName: string, value: unknown, path: string): unkn
     return value;
   }
 
+  if (typeName === "json") {
+    return coerceJsonType(value, path);
+  }
+
   throw new UsageError(`Unknown builtin type '${typeName}'.`);
+}
+
+function coerceJsonType(value: unknown, path: string): unknown {
+  if (typeof value === "object" && value !== null) {
+    return value;
+  }
+
+  if (typeof value !== "string") {
+    throw new UsageError(`Expected string or object for '${path}', got ${typeof value}.`);
+  }
+
+  try {
+    return JSON.parse(value);
+  } catch {
+    return convertMarkdownToTiptap(value);
+  }
 }
 
 function coerceContextualDate(value: unknown, types: CatalogTypes, path: string) {
