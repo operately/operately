@@ -54,7 +54,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeSubscriptionList: true,
           includeAvailableStatuses: true,
         }).then((d) => d.milestone),
-        tasks: Api.project_milestones.listTasks({ milestoneId: params.id }).then((d) => d.tasks),
+        tasks: Api.projects.listMilestoneTasks({ milestoneId: params.id }).then((d) => d.tasks),
         childrenCount: Api.projects.countChildren({ id: params.id, useMilestoneId: true }).then((d) => d.childrenCount),
         activities: Api.companies.listActivities({
           scopeId: params.id,
@@ -99,14 +99,14 @@ function Page() {
   const [description, setDescription] = usePageField(pageData, {
     value: ({ milestone }) => milestone.description && JSON.parse(milestone.description),
     update: (v) =>
-      Api.project_milestones.updateDescription({ milestoneId: milestone.id, description: JSON.stringify(v) }),
+      Api.projects.updateMilestoneDescription({ milestoneId: milestone.id, description: JSON.stringify(v) }),
     onError: () => showErrorToast("Error", "Failed to update milestone description."),
   });
 
   const [dueDate, setDueDate] = usePageField(pageData, {
     value: ({ milestone }) => parseContextualDate(milestone.timeframe?.contextualEndDate),
     update: (v) =>
-      Api.project_milestones.updateDueDate({ milestoneId: milestone.id, dueDate: serializeContextualDate(v) }),
+      Api.projects.updateMilestoneDueDate({ milestoneId: milestone.id, dueDate: serializeContextualDate(v) }),
     onError: (e: string) => showErrorToast(e, "Failed to update milestone due date."),
   });
 
@@ -133,7 +133,7 @@ function Page() {
   );
 
   const handleDelete = React.useCallback(async () => {
-    await Api.project_milestones.delete({ milestoneId: milestone.id });
+    await Api.projects.deleteMilestone({ milestoneId: milestone.id });
 
     if (milestone.project) {
       PageCache.invalidate(projectPageCacheKey(milestone.project.id));
@@ -353,7 +353,7 @@ function useStatusField(
 
       setComments((prev) => [...prev, Milestones.parseMilestoneCommentForTurboUi(paths, optimisticComment)]);
 
-      const res = await Api.project_milestones.createComment({
+      const res = await Api.projects.createMilestoneComment({
         milestoneId: milestone.id,
         content: null,
         action: v === "done" ? "complete" : "reopen",
@@ -388,7 +388,7 @@ function useMilestones(pageData, milestone: Milestones.Milestone) {
 
   const [title, setTitle] = usePageField(pageData, {
     value: ({ milestone }) => milestone.title,
-    update: (v) => Api.project_milestones.updateTitle({ milestoneId: milestone.id, title: v }),
+    update: (v) => Api.projects.updateMilestoneTitle({ milestoneId: milestone.id, title: v }),
     onError: (e: string) => showErrorToast(e, "Failed to update milestone name."),
     validations: [(v) => (v.trim() === "" ? "Milestone name cannot be empty" : null)],
   });

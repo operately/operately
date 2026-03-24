@@ -88,7 +88,7 @@ export function useProjectMilestoneOrdering({
       });
 
       try {
-        const response = await Api.project_milestones.updateOrdering({
+        const response = await Api.projects.updateMilestoneOrdering({
           projectId,
           orderingState: updatedOrder,
         });

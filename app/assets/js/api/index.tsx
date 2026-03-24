@@ -2390,19 +2390,6 @@ export interface FilesGetResult {
   file: ResourceHubFile;
 }
 
-export interface FoldersGetInput {
-  id: Id;
-  includeNodes?: boolean;
-  includeResourceHub?: boolean;
-  includePathToFolder?: boolean;
-  includePermissions?: boolean;
-  includePotentialSubscribers?: boolean;
-}
-
-export interface FoldersGetResult {
-  folder: ResourceHubFolder;
-}
-
 export interface GetThemeInput {}
 
 export interface GetThemeResult {
@@ -2649,29 +2636,6 @@ export interface PeopleSearchResult {
   people: Person[];
 }
 
-export interface ProjectMilestonesGetInput {
-  id: Id;
-  includeComments?: boolean;
-  includeProject?: boolean;
-  includeCreator?: boolean;
-  includePermissions?: boolean;
-  includeSpace?: boolean;
-  includeSubscriptionList?: boolean;
-  includeAvailableStatuses?: boolean;
-}
-
-export interface ProjectMilestonesGetResult {
-  milestone: Milestone;
-}
-
-export interface ProjectMilestonesListTasksInput {
-  milestoneId: Id;
-}
-
-export interface ProjectMilestonesListTasksResult {
-  tasks: Task[];
-}
-
 export interface ProjectsCountChildrenInput {
   id: Id;
   useTaskId?: boolean;
@@ -2758,6 +2722,21 @@ export interface ProjectsGetKeyResourceResult {
   keyResource: ProjectKeyResource;
 }
 
+export interface ProjectsGetMilestoneInput {
+  id: Id;
+  includeComments?: boolean;
+  includeProject?: boolean;
+  includeCreator?: boolean;
+  includePermissions?: boolean;
+  includeSpace?: boolean;
+  includeSubscriptionList?: boolean;
+  includeAvailableStatuses?: boolean;
+}
+
+export interface ProjectsGetMilestoneResult {
+  milestone: Milestone;
+}
+
 export interface ProjectsGetRetrospectiveInput {
   projectId: Id;
   includeAuthor?: boolean | null;
@@ -2824,6 +2803,14 @@ export interface ProjectsListDiscussionsResult {
   discussions: CommentThread[];
 }
 
+export interface ProjectsListMilestoneTasksInput {
+  milestoneId: Id;
+}
+
+export interface ProjectsListMilestoneTasksResult {
+  tasks: Task[];
+}
+
 export interface ProjectsListMilestonesInput {
   projectId: Id;
   query?: string;
@@ -2872,6 +2859,19 @@ export interface ResourceHubsGetInput {
 
 export interface ResourceHubsGetResult {
   resourceHub: ResourceHub;
+}
+
+export interface ResourceHubsGetFolderInput {
+  id: Id;
+  includeNodes?: boolean;
+  includeResourceHub?: boolean;
+  includePathToFolder?: boolean;
+  includePermissions?: boolean;
+  includePotentialSubscribers?: boolean;
+}
+
+export interface ResourceHubsGetFolderResult {
+  folder: ResourceHubFolder;
 }
 
 export interface ResourceHubsListNodesInput {
@@ -3465,44 +3465,6 @@ export interface FilesUpdateResult {
   file: ResourceHubFile;
 }
 
-export interface FoldersCopyInput {
-  folderName?: string;
-  folderId: Id;
-  destResourceHubId: Id;
-  destParentFolderId?: Id | null;
-}
-
-export interface FoldersCopyResult {
-  folderId: Id;
-}
-
-export interface FoldersCreateInput {
-  resourceHubId: Id;
-  folderId?: Id | null;
-  name: string;
-}
-
-export interface FoldersCreateResult {
-  folder: ResourceHubFolder;
-}
-
-export interface FoldersDeleteInput {
-  folderId: Id;
-}
-
-export interface FoldersDeleteResult {
-  success: boolean;
-}
-
-export interface FoldersRenameInput {
-  folderId: Id;
-  newName: string;
-}
-
-export interface FoldersRenameResult {
-  success: boolean;
-}
-
 export interface GoalsAcknowledgeCheckInInput {
   id: Id;
 }
@@ -3983,71 +3945,6 @@ export interface PeopleUpdateThemeResult {
   success: boolean;
 }
 
-export interface ProjectMilestonesCreateCommentInput {
-  milestoneId: Id;
-  content: Json | null;
-  action: string;
-}
-
-export interface ProjectMilestonesCreateCommentResult {
-  comment: MilestoneComment;
-}
-
-export interface ProjectMilestonesDeleteInput {
-  milestoneId: Id;
-}
-
-export interface ProjectMilestonesDeleteResult {
-  success: boolean;
-}
-
-export interface ProjectMilestonesUpdateDescriptionInput {
-  milestoneId: Id;
-  description: Json;
-}
-
-export interface ProjectMilestonesUpdateDescriptionResult {
-  milestone: Milestone;
-}
-
-export interface ProjectMilestonesUpdateDueDateInput {
-  milestoneId: Id;
-  dueDate: ContextualDate | null;
-}
-
-export interface ProjectMilestonesUpdateDueDateResult {
-  milestone: Milestone;
-}
-
-export interface ProjectMilestonesUpdateKanbanInput {
-  milestoneId: Id;
-  taskId: Id;
-  status: TaskStatus;
-  kanbanState: Json;
-}
-
-export interface ProjectMilestonesUpdateKanbanResult {
-  task: Task;
-}
-
-export interface ProjectMilestonesUpdateOrderingInput {
-  projectId: Id;
-  orderingState: string[];
-}
-
-export interface ProjectMilestonesUpdateOrderingResult {
-  project: Project;
-}
-
-export interface ProjectMilestonesUpdateTitleInput {
-  milestoneId: Id;
-  title: string;
-}
-
-export interface ProjectMilestonesUpdateTitleResult {
-  milestone: Milestone;
-}
-
 export interface ProjectsAcknowledgeCheckInInput {
   id: Id;
 }
@@ -4149,6 +4046,16 @@ export interface ProjectsCreateMilestoneResult {
   milestone: Milestone;
 }
 
+export interface ProjectsCreateMilestoneCommentInput {
+  milestoneId: Id;
+  content: Json | null;
+  action: string;
+}
+
+export interface ProjectsCreateMilestoneCommentResult {
+  comment: MilestoneComment;
+}
+
 export interface ProjectsDeleteInput {
   projectId: Id;
 }
@@ -4171,6 +4078,14 @@ export interface ProjectsDeleteKeyResourceInput {
 
 export interface ProjectsDeleteKeyResourceResult {
   keyResource: ProjectKeyResource;
+}
+
+export interface ProjectsDeleteMilestoneInput {
+  milestoneId: Id;
+}
+
+export interface ProjectsDeleteMilestoneResult {
+  success: boolean;
 }
 
 export interface ProjectsMoveToSpaceInput {
@@ -4292,6 +4207,53 @@ export interface ProjectsUpdateMilestoneResult {
   milestone: Milestone;
 }
 
+export interface ProjectsUpdateMilestoneDescriptionInput {
+  milestoneId: Id;
+  description: Json;
+}
+
+export interface ProjectsUpdateMilestoneDescriptionResult {
+  milestone: Milestone;
+}
+
+export interface ProjectsUpdateMilestoneDueDateInput {
+  milestoneId: Id;
+  dueDate: ContextualDate | null;
+}
+
+export interface ProjectsUpdateMilestoneDueDateResult {
+  milestone: Milestone;
+}
+
+export interface ProjectsUpdateMilestoneKanbanInput {
+  milestoneId: Id;
+  taskId: Id;
+  status: TaskStatus;
+  kanbanState: Json;
+}
+
+export interface ProjectsUpdateMilestoneKanbanResult {
+  task: Task;
+}
+
+export interface ProjectsUpdateMilestoneOrderingInput {
+  projectId: Id;
+  orderingState: string[];
+}
+
+export interface ProjectsUpdateMilestoneOrderingResult {
+  project: Project;
+}
+
+export interface ProjectsUpdateMilestoneTitleInput {
+  milestoneId: Id;
+  title: string;
+}
+
+export interface ProjectsUpdateMilestoneTitleResult {
+  milestone: Milestone;
+}
+
 export interface ProjectsUpdateNameInput {
   projectId: Id;
   name: string;
@@ -4392,6 +4354,17 @@ export interface ResetPasswordInput {
 
 export interface ResetPasswordResult {}
 
+export interface ResourceHubsCopyFolderInput {
+  folderName?: string;
+  folderId: Id;
+  destResourceHubId: Id;
+  destParentFolderId?: Id | null;
+}
+
+export interface ResourceHubsCopyFolderResult {
+  folderId: Id;
+}
+
 export interface ResourceHubsCreateInput {
   spaceId: Id;
   name: string;
@@ -4403,6 +4376,33 @@ export interface ResourceHubsCreateInput {
 
 export interface ResourceHubsCreateResult {
   resourceHub: ResourceHub;
+}
+
+export interface ResourceHubsCreateFolderInput {
+  resourceHubId: Id;
+  folderId?: Id | null;
+  name: string;
+}
+
+export interface ResourceHubsCreateFolderResult {
+  folder: ResourceHubFolder;
+}
+
+export interface ResourceHubsDeleteFolderInput {
+  folderId: Id;
+}
+
+export interface ResourceHubsDeleteFolderResult {
+  success: boolean;
+}
+
+export interface ResourceHubsRenameFolderInput {
+  folderId: Id;
+  newName: string;
+}
+
+export interface ResourceHubsRenameFolderResult {
+  success: boolean;
 }
 
 export interface ResourceHubsUpdateParentFolderInput {
@@ -4912,30 +4912,6 @@ class ApiNamespaceNotifications {
   }
 }
 
-class ApiNamespaceFolders {
-  constructor(private client: ApiClient) {}
-
-  async get(input: FoldersGetInput): Promise<FoldersGetResult> {
-    return this.client.get("/folders/get", input);
-  }
-
-  async copy(input: FoldersCopyInput): Promise<FoldersCopyResult> {
-    return this.client.post("/folders/copy", input);
-  }
-
-  async create(input: FoldersCreateInput): Promise<FoldersCreateResult> {
-    return this.client.post("/folders/create", input);
-  }
-
-  async delete(input: FoldersDeleteInput): Promise<FoldersDeleteResult> {
-    return this.client.post("/folders/delete", input);
-  }
-
-  async rename(input: FoldersRenameInput): Promise<FoldersRenameResult> {
-    return this.client.post("/folders/rename", input);
-  }
-}
-
 class ApiNamespaceLinks {
   constructor(private client: ApiClient) {}
 
@@ -5007,12 +4983,32 @@ class ApiNamespaceResourceHubs {
     return this.client.get("/resource_hubs/get", input);
   }
 
+  async getFolder(input: ResourceHubsGetFolderInput): Promise<ResourceHubsGetFolderResult> {
+    return this.client.get("/resource_hubs/get_folder", input);
+  }
+
   async listNodes(input: ResourceHubsListNodesInput): Promise<ResourceHubsListNodesResult> {
     return this.client.get("/resource_hubs/list_nodes", input);
   }
 
+  async copyFolder(input: ResourceHubsCopyFolderInput): Promise<ResourceHubsCopyFolderResult> {
+    return this.client.post("/resource_hubs/copy_folder", input);
+  }
+
   async create(input: ResourceHubsCreateInput): Promise<ResourceHubsCreateResult> {
     return this.client.post("/resource_hubs/create", input);
+  }
+
+  async createFolder(input: ResourceHubsCreateFolderInput): Promise<ResourceHubsCreateFolderResult> {
+    return this.client.post("/resource_hubs/create_folder", input);
+  }
+
+  async deleteFolder(input: ResourceHubsDeleteFolderInput): Promise<ResourceHubsDeleteFolderResult> {
+    return this.client.post("/resource_hubs/delete_folder", input);
+  }
+
+  async renameFolder(input: ResourceHubsRenameFolderInput): Promise<ResourceHubsRenameFolderResult> {
+    return this.client.post("/resource_hubs/rename_folder", input);
   }
 
   async updateParentFolder(input: ResourceHubsUpdateParentFolderInput): Promise<ResourceHubsUpdateParentFolderResult> {
@@ -5344,48 +5340,6 @@ class ApiNamespaceTasks {
   }
 }
 
-class ApiNamespaceProjectMilestones {
-  constructor(private client: ApiClient) {}
-
-  async get(input: ProjectMilestonesGetInput): Promise<ProjectMilestonesGetResult> {
-    return this.client.get("/project_milestones/get", input);
-  }
-
-  async listTasks(input: ProjectMilestonesListTasksInput): Promise<ProjectMilestonesListTasksResult> {
-    return this.client.get("/project_milestones/list_tasks", input);
-  }
-
-  async createComment(input: ProjectMilestonesCreateCommentInput): Promise<ProjectMilestonesCreateCommentResult> {
-    return this.client.post("/project_milestones/create_comment", input);
-  }
-
-  async delete(input: ProjectMilestonesDeleteInput): Promise<ProjectMilestonesDeleteResult> {
-    return this.client.post("/project_milestones/delete", input);
-  }
-
-  async updateDescription(
-    input: ProjectMilestonesUpdateDescriptionInput,
-  ): Promise<ProjectMilestonesUpdateDescriptionResult> {
-    return this.client.post("/project_milestones/update_description", input);
-  }
-
-  async updateDueDate(input: ProjectMilestonesUpdateDueDateInput): Promise<ProjectMilestonesUpdateDueDateResult> {
-    return this.client.post("/project_milestones/update_due_date", input);
-  }
-
-  async updateKanban(input: ProjectMilestonesUpdateKanbanInput): Promise<ProjectMilestonesUpdateKanbanResult> {
-    return this.client.post("/project_milestones/update_kanban", input);
-  }
-
-  async updateOrdering(input: ProjectMilestonesUpdateOrderingInput): Promise<ProjectMilestonesUpdateOrderingResult> {
-    return this.client.post("/project_milestones/update_ordering", input);
-  }
-
-  async updateTitle(input: ProjectMilestonesUpdateTitleInput): Promise<ProjectMilestonesUpdateTitleResult> {
-    return this.client.post("/project_milestones/update_title", input);
-  }
-}
-
 class ApiNamespaceProjects {
   constructor(private client: ApiClient) {}
 
@@ -5413,6 +5367,10 @@ class ApiNamespaceProjects {
     return this.client.get("/projects/get_key_resource", input);
   }
 
+  async getMilestone(input: ProjectsGetMilestoneInput): Promise<ProjectsGetMilestoneResult> {
+    return this.client.get("/projects/get_milestone", input);
+  }
+
   async getRetrospective(input: ProjectsGetRetrospectiveInput): Promise<ProjectsGetRetrospectiveResult> {
     return this.client.get("/projects/get_retrospective", input);
   }
@@ -5431,6 +5389,10 @@ class ApiNamespaceProjects {
 
   async listDiscussions(input: ProjectsListDiscussionsInput): Promise<ProjectsListDiscussionsResult> {
     return this.client.get("/projects/list_discussions", input);
+  }
+
+  async listMilestoneTasks(input: ProjectsListMilestoneTasksInput): Promise<ProjectsListMilestoneTasksResult> {
+    return this.client.get("/projects/list_milestone_tasks", input);
   }
 
   async listMilestones(input: ProjectsListMilestonesInput): Promise<ProjectsListMilestonesResult> {
@@ -5487,6 +5449,12 @@ class ApiNamespaceProjects {
     return this.client.post("/projects/create_milestone", input);
   }
 
+  async createMilestoneComment(
+    input: ProjectsCreateMilestoneCommentInput,
+  ): Promise<ProjectsCreateMilestoneCommentResult> {
+    return this.client.post("/projects/create_milestone_comment", input);
+  }
+
   async delete(input: ProjectsDeleteInput): Promise<ProjectsDeleteResult> {
     return this.client.post("/projects/delete", input);
   }
@@ -5497,6 +5465,10 @@ class ApiNamespaceProjects {
 
   async deleteKeyResource(input: ProjectsDeleteKeyResourceInput): Promise<ProjectsDeleteKeyResourceResult> {
     return this.client.post("/projects/delete_key_resource", input);
+  }
+
+  async deleteMilestone(input: ProjectsDeleteMilestoneInput): Promise<ProjectsDeleteMilestoneResult> {
+    return this.client.post("/projects/delete_milestone", input);
   }
 
   async moveToSpace(input: ProjectsMoveToSpaceInput): Promise<ProjectsMoveToSpaceResult> {
@@ -5545,6 +5517,32 @@ class ApiNamespaceProjects {
 
   async updateMilestone(input: ProjectsUpdateMilestoneInput): Promise<ProjectsUpdateMilestoneResult> {
     return this.client.post("/projects/update_milestone", input);
+  }
+
+  async updateMilestoneDescription(
+    input: ProjectsUpdateMilestoneDescriptionInput,
+  ): Promise<ProjectsUpdateMilestoneDescriptionResult> {
+    return this.client.post("/projects/update_milestone_description", input);
+  }
+
+  async updateMilestoneDueDate(
+    input: ProjectsUpdateMilestoneDueDateInput,
+  ): Promise<ProjectsUpdateMilestoneDueDateResult> {
+    return this.client.post("/projects/update_milestone_due_date", input);
+  }
+
+  async updateMilestoneKanban(input: ProjectsUpdateMilestoneKanbanInput): Promise<ProjectsUpdateMilestoneKanbanResult> {
+    return this.client.post("/projects/update_milestone_kanban", input);
+  }
+
+  async updateMilestoneOrdering(
+    input: ProjectsUpdateMilestoneOrderingInput,
+  ): Promise<ProjectsUpdateMilestoneOrderingResult> {
+    return this.client.post("/projects/update_milestone_ordering", input);
+  }
+
+  async updateMilestoneTitle(input: ProjectsUpdateMilestoneTitleInput): Promise<ProjectsUpdateMilestoneTitleResult> {
+    return this.client.post("/projects/update_milestone_title", input);
   }
 
   async updateName(input: ProjectsUpdateNameInput): Promise<ProjectsUpdateNameResult> {
@@ -5760,7 +5758,6 @@ export class ApiClient {
   public apiNamespaceAi: ApiNamespaceAi;
   public apiNamespaceRoot: ApiNamespaceRoot;
   public apiNamespaceNotifications: ApiNamespaceNotifications;
-  public apiNamespaceFolders: ApiNamespaceFolders;
   public apiNamespaceLinks: ApiNamespaceLinks;
   public apiNamespaceFiles: ApiNamespaceFiles;
   public apiNamespaceDocuments: ApiNamespaceDocuments;
@@ -5770,7 +5767,6 @@ export class ApiClient {
   public apiNamespacePeople: ApiNamespacePeople;
   public apiNamespaceSpaces: ApiNamespaceSpaces;
   public apiNamespaceTasks: ApiNamespaceTasks;
-  public apiNamespaceProjectMilestones: ApiNamespaceProjectMilestones;
   public apiNamespaceProjects: ApiNamespaceProjects;
   public apiNamespaceGoals: ApiNamespaceGoals;
   public apiNamespaceReactions: ApiNamespaceReactions;
@@ -5781,7 +5777,6 @@ export class ApiClient {
     this.apiNamespaceAi = new ApiNamespaceAi(this);
     this.apiNamespaceRoot = new ApiNamespaceRoot(this);
     this.apiNamespaceNotifications = new ApiNamespaceNotifications(this);
-    this.apiNamespaceFolders = new ApiNamespaceFolders(this);
     this.apiNamespaceLinks = new ApiNamespaceLinks(this);
     this.apiNamespaceFiles = new ApiNamespaceFiles(this);
     this.apiNamespaceDocuments = new ApiNamespaceDocuments(this);
@@ -5791,7 +5786,6 @@ export class ApiClient {
     this.apiNamespacePeople = new ApiNamespacePeople(this);
     this.apiNamespaceSpaces = new ApiNamespaceSpaces(this);
     this.apiNamespaceTasks = new ApiNamespaceTasks(this);
-    this.apiNamespaceProjectMilestones = new ApiNamespaceProjectMilestones(this);
     this.apiNamespaceProjects = new ApiNamespaceProjects(this);
     this.apiNamespaceGoals = new ApiNamespaceGoals(this);
     this.apiNamespaceReactions = new ApiNamespaceReactions(this);
@@ -6290,34 +6284,6 @@ export default {
       ),
   },
 
-  folders: {
-    get: (input: FoldersGetInput) => defaultApiClient.apiNamespaceFolders.get(input),
-    useGet: (input: FoldersGetInput) =>
-      useQuery<FoldersGetResult>(() => defaultApiClient.apiNamespaceFolders.get(input)),
-
-    rename: (input: FoldersRenameInput) => defaultApiClient.apiNamespaceFolders.rename(input),
-    useRename: () =>
-      useMutation<FoldersRenameInput, FoldersRenameResult>((input) =>
-        defaultApiClient.apiNamespaceFolders.rename(input),
-      ),
-
-    delete: (input: FoldersDeleteInput) => defaultApiClient.apiNamespaceFolders.delete(input),
-    useDelete: () =>
-      useMutation<FoldersDeleteInput, FoldersDeleteResult>((input) =>
-        defaultApiClient.apiNamespaceFolders.delete(input),
-      ),
-
-    copy: (input: FoldersCopyInput) => defaultApiClient.apiNamespaceFolders.copy(input),
-    useCopy: () =>
-      useMutation<FoldersCopyInput, FoldersCopyResult>((input) => defaultApiClient.apiNamespaceFolders.copy(input)),
-
-    create: (input: FoldersCreateInput) => defaultApiClient.apiNamespaceFolders.create(input),
-    useCreate: () =>
-      useMutation<FoldersCreateInput, FoldersCreateResult>((input) =>
-        defaultApiClient.apiNamespaceFolders.create(input),
-      ),
-  },
-
   links: {
     get: (input: LinksGetInput) => defaultApiClient.apiNamespaceLinks.get(input),
     useGet: (input: LinksGetInput) => useQuery<LinksGetResult>(() => defaultApiClient.apiNamespaceLinks.get(input)),
@@ -6391,11 +6357,42 @@ export default {
     useGet: (input: ResourceHubsGetInput) =>
       useQuery<ResourceHubsGetResult>(() => defaultApiClient.apiNamespaceResourceHubs.get(input)),
 
+    getFolder: (input: ResourceHubsGetFolderInput) => defaultApiClient.apiNamespaceResourceHubs.getFolder(input),
+    useGetFolder: (input: ResourceHubsGetFolderInput) =>
+      useQuery<ResourceHubsGetFolderResult>(() => defaultApiClient.apiNamespaceResourceHubs.getFolder(input)),
+
+    deleteFolder: (input: ResourceHubsDeleteFolderInput) =>
+      defaultApiClient.apiNamespaceResourceHubs.deleteFolder(input),
+    useDeleteFolder: () =>
+      useMutation<ResourceHubsDeleteFolderInput, ResourceHubsDeleteFolderResult>((input) =>
+        defaultApiClient.apiNamespaceResourceHubs.deleteFolder(input),
+      ),
+
     updateParentFolder: (input: ResourceHubsUpdateParentFolderInput) =>
       defaultApiClient.apiNamespaceResourceHubs.updateParentFolder(input),
     useUpdateParentFolder: () =>
       useMutation<ResourceHubsUpdateParentFolderInput, ResourceHubsUpdateParentFolderResult>((input) =>
         defaultApiClient.apiNamespaceResourceHubs.updateParentFolder(input),
+      ),
+
+    renameFolder: (input: ResourceHubsRenameFolderInput) =>
+      defaultApiClient.apiNamespaceResourceHubs.renameFolder(input),
+    useRenameFolder: () =>
+      useMutation<ResourceHubsRenameFolderInput, ResourceHubsRenameFolderResult>((input) =>
+        defaultApiClient.apiNamespaceResourceHubs.renameFolder(input),
+      ),
+
+    copyFolder: (input: ResourceHubsCopyFolderInput) => defaultApiClient.apiNamespaceResourceHubs.copyFolder(input),
+    useCopyFolder: () =>
+      useMutation<ResourceHubsCopyFolderInput, ResourceHubsCopyFolderResult>((input) =>
+        defaultApiClient.apiNamespaceResourceHubs.copyFolder(input),
+      ),
+
+    createFolder: (input: ResourceHubsCreateFolderInput) =>
+      defaultApiClient.apiNamespaceResourceHubs.createFolder(input),
+    useCreateFolder: () =>
+      useMutation<ResourceHubsCreateFolderInput, ResourceHubsCreateFolderResult>((input) =>
+        defaultApiClient.apiNamespaceResourceHubs.createFolder(input),
       ),
 
     create: (input: ResourceHubsCreateInput) => defaultApiClient.apiNamespaceResourceHubs.create(input),
@@ -6803,65 +6800,6 @@ export default {
       ),
   },
 
-  project_milestones: {
-    listTasks: (input: ProjectMilestonesListTasksInput) =>
-      defaultApiClient.apiNamespaceProjectMilestones.listTasks(input),
-    useListTasks: (input: ProjectMilestonesListTasksInput) =>
-      useQuery<ProjectMilestonesListTasksResult>(() => defaultApiClient.apiNamespaceProjectMilestones.listTasks(input)),
-
-    get: (input: ProjectMilestonesGetInput) => defaultApiClient.apiNamespaceProjectMilestones.get(input),
-    useGet: (input: ProjectMilestonesGetInput) =>
-      useQuery<ProjectMilestonesGetResult>(() => defaultApiClient.apiNamespaceProjectMilestones.get(input)),
-
-    delete: (input: ProjectMilestonesDeleteInput) => defaultApiClient.apiNamespaceProjectMilestones.delete(input),
-    useDelete: () =>
-      useMutation<ProjectMilestonesDeleteInput, ProjectMilestonesDeleteResult>((input) =>
-        defaultApiClient.apiNamespaceProjectMilestones.delete(input),
-      ),
-
-    updateDescription: (input: ProjectMilestonesUpdateDescriptionInput) =>
-      defaultApiClient.apiNamespaceProjectMilestones.updateDescription(input),
-    useUpdateDescription: () =>
-      useMutation<ProjectMilestonesUpdateDescriptionInput, ProjectMilestonesUpdateDescriptionResult>((input) =>
-        defaultApiClient.apiNamespaceProjectMilestones.updateDescription(input),
-      ),
-
-    createComment: (input: ProjectMilestonesCreateCommentInput) =>
-      defaultApiClient.apiNamespaceProjectMilestones.createComment(input),
-    useCreateComment: () =>
-      useMutation<ProjectMilestonesCreateCommentInput, ProjectMilestonesCreateCommentResult>((input) =>
-        defaultApiClient.apiNamespaceProjectMilestones.createComment(input),
-      ),
-
-    updateDueDate: (input: ProjectMilestonesUpdateDueDateInput) =>
-      defaultApiClient.apiNamespaceProjectMilestones.updateDueDate(input),
-    useUpdateDueDate: () =>
-      useMutation<ProjectMilestonesUpdateDueDateInput, ProjectMilestonesUpdateDueDateResult>((input) =>
-        defaultApiClient.apiNamespaceProjectMilestones.updateDueDate(input),
-      ),
-
-    updateKanban: (input: ProjectMilestonesUpdateKanbanInput) =>
-      defaultApiClient.apiNamespaceProjectMilestones.updateKanban(input),
-    useUpdateKanban: () =>
-      useMutation<ProjectMilestonesUpdateKanbanInput, ProjectMilestonesUpdateKanbanResult>((input) =>
-        defaultApiClient.apiNamespaceProjectMilestones.updateKanban(input),
-      ),
-
-    updateTitle: (input: ProjectMilestonesUpdateTitleInput) =>
-      defaultApiClient.apiNamespaceProjectMilestones.updateTitle(input),
-    useUpdateTitle: () =>
-      useMutation<ProjectMilestonesUpdateTitleInput, ProjectMilestonesUpdateTitleResult>((input) =>
-        defaultApiClient.apiNamespaceProjectMilestones.updateTitle(input),
-      ),
-
-    updateOrdering: (input: ProjectMilestonesUpdateOrderingInput) =>
-      defaultApiClient.apiNamespaceProjectMilestones.updateOrdering(input),
-    useUpdateOrdering: () =>
-      useMutation<ProjectMilestonesUpdateOrderingInput, ProjectMilestonesUpdateOrderingResult>((input) =>
-        defaultApiClient.apiNamespaceProjectMilestones.updateOrdering(input),
-      ),
-  },
-
   projects: {
     searchPotentialContributors: (input: ProjectsSearchPotentialContributorsInput) =>
       defaultApiClient.apiNamespaceProjects.searchPotentialContributors(input),
@@ -6881,6 +6819,15 @@ export default {
     list: (input: ProjectsListInput) => defaultApiClient.apiNamespaceProjects.list(input),
     useList: (input: ProjectsListInput) =>
       useQuery<ProjectsListResult>(() => defaultApiClient.apiNamespaceProjects.list(input)),
+
+    listMilestoneTasks: (input: ProjectsListMilestoneTasksInput) =>
+      defaultApiClient.apiNamespaceProjects.listMilestoneTasks(input),
+    useListMilestoneTasks: (input: ProjectsListMilestoneTasksInput) =>
+      useQuery<ProjectsListMilestoneTasksResult>(() => defaultApiClient.apiNamespaceProjects.listMilestoneTasks(input)),
+
+    getMilestone: (input: ProjectsGetMilestoneInput) => defaultApiClient.apiNamespaceProjects.getMilestone(input),
+    useGetMilestone: (input: ProjectsGetMilestoneInput) =>
+      useQuery<ProjectsGetMilestoneResult>(() => defaultApiClient.apiNamespaceProjects.getMilestone(input)),
 
     searchParentGoal: (input: ProjectsSearchParentGoalInput) =>
       defaultApiClient.apiNamespaceProjects.searchParentGoal(input),
@@ -7016,6 +6963,13 @@ export default {
         defaultApiClient.apiNamespaceProjects.moveToSpace(input),
       ),
 
+    updateMilestoneOrdering: (input: ProjectsUpdateMilestoneOrderingInput) =>
+      defaultApiClient.apiNamespaceProjects.updateMilestoneOrdering(input),
+    useUpdateMilestoneOrdering: () =>
+      useMutation<ProjectsUpdateMilestoneOrderingInput, ProjectsUpdateMilestoneOrderingResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.updateMilestoneOrdering(input),
+      ),
+
     close: (input: ProjectsCloseInput) => defaultApiClient.apiNamespaceProjects.close(input),
     useClose: () =>
       useMutation<ProjectsCloseInput, ProjectsCloseResult>((input) =>
@@ -7036,11 +6990,25 @@ export default {
         defaultApiClient.apiNamespaceProjects.updatePermissions(input),
       ),
 
+    updateMilestoneDueDate: (input: ProjectsUpdateMilestoneDueDateInput) =>
+      defaultApiClient.apiNamespaceProjects.updateMilestoneDueDate(input),
+    useUpdateMilestoneDueDate: () =>
+      useMutation<ProjectsUpdateMilestoneDueDateInput, ProjectsUpdateMilestoneDueDateResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.updateMilestoneDueDate(input),
+      ),
+
     updateStartDate: (input: ProjectsUpdateStartDateInput) =>
       defaultApiClient.apiNamespaceProjects.updateStartDate(input),
     useUpdateStartDate: () =>
       useMutation<ProjectsUpdateStartDateInput, ProjectsUpdateStartDateResult>((input) =>
         defaultApiClient.apiNamespaceProjects.updateStartDate(input),
+      ),
+
+    updateMilestoneDescription: (input: ProjectsUpdateMilestoneDescriptionInput) =>
+      defaultApiClient.apiNamespaceProjects.updateMilestoneDescription(input),
+    useUpdateMilestoneDescription: () =>
+      useMutation<ProjectsUpdateMilestoneDescriptionInput, ProjectsUpdateMilestoneDescriptionResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.updateMilestoneDescription(input),
       ),
 
     resume: (input: ProjectsResumeInput) => defaultApiClient.apiNamespaceProjects.resume(input),
@@ -7059,6 +7027,20 @@ export default {
     useCreate: () =>
       useMutation<ProjectsCreateInput, ProjectsCreateResult>((input) =>
         defaultApiClient.apiNamespaceProjects.create(input),
+      ),
+
+    createMilestoneComment: (input: ProjectsCreateMilestoneCommentInput) =>
+      defaultApiClient.apiNamespaceProjects.createMilestoneComment(input),
+    useCreateMilestoneComment: () =>
+      useMutation<ProjectsCreateMilestoneCommentInput, ProjectsCreateMilestoneCommentResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.createMilestoneComment(input),
+      ),
+
+    updateMilestoneTitle: (input: ProjectsUpdateMilestoneTitleInput) =>
+      defaultApiClient.apiNamespaceProjects.updateMilestoneTitle(input),
+    useUpdateMilestoneTitle: () =>
+      useMutation<ProjectsUpdateMilestoneTitleInput, ProjectsUpdateMilestoneTitleResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.updateMilestoneTitle(input),
       ),
 
     updateKeyResource: (input: ProjectsUpdateKeyResourceInput) =>
@@ -7114,6 +7096,13 @@ export default {
         defaultApiClient.apiNamespaceProjects.deleteKeyResource(input),
       ),
 
+    deleteMilestone: (input: ProjectsDeleteMilestoneInput) =>
+      defaultApiClient.apiNamespaceProjects.deleteMilestone(input),
+    useDeleteMilestone: () =>
+      useMutation<ProjectsDeleteMilestoneInput, ProjectsDeleteMilestoneResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.deleteMilestone(input),
+      ),
+
     updateDiscussion: (input: ProjectsUpdateDiscussionInput) =>
       defaultApiClient.apiNamespaceProjects.updateDiscussion(input),
     useUpdateDiscussion: () =>
@@ -7125,6 +7114,13 @@ export default {
     useUpdateCheckIn: () =>
       useMutation<ProjectsUpdateCheckInInput, ProjectsUpdateCheckInResult>((input) =>
         defaultApiClient.apiNamespaceProjects.updateCheckIn(input),
+      ),
+
+    updateMilestoneKanban: (input: ProjectsUpdateMilestoneKanbanInput) =>
+      defaultApiClient.apiNamespaceProjects.updateMilestoneKanban(input),
+    useUpdateMilestoneKanban: () =>
+      useMutation<ProjectsUpdateMilestoneKanbanInput, ProjectsUpdateMilestoneKanbanResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.updateMilestoneKanban(input),
       ),
 
     createContributor: (input: ProjectsCreateContributorInput) =>
