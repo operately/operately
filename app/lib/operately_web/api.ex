@@ -138,17 +138,6 @@ defmodule OperatelyWeb.Api do
         mutation(:update_description, OperatelyWeb.Api.Tasks.UpdateDescription)
       end
 
-      @doc "Get, list, create and manage space discussions"
-      namespace(:space_discussions) do
-        query(:get, OperatelyWeb.Api.SpaceDiscussions.Get)
-        query(:list, OperatelyWeb.Api.SpaceDiscussions.List)
-
-        mutation(:archive, OperatelyWeb.Api.SpaceDiscussions.Archive)
-        mutation(:update, OperatelyWeb.Api.SpaceDiscussions.Update)
-        mutation(:create, OperatelyWeb.Api.SpaceDiscussions.Create)
-        mutation(:publish, OperatelyWeb.Api.SpaceDiscussions.Publish)
-      end
-
       @doc "Get, list, create and manage spaces"
       namespace(:spaces) do
         query(:get, OperatelyWeb.Api.Spaces.Get)
@@ -159,6 +148,8 @@ defmodule OperatelyWeb.Api do
         query(:list_members, OperatelyWeb.Api.Spaces.ListMembers)
         query(:list_tasks, OperatelyWeb.Api.Spaces.ListTasks)
         query(:list_tools, OperatelyWeb.Api.Spaces.ListTools)
+        query(:get_discussion, OperatelyWeb.Api.Spaces.GetDiscussion)
+        query(:list_discussions, OperatelyWeb.Api.Spaces.ListDiscussions)
 
         mutation(:add_members, OperatelyWeb.Api.Spaces.AddMembers)
         mutation(:create, OperatelyWeb.Api.Spaces.Create)
@@ -171,6 +162,10 @@ defmodule OperatelyWeb.Api do
         mutation(:update_members_permissions, OperatelyWeb.Api.Spaces.UpdateMembersPermissions)
         mutation(:update_permissions, OperatelyWeb.Api.Spaces.UpdatePermissions)
         mutation(:update_tools, OperatelyWeb.Api.Spaces.UpdateTools)
+        mutation(:archive_discussion, OperatelyWeb.Api.Spaces.ArchiveDiscussion)
+        mutation(:create_discussion, OperatelyWeb.Api.Spaces.CreateDiscussion)
+        mutation(:publish_discussion, OperatelyWeb.Api.Spaces.PublishDiscussion)
+        mutation(:update_discussion, OperatelyWeb.Api.Spaces.UpdateDiscussion)
       end
 
       @doc "Get, list, update and manage user profiles and account settings"

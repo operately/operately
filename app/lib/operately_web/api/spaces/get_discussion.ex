@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.SpaceDiscussions.Get do
+defmodule OperatelyWeb.Api.Spaces.GetDiscussion do
   @moduledoc """
   Retrieves a space discussion by ID with optional related data.
   """

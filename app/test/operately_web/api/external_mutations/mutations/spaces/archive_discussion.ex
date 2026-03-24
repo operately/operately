@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.SpaceDiscussions.Archive do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Spaces.ArchiveDiscussion do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "space_discussions/archive"
+  def mutation_name, do: "spaces/archive_discussion"
 
   @impl true
   def setup(ctx) do

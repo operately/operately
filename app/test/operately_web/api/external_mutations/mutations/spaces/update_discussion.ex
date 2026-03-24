@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.SpaceDiscussions.Update do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Spaces.UpdateDiscussion do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "space_discussions/update"
+  def mutation_name, do: "spaces/update_discussion"
 
   @impl true
   def setup(ctx) do

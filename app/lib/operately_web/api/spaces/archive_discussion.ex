@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.SpaceDiscussions.Archive do
+defmodule OperatelyWeb.Api.Spaces.ArchiveDiscussion do
   @moduledoc """
   Archives a space discussion.
   """

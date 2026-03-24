@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.SpaceDiscussions.List do
+defmodule OperatelyWeb.Api.Spaces.ListDiscussions do
   @moduledoc """
   Lists space discussions for a space.
   """

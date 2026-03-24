@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.SpaceDiscussions.Create do
+defmodule OperatelyWeb.Api.Spaces.CreateDiscussion do
   @moduledoc """
   Creates a new space discussion.
   """
