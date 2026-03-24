@@ -15,7 +15,13 @@ export type {
 export const resource_hubs = Api.resource_hubs;
 export const documents = Api.documents;
 export const files = Api.files;
-export const folders = Api.folders;
+export const folders = {
+  get: Api.resource_hubs.getFolder,
+  useCopy: Api.resource_hubs.useCopyFolder,
+  useCreate: Api.resource_hubs.useCreateFolder,
+  useDelete: Api.resource_hubs.useDeleteFolder,
+  useRename: Api.resource_hubs.useRenameFolder,
+};
 export const links = Api.links;
 
 export type Resource = ResourceHubDocument | ResourceHubFile | ResourceHubFolder | ResourceHubLink;

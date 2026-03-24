@@ -54,7 +54,7 @@ export function useComments(paths: Paths, milestone: Milestones.Milestone, inval
 
         setComments((prev) => [...prev, Milestones.parseMilestoneCommentForTurboUi(paths, optimisticComment)]);
 
-        const res = await Api.project_milestones.createComment({
+        const res = await Api.projects.createMilestoneComment({
           milestoneId: milestone.id!,
           action: "none",
           content: JSON.stringify(content),

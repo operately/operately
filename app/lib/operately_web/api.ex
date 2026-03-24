@@ -104,20 +104,17 @@ defmodule OperatelyWeb.Api do
         mutation(:acknowledge_check_in, OperatelyWeb.Api.Projects.AcknowledgeCheckIn)
         mutation(:create_discussion, OperatelyWeb.Api.Projects.Discussions.Create)
         mutation(:update_discussion, OperatelyWeb.Api.Projects.Discussions.Update)
-      end
 
-      @doc "Get, list, create and manage project milestones"
-      namespace(:project_milestones) do
-        query(:get, OperatelyWeb.Api.ProjectMilestones.Get)
-        query(:list_tasks, OperatelyWeb.Api.ProjectMilestones.ListTasks)
+        query(:get_milestone, OperatelyWeb.Api.Projects.GetMilestone)
+        query(:list_milestone_tasks, OperatelyWeb.Api.Projects.Milestones.ListTasks)
 
-        mutation(:update_title, OperatelyWeb.Api.ProjectMilestones.UpdateTitle)
-        mutation(:update_kanban, OperatelyWeb.Api.ProjectMilestones.UpdateKanban)
-        mutation(:update_due_date, OperatelyWeb.Api.ProjectMilestones.UpdateDueDate)
-        mutation(:update_description, OperatelyWeb.Api.ProjectMilestones.UpdateDescription)
-        mutation(:update_ordering, OperatelyWeb.Api.ProjectMilestones.UpdateOrdering)
-        mutation(:delete, OperatelyWeb.Api.ProjectMilestones.Delete)
-        mutation(:create_comment, OperatelyWeb.Api.ProjectMilestones.CreateComment)
+        mutation(:create_milestone_comment, OperatelyWeb.Api.Projects.CreateMilestoneComment)
+        mutation(:delete_milestone, OperatelyWeb.Api.Projects.Milestones.Delete)
+        mutation(:update_milestone_title, OperatelyWeb.Api.Projects.Milestones.UpdateTitle)
+        mutation(:update_milestone_kanban, OperatelyWeb.Api.Projects.Milestones.UpdateKanban)
+        mutation(:update_milestone_due_date, OperatelyWeb.Api.Projects.Milestones.UpdateDueDate)
+        mutation(:update_milestone_description, OperatelyWeb.Api.Projects.Milestones.UpdateDescription)
+        mutation(:update_milestone_ordering, OperatelyWeb.Api.Projects.Milestones.UpdateOrdering)
       end
 
       @doc "Get, list, create and manage tasks across projects and spaces"
@@ -228,9 +225,14 @@ defmodule OperatelyWeb.Api do
       namespace(:resource_hubs) do
         query(:get, OperatelyWeb.Api.ResourceHubs.Get)
         query(:list_nodes, OperatelyWeb.Api.ResourceHubs.ListNodes)
+        query(:get_folder, OperatelyWeb.Api.ResourceHubs.GetFolder)
 
         mutation(:create, OperatelyWeb.Api.ResourceHubs.Create)
         mutation(:update_parent_folder, OperatelyWeb.Api.ResourceHubs.UpdateParentFolder)
+        mutation(:copy_folder, OperatelyWeb.Api.ResourceHubs.CopyFolder)
+        mutation(:create_folder, OperatelyWeb.Api.ResourceHubs.CreateFolder)
+        mutation(:delete_folder, OperatelyWeb.Api.ResourceHubs.DeleteFolder)
+        mutation(:rename_folder, OperatelyWeb.Api.ResourceHubs.RenameFolder)
       end
 
       @doc "Get, create and manage documents in resource hubs"
@@ -259,16 +261,6 @@ defmodule OperatelyWeb.Api do
         mutation(:create, OperatelyWeb.Api.Links.Create)
         mutation(:delete, OperatelyWeb.Api.Links.Delete)
         mutation(:update, OperatelyWeb.Api.Links.Update)
-      end
-
-      @doc "Get, create and manage folders in resource hubs"
-      namespace(:folders) do
-        query(:get, OperatelyWeb.Api.Folders.Get)
-
-        mutation(:copy, OperatelyWeb.Api.Folders.Copy)
-        mutation(:create, OperatelyWeb.Api.Folders.Create)
-        mutation(:delete, OperatelyWeb.Api.Folders.Delete)
-        mutation(:rename, OperatelyWeb.Api.Folders.Rename)
       end
 
       @doc "List and manage notifications and subscriptions"

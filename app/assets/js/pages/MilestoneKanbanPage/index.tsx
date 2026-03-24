@@ -43,7 +43,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeAvailableStatuses: true,
           includeSubscriptionList: true,
         }).then((d) => d.milestone),
-        tasks: Api.project_milestones.listTasks({ milestoneId: params.id }).then((d) => d.tasks),
+        tasks: Api.projects.listMilestoneTasks({ milestoneId: params.id }).then((d) => d.tasks),
       }),
   });
 }
