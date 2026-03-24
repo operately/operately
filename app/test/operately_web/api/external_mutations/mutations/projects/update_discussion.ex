@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.ProjectDiscussions.Create do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Projects.Discussions.Update do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "project_discussions/create"
+  def mutation_name, do: "projects/update_discussion"
 
   @impl true
   def setup(ctx) do
@@ -11,16 +11,15 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.ProjectDiscussions.Create
     |> Factory.setup()
     |> Factory.add_space(:space)
     |> Factory.add_project(:project, :space)
-    |> Factory.add_company_member(:member)
+    |> Factory.add_project_discussion(:project_discussion, :project)
   end
 
   @impl true
   def inputs(ctx) do
     %{
-      project_id: Paths.project_id(ctx.project),
+      id: Paths.comment_thread_id(ctx.project_discussion),
       title: "Updated Title",
-      message: rich_text_string("Updated content"),
-      subscriber_ids: [Paths.person_id(ctx.member)]
+      message: rich_text_string("Updated content")
     }
   end
 

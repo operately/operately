@@ -179,7 +179,7 @@ defmodule Operately.AI.Tools do
         if context.agent_run.sandbox_mode do
           {:ok, "posted"}
         else
-          {:ok, resp} = OperatelyWeb.Api.ProjectDiscussions.Create.call(conn, args)
+          {:ok, resp} = OperatelyWeb.Api.Projects.Discussions.Create.call(conn, args)
           Jason.encode(resp)
         end
       end

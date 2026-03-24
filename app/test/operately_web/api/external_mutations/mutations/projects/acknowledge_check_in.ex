@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.ProjectCheckIns.Acknowledge do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Projects.AcknowledgeCheckIn do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "project_check_ins/acknowledge"
+  def mutation_name, do: "projects/acknowledge_check_in"
 
   @impl true
   def setup(ctx) do

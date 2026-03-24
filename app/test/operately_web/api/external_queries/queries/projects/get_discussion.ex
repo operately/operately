@@ -1,10 +1,10 @@
-defmodule OperatelyWeb.Api.ExternalQueries.Queries.ProjectDiscussions.Get do
+defmodule OperatelyWeb.Api.ExternalQueries.Queries.Projects.Discussions.Get do
   use Operately.Support.ExternalApi.QuerySpec
 
   alias Operately.Support.Factory
   alias OperatelyWeb.Paths
 
-  def query_name, do: "project_discussions/get"
+  def query_name, do: "projects/get_discussion"
 
   @impl true
   def setup(ctx) do

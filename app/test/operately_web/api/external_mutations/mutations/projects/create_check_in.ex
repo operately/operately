@@ -1,9 +1,9 @@
-defmodule OperatelyWeb.Api.ExternalMutations.Mutations.ProjectCheckIns.Update do
+defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Projects.CreateCheckIn do
   use Operately.Support.ExternalApi.MutationSpec
   use OperatelyWeb.TurboCase
 
   @impl true
-  def mutation_name, do: "project_check_ins/update"
+  def mutation_name, do: "projects/create_check_in"
 
   @impl true
   def setup(ctx) do
@@ -11,15 +11,17 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.ProjectCheckIns.Update do
     |> Factory.setup()
     |> Factory.add_space(:space)
     |> Factory.add_project(:project, :space)
-    |> Factory.add_project_check_in(:project_check_in, :project, :creator)
+    |> Factory.add_company_member(:member)
   end
 
   @impl true
   def inputs(ctx) do
     %{
-      check_in_id: Paths.project_check_in_id(ctx.project_check_in),
+      project_id: Paths.project_id(ctx.project),
       status: "on_track",
-      description: rich_text_string("Updated content")
+      description: rich_text_string("Updated content"),
+      send_notifications_to_everyone: false,
+      subscriber_ids: [Paths.person_id(ctx.member)]
     }
   end
 

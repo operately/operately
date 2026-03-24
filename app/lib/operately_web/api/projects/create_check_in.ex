@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.ProjectCheckIns.Create do
+defmodule OperatelyWeb.Api.Projects.CreateCheckIn do
   @moduledoc """
   Creates a new project check-in.
   """

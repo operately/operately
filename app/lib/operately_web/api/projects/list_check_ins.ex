@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.ProjectCheckIns.List do
+defmodule OperatelyWeb.Api.Projects.ListCheckIns do
   @moduledoc """
   Lists all project check-ins for a given project with optional related data.
   """
