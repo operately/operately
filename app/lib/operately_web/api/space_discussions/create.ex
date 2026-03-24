@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api.SpaceDiscussions.Create do
   inputs do
     field :space_id, :id, null: false
     field :title, :string, null: false
-    field? :body, :string, null: false
+    field? :body, :json, null: false
     field? :post_as_draft, :boolean, null: false
 
     field? :send_notifications_to_everyone, :boolean, null: false
@@ -53,7 +53,7 @@ defmodule OperatelyWeb.Api.SpaceDiscussions.Create do
       messages_board_id: board_id,
       space_id: inputs.space_id,
       title: inputs.title,
-      content: Jason.decode!(inputs.body),
+      content: inputs.body,
       post_as_draft: inputs[:post_as_draft] || false,
       send_to_everyone: inputs[:send_notifications_to_everyone] || false,
       subscription_parent_type: :message,

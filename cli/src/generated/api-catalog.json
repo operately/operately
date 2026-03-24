@@ -14833,7 +14833,7 @@
           "default": null,
           "name": "content",
           "type": {
-            "name": "string",
+            "name": "json",
             "kind": "named"
           },
           "optional": false,
@@ -25486,7 +25486,7 @@
           "default": null,
           "name": "body",
           "type": {
-            "name": "string",
+            "name": "json",
             "kind": "named"
           },
           "optional": true,
@@ -27844,6 +27844,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-23T17:08:15Z",
+  "generated_at": "2026-03-24T11:25:00Z",
   "schema_version": 1
 }
