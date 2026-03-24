@@ -120,74 +120,90 @@ export function printEndpointHelp(endpoint: CatalogEndpoint, command: string, ty
   header.push("");
   header.push("Input flags:");
 
-  const rows: string[] =
+  const enumTypesUsed = new Map<string, string[] | number[]>();
+  let hasContextualDate = false;
+  let hasContextualDateNullable = false;
+  let hasMarkdown = false;
+
+  const flagRows: string[] =
     endpoint.inputs.length === 0
       ? ["  (none)"]
-      : endpoint.inputs.flatMap((field) => {
+      : endpoint.inputs.map((field) => {
           const flag = `--${field.name.replace(/_/g, "-")}`;
           const required = field.optional ? "optional" : "required";
           const nullable = field.nullable ? ", nullable" : "";
           const typeHint = formatTypeHint(field.type);
-          const lines: string[] = [];
-
-          lines.push(`  ${flag} <${typeHint}> (${required}${nullable})`);
 
           if (field.type.kind === "named" && field.type.name === "contextual_date") {
-            lines.push(...formatContextualDateHelp(field.nullable));
+            hasContextualDate = true;
+            if (field.nullable) {
+              hasContextualDateNullable = true;
+            }
           }
 
           if (types && field.type.kind === "named") {
             const enumValues = types.enums[field.type.name] || types.int_enums[field.type.name];
-            if (enumValues) {
-              lines.push(...formatEnumHelp(field.type.name, enumValues));
+            if (enumValues && !enumTypesUsed.has(field.type.name)) {
+              enumTypesUsed.set(field.type.name, enumValues);
             }
           }
 
           if (field.type.kind === "named" && field.type.name === "json") {
-            lines.push(...formatMarkdownHelp());
+            hasMarkdown = true;
           }
 
-          return lines;
+          return `  ${flag} <${typeHint}> (${required}${nullable})`;
         });
 
-  console.log([...header, ...rows].join("\n"));
+  const additionalSections: string[] = [];
+
+  if (enumTypesUsed.size > 0) {
+    for (const [enumName, enumValues] of enumTypesUsed) {
+      additionalSections.push("");
+      additionalSections.push(`Allowed values for ${enumName}:`);
+      for (const value of enumValues) {
+        additionalSections.push(`  ${value}`);
+      }
+    }
+  }
+
+  if (hasMarkdown) {
+    additionalSections.push("");
+    additionalSections.push(...formatMarkdownHelp());
+  }
+
+  if (hasContextualDate) {
+    additionalSections.push("");
+    additionalSections.push(...formatContextualDateHelp(hasContextualDateNullable));
+  }
+
+  console.log([...header, ...flagRows, ...additionalSections].join("\n"));
 }
 
 function formatContextualDateHelp(isNullable: boolean): string[] {
   const lines: string[] = [];
-  lines.push("    Contextual Date Formats:");
-  lines.push("      YYYY-MM-DD         Specific day (e.g., 2025-03-20)");
-  lines.push("      YYYY               Year end (e.g., 2025 → 31/12/2025)");
-  lines.push("      YYYY^              Year start (e.g., 2025^ → 01/01/2025)");
-  lines.push("      YYYY/q#            Quarter end (e.g., 2025/q1 → 31/03/2025)");
-  lines.push("      YYYY/q#^           Quarter start (e.g., 2025/q1^ → 01/01/2025)");
-  lines.push("      YYYY/MM            Month end (e.g., 2025/01 → 31/01/2025)");
-  lines.push("      YYYY/MM^           Month start (e.g., 2025/01^ → 01/01/2025)");
+  lines.push("Contextual Date Formats:");
+  lines.push("  YYYY-MM-DD         Specific day (e.g., 2025-03-20)");
+  lines.push("  YYYY               Year end (e.g., 2025 → 31/12/2025)");
+  lines.push("  YYYY^              Year start (e.g., 2025^ → 01/01/2025)");
+  lines.push("  YYYY/q#            Quarter end (e.g., 2025/q1 → 31/03/2025)");
+  lines.push("  YYYY/q#^           Quarter start (e.g., 2025/q1^ → 01/01/2025)");
+  lines.push("  YYYY/MM            Month end (e.g., 2025/01 → 31/01/2025)");
+  lines.push("  YYYY/MM^           Month start (e.g., 2025/01^ → 01/01/2025)");
   if (isNullable) {
-    lines.push("      null               Clear the date");
+    lines.push("  null               Clear the date");
   }
-  return lines;
-}
-
-function formatEnumHelp(enumName: string, values: string[]): string[] {
-  const lines: string[] = [];
-  lines.push("    Allowed values:");
-
-  for (const value of values) {
-    lines.push(`      ${value}`);
-  }
-
   return lines;
 }
 
 function formatMarkdownHelp(): string[] {
   const lines: string[] = [];
-  lines.push("    Markdown Format:");
-  lines.push("      Supports standard markdown syntax");
-  lines.push("      Headings: # H1, ## H2, ### H3");
-  lines.push("      Bold: **text**, Italic: *text*");
-  lines.push("      Lists: - item or 1. item");
-  lines.push("      Links: [text](url)");
-  lines.push("      Code: `inline` or ```block```");
+  lines.push("Markdown Format:");
+  lines.push("  Supports standard markdown syntax");
+  lines.push("  Headings: # H1, ## H2, ### H3");
+  lines.push("  Bold: **text**, Italic: *text*");
+  lines.push("  Lists: - item or 1. item");
+  lines.push("  Links: [text](url)");
+  lines.push("  Code: `inline` or ```block```");
   return lines;
 }
