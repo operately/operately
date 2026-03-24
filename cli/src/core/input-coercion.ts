@@ -2,8 +2,9 @@ import { UsageError } from "./parser-types";
 import type { CatalogEndpoint, CatalogField, CatalogTypeRef, CatalogTypes } from "../types/catalog";
 import { isGlobalFlag } from "./flags";
 import { parseContextualDateString } from "./contextual-date-parser";
+import { convertMarkdownToTiptap } from "./markdown-to-tiptap";
 
-const BUILTIN_TYPES = new Set(["string", "integer", "float", "boolean", "date", "time", "datetime", "id"]);
+const BUILTIN_TYPES = new Set(["string", "integer", "float", "boolean", "date", "time", "datetime", "id", "json"]);
 
 export function parseEndpointInputs(
   endpoint: CatalogEndpoint,
@@ -184,6 +185,18 @@ function coerceFieldValue(
     return value;
   }
 
+  if (types.int_enums[typeName]) {
+    const num = Number(value);
+    if (!Number.isInteger(num)) {
+      throw new UsageError(`Expected integer for enum '${path}', got '${value}'.`);
+    }
+    if (!types.int_enums[typeName].includes(num)) {
+      const validValues = types.int_enums[typeName].map(String).join(", ");
+      throw new UsageError(`Invalid enum value '${value}' for '${path}'. Expected one of: ${validValues}.`);
+    }
+    return num;
+  }
+
   if (types.unions[typeName]) {
     for (const variant of types.unions[typeName]) {
       try {
@@ -236,7 +249,29 @@ function coerceBuiltinType(typeName: string, value: unknown, path: string): unkn
     return value;
   }
 
+  if (typeName === "json") {
+    return coerceJsonType(value, path);
+  }
+
   throw new UsageError(`Unknown builtin type '${typeName}'.`);
+}
+
+function coerceJsonType(value: unknown, path: string): string {
+  if (typeof value === "object" && value !== null) {
+    return JSON.stringify(value);
+  }
+
+  if (typeof value !== "string") {
+    throw new UsageError(`Expected string or object for '${path}', got ${typeof value}.`);
+  }
+
+  try {
+    const parsed = JSON.parse(value);
+    return JSON.stringify(parsed);
+  } catch {
+    const tiptapJson = convertMarkdownToTiptap(value);
+    return JSON.stringify(tiptapJson);
+  }
 }
 
 function coerceContextualDate(value: unknown, types: CatalogTypes, path: string) {

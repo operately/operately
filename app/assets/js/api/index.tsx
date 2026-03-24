@@ -3204,7 +3204,7 @@ export interface ChangePasswordResult {}
 export interface CommentsCreateInput {
   entityId: Id;
   entityType: CommentParentType;
-  content: string;
+  content: Json;
 }
 
 export interface CommentsCreateResult {
@@ -4424,7 +4424,7 @@ export interface SpaceDiscussionsArchiveResult {}
 export interface SpaceDiscussionsCreateInput {
   spaceId: Id;
   title: string;
-  body?: string;
+  body?: Json;
   postAsDraft?: boolean;
   sendNotificationsToEveryone?: boolean;
   subscriberIds?: Id[];

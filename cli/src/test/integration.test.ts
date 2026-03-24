@@ -235,6 +235,22 @@ describe("CLI Integration Tests", () => {
       assert.ok(result.stdout.includes("<string>"));
       assert.ok(result.stdout.includes("<access_options_int>"));
     });
+
+    it("shows markdown format for json fields", async () => {
+      const result = await runCLI(["help", "projects", "update_description"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("<markdown>"));
+      assert.ok(result.stdout.includes("Markdown Format:"));
+      assert.ok(result.stdout.includes("Headings: # H1"));
+      assert.ok(result.stdout.includes("Bold: **text**"));
+      assert.ok(result.stdout.includes("Lists: - item"));
+    });
+
+    it("shows markdown help for all json type fields", async () => {
+      const result = await runCLI(["help", "comments", "create"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("--content"));
+    });
   });
 
   describe("Backward Compatibility", () => {
