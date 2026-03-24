@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.GoalCheckIns.Acknowledge do
+defmodule OperatelyWeb.Api.Goals.AcknowledgeCheckIn do
   @moduledoc """
   Acknowledges a goal check-in.
   """

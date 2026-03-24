@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.GoalDiscussions.List do
+defmodule OperatelyWeb.Api.Goals.ListDiscussions do
   @moduledoc """
   Lists discussions for a goal.
   """

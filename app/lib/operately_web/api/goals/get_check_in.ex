@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.GoalCheckIns.Get do
+defmodule OperatelyWeb.Api.Goals.GetCheckIn do
   @moduledoc """
   Retrieves a goal check-in by ID with optional includes for related data.
   """

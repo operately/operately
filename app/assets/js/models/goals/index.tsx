@@ -9,8 +9,8 @@ export type Check = api.GoalCheck;
 export { filterPossibleParentGoals } from "./filterPossibleParentGoals";
 export { useGoalTargets } from "./useGoalTargets";
 
-export const createGoalDiscussion = Api.goal_discussions.create;
-export const useEditGoalDiscussion = Api.goal_discussions.useUpdate;
+export const createGoalDiscussion = Api.goals.createDiscussion;
+export const useEditGoalDiscussion = Api.goals.useUpdateDiscussion;
 
 export const getGoal = Api.goals.get;
 export const getGoals = Api.goals.list;
