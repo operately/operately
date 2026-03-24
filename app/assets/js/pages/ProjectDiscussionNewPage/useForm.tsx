@@ -29,7 +29,7 @@ export function useForm({ project, subscriptionsState }: UseFormProps) {
       }
     },
     submit: async () => {
-      const res = await Api.project_discussions.create({
+      const res = await Api.projects.createDiscussion({
         projectId: project.id,
         title: form.values.title,
         message: JSON.stringify(form.values.message),

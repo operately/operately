@@ -7,10 +7,10 @@ import * as Time from "@/utils/time";
 
 export type ProjectCheckIn = api.ProjectCheckIn;
 
-export const getProjectCheckIn = Api.project_check_ins.get;
-export const useAcknowledgeProjectCheckIn = Api.project_check_ins.useAcknowledge;
-export const useEditProjectCheckIn = Api.project_check_ins.useUpdate;
-export const usePostProjectCheckIn = Api.project_check_ins.useCreate;
+export const getProjectCheckIn = Api.projects.getCheckIn;
+export const useAcknowledgeProjectCheckIn = Api.projects.useAcknowledgeCheckIn;
+export const useEditProjectCheckIn = Api.projects.useUpdateCheckIn;
+export const usePostProjectCheckIn = Api.projects.useCreateCheckIn;
 
 export function parseCheckInsForTurboUi(paths: Paths, checkIns: api.ProjectCheckIn[]) {
   return checkIns.map((checkIn) => {
