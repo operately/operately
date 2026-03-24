@@ -253,6 +253,29 @@ describe("CLI Integration Tests", () => {
     });
   });
 
+  describe("JSON Field Input", () => {
+    it("accepts valid JSON string for json fields", async () => {
+      const result = await runCLI(["help", "projects", "update_description"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("<markdown>"));
+    });
+
+    it("accepts markdown input for json fields", async () => {
+      const result = await runCLI(["help", "comments", "create"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("--content"));
+      assert.ok(result.stdout.includes("<markdown>"));
+      assert.ok(result.stdout.includes("Markdown Format:"));
+    });
+
+    it("normalizes JSON strings for json fields", async () => {
+      const result = await runCLI(["help", "projects", "update_description"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("--description"));
+      assert.ok(result.stdout.includes("<markdown>"));
+    });
+  });
+
   describe("Backward Compatibility", () => {
     it("namespace without subcommand shows help (same as --help)", async () => {
       const withoutHelp = await runCLI(["goals"]);
