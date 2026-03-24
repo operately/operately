@@ -139,7 +139,7 @@ npm install
     assert.strictEqual((result.content as any)[2].type, "paragraph");
   });
 
-  it("throws error for invalid markdown parsing", () => {
+  it("handles valid markdown without throwing", () => {
     assert.doesNotThrow(() => {
       convertMarkdownToTiptap("Valid markdown");
     });

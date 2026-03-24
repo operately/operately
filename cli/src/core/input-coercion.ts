@@ -269,8 +269,12 @@ function coerceJsonType(value: unknown, path: string): string {
     const parsed = JSON.parse(value);
     return JSON.stringify(parsed);
   } catch {
-    const tiptapJson = convertMarkdownToTiptap(value);
-    return JSON.stringify(tiptapJson);
+    try {
+      const tiptapJson = convertMarkdownToTiptap(value);
+      return JSON.stringify(tiptapJson);
+    } catch (error) {
+      throw new UsageError(`Failed to parse '${path}' as JSON or markdown: ${error instanceof Error ? error.message : String(error)}`);
+    }
   }
 }
 
