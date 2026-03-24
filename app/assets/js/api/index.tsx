@@ -2409,36 +2409,6 @@ export interface GetThemeResult {
   theme: AccountTheme;
 }
 
-export interface GoalCheckInsGetInput {
-  id: Id;
-  includeAuthor?: boolean | null;
-  includeAcknowledgedBy?: boolean | null;
-  includeReactions?: boolean | null;
-  includeGoal?: boolean | null;
-  includeGoalTargets?: boolean | null;
-  includeGoalChecklist?: boolean | null;
-  includeReviewer?: boolean | null;
-  includeChampion?: boolean | null;
-  includeSpace?: boolean | null;
-  includeSpaceMembers?: boolean | null;
-  includeSubscriptionsList?: boolean | null;
-  includePotentialSubscribers?: boolean | null;
-  includeUnreadNotifications?: boolean | null;
-  includePermissions?: boolean | null;
-}
-
-export interface GoalCheckInsGetResult {
-  update: GoalProgressUpdate;
-}
-
-export interface GoalDiscussionsListInput {
-  goalId: Id;
-}
-
-export interface GoalDiscussionsListResult {
-  discussions: Discussion[];
-}
-
 export interface GoalsGetInput {
   id: Id;
   includeChampion?: boolean | null;
@@ -2461,6 +2431,28 @@ export interface GoalsGetInput {
 export interface GoalsGetResult {
   goal: Goal;
   markdown?: string;
+}
+
+export interface GoalsGetCheckInInput {
+  id: Id;
+  includeAuthor?: boolean | null;
+  includeAcknowledgedBy?: boolean | null;
+  includeReactions?: boolean | null;
+  includeGoal?: boolean | null;
+  includeGoalTargets?: boolean | null;
+  includeGoalChecklist?: boolean | null;
+  includeReviewer?: boolean | null;
+  includeChampion?: boolean | null;
+  includeSpace?: boolean | null;
+  includeSpaceMembers?: boolean | null;
+  includeSubscriptionsList?: boolean | null;
+  includePotentialSubscribers?: boolean | null;
+  includeUnreadNotifications?: boolean | null;
+  includePermissions?: boolean | null;
+}
+
+export interface GoalsGetCheckInResult {
+  update: GoalProgressUpdate;
 }
 
 export interface GoalsListInput {
@@ -2498,6 +2490,14 @@ export interface GoalsListContributorsInput {
 
 export interface GoalsListContributorsResult {
   contributors?: Person[] | null;
+}
+
+export interface GoalsListDiscussionsInput {
+  goalId: Id;
+}
+
+export interface GoalsListDiscussionsResult {
+  discussions: Discussion[];
 }
 
 export interface GoalsSearchParentGoalInput {
@@ -3503,61 +3503,13 @@ export interface FoldersRenameResult {
   success: boolean;
 }
 
-export interface GoalCheckInsAcknowledgeInput {
+export interface GoalsAcknowledgeCheckInInput {
   id: Id;
 }
 
-export interface GoalCheckInsAcknowledgeResult {
+export interface GoalsAcknowledgeCheckInResult {
   update?: GoalProgressUpdate | null;
 }
-
-export interface GoalCheckInsCreateInput {
-  goalId: Id;
-  status: string;
-  dueDate: ContextualDate | null;
-  checklist: GoalCheckUpdate[];
-  content?: Json | null;
-  newTargetValues?: string | null;
-  sendNotificationsToEveryone?: boolean | null;
-  subscriberIds?: Id[] | null;
-}
-
-export interface GoalCheckInsCreateResult {
-  update?: GoalProgressUpdate | null;
-}
-
-export interface GoalCheckInsUpdateInput {
-  id: Id;
-  dueDate: ContextualDate | null;
-  status?: string | null;
-  content?: Json | null;
-  newTargetValues?: string | null;
-  checklist?: GoalCheckUpdate[] | null;
-}
-
-export interface GoalCheckInsUpdateResult {
-  update?: GoalProgressUpdate | null;
-}
-
-export interface GoalDiscussionsCreateInput {
-  goalId: Id;
-  title: string;
-  message: string;
-  sendNotificationsToEveryone?: boolean | null;
-  subscriberIds?: Id[] | null;
-}
-
-export interface GoalDiscussionsCreateResult {
-  id?: string | null;
-}
-
-export interface GoalDiscussionsUpdateInput {
-  activityId: Id;
-  title: string;
-  message: string;
-}
-
-export interface GoalDiscussionsUpdateResult {}
 
 export interface GoalsChangeParentInput {
   goalId: Id;
@@ -3616,6 +3568,33 @@ export interface GoalsCreateCheckInput {
 export interface GoalsCreateCheckResult {
   checkId: Id;
   success: boolean;
+}
+
+export interface GoalsCreateCheckInInput {
+  goalId: Id;
+  status: string;
+  dueDate: ContextualDate | null;
+  checklist: GoalCheckUpdate[];
+  content?: Json | null;
+  newTargetValues?: string | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
+}
+
+export interface GoalsCreateCheckInResult {
+  update?: GoalProgressUpdate | null;
+}
+
+export interface GoalsCreateDiscussionInput {
+  goalId: Id;
+  title: string;
+  message: string;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
+}
+
+export interface GoalsCreateDiscussionResult {
+  id?: string | null;
 }
 
 export interface GoalsCreateTargetInput {
@@ -3724,6 +3703,19 @@ export interface GoalsUpdateCheckResult {
   success: boolean;
 }
 
+export interface GoalsUpdateCheckInInput {
+  id: Id;
+  dueDate: ContextualDate | null;
+  status?: string | null;
+  content?: Json | null;
+  newTargetValues?: string | null;
+  checklist?: GoalCheckUpdate[] | null;
+}
+
+export interface GoalsUpdateCheckInResult {
+  update?: GoalProgressUpdate | null;
+}
+
 export interface GoalsUpdateCheckIndexInput {
   goalId: Id;
   checkId: Id;
@@ -3742,6 +3734,14 @@ export interface GoalsUpdateDescriptionInput {
 export interface GoalsUpdateDescriptionResult {
   success: boolean;
 }
+
+export interface GoalsUpdateDiscussionInput {
+  activityId: Id;
+  title: string;
+  message: string;
+}
+
+export interface GoalsUpdateDiscussionResult {}
 
 export interface GoalsUpdateDueDateInput {
   goalId: Id;
@@ -5588,47 +5588,15 @@ class ApiNamespaceProjects {
   }
 }
 
-class ApiNamespaceGoalDiscussions {
-  constructor(private client: ApiClient) {}
-
-  async list(input: GoalDiscussionsListInput): Promise<GoalDiscussionsListResult> {
-    return this.client.get("/goal_discussions/list", input);
-  }
-
-  async create(input: GoalDiscussionsCreateInput): Promise<GoalDiscussionsCreateResult> {
-    return this.client.post("/goal_discussions/create", input);
-  }
-
-  async update(input: GoalDiscussionsUpdateInput): Promise<GoalDiscussionsUpdateResult> {
-    return this.client.post("/goal_discussions/update", input);
-  }
-}
-
-class ApiNamespaceGoalCheckIns {
-  constructor(private client: ApiClient) {}
-
-  async get(input: GoalCheckInsGetInput): Promise<GoalCheckInsGetResult> {
-    return this.client.get("/goal_check_ins/get", input);
-  }
-
-  async acknowledge(input: GoalCheckInsAcknowledgeInput): Promise<GoalCheckInsAcknowledgeResult> {
-    return this.client.post("/goal_check_ins/acknowledge", input);
-  }
-
-  async create(input: GoalCheckInsCreateInput): Promise<GoalCheckInsCreateResult> {
-    return this.client.post("/goal_check_ins/create", input);
-  }
-
-  async update(input: GoalCheckInsUpdateInput): Promise<GoalCheckInsUpdateResult> {
-    return this.client.post("/goal_check_ins/update", input);
-  }
-}
-
 class ApiNamespaceGoals {
   constructor(private client: ApiClient) {}
 
   async get(input: GoalsGetInput): Promise<GoalsGetResult> {
     return this.client.get("/goals/get", input);
+  }
+
+  async getCheckIn(input: GoalsGetCheckInInput): Promise<GoalsGetCheckInResult> {
+    return this.client.get("/goals/get_check_in", input);
   }
 
   async list(input: GoalsListInput): Promise<GoalsListResult> {
@@ -5647,8 +5615,16 @@ class ApiNamespaceGoals {
     return this.client.get("/goals/list_contributors", input);
   }
 
+  async listDiscussions(input: GoalsListDiscussionsInput): Promise<GoalsListDiscussionsResult> {
+    return this.client.get("/goals/list_discussions", input);
+  }
+
   async searchParentGoal(input: GoalsSearchParentGoalInput): Promise<GoalsSearchParentGoalResult> {
     return this.client.get("/goals/search_parent_goal", input);
+  }
+
+  async acknowledgeCheckIn(input: GoalsAcknowledgeCheckInInput): Promise<GoalsAcknowledgeCheckInResult> {
+    return this.client.post("/goals/acknowledge_check_in", input);
   }
 
   async changeParent(input: GoalsChangeParentInput): Promise<GoalsChangeParentResult> {
@@ -5669,6 +5645,14 @@ class ApiNamespaceGoals {
 
   async createCheck(input: GoalsCreateCheckInput): Promise<GoalsCreateCheckResult> {
     return this.client.post("/goals/create_check", input);
+  }
+
+  async createCheckIn(input: GoalsCreateCheckInInput): Promise<GoalsCreateCheckInResult> {
+    return this.client.post("/goals/create_check_in", input);
+  }
+
+  async createDiscussion(input: GoalsCreateDiscussionInput): Promise<GoalsCreateDiscussionResult> {
+    return this.client.post("/goals/create_discussion", input);
   }
 
   async createTarget(input: GoalsCreateTargetInput): Promise<GoalsCreateTargetResult> {
@@ -5715,12 +5699,20 @@ class ApiNamespaceGoals {
     return this.client.post("/goals/update_check", input);
   }
 
+  async updateCheckIn(input: GoalsUpdateCheckInInput): Promise<GoalsUpdateCheckInResult> {
+    return this.client.post("/goals/update_check_in", input);
+  }
+
   async updateCheckIndex(input: GoalsUpdateCheckIndexInput): Promise<GoalsUpdateCheckIndexResult> {
     return this.client.post("/goals/update_check_index", input);
   }
 
   async updateDescription(input: GoalsUpdateDescriptionInput): Promise<GoalsUpdateDescriptionResult> {
     return this.client.post("/goals/update_description", input);
+  }
+
+  async updateDiscussion(input: GoalsUpdateDiscussionInput): Promise<GoalsUpdateDiscussionResult> {
+    return this.client.post("/goals/update_discussion", input);
   }
 
   async updateDueDate(input: GoalsUpdateDueDateInput): Promise<GoalsUpdateDueDateResult> {
@@ -5795,8 +5787,6 @@ export class ApiClient {
   public apiNamespaceProjectCheckIns: ApiNamespaceProjectCheckIns;
   public apiNamespaceProjectMilestones: ApiNamespaceProjectMilestones;
   public apiNamespaceProjects: ApiNamespaceProjects;
-  public apiNamespaceGoalDiscussions: ApiNamespaceGoalDiscussions;
-  public apiNamespaceGoalCheckIns: ApiNamespaceGoalCheckIns;
   public apiNamespaceGoals: ApiNamespaceGoals;
   public apiNamespaceReactions: ApiNamespaceReactions;
 
@@ -5821,8 +5811,6 @@ export class ApiClient {
     this.apiNamespaceProjectCheckIns = new ApiNamespaceProjectCheckIns(this);
     this.apiNamespaceProjectMilestones = new ApiNamespaceProjectMilestones(this);
     this.apiNamespaceProjects = new ApiNamespaceProjects(this);
-    this.apiNamespaceGoalDiscussions = new ApiNamespaceGoalDiscussions(this);
-    this.apiNamespaceGoalCheckIns = new ApiNamespaceGoalCheckIns(this);
     this.apiNamespaceGoals = new ApiNamespaceGoals(this);
     this.apiNamespaceReactions = new ApiNamespaceReactions(this);
   }
@@ -7164,53 +7152,15 @@ export default {
       ),
   },
 
-  goal_discussions: {
-    list: (input: GoalDiscussionsListInput) => defaultApiClient.apiNamespaceGoalDiscussions.list(input),
-    useList: (input: GoalDiscussionsListInput) =>
-      useQuery<GoalDiscussionsListResult>(() => defaultApiClient.apiNamespaceGoalDiscussions.list(input)),
-
-    update: (input: GoalDiscussionsUpdateInput) => defaultApiClient.apiNamespaceGoalDiscussions.update(input),
-    useUpdate: () =>
-      useMutation<GoalDiscussionsUpdateInput, GoalDiscussionsUpdateResult>((input) =>
-        defaultApiClient.apiNamespaceGoalDiscussions.update(input),
-      ),
-
-    create: (input: GoalDiscussionsCreateInput) => defaultApiClient.apiNamespaceGoalDiscussions.create(input),
-    useCreate: () =>
-      useMutation<GoalDiscussionsCreateInput, GoalDiscussionsCreateResult>((input) =>
-        defaultApiClient.apiNamespaceGoalDiscussions.create(input),
-      ),
-  },
-
-  goal_check_ins: {
-    get: (input: GoalCheckInsGetInput) => defaultApiClient.apiNamespaceGoalCheckIns.get(input),
-    useGet: (input: GoalCheckInsGetInput) =>
-      useQuery<GoalCheckInsGetResult>(() => defaultApiClient.apiNamespaceGoalCheckIns.get(input)),
-
-    update: (input: GoalCheckInsUpdateInput) => defaultApiClient.apiNamespaceGoalCheckIns.update(input),
-    useUpdate: () =>
-      useMutation<GoalCheckInsUpdateInput, GoalCheckInsUpdateResult>((input) =>
-        defaultApiClient.apiNamespaceGoalCheckIns.update(input),
-      ),
-
-    create: (input: GoalCheckInsCreateInput) => defaultApiClient.apiNamespaceGoalCheckIns.create(input),
-    useCreate: () =>
-      useMutation<GoalCheckInsCreateInput, GoalCheckInsCreateResult>((input) =>
-        defaultApiClient.apiNamespaceGoalCheckIns.create(input),
-      ),
-
-    acknowledge: (input: GoalCheckInsAcknowledgeInput) => defaultApiClient.apiNamespaceGoalCheckIns.acknowledge(input),
-    useAcknowledge: () =>
-      useMutation<GoalCheckInsAcknowledgeInput, GoalCheckInsAcknowledgeResult>((input) =>
-        defaultApiClient.apiNamespaceGoalCheckIns.acknowledge(input),
-      ),
-  },
-
   goals: {
     listAccessMembers: (input: GoalsListAccessMembersInput) =>
       defaultApiClient.apiNamespaceGoals.listAccessMembers(input),
     useListAccessMembers: (input: GoalsListAccessMembersInput) =>
       useQuery<GoalsListAccessMembersResult>(() => defaultApiClient.apiNamespaceGoals.listAccessMembers(input)),
+
+    getCheckIn: (input: GoalsGetCheckInInput) => defaultApiClient.apiNamespaceGoals.getCheckIn(input),
+    useGetCheckIn: (input: GoalsGetCheckInInput) =>
+      useQuery<GoalsGetCheckInResult>(() => defaultApiClient.apiNamespaceGoals.getCheckIn(input)),
 
     list: (input: GoalsListInput) => defaultApiClient.apiNamespaceGoals.list(input),
     useList: (input: GoalsListInput) => useQuery<GoalsListResult>(() => defaultApiClient.apiNamespaceGoals.list(input)),
@@ -7229,6 +7179,10 @@ export default {
 
     get: (input: GoalsGetInput) => defaultApiClient.apiNamespaceGoals.get(input),
     useGet: (input: GoalsGetInput) => useQuery<GoalsGetResult>(() => defaultApiClient.apiNamespaceGoals.get(input)),
+
+    listDiscussions: (input: GoalsListDiscussionsInput) => defaultApiClient.apiNamespaceGoals.listDiscussions(input),
+    useListDiscussions: (input: GoalsListDiscussionsInput) =>
+      useQuery<GoalsListDiscussionsResult>(() => defaultApiClient.apiNamespaceGoals.listDiscussions(input)),
 
     updateName: (input: GoalsUpdateNameInput) => defaultApiClient.apiNamespaceGoals.updateName(input),
     useUpdateName: () =>
@@ -7255,6 +7209,12 @@ export default {
     useUpdateAccessLevels: () =>
       useMutation<GoalsUpdateAccessLevelsInput, GoalsUpdateAccessLevelsResult>((input) =>
         defaultApiClient.apiNamespaceGoals.updateAccessLevels(input),
+      ),
+
+    createDiscussion: (input: GoalsCreateDiscussionInput) => defaultApiClient.apiNamespaceGoals.createDiscussion(input),
+    useCreateDiscussion: () =>
+      useMutation<GoalsCreateDiscussionInput, GoalsCreateDiscussionResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.createDiscussion(input),
       ),
 
     changeParent: (input: GoalsChangeParentInput) => defaultApiClient.apiNamespaceGoals.changeParent(input),
@@ -7326,6 +7286,12 @@ export default {
         defaultApiClient.apiNamespaceGoals.updateCheck(input),
       ),
 
+    createCheckIn: (input: GoalsCreateCheckInInput) => defaultApiClient.apiNamespaceGoals.createCheckIn(input),
+    useCreateCheckIn: () =>
+      useMutation<GoalsCreateCheckInInput, GoalsCreateCheckInResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.createCheckIn(input),
+      ),
+
     updateStartDate: (input: GoalsUpdateStartDateInput) => defaultApiClient.apiNamespaceGoals.updateStartDate(input),
     useUpdateStartDate: () =>
       useMutation<GoalsUpdateStartDateInput, GoalsUpdateStartDateResult>((input) =>
@@ -7343,6 +7309,12 @@ export default {
     useUpdateSpace: () =>
       useMutation<GoalsUpdateSpaceInput, GoalsUpdateSpaceResult>((input) =>
         defaultApiClient.apiNamespaceGoals.updateSpace(input),
+      ),
+
+    updateCheckIn: (input: GoalsUpdateCheckInInput) => defaultApiClient.apiNamespaceGoals.updateCheckIn(input),
+    useUpdateCheckIn: () =>
+      useMutation<GoalsUpdateCheckInInput, GoalsUpdateCheckInResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.updateCheckIn(input),
       ),
 
     toggleCheck: (input: GoalsToggleCheckInput) => defaultApiClient.apiNamespaceGoals.toggleCheck(input),
@@ -7368,10 +7340,23 @@ export default {
         defaultApiClient.apiNamespaceGoals.deleteCheck(input),
       ),
 
+    updateDiscussion: (input: GoalsUpdateDiscussionInput) => defaultApiClient.apiNamespaceGoals.updateDiscussion(input),
+    useUpdateDiscussion: () =>
+      useMutation<GoalsUpdateDiscussionInput, GoalsUpdateDiscussionResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.updateDiscussion(input),
+      ),
+
     updateChampion: (input: GoalsUpdateChampionInput) => defaultApiClient.apiNamespaceGoals.updateChampion(input),
     useUpdateChampion: () =>
       useMutation<GoalsUpdateChampionInput, GoalsUpdateChampionResult>((input) =>
         defaultApiClient.apiNamespaceGoals.updateChampion(input),
+      ),
+
+    acknowledgeCheckIn: (input: GoalsAcknowledgeCheckInInput) =>
+      defaultApiClient.apiNamespaceGoals.acknowledgeCheckIn(input),
+    useAcknowledgeCheckIn: () =>
+      useMutation<GoalsAcknowledgeCheckInInput, GoalsAcknowledgeCheckInResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.acknowledgeCheckIn(input),
       ),
 
     deleteAccessMember: (input: GoalsDeleteAccessMemberInput) =>
