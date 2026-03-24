@@ -213,7 +213,7 @@ describe("CLI Integration Tests", () => {
       const result = await runCLI(["help", "comments", "create"]);
       assert.strictEqual(result.exitCode, 0);
       assert.ok(result.stdout.includes("--entity-type"));
-      assert.ok(result.stdout.includes("Allowed values:"));
+      assert.ok(result.stdout.includes("Allowed values for comment_parent_type:"));
       assert.ok(result.stdout.includes("project_check_in"));
       assert.ok(result.stdout.includes("goal_update"));
       assert.ok(result.stdout.includes("milestone"));
@@ -223,7 +223,7 @@ describe("CLI Integration Tests", () => {
       const result = await runCLI(["help", "projects", "create"]);
       assert.strictEqual(result.exitCode, 0);
       assert.ok(result.stdout.includes("--anonymous-access-level"));
-      assert.ok(result.stdout.includes("Allowed values:"));
+      assert.ok(result.stdout.includes("Allowed values for access_options_int:"));
       assert.ok(result.stdout.includes("0"));
       assert.ok(result.stdout.includes("100"));
     });
