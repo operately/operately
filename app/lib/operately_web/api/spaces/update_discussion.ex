@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.SpaceDiscussions.Update do
+defmodule OperatelyWeb.Api.Spaces.UpdateDiscussion do
   @moduledoc """
   Updates a space discussion.
   """

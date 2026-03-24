@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.SpaceDiscussions.Publish do
+defmodule OperatelyWeb.Api.Spaces.PublishDiscussion do
   @moduledoc """
   Publishes a space discussion draft.
   """

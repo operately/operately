@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.SpaceDiscussions.UpdateTest do
+defmodule OperatelyWeb.Api.Spaces.UpdateDiscussionTest do
   use OperatelyWeb.TurboCase
 
   import Operately.PeopleFixtures
@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api.SpaceDiscussions.UpdateTest do
 
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, [:space_discussions, :update], %{})
+      assert {401, _} = mutation(ctx.conn, [:spaces, :update_discussion], %{})
     end
   end
 
@@ -112,7 +112,7 @@ defmodule OperatelyWeb.Api.SpaceDiscussions.UpdateTest do
       subscriptions = Enum.filter(list.subscriptions, &(&1.person_id != ctx.person.id))
       assert subscriptions == []
 
-      assert {200, _} = mutation(ctx.conn, [:space_discussions, :update], %{
+      assert {200, _} = mutation(ctx.conn, [:spaces, :update_discussion], %{
         id: Paths.message_id(message),
         title: "New title",
         body: RichText.rich_text(mentioned_people: [ctx.company_creator]),
@@ -132,7 +132,7 @@ defmodule OperatelyWeb.Api.SpaceDiscussions.UpdateTest do
   #
 
   defp request(conn, message) do
-    mutation(conn, [:space_discussions, :update], %{
+    mutation(conn, [:spaces, :update_discussion], %{
       id: Paths.message_id(message),
       title: "New title",
       body: RichText.rich_text("New body", :as_string),
