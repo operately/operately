@@ -17,7 +17,7 @@ defmodule OperatelyWeb.Api.Comments.Create do
   alias Operately.Goals.Update
   alias Operately.Messages.Message
   alias Operately.ResourceHubs.{Document, File, Link}
-  alias Operately.Projects.{CheckIn, Retrospective}
+  alias Operately.Projects.{CheckIn, Retrospective, Milestone}
   alias Operately.Tasks.Task
   alias Operately.Operations.CommentAdding
   alias Operately.Comments.CommentThread
@@ -66,6 +66,7 @@ defmodule OperatelyWeb.Api.Comments.Create do
       :resource_hub_link -> Link.get(person, id: id, opts: [preload: [:resource_hub, :node]])
       :project_task -> Task.get(person, id: id, opts: [preload: :project])
       :space_task -> Task.get(person, id: id, opts: [preload: :space])
+      :milestone -> Milestone.get(person, id: id)
     end
   end
 
@@ -82,11 +83,23 @@ defmodule OperatelyWeb.Api.Comments.Create do
       :resource_hub_link -> ResourceHubs.Permissions.check(parent.request_info.access_level, :can_comment_on_link)
       :project_task -> Projects.Permissions.check(parent.request_info.access_level, :can_comment)
       :space_task -> Groups.Permissions.check(parent.request_info.access_level, :can_comment)
+      :milestone -> Projects.Permissions.check(parent.request_info.access_level, :can_comment)
     end
   end
 
   defp execute(ctx, inputs) do
-    CommentAdding.run(ctx.me, ctx.parent, normalize_entity_type(inputs.entity_type), inputs.content)
+    case inputs.entity_type do
+      :milestone ->
+        Operately.Comments.create_milestone_comment(ctx.me, ctx.parent, "none", %{
+          content: %{"message" => inputs.content},
+          author_id: ctx.me.id,
+          entity_id: ctx.parent.id,
+          entity_type: :project_milestone
+        })
+
+      _ ->
+        CommentAdding.run(ctx.me, ctx.parent, normalize_entity_type(inputs.entity_type), inputs.content)
+    end
   end
 
   defp normalize_entity_type(:project_discussion), do: :comment_thread

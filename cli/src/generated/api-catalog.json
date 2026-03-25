@@ -27840,6 +27840,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-25T16:39:40Z",
+  "generated_at": "2026-03-25T17:11:00Z",
   "schema_version": 1
 }
