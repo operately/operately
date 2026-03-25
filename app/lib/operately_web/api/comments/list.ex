@@ -88,20 +88,8 @@ defmodule OperatelyWeb.Api.Comments.List do
     |> load_notifications(person, action: "discussion_comment_submitted")
   end
 
-  defp load(id, :comment_thread, person) do
-    from(c in Comment,
-      join: t in CommentThread,
-      on: c.entity_id == t.id,
-      join: a in Activity,
-      on: a.comment_thread_id == t.id,
-      as: :activity,
-      where: c.entity_id == ^id and c.entity_type == :comment_thread
-    )
-    |> preload_resources()
-    |> filter_by_view_access(person.id, named_binding: :activity)
-    |> Repo.all()
-    |> load_notifications(person, action: "comment_added")
-  end
+  defp load(id, :project_discussion, person), do: load_comment_thread(id, person)
+  defp load(id, :goal_discussion, person), do: load_comment_thread(id, person)
 
   defp load(id, :resource_hub_document, person) do
     from(c in Comment, join: d in Operately.ResourceHubs.Document, on: c.entity_id == d.id, as: :document, where: d.id == ^id)
@@ -155,5 +143,20 @@ defmodule OperatelyWeb.Api.Comments.List do
         notification -> Map.put(comment, :notification, notification)
       end
     end)
+  end
+
+  defp load_comment_thread(id, person) do
+    from(c in Comment,
+      join: t in CommentThread,
+      on: c.entity_id == t.id,
+      join: a in Activity,
+      on: a.comment_thread_id == t.id,
+      as: :activity,
+      where: c.entity_id == ^id and c.entity_type == :comment_thread
+    )
+    |> preload_resources()
+    |> filter_by_view_access(person.id, named_binding: :activity)
+    |> Repo.all()
+    |> load_notifications(person, action: "comment_added")
   end
 end

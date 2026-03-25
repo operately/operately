@@ -102,7 +102,11 @@ defmodule OperatelyWeb.Api.Reactions.Create do
   end
 
   defp execute(ctx, inputs) do
-    entity_type = Atom.to_string(inputs.entity_type)
+    entity_type =  normalize_entity_type(inputs.entity_type)
     ReactionAdding.run(ctx.me, inputs.entity_id, entity_type, inputs.emoji)
   end
+
+  defp normalize_entity_type(:project_discussion), do: :comment_thread
+  defp normalize_entity_type(:goal_discussion), do: :comment_thread
+  defp normalize_entity_type(entity_type), do: entity_type
 end

@@ -17591,7 +17591,7 @@
           "default": null,
           "name": "message",
           "type": {
-            "name": "string",
+            "name": "json",
             "kind": "named"
           },
           "optional": false,
@@ -27840,6 +27840,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-25T13:36:29Z",
+  "generated_at": "2026-03-25T14:22:05Z",
   "schema_version": 1
 }

@@ -80,7 +80,8 @@ function coerceEndpointInputs(
 
     if (value === undefined) {
       if (field.has_default) {
-        output[field.name] = field.default;
+        const coerced = coerceFieldValue(field.type, field.default, field, types, field.name);
+        output[field.name] = coerced;
         continue;
       }
 

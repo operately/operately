@@ -86,6 +86,10 @@ defmodule OperatelyWeb.Api.Comments.Create do
   end
 
   defp execute(ctx, inputs) do
-    CommentAdding.run(ctx.me, ctx.parent, inputs.entity_type, inputs.content)
+    CommentAdding.run(ctx.me, ctx.parent, normalize_entity_type(inputs.entity_type), inputs.content)
   end
+
+  defp normalize_entity_type(:project_discussion), do: :comment_thread
+  defp normalize_entity_type(:goal_discussion), do: :comment_thread
+  defp normalize_entity_type(entity_type), do: entity_type
 end
