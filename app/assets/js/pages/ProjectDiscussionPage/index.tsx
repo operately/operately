@@ -147,7 +147,7 @@ function DiscussionReactions() {
   const { discussion } = Pages.useLoadedData<LoaderResult>();
 
   const reactions = (discussion.reactions || []).map((r) => r);
-  const entity = Reactions.entity(discussion.id, "comment_thread");
+  const entity = Reactions.entity(discussion.id, "project_discussion");
   const addReactionForm = useReactionsForm(entity, reactions);
 
   return (
@@ -162,14 +162,14 @@ function DiscussionReactions() {
 function Comments() {
   const { discussion } = Pages.useLoadedData<LoaderResult>();
 
-  const commentsForm = useComments({ thread: discussion, parentType: "comment_thread", project: discussion.project });
+  const commentsForm = useComments({ thread: discussion, parentType: "project_discussion", project: discussion.project });
 
   return (
     <>
       <div className="border-t border-stroke-base mt-8" />
       <CommentSection
         form={commentsForm}
-        commentParentType="comment_thread"
+        commentParentType="project_discussion"
         canComment={discussion.projectPermissions?.canComment || false}
       />
     </>

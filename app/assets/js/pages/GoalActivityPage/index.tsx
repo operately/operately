@@ -98,7 +98,7 @@ function ActivityReactions() {
   assertPresent(activity.permissions?.canCommentOnThread, "permissions must be present in activity");
 
   const reactions = activity.commentThread.reactions.map((r) => r!);
-  const entity = Reactions.entity(activity.commentThread.id!, "comment_thread");
+  const entity = Reactions.entity(activity.commentThread.id!, "goal_discussion");
   const addReactionForm = useReactionsForm(entity, reactions);
 
   return <ReactionList size={24} form={addReactionForm} canAddReaction={activity.permissions.canCommentOnThread} />;
@@ -110,14 +110,14 @@ function Comments({ goal }: { goal: Goals.Goal }) {
   assertPresent(activity.commentThread, "commentThread must be present in activity");
   assertPresent(activity.permissions?.canCommentOnThread, "permissions must be present in activity");
 
-  const commentsForm = useComments({ thread: activity.commentThread, goal: goal, parentType: "comment_thread" });
+  const commentsForm = useComments({ thread: activity.commentThread, goal: goal, parentType: "goal_discussion" });
 
   return (
     <>
       <div className="border-t border-stroke-base mt-8" />
       <CommentSection
         form={commentsForm}
-        commentParentType="comment_thread"
+        commentParentType="goal_discussion"
         canComment={activity.permissions.canCommentOnThread}
       />
     </>

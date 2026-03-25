@@ -246,7 +246,7 @@ defmodule OperatelyWeb.Api.Comments.CreateTest do
         assert {code, res} =
                  mutation(ctx.conn, [:comments, :create], %{
                    entity_id: Paths.comment_thread_id(thread),
-                   entity_type: "comment_thread",
+                   entity_type: "goal_discussion",
                    content: RichText.rich_text("Content", :as_string)
                  })
 

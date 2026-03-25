@@ -2096,8 +2096,9 @@ export type AgentMessageStatus = "pending" | "done";
 export type CommentParentType =
   | "project_check_in"
   | "project_retrospective"
-  | "comment_thread"
+  | "project_discussion"
   | "goal_update"
+  | "goal_discussion"
   | "message"
   | "resource_hub_document"
   | "resource_hub_file"
@@ -2133,8 +2134,9 @@ export type ProjectTaskStatusColor = "gray" | "blue" | "green" | "red";
 export type ReactionEntityType =
   | "project_check_in"
   | "project_retrospective"
-  | "comment_thread"
+  | "project_discussion"
   | "goal_update"
+  | "goal_discussion"
   | "message"
   | "comment"
   | "resource_hub_document"
@@ -2144,8 +2146,9 @@ export type ReactionEntityType =
 export type ReactionParentType =
   | "project_check_in"
   | "project_retrospective"
-  | "comment_thread"
+  | "project_discussion"
   | "goal_update"
+  | "goal_discussion"
   | "message"
   | "milestone"
   | "project_task"
