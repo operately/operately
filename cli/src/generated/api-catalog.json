@@ -14623,8 +14623,9 @@
       "comment_parent_type": [
         "project_check_in",
         "project_retrospective",
-        "comment_thread",
+        "project_discussion",
         "goal_update",
+        "goal_discussion",
         "message",
         "resource_hub_document",
         "resource_hub_file",
@@ -14682,8 +14683,9 @@
       "reaction_entity_type": [
         "project_check_in",
         "project_retrospective",
-        "comment_thread",
+        "project_discussion",
         "goal_update",
+        "goal_discussion",
         "message",
         "comment",
         "resource_hub_document",
@@ -14693,8 +14695,9 @@
       "reaction_parent_type": [
         "project_check_in",
         "project_retrospective",
-        "comment_thread",
+        "project_discussion",
         "goal_update",
+        "goal_discussion",
         "message",
         "milestone",
         "project_task",
@@ -27837,6 +27840,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-25T11:02:37Z",
+  "generated_at": "2026-03-25T13:36:29Z",
   "schema_version": 1
 }
