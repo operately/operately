@@ -58,8 +58,9 @@ defmodule OperatelyWeb.Api.Reactions.Create do
     case type do
       :project_check_in -> Projects.get_check_in_with_access_level(id, person.id)
       :project_retrospective -> Retrospective.get(person, id: id)
-      :comment_thread -> CommentThread.get(person, id: id, opts: [preload: :activity])
+      :project_discussion -> CommentThread.get(person, id: id, opts: [preload: :activity])
       :goal_update -> Update.get(person, id: id)
+      :goal_discussion -> CommentThread.get(person, id: id, opts: [preload: :activity])
       :message -> Message.get(person, id: id)
       :comment -> Updates.get_comment_with_access_level(id, person.id, parent_type)
       :resource_hub_document -> Document.get(person, id: id)
@@ -72,8 +73,9 @@ defmodule OperatelyWeb.Api.Reactions.Create do
     case type do
       :project_check_in -> Projects.Permissions.check(parent.requester_access_level, :can_comment)
       :project_retrospective -> Projects.Permissions.check(parent.request_info.access_level, :can_comment)
-      :comment_thread -> Activities.Permissions.check(parent.request_info.access_level, :can_comment_on_thread)
+      :project_discussion -> Activities.Permissions.check(parent.request_info.access_level, :can_comment_on_thread)
       :goal_update -> Goals.Update.Permissions.check(parent.request_info.access_level, parent, parent.request_info.requester.id, :can_comment)
+      :goal_discussion -> Activities.Permissions.check(parent.request_info.access_level, :can_comment_on_thread)
       :message -> Groups.Permissions.check(parent.request_info.access_level, :can_comment)
       :comment -> check_comment_permissions(parent, parent_type, me)
       :resource_hub_document -> ResourceHubs.Permissions.check(parent.request_info.access_level, :can_comment_on_document)
@@ -86,8 +88,9 @@ defmodule OperatelyWeb.Api.Reactions.Create do
     case type do
       :project_check_in -> Projects.Permissions.check(parent.requester_access_level, :can_comment)
       :project_retrospective -> Projects.Permissions.check(parent.requester_access_level, :can_comment)
-      :comment_thread -> Activities.Permissions.check(parent.requester_access_level, :can_comment_on_thread)
+      :project_discussion -> Activities.Permissions.check(parent.requester_access_level, :can_comment_on_thread)
       :goal_update -> Goals.Update.Permissions.check(parent.requester_access_level, parent.entity_id, me.id, :can_comment)
+      :goal_discussion -> Activities.Permissions.check(parent.requester_access_level, :can_comment_on_thread)
       :message -> Groups.Permissions.check(parent.requester_access_level, :can_comment)
       :milestone -> Projects.Permissions.check(parent.requester_access_level, :can_comment)
       :project_task -> Projects.Permissions.check(parent.requester_access_level, :can_comment)

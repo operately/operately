@@ -57,8 +57,9 @@ defmodule OperatelyWeb.Api.Comments.Create do
     case type do
       :project_check_in -> CheckIn.get(person, id: id, opts: [preload: :project])
       :project_retrospective -> Retrospective.get(person, id: id, opts: [preload: :project])
-      :comment_thread -> CommentThread.get(person, id: id, opts: [preload: :activity])
+      :project_discussion -> CommentThread.get(person, id: id, opts: [preload: :activity])
       :goal_update -> Update.get(person, id: id, opts: [preload: :goal])
+      :goal_discussion -> CommentThread.get(person, id: id, opts: [preload: :activity])
       :message -> Message.get(person, id: id, opts: [preload: :space])
       :resource_hub_document -> Document.get(person, id: id, opts: [preload: [:resource_hub, :node]])
       :resource_hub_file -> File.get(person, id: id, opts: [preload: [:resource_hub, :node]])
@@ -72,8 +73,9 @@ defmodule OperatelyWeb.Api.Comments.Create do
     case type do
       :project_check_in -> Projects.Permissions.check(parent.request_info.access_level, :can_comment)
       :project_retrospective -> Projects.Permissions.check(parent.request_info.access_level, :can_comment)
-      :comment_thread -> Activities.Permissions.check(parent.request_info.access_level, :can_comment_on_thread)
+      :project_discussion -> Activities.Permissions.check(parent.request_info.access_level, :can_comment_on_thread)
       :goal_update -> Goals.Update.Permissions.check(parent.request_info.access_level, parent, parent.request_info.requester.id, :can_comment)
+      :goal_discussion -> Activities.Permissions.check(parent.request_info.access_level, :can_comment_on_thread)
       :message -> Groups.Permissions.check(parent.request_info.access_level, :can_comment)
       :resource_hub_document -> ResourceHubs.Permissions.check(parent.request_info.access_level, :can_comment_on_document)
       :resource_hub_file -> ResourceHubs.Permissions.check(parent.request_info.access_level, :can_comment_on_file)
