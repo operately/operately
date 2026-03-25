@@ -305,6 +305,29 @@ defmodule OperatelyWeb.Api.Comments.CreateTest do
         end
       end
     end
+
+    tabletest @project_table do
+      test "milestone - if caller has levels company=#{@test.company}, space=#{@test.space}, project=#{@test.project} on the project, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        project = create_project(ctx, space, @test.company, @test.space, @test.project)
+        milestone = create_milestone(ctx.creator, project)
+
+        assert {code, res} =
+                 mutation(ctx.conn, [:comments, :create], %{
+                   entity_id: Paths.milestone_id(milestone),
+                   entity_type: "milestone",
+                   content: RichText.rich_text("Content", :as_string)
+                 })
+
+        assert code == @test.expected
+
+        case @test.expected do
+          200 -> assert count_milestone_comments(milestone.id) == 1
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "The requested resource was not found"
+        end
+      end
+    end
   end
 
   describe "create_comment functionality" do
@@ -390,6 +413,84 @@ defmodule OperatelyWeb.Api.Comments.CreateTest do
       assert length(subscriptions) == 2
       assert Enum.find(subscriptions, &(&1.person_id == another_person.id))
       assert Enum.find(subscriptions, &(&1.person_id == ctx.person.id))
+    end
+  end
+
+  describe "milestone comment functionality" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      project = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.person.id, group_id: ctx.company.company_space_id})
+      milestone = create_milestone(ctx.person, project)
+
+      Map.merge(ctx, %{project: project, milestone: milestone})
+    end
+
+    test "creates milestone comment with action 'none'", ctx do
+      assert count_milestone_comments(ctx.milestone.id) == 0
+
+      assert {200, res} =
+               mutation(ctx.conn, [:comments, :create], %{
+                 entity_id: Paths.milestone_id(ctx.milestone),
+                 entity_type: "milestone",
+                 content: RichText.rich_text("Great progress!", :as_string)
+               })
+
+      assert count_milestone_comments(ctx.milestone.id) == 1
+
+      milestone_comment = hd(Operately.Repo.all(Operately.Comments.MilestoneComment))
+      assert milestone_comment.action == :none
+      assert milestone_comment.milestone_id == ctx.milestone.id
+      assert res.comment
+    end
+
+    test "updates subscriptions list with mentioned people", ctx do
+      people =
+        Enum.map(1..3, fn _ ->
+          person_fixture(%{company_id: ctx.company.id})
+        end)
+
+      content = RichText.rich_text(mentioned_people: people)
+
+      {:ok, list} =
+        SubscriptionList.get(:system, parent_id: ctx.milestone.id, opts: [preload: :subscriptions])
+
+      assert length(list.subscriptions) == 0
+
+      assert {200, _} =
+               mutation(ctx.conn, [:comments, :create], %{
+                 entity_id: Paths.milestone_id(ctx.milestone),
+                 entity_type: "milestone",
+                 content: content
+               })
+
+      {:ok, list} =
+        SubscriptionList.get(:system, parent_id: ctx.milestone.id, opts: [preload: :subscriptions])
+
+      assert length(list.subscriptions) ==  4
+
+      Enum.each(people, fn p ->
+        assert Enum.find(list.subscriptions, &(&1.person_id == p.id))
+      end)
+    end
+
+    test "creates activity for milestone comment", ctx do
+      assert {200, _} =
+               mutation(ctx.conn, [:comments, :create], %{
+                 entity_id: Paths.milestone_id(ctx.milestone),
+                 entity_type: "milestone",
+                 content: RichText.rich_text("Comment content", :as_string)
+               })
+
+      activity =
+        from(a in Activity,
+          where: a.action == "project_milestone_commented",
+          order_by: [desc: a.inserted_at],
+          limit: 1
+        )
+        |> Repo.one!()
+
+      assert activity.author_id == ctx.person.id
+      assert activity.content["milestone_id"] == ctx.milestone.id
     end
   end
 
@@ -505,8 +606,18 @@ defmodule OperatelyWeb.Api.Comments.CreateTest do
     goal_update_fixture(ctx.creator, goal)
   end
 
+  defp create_milestone(creator, project) do
+    milestone_fixture(%{project_id: project.id, creator_id: creator.id})
+  end
+
   def count_comments(entity_id, entity_type) do
     query = from c in Operately.Updates.Comment, where: c.entity_id == ^entity_id and c.entity_type == ^entity_type
+
+    Repo.aggregate(query, :count, :id)
+  end
+
+  def count_milestone_comments(milestone_id) do
+    query = from mc in Operately.Comments.MilestoneComment, where: mc.milestone_id == ^milestone_id and mc.action == :none
 
     Repo.aggregate(query, :count, :id)
   end
