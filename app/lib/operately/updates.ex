@@ -127,6 +127,28 @@ defmodule Operately.Updates do
           where: c.id == ^id
         )
 
+      :project_discussion ->
+        from(c in Comment,
+          as: :comment,
+          join: t in Operately.Comments.CommentThread,
+          on: t.id == c.entity_id,
+          join: a in Activities.Activity,
+          on: a.comment_thread_id == t.id,
+          as: :resource,
+          where: c.id == ^id
+        )
+
+      :goal_discussion ->
+        from(c in Comment,
+          as: :comment,
+          join: t in Operately.Comments.CommentThread,
+          on: t.id == c.entity_id,
+          join: a in Activities.Activity,
+          on: a.comment_thread_id == t.id,
+          as: :resource,
+          where: c.id == ^id
+        )
+
       :goal_update ->
         from(c in Comment, as: :comment, join: u in Operately.Goals.Update, on: u.id == c.entity_id, as: :resource, where: c.id == ^id)
 

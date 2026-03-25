@@ -42,7 +42,7 @@ interface ParentGoalUpdate {
 
 interface ParentCommentThread {
   thread: CommentThread;
-  parentType: "comment_thread";
+  parentType: "goal_discussion" | "project_discussion";
   goal?: { id: string };
   project?: { id: string };
 }

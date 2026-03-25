@@ -12,8 +12,9 @@ export { useReactionHandlers } from "./useReactionHandlers";
 type EntityType =
   | "project_check_in"
   | "project_retrospective"
-  | "comment_thread"
+  | "project_discussion"
   | "goal_update"
+  | "goal_discussion"
   | "message"
   | "comment"
   | "resource_hub_document"

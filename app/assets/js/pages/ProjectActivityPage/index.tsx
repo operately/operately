@@ -98,7 +98,7 @@ function ActivityReactions() {
   }
 
   const reactions = commentThread.reactions.filter((reaction): reaction is NonNullable<typeof reaction> => !!reaction);
-  const entity = Reactions.entity(commentThread.id, "comment_thread");
+  const entity = Reactions.entity(commentThread.id, "project_discussion");
   const addReactionForm = useReactionsForm(entity, reactions);
 
   return <ReactionList size={24} form={addReactionForm} canAddReaction={!!permissions.canCommentOnThread} />;
@@ -113,14 +113,14 @@ function Comments({ project }: { project: Projects.Project }) {
   }
 
   const thread = { ...commentThread, project };
-  const commentsForm = useComments({ thread: thread, project: project, parentType: "comment_thread" });
+  const commentsForm = useComments({ thread: thread, project: project, parentType: "project_discussion" });
 
   return (
     <>
       <div className="border-t border-stroke-base mt-8" />
       <CommentSection
         form={commentsForm}
-        commentParentType="comment_thread"
+        commentParentType="project_discussion"
         canComment={!!permissions.canCommentOnThread}
       />
     </>
