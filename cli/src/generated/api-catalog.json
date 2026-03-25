@@ -14966,7 +14966,7 @@
           "default": null,
           "name": "content",
           "type": {
-            "name": "string",
+            "name": "json",
             "kind": "named"
           },
           "optional": false,
@@ -16264,7 +16264,7 @@
           "default": null,
           "name": "content",
           "type": {
-            "name": "string",
+            "name": "json",
             "kind": "named"
           },
           "optional": false,
@@ -16977,7 +16977,7 @@
           "default": null,
           "name": "description",
           "type": {
-            "name": "string",
+            "name": "json",
             "kind": "named"
           },
           "optional": true,
@@ -17259,7 +17259,7 @@
           "default": null,
           "name": "description",
           "type": {
-            "name": "string",
+            "name": "json",
             "kind": "named"
           },
           "optional": true,
@@ -19726,7 +19726,7 @@
           "default": null,
           "name": "description",
           "type": {
-            "name": "string",
+            "name": "json",
             "kind": "named"
           },
           "optional": true,
@@ -20024,7 +20024,7 @@
           "default": null,
           "name": "description",
           "type": {
-            "name": "string",
+            "name": "json",
             "kind": "named"
           },
           "optional": true,
@@ -21353,7 +21353,7 @@
           "default": null,
           "name": "description",
           "type": {
-            "name": "string",
+            "name": "json",
             "kind": "named"
           },
           "optional": false,
@@ -23602,7 +23602,7 @@
           "default": null,
           "name": "description",
           "type": {
-            "name": "string",
+            "name": "json",
             "kind": "named"
           },
           "optional": false,
@@ -24514,7 +24514,7 @@
           "default": null,
           "name": "content",
           "type": {
-            "name": "string",
+            "name": "json",
             "kind": "named"
           },
           "optional": false,
@@ -24915,7 +24915,7 @@
           "default": null,
           "name": "description",
           "type": {
-            "name": "string",
+            "name": "json",
             "kind": "named"
           },
           "optional": true,
@@ -27837,6 +27837,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-24T21:00:34Z",
+  "generated_at": "2026-03-25T11:02:37Z",
   "schema_version": 1
 }

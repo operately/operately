@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api.Projects.UpdateCheckIn do
   inputs do
     field :check_in_id, :id, null: false
     field :status, :string, null: false
-    field :description, :string, null: false
+    field :description, :json, null: false
   end
 
   outputs do
@@ -23,10 +23,9 @@ defmodule OperatelyWeb.Api.Projects.UpdateCheckIn do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:description, fn -> {:ok, Jason.decode!(inputs.description)} end)
     |> run(:check_in, fn ctx -> Projects.get_check_in_with_access_level(inputs.check_in_id, ctx.me.id) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.check_in.requester_access_level, :can_edit) end)
-    |> run(:operation, fn ctx -> ProjectCheckInEdit.run(ctx.me, ctx.check_in, inputs.status, ctx.description) end)
+    |> run(:operation, fn ctx -> ProjectCheckInEdit.run(ctx.me, ctx.check_in, inputs.status, inputs.description) end)
     |> run(:serialized, fn ctx -> {:ok, %{check_in: Serializer.serialize(ctx.operation, level: :essential)}} end)
     |> respond()
   end
@@ -34,7 +33,6 @@ defmodule OperatelyWeb.Api.Projects.UpdateCheckIn do
   defp respond(result) do
     case result do
       {:ok, ctx} -> {:ok, ctx.serialized}
-      {:error, :description, _} -> {:error, :bad_request}
       {:error, :check_in, _} -> {:error, :not_found}
       {:error, :check_permissions, _} -> {:error, :forbidden}
       {:error, :operation, _} -> {:error, :internal_server_error}

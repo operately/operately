@@ -3221,7 +3221,7 @@ export interface CommentsDeleteResult {
 }
 
 export interface CommentsUpdateInput {
-  content: string;
+  content: Json;
   commentId: Id;
   parentType: CommentParentType;
 }
@@ -3392,7 +3392,7 @@ export interface DocumentsCreateInput {
   resourceHubId: Id;
   folderId?: Id | null;
   name: string;
-  content: string;
+  content: Json;
   postAsDraft?: boolean | null;
   sendNotificationsToEveryone?: boolean | null;
   subscriberIds?: Id[] | null;
@@ -3458,7 +3458,7 @@ export interface FilesDeleteResult {
 export interface FilesUpdateInput {
   fileId: Id;
   name: string;
-  description?: string;
+  description?: Json;
 }
 
 export interface FilesUpdateResult {
@@ -3502,7 +3502,7 @@ export interface GoalsCreateInput {
   reviewerId?: Id | null;
   timeframe?: Timeframe | null;
   targets?: CreateTargetInput[] | null;
-  description?: string | null;
+  description?: Json | null;
   parentGoalId?: Id | null;
   anonymousAccessLevel: AccessOptionsInt;
   companyAccessLevel: AccessOptionsInt;
@@ -3844,7 +3844,7 @@ export interface LinksCreateInput {
   folderId?: Id | null;
   name: string;
   url: string;
-  description?: string;
+  description?: Json;
   type: string;
   sendNotificationsToEveryone?: boolean | null;
   subscriberIds?: Id[] | null;
@@ -3867,7 +3867,7 @@ export interface LinksUpdateInput {
   name: string;
   type: string;
   url: string;
-  description?: string;
+  description?: Json;
 }
 
 export interface LinksUpdateResult {
@@ -3983,7 +3983,7 @@ export interface ProjectsCreateResult {
 export interface ProjectsCreateCheckInInput {
   projectId: Id;
   status: string;
-  description: string;
+  description: Json;
   sendNotificationsToEveryone?: boolean | null;
   subscriberIds?: Id[] | null;
 }
@@ -4126,7 +4126,7 @@ export interface ProjectsUpdateChampionResult {
 export interface ProjectsUpdateCheckInInput {
   checkInId: Id;
   status: string;
-  description: string;
+  description: Json;
 }
 
 export interface ProjectsUpdateCheckInResult {
@@ -4284,7 +4284,7 @@ export interface ProjectsUpdatePermissionsResult {
 
 export interface ProjectsUpdateRetrospectiveInput {
   id: Id;
-  content: string;
+  content: Json;
   successStatus: string;
 }
 
@@ -4368,7 +4368,7 @@ export interface ResourceHubsCopyFolderResult {
 export interface ResourceHubsCreateInput {
   spaceId: Id;
   name: string;
-  description?: string | null;
+  description?: Json | null;
   anonymousAccessLevel?: AccessOptionsInt | null;
   companyAccessLevel?: AccessOptionsInt | null;
   spaceAccessLevel?: AccessOptionsInt | null;
