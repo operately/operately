@@ -89,7 +89,8 @@ function findParent(props: Comments.CommentableResource) {
       return props.link;
     case "goal_update":
       return props.update;
-    case "comment_thread":
+    case "project_discussion":
+    case "goal_discussion":
       return props.thread;
   }
 }
@@ -117,7 +118,8 @@ function findMentionedScope(props: Comments.CommentableResource): SearchScope {
     case "goal_update":
       assertPresent(props.update?.goal?.id, "goal must be present in update");
       return { type: "goal", id: props.update.goal.id };
-    case "comment_thread":
+    case "project_discussion":
+    case "goal_discussion":
       if (props.goal) {
         assertPresent(props.goal?.id, "Goal must be provided along with CommentThread");
         return { type: "goal", id: props.goal.id };

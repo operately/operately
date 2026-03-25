@@ -411,7 +411,7 @@ defmodule OperatelyWeb.Api.Comments.ListTest do
       assert {200, res} =
                query(ctx.conn, [:comments, :list], %{
                  entity_id: Paths.comment_thread_id(thread),
-                 entity_type: "comment_thread"
+                 entity_type: "goal_discussion"
                })
 
       assert length(res.comments) == 0
@@ -428,7 +428,7 @@ defmodule OperatelyWeb.Api.Comments.ListTest do
       assert {200, res} =
                query(ctx.conn, [:comments, :list], %{
                  entity_id: Paths.comment_thread_id(thread),
-                 entity_type: "comment_thread"
+                 entity_type: "goal_discussion"
                })
 
       assert_comments(res, comments)
@@ -445,7 +445,7 @@ defmodule OperatelyWeb.Api.Comments.ListTest do
       assert {200, res} =
                query(ctx.conn, [:comments, :list], %{
                  entity_id: Paths.comment_thread_id(thread),
-                 entity_type: "comment_thread"
+                 entity_type: "goal_discussion"
                })
 
       assert length(res.comments) == 0
@@ -463,7 +463,7 @@ defmodule OperatelyWeb.Api.Comments.ListTest do
       assert {200, res} =
                query(ctx.conn, [:comments, :list], %{
                  entity_id: Paths.comment_thread_id(thread),
-                 entity_type: "comment_thread"
+                 entity_type: "goal_discussion"
                })
 
       assert_comments(res, comments)
@@ -485,7 +485,7 @@ defmodule OperatelyWeb.Api.Comments.ListTest do
       assert {200, res} =
                query(conn, [:comments, :list], %{
                  entity_id: Paths.comment_thread_id(thread),
-                 entity_type: "comment_thread"
+                 entity_type: "goal_discussion"
                })
 
       assert_comments(res, comments)
@@ -494,7 +494,7 @@ defmodule OperatelyWeb.Api.Comments.ListTest do
       assert {200, res} =
                query(ctx.conn, [:comments, :list], %{
                  entity_id: Paths.comment_thread_id(thread),
-                 entity_type: "comment_thread"
+                 entity_type: "goal_discussion"
                })
 
       assert length(res.comments) == 0
@@ -516,7 +516,7 @@ defmodule OperatelyWeb.Api.Comments.ListTest do
       assert {200, res} =
                query(conn, [:comments, :list], %{
                  entity_id: Paths.comment_thread_id(thread),
-                 entity_type: "comment_thread"
+                 entity_type: "goal_discussion"
                })
 
       assert_comments(res, comments)
@@ -525,7 +525,7 @@ defmodule OperatelyWeb.Api.Comments.ListTest do
       assert {200, res} =
                query(ctx.conn, [:comments, :list], %{
                  entity_id: Paths.comment_thread_id(thread),
-                 entity_type: "comment_thread"
+                 entity_type: "goal_discussion"
                })
 
       assert length(res.comments) == 0

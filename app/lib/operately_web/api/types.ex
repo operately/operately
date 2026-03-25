@@ -394,8 +394,9 @@ defmodule OperatelyWeb.Api.Types do
   enum(:reaction_entity_type, values: [
     :project_check_in,
     :project_retrospective,
-    :comment_thread,
+    :project_discussion,
     :goal_update,
+    :goal_discussion,
     :message,
     :comment,
     :resource_hub_document,
@@ -406,8 +407,9 @@ defmodule OperatelyWeb.Api.Types do
   enum(:reaction_parent_type, values: [
     :project_check_in,
     :project_retrospective,
-    :comment_thread,
+    :project_discussion,
     :goal_update,
+    :goal_discussion,
     :message,
     :milestone,
     :project_task,
@@ -1820,8 +1822,9 @@ defmodule OperatelyWeb.Api.Types do
     values: [
       :project_check_in,
       :project_retrospective,
-      :comment_thread,
+      :project_discussion,
       :goal_update,
+      :goal_discussion,
       :message,
       :resource_hub_document,
       :resource_hub_file,
