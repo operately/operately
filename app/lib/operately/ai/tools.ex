@@ -84,7 +84,7 @@ defmodule Operately.AI.Tools do
         me = Map.get(context, :person)
         title = Map.get(args, "title")
         goal_id = Map.get(args, "goal_id")
-        message = Map.get(args, "message") |> Operately.Demo.PoorMansMarkdown.from_markdown(%{}) |> Jason.encode!()
+        message = Map.get(args, "message") |> Operately.Demo.PoorMansMarkdown.from_markdown(%{})
 
         conn = %{
           assigns: %{
