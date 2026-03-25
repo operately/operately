@@ -111,7 +111,7 @@ defmodule OperatelyWeb.Api.Comments.UpdateTest do
                  mutation(ctx.conn, [:comments, :update], %{
                    comment_id: Paths.comment_id(comment),
                    content: RichText.rich_text("New content", :as_string),
-                   parent_type: "comment_thread"
+                   parent_type: "goal_discussion"
                  })
 
         assert code == @test.expected

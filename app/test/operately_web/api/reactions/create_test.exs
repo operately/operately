@@ -223,7 +223,7 @@ defmodule OperatelyWeb.Api.Reactions.CreateTest do
         assert {code, res} =
                  mutation(ctx.conn, [:reactions, :create], %{
                    entity_id: Paths.comment_thread_id(thread),
-                   entity_type: "comment_thread",
+                   entity_type: "goal_discussion",
                    emoji: "👍"
                  })
 
@@ -405,7 +405,7 @@ defmodule OperatelyWeb.Api.Reactions.CreateTest do
                  mutation(ctx.conn, [:reactions, :create], %{
                    entity_id: Paths.comment_id(comment),
                    entity_type: "comment",
-                   parent_type: "comment_thread",
+                   parent_type: "goal_discussion",
                    emoji: "👍"
                  })
 
