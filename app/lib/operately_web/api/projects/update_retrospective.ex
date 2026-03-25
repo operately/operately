@@ -11,7 +11,7 @@ defmodule OperatelyWeb.Api.Projects.UpdateRetrospective do
 
   inputs do
     field :id, :id, null: false
-    field :content, :string, null: false
+    field :content, :json, null: false
     field :success_status, :string, null: false
   end
 
@@ -34,7 +34,6 @@ defmodule OperatelyWeb.Api.Projects.UpdateRetrospective do
     case result do
       {:ok, ctx} -> {:ok, ctx.serialized}
       {:error, :id, _} -> {:error, :bad_request}
-      {:error, :content, _} -> {:error, :bad_request}
       {:error, :retrospective, _} -> {:error, :not_found}
       {:error, :permissions, _} -> {:error, :forbidden}
       {:error, :operation, _} -> {:error, :internal_server_error}
@@ -51,7 +50,7 @@ defmodule OperatelyWeb.Api.Projects.UpdateRetrospective do
   defp parse_inputs(inputs) do
     {:ok, %{
       id: inputs.id,
-      content: Jason.decode!(inputs.content),
+      content: inputs.content,
       success_status: String.to_atom(inputs.success_status),
     }}
   end

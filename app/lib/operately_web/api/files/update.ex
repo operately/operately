@@ -12,7 +12,7 @@ defmodule OperatelyWeb.Api.Files.Update do
   inputs do
     field :file_id, :id, null: false
     field :name, :string, null: false
-    field? :description, :string, null: false
+    field? :description, :json, null: false
   end
 
   outputs do
@@ -22,10 +22,9 @@ defmodule OperatelyWeb.Api.Files.Update do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:attrs, fn -> parse_attrs(inputs) end)
-    |> run(:file, fn ctx -> find_file(ctx) end)
+    |> run(:file, fn ctx -> find_file(ctx, inputs) end)
     |> run(:permissions, fn ctx -> Permissions.check(ctx.file.request_info.access_level, :can_edit_file) end)
-    |> run(:operation, fn ctx -> ResourceHubFileEditing.run(ctx.me, ctx.file, ctx.attrs) end)
+    |> run(:operation, fn ctx -> ResourceHubFileEditing.run(ctx.me, ctx.file, inputs) end)
     |> run(:serialized, fn ctx -> {:ok, %{file: Serializer.serialize(ctx.operation)}} end)
     |> respond()
   end
@@ -33,7 +32,6 @@ defmodule OperatelyWeb.Api.Files.Update do
   defp respond(result) do
     case result do
       {:ok, ctx} -> {:ok, ctx.serialized}
-      {:error, :attrs, _} -> {:error, :bad_request}
       {:error, :file, _} -> {:error, :not_found}
       {:error, :permissions, _} -> {:error, :forbidden}
       {:error, :operation, _} -> {:error, :internal_server_error}
@@ -41,12 +39,7 @@ defmodule OperatelyWeb.Api.Files.Update do
     end
   end
 
-  defp parse_attrs(inputs) do
-    description = Jason.decode!(inputs.description)
-    {:ok, Map.put(inputs, :description, description)}
-  end
-
-  defp find_file(ctx) do
-    File.get(ctx.me, id: ctx.attrs.file_id, opts: [preload: [:node, :resource_hub]])
+  defp find_file(ctx, inputs) do
+    File.get(ctx.me, id: inputs.file_id, opts: [preload: [:node, :resource_hub]])
   end
 end
