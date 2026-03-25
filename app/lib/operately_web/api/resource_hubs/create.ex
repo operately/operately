@@ -12,7 +12,7 @@ defmodule OperatelyWeb.Api.ResourceHubs.Create do
   inputs do
     field :space_id, :id, null: false
     field :name, :string, null: false
-    field? :description, :string, null: true
+    field? :description, :json, null: true
     field? :anonymous_access_level, :access_options_int, null: true
     field? :company_access_level, :access_options_int, null: true
     field? :space_access_level, :access_options_int, null: true
@@ -45,8 +45,6 @@ defmodule OperatelyWeb.Api.ResourceHubs.Create do
   end
 
   defp parse_inputs(inputs) do
-    description = inputs[:description] && Jason.decode!(inputs.description)
-
-    {:ok, Map.merge(inputs, %{id: inputs.space_id, description: description})}
+    {:ok, Map.merge(inputs, %{id: inputs.space_id})}
   end
 end

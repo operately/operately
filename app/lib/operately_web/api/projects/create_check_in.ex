@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api.Projects.CreateCheckIn do
   inputs do
     field :project_id, :id, null: false
     field :status, :string, null: false
-    field :description, :string, null: false
+    field :description, :json, null: false
     field? :send_notifications_to_everyone, :boolean, null: true
     field? :subscriber_ids, list_of(:id), null: true
   end
@@ -48,7 +48,7 @@ defmodule OperatelyWeb.Api.Projects.CreateCheckIn do
     {:ok, %{
       project_id: inputs.project_id,
       status: String.to_atom(inputs.status),
-      content: Jason.decode!(inputs.description),
+      content: inputs.description,
       send_to_everyone: inputs[:send_notifications_to_everyone] || false,
       subscription_parent_type: :project_check_in,
       subscriber_ids: inputs[:subscriber_ids] || []

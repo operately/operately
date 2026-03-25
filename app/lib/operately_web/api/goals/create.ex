@@ -17,7 +17,7 @@ defmodule OperatelyWeb.Api.Goals.Create do
     field? :reviewer_id, :id, null: true
     field? :timeframe, :timeframe, null: true
     field? :targets, list_of(:create_target_input), null: true
-    field? :description, :string, null: true
+    field? :description, :json, null: true
     field? :parent_goal_id, :id, null: true
     field :anonymous_access_level, :access_options_int, null: false
     field :company_access_level, :access_options_int, null: false

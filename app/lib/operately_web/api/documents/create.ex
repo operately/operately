@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api.Documents.Create do
     field :resource_hub_id, :id, null: false
     field? :folder_id, :id, null: true
     field :name, :string, null: false
-    field :content, :string, null: false
+    field :content, :json, null: false
     field? :post_as_draft, :boolean, null: true
     field? :send_notifications_to_everyone, :boolean, null: true
     field? :subscriber_ids, list_of(:id), null: true
@@ -49,10 +49,8 @@ defmodule OperatelyWeb.Api.Documents.Create do
   end
 
   defp parse_inputs(ctx, inputs) do
-    content = Jason.decode!(inputs.content)
-
     {:ok, Map.merge(inputs, %{
-      content: content,
+      content: inputs.content,
       post_as_draft: inputs[:post_as_draft] || false,
       send_to_everyone: inputs[:send_notifications_to_everyone] || false,
       subscription_parent_type: :resource_hub_document,

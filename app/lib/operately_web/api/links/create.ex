@@ -14,7 +14,7 @@ defmodule OperatelyWeb.Api.Links.Create do
     field? :folder_id, :id, null: true
     field :name, :string, null: false
     field :url, :string, null: false
-    field? :description, :string, null: false
+    field? :description, :json, null: false
     field :type, :string, null: false
     field? :send_notifications_to_everyone, :boolean, null: true
     field? :subscriber_ids, list_of(:id), null: true
@@ -47,10 +47,8 @@ defmodule OperatelyWeb.Api.Links.Create do
   end
 
   defp parse_inputs(inputs) do
-    description = Jason.decode!(inputs.description)
-
     {:ok, Map.merge(inputs, %{
-      content: description,
+      content: inputs.description,
       send_to_everyone: inputs[:send_notifications_to_everyone] || false,
       subscription_parent_type: :resource_hub_link,
       subscriber_ids: inputs[:subscriber_ids] || []
