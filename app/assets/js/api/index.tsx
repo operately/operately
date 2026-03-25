@@ -3553,7 +3553,7 @@ export interface GoalsCreateCheckInResult {
 export interface GoalsCreateDiscussionInput {
   goalId: Id;
   title: string;
-  message: string;
+  message: Json;
   sendNotificationsToEveryone?: boolean | null;
   subscriberIds?: Id[] | null;
 }
@@ -3612,7 +3612,7 @@ export interface GoalsDeleteTargetResult {
 
 export interface GoalsReopenInput {
   id: Id;
-  message: string;
+  message: Json;
   sendNotificationsToEveryone?: boolean | null;
   subscriberIds?: Id[] | null;
 }
@@ -3703,7 +3703,7 @@ export interface GoalsUpdateDescriptionResult {
 export interface GoalsUpdateDiscussionInput {
   activityId: Id;
   title: string;
-  message: string;
+  message: Json;
 }
 
 export interface GoalsUpdateDiscussionResult {}

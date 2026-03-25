@@ -11,7 +11,7 @@ defmodule OperatelyWeb.Api.Goals.Reopen do
 
   inputs do
     field :id, :id, null: false
-    field :message, :string, null: false
+    field :message, :json, null: false
     field? :send_notifications_to_everyone, :boolean, null: true
     field? :subscriber_ids, list_of(:id), null: true
   end
@@ -44,7 +44,7 @@ defmodule OperatelyWeb.Api.Goals.Reopen do
 
   defp parse_inputs(inputs) do
     {:ok, %{
-      content: Jason.decode!(inputs.message),
+      content: inputs.message,
       send_to_everyone: inputs[:send_notifications_to_everyone] || false,
       subscriber_ids: inputs[:subscriber_ids] || [],
       subscription_parent_type: :comment_thread
