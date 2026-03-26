@@ -12,7 +12,7 @@ defmodule OperatelyWeb.Api.Projects.Close do
   inputs do
     field :project_id, :id, null: false
     field :retrospective, :json, null: false
-    field :success_status, :string, null: false
+    field :success_status, :success_status, null: false
     field? :send_notifications_to_everyone, :boolean, null: true
     field? :subscriber_ids, list_of(:id), null: true
   end

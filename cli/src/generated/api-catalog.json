@@ -17143,7 +17143,7 @@
           "default": null,
           "name": "success_status",
           "type": {
-            "name": "string",
+            "name": "success_status",
             "kind": "named"
           },
           "optional": false,
@@ -21124,7 +21124,7 @@
           "default": null,
           "name": "success_status",
           "type": {
-            "name": "string",
+            "name": "success_status",
             "kind": "named"
           },
           "optional": false,
@@ -27862,6 +27862,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-26T18:46:34Z",
+  "generated_at": "2026-03-26T19:51:02Z",
   "schema_version": 1
 }
