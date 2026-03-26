@@ -14,7 +14,7 @@ defmodule OperatelyWeb.Api.Spaces.UpdateDiscussion do
     field :id, :id, null: false
     field? :title, :string, null: true
     field? :body, :json, null: true
-    field? :state, :string, null: true
+    field? :state, :discussion_state, null: true
   end
 
   outputs do
@@ -24,10 +24,9 @@ defmodule OperatelyWeb.Api.Spaces.UpdateDiscussion do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:attrs, fn -> parse_inputs(inputs) end)
-    |> run(:message, fn ctx -> Message.get(ctx.me, id: ctx.attrs.id, opts: [preload: :space]) end)
+    |> run(:message, fn ctx -> Message.get(ctx.me, id: inputs.id, opts: [preload: :space]) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.message.request_info.access_level, :can_edit) end)
-    |> run(:operation, fn ctx -> DiscussionEditing.run(ctx.me, ctx.message, ctx.attrs) end)
+    |> run(:operation, fn ctx -> DiscussionEditing.run(ctx.me, ctx.message, inputs) end)
     |> run(:serialized, fn ctx -> {:ok, %{discussion: Serializer.serialize(ctx.operation, level: :essential)}} end)
     |> respond()
   end
@@ -41,15 +40,5 @@ defmodule OperatelyWeb.Api.Spaces.UpdateDiscussion do
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
     end
-  end
-
-  defp parse_inputs(inputs) do
-    inputs = if Map.has_key?(inputs, :state) do
-      Map.put(inputs, :state, String.to_atom(inputs.state))
-    else
-      inputs
-    end
-
-    {:ok, inputs}
   end
 end

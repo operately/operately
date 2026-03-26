@@ -29,7 +29,6 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries do
       Queries.Projects.List,
       Queries.ResourceHubs.Get,
       Queries.Documents.Get,
-      Queries.Files.Get,
       Queries.ResourceHubs.GetFolder,
       Queries.Links.Get,
       Queries.Spaces.Get,

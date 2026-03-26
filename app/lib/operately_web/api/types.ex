@@ -559,6 +559,8 @@ defmodule OperatelyWeb.Api.Types do
     field? :updated_at, :datetime, null: true
   end
 
+  enum(:discussion_state, values: Operately.Messages.Message.valid_states())
+
   object :discussion do
     field :id, :string, null: false
     field :name, :string, null: false

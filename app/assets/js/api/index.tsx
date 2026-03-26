@@ -2112,6 +2112,8 @@ export type ContextualDateType = "day" | "month" | "quarter" | "year";
 
 export type CreateConversationContextType = "goal" | "project";
 
+export type DiscussionState = "draft" | "published";
+
 export type GoalPrivacyValues = "public" | "internal" | "confidential" | "secret";
 
 export type GoalStatus =
@@ -4502,7 +4504,7 @@ export interface SpacesUpdateDiscussionInput {
   id: Id;
   title?: string | null;
   body?: Json | null;
-  state?: string | null;
+  state?: DiscussionState | null;
 }
 
 export interface SpacesUpdateDiscussionResult {
@@ -4733,6 +4735,26 @@ class ApiNamespaceInvitations {
   }
 }
 
+class ApiNamespaceFiles {
+  constructor(private client: ApiClient) {}
+
+  async get(input: FilesGetInput): Promise<FilesGetResult> {
+    return this.client.get("/files/get", input);
+  }
+
+  async create(input: FilesCreateInput): Promise<FilesCreateResult> {
+    return this.client.post("/files/create", input);
+  }
+
+  async delete(input: FilesDeleteInput): Promise<FilesDeleteResult> {
+    return this.client.post("/files/delete", input);
+  }
+
+  async update(input: FilesUpdateInput): Promise<FilesUpdateResult> {
+    return this.client.post("/files/update", input);
+  }
+}
+
 class ApiNamespaceAi {
   constructor(private client: ApiClient) {}
 
@@ -4934,26 +4956,6 @@ class ApiNamespaceLinks {
 
   async update(input: LinksUpdateInput): Promise<LinksUpdateResult> {
     return this.client.post("/links/update", input);
-  }
-}
-
-class ApiNamespaceFiles {
-  constructor(private client: ApiClient) {}
-
-  async get(input: FilesGetInput): Promise<FilesGetResult> {
-    return this.client.get("/files/get", input);
-  }
-
-  async create(input: FilesCreateInput): Promise<FilesCreateResult> {
-    return this.client.post("/files/create", input);
-  }
-
-  async delete(input: FilesDeleteInput): Promise<FilesDeleteResult> {
-    return this.client.post("/files/delete", input);
-  }
-
-  async update(input: FilesUpdateInput): Promise<FilesUpdateResult> {
-    return this.client.post("/files/update", input);
   }
 }
 
@@ -5760,11 +5762,11 @@ export class ApiClient {
   private headers: any;
   public apiNamespaceApiTokens: ApiNamespaceApiTokens;
   public apiNamespaceInvitations: ApiNamespaceInvitations;
+  public apiNamespaceFiles: ApiNamespaceFiles;
   public apiNamespaceAi: ApiNamespaceAi;
   public apiNamespaceRoot: ApiNamespaceRoot;
   public apiNamespaceNotifications: ApiNamespaceNotifications;
   public apiNamespaceLinks: ApiNamespaceLinks;
-  public apiNamespaceFiles: ApiNamespaceFiles;
   public apiNamespaceDocuments: ApiNamespaceDocuments;
   public apiNamespaceResourceHubs: ApiNamespaceResourceHubs;
   public apiNamespaceComments: ApiNamespaceComments;
@@ -5779,11 +5781,11 @@ export class ApiClient {
   constructor() {
     this.apiNamespaceApiTokens = new ApiNamespaceApiTokens(this);
     this.apiNamespaceInvitations = new ApiNamespaceInvitations(this);
+    this.apiNamespaceFiles = new ApiNamespaceFiles(this);
     this.apiNamespaceAi = new ApiNamespaceAi(this);
     this.apiNamespaceRoot = new ApiNamespaceRoot(this);
     this.apiNamespaceNotifications = new ApiNamespaceNotifications(this);
     this.apiNamespaceLinks = new ApiNamespaceLinks(this);
-    this.apiNamespaceFiles = new ApiNamespaceFiles(this);
     this.apiNamespaceDocuments = new ApiNamespaceDocuments(this);
     this.apiNamespaceResourceHubs = new ApiNamespaceResourceHubs(this);
     this.apiNamespaceComments = new ApiNamespaceComments(this);
@@ -6135,6 +6137,23 @@ export default {
       ),
   },
 
+  files: {
+    get: (input: FilesGetInput) => defaultApiClient.apiNamespaceFiles.get(input),
+    useGet: (input: FilesGetInput) => useQuery<FilesGetResult>(() => defaultApiClient.apiNamespaceFiles.get(input)),
+
+    delete: (input: FilesDeleteInput) => defaultApiClient.apiNamespaceFiles.delete(input),
+    useDelete: () =>
+      useMutation<FilesDeleteInput, FilesDeleteResult>((input) => defaultApiClient.apiNamespaceFiles.delete(input)),
+
+    update: (input: FilesUpdateInput) => defaultApiClient.apiNamespaceFiles.update(input),
+    useUpdate: () =>
+      useMutation<FilesUpdateInput, FilesUpdateResult>((input) => defaultApiClient.apiNamespaceFiles.update(input)),
+
+    create: (input: FilesCreateInput) => defaultApiClient.apiNamespaceFiles.create(input),
+    useCreate: () =>
+      useMutation<FilesCreateInput, FilesCreateResult>((input) => defaultApiClient.apiNamespaceFiles.create(input)),
+  },
+
   ai: {
     getConversations: (input: AiGetConversationsInput) => defaultApiClient.apiNamespaceAi.getConversations(input),
     useGetConversations: (input: AiGetConversationsInput) =>
@@ -6304,23 +6323,6 @@ export default {
     delete: (input: LinksDeleteInput) => defaultApiClient.apiNamespaceLinks.delete(input),
     useDelete: () =>
       useMutation<LinksDeleteInput, LinksDeleteResult>((input) => defaultApiClient.apiNamespaceLinks.delete(input)),
-  },
-
-  files: {
-    get: (input: FilesGetInput) => defaultApiClient.apiNamespaceFiles.get(input),
-    useGet: (input: FilesGetInput) => useQuery<FilesGetResult>(() => defaultApiClient.apiNamespaceFiles.get(input)),
-
-    delete: (input: FilesDeleteInput) => defaultApiClient.apiNamespaceFiles.delete(input),
-    useDelete: () =>
-      useMutation<FilesDeleteInput, FilesDeleteResult>((input) => defaultApiClient.apiNamespaceFiles.delete(input)),
-
-    update: (input: FilesUpdateInput) => defaultApiClient.apiNamespaceFiles.update(input),
-    useUpdate: () =>
-      useMutation<FilesUpdateInput, FilesUpdateResult>((input) => defaultApiClient.apiNamespaceFiles.update(input)),
-
-    create: (input: FilesCreateInput) => defaultApiClient.apiNamespaceFiles.create(input),
-    useCreate: () =>
-      useMutation<FilesCreateInput, FilesCreateResult>((input) => defaultApiClient.apiNamespaceFiles.create(input)),
   },
 
   documents: {

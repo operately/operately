@@ -5,6 +5,8 @@ defmodule Operately.Messages.Message do
   alias Operately.Notifications
   alias Operately.StateMachine
 
+  @valid_states [:draft, :published]
+
   schema "messages" do
     belongs_to :author, Operately.People.Person, foreign_key: :author_id
     belongs_to :messages_board, Operately.Messages.MessagesBoard, foreign_key: :messages_board_id
@@ -17,7 +19,7 @@ defmodule Operately.Messages.Message do
 
     field :title
     field :body, :map
-    field :state, Ecto.Enum, values: [:draft, :published]
+    field :state, Ecto.Enum, values: @valid_states
     field :published_at, :utc_datetime
 
     # populated with after load hooks
@@ -52,6 +54,8 @@ defmodule Operately.Messages.Message do
   defp set_published_at(changeset) do
     put_change(changeset, :published_at, Operately.Time.utc_datetime_now())
   end
+
+  def valid_states, do: @valid_states
 
   #
   # After load hooks
