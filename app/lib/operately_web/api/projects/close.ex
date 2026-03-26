@@ -47,7 +47,7 @@ defmodule OperatelyWeb.Api.Projects.Close do
     {:ok, %{
       project_id: inputs.project_id,
       content: inputs.retrospective,
-      success_status: String.to_atom(inputs.success_status),
+      success_status: inputs.success_status,
       send_to_everyone: inputs[:send_notifications_to_everyone] || false,
       subscription_parent_type: :project_retrospective,
       subscriber_ids: inputs[:subscriber_ids] || []

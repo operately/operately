@@ -47,7 +47,7 @@ defmodule OperatelyWeb.Api.Goals.Close do
   defp parse_inputs(inputs) do
     {:ok, %{
       success: inputs.success,
-      success_status: String.to_atom(inputs.success_status),
+      success_status: inputs.success_status,
       content: inputs.retrospective,
       send_to_everyone: inputs[:send_notifications_to_everyone] || false,
       subscriber_ids: inputs[:subscriber_ids] || [],
