@@ -3490,7 +3490,7 @@ export interface GoalsCloseInput {
   goalId: Id;
   success: string;
   retrospective: Json;
-  successStatus: string;
+  successStatus: SuccessStatus;
   sendNotificationsToEveryone?: boolean | null;
   subscriberIds?: Id[] | null;
 }
@@ -3961,7 +3961,7 @@ export interface ProjectsAcknowledgeCheckInResult {
 export interface ProjectsCloseInput {
   projectId: Id;
   retrospective: Json;
-  successStatus: string;
+  successStatus: SuccessStatus;
   sendNotificationsToEveryone?: boolean | null;
   subscriberIds?: Id[] | null;
 }
