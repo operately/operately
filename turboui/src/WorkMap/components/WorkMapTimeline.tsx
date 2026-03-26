@@ -3,13 +3,24 @@ import { WorkMap } from ".";
 import { BlackLink } from "../../Link";
 import { IconInfinity } from "../../icons";
 import classNames from "../../utils/classnames";
+import {
+  buildColumns,
+  calculateRange,
+  clampPercent,
+  chooseScale,
+  compareTimelineItems,
+  formatMarkerDate,
+  formatRangeLabel,
+  getBarStartDate,
+  getDateAtPosition,
+  getMarkerPosition,
+  type TimelineColumn as Column,
+} from "../utils/timeline";
 
 interface Props {
   items: WorkMap.Item[];
   tab: WorkMap.Filter;
 }
-
-type Scale = "week" | "month";
 
 interface TimelineItem {
   id: string;
@@ -21,14 +32,6 @@ interface TimelineItem {
   itemPath: string;
   startDate: Date | null;
   endDate: Date | null;
-}
-
-interface Column {
-  key: string;
-  label: string;
-  shortLabel: string;
-  start: Date;
-  end: Date;
 }
 
 export function WorkMapTimeline({ items, tab }: Props) {
@@ -88,12 +91,12 @@ export function WorkMapTimeline({ items, tab }: Props) {
         >
           <MarkerBadge
             left={todayLeft}
-            label={todayDate ? markerDateLabel.format(todayDate).toUpperCase() : null}
+            label={todayDate ? formatMarkerDate(todayDate) : null}
             className="border border-red-200 bg-red-50 text-red-700"
           />
           <MarkerBadge
             left={hoverLeft}
-            label={hoverDate ? markerDateLabel.format(hoverDate).toUpperCase() : null}
+            label={hoverDate ? formatMarkerDate(hoverDate) : null}
             className="border border-sky-200 bg-sky-50 text-sky-800"
           />
           <TimelineMarker left={todayLeft} className="bg-red-500/90" />
@@ -286,122 +289,6 @@ function normalizeDate(date: Date | null | undefined) {
   return value;
 }
 
-function getMarkerPosition(date: Date, rangeStart: number, rangeEnd: number) {
-  const normalized = new Date(date);
-  normalized.setHours(0, 0, 0, 0);
-
-  const value = normalized.getTime();
-  if (value < rangeStart || value > rangeEnd) return null;
-
-  return clampPercent(((value - rangeStart) / Math.max(rangeEnd - rangeStart, 1)) * 100);
-}
-
-function getDateAtPosition(left: number | null, rangeStart: number, rangeEnd: number) {
-  if (left === null) return null;
-
-  const total = Math.max(rangeEnd - rangeStart, 1);
-  const timestamp = rangeStart + (left / 100) * total;
-  const date = new Date(timestamp);
-  date.setHours(0, 0, 0, 0);
-  return date;
-}
-
-function calculateRange(items: TimelineItem[]) {
-  const dates = items.flatMap((item) => {
-    const rangeDates: Date[] = [];
-    if (item.startDate) rangeDates.push(item.startDate);
-    if (item.endDate) rangeDates.push(item.endDate);
-    if (item.startDate && !item.endDate) {
-      rangeDates.push(addDays(item.startDate, 28));
-    }
-    return rangeDates;
-  });
-
-  const minDate = new Date(Math.min(...dates.map((date) => date.getTime())));
-  const maxDate = new Date(Math.max(...dates.map((date) => date.getTime())));
-
-  return {
-    start: startOfWeek(addDays(minDate, -7)),
-    end: endOfWeek(addDays(maxDate, 7)),
-  };
-}
-
-function chooseScale(start: Date, end: Date): Scale {
-  const spanDays = Math.ceil((end.getTime() - start.getTime()) / DAY);
-  return spanDays <= 140 ? "week" : "month";
-}
-
-function buildColumns(start: Date, end: Date, scale: Scale): Column[] {
-  const columns: Column[] = [];
-  let cursor = new Date(start);
-
-  while (cursor < end) {
-    if (scale === "week") {
-      const columnStart = startOfWeek(cursor);
-      const columnEnd = endOfWeek(columnStart);
-      columns.push({
-        key: columnStart.toISOString(),
-        label: formatWeekLabel(columnStart),
-        shortLabel: formatWeekSubLabel(columnStart),
-        start: columnStart,
-        end: columnEnd,
-      });
-      cursor = addDays(columnStart, 7);
-      continue;
-    }
-
-    const columnStart = startOfMonth(cursor);
-    const columnEnd = endOfMonth(columnStart);
-    columns.push({
-      key: columnStart.toISOString(),
-      label: monthLabel.format(columnStart),
-      shortLabel: yearLabel.format(columnStart),
-      start: columnStart,
-      end: columnEnd,
-    });
-    cursor = addMonths(columnStart, 1);
-  }
-
-  return columns;
-}
-
-function compareTimelineItems(a: TimelineItem, b: TimelineItem) {
-  const startA = a.startDate?.getTime() ?? a.endDate?.getTime() ?? Number.MAX_SAFE_INTEGER;
-  const startB = b.startDate?.getTime() ?? b.endDate?.getTime() ?? Number.MAX_SAFE_INTEGER;
-
-  if (startA !== startB) return startA - startB;
-
-  const endA = a.endDate?.getTime() ?? Number.MAX_SAFE_INTEGER;
-  const endB = b.endDate?.getTime() ?? Number.MAX_SAFE_INTEGER;
-
-  if (endA !== endB) return endA - endB;
-
-  return a.name.localeCompare(b.name);
-}
-
-function formatRangeLabel(item: TimelineItem) {
-  if (item.startDate && item.endDate) {
-    return `${compactDate.format(item.startDate)} - ${compactDate.format(item.endDate)}`;
-  }
-
-  if (item.startDate && !item.endDate) {
-    return `${compactDate.format(item.startDate)} - forever`;
-  }
-
-  if (!item.startDate && item.endDate) {
-    return `Due ${compactDate.format(item.endDate)}`;
-  }
-
-  return null;
-}
-
-function getBarStartDate(item: TimelineItem) {
-  if (item.startDate) return item.startDate;
-  if (!item.endDate) return null;
-
-  return addDays(item.endDate, -21);
-}
-
 function TimelineEmptyState({ message, hiddenUndatedCount }: { message: string; hiddenUndatedCount?: number }) {
   return (
     <div className="px-6 py-12 text-sm text-content-dimmed">
@@ -425,66 +312,3 @@ function emptyStateMessage(tab: WorkMap.Filter) {
       return "No work to show.";
   }
 }
-
-function startOfWeek(date: Date) {
-  const value = new Date(date);
-  const day = value.getDay();
-  const diff = day === 0 ? -6 : 1 - day;
-  value.setDate(value.getDate() + diff);
-  value.setHours(0, 0, 0, 0);
-  return value;
-}
-
-function endOfWeek(date: Date) {
-  const value = startOfWeek(date);
-  value.setDate(value.getDate() + 6);
-  value.setHours(23, 59, 59, 999);
-  return value;
-}
-
-function startOfMonth(date: Date) {
-  const value = new Date(date);
-  value.setDate(1);
-  value.setHours(0, 0, 0, 0);
-  return value;
-}
-
-function endOfMonth(date: Date) {
-  const value = startOfMonth(date);
-  value.setMonth(value.getMonth() + 1);
-  value.setDate(0);
-  value.setHours(23, 59, 59, 999);
-  return value;
-}
-
-function addDays(date: Date, days: number) {
-  const value = new Date(date);
-  value.setDate(value.getDate() + days);
-  return value;
-}
-
-function addMonths(date: Date, months: number) {
-  const value = new Date(date);
-  value.setMonth(value.getMonth() + months);
-  return value;
-}
-
-function clampPercent(value: number) {
-  return Math.max(0, Math.min(100, value));
-}
-
-function formatWeekLabel(date: Date) {
-  const end = addDays(date, 6);
-  return `${monthDayLabel.format(date)} - ${monthDayLabel.format(end)}`;
-}
-
-function formatWeekSubLabel(date: Date) {
-  return yearLabel.format(date);
-}
-
-const DAY = 24 * 60 * 60 * 1000;
-const monthDayLabel = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" });
-const compactDate = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" });
-const monthLabel = new Intl.DateTimeFormat("en-US", { month: "short" });
-const markerDateLabel = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" });
-const yearLabel = new Intl.DateTimeFormat("en-US", { year: "numeric" });
