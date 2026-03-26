@@ -3489,7 +3489,7 @@ export interface GoalsChangeParentResult {
 export interface GoalsCloseInput {
   goalId: Id;
   success: string;
-  retrospective: string;
+  retrospective: Json;
   successStatus: string;
   sendNotificationsToEveryone?: boolean | null;
   subscriberIds?: Id[] | null;
@@ -3960,7 +3960,7 @@ export interface ProjectsAcknowledgeCheckInResult {
 
 export interface ProjectsCloseInput {
   projectId: Id;
-  retrospective: string;
+  retrospective: Json;
   successStatus: string;
   sendNotificationsToEveryone?: boolean | null;
   subscriberIds?: Id[] | null;
@@ -4501,7 +4501,7 @@ export interface SpacesUpdateResult {
 export interface SpacesUpdateDiscussionInput {
   id: Id;
   title?: string | null;
-  body?: string | null;
+  body?: Json | null;
   state?: string | null;
 }
 
