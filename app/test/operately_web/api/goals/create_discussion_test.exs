@@ -6,9 +6,7 @@ defmodule OperatelyWeb.Api.Goals.CreateDiscussionTest do
   import Operately.GoalsFixtures
   import Operately.Support.RichText
 
-  alias Operately.Repo
   alias Operately.Access.Binding
-  alias Operately.Activities.Activity
   alias Operately.Support.RichText
   alias Operately.Notifications.SubscriptionList
 
@@ -92,7 +90,7 @@ defmodule OperatelyWeb.Api.Goals.CreateDiscussionTest do
         subscriber_ids: Enum.map(ctx.people, &(Paths.person_id(&1)))
       })
 
-      discussion = fetch_discussion(res.id)
+      discussion = fetch_discussion(res.discussion.id)
 
       {:ok, list} = SubscriptionList.get(:system, parent_id: discussion.id, opts: [preload: :subscriptions])
 
@@ -116,7 +114,7 @@ defmodule OperatelyWeb.Api.Goals.CreateDiscussionTest do
         subscriber_ids: [],
       })
 
-      discussion = fetch_discussion(res.id)
+      discussion = fetch_discussion(res.discussion.id)
       subscriptions = fetch_subscriptions(discussion.id)
 
       assert length(subscriptions) == 4
@@ -136,7 +134,7 @@ defmodule OperatelyWeb.Api.Goals.CreateDiscussionTest do
         subscriber_ids: Enum.map(people, &(Paths.person_id(&1))),
       })
 
-      discussion = fetch_discussion(res.id)
+      discussion = fetch_discussion(res.discussion.id)
       subscriptions = fetch_subscriptions(discussion.id)
 
       assert length(subscriptions) == 4
@@ -160,17 +158,15 @@ defmodule OperatelyWeb.Api.Goals.CreateDiscussionTest do
   end
 
   defp assert_discussion_created(res) do
-    {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.id)
-    activity = Operately.Activities.get_activity!(id) |> Repo.preload(:comment_thread)
-
-    assert activity.comment_thread_id
-    assert activity.comment_thread.title == "Some title"
+    assert res.discussion
+    assert res.discussion.id
+    assert res.discussion.title == "Some title"
   end
 
-  defp fetch_discussion(activity_id) do
-    {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(activity_id)
-    {:ok, activity} = Activity.get(:system, id: id, opts: [preload: :comment_thread])
-    activity.comment_thread
+  defp fetch_discussion(discussion_id) do
+    {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(discussion_id)
+    {:ok, thread} = Operately.Comments.CommentThread.get(:system, id: id)
+    thread
   end
 
   defp fetch_subscriptions(parent_id) do
