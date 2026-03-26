@@ -12,7 +12,7 @@ defmodule OperatelyWeb.Api.Goals.Close do
   inputs do
     field :goal_id, :id, null: false
     field :success, :string, null: false
-    field :retrospective, :string, null: false
+    field :retrospective, :json, null: false
     field :success_status, :string, null: false
     field? :send_notifications_to_everyone, :boolean, null: true
     field? :subscriber_ids, list_of(:id), null: true
@@ -48,7 +48,7 @@ defmodule OperatelyWeb.Api.Goals.Close do
     {:ok, %{
       success: inputs.success,
       success_status: String.to_atom(inputs.success_status),
-      content: Jason.decode!(inputs.retrospective),
+      content: inputs.retrospective,
       send_to_everyone: inputs[:send_notifications_to_everyone] || false,
       subscriber_ids: inputs[:subscriber_ids] || [],
       subscription_parent_type: :comment_thread

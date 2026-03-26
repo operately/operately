@@ -17132,7 +17132,7 @@
           "default": null,
           "name": "retrospective",
           "type": {
-            "name": "string",
+            "name": "json",
             "kind": "named"
           },
           "optional": false,
@@ -21113,7 +21113,7 @@
           "default": null,
           "name": "retrospective",
           "type": {
-            "name": "string",
+            "name": "json",
             "kind": "named"
           },
           "optional": false,
@@ -26611,7 +26611,7 @@
           "default": null,
           "name": "body",
           "type": {
-            "name": "string",
+            "name": "json",
             "kind": "named"
           },
           "optional": true,
@@ -27862,6 +27862,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-26T10:44:36Z",
+  "generated_at": "2026-03-26T18:46:34Z",
   "schema_version": 1
 }
