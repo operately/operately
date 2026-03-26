@@ -11,7 +11,7 @@ defmodule OperatelyWeb.Api.Projects.Close do
 
   inputs do
     field :project_id, :id, null: false
-    field :retrospective, :string, null: false
+    field :retrospective, :json, null: false
     field :success_status, :string, null: false
     field? :send_notifications_to_everyone, :boolean, null: true
     field? :subscriber_ids, list_of(:id), null: true
@@ -46,7 +46,7 @@ defmodule OperatelyWeb.Api.Projects.Close do
   defp parse_inputs(inputs) do
     {:ok, %{
       project_id: inputs.project_id,
-      content: Jason.decode!(inputs.retrospective),
+      content: inputs.retrospective,
       success_status: String.to_atom(inputs.success_status),
       send_to_everyone: inputs[:send_notifications_to_everyone] || false,
       subscription_parent_type: :project_retrospective,

@@ -28,7 +28,7 @@ defmodule Operately.AI.ToolsTest do
       args = %{"goal_id" => Paths.goal_id(ctx.goal), "title" => "Test Message", "message" => "This is a test message."}
 
       assert {:ok, result} = tool.function.(args, context)
-      assert {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(Jason.decode!(result)["id"])
+      assert {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(Jason.decode!(result)["activity_id"])
       assert message = Operately.Activities.get_activity(id) |> Repo.preload(:comment_thread)
       assert message.comment_thread.title == "Test Message"
     end
