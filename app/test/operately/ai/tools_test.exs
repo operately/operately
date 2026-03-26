@@ -3,6 +3,7 @@ defmodule Operately.AI.ToolsTest do
 
   alias Operately.AI.Tools
   alias Operately.Support.Factory
+  alias OperatelyWeb.Paths
 
   setup do
     Factory.setup(%{})
@@ -24,7 +25,7 @@ defmodule Operately.AI.ToolsTest do
     test "posts a message to the goal", ctx do
       tool = Tools.post_goal_message()
       context = %{person: ctx.creator, agent_run: ctx.agent_run}
-      args = %{"goal_id" => ctx.goal.id, "title" => "Test Message", "message" => "This is a test message."}
+      args = %{"goal_id" => Paths.goal_id(ctx.goal), "title" => "Test Message", "message" => "This is a test message."}
 
       assert {:ok, result} = tool.function.(args, context)
       assert {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(Jason.decode!(result)["id"])
