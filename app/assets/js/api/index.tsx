@@ -1271,6 +1271,7 @@ export interface GoalDiscussion {
   insertedAt: string;
   commentCount: number;
   author: Person;
+  activityId: Id;
   content: string;
 }
 
@@ -3559,7 +3560,8 @@ export interface GoalsCreateDiscussionInput {
 }
 
 export interface GoalsCreateDiscussionResult {
-  id?: string | null;
+  discussion: CommentThread;
+  activityId: string;
 }
 
 export interface GoalsCreateTargetInput {
