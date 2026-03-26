@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api.Spaces.UpdateDiscussion do
   inputs do
     field :id, :id, null: false
     field? :title, :string, null: true
-    field? :body, :string, null: true
+    field? :body, :json, null: true
     field? :state, :string, null: true
   end
 
@@ -44,8 +44,6 @@ defmodule OperatelyWeb.Api.Spaces.UpdateDiscussion do
   end
 
   defp parse_inputs(inputs) do
-    inputs = Map.put(inputs, :body, Jason.decode!(inputs.body))
-
     inputs = if Map.has_key?(inputs, :state) do
       Map.put(inputs, :state, String.to_atom(inputs.state))
     else
