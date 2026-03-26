@@ -218,6 +218,29 @@ export const ProjectsTab: Story = {
   },
 };
 
+export const TimelineView: Story = {
+  render: (args) => (
+    <div className="py-4">
+      <Page title={args.title} size="fullwidth">
+        <WorkMap {...args} />
+      </Page>
+    </div>
+  ),
+  args: {
+    title: "Company Work Map",
+    items: mockItems,
+    tabOptions: {
+      hideAll: true,
+      hideGoals: true,
+      hideCompleted: true,
+      hidePaused: true,
+    },
+    columnOptions: {
+      hideProject: true,
+    },
+  },
+};
+
 /**
  * Completed tab selected
  */

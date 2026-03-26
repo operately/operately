@@ -92,9 +92,11 @@ defmodule Operately.AI.Tools do
           }
         }
 
+        {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(goal_id)
+
         args =
           %{
-            goal_id: goal_id,
+            goal_id: id,
             title: title,
             message: message,
             send_notifications_to_everyone: true,
