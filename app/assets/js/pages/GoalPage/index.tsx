@@ -436,7 +436,7 @@ function prepareDiscussions(paths: Paths, discussions: GoalDiscussion[]): GoalPa
       date: Time.parse(discussion.insertedAt)!,
       title: discussion.title,
       author: People.parsePersonForTurboUi(paths, discussion.author)!,
-      link: paths.goalDiscussionPath(discussion.id),
+      link: paths.goalDiscussionPath(discussion.activityId),
       content: JSON.parse(discussion.content),
       commentCount: discussion.commentCount,
     };

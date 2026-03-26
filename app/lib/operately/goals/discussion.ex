@@ -6,6 +6,7 @@ defmodule Operately.Goals.Discussion do
     :id,
     :title,
     :author,
+    :activity,
     :comment_count,
     :inserted_at,
     :content
@@ -22,9 +23,10 @@ defmodule Operately.Goals.Discussion do
       where: activity.content["goal_id"] == ^goal_id,
       order_by: [desc: activity.inserted_at],
       select: %__MODULE__{
-        id: activity.id,
+        id: thread.id,
         title: thread.title,
         author: author,
+        activity: activity,
         inserted_at: thread.inserted_at,
         content: thread.message,
         comment_count: fragment("SELECT COUNT(*) FROM comments WHERE entity_id = ? AND entity_type = 'comment_thread'", thread.id)

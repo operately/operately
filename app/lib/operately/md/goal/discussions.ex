@@ -72,7 +72,7 @@ defmodule Operately.MD.Goal.Discussions do
   defp load_additional_data(discussion) do
     {:ok, activity} =
       Operately.Activities.Activity.get(:system,
-        id: discussion.id,
+        id: discussion.activity.id,
         opts: [
           preload: [comment_thread: [:author, reactions: :person, comments: [:author, reactions: :person]]]
         ]
