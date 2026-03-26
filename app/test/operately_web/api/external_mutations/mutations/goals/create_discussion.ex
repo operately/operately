@@ -24,7 +24,8 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Goals.CreateDiscussion do
 
   @impl true
   def assert(response, _ctx) do
-    assert response.id
+    assert response.activity_id
+    assert response.discussion
     refute Map.has_key?(response, :error)
   end
 

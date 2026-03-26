@@ -1474,6 +1474,7 @@ defmodule OperatelyWeb.Api.Types do
     field :inserted_at, :date, null: false
     field :comment_count, :integer, null: false
     field :author, :person, null: false
+    field :activity_id, :id, null: false
     field :content, :string, null: false
   end
 

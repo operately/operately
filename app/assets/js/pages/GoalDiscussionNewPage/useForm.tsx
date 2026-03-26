@@ -34,7 +34,7 @@ export function useForm({ goal, subscriptionsState }: { goal: Goals.Goal; subscr
         subscriberIds: subscriptionsState.currentSubscribersList,
       });
 
-      navigate(paths.goalActivityPath(res.id!));
+      navigate(paths.goalActivityPath(res.activityId));
     },
   });
 
