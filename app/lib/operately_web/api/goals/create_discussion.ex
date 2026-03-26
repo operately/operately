@@ -8,6 +8,7 @@ defmodule OperatelyWeb.Api.Goals.CreateDiscussion do
 
   alias Operately.Goals.{Goal, Permissions}
   alias Operately.Operations.GoalDiscussionCreation
+  alias OperatelyWeb.Api.Serializer
 
   inputs do
     field :goal_id, :id, null: false
@@ -18,7 +19,8 @@ defmodule OperatelyWeb.Api.Goals.CreateDiscussion do
   end
 
   outputs do
-    field? :id, :string, null: true
+    field :discussion, :comment_thread
+    field :activity_id, :string
   end
 
   def call(conn, inputs) do
@@ -28,7 +30,10 @@ defmodule OperatelyWeb.Api.Goals.CreateDiscussion do
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.goal.request_info.access_level, :can_edit) end)
     |> run(:attrs, fn -> parse_inputs(inputs) end)
     |> run(:operation, fn ctx -> GoalDiscussionCreation.run(ctx.me, ctx.goal, ctx.attrs) end)
-    |> run(:serialized, fn ctx -> {:ok, %{id: OperatelyWeb.Paths.activity_id(ctx.operation)}} end)
+    |> run(:serialized, fn ctx -> {:ok, %{
+      discussion: Serializer.serialize(ctx.operation.comment_thread, level: :essential),
+      activity_id: OperatelyWeb.Paths.activity_id(ctx.operation),
+    }} end)
     |> respond()
   end
 

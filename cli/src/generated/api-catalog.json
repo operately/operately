@@ -13330,6 +13330,17 @@
           },
           {
             "default": null,
+            "name": "activity_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
             "name": "content",
             "type": {
               "name": "string",
@@ -17553,14 +17564,25 @@
       "outputs": [
         {
           "default": null,
-          "name": "id",
+          "name": "discussion",
+          "type": {
+            "name": "comment_thread",
+            "kind": "named"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "activity_id",
           "type": {
             "name": "string",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         }
       ],
       "namespace": "goals",
@@ -27840,6 +27862,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-25T17:11:00Z",
+  "generated_at": "2026-03-26T10:44:36Z",
   "schema_version": 1
 }
