@@ -245,15 +245,6 @@ defmodule OperatelyWeb.Api do
         mutation(:update, OperatelyWeb.Api.Documents.Update)
       end
 
-      @doc "Get, upload and manage files in resource hubs"
-      namespace(:files) do
-        query(:get, OperatelyWeb.Api.Files.Get)
-
-        mutation(:create, OperatelyWeb.Api.Files.Create)
-        mutation(:delete, OperatelyWeb.Api.Files.Delete)
-        mutation(:update, OperatelyWeb.Api.Files.Update)
-      end
-
       @doc "Get, create and manage links in resource hubs"
       namespace(:links) do
         query(:get, OperatelyWeb.Api.Links.Get)
@@ -325,6 +316,14 @@ defmodule OperatelyWeb.Api do
         query(:get_conversations, OperatelyWeb.Api.Ai.GetConversations)
         mutation(:create_conversation, OperatelyWeb.Api.Ai.CreateConversation)
         mutation(:send_message, OperatelyWeb.Api.Ai.SendMessage)
+      end
+
+      namespace(:files) do
+        query(:get, OperatelyWeb.Api.Files.Get)
+
+        mutation(:create, OperatelyWeb.Api.Files.Create)
+        mutation(:delete, OperatelyWeb.Api.Files.Delete)
+        mutation(:update, OperatelyWeb.Api.Files.Update)
       end
 
       namespace(:invitations) do
