@@ -9,8 +9,10 @@ import { BlackLink } from "../../Link";
 import { PageNew } from "../../Page";
 import { SpaceField } from "../../SpaceField";
 import type { StatusSelector } from "../../StatusSelector";
+import { useLocation } from "react-router-dom";
 import { useWorkMapTab } from "../hooks/useWorkMapTab";
 import { AddItemModal } from "./AddItemModal";
+import { WorkMapTimeline } from "./WorkMapTimeline";
 import { WorkMapNavigation } from "./WorkMapNavigation";
 import { WorkMapTable } from "./WorkMapTable";
 
@@ -40,7 +42,11 @@ export function WorkMap({
   hideCompanyAccessInQuickAdd,
   zeroStateMessage,
 }: WorkMap.Props) {
+  const location = useLocation();
   const { filteredItems, tabsState, tab } = useWorkMapTab({ rawItems: items, type, opts: { tabOptions } });
+  const searchParams = new URLSearchParams(location.search);
+  const timelineAvailable = type === "company" && tab === "projects";
+  const view = timelineAvailable && searchParams.get("view") === "timeline" ? "timeline" : "table";
 
   return (
     <div className="flex flex-col w-full bg-surface-base rounded-lg">
@@ -54,22 +60,26 @@ export function WorkMap({
         </div>
       </header>
 
-      <WorkMapNavigation tabsState={tabsState} />
+      <WorkMapNavigation tabsState={tabsState} timelineAvailable={timelineAvailable} view={view} />
       <div className="flex-1 overflow-auto">
-        <WorkMapTable
-          items={filteredItems}
-          tab={tab}
-          columnOptions={columnOptions}
-          addItem={addItem}
-          addingEnabled={addingEnabled}
-          spaceSearch={spaceSearch}
-          addItemDefaultSpace={addItemDefaultSpace}
-          type={type}
-          viewer={viewer}
-          profileUser={profileUser}
-          hideCompanyAccessInQuickAdd={Boolean(hideCompanyAccessInQuickAdd)}
-          zeroStateMessage={zeroStateMessage}
-        />
+        {view === "timeline" ? (
+          <WorkMapTimeline items={filteredItems} tab={tab} />
+        ) : (
+          <WorkMapTable
+            items={filteredItems}
+            tab={tab}
+            columnOptions={columnOptions}
+            addItem={addItem}
+            addingEnabled={addingEnabled}
+            spaceSearch={spaceSearch}
+            addItemDefaultSpace={addItemDefaultSpace}
+            type={type}
+            viewer={viewer}
+            profileUser={profileUser}
+            hideCompanyAccessInQuickAdd={Boolean(hideCompanyAccessInQuickAdd)}
+            zeroStateMessage={zeroStateMessage}
+          />
+        )}
       </div>
     </div>
   );
@@ -154,6 +164,7 @@ export namespace WorkMap {
 
   export type WorkMapType = "company" | "personal";
   export type Filter = "all" | "goals" | "projects" | "completed" | "paused";
+  export type View = "table" | "timeline";
 
   export interface TabOptions {
     hideAll?: boolean;

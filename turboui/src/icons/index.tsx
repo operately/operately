@@ -87,6 +87,7 @@ import IconHome2 from "@tabler/icons-react/dist/esm/icons/IconHome2.mjs";
 import IconId from "@tabler/icons-react/dist/esm/icons/IconId.mjs";
 import IconInfoCircle from "@tabler/icons-react/dist/esm/icons/IconInfoCircle.mjs";
 import IconInfoCircleFilled from "@tabler/icons-react/dist/esm/icons/IconInfoCircleFilled.mjs";
+import IconInfinity from "@tabler/icons-react/dist/esm/icons/IconInfinity.mjs";
 import IconItalic from "@tabler/icons-react/dist/esm/icons/IconItalic.mjs";
 import IconLayoutGrid from "@tabler/icons-react/dist/esm/icons/IconLayoutGrid.mjs";
 import IconLetterCase from "@tabler/icons-react/dist/esm/icons/IconLetterCase.mjs";
@@ -247,6 +248,7 @@ export {
   IconId,
   IconInfoCircle,
   IconInfoCircleFilled,
+  IconInfinity,
   IconItalic,
   IconLayoutGrid,
   IconLetterCase,
