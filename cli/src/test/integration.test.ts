@@ -5,6 +5,8 @@ import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 
+const { version: packageVersion } = require("../../package.json") as { version: string };
+
 interface CLIResult {
   exitCode: number;
   stdout: string;
@@ -59,7 +61,7 @@ describe("CLI Integration Tests", () => {
     it("shows version with --version flag", async () => {
       const result = await runCLI(["--version"]);
       assert.strictEqual(result.exitCode, 0);
-      assert.match(result.stdout.trim(), /^\d+\.\d+\.\d+$/);
+      assert.strictEqual(result.stdout.trim(), packageVersion);
     });
 
     it("shows namespace help when namespace is called without subcommand", async () => {

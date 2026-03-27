@@ -1,1 +1,3 @@
-export const CLI_VERSION = "0.1.0";
+const { version } = require("../package.json") as { version: string };
+
+export const CLI_VERSION = version;
