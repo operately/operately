@@ -1960,10 +1960,12 @@ defmodule OperatelyWeb.Api.Types do
     field? :new_start_time, :string, null: true
   end
 
+  enum(:project_contributor_role, values: Operately.Projects.Contributor.allowed_roles())
+
   object :project_contributor do
     field :id, :string
     field :responsibility, :string, null: true
-    field :role, :string, null: true
+    field :role, :project_contributor_role, null: true
     field? :person, :person, null: true
     field :access_level, :access_options_int, null: true
     field? :project, :project, null: true
