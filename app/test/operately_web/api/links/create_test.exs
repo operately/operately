@@ -100,6 +100,27 @@ defmodule OperatelyWeb.Api.Links.CreateTest do
       assert {:ok, list} = SubscriptionList.get(:system, parent_id: link.id)
       assert {:ok, _} = Subscription.get(:system, subscription_list_id: list.id, person_id: ctx.creator.id)
     end
+
+    test "creates link without description", ctx do
+      assert ResourceHubs.list_links(ctx.hub) == []
+
+      assert {200, res} = mutation(ctx.conn, [:links, :create], %{
+        resource_hub_id: Paths.resource_hub_id(ctx.hub),
+        name: "Link without description",
+        url: "https://example.com",
+        type: "other",
+      })
+
+      links = ResourceHubs.list_links(ctx.hub)
+      assert length(links) == 1
+
+      link = Repo.preload(hd(links), :node)
+
+      assert res.link.id == Paths.link_id(link)
+      assert link.node.name == "Link without description"
+      assert link.url == "https://example.com"
+      assert link.description == Operately.RichContent.Builder.empty_content()
+    end
   end
 
   #
