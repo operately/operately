@@ -35,7 +35,7 @@ defmodule Operately.Operations.ResourceHubLinkEditing do
         },
         updated_link: %{
           name: attrs.name,
-          type: attrs.type,
+          type: to_string(attrs.type),
           url: attrs.url
         }
       }

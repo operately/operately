@@ -12,7 +12,7 @@ defmodule OperatelyWeb.Api.Links.Update do
   inputs do
     field :link_id, :id, null: false
     field :name, :string, null: false
-    field :type, :string, null: false
+    field :type, :resource_hub_link_type, null: false
     field :url, :string, null: false
     field? :description, :json, null: false
   end

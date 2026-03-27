@@ -858,7 +858,7 @@
             "default": null,
             "name": "type",
             "type": {
-              "name": "string",
+              "name": "resource_hub_link_type",
               "kind": "named"
             },
             "optional": false,
@@ -14731,6 +14731,17 @@
         "goal",
         "project"
       ],
+      "resource_hub_link_type": [
+        "airtable",
+        "dropbox",
+        "figma",
+        "google",
+        "google_doc",
+        "google_sheet",
+        "google_slides",
+        "notion",
+        "other"
+      ],
       "review_assignment_origin_types": [
         "project",
         "goal",
@@ -19453,7 +19464,7 @@
           "default": null,
           "name": "type",
           "type": {
-            "name": "string",
+            "name": "resource_hub_link_type",
             "kind": "named"
           },
           "optional": false,
@@ -19718,7 +19729,7 @@
           "default": null,
           "name": "type",
           "type": {
-            "name": "string",
+            "name": "resource_hub_link_type",
             "kind": "named"
           },
           "optional": false,
@@ -27552,6 +27563,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-27T18:04:06Z",
+  "generated_at": "2026-03-27T18:42:24Z",
   "schema_version": 1
 }
