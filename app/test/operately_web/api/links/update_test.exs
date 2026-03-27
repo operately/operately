@@ -100,6 +100,62 @@ defmodule OperatelyWeb.Api.Mutations.UpdateLinkTest do
       assert link.url === "http://localhost:3000"
       assert link.description === RichText.rich_text("Brand new description")
     end
+
+    test "updates link without description", ctx do
+      original_description = ctx.link.description
+
+      assert {200, _} = mutation(ctx.conn, [:links, :update], %{
+        link_id: Paths.link_id(ctx.link),
+        name: "Updated name",
+        type: "google_sheet",
+        url: "https://updated.example.com",
+      })
+
+      node = Repo.reload(ctx.link.node)
+      link = Repo.reload(ctx.link)
+
+      assert node.name === "Updated name"
+      assert link.type === :google_sheet
+      assert link.url === "https://updated.example.com"
+      assert link.description === original_description
+    end
+
+    test "updates only name and preserves other fields", ctx do
+      original_type = ctx.link.type
+      original_url = ctx.link.url
+      original_description = ctx.link.description
+
+      assert {200, _} = mutation(ctx.conn, [:links, :update], %{
+        link_id: Paths.link_id(ctx.link),
+        name: "Just the name changed",
+        type: Atom.to_string(original_type),
+        url: original_url,
+      })
+
+      node = Repo.reload(ctx.link.node)
+      link = Repo.reload(ctx.link)
+
+      assert node.name === "Just the name changed"
+      assert link.type === original_type
+      assert link.url === original_url
+      assert link.description === original_description
+    end
+
+    test "updates description to empty content", ctx do
+      assert ctx.link.description === RichText.rich_text("Description")
+
+      assert {200, _} = mutation(ctx.conn, [:links, :update], %{
+        link_id: Paths.link_id(ctx.link),
+        name: ctx.link.node.name,
+        type: Atom.to_string(ctx.link.type),
+        url: ctx.link.url,
+        description: RichText.rich_text("", :as_string)
+      })
+
+      link = Repo.reload(ctx.link)
+
+      assert link.description === RichText.rich_text("")
+    end
   end
 
   #

@@ -6,14 +6,7 @@ defmodule Operately.Operations.ResourceHubLinkEditing do
 
   def run(author, link, attrs) do
     Multi.new()
-    |> Multi.update(
-      :link,
-      Link.changeset(link, %{
-        url: attrs.url,
-        type: attrs.type,
-        description: attrs.description
-      })
-    )
+    |> Multi.update(:link, Link.changeset(link, attrs))
     |> Multi.update(:node, fn changes ->
       Node.changeset(link.node, %{name: attrs.name, updated_at: changes.link.updated_at})
     end)
