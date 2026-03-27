@@ -49,7 +49,7 @@ defmodule OperatelyWeb.Api.Notifications.SubscribeTest do
         {:ok, subscription_list} = SubscriptionList.get(:system, parent_id: check_in.id)
 
         assert {code, res} = mutation(ctx.conn, [:notifications, :subscribe], %{
-          id: Paths.subscription_list_id(subscription_list),
+          subscription_list_id: Paths.subscription_list_id(subscription_list),
           type: "project_check_in",
         })
 
@@ -92,7 +92,7 @@ defmodule OperatelyWeb.Api.Notifications.SubscribeTest do
       refute Notifications.is_subscriber?(ctx.person.id, ctx.subscription_list.id)
 
       assert {200, _} = mutation(ctx.conn, [:notifications, :subscribe], %{
-        id: Paths.subscription_list_id(ctx.subscription_list),
+        subscription_list_id: Paths.subscription_list_id(ctx.subscription_list),
         type: "project_check_in",
       })
 
@@ -114,7 +114,7 @@ defmodule OperatelyWeb.Api.Notifications.SubscribeTest do
       refute Notifications.is_subscriber?(ctx.person.id, ctx.subscription_list.id)
 
       assert {200, _} = mutation(ctx.conn, [:notifications, :subscribe], %{
-        id: Paths.subscription_list_id(ctx.subscription_list),
+        subscription_list_id: Paths.subscription_list_id(ctx.subscription_list),
         type: "project_check_in",
       })
 
@@ -158,7 +158,7 @@ defmodule OperatelyWeb.Api.Notifications.SubscribeTest do
       refute Notifications.is_subscriber?(ctx.person.id, ctx.project_subscription_list.id)
 
       assert {200, _} = mutation(ctx.conn, [:notifications, :subscribe], %{
-        id: Paths.subscription_list_id(ctx.project_subscription_list),
+        subscription_list_id: Paths.subscription_list_id(ctx.project_subscription_list),
         type: "project",
       })
 
@@ -169,7 +169,7 @@ defmodule OperatelyWeb.Api.Notifications.SubscribeTest do
       refute Notifications.is_subscriber?(ctx.person.id, ctx.restricted_project_subscription_list.id)
 
       assert {404, _} = mutation(ctx.conn, [:notifications, :subscribe], %{
-        id: Paths.subscription_list_id(ctx.restricted_project_subscription_list),
+        subscription_list_id: Paths.subscription_list_id(ctx.restricted_project_subscription_list),
         type: "project",
       })
 

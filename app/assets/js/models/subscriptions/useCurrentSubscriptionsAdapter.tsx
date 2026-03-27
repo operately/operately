@@ -49,20 +49,20 @@ export function useCurrentSubscriptionsAdapter({
 
   const handleSubscribe = () => {
     subscribe({
-      id: subscriptionList.id,
+      subscriptionListId: subscriptionList.id,
       type,
     }).then(() => onRefresh());
   };
 
   const handleUnsubscribe = () => {
     unsubscribe({
-      id: subscriptionList.id,
+      subscriptionListId: subscriptionList.id,
     }).then(() => onRefresh());
   };
 
   const handleEditSubscribers = (subscriberIds: string[]) => {
     editSubscribers({
-      id: subscriptionList.id,
+      subscriptionListId: subscriptionList.id,
       subscriberIds,
       type,
     }).then(() => onRefresh());
