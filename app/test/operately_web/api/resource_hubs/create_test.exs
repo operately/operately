@@ -95,6 +95,23 @@ defmodule OperatelyWeb.Api.ResourceHubs.CreateTest do
       assert length(hubs) == 2
       assert Enum.find(hubs, &(Serializer.serialize(&1) == res.resource_hub))
     end
+
+    test "creates resource hub without description", ctx do
+      assert length(ResourceHubs.list_resource_hubs(ctx.space)) == 1
+
+      assert {200, res} = mutation(ctx.conn, [:resource_hubs, :create], %{
+        space_id: Paths.space_id(ctx.space),
+        name: "Resource Hub Without Description",
+        anonymous_access_level: Binding.no_access(),
+        company_access_level: Binding.view_access(),
+        space_access_level: Binding.edit_access()
+      })
+
+      hubs = ResourceHubs.list_resource_hubs(ctx.space)
+
+      assert length(hubs) == 2
+      assert Enum.find(hubs, &(Serializer.serialize(&1) == res.resource_hub))
+    end
   end
 
   #
