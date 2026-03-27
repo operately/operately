@@ -2,6 +2,8 @@ defmodule Operately.Projects.Contributor do
   use Operately.Schema
   use Operately.Repo.Getter
 
+  @allowed_roles [:champion, :reviewer, :contributor]
+
   schema "project_contributors" do
     belongs_to :project, Operately.Projects.Project, foreign_key: :project_id
     belongs_to :person, Operately.People.Person, foreign_key: :person_id, where: [suspended_at: nil, type: {:fragment, "? != 'ai'"}]
@@ -9,7 +11,7 @@ defmodule Operately.Projects.Contributor do
     has_one :access_context, through: [:project, :access_context]
 
     field :responsibility, :string
-    field :role, Ecto.Enum, values: [:champion, :reviewer, :contributor], default: :contributor
+    field :role, Ecto.Enum, values: @allowed_roles, default: :contributor
 
     # populated with after load hooks
     field :permissions, :any, virtual: true
@@ -78,4 +80,5 @@ defmodule Operately.Projects.Contributor do
     Map.put(contributor, :access_level, level)
   end
 
+  def allowed_roles, do: @allowed_roles
 end
