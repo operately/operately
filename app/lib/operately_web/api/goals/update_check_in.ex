@@ -14,8 +14,8 @@ defmodule OperatelyWeb.Api.Goals.UpdateCheckIn do
     field :id, :id, null: false
     field :due_date, :contextual_date, null: true
 
-    field? :status, :string, null: true
-    field? :content, :json, null: true
+    field :status, :goal_check_in_status, null: false
+    field :content, :json, null: false
     field? :new_target_values, :string, null: true
     field? :checklist, list_of(:goal_check_update), null: true
   end

@@ -12,7 +12,7 @@ defmodule OperatelyWeb.Api.Projects.UpdateCheckIn do
 
   inputs do
     field :check_in_id, :id, null: false
-    field :status, :string, null: false
+    field :status, :project_check_in_status, null: false
     field :description, :json, null: false
   end
 

@@ -6,6 +6,7 @@ import { parsePersonForTurboUi } from "../people";
 import * as Time from "@/utils/time";
 
 export type ProjectCheckIn = api.ProjectCheckIn;
+export type ProjectCheckInStatus = api.ProjectCheckInStatus;
 
 export const getProjectCheckIn = Api.projects.getCheckIn;
 export const useAcknowledgeProjectCheckIn = Api.projects.useAcknowledgeCheckIn;

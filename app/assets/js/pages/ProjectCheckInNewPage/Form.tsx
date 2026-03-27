@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Person } from "@/models/people";
-import { usePostProjectCheckIn } from "@/models/projectCheckIns";
+import { usePostProjectCheckIn, ProjectCheckInStatus } from "@/models/projectCheckIns";
 import { Project } from "@/models/projects";
 import { useNavigate } from "react-router-dom";
 
@@ -26,9 +26,12 @@ export function Form({ project }: { project: Project }) {
     projectName: project.name,
   });
 
-  const form = Forms.useForm({
+  const form = Forms.useForm<{
+    status: ProjectCheckInStatus | null;
+    description: any;
+  }>({
     fields: {
-      status: "",
+      status: null,
       description: null,
     },
     validate: (addError) => {
@@ -45,7 +48,7 @@ export function Form({ project }: { project: Project }) {
     submit: async () => {
       const res = await post({
         projectId: project.id,
-        status: form.values.status,
+        status: form.values.status!,
         description: JSON.stringify(form.values.description),
         sendNotificationsToEveryone: subscriptionsState.notifyEveryone,
         subscriberIds: subscriptionsState.currentSubscribersList,

@@ -2029,9 +2029,11 @@ defmodule OperatelyWeb.Api.Types do
     field :due_date, :contextual_date
   end
 
+  enum(:goal_check_in_status, values: Operately.Goals.Update.valid_statuses())
+
   object :goal_progress_update do
     field :id, :string, null: false
-    field? :status, :string, null: true
+    field? :status, :goal_check_in_status, null: true
     field? :message, :string, null: true
     field? :inserted_at, :datetime, null: true
     field? :author, :person, null: true
