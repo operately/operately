@@ -12,10 +12,10 @@ defmodule OperatelyWeb.Api.ResourceHubs.Create do
   inputs do
     field :space_id, :id, null: false
     field :name, :string, null: false
-    field? :description, :json, null: true
-    field? :anonymous_access_level, :access_options_int, null: true
-    field? :company_access_level, :access_options_int, null: true
-    field? :space_access_level, :access_options_int, null: true
+    field? :description, :json, null: false
+    field :anonymous_access_level, :access_options_int, null: false
+    field :company_access_level, :access_options_int, null: false
+    field :space_access_level, :access_options_int, null: false
   end
 
   outputs do
@@ -45,6 +45,9 @@ defmodule OperatelyWeb.Api.ResourceHubs.Create do
   end
 
   defp parse_inputs(inputs) do
-    {:ok, Map.merge(inputs, %{id: inputs.space_id})}
+    {:ok, Map.merge(inputs, %{
+      id: inputs.space_id,
+      description: inputs[:description] || Operately.RichContent.Builder.empty_content()
+    })}
   end
 end
