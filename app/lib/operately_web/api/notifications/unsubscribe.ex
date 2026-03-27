@@ -9,13 +9,13 @@ defmodule OperatelyWeb.Api.Notifications.Unsubscribe do
   alias Operately.Operations.NotificationsUnsubscribing
 
   inputs do
-    field :id, :id, null: false
+    field :subscription_list_id, :id, null: false
   end
 
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:operation, fn ctx -> NotificationsUnsubscribing.run(ctx.me.id, inputs.id) end)
+    |> run(:operation, fn ctx -> NotificationsUnsubscribing.run(ctx.me.id, inputs.subscription_list_id) end)
     |> respond()
   end
 
