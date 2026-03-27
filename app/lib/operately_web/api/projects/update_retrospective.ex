@@ -12,7 +12,7 @@ defmodule OperatelyWeb.Api.Projects.UpdateRetrospective do
   inputs do
     field :id, :id, null: false
     field :content, :json, null: false
-    field :success_status, :string, null: false
+    field :success_status, :success_status, null: false
   end
 
   outputs do
@@ -22,10 +22,9 @@ defmodule OperatelyWeb.Api.Projects.UpdateRetrospective do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:attrs, fn -> parse_inputs(inputs) end)
     |> run(:retrospective, fn ctx -> load(inputs.id, ctx.me) end)
     |> run(:permissions, fn ctx -> Permissions.check(ctx.retrospective.request_info.access_level, :can_edit) end)
-    |> run(:operation, fn ctx -> ProjectRetrospectiveEditing.run(ctx.me, ctx.retrospective, ctx.attrs)  end)
+    |> run(:operation, fn ctx -> ProjectRetrospectiveEditing.run(ctx.me, ctx.retrospective, inputs)  end)
     |> run(:serialized, fn ctx -> {:ok, %{retrospective: Serializer.serialize(ctx.operation)}} end)
     |> respond()
   end
@@ -45,13 +44,5 @@ defmodule OperatelyWeb.Api.Projects.UpdateRetrospective do
     Retrospective.get(me, id: id, opts: [
       preload: :project,
     ])
-  end
-
-  defp parse_inputs(inputs) do
-    {:ok, %{
-      id: inputs.id,
-      content: inputs.content,
-      success_status: String.to_atom(inputs.success_status),
-    }}
   end
 end

@@ -24257,7 +24257,7 @@
           "default": null,
           "name": "success_status",
           "type": {
-            "name": "string",
+            "name": "success_status",
             "kind": "named"
           },
           "optional": false,
@@ -27568,6 +27568,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-27T20:50:05Z",
+  "generated_at": "2026-03-27T21:37:46Z",
   "schema_version": 1
 }
