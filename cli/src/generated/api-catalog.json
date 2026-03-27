@@ -18686,12 +18686,12 @@
           "default": null,
           "name": "status",
           "type": {
-            "name": "string",
+            "name": "goal_check_in_status",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -18700,9 +18700,9 @@
             "name": "json",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -23307,7 +23307,7 @@
           "default": null,
           "name": "status",
           "type": {
-            "name": "string",
+            "name": "project_check_in_status",
             "kind": "named"
           },
           "optional": false,
@@ -27552,6 +27552,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-27T17:51:38Z",
+  "generated_at": "2026-03-27T18:04:06Z",
   "schema_version": 1
 }

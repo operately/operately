@@ -3677,8 +3677,8 @@ export interface GoalsUpdateCheckResult {
 export interface GoalsUpdateCheckInInput {
   id: Id;
   dueDate: ContextualDate | null;
-  status?: string | null;
-  content?: Json | null;
+  status: GoalCheckInStatus;
+  content: Json;
   newTargetValues?: string | null;
   checklist?: GoalCheckUpdate[] | null;
 }
@@ -4134,7 +4134,7 @@ export interface ProjectsUpdateChampionResult {
 
 export interface ProjectsUpdateCheckInInput {
   checkInId: Id;
-  status: string;
+  status: ProjectCheckInStatus;
   description: Json;
 }
 
