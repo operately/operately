@@ -4307,7 +4307,7 @@ export interface ProjectsUpdatePermissionsResult {
 export interface ProjectsUpdateRetrospectiveInput {
   id: Id;
   content: Json;
-  successStatus: string;
+  successStatus: SuccessStatus;
 }
 
 export interface ProjectsUpdateRetrospectiveResult {
