@@ -1498,7 +1498,7 @@ export interface ProjectChildrenCount {
 export interface ProjectContributor {
   id: string;
   responsibility: string | null;
-  role: string | null;
+  role: ProjectContributorRole | null;
   person?: Person | null;
   accessLevel: AccessOptionsInt | null;
   project?: Project | null;
@@ -2133,6 +2133,8 @@ export type MilestoneCommentAction = "none" | "complete" | "reopen";
 export type MilestoneStatus = "pending" | "done";
 
 export type ProjectCheckInStatus = "on_track" | "caution" | "off_track";
+
+export type ProjectContributorRole = "champion" | "reviewer" | "contributor";
 
 export type ProjectTaskStatusColor = "gray" | "blue" | "green" | "red";
 
@@ -4017,7 +4019,7 @@ export interface ProjectsCreateContributorInput {
   personId: Id;
   responsibility: string;
   permissions: AccessOptions;
-  role: string | null;
+  role: ProjectContributorRole | null;
 }
 
 export interface ProjectsCreateContributorResult {
@@ -4158,7 +4160,7 @@ export interface ProjectsUpdateContributorInput {
   personId?: Id | null;
   responsibility?: string | null;
   permissions?: AccessOptions | null;
-  role?: string | null;
+  role?: ProjectContributorRole | null;
 }
 
 export interface ProjectsUpdateContributorResult {

@@ -15,7 +15,7 @@ defmodule OperatelyWeb.Api.Projects.CreateContributor do
 
     field :responsibility, :string, null: false
     field :permissions, :access_options, null: false
-    field :role, :string, null: true
+    field :role, :project_contributor_role, null: true
   end
 
   outputs do

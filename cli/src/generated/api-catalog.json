@@ -1032,7 +1032,7 @@
             "default": null,
             "name": "role",
             "type": {
-              "name": "string",
+              "name": "project_contributor_role",
               "kind": "named"
             },
             "optional": false,
@@ -14694,6 +14694,11 @@
         "caution",
         "off_track"
       ],
+      "project_contributor_role": [
+        "champion",
+        "reviewer",
+        "contributor"
+      ],
       "project_task_status_color": [
         "gray",
         "blue",
@@ -21185,7 +21190,7 @@
           "default": null,
           "name": "role",
           "type": {
-            "name": "string",
+            "name": "project_contributor_role",
             "kind": "named"
           },
           "optional": false,
@@ -23409,7 +23414,7 @@
           "default": null,
           "name": "role",
           "type": {
-            "name": "string",
+            "name": "project_contributor_role",
             "kind": "named"
           },
           "optional": true,
@@ -27563,6 +27568,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-27T19:22:15Z",
+  "generated_at": "2026-03-27T20:50:05Z",
   "schema_version": 1
 }
