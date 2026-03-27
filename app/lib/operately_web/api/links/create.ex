@@ -48,7 +48,7 @@ defmodule OperatelyWeb.Api.Links.Create do
 
   defp parse_inputs(inputs) do
     {:ok, Map.merge(inputs, %{
-      content: inputs.description,
+      content: inputs[:description] || Operately.RichContent.empty_content(),
       send_to_everyone: inputs[:send_notifications_to_everyone] || false,
       subscription_parent_type: :resource_hub_link,
       subscriber_ids: inputs[:subscriber_ids] || []

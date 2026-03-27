@@ -95,6 +95,10 @@ defmodule Operately.RichContent do
 
   def rich_content_to_string(_), do: ""
 
+  def empty_content do
+    %{"type" => "doc", "content" => [%{"type" => "paragraph"}]}
+  end
+
   defmodule Builder do
     def doc(content) do
       %{type: "doc", content: content} |> Jason.encode!() |> Jason.decode!()
