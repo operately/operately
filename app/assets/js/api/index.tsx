@@ -1290,7 +1290,7 @@ export interface GoalPermissions {
 
 export interface GoalProgressUpdate {
   id: string;
-  status?: string | null;
+  status?: GoalCheckInStatus | null;
   message?: string | null;
   insertedAt?: string | null;
   author?: Person | null;
@@ -2113,6 +2113,8 @@ export type ContextualDateType = "day" | "month" | "quarter" | "year";
 export type CreateConversationContextType = "goal" | "project";
 
 export type DiscussionState = "draft" | "published";
+
+export type GoalCheckInStatus = "on_track" | "caution" | "off_track";
 
 export type GoalPrivacyValues = "public" | "internal" | "confidential" | "secret";
 
@@ -3540,7 +3542,7 @@ export interface GoalsCreateCheckResult {
 
 export interface GoalsCreateCheckInInput {
   goalId: Id;
-  status: string;
+  status: GoalCheckInStatus;
   dueDate: ContextualDate | null;
   checklist: GoalCheckUpdate[];
   content?: Json | null;
@@ -3675,8 +3677,8 @@ export interface GoalsUpdateCheckResult {
 export interface GoalsUpdateCheckInInput {
   id: Id;
   dueDate: ContextualDate | null;
-  status?: string | null;
-  content?: Json | null;
+  status: GoalCheckInStatus;
+  content: Json;
   newTargetValues?: string | null;
   checklist?: GoalCheckUpdate[] | null;
 }
@@ -3989,7 +3991,7 @@ export interface ProjectsCreateResult {
 
 export interface ProjectsCreateCheckInInput {
   projectId: Id;
-  status: string;
+  status: ProjectCheckInStatus;
   description: Json;
   sendNotificationsToEveryone?: boolean | null;
   subscriberIds?: Id[] | null;
@@ -4132,7 +4134,7 @@ export interface ProjectsUpdateChampionResult {
 
 export interface ProjectsUpdateCheckInInput {
   checkInId: Id;
-  status: string;
+  status: ProjectCheckInStatus;
   description: Json;
 }
 
