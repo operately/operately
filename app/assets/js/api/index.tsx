@@ -4390,10 +4390,10 @@ export interface ResourceHubsCopyFolderResult {
 export interface ResourceHubsCreateInput {
   spaceId: Id;
   name: string;
-  description?: Json | null;
-  anonymousAccessLevel?: AccessOptionsInt | null;
-  companyAccessLevel?: AccessOptionsInt | null;
-  spaceAccessLevel?: AccessOptionsInt | null;
+  description?: Json;
+  anonymousAccessLevel: AccessOptionsInt;
+  companyAccessLevel: AccessOptionsInt;
+  spaceAccessLevel: AccessOptionsInt;
 }
 
 export interface ResourceHubsCreateResult {
