@@ -553,7 +553,7 @@
             "default": null,
             "name": "status",
             "type": {
-              "name": "string",
+              "name": "goal_check_in_status",
               "kind": "named"
             },
             "optional": true,
@@ -14659,6 +14659,11 @@
         "draft",
         "published"
       ],
+      "goal_check_in_status": [
+        "on_track",
+        "caution",
+        "off_track"
+      ],
       "goal_privacy_values": [
         "public",
         "internal",
@@ -17158,7 +17163,7 @@
           "default": null,
           "name": "status",
           "type": {
-            "name": "string",
+            "name": "goal_check_in_status",
             "kind": "named"
           },
           "optional": false,
@@ -21053,7 +21058,7 @@
           "default": null,
           "name": "status",
           "type": {
-            "name": "string",
+            "name": "project_check_in_status",
             "kind": "named"
           },
           "optional": false,
@@ -27547,6 +27552,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-26T20:44:05Z",
+  "generated_at": "2026-03-27T17:51:38Z",
   "schema_version": 1
 }

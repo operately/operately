@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api.Goals.CreateCheckIn do
 
   inputs do
     field :goal_id, :id, null: false
-    field :status, :string, null: false
+    field :status, :goal_check_in_status, null: false
     field :due_date, :contextual_date, null: true
     field :checklist, list_of(:goal_check_update), null: false
 
@@ -70,7 +70,7 @@ defmodule OperatelyWeb.Api.Goals.CreateCheckIn do
            %{"id" => id, "value" => t["value"]}
          end),
        content: inputs.content,
-       status: String.to_atom(inputs.status),
+       status: inputs.status,
        due_date: inputs.due_date,
        checklist: inputs.checklist,
        send_to_everyone: inputs[:send_notifications_to_everyone] || false,
