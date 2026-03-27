@@ -119,7 +119,7 @@ defmodule OperatelyWeb.Api.Links.CreateTest do
       assert res.link.id == Paths.link_id(link)
       assert link.node.name == "Link without description"
       assert link.url == "https://example.com"
-      assert link.description == Operately.RichContent.empty_content()
+      assert link.description == Operately.RichContent.Builder.empty_content()
     end
   end
 
