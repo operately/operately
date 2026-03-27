@@ -1657,7 +1657,7 @@ export interface ResourceHubLink {
   name: string;
   url: string;
   description?: string | null;
-  type: string;
+  type: ResourceHubLinkType;
   potentialSubscribers?: Subscriber[] | null;
   subscriptionList?: SubscriptionList | null;
   insertedAt?: string | null;
@@ -2163,6 +2163,17 @@ export type ReactionParentType =
   | "resource_hub_link";
 
 export type ResourceAccessTypes = "space" | "goal" | "project";
+
+export type ResourceHubLinkType =
+  | "airtable"
+  | "dropbox"
+  | "figma"
+  | "google"
+  | "google_doc"
+  | "google_sheet"
+  | "google_slides"
+  | "notion"
+  | "other";
 
 export type ReviewAssignmentOriginTypes = "project" | "goal" | "space";
 
@@ -3854,7 +3865,7 @@ export interface LinksCreateInput {
   name: string;
   url: string;
   description?: Json;
-  type: string;
+  type: ResourceHubLinkType;
   sendNotificationsToEveryone?: boolean | null;
   subscriberIds?: Id[] | null;
 }
@@ -3874,7 +3885,7 @@ export interface LinksDeleteResult {
 export interface LinksUpdateInput {
   linkId: Id;
   name: string;
-  type: string;
+  type: ResourceHubLinkType;
   url: string;
   description?: Json;
 }

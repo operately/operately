@@ -15,7 +15,7 @@ defmodule OperatelyWeb.Api.Links.Create do
     field :name, :string, null: false
     field :url, :string, null: false
     field? :description, :json, null: false
-    field :type, :string, null: false
+    field :type, :resource_hub_link_type, null: false
     field? :send_notifications_to_everyone, :boolean, null: true
     field? :subscriber_ids, list_of(:id), null: true
   end

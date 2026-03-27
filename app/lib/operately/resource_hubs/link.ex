@@ -4,6 +4,8 @@ defmodule Operately.ResourceHubs.Link do
 
   alias Operately.Notifications
 
+  @valid_types [:airtable, :dropbox, :figma, :google, :google_doc, :google_sheet, :google_slides, :notion, :other]
+
   schema "resource_links" do
     belongs_to :node, Operately.ResourceHubs.Node, foreign_key: :node_id
     belongs_to :author, Operately.People.Person, foreign_key: :author_id
@@ -16,17 +18,7 @@ defmodule Operately.ResourceHubs.Link do
 
     field :url, :string
     field :description, :map
-    field :type, Ecto.Enum, values: [
-      :airtable,
-      :dropbox,
-      :figma,
-      :google,
-      :google_doc,
-      :google_sheet,
-      :google_slides,
-      :notion,
-      :other,
-    ]
+    field :type, Ecto.Enum, values: @valid_types
 
     # populated with after load hooks
     field :potential_subscribers, :any, virtual: true
@@ -49,6 +41,8 @@ def changeset(attrs) do
     |> cast(attrs, [:node_id, :author_id, :subscription_list_id, :url, :description, :type])
     |> validate_required([:node_id, :author_id, :url, :type])
   end
+
+  def valid_types, do: @valid_types
 
   #
   # After load hooks

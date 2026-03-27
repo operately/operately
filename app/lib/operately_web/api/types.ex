@@ -1188,6 +1188,8 @@ defmodule OperatelyWeb.Api.Types do
     field? :description, :string, null: true
   end
 
+  enum :resource_hub_link_type, values: Operately.ResourceHubs.Link.valid_types()
+
   object :resource_hub_link do
     field :id, :string, null: false
     field? :author, :person, null: true
@@ -1198,7 +1200,7 @@ defmodule OperatelyWeb.Api.Types do
     field :name, :string, null: false
     field :url, :string, null: false
     field? :description, :string, null: true
-    field :type, :string, null: false
+    field :type, :resource_hub_link_type, null: false
     field? :potential_subscribers, list_of(:subscriber), null: true
     field? :subscription_list, :subscription_list, null: true
     field? :inserted_at, :string, null: true
