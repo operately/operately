@@ -49,7 +49,7 @@ defmodule OperatelyWeb.Api.Notifications.UpdateSubscriptionsListTest do
         {:ok, subscription_list} = SubscriptionList.get(:system, parent_id: check_in.id)
 
         assert {code, res} = mutation(ctx.conn, [:notifications, :update_subscriptions_list], %{
-          id: Paths.subscription_list_id(subscription_list),
+          subscription_list_id: Paths.subscription_list_id(subscription_list),
           type: "project_check_in",
           send_notifications_to_everyone: true,
           subscriber_ids: [],
@@ -87,7 +87,7 @@ defmodule OperatelyWeb.Api.Notifications.UpdateSubscriptionsListTest do
       refute subscriptions_list.send_to_everyone
 
       assert {200, _} = mutation(ctx.conn, [:notifications, :update_subscriptions_list], %{
-        id: Paths.subscription_list_id(subscriptions_list),
+        subscription_list_id: Paths.subscription_list_id(subscriptions_list),
         type: "project_check_in",
         send_notifications_to_everyone: true,
         subscriber_ids: [],
@@ -97,7 +97,7 @@ defmodule OperatelyWeb.Api.Notifications.UpdateSubscriptionsListTest do
       assert subscriptions_list.send_to_everyone
 
       assert {200, _} = mutation(ctx.conn, [:notifications, :update_subscriptions_list], %{
-        id: Paths.subscription_list_id(subscriptions_list),
+        subscription_list_id: Paths.subscription_list_id(subscriptions_list),
         type: "project_check_in",
         send_notifications_to_everyone: false,
         subscriber_ids: [],
@@ -111,7 +111,7 @@ defmodule OperatelyWeb.Api.Notifications.UpdateSubscriptionsListTest do
       people = create_people(ctx)
 
       assert {200, _} = mutation(ctx.conn, [:notifications, :update_subscriptions_list], %{
-        id: Paths.subscription_list_id(ctx.subscriptions_list),
+        subscription_list_id: Paths.subscription_list_id(ctx.subscriptions_list),
         type: "project_check_in",
         send_notifications_to_everyone: true,
         subscriber_ids: Enum.map(people, &(Paths.person_id(&1))),
@@ -131,7 +131,7 @@ defmodule OperatelyWeb.Api.Notifications.UpdateSubscriptionsListTest do
       end)
 
       assert {200, _} = mutation(ctx.conn, [:notifications, :update_subscriptions_list], %{
-        id: Paths.subscription_list_id(ctx.subscriptions_list),
+        subscription_list_id: Paths.subscription_list_id(ctx.subscriptions_list),
         type: "project_check_in",
         send_notifications_to_everyone: true,
         subscriber_ids: [],
@@ -150,7 +150,7 @@ defmodule OperatelyWeb.Api.Notifications.UpdateSubscriptionsListTest do
       refute Notifications.is_subscriber?(another.id, ctx.subscriptions_list.id)
 
       assert {200, _} = mutation(ctx.conn, [:notifications, :update_subscriptions_list], %{
-        id: Paths.subscription_list_id(ctx.subscriptions_list),
+        subscription_list_id: Paths.subscription_list_id(ctx.subscriptions_list),
         type: "project_check_in",
         send_notifications_to_everyone: true,
         subscriber_ids: [Paths.person_id(another)],
@@ -168,7 +168,7 @@ defmodule OperatelyWeb.Api.Notifications.UpdateSubscriptionsListTest do
       assert Notifications.is_subscriber?(another.id, ctx.subscriptions_list.id)
 
       assert {200, _} = mutation(ctx.conn, [:notifications, :update_subscriptions_list], %{
-        id: Paths.subscription_list_id(ctx.subscriptions_list),
+        subscription_list_id: Paths.subscription_list_id(ctx.subscriptions_list),
         type: "project_check_in",
         send_notifications_to_everyone: true,
         subscriber_ids: [Paths.person_id(another)],
@@ -191,7 +191,7 @@ defmodule OperatelyWeb.Api.Notifications.UpdateSubscriptionsListTest do
       refute Notifications.is_subscriber?(another.id, ctx.subscriptions_list.id)
 
       assert {200, _} = mutation(ctx.conn, [:notifications, :update_subscriptions_list], %{
-        id: Paths.subscription_list_id(ctx.subscriptions_list),
+        subscription_list_id: Paths.subscription_list_id(ctx.subscriptions_list),
         type: "project_check_in",
         subscriber_ids: [Paths.person_id(ctx.person), Paths.person_id(another)],
       })

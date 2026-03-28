@@ -34,7 +34,7 @@ defmodule OperatelyWeb.Api.Notifications.UnsubscribeTest do
       assert Notifications.is_subscriber?(ctx.person.id, ctx.subscription_list.id)
 
       assert {200, _} = mutation(ctx.conn, [:notifications, :unsubscribe], %{
-        id: Paths.subscription_list_id(ctx.subscription_list),
+        subscription_list_id: Paths.subscription_list_id(ctx.subscription_list),
       })
 
       refute Notifications.is_subscriber?(ctx.person.id, ctx.subscription_list.id)
@@ -56,7 +56,7 @@ defmodule OperatelyWeb.Api.Notifications.UnsubscribeTest do
       assert Notifications.is_subscriber?(ctx.person.id, ctx.project_subscription_list.id)
 
       assert {200, _} = mutation(ctx.conn, [:notifications, :unsubscribe], %{
-        id: Paths.subscription_list_id(ctx.project_subscription_list),
+        subscription_list_id: Paths.subscription_list_id(ctx.project_subscription_list),
       })
 
       refute Notifications.is_subscriber?(ctx.person.id, ctx.project_subscription_list.id)

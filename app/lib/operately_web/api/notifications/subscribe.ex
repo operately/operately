@@ -10,16 +10,16 @@ defmodule OperatelyWeb.Api.Notifications.Subscribe do
   alias Operately.Operations.NotificationsSubscribing
 
   inputs do
-    field :id, :id, null: false
+    field :subscription_list_id, :id, null: false
     field :type, :subscription_parent_type, null: false
   end
 
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:access_level, fn ctx -> Notifications.get_subscription_list_access_level(inputs.id, inputs.type, ctx.me.id) end)
+    |> run(:access_level, fn ctx -> Notifications.get_subscription_list_access_level(inputs.subscription_list_id, inputs.type, ctx.me.id) end)
     |> run(:check_permissions, fn ctx -> check_permissions(inputs.type, ctx.access_level) end)
-    |> run(:operation, fn ctx -> NotificationsSubscribing.run(ctx.me.id, inputs.id) end)
+    |> run(:operation, fn ctx -> NotificationsSubscribing.run(ctx.me.id, inputs.subscription_list_id) end)
     |> respond()
   end
 

@@ -19962,7 +19962,7 @@
       "inputs": [
         {
           "default": null,
-          "name": "id",
+          "name": "subscription_list_id",
           "type": {
             "name": "id",
             "kind": "named"
@@ -19997,7 +19997,7 @@
       "inputs": [
         {
           "default": null,
-          "name": "id",
+          "name": "subscription_list_id",
           "type": {
             "name": "id",
             "kind": "named"
@@ -20021,7 +20021,7 @@
       "inputs": [
         {
           "default": null,
-          "name": "id",
+          "name": "subscription_list_id",
           "type": {
             "name": "id",
             "kind": "named"
@@ -27568,6 +27568,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-27T22:44:13Z",
+  "generated_at": "2026-03-27T23:05:15Z",
   "schema_version": 1
 }

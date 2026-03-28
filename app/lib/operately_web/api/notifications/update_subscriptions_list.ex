@@ -10,7 +10,7 @@ defmodule OperatelyWeb.Api.Notifications.UpdateSubscriptionsList do
   alias Operately.Operations.SubscriptionsListEditing
 
   inputs do
-    field :id, :id, null: false
+    field :subscription_list_id, :id, null: false
     field :type, :string, null: false
     field? :send_notifications_to_everyone, :boolean, null: true
     field? :subscriber_ids, list_of(:id), null: true
@@ -39,7 +39,7 @@ defmodule OperatelyWeb.Api.Notifications.UpdateSubscriptionsList do
 
   defp parse_inputs(inputs) do
     {:ok, %{
-      id: inputs.id,
+      id: inputs.subscription_list_id,
       type: String.to_existing_atom(inputs.type),
       send_notifications_to_everyone: inputs[:send_notifications_to_everyone] || false,
       subscriber_ids: inputs[:subscriber_ids] || [],
