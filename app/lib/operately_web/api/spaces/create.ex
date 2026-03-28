@@ -12,8 +12,8 @@ defmodule OperatelyWeb.Api.Spaces.Create do
   inputs do
     field :name, :string, null: false
     field :mission, :string, null: false
-    field :company_permissions, :integer, null: false
-    field :public_permissions, :integer, null: false
+    field :company_permissions, :access_options_int, null: false
+    field :public_permissions, :access_options_int, null: false
   end
 
   outputs do
