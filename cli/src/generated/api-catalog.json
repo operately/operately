@@ -14820,9 +14820,9 @@
       ]
     }
   },
-  "endpoint_count": 198,
+  "endpoint_count": 196,
   "query_count": 63,
-  "mutation_count": 135,
+  "mutation_count": 133,
   "endpoints": [
     {
       "name": "create",
@@ -23591,86 +23591,6 @@
       "method": "POST"
     },
     {
-      "name": "update_kanban",
-      "type": "mutation",
-      "path": "/api/external/v1/projects/update_kanban",
-      "handler": "OperatelyWeb.Api.Projects.UpdateKanban",
-      "outputs": [
-        {
-          "default": null,
-          "name": "project",
-          "type": {
-            "name": "project",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "task",
-          "type": {
-            "name": "task",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "projects",
-      "inputs": [
-        {
-          "default": null,
-          "name": "project_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "task_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "status",
-          "type": {
-            "name": "task_status",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "kanban_state",
-          "type": {
-            "name": "json",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "docstring": "Updates the kanban state of a task in a project.",
-      "full_name": "projects/update_kanban",
-      "method": "POST"
-    },
-    {
       "name": "update_key_resource",
       "type": "mutation",
       "path": "/api/external/v1/projects/update_key_resource",
@@ -26340,75 +26260,6 @@
       "method": "POST"
     },
     {
-      "name": "update_kanban",
-      "type": "mutation",
-      "path": "/api/external/v1/spaces/update_kanban",
-      "handler": "OperatelyWeb.Api.Spaces.UpdateKanban",
-      "outputs": [
-        {
-          "default": null,
-          "name": "task",
-          "type": {
-            "name": "task",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "spaces",
-      "inputs": [
-        {
-          "default": null,
-          "name": "space_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "task_id",
-          "type": {
-            "name": "id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "status",
-          "type": {
-            "name": "task_status",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "kanban_state",
-          "type": {
-            "name": "json",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "docstring": "Updates the kanban state and status of a task in a space.",
-      "full_name": "spaces/update_kanban",
-      "method": "POST"
-    },
-    {
       "name": "update_members_permissions",
       "type": "mutation",
       "path": "/api/external/v1/spaces/update_members_permissions",
@@ -27566,6 +27417,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-28T18:40:08Z",
+  "generated_at": "2026-03-28T19:06:30Z",
   "schema_version": 1
 }
