@@ -3913,20 +3913,20 @@ export interface NotificationsMarkManyAsReadInput {
 export interface NotificationsMarkManyAsReadResult {}
 
 export interface NotificationsSubscribeInput {
-  id: Id;
+  subscriptionListId: Id;
   type: SubscriptionParentType;
 }
 
 export interface NotificationsSubscribeResult {}
 
 export interface NotificationsUnsubscribeInput {
-  id: Id;
+  subscriptionListId: Id;
 }
 
 export interface NotificationsUnsubscribeResult {}
 
 export interface NotificationsUpdateSubscriptionsListInput {
-  id: Id;
+  subscriptionListId: Id;
   type: string;
   sendNotificationsToEveryone?: boolean | null;
   subscriberIds?: Id[] | null;
