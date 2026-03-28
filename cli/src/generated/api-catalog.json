@@ -2999,9 +2999,9 @@
               "name": "id",
               "kind": "named"
             },
-            "optional": true,
+            "optional": false,
             "has_default": false,
-            "nullable": true
+            "nullable": false
           },
           {
             "default": null,
@@ -3010,9 +3010,9 @@
               "name": "access_options_int",
               "kind": "named"
             },
-            "optional": true,
+            "optional": false,
             "has_default": false,
-            "nullable": true
+            "nullable": false
           }
         ]
       },
@@ -8634,9 +8634,9 @@
               "name": "id",
               "kind": "named"
             },
-            "optional": true,
+            "optional": false,
             "has_default": false,
-            "nullable": true
+            "nullable": false
           },
           {
             "default": null,
@@ -8645,9 +8645,9 @@
               "name": "access_options_int",
               "kind": "named"
             },
-            "optional": true,
+            "optional": false,
             "has_default": false,
-            "nullable": true
+            "nullable": false
           }
         ]
       },
@@ -13550,7 +13550,7 @@
             "default": null,
             "name": "public",
             "type": {
-              "name": "integer",
+              "name": "access_options_int",
               "kind": "named"
             },
             "optional": true,
@@ -13561,7 +13561,7 @@
             "default": null,
             "name": "company",
             "type": {
-              "name": "integer",
+              "name": "access_options_int",
               "kind": "named"
             },
             "optional": true,
@@ -13572,7 +13572,7 @@
             "default": null,
             "name": "space",
             "type": {
-              "name": "integer",
+              "name": "access_options_int",
               "kind": "named"
             },
             "optional": true,
@@ -14813,11 +14813,9 @@
     "int_enums": {
       "access_options_int": [
         "0",
-        "1",
         "10",
         "40",
         "70",
-        "90",
         "100"
       ]
     }
@@ -25304,7 +25302,7 @@
           "default": null,
           "name": "company_permissions",
           "type": {
-            "name": "integer",
+            "name": "access_options_int",
             "kind": "named"
           },
           "optional": false,
@@ -25315,7 +25313,7 @@
           "default": null,
           "name": "public_permissions",
           "type": {
-            "name": "integer",
+            "name": "access_options_int",
             "kind": "named"
           },
           "optional": false,
@@ -27568,6 +27566,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-27T23:05:15Z",
+  "generated_at": "2026-03-28T18:40:08Z",
   "schema_version": 1
 }
