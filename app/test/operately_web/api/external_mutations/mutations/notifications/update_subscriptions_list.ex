@@ -20,7 +20,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Notifications.UpdateSubsc
     list = Repo.preload(ctx.check_in, :subscription_list).subscription_list
 
     %{
-      id: Paths.subscription_list_id(list),
+      subscription_list_id: Paths.subscription_list_id(list),
       type: "project_check_in",
       send_notifications_to_everyone: false,
       subscriber_ids: [Paths.person_id(ctx.member)]
