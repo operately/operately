@@ -124,9 +124,9 @@ export type Id = string;
 export type Json = string;
 
 export interface AccessLevels {
-  public?: number | null;
-  company?: number | null;
-  space?: number | null;
+  public?: AccessOptionsInt | null;
+  company?: AccessOptionsInt | null;
+  space?: AccessOptionsInt | null;
 }
 
 export interface Account {
@@ -1009,8 +1009,8 @@ export interface ActivityPermissions {
 }
 
 export interface AddMemberInput {
-  id?: Id | null;
-  accessLevel?: AccessOptionsInt | null;
+  id: Id;
+  accessLevel: AccessOptionsInt;
 }
 
 export interface AgentConversation {
@@ -1191,8 +1191,8 @@ export interface EditCompanyMemberPermissionsInput {
 }
 
 export interface EditMemberPermissionsInput {
-  id?: Id | null;
-  accessLevel?: AccessOptionsInt | null;
+  id: Id;
+  accessLevel: AccessOptionsInt;
 }
 
 export interface EditMilestoneOrderingStateInput {
@@ -2216,7 +2216,7 @@ export type WorkMapItemStatus =
 
 export type WorkMapItemType = "project" | "goal";
 
-export type AccessOptionsInt = 0 | 1 | 10 | 40 | 70 | 90 | 100;
+export type AccessOptionsInt = 0 | 10 | 40 | 70 | 100;
 
 export interface AiGetAgentInput {
   id: Id;
@@ -4455,8 +4455,8 @@ export interface SpacesArchiveDiscussionResult {}
 export interface SpacesCreateInput {
   name: string;
   mission: string;
-  companyPermissions: number;
-  publicPermissions: number;
+  companyPermissions: AccessOptionsInt;
+  publicPermissions: AccessOptionsInt;
 }
 
 export interface SpacesCreateResult {

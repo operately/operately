@@ -1,5 +1,6 @@
 defmodule OperatelyWeb.Api.Types do
   use TurboConnect.Types
+  alias Operately.Access.Binding
 
   primitive(:id,
     encoded_type: :string,
@@ -34,9 +35,15 @@ defmodule OperatelyWeb.Api.Types do
     field :site_admin, :boolean, null: false
   end
 
-  enum :access_options, values: Operately.Access.Binding.valid_access_levels(:as_atom)
+  enum :access_options, values: Binding.valid_access_levels(:as_atom)
 
-  int_enum :access_options_int, values: Operately.Access.Binding.valid_access_levels()
+  int_enum(:access_options_int, values: [
+    Binding.no_access(),
+    Binding.view_access(),
+    Binding.comment_access(),
+    Binding.edit_access(),
+    Binding.full_access()
+  ])
 
   enum :resource_access_types, values: [:space, :goal, :project]
 
@@ -47,9 +54,9 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :access_levels do
-    field? :public, :integer, null: true
-    field? :company, :integer, null: true
-    field? :space, :integer, null: true
+    field? :public, :access_options_int, null: true
+    field? :company, :access_options_int, null: true
+    field? :space, :access_options_int, null: true
   end
 
   object :activity_content_goal_check_toggled do
@@ -2006,13 +2013,13 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :add_member_input do
-    field? :id, :id, null: true
-    field? :access_level, :access_options_int, null: true
+    field :id, :id, null: false
+    field :access_level, :access_options_int, null: false
   end
 
   object :edit_member_permissions_input do
-    field? :id, :id, null: true
-    field? :access_level, :access_options_int, null: true
+    field :id, :id, null: false
+    field :access_level, :access_options_int, null: false
   end
 
   object :edit_company_member_permissions_input do
