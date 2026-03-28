@@ -2,7 +2,7 @@
 
 This file is generated from `cli/src/generated/api-catalog.json`.
 
-- Endpoints: 198
+- Endpoints: 196
 - Mapping rule: root endpoint -> `<endpoint_name>`, namespaced endpoint -> `<namespace> <endpoint_name>`
 
 | Command | Shortcut | Method | Path |
@@ -141,7 +141,6 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `projects update_description` | `op projects update_description` | `POST` | `/api/external/v1/projects/update_description` |
 | `projects update_discussion` | `op projects update_discussion` | `POST` | `/api/external/v1/projects/update_discussion` |
 | `projects update_due_date` | `op projects update_due_date` | `POST` | `/api/external/v1/projects/update_due_date` |
-| `projects update_kanban` | `op projects update_kanban` | `POST` | `/api/external/v1/projects/update_kanban` |
 | `projects update_key_resource` | `op projects update_key_resource` | `POST` | `/api/external/v1/projects/update_key_resource` |
 | `projects update_milestone` | `op projects update_milestone` | `POST` | `/api/external/v1/projects/update_milestone` |
 | `projects update_milestone_description` | `op projects update_milestone_description` | `POST` | `/api/external/v1/projects/update_milestone_description` |
@@ -187,7 +186,6 @@ This file is generated from `cli/src/generated/api-catalog.json`.
 | `spaces search_potential_members` | `op spaces search_potential_members` | `GET` | `/api/external/v1/spaces/search_potential_members` |
 | `spaces update` | `op spaces update` | `POST` | `/api/external/v1/spaces/update` |
 | `spaces update_discussion` | `op spaces update_discussion` | `POST` | `/api/external/v1/spaces/update_discussion` |
-| `spaces update_kanban` | `op spaces update_kanban` | `POST` | `/api/external/v1/spaces/update_kanban` |
 | `spaces update_members_permissions` | `op spaces update_members_permissions` | `POST` | `/api/external/v1/spaces/update_members_permissions` |
 | `spaces update_permissions` | `op spaces update_permissions` | `POST` | `/api/external/v1/spaces/update_permissions` |
 | `spaces update_task_statuses` | `op spaces update_task_statuses` | `POST` | `/api/external/v1/spaces/update_task_statuses` |
