@@ -121,6 +121,7 @@ export function printEndpointHelp(endpoint: CatalogEndpoint, command: string, ty
   header.push("Input flags:");
 
   const enumTypesUsed = new Map<string, string[] | number[]>();
+  const objectTypesUsed = new Set<string>();
   let hasContextualDate = false;
   let hasContextualDateNullable = false;
   let hasMarkdown = false;
@@ -146,6 +147,22 @@ export function printEndpointHelp(endpoint: CatalogEndpoint, command: string, ty
             if (enumValues && !enumTypesUsed.has(field.type.name)) {
               enumTypesUsed.set(field.type.name, enumValues);
             }
+
+            const objectType = types.objects[field.type.name];
+            if (objectType && !objectTypesUsed.has(field.type.name) && field.type.name !== "contextual_date") {
+              objectTypesUsed.add(field.type.name);
+            }
+          }
+
+          if (types && field.type.kind === "list" && field.type.item.kind === "named") {
+            const objectType = types.objects[field.type.item.name];
+            if (
+              objectType &&
+              !objectTypesUsed.has(field.type.item.name) &&
+              field.type.item.name !== "contextual_date"
+            ) {
+              objectTypesUsed.add(field.type.item.name);
+            }
           }
 
           if (field.type.kind === "named" && field.type.name === "json") {
@@ -170,6 +187,27 @@ export function printEndpointHelp(endpoint: CatalogEndpoint, command: string, ty
   if (hasMarkdown) {
     additionalSections.push("");
     additionalSections.push(...formatMarkdownHelp());
+  }
+
+  if (objectTypesUsed.size > 0 && types) {
+    for (const objectTypeName of objectTypesUsed) {
+      additionalSections.push("");
+      const objectHelp = formatObjectTypeHelp(objectTypeName, types);
+      additionalSections.push(...objectHelp);
+
+      // Check if any fields in this object type use contextual_date
+      const objectType = types.objects[objectTypeName];
+      if (objectType) {
+        for (const field of objectType.fields) {
+          if (field.type.kind === "named" && field.type.name === "contextual_date") {
+            hasContextualDate = true;
+            if (field.nullable) {
+              hasContextualDateNullable = true;
+            }
+          }
+        }
+      }
+    }
   }
 
   if (hasContextualDate) {
@@ -205,5 +243,45 @@ function formatMarkdownHelp(): string[] {
   lines.push("  Lists: - item or 1. item");
   lines.push("  Links: [text](url)");
   lines.push("  Code: `inline` or ```block```");
+  return lines;
+}
+
+function formatObjectTypeHelp(typeName: string, types: CatalogTypes): string[] {
+  const lines: string[] = [];
+  const objectType = types.objects[typeName];
+
+  if (!objectType) {
+    return lines;
+  }
+
+  lines.push(`Fields for object '${typeName}':`);
+
+  const enumsInObject = new Map<string, string[] | number[]>();
+
+  for (const field of objectType.fields) {
+    const fieldName = field.name;
+    const typeHint = formatTypeHint(field.type);
+    const required = field.optional ? "optional" : "required";
+    const nullable = field.nullable ? ", nullable" : "";
+    lines.push(`  ${fieldName}: <${typeHint}> (${required}${nullable})`);
+
+    if (field.type.kind === "named") {
+      const enumValues = types.enums[field.type.name] || types.int_enums[field.type.name];
+      if (enumValues && !enumsInObject.has(field.type.name)) {
+        enumsInObject.set(field.type.name, enumValues);
+      }
+    }
+  }
+
+  if (enumsInObject.size > 0) {
+    for (const [enumName, enumValues] of enumsInObject) {
+      lines.push("");
+      lines.push(`Allowed values for ${enumName}:`);
+      for (const value of enumValues) {
+        lines.push(`  ${value}`);
+      }
+    }
+  }
+
   return lines;
 }
