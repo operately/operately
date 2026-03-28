@@ -253,6 +253,79 @@ describe("CLI Integration Tests", () => {
       assert.strictEqual(result.exitCode, 0);
       assert.ok(result.stdout.includes("--content"));
     });
+
+    it("shows object type field definitions in help", async () => {
+      const result = await runCLI(["help", "spaces", "add_members"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("--members <[add_member_input]>"));
+      assert.ok(result.stdout.includes("Fields for object 'add_member_input':"));
+      assert.ok(result.stdout.includes("id: <id>"));
+      assert.ok(result.stdout.includes("access_level: <access_options_int>"));
+    });
+
+    it("shows enum values for fields within object types", async () => {
+      const result = await runCLI(["help", "spaces", "add_members"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("Fields for object 'add_member_input':"));
+      assert.ok(result.stdout.includes("Allowed values for access_options_int:"));
+      assert.ok(result.stdout.includes("0"));
+      assert.ok(result.stdout.includes("1"));
+      assert.ok(result.stdout.includes("10"));
+      assert.ok(result.stdout.includes("100"));
+    });
+
+    it("shows field requirements for object types", async () => {
+      const result = await runCLI(["help", "spaces", "add_members"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("id: <id> (optional, nullable)"));
+      assert.ok(result.stdout.includes("access_level: <access_options_int> (optional, nullable)"));
+    });
+
+    it("excludes contextual_date from object type display when it has dedicated help", async () => {
+      const result = await runCLI(["help", "tasks", "create"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("Contextual Date Formats:"));
+      assert.ok(!result.stdout.includes("Fields for object 'contextual_date':"));
+    });
+
+    it("shows contextual date help when contextual_date is within an object type", async () => {
+      const result = await runCLI(["help", "goals", "create"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("--timeframe <timeframe>"));
+      assert.ok(result.stdout.includes("Fields for object 'timeframe':"));
+      assert.ok(result.stdout.includes("contextual_start_date: <contextual_date>"));
+      assert.ok(result.stdout.includes("Contextual Date Formats:"));
+      assert.ok(result.stdout.includes("YYYY-MM-DD"));
+      assert.ok(result.stdout.includes("YYYY/q#"));
+    });
+
+    it("shows multiple object types when command has multiple custom types", async () => {
+      const result = await runCLI(["help", "goals", "create"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("Fields for object 'timeframe':"));
+      assert.ok(result.stdout.includes("Fields for object 'create_target_input':"));
+    });
+
+    it("does not duplicate enum values when same enum appears in multiple contexts", async () => {
+      const result = await runCLI(["help", "projects", "create"]);
+      assert.strictEqual(result.exitCode, 0);
+      const matches = result.stdout.match(/Allowed values for access_options_int:/g);
+      assert.strictEqual(matches?.length, 1, "Should only show enum values once");
+    });
+
+    it("shows object type help only for list item types", async () => {
+      const result = await runCLI(["help", "spaces", "add_members"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("--members <[add_member_input]>"));
+      assert.ok(result.stdout.includes("Fields for object 'add_member_input':"));
+    });
+
+    it("does not duplicate object type definitions when same type appears multiple times", async () => {
+      const result = await runCLI(["help", "goals", "create"]);
+      assert.strictEqual(result.exitCode, 0);
+      const matches = result.stdout.match(/Fields for object 'timeframe':/g);
+      assert.strictEqual(matches?.length, 1, "Should only show object type definition once");
+    });
   });
 
   describe("JSON Field Input", () => {
