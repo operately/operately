@@ -277,8 +277,8 @@ describe("CLI Integration Tests", () => {
     it("shows field requirements for object types", async () => {
       const result = await runCLI(["help", "spaces", "add_members"]);
       assert.strictEqual(result.exitCode, 0);
-      assert.ok(result.stdout.includes("id: <id> (optional, nullable)"));
-      assert.ok(result.stdout.includes("access_level: <access_options_int> (optional, nullable)"));
+      assert.ok(result.stdout.includes("id: <id> (required)"));
+      assert.ok(result.stdout.includes("access_level: <access_options_int> (required)"));
     });
 
     it("excludes contextual_date from object type display when it has dedicated help", async () => {
