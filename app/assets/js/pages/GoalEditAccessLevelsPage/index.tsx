@@ -2,6 +2,7 @@ import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Goals from "@/models/goals";
+import * as Permissions from "@/models/permissions";
 
 import Api from "@/api";
 import Forms from "@/components/Forms";
@@ -74,7 +75,7 @@ function Form() {
   const navigateBack = useNavigateTo(paths.goalAccessManagementPath(goal.id));
   const [edit] = Api.goals.useUpdateAccessLevels();
   const showSpaceAccess = Boolean(goal.space);
-  const fullAccessLevels = { public: 0, company: 100, space: 100 };
+  const fullAccessLevels: Permissions.AccessLevels = { public: 0, company: 100, space: 100 };
 
   const form = Forms.useForm({
     fields: {
