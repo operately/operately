@@ -84,7 +84,6 @@ defmodule OperatelyWeb.Api do
         mutation(:create_milestone, OperatelyWeb.Api.Projects.CreateMilestone)
         mutation(:update_milestone, OperatelyWeb.Api.Projects.UpdateMilestone)
         mutation(:update_task_statuses, OperatelyWeb.Api.Projects.UpdateTaskStatuses)
-        mutation(:update_kanban, OperatelyWeb.Api.Projects.UpdateKanban)
         mutation(:delete, OperatelyWeb.Api.Projects.DeleteProject)
         mutation(:create_key_resource, OperatelyWeb.Api.Projects.CreateKeyResource)
         mutation(:update_key_resource, OperatelyWeb.Api.Projects.UpdateKeyResource)
@@ -154,7 +153,6 @@ defmodule OperatelyWeb.Api do
         mutation(:delete_member, OperatelyWeb.Api.Spaces.DeleteMember)
         mutation(:join, OperatelyWeb.Api.Spaces.Join)
         mutation(:update_task_statuses, OperatelyWeb.Api.Spaces.UpdateTaskStatuses)
-        mutation(:update_kanban, OperatelyWeb.Api.Spaces.UpdateKanban)
         mutation(:update, OperatelyWeb.Api.Spaces.Update)
         mutation(:update_members_permissions, OperatelyWeb.Api.Spaces.UpdateMembersPermissions)
         mutation(:update_permissions, OperatelyWeb.Api.Spaces.UpdatePermissions)
@@ -316,6 +314,14 @@ defmodule OperatelyWeb.Api do
         query(:get_conversations, OperatelyWeb.Api.Ai.GetConversations)
         mutation(:create_conversation, OperatelyWeb.Api.Ai.CreateConversation)
         mutation(:send_message, OperatelyWeb.Api.Ai.SendMessage)
+      end
+
+      namespace(:spaces) do
+        mutation(:update_kanban, OperatelyWeb.Api.Spaces.UpdateKanban)
+      end
+
+      namespace(:projects) do
+        mutation(:update_kanban, OperatelyWeb.Api.Projects.UpdateKanban)
       end
 
       namespace(:files) do
