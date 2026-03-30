@@ -16,7 +16,7 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.Spaces.SearchPotentialMembers
 
   @impl true
   def inputs(ctx) do
-    %{group_id: Paths.space_id(ctx.space)}
+    %{space_id: Paths.space_id(ctx.space)}
   end
 
   @impl true

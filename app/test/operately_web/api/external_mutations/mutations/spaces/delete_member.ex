@@ -16,7 +16,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Spaces.DeleteMember do
   @impl true
   def inputs(ctx) do
     %{
-      group_id: Paths.space_id(ctx.space),
+      space_id: Paths.space_id(ctx.space),
       member_id: Paths.person_id(ctx.member)
     }
   end

@@ -17,7 +17,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Spaces.ArchiveDiscussion 
   @impl true
   def inputs(ctx) do
     %{
-      message_id: Paths.message_id(ctx.message)
+      id: Paths.message_id(ctx.message)
     }
   end
 
