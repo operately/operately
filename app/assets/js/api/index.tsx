@@ -3005,7 +3005,7 @@ export interface SpacesSearchResult {
 }
 
 export interface SpacesSearchPotentialMembersInput {
-  groupId: Id;
+  spaceId: Id;
   query?: string;
   excludeIds?: Id[];
   limit?: number;
