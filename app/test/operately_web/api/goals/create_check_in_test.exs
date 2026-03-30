@@ -201,6 +201,269 @@ defmodule OperatelyWeb.Api.Goals.CreateCheckInTest do
     end
   end
 
+  describe "checklist functionality" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      goal = goal_fixture(ctx.person, %{space_id: ctx.company.company_space_id})
+
+      check1 = create_check(goal, ctx.person, %{name: "Check 1", index: 0, completed: false})
+      check2 = create_check(goal, ctx.person, %{name: "Check 2", index: 1, completed: false})
+      check3 = create_check(goal, ctx.person, %{name: "Check 3", index: 2, completed: true})
+
+      Map.merge(ctx, %{goal: goal, check1: check1, check2: check2, check3: check3})
+    end
+
+    test "updates checklist when provided", ctx do
+      assert {200, res} =
+               mutation(ctx.conn, [:goals, :create_check_in], %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 status: "on_track",
+                 content: RichText.rich_text("Content", :as_string),
+                 new_target_values: new_target_values(ctx.goal),
+                 due_date: nil,
+                 checklist: [
+                   %{id: encode_check_id(ctx.check1), name: ctx.check1.name, completed: true, index: 0},
+                   %{id: encode_check_id(ctx.check2), name: ctx.check2.name, completed: true, index: 1},
+                   %{id: encode_check_id(ctx.check3), name: ctx.check3.name, completed: false, index: 2}
+                 ]
+               })
+
+      check1_updated = Operately.Repo.get!(Operately.Goals.Check, ctx.check1.id)
+      check2_updated = Operately.Repo.get!(Operately.Goals.Check, ctx.check2.id)
+      check3_updated = Operately.Repo.get!(Operately.Goals.Check, ctx.check3.id)
+
+      assert check1_updated.completed == true
+      assert check2_updated.completed == true
+      assert check3_updated.completed == false
+      assert res.update != nil
+    end
+
+    test "does not update checklist when omitted", ctx do
+      original_check1_completed = ctx.check1.completed
+      original_check2_completed = ctx.check2.completed
+      original_check3_completed = ctx.check3.completed
+
+      assert {200, res} =
+               mutation(ctx.conn, [:goals, :create_check_in], %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 status: "on_track",
+                 content: RichText.rich_text("Content", :as_string),
+                 new_target_values: new_target_values(ctx.goal),
+                 due_date: nil
+               })
+
+      check1_after = Operately.Repo.get!(Operately.Goals.Check, ctx.check1.id)
+      check2_after = Operately.Repo.get!(Operately.Goals.Check, ctx.check2.id)
+      check3_after = Operately.Repo.get!(Operately.Goals.Check, ctx.check3.id)
+
+      assert check1_after.completed == original_check1_completed
+      assert check2_after.completed == original_check2_completed
+      assert check3_after.completed == original_check3_completed
+      assert res.update != nil
+    end
+
+    test "updates only specified checks in checklist", ctx do
+      assert {200, res} =
+               mutation(ctx.conn, [:goals, :create_check_in], %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 status: "caution",
+                 content: RichText.rich_text("Content", :as_string),
+                 new_target_values: new_target_values(ctx.goal),
+                 due_date: nil,
+                 checklist: [
+                   %{id: encode_check_id(ctx.check1), name: ctx.check1.name, completed: true, index: 0}
+                 ]
+               })
+
+      check1_updated = Operately.Repo.get!(Operately.Goals.Check, ctx.check1.id)
+      check2_unchanged = Operately.Repo.get!(Operately.Goals.Check, ctx.check2.id)
+      check3_unchanged = Operately.Repo.get!(Operately.Goals.Check, ctx.check3.id)
+
+      assert check1_updated.completed == true
+      assert check2_unchanged.completed == false
+      assert check3_unchanged.completed == true
+      assert res.update != nil
+    end
+
+    test "handles empty checklist array", ctx do
+      assert {200, res} =
+               mutation(ctx.conn, [:goals, :create_check_in], %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 status: "off_track",
+                 content: RichText.rich_text("Content", :as_string),
+                 new_target_values: new_target_values(ctx.goal),
+                 due_date: nil,
+                 checklist: []
+               })
+
+      check1_unchanged = Operately.Repo.get!(Operately.Goals.Check, ctx.check1.id)
+      check2_unchanged = Operately.Repo.get!(Operately.Goals.Check, ctx.check2.id)
+      check3_unchanged = Operately.Repo.get!(Operately.Goals.Check, ctx.check3.id)
+
+      assert check1_unchanged.completed == false
+      assert check2_unchanged.completed == false
+      assert check3_unchanged.completed == true
+      assert res.update != nil
+    end
+
+    test "checklist parameter can be omitted with other optional parameters", ctx do
+      people = [person_fixture(%{company_id: ctx.company.id})]
+
+      assert {200, res} =
+               mutation(ctx.conn, [:goals, :create_check_in], %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 status: "on_track",
+                 content: RichText.rich_text("Content", :as_string),
+                 new_target_values: new_target_values(ctx.goal),
+                 due_date: nil,
+                 send_notifications_to_everyone: true,
+                 subscriber_ids: Enum.map(people, &Paths.person_id(&1))
+               })
+
+      check1_unchanged = Operately.Repo.get!(Operately.Goals.Check, ctx.check1.id)
+      check2_unchanged = Operately.Repo.get!(Operately.Goals.Check, ctx.check2.id)
+
+      assert check1_unchanged.completed == false
+      assert check2_unchanged.completed == false
+      assert res.update != nil
+    end
+  end
+
+  describe "target values functionality" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      goal = goal_fixture(ctx.person, %{space_id: ctx.company.company_space_id})
+      targets = Goals.list_targets(goal.id)
+
+      Map.merge(ctx, %{goal: goal, targets: targets})
+    end
+
+    test "updates targets when provided", ctx do
+      original_target_values = Enum.map(ctx.targets, & &1.value)
+      new_values = Enum.map(ctx.targets, & &1.value + 50)
+
+      assert {200, res} =
+               mutation(ctx.conn, [:goals, :create_check_in], %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 status: "on_track",
+                 content: RichText.rich_text("Content", :as_string),
+                 new_target_values: new_target_values(ctx.goal),
+                 checklist: [],
+                 due_date: nil
+               })
+
+      updated_targets = Goals.list_targets(ctx.goal.id)
+      updated_values = Enum.map(updated_targets, & &1.value)
+
+      assert updated_values == new_values
+      refute updated_values == original_target_values
+      assert res.update != nil
+    end
+
+    test "does not update targets when omitted", ctx do
+      original_target_values = Enum.map(ctx.targets, & &1.value)
+
+      assert {200, res} =
+               mutation(ctx.conn, [:goals, :create_check_in], %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 status: "on_track",
+                 content: RichText.rich_text("Content", :as_string),
+                 checklist: [],
+                 due_date: nil
+               })
+
+      targets_after = Goals.list_targets(ctx.goal.id)
+      values_after = Enum.map(targets_after, & &1.value)
+
+      assert values_after == original_target_values
+      assert res.update != nil
+    end
+
+    test "updates only specified targets", ctx do
+      first_target = hd(ctx.targets)
+      original_values = Enum.map(ctx.targets, & &1.value)
+
+      partial_update = [%{id: first_target.id, value: first_target.value + 100}]
+      |> Jason.encode!()
+
+      assert {200, res} =
+               mutation(ctx.conn, [:goals, :create_check_in], %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 status: "caution",
+                 content: RichText.rich_text("Content", :as_string),
+                 new_target_values: partial_update,
+                 checklist: [],
+                 due_date: nil
+               })
+
+      updated_targets = Goals.list_targets(ctx.goal.id)
+      first_updated = Enum.find(updated_targets, fn t -> t.id == first_target.id end)
+
+      assert first_updated.value == first_target.value + 100
+      assert res.update != nil
+    end
+
+    test "handles empty target values array", ctx do
+      original_target_values = Enum.map(ctx.targets, & &1.value)
+
+      assert {200, res} =
+               mutation(ctx.conn, [:goals, :create_check_in], %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 status: "off_track",
+                 content: RichText.rich_text("Content", :as_string),
+                 new_target_values: "[]",
+                 checklist: [],
+                 due_date: nil
+               })
+
+      targets_after = Goals.list_targets(ctx.goal.id)
+      values_after = Enum.map(targets_after, & &1.value)
+
+      assert values_after == original_target_values
+      assert res.update != nil
+    end
+
+    test "target values can be omitted with other optional parameters", ctx do
+      people = [person_fixture(%{company_id: ctx.company.id})]
+      original_target_values = Enum.map(ctx.targets, & &1.value)
+
+      assert {200, res} =
+               mutation(ctx.conn, [:goals, :create_check_in], %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 status: "on_track",
+                 content: RichText.rich_text("Content", :as_string),
+                 checklist: [],
+                 due_date: nil,
+                 send_notifications_to_everyone: true,
+                 subscriber_ids: Enum.map(people, &Paths.person_id(&1))
+               })
+
+      targets_after = Goals.list_targets(ctx.goal.id)
+      values_after = Enum.map(targets_after, & &1.value)
+
+      assert values_after == original_target_values
+      assert res.update != nil
+    end
+
+    test "both targets and checklist can be omitted together", ctx do
+      original_target_values = Enum.map(ctx.targets, & &1.value)
+
+      assert {200, res} =
+               mutation(ctx.conn, [:goals, :create_check_in], %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 status: "caution",
+                 content: RichText.rich_text("Content", :as_string),
+                 due_date: nil
+               })
+
+      targets_after = Goals.list_targets(ctx.goal.id)
+      values_after = Enum.map(targets_after, & &1.value)
+
+      assert values_after == original_target_values
+      assert res.update != nil
+    end
+  end
+
   #
   # Helpers
   #
@@ -210,6 +473,16 @@ defmodule OperatelyWeb.Api.Goals.CreateCheckInTest do
     {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
 
     list.subscriptions
+  end
+
+  defp create_check(goal, creator, attrs) do
+    attrs = Enum.into(attrs, %{goal_id: goal.id, creator_id: creator.id})
+    {:ok, check} = Operately.Repo.insert(Operately.Goals.Check.changeset(attrs))
+    check
+  end
+
+  defp encode_check_id(check) do
+    Operately.ShortUuid.encode!(check.id)
   end
 
   defp new_target_values(goal) do
