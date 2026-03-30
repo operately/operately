@@ -22,8 +22,8 @@ interface LoaderResult {
   guests: People.Person[];
 }
 
-async function loader({ params }): Promise<LoaderResult> {
-  const company = await Companies.getCompany({ id: params.companyId, includePermissions: true }).then((res) => res.company);
+async function loader(): Promise<LoaderResult> {
+  const company = await Companies.getCompany({ includePermissions: true }).then((res) => res.company);
   const people = await People.getPeople({ includeManager: true, includeCompanyAccessLevels: true, includeInviteLink: true, includeAccount: true }).then(
     (res) => res.people,
   );

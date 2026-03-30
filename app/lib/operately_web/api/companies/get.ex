@@ -13,7 +13,6 @@ defmodule OperatelyWeb.Api.Companies.Get do
   require Logger
 
   inputs do
-    field :id, :company_id, null: false
     field? :include_permissions, :boolean, null: false
     field? :include_people, :boolean, null: false
     field? :include_admins, :boolean, null: false
@@ -27,17 +26,18 @@ defmodule OperatelyWeb.Api.Companies.Get do
   end
 
   def call(conn, inputs) do
-    Company.get(me(conn),
-      short_id: inputs.id,
-      opts: [
+    with {:ok, company} <- find_company(conn) do
+      Company.get(me(conn), id: company.id, opts: [
         required_access_level: Binding.minimal_access()
-      ]
-    )
-    |> apply_hooks(inputs)
-    |> case do
-      {:ok, company} -> {:ok, serialize(company)}
+      ])
+      |> apply_hooks(inputs)
+      |> case do
+        {:ok, company} -> {:ok, serialize(company)}
+        {:error, :not_found} -> {:error, :not_found}
+        e -> internal_server_error(e)
+      end
+    else
       {:error, :not_found} -> {:error, :not_found}
-      e -> internal_server_error(e)
     end
   end
 

@@ -16,8 +16,8 @@ interface LoaderResult {
   company: Companies.Company;
 }
 
-async function loader({ params }): Promise<LoaderResult> {
-  const company = await Companies.getCompany({ id: params.companyId, includePermissions: true }).then(
+async function loader(): Promise<LoaderResult> {
+  const company = await Companies.getCompany({ includePermissions: true }).then(
     (res) => res.company,
   );
 

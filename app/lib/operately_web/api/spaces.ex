@@ -54,10 +54,13 @@ defmodule OperatelyWeb.Api.Spaces do
     end
 
     def call(conn, inputs) do
-      person = me(conn)
-      count = Space.count_by_access_level(person, inputs.access_level)
+      with {:ok, person} <- find_me(conn) do
+        count = Space.count_by_access_level(person, inputs.access_level)
 
-      {:ok, %{count: count}}
+        {:ok, %{count: count}}
+      else
+        {:error, :not_found} -> {:ok, %{count: 0}}
+      end
     end
   end
 

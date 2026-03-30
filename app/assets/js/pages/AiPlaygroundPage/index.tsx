@@ -16,9 +16,8 @@ async function loader({ params }): Promise<LoaderResult> {
   const paths = new Paths({ companyId: params.companyId! });
 
   const company = await Companies.getCompany({
-    id: params.companyId,
     includePermissions: true,
-  }).then((d) => d.company!);
+  }).then((d) => d.company);
 
   if (Companies.hasFeature(company, "ai")) {
     return {};

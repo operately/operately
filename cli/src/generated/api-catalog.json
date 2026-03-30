@@ -15403,17 +15403,6 @@
       "inputs": [
         {
           "default": null,
-          "name": "id",
-          "type": {
-            "name": "company_id",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
           "name": "include_permissions",
           "type": {
             "name": "boolean",
@@ -27417,6 +27406,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-30T13:09:17Z",
+  "generated_at": "2026-03-30T14:07:20Z",
   "schema_version": 1
 }
