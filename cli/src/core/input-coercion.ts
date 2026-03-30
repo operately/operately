@@ -148,6 +148,7 @@ function coerceFieldValue(
   types: CatalogTypes,
   path: string,
 ): unknown {
+  // Handle null values
   if (value === null) {
     if (!field.nullable) {
       throw new UsageError(`Field '${path}' is not nullable.`);
@@ -155,6 +156,7 @@ function coerceFieldValue(
     return null;
   }
 
+  // Handle list/array types
   if (typeRef.kind === "list") {
     const list = Array.isArray(value) ? value : [value];
     return list.map((item, i) =>
@@ -164,18 +166,22 @@ function coerceFieldValue(
 
   const typeName = typeRef.name;
 
+  // Handle built-in types (string, integer, float, boolean, json)
   if (BUILTIN_TYPES.has(typeName)) {
     return coerceBuiltinType(typeName, value, path);
   }
 
+  // Handle contextual date types
   if (typeName === "contextual_date") {
     return coerceContextualDate(value, types, path);
   }
 
+  // Handle object types with nested fields
   if (types.objects[typeName]) {
     return coerceObjectFields(types.objects[typeName].fields, value, types, path);
   }
 
+  // Handle string enum types
   if (types.enums[typeName]) {
     if (typeof value !== "string") {
       throw new UsageError(`Expected string for enum '${path}', got ${typeof value}.`);
@@ -186,6 +192,7 @@ function coerceFieldValue(
     return value;
   }
 
+  // Handle integer enum types
   if (types.int_enums[typeName]) {
     const num = Number(value);
     if (!Number.isInteger(num)) {
@@ -198,6 +205,7 @@ function coerceFieldValue(
     return num;
   }
 
+  // Handle union types (try each variant until one succeeds)
   if (types.unions[typeName]) {
     for (const variant of types.unions[typeName]) {
       try {
