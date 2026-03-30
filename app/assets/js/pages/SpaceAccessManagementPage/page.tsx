@@ -217,7 +217,7 @@ function RemoveMemberMenuItem({ member, hidden }: { member: People.Person; hidde
   const [remove] = useRemoveGroupMember();
 
   const handleClick = async () => {
-    await remove({ groupId: space.id, memberId: member.id });
+    await remove({ spaceId: space.id, memberId: member.id });
     refresh();
   };
 

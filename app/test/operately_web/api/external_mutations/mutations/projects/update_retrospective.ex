@@ -18,7 +18,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Projects.UpdateRetrospect
   @impl true
   def inputs(ctx) do
     %{
-      id: Paths.project_retrospective_id(ctx.project_retrospective),
+      retrospective_id: Paths.project_retrospective_id(ctx.project_retrospective),
       content: rich_text_string("Updated content"),
       success_status: "achieved"
     }

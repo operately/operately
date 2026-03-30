@@ -46,7 +46,7 @@ export function Form({ mode, project, retrospective }: Props) {
         navigate(paths.projectPath(project.id));
       } else {
         await edit({
-          id: retrospective!.id,
+          retrospectiveId: retrospective!.id,
           content: JSON.stringify(form.values.retrospective),
           successStatus: form.values.success === "yes" ? "achieved" : "missed",
         });

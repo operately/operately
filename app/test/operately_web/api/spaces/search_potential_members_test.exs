@@ -26,7 +26,7 @@ defmodule OperatelyWeb.Api.Spaces.SearchPotentialMembersTest do
       p5 = person_fixture_with_account(%{company_id: other_ctx.company.id})
       p6 = person_fixture_with_account(%{company_id: other_ctx.company.id})
 
-      assert {200, res} = query(ctx.conn, [:spaces, :search_potential_members], %{group_id: Paths.space_id(space)})
+      assert {200, res} = query(ctx.conn, [:spaces, :search_potential_members], %{space_id: Paths.space_id(space)})
       assert length(res.people) == 4
 
       [p1, p2, p3, ctx.company_creator]
@@ -34,7 +34,7 @@ defmodule OperatelyWeb.Api.Spaces.SearchPotentialMembersTest do
         assert Enum.find(res.people, &(&1 == Serializer.serialize(person)))
       end)
 
-      assert {200, res} = query(other_ctx.conn, [:spaces, :search_potential_members], %{group_id: Paths.space_id(other_space)})
+      assert {200, res} = query(other_ctx.conn, [:spaces, :search_potential_members], %{space_id: Paths.space_id(other_space)})
       assert length(res.people) == 4
 
       [p4, p5, p6, other_ctx.company_creator]
@@ -58,7 +58,7 @@ defmodule OperatelyWeb.Api.Spaces.SearchPotentialMembersTest do
         company_permissions: Binding.view_access(),
       ])
 
-      assert {200, res} = query(ctx.conn, [:spaces, :search_potential_members], %{group_id: Paths.space_id(space)})
+      assert {200, res} = query(ctx.conn, [:spaces, :search_potential_members], %{space_id: Paths.space_id(space)})
 
       assert length(res.people) == 2
       assert Enum.find(res.people, &(&1 == Serializer.serialize(ctx.member)))
@@ -71,7 +71,7 @@ defmodule OperatelyWeb.Api.Spaces.SearchPotentialMembersTest do
         company_permissions: Binding.no_access(),
       ])
 
-      assert {200, res} = query(ctx.conn, [:spaces, :search_potential_members], %{group_id: Paths.space_id(space)})
+      assert {200, res} = query(ctx.conn, [:spaces, :search_potential_members], %{space_id: Paths.space_id(space)})
       assert length(res.people) == 0
     end
 
@@ -81,12 +81,12 @@ defmodule OperatelyWeb.Api.Spaces.SearchPotentialMembersTest do
         company_permissions: Binding.no_access(),
       ])
 
-      assert {200, res} = query(ctx.conn, [:spaces, :search_potential_members], %{group_id: Paths.space_id(space)})
+      assert {200, res} = query(ctx.conn, [:spaces, :search_potential_members], %{space_id: Paths.space_id(space)})
       assert length(res.people) == 0
 
       add_person_to_space(ctx.person, space)
 
-      assert {200, res} = query(ctx.conn, [:spaces, :search_potential_members], %{group_id: Paths.space_id(space)})
+      assert {200, res} = query(ctx.conn, [:spaces, :search_potential_members], %{space_id: Paths.space_id(space)})
       assert length(res.people) == 1
       assert Enum.find(res.people, &(&1 == Serializer.serialize(ctx.member)))
     end
@@ -97,12 +97,12 @@ defmodule OperatelyWeb.Api.Spaces.SearchPotentialMembersTest do
         company_permissions: Binding.view_access(),
       ])
 
-      assert {200, res} = query(ctx.conn, [:spaces, :search_potential_members], %{group_id: Paths.space_id(space)})
+      assert {200, res} = query(ctx.conn, [:spaces, :search_potential_members], %{space_id: Paths.space_id(space)})
       assert length(res.people) == 2
 
       People.update_person(ctx.person, %{suspended_at: DateTime.utc_now()})
 
-      assert {200, res} = query(ctx.conn, [:spaces, :search_potential_members], %{group_id: Paths.space_id(space)})
+      assert {200, res} = query(ctx.conn, [:spaces, :search_potential_members], %{space_id: Paths.space_id(space)})
       assert length(res.people) == 0
     end
   end
@@ -121,7 +121,7 @@ defmodule OperatelyWeb.Api.Spaces.SearchPotentialMembersTest do
     end
 
     test "returns all petential members", ctx do
-      assert {200, res} = query(ctx.conn, [:spaces, :search_potential_members], %{group_id: Paths.space_id(ctx.space)})
+      assert {200, res} = query(ctx.conn, [:spaces, :search_potential_members], %{space_id: Paths.space_id(ctx.space)})
 
       assert length(res.people) == 2
       assert Enum.find(res.people, &(&1 == Serializer.serialize(ctx.person1)))
@@ -130,7 +130,7 @@ defmodule OperatelyWeb.Api.Spaces.SearchPotentialMembersTest do
 
     test "query members by name", ctx do
       assert {200, res} = query(ctx.conn, [:spaces, :search_potential_members], %{
-        group_id: Paths.space_id(ctx.space),
+        space_id: Paths.space_id(ctx.space),
         query: "Mike",
       })
 
@@ -140,7 +140,7 @@ defmodule OperatelyWeb.Api.Spaces.SearchPotentialMembersTest do
 
     test "query members by title", ctx do
       assert {200, res} = query(ctx.conn, [:spaces, :search_potential_members], %{
-        group_id: Paths.space_id(ctx.space),
+        space_id: Paths.space_id(ctx.space),
         query: "CEO",
       })
 
@@ -150,14 +150,14 @@ defmodule OperatelyWeb.Api.Spaces.SearchPotentialMembersTest do
 
     test "exlude_ids excludes members from result", ctx do
       assert {200, res} = query(ctx.conn, [:spaces, :search_potential_members], %{
-        group_id: Paths.space_id(ctx.space),
+        space_id: Paths.space_id(ctx.space),
         exclude_ids: [Paths.person_id(ctx.person1)],
       })
       assert length(res.people) == 1
       assert Enum.find(res.people, &(&1 == Serializer.serialize(ctx.person2)))
 
       assert {200, res} = query(ctx.conn, [:spaces, :search_potential_members], %{
-        group_id: Paths.space_id(ctx.space),
+        space_id: Paths.space_id(ctx.space),
         exclude_ids: [Paths.person_id(ctx.person2)],
       })
       assert length(res.people) == 1
@@ -165,28 +165,28 @@ defmodule OperatelyWeb.Api.Spaces.SearchPotentialMembersTest do
     end
 
     test "existing members excluded from result", ctx do
-      assert {200, res} = query(ctx.conn, [:spaces, :search_potential_members], %{group_id: Paths.space_id(ctx.space)})
+      assert {200, res} = query(ctx.conn, [:spaces, :search_potential_members], %{space_id: Paths.space_id(ctx.space)})
       assert length(res.people) == 2
 
       add_person_to_space(ctx.person1, ctx.space)
 
-      assert {200, res} = query(ctx.conn, [:spaces, :search_potential_members], %{group_id: Paths.space_id(ctx.space)})
+      assert {200, res} = query(ctx.conn, [:spaces, :search_potential_members], %{space_id: Paths.space_id(ctx.space)})
       assert length(res.people) == 1
       assert Enum.find(res.people, &(&1 == Serializer.serialize(ctx.person2)))
 
       add_person_to_space(ctx.person2, ctx.space)
 
-      assert {200, res} = query(ctx.conn, [:spaces, :search_potential_members], %{group_id: Paths.space_id(ctx.space)})
+      assert {200, res} = query(ctx.conn, [:spaces, :search_potential_members], %{space_id: Paths.space_id(ctx.space)})
       assert length(res.people) == 0
     end
 
     test "suspended people excluded from result", ctx do
-      assert {200, res} = query(ctx.conn, [:spaces, :search_potential_members], %{group_id: Paths.space_id(ctx.space)})
+      assert {200, res} = query(ctx.conn, [:spaces, :search_potential_members], %{space_id: Paths.space_id(ctx.space)})
       assert length(res.people) == 2
 
       People.update_person(ctx.person1, %{suspended: true})
 
-      assert {200, res} = query(ctx.conn, [:spaces, :search_potential_members], %{group_id: Paths.space_id(ctx.space)})
+      assert {200, res} = query(ctx.conn, [:spaces, :search_potential_members], %{space_id: Paths.space_id(ctx.space)})
       assert length(res.people) == 1
       assert Enum.find(res.people, &(&1 == Serializer.serialize(ctx.person2)))
     end
