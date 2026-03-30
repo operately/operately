@@ -41,7 +41,7 @@ async function getCachedEnabledFeatures(companyId: string): Promise<string[]> {
   if (cached) {
     return cached;
   } else {
-    const company = await Companies.getCompany({ id: companyId }).then((data) => data.company!);
+    const company = await Companies.getCompany({}).then((data) => data.company!);
     ENABLED_FEATURES_CACHE[companyId] = company.enabledExperimentalFeatures || [];
     return ENABLED_FEATURES_CACHE[companyId]!;
   }

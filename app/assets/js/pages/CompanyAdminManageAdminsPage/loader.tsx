@@ -8,9 +8,8 @@ interface LoaderResult {
   owners: People.Person[];
 }
 
-export async function loader({ params }): Promise<LoaderResult> {
+export async function loader(): Promise<LoaderResult> {
   const company = await Companies.getCompany({
-    id: params.companyId,
     includeAdmins: true,
     includeOwners: true,
   }).then((d) => d.company!);

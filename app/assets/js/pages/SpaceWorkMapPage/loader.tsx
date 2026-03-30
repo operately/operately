@@ -21,7 +21,7 @@ export async function loader({ params, refreshCache = false }): Promise<LoaderRe
       fetchAll({
         workMap: getWorkMap({ spaceId: params.id }).then((d) => d.workMap),
         space: getSpace({ id: params.id, includeAccessLevels: true, includePermissions: true }),
-        company: Api.companies.get({ id: params.companyId }).then((d) => d.company!),
+        company: Api.companies.get({}).then((d) => d.company!),
       }),
   });
 }

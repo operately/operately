@@ -40,7 +40,7 @@ export async function loader({ request, params }): Promise<LoaderResult> {
   const goalID = searchParams.get("goalId") || undefined;
   const goal = goalID ? await Goals.getGoal({ id: goalID }).then((data) => data.goal!) : undefined;
 
-  const company = await Companies.getCompany({ id: params.companyId }).then((data) => data.company!);
+  const company = await Companies.getCompany({}).then((data) => data.company!);
   const goals = await Goals.getGoals({ includeSpace: true, includeChampion: true }).then((data) => data.goals!);
 
   const spaces = await Spaces.getSpaces({ includeAccessLevels: true, accessLevel: "edit_access" });

@@ -18,7 +18,7 @@ export async function companyLoader({ params }): Promise<CompanyLoadedData> {
 
   try {
     const [company, spacesCount] = await Promise.all([
-      Companies.getCompany({ id: params.companyId, includePermissions: true }).then((d) => d.company!),
+      Companies.getCompany({ includePermissions: true }).then((d) => d.company!),
       Api.spaces.countByAccessLevel({ accessLevel: "edit_access" }).then((d) => d.count || 0),
     ]);
 
