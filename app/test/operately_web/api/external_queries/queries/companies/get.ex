@@ -11,7 +11,7 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.Companies.Get do
 
   @impl true
   def inputs(ctx) do
-    %{id: Paths.company_id(ctx.company)}
+    %{}
   end
 
   @impl true

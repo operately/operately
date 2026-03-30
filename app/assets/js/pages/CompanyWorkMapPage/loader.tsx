@@ -20,7 +20,7 @@ export async function loader({ params, refreshCache = false }): Promise<LoaderRe
     fetchFn: async () =>
       await fetchAll({
         workMap: getWorkMap({}).then((d) => d.workMap),
-        company: getCompany({ id: params.companyId, includeGeneralSpace: true }).then((d) => d.company!),
+        company: getCompany({ includeGeneralSpace: true }).then((d) => d.company!),
         spacesCount: Api.spaces.countByAccessLevel({ accessLevel: "edit_access" }).then((d) => d.count),
       }),
   });

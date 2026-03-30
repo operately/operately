@@ -7,9 +7,8 @@ interface LoaderResult {
   ownerIds: string[];
 }
 
-export async function loader({ params }): Promise<LoaderResult> {
+export async function loader(): Promise<LoaderResult> {
   const company = await Companies.getCompany({
-    id: params.companyId,
     includeAdmins: true,
     includeOwners: true,
     includePermissions: true,

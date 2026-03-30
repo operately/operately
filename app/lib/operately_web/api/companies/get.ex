@@ -13,7 +13,6 @@ defmodule OperatelyWeb.Api.Companies.Get do
   require Logger
 
   inputs do
-    field :id, :company_id, null: false
     field? :include_permissions, :boolean, null: false
     field? :include_people, :boolean, null: false
     field? :include_admins, :boolean, null: false
@@ -27,12 +26,11 @@ defmodule OperatelyWeb.Api.Companies.Get do
   end
 
   def call(conn, inputs) do
-    Company.get(me(conn),
-      short_id: inputs.id,
-      opts: [
-        required_access_level: Binding.minimal_access()
-      ]
-    )
+    company_id = company(conn).id
+
+    Company.get(me(conn), id: company_id, opts: [
+      required_access_level: Binding.minimal_access()
+    ])
     |> apply_hooks(inputs)
     |> case do
       {:ok, company} -> {:ok, serialize(company)}

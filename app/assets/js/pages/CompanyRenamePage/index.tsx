@@ -14,9 +14,9 @@ interface LoaderResult {
   company: Companies.Company;
 }
 
-async function loader({ params }): Promise<LoaderResult> {
+async function loader(): Promise<LoaderResult> {
   return {
-    company: await Companies.getCompany({ id: params.companyId }).then((d) => d.company!),
+    company: await Companies.getCompany({}).then((d) => d.company!),
   };
 }
 
