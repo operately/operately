@@ -19,8 +19,8 @@ interface LoaderResult {
   suspendedPeople: People.Person[];
 }
 
-async function loader({ params }): Promise<LoaderResult> {
-  const company = await Companies.getCompany({ id: params.companyId }).then((res) => res.company!);
+async function loader(): Promise<LoaderResult> {
+  const company = await Companies.getCompany({}).then((res) => res.company!);
   const people = await People.getPeople({ onlySuspended: true }).then((res) => res.people!);
 
   return {

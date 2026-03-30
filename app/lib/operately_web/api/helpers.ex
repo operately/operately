@@ -30,7 +30,7 @@ defmodule OperatelyWeb.Api.Helpers do
   end
 
   def find_me(conn) do
-    if conn.assigns.current_person do
+    if conn.assigns[:current_person] do
       {:ok, conn.assigns.current_person}
     else
       {:error, :not_found}
@@ -46,8 +46,8 @@ defmodule OperatelyWeb.Api.Helpers do
   end
 
   def find_company(conn) do
-    if conn.assigns.current_company do
-      {:ok, conn.assigns.current_company}
+    if conn.assigns[:current_company] do
+      {:ok, conn.assigns[:current_company]}
     else
       {:error, :not_found}
     end

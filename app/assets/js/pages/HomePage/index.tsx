@@ -26,9 +26,8 @@ interface LoaderData {
   ownerIds: string[];
 }
 
-async function loader({ params }): Promise<LoaderData> {
+async function loader(): Promise<LoaderData> {
   const company = await Companies.getCompany({
-    id: params.companyId,
     includeOwners: true,
     includeAdmins: true,
     includePermissions: true,

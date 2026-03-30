@@ -6,7 +6,6 @@ import { useProfileUpdatedSignal } from "@/signals";
 import { throttle } from "@/utils/throttle";
 
 import { usePaths } from "@/routes/paths";
-import { useParams } from "react-router-dom";
 
 interface CurrentCompanyContextProps {
   company: Companies.Company | null;
@@ -20,8 +19,7 @@ interface CurrentCompanyContextProps {
 const CurrentCompanyContext = React.createContext<CurrentCompanyContextProps | null>(null);
 
 export function CurrentCompanyProvider({ children }) {
-  const params = useParams();
-  const company = Companies.useGetCompany({ id: params.companyId! });
+  const company = Companies.useGetCompany({});
 
   const { data: meData, refetch: meRefetch } = People.useGetMe({ includeManager: true });
   const {

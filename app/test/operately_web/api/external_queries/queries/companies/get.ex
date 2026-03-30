@@ -10,8 +10,8 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.Companies.Get do
   def setup(ctx), do: Factory.setup(ctx)
 
   @impl true
-  def inputs(ctx) do
-    %{id: Paths.company_id(ctx.company)}
+  def inputs(_ctx) do
+    %{}
   end
 
   @impl true

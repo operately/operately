@@ -2289,7 +2289,6 @@ export interface CommentsListResult {
 }
 
 export interface CompaniesGetInput {
-  id: CompanyId;
   includePermissions?: boolean;
   includePeople?: boolean;
   includeAdmins?: boolean;
