@@ -51,7 +51,7 @@ defmodule OperatelyWeb.Api.Projects.UpdateRetrospectiveTest do
         retrospective = retrospective_fixture(%{project_id: project.id, author_id: ctx.creator.id})
 
         assert {code, res} = mutation(ctx.conn, [:projects, :update_retrospective], %{
-          id: Paths.project_retrospective_id(retrospective),
+          retrospective_id: Paths.project_retrospective_id(retrospective),
           content: Jason.encode!(@new_content),
           success_status: "achieved"
         })
@@ -87,7 +87,7 @@ defmodule OperatelyWeb.Api.Projects.UpdateRetrospectiveTest do
       refute ctx.retrospective.content == @new_content
 
       assert {200, res} = mutation(ctx.conn, [:projects, :update_retrospective], %{
-        id: Paths.project_retrospective_id(ctx.retrospective),
+        retrospective_id: Paths.project_retrospective_id(ctx.retrospective),
         content: Jason.encode!(@new_content),
         success_status: "achieved"
       })
@@ -116,7 +116,7 @@ defmodule OperatelyWeb.Api.Projects.UpdateRetrospectiveTest do
       assert list.subscriptions == []
 
       assert {200, _} = mutation(ctx.conn, [:projects, :update_retrospective], %{
-        id: Paths.project_retrospective_id(ctx.retrospective),
+        retrospective_id: Paths.project_retrospective_id(ctx.retrospective),
         content: Jason.encode!(content),
         success_status: "achieved"
       })

@@ -3005,7 +3005,7 @@ export interface SpacesSearchResult {
 }
 
 export interface SpacesSearchPotentialMembersInput {
-  groupId: Id;
+  spaceId: Id;
   query?: string;
   excludeIds?: Id[];
   limit?: number;
@@ -4305,7 +4305,7 @@ export interface ProjectsUpdatePermissionsResult {
 }
 
 export interface ProjectsUpdateRetrospectiveInput {
-  id: Id;
+  retrospectiveId: Id;
   content: Json;
   successStatus: SuccessStatus;
 }
@@ -4447,7 +4447,7 @@ export interface SpacesAddMembersResult {
 }
 
 export interface SpacesArchiveDiscussionInput {
-  messageId: Id;
+  id: Id;
 }
 
 export interface SpacesArchiveDiscussionResult {}
@@ -4485,7 +4485,7 @@ export interface SpacesDeleteResult {
 }
 
 export interface SpacesDeleteMemberInput {
-  groupId: Id;
+  spaceId: Id;
   memberId: Id;
 }
 

@@ -11,14 +11,14 @@ defmodule OperatelyWeb.Api.Spaces.DeleteMember do
   alias Operately.Operations.GroupMemberRemoving
 
   inputs do
-    field :group_id, :id, null: false
+    field :space_id, :id, null: false
     field :member_id, :id, null: false
   end
 
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:space, fn ctx -> Groups.get_group_with_access_level(inputs.group_id, ctx.me.id) end)
+    |> run(:space, fn ctx -> Groups.get_group_with_access_level(inputs.space_id, ctx.me.id) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.space.requester_access_level, :has_full_access) end)
     |> run(:operation, fn ctx -> GroupMemberRemoving.run(ctx.me, ctx.space, inputs.member_id) end)
     |> respond()
@@ -27,7 +27,7 @@ defmodule OperatelyWeb.Api.Spaces.DeleteMember do
   def respond(result) do
     case result do
       {:ok, _} -> {:ok, %{}}
-      {:error, :group_id, _} -> {:error, :bad_request}
+      {:error, :space_id, _} -> {:error, :bad_request}
       {:error, :member_id, _} -> {:error, :bad_request}
       {:error, :space, _} -> {:error, :not_found}
       {:error, :check_permissions, _} -> {:error, :forbidden}

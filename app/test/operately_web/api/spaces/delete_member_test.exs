@@ -45,7 +45,7 @@ defmodule OperatelyWeb.Api.Spaces.DeleteMemberTest do
 
         # run the mutation
         assert {code, res} = mutation(ctx.conn, [:spaces, :delete_member], %{
-          group_id: Paths.space_id(space),
+          space_id: Paths.space_id(space),
           member_id: Paths.person_id(member)
         })
 
