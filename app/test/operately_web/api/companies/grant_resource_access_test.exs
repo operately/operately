@@ -132,5 +132,37 @@ defmodule OperatelyWeb.Api.Companies.GrantResourceAccessTest do
       assert Access.get_binding(goal_context, person_id: ctx.guest.id).access_level == Binding.view_access()
       assert Access.get_binding(project_context, person_id: ctx.guest.id).access_level == Binding.full_access()
     end
+
+    test "accepts both UUID and short ID formats for person_id", ctx do
+      # Test with UUID format
+      assert {200, res} = mutation(ctx.conn, [:companies, :grant_resource_access], %{
+        person_id: ctx.guest.id,
+        resources: [
+          %{resource_type: "space", resource_id: Paths.space_id(ctx.space), access_level: "view_access"},
+        ],
+      })
+
+      assert res.success
+
+      space_context = Access.get_context!(group_id: ctx.space.id)
+      binding = Access.get_binding(space_context, person_id: ctx.guest.id)
+      assert binding
+      assert binding.access_level == Binding.view_access()
+
+      # Test with short ID format
+      assert {200, res} = mutation(ctx.conn, [:companies, :grant_resource_access], %{
+        person_id: Paths.person_id(ctx.guest),
+        resources: [
+          %{resource_type: "project", resource_id: Paths.project_id(ctx.project), access_level: "edit_access"},
+        ],
+      })
+
+      assert res.success
+
+      project_context = Access.get_context!(project_id: ctx.project.id)
+      binding = Access.get_binding(project_context, person_id: ctx.guest.id)
+      assert binding
+      assert binding.access_level == Binding.edit_access()
+    end
   end
 end
