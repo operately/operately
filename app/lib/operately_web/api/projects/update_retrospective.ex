@@ -10,7 +10,7 @@ defmodule OperatelyWeb.Api.Projects.UpdateRetrospective do
   alias Operately.Operations.ProjectRetrospectiveEditing
 
   inputs do
-    field :id, :id, null: false
+    field :retrospective_id, :id, null: false
     field :content, :json, null: false
     field :success_status, :success_status, null: false
   end
@@ -22,7 +22,7 @@ defmodule OperatelyWeb.Api.Projects.UpdateRetrospective do
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:retrospective, fn ctx -> load(inputs.id, ctx.me) end)
+    |> run(:retrospective, fn ctx -> load(inputs.retrospective_id, ctx.me) end)
     |> run(:permissions, fn ctx -> Permissions.check(ctx.retrospective.request_info.access_level, :can_edit) end)
     |> run(:operation, fn ctx -> ProjectRetrospectiveEditing.run(ctx.me, ctx.retrospective, inputs)  end)
     |> run(:serialized, fn ctx -> {:ok, %{retrospective: Serializer.serialize(ctx.operation)}} end)
@@ -32,7 +32,6 @@ defmodule OperatelyWeb.Api.Projects.UpdateRetrospective do
   def respond(result) do
     case result do
       {:ok, ctx} -> {:ok, ctx.serialized}
-      {:error, :id, _} -> {:error, :bad_request}
       {:error, :retrospective, _} -> {:error, :not_found}
       {:error, :permissions, _} -> {:error, :forbidden}
       {:error, :operation, _} -> {:error, :internal_server_error}

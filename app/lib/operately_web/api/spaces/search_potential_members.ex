@@ -12,7 +12,7 @@ defmodule OperatelyWeb.Api.Spaces.SearchPotentialMembers do
   alias Operately.Groups.{Group, Member}
 
   inputs do
-    field :group_id, :id, null: false
+    field :space_id, :id, null: false
     field? :query, :string, null: false
     field? :exclude_ids, list_of(:id), null: false
     field? :limit, :integer, null: false
@@ -23,8 +23,8 @@ defmodule OperatelyWeb.Api.Spaces.SearchPotentialMembers do
   end
 
   def call(conn, inputs) do
-    if has_permissions?(me(conn), inputs.group_id) do
-      people = load_members(inputs, inputs.group_id, company(conn))
+    if has_permissions?(me(conn), inputs.space_id) do
+      people = load_members(inputs, inputs.space_id, company(conn))
       {:ok, %{people: Serializer.serialize(people)}}
     else
       {:ok, %{people: []}}

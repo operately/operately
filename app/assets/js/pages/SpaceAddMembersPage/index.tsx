@@ -158,7 +158,7 @@ function useSearch() {
 
   return React.useCallback(
     async (query: string): Promise<People.Person[]> => {
-      const res = await Spaces.searchPotentialSpaceMembers({ groupId: space.id!, query });
+      const res = await Spaces.searchPotentialSpaceMembers({ spaceId: space.id, query });
 
       return res.people as People.Person[];
     },
