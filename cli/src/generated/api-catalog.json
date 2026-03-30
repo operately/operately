@@ -15936,7 +15936,7 @@
           "default": null,
           "name": "person_id",
           "type": {
-            "name": "string",
+            "name": "id",
             "kind": "named"
           },
           "optional": false,
@@ -27417,6 +27417,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-28T19:06:30Z",
+  "generated_at": "2026-03-30T10:25:03Z",
   "schema_version": 1
 }
