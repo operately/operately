@@ -45,6 +45,8 @@ defmodule OperatelyWeb.Api.Types do
     Binding.full_access()
   ])
 
+  enum :search_scope_options, values: [:company, :project, :space, :goal, :resource_hub, :none]
+
   enum :resource_access_types, values: [:space, :goal, :project]
 
   object :resource_access_input do
