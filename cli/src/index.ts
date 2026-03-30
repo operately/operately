@@ -49,6 +49,12 @@ async function main(argv: string[]): Promise<number> {
       return 0;
     }
 
+    // Check if this is auth help request (e.g., "help auth")
+    if (parsed.commandParts.length === 1 && parsed.commandParts[0] === "auth") {
+      printAuthHelp();
+      return 0;
+    }
+
     // Check if this is a namespace-specific help request (e.g., "projects help")
     if (parsed.commandParts.length === 1) {
       const namespace = parsed.commandParts[0];

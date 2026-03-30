@@ -121,6 +121,22 @@ describe("CLI Integration Tests", () => {
       assert.ok(result.stdout.includes("login"));
     });
 
+    it("shows auth help when 'help auth' is used", async () => {
+      const result = await runCLI(["help", "auth"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("Authentication"));
+      assert.ok(result.stdout.includes("login"));
+      assert.ok(result.stdout.includes("status"));
+    });
+
+    it("shows auth help when 'auth' is used alone", async () => {
+      const result = await runCLI(["auth"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("Authentication"));
+      assert.ok(result.stdout.includes("login"));
+      assert.ok(result.stdout.includes("status"));
+    });
+
     it("shows auth status with user-friendly format", async () => {
       const result = await runCLI(["auth", "status"]);
       assert.strictEqual(result.exitCode, 0);
