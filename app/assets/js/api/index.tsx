@@ -3319,7 +3319,7 @@ export interface CompaniesDeleteTrustedEmailDomainResult {
 }
 
 export interface CompaniesGrantResourceAccessInput {
-  personId: string;
+  personId: Id;
   resources: ResourceAccessInput[];
 }
 

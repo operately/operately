@@ -10,7 +10,7 @@ defmodule OperatelyWeb.Api.Companies.GrantResourceAccess do
   alias Operately.Access.Filters
 
   inputs do
-    field :person_id, :string, null: false
+    field :person_id, :id, null: false
     field :resources, list_of(:resource_access_input), null: false
   end
 
