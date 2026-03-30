@@ -49,6 +49,56 @@ defmodule OperatelyWeb.Api.People.SearchTest do
       assert res == %{people: [serialized(person1), serialized(person3)]}
     end
 
+    test "works when query is not provided (defaults to empty string)", ctx do
+      person1 = person_fixture(company_id: ctx.company.id, full_name: "John Doe")
+      person2 = person_fixture(company_id: ctx.company.id, full_name: "Jane Doe")
+
+      assert {200, res} = query(ctx.conn, [:people, :search], %{})
+      assert length(res.people) >= 2
+      assert serialized(person1) in res.people
+      assert serialized(person2) in res.people
+    end
+
+    test "works when ignored_ids is not provided (defaults to empty list)", ctx do
+      person1 = person_fixture(company_id: ctx.company.id, full_name: "John Doe")
+      person2 = person_fixture(company_id: ctx.company.id, full_name: "John Smith")
+
+      assert {200, res} = query(ctx.conn, [:people, :search], %{query: "John"})
+
+      assert length(res.people) >= 2
+      assert serialized(person1) in res.people
+      assert serialized(person2) in res.people
+    end
+
+    test "works when search_scope_type is not provided (defaults to :none)", ctx do
+      person1 = person_fixture(company_id: ctx.company.id, full_name: "John Doe")
+      person2 = person_fixture(company_id: ctx.company.id, full_name: "Jane Doe")
+
+      assert {200, res} = query(ctx.conn, [:people, :search], %{query: "Doe"})
+
+      assert length(res.people) >= 2
+      assert serialized(person1) in res.people
+      assert serialized(person2) in res.people
+    end
+
+    test "works when search_scope_id is not provided (defaults to nil)", ctx do
+      person1 = person_fixture(company_id: ctx.company.id, full_name: "John Doe")
+
+      assert {200, res} = query(ctx.conn, [:people, :search], %{query: "John", search_scope_type: "company"})
+      assert res == %{people: [serialized(person1)]}
+    end
+
+    test "works with search_scope_type :none", ctx do
+      person1 = person_fixture(company_id: ctx.company.id, full_name: "John Doe")
+      person2 = person_fixture(company_id: ctx.company.id, full_name: "Jane Doe")
+
+      assert {200, res} = query(ctx.conn, [:people, :search], %{query: "Doe", search_scope_type: "none"})
+
+      assert length(res.people) >= 2
+      assert serialized(person1) in res.people
+      assert serialized(person2) in res.people
+    end
+
     test "searches people by title", ctx do
       person1 = person_fixture(company_id: ctx.company.id, full_name: "John Doe", title: "Developer")
       person2 = person_fixture(company_id: ctx.company.id, full_name: "Jane Doe", title: "Backend Developer")

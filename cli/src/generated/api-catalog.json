@@ -14763,6 +14763,14 @@
         "project_task",
         "milestone"
       ],
+      "search_scope_options": [
+        "company",
+        "project",
+        "space",
+        "goal",
+        "resource_hub",
+        "none"
+      ],
       "subscription_parent_type": [
         "project_check_in",
         "project_retrospective",
@@ -20478,18 +20486,18 @@
       "namespace": "people",
       "inputs": [
         {
-          "default": null,
+          "default": "",
           "name": "query",
           "type": {
             "name": "string",
             "kind": "named"
           },
           "optional": true,
-          "has_default": false,
-          "nullable": true
+          "has_default": true,
+          "nullable": false
         },
         {
-          "default": null,
+          "default": [],
           "name": "ignored_ids",
           "type": {
             "item": {
@@ -20499,19 +20507,19 @@
             "kind": "list"
           },
           "optional": true,
-          "has_default": false,
-          "nullable": true
+          "has_default": true,
+          "nullable": false
         },
         {
-          "default": null,
+          "default": "none",
           "name": "search_scope_type",
           "type": {
-            "name": "string",
+            "name": "search_scope_options",
             "kind": "named"
           },
           "optional": true,
-          "has_default": false,
-          "nullable": true
+          "has_default": true,
+          "nullable": false
         },
         {
           "default": null,
@@ -20521,7 +20529,7 @@
             "kind": "named"
           },
           "optional": true,
-          "has_default": false,
+          "has_default": true,
           "nullable": true
         }
       ],
@@ -27406,6 +27414,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-30T14:07:20Z",
+  "generated_at": "2026-03-30T15:33:10Z",
   "schema_version": 1
 }

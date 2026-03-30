@@ -15,10 +15,10 @@ defmodule OperatelyWeb.Api.People.Search do
   alias Operately.Access.Binding
 
   inputs do
-    field? :query, :string, null: true
-    field? :ignored_ids, list_of(:id), null: true
-    field? :search_scope_type, :string, null: true
-    field? :search_scope_id, :id, null: true
+    field? :query, :string, null: false, default: ""
+    field? :ignored_ids, list_of(:id), null: false, default: []
+    field? :search_scope_type, :search_scope_options, null: false, default: "none"
+    field? :search_scope_id, :id, null: true, default: nil
   end
 
   outputs do
@@ -82,10 +82,13 @@ defmodule OperatelyWeb.Api.People.Search do
 
   defp filter_by_search_scope(query, scope, id) do
     case {scope, id} do
-      {"company", _} ->
+      {:company, _} ->
         query
 
-      {"project", id} ->
+      {:none, _} ->
+        query
+
+      {:project, id} ->
         from p in query,
           join: m in assoc(p, :access_group_memberships),
           join: g in assoc(m, :group),
@@ -94,7 +97,7 @@ defmodule OperatelyWeb.Api.People.Search do
           where: c.project_id == ^id and b.access_level >= ^Binding.view_access(),
           group_by: p.id
 
-      {"space", id} ->
+      {:space, id} ->
         from p in query,
           join: m in assoc(p, :access_group_memberships),
           join: g in assoc(m, :group),
@@ -103,7 +106,7 @@ defmodule OperatelyWeb.Api.People.Search do
           where: c.group_id == ^id and b.access_level >= ^Binding.view_access(),
           group_by: p.id
 
-      {"goal", id} ->
+      {:goal, id} ->
         from p in query,
           join: m in assoc(p, :access_group_memberships),
           join: g in assoc(m, :group),
@@ -112,7 +115,7 @@ defmodule OperatelyWeb.Api.People.Search do
           where: c.goal_id == ^id and b.access_level >= ^Binding.view_access(),
           group_by: p.id
 
-      {"resource_hub", id} ->
+      {:resource_hub, id} ->
         from p in query,
           join: m in assoc(p, :access_group_memberships),
           join: g in assoc(m, :group),

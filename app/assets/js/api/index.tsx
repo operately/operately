@@ -2183,6 +2183,8 @@ export type ReviewAssignmentRoles = "owner" | "reviewer";
 
 export type ReviewAssignmentTypes = "check_in" | "goal_update" | "space_task" | "project_task" | "milestone";
 
+export type SearchScopeOptions = "company" | "project" | "space" | "goal" | "resource_hub" | "none";
+
 export type SubscriptionParentType =
   | "project_check_in"
   | "project_retrospective"
@@ -2646,9 +2648,9 @@ export interface PeopleListPossibleManagersResult {
 }
 
 export interface PeopleSearchInput {
-  query?: string | null;
-  ignoredIds?: Id[] | null;
-  searchScopeType?: string | null;
+  query?: string;
+  ignoredIds?: Id[];
+  searchScopeType?: SearchScopeOptions;
   searchScopeId?: Id | null;
 }
 
