@@ -4305,7 +4305,7 @@ export interface ProjectsUpdatePermissionsResult {
 }
 
 export interface ProjectsUpdateRetrospectiveInput {
-  id: Id;
+  retrospectiveId: Id;
   content: Json;
   successStatus: SuccessStatus;
 }
@@ -4485,7 +4485,7 @@ export interface SpacesDeleteResult {
 }
 
 export interface SpacesDeleteMemberInput {
-  groupId: Id;
+  spaceId: Id;
   memberId: Id;
 }
 

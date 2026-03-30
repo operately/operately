@@ -24151,7 +24151,7 @@
       "inputs": [
         {
           "default": null,
-          "name": "id",
+          "name": "retrospective_id",
           "type": {
             "name": "id",
             "kind": "named"
@@ -25385,7 +25385,7 @@
       "inputs": [
         {
           "default": null,
-          "name": "group_id",
+          "name": "space_id",
           "type": {
             "name": "id",
             "kind": "named"
@@ -27417,6 +27417,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-30T10:25:03Z",
+  "generated_at": "2026-03-30T13:23:08Z",
   "schema_version": 1
 }
