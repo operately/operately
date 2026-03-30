@@ -26,16 +26,18 @@ defmodule OperatelyWeb.Api.Companies.Get do
   end
 
   def call(conn, inputs) do
-    company_id = company(conn).id
-
-    Company.get(me(conn), id: company_id, opts: [
-      required_access_level: Binding.minimal_access()
-    ])
-    |> apply_hooks(inputs)
-    |> case do
-      {:ok, company} -> {:ok, serialize(company)}
+    with {:ok, company} <- find_company(conn) do
+      Company.get(me(conn), id: company.id, opts: [
+        required_access_level: Binding.minimal_access()
+      ])
+      |> apply_hooks(inputs)
+      |> case do
+        {:ok, company} -> {:ok, serialize(company)}
+        {:error, :not_found} -> {:error, :not_found}
+        e -> internal_server_error(e)
+      end
+    else
       {:error, :not_found} -> {:error, :not_found}
-      e -> internal_server_error(e)
     end
   end
 

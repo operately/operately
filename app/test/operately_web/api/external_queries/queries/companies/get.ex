@@ -10,7 +10,7 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.Companies.Get do
   def setup(ctx), do: Factory.setup(ctx)
 
   @impl true
-  def inputs(ctx) do
+  def inputs(_ctx) do
     %{}
   end
 
