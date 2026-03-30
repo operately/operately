@@ -3557,9 +3557,9 @@ export interface GoalsCreateCheckInInput {
   goalId: Id;
   status: GoalCheckInStatus;
   dueDate: ContextualDate | null;
-  checklist: GoalCheckUpdate[];
-  content?: Json | null;
-  newTargetValues?: string | null;
+  checklist?: GoalCheckUpdate[];
+  content: Json;
+  newTargetValues?: string;
   sendNotificationsToEveryone?: boolean | null;
   subscriberIds?: Id[] | null;
 }

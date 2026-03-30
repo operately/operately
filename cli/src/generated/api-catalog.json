@@ -17205,7 +17205,7 @@
             },
             "kind": "list"
           },
-          "optional": false,
+          "optional": true,
           "has_default": false,
           "nullable": false
         },
@@ -17216,9 +17216,9 @@
             "name": "json",
             "kind": "named"
           },
-          "optional": true,
+          "optional": false,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
@@ -17229,7 +17229,7 @@
           },
           "optional": true,
           "has_default": false,
-          "nullable": true
+          "nullable": false
         },
         {
           "default": null,
