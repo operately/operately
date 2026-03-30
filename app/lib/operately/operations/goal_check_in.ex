@@ -6,28 +6,41 @@ defmodule Operately.Operations.GoalCheckIn do
 
   def run(author, goal, attrs) do
     targets = Operately.Goals.list_targets(goal.id)
-    checklist = attrs.checklist || []
-    encoded_new_target_values = encode_new_target_values(targets, attrs.target_values)
+    checklist = attrs.checklist
+    target_values = attrs.target_values
 
     Multi.new()
     |> SubscriptionList.insert(attrs)
     |> Subscription.insert(author, attrs)
     |> Multi.insert(:update, fn changes ->
-      Update.changeset(%{
+      changeset_attrs = %{
         goal_id: goal.id,
         author_id: author.id,
         status: attrs.status,
         message: attrs.content,
-        targets: encoded_new_target_values,
-        checks: checklist,
         subscription_list_id: changes.subscription_list.id,
         timeframe: to_timeframe(goal, attrs.due_date)
-      })
+      }
+
+      changeset_attrs = if target_values != nil do
+        encoded_target_values = encode_new_target_values(targets, target_values)
+        Map.put(changeset_attrs, :targets, encoded_target_values)
+      else
+        changeset_attrs
+      end
+
+      changeset_attrs = if checklist != nil do
+        Map.put(changeset_attrs, :checks, checklist)
+      else
+        changeset_attrs
+      end
+
+      Update.changeset(changeset_attrs)
     end)
     |> SubscriptionList.update(:update)
     |> update_goal(goal, attrs)
-    |> update_targets(targets, attrs.target_values)
-    |> update_checklist(goal, checklist)
+    |> maybe_update_targets(targets, target_values)
+    |> maybe_update_checklist(goal, checklist)
     |> record_activity(author, goal)
     |> Repo.transaction()
     |> Repo.extract_result(:update)
@@ -45,7 +58,9 @@ defmodule Operately.Operations.GoalCheckIn do
     end)
   end
 
-  defp update_targets(multi, targets, new_target_values) do
+  defp maybe_update_targets(multi, _targets, nil), do: multi
+
+  defp maybe_update_targets(multi, targets, new_target_values) do
     Enum.reduce(new_target_values, multi, fn target_value, multi ->
       target = Enum.find(targets, fn target -> target.id == target_value["id"] end)
       changeset = Target.changeset(target, %{value: target_value["value"]})
@@ -55,7 +70,9 @@ defmodule Operately.Operations.GoalCheckIn do
     end)
   end
 
-  defp update_checklist(multi, goal, checklist) do
+  defp maybe_update_checklist(multi, _goal, nil), do: multi
+
+  defp maybe_update_checklist(multi, goal, checklist) do
     checks = Operately.Repo.preload(goal, :checks).checks
 
     Enum.reduce(checklist, multi, fn item, multi ->
