@@ -4447,7 +4447,7 @@ export interface SpacesAddMembersResult {
 }
 
 export interface SpacesArchiveDiscussionInput {
-  messageId: Id;
+  id: Id;
 }
 
 export interface SpacesArchiveDiscussionResult {}

@@ -35,7 +35,7 @@ defmodule OperatelyWeb.Api.Spaces.ArchiveDiscussionTest do
   end
 
   defp request(conn, message) do
-    mutation(conn, [:spaces, :archive_discussion], %{message_id: Paths.message_id(message)})
+    mutation(conn, [:spaces, :archive_discussion], %{id: Paths.message_id(message)})
   end
 
   defp assert_message_archived(message) do

@@ -148,7 +148,7 @@ function Options() {
   const [archive] = Discussions.useArchiveMessage();
 
   const handleArchive = async () => {
-    await archive({ messageId: discussion.id! });
+    await archive({ id: discussion.id! });
     navigate(paths.spaceDiscussionsPath(discussion.space!.id!));
   };
 
