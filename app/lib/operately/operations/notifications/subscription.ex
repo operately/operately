@@ -12,12 +12,8 @@ defmodule Operately.Operations.Notifications.Subscription do
     Enum.reduce(ids, multi, fn {id, type}, multi ->
       name = "subscription_" <> id
 
-      Multi.insert(multi, name, fn changes ->
-        Subscription.changeset(%{
-          subscription_list_id: changes.subscription_list.id,
-          person_id: id,
-          type: type,
-        })
+      Multi.run(multi, name, fn _, changes ->
+        ensure_subscription(changes.subscription_list.id, id, type)
       end)
     end)
   end
@@ -73,5 +69,25 @@ defmodule Operately.Operations.Notifications.Subscription do
 
   defp subscription_exists?(changes, id) do
     Enum.any?(changes.subscription_list.subscriptions, &(&1.person_id == id))
+  end
+
+  defp ensure_subscription(subscription_list_id, person_id, type) do
+    case Subscription.get(:system, subscription_list_id: subscription_list_id, person_id: person_id) do
+      {:error, :not_found} ->
+        Notifications.create_subscription(%{
+          subscription_list_id: subscription_list_id,
+          person_id: person_id,
+          type: type,
+        })
+
+      {:ok, subscription = %{canceled: true}} ->
+        Notifications.update_subscription(subscription, %{
+          canceled: false,
+          type: type,
+        })
+
+      {:ok, subscription} ->
+        {:ok, subscription}
+    end
   end
 end

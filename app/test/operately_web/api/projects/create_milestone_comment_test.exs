@@ -1,6 +1,7 @@
 defmodule OperatelyWeb.Api.Projects.CreateMilestoneCommentTest do
   use OperatelyWeb.TurboCase
 
+  import Ecto.Query, only: [from: 2]
   import Operately.ProjectsFixtures
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
@@ -125,6 +126,30 @@ defmodule OperatelyWeb.Api.Projects.CreateMilestoneCommentTest do
         assert comment.comment.content["message"] == @test.result
       end
     end
+
+    test "doesn't create repeated subscriptions", ctx do
+      mentioned_person = person_fixture(%{company_id: ctx.company.id})
+      project = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.person.id, group_id: ctx.company.company_space_id})
+      milestone = milestone_fixture(%{project_id: project.id})
+      content = RichText.rich_text(mentioned_people: [mentioned_person])
+
+      assert {200, _} = mutation(ctx.conn, [:projects, :create_milestone_comment], %{
+        milestone_id: Paths.milestone_id(milestone),
+        content: content,
+        action: "none",
+      })
+
+      assert {200, _} = mutation(ctx.conn, [:projects, :create_milestone_comment], %{
+        milestone_id: Paths.milestone_id(milestone),
+        content: content,
+        action: "none",
+      })
+
+      milestone = Operately.Repo.reload(milestone)
+
+      assert subscription_count(milestone.subscription_list_id, ctx.person.id) == 1
+      assert subscription_count(milestone.subscription_list_id, mentioned_person.id) == 1
+    end
   end
 
   #
@@ -162,5 +187,13 @@ defmodule OperatelyWeb.Api.Projects.CreateMilestoneCommentTest do
     end
 
     project
+  end
+
+  defp subscription_count(subscription_list_id, person_id) do
+    query =
+      from s in Operately.Notifications.Subscription,
+        where: s.subscription_list_id == ^subscription_list_id and s.person_id == ^person_id
+
+    Operately.Repo.aggregate(query, :count, :id)
   end
 end

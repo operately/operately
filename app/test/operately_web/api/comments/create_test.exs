@@ -492,6 +492,30 @@ defmodule OperatelyWeb.Api.Comments.CreateTest do
       assert activity.author_id == ctx.person.id
       assert activity.content["milestone_id"] == ctx.milestone.id
     end
+
+    test "doesn't create repeated subscriptions for milestone comments", ctx do
+      mentioned_person = person_fixture(%{company_id: ctx.company.id})
+      content = RichText.rich_text(mentioned_people: [mentioned_person])
+
+      assert {200, _} =
+               mutation(ctx.conn, [:comments, :create], %{
+                 entity_id: Paths.milestone_id(ctx.milestone),
+                 entity_type: "milestone",
+                 content: content
+               })
+
+      assert {200, _} =
+               mutation(ctx.conn, [:comments, :create], %{
+                 entity_id: Paths.milestone_id(ctx.milestone),
+                 entity_type: "milestone",
+                 content: content
+               })
+
+      milestone = Repo.reload(ctx.milestone)
+
+      assert subscription_count(milestone.subscription_list_id, ctx.person.id) == 1
+      assert subscription_count(milestone.subscription_list_id, mentioned_person.id) == 1
+    end
   end
 
   #
@@ -618,6 +642,14 @@ defmodule OperatelyWeb.Api.Comments.CreateTest do
 
   def count_milestone_comments(milestone_id) do
     query = from mc in Operately.Comments.MilestoneComment, where: mc.milestone_id == ^milestone_id and mc.action == :none
+
+    Repo.aggregate(query, :count, :id)
+  end
+
+  defp subscription_count(subscription_list_id, person_id) do
+    query =
+      from s in Operately.Notifications.Subscription,
+        where: s.subscription_list_id == ^subscription_list_id and s.person_id == ^person_id
 
     Repo.aggregate(query, :count, :id)
   end
