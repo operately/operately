@@ -96,6 +96,28 @@ defmodule Operately.Comments.CreateMilestoneCommentOperationTest do
       joined_after = fetch_joined_ids(ctx.milestone)
       assert ctx.creator.id in joined_after
     end
+
+    test "author subscription is idempotent", ctx do
+      content = RichText.rich_text("Great work!")
+
+      {:ok, _comment} =
+        CreateMilestoneCommentOperation.run(
+          ctx.creator,
+          ctx.milestone,
+          "none",
+          comment_attrs(ctx, content)
+        )
+
+      {:ok, _another_comment} =
+        CreateMilestoneCommentOperation.run(
+          ctx.creator,
+          ctx.milestone,
+          "none",
+          comment_attrs(ctx, content)
+        )
+
+      assert subscription_count(ctx.milestone.subscription_list_id, ctx.creator.id) == 1
+    end
   end
 
   describe "notifications" do
@@ -158,6 +180,14 @@ defmodule Operately.Comments.CreateMilestoneCommentOperationTest do
     list.subscriptions
     |> Enum.filter(&(&1.type == type and not &1.canceled))
     |> Enum.map(& &1.person_id)
+  end
+
+  defp subscription_count(subscription_list_id, person_id) do
+    query =
+      from s in Operately.Notifications.Subscription,
+        where: s.subscription_list_id == ^subscription_list_id and s.person_id == ^person_id
+
+    Repo.aggregate(query, :count, :id)
   end
 
   defp get_activity(comment) do

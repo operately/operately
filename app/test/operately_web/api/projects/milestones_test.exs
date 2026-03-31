@@ -1325,6 +1325,50 @@ defmodule OperatelyWeb.Api.Projects.MilestonesTest do
       refute subscription2.canceled
     end
 
+    test "repeated plain description updates keep a single editor subscription", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      first_description = RichText.rich_text("First milestone description")
+      second_description = RichText.rich_text("Second milestone description")
+
+      assert {200, _} = mutation(ctx.conn, [:projects, :update_milestone_description], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        description: Jason.encode!(first_description)
+      })
+
+      assert {200, _} = mutation(ctx.conn, [:projects, :update_milestone_description], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        description: Jason.encode!(second_description)
+      })
+
+      milestone = Repo.reload(ctx.milestone)
+
+      assert subscription_count(milestone.subscription_list_id, ctx.creator.id) == 1
+    end
+
+    test "repeated mention updates keep a single mentioned-person subscription", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:mentioned_person)
+        |> Factory.log_in_person(:creator)
+
+      description = RichText.rich_text(mentioned_people: [ctx.mentioned_person])
+
+      assert {200, _} = mutation(ctx.conn, [:projects, :update_milestone_description], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        description: description
+      })
+
+      assert {200, _} = mutation(ctx.conn, [:projects, :update_milestone_description], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        description: description
+      })
+
+      milestone = Repo.reload(ctx.milestone)
+
+      assert subscription_count(milestone.subscription_list_id, ctx.mentioned_person.id) == 1
+    end
+
     #
     # Notifications
     #
@@ -1844,5 +1888,13 @@ defmodule OperatelyWeb.Api.Projects.MilestonesTest do
       limit: 1
     )
     |> Repo.one()
+  end
+
+  defp subscription_count(subscription_list_id, person_id) do
+    query =
+      from s in Operately.Notifications.Subscription,
+        where: s.subscription_list_id == ^subscription_list_id and s.person_id == ^person_id
+
+    Repo.aggregate(query, :count, :id)
   end
 end
