@@ -21,5 +21,6 @@ defmodule Operately.Notifications.Subscription do
     subscriptions
     |> cast(attrs, [:type, :subscription_list_id, :person_id, :canceled])
     |> validate_required([:type, :subscription_list_id, :person_id])
+    |> unique_constraint([:subscription_list_id, :person_id], name: :subscriptions_subscription_list_id_person_id_index)
   end
 end
