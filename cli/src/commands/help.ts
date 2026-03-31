@@ -1,4 +1,5 @@
 import type { CatalogEndpoint, CatalogTypeRef, CatalogTypes } from "../types/catalog";
+import { AUTH_ACTIONS, type AuthAction } from "../core/parser-types";
 import type { EndpointRegistry } from "./registry";
 
 export function printNamespaceHelp(namespace: string, registry: EndpointRegistry): void {
@@ -74,25 +75,89 @@ Endpoint commands available: ${registry.endpoints.length}
 Use 'operately help <command>' for command-specific input flags.`);
 }
 
+interface AuthCommandHelp {
+  description: string;
+  usage: string;
+  flags: string[];
+  examples: string[];
+}
+
+const AUTH_COMMAND_HELP: Record<AuthAction, AuthCommandHelp> = {
+  login: {
+    description: "Authenticate with an API token",
+    usage: "operately auth login --token <token> [--base-url <url>] [--profile <name>]",
+    flags: ["--token <token>", "--base-url <url>", "--profile <name>"],
+    examples: [
+      "operately auth login --token op_live_xxx",
+      "operately auth login --token op_staging_xxx --profile staging --base-url https://staging.operately.com",
+    ],
+  },
+  status: {
+    description: "Show authentication status for current profile",
+    usage: "operately auth status [--profile <name>]",
+    flags: ["--profile <name>"],
+    examples: ["operately auth status", "operately auth status --profile staging"],
+  },
+  whoami: {
+    description: "Display information about the authenticated user",
+    usage: "operately auth whoami [--profile <name>]",
+    flags: ["--profile <name>"],
+    examples: ["operately auth whoami", "operately auth whoami --profile staging"],
+  },
+  logout: {
+    description: "Remove authentication credentials from profile",
+    usage: "operately auth logout [--profile <name>]",
+    flags: ["--profile <name>"],
+    examples: ["operately auth logout", "operately auth logout --profile staging"],
+  },
+};
+
 export function printAuthHelp(): void {
+  const commandLines = AUTH_ACTIONS.map((action) => {
+    const description = AUTH_COMMAND_HELP[action].description;
+    return `  ${action.padEnd(20)} ${description}`;
+  }).join("\n");
+
+  const exampleLines = AUTH_ACTIONS.map((action) => `  ${AUTH_COMMAND_HELP[action].usage}`).join("\n");
+
   console.log(`Operately CLI - Authentication
 
 Usage:
   operately auth <command> [flags]
 
 Available Commands:
-  login                Authenticate with an API token
-  status               Show authentication status for current profile
-  whoami               Display information about the authenticated user
-  logout               Remove authentication credentials from profile
+${commandLines}
 
 Examples:
-  operately auth login --token <token> [--base-url <url>] [--profile <name>]
-  operately auth status [--profile <name>]
-  operately auth whoami [--profile <name>]
-  operately auth logout [--profile <name>]
+${exampleLines}
 
+Use 'operately help auth <command>' for command-specific authentication help.
 Use 'operately help' to see all available commands.`);
+}
+
+export function printAuthCommandHelp(action: AuthAction): void {
+  const help = AUTH_COMMAND_HELP[action];
+  const flagLines = help.flags.map((flag) => `  ${flag}`).join("\n");
+  const exampleLines = help.examples.map((example) => `  ${example}`).join("\n");
+
+  console.log(`Operately CLI - Authentication
+
+Command:
+  auth ${action}
+
+Description:
+  ${help.description}
+
+Usage:
+  ${help.usage}
+
+Flags:
+${flagLines}
+
+Examples:
+${exampleLines}
+
+Use 'operately help auth' to see all authentication commands.`);
 }
 
 function formatTypeHint(typeRef: CatalogTypeRef): string {

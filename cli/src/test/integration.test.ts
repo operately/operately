@@ -129,6 +129,36 @@ describe("CLI Integration Tests", () => {
       assert.ok(result.stdout.includes("status"));
     });
 
+    it("shows auth login help with --help", async () => {
+      const result = await runCLI(["auth", "login", "--help"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("Command:"));
+      assert.ok(result.stdout.includes("auth login"));
+      assert.ok(result.stdout.includes("operately auth login --token <token> [--base-url <url>] [--profile <name>]"));
+    });
+
+    it("shows auth whoami help with --help", async () => {
+      const result = await runCLI(["auth", "whoami", "--help"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("Command:"));
+      assert.ok(result.stdout.includes("auth whoami"));
+      assert.ok(result.stdout.includes("operately auth whoami [--profile <name>]"));
+    });
+
+    it("shows auth whoami help when 'help auth whoami' is used", async () => {
+      const result = await runCLI(["help", "auth", "whoami"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("auth whoami"));
+      assert.ok(result.stdout.includes("operately auth whoami [--profile <name>]"));
+    });
+
+    it("shows auth login help when 'help auth login' is used", async () => {
+      const result = await runCLI(["help", "auth", "login"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("auth login"));
+      assert.ok(result.stdout.includes("operately auth login --token <token> [--base-url <url>] [--profile <name>]"));
+    });
+
     it("shows auth help when 'auth' is used alone", async () => {
       const result = await runCLI(["auth"]);
       assert.strictEqual(result.exitCode, 0);
