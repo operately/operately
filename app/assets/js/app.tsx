@@ -6,6 +6,7 @@ import { createRoot } from "react-dom/client";
 
 import * as Signals from "@/signals";
 import * as Sentry from "@sentry/react";
+import axios from "axios";
 import {
   createRoutesFromChildren,
   matchRoutes,
@@ -24,6 +25,7 @@ import "./i18n";
 import "@/api/socket";
 import ReactModal from "react-modal";
 import { ToasterBar } from "turboui";
+import { installSentryAxiosInterceptor } from "@/utils/axiosErrorReporting";
 
 Api.default.setBasePath("/api/v2");
 AdminApi.default.setBasePath("/admin/api/v1");
@@ -47,6 +49,8 @@ if (window.appConfig.sentry.enabled) {
     ],
     enableTracing: false,
   });
+
+  installSentryAxiosInterceptor(axios);
 }
 
 const rootElement: HTMLElement | null = document.getElementById("root");
