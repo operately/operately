@@ -2,7 +2,9 @@ import type { CatalogEndpoint } from "../types/catalog";
 
 export class UsageError extends Error {}
 
-export type AuthAction = "login" | "status" | "whoami" | "logout";
+export const AUTH_ACTIONS = ["login", "status", "whoami", "logout"] as const;
+
+export type AuthAction = (typeof AUTH_ACTIONS)[number];
 
 export interface GlobalFlags {
   token?: string;
@@ -14,8 +16,6 @@ export interface GlobalFlags {
 }
 
 export type ParsedCommand =
-  | { kind: "help"; commandParts: string[] }
-  | { kind: "auth-help" }
   | { kind: "version" }
   | { kind: "auth"; action: AuthAction; flags: Map<string, unknown[]> }
   | {
