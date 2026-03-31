@@ -1,5 +1,6 @@
-import axios, { AxiosRequestConfig } from "axios";
+import { AxiosRequestConfig } from "axios";
 import csrftoken from "@/utils/csrf_token";
+import { createSentryAxiosClient } from "@/utils/axiosErrorReporting";
 
 import { createBlob, createAvatarBlob } from "@/api";
 import { findImageDimensions, findVideoDimensions } from "./utils";
@@ -55,7 +56,7 @@ async function uploadWithCreator(
 }
 
 async function directUpload(file: File, url: string, progressCallback: ProgressCallback) {
-  const client = axios.create();
+  const client = createSentryAxiosClient();
 
   const config = {
     headers: {
@@ -71,7 +72,7 @@ async function directUpload(file: File, url: string, progressCallback: ProgressC
 }
 
 async function multipartUpload(file: File, url: string, progressCallback: ProgressCallback) {
-  const client = axios.create();
+  const client = createSentryAxiosClient();
 
   const config: AxiosRequestConfig = {
     headers: {
