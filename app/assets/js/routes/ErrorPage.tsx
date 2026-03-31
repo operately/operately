@@ -2,7 +2,7 @@ import NotFoundPage from "@/pages/NotFoundPage";
 import * as React from "react";
 
 import { captureException } from "@sentry/react";
-import { AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
 import { useRouteError, useRouteLoaderData } from "react-router-dom";
 import { GhostButton } from "turboui";
 
@@ -22,8 +22,12 @@ function ServerErrorPage() {
   const data = useRouteLoaderData("companyRoot") as { company: { id: string | null } };
 
   React.useEffect(() => {
+    if (!error) return;
+
     console.error(error);
-    captureException(error, { level: "fatal" });
+    if (!axios.isAxiosError(error)) {
+      captureException(error, { level: "fatal" });
+    }
   }, [error]);
 
   return (
