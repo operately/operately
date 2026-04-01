@@ -34,18 +34,22 @@ defmodule OperatelyLocalMediaStorage.Plug do
   end
 
   def verify_token(conn, _) do
-    path = conn.params["path"] && List.first(conn.params["path"])
-    token = conn.query_params["token"] || conn.body_params["token"]
+    if conn.method == "OPTIONS" do
+      conn
+    else
+      path = conn.params["path"] && List.first(conn.params["path"])
+      token = conn.query_params["token"] || conn.body_params["token"]
 
-    operation =
-      case conn.method do
-        "GET" -> "get"
-        "PUT" -> "upload"
+      operation =
+        case conn.method do
+          "GET" -> "get"
+          "PUT" -> "upload"
+        end
+
+      case Operately.Blobs.Tokens.validate(operation, path, token) do
+        :ok -> conn
+        {:error, _} -> send_invalid_token(conn)
       end
-
-    case Operately.Blobs.Tokens.validate(operation, path, token) do
-      :ok -> conn
-      {:error, _} -> send_invalid_token(conn)
     end
   end
 
