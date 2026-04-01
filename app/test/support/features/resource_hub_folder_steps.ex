@@ -99,15 +99,7 @@ defmodule Operately.Support.Features.ResourceHubFolderSteps do
     |> UI.click(testid: UI.testid("menu-#{Paths.folder_id(ctx.folder)}"))
     |> UI.click(testid: UI.testid("copy-resource-#{Paths.folder_id(ctx.folder)}"))
     |> UI.fill(testid: "name", with: new_name)
-    |> UI.find(UI.query(testid: "copy-resource-modal"), fn el ->
-      el
-      |> UI.click(testid: "three-1")
-      |> UI.click(testid: "four-0")
-      |> UI.click(testid: "five-0")
-      |> UI.refute_has(testid: "five-0")
-      |> UI.click(testid: "submit")
-    end)
-    |> UI.refute_has(testid: "submit")
+    |> then(&Steps.select_copy_destination(&1, ctx.two, ctx.five))
   end
 
   step :copy_folder_into_resource_hub_root, ctx, new_name do
@@ -115,43 +107,21 @@ defmodule Operately.Support.Features.ResourceHubFolderSteps do
     |> UI.click(testid: UI.testid("menu-#{Paths.folder_id(ctx.folder)}"))
     |> UI.click(testid: UI.testid("copy-resource-#{Paths.folder_id(ctx.folder)}"))
     |> UI.fill(testid: "name", with: new_name)
-    |> UI.find(UI.query(testid: "copy-resource-modal"), fn el ->
-      el
-      |> UI.click(testid: "go-back-icon")
-      |> UI.assert_text("three")
-      |> UI.click(testid: "go-back-icon")
-      |> UI.assert_text("two")
-      |> UI.click(testid: "go-back-icon")
-      |> UI.assert_text("one")
-      |> UI.click(testid: "go-back-icon")
-      |> UI.assert_text("Resource hub")
-      |> UI.click(testid: "submit")
-    end)
-    |> UI.refute_has(testid: "submit")
+    |> then(&Steps.select_copy_destination(&1, ctx.four, ctx.hub))
   end
 
   step :assert_folder_name, ctx, attrs do
-    UI.find(ctx, UI.query(testid: "node-#{attrs.index}"), fn ctx ->
-      ctx
-      |> UI.assert_text(attrs.name)
-    end)
+    Steps.assert_node_row_contains(ctx, attrs.index, attrs.name)
   end
 
   step :assert_folder_created, ctx, attrs do
-    UI.find(ctx, UI.query(testid: "node-#{attrs.index}"), fn ctx ->
-      ctx
-      |> UI.assert_text(attrs.name)
-      |> UI.assert_text("0 items")
-    end)
+    ctx
+    |> Steps.assert_node_row_contains(attrs.index, attrs.name)
+    |> Steps.assert_node_row_contains(attrs.index, "0 items")
   end
 
   step :assert_items_count, ctx, attrs do
-    ctx
-    |> UI.sleep(100)
-    |> UI.find(UI.query(testid: "node-#{attrs.index}"), fn ctx ->
-      ctx
-      |> UI.assert_text(attrs.items_count)
-    end)
+    Steps.assert_node_row_contains(ctx, attrs.index, attrs.items_count)
   end
 
   step :assert_zero_state_on_space_page, ctx do
@@ -168,13 +138,9 @@ defmodule Operately.Support.Features.ResourceHubFolderSteps do
   end
 
   step :assert_folder_and_its_content_was_copied, ctx, attrs do
-    UI.find(ctx, UI.query(testid: "node-#{attrs.index}"), fn ctx ->
-      ctx
-      |> UI.assert_text(attrs.name)
-      |> UI.assert_text("3 items")
-    end)
-
     ctx
+    |> Steps.assert_node_row_contains(attrs.index, attrs.name)
+    |> Steps.assert_node_row_contains(attrs.index, "3 items")
     |> UI.click(testid: "node-#{attrs.index}")
     |> UI.assert_text("Document")
     |> UI.assert_text("Link")
