@@ -34,7 +34,7 @@ defmodule OperatelyLocalMediaStorage.Plug do
   end
 
   def verify_token(conn, _) do
-    path = conn.params["path"] |> List.first()
+    path = conn.params["path"] && List.first(conn.params["path"])
     token = conn.query_params["token"] || conn.body_params["token"]
 
     operation =
