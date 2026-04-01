@@ -30,4 +30,40 @@ defmodule OperatelyLocalMediaStorage.PlugTest do
       assert token1 == token2
     end
   end
+
+  describe "OPTIONS request handling" do
+    test "OPTIONS requests bypass token verification" do
+      conn = conn(:options, "/test-path")
+      result = OperatelyLocalMediaStorage.Plug.verify_token(conn, nil)
+
+      assert result == conn
+    end
+
+    test "OPTIONS requests with missing path params do not crash" do
+      conn = conn(:options, "/test-path")
+      conn = %{conn | params: %{}}
+
+      result = OperatelyLocalMediaStorage.Plug.verify_token(conn, nil)
+
+      assert result == conn
+    end
+
+    test "OPTIONS requests with no token do not crash" do
+      conn = conn(:options, "/test-path")
+      conn = %{conn | query_params: %{}, body_params: %{}}
+
+      result = OperatelyLocalMediaStorage.Plug.verify_token(conn, nil)
+
+      assert result == conn
+    end
+
+    test "OPTIONS requests return 401 through full plug pipeline" do
+      conn =
+        conn(:options, "/test-path")
+        |> OperatelyLocalMediaStorage.Plug.call(OperatelyLocalMediaStorage.Plug.init([]))
+
+      assert conn.status == 401
+      assert conn.resp_body == "Unauthorized"
+    end
+  end
 end
