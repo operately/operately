@@ -1,7 +1,7 @@
 defmodule Operately.Support.Features.ResourceHubSteps do
   use Operately.FeatureCase
 
-  alias Operately.ResourceHubs.{ResourceHub, Node}
+  alias Operately.ResourceHubs.{Folder, ResourceHub, Node}
   alias Operately.Updates
 
   step :setup, ctx do
@@ -19,12 +19,14 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     UI.visit(ctx, Paths.resource_hub_path(ctx.company, hub))
   end
 
- step :visit_folder_page, ctx, folder_name do
+  step :visit_folder_page, ctx, folder_name do
     UI.visit(ctx, Paths.folder_path(ctx.company, ctx[folder_name]))
   end
 
   step :navigate_back, ctx, name do
-    UI.click_link(ctx, name)
+    ctx
+    |> UI.click_link(name)
+    |> wait_for_navigation_target(name)
   end
 
   step :leave_comment, ctx do
@@ -92,10 +94,7 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   end
 
   step :assert_comments_count, ctx, attrs do
-    UI.find(ctx, UI.query(testid: "node-#{attrs.index}"), fn ctx ->
-      ctx
-      |> UI.assert_text(attrs.count)
-    end)
+    assert_node_row_contains(ctx, attrs.index, attrs.count)
   end
 
   step :assert_navigation_links, ctx, links do
@@ -168,17 +167,7 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     ctx
     |> UI.click(testid: menu_id)
     |> UI.click(testid: move_id)
-    |> UI.assert_text("Select destination")
-    |> UI.find(UI.query(testid: "move-resource-modal"), fn el ->
-      el
-      |> UI.click(testid: "one-0")
-      |> UI.click(testid: "two-0")
-      |> UI.click(testid: "three-0")
-      |> UI.click(testid: "four-0")
-      |> UI.click(testid: "five-0")
-      |> UI.click(testid: "submit")
-    end)
-    |> UI.refute_text("Select destination")
+    |> then(&select_move_destination(&1, ctx.hub, ctx.five))
   end
 
   step :move_resource_to_parent_folder, ctx, resource_name do
@@ -189,21 +178,7 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     ctx
     |> UI.click(testid: menu_id)
     |> UI.click(testid: move_id)
-    |> UI.assert_text("Select destination")
-    |> UI.find(UI.query(testid: "move-resource-modal"), fn el ->
-      el
-      |> UI.assert_text(resource_name)
-      |> UI.click(testid: "go-back-icon")
-      |> UI.assert_text("five")
-      |> UI.click(testid: "go-back-icon")
-      |> UI.assert_text("four")
-      |> UI.click(testid: "go-back-icon")
-      |> UI.assert_text("three")
-      |> UI.click(testid: "go-back-icon")
-      |> UI.assert_text("two")
-      |> UI.click(testid: "submit")
-    end)
-    |> UI.refute_text("Select destination")
+    |> then(&select_move_destination(&1, ctx.five, ctx.one))
   end
 
   step :move_resource_to_hub_root, ctx, resource_name do
@@ -214,24 +189,7 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     ctx
     |> UI.click(testid: menu_id)
     |> UI.click(testid: move_id)
-    |> UI.assert_text("Select destination")
-    |> UI.find(UI.query(testid: "move-resource-modal"), fn el ->
-      el
-      |> UI.assert_text(resource_name)
-      |> UI.click(testid: "go-back-icon")
-      |> UI.assert_text("five")
-      |> UI.click(testid: "go-back-icon")
-      |> UI.assert_text("four")
-      |> UI.click(testid: "go-back-icon")
-      |> UI.assert_text("three")
-      |> UI.click(testid: "go-back-icon")
-      |> UI.assert_text("two")
-      |> UI.click(testid: "go-back-icon")
-      |> UI.assert_text("one")
-      |> UI.assert_text("Resource hub")
-      |> UI.click(testid: "submit")
-    end)
-    |> UI.refute_text("Select destination")
+    |> then(&select_move_destination(&1, ctx.five, ctx.hub))
   end
 
   step :assert_resource_present_in_files_list, ctx, resource_name do
@@ -247,6 +205,22 @@ defmodule Operately.Support.Features.ResourceHubSteps do
   #
   # Helpers
   #
+
+  def select_move_destination(ctx, current_location, destination_location) do
+    navigate_folder_picker(ctx, "move-resource-modal", current_location, destination_location)
+  end
+
+  def select_copy_destination(ctx, current_location, destination_location) do
+    navigate_folder_picker(ctx, "copy-resource-modal", current_location, destination_location)
+  end
+
+  def assert_node_row_contains(ctx, index, text) do
+    UI.assert_text(ctx, text, testid: "node-#{index}")
+  end
+
+  def refute_node_row_contains(ctx, index, text) do
+    UI.refute_text(ctx, text, testid: "node-#{index}")
+  end
 
   defp find_last_comment(ctx) do
     cond do
@@ -277,6 +251,102 @@ defmodule Operately.Support.Features.ResourceHubSteps do
       node.link -> Paths.link_id(node.link)
       node.folder -> Paths.folder_id(node.folder)
       node.file -> Paths.file_id(node.file)
+    end
+  end
+
+  defp navigate_folder_picker(ctx, modal_testid, current_location, destination_location) do
+    hub = picker_hub(ctx, current_location, destination_location)
+    current_path = picker_path(current_location, hub)
+    destination_path = picker_path(destination_location, hub)
+    shared_length = shared_prefix_length(current_path, destination_path)
+
+    back_targets =
+      current_path
+      |> Enum.slice(shared_length - 1, length(current_path) - shared_length)
+      |> Enum.reverse()
+
+    descend_targets = Enum.drop(destination_path, shared_length)
+
+    ctx
+    |> UI.assert_has(testid: modal_testid)
+    |> wait_for_picker_location(current_location)
+    |> click_back_targets(back_targets)
+    |> click_folder_targets(descend_targets)
+    |> UI.click(testid: "submit")
+    |> UI.refute_has(testid: modal_testid)
+  end
+
+  defp click_back_targets(ctx, targets) do
+    Enum.reduce(targets, ctx, fn target, ctx ->
+      ctx
+      |> UI.click(testid: "folder-select-go-back")
+      |> wait_for_picker_location(target)
+    end)
+  end
+
+  defp click_folder_targets(ctx, targets) do
+    Enum.reduce(targets, ctx, fn target, ctx ->
+      ctx
+      |> UI.click(testid: picker_testid("node", target))
+      |> wait_for_picker_location(target)
+    end)
+  end
+
+  defp wait_for_picker_location(ctx, location) do
+    UI.assert_has(ctx, testid: picker_testid("current", location))
+  end
+
+  defp picker_path(%ResourceHub{} = hub, _root_hub), do: [hub]
+
+  defp picker_path(%Folder{} = folder, root_hub) do
+    folder = Folder.find_path_to_folder(folder)
+    [root_hub | List.wrap(folder.path_to_folder)] ++ [folder]
+  end
+
+  # Counts how many folders both paths share from the start, so we know how many
+  # times to click "back" before clicking into the destination folders.
+  defp shared_prefix_length(left, right) do
+    left
+    |> Enum.zip(right)
+    |> Enum.take_while(fn {a, b} -> a.id == b.id end)
+    |> length()
+  end
+
+  defp picker_hub(_ctx, %ResourceHub{} = hub, _destination_location), do: hub
+  defp picker_hub(_ctx, _current_location, %ResourceHub{} = hub), do: hub
+  defp picker_hub(ctx, _current_location, _destination_location), do: Map.fetch!(ctx, :hub)
+
+  defp picker_testid(prefix, %ResourceHub{} = hub) do
+    UI.testid(["folder-select", prefix, Paths.resource_hub_id(hub)])
+  end
+
+  defp picker_testid(prefix, %Folder{} = folder) do
+    UI.testid(["folder-select", prefix, Paths.folder_id(folder)])
+  end
+
+  defp wait_for_navigation_target(ctx, name) do
+    case find_navigation_target_path(ctx, name) do
+      path when is_binary(path) -> UI.assert_page(ctx, path)
+      _ -> ctx
+    end
+  end
+
+  defp find_navigation_target_path(ctx, name) do
+    cond do
+      ctx.space.name == name ->
+        Paths.space_path(ctx.company, ctx.space)
+
+      true ->
+        case ResourceHub.get(:system, space_id: ctx.space.id, name: name) do
+          {:ok, hub} ->
+            Paths.resource_hub_path(ctx.company, hub)
+
+          _ ->
+            case Node.get(:system, name: name, type: :folder, opts: [preload: :folder]) do
+              {:ok, node} -> Paths.folder_path(ctx.company, node.folder)
+              _ -> nil
+            end
+        end
     end
   end
 end

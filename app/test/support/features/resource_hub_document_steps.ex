@@ -210,13 +210,7 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     |> UI.click(testid: "options-button")
     |> UI.click(testid: "copy-document-link")
     |> UI.fill(testid: "name", with: new_name)
-    |> UI.find(UI.query(testid: "copy-resource-modal"), fn el ->
-      el
-      |> UI.click(testid: "one-0")
-      |> UI.assert_text("one")
-      |> UI.click(testid: "submit")
-    end)
-    |> UI.refute_has(testid: "copy-resource-modal")
+    |> then(&Steps.select_copy_destination(&1, ctx.hub, ctx.one))
   end
 
   step :copy_document_from_document_page_into_hub_root, ctx, new_name do
@@ -224,13 +218,7 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     |> UI.click(testid: "options-button")
     |> UI.click(testid: "copy-document-link")
     |> UI.fill(testid: "name", with: new_name)
-    |> UI.find(UI.query(testid: "copy-resource-modal"), fn el ->
-      el
-      |> UI.click(testid: "go-back-icon")
-      |> UI.assert_text("Resource hub")
-      |> UI.click(testid: "submit")
-    end)
-    |> UI.refute_has(testid: "copy-resource-modal")
+    |> then(&Steps.select_copy_destination(&1, ctx.folder, ctx.hub))
   end
 
   step :copy_document_into_folder, ctx, document_name do
@@ -238,16 +226,7 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     |> UI.click(testid: UI.testid("menu-#{Paths.document_id(ctx.document)}"))
     |> UI.click(testid: UI.testid("copy-resource-#{Paths.document_id(ctx.document)}"))
     |> UI.assert_text("Create a copy of #{document_name}")
-    |> UI.find(UI.query(testid: "copy-resource-modal"), fn el ->
-      el
-      |> UI.assert_text(document_name)
-      |> UI.click(testid: "go-back-icon")
-      |> UI.assert_text("five")
-      |> UI.click(testid: "go-back-icon")
-      |> UI.assert_text("four")
-      |> UI.click(testid: "submit")
-    end)
-    |> UI.refute_text("Create a copy of #{document_name}")
+    |> then(&Steps.select_copy_destination(&1, ctx.five, ctx.three))
   end
 
   step :click_on_continue_writing_draft_link, ctx do

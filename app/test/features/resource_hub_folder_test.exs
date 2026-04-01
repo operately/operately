@@ -147,7 +147,7 @@ defmodule Operately.Features.ResourceHubFolderTest do
       |> move_resource_to_parent_folder(resource_name: @resource_name)
     end
 
-    feature "Moving link to resource hub root", ctx do
+    feature "Moving folder to resource hub root", ctx do
       ctx
       |> Steps.given_nested_folders_exist()
       |> Steps.visit_folder_page(:five)
