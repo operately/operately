@@ -35,7 +35,9 @@ function Navigation({ viewModel }: { viewModel: ViewModel }) {
   return (
     <div className="h-8 flex items-center gap-2 p-2 border-b border-stroke-base">
       <NavigateBack viewModel={viewModel} />
-      <div className="text-sm">{viewModel.currentNode!.name}</div>
+      <div className="text-sm" data-test-id={createTestId("folder-select-current", viewModel.currentNode.resource.id!)}>
+        {viewModel.currentNode!.name}
+      </div>
     </div>
   );
 }
@@ -49,7 +51,7 @@ function NavigateBack({ viewModel }: { viewModel: ViewModel }) {
       className="cursor-pointer"
       size={16}
       onClick={() => viewModel.select(viewModel.currentNode!.parent!)}
-      data-test-id="go-back-icon"
+      data-test-id="folder-select-go-back"
     />
   );
 }
@@ -57,14 +59,14 @@ function NavigateBack({ viewModel }: { viewModel: ViewModel }) {
 function NodeList({ viewModel }: { viewModel: ViewModel }) {
   return (
     <div className="h-[240px] overflow-auto">
-      {viewModel.nodes?.map((node, index) => (
-        <NodeItem viewModel={viewModel} node={node} key={node.id} index={index} />
+      {viewModel.nodes?.map((node) => (
+        <NodeItem viewModel={viewModel} node={node} key={node.id} />
       ))}
     </div>
   );
 }
 
-function NodeItem({ viewModel, node, index }: { viewModel: ViewModel; node: ViewModelNode; index: number }) {
+function NodeItem({ viewModel, node }: { viewModel: ViewModel; node: ViewModelNode }) {
   const className = classNames("flex items-center justify-between", "p-2", "even:bg-surface-dimmed", {
     "cursor-pointer": node.selectable,
     "hover:bg-surface-highlight": !viewModel.isNodeLoading(node),
@@ -73,7 +75,7 @@ function NodeItem({ viewModel, node, index }: { viewModel: ViewModel; node: View
   const innerClassName = classNames("flex items-center gap-2 text-sm", {
     "opacity-40": !node.selectable,
   });
-  const testId = createTestId(node.name, index.toString());
+  const testId = node.selectable ? createTestId("folder-select-node", node.resource.id!) : undefined;
 
   return (
     <div className={className} onClick={() => viewModel.select(node)} data-test-id={testId}>
