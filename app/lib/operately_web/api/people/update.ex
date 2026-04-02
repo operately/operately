@@ -48,6 +48,7 @@ defmodule OperatelyWeb.Api.People.Update do
   defp update_profile(person, inputs, requester_id) do
     inputs = if person.id == requester_id do
       Map.take(inputs, @updatable_fields_for_oneself)
+      |> normalize_notification_preferences()
     else
       Map.take(inputs, @updatable_fields_for_others)
     end
@@ -57,5 +58,17 @@ defmodule OperatelyWeb.Api.People.Update do
     OperatelyWeb.ApiSocket.broadcast!("api:profile_updated:#{person.id}")
 
     {:ok, person}
+  end
+
+  defp normalize_notification_preferences(inputs) do
+    case Map.fetch(inputs, :notify_about_assignments) do
+      {:ok, value} ->
+        inputs
+        |> Map.delete(:notify_about_assignments)
+        |> Map.put(:preferences, %{notifications: %{notify_about_assignments: value}})
+
+      :error ->
+        inputs
+    end
   end
 end

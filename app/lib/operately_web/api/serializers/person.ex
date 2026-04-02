@@ -60,7 +60,9 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
       permissions: OperatelyWeb.Api.Serializer.serialize(data.permissions),
       invite_link: OperatelyWeb.Api.Serializer.serialize(data.invite_link),
       agent_def: data.agent_def && OperatelyWeb.Api.Serializer.serialize(data.agent_def, level: :full),
-      notify_about_assignments: data.notify_about_assignments,
+      send_daily_summary: Operately.People.Person.send_daily_summary?(data),
+      notify_on_mention: Operately.People.Person.notify_on_mention?(data),
+      notify_about_assignments: Operately.People.Person.notify_about_assignments?(data),
       description: encode_description(data.description)
     }
   end
