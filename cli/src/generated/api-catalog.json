@@ -8872,6 +8872,28 @@
           },
           {
             "default": null,
+            "name": "email_preference",
+            "type": {
+              "name": "email_preference_values",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "email_window_minutes",
+            "type": {
+              "name": "email_window_minutes",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
             "name": "send_daily_summary",
             "type": {
               "name": "boolean",
@@ -8879,7 +8901,7 @@
             },
             "optional": true,
             "has_default": false,
-            "nullable": true
+            "nullable": false
           },
           {
             "default": null,
@@ -8890,7 +8912,7 @@
             },
             "optional": true,
             "has_default": false,
-            "nullable": true
+            "nullable": false
           },
           {
             "default": null,
@@ -14600,36 +14622,25 @@
       ]
     },
     "enums": {
-      "access_options": [
-        "no_access",
-        "minimal_access",
-        "view_access",
-        "comment_access",
-        "edit_access",
-        "admin_access",
-        "full_access"
+      "review_assignment_types": [
+        "check_in",
+        "goal_update",
+        "space_task",
+        "project_task",
+        "milestone"
       ],
-      "account_theme": [
-        "dark",
-        "light",
-        "system"
-      ],
-      "activity_scope_type": [
-        "person",
-        "company",
-        "space",
-        "project",
-        "milestone",
-        "task",
-        "goal"
+      "agent_message_status": [
+        "pending",
+        "done"
       ],
       "agent_message_sender": [
         "user",
         "ai"
       ],
-      "agent_message_status": [
-        "pending",
-        "done"
+      "account_theme": [
+        "dark",
+        "light",
+        "system"
       ],
       "comment_parent_type": [
         "project_check_in",
@@ -14645,24 +14656,27 @@
         "project_task",
         "milestone"
       ],
-      "contextual_date_type": [
-        "day",
-        "month",
-        "quarter",
-        "year"
-      ],
-      "create_conversation_context_type": [
+      "search_scope_options": [
+        "company",
+        "project",
+        "space",
         "goal",
-        "project"
+        "resource_hub",
+        "none"
+      ],
+      "work_map_item_state": [
+        "active",
+        "paused",
+        "closed"
+      ],
+      "project_check_in_status": [
+        "on_track",
+        "caution",
+        "off_track"
       ],
       "discussion_state": [
         "draft",
         "published"
-      ],
-      "goal_check_in_status": [
-        "on_track",
-        "caution",
-        "off_track"
       ],
       "goal_privacy_values": [
         "public",
@@ -14670,40 +14684,33 @@
         "confidential",
         "secret"
       ],
-      "goal_status": [
-        "on_track",
+      "success_status": [
         "achieved",
-        "missed",
-        "paused",
-        "caution",
-        "off_track",
-        "pending",
-        "outdated"
+        "missed"
       ],
-      "milestone_comment_action": [
-        "none",
-        "complete",
-        "reopen"
+      "resource_hub_link_type": [
+        "airtable",
+        "dropbox",
+        "figma",
+        "google",
+        "google_doc",
+        "google_sheet",
+        "google_slides",
+        "notion",
+        "other"
       ],
-      "milestone_status": [
-        "pending",
-        "done"
-      ],
-      "project_check_in_status": [
-        "on_track",
-        "caution",
-        "off_track"
-      ],
-      "project_contributor_role": [
-        "champion",
-        "reviewer",
-        "contributor"
-      ],
-      "project_task_status_color": [
-        "gray",
-        "blue",
-        "green",
-        "red"
+      "subscription_parent_type": [
+        "project_check_in",
+        "project_retrospective",
+        "goal_update",
+        "message",
+        "resource_hub_document",
+        "resource_hub_file",
+        "resource_hub_link",
+        "comment_thread",
+        "project",
+        "milestone",
+        "project_task"
       ],
       "reaction_entity_type": [
         "project_check_in",
@@ -14716,6 +14723,80 @@
         "resource_hub_document",
         "resource_hub_file",
         "resource_hub_link"
+      ],
+      "milestone_comment_action": [
+        "none",
+        "complete",
+        "reopen"
+      ],
+      "create_conversation_context_type": [
+        "goal",
+        "project"
+      ],
+      "review_assignment_roles": [
+        "owner",
+        "reviewer"
+      ],
+      "project_task_status_color": [
+        "gray",
+        "blue",
+        "green",
+        "red"
+      ],
+      "contextual_date_type": [
+        "day",
+        "month",
+        "quarter",
+        "year"
+      ],
+      "task_type": [
+        "space",
+        "project"
+      ],
+      "project_contributor_role": [
+        "champion",
+        "reviewer",
+        "contributor"
+      ],
+      "access_options": [
+        "no_access",
+        "minimal_access",
+        "view_access",
+        "comment_access",
+        "edit_access",
+        "admin_access",
+        "full_access"
+      ],
+      "review_assignment_origin_types": [
+        "project",
+        "goal",
+        "space"
+      ],
+      "goal_status": [
+        "on_track",
+        "achieved",
+        "missed",
+        "paused",
+        "caution",
+        "off_track",
+        "pending",
+        "outdated"
+      ],
+      "work_map_item_status": [
+        "on_track",
+        "achieved",
+        "missed",
+        "paused",
+        "caution",
+        "off_track",
+        "pending",
+        "outdated"
+      ],
+      "work_map_item_privacy": [
+        "public",
+        "internal",
+        "confidential",
+        "secret"
       ],
       "reaction_parent_type": [
         "project_check_in",
@@ -14731,91 +14812,36 @@
         "resource_hub_file",
         "resource_hub_link"
       ],
+      "goal_check_in_status": [
+        "on_track",
+        "caution",
+        "off_track"
+      ],
       "resource_access_types": [
         "space",
         "goal",
         "project"
       ],
-      "resource_hub_link_type": [
-        "airtable",
-        "dropbox",
-        "figma",
-        "google",
-        "google_doc",
-        "google_sheet",
-        "google_slides",
-        "notion",
-        "other"
-      ],
-      "review_assignment_origin_types": [
-        "project",
-        "goal",
-        "space"
-      ],
-      "review_assignment_roles": [
-        "owner",
-        "reviewer"
-      ],
-      "review_assignment_types": [
-        "check_in",
-        "goal_update",
-        "space_task",
-        "project_task",
-        "milestone"
-      ],
-      "search_scope_options": [
-        "company",
-        "project",
-        "space",
-        "goal",
-        "resource_hub",
-        "none"
-      ],
-      "subscription_parent_type": [
-        "project_check_in",
-        "project_retrospective",
-        "goal_update",
-        "message",
-        "resource_hub_document",
-        "resource_hub_file",
-        "resource_hub_link",
-        "comment_thread",
-        "project",
-        "milestone",
-        "project_task"
-      ],
-      "success_status": [
-        "achieved",
-        "missed"
-      ],
-      "task_type": [
-        "space",
-        "project"
-      ],
-      "work_map_item_privacy": [
-        "public",
-        "internal",
-        "confidential",
-        "secret"
-      ],
-      "work_map_item_state": [
-        "active",
-        "paused",
-        "closed"
-      ],
-      "work_map_item_status": [
-        "on_track",
-        "achieved",
-        "missed",
-        "paused",
-        "caution",
-        "off_track",
-        "pending",
-        "outdated"
-      ],
       "work_map_item_type": [
         "project",
         "goal"
+      ],
+      "activity_scope_type": [
+        "person",
+        "company",
+        "space",
+        "project",
+        "milestone",
+        "task",
+        "goal"
+      ],
+      "email_preference_values": [
+        "buffered",
+        "mentions_only"
+      ],
+      "milestone_status": [
+        "pending",
+        "done"
       ]
     },
     "int_enums": {
@@ -14825,6 +14851,13 @@
         "40",
         "70",
         "100"
+      ],
+      "email_window_minutes": [
+        "5",
+        "10",
+        "15",
+        "30",
+        "60"
       ]
     }
   },
@@ -20628,6 +20661,39 @@
           "name": "notify_about_assignments",
           "type": {
             "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "send_daily_summary",
+          "type": {
+            "name": "boolean",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "email_preference",
+          "type": {
+            "name": "string",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "email_window_minutes",
+          "type": {
+            "name": "integer",
             "kind": "named"
           },
           "optional": true,
@@ -27414,6 +27480,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-03-31T11:11:13Z",
+  "generated_at": "2026-04-02T17:08:34Z",
   "schema_version": 1
 }

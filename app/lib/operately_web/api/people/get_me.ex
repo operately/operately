@@ -37,6 +37,8 @@ defmodule OperatelyWeb.Api.People.GetMe do
         avatar_url: me.avatar_url,
         timezone: me.timezone,
         avatar_blob_id: me.avatar_blob_id,
+        email_preference: me |> Operately.People.Person.email_preference() |> Atom.to_string(),
+        email_window_minutes: Operately.People.Person.email_window_minutes(me),
         send_daily_summary: Operately.People.Person.send_daily_summary?(me),
         notify_on_mention: Operately.People.Person.notify_on_mention?(me),
         notify_about_assignments: Operately.People.Person.notify_about_assignments?(me),

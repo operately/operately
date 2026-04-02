@@ -1552,6 +1552,10 @@ defmodule OperatelyWeb.Api.Types do
     field? :goal, :goal, null: true
   end
 
+  enum(:email_preference_values, values: Operately.People.Preferences.Notifications.email_preference_values())
+
+  int_enum(:email_window_minutes, values: Operately.People.Preferences.Notifications.email_window_minutes())
+
   object :person do
     field :id, :string
     field :full_name, :string
@@ -1563,8 +1567,10 @@ defmodule OperatelyWeb.Api.Types do
     field? :description, :string, null: true
 
     field? :timezone, :string, null: true
-    field? :send_daily_summary, :boolean, null: true
-    field? :notify_on_mention, :boolean, null: true
+    field? :email_preference, :email_preference_values, null: false
+    field? :email_window_minutes, :email_window_minutes, null: false
+    field? :send_daily_summary, :boolean, null: false
+    field? :notify_on_mention, :boolean, null: false
     field? :notify_about_assignments, :boolean, null: false
     field? :suspended, :boolean, null: true
     field? :company, :company, null: true

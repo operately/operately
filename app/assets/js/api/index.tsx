@@ -1411,8 +1411,10 @@ export interface Person {
   type: string;
   description?: string | null;
   timezone?: string | null;
-  sendDailySummary?: boolean | null;
-  notifyOnMention?: boolean | null;
+  emailPreference?: EmailPreferenceValues;
+  emailWindowMinutes?: EmailWindowMinutes;
+  sendDailySummary?: boolean;
+  notifyOnMention?: boolean;
   notifyAboutAssignments?: boolean;
   suspended?: boolean | null;
   company?: Company | null;
@@ -2114,6 +2116,8 @@ export type CreateConversationContextType = "goal" | "project";
 
 export type DiscussionState = "draft" | "published";
 
+export type EmailPreferenceValues = "buffered" | "mentions_only";
+
 export type GoalCheckInStatus = "on_track" | "caution" | "off_track";
 
 export type GoalPrivacyValues = "public" | "internal" | "confidential" | "secret";
@@ -2219,6 +2223,8 @@ export type WorkMapItemStatus =
 export type WorkMapItemType = "project" | "goal";
 
 export type AccessOptionsInt = 0 | 10 | 40 | 70 | 100;
+
+export type EmailWindowMinutes = 5 | 10 | 15 | 30 | 60;
 
 export interface AiGetAgentInput {
   id: Id;
@@ -3943,6 +3949,9 @@ export interface PeopleUpdateInput {
   managerId?: Id | null;
   theme?: string;
   notifyAboutAssignments?: boolean;
+  sendDailySummary?: boolean;
+  emailPreference?: string;
+  emailWindowMinutes?: number;
   description?: Json | null;
 }
 

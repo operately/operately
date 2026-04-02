@@ -145,7 +145,7 @@
    - Fixed immediate email delivery bookkeeping so sent notifications record `email_sent` and `email_sent_at`.
    - Result: current immediate path now records delivery state correctly.
 
-3. **PR 3: Preferences embed foundation on people**
+3. **PR 3: Preferences embed foundation on people** `(Implemented)`
    - Add a single embedded `preferences` field to `people`.
    - Inside it, add the nested `notifications` embed.
    - Move `notify_about_assignments`, `notify_on_mention`, and `send_daily_summary` into `preferences.notifications`.
@@ -155,7 +155,7 @@
    - Tests: embed defaults, backfill correctness, and compatibility with existing assignment and notification settings behavior.
    - Result: settings storage is consolidated without changing current behavior.
 
-4. **PR 4: Notification preference fields and API on top of preferences embed**
+4. **PR 4: Notification preference fields and API on top of preferences embed** `(Implemented)`
    - Add `preferences.notifications.email_preference` and `preferences.notifications.email_window_minutes`.
    - Add defaults, validation, serializers, and people update API support.
    - Update `BufferedEmailPolicy` to read preference and fixed window from the embedded settings.
