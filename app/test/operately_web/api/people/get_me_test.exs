@@ -24,6 +24,8 @@ defmodule OperatelyWeb.Api.People.GetMeTest do
         avatar_url: ctx.person.avatar_url,
         avatar_blob_id: ctx.person.avatar_blob_id,
         timezone: ctx.person.timezone,
+        email_preference: "buffered",
+        email_window_minutes: 5,
         send_daily_summary: Operately.People.Person.send_daily_summary?(ctx.person),
         notify_on_mention: Operately.People.Person.notify_on_mention?(ctx.person),
         notify_about_assignments: Operately.People.Person.notify_about_assignments?(ctx.person),
@@ -48,6 +50,8 @@ defmodule OperatelyWeb.Api.People.GetMeTest do
         avatar_url: ctx.person.avatar_url,
         avatar_blob_id: ctx.person.avatar_blob_id,
         timezone: me.timezone,
+        email_preference: "buffered",
+        email_window_minutes: 5,
         send_daily_summary: Operately.People.Person.send_daily_summary?(me),
         notify_on_mention: Operately.People.Person.notify_on_mention?(me),
         notify_about_assignments: Operately.People.Person.notify_about_assignments?(me),
@@ -76,6 +80,8 @@ defmodule OperatelyWeb.Api.People.GetMeTest do
         avatar_url: ctx.person.avatar_url,
         avatar_blob_id: ctx.person.avatar_blob_id,
         timezone: ctx.person.timezone,
+        email_preference: "buffered",
+        email_window_minutes: 5,
         send_daily_summary: Operately.People.Person.send_daily_summary?(ctx.person),
         notify_on_mention: Operately.People.Person.notify_on_mention?(ctx.person),
         notify_about_assignments: Operately.People.Person.notify_about_assignments?(ctx.person),
@@ -83,6 +89,26 @@ defmodule OperatelyWeb.Api.People.GetMeTest do
         show_dev_bar: false,
         manager: nil
       }
+    end
+
+    test "it returns custom notification preference settings", ctx do
+      {:ok, person} =
+        Operately.People.update_person(ctx.person, %{
+          preferences: %{
+            notifications: %{
+              email_preference: :mentions_only,
+              email_window_minutes: 30,
+              send_daily_summary: false
+            }
+          }
+        })
+
+      assert {200, %{me: data}} = query(ctx.conn, [:people, :get_me], %{})
+
+      assert data.email_preference == "mentions_only"
+      assert data.email_window_minutes == 30
+      refute data.send_daily_summary
+      assert Operately.People.Person.email_preference(person) == :mentions_only
     end
   end
 end

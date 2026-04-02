@@ -6,7 +6,8 @@ defmodule OperatelyWeb.Api.People.Update do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  @updatable_fields_for_oneself [:full_name, :title, :timezone, :manager_id, :theme, :notify_about_assignments, :description]
+  @notification_preference_fields [:notify_about_assignments, :send_daily_summary, :email_preference, :email_window_minutes]
+  @updatable_fields_for_oneself [:full_name, :title, :timezone, :manager_id, :theme, :notify_about_assignments, :send_daily_summary, :email_preference, :email_window_minutes, :description]
   @updatable_fields_for_others [:full_name, :title, :timezone, :manager_id]
 
   inputs do
@@ -17,6 +18,9 @@ defmodule OperatelyWeb.Api.People.Update do
     field? :manager_id, :id, null: true
     field? :theme, :string, null: false
     field? :notify_about_assignments, :boolean, null: false
+    field? :send_daily_summary, :boolean, null: false
+    field? :email_preference, :string, null: false
+    field? :email_window_minutes, :integer, null: false
     field? :description, :json, null: true
   end
 
@@ -40,6 +44,7 @@ defmodule OperatelyWeb.Api.People.Update do
       {:error, :inputs, _} -> {:error, :bad_request}
       {:error, :person, _} -> {:error, :not_found}
       {:error, :check_permissions, _} -> {:error, :forbidden}
+      {:error, :updated_person, _} -> {:error, :bad_request}
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
     end
@@ -53,22 +58,21 @@ defmodule OperatelyWeb.Api.People.Update do
       Map.take(inputs, @updatable_fields_for_others)
     end
 
-    {:ok, person} = Operately.People.update_person(person, inputs)
-
-    OperatelyWeb.ApiSocket.broadcast!("api:profile_updated:#{person.id}")
-
-    {:ok, person}
+    with {:ok, person} <- Operately.People.update_person(person, inputs) do
+      OperatelyWeb.ApiSocket.broadcast!("api:profile_updated:#{person.id}")
+      {:ok, person}
+    end
   end
 
   defp normalize_notification_preferences(inputs) do
-    case Map.fetch(inputs, :notify_about_assignments) do
-      {:ok, value} ->
-        inputs
-        |> Map.delete(:notify_about_assignments)
-        |> Map.put(:preferences, %{notifications: %{notify_about_assignments: value}})
+    notifications = Map.take(inputs, @notification_preference_fields)
 
-      :error ->
-        inputs
+    if map_size(notifications) == 0 do
+      inputs
+    else
+      inputs
+      |> Map.drop(@notification_preference_fields)
+      |> Map.put(:preferences, %{notifications: notifications})
     end
   end
 end

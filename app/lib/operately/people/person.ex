@@ -75,6 +75,8 @@ defmodule Operately.People.Person do
   def notification_preferences(%__MODULE__{preferences: %Preferences{notifications: %NotificationPreferences{} = notifications}}), do: notifications
   def notification_preferences(_), do: %NotificationPreferences{}
 
+  def email_preference(person), do: notification_preferences(person).email_preference
+  def email_window_minutes(person), do: notification_preferences(person).email_window_minutes
   def notify_about_assignments?(person), do: notification_preferences(person).notify_about_assignments
   def notify_on_mention?(person), do: notification_preferences(person).notify_on_mention
   def send_daily_summary?(person), do: notification_preferences(person).send_daily_summary

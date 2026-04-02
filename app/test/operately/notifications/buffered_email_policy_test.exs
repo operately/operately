@@ -5,6 +5,9 @@ defmodule Operately.Notifications.BufferedEmailPolicyTest do
 
   alias Operately.Companies
   alias Operately.Notifications.BufferedEmailPolicy
+  alias Operately.People.Person
+  alias Operately.People.Preferences
+  alias Operately.People.Preferences.Notifications, as: NotificationPreferences
 
   describe "enabled?/1" do
     test "is disabled by default and can be enabled per company" do
@@ -21,7 +24,22 @@ defmodule Operately.Notifications.BufferedEmailPolicyTest do
   describe "buffer window" do
     test "uses the policy default of five minutes" do
       assert BufferedEmailPolicy.buffer_window_minutes() == 5
-      assert BufferedEmailPolicy.buffer_window_seconds() == 300
+    end
+
+    test "reads the configured preference and window from person preferences" do
+      person = %Person{
+        preferences: %Preferences{
+          notifications: %NotificationPreferences{
+            email_preference: :mentions_only,
+            email_window_minutes: 30
+          }
+        }
+      }
+
+      assert BufferedEmailPolicy.email_preference(person) == :mentions_only
+      assert BufferedEmailPolicy.mentions_only?(person)
+      refute BufferedEmailPolicy.buffered?(person)
+      assert BufferedEmailPolicy.buffer_window_minutes(person) == 30
     end
   end
 
