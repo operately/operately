@@ -180,4 +180,61 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
     |> UI.assert_has(testid: "copy-mutation-snippet")
   end
 
+  step :navigate_to_notification_settings_page, ctx do
+    ctx
+    |> UI.click(testid: "account-menu")
+    |> UI.click(testid: "settings-link")
+    |> UI.click(testid: "notification-settings-link")
+    |> UI.assert_has(testid: "account-notification-settings-page")
+  end
+
+  step :choose_buffered_notifications, ctx do
+    ctx
+    |> UI.click(testid: "email-preference-buffered")
+  end
+
+  step :choose_instant_direct_mentions, ctx do
+    ctx
+    |> UI.click(testid: "email-preference-mentions-only")
+  end
+
+  step :choose_buffer_window, ctx, option do
+    ctx
+    |> UI.select(testid: "email-window-minutes-dropdown", option: option)
+  end
+
+  step :disable_daily_summary, ctx do
+    person = Operately.People.get_person!(ctx.person.id)
+
+    if Operately.People.Person.send_daily_summary?(person) do
+      ctx |> UI.click(testid: "disable-daily-summary-toggle")
+    else
+      ctx
+    end
+  end
+
+  step :save_notification_settings, ctx do
+    ctx
+    |> UI.click(testid: "save-notification-settings")
+    |> UI.assert_has(testid: "account-settings-page")
+  end
+
+  step :assert_notification_preferences_saved, ctx, attrs do
+    person = Operately.People.get_person!(ctx.person.id)
+
+    if Map.has_key?(attrs, :email_preference) do
+      assert Operately.People.Person.email_preference(person) == attrs.email_preference
+    end
+
+    if Map.has_key?(attrs, :email_window_minutes) do
+      assert Operately.People.Person.email_window_minutes(person) == attrs.email_window_minutes
+    end
+
+    if Map.has_key?(attrs, :send_daily_summary) do
+      assert Operately.People.Person.send_daily_summary?(person) == attrs.send_daily_summary
+    end
+
+    ctx
+  end
+
 end
