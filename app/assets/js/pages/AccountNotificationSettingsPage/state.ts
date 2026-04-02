@@ -1,13 +1,13 @@
 import type { EmailPreferenceValues, EmailWindowMinutes, PeopleUpdateInput, Person } from "@/api";
 
-export interface NotificationSettingsFormState {
+interface NotificationSettingsFormState {
   emailPreference: EmailPreferenceValues;
   emailWindowMinutes: EmailWindowMinutes;
   sendDailySummary: boolean;
 }
 
-export const DEFAULT_EMAIL_PREFERENCE: EmailPreferenceValues = "buffered";
-export const DEFAULT_EMAIL_WINDOW_MINUTES: EmailWindowMinutes = 5;
+const DEFAULT_EMAIL_PREFERENCE: EmailPreferenceValues = "buffered";
+const DEFAULT_EMAIL_WINDOW_MINUTES: EmailWindowMinutes = 5;
 
 export function getNotificationSettingsFormState(
   person: Pick<Person, "emailPreference" | "emailWindowMinutes" | "sendDailySummary">,
