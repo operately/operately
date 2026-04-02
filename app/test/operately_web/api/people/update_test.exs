@@ -124,6 +124,20 @@ defmodule OperatelyWeb.Api.People.UpdateTest do
       assert person.title == ctx.person.title
       assert person.timezone == ctx.person.timezone
     end
+
+    test "it updates notification preferences", ctx do
+      assert {200, %{person: %{}}} =
+               mutation(ctx.conn, [:people, :update], %{
+                 id: Paths.person_id(ctx.person),
+                 notify_about_assignments: false
+               })
+
+      person = Operately.People.get_person!(ctx.person.id)
+
+      refute Operately.People.Person.notify_about_assignments?(person)
+      assert Operately.People.Person.notify_on_mention?(person)
+      assert Operately.People.Person.send_daily_summary?(person)
+    end
   end
 
   defp promote_me_to_admin(ctx) do
