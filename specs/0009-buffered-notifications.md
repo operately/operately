@@ -13,7 +13,7 @@
   - `notify_about_assignments`, migrated from the current top-level field so existing assignment email behavior is preserved
   - `notify_on_mention`, migrated from the current top-level field
   - `send_daily_summary`, migrated from the current top-level field
-- `mentions_only` suppresses all non-mention email. Real direct `@mentions` still send an immediate email.
+- `mentions_only` lets real direct `@mentions` bypass buffering and send immediately. All other non-bypassed activity email still follows the normal buffered flow.
 - Bypassed admin/access/invitation actions remain immediate regardless of the selected preference.
 - If a batch resolves to a single notification at send time, render the existing single-notification mailer/template for that activity instead of the digest template.
 - If `preferences.notifications.send_daily_summary` is enabled, send one daily summary email at `6:00 PM` in the user's timezone. If the user has no timezone, use the app's default timezone.
@@ -37,8 +37,8 @@
 - Update all current readers and writers to use the new embedded notification fields without changing user-visible behavior.
 - Extend the people update API and serializers so the current user can read and update the new embedded notification settings.
 - Add a new account settings flow:
-  - Remove the direct `Appearance` item from `app/assets/js/layouts/CompanyLayout/User.tsx`
-  - Add a `Settings` item there instead
+  - When the feature flag is disabled, keep the direct `Appearance` item in `app/assets/js/layouts/CompanyLayout/User.tsx` and keep `Settings` hidden
+  - When the feature flag is enabled, hide `Appearance` there and show `Settings` instead
   - Add a new settings page, modeled after `app/assets/js/pages/AccountSecurityPage/index.tsx`
   - The settings page should link to `Appearance`, which redirects to `app/assets/js/pages/AccountAppearancePage/index.tsx`
   - The settings page should also link to a new notifications settings page where the user can update notification preferences
@@ -51,8 +51,8 @@
   - `buffered_email`
 - Use a single policy module to decide routing:
   - bypass actions are always immediate
-  - `preferences.notifications.email_preference == :mentions_only` sends immediate email only for direct mentions and suppresses all other email
-  - `preferences.notifications.email_preference == :buffered` adds non-bypassed notifications to the current open batch for the person, or creates a new batch if none exists
+  - `preferences.notifications.email_preference == :mentions_only` sends immediate email for direct mentions and adds all other non-bypassed activity to the current open batch for the person, or creates a new batch if none exists
+  - `preferences.notifications.email_preference == :buffered` adds all non-bypassed activity, including direct mentions, to the current open batch for the person, or creates a new batch if none exists
 - Keep the current `EmailWorker` for immediate delivery.
 - Add `BufferedEmailWorker` on the `:mailer` queue. It should send the batch at the stored `send_at` time. Because the window is fixed, appending more notifications to the batch must not move `send_at`.
 - Keep shared bookkeeping so both workers mark `notifications.email_sent` and `notifications.email_sent_at` on success. The batch worker should update all included notifications in one DB write.
@@ -82,7 +82,7 @@
 - Keep fallback behavior explicit:
   - feature flag disabled falls back to the current immediate flow
   - unsupported formatter coverage falls back to the current immediate flow for `buffered`
-  - `mentions_only` without a real direct mention sends no email
+  - unsupported formatter coverage falls back to the current immediate flow for `mentions_only` direct mentions as well
 
 **Test Plan**
 - Preference tests:
@@ -108,7 +108,7 @@
 - Policy tests:
   - bypass actions stay immediate
   - `mentions_only` sends immediate email for direct mentions
-  - `mentions_only` suppresses email for non-mention activity
+  - `mentions_only` still routes non-mention activity into the batch path
   - `buffered` routes non-bypassed activity into the batch path
 - Rendering tests:
   - a single-item batch uses the existing single-notification template
@@ -116,9 +116,11 @@
   - items remain ordered by `occurred_at` within each section
   - excerpts and coalesced rows render correctly
 - UI tests:
-  - `CompanyLayout/User.tsx` shows `Settings` and no longer shows `Appearance`
+  - with the feature flag disabled, `CompanyLayout/User.tsx` shows `Appearance` and hides `Settings`
+  - with the feature flag enabled, `CompanyLayout/User.tsx` shows `Settings` and hides `Appearance`
   - the new settings page links to appearance and notification settings
   - the notification settings page loads current preference and saves updates
+  - the notification settings page always shows the buffer window selector
   - the notification settings page lets the user enable or disable daily summaries
 - Daily summary tests:
   - eligible users receive one summary at `6:00 PM` in their timezone
@@ -129,11 +131,12 @@
   - the daily summary groups rows into `Projects`, `Goals`, `Spaces`, and `Other` and includes excerpts when available
 - Bookkeeping tests:
   - successful immediate sends and successful digest sends both set `email_sent` and `email_sent_at`
-  - suppressed `mentions_only` notifications leave `email_sent` unset
+  - `mentions_only` direct mentions are marked sent by the immediate path
+  - `mentions_only` non-mention activity is marked sent when its buffered batch is delivered
 - Integration coverage:
   - one mixed-context buffered batch
   - one mentions-only direct mention
-  - one mentions-only non-mention
+  - one mentions-only non-mention routed into a buffered batch
   - one bypass action
 
 **PR Breakdown**
@@ -172,8 +175,8 @@
 
 6. **PR 6: Notification settings page**
    - Add the new notification settings page.
-   - Let the user choose between `Buffered notifications` and `Mentions only`.
-   - When `Buffered notifications` is selected, expose fixed window choices `5`, `10`, `15`, `30`, `60` minutes.
+   - Let the user choose whether direct mentions also stay buffered or skip the buffer window and send immediately.
+   - Always expose fixed window choices `5`, `10`, `15`, `30`, `60` minutes, because buffered delivery remains active in both modes.
    - Let the user enable or disable daily summary emails.
    - Save changes through the people update API from PR 4.
    - Tests: page load, form state, save behavior, and preference-specific UI behavior.
@@ -202,7 +205,7 @@
    - Add the direct-mention classifier used by `mentions_only`.
    - Implement `buffered_item/2` for the highest-volume collaborative activity mailers first: project, goal, task, and milestone changes.
    - Include excerpts where available.
-   - Tests: mentions-only immediate mention delivery and mixed project/goal/space digest rendering.
+   - Tests: mentions-only immediate mention delivery, mentions-only buffered non-mention delivery, and mixed project/goal/space digest rendering.
    - Result: the feature works for the main noisy activity families and for the new mentions-only mode.
 
 10. **PR 10: Remaining formatter coverage and mixed-section coalescing**
@@ -220,7 +223,7 @@
     - Result: users can opt into a daily digest of that day's updates.
 
 12. **PR 12: Rollout and observability**
-    - Add logs, counters, and rollout notes for batch creation, suppressed mentions-only notifications, fixed-window delivery, send success/failure, and fallback-to-immediate cases.
+    - Add logs, counters, and rollout notes for batch creation, mentions-only immediate mention bypasses, fixed-window delivery, send success/failure, and fallback-to-immediate cases.
     - Add observability for daily summary eligibility, send success/failure, empty-day skips, and deduplication skips.
     - Enable the company feature flag for internal or canary companies first, then broaden rollout after validation.
     - Tests: smoke coverage for the fully wired path with the feature flag enabled.

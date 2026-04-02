@@ -24,6 +24,7 @@ import RichContent from "./RichContent";
 export { AccountPage } from "./AccountPage";
 export { AccountApiTokensPage } from "./AccountApiTokensPage";
 export { AccountApiTokensUsagePage } from "./AccountApiTokensUsagePage";
+export { AccountNotificationSettingsPage } from "./AccountNotificationSettingsPage";
 export { InfoCallout, WarningCallout } from "./Callouts";
 export { Checkbox } from "./Checkbox";
 export { Checklist } from "./Checklist";
