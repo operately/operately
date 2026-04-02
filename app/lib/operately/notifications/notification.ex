@@ -6,6 +6,7 @@ defmodule Operately.Notifications.Notification do
   @foreign_key_type :binary_id
   schema "notifications" do
     belongs_to :activity, Operately.Activities.Activity
+    belongs_to :email_batch, Operately.Notifications.EmailBatch
     belongs_to :person, Operately.People.Person
 
     field :email_sent, :boolean, default: false
@@ -20,7 +21,7 @@ defmodule Operately.Notifications.Notification do
   @doc false
   def changeset(notification, attrs) do
     notification
-    |> cast(attrs, [:read, :read_at, :email_sent, :email_sent_at, :should_send_email, :person_id, :activity_id])
+    |> cast(attrs, [:read, :read_at, :email_sent, :email_sent_at, :should_send_email, :person_id, :activity_id, :email_batch_id])
     |> validate_required([:should_send_email, :person_id, :activity_id])
   end
 end
