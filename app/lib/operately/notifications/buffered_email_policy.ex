@@ -1,6 +1,7 @@
 defmodule Operately.Notifications.BufferedEmailPolicy do
   @feature_name "buffered_notifications"
-  @buffer_window_minutes 5
+  @default_email_preference :buffered
+  @deafult_buffer_window 5
   @bypass_actions [
     "guest_invited",
     "company_member_added",
@@ -25,9 +26,14 @@ defmodule Operately.Notifications.BufferedEmailPolicy do
 
   def feature_name, do: @feature_name
 
-  def buffer_window_minutes, do: @buffer_window_minutes
+  def email_preference, do: @default_email_preference
+  def email_preference(%Operately.People.Person{} = person), do: Operately.People.Person.email_preference(person) || @default_email_preference
 
-  def buffer_window_seconds, do: @buffer_window_minutes * 60
+  def buffer_window_minutes, do: @deafult_buffer_window
+  def buffer_window_minutes(%Operately.People.Person{} = person), do: Operately.People.Person.email_window_minutes(person) || @deafult_buffer_window
+
+  def buffered?(%Operately.People.Person{} = person), do: email_preference(person) == :buffered
+  def mentions_only?(%Operately.People.Person{} = person), do: email_preference(person) == :mentions_only
 
   def bypass_actions, do: @bypass_actions
 
