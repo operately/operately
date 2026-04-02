@@ -16,7 +16,7 @@ defmodule OperatelyEmail.Assignments.Cron do
   end
 
   def send_assignments do
-    people = people_who_want_assignment_emails() 
+    people = people_who_want_assignment_emails()
 
     Enum.each(people, fn person ->
       catch_and_log_errors(fn ->
@@ -42,7 +42,7 @@ defmodule OperatelyEmail.Assignments.Cron do
       p in Person,
       inner_join: a in Account, on: p.account_id == a.id,
       where: not is_nil(a.email),
-      where: p.notify_about_assignments == true
+      where: fragment("COALESCE((?->'notifications'->>'notify_about_assignments')::boolean, true)", p.preferences)
     )
     |> Repo.all()
     |> Repo.preload([:account])
