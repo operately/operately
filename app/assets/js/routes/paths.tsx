@@ -67,6 +67,14 @@ export class Paths {
     return this.createCompanyPath(["account", "appearance"]);
   }
 
+  accountSettingsPath() {
+    return this.createCompanyPath(["account", "settings"]);
+  }
+
+  accountNotificationSettingsPath() {
+    return this.createCompanyPath(["account", "settings", "notifications"]);
+  }
+
   accountSecurityPath() {
     return this.createCompanyPath(["account", "security"]);
   }

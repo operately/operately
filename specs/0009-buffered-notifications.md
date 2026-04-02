@@ -162,9 +162,9 @@
    - Tests: preference defaults, validation, serialization, and mutation coverage.
    - Result: the backend can store and expose the new notification preference model.
 
-5. **PR 5: Account settings navigation shell**
-   - Remove `Appearance` from `app/assets/js/layouts/CompanyLayout/User.tsx`.
-   - Add `Settings` to that menu.
+5. **PR 5: Account settings navigation shell** `(Implemented)`
+   - Keep `Appearance` visible and keep `Settings` hidden in `app/assets/js/layouts/CompanyLayout/User.tsx` when the feature flag is disabled.
+   - Hide `Appearance` and show `Settings` in that menu when the feature flag is enabled.
    - Add a new settings page modeled after `AccountSecurityPage`, with links to `Appearance` and `Notification settings`.
    - Route `Appearance` from the new settings page to `AccountAppearancePage`.
    - Tests: navigation and route coverage.

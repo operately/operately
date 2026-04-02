@@ -81,6 +81,8 @@ export function createAppRoutes() {
 
         pageRoute("account", pages.AccountPage),
         pageRoute("account/appearance", pages.AccountAppearancePage),
+        pageRoute("account/settings", pages.AccountSettingsPage),
+        pageRoute("account/settings/notifications", pages.AccountNotificationSettingsPage),
         pageRoute("account/security", pages.AccountSecurityPage),
         pageRoute("account/security/api-tokens", pages.AccountApiTokensPage),
         pageRoute("account/security/api-tokens/usage", pages.AccountApiTokensUsagePage),

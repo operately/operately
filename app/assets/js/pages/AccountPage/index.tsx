@@ -1,6 +1,7 @@
 import React from "react";
 import * as Pages from "@/components/Pages";
-import { useMe } from "@/contexts/CurrentCompanyContext";
+import * as Companies from "@/models/companies";
+import { useCurrentCompany, useMe } from "@/contexts/CurrentCompanyContext";
 import { logOut } from "@/routes/auth";
 import { PageModule } from "@/routes/types";
 import { AccountPage } from "turboui";
@@ -10,7 +11,10 @@ export default { name: "AccountPage", loader: Pages.emptyLoader, Page } as PageM
 
 function Page() {
   const me = useMe()!;
+  const company = useCurrentCompany();
   const paths = usePaths();
+  const showSettings = company ? Companies.hasFeature(company, "buffered_notifications") : false;
+  const showAppearance = !showSettings;
 
   const handleLogOut = async () => {
     const res = await logOut();
@@ -24,6 +28,9 @@ function Page() {
       person={me}
       profilePath={paths.profileEditPath(me.id!)}
       appearancePath={paths.accountAppearancePath()}
+      settingsPath={paths.accountSettingsPath()}
+      showAppearance={showAppearance}
+      showSettings={showSettings}
       securityPath={paths.accountSecurityPath()}
       homePath={paths.homePath()}
       onLogOut={handleLogOut}
