@@ -7,8 +7,10 @@ import AccountApiTokensPage from "./AccountApiTokensPage";
 import AccountApiTokensUsagePage from "./AccountApiTokensUsagePage";
 import AccountAppearancePage from "./AccountAppearancePage";
 import AccountChangePasswordPage from "./AccountChangePasswordPage";
+import AccountNotificationSettingsPage from "./AccountNotificationSettingsPage";
 import AccountPage from "./AccountPage";
 import AccountSecurityPage from "./AccountSecurityPage";
+import AccountSettingsPage from "./AccountSettingsPage";
 import AgentPage from "./AgentPage";
 import AiPlaygroundPage from "./AiPlaygroundPage";
 import CompanyAdminAddPeoplePage from "./CompanyAdminAddPeoplePage";
@@ -112,8 +114,10 @@ export default {
   AccountApiTokensUsagePage,
   AccountAppearancePage,
   AccountChangePasswordPage,
+  AccountNotificationSettingsPage,
   AccountPage,
   AccountSecurityPage,
+  AccountSettingsPage,
   AgentPage,
   AiPlaygroundPage,
   CompanyAdminAddPeoplePage,

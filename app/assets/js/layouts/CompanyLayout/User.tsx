@@ -1,6 +1,7 @@
 import React from "react";
 
-import { useMe } from "@/contexts/CurrentCompanyContext";
+import * as Companies from "@/models/companies";
+import { useCurrentCompany, useMe } from "@/contexts/CurrentCompanyContext";
 import {
   Avatar,
   Menu,
@@ -8,6 +9,7 @@ import {
   MenuActionItem,
   IconUserCircle,
   IconPalette,
+  IconSettings,
   IconLockPassword,
   IconCode,
   IconDoorExit,
@@ -18,8 +20,12 @@ import { usePaths } from "@/routes/paths";
 export function User() {
   const paths = usePaths();
   const me = useMe();
+  const company = useCurrentCompany();
 
   if (!me) return null;
+
+  const showSettings = company ? Companies.hasFeature(company, "buffered_notifications") : false;
+  const showAppearance = !showSettings;
 
   const handleLogOut = async () => {
     const res = await logOut();
@@ -51,9 +57,16 @@ export function User() {
       <MenuLinkItem icon={IconUserCircle} to={paths.profileEditPath(me.id!)} testId="profile-link">
         Profile
       </MenuLinkItem>
-      <MenuLinkItem icon={IconPalette} to={paths.accountAppearancePath()} testId="appearance-link">
-        Appearance
-      </MenuLinkItem>
+      {showAppearance && (
+        <MenuLinkItem icon={IconPalette} to={paths.accountAppearancePath()} testId="appearance-link">
+          Appearance
+        </MenuLinkItem>
+      )}
+      {showSettings && (
+        <MenuLinkItem icon={IconSettings} to={paths.accountSettingsPath()} testId="settings-link">
+          Settings
+        </MenuLinkItem>
+      )}
       <MenuLinkItem icon={IconLockPassword} to={paths.accountSecurityPath()} testId="password-link">
         Password &amp; Security
       </MenuLinkItem>
