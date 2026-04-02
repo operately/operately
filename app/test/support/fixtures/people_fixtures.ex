@@ -11,9 +11,6 @@ defmodule Operately.PeopleFixtures do
         full_name: "some full_name",
         title: "some title",
         email: "some-email@localhost",
-        send_daily_summary: true,
-        notify_on_mention: true,
-        notify_about_assignments: true
       })
       |> Operately.People.create_person()
 

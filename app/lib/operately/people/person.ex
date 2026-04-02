@@ -2,6 +2,9 @@ defmodule Operately.People.Person do
   use Operately.Schema
   use Operately.Repo.Getter
 
+  alias Operately.People.Preferences
+  alias Operately.People.Preferences.Notifications, as: NotificationPreferences
+
   schema "people" do
     belongs_to(:account, Operately.People.Account)
     belongs_to(:company, Operately.Companies.Company)
@@ -23,9 +26,7 @@ defmodule Operately.People.Person do
     field :timezone, :string
     field :description, :map
 
-    field :send_daily_summary, :boolean
-    field :notify_on_mention, :boolean
-    field :notify_about_assignments, :boolean, default: true
+    embeds_one :preferences, Preferences, on_replace: :update, defaults_to_struct: true
 
     field :suspended, :boolean, default: false
     field :suspended_at, :utc_datetime
@@ -60,18 +61,23 @@ defmodule Operately.People.Person do
       :company_id,
       :manager_id,
       :description,
-      :send_daily_summary,
-      :notify_on_mention,
-      :notify_about_assignments,
       :suspended,
       :suspended_at,
       :avatar_blob_id,
       :type
     ])
+    |> cast_embed(:preferences, with: &Preferences.changeset/2)
     |> validate_required([:full_name, :company_id])
     |> foreign_key_constraint(:avatar_blob_id, name: :people_avatar_blob_id_fkey)
     |> unique_constraint([:company_id, :account_id], name: :people_company_id_account_id_index, message: "Email has already been taken")
   end
+
+  def notification_preferences(%__MODULE__{preferences: %Preferences{notifications: %NotificationPreferences{} = notifications}}), do: notifications
+  def notification_preferences(_), do: %NotificationPreferences{}
+
+  def notify_about_assignments?(person), do: notification_preferences(person).notify_about_assignments
+  def notify_on_mention?(person), do: notification_preferences(person).notify_on_mention
+  def send_daily_summary?(person), do: notification_preferences(person).send_daily_summary
 
   def short_name(person) do
     parts = String.split(person.full_name, " ")

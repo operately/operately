@@ -83,6 +83,35 @@ defmodule Operately.PeopleTest do
       assert person.title == "some title"
     end
 
+    test "person changeset populates default notification preferences when creating a person", ctx do
+      changeset =
+        Person.changeset(%Person{}, %{
+          full_name: "some full_name",
+          title: "some title",
+          company_id: ctx.person.company_id
+        })
+
+      person = Ecto.Changeset.apply_changes(changeset)
+
+      assert person.preferences.notifications.notify_about_assignments
+      assert person.preferences.notifications.notify_on_mention
+      assert person.preferences.notifications.send_daily_summary
+    end
+
+    test "create_person/1 persists default notification preferences", ctx do
+      valid_attrs = %{
+        full_name: "with defaults",
+        title: "some title",
+        company_id: ctx.person.company_id
+      }
+
+      assert {:ok, %Person{} = person} = People.create_person(valid_attrs)
+
+      assert person.preferences.notifications.notify_about_assignments
+      assert person.preferences.notifications.notify_on_mention
+      assert person.preferences.notifications.send_daily_summary
+    end
+
     test "create_person/1 with invalid data returns error changeset" do
       assert {:error, %Ecto.Changeset{}} = People.create_person(@invalid_attrs)
     end
