@@ -3,7 +3,7 @@ defmodule Operately.Notifications do
   alias Operately.Repo
 
   alias Operately.Access.Fetch
-  alias Operately.Notifications.Notification
+  alias Operately.Notifications.{EmailBatch, Notification}
 
   def list_notifications do
     Repo.all(Notification)
@@ -119,6 +119,28 @@ defmodule Operately.Notifications do
       select: count(n.id)
 
     Repo.one(query)
+  end
+
+  def list_email_batches do
+    Repo.all(EmailBatch)
+  end
+
+  def get_email_batch!(id), do: Repo.get!(EmailBatch, id)
+
+  def create_email_batch(attrs \\ %{}) do
+    %EmailBatch{}
+    |> EmailBatch.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def update_email_batch(%EmailBatch{} = email_batch, attrs) do
+    email_batch
+    |> EmailBatch.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def change_email_batch(%EmailBatch{} = email_batch, attrs \\ %{}) do
+    EmailBatch.changeset(email_batch, attrs)
   end
 
   alias Operately.Notifications.SubscriptionList
