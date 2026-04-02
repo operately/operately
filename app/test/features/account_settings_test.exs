@@ -70,4 +70,35 @@ defmodule Operately.Features.AccountSettingsTest do
     |> Steps.navigate_to_api_tokens_usage_page()
     |> Steps.assert_api_tokens_usage_page_content()
   end
+
+  feature "saving buffered notification settings", ctx do
+    ctx
+    |> Factory.enable_feature("buffered_notifications")
+    |> Factory.log_in_person(:person)
+    |> Steps.navigate_to_notification_settings_page()
+    |> Steps.choose_buffered_notifications()
+    |> Steps.choose_buffer_window("30 minutes")
+    |> Steps.disable_daily_summary()
+    |> Steps.save_notification_settings()
+    |> Steps.assert_notification_preferences_saved(%{
+      email_preference: :buffered,
+      email_window_minutes: 30,
+      send_daily_summary: false
+    })
+  end
+
+  feature "saving instant direct mention notification settings", ctx do
+    ctx
+    |> Factory.enable_feature("buffered_notifications")
+    |> Factory.log_in_person(:person)
+    |> Steps.navigate_to_notification_settings_page()
+    |> Steps.choose_instant_direct_mentions()
+    |> Steps.choose_buffer_window("10 minutes")
+    |> Steps.save_notification_settings()
+    |> Steps.assert_notification_preferences_saved(%{
+      email_preference: :mentions_only,
+      email_window_minutes: 10,
+      send_daily_summary: true
+    })
+  end
 end
