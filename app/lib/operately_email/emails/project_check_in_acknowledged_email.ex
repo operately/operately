@@ -20,4 +20,23 @@ defmodule OperatelyEmail.Emails.ProjectCheckInAcknowledgedEmail do
     |> assign(:cta_url, OperatelyWeb.Paths.project_check_in_path(company, check_in) |> OperatelyWeb.Paths.to_url())
     |> render("project_check_in_acknowledged")
   end
+
+  def buffered_item(_person, activity) do
+    project = Operately.Projects.get_project!(activity.content["project_id"])
+    author = Operately.Repo.preload(activity, :author).author
+    company = Operately.Repo.preload(author, :company).company
+
+    %{
+      parent_id: project.id,
+      parent_type: :project,
+      parent_name: project.name,
+      headline: "acknowledged a project check-in",
+      excerpt_html: nil,
+      excerpt_text: nil,
+      item_url: OperatelyWeb.Paths.project_path(company, project) |> OperatelyWeb.Paths.to_url(),
+      actor_name: Operately.People.Person.short_name(author),
+      occurred_at: activity.inserted_at,
+      coalesce_key: nil
+    }
+  end
 end

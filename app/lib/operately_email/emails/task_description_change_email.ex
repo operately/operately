@@ -54,4 +54,45 @@ defmodule OperatelyEmail.Emails.TaskDescriptionChangeEmail do
       _ -> "Unknown"
     end
   end
+
+  def buffered_item(_person, activity) do
+    task = Operately.Tasks.get_task!(activity.content["task_id"]) |> Operately.Repo.preload(:space)
+    content = decode_description(activity.content["description"])
+    author = Operately.Repo.preload(activity, :author).author
+    company = Operately.Repo.preload(author, :company).company
+
+    excerpt_html =
+      if is_map(content) do
+        content
+        |> OperatelyEmail.Templates.rich_text()
+        |> Phoenix.HTML.safe_to_string()
+      else
+        nil
+      end
+
+    excerpt_text =
+      if is_map(content) do
+        content
+        |> Operately.RichContent.rich_content_to_string()
+        |> String.trim()
+      else
+        nil
+      end
+
+    excerpt_html = if excerpt_html in [nil, ""], do: nil, else: excerpt_html
+    excerpt_text = if excerpt_text in [nil, ""], do: nil, else: excerpt_text
+
+    %{
+      parent_id: task.id,
+      parent_type: :task,
+      parent_name: task.name,
+      headline: "updated this task description",
+      excerpt_html: excerpt_html,
+      excerpt_text: excerpt_text,
+      item_url: OperatelyWeb.Paths.task_path(company, task) |> OperatelyWeb.Paths.to_url(),
+      actor_name: Operately.People.Person.short_name(author),
+      occurred_at: activity.inserted_at,
+      coalesce_key: nil
+    }
+  end
 end
