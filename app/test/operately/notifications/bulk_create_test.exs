@@ -11,6 +11,7 @@ defmodule Operately.Notifications.BulkCreateTest do
   alias Operately.Notifications.BufferedEmailWorker
   alias Operately.Notifications.EmailBatch
   alias Operately.Notifications.EmailWorker
+  alias Operately.Support.RichText
 
   setup do
     company = company_fixture()
@@ -136,5 +137,76 @@ defmodule Operately.Notifications.BulkCreateTest do
     end)
 
     assert Repo.all(EmailBatch) == []
+  end
+
+  test "mentions_only sends direct mentions immediately", ctx do
+    {:ok, _company} = Companies.enable_experimental_feature(ctx.company, "buffered_notifications")
+
+    {:ok, _person} =
+      Operately.People.update_person(ctx.person, %{
+        preferences: %{notifications: %{email_preference: :mentions_only}}
+      })
+
+    description = RichText.rich_text(mentioned_people: [ctx.person]) |> Jason.decode!()
+    activity = activity_fixture(author_id: ctx.person.id, action: "project_description_changed", content: %{"description" => description})
+
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      assert {:ok, notifications} =
+               Notifications.bulk_create([
+                 %{person_id: ctx.person.id, activity_id: activity.id, should_send_email: true}
+               ])
+
+      assert_enqueued worker: EmailWorker, args: %{notification_id: hd(notifications).id}
+      refute_enqueued worker: BufferedEmailWorker
+    end)
+
+    assert Repo.all(EmailBatch) == []
+  end
+
+  test "mentions_only keeps non-mentions buffered for mention-capable actions", ctx do
+    {:ok, _company} = Companies.enable_experimental_feature(ctx.company, "buffered_notifications")
+
+    {:ok, _person} =
+      Operately.People.update_person(ctx.person, %{
+        preferences: %{notifications: %{email_preference: :mentions_only}}
+      })
+
+    description = RichText.rich_text("No mentions in this update")
+    activity = activity_fixture(author_id: ctx.person.id, action: "project_description_changed", content: %{"description" => description})
+
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      assert {:ok, [_notification]} =
+               Notifications.bulk_create([
+                 %{person_id: ctx.person.id, activity_id: activity.id, should_send_email: true}
+               ])
+
+      refute_enqueued worker: EmailWorker
+      assert_enqueued worker: BufferedEmailWorker
+    end)
+
+    assert length(Repo.all(EmailBatch)) == 1
+  end
+
+  test "mentions_only keeps unsupported actions buffered", ctx do
+    {:ok, _company} = Companies.enable_experimental_feature(ctx.company, "buffered_notifications")
+
+    {:ok, _person} =
+      Operately.People.update_person(ctx.person, %{
+        preferences: %{notifications: %{email_preference: :mentions_only}}
+      })
+
+    activity = activity_fixture(author_id: ctx.person.id, action: "milestone_due_date_updating")
+
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      assert {:ok, [_notification]} =
+               Notifications.bulk_create([
+                 %{person_id: ctx.person.id, activity_id: activity.id, should_send_email: true}
+               ])
+
+      refute_enqueued worker: EmailWorker
+      assert_enqueued worker: BufferedEmailWorker
+    end)
+
+    assert length(Repo.all(EmailBatch)) == 1
   end
 end

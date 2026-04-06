@@ -1,0 +1,299 @@
+defmodule Operately.Notifications.DirectMentionClassifier do
+  import Ecto.Query, warn: false
+
+  alias Operately.Notifications.Notification
+  alias Operately.Repo
+  alias Operately.Updates.Comment
+
+  @project_milestone_exception "project_milestone_commented"
+
+  @rich_content_actions [
+    {"project_description_changed", "description"},
+    {"task_description_change", "description"},
+    {"milestone_description_updating", "description"},
+    {"goal_description_changed", "new_description"}
+  ]
+
+  @preloaded_content_actions [
+    {"comment_added", %{resource: :comment, resource_id_key: "comment_id", content_field_key: "message"}},
+    {"project_check_in_commented", %{resource: :comment, resource_id_key: "comment_id", content_field_key: "message"}},
+    {"goal_check_in_commented", %{resource: :comment, resource_id_key: "comment_id", content_field_key: "message"}},
+    {"project_retrospective_commented", %{resource: :comment, resource_id_key: "comment_id", content_field_key: "message"}},
+    {"project_task_commented", %{resource: :comment, resource_id_key: "comment_id", content_field_key: "message"}},
+    {"space_task_commented", %{resource: :comment, resource_id_key: "comment_id", content_field_key: "message"}}
+  ]
+
+  @never_mention_actions [
+    "company_adding",
+    "company_admin_added",
+    "company_admin_removed",
+    "company_editing",
+    "company_invitation_token_created",
+    "company_member_added",
+    "company_member_converted_to_guest",
+    "company_member_removed",
+    "company_member_restoring",
+    "company_members_permissions_edited",
+    "company_owner_removing",
+    "company_owners_adding",
+    "guest_invited",
+    "password_first_time_changed",
+    "discussion_comment_submitted",
+    "discussion_editing",
+    "discussion_posting",
+    "group_edited",
+    "message_archiving",
+    "space_added",
+    "space_joining",
+    "space_member_removed",
+    "space_members_added",
+    "space_members_permissions_edited",
+    "space_permissions_edited",
+    "goal_archived",
+    "goal_champion_updating",
+    "goal_check_adding",
+    "goal_check_in",
+    "goal_check_in_acknowledgement",
+    "goal_check_in_edit",
+    "goal_check_removing",
+    "goal_check_toggled",
+    "goal_closing",
+    "goal_created",
+    "goal_discussion_creation",
+    "goal_discussion_editing",
+    "goal_due_date_changed",
+    "goal_due_date_updating",
+    "goal_editing",
+    "goal_name_updating",
+    "goal_reopening",
+    "goal_reparent",
+    "goal_reviewer_updating",
+    "goal_space_updating",
+    "goal_start_date_updating",
+    "goal_target_adding",
+    "goal_target_deleting",
+    "goal_target_updating",
+    "goal_timeframe_editing",
+    "milestone_deleting",
+    "milestone_due_date_updating",
+    "milestone_title_updating",
+    "project_archived",
+    "project_champion_updating",
+    "project_check_in_acknowledged",
+    "project_check_in_edit",
+    "project_check_in_submitted",
+    "project_closed",
+    "project_contributions_addition",
+    "project_contributor_addition",
+    "project_contributor_edited",
+    "project_contributor_removed",
+    "project_contributors_addition",
+    "project_created",
+    "project_discussion_submitted",
+    "project_due_date_updating",
+    "project_goal_connection",
+    "project_goal_disconnection",
+    "project_key_resource_added",
+    "project_key_resource_deleted",
+    "project_milestone_creation",
+    "project_milestone_updating",
+    "project_moved",
+    "project_pausing",
+    "project_permissions_edited",
+    "project_renamed",
+    "project_resuming",
+    "project_retrospective_edited",
+    "project_reviewer_updating",
+    "project_start_date_updating",
+    "project_timeline_edited",
+    "task_adding",
+    "task_assignee_assignment",
+    "task_assignee_updating",
+    "task_closing",
+    "task_deleting",
+    "task_due_date_updating",
+    "task_milestone_updating",
+    "task_moving",
+    "task_name_editing",
+    "task_name_updating",
+    "task_priority_change",
+    "task_reopening",
+    "task_size_change",
+    "task_status_change",
+    "task_status_updating",
+    "task_update",
+    "resource_hub_created",
+    "resource_hub_document_commented",
+    "resource_hub_document_created",
+    "resource_hub_document_deleted",
+    "resource_hub_document_edited",
+    "resource_hub_file_commented",
+    "resource_hub_file_created",
+    "resource_hub_file_deleted",
+    "resource_hub_file_edited",
+    "resource_hub_folder_copied",
+    "resource_hub_folder_created",
+    "resource_hub_folder_deleted",
+    "resource_hub_folder_renamed",
+    "resource_hub_link_commented",
+    "resource_hub_link_created",
+    "resource_hub_link_deleted",
+    "resource_hub_link_edited",
+    "resource_hub_parent_folder_edited"
+  ]
+
+  def classify(notifications) when is_list(notifications) do
+    preloaded = preload_contents(notifications)
+
+    notifications
+    |> Enum.into(%{}, fn notification ->
+      {notification.id, directly_mentions_recipient?(notification, preloaded)}
+    end)
+  end
+
+  def directly_mentions_recipient?(%Notification{} = notification, preloaded) when is_map(preloaded) do
+    action = action_for(notification.activity)
+    recipient_id = notification.person_id
+    rich_content_key = rich_content_key(action)
+    preloaded_spec = preloaded_content_spec(action)
+
+    cond do
+      rich_content_key ->
+        notification
+        |> activity_content_value(rich_content_key)
+        |> has_mention?(recipient_id)
+
+      preloaded_spec ->
+        notification
+        |> activity_content_value(preloaded_spec.resource_id_key)
+        |> lookup_preloaded_content(preloaded, preloaded_spec)
+        |> has_mention?(recipient_id)
+
+      action == @project_milestone_exception ->
+        project_milestone_mentions_recipient?(notification, preloaded, recipient_id)
+
+      action in @never_mention_actions ->
+        false
+
+      true ->
+        raise "Activity not handled in direct mention classification #{inspect(action)}"
+    end
+  end
+
+  defp preload_contents(notifications) do
+    notifications
+    |> Enum.reduce(%{}, fn notification, acc ->
+      case preload_request(notification) do
+        nil -> acc
+        {resource, resource_id} -> accumulate_preload(acc, resource, resource_id)
+      end
+    end)
+    |> Enum.into(%{}, fn {resource, ids} ->
+      {resource, load_preloaded_resource(resource, MapSet.to_list(ids))}
+    end)
+  end
+
+  defp preload_request(notification) do
+    action = action_for(notification.activity)
+    preloaded_spec = preloaded_content_spec(action)
+
+    cond do
+      preloaded_spec ->
+        notification
+        |> activity_content_value(preloaded_spec.resource_id_key)
+        |> to_preload_request(preloaded_spec.resource)
+
+      action == @project_milestone_exception ->
+        project_milestone_preload_request(notification)
+
+      true ->
+        nil
+    end
+  end
+
+  defp project_milestone_preload_request(notification) do
+    if activity_content_value(notification, "comment_action") == "none" do
+      notification
+      |> activity_content_value("comment_id")
+      |> to_preload_request(:comment)
+    else
+      nil
+    end
+  end
+
+  defp project_milestone_mentions_recipient?(notification, preloaded, recipient_id) do
+    if activity_content_value(notification, "comment_action") == "none" do
+      spec = %{resource: :comment, content_field_key: "message"}
+
+      notification
+      |> activity_content_value("comment_id")
+      |> lookup_preloaded_content(preloaded, spec)
+      |> has_mention?(recipient_id)
+    else
+      false
+    end
+  end
+
+  defp to_preload_request(nil, _resource), do: nil
+  defp to_preload_request(resource_id, resource), do: {resource, resource_id}
+
+  defp accumulate_preload(preloaded, resource, resource_id) do
+    Map.update(preloaded, resource, MapSet.new([resource_id]), &MapSet.put(&1, resource_id))
+  end
+
+  defp load_preloaded_resource(_resource, []), do: %{}
+
+  defp load_preloaded_resource(:comment, ids) do
+    from(c in Comment, where: c.id in ^ids, select: {c.id, c.content})
+    |> Repo.all()
+    |> Enum.into(%{})
+  end
+
+  defp load_preloaded_resource(resource, _ids) do
+    raise "Missing preloaded resource loader for #{inspect(resource)} in direct mention classification"
+  end
+
+  defp rich_content_key(action) do
+    Enum.find_value(@rich_content_actions, fn
+      {^action, key} -> key
+      _ -> nil
+    end)
+  end
+
+  defp preloaded_content_spec(action) do
+    Enum.find_value(@preloaded_content_actions, fn
+      {^action, spec} -> spec
+      _ -> nil
+    end)
+  end
+
+  defp action_for(activity), do: to_string(activity.action)
+
+  defp lookup_preloaded_content(nil, _preloaded, _spec), do: nil
+
+  defp lookup_preloaded_content(resource_id, preloaded, %{resource: resource, content_field_key: field_key}) do
+    preloaded
+    |> Map.get(resource, %{})
+    |> Map.get(resource_id)
+    |> content_value(field_key)
+  end
+
+  defp activity_content_value(notification, key) do
+    case notification.activity do
+      %{content: content} -> content_value(content, key)
+      _ -> nil
+    end
+  end
+
+  defp content_value(map, key) when is_map(map), do: Map.get(map, key)
+  defp content_value(_map, _key), do: nil
+
+  defp has_mention?(_content, nil), do: false
+
+  defp has_mention?(content, person_id) do
+    mentioned_ids = Operately.RichContent.find_mentioned_ids(content, :decode_ids)
+    Enum.member?(mentioned_ids, person_id)
+  rescue
+    _ -> false
+  end
+end
