@@ -33,7 +33,7 @@ defmodule OperatelyEmail.Mailers.DigestMailer do
     digest_items
     |> Enum.group_by(fn item -> {item.parent_type, item.parent_id} end)
     |> Enum.map(fn {{_parent_type, _parent_id}, items} ->
-      sorted_items = Enum.sort_by(items, & &1.occurred_at, NaiveDateTime)
+      sorted_items = Enum.sort_by(items, & &1.occurred_at, &NaiveDateTime.before?/2)
 
       %{
         parent_name: hd(items).parent_name,
@@ -42,6 +42,6 @@ defmodule OperatelyEmail.Mailers.DigestMailer do
     end)
     |> Enum.sort_by(fn group ->
       hd(group.items).occurred_at
-    end, NaiveDateTime)
+    end, &NaiveDateTime.before?/2)
   end
 end
