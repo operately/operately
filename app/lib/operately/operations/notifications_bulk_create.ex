@@ -2,7 +2,14 @@ defmodule Operately.Operations.NotificationsBulkCreate do
   import Ecto.Query, warn: false
 
   alias Ecto.Multi
-  alias Operately.Notifications.{BufferedEmailPolicy, BufferedEmailWorker, EmailBatch, EmailWorker, Notification}
+  alias Operately.Notifications.{
+    BufferedEmailPolicy,
+    BufferedEmailWorker,
+    DirectMentionClassifier,
+    EmailBatch,
+    EmailWorker,
+    Notification
+  }
   alias Operately.Repo
 
   def run(notifications) do
@@ -42,8 +49,15 @@ defmodule Operately.Operations.NotificationsBulkCreate do
       |> Enum.map(& &1.id)
       |> load_inserted_notifications(repo)
 
+    mention_lookup =
+      if Enum.any?(notifications, &needs_mention_classification?/1) do
+        DirectMentionClassifier.classify(notifications)
+      else
+        %{}
+      end
+
     notifications
-    |> Enum.group_by(&email_delivery_route/1)
+    |> Enum.group_by(&email_delivery_route(&1, mention_lookup))
     |> enqueue_immediate_emails()
     |> assign_buffered_batches(repo, now)
 
@@ -61,13 +75,26 @@ defmodule Operately.Operations.NotificationsBulkCreate do
     |> repo.all()
   end
 
-  defp email_delivery_route(notification) do
+  defp email_delivery_route(notification, mention_lookup) do
+    person = notification.person
+
     cond do
       not notification.should_send_email -> :no_email
-      not BufferedEmailPolicy.enabled?(notification.person.company) -> :immediate_email
+      not BufferedEmailPolicy.enabled?(person.company) -> :immediate_email
       BufferedEmailPolicy.bypass_action?(notification.activity.action) -> :immediate_email
+      BufferedEmailPolicy.buffered?(person) -> :buffered_email
+      BufferedEmailPolicy.mentions_only?(person) and Map.get(mention_lookup, notification.id, false) -> :immediate_email
       true -> :buffered_email
     end
+  end
+
+  defp needs_mention_classification?(notification) do
+    person = notification.person
+
+    notification.should_send_email &&
+      BufferedEmailPolicy.enabled?(person.company) &&
+      not BufferedEmailPolicy.bypass_action?(notification.activity.action) &&
+      BufferedEmailPolicy.mentions_only?(person)
   end
 
   defp enqueue_immediate_emails(grouped_notifications) do
