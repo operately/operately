@@ -1,6 +1,7 @@
 defmodule OperatelyEmail.Emails.ProjectCreatedEmail do
   import OperatelyEmail.Mailers.ActivityMailer
   alias Operately.{Repo, Projects}
+  alias Operately.People.Person
 
   def send(person, activity) do
     author = Repo.preload(activity, :author).author
@@ -22,6 +23,25 @@ defmodule OperatelyEmail.Emails.ProjectCreatedEmail do
     |> assign(:project, project)
     |> assign(:link, link)
     |> render("project_created")
+  end
+
+  def buffered_item(_person, activity) do
+    project = Projects.get_project!(activity.content["project_id"])
+    author = Repo.preload(activity, :author).author
+    company = Repo.preload(project, :company).company
+
+    %{
+      parent_id: project.id,
+      parent_type: :project,
+      parent_name: project.name,
+      headline: "#{Person.short_name(author)} added the #{project.name} project",
+      excerpt_html: nil,
+      excerpt_text: nil,
+      item_url: OperatelyWeb.Paths.project_path(company, project) |> OperatelyWeb.Paths.to_url(),
+      actor_name: Person.short_name(author),
+      occurred_at: activity.inserted_at,
+      coalesce_key: nil
+    }
   end
 
   defp stringify_role(role) do

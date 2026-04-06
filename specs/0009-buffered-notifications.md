@@ -192,7 +192,7 @@
    - Tests: fixed-window batch creation, mixed-context batching, and worker scheduling behavior.
    - Result: buffered routing works with the new batching rule, but rendering still uses fallback behavior until digest support is added.
 
-8. **PR 8: Digest rendering foundation and section grouping**
+8. **PR 8: Digest rendering foundation and section grouping** `(Implemented)`
    - Add digest templates and the batch rendering pipeline.
    - Implement single-item fallback to the existing mailer/template.
    - Update the formatter contract so buffered items declare digest section and section label.
