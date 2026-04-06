@@ -1,0 +1,15 @@
+Updates from the last <%= @window_minutes %> minutes
+
+<%= for group <- @parent_groups do %>
+<%= group.parent_name %> (<%= length(group.items) %> <%= if length(group.items) == 1, do: "update", else: "updates" %>)
+<%= for item <- group.items do %>
+  - <%= item.actor_name %>: <%= item.headline %>
+<%= if item.excerpt_text do %>
+    <%= item.excerpt_text %>
+<% end %>
+    <%= item.item_url %>
+
+<% end %>
+<% end %>
+
+View all notifications: <%= @notifications_url %>
