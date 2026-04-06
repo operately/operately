@@ -173,7 +173,7 @@
    - Tests: navigation and route coverage.
    - Result: the new settings entry point exists before notification settings UI is added.
 
-6. **PR 6: Notification settings page**
+6. **PR 6: Notification settings page** `(Implemented)`
    - Add the new notification settings page.
    - Let the user choose whether direct mentions also stay buffered or skip the buffer window and send immediately.
    - Always expose fixed window choices `5`, `10`, `15`, `30`, `60` minutes, because buffered delivery remains active in both modes.
@@ -182,7 +182,7 @@
    - Tests: page load, form state, save behavior, and preference-specific UI behavior.
    - Result: users can configure the new preference model before batching behavior is enabled.
 
-7. **PR 7: Batch model refactor and fixed-window scheduler**
+7. **PR 7: Batch model refactor and fixed-window scheduler** `(Implemented)`
    - Reshape the PR 1 batch foundation from context-based batches to person-only batches.
    - Add the follow-up migration needed to remove `access_context_id` from batch grouping and persist `window_minutes` on the batch.
    - Update `Operately.Notifications.bulk_create/1` to route notifications into `no_email`, `immediate_email`, and `buffered_email`.
