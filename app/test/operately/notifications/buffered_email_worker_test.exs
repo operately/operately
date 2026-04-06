@@ -131,7 +131,7 @@ defmodule Operately.Notifications.BufferedEmailWorkerTest do
   end
 
   test "skips notifications without buffered_item/2 and logs warning", ctx do
-    activity = activity_fixture(author_id: ctx.creator.id, action: "task_update")
+    activity = activity_fixture(author_id: ctx.creator.id, action: "resource_hub_link_created")
 
     notification_fixture(
       activity_id: activity.id,

@@ -29,4 +29,23 @@ defmodule OperatelyEmail.Emails.MilestoneDueDateUpdatingEmail do
 
   defp get_date_value(nil), do: nil
   defp get_date_value(date), do: date.value
+
+  def buffered_item(_person, activity) do
+    milestone = Operately.Projects.get_milestone!(activity.content["milestone_id"])
+    author = Operately.Repo.preload(activity, :author).author
+    company = Operately.Repo.preload(author, :company).company
+
+    %{
+      parent_id: milestone.id,
+      parent_type: :milestone,
+      parent_name: milestone.title,
+      headline: "updated this milestone due date",
+      excerpt_html: nil,
+      excerpt_text: nil,
+      item_url: OperatelyWeb.Paths.project_milestone_path(company, milestone) |> OperatelyWeb.Paths.to_url(),
+      actor_name: Operately.People.Person.short_name(author),
+      occurred_at: activity.inserted_at,
+      coalesce_key: nil
+    }
+  end
 end
