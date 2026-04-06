@@ -72,7 +72,7 @@ defmodule Operately.Operations.NotificationsBulkCreate do
 
   defp enqueue_immediate_emails(grouped_notifications) do
     Enum.each(Map.get(grouped_notifications, :immediate_email, []), fn notification ->
-      EmailWorker.new(%{notification_id: notification.id}) |> Oban.insert()
+      EmailWorker.new(%{notification_id: notification.id}) |> Oban.insert!()
     end)
 
     grouped_notifications
@@ -99,7 +99,7 @@ defmodule Operately.Operations.NotificationsBulkCreate do
   end
 
   defp create_batch(notifications, repo) do
-    [first_notification | _] = Enum.sort_by(notifications, & &1.inserted_at, NaiveDateTime)
+    [first_notification | _] = Enum.sort_by(notifications, & &1.inserted_at, fn a, b -> NaiveDateTime.compare(a, b) != :gt end)
     person = first_notification.person
     window_minutes = BufferedEmailPolicy.buffer_window_minutes(person)
 
