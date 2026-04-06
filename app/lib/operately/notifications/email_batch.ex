@@ -4,11 +4,11 @@ defmodule Operately.Notifications.EmailBatch do
 
   schema "notification_email_batches" do
     belongs_to :person, Operately.People.Person
-    belongs_to :access_context, Operately.Access.Context
 
     has_many :notifications, Operately.Notifications.Notification, foreign_key: :email_batch_id
 
     field :status, Ecto.Enum, values: [:scheduled, :sending, :sent, :failed, :skipped], default: :scheduled
+    field :window_minutes, :integer, default: 5
     field :window_started_at, :naive_datetime
     field :send_at, :naive_datetime
     field :sent_at, :naive_datetime
@@ -23,8 +23,9 @@ defmodule Operately.Notifications.EmailBatch do
 
   def changeset(email_batch, attrs) do
     email_batch
-    |> cast(attrs, [:person_id, :access_context_id, :status, :window_started_at, :send_at, :sent_at, :error])
-    |> validate_required([:person_id, :access_context_id, :status, :window_started_at, :send_at])
+    |> cast(attrs, [:person_id, :status, :window_minutes, :window_started_at, :send_at, :sent_at, :error])
+    |> validate_required([:person_id, :status, :window_minutes, :window_started_at, :send_at])
+    |> validate_inclusion(:window_minutes, Operately.People.Preferences.Notifications.email_window_minutes())
   end
 
   def scheduled(query \\ __MODULE__) do
@@ -39,9 +40,17 @@ defmodule Operately.Notifications.EmailBatch do
     from(batch in query, where: batch.send_at <= ^now)
   end
 
-  def for_person_and_context(query \\ __MODULE__, person_id, access_context_id) do
+  def for_person(query \\ __MODULE__, person_id) do
     from(batch in query,
-      where: batch.person_id == ^person_id and batch.access_context_id == ^access_context_id
+      where: batch.person_id == ^person_id
+    )
+  end
+
+  def open_for_person(query \\ __MODULE__, person_id, now \\ current_time()) do
+    from(batch in query,
+      where: batch.person_id == ^person_id and batch.status == :scheduled and batch.send_at > ^now,
+      order_by: [desc: batch.send_at],
+      limit: 1
     )
   end
 

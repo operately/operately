@@ -7,6 +7,19 @@ defmodule Operately.Notifications.EmailWorker do
   def perform(job) do
     notification_id = job.args["notification_id"]
     notification = Operately.Notifications.get_notification!(notification_id)
+
+    case deliver(notification) do
+      {:ok, _result} -> :ok
+      {:error, reason} -> {:error, reason}
+    end
+  rescue
+    e ->
+      Logger.error("Failed to send email")
+      Logger.error(Exception.format(:error, e, __STACKTRACE__))
+      {:error, e}
+  end
+
+  def deliver(notification) do
     person = Operately.People.get_person!(notification.person_id)
     activity = Operately.Activities.get_activity!(notification.activity_id)
 
@@ -15,16 +28,11 @@ defmodule Operately.Notifications.EmailWorker do
 
       with {:ok, _result} <- deliver_email(module, person, activity),
            {:ok, _notification} <- EmailDelivery.mark_sent(notification) do
-        :ok
+        {:ok, :sent}
       end
     else
-      :ok
+      {:ok, :skipped}
     end
-  rescue
-    e ->
-      Logger.error("Failed to send email")
-      Logger.error(Exception.format(:error, e, __STACKTRACE__))
-      {:error, e}
   end
 
   defp email_module(activity) do
