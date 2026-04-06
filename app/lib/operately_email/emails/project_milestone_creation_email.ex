@@ -38,4 +38,23 @@ defmodule OperatelyEmail.Emails.ProjectMilestoneCreationEmail do
       _ -> nil
     end
   end
+
+  def buffered_item(_person, activity) do
+    milestone = Operately.Projects.get_milestone!(activity.content["milestone_id"])
+    author = Operately.Repo.preload(activity, :author).author
+    company = Operately.Repo.preload(author, :company).company
+
+    %{
+      parent_id: milestone.id,
+      parent_type: :milestone,
+      parent_name: milestone.title,
+      headline: "created this milestone",
+      excerpt_html: nil,
+      excerpt_text: nil,
+      item_url: OperatelyWeb.Paths.project_milestone_path(company, milestone) |> OperatelyWeb.Paths.to_url(),
+      actor_name: Operately.People.Person.short_name(author),
+      occurred_at: activity.inserted_at,
+      coalesce_key: nil
+    }
+  end
 end

@@ -23,4 +23,23 @@ defmodule OperatelyEmail.Emails.GoalTimeframeEditingEmail do
     |> assign(:link, link)
     |> render("goal_timeframe_editing")
   end
+
+  def buffered_item(_person, activity) do
+    goal = Operately.Goals.get_goal!(activity.content["goal_id"])
+    author = Operately.Repo.preload(activity, :author).author
+    company = Operately.Repo.preload(author, :company).company
+
+    %{
+      parent_id: goal.id,
+      parent_type: :goal,
+      parent_name: goal.name,
+      headline: "updated this goal timeframe",
+      excerpt_html: nil,
+      excerpt_text: nil,
+      item_url: OperatelyWeb.Paths.goal_path(company, goal) |> OperatelyWeb.Paths.to_url(),
+      actor_name: Operately.People.Person.short_name(author),
+      occurred_at: activity.inserted_at,
+      coalesce_key: nil
+    }
+  end
 end
