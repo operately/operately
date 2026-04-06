@@ -53,4 +53,45 @@ defmodule OperatelyEmail.Emails.ProjectDescriptionChangedEmail do
 
   defp decode_description(description) when is_map(description), do: description
   defp decode_description(_), do: nil
+
+  def buffered_item(_person, activity) do
+    project = Operately.Projects.get_project!(activity.content["project_id"])
+    content = decode_description(activity.content["description"])
+    author = Operately.Repo.preload(activity, :author).author
+    company = Operately.Repo.preload(author, :company).company
+
+    excerpt_html =
+      if is_map(content) do
+        content
+        |> OperatelyEmail.Templates.rich_text()
+        |> Phoenix.HTML.safe_to_string()
+      else
+        nil
+      end
+
+    excerpt_text =
+      if is_map(content) do
+        content
+        |> Operately.RichContent.rich_content_to_string()
+        |> String.trim()
+      else
+        nil
+      end
+
+    excerpt_html = if excerpt_html in [nil, ""], do: nil, else: excerpt_html
+    excerpt_text = if excerpt_text in [nil, ""], do: nil, else: excerpt_text
+
+    %{
+      parent_id: project.id,
+      parent_type: :project,
+      parent_name: project.name,
+      headline: "updated this project description",
+      excerpt_html: excerpt_html,
+      excerpt_text: excerpt_text,
+      item_url: OperatelyWeb.Paths.project_path(company, project) |> OperatelyWeb.Paths.to_url(),
+      actor_name: Operately.People.Person.short_name(author),
+      occurred_at: activity.inserted_at,
+      coalesce_key: nil
+    }
+  end
 end

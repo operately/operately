@@ -25,4 +25,43 @@ defmodule OperatelyEmail.Emails.ProjectRetrospectiveCommentedEmail do
     |> assign(:cta_url, Paths.project_retrospective_path(company, project, comment) |> Paths.to_url())
     |> render("project_retrospective_commented")
   end
+
+  def buffered_item(_person, activity) do
+    project = Operately.Projects.get_project!(activity.content["project_id"])
+    comment = Operately.Updates.get_comment!(activity.content["comment_id"])
+    content = comment.content["message"]
+    author = Operately.Repo.preload(activity, :author).author
+    company = Operately.Repo.preload(author, :company).company
+
+    excerpt_html =
+      if is_map(content) do
+        OperatelyEmail.Templates.rich_text(content) |> Phoenix.HTML.safe_to_string()
+      else
+        nil
+      end
+
+    excerpt_text =
+      if is_map(content) do
+        Operately.RichContent.rich_content_to_string(content)
+        |> String.trim()
+      else
+        nil
+      end
+
+    excerpt_html = if excerpt_html in [nil, ""], do: nil, else: excerpt_html
+    excerpt_text = if excerpt_text in [nil, ""], do: nil, else: excerpt_text
+
+    %{
+      parent_id: project.id,
+      parent_type: :project,
+      parent_name: project.name,
+      headline: "commented on this project retrospective",
+      excerpt_html: excerpt_html,
+      excerpt_text: excerpt_text,
+      item_url: OperatelyWeb.Paths.project_path(company, project) |> OperatelyWeb.Paths.to_url(),
+      actor_name: Operately.People.Person.short_name(author),
+      occurred_at: activity.inserted_at,
+      coalesce_key: nil
+    }
+  end
 end
