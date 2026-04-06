@@ -35,29 +35,10 @@ defmodule OperatelyEmail.Emails.GoalDescriptionChangedEmail do
 
   def buffered_item(_person, activity) do
     goal = Operately.Goals.get_goal!(activity.content["goal_id"])
+    content = decode_description(activity.content["new_description"])
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
-
-    excerpt_html =
-      if is_map(decode_description(activity.content["new_description"])) do
-        decode_description(activity.content["new_description"])
-        |> OperatelyEmail.Templates.rich_text()
-        |> Phoenix.HTML.safe_to_string()
-      else
-        nil
-      end
-
-    excerpt_text =
-      if is_map(decode_description(activity.content["new_description"])) do
-        decode_description(activity.content["new_description"])
-        |> Operately.RichContent.rich_content_to_string()
-        |> String.trim()
-      else
-        nil
-      end
-
-    excerpt_html = if excerpt_html in [nil, ""], do: nil, else: excerpt_html
-    excerpt_text = if excerpt_text in [nil, ""], do: nil, else: excerpt_text
+    %{html: excerpt_html, text: excerpt_text} = OperatelyEmail.RichTextExcerpt.excerpt(content)
 
     %{
       parent_id: goal.id,
