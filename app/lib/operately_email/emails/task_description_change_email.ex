@@ -60,27 +60,7 @@ defmodule OperatelyEmail.Emails.TaskDescriptionChangeEmail do
     content = decode_description(activity.content["description"])
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
-
-    excerpt_html =
-      if is_map(content) do
-        content
-        |> OperatelyEmail.Templates.rich_text()
-        |> Phoenix.HTML.safe_to_string()
-      else
-        nil
-      end
-
-    excerpt_text =
-      if is_map(content) do
-        content
-        |> Operately.RichContent.rich_content_to_string()
-        |> String.trim()
-      else
-        nil
-      end
-
-    excerpt_html = if excerpt_html in [nil, ""], do: nil, else: excerpt_html
-    excerpt_text = if excerpt_text in [nil, ""], do: nil, else: excerpt_text
+    %{html: excerpt_html, text: excerpt_text} = OperatelyEmail.RichTextExcerpt.excerpt(content)
 
     %{
       parent_id: task.id,

@@ -32,24 +32,7 @@ defmodule OperatelyEmail.Emails.ProjectRetrospectiveCommentedEmail do
     content = comment.content["message"]
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
-
-    excerpt_html =
-      if is_map(content) do
-        OperatelyEmail.Templates.rich_text(content) |> Phoenix.HTML.safe_to_string()
-      else
-        nil
-      end
-
-    excerpt_text =
-      if is_map(content) do
-        Operately.RichContent.rich_content_to_string(content)
-        |> String.trim()
-      else
-        nil
-      end
-
-    excerpt_html = if excerpt_html in [nil, ""], do: nil, else: excerpt_html
-    excerpt_text = if excerpt_text in [nil, ""], do: nil, else: excerpt_text
+    %{html: excerpt_html, text: excerpt_text} = OperatelyEmail.RichTextExcerpt.excerpt(content)
 
     %{
       parent_id: project.id,
