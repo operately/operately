@@ -184,7 +184,7 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
     ctx
     |> UI.click(testid: "account-menu")
     |> UI.click(testid: "settings-link")
-    |> UI.click(testid: "notification-settings-link")
+    |> UI.click(testid: "notification-settings")
     |> UI.assert_has(testid: "account-notification-settings-page")
   end
 

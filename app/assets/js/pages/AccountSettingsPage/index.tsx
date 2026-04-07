@@ -1,9 +1,9 @@
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
+import { IconBell, IconPalette, OptionsMenuItem } from "turboui";
 
 import { PageNavigation } from "@/features/accounts/PageNavigation";
-import { Link } from "turboui";
 
 import { Paths } from "@/routes/paths";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectUtils";
@@ -27,20 +27,22 @@ function Page() {
     <Pages.Page title={"Settings"} testId="account-settings-page">
       <Paper.Root size="small">
         <PageNavigation />
-        <Paper.Body>
-          <Paper.Header title="Settings" />
+        <Paper.Body minHeight="none">
+          <div className="mb-2 text-content-accent text-3xl font-extrabold">Settings</div>
+          <p className="mb-8">Manage the account settings available to you.</p>
 
-          <div>Manage the account settings available to you.</div>
-
-          <div className="mt-8">Adjust how Operately looks for you.</div>
-          <Link to={paths.accountAppearancePath()} testId="settings-appearance-link">
-            Appearance
-          </Link>
-
-          <div className="mt-8">Configure how activity and summary emails are delivered.</div>
-          <Link to={paths.accountNotificationSettingsPath()} testId="notification-settings-link">
-            Notification settings
-          </Link>
+          <OptionsMenuItem
+            linkTo={paths.accountAppearancePath()}
+            icon={IconPalette}
+            title="Appearance"
+            description="Adjust how Operately looks for you"
+          />
+          <OptionsMenuItem
+            linkTo={paths.accountNotificationSettingsPath()}
+            icon={IconBell}
+            title="Notification settings"
+            description="Configure how activity and summary emails are delivered"
+          />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
