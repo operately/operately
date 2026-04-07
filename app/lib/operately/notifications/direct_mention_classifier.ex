@@ -3,6 +3,12 @@ defmodule Operately.Notifications.DirectMentionClassifier do
 
   alias Operately.Notifications.Notification
   alias Operately.Repo
+  alias Operately.Comments.CommentThread
+  alias Operately.Goals.Update
+  alias Operately.Messages.Message
+  alias Operately.Projects.CheckIn
+  alias Operately.Projects.Retrospective
+  alias Operately.ResourceHubs.Document
   alias Operately.Updates.Comment
 
   @project_milestone_exception "project_milestone_commented"
@@ -15,12 +21,28 @@ defmodule Operately.Notifications.DirectMentionClassifier do
   ]
 
   @preloaded_content_actions [
-    {"comment_added", %{resource: :comment, resource_id_key: "comment_id", content_field_key: "message"}},
-    {"project_check_in_commented", %{resource: :comment, resource_id_key: "comment_id", content_field_key: "message"}},
-    {"goal_check_in_commented", %{resource: :comment, resource_id_key: "comment_id", content_field_key: "message"}},
-    {"project_retrospective_commented", %{resource: :comment, resource_id_key: "comment_id", content_field_key: "message"}},
-    {"project_task_commented", %{resource: :comment, resource_id_key: "comment_id", content_field_key: "message"}},
-    {"space_task_commented", %{resource: :comment, resource_id_key: "comment_id", content_field_key: "message"}}
+    {"comment_added", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: "message"}},
+    {"project_check_in_commented", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: "message"}},
+    {"goal_check_in_commented", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: "message"}},
+    {"project_retrospective_commented", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: "message"}},
+    {"project_task_commented", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: "message"}},
+    {"space_task_commented", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: "message"}},
+    {"discussion_comment_submitted", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: "message"}},
+    {"discussion_posting", %{resource: :message, resource_id: {:content, "discussion_id"}, content_field_key: nil}},
+    {"discussion_editing", %{resource: :message, resource_id: {:content, "discussion_id"}, content_field_key: nil}},
+    {"goal_check_in", %{resource: :goal_update, resource_id: {:content, "update_id"}, content_field_key: nil}},
+    {"project_check_in_submitted", %{resource: :project_check_in, resource_id: {:content, "check_in_id"}, content_field_key: nil}},
+    {"project_discussion_submitted", %{resource: :comment_thread, resource_id: {:content, "discussion_id"}, content_field_key: nil}},
+    {"goal_closing", %{resource: :comment_thread, resource_id: {:activity, :comment_thread_id}, content_field_key: nil}},
+    {"goal_discussion_creation", %{resource: :comment_thread, resource_id: {:activity, :comment_thread_id}, content_field_key: nil}},
+    {"goal_reopening", %{resource: :comment_thread, resource_id: {:activity, :comment_thread_id}, content_field_key: nil}},
+    {"goal_timeframe_editing", %{resource: :comment_thread, resource_id: {:activity, :comment_thread_id}, content_field_key: nil}},
+    {"project_resuming", %{resource: :comment_thread, resource_id: {:activity, :comment_thread_id}, content_field_key: nil}},
+    {"project_closed", %{resource: :project_retrospective, resource_id: {:content, "retrospective_id"}, content_field_key: nil}},
+    {"resource_hub_document_created", %{resource: :resource_hub_document, resource_id: {:content, "document_id"}, content_field_key: nil}},
+    {"resource_hub_document_commented", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: "message"}},
+    {"resource_hub_file_commented", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: "message"}},
+    {"resource_hub_link_commented", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: "message"}}
   ]
 
   @never_mention_actions [
@@ -38,9 +60,6 @@ defmodule Operately.Notifications.DirectMentionClassifier do
     "company_owners_adding",
     "guest_invited",
     "password_first_time_changed",
-    "discussion_comment_submitted",
-    "discussion_editing",
-    "discussion_posting",
     "group_edited",
     "message_archiving",
     "space_added",
@@ -52,20 +71,16 @@ defmodule Operately.Notifications.DirectMentionClassifier do
     "goal_archived",
     "goal_champion_updating",
     "goal_check_adding",
-    "goal_check_in",
     "goal_check_in_acknowledgement",
     "goal_check_in_edit",
     "goal_check_removing",
     "goal_check_toggled",
-    "goal_closing",
     "goal_created",
-    "goal_discussion_creation",
     "goal_discussion_editing",
     "goal_due_date_changed",
     "goal_due_date_updating",
     "goal_editing",
     "goal_name_updating",
-    "goal_reopening",
     "goal_reparent",
     "goal_reviewer_updating",
     "goal_space_updating",
@@ -73,7 +88,6 @@ defmodule Operately.Notifications.DirectMentionClassifier do
     "goal_target_adding",
     "goal_target_deleting",
     "goal_target_updating",
-    "goal_timeframe_editing",
     "milestone_deleting",
     "milestone_due_date_updating",
     "milestone_title_updating",
@@ -81,15 +95,12 @@ defmodule Operately.Notifications.DirectMentionClassifier do
     "project_champion_updating",
     "project_check_in_acknowledged",
     "project_check_in_edit",
-    "project_check_in_submitted",
-    "project_closed",
     "project_contributions_addition",
     "project_contributor_addition",
     "project_contributor_edited",
     "project_contributor_removed",
     "project_contributors_addition",
     "project_created",
-    "project_discussion_submitted",
     "project_due_date_updating",
     "project_goal_connection",
     "project_goal_disconnection",
@@ -101,7 +112,6 @@ defmodule Operately.Notifications.DirectMentionClassifier do
     "project_pausing",
     "project_permissions_edited",
     "project_renamed",
-    "project_resuming",
     "project_retrospective_edited",
     "project_reviewer_updating",
     "project_start_date_updating",
@@ -123,11 +133,8 @@ defmodule Operately.Notifications.DirectMentionClassifier do
     "task_status_updating",
     "task_update",
     "resource_hub_created",
-    "resource_hub_document_commented",
-    "resource_hub_document_created",
     "resource_hub_document_deleted",
     "resource_hub_document_edited",
-    "resource_hub_file_commented",
     "resource_hub_file_created",
     "resource_hub_file_deleted",
     "resource_hub_file_edited",
@@ -135,7 +142,6 @@ defmodule Operately.Notifications.DirectMentionClassifier do
     "resource_hub_folder_created",
     "resource_hub_folder_deleted",
     "resource_hub_folder_renamed",
-    "resource_hub_link_commented",
     "resource_hub_link_created",
     "resource_hub_link_deleted",
     "resource_hub_link_edited",
@@ -165,7 +171,7 @@ defmodule Operately.Notifications.DirectMentionClassifier do
 
       preloaded_spec ->
         notification
-        |> activity_content_value(preloaded_spec.resource_id_key)
+        |> extract_resource_id(preloaded_spec)
         |> lookup_preloaded_content(preloaded, preloaded_spec)
         |> has_mention?(recipient_id)
 
@@ -200,7 +206,7 @@ defmodule Operately.Notifications.DirectMentionClassifier do
     cond do
       preloaded_spec ->
         notification
-        |> activity_content_value(preloaded_spec.resource_id_key)
+        |> extract_resource_id(preloaded_spec)
         |> to_preload_request(preloaded_spec.resource)
 
       action == @project_milestone_exception ->
@@ -249,6 +255,42 @@ defmodule Operately.Notifications.DirectMentionClassifier do
     |> Enum.into(%{})
   end
 
+  defp load_preloaded_resource(:message, ids) do
+    from(m in Message, where: m.id in ^ids, select: {m.id, m.body})
+    |> Repo.all()
+    |> Enum.into(%{})
+  end
+
+  defp load_preloaded_resource(:goal_update, ids) do
+    from(u in Update, where: u.id in ^ids, select: {u.id, u.message})
+    |> Repo.all()
+    |> Enum.into(%{})
+  end
+
+  defp load_preloaded_resource(:project_check_in, ids) do
+    from(c in CheckIn, where: c.id in ^ids, select: {c.id, c.description})
+    |> Repo.all()
+    |> Enum.into(%{})
+  end
+
+  defp load_preloaded_resource(:project_retrospective, ids) do
+    from(r in Retrospective, where: r.id in ^ids, select: {r.id, r.content})
+    |> Repo.all()
+    |> Enum.into(%{})
+  end
+
+  defp load_preloaded_resource(:resource_hub_document, ids) do
+    from(d in Document, where: d.id in ^ids, select: {d.id, d.content})
+    |> Repo.all()
+    |> Enum.into(%{})
+  end
+
+  defp load_preloaded_resource(:comment_thread, ids) do
+    from(t in CommentThread, where: t.id in ^ids, select: {t.id, t.message})
+    |> Repo.all()
+    |> Enum.into(%{})
+  end
+
   defp load_preloaded_resource(resource, _ids) do
     raise "Missing preloaded resource loader for #{inspect(resource)} in direct mention classification"
   end
@@ -267,9 +309,18 @@ defmodule Operately.Notifications.DirectMentionClassifier do
     end)
   end
 
+  defp extract_resource_id(notification, %{resource_id: {:content, key}}), do: activity_content_value(notification, key)
+  defp extract_resource_id(notification, %{resource_id: {:activity, key}}), do: activity_field_value(notification, key)
+
   defp action_for(activity), do: to_string(activity.action)
 
   defp lookup_preloaded_content(nil, _preloaded, _spec), do: nil
+
+  defp lookup_preloaded_content(resource_id, preloaded, %{resource: resource, content_field_key: nil}) do
+    preloaded
+    |> Map.get(resource, %{})
+    |> Map.get(resource_id)
+  end
 
   defp lookup_preloaded_content(resource_id, preloaded, %{resource: resource, content_field_key: field_key}) do
     preloaded
@@ -281,6 +332,13 @@ defmodule Operately.Notifications.DirectMentionClassifier do
   defp activity_content_value(notification, key) do
     case notification.activity do
       %{content: content} -> content_value(content, key)
+      _ -> nil
+    end
+  end
+
+  defp activity_field_value(notification, key) do
+    case notification.activity do
+      %{} = activity -> Map.get(activity, key)
       _ -> nil
     end
   end
