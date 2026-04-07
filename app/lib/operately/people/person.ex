@@ -80,6 +80,7 @@ defmodule Operately.People.Person do
   def notify_about_assignments?(person), do: notification_preferences(person).notify_about_assignments
   def notify_on_mention?(person), do: notification_preferences(person).notify_on_mention
   def send_daily_summary?(person), do: notification_preferences(person).send_daily_summary
+  def daily_summary_delivery_time(person), do: notification_preferences(person).daily_summary_delivery_time || NotificationPreferences.default_daily_summary_delivery_time()
 
   def short_name(person) do
     parts = String.split(person.full_name, " ")

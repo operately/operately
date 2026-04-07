@@ -1414,6 +1414,7 @@ export interface Person {
   emailPreference?: EmailPreferenceValues;
   emailWindowMinutes?: EmailWindowMinutes;
   sendDailySummary?: boolean;
+  dailySummaryDeliveryTime?: string;
   notifyOnMention?: boolean;
   notifyAboutAssignments?: boolean;
   suspended?: boolean | null;
@@ -3952,6 +3953,7 @@ export interface PeopleUpdateInput {
   notifyOnMention?: boolean;
   sendDailySummary?: boolean;
   emailWindowMinutes?: number;
+  dailySummaryDeliveryTime?: string;
   description?: Json | null;
 }
 

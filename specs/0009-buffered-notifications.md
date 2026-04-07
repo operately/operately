@@ -229,13 +229,13 @@
     - Result: users can opt into a once-daily digest of recent updates.
 
 12. **PR 12: Timezone-aware daily summary scheduling and preferred delivery time**
-    - Upgrade daily summary delivery from fixed once-per-day cron behavior to timezone-aware scheduling.
+    - Upgrade daily summary delivery to timezone-aware scheduling while keeping a once-per-day cron trigger.
     - Add a new field in `preferences.notifications` for daily summary delivery time (local time of the user).
     - Extend people API and serializers so users can read and update this new delivery-time preference.
-    - Update `AccountNotificationSettingsPage` so users can choose the preferred daily summary time.
-    - Use the user timezone (fallback to app default timezone when missing) plus preferred time to determine when each summary is sent.
-    - Add per-user/day deduplication for local-day delivery windows so summaries are not sent more than once for the same local day.
-    - Tests: preference validation/persistence, timezone + preferred-time scheduling behavior, default-time fallback behavior, and deduplication.
+    - Update `AccountNotificationSettingsPage` so users can choose the preferred daily summary time. It should be a dropdown with time options.
+    - Use the user timezone (fallback to app default timezone when missing or invalid) plus preferred time to determine when each summary is sent.
+    - When the daily-summary cron runs, enqueue one summary job per eligible user, scheduled to that user's next preferred local delivery time.
+    - Tests: preference validation/persistence, timezone + preferred-time scheduling behavior, and default-time fallback behavior.
     - Result: daily summaries are delivered at each user’s chosen local time.
 
 13. **PR 13: Rollout and observability**
