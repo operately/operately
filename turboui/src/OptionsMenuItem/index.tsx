@@ -1,7 +1,7 @@
-import { createTestId } from "@/utils/testid";
+import { createTestId } from "../TestableElement";
 import classNames from "classnames";
 import * as React from "react";
-import { BlackLink } from "turboui";
+import { BlackLink } from "../Link";
 
 interface Props {
   icon: any;
