@@ -13,10 +13,10 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const defaultArgs = {
-  emailPreference: "buffered" as const,
+  notifyOnMention: false,
   emailWindowMinutes: 15 as const,
   sendDailySummary: true,
-  onEmailPreferenceChange: () => undefined,
+  onNotifyOnMentionChange: () => undefined,
   onEmailWindowMinutesChange: () => undefined,
   onSendDailySummaryChange: () => undefined,
   onSubmit: async () => undefined,
@@ -32,7 +32,7 @@ export const Buffered: Story = {
 export const MentionsOnly: Story = {
   args: {
     ...defaultArgs,
-    emailPreference: "mentions_only",
+    notifyOnMention: true,
   },
 };
 

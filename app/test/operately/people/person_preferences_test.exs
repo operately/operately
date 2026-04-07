@@ -14,7 +14,7 @@ defmodule Operately.People.PersonPreferencesTest do
       assert person.preferences.notifications.email_preference == :buffered
       assert person.preferences.notifications.email_window_minutes == 5
       assert person.preferences.notifications.notify_about_assignments
-      assert person.preferences.notifications.notify_on_mention
+      refute person.preferences.notifications.notify_on_mention
       assert person.preferences.notifications.send_daily_summary
     end
 
@@ -23,19 +23,19 @@ defmodule Operately.People.PersonPreferencesTest do
         Person.changeset(%Person{}, %{
           preferences: %{
             notifications: %{
-              email_preference: :mentions_only,
               email_window_minutes: 30,
-              notify_about_assignments: false
+              notify_about_assignments: false,
+              notify_on_mention: false
             }
           }
         })
 
       person = Ecto.Changeset.apply_changes(changeset)
 
-      assert person.preferences.notifications.email_preference == :mentions_only
+      assert person.preferences.notifications.email_preference == :buffered
       assert person.preferences.notifications.email_window_minutes == 30
       refute person.preferences.notifications.notify_about_assignments
-      assert person.preferences.notifications.notify_on_mention
+      refute person.preferences.notifications.notify_on_mention
       assert person.preferences.notifications.send_daily_summary
     end
 
@@ -57,7 +57,6 @@ defmodule Operately.People.PersonPreferencesTest do
         Person.changeset(person, %{
           preferences: %{
             notifications: %{
-              email_preference: :mentions_only,
               email_window_minutes: 15,
               notify_about_assignments: false
             }
@@ -66,7 +65,7 @@ defmodule Operately.People.PersonPreferencesTest do
 
       updated_person = Ecto.Changeset.apply_changes(changeset)
 
-      assert updated_person.preferences.notifications.email_preference == :mentions_only
+      assert updated_person.preferences.notifications.email_preference == :buffered
       assert updated_person.preferences.notifications.email_window_minutes == 15
       refute updated_person.preferences.notifications.notify_about_assignments
       refute updated_person.preferences.notifications.notify_on_mention
@@ -107,7 +106,7 @@ defmodule Operately.People.PersonPreferencesTest do
       assert Person.email_preference(%Person{}) == :buffered
       assert Person.email_window_minutes(%Person{}) == 5
       assert Person.notify_about_assignments?(%Person{})
-      assert Person.notify_on_mention?(%Person{})
+      refute Person.notify_on_mention?(%Person{})
       assert Person.send_daily_summary?(%Person{})
     end
 
@@ -115,7 +114,7 @@ defmodule Operately.People.PersonPreferencesTest do
       person = %Person{
         preferences: %Preferences{
           notifications: %NotificationPreferences{
-            email_preference: :mentions_only,
+            email_preference: :buffered,
             email_window_minutes: 10,
             notify_about_assignments: false,
             notify_on_mention: false,
@@ -124,7 +123,7 @@ defmodule Operately.People.PersonPreferencesTest do
         }
       }
 
-      assert Person.email_preference(person) == :mentions_only
+      assert Person.email_preference(person) == :buffered
       assert Person.email_window_minutes(person) == 10
       refute Person.notify_about_assignments?(person)
       refute Person.notify_on_mention?(person)

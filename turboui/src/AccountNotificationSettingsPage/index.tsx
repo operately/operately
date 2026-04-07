@@ -8,14 +8,13 @@ import { IconClockPlay, IconMail, IconMailFast } from "../icons";
 import classNames from "../utils/classnames";
 
 export namespace AccountNotificationSettingsPage {
-  export type EmailPreference = "buffered" | "mentions_only";
   export type EmailWindowMinutes = 5 | 10 | 15 | 30 | 60;
 
   export interface Props {
-    emailPreference: EmailPreference;
+    notifyOnMention: boolean;
     emailWindowMinutes: EmailWindowMinutes;
     sendDailySummary: boolean;
-    onEmailPreferenceChange: (value: EmailPreference) => void;
+    onNotifyOnMentionChange: (value: boolean) => void;
     onEmailWindowMinutesChange: (value: EmailWindowMinutes) => void;
     onSendDailySummaryChange: (value: boolean) => void;
     onSubmit: () => Promise<void>;
@@ -77,8 +76,8 @@ export function AccountNotificationSettingsPage(props: AccountNotificationSettin
               <PreferenceCard
                 title="Buffered notifications"
                 description="All activity emails wait for the buffer window, are grouped together, and sent as a single email."
-                selected={props.emailPreference === "buffered"}
-                onClick={() => props.onEmailPreferenceChange("buffered")}
+                selected={!props.notifyOnMention}
+                onClick={() => props.onNotifyOnMentionChange(false)}
                 testId="email-preference-buffered"
                 icon={<IconMail size={20} />}
               />
@@ -86,8 +85,8 @@ export function AccountNotificationSettingsPage(props: AccountNotificationSettin
               <PreferenceCard
                 title="Direct mentions are instant"
                 description="Emails for direct mentions are sent right away. All other activity emails wait for the buffer window and are sent as a single email."
-                selected={props.emailPreference === "mentions_only"}
-                onClick={() => props.onEmailPreferenceChange("mentions_only")}
+                selected={props.notifyOnMention}
+                onClick={() => props.onNotifyOnMentionChange(true)}
                 testId="email-preference-mentions-only"
                 icon={<IconMailFast size={20} />}
               />

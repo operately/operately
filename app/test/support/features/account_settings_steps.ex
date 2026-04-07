@@ -226,6 +226,10 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
       assert Operately.People.Person.email_preference(person) == attrs.email_preference
     end
 
+    if Map.has_key?(attrs, :notify_on_mention) do
+      assert Operately.People.Person.notify_on_mention?(person) == attrs.notify_on_mention
+    end
+
     if Map.has_key?(attrs, :email_window_minutes) do
       assert Operately.People.Person.email_window_minutes(person) == attrs.email_window_minutes
     end

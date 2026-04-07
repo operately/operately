@@ -8,13 +8,13 @@ defmodule Operately.People.Preferences do
 
     @primary_key false
     @email_window_minutes [5, 10, 15, 30, 60]
-    @email_preference_values [:buffered, :mentions_only]
+    @email_preference_values [:buffered]
 
     embedded_schema do
       field :email_preference, Ecto.Enum, values: @email_preference_values, default: :buffered
       field :email_window_minutes, :integer, default: 5
       field :notify_about_assignments, :boolean, default: true
-      field :notify_on_mention, :boolean, default: true
+      field :notify_on_mention, :boolean, default: false
       field :send_daily_summary, :boolean, default: true
     end
 
