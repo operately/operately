@@ -166,11 +166,12 @@ defmodule Operately.Notifications.BufferedEmailWorkerTest do
     end
   end
 
-  test "skips notifications without buffered_item/2 and logs warning", ctx do
-    activity = activity_fixture(author_id: ctx.creator.id, action: "resource_hub_link_created")
+  test "keeps repeated mutation rows as separate digest items", ctx do
+    activity_one = activity_fixture(author_id: ctx.creator.id, action: "project_description_changed")
+    activity_two = activity_fixture(author_id: ctx.creator.id, action: "project_description_changed")
 
     notification_fixture(
-      activity_id: activity.id,
+      activity_id: activity_one.id,
       person_id: ctx.creator.id,
       email_batch_id: ctx.batch.id,
       email_sent: false,
@@ -178,17 +179,115 @@ defmodule Operately.Notifications.BufferedEmailWorkerTest do
     )
 
     notification_fixture(
-      activity_id: activity.id,
+      activity_id: activity_two.id,
       person_id: ctx.creator.id,
       email_batch_id: ctx.batch.id,
       email_sent: false,
       email_sent_at: nil
     )
 
-    assert :ok = BufferedEmailWorker.perform(%{args: %{"email_batch_id" => ctx.batch.id}})
+    with_mocks([
+      {OperatelyEmail.Emails.ProjectDescriptionChangedEmail, [:passthrough], [buffered_item: fn _person, activity ->
+        %{
+          parent_id: "project-1",
+          parent_type: :project,
+          parent_name: "Project",
+          headline: "updated the project description",
+          excerpt_html: nil,
+          excerpt_text: nil,
+          item_url: "https://example.com/project-1",
+          actor_name: "Alice",
+          occurred_at: activity.inserted_at,
+          coalesce_key: nil
+        }
+      end]},
+      {OperatelyEmail.Mailers.DigestMailer, [:passthrough], [send: fn _person, _batch, items ->
+        assert length(items) == 2
+        {:ok, :delivered}
+      end]}
+    ]) do
+      assert :ok = BufferedEmailWorker.perform(%{args: %{"email_batch_id" => ctx.batch.id}})
+    end
+  end
 
-    batch = Notifications.get_email_batch!(ctx.batch.id)
-    assert batch.status == :skipped
+  test "renders mixed action families across project, goal, and space digest sections", ctx do
+    activity_project = activity_fixture(author_id: ctx.creator.id, action: "project_description_changed")
+    activity_goal = activity_fixture(author_id: ctx.creator.id, action: "goal_check_in")
+    activity_discussion = activity_fixture(author_id: ctx.creator.id, action: "discussion_posting")
+    activity_resource_hub = activity_fixture(author_id: ctx.creator.id, action: "resource_hub_link_created")
+
+    notification_fixture(activity_id: activity_project.id, person_id: ctx.creator.id, email_batch_id: ctx.batch.id, email_sent: false, email_sent_at: nil)
+    notification_fixture(activity_id: activity_goal.id, person_id: ctx.creator.id, email_batch_id: ctx.batch.id, email_sent: false, email_sent_at: nil)
+    notification_fixture(activity_id: activity_discussion.id, person_id: ctx.creator.id, email_batch_id: ctx.batch.id, email_sent: false, email_sent_at: nil)
+    notification_fixture(activity_id: activity_resource_hub.id, person_id: ctx.creator.id, email_batch_id: ctx.batch.id, email_sent: false, email_sent_at: nil)
+
+    with_mocks([
+      {OperatelyEmail.Emails.ProjectDescriptionChangedEmail, [:passthrough], [buffered_item: fn _person, activity ->
+        %{
+          parent_id: "project-1",
+          parent_type: :project,
+          parent_name: "Project",
+          headline: "updated the project description",
+          excerpt_html: nil,
+          excerpt_text: nil,
+          item_url: "https://example.com/project-1",
+          actor_name: "Alice",
+          occurred_at: activity.inserted_at,
+          coalesce_key: nil
+        }
+      end]},
+      {OperatelyEmail.Emails.GoalCheckInEmail, [:passthrough], [buffered_item: fn _person, activity ->
+        %{
+          parent_id: "goal-1",
+          parent_type: :goal,
+          parent_name: "Goal",
+          headline: "submitted a goal check-in",
+          excerpt_html: nil,
+          excerpt_text: nil,
+          item_url: "https://example.com/goal-1/check-ins/1",
+          actor_name: "Alice",
+          occurred_at: activity.inserted_at,
+          coalesce_key: nil
+        }
+      end]},
+      {OperatelyEmail.Emails.DiscussionPostingEmail, [:passthrough], [buffered_item: fn _person, activity ->
+        %{
+          parent_id: "space-1",
+          parent_type: :space,
+          parent_name: "Space",
+          headline: "started the discussion",
+          excerpt_html: nil,
+          excerpt_text: nil,
+          item_url: "https://example.com/discussions/1",
+          actor_name: "Alice",
+          occurred_at: activity.inserted_at,
+          coalesce_key: nil
+        }
+      end]},
+      {OperatelyEmail.Emails.ResourceHubLinkCreatedEmail, [:passthrough], [buffered_item: fn _person, activity ->
+        %{
+          parent_id: "space-1",
+          parent_type: :space,
+          parent_name: "Space",
+          headline: "added the link \"Roadmap\"",
+          excerpt_html: nil,
+          excerpt_text: nil,
+          item_url: "https://example.com/links/1",
+          actor_name: "Alice",
+          occurred_at: activity.inserted_at,
+          coalesce_key: nil
+        }
+      end]},
+      {OperatelyEmail.Mailers.DigestMailer, [:passthrough], [send: fn _person, _batch, items ->
+        assert length(items) == 4
+        assert Enum.any?(items, &(&1.parent_type == :project))
+        assert Enum.any?(items, &(&1.parent_type == :goal))
+        assert Enum.any?(items, &(&1.parent_type == :space))
+        {:ok, :delivered}
+      end]}
+    ]) do
+      assert :ok = BufferedEmailWorker.perform(%{args: %{"email_batch_id" => ctx.batch.id}})
+    end
   end
 
   test "marks an empty batch as skipped", ctx do

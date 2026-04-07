@@ -88,6 +88,7 @@ defmodule Operately.Notifications.BufferedEmailWorker do
         if has_buffered_item?(activity) do
           module = email_module(activity)
           item = apply(module, :buffered_item, [person, activity])
+
           {[item | items], skipped}
         else
           Logger.warning("Activity #{activity.action} does not have buffered_item/2 implemented, skipping notification #{notification.id}")

@@ -97,4 +97,44 @@ defmodule OperatelyEmail.Emails.CommentAddedEmail do
         raise "Unsupported action"
     end
   end
+
+  def buffered_item(_person, activity) do
+    author = Operately.Repo.preload(activity, :author).author
+    company = Operately.Repo.preload(author, :company).company
+    comment = Operately.Updates.get_comment!(activity.content["comment_id"])
+    %{html: excerpt_html, text: excerpt_text} = OperatelyEmail.RichTextExcerpt.excerpt(comment.content["message"])
+    {parent_type, parent_id, parent_name} = digest_parent(activity)
+
+    %{
+      parent_id: parent_id,
+      parent_type: parent_type,
+      parent_name: parent_name,
+      headline: get_action(activity),
+      excerpt_html: excerpt_html,
+      excerpt_text: excerpt_text,
+      item_url: get_link(company, activity, comment),
+      actor_name: Operately.People.Person.short_name(author),
+      occurred_at: activity.inserted_at,
+      coalesce_key: nil
+    }
+  end
+
+  defp digest_parent(activity) do
+    cond do
+      activity.content["goal_id"] ->
+        goal = Operately.Goals.get_goal!(activity.content["goal_id"])
+        {:goal, goal.id, goal.name}
+
+      activity.content["project_id"] ->
+        project = Operately.Projects.get_project!(activity.content["project_id"])
+        {:project, project.id, project.name}
+
+      activity.content["space_id"] ->
+        space = Operately.Groups.get_group!(activity.content["space_id"])
+        {:space, space.id, space.name}
+
+      true ->
+        raise "Unsupported location"
+    end
+  end
 end

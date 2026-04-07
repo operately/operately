@@ -208,9 +208,9 @@
    - Tests: mentions-only immediate mention delivery, mentions-only buffered non-mention delivery, and mixed project/goal/space digest rendering.
    - Result: the feature works for the main noisy activity families and for the new mentions-only mode.
 
-10. **PR 10: Remaining formatter coverage and mixed-section coalescing**
+10. **PR 10: Remaining formatter coverage and mixed-section coalescing** `(Implemented)`
    - Implement `buffered_item/2` for the remaining non-bypass activity types such as discussions, comments, check-ins, and resource-hub activity.
-   - Finalize `coalesce_key` behavior so repeated mutation rows collapse cleanly without collapsing comment/discussion items that should stay separate.
+   - Keep per-event rows as-is in digest rendering (no coalescing).
    - Expand integration coverage across mixed action families and mixed digest sections.
    - Result: full buffered-email coverage for all non-bypass activity emails.
 
