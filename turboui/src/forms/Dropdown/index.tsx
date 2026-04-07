@@ -30,6 +30,7 @@ export function Dropdown<T extends Dropdown.Item>({
   const [isOpen, setIsOpen] = React.useState(false);
   const [triggerWidth, setTriggerWidth] = React.useState<number | null>(null);
   const triggerRef = React.useRef<HTMLButtonElement>(null);
+  const selectedItemRef = React.useRef<HTMLButtonElement>(null);
   const selectedItem = items.find((item) => item.id === value);
   const selectedLabel = selectedItem?.name || placeholder;
 
@@ -38,6 +39,16 @@ export function Dropdown<T extends Dropdown.Item>({
       setTriggerWidth(triggerRef.current.offsetWidth);
     }
   }, []);
+
+  React.useEffect(() => {
+    if (!isOpen) return;
+
+    const frame = requestAnimationFrame(() => {
+      selectedItemRef.current?.scrollIntoView({ block: "nearest" });
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [isOpen, value]);
 
   return (
     <div>
@@ -67,6 +78,7 @@ export function Dropdown<T extends Dropdown.Item>({
             {items.map((item) => (
               <button
                 key={item.id}
+                ref={item.id === value ? selectedItemRef : undefined}
                 type="button"
                 className={`w-full text-left px-3 py-2 text-sm cursor-pointer ${
                   item.id === value ? "bg-surface-dimmed font-medium" : "hover:bg-surface-dimmed"

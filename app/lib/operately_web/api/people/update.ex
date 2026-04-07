@@ -6,8 +6,20 @@ defmodule OperatelyWeb.Api.People.Update do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  @notification_preference_fields [:notify_about_assignments, :notify_on_mention, :send_daily_summary, :email_window_minutes]
-  @updatable_fields_for_oneself [:full_name, :title, :timezone, :manager_id, :theme, :notify_about_assignments, :notify_on_mention, :send_daily_summary, :email_window_minutes, :description]
+  @notification_preference_fields [:notify_about_assignments, :notify_on_mention, :send_daily_summary, :email_window_minutes, :daily_summary_delivery_time]
+  @updatable_fields_for_oneself [
+    :full_name,
+    :title,
+    :timezone,
+    :manager_id,
+    :theme,
+    :notify_about_assignments,
+    :notify_on_mention,
+    :send_daily_summary,
+    :email_window_minutes,
+    :daily_summary_delivery_time,
+    :description
+  ]
   @updatable_fields_for_others [:full_name, :title, :timezone, :manager_id]
 
   inputs do
@@ -21,6 +33,7 @@ defmodule OperatelyWeb.Api.People.Update do
     field? :notify_on_mention, :boolean, null: false
     field? :send_daily_summary, :boolean, null: false
     field? :email_window_minutes, :integer, null: false
+    field? :daily_summary_delivery_time, :string, null: false
     field? :description, :json, null: true
   end
 

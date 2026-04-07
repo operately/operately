@@ -132,7 +132,8 @@ defmodule OperatelyWeb.Api.People.UpdateTest do
                  notify_about_assignments: false,
                  notify_on_mention: false,
                  send_daily_summary: false,
-                 email_window_minutes: 30
+                 email_window_minutes: 30,
+                 daily_summary_delivery_time: "09:00"
                })
 
       person = Operately.People.get_person!(ctx.person.id)
@@ -142,6 +143,7 @@ defmodule OperatelyWeb.Api.People.UpdateTest do
       refute Operately.People.Person.notify_about_assignments?(person)
       refute Operately.People.Person.notify_on_mention?(person)
       refute Operately.People.Person.send_daily_summary?(person)
+      assert Operately.People.Person.daily_summary_delivery_time(person) == "09:00"
     end
 
     test "it rejects invalid notification preferences", ctx do
@@ -149,6 +151,14 @@ defmodule OperatelyWeb.Api.People.UpdateTest do
                mutation(ctx.conn, [:people, :update], %{
                  id: Paths.person_id(ctx.person),
                  email_window_minutes: 7
+               })
+    end
+
+    test "it rejects invalid daily summary delivery time", ctx do
+      assert {400, %{}} =
+               mutation(ctx.conn, [:people, :update], %{
+                 id: Paths.person_id(ctx.person),
+                 daily_summary_delivery_time: "18:45"
                })
     end
   end
