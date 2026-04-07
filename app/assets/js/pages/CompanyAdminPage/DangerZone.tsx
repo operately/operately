@@ -4,9 +4,8 @@ import * as Companies from "@/models/companies";
 import { useLoadedData } from "./loader";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { includesId, Paths } from "@/routes/paths";
-import { showErrorToast, IconTrash, DangerButton, SecondaryButton, WarningCallout } from "turboui";
+import { showErrorToast, IconTrash, DangerButton, SecondaryButton, WarningCallout, OptionsMenuItem } from "turboui";
 
-import { OptionsMenuItem } from "./OptionsMenu";
 import * as Paper from "@/components/PaperContainer";
 
 export function DangerZone() {

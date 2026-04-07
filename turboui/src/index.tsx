@@ -10,6 +10,7 @@ export * from "./FormattedTime";
 export * from "./icons";
 export * from "./Link";
 export * from "./Menu";
+export * from "./OptionsMenuItem";
 export * from "./Page";
 export * from "./PieChart";
 export * from "./ProgressBar";
