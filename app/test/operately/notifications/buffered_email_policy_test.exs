@@ -30,15 +30,16 @@ defmodule Operately.Notifications.BufferedEmailPolicyTest do
       person = %Person{
         preferences: %Preferences{
           notifications: %NotificationPreferences{
-            email_preference: :mentions_only,
+            email_preference: :buffered,
+            notify_on_mention: false,
             email_window_minutes: 30
           }
         }
       }
 
-      assert BufferedEmailPolicy.email_preference(person) == :mentions_only
-      assert BufferedEmailPolicy.mentions_only?(person)
-      refute BufferedEmailPolicy.buffered?(person)
+      assert BufferedEmailPolicy.email_preference(person) == :buffered
+      assert BufferedEmailPolicy.buffered?(person)
+      refute BufferedEmailPolicy.notify_on_mention?(person)
       assert BufferedEmailPolicy.buffer_window_minutes(person) == 30
     end
   end

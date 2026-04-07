@@ -139,12 +139,12 @@ defmodule Operately.Notifications.BulkCreateTest do
     assert Repo.all(EmailBatch) == []
   end
 
-  test "mentions_only sends direct mentions immediately", ctx do
+  test "notify_on_mention sends direct mentions immediately", ctx do
     {:ok, _company} = Companies.enable_experimental_feature(ctx.company, "buffered_notifications")
 
     {:ok, _person} =
       Operately.People.update_person(ctx.person, %{
-        preferences: %{notifications: %{email_preference: :mentions_only}}
+        preferences: %{notifications: %{notify_on_mention: true}}
       })
 
     description = RichText.rich_text(mentioned_people: [ctx.person]) |> Jason.decode!()
@@ -163,12 +163,12 @@ defmodule Operately.Notifications.BulkCreateTest do
     assert Repo.all(EmailBatch) == []
   end
 
-  test "mentions_only keeps non-mentions buffered for mention-capable actions", ctx do
+  test "notify_on_mention keeps non-mentions buffered for mention-capable actions", ctx do
     {:ok, _company} = Companies.enable_experimental_feature(ctx.company, "buffered_notifications")
 
     {:ok, _person} =
       Operately.People.update_person(ctx.person, %{
-        preferences: %{notifications: %{email_preference: :mentions_only}}
+        preferences: %{notifications: %{notify_on_mention: true}}
       })
 
     description = RichText.rich_text("No mentions in this update")
@@ -187,12 +187,12 @@ defmodule Operately.Notifications.BulkCreateTest do
     assert length(Repo.all(EmailBatch)) == 1
   end
 
-  test "mentions_only keeps unsupported actions buffered", ctx do
+  test "notify_on_mention keeps unsupported actions buffered", ctx do
     {:ok, _company} = Companies.enable_experimental_feature(ctx.company, "buffered_notifications")
 
     {:ok, _person} =
       Operately.People.update_person(ctx.person, %{
-        preferences: %{notifications: %{email_preference: :mentions_only}}
+        preferences: %{notifications: %{notify_on_mention: true}}
       })
 
     activity = activity_fixture(author_id: ctx.person.id, action: "milestone_due_date_updating")

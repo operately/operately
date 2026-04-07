@@ -14836,8 +14836,7 @@
         "goal"
       ],
       "email_preference_values": [
-        "buffered",
-        "mentions_only"
+        "buffered"
       ],
       "milestone_status": [
         "pending",
@@ -20669,7 +20668,7 @@
         },
         {
           "default": null,
-          "name": "send_daily_summary",
+          "name": "notify_on_mention",
           "type": {
             "name": "boolean",
             "kind": "named"
@@ -20680,9 +20679,9 @@
         },
         {
           "default": null,
-          "name": "email_preference",
+          "name": "send_daily_summary",
           "type": {
-            "name": "string",
+            "name": "boolean",
             "kind": "named"
           },
           "optional": true,
@@ -27480,6 +27479,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-04-02T17:08:34Z",
+  "generated_at": "2026-04-07T17:42:32Z",
   "schema_version": 1
 }

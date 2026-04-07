@@ -96,8 +96,8 @@ defmodule OperatelyWeb.Api.People.GetMeTest do
         Operately.People.update_person(ctx.person, %{
           preferences: %{
             notifications: %{
-              email_preference: :mentions_only,
               email_window_minutes: 30,
+              notify_on_mention: false,
               send_daily_summary: false
             }
           }
@@ -105,10 +105,11 @@ defmodule OperatelyWeb.Api.People.GetMeTest do
 
       assert {200, %{me: data}} = query(ctx.conn, [:people, :get_me], %{})
 
-      assert data.email_preference == "mentions_only"
+      assert data.email_preference == "buffered"
       assert data.email_window_minutes == 30
+      refute data.notify_on_mention
       refute data.send_daily_summary
-      assert Operately.People.Person.email_preference(person) == :mentions_only
+      assert Operately.People.Person.email_preference(person) == :buffered
     end
   end
 end

@@ -81,7 +81,7 @@ defmodule Operately.Features.AccountSettingsTest do
     |> Steps.disable_daily_summary()
     |> Steps.save_notification_settings()
     |> Steps.assert_notification_preferences_saved(%{
-      email_preference: :buffered,
+      notify_on_mention: false,
       email_window_minutes: 30,
       send_daily_summary: false
     })
@@ -96,7 +96,7 @@ defmodule Operately.Features.AccountSettingsTest do
     |> Steps.choose_buffer_window("10 minutes")
     |> Steps.save_notification_settings()
     |> Steps.assert_notification_preferences_saved(%{
-      email_preference: :mentions_only,
+      notify_on_mention: true,
       email_window_minutes: 10,
       send_daily_summary: true
     })
