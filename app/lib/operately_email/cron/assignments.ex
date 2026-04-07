@@ -1,4 +1,4 @@
-defmodule OperatelyEmail.Assignments.Cron do
+defmodule OperatelyEmail.Cron.Assignments do
   use Oban.Worker, queue: :mailer
 
   alias Operately.People.{Person, Account}
@@ -31,7 +31,7 @@ defmodule OperatelyEmail.Assignments.Cron do
     try do
       cb.()
     rescue
-      e -> Logger.error("Error in OperatelyEmail.Assignments.Cron: #{inspect(e)}")
+      e -> Logger.error("Error in OperatelyEmail.Cron.Assignments: #{inspect(e)}")
     end
   end
 
@@ -52,5 +52,4 @@ defmodule OperatelyEmail.Assignments.Cron do
   def is_workday? do
     Date.day_of_week(Date.utc_today()) in [1, 2, 3, 4, 5]
   end
-
 end

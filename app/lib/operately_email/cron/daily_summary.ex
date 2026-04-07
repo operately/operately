@@ -1,4 +1,4 @@
-defmodule Operately.Notifications.DailySummaryWorker do
+defmodule OperatelyEmail.Cron.DailySummary do
   use Oban.Worker, queue: :mailer
 
   import Ecto.Query
@@ -84,7 +84,7 @@ defmodule Operately.Notifications.DailySummaryWorker do
     try do
       cb.()
     rescue
-      e -> Logger.error("Error in Operately.Notifications.DailySummaryWorker: #{inspect(e)}")
+      e -> Logger.error("Error in OperatelyEmail.Cron.DailySummary: #{inspect(e)}")
     end
   end
 end

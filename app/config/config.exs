@@ -68,8 +68,8 @@ config :operately, Oban,
     {Oban.Plugins.Pruner, max_age: 300},
     {Oban.Plugins.Cron,
      crontab: [
-       {"0 8 * * *", Operately.Notifications.DailySummaryWorker},
-       {"0 8 * * *", OperatelyEmail.Assignments.Cron},
+       {"0 8 * * *", OperatelyEmail.Cron.DailySummary},
+       {"0 8 * * *", OperatelyEmail.Cron.Assignments},
        {"0 8 * * *", Operately.AI.Cron},
        {"0 2 * * *", Operately.Beacon.Cron}
      ]}

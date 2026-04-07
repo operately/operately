@@ -301,7 +301,7 @@ defmodule Operately.Support.Features.ProfileSteps do
   end
 
   step :assert_person_not_in_assignments_cron, ctx do
-    people = OperatelyEmail.Assignments.Cron.people_who_want_assignment_emails()
+    people = OperatelyEmail.Cron.Assignments.people_who_want_assignment_emails()
 
     refute Enum.any?(people, fn person -> person.id == ctx.person.id end)
 
@@ -309,7 +309,7 @@ defmodule Operately.Support.Features.ProfileSteps do
   end
 
   step :assert_person_in_assignments_cron, ctx do
-    people = OperatelyEmail.Assignments.Cron.people_who_want_assignment_emails()
+    people = OperatelyEmail.Cron.Assignments.people_who_want_assignment_emails()
 
     assert Enum.any?(people, fn person -> person.id == ctx.person.id end)
 

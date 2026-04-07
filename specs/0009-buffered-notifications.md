@@ -13,10 +13,11 @@
   - `notify_about_assignments`, migrated from the current top-level field so existing assignment email behavior is preserved
   - `notify_on_mention`, migrated from the current top-level field
   - `send_daily_summary`, migrated from the current top-level field
+  - `daily_summary_delivery_time` (local time), defaulting to `18:00`
 - `mentions_only` lets real direct `@mentions` bypass buffering and send immediately. All other non-bypassed activity email still follows the normal buffered flow.
 - Bypassed admin/access/invitation actions remain immediate regardless of the selected preference.
 - If a batch resolves to a single notification at send time, render the existing single-notification mailer/template for that activity instead of the digest template.
-- If `preferences.notifications.send_daily_summary` is enabled, send one daily summary email at `6:00 PM` in the user's timezone. If the user has no timezone, use the app's default timezone.
+- If `preferences.notifications.send_daily_summary` is enabled, send one daily summary email at the user's configured local delivery time (`preferences.notifications.daily_summary_delivery_time`, default `18:00`). If the user has no timezone, use the app's default timezone.
 - The daily summary email should include that day's updates only, include the same rich excerpts used by buffered notification emails, and group rows into `Projects`, `Goals`, `Spaces`, and `Other`.
 - Reading notifications in the app does not cancel the email. Non-activity transactional emails such as reset-password and activation emails remain unchanged.
 
@@ -29,11 +30,13 @@
   - `notify_about_assignments` migrated from the current top-level field
   - `notify_on_mention` migrated from the current top-level field
   - `send_daily_summary` migrated from the current top-level field
+  - `daily_summary_delivery_time` with default `18:00`
 - Validate `email_window_minutes` against a fixed set of allowed values: `5`, `10`, `15`, `30`, `60`. The UI should use the same predefined options.
 - Add a migration strategy that backfills:
   - `preferences.notifications.notify_about_assignments` from the current top-level `notify_about_assignments` field
   - `preferences.notifications.notify_on_mention` from the current top-level `notify_on_mention` field
   - `preferences.notifications.send_daily_summary` from the current top-level `send_daily_summary` field
+  - `preferences.notifications.daily_summary_delivery_time` to default `18:00` for existing people
 - Update all current readers and writers to use the new embedded notification fields without changing user-visible behavior.
 - Extend the people update API and serializers so the current user can read and update the new embedded notification settings.
 - Add a new account settings flow:
@@ -73,7 +76,7 @@
 - Add a daily summary delivery path:
   - schedule a daily worker that runs frequently enough to pick up eligible users across timezones
   - select users with `preferences.notifications.send_daily_summary = true`
-  - evaluate whether the current time is at or just after `6:00 PM` in each user's timezone, using the app's default timezone when the user has none
+  - evaluate whether the current time is at or just after each user's preferred local delivery time from `preferences.notifications.daily_summary_delivery_time` (default `18:00`), using the app's default timezone when the user has none
   - gather that day's non-bypassed activity notifications for the person
   - skip sending if there were no updates that day
   - render the email with the same digest item formatter and excerpt support used by buffered notification emails
@@ -91,6 +94,7 @@
   - `preferences.notifications.notify_about_assignments` preserves the current assignment-email default and behavior
   - `preferences.notifications.notify_on_mention` preserves the current mention-notification default and behavior
   - `preferences.notifications.send_daily_summary` preserves the current daily-summary default and behavior
+  - new users default to `preferences.notifications.daily_summary_delivery_time = "18:00"`
   - valid window options persist correctly
   - invalid window values are rejected
   - `mentions_only` persists correctly
@@ -122,8 +126,9 @@
   - the notification settings page loads current preference and saves updates
   - the notification settings page always shows the buffer window selector
   - the notification settings page lets the user enable or disable daily summaries
+  - the notification settings page lets the user choose and save daily summary delivery time
 - Daily summary tests:
-  - eligible users receive one summary at `6:00 PM` in their timezone
+  - eligible users receive one summary at their configured local delivery time
   - users without a timezone use the app's default timezone
   - users with `send_daily_summary = false` receive no summary
   - users with no updates that day receive no summary
@@ -223,7 +228,17 @@
     - Tests: eligibility filtering, last-24-hours window behavior, empty-summary suppression, and grouped summary rendering.
     - Result: users can opt into a once-daily digest of recent updates.
 
-12. **PR 12: Rollout and observability**
+12. **PR 12: Timezone-aware daily summary scheduling and preferred delivery time**
+    - Upgrade daily summary delivery from fixed once-per-day cron behavior to timezone-aware scheduling.
+    - Add a new field in `preferences.notifications` for daily summary delivery time (local time of the user).
+    - Extend people API and serializers so users can read and update this new delivery-time preference.
+    - Update `AccountNotificationSettingsPage` so users can choose the preferred daily summary time.
+    - Use the user timezone (fallback to app default timezone when missing) plus preferred time to determine when each summary is sent.
+    - Add per-user/day deduplication for local-day delivery windows so summaries are not sent more than once for the same local day.
+    - Tests: preference validation/persistence, timezone + preferred-time scheduling behavior, default-time fallback behavior, and deduplication.
+    - Result: daily summaries are delivered at each user’s chosen local time.
+
+13. **PR 13: Rollout and observability**
     - Add logs, counters, and rollout notes for batch creation, mentions-only immediate mention bypasses, fixed-window delivery, send success/failure, and fallback-to-immediate cases.
     - Add observability for daily summary eligibility, send success/failure, empty-day skips, and deduplication skips.
     - Enable the company feature flag for internal or canary companies first, then broaden rollout after validation.

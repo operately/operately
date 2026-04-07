@@ -1,4 +1,4 @@
-defmodule Operately.Notifications.DailySummaryWorkerTest do
+defmodule OperatelyEmail.Cron.DailySummaryTest do
   use Operately.DataCase
 
   import Mock
@@ -6,8 +6,8 @@ defmodule Operately.Notifications.DailySummaryWorkerTest do
   import Operately.ActivitiesFixtures
   import Operately.NotificationsFixtures
 
-  alias Operately.Notifications.DailySummaryWorker
   alias Operately.Notifications.Notification
+  alias OperatelyEmail.Cron.DailySummary
 
   setup ctx do
     ctx =
@@ -35,7 +35,7 @@ defmodule Operately.Notifications.DailySummaryWorkerTest do
           preferences: %{notifications: %{send_daily_summary: true}}
         })
 
-      people = DailySummaryWorker.people_who_want_daily_summary_emails()
+      people = DailySummary.people_who_want_daily_summary_emails()
 
       assert MapSet.new(Enum.map(people, & &1.id)) == MapSet.new([ctx.creator.id, ctx.enabled_member.id])
       refute Enum.any?(people, &(&1.id == ctx.disabled_member.id))
@@ -50,7 +50,7 @@ defmodule Operately.Notifications.DailySummaryWorkerTest do
       with_mocks([
         {OperatelyEmail.Mailers.DigestMailer, [:passthrough], [send_daily_summary: fn _person, _items -> {:ok, :delivered} end]}
       ]) do
-        assert :ok = DailySummaryWorker.send_daily_summaries(~U[2026-04-08 18:00:00Z])
+        assert :ok = DailySummary.send_daily_summaries(~U[2026-04-08 18:00:00Z])
 
         assert_not_called(OperatelyEmail.Mailers.DigestMailer.send_daily_summary(:_, :_))
       end
@@ -72,7 +72,7 @@ defmodule Operately.Notifications.DailySummaryWorkerTest do
           {:ok, :delivered}
         end]}
       ]) do
-        assert :ok = DailySummaryWorker.send_daily_summaries(~U[2026-04-08 18:00:00Z])
+        assert :ok = DailySummary.send_daily_summaries(~U[2026-04-08 18:00:00Z])
       end
     end
 
@@ -99,7 +99,7 @@ defmodule Operately.Notifications.DailySummaryWorkerTest do
           {:ok, :delivered}
         end]}
       ]) do
-        assert :ok = DailySummaryWorker.send_daily_summaries(~U[2026-04-08 18:00:00Z])
+        assert :ok = DailySummary.send_daily_summaries(~U[2026-04-08 18:00:00Z])
       end
     end
   end
