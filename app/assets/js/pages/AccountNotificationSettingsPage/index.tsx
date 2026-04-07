@@ -35,20 +35,20 @@ function Page() {
   const initialState = React.useMemo(
     () =>
       getNotificationSettingsFormState({
-        emailPreference: me.emailPreference,
+        notifyOnMention: me.notifyOnMention,
         emailWindowMinutes: me.emailWindowMinutes,
         sendDailySummary: me.sendDailySummary,
       }),
-    [me.emailPreference, me.emailWindowMinutes, me.sendDailySummary],
+    [me.notifyOnMention, me.emailWindowMinutes, me.sendDailySummary],
   );
 
-  const [emailPreference, setEmailPreference] = React.useState(initialState.emailPreference);
+  const [notifyOnMention, setNotifyOnMention] = React.useState(initialState.notifyOnMention);
   const [emailWindowMinutes, setEmailWindowMinutes] = React.useState(initialState.emailWindowMinutes);
   const [sendDailySummary, setSendDailySummary] = React.useState(initialState.sendDailySummary);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   React.useEffect(() => {
-    setEmailPreference(initialState.emailPreference);
+    setNotifyOnMention(initialState.notifyOnMention);
     setEmailWindowMinutes(initialState.emailWindowMinutes);
     setSendDailySummary(initialState.sendDailySummary);
   }, [initialState]);
@@ -59,7 +59,7 @@ function Page() {
     try {
       await People.updateProfile(
         buildNotificationSettingsUpdateInput(me.id, {
-          emailPreference,
+          notifyOnMention,
           emailWindowMinutes,
           sendDailySummary,
         }),
@@ -71,14 +71,14 @@ function Page() {
     } finally {
       setIsSubmitting(false);
     }
-  }, [emailPreference, emailWindowMinutes, me.id, navigate, paths, sendDailySummary]);
+  }, [notifyOnMention, emailWindowMinutes, me.id, navigate, paths, sendDailySummary]);
 
   return (
     <NotificationSettingsPage
-      emailPreference={emailPreference}
+      notifyOnMention={notifyOnMention}
       emailWindowMinutes={emailWindowMinutes}
       sendDailySummary={sendDailySummary}
-      onEmailPreferenceChange={setEmailPreference}
+      onNotifyOnMentionChange={setNotifyOnMention}
       onEmailWindowMinutesChange={setEmailWindowMinutes}
       onSendDailySummaryChange={setSendDailySummary}
       onSubmit={handleSubmit}

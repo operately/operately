@@ -2116,7 +2116,7 @@ export type CreateConversationContextType = "goal" | "project";
 
 export type DiscussionState = "draft" | "published";
 
-export type EmailPreferenceValues = "buffered" | "mentions_only";
+export type EmailPreferenceValues = "buffered";
 
 export type GoalCheckInStatus = "on_track" | "caution" | "off_track";
 
@@ -3949,8 +3949,8 @@ export interface PeopleUpdateInput {
   managerId?: Id | null;
   theme?: string;
   notifyAboutAssignments?: boolean;
+  notifyOnMention?: boolean;
   sendDailySummary?: boolean;
-  emailPreference?: string;
   emailWindowMinutes?: number;
   description?: Json | null;
 }

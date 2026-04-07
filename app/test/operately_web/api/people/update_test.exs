@@ -130,17 +130,17 @@ defmodule OperatelyWeb.Api.People.UpdateTest do
                mutation(ctx.conn, [:people, :update], %{
                  id: Paths.person_id(ctx.person),
                  notify_about_assignments: false,
+                 notify_on_mention: false,
                  send_daily_summary: false,
-                 email_preference: "mentions_only",
                  email_window_minutes: 30
                })
 
       person = Operately.People.get_person!(ctx.person.id)
 
-      assert Operately.People.Person.email_preference(person) == :mentions_only
+      assert Operately.People.Person.email_preference(person) == :buffered
       assert Operately.People.Person.email_window_minutes(person) == 30
       refute Operately.People.Person.notify_about_assignments?(person)
-      assert Operately.People.Person.notify_on_mention?(person)
+      refute Operately.People.Person.notify_on_mention?(person)
       refute Operately.People.Person.send_daily_summary?(person)
     end
 
@@ -148,7 +148,6 @@ defmodule OperatelyWeb.Api.People.UpdateTest do
       assert {400, %{}} =
                mutation(ctx.conn, [:people, :update], %{
                  id: Paths.person_id(ctx.person),
-                 email_preference: "other",
                  email_window_minutes: 7
                })
     end

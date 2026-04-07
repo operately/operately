@@ -33,7 +33,7 @@ defmodule Operately.Notifications.BufferedEmailPolicy do
   def buffer_window_minutes(%Operately.People.Person{} = person), do: Operately.People.Person.email_window_minutes(person) || @deafult_buffer_window
 
   def buffered?(%Operately.People.Person{} = person), do: email_preference(person) == :buffered
-  def mentions_only?(%Operately.People.Person{} = person), do: email_preference(person) == :mentions_only
+  def notify_on_mention?(%Operately.People.Person{} = person), do: Operately.People.Person.notify_on_mention?(person)
 
   def bypass_actions, do: @bypass_actions
 
