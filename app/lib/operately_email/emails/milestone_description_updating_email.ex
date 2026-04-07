@@ -59,13 +59,14 @@ defmodule OperatelyEmail.Emails.MilestoneDescriptionUpdatingEmail do
     content = decode_description(activity.content["description"])
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
+    parent = OperatelyEmail.DigestParent.for_milestone(milestone)
     %{html: excerpt_html, text: excerpt_text} = OperatelyEmail.RichTextExcerpt.excerpt(content)
 
     %{
-      parent_id: milestone.id,
-      parent_type: :milestone,
-      parent_name: milestone.title,
-      headline: "updated this milestone description",
+      parent_id: parent.id,
+      parent_type: parent.type,
+      parent_name: parent.name,
+      headline: "updated the description of the milestone \"#{milestone.title}\"",
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
       item_url: OperatelyWeb.Paths.project_milestone_path(company, milestone) |> OperatelyWeb.Paths.to_url(),

@@ -48,13 +48,14 @@ defmodule OperatelyEmail.Emails.ProjectMilestoneCommentedEmail do
     content = comment.content["message"]
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
+    parent = OperatelyEmail.DigestParent.for_milestone(milestone)
     %{html: excerpt_html, text: excerpt_text} = OperatelyEmail.RichTextExcerpt.excerpt(content)
 
     %{
-      parent_id: milestone.id,
-      parent_type: :milestone,
-      parent_name: milestone.title,
-      headline: "commented on this milestone",
+      parent_id: parent.id,
+      parent_type: parent.type,
+      parent_name: parent.name,
+      headline: "commented on the milestone \"#{milestone.title}\"",
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
       item_url: OperatelyWeb.Paths.project_milestone_path(company, milestone) |> OperatelyWeb.Paths.to_url(),

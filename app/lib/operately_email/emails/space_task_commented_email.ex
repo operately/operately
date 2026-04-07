@@ -32,13 +32,14 @@ defmodule OperatelyEmail.Emails.SpaceTaskCommentedEmail do
     content = comment.content["message"]
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
+    parent = OperatelyEmail.DigestParent.for_task(task)
     %{html: excerpt_html, text: excerpt_text} = OperatelyEmail.RichTextExcerpt.excerpt(content)
 
     %{
-      parent_id: task.id,
-      parent_type: :task,
-      parent_name: task.name,
-      headline: "commented on this task",
+      parent_id: parent.id,
+      parent_type: parent.type,
+      parent_name: parent.name,
+      headline: "commented on the task \"#{task.name}\"",
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
       item_url: OperatelyWeb.Paths.task_path(company, task) |> OperatelyWeb.Paths.to_url(),

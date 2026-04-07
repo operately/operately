@@ -130,28 +130,35 @@ defmodule Operately.Notifications.BufferedEmailWorkerTest do
     end
   end
 
-  test "digest renders mixed project, goal, task, and milestone items", ctx do
+  test "digest renders mixed project, goal, and space items while task and milestone items roll up to parent resources", ctx do
     ctx = Factory.add_goal(ctx, :goal, :space)
     ctx = Factory.add_project(ctx, :project, :space)
     ctx = Factory.add_project_milestone(ctx, :milestone, :project)
     ctx = Factory.add_project_task(ctx, :task, :milestone)
+    ctx = Factory.create_space_task(ctx, :space_task, :space)
 
     activity_project = activity_fixture(author_id: ctx.creator.id, action: "project_created", content: %{"project_id" => ctx.project.id})
     activity_goal = activity_fixture(author_id: ctx.creator.id, action: "goal_created", content: %{"goal_id" => ctx.goal.id})
-    activity_task = activity_fixture(author_id: ctx.creator.id, action: "task_adding", content: %{"task_id" => ctx.task.id})
+    activity_project_task = activity_fixture(author_id: ctx.creator.id, action: "task_adding", content: %{"task_id" => ctx.task.id})
+    activity_space_task = activity_fixture(author_id: ctx.creator.id, action: "task_adding", content: %{"task_id" => ctx.space_task.id})
     activity_milestone = activity_fixture(author_id: ctx.creator.id, action: "milestone_due_date_updating", content: %{"milestone_id" => ctx.milestone.id})
 
     notification_fixture(activity_id: activity_project.id, person_id: ctx.creator.id, email_batch_id: ctx.batch.id, email_sent: false, email_sent_at: nil)
     notification_fixture(activity_id: activity_goal.id, person_id: ctx.creator.id, email_batch_id: ctx.batch.id, email_sent: false, email_sent_at: nil)
-    notification_fixture(activity_id: activity_task.id, person_id: ctx.creator.id, email_batch_id: ctx.batch.id, email_sent: false, email_sent_at: nil)
+    notification_fixture(activity_id: activity_project_task.id, person_id: ctx.creator.id, email_batch_id: ctx.batch.id, email_sent: false, email_sent_at: nil)
+    notification_fixture(activity_id: activity_space_task.id, person_id: ctx.creator.id, email_batch_id: ctx.batch.id, email_sent: false, email_sent_at: nil)
     notification_fixture(activity_id: activity_milestone.id, person_id: ctx.creator.id, email_batch_id: ctx.batch.id, email_sent: false, email_sent_at: nil)
 
     with_mocks([
       {OperatelyEmail.Mailers.DigestMailer, [:passthrough], [send: fn _person, _batch, items ->
+        project_items = Enum.filter(items, &(&1.parent_type == :project))
+
         assert Enum.any?(items, &(&1.parent_type == :project))
         assert Enum.any?(items, &(&1.parent_type == :goal))
-        assert Enum.any?(items, &(&1.parent_type == :task))
-        assert Enum.any?(items, &(&1.parent_type == :milestone))
+        assert Enum.any?(items, &(&1.parent_type == :space))
+        refute Enum.any?(items, &(&1.parent_type == :task))
+        refute Enum.any?(items, &(&1.parent_type == :milestone))
+        assert length(project_items) >= 3
         {:ok, :delivered}
       end]}
     ]) do
