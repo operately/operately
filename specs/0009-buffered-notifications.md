@@ -214,13 +214,14 @@
    - Expand integration coverage across mixed action families and mixed digest sections.
    - Result: full buffered-email coverage for all non-bypass activity emails.
 
-11. **PR 11: Daily summary delivery**
-    - Add the daily summary worker and scheduling strategy for timezone-aware `6:00 PM` delivery.
+11. **PR 11: Daily summary delivery** `(Implemented)`
+    - Add a daily summary worker scheduled once per day via cron (same operational model as assignments emails).
     - Reuse the digest formatter and grouping logic from buffered notification emails.
-    - Collect that day's updates for the user, skip empty days, and enforce once-per-local-day delivery.
+    - For each eligible user, collect notifications from the last 24 hours, exclude bypass actions, and skip empty summaries.
     - Respect `preferences.notifications.send_daily_summary`.
-    - Tests: timezone scheduling, empty-day suppression, deduplication, and grouped summary rendering.
-    - Result: users can opt into a daily digest of that day's updates.
+    - Keep the implementation simple: no timezone-specific `6:00 PM` scheduling and no persisted per-day dedup table.
+    - Tests: eligibility filtering, last-24-hours window behavior, empty-summary suppression, and grouped summary rendering.
+    - Result: users can opt into a once-daily digest of recent updates.
 
 12. **PR 12: Rollout and observability**
     - Add logs, counters, and rollout notes for batch creation, mentions-only immediate mention bypasses, fixed-window delivery, send success/failure, and fallback-to-immediate cases.
