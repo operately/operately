@@ -201,7 +201,7 @@
    - Tests: single-item fallback and grouped digest rendering from synthetic batch data.
    - Result: the email shape matches the new requirement, but coverage is still partial until formatter implementations are added.
 
-9. **PR 9: Mention classification and high-volume formatter coverage**
+9. **PR 9: Mention classification and high-volume formatter coverage**  `(Implemented)`
    - Add the direct-mention classifier used by `mentions_only`.
    - Implement `buffered_item/2` for the highest-volume collaborative activity mailers first: project, goal, task, and milestone changes.
    - Include excerpts where available.

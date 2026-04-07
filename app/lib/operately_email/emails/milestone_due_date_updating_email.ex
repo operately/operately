@@ -34,12 +34,13 @@ defmodule OperatelyEmail.Emails.MilestoneDueDateUpdatingEmail do
     milestone = Operately.Projects.get_milestone!(activity.content["milestone_id"])
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
+    parent = OperatelyEmail.DigestParent.for_milestone(milestone)
 
     %{
-      parent_id: milestone.id,
-      parent_type: :milestone,
-      parent_name: milestone.title,
-      headline: "updated this milestone due date",
+      parent_id: parent.id,
+      parent_type: parent.type,
+      parent_name: parent.name,
+      headline: "updated the due date of the milestone \"#{milestone.title}\"",
       excerpt_html: nil,
       excerpt_text: nil,
       item_url: OperatelyWeb.Paths.project_milestone_path(company, milestone) |> OperatelyWeb.Paths.to_url(),
