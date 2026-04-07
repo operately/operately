@@ -15,7 +15,7 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
 
   #
   # Sending out an email to remind people of their assignments.
-  # The scheduler of this email is located in OperatelyEmail.Assignments.Cron
+  # The scheduler of this email is located in OperatelyEmail.Cron.Assignments
   #
 
   def send(person) do

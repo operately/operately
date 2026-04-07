@@ -1,8 +1,8 @@
-defmodule OperatelyEmail.Assignments.CronTest do
+defmodule OperatelyEmail.Cron.AssignmentsTest do
   use Operately.DataCase
 
   alias Operately.Support.Factory
-  alias OperatelyEmail.Assignments.Cron
+  alias OperatelyEmail.Cron.Assignments
 
   describe "people_who_want_assignment_emails/0" do
     setup do
@@ -23,7 +23,7 @@ defmodule OperatelyEmail.Assignments.CronTest do
     end
 
     test "returns only people with account emails and assignment emails enabled", ctx do
-      people = Cron.people_who_want_assignment_emails()
+      people = Assignments.people_who_want_assignment_emails()
 
       assert MapSet.new(Enum.map(people, & &1.id)) == MapSet.new([ctx.creator.id, ctx.enabled_member.id])
       refute Enum.any?(people, &(&1.id == ctx.disabled_member.id))
@@ -37,7 +37,7 @@ defmodule OperatelyEmail.Assignments.CronTest do
       |> Ecto.Changeset.change(%{preferences: nil})
       |> Repo.update!()
 
-      people = Cron.people_who_want_assignment_emails()
+      people = Assignments.people_who_want_assignment_emails()
 
       assert MapSet.new(Enum.map(people, & &1.id)) == MapSet.new([ctx.creator.id, ctx.enabled_member.id])
     end
