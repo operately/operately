@@ -1,0 +1,34 @@
+<%= title("Daily summary from the last 24 hours") %>
+
+<%= spacer() %>
+
+<%= for group <- @parent_groups do %>
+  <%= subtitle("#{group.parent_name} (#{length(group.items)} #{if length(group.items) == 1, do: "update", else: "updates"})") %>
+
+  <%= spacer() %>
+
+  <%= for item <- group.items do %>
+    <%= row do %>
+      <strong><%= item.actor_name %></strong>: <%= item.headline %>
+    <% end %>
+
+    <%= if item.excerpt_html do %>
+      <%= row do %>
+        <%= Phoenix.HTML.raw(item.excerpt_html) %>
+      <% end %>
+    <% end %>
+
+    <%= row do %>
+      <%= link(item.item_url, "View →") %>
+    <% end %>
+
+    <%= spacer() %>
+  <% end %>
+
+  <%= line() %>
+  <%= spacer() %>
+<% end %>
+
+<%= row do %>
+  <%= cta_button(@notifications_url, "View All Notifications") %>
+<% end %>
