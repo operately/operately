@@ -50,12 +50,13 @@ defmodule OperatelyEmail.Emails.TaskAssigneeUpdatingEmail do
     task = Operately.Tasks.get_task!(activity.content["task_id"]) |> Operately.Repo.preload(:space)
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
+    parent = OperatelyEmail.DigestParent.for_task(task)
 
     %{
-      parent_id: task.id,
-      parent_type: :task,
-      parent_name: task.name,
-      headline: "updated this task assignee",
+      parent_id: parent.id,
+      parent_type: parent.type,
+      parent_name: parent.name,
+      headline: "updated the assignee of the task \"#{task.name}\"",
       excerpt_html: nil,
       excerpt_text: nil,
       item_url: OperatelyWeb.Paths.task_path(company, task) |> OperatelyWeb.Paths.to_url(),
