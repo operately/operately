@@ -23,4 +23,25 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentDeletedEmail do
     |> assign(:cta_url, OperatelyWeb.Paths.resource_hub_path(company, document.resource_hub) |> OperatelyWeb.Paths.to_url())
     |> render("resource_hub_document_deleted")
   end
+
+  def buffered_item(_person, activity) do
+    author = Operately.Repo.preload(activity, :author).author
+    company = Operately.Repo.preload(author, :company).company
+
+    {:ok, document} =
+      Document.get(:system, id: activity.content["document_id"], opts: [preload: [:node, :resource_hub, :space], with_deleted: true])
+
+    %{
+      parent_id: document.space.id,
+      parent_type: :space,
+      parent_name: document.space.name,
+      headline: "deleted the document \"#{document.node.name}\"",
+      excerpt_html: nil,
+      excerpt_text: nil,
+      item_url: OperatelyWeb.Paths.resource_hub_path(company, document.resource_hub) |> OperatelyWeb.Paths.to_url(),
+      actor_name: Operately.People.Person.short_name(author),
+      occurred_at: activity.inserted_at,
+      coalesce_key: nil
+    }
+  end
 end

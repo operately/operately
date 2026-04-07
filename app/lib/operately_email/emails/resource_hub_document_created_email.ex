@@ -35,4 +35,26 @@ defmodule OperatelyEmail.Emails.ResourceHubDocumentCreatedEmail do
     {:ok, copied_document} = Document.get(:system, id: id, opts: [preload: :node])
     copied_document
   end
+
+  def buffered_item(_person, activity) do
+    author = Operately.Repo.preload(activity, :author).author
+    company = Operately.Repo.preload(author, :company).company
+
+    {:ok, document} = Document.get(:system, id: activity.content["document_id"], opts: [preload: [:node, :space]])
+
+    action = get_action(activity.content["copied_document_id"])
+
+    %{
+      parent_id: document.space.id,
+      parent_type: :space,
+      parent_name: document.space.name,
+      headline: "#{action} the document \"#{document.node.name}\"",
+      excerpt_html: nil,
+      excerpt_text: nil,
+      item_url: OperatelyWeb.Paths.document_path(company, document) |> OperatelyWeb.Paths.to_url(),
+      actor_name: Operately.People.Person.short_name(author),
+      occurred_at: activity.inserted_at,
+      coalesce_key: nil
+    }
+  end
 end
