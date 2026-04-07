@@ -1,7 +1,7 @@
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
-import { IconLetterCase, IconLock, IconRobotFace, IconShieldLock, IconUser, IconUsers } from "turboui";
+import { IconLetterCase, IconLock, IconRobotFace, IconShieldLock, IconUser, IconUsers, OptionsMenuItem } from "turboui";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { includesId } from "@/routes/paths";
@@ -9,7 +9,6 @@ import { Link } from "turboui";
 import { CompanyAdmins, CompanyOwners } from "./CompanyAdmins";
 import { useLoadedData } from "./loader";
 import { NavigationBackToLobby } from "./NavigationBackToLobby";
-import { OptionsMenuItem } from "./OptionsMenu";
 import { DangerZone } from "./DangerZone";
 
 import { usePaths } from "@/routes/paths";
