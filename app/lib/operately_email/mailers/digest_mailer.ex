@@ -7,6 +7,12 @@ defmodule OperatelyEmail.Mailers.DigestMailer do
     |> OperatelyEmail.Mailers.BaseMailer.deliver_now()
   end
 
+  def send_daily_summary(person, digest_items) do
+    person
+    |> build_daily_summary_email(digest_items)
+    |> OperatelyEmail.Mailers.BaseMailer.deliver_now()
+  end
+
   def build_digest_email(person, batch, digest_items) do
     company = Operately.Repo.preload(person, :company).company
 
@@ -27,6 +33,27 @@ defmodule OperatelyEmail.Mailers.DigestMailer do
     |> Swoosh.Email.subject(subject)
     |> Swoosh.Email.html_body(html("buffered_activity_digest", assigns))
     |> Swoosh.Email.text_body(text("buffered_activity_digest", assigns))
+  end
+
+  def build_daily_summary_email(person, digest_items) do
+    company = Operately.Repo.preload(person, :company).company
+
+    parent_groups = group_by_parent(digest_items)
+    notifications_url = OperatelyWeb.Paths.notifications_path(company) |> OperatelyWeb.Paths.to_url()
+    subject = "Daily summary from the last 24 hours"
+
+    assigns = %{
+      subject: subject,
+      parent_groups: parent_groups,
+      notifications_url: notifications_url
+    }
+
+    Swoosh.Email.new()
+    |> Swoosh.Email.to(person.email)
+    |> Swoosh.Email.from({"Operately", OperatelyEmail.notification_email_address()})
+    |> Swoosh.Email.subject(subject)
+    |> Swoosh.Email.html_body(html("daily_activity_digest", assigns))
+    |> Swoosh.Email.text_body(text("daily_activity_digest", assigns))
   end
 
   defp group_by_parent(digest_items) do

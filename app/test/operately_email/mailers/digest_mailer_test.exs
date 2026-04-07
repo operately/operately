@@ -161,4 +161,41 @@ defmodule OperatelyEmail.Mailers.DigestMailerTest do
 
     assert goal_pos < project_pos, "Goal 1 should appear before Project Alpha (earliest activity first)"
   end
+
+  test "builds daily summary digest email with the same grouped rendering", ctx do
+    digest_items = [
+      %{
+        parent_id: "goal-1",
+        parent_type: :goal,
+        parent_name: "Goal 1",
+        headline: "Activity 1",
+        excerpt_html: "<p>Hello</p>",
+        excerpt_text: "Hello",
+        item_url: "https://example.com/goal-1/activity-1",
+        actor_name: "John D.",
+        occurred_at: ~N[2026-04-02 10:01:00],
+        coalesce_key: nil
+      },
+      %{
+        parent_id: "project-1",
+        parent_type: :project,
+        parent_name: "Project Alpha",
+        headline: "Activity 2",
+        excerpt_html: nil,
+        excerpt_text: nil,
+        item_url: "https://example.com/project-1/activity-2",
+        actor_name: "Jane D.",
+        occurred_at: ~N[2026-04-02 10:02:00],
+        coalesce_key: nil
+      }
+    ]
+
+    email = DigestMailer.build_daily_summary_email(ctx.person, digest_items)
+
+    assert email.subject == "Daily summary from the last 24 hours"
+    assert email.html_body =~ "Daily summary from the last 24 hours"
+    assert email.html_body =~ "Goal 1"
+    assert email.html_body =~ "Project Alpha"
+    assert email.text_body =~ "Daily summary from the last 24 hours"
+  end
 end

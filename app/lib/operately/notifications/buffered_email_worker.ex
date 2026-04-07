@@ -4,12 +4,11 @@ defmodule Operately.Notifications.BufferedEmailWorker do
   import Ecto.Query
 
   alias Operately.Notifications.EmailBatch
+  alias Operately.Notifications.DigestItems
   alias Operately.Notifications.EmailWorker
   alias Operately.Notifications.Notification
   alias Operately.Repo
   alias OperatelyEmail.Mailers.DigestMailer
-
-  require Logger
 
   def perform(%{args: %{"email_batch_id" => email_batch_id}}) do
     batch = Repo.get!(EmailBatch, email_batch_id)
@@ -59,7 +58,7 @@ defmodule Operately.Notifications.BufferedEmailWorker do
 
   defp deliver_digest(notifications, batch) do
     batch = Repo.preload(batch, :person)
-    {digest_items, sent_notifications} = build_digest_items(notifications, batch.person)
+    {digest_items, sent_notifications} = DigestItems.build(notifications, batch.person)
 
     case digest_items do
       [] ->
@@ -78,39 +77,6 @@ defmodule Operately.Notifications.BufferedEmailWorker do
             {:error, reason}
         end
     end
-  end
-
-  defp build_digest_items(notifications, person) do
-    {digest_items, skipped_notifications} =
-      Enum.reduce(notifications, {[], []}, fn notification, {items, skipped} ->
-        activity = notification.activity
-
-        if has_buffered_item?(activity) do
-          module = email_module(activity)
-          item = apply(module, :buffered_item, [person, activity])
-
-          {[item | items], skipped}
-        else
-          Logger.warning("Activity #{activity.action} does not have buffered_item/2 implemented, skipping notification #{notification.id}")
-          {items, [notification | skipped]}
-        end
-      end)
-
-    digest_items = Enum.reverse(digest_items)
-    sent_notifications = notifications -- skipped_notifications
-
-    {digest_items, sent_notifications}
-  end
-
-  defp has_buffered_item?(activity) do
-    module = email_module(activity)
-    Code.ensure_loaded?(module) && function_exported?(module, :buffered_item, 2)
-  rescue
-    ArgumentError -> false
-  end
-
-  defp email_module(activity) do
-    String.to_existing_atom("Elixir.OperatelyEmail.Emails.#{Macro.camelize(activity.action)}Email")
   end
 
   defp mark_notifications_sent(notifications) do
