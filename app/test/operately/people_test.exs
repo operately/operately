@@ -94,7 +94,7 @@ defmodule Operately.PeopleTest do
       person = Ecto.Changeset.apply_changes(changeset)
 
       assert person.preferences.notifications.notify_about_assignments
-      refute person.preferences.notifications.notify_on_mention
+      assert person.preferences.notifications.notify_on_mention
       assert person.preferences.notifications.send_daily_summary
       assert person.preferences.notifications.daily_summary_delivery_time == "18:00"
     end
@@ -109,7 +109,7 @@ defmodule Operately.PeopleTest do
       assert {:ok, %Person{} = person} = People.create_person(valid_attrs)
 
       assert person.preferences.notifications.notify_about_assignments
-      refute person.preferences.notifications.notify_on_mention
+      assert person.preferences.notifications.notify_on_mention
       assert person.preferences.notifications.send_daily_summary
       assert person.preferences.notifications.daily_summary_delivery_time == "18:00"
     end

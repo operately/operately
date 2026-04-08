@@ -14,7 +14,7 @@ defmodule Operately.People.PersonPreferencesTest do
       assert person.preferences.notifications.email_preference == :buffered
       assert person.preferences.notifications.email_window_minutes == 5
       assert person.preferences.notifications.notify_about_assignments
-      refute person.preferences.notifications.notify_on_mention
+      assert person.preferences.notifications.notify_on_mention
       assert person.preferences.notifications.send_daily_summary
       assert person.preferences.notifications.daily_summary_delivery_time == "18:00"
     end
@@ -124,7 +124,7 @@ defmodule Operately.People.PersonPreferencesTest do
       assert Person.email_preference(%Person{}) == :buffered
       assert Person.email_window_minutes(%Person{}) == 5
       assert Person.notify_about_assignments?(%Person{})
-      refute Person.notify_on_mention?(%Person{})
+      assert Person.notify_on_mention?(%Person{})
       assert Person.send_daily_summary?(%Person{})
       assert Person.daily_summary_delivery_time(%Person{}) == "18:00"
     end
