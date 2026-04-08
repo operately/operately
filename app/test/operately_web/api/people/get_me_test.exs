@@ -27,6 +27,7 @@ defmodule OperatelyWeb.Api.People.GetMeTest do
         email_preference: "buffered",
         email_window_minutes: 5,
         send_daily_summary: Operately.People.Person.send_daily_summary?(ctx.person),
+        daily_summary_delivery_time: Operately.People.Person.daily_summary_delivery_time(ctx.person),
         notify_on_mention: Operately.People.Person.notify_on_mention?(ctx.person),
         notify_about_assignments: Operately.People.Person.notify_about_assignments?(ctx.person),
         description: nil,
@@ -53,6 +54,7 @@ defmodule OperatelyWeb.Api.People.GetMeTest do
         email_preference: "buffered",
         email_window_minutes: 5,
         send_daily_summary: Operately.People.Person.send_daily_summary?(me),
+        daily_summary_delivery_time: Operately.People.Person.daily_summary_delivery_time(me),
         notify_on_mention: Operately.People.Person.notify_on_mention?(me),
         notify_about_assignments: Operately.People.Person.notify_about_assignments?(me),
         description: nil,
@@ -83,6 +85,7 @@ defmodule OperatelyWeb.Api.People.GetMeTest do
         email_preference: "buffered",
         email_window_minutes: 5,
         send_daily_summary: Operately.People.Person.send_daily_summary?(ctx.person),
+        daily_summary_delivery_time: Operately.People.Person.daily_summary_delivery_time(ctx.person),
         notify_on_mention: Operately.People.Person.notify_on_mention?(ctx.person),
         notify_about_assignments: Operately.People.Person.notify_about_assignments?(ctx.person),
         description: nil,
@@ -98,7 +101,8 @@ defmodule OperatelyWeb.Api.People.GetMeTest do
             notifications: %{
               email_window_minutes: 30,
               notify_on_mention: false,
-              send_daily_summary: false
+              send_daily_summary: false,
+              daily_summary_delivery_time: "09:00"
             }
           }
         })
@@ -109,6 +113,7 @@ defmodule OperatelyWeb.Api.People.GetMeTest do
       assert data.email_window_minutes == 30
       refute data.notify_on_mention
       refute data.send_daily_summary
+      assert data.daily_summary_delivery_time == "09:00"
       assert Operately.People.Person.email_preference(person) == :buffered
     end
   end

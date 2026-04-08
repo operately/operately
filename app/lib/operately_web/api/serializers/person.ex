@@ -63,6 +63,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
       email_preference: data |> Operately.People.Person.email_preference() |> Atom.to_string(),
       email_window_minutes: Operately.People.Person.email_window_minutes(data),
       send_daily_summary: Operately.People.Person.send_daily_summary?(data),
+      daily_summary_delivery_time: Operately.People.Person.daily_summary_delivery_time(data),
       notify_on_mention: Operately.People.Person.notify_on_mention?(data),
       notify_about_assignments: Operately.People.Person.notify_about_assignments?(data),
       description: encode_description(data.description)

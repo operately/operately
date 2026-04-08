@@ -40,6 +40,7 @@ defmodule OperatelyWeb.Api.People.GetMe do
         email_preference: me |> Operately.People.Person.email_preference() |> Atom.to_string(),
         email_window_minutes: Operately.People.Person.email_window_minutes(me),
         send_daily_summary: Operately.People.Person.send_daily_summary?(me),
+        daily_summary_delivery_time: Operately.People.Person.daily_summary_delivery_time(me),
         notify_on_mention: Operately.People.Person.notify_on_mention?(me),
         notify_about_assignments: Operately.People.Person.notify_about_assignments?(me),
         description: encode_description(me.description),
