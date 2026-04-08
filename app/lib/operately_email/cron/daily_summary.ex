@@ -188,17 +188,11 @@ defmodule OperatelyEmail.Cron.DailySummary do
     if eligible_person?(person), do: person, else: nil
   end
 
-  defp eligible_person?(nil), do: false
-
-  defp eligible_person?(person) do
-    person.account_id != nil and
-      person.account != nil and
-      person.company != nil and
-      not is_nil(person.account.email) and
-      not is_nil(person.email) and
-      Person.send_daily_summary?(person) and
-      BufferedEmailPolicy.enabled?(person.company)
+  defp eligible_person?(person = %Person{}) do
+    Person.send_daily_summary?(person) and BufferedEmailPolicy.enabled?(person.company)
   end
+
+  defp eligible_person?(_), do: false
 
   defp catch_and_log_errors(cb) do
     try do
