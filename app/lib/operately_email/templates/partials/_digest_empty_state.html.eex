@@ -1,0 +1,16 @@
+<tr>
+  <td width="100%" style="width: 100%; padding-bottom: 24px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width: 100%; border-collapse: separate; border-spacing: 0;">
+      <tr>
+        <td width="100%" style="width: 100%; border: 1px solid #e2e8f0; border-radius: 18px; background: #f8fafc; background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%); padding: 24px 22px;">
+          <div style="font-size: 18px; line-height: 1.4; font-family: sans-serif; font-weight: 700; color: #0f172a; margin-bottom: 8px;">
+            <%= @title %>
+          </div>
+          <div style="font-size: 14px; line-height: 1.7; font-family: sans-serif; color: #475569;">
+            <%= @body %>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </td>
+</tr>

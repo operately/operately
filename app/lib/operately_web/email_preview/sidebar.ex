@@ -7,6 +7,7 @@ defmodule OperatelyWeb.EmailPreview.Sidebar do
 
   def render(email_body, current_path, preview_registry) do
     email_content = render_email_content(email_body)
+    page_title = page_title(current_path, preview_registry)
 
     """
     <!DOCTYPE html>
@@ -14,7 +15,7 @@ defmodule OperatelyWeb.EmailPreview.Sidebar do
     <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1">
-      <title>Email Preview</title>
+      <title>#{page_title}</title>
       <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { height: 100% !important; margin: 0; padding: 0 !important; }
@@ -26,7 +27,7 @@ defmodule OperatelyWeb.EmailPreview.Sidebar do
         .sidebar-email { padding: 16px 20px 8px 20px; font-weight: 600; font-size: 13px; color: #6c757d; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.6; }
         .sidebar-link { display: block; padding: 8px 20px 8px 36px; color: #495057; text-decoration: none; font-size: 14px; transition: background 0.15s; line-height: 2; }
         .sidebar-link:hover { background: #e9ecef; }
-        .sidebar-link.active { background: #007bff; color: white; font-weight: 500; }
+        .sidebar-link.active { background: #007bff; color: white; font-weight: 500; scroll-margin-block: 24px; }
         .content { flex: 1; overflow: hidden; background: #ffffff; display: flex; }
         .email-container { flex: 1; overflow-y: auto; padding: 40px 20px; display: flex; justify-content: center; }
         .email-frame { width: 100%; max-width: 800px; min-height: 100vh; border: none; display: block; background: #ffffff; }
@@ -47,14 +48,22 @@ defmodule OperatelyWeb.EmailPreview.Sidebar do
           #{email_content}
         </div>
       </div>
+      <script>
+        window.addEventListener("load", function () {
+          var activeLink = document.querySelector(".sidebar-link.active");
+
+          if (activeLink) {
+            activeLink.scrollIntoView({ block: "center", inline: "nearest" });
+          }
+        });
+      </script>
     </body>
     </html>
     """
   end
 
   defp render_links(current_path, preview_registry) do
-    # Strip the /dev/emails prefix from current_path for comparison
-    normalized_path = String.replace_prefix(current_path, "/dev/emails", "")
+    normalized_path = normalize_path(current_path)
 
     preview_registry
     |> Enum.map(fn group ->
@@ -64,7 +73,8 @@ defmodule OperatelyWeb.EmailPreview.Sidebar do
         group.previews
         |> Enum.map(fn preview ->
           active_class = if preview.path == normalized_path, do: " active", else: ""
-          "<a href=\"/dev/emails#{preview.path}\" class=\"sidebar-link#{active_class}\">#{preview.label}</a>"
+          aria_current = if preview.path == normalized_path, do: " aria-current=\"page\"", else: ""
+          "<a href=\"/dev/emails#{preview.path}\" class=\"sidebar-link#{active_class}\"#{aria_current}>#{preview.label}</a>"
         end)
         |> Enum.join("\n          ")
 
@@ -83,5 +93,26 @@ defmodule OperatelyWeb.EmailPreview.Sidebar do
 
   defp placeholder do
     ~s(<div class="email-placeholder"></div>)
+  end
+
+  defp page_title(current_path, preview_registry) do
+    case current_preview_label(current_path, preview_registry) do
+      nil -> "Email Preview"
+      label -> "#{label} · Email Preview"
+    end
+  end
+
+  defp current_preview_label(current_path, preview_registry) do
+    normalized_path = normalize_path(current_path)
+
+    preview_registry
+    |> Enum.flat_map(& &1.previews)
+    |> Enum.find_value(fn preview ->
+      if preview.path == normalized_path, do: preview.label
+    end)
+  end
+
+  defp normalize_path(current_path) do
+    String.replace_prefix(current_path, "/dev/emails", "")
   end
 end

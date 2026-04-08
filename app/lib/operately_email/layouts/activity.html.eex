@@ -13,11 +13,19 @@
         margin-bottom: 20px;
         font-weight: bold;
       }
+
+      .digest-link {
+        text-decoration: none;
+      }
+
+      .digest-link:hover {
+        text-decoration: underline !important;
+      }
     </style>
   </head>
 
   <body style="padding: 10px 20px;">
-    <table style="background: #fff; margin:0; padding:0; border:0; border-collapse:collapse; border-spacing:0; max-width: 40em">
+    <table width="100%" style="width: 100%; background: #fff; margin:0; padding:0; border:0; border-collapse:collapse; border-spacing:0; max-width: 40em">
       <%= @inner_content %>
     </table>
   </body>
