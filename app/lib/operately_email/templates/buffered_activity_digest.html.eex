@@ -2,33 +2,10 @@
 
 <%= spacer() %>
 
-<%= for group <- @parent_groups do %>
-  <%= subtitle("#{group.parent_name} (#{length(group.items)} #{if length(group.items) == 1, do: "update", else: "updates"})") %>
-
-  <%= spacer() %>
-
-  <%= for item <- group.items do %>
-    <%= row do %>
-      <strong><%= item.actor_name %></strong>: <%= item.headline %>
-    <% end %>
-
-    <%= if item.excerpt_html do %>
-      <%= row do %>
-        <%= Phoenix.HTML.raw(item.excerpt_html) %>
-      <% end %>
-    <% end %>
-
-    <%= row do %>
-      <%= link(item.item_url, "View →") %>
-    <% end %>
-
-    <%= spacer() %>
+<%= if Enum.empty?(@parent_groups) do %>
+  <%= digest_empty_state("You're all caught up", "No new updates came in during the last #{@window_minutes} minutes.") %>
+<% else %>
+  <%= for group <- @parent_groups do %>
+    <%= digest_group(group) %>
   <% end %>
-
-  <%= line() %>
-  <%= spacer() %>
-<% end %>
-
-<%= row do %>
-  <%= cta_button(@notifications_url, "View All Notifications") %>
 <% end %>

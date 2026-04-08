@@ -1,5 +1,9 @@
 Daily summary from the last 24 hours
 
+<%= if Enum.empty?(@parent_groups) do %>
+You're all caught up.
+No new updates were posted in the last 24 hours.
+<% else %>
 <%= for group <- @parent_groups do %>
 <%= group.parent_name %> (<%= length(group.items) %> <%= if length(group.items) == 1, do: "update", else: "updates" %>)
 <%= for item <- group.items do %>
@@ -9,6 +13,7 @@ Daily summary from the last 24 hours
 <% end %>
     <%= item.item_url %>
 
+<% end %>
 <% end %>
 <% end %>
 

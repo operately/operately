@@ -22,6 +22,14 @@ defmodule OperatelyEmail.Templates do
     render "partials/_subtitle.html", text: text
   end
 
+  def digest_group(group) do
+    render "partials/_digest_group.html", group: group
+  end
+
+  def digest_empty_state(title, body) do
+    render "partials/_digest_empty_state.html", title: title, body: body
+  end
+
   def spacer do
     render "partials/_spacer.html"
   end
