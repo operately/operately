@@ -203,6 +203,11 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
     |> UI.select(testid: "email-window-minutes-dropdown", option: option)
   end
 
+  step :choose_daily_summary_delivery_time, ctx, option do
+    ctx
+    |> UI.select(testid: "daily-summary-delivery-time-dropdown", option: option)
+  end
+
   step :disable_daily_summary, ctx do
     person = Operately.People.get_person!(ctx.person.id)
 
@@ -236,6 +241,10 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
 
     if Map.has_key?(attrs, :send_daily_summary) do
       assert Operately.People.Person.send_daily_summary?(person) == attrs.send_daily_summary
+    end
+
+    if Map.has_key?(attrs, :daily_summary_delivery_time) do
+      assert Operately.People.Person.daily_summary_delivery_time(person) == attrs.daily_summary_delivery_time
     end
 
     ctx

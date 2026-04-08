@@ -9,14 +9,17 @@ import classNames from "../utils/classnames";
 
 export namespace AccountNotificationSettingsPage {
   export type EmailWindowMinutes = 5 | 10 | 15 | 30 | 60;
+  export type DailySummaryDeliveryTime = string;
 
   export interface Props {
     notifyOnMention: boolean;
     emailWindowMinutes: EmailWindowMinutes;
     sendDailySummary: boolean;
+    dailySummaryDeliveryTime: DailySummaryDeliveryTime;
     onNotifyOnMentionChange: (value: boolean) => void;
     onEmailWindowMinutesChange: (value: EmailWindowMinutes) => void;
     onSendDailySummaryChange: (value: boolean) => void;
+    onDailySummaryDeliveryTimeChange: (value: DailySummaryDeliveryTime) => void;
     onSubmit: () => Promise<void>;
     onCancel: () => void;
     isSubmitting?: boolean;
@@ -29,6 +32,10 @@ interface WindowOption extends Dropdown.Item {
   minutes: AccountNotificationSettingsPage.EmailWindowMinutes;
 }
 
+interface DailySummaryTimeOption extends Dropdown.Item {
+  value: AccountNotificationSettingsPage.DailySummaryDeliveryTime;
+}
+
 const WINDOW_OPTIONS: WindowOption[] = [
   { id: "5", name: "5 minutes", minutes: 5, testId: "email-window-minutes-option-5" },
   { id: "10", name: "10 minutes", minutes: 10, testId: "email-window-minutes-option-10" },
@@ -36,6 +43,18 @@ const WINDOW_OPTIONS: WindowOption[] = [
   { id: "30", name: "30 minutes", minutes: 30, testId: "email-window-minutes-option-30" },
   { id: "60", name: "60 minutes", minutes: 60, testId: "email-window-minutes-option-60" },
 ];
+
+const DAILY_SUMMARY_TIME_OPTIONS: DailySummaryTimeOption[] = Array.from({ length: 24 }, (_, hour) => {
+  const value = `${String(hour).padStart(2, "0")}:00`;
+  const label = formatDailySummaryHourLabel(hour);
+
+  return {
+    id: value,
+    value,
+    name: label,
+    testId: `daily-summary-delivery-time-option-${value}`,
+  };
+});
 
 export function AccountNotificationSettingsPage(props: AccountNotificationSettingsPage.Props) {
   const navigation = React.useMemo(
@@ -110,27 +129,12 @@ export function AccountNotificationSettingsPage(props: AccountNotificationSettin
             </div>
           </section>
 
-          <section className="rounded-lg border border-surface-outline bg-surface-dimmed p-4">
-            <div className="flex items-start justify-between gap-4">
-              <div className="pr-6">
-                <div className="font-bold text-sm flex items-center gap-2">
-                  <IconClockPlay size={18} />
-                  Daily summary
-                </div>
-                <div className="text-sm text-content-dimmed mt-1">
-                  Send one summary email at the end of your workday.
-                </div>
-              </div>
-
-              <SwitchToggle
-                label="Send daily summary"
-                value={props.sendDailySummary}
-                setValue={props.onSendDailySummaryChange}
-                testId={props.sendDailySummary ? "disable-daily-summary-toggle" : "enable-daily-summary-toggle"}
-                labelHidden
-              />
-            </div>
-          </section>
+          <DailySummarySection
+            sendDailySummary={props.sendDailySummary}
+            dailySummaryDeliveryTime={props.dailySummaryDeliveryTime}
+            onSendDailySummaryChange={props.onSendDailySummaryChange}
+            onDailySummaryDeliveryTimeChange={props.onDailySummaryDeliveryTimeChange}
+          />
 
           <div className="flex justify-end gap-2">
             <SecondaryButton type="button" onClick={props.onCancel} disabled={props.isSubmitting}>
@@ -144,6 +148,62 @@ export function AccountNotificationSettingsPage(props: AccountNotificationSettin
         </form>
       </div>
     </Page>
+  );
+}
+
+function formatDailySummaryHourLabel(hour: number) {
+  if (hour === 0) return "12:00 AM";
+  if (hour < 12) return `${hour}:00 AM`;
+  if (hour === 12) return "12:00 PM";
+
+  return `${hour - 12}:00 PM`;
+}
+
+function DailySummarySection({
+  sendDailySummary,
+  dailySummaryDeliveryTime,
+  onSendDailySummaryChange,
+  onDailySummaryDeliveryTimeChange,
+}: {
+  sendDailySummary: boolean;
+  dailySummaryDeliveryTime: AccountNotificationSettingsPage.DailySummaryDeliveryTime;
+  onSendDailySummaryChange: (value: boolean) => void;
+  onDailySummaryDeliveryTimeChange: (value: AccountNotificationSettingsPage.DailySummaryDeliveryTime) => void;
+}) {
+  return (
+    <section className="rounded-lg border border-surface-outline bg-surface-dimmed p-4">
+      <div className="flex items-start justify-between gap-4">
+        <div className="pr-6">
+          <div className="font-bold text-sm flex items-center gap-2">
+            <IconClockPlay size={18} />
+            Daily summary
+          </div>
+          <div className="text-sm text-content-dimmed mt-1">
+            Send one summary email at the end of your workday.
+          </div>
+        </div>
+
+        <SwitchToggle
+          label="Send daily summary"
+          value={sendDailySummary}
+          setValue={onSendDailySummaryChange}
+          testId={sendDailySummary ? "disable-daily-summary-toggle" : "enable-daily-summary-toggle"}
+          labelHidden
+        />
+      </div>
+
+      {sendDailySummary && (
+        <div className="mt-4 max-w-xs">
+          <div className="text-xs text-content-dimmed mb-1">Delivery time</div>
+          <Dropdown
+            items={DAILY_SUMMARY_TIME_OPTIONS}
+            value={dailySummaryDeliveryTime}
+            onSelect={(item) => onDailySummaryDeliveryTimeChange(item.value)}
+            testId="daily-summary-delivery-time-dropdown"
+          />
+        </div>
+      )}
+    </section>
   );
 }
 

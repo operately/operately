@@ -1570,6 +1570,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :email_preference, :email_preference_values, null: false
     field? :email_window_minutes, :email_window_minutes, null: false
     field? :send_daily_summary, :boolean, null: false
+    field? :daily_summary_delivery_time, :string, null: false
     field? :notify_on_mention, :boolean, null: false
     field? :notify_about_assignments, :boolean, null: false
     field? :suspended, :boolean, null: true
