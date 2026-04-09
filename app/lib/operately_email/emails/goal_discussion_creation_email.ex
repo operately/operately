@@ -29,16 +29,18 @@ defmodule OperatelyEmail.Emails.GoalDiscussionCreationEmail do
 
   def buffered_item(_person, activity) do
     goal = Operately.Goals.get_goal!(activity.content["goal_id"])
+    discussion = Operately.Comments.get_thread!(activity.comment_thread_id)
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
+    %{html: excerpt_html, text: excerpt_text} = OperatelyEmail.RichTextExcerpt.excerpt(discussion.message)
 
     %{
       parent_id: goal.id,
       parent_type: :goal,
       parent_name: goal.name,
-      headline: "started a goal discussion",
-      excerpt_html: nil,
-      excerpt_text: nil,
+      headline: "started a goal discussion: #{discussion.title}",
+      excerpt_html: excerpt_html,
+      excerpt_text: excerpt_text,
       item_url: OperatelyWeb.Paths.goal_path(company, goal) |> OperatelyWeb.Paths.to_url(),
       actor_name: Operately.People.Person.short_name(author),
       occurred_at: activity.inserted_at,

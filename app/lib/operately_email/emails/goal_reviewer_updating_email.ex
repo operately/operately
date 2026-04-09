@@ -23,12 +23,13 @@ defmodule OperatelyEmail.Emails.GoalReviewerUpdatingEmail do
     goal = Operately.Goals.get_goal!(activity.content["goal_id"])
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
+    reviewer = get_reviewer(activity.content["new_reviewer_id"])
 
     %{
       parent_id: goal.id,
       parent_type: :goal,
       parent_name: goal.name,
-      headline: "updated the goal reviewer",
+      headline: buffered_headline(reviewer),
       excerpt_html: nil,
       excerpt_text: nil,
       item_url: OperatelyWeb.Paths.goal_path(company, goal) |> OperatelyWeb.Paths.to_url(),
@@ -37,4 +38,10 @@ defmodule OperatelyEmail.Emails.GoalReviewerUpdatingEmail do
       coalesce_key: nil
     }
   end
+
+  defp buffered_headline(nil), do: "removed the goal reviewer"
+  defp buffered_headline(reviewer), do: "assigned #{reviewer.full_name} as the goal reviewer"
+
+  defp get_reviewer(nil), do: nil
+  defp get_reviewer(id), do: Operately.People.get_person!(id)
 end

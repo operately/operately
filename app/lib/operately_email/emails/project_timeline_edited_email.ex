@@ -59,12 +59,14 @@ defmodule OperatelyEmail.Emails.ProjectTimelineEditedEmail do
     project = Operately.Projects.get_project!(activity.content["project_id"])
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
+    start_date = activity.content["new_start_date"]
+    end_date = activity.content["new_end_date"]
 
     %{
       parent_id: project.id,
       parent_type: :project,
       parent_name: project.name,
-      headline: "edited this project timeline",
+      headline: buffered_headline(start_date, end_date),
       excerpt_html: nil,
       excerpt_text: nil,
       item_url: OperatelyWeb.Paths.project_path(company, project) |> OperatelyWeb.Paths.to_url(),
@@ -73,4 +75,17 @@ defmodule OperatelyEmail.Emails.ProjectTimelineEditedEmail do
       coalesce_key: nil
     }
   end
+
+  defp buffered_headline(nil, nil), do: "updated the project's timeline"
+  defp buffered_headline(start_date, nil), do: "updated the project's timeline to start on #{format_date(start_date)}"
+  defp buffered_headline(nil, end_date), do: "updated the project's timeline to end on #{format_date(end_date)}"
+  defp buffered_headline(start_date, end_date), do: "updated the project's timeline from #{format_date(start_date)} to #{format_date(end_date)}"
+
+  defp format_date(date) when is_binary(date) do
+    case Date.from_iso8601(date) do
+      {:ok, parsed} -> Calendar.strftime(parsed, "%b %-d, %Y")
+      _ -> date
+    end
+  end
+  defp format_date(date), do: Calendar.strftime(date, "%b %-d, %Y")
 end
