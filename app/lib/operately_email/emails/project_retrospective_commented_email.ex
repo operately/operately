@@ -38,7 +38,7 @@ defmodule OperatelyEmail.Emails.ProjectRetrospectiveCommentedEmail do
       parent_id: project.id,
       parent_type: :project,
       parent_name: project.name,
-      headline: "commented on this project retrospective",
+      headline: "commented on the project retrospective",
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
       item_url: OperatelyWeb.Paths.project_path(company, project) |> OperatelyWeb.Paths.to_url(),

@@ -51,12 +51,13 @@ defmodule OperatelyEmail.Emails.TaskAssigneeUpdatingEmail do
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
     parent = OperatelyEmail.DigestParent.for_task(task)
+    new_assignee = get_person(activity.content["new_assignee_id"])
 
     %{
       parent_id: parent.id,
       parent_type: parent.type,
       parent_name: parent.name,
-      headline: "updated the assignee of the task \"#{task.name}\"",
+      headline: buffered_headline(task.name, new_assignee),
       excerpt_html: nil,
       excerpt_text: nil,
       item_url: OperatelyWeb.Paths.task_path(company, task) |> OperatelyWeb.Paths.to_url(),
@@ -65,4 +66,7 @@ defmodule OperatelyEmail.Emails.TaskAssigneeUpdatingEmail do
       coalesce_key: nil
     }
   end
+
+  defp buffered_headline(task_name, nil), do: "removed the assignee from the task \"#{task_name}\""
+  defp buffered_headline(task_name, assignee), do: "assigned #{assignee.full_name} to the task \"#{task_name}\""
 end

@@ -32,7 +32,7 @@ defmodule OperatelyEmail.Emails.GoalCreatedEmail do
       parent_id: goal.id,
       parent_type: :goal,
       parent_name: goal.name,
-      headline: "#{Person.short_name(author)} added the #{goal.name} goal",
+      headline: "created the goal",
       excerpt_html: nil,
       excerpt_text: nil,
       item_url: Paths.goal_path(company, goal) |> Paths.to_url(),

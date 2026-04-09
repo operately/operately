@@ -26,6 +26,7 @@ defmodule OperatelyEmail.Emails.ProjectGoalDisconnectionEmail do
 
   def buffered_item(_person, activity) do
     project = Operately.Projects.get_project!(activity.content["project_id"])
+    goal = Operately.Goals.get_goal!(activity.content["goal_id"])
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
 
@@ -33,7 +34,7 @@ defmodule OperatelyEmail.Emails.ProjectGoalDisconnectionEmail do
       parent_id: project.id,
       parent_type: :project,
       parent_name: project.name,
-      headline: "disconnected this project from a goal",
+      headline: "disconnected the project from the goal \"#{goal.name}\"",
       excerpt_html: nil,
       excerpt_text: nil,
       item_url: OperatelyWeb.Paths.project_path(company, project) |> OperatelyWeb.Paths.to_url(),

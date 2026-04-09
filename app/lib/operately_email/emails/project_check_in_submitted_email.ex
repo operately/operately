@@ -110,20 +110,27 @@ defmodule OperatelyEmail.Emails.ProjectCheckInSubmittedEmail do
 
   def buffered_item(_person, activity) do
     project = Operately.Projects.get_project!(activity.content["project_id"])
+    check_in = Operately.Projects.get_check_in!(activity.content["check_in_id"])
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
+    %{html: excerpt_html, text: excerpt_text} = OperatelyEmail.RichTextExcerpt.excerpt(check_in.description)
 
     %{
       parent_id: project.id,
       parent_type: :project,
       parent_name: project.name,
-      headline: "submitted a project check-in",
-      excerpt_html: nil,
-      excerpt_text: nil,
+      headline: "submitted a check-in with status \"#{status_label(check_in.status)}\"",
+      excerpt_html: excerpt_html,
+      excerpt_text: excerpt_text,
       item_url: OperatelyWeb.Paths.project_path(company, project) |> OperatelyWeb.Paths.to_url(),
       actor_name: Operately.People.Person.short_name(author),
       occurred_at: activity.inserted_at,
       coalesce_key: nil
     }
   end
+
+  defp status_label(:on_track), do: "on track"
+  defp status_label(:off_track), do: "off track"
+  defp status_label(status) when is_binary(status), do: status
+  defp status_label(status) when is_atom(status), do: Atom.to_string(status)
 end

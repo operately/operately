@@ -35,12 +35,14 @@ defmodule OperatelyEmail.Emails.MilestoneDueDateUpdatingEmail do
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
     parent = OperatelyEmail.DigestParent.for_milestone(milestone)
+    old_date = get_date_value(activity.content["old_due_date"])
+    new_date = get_date_value(activity.content["new_due_date"])
 
     %{
       parent_id: parent.id,
       parent_type: parent.type,
       parent_name: parent.name,
-      headline: "updated the due date of the milestone \"#{milestone.title}\"",
+      headline: buffered_headline(milestone.title, old_date, new_date),
       excerpt_html: nil,
       excerpt_text: nil,
       item_url: OperatelyWeb.Paths.project_milestone_path(company, milestone) |> OperatelyWeb.Paths.to_url(),
@@ -49,4 +51,8 @@ defmodule OperatelyEmail.Emails.MilestoneDueDateUpdatingEmail do
       coalesce_key: nil
     }
   end
+
+  defp buffered_headline(milestone_title, _old_date, nil), do: "removed the due date from the milestone \"#{milestone_title}\""
+  defp buffered_headline(milestone_title, nil, new_date), do: "set the due date of the milestone \"#{milestone_title}\" to #{new_date}"
+  defp buffered_headline(milestone_title, _old_date, new_date), do: "changed the due date of the milestone \"#{milestone_title}\" to #{new_date}"
 end

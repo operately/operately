@@ -33,7 +33,7 @@ defmodule OperatelyEmail.Emails.GoalTimeframeEditingEmail do
       parent_id: goal.id,
       parent_type: :goal,
       parent_name: goal.name,
-      headline: "updated this goal timeframe",
+      headline: "updated the goal's timeframe",
       excerpt_html: nil,
       excerpt_text: nil,
       item_url: OperatelyWeb.Paths.goal_path(company, goal) |> OperatelyWeb.Paths.to_url(),
