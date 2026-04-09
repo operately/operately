@@ -30,7 +30,9 @@ defmodule OperatelyEmail.Emails.TaskDueDateUpdatingEmail do
   end
 
   defp get_date_value(nil), do: nil
-  defp get_date_value(date), do: date["value"]
+  defp get_date_value(%Operately.ContextualDates.ContextualDate{value: value}), do: value
+  defp get_date_value(%{"value" => value}), do: value
+  defp get_date_value(date) when is_binary(date), do: date
 
   defp get_location(task) do
     cond do

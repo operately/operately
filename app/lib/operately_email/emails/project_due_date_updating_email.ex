@@ -35,7 +35,6 @@ defmodule OperatelyEmail.Emails.ProjectDueDateUpdatingEmail do
       _ -> date
     end
   end
-  defp get_date_value(%{}), do: nil
   defp get_date_value(date), do: Calendar.strftime(date, "%b %-d, %Y")
 
   defp subject_action(_old, nil), do: "removed the due date"
