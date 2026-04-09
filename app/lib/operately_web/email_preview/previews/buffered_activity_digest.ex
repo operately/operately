@@ -20,6 +20,10 @@ defmodule OperatelyWeb.EmailPreview.Previews.BufferedActivityDigest do
     build_preview(multiple_item_digest_items())
   end
 
+  def mixed_grouped_and_individual do
+    build_preview(mixed_digest_items())
+  end
+
   def preview do
     multiple_items()
   end
@@ -70,6 +74,99 @@ defmodule OperatelyWeb.EmailPreview.Previews.BufferedActivityDigest do
         item_url: "https://app.operately.dev/projects/launch-website/tasks/launch-checklist",
         actor_name: "Taylor R.",
         occurred_at: ~N[2026-04-08 10:07:00]
+      })
+    ]
+  end
+
+  defp mixed_digest_items do
+    [
+      digest_item(%{
+        parent_id: "project-001",
+        parent_type: :project,
+        parent_name: "Launch Website Project",
+        headline: "set the champion to Adriano",
+        excerpt_html: nil,
+        excerpt_text: nil,
+        item_url: "https://app.operately.dev/projects/launch-website",
+        actor_name: "Adriano",
+        occurred_at: ~N[2026-04-08 10:00:00]
+      }),
+      digest_item(%{
+        parent_id: "project-001",
+        parent_type: :project,
+        parent_name: "Launch Website Project",
+        headline: "added a milestone",
+        excerpt_html: "<p>Beta Launch - April 15th</p>",
+        excerpt_text: "Beta Launch - April 15th",
+        item_url: "https://app.operately.dev/projects/launch-website/milestones/beta-launch",
+        actor_name: "Adriano",
+        occurred_at: ~N[2026-04-08 10:02:00]
+      }),
+      digest_item(%{
+        parent_id: "project-001",
+        parent_type: :project,
+        parent_name: "Launch Website Project",
+        headline: "set the due date to 15th April",
+        excerpt_html: nil,
+        excerpt_text: nil,
+        item_url: "https://app.operately.dev/projects/launch-website",
+        actor_name: "Adriano",
+        occurred_at: ~N[2026-04-08 10:05:00]
+      }),
+      digest_item(%{
+        parent_id: "project-001",
+        parent_type: :project,
+        parent_name: "Launch Website Project",
+        headline: "commented on the launch checklist",
+        excerpt_html: "<p>QA sign-off is in, but we still need the final support handoff.</p>",
+        excerpt_text: "QA sign-off is in, but we still need the final support handoff.",
+        item_url: "https://app.operately.dev/projects/launch-website/tasks/launch-checklist",
+        actor_name: "Taylor R.",
+        occurred_at: ~N[2026-04-08 10:07:00]
+      }),
+      digest_item(%{
+        parent_id: "project-001",
+        parent_type: :project,
+        parent_name: "Launch Website Project",
+        headline: "updated the project champion",
+        excerpt_html: nil,
+        excerpt_text: nil,
+        item_url: "https://app.operately.dev/projects/launch-website",
+        actor_name: "Jordan S.",
+        occurred_at: ~N[2026-04-08 10:11:00]
+      }),
+      digest_item(%{
+        parent_id: "goal-002",
+        parent_type: :goal,
+        parent_name: "Q2 Growth Plan",
+        headline: "updated the goal reviewer",
+        excerpt_html: nil,
+        excerpt_text: nil,
+        item_url: "https://app.operately.dev/goals/q2-growth-plan",
+        actor_name: "Morgan L.",
+        occurred_at: ~N[2026-04-08 10:10:00]
+      }),
+      digest_item(%{
+        parent_id: "goal-002",
+        parent_type: :goal,
+        parent_name: "Q2 Growth Plan",
+        headline: "updated the goal champion",
+        excerpt_html: nil,
+        excerpt_text: nil,
+        item_url: "https://app.operately.dev/goals/q2-growth-plan",
+        actor_name: "Morgan L.",
+        occurred_at: ~N[2026-04-08 10:12:00]
+      }),
+      digest_item(%{
+        parent_id: "goal-002",
+        parent_type: :goal,
+        parent_name: "Q2 Growth Plan",
+        headline: "commented on the goal timeframe change",
+        excerpt_html: "<p>The revised target looks solid, but we should still validate the assumptions with finance.</p>",
+        excerpt_text: "The revised target looks solid, but we should still validate the assumptions with finance.",
+        item_url: "https://app.operately.dev/goals/q2-growth-plan/activities/timeframe-change",
+        actor_name: "Casey P.",
+        occurred_at: ~N[2026-04-08 10:15:00]
       })
     ]
   end
@@ -153,10 +250,26 @@ defmodule OperatelyWeb.EmailPreview.Previews.BufferedActivityDigest do
     digest_items
     |> Enum.group_by(fn item -> {item.parent_type, item.parent_id} end)
     |> Enum.map(fn {{_parent_type, _parent_id}, items} ->
-      sorted_items = Enum.sort_by(items, & &1.occurred_at, &NaiveDateTime.before?/2)
+      author_groups = group_by_author(items)
+      earliest_occurred_at = items |> Enum.map(& &1.occurred_at) |> Enum.min(&NaiveDateTime.before?/2)
 
       %{
         parent_name: hd(items).parent_name,
+        author_groups: author_groups,
+        earliest_occurred_at: earliest_occurred_at
+      }
+    end)
+    |> Enum.sort_by(& &1.earliest_occurred_at, &NaiveDateTime.before?/2)
+  end
+
+  defp group_by_author(items) do
+    items
+    |> Enum.group_by(fn item -> item.actor_name end)
+    |> Enum.map(fn {actor_name, actor_items} ->
+      sorted_items = Enum.sort_by(actor_items, & &1.occurred_at, &NaiveDateTime.before?/2)
+
+      %{
+        actor_name: actor_name,
         items: sorted_items
       }
     end)
