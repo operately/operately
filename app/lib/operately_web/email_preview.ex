@@ -22,12 +22,14 @@ defmodule OperatelyWeb.EmailPreview do
     preview :zero_state, label: "Zero State"
     preview :couple_items, label: "A Couple Items"
     preview :multiple_items, slug: "preview", label: "Multiple Items"
+    preview :mixed_grouped_and_individual, label: "Grouped by Author"
   end
 
   group "buffered-activity-digest", module: Previews.BufferedActivityDigest do
     preview :zero_state, label: "Zero State"
     preview :couple_items, label: "A Couple Items"
     preview :multiple_items, slug: "preview", label: "Multiple Items"
+    preview :mixed_grouped_and_individual, label: "Grouped by Author"
   end
 
   group "project-champion-updating", module: Previews.ProjectChampionUpdating do

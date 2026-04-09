@@ -60,10 +60,26 @@ defmodule OperatelyEmail.Mailers.DigestMailer do
     digest_items
     |> Enum.group_by(fn item -> {item.parent_type, item.parent_id} end)
     |> Enum.map(fn {{_parent_type, _parent_id}, items} ->
-      sorted_items = Enum.sort_by(items, & &1.occurred_at, &NaiveDateTime.before?/2)
+      author_groups = group_by_author(items)
+      earliest_occurred_at = items |> Enum.map(& &1.occurred_at) |> Enum.min(&NaiveDateTime.before?/2)
 
       %{
         parent_name: hd(items).parent_name,
+        author_groups: author_groups,
+        earliest_occurred_at: earliest_occurred_at
+      }
+    end)
+    |> Enum.sort_by(& &1.earliest_occurred_at, &NaiveDateTime.before?/2)
+  end
+
+  defp group_by_author(items) do
+    items
+    |> Enum.group_by(fn item -> item.actor_name end)
+    |> Enum.map(fn {actor_name, actor_items} ->
+      sorted_items = Enum.sort_by(actor_items, & &1.occurred_at, &NaiveDateTime.before?/2)
+
+      %{
+        actor_name: actor_name,
         items: sorted_items
       }
     end)
