@@ -3,6 +3,7 @@ defmodule Operately.CompanyTransfers do
 
   alias Ecto.Multi
   alias Operately.CompanyTransfers.{ExportRun, ExportWorker, ImportRun, ImportWorker}
+  alias Operately.CompanyTransfers.Package.{ExportArtifacts, Workspace}
   alias Operately.People.Account
   alias Operately.Companies.Company
   alias Operately.Repo
@@ -103,6 +104,45 @@ defmodule Operately.CompanyTransfers do
     update_export_run(export_run, attrs)
   end
 
+  def prepare_export_workspace(%ExportRun{} = export_run) do
+    workspace = Workspace.prepare!(:export, export_run.id)
+
+    attrs = %{
+      workspace_path: workspace.root_path,
+      json_path: workspace.json_path,
+      zip_path: workspace.zip_path,
+      artifacts_metadata: Map.put(export_run.artifacts_metadata || %{}, "workspace", Workspace.metadata(workspace))
+    }
+
+    case update_export_run(export_run, attrs) do
+      {:ok, export_run} -> {:ok, export_run, workspace}
+      error -> error
+    end
+  end
+
+  def publish_export_artifacts(%ExportRun{} = export_run, artifact_paths) when is_map(artifact_paths) do
+    artifact = ExportArtifacts.publish!(export_run.id, artifact_paths)
+
+    attrs = %{
+      json_path: artifact.json_path,
+      zip_path: artifact.zip_path,
+      json_size_bytes: artifact.json_size_bytes,
+      zip_size_bytes: artifact.zip_size_bytes,
+      artifacts_metadata:
+        (export_run.artifacts_metadata || %{})
+        |> Map.put("workspace", Map.get(export_run.artifacts_metadata || %{}, "workspace"))
+        |> Map.put("export_artifacts", %{
+          "artifact_dir" => artifact.artifact_dir,
+          "json_key" => artifact.json_key,
+          "json_sha256" => artifact.json_sha256,
+          "zip_key" => artifact.zip_key,
+          "zip_sha256" => artifact.zip_sha256
+        })
+    }
+
+    update_export_run(export_run, attrs)
+  end
+
   def list_import_runs do
     from(r in ImportRun, order_by: [desc: r.inserted_at]) |> Repo.all()
   end
@@ -196,6 +236,22 @@ defmodule Operately.CompanyTransfers do
       |> Map.put(:cancelled_at, DateTime.utc_now())
 
     update_import_run(import_run, attrs)
+  end
+
+  def prepare_import_workspace(%ImportRun{} = import_run) do
+    workspace = Workspace.prepare!(:import, import_run.id)
+
+    attrs = %{
+      workspace_path: workspace.root_path,
+      json_path: workspace.json_path,
+      zip_path: workspace.zip_path,
+      artifacts_metadata: Map.put(import_run.artifacts_metadata || %{}, "workspace", Workspace.metadata(workspace))
+    }
+
+    case update_import_run(import_run, attrs) do
+      {:ok, import_run} -> {:ok, import_run, workspace}
+      error -> error
+    end
   end
 
   defp maybe_enqueue_export_worker(multi, false), do: Multi.put(multi, :worker, nil)
