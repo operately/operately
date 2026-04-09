@@ -23,12 +23,13 @@ defmodule OperatelyEmail.Emails.GoalChampionUpdatingEmail do
     goal = Operately.Goals.get_goal!(activity.content["goal_id"])
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
+    champion = get_champion(activity.content["new_champion_id"])
 
     %{
       parent_id: goal.id,
       parent_type: :goal,
       parent_name: goal.name,
-      headline: "updated the goal champion",
+      headline: buffered_headline(champion),
       excerpt_html: nil,
       excerpt_text: nil,
       item_url: OperatelyWeb.Paths.goal_path(company, goal) |> OperatelyWeb.Paths.to_url(),
@@ -37,4 +38,10 @@ defmodule OperatelyEmail.Emails.GoalChampionUpdatingEmail do
       coalesce_key: nil
     }
   end
+
+  defp get_champion(nil), do: nil
+  defp get_champion(id), do: Operately.People.Person.get!(:system, id: id)
+
+  defp buffered_headline(nil), do: "removed the goal champion"
+  defp buffered_headline(champion), do: "assigned #{champion.full_name} as the goal champion"
 end

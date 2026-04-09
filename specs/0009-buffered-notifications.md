@@ -228,7 +228,7 @@
     - Tests: eligibility filtering, last-24-hours window behavior, empty-summary suppression, and grouped summary rendering.
     - Result: users can opt into a once-daily digest of recent updates.
 
-12. **PR 12: Timezone-aware daily summary scheduling and preferred delivery time**
+12. **PR 12: Timezone-aware daily summary scheduling and preferred delivery time** `(Implemented)`
     - Upgrade daily summary delivery to timezone-aware scheduling while keeping a once-per-day cron trigger.
     - Add a new field in `preferences.notifications` for daily summary delivery time (local time of the user).
     - Extend people API and serializers so users can read and update this new delivery-time preference.

@@ -122,21 +122,28 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
   end
 
   def buffered_item(_person, activity) do
-    goal = Operately.Goals.get_goal!(activity.content["goal_id"])
+    {:ok, update} = Update.get(:system, id: activity.content["update_id"], opts: [preload: :goal])
+    goal = update.goal
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
+    %{html: excerpt_html, text: excerpt_text} = OperatelyEmail.RichTextExcerpt.excerpt(update.message)
 
     %{
       parent_id: goal.id,
       parent_type: :goal,
       parent_name: goal.name,
-      headline: "submitted a goal check-in",
-      excerpt_html: nil,
-      excerpt_text: nil,
+      headline: "submitted a check-in with status \"#{status_label(update.status)}\"",
+      excerpt_html: excerpt_html,
+      excerpt_text: excerpt_text,
       item_url: OperatelyWeb.Paths.goal_path(company, goal) |> OperatelyWeb.Paths.to_url(),
       actor_name: Operately.People.Person.short_name(author),
       occurred_at: activity.inserted_at,
       coalesce_key: nil
     }
   end
+
+  defp status_label(:on_track), do: "on track"
+  defp status_label(:off_track), do: "off track"
+  defp status_label(status) when is_binary(status), do: status
+  defp status_label(status) when is_atom(status), do: Atom.to_string(status)
 end

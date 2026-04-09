@@ -1422,7 +1422,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
       to: ctx.champion,
-      action: "commented on project resumption",
+      action: "commented on the project resumption",
       author: ctx.commenter
     })
   end

@@ -34,7 +34,7 @@ defmodule OperatelyEmail.Emails.ProjectCreatedEmail do
       parent_id: project.id,
       parent_type: :project,
       parent_name: project.name,
-      headline: "#{Person.short_name(author)} added the #{project.name} project",
+      headline: "created the project",
       excerpt_html: nil,
       excerpt_text: nil,
       item_url: OperatelyWeb.Paths.project_path(company, project) |> OperatelyWeb.Paths.to_url(),
