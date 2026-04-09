@@ -28,17 +28,17 @@ defmodule Operately.CompanyTransfers do
 
   def create_export_run(%Company{} = company, %Account{} = requested_by, attrs, opts) do
     attrs
-    |> Map.new()
     |> Map.put(:company_id, company.id)
     |> Map.put(:requested_by_id, requested_by.id)
     |> create_export_run_record(opts)
   end
 
-  def create_export_run_record(attrs) when is_map(attrs) do
+  def create_export_run_record(attrs) do
     create_export_run_record(attrs, [])
   end
 
-  def create_export_run_record(attrs, opts) when is_map(attrs) do
+  def create_export_run_record(attrs, opts) do
+    attrs = Map.new(attrs)
     dispatch? = Keyword.get(opts, :dispatch, true)
 
     Multi.new()
@@ -124,16 +124,16 @@ defmodule Operately.CompanyTransfers do
 
   def create_import_run(%Account{} = requested_by, attrs, opts) do
     attrs
-    |> Map.new()
     |> Map.put(:requested_by_id, requested_by.id)
     |> create_import_run_record(opts)
   end
 
-  def create_import_run_record(attrs) when is_map(attrs) do
+  def create_import_run_record(attrs) do
     create_import_run_record(attrs, [])
   end
 
-  def create_import_run_record(attrs, opts) when is_map(attrs) do
+  def create_import_run_record(attrs, opts) do
+    attrs = Map.new(attrs)
     dispatch? = Keyword.get(opts, :dispatch, true)
 
     Multi.new()
