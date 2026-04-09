@@ -51,7 +51,7 @@ defmodule OperatelyEmail.Emails.ProjectKeyResourceAddedEmail do
       parent_id: project.id,
       parent_type: :project,
       parent_name: project.name,
-      headline: "added a key resource",
+      headline: get_action(activity.content),
       excerpt_html: nil,
       excerpt_text: nil,
       item_url: OperatelyWeb.Paths.project_path(company, project) |> OperatelyWeb.Paths.to_url(),

@@ -28,7 +28,7 @@ defmodule OperatelyEmail.Emails.ResourceHubFileCreatedEmail do
   defp get_files(activity) do
     import Ecto.Query, only: [from: 2]
 
-    file_ids = Enum.map(activity.content.files, &(&1.file_id))
+    file_ids = Enum.map(activity.content["files"], &(&1["file_id"]))
 
     from(f in Operately.ResourceHubs.File,
       where: f.id in ^file_ids,
@@ -46,9 +46,12 @@ defmodule OperatelyEmail.Emails.ResourceHubFileCreatedEmail do
   end
 
   defp find_action(files) when length(files) == 1 do
-    "uploaded a file: #{hd(files).node.name}"
+    "uploaded the file \"#{hd(files).node.name}\""
   end
-  defp find_action(_), do: "uploaded files"
+
+  defp find_action(files) do
+    "uploaded #{length(files)} files"
+  end
 
   def buffered_item(_person, activity) do
     author = Operately.Repo.preload(activity, :author).author

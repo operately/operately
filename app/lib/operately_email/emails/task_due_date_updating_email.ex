@@ -30,7 +30,7 @@ defmodule OperatelyEmail.Emails.TaskDueDateUpdatingEmail do
   end
 
   defp get_date_value(nil), do: nil
-  defp get_date_value(date), do: date.value
+  defp get_date_value(date), do: date["value"]
 
   defp get_location(task) do
     cond do
@@ -45,12 +45,14 @@ defmodule OperatelyEmail.Emails.TaskDueDateUpdatingEmail do
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
     parent = OperatelyEmail.DigestParent.for_task(task)
+    old_date = get_date_value(activity.content["old_due_date"])
+    new_date = get_date_value(activity.content["new_due_date"])
 
     %{
       parent_id: parent.id,
       parent_type: parent.type,
       parent_name: parent.name,
-      headline: "updated the due date of the task \"#{task.name}\"",
+      headline: buffered_headline(task.name, old_date, new_date),
       excerpt_html: nil,
       excerpt_text: nil,
       item_url: OperatelyWeb.Paths.task_path(company, task) |> OperatelyWeb.Paths.to_url(),
@@ -59,4 +61,8 @@ defmodule OperatelyEmail.Emails.TaskDueDateUpdatingEmail do
       coalesce_key: nil
     }
   end
+
+  defp buffered_headline(task_name, _old_date, nil), do: "removed the due date from the task \"#{task_name}\""
+  defp buffered_headline(task_name, nil, new_date), do: "set the due date of the task \"#{task_name}\" to #{new_date}"
+  defp buffered_headline(task_name, _old_date, new_date), do: "changed the due date of the task \"#{task_name}\" to #{new_date}"
 end

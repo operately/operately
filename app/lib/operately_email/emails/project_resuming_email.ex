@@ -24,14 +24,16 @@ defmodule OperatelyEmail.Emails.ProjectResumingEmail do
     project = Operately.Projects.get_project!(activity.content["project_id"])
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
+    comment_thread = Operately.Repo.preload(activity, :comment_thread).comment_thread
+    %{html: excerpt_html, text: excerpt_text} = OperatelyEmail.RichTextExcerpt.excerpt(comment_thread.message)
 
     %{
       parent_id: project.id,
       parent_type: :project,
       parent_name: project.name,
-      headline: "resumed this project",
-      excerpt_html: nil,
-      excerpt_text: nil,
+      headline: "resumed the project",
+      excerpt_html: excerpt_html,
+      excerpt_text: excerpt_text,
       item_url: OperatelyWeb.Paths.project_path(company, project) |> OperatelyWeb.Paths.to_url(),
       actor_name: Operately.People.Person.short_name(author),
       occurred_at: activity.inserted_at,

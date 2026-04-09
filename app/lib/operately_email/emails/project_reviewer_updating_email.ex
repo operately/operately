@@ -40,12 +40,13 @@ defmodule OperatelyEmail.Emails.ProjectReviewerUpdatingEmail do
     project = Operately.Projects.get_project!(activity.content["project_id"])
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
+    reviewer = get_reviewer(activity.content["new_reviewer_id"])
 
     %{
       parent_id: project.id,
       parent_type: :project,
       parent_name: project.name,
-      headline: "updated the project reviewer",
+      headline: buffered_headline(reviewer),
       excerpt_html: nil,
       excerpt_text: nil,
       item_url: OperatelyWeb.Paths.project_path(company, project) |> OperatelyWeb.Paths.to_url(),
@@ -54,4 +55,7 @@ defmodule OperatelyEmail.Emails.ProjectReviewerUpdatingEmail do
       coalesce_key: nil
     }
   end
+
+  defp buffered_headline(nil), do: "removed the project reviewer"
+  defp buffered_headline(reviewer), do: "assigned #{reviewer.full_name} as the project reviewer"
 end

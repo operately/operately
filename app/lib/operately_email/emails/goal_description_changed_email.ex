@@ -44,7 +44,7 @@ defmodule OperatelyEmail.Emails.GoalDescriptionChangedEmail do
       parent_id: goal.id,
       parent_type: :goal,
       parent_name: goal.name,
-      headline: "updated this goal description",
+      headline: "updated the goal's description",
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
       item_url: OperatelyWeb.Paths.goal_path(company, goal) |> OperatelyWeb.Paths.to_url(),

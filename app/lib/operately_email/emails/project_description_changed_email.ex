@@ -65,7 +65,7 @@ defmodule OperatelyEmail.Emails.ProjectDescriptionChangedEmail do
       parent_id: project.id,
       parent_type: :project,
       parent_name: project.name,
-      headline: "updated this project description",
+      headline: "updated the project's description",
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
       item_url: OperatelyWeb.Paths.project_path(company, project) |> OperatelyWeb.Paths.to_url(),
