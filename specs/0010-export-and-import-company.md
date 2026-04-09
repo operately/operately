@@ -39,6 +39,7 @@ The migration mode is an exact same-version clone with these explicit exceptions
   - Download completed exports (JSON and ZIP as separate downloads)
   - Cancel running exports (marks as cancelled, stops worker gracefully)
   - Delete completed/failed exports (removes artifacts from storage and run record)
+- Observation: this spec currently limits export to company owners. Verify that this remains intentional, since earlier discussion used "admin user" more broadly.
 
 **Import workflow:**
 - Add Lobby action and page for `Import organization`.
@@ -90,6 +91,7 @@ The migration mode is an exact same-version clone with these explicit exceptions
 - Add a blob storage abstraction for reading file bytes from local storage or S3 using the existing `company_id-blob_id` object key convention.
 - Store completed export artifacts in a dedicated exports storage location (e.g., `exports/[export_run_id]/data.json` and `exports/[export_run_id]/files.zip`).
 - Support artifact cleanup: when user deletes an export, remove both files from storage and the run record from database.
+- Observation: if IDs are remapped on import, export must preserve enough structure in JSON/map fields for a later rewrite pass. Relational PK/FK extraction alone will not cover references embedded in activity payloads, rich-text maps, or derived ordering state.
 
 ### 3. Import engine
 - Stage uploaded JSON and ZIP under a temp workspace, then validate before any DB mutation:
@@ -98,21 +100,25 @@ The migration mode is an exact same-version clone with these explicit exceptions
   - every manifest file exists in the ZIP and hash/size checks pass
   - destination instance quota/limits check (company count, storage capacity)
   - no conflicts in `companies.short_id` (fail import if collision detected)
+- Observation: quota/limit validation depends on a real source of truth for those limits. If the app still has no server-side quota model when this is implemented, reduce this to artifact-size/storage checks or split quota enforcement into separate work.
 - Build ID translation table before row import:
   - generate new IDs for all company-scoped rows and build source→destination translation map
   - translation applies to primary keys and all foreign keys referencing remapped tables
   - always remap IDs regardless of destination state for consistency and simplicity
+- Observation: this translation step must also rewrite IDs stored inside JSON/map payloads and string-based ordering state, not just relational columns. In the current schema that likely includes activity content, rich text, kanban/order state, mentions, and any other serialized resource references.
 - Resolve accounts and build account mapping before row import:
   - for each source account email, check if destination account exists
   - if exists: reuse destination account ID, do not clone account fields, record source→destination account ID mapping
   - if not exists: generate new account ID, mark for creation with activation link
   - build account→people mapping: for each source person record, apply account ID remapping based on email resolution
+- Observation: keep account remapping and person remapping separate. In the current schema, fields such as `author_id`, `creator_id`, `reviewer_id`, `champion_id`, and similar references point to `people`, not `accounts`.
 - Import company data inside a single database transaction with raw SQL / `insert_all`-style writes in topological order:
   - apply ID translation table to all primary keys and foreign keys
   - apply account remapping to all account_id references and author_id/creator_id fields
   - preserve original timestamps for all company-scoped rows
   - bypass business operations so no new activities, notifications, or side effects are generated
   - on any constraint violation or error, rollback entire transaction and clean up staged files
+- Observation: the wording above should be read as "apply account remapping to `account_id` fields, and apply person ID remapping to person-owned references such as `author_id`/`creator_id`." Implementers should not treat those as account fields.
 - Write file blobs before database transaction:
   - upload/copy ZIP blobs through the storage abstraction using final blob keys (with ID remapping applied)
   - track uploaded blob keys for cleanup on failure
@@ -137,6 +143,7 @@ The migration mode is an exact same-version clone with these explicit exceptions
   - `notifications` by `resource_type/resource_id`
   - `access_contexts` by `context_type/context_id`
   - any other polymorphic associations discovered via schema audit
+- Observation: this list is a planning aid, not confirmed schema truth. In the current codebase, `notifications` appear to be keyed by `activity_id` and `person_id`, and `access_contexts` use dedicated nullable foreign keys rather than a generic type/id pair. Re-verify the real schema before implementing this registry.
 - Handle dependency-parent tables explicitly when referenced from owned rows:
   - `accounts`
   - `subscription_lists` and their `subscriptions`
@@ -182,29 +189,45 @@ The migration mode is an exact same-version clone with these explicit exceptions
 - Import runs inside a single database transaction; any failure triggers full rollback and file cleanup.
 
 ## Implementation Steps
-1. **PR 1: Transfer run foundation.** Add export/import run tables, statuses, progress fields, validation error storage, temp artifact metadata, `CompanyTransfers` skeleton modules, and Oban worker shells. No real export/import logic yet.
-2. **PR 2: Blob storage and archive utilities.** Add a storage adapter for local and S3 blob reads/writes with cross-storage streaming support, ZIP pack/unpack helpers, hashing utilities, and temp workspace management.
-3. **PR 3: Schema graph and policy registry.** Add PostgreSQL table/FK introspection, automatic topological ordering, inclusion/exclusion policy hooks, polymorphic table registry, and regression tests for schema classification.
-4. **PR 4: Polymorphic table audit and registry.** Audit codebase for all polymorphic associations (`*_type/*_id` patterns), add explicit entries to policy registry for `notifications`, `access_contexts`, and any others discovered, and add CI test that fails on unregistered polymorphic tables.
-5. **PR 5: Rich-text column registry.** Audit schema for all JSON/map columns that may contain blob references, create explicit column registry with blob-node extractors, and add CI test that fails when new rich-text columns are added without extractor registration.
-6. **PR 6: Core relational exporter.** Implement company-rooted FK traversal for normal relational tables, typed row serialization (including `bytea` handling), manifest generation, and JSON package writing for non-polymorphic data.
-7. **PR 7: Polymorphic and dependency-parent export rules.** Add explicit collectors for `updates`, `comments`, `reactions`, `notifications`, `access_contexts`, `activities`, `comment_threads`, `subscription_lists`, `subscriptions`, `project_documents`, and reused `accounts`.
-8. **PR 8: File discovery and export.** Add blob discovery from direct FK columns plus rich-text/map extractors using the column registry, generate the file manifest, collect blob payloads from storage abstraction, and pack into ZIP.
-9. **PR 9: End-to-end export worker.** Wire the collector and file packer into the export worker, produce downloadable JSON and ZIP artifacts, and finish the Company Admin download flow with progress tracking.
-10. **PR 10: Export notifications and emails.** Add notification creation on export completion, email template and delivery for "export ready" with download links, and notification click-through to export page.
-11. **PR 11: Source-side export UI.** Add the Company Admin entrypoint, export management page with history list, "Start export" action, real-time progress polling, download buttons for completed exports, cancel action for running exports, delete action for completed/failed exports, and empty state.
-12. **PR 12: Export cancellation and cleanup.** Implement graceful cancellation in Oban worker (check before each step), cancel endpoint in API, artifact cleanup on cancellation/failure/deletion, and storage deletion helpers.
-13. **PR 13: Import preflight validator and dry-run.** Parse the package, unpack the ZIP, verify manifest/schema/version compatibility, validate file hashes, check destination quotas/limits, detect `short_id` conflicts, and report dry-run validation results without mutating data.
-14. **PR 14: ID translation table builder.** Implement logic to generate new IDs for all company-scoped tables, build source→destination ID translation map, and add translation application helpers for primary keys and foreign keys.
-15. **PR 15: Account resolution and mapping.** Implement account matching by email, build source→destination account ID mapping, detect duplicate source emails (fail validation), prepare new-account creation list, and build account→people remapping logic.
-16. **PR 16: Transaction-wrapped row importer.** Implement ordered table import inside a single DB transaction with ID translation and account remapping applied, preserve timestamps, bypass business logic, add constraint violation handling with full rollback, and add detailed error reporting.
-17. **PR 17: File import with cleanup.** Write blob payloads to storage before DB transaction (with ID remapping applied), track uploaded keys, implement cleanup on any failure (validation, file write, or DB rollback), and verify no partial artifacts remain.
-18. **PR 18: Post-import side effects and finalization.** Send emails to reused accounts and new accounts after successful DB commit, grant owner access to importing user, redirect to imported company, and mark run as completed.
-19. **PR 19: Destination-side import UI.** Add the Lobby entrypoint, import page, two-file upload form, run creation endpoint, polling API, validation result display, progress tracking, error display, and success redirect.
-20. **PR 20: Export management tests.** Add tests for export cancellation (graceful worker stop, artifact cleanup), export deletion (storage cleanup, run record removal), multiple concurrent exports, and notification/email delivery on completion.
-21. **PR 21: Permission fidelity tests.** Add tests verifying access groups, memberships, bindings, contexts, and effective permissions are preserved through account remapping and ID translation.
-22. **PR 22: E2E coverage for empty destination.** Add end-to-end test for import into empty destination with full company data, verify ID remapping works correctly, account creation, file fidelity, and importer access.
-23. **PR 23: E2E coverage for existing destination.** Add end-to-end test for import into destination with existing companies, verify translation table correctness, account reuse, no cross-company data leakage, and permission preservation.
-24. **PR 24: Failure and rollback tests.** Add tests for version mismatch, manifest/hash errors, missing ZIP entries, `short_id` collision, duplicate source emails, quota exceeded, mid-import DB errors, and file write failures; verify full cleanup and no partial state.
-25. **PR 25: Cross-storage migration tests.** Add tests for S3→local, local→S3, and S3→S3 blob migration with large files, verify streaming works, and validate blob integrity.
-26. **PR 26: Schema-guard hardening and docs.** Harden CI schema-guard so new tables, polymorphic associations, and rich-text columns must be explicitly classified, add operational documentation for admins, and document the import/export workflow.
+Implementation should be delivered in vertical slices. Each slice must leave the product usable and testable end-to-end, even if coverage is intentionally incomplete.
+
+**Slice 1 outcome:** export and import work through real UI/API/worker flows for schema-driven relational data only. Missing polymorphic rows, serialized ID rewrites, and files are acceptable at this stage as long as tests make those limits explicit.
+
+1. **PR 1: Transfer run foundation.** Add `company_export_runs` and `company_import_runs`, statuses, progress fields, validation error storage, temp artifact metadata, `CompanyTransfers` skeleton modules, and Oban worker shells.
+2. **PR 2: Archive and staging utilities.** Add JSON/ZIP helpers, hashing utilities, temp workspace management, and artifact storage conventions for completed exports. Keep storage support minimal for the first slice; file payload migration can come later.
+3. **PR 3: Schema graph and relational policy registry.** Add PostgreSQL table/FK introspection, automatic topological ordering, inclusion/exclusion hooks, and tests for graph discovery of non-polymorphic relational tables.
+4. **PR 4: Minimal export engine.** Implement company-rooted FK traversal for normal relational tables, typed row serialization for DB values, manifest generation, JSON package writing, and a placeholder ZIP artifact.
+5. **PR 5: Minimal import engine.** Implement package parsing, same-version/schema validation, ID translation table generation, account matching by email, and transaction-wrapped relational row import for the non-polymorphic graph.
+   - Observation: even in this minimal slice, keep account remapping and person remapping separate. Person-owned references such as `author_id` and `creator_id` must not be treated as account fields.
+6. **PR 6: Minimal product flow and tests.** Add the Company Admin export page and Lobby import page, start/poll/download/upload endpoints, end-to-end worker wiring, and a basic E2E test proving export then import works for a fixture limited to schema-driven relational data.
+
+**Slice 2 outcome:** export and import continue to work end-to-end, now with explicit polymorphic coverage and serialized ID rewriting for non-file content.
+
+7. **PR 7: Polymorphic audit and registry.** Audit the real schema and codebase for polymorphic associations, add explicit registry entries only for confirmed cases, and add CI coverage that fails on new unclassified polymorphic patterns.
+   - Observation: validate the real schema first; the current plan names `notifications` and `access_contexts` here as likely audit targets, not confirmed polymorphic tables.
+8. **PR 8: Serialized reference registry.** Audit JSON/map/string columns for embedded resource IDs, mentions, and ordering-state references; create a generalized serialized-reference rewrite registry rather than a blob-only registry.
+   - Observation: because import always remaps IDs, this registry is required for correctness, not just completeness.
+9. **PR 9: Polymorphic export/import coverage.** Add explicit collectors and import support for polymorphic tables and serialized payload rewrites, including activities, comments, reactions, updates, comment threads, and other audited cases.
+10. **PR 10: Polymorphic slice tests.** Add E2E tests showing that export/import now preserves polymorphic data and serialized references correctly.
+
+**Slice 3 outcome:** export and import continue to work end-to-end, now with real file coverage and cross-storage correctness.
+
+11. **PR 11: Blob storage abstraction.** Add storage adapters for local and S3 blob reads/writes with streaming support and a stable interface used by both export and import.
+12. **PR 12: File discovery registry.** Add blob discovery from direct FK columns plus file references inside serialized rich-text/map fields using the audited registry.
+13. **PR 13: File export/import.** Pack real file payloads into the ZIP, write blobs to destination storage during import, apply ID remapping to blob keys, and add cleanup on failure.
+14. **PR 14: File slice tests.** Add E2E tests for avatars, resource hub files, previews, and rich-text attachments under at least local storage. Add cross-storage tests after local coverage is stable.
+
+**Slice 4 outcome:** the feature is operationally usable by admins, with notifications, cancellation, cleanup, and stronger failure handling.
+
+15. **PR 15: Export completion notifications.** Add in-app notification and email delivery for completed exports, plus click-through back to the export page.
+16. **PR 16: Export management UX.** Expand the Company Admin export page to show history, status, download actions, and delete actions for completed/failed runs.
+17. **PR 17: Cancellation and artifact cleanup.** Implement graceful cancellation, cancel endpoints, deletion of artifacts on cancellation/failure/user delete, and tests for cleanup behavior.
+18. **PR 18: Import UX and finalization.** Expand the Lobby import page with validation feedback, progress tracking, success/failure presentation, importer-owner grant, and redirect into the imported company.
+
+**Slice 5 outcome:** the feature is hardened for broader use and future schema evolution.
+
+19. **PR 19: Permission fidelity tests.** Add focused tests for access groups, memberships, bindings, contexts, and effective permissions after account matching and ID translation.
+20. **PR 20: Existing-destination tests.** Add E2E coverage for importing into an instance that already has other companies and some existing accounts, verifying no cross-company leakage.
+21. **PR 21: Failure and rollback tests.** Add tests for version mismatch, malformed packages, hash mismatches, missing ZIP entries, `short_id` collision, duplicate source emails, DB failures, and file write failures.
+22. **PR 22: Cross-storage tests.** Add S3→local, local→S3, and S3→S3 migration tests once the local-path file slice is stable.
+23. **PR 23: Schema-guard hardening and docs.** Harden CI so new tables, polymorphic associations, and serialized-reference columns must be classified, and document the workflow and known limitations for admins.
