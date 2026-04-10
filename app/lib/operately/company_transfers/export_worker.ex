@@ -17,10 +17,14 @@ defmodule Operately.CompanyTransfers.ExportWorker do
       run ->
         {:ok, run} = CompanyTransfers.mark_export_run_running(run)
 
-        {:error, {:not_implemented, message}} = Exporter.run(run)
+        case Exporter.run(run) do
+          {:ok, _run} ->
+            :ok
 
-        {:ok, _run} = CompanyTransfers.mark_export_run_failed(run, message)
-        :ok
+          {:error, reason} ->
+            {:ok, _run} = CompanyTransfers.mark_export_run_failed(run, format_reason(reason))
+            :ok
+        end
     end
   rescue
     error ->
@@ -32,4 +36,10 @@ defmodule Operately.CompanyTransfers.ExportWorker do
 
       :ok
   end
+
+  defp format_reason({:exception, message}) when is_binary(message), do: message
+  defp format_reason({:no_company_path, table}) when is_binary(table), do: "No ownership path to company for table #{table}"
+  defp format_reason(:company_not_found), do: "Company not found"
+  defp format_reason(reason) when is_binary(reason), do: reason
+  defp format_reason(reason), do: inspect(reason)
 end

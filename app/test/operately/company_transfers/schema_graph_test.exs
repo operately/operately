@@ -1,7 +1,13 @@
 defmodule Operately.CompanyTransfers.SchemaGraphTest do
   use Operately.DataCase
 
+  alias Operately.CompanyTransfers.Package.Paths
   alias Operately.CompanyTransfers.Schema.{Graph, PolicyRegistry, TopologicalSort, Discovery}
+
+  setup do
+    on_exit(fn -> File.rm_rf!(Paths.root()) end)
+    :ok
+  end
 
   describe "SchemaGraph.get_tables/0" do
     test "returns list of tables from information_schema" do
