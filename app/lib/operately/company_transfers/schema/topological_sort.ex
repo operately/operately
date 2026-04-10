@@ -15,7 +15,7 @@ defmodule Operately.CompanyTransfers.Schema.TopologicalSort do
 
   - `sort/1` - Returns tables in dependency order
   - `validate_acyclic/1` - Check for cycles (returns ok with cycle info)
-  - `detect_cycles/1` - Get list of tables involved in cycles
+  - `detect_cycles/1` - Returns first node where a cycle is detected (or empty list if acyclic)
 
   ## Cycle Handling
 
@@ -198,6 +198,13 @@ defmodule Operately.CompanyTransfers.Schema.TopologicalSort do
     end
   end
 
+  @doc """
+  Detects if the dependency graph contains cycles.
+
+  Returns `{:ok, []}` if the graph is acyclic, or `{:ok, [node]}` with the first
+  node where a cycle was detected. Note: this returns only a single representative
+  node, not all nodes involved in cycles.
+  """
   def detect_cycles(dependency_graph) when is_map(dependency_graph) do
     all_tables = Map.keys(dependency_graph) |> MapSet.new()
 
