@@ -41,7 +41,7 @@ defmodule Operately.CompanyTransfersFilesTest do
   end
 
   test "package json and hashing helpers round-trip payloads and produce stable hashes" do
-    path = Path.join(System.tmp_dir!(), "company_transfers_json_#{System.unique_integer([:positive])}.json")
+    path = Path.join(Paths.root(), "json/company_transfers_#{System.unique_integer([:positive])}.json")
     payload = %{"company" => %{"name" => "Acme"}, "rows" => [1, 2, 3]}
 
     result = PackageJson.write!(path, payload)
@@ -54,8 +54,8 @@ defmodule Operately.CompanyTransfersFilesTest do
   end
 
   test "archive helper creates and extracts zip entries" do
-    zip_path = Path.join(System.tmp_dir!(), "company_transfers_zip_#{System.unique_integer([:positive])}.zip")
-    extract_path = Path.join(System.tmp_dir!(), "company_transfers_extract_#{System.unique_integer([:positive])}")
+    zip_path = Path.join(Paths.root(), "zip/company_transfers_#{System.unique_integer([:positive])}.zip")
+    extract_path = Path.join(Paths.root(), "extract/company_transfers_#{System.unique_integer([:positive])}")
 
     Archive.create!(zip_path, [
       {"manifest.json", "{\"ok\":true}"},
