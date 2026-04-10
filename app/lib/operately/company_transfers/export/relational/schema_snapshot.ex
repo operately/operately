@@ -7,9 +7,16 @@ defmodule Operately.CompanyTransfers.Export.Relational.SchemaSnapshot do
 
   defstruct [:tables, :columns, :foreign_keys, :reverse_foreign_keys, :classifications]
 
+  @type column_info :: %{
+          name: String.t(),
+          type: String.t(),
+          nullable: boolean(),
+          default: String.t() | nil
+        }
+
   @type t :: %__MODULE__{
           tables: [String.t()],
-          columns: %{optional(String.t()) => [String.t()]},
+          columns: %{optional(String.t()) => [column_info()]},
           foreign_keys: map(),
           reverse_foreign_keys: map(),
           classifications: %{optional(String.t()) => atom()}
