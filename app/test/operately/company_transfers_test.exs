@@ -1,11 +1,15 @@
 defmodule Operately.CompanyTransfersTest do
   use Operately.DataCase
   use Oban.Testing, repo: Operately.Repo
+  import Ecto.Query, only: [from: 2]
 
   alias Operately.CompanyTransfers
+  alias Operately.CompanyTransfers.Exporter
   alias Operately.CompanyTransfers.Package.PackageJson
   alias Operately.CompanyTransfers.Package.Paths
   alias Operately.CompanyTransfers.{ExportRun, ExportWorker, ImportRun, ImportWorker}
+  alias Operately.Companies.Company
+  alias Operately.People.Person
   alias Operately.People.ApiToken
   alias Operately.Repo
 
@@ -126,16 +130,51 @@ defmodule Operately.CompanyTransfersTest do
            }
   end
 
-  test "import worker marks placeholder runs as failed until import logic exists", ctx do
+  test "import worker imports a staged relational package", ctx do
+    ctx =
+      ctx
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
+      |> Factory.add_company_member(:member)
+
+    short_id = 2_000_000 + System.unique_integer([:positive])
+
+    assert {:ok, export_run} = CompanyTransfers.create_export_run(ctx.company, ctx.account, %{}, dispatch: false)
+    assert {:ok, export_run} = CompanyTransfers.mark_export_run_running(export_run)
+    assert {:ok, export_run} = Exporter.run(export_run)
+
+    package =
+      export_run.json_path
+      |> PackageJson.read!()
+      |> update_in(["tables"], fn tables ->
+        Enum.map(tables, fn table ->
+          if table["name"] == "companies" do
+            update_in(table, ["rows"], fn rows ->
+              Enum.map(rows, &Map.put(&1, "short_id", short_id))
+            end)
+          else
+            table
+          end
+        end)
+      end)
+      |> put_in(["manifest", "source_company", "short_id"], short_id)
+
     assert {:ok, run} = CompanyTransfers.create_import_run(ctx.account, %{}, dispatch: false)
+    assert {:ok, run, workspace} = CompanyTransfers.prepare_import_workspace(run)
+    _json_meta = PackageJson.write!(workspace.json_path, package)
+    assert {:ok, run} = CompanyTransfers.update_import_run(run, %{json_path: workspace.json_path, zip_path: workspace.zip_path})
 
     assert :ok = perform_job(ImportWorker, %{import_run_id: run.id})
 
     run = CompanyTransfers.get_import_run!(run.id)
+    imported_company = Repo.get!(Company, run.company_id)
+    imported_people = Repo.all(from p in Person, where: p.company_id == ^imported_company.id)
 
-    assert run.status == :failed
+    assert run.status == :completed
     assert run.started_at != nil
     assert run.completed_at != nil
-    assert run.error_message == "Company import is not implemented yet"
+    assert run.error_message == nil
+    assert imported_company.short_id == short_id
+    assert Enum.any?(imported_people, &(&1.full_name == ctx.member.full_name))
   end
 end

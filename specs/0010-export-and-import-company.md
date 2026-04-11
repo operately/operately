@@ -202,8 +202,9 @@ Implementation should be delivered in vertical slices. Each slice must leave the
 4. [x] **PR 4: Minimal export engine.** Implemented company-rooted relational export using FK ownership paths to `companies`, typed row serialization for DB values, manifest generation, JSON package writing, and a placeholder ZIP artifact.
    - Observation: ownership for the minimal slice is derived from included-table FK paths that resolve to `companies`; dependency-parent export is still limited to rows directly referenced from that owned graph plus dependency-parent descendants such as `subscriptions`.
    - Observation: the ZIP is currently a placeholder artifact only. Real file payload discovery and storage transfer still start in PR 11-13.
-5. [ ] **PR 5: Minimal import engine.** Implement package parsing, same-version/schema validation, ID translation table generation, account matching by email, and transaction-wrapped relational row import for the non-polymorphic graph.
+5. [x] **PR 5: Minimal import engine.** Implemented package parsing, same-version/schema validation, ID translation table generation, account matching by email, and transaction-wrapped relational row import for the non-polymorphic graph.
    - Observation: even in this minimal slice, keep account remapping and person remapping separate. Person-owned references such as `author_id` and `creator_id` must not be treated as account fields.
+   - Observation: the minimal importer now rewrites FK-based references plus a small registry of plain `*_type`/`*_id` columns such as `subscription_lists.parent_id`, `comment_threads.parent_id`, and `alignments.parent/child`. Broader serialized/plain-reference rewriting still belongs to Slice 2.
 6. [ ] **PR 6: Minimal product flow and tests.** Add the Company Admin export page and Lobby import page, start/poll/download/upload endpoints, end-to-end worker wiring, and a basic E2E test proving export then import works for a fixture limited to schema-driven relational data.
 
 **Slice 2 outcome:** export and import continue to work end-to-end, now with explicit polymorphic coverage and serialized ID rewriting for non-file content.
