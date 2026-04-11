@@ -10,11 +10,13 @@ defmodule Operately.CompanyTransfers.Import.TranslationPlan do
   def build(%Package{} = package, account_id_map) when is_map(account_id_map) do
     id_map =
       Enum.reduce(package.tables, %{"accounts" => account_id_map}, fn table, acc ->
-        case {table["name"], table["rows"]} do
-          {"accounts", _rows} ->
+        case table["name"] do
+          "accounts" ->
             acc
 
-          {table_name, rows} ->
+          table_name ->
+            rows = Package.table_rows(package, table_name)
+
             table_map =
               rows
               |> Enum.reduce(%{}, fn row, row_acc ->
