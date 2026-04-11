@@ -15,7 +15,9 @@ defmodule Operately.CompanyTransfers.Import.AccountResolver do
   end
 
   defp resolve_account(%{"id" => source_id, "email" => email} = account_row, resolution) when is_binary(source_id) and is_binary(email) do
-    case Repo.get_by(Account, email: email) do
+    normalized_email = email |> String.trim() |> String.downcase()
+
+    case Repo.get_by(Account, email: normalized_email) do
       %Account{} = account ->
         {:ok,
          %{
@@ -26,8 +28,8 @@ defmodule Operately.CompanyTransfers.Import.AccountResolver do
 
       nil ->
         attrs = %{
-          email: email,
-          full_name: account_row["full_name"] || email,
+          email: normalized_email,
+          full_name: account_row["full_name"] || normalized_email,
           password: random_password()
         }
 
