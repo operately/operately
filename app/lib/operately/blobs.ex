@@ -32,4 +32,6 @@ defmodule Operately.Blobs do
 
   defdelegate get_signed_get_url(blob, disposition), to: Operately.Blobs.SignedUrls
   defdelegate get_signed_upload_url(blob), to: Operately.Blobs.SignedUrls
+  defdelegate upload_file_to_blob(company, author, file_path, content_type), to: Operately.Blobs.Upload
+  defdelegate download_blob_to_file(blob, dest_path), to: Operately.Blobs.Download, as: :download
 end

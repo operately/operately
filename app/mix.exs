@@ -50,6 +50,7 @@ defmodule Operately.MixProject do
       {:ueberauth_google, "~> 0.12"},
       {:inflex, "~> 2.0.0"},
       {:ex_aws, "~> 2.5"},
+      {:ex_aws_s3, "~> 2.5"},
       {:custom_base, "~> 0.2"},
       {:oban, "~> 2.14"},
       {:site_encrypt, "~> 0.6.0"},
