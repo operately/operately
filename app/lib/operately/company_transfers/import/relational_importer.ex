@@ -4,7 +4,7 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
   """
 
   alias Operately.CompanyTransfers.Export.Relational.SchemaSnapshot
-  alias Operately.CompanyTransfers.Import.{AccountResolver, Package, RowDeserializer, TranslationPlan}
+  alias Operately.CompanyTransfers.Import.{AccountResolver, Package, PackageOrder, RowDeserializer, TranslationPlan}
   alias Operately.CompanyTransfers.Import.Relational.Sql
 
   @plain_reference_registry %{
@@ -38,6 +38,7 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
 
   def import(%Package{} = package) do
     schema = SchemaSnapshot.load()
+    package = PackageOrder.reorder_for_insert(package, schema)
 
     with {:ok, account_resolution} <- AccountResolver.resolve(package),
          plan = TranslationPlan.build(package, account_resolution.mapping),
