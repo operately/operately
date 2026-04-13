@@ -31,14 +31,14 @@ defmodule Operately.Blobs.SignedUrls do
 
     def get_signed_get_url(%Blob{} = blob, _disposition) do
       host = OperatelyWeb.Endpoint.url()
-      path = "#{blob.company_id}-#{blob.id}"
+      path = Blob.path(blob)
       token = Operately.Blobs.Tokens.gen_get_token(path)
 
       {:ok, "#{host}/media/#{path}?token=#{token}"}
     end
 
     def get_signed_upload_url(%Blob{} = blob) do
-      path = "#{blob.company_id}-#{blob.id}"
+      path = Blob.path(blob)
       host = OperatelyWeb.Endpoint.url()
       token = Operately.Blobs.Tokens.gen_upload_token(path)
 
@@ -52,7 +52,7 @@ defmodule Operately.Blobs.SignedUrls do
     def get_signed_get_url(%Blob{} = blob, disposition) do
       validate_disposition!(disposition)
 
-      path = "#{blob.company_id}-#{blob.id}"
+      path = Blob.path(blob)
 
       query_params = disposition_query_params(disposition, blob.filename)
       {time, expires_in} = cache_friendly_time_and_expriration()
@@ -61,7 +61,7 @@ defmodule Operately.Blobs.SignedUrls do
     end
 
     def get_signed_upload_url(%Blob{} = blob) do
-      path = "#{blob.company_id}-#{blob.id}"
+      path = Blob.path(blob)
 
       time = NaiveDateTime.utc_now() |> NaiveDateTime.to_erl()
       expires_in = 3600
@@ -111,17 +111,16 @@ defmodule Operately.Blobs.SignedUrls do
     end
 
     def presigned_s3_url(method, path, time, expires_in, headers, query_params) when method in [:get, :put] do
-      host = System.get_env("OPERATELY_STORAGE_S3_HOST")
-      scheme = System.get_env("OPERATELY_STORAGE_S3_SCHEME")
-      port = System.get_env("OPERATELY_STORAGE_S3_PORT")
-      bucket = System.get_env("OPERATELY_STORAGE_S3_BUCKET")
-      region = System.get_env("OPERATELY_STORAGE_S3_REGION")
-      access_key_id = System.get_env("OPERATELY_STORAGE_S3_ACCESS_KEY_ID")
-      secret_access_key = System.get_env("OPERATELY_STORAGE_S3_SECRET_ACCESS_KEY")
+      alias Operately.Blobs.S3Config
+
+      host = S3Config.host()
+      scheme = S3Config.scheme()
+      port = S3Config.port()
+      bucket = S3Config.bucket!()
+      config = S3Config.ex_aws_config()
 
       port = if port == nil, do: "", else: ":#{port}"
       url = "#{scheme}://#{host}#{port}/#{bucket}/#{path}"
-      config = %{access_key_id: access_key_id, secret_access_key: secret_access_key, region: region}
 
       ExAws.Auth.presigned_url(method, url, :s3, time, config, expires_in, query_params, nil, headers)
     end
