@@ -38,9 +38,16 @@ defmodule Operately.DataCase do
   Sets up the sandbox based on the test tags.
   """
   def setup_sandbox(tags) do
-    pid = Ecto.Adapters.SQL.Sandbox.start_owner!(Operately.Repo, shared: not tags[:async])
+    opts =
+      [shared: not tags[:async]]
+      |> maybe_put_ownership_timeout(tags[:ownership_timeout])
+
+    pid = Ecto.Adapters.SQL.Sandbox.start_owner!(Operately.Repo, opts)
     on_exit(fn -> Ecto.Adapters.SQL.Sandbox.stop_owner(pid) end)
   end
+
+  defp maybe_put_ownership_timeout(opts, nil), do: opts
+  defp maybe_put_ownership_timeout(opts, timeout), do: Keyword.put(opts, :ownership_timeout, timeout)
 
   @doc """
   A helper that transforms changeset errors into a map of messages.
