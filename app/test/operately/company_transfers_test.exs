@@ -28,8 +28,8 @@ defmodule Operately.CompanyTransfersTest do
       manifest_summary: %{"company_name" => ctx.company.name},
       artifacts_metadata: %{"workspace" => "tmp/export-run"},
       workspace_path: "/tmp/export-run",
-      json_path: "/tmp/export-run/data.json",
-      zip_path: "/tmp/export-run/files.zip"
+      json_size_bytes: 1024,
+      zip_size_bytes: 512
     }
 
     assert {:ok, %ExportRun{} = run} = CompanyTransfers.create_export_run(ctx.company, ctx.account, attrs, dispatch: false)
@@ -45,8 +45,8 @@ defmodule Operately.CompanyTransfersTest do
     assert run.manifest_summary == %{"company_name" => ctx.company.name}
     assert run.artifacts_metadata == %{"workspace" => "tmp/export-run"}
     assert run.workspace_path == "/tmp/export-run"
-    assert run.json_path == "/tmp/export-run/data.json"
-    assert run.zip_path == "/tmp/export-run/files.zip"
+    assert run.json_size_bytes == 1024
+    assert run.zip_size_bytes == 512
     assert run.started_at == nil
     assert run.completed_at == nil
   end
@@ -56,8 +56,6 @@ defmodule Operately.CompanyTransfersTest do
       manifest_summary: %{"company_name" => "Imported Co"},
       artifacts_metadata: %{"workspace" => "tmp/import-run"},
       workspace_path: "/tmp/import-run",
-      json_path: "/tmp/import-run/data.json",
-      zip_path: "/tmp/import-run/files.zip",
       json_size_bytes: 2048,
       zip_size_bytes: 4096
     }
@@ -69,8 +67,6 @@ defmodule Operately.CompanyTransfersTest do
     assert run.manifest_summary == %{"company_name" => "Imported Co"}
     assert run.artifacts_metadata == %{"workspace" => "tmp/import-run"}
     assert run.workspace_path == "/tmp/import-run"
-    assert run.json_path == "/tmp/import-run/data.json"
-    assert run.zip_path == "/tmp/import-run/files.zip"
     assert run.json_size_bytes == 2048
     assert run.zip_size_bytes == 4096
     assert run.company_id == nil
@@ -96,7 +92,13 @@ defmodule Operately.CompanyTransfersTest do
     assert :ok = perform_job(ExportWorker, %{export_run_id: run.id})
 
     run = CompanyTransfers.get_export_run!(run.id)
-    package = PackageJson.read!(run.json_path)
+
+    # Download blob to read package
+    run = Repo.preload(run, :json_blob)
+    temp_path = Path.join(System.tmp_dir!(), "export_worker_test_#{run.id}.json")
+    :ok = Operately.Blobs.download_blob_to_file(run.json_blob, temp_path)
+    package = PackageJson.read!(temp_path)
+    File.rm!(temp_path)
     tables = Map.new(package["tables"], &{&1["name"], &1})
     exported_project_ids = Enum.map(tables["projects"]["rows"], & &1["id"])
     exported_company_ids = Enum.map(tables["companies"]["rows"], & &1["id"])
@@ -108,10 +110,10 @@ defmodule Operately.CompanyTransfersTest do
     assert run.started_at != nil
     assert run.completed_at != nil
     assert run.error_message == nil
-    assert run.json_path != nil
-    assert run.zip_path != nil
-    assert File.exists?(run.json_path)
-    assert File.exists?(run.zip_path)
+    assert run.json_blob_id != nil
+    assert run.zip_blob_id != nil
+    assert run.json_size_bytes > 0
+    assert run.zip_size_bytes > 0
     assert package["files"] == []
     assert package["manifest"]["slice"] == "relational_minimal"
     assert package["manifest"]["source_company"]["id"] == ctx.company.id
@@ -143,8 +145,13 @@ defmodule Operately.CompanyTransfersTest do
     assert {:ok, export_run} = CompanyTransfers.mark_export_run_running(export_run)
     assert {:ok, export_run} = Exporter.run(export_run)
 
+    # Download blob to read and mutate package
+    export_run = Repo.preload(export_run, :json_blob)
+    temp_export_path = Path.join(System.tmp_dir!(), "import_worker_export_#{export_run.id}.json")
+    :ok = Operately.Blobs.download_blob_to_file(export_run.json_blob, temp_export_path)
+
     package =
-      export_run.json_path
+      temp_export_path
       |> PackageJson.read!()
       |> update_in(["tables"], fn tables ->
         Enum.map(tables, fn table ->
@@ -159,10 +166,13 @@ defmodule Operately.CompanyTransfersTest do
       end)
       |> put_in(["manifest", "source_company", "short_id"], short_id)
 
+    File.rm!(temp_export_path)
+
     assert {:ok, run} = CompanyTransfers.create_import_run(ctx.account, %{}, dispatch: false)
     assert {:ok, run, workspace} = CompanyTransfers.prepare_import_workspace(run)
     _json_meta = PackageJson.write!(workspace.json_path, package)
-    assert {:ok, run} = CompanyTransfers.update_import_run(run, %{json_path: workspace.json_path, zip_path: workspace.zip_path})
+
+    assert {:ok, run} = Operately.Support.CompanyTransfer.Helpers.upload_import_artifacts_as_blobs(run, workspace, ctx.account)
 
     assert :ok = perform_job(ImportWorker, %{import_run_id: run.id})
 
