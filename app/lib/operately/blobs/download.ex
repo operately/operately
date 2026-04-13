@@ -44,9 +44,10 @@ defmodule Operately.Blobs.Download do
     """
 
     alias Operately.Blobs.Blob
+    alias Operately.Blobs.S3Config
 
     def download(%Blob{} = blob, dest_path) do
-      bucket = System.get_env("OPERATELY_STORAGE_S3_BUCKET")
+      bucket = S3Config.bucket!()
       path = Blob.path(blob)
 
       case ExAws.S3.get_object(bucket, path) |> ExAws.request() do

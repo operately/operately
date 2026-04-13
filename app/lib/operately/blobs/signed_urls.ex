@@ -111,17 +111,16 @@ defmodule Operately.Blobs.SignedUrls do
     end
 
     def presigned_s3_url(method, path, time, expires_in, headers, query_params) when method in [:get, :put] do
-      host = System.get_env("OPERATELY_STORAGE_S3_HOST")
-      scheme = System.get_env("OPERATELY_STORAGE_S3_SCHEME")
-      port = System.get_env("OPERATELY_STORAGE_S3_PORT")
-      bucket = System.get_env("OPERATELY_STORAGE_S3_BUCKET")
-      region = System.get_env("OPERATELY_STORAGE_S3_REGION")
-      access_key_id = System.get_env("OPERATELY_STORAGE_S3_ACCESS_KEY_ID")
-      secret_access_key = System.get_env("OPERATELY_STORAGE_S3_SECRET_ACCESS_KEY")
+      alias Operately.Blobs.S3Config
+
+      host = S3Config.host()
+      scheme = S3Config.scheme()
+      port = S3Config.port()
+      bucket = S3Config.bucket!()
+      config = S3Config.ex_aws_config()
 
       port = if port == nil, do: "", else: ":#{port}"
       url = "#{scheme}://#{host}#{port}/#{bucket}/#{path}"
-      config = %{access_key_id: access_key_id, secret_access_key: secret_access_key, region: region}
 
       ExAws.Auth.presigned_url(method, url, :s3, time, config, expires_in, query_params, nil, headers)
     end

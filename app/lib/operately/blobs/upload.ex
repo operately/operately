@@ -69,14 +69,16 @@ defmodule Operately.Blobs.Upload do
     """
 
     alias Operately.Blobs.Blob
+    alias Operately.Blobs.S3Config
 
     def upload(%Blob{} = blob, source_path) do
-      bucket = System.get_env("OPERATELY_STORAGE_S3_BUCKET")
+      bucket = S3Config.bucket!()
       path = Blob.path(blob)
 
-      file_binary = File.read!(source_path)
-
-      ExAws.S3.put_object(bucket, path, file_binary,
+      # Stream file to S3 to avoid loading entire file into memory
+      source_path
+      |> ExAws.S3.Upload.stream_file()
+      |> ExAws.S3.upload(bucket, path,
         content_type: blob.content_type,
         acl: :private
       )
