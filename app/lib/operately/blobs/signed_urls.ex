@@ -31,14 +31,14 @@ defmodule Operately.Blobs.SignedUrls do
 
     def get_signed_get_url(%Blob{} = blob, _disposition) do
       host = OperatelyWeb.Endpoint.url()
-      path = "#{blob.company_id}-#{blob.id}"
+      path = Blob.path(blob)
       token = Operately.Blobs.Tokens.gen_get_token(path)
 
       {:ok, "#{host}/media/#{path}?token=#{token}"}
     end
 
     def get_signed_upload_url(%Blob{} = blob) do
-      path = "#{blob.company_id}-#{blob.id}"
+      path = Blob.path(blob)
       host = OperatelyWeb.Endpoint.url()
       token = Operately.Blobs.Tokens.gen_upload_token(path)
 
@@ -52,7 +52,7 @@ defmodule Operately.Blobs.SignedUrls do
     def get_signed_get_url(%Blob{} = blob, disposition) do
       validate_disposition!(disposition)
 
-      path = "#{blob.company_id}-#{blob.id}"
+      path = Blob.path(blob)
 
       query_params = disposition_query_params(disposition, blob.filename)
       {time, expires_in} = cache_friendly_time_and_expriration()
@@ -61,7 +61,7 @@ defmodule Operately.Blobs.SignedUrls do
     end
 
     def get_signed_upload_url(%Blob{} = blob) do
-      path = "#{blob.company_id}-#{blob.id}"
+      path = Blob.path(blob)
 
       time = NaiveDateTime.utc_now() |> NaiveDateTime.to_erl()
       expires_in = 3600
