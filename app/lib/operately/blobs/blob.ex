@@ -48,4 +48,12 @@ defmodule Operately.Blobs.Blob do
   def url(blob) do
     "/blobs/#{blob.id}"
   end
+
+  @doc """
+  Returns the storage path for a blob.
+  This pattern is used consistently across local filesystem and S3 storage.
+  """
+  def path(blob) do
+    "#{blob.company_id}-#{blob.id}"
+  end
 end

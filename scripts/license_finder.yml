@@ -238,6 +238,12 @@
     :versions: []
     :when: 2025-04-14 08:40:00.000000000 Z
 - - :approve
+  - ex_aws_s3
+  - :who: Adriano Lazzaretti
+    :why: Elixir package licensed under MIT
+    :versions: []
+    :when: 2025-04-14 08:40:00.000000000 Z
+- - :approve
   - finch
   - :who: Adriano Lazzaretti
     :why: Elixir package licensed under MIT
