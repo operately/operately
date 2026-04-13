@@ -17,9 +17,27 @@ defmodule Operately.CompanyTransfers.ImportWorker do
       run ->
         {:ok, run} = CompanyTransfers.mark_import_run_running(run)
 
-        {:error, {:not_implemented, message}} = Importer.run(run)
+        case Importer.run(run) do
+          {:ok, _run} ->
+            :ok
 
-        {:ok, _run} = CompanyTransfers.mark_import_run_failed(run, message)
+          {:error, {:validation_failed, message, errors}} ->
+            {:ok, _run} = CompanyTransfers.mark_import_run_failed(run, message, %{validation_errors: errors})
+            :ok
+
+          {:error, {:package_not_found, path}} ->
+            {:ok, _run} = CompanyTransfers.mark_import_run_failed(run, "Import package not found: #{inspect(path)}")
+            :ok
+
+          {:error, {:exception, message}} ->
+            {:ok, _run} = CompanyTransfers.mark_import_run_failed(run, message)
+            :ok
+
+          {:error, reason} ->
+            {:ok, _run} = CompanyTransfers.mark_import_run_failed(run, format_reason(reason))
+            :ok
+        end
+
         :ok
     end
   rescue
@@ -32,4 +50,18 @@ defmodule Operately.CompanyTransfers.ImportWorker do
 
       :ok
   end
+
+  defp format_reason({:account_creation_failed, email, changeset}) do
+    "Failed to create imported account #{email}: #{inspect(changeset.errors)}"
+  end
+
+  defp format_reason({:invalid_account_row, row}) do
+    "Invalid imported account row: #{inspect(row)}"
+  end
+
+  defp format_reason({:missing_reference_translation, table, column, referenced_table, source_id}) do
+    "Missing reference translation for #{table}.#{column} -> #{referenced_table} (#{source_id})"
+  end
+
+  defp format_reason(reason), do: inspect(reason)
 end
