@@ -141,23 +141,35 @@ defmodule Operately.CompanyTransfers.ImporterTest do
   end
 
   defp export_and_stage_import(ctx, mutate_package \\ & &1) do
+    package = export_package(ctx, mutate_package)
+    stage_import(ctx.account, package)
+  end
+
+  defp export_package(ctx, mutate_package) do
     assert {:ok, export_run} = CompanyTransfers.create_export_run(ctx.company, ctx.account, %{}, dispatch: false)
     assert {:ok, export_run} = CompanyTransfers.mark_export_run_running(export_run)
     assert {:ok, export_run} = Exporter.run(export_run)
 
+    # Download blob to read and mutate package
+    export_run = Repo.preload(export_run, :json_blob)
+    temp_export_path = Path.join(System.tmp_dir!(), "export_#{export_run.id}.json")
+    :ok = Operately.Blobs.download_blob_to_file(export_run.json_blob, temp_export_path)
+
     package =
-      export_run.json_path
+      temp_export_path
       |> PackageJson.read!()
       |> mutate_package.()
 
-    assert {:ok, import_run} = CompanyTransfers.create_import_run(ctx.account, %{}, dispatch: false)
+    File.rm!(temp_export_path)
+    package
+  end
+
+  defp stage_import(account, package) do
+    assert {:ok, import_run} = CompanyTransfers.create_import_run(account, %{}, dispatch: false)
     assert {:ok, import_run, workspace} = CompanyTransfers.prepare_import_workspace(import_run)
     _json_meta = PackageJson.write!(workspace.json_path, package)
 
-    CompanyTransfers.update_import_run(import_run, %{
-      json_path: workspace.json_path,
-      zip_path: workspace.zip_path
-    })
+    Operately.Support.CompanyTransfer.Helpers.upload_import_artifacts_as_blobs(import_run, workspace, account)
   end
 
   defp replace_company_short_id(package, short_id) do

@@ -3,7 +3,7 @@ defmodule Operately.CompanyTransfers do
 
   alias Ecto.Multi
   alias Operately.CompanyTransfers.{ExportRun, ExportWorker, ImportRun, ImportWorker}
-  alias Operately.CompanyTransfers.Package.{ExportArtifacts, Workspace}
+  alias Operately.CompanyTransfers.Package.Workspace
   alias Operately.People.Account
   alias Operately.Companies.Company
   alias Operately.Repo
@@ -121,23 +121,33 @@ defmodule Operately.CompanyTransfers do
   end
 
   def publish_export_artifacts(%ExportRun{} = export_run, artifact_paths) when is_map(artifact_paths) do
-    artifact = ExportArtifacts.publish!(export_run.id, artifact_paths)
+    export_run = Repo.preload(export_run, [:company, :requested_by])
+    person = Operately.People.get_person!(export_run.requested_by, export_run.company)
+
+    # Create blobs and upload files using Blobs helper
+    {:ok, json_blob} = Operately.Blobs.upload_file_to_blob(
+      export_run.company,
+      person,
+      artifact_paths.json_path,
+      "application/json"
+    )
+
+    {:ok, zip_blob} = Operately.Blobs.upload_file_to_blob(
+      export_run.company,
+      person,
+      artifact_paths.zip_path,
+      "application/zip"
+    )
+
+    # Get file sizes
+    json_size = File.stat!(artifact_paths.json_path).size
+    zip_size = File.stat!(artifact_paths.zip_path).size
 
     attrs = %{
-      json_path: artifact.json_path,
-      zip_path: artifact.zip_path,
-      json_size_bytes: artifact.json_size_bytes,
-      zip_size_bytes: artifact.zip_size_bytes,
-      artifacts_metadata:
-        (export_run.artifacts_metadata || %{})
-        |> Map.put("workspace", Map.get(export_run.artifacts_metadata || %{}, "workspace"))
-        |> Map.put("export_artifacts", %{
-          "artifact_dir" => artifact.artifact_dir,
-          "json_key" => artifact.json_key,
-          "json_sha256" => artifact.json_sha256,
-          "zip_key" => artifact.zip_key,
-          "zip_sha256" => artifact.zip_sha256
-        })
+      json_blob_id: json_blob.id,
+      zip_blob_id: zip_blob.id,
+      json_size_bytes: json_size,
+      zip_size_bytes: zip_size
     }
 
     update_export_run(export_run, attrs)

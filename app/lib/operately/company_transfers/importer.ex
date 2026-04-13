@@ -30,15 +30,24 @@ defmodule Operately.CompanyTransfers.Importer do
       {:error, {:exception, Exception.message(error)}}
   end
 
-  defp fetch_json_path(%{json_path: json_path}) when is_binary(json_path) do
-    if File.exists?(json_path) do
-      {:ok, json_path}
-    else
-      {:error, {:package_not_found, json_path}}
+  defp fetch_json_path(import_run) do
+    import_run = Repo.preload(import_run, [:json_blob, :zip_blob])
+
+    cond do
+      is_nil(import_run.json_blob) ->
+        {:error, {:package_not_found, "No JSON blob associated with import run"}}
+
+      true ->
+        # Download blob to temporary workspace using Blobs helper
+        workspace = Operately.CompanyTransfers.Package.Workspace.prepare!(:import, import_run.id)
+        json_path = Path.join(workspace.root_path, "data.json")
+
+        case Operately.Blobs.download_blob_to_file(import_run.json_blob, json_path) do
+          :ok -> {:ok, json_path}
+          {:error, reason} -> {:error, {:package_not_found, reason}}
+        end
     end
   end
-
-  defp fetch_json_path(_import_run), do: {:error, {:package_not_found, nil}}
 
   defp validate_package(package) do
     case Validator.validate(package) do
