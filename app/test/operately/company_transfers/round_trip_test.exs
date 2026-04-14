@@ -5,7 +5,7 @@ defmodule Operately.CompanyTransfers.RoundTripTest do
   alias Operately.Companies.Company
   alias Operately.CompanyTransfers.Package.Paths
   alias Operately.Demo
-  alias Operately.People.{ApiToken, Person}
+  alias Operately.People.Person
   alias Operately.Projects.Project
   alias Operately.Repo
   alias Operately.Support.CompanyTransfer.Helpers, as: Transfers
@@ -71,34 +71,6 @@ defmodule Operately.CompanyTransfers.RoundTripTest do
 
     assert Repo.get_by(Company, short_id: get_in(package, ["manifest", "source_company", "short_id"])) == nil
     assert db_counts() == before_counts
-  end
-
-  test "typed binary api token data survives export and import", ctx do
-    ctx =
-      ctx
-      |> Factory.add_space(:space)
-      |> Factory.add_project(:project, :space)
-      |> Factory.add_api_token(:raw_token, :creator)
-
-    export = Transfers.export!(ctx.company, ctx.account)
-    api_token = Repo.get_by!(ApiToken, person_id: ctx.creator.id)
-    original_token_hash = api_token.token_hash
-    exported_token = find_row!(export.package, "api_tokens", api_token.id)
-
-    Repo.delete!(api_token)
-
-    imported =
-      export.package
-      |> Transfers.replace_company_short_id(unique_short_id())
-      |> Transfers.run_import!(ctx.account)
-
-    imported_company = Repo.get!(Company, imported.run.company_id)
-    imported_person = Repo.get_by!(Person, company_id: imported_company.id, full_name: ctx.creator.full_name)
-    imported_token = Repo.get_by!(ApiToken, person_id: imported_person.id)
-    reexported = Transfers.export!(imported_company, ctx.account)
-
-    assert imported_token.token_hash == original_token_hash
-    assert find_row!(reexported.package, "api_tokens", imported_token.id)["token_hash"] == exported_token["token_hash"]
   end
 
   test "re-exported packages keep table counts and core relationships for a rich minimal-slice company", ctx do

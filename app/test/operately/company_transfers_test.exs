@@ -10,7 +10,6 @@ defmodule Operately.CompanyTransfersTest do
   alias Operately.CompanyTransfers.{ExportRun, ExportWorker, ImportRun, ImportWorker}
   alias Operately.Companies.Company
   alias Operately.People.Person
-  alias Operately.People.ApiToken
   alias Operately.Repo
 
   setup do
@@ -85,8 +84,6 @@ defmodule Operately.CompanyTransfersTest do
       |> Factory.add_space(:space)
       |> Factory.add_project(:project, :space)
 
-    api_token = Repo.get_by!(ApiToken, person_id: ctx.creator.id)
-
     assert {:ok, run} = CompanyTransfers.create_export_run(ctx.company, ctx.account, %{}, dispatch: false)
 
     assert :ok = perform_job(ExportWorker, %{export_run_id: run.id})
@@ -103,8 +100,6 @@ defmodule Operately.CompanyTransfersTest do
     exported_project_ids = Enum.map(tables["projects"]["rows"], & &1["id"])
     exported_company_ids = Enum.map(tables["companies"]["rows"], & &1["id"])
     exported_account_ids = Enum.map(tables["accounts"]["rows"], & &1["id"])
-    exported_api_tokens = tables["api_tokens"]["rows"]
-    serialized_hash = Enum.find(exported_api_tokens, &(&1["id"] == api_token.id))["token_hash"]
 
     assert run.status == :completed
     assert run.started_at != nil
@@ -125,11 +120,9 @@ defmodule Operately.CompanyTransfersTest do
     refute other_ctx.company.id in exported_company_ids
     assert ctx.account.id in exported_account_ids
     refute other_ctx.account.id in exported_account_ids
-    assert serialized_hash == %{
-             "__type__" => "bytea",
-             "encoding" => "base64",
-             "value" => Base.encode64(api_token.token_hash)
-           }
+
+    # api_tokens is now excluded from export
+    refute Map.has_key?(tables, "api_tokens")
   end
 
   test "import worker imports a staged relational package", ctx do
