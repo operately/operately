@@ -3,9 +3,6 @@ defmodule Operately.CompanyTransfers.Import.Validator do
   Validates whether a package can be imported by the current Operately instance.
   """
 
-  import Ecto.Query, only: [from: 2]
-
-  alias Operately.Companies.Company
   alias Operately.CompanyTransfers.Import.Package
   alias Operately.Repo
 
@@ -83,29 +80,13 @@ defmodule Operately.CompanyTransfers.Import.Validator do
 
   defp validate_company_row(errors, %Package{} = package) do
     case Package.company_rows(package) do
-      [company_row] ->
-        validate_company_short_id(errors, company_row)
+      [_company_row] ->
+        errors
 
       company_rows ->
         [error("invalid_company_count", "Package must contain exactly one company row", %{
            "count" => length(company_rows)
          }) | errors]
-    end
-  end
-
-  defp validate_company_short_id(errors, %{"short_id" => nil}), do: errors
-
-  defp validate_company_short_id(errors, %{"short_id" => short_id}) do
-    exists? =
-      from(c in Company, where: c.short_id == ^short_id, select: 1)
-      |> Repo.exists?()
-
-    if exists? do
-      [error("company_short_id_taken", "Company short_id is already taken on the destination instance", %{
-         "short_id" => short_id
-       }) | errors]
-    else
-      errors
     end
   end
 
