@@ -1,7 +1,6 @@
 defmodule Operately.CompanyTransfers.Import.ValidatorTest do
   use Operately.DataCase
 
-  alias Operately.Companies.Company
   alias Operately.CompanyTransfers.Import.{Package, Validator}
   alias Operately.Repo
 
@@ -71,22 +70,6 @@ defmodule Operately.CompanyTransfers.Import.ValidatorTest do
 
     assert {:error, errors} = Validator.validate(package)
     assert find_error(errors, "invalid_company_count")["details"]["count"] == 0
-  end
-
-  test "validate/1 rejects company short_id collisions", ctx do
-    short_id = ctx.company.short_id || unique_short_id()
-    company = ctx.company |> Company.changeset(%{short_id: short_id}) |> Repo.update!()
-
-    package =
-      build_package(%{
-        tables: [
-          company_table([company_row(short_id: company.short_id)]),
-          account_table([account_row()])
-        ]
-      })
-
-    assert {:error, errors} = Validator.validate(package)
-    assert find_error(errors, "company_short_id_taken")["details"]["short_id"] == company.short_id
   end
 
   test "validate/1 rejects duplicate account emails after normalization" do

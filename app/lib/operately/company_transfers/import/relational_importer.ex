@@ -97,6 +97,7 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
     row
     |> RowDeserializer.deserialize_row()
     |> translate_primary_key(table, plan)
+    |> handle_company_short_id(table)
     |> translate_plain_references(table, plan)
     |> translate_foreign_keys(table, nullable_columns, foreign_keys, plan)
     |> then(fn
@@ -119,6 +120,29 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
       _ ->
         row
     end
+  end
+
+  defp handle_company_short_id(row, "companies") do
+    case row["short_id"] do
+      short_id when is_integer(short_id) ->
+        if short_id_taken?(short_id) do
+          new_short_id = Operately.Companies.ShortId.generate()
+          Map.put(row, "short_id", new_short_id)
+        else
+          row
+        end
+
+      _ ->
+        row
+    end
+  end
+
+  defp handle_company_short_id(row, _table), do: row
+
+  defp short_id_taken?(short_id) do
+    import Ecto.Query
+    alias Operately.Companies.Company
+    Operately.Repo.exists?(from c in Company, where: c.short_id == ^short_id)
   end
 
   defp translate_plain_references(row, table, %TranslationPlan{} = plan) do
