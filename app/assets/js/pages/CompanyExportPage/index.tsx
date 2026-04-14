@@ -12,7 +12,7 @@ export default { name: "CompanyExportPage", loader, Page } as PageModule;
 
 const POLL_INTERVAL_MS = 2_000;
 
-export function Page() {
+function Page() {
   const paths = usePaths();
   const { exportRuns } = useLoadedData();
 
