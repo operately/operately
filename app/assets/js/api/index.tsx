@@ -1134,6 +1134,45 @@ export interface Company {
   generalSpace?: Space;
 }
 
+export interface CompanyExportRun {
+  id: Id;
+  company?: Company;
+  requestedBy?: Account;
+  status: string;
+  currentStep?: string;
+  percentage?: number;
+  tablesCount?: number;
+  rowsCount?: number;
+  jsonBlobId?: Id;
+  zipBlobId?: Id;
+  jsonDownloadUrl?: string;
+  zipDownloadUrl?: string;
+  jsonSizeBytes?: number;
+  zipSizeBytes?: number;
+  errorMessage?: string;
+  insertedAt: string;
+  startedAt?: string;
+  completedAt?: string;
+}
+
+export interface CompanyImportRun {
+  id: Id;
+  company?: Company;
+  requestedBy?: Account;
+  status: string;
+  currentStep?: string;
+  percentage?: number;
+  tablesCount?: number;
+  rowsCount?: number;
+  jsonBlobId?: Id;
+  zipBlobId?: Id;
+  errorMessage?: string;
+  validationErrors?: Json;
+  insertedAt: string;
+  startedAt?: string;
+  completedAt?: string;
+}
+
 export interface CompanyPermissions {
   canView: boolean;
   isAdmin: boolean;
@@ -2384,6 +2423,34 @@ export interface CompaniesListActivitiesResult {
   activities: Activity[];
 }
 
+export interface CompanyTransfersGetExportRunInput {
+  id: Id;
+}
+
+export interface CompanyTransfersGetExportRunResult {
+  exportRun: CompanyExportRun;
+}
+
+export interface CompanyTransfersGetImportRunInput {
+  id: Id;
+}
+
+export interface CompanyTransfersGetImportRunResult {
+  importRun: CompanyImportRun;
+}
+
+export interface CompanyTransfersListExportRunsInput {}
+
+export interface CompanyTransfersListExportRunsResult {
+  exportRuns: CompanyExportRun[];
+}
+
+export interface CompanyTransfersListImportRunsInput {}
+
+export interface CompanyTransfersListImportRunsResult {
+  importRuns: CompanyImportRun[];
+}
+
 export interface DocumentsGetInput {
   id: Id;
   includeAuthor?: boolean | null;
@@ -3367,6 +3434,21 @@ export interface CompaniesUpdateMembersPermissionsInput {
 
 export interface CompaniesUpdateMembersPermissionsResult {
   success: boolean;
+}
+
+export interface CompanyTransfersStartExportInput {}
+
+export interface CompanyTransfersStartExportResult {
+  exportRun: CompanyExportRun;
+}
+
+export interface CompanyTransfersStartImportInput {
+  jsonBlobId: Id;
+  zipBlobId: Id;
+}
+
+export interface CompanyTransfersStartImportResult {
+  importRun: CompanyImportRun;
 }
 
 export interface CompleteCompanySetupInput {
@@ -4696,6 +4778,34 @@ export interface TasksUpdateStatusResult {
   updatedMilestone: Milestone | null;
 }
 
+class ApiNamespaceCompanyTransfers {
+  constructor(private client: ApiClient) {}
+
+  async getExportRun(input: CompanyTransfersGetExportRunInput): Promise<CompanyTransfersGetExportRunResult> {
+    return this.client.get("/company_transfers/get_export_run", input);
+  }
+
+  async getImportRun(input: CompanyTransfersGetImportRunInput): Promise<CompanyTransfersGetImportRunResult> {
+    return this.client.get("/company_transfers/get_import_run", input);
+  }
+
+  async listExportRuns(input: CompanyTransfersListExportRunsInput): Promise<CompanyTransfersListExportRunsResult> {
+    return this.client.get("/company_transfers/list_export_runs", input);
+  }
+
+  async listImportRuns(input: CompanyTransfersListImportRunsInput): Promise<CompanyTransfersListImportRunsResult> {
+    return this.client.get("/company_transfers/list_import_runs", input);
+  }
+
+  async startExport(input: CompanyTransfersStartExportInput): Promise<CompanyTransfersStartExportResult> {
+    return this.client.post("/company_transfers/start_export", input);
+  }
+
+  async startImport(input: CompanyTransfersStartImportInput): Promise<CompanyTransfersStartImportResult> {
+    return this.client.post("/company_transfers/start_import", input);
+  }
+}
+
 class ApiNamespaceApiTokens {
   constructor(private client: ApiClient) {}
 
@@ -5787,6 +5897,7 @@ class ApiNamespaceReactions {
 export class ApiClient {
   private basePath: string;
   private headers: any;
+  public apiNamespaceCompanyTransfers: ApiNamespaceCompanyTransfers;
   public apiNamespaceApiTokens: ApiNamespaceApiTokens;
   public apiNamespaceInvitations: ApiNamespaceInvitations;
   public apiNamespaceFiles: ApiNamespaceFiles;
@@ -5806,6 +5917,7 @@ export class ApiClient {
   public apiNamespaceReactions: ApiNamespaceReactions;
 
   constructor() {
+    this.apiNamespaceCompanyTransfers = new ApiNamespaceCompanyTransfers(this);
     this.apiNamespaceApiTokens = new ApiNamespaceApiTokens(this);
     this.apiNamespaceInvitations = new ApiNamespaceInvitations(this);
     this.apiNamespaceFiles = new ApiNamespaceFiles(this);
@@ -6084,6 +6196,50 @@ export default {
   useRequestPasswordReset,
   resetPassword,
   useResetPassword,
+
+  company_transfers: {
+    listExportRuns: (input: CompanyTransfersListExportRunsInput) =>
+      defaultApiClient.apiNamespaceCompanyTransfers.listExportRuns(input),
+    useListExportRuns: (input: CompanyTransfersListExportRunsInput) =>
+      useQuery<CompanyTransfersListExportRunsResult>(() =>
+        defaultApiClient.apiNamespaceCompanyTransfers.listExportRuns(input),
+      ),
+
+    getImportRun: (input: CompanyTransfersGetImportRunInput) =>
+      defaultApiClient.apiNamespaceCompanyTransfers.getImportRun(input),
+    useGetImportRun: (input: CompanyTransfersGetImportRunInput) =>
+      useQuery<CompanyTransfersGetImportRunResult>(() =>
+        defaultApiClient.apiNamespaceCompanyTransfers.getImportRun(input),
+      ),
+
+    listImportRuns: (input: CompanyTransfersListImportRunsInput) =>
+      defaultApiClient.apiNamespaceCompanyTransfers.listImportRuns(input),
+    useListImportRuns: (input: CompanyTransfersListImportRunsInput) =>
+      useQuery<CompanyTransfersListImportRunsResult>(() =>
+        defaultApiClient.apiNamespaceCompanyTransfers.listImportRuns(input),
+      ),
+
+    getExportRun: (input: CompanyTransfersGetExportRunInput) =>
+      defaultApiClient.apiNamespaceCompanyTransfers.getExportRun(input),
+    useGetExportRun: (input: CompanyTransfersGetExportRunInput) =>
+      useQuery<CompanyTransfersGetExportRunResult>(() =>
+        defaultApiClient.apiNamespaceCompanyTransfers.getExportRun(input),
+      ),
+
+    startImport: (input: CompanyTransfersStartImportInput) =>
+      defaultApiClient.apiNamespaceCompanyTransfers.startImport(input),
+    useStartImport: () =>
+      useMutation<CompanyTransfersStartImportInput, CompanyTransfersStartImportResult>((input) =>
+        defaultApiClient.apiNamespaceCompanyTransfers.startImport(input),
+      ),
+
+    startExport: (input: CompanyTransfersStartExportInput) =>
+      defaultApiClient.apiNamespaceCompanyTransfers.startExport(input),
+    useStartExport: () =>
+      useMutation<CompanyTransfersStartExportInput, CompanyTransfersStartExportResult>((input) =>
+        defaultApiClient.apiNamespaceCompanyTransfers.startExport(input),
+      ),
+  },
 
   api_tokens: {
     list: (input: ApiTokensListInput) => defaultApiClient.apiNamespaceApiTokens.list(input),

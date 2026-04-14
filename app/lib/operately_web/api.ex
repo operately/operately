@@ -354,6 +354,16 @@ defmodule OperatelyWeb.Api do
         mutation(:update_name, OperatelyWeb.Api.ApiTokens.UpdateName)
         mutation(:delete, OperatelyWeb.Api.ApiTokens.Delete)
       end
+
+      namespace(:company_transfers) do
+        query(:get_export_run, OperatelyWeb.Api.CompanyTransfers.GetExportRun)
+        query(:list_export_runs, OperatelyWeb.Api.CompanyTransfers.ListExportRuns)
+        query(:get_import_run, OperatelyWeb.Api.CompanyTransfers.GetImportRun)
+        query(:list_import_runs, OperatelyWeb.Api.CompanyTransfers.ListImportRuns)
+
+        mutation(:start_export, OperatelyWeb.Api.CompanyTransfers.StartExport)
+        mutation(:start_import, OperatelyWeb.Api.CompanyTransfers.StartImport)
+      end
     end
   end
 

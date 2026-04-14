@@ -2171,4 +2171,43 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   enum(:success_status, values: [:achieved, :missed])
+
+  object :company_export_run do
+    field :id, :id, null: false
+    field? :company, :company
+    field? :requested_by, :account
+    field :status, :string, null: false
+    field? :current_step, :string
+    field? :percentage, :float
+    field? :tables_count, :integer
+    field? :rows_count, :integer
+    field? :json_blob_id, :id
+    field? :zip_blob_id, :id
+    field? :json_download_url, :string
+    field? :zip_download_url, :string
+    field? :json_size_bytes, :integer
+    field? :zip_size_bytes, :integer
+    field? :error_message, :string
+    field :inserted_at, :datetime, null: false
+    field? :started_at, :datetime
+    field? :completed_at, :datetime
+  end
+
+  object :company_import_run do
+    field :id, :id, null: false
+    field? :company, :company
+    field? :requested_by, :account
+    field :status, :string, null: false
+    field? :current_step, :string
+    field? :percentage, :float
+    field? :tables_count, :integer
+    field? :rows_count, :integer
+    field? :json_blob_id, :id
+    field? :zip_blob_id, :id
+    field? :error_message, :string
+    field? :validation_errors, :json
+    field :inserted_at, :datetime, null: false
+    field? :started_at, :datetime
+    field? :completed_at, :datetime
+  end
 end
