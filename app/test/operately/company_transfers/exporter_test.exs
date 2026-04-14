@@ -4,7 +4,6 @@ defmodule Operately.CompanyTransfers.ExporterTest do
   alias Operately.CompanyTransfers
   alias Operately.CompanyTransfers.{ExportRun, Exporter}
   alias Operately.CompanyTransfers.Package.{Archive, PackageJson, Paths}
-  alias Operately.People.ApiToken
   alias Operately.Repo
 
   setup do
@@ -24,8 +23,6 @@ defmodule Operately.CompanyTransfers.ExporterTest do
       |> Factory.add_subscription(:subscription, :project, person: ctx.member)
       |> Factory.add_api_token(:raw_token, :creator)
 
-    api_token = Repo.get_by!(ApiToken, person_id: ctx.creator.id)
-
     assert {:ok, run} = CompanyTransfers.create_export_run(ctx.company, ctx.account, %{}, dispatch: false)
     assert {:ok, run} = CompanyTransfers.mark_export_run_running(run)
     assert {:ok, completed_run} = Exporter.run(run)
@@ -37,7 +34,6 @@ defmodule Operately.CompanyTransfers.ExporterTest do
     package = PackageJson.read!(temp_path)
     File.rm!(temp_path)
     tables = Map.new(package["tables"], &{&1["name"], &1})
-    exported_token = Enum.find(tables["api_tokens"]["rows"], &(&1["id"] == api_token.id))
 
     assert completed_run.status == :completed
     assert completed_run.started_at != nil
@@ -61,11 +57,9 @@ defmodule Operately.CompanyTransfers.ExporterTest do
     assert package["manifest"]["requested_by_id"] == ctx.account.id
     assert ctx.project.id in Enum.map(tables["projects"]["rows"], & &1["id"])
     assert ctx.subscription.id in Enum.map(tables["subscriptions"]["rows"], & &1["id"])
-    assert exported_token["token_hash"] == %{
-             "__type__" => "bytea",
-             "encoding" => "base64",
-             "value" => Base.encode64(api_token.token_hash)
-           }
+
+    # api_tokens is now excluded from export
+    refute Map.has_key?(tables, "api_tokens")
 
     assert completed_run.manifest_summary["source_company"] == package["manifest"]["source_company"]
     assert completed_run.manifest_summary["tables_count"] == package["manifest"]["tables_count"]
