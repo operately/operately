@@ -26,7 +26,9 @@ defmodule OperatelyWeb.Api.CompanyTransfers.StartImport do
   defp respond(result) do
     case result do
       {:ok, ctx} -> {:ok, %{import_run: Serializer.serialize(ctx.import_run, level: :full)}}
-      {:error, :blobs, _} -> {:error, :forbidden}
+      {:error, :blobs, :not_found} -> {:error, :not_found}
+      {:error, :blobs, :forbidden} -> {:error, :forbidden}
+      {:error, :blobs, :not_uploaded} -> {:error, :bad_request}
       {:error, :import_run, changeset} -> {:error, changeset}
       _ -> {:error, :internal_server_error}
     end

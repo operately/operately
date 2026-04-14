@@ -24,6 +24,7 @@ defmodule OperatelyWeb.Api.CompanyTransfers.GetImportRun do
     case result do
       {:ok, ctx} -> {:ok, %{import_run: Serializer.serialize(ctx.run, level: :full)}}
       {:error, :run, _} -> {:error, :not_found}
+      {:error, :account, _} -> {:error, :forbidden}
       {:error, :check_permissions, _} -> {:error, :forbidden}
       _ -> {:error, :internal_server_error}
     end

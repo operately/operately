@@ -21,6 +21,7 @@ defmodule OperatelyWeb.Api.CompanyTransfers.ListImportRuns do
   defp respond(result) do
     case result do
       {:ok, ctx} -> {:ok, %{import_runs: Serializer.serialize(ctx.runs, level: :essential)}}
+      {:error, :account, _} -> {:error, :forbidden}
       _ -> {:error, :internal_server_error}
     end
   end
