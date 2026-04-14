@@ -31,7 +31,7 @@ defmodule Operately.CompanyTransfers.Importer do
   end
 
   defp fetch_json_path(import_run) do
-    import_run = Repo.preload(import_run, [:json_blob, :zip_blob])
+    import_run = Repo.preload(import_run, :json_blob)
 
     cond do
       is_nil(import_run.json_blob) ->
