@@ -7,6 +7,8 @@ defmodule Operately.CompanyTransfers.ImportRun do
     belongs_to :company, Operately.Companies.Company
     belongs_to :requested_by, Operately.People.Account, foreign_key: :requested_by_id
     belongs_to :cancelled_by, Operately.People.Account, foreign_key: :cancelled_by_id
+    belongs_to :json_blob, Operately.Blobs.Blob
+    belongs_to :zip_blob, Operately.Blobs.Blob
 
     field :status, Ecto.Enum, values: @statuses, default: :pending
     field :current_step, :string
@@ -22,8 +24,6 @@ defmodule Operately.CompanyTransfers.ImportRun do
     field :manifest_summary, :map, default: %{}
     field :artifacts_metadata, :map, default: %{}
     field :workspace_path, :string
-    field :json_path, :string
-    field :zip_path, :string
     field :json_size_bytes, :integer
     field :zip_size_bytes, :integer
     field :error_message, :string
@@ -47,6 +47,8 @@ defmodule Operately.CompanyTransfers.ImportRun do
       :company_id,
       :requested_by_id,
       :cancelled_by_id,
+      :json_blob_id,
+      :zip_blob_id,
       :status,
       :current_step,
       :total_steps,
@@ -59,8 +61,6 @@ defmodule Operately.CompanyTransfers.ImportRun do
       :manifest_summary,
       :artifacts_metadata,
       :workspace_path,
-      :json_path,
-      :zip_path,
       :json_size_bytes,
       :zip_size_bytes,
       :error_message,
@@ -77,5 +77,7 @@ defmodule Operately.CompanyTransfers.ImportRun do
     |> assoc_constraint(:company)
     |> assoc_constraint(:requested_by)
     |> assoc_constraint(:cancelled_by)
+    |> assoc_constraint(:json_blob)
+    |> assoc_constraint(:zip_blob)
   end
 end

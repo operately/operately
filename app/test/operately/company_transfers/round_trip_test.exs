@@ -129,10 +129,13 @@ defmodule Operately.CompanyTransfers.RoundTripTest do
 
     destination_people_before = Repo.aggregate(Ecto.assoc(destination_ctx.company, :people), :count, :id)
 
+    # Use existing_match's account for reexport since that person will be in the imported company
+    reexport_account = Repo.get!(Operately.People.Account, destination_ctx.existing_match.account_id)
+
     round_trip =
       Transfers.round_trip!(ctx.company, ctx.account,
         import_account: destination_ctx.account,
-        reexport_account: destination_ctx.account,
+        reexport_account: reexport_account,
         mutate_package: fn package ->
           package
           |> Transfers.replace_company_short_id(unique_short_id())

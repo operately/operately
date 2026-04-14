@@ -2,7 +2,8 @@ defmodule Operately.CompanyTransfersFilesTest do
   use Operately.DataCase
 
   alias Operately.CompanyTransfers
-  alias Operately.CompanyTransfers.Package.{Archive, ExportArtifacts, Hashing, PackageJson, Paths, Workspace}
+  alias Operately.CompanyTransfers.Package.{Archive, Hashing, PackageJson, Paths, Workspace}
+  alias Operately.Blobs
 
   setup do
     ctx = Factory.setup(%{})
@@ -20,8 +21,8 @@ defmodule Operately.CompanyTransfersFilesTest do
     assert File.dir?(workspace.root_path)
 
     assert run.workspace_path == workspace.root_path
-    assert run.json_path == workspace.json_path
-    assert run.zip_path == workspace.zip_path
+    assert run.artifacts_metadata["workspace"]["json_path"] == workspace.json_path
+    assert run.artifacts_metadata["workspace"]["zip_path"] == workspace.zip_path
     assert run.artifacts_metadata["workspace"]["kind"] == "export"
   end
 
@@ -35,8 +36,8 @@ defmodule Operately.CompanyTransfersFilesTest do
     assert File.dir?(workspace.root_path)
 
     assert run.workspace_path == workspace.root_path
-    assert run.json_path == workspace.json_path
-    assert run.zip_path == workspace.zip_path
+    assert run.artifacts_metadata["workspace"]["json_path"] == workspace.json_path
+    assert run.artifacts_metadata["workspace"]["zip_path"] == workspace.zip_path
     assert run.artifacts_metadata["workspace"]["kind"] == "import"
   end
 
@@ -70,7 +71,7 @@ defmodule Operately.CompanyTransfersFilesTest do
     assert File.read!(Path.join(extract_path, "nested/hello.txt")) == "world"
   end
 
-  test "export artifacts are published under the exports run-id convention", ctx do
+  test "export artifacts are published to blob storage", ctx do
     assert {:ok, run} = CompanyTransfers.create_export_run(ctx.company, ctx.account, %{}, dispatch: false)
     assert {:ok, run, workspace} = CompanyTransfers.prepare_export_workspace(run)
 
@@ -79,18 +80,34 @@ defmodule Operately.CompanyTransfersFilesTest do
 
     assert {:ok, run} = CompanyTransfers.publish_export_artifacts(run, workspace)
 
-    assert run.json_path == Paths.export_artifact_json_path(run.id)
-    assert run.zip_path == Paths.export_artifact_zip_path(run.id)
+    # Verify blob records were created
+    assert run.json_blob_id != nil
+    assert run.zip_blob_id != nil
     assert run.json_size_bytes > 0
     assert run.zip_size_bytes >= 0
-    assert File.exists?(run.json_path)
-    assert File.exists?(run.zip_path)
-    assert run.artifacts_metadata["export_artifacts"]["json_key"] == Paths.export_artifact_json_key(run.id)
-    assert run.artifacts_metadata["export_artifacts"]["zip_key"] == Paths.export_artifact_zip_key(run.id)
-    assert run.artifacts_metadata["workspace"]["root_path"] == workspace.root_path
 
-    assert :ok = ExportArtifacts.delete!(run.id)
-    refute File.exists?(Paths.export_artifact_dir(run.id))
+    # Verify blobs have correct properties
+    json_blob = Blobs.get_blob!(run.json_blob_id)
+    assert json_blob.company_id == ctx.company.id
+    assert json_blob.status == :uploaded
+    assert json_blob.content_type == "application/json"
+    assert json_blob.size == run.json_size_bytes
+
+    zip_blob = Blobs.get_blob!(run.zip_blob_id)
+    assert zip_blob.company_id == ctx.company.id
+    assert zip_blob.status == :uploaded
+    assert zip_blob.content_type == "application/zip"
+    assert zip_blob.size == run.zip_size_bytes
+
+    # Verify files were uploaded to storage
+    json_storage_path = "/media/#{Operately.Blobs.Blob.path(json_blob)}"
+    zip_storage_path = "/media/#{Operately.Blobs.Blob.path(zip_blob)}"
+    assert File.exists?(json_storage_path)
+    assert File.exists?(zip_storage_path)
+
+    # Cleanup
+    File.rm(json_storage_path)
+    File.rm(zip_storage_path)
   end
 
   test "workspace cleanup removes the temp directory" do
