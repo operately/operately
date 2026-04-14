@@ -3,18 +3,73 @@ defmodule Operately.Support.CompanyTransfer.Helpers do
   alias Operately.CompanyTransfers
   alias Operately.CompanyTransfers.{Exporter, Importer}
   alias Operately.CompanyTransfers.Package.PackageJson
-  alias Operately.People.Account
+  alias Operately.People.{Account, Person}
   alias Operately.Repo
+
+  import Ecto.Query
 
   def export!(%Company{} = company, %Account{} = account) do
     {:ok, export_run} = CompanyTransfers.create_export_run(company, account, %{}, dispatch: false)
     {:ok, export_run} = CompanyTransfers.mark_export_run_running(export_run)
     {:ok, export_run} = Exporter.run(export_run)
 
+    # Download blob to read package
+    export_run = Repo.preload(export_run, :json_blob)
+    temp_path = Path.join(System.tmp_dir!(), "export_#{export_run.id}.json")
+    :ok = Operately.Blobs.download_blob_to_file(export_run.json_blob, temp_path)
+    package = PackageJson.read!(temp_path)
+    File.rm!(temp_path)
+
     %{
       run: export_run,
-      package: PackageJson.read!(export_run.json_path)
+      package: package
     }
+  end
+
+  def upload_import_artifacts_as_blobs(import_run, workspace, account) do
+    # Create placeholder zip if it doesn't exist
+    unless File.exists?(workspace.zip_path) do
+      alias Operately.CompanyTransfers.Package.Archive
+      Archive.create!(workspace.zip_path, [%{path: "README.txt", content: "Test import placeholder\n"}])
+    end
+
+    # Get the first person associated with this account to use as blob author
+    # Import runs don't have a company yet, so we use any company the account belongs to
+    person = Repo.one!(
+      from p in Person,
+      where: p.account_id == ^account.id,
+      limit: 1
+    )
+
+    # Create and upload JSON blob
+    {:ok, json_blob} = Operately.Blobs.create_blob(%{
+      company_id: person.company_id,
+      author_id: person.id,
+      status: :pending,
+      filename: "import_#{import_run.id}.json",
+      size: File.stat!(workspace.json_path).size,
+      content_type: "application/json"
+    })
+    {:ok, json_blob} = Operately.Blobs.Upload.upload(json_blob, workspace.json_path)
+    {:ok, json_blob} = Operately.Blobs.update_blob(json_blob, %{status: :uploaded})
+
+    # Create and upload ZIP blob
+    {:ok, zip_blob} = Operately.Blobs.create_blob(%{
+      company_id: person.company_id,
+      author_id: person.id,
+      status: :pending,
+      filename: "import_#{import_run.id}.zip",
+      size: File.stat!(workspace.zip_path).size,
+      content_type: "application/zip"
+    })
+    {:ok, zip_blob} = Operately.Blobs.Upload.upload(zip_blob, workspace.zip_path)
+    {:ok, zip_blob} = Operately.Blobs.update_blob(zip_blob, %{status: :uploaded})
+
+    # Update import run with blob IDs
+    CompanyTransfers.update_import_run(import_run, %{
+      json_blob_id: json_blob.id,
+      zip_blob_id: zip_blob.id
+    })
   end
 
   def run_import(package, %Account{} = account) when is_map(package) do
@@ -22,12 +77,7 @@ defmodule Operately.Support.CompanyTransfer.Helpers do
     {:ok, import_run, workspace} = CompanyTransfers.prepare_import_workspace(import_run)
     _json_meta = PackageJson.write!(workspace.json_path, package)
 
-    {:ok, import_run} =
-      CompanyTransfers.update_import_run(import_run, %{
-        json_path: workspace.json_path,
-        zip_path: workspace.zip_path
-      })
-
+    {:ok, import_run} = upload_import_artifacts_as_blobs(import_run, workspace, account)
     {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
 
     case Importer.run(import_run) do

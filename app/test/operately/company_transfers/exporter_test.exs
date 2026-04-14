@@ -30,7 +30,12 @@ defmodule Operately.CompanyTransfers.ExporterTest do
     assert {:ok, run} = CompanyTransfers.mark_export_run_running(run)
     assert {:ok, completed_run} = Exporter.run(run)
 
-    package = PackageJson.read!(completed_run.json_path)
+    # Download blob to read package
+    completed_run = Repo.preload(completed_run, :json_blob)
+    temp_path = Path.join(System.tmp_dir!(), "export_test_#{completed_run.id}.json")
+    :ok = Operately.Blobs.download_blob_to_file(completed_run.json_blob, temp_path)
+    package = PackageJson.read!(temp_path)
+    File.rm!(temp_path)
     tables = Map.new(package["tables"], &{&1["name"], &1})
     exported_token = Enum.find(tables["api_tokens"]["rows"], &(&1["id"] == api_token.id))
 
@@ -45,10 +50,10 @@ defmodule Operately.CompanyTransfers.ExporterTest do
     assert completed_run.rows_count == package["manifest"]["rows_count"]
     assert completed_run.tables_count == package["manifest"]["tables_count"]
 
-    assert completed_run.json_path == Paths.export_artifact_json_path(run.id)
-    assert completed_run.zip_path == Paths.export_artifact_zip_path(run.id)
-    assert File.exists?(completed_run.json_path)
-    assert File.exists?(completed_run.zip_path)
+    assert completed_run.json_blob_id != nil
+    assert completed_run.zip_blob_id != nil
+    assert completed_run.json_size_bytes > 0
+    assert completed_run.zip_size_bytes > 0
 
     assert package["files"] == []
     assert package["manifest"]["slice"] == "relational_minimal"
@@ -69,8 +74,6 @@ defmodule Operately.CompanyTransfers.ExporterTest do
     assert completed_run.artifacts_metadata["workspace"]["run_id"] == run.id
     assert completed_run.artifacts_metadata["package"]["zip_placeholder"] == true
     assert completed_run.artifacts_metadata["package"]["json_size_bytes"] == completed_run.json_size_bytes
-    assert completed_run.artifacts_metadata["export_artifacts"]["json_key"] == Path.join(["exports", run.id, "data.json"])
-    assert completed_run.artifacts_metadata["export_artifacts"]["zip_key"] == Path.join(["exports", run.id, "files.zip"])
   end
 
   test "run/1 writes a placeholder zip artifact", ctx do
@@ -78,13 +81,20 @@ defmodule Operately.CompanyTransfers.ExporterTest do
     assert {:ok, run} = CompanyTransfers.mark_export_run_running(run)
     assert {:ok, completed_run} = Exporter.run(run)
 
-    extract_dir = Path.join(Paths.root(), "extract-#{Ecto.UUID.generate()}")
+    # Download zip blob to extract
+    completed_run = Repo.preload(completed_run, :zip_blob)
+    temp_zip_path = Path.join(System.tmp_dir!(), "export_test_#{completed_run.id}.zip")
+    :ok = Operately.Blobs.download_blob_to_file(completed_run.zip_blob, temp_zip_path)
 
-    extracted_paths = Archive.extract!(completed_run.zip_path, extract_dir)
+    extract_dir = Path.join(Paths.root(), "extract-#{Ecto.UUID.generate()}")
+    extracted_paths = Archive.extract!(temp_zip_path, extract_dir)
     readme_path = Path.join(extract_dir, "README.txt")
 
     assert readme_path in extracted_paths
     assert File.read!(readme_path) == "No files are included in this export yet.\n"
+
+    # Cleanup
+    File.rm!(temp_zip_path)
   end
 
   test "run/1 returns company_not_found when the source company does not exist", ctx do
