@@ -42,6 +42,7 @@ export { InvitePeoplePage } from "./InvitePeoplePage";
 export { MemberTypeSelectionPage } from "./MemberTypeSelectionPage";
 export { CompanyAdminAddPeoplePage } from "./CompanyAdminAddPeoplePage";
 export { CompanyAdminManagePeoplePage } from "./CompanyAdminManagePeoplePage";
+export { CompanyExportPage } from "./CompanyExportPage";
 export { MilestoneKanbanPage } from "./MilestoneKanbanPage";
 export { MilestonePage } from "./MilestonePage";
 export { MiniWorkMap } from "./MiniWorkMap";

@@ -113,6 +113,10 @@ export class Paths {
     return this.createCompanyPath(["admin"]);
   }
 
+  companyExportPath() {
+    return this.createCompanyPath(["admin", "export-company"]);
+  }
+
   companyManagePeoplePath() {
     return this.createCompanyPath(["admin", "manage-people"]);
   }

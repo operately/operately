@@ -29,12 +29,15 @@ defmodule Operately.Blobs.SignedUrls do
   defmodule Local do
     alias Operately.Blobs.Blob
 
-    def get_signed_get_url(%Blob{} = blob, _disposition) do
+    def get_signed_get_url(%Blob{} = blob, disposition) do
+      validate_disposition!(disposition)
+
       host = OperatelyWeb.Endpoint.url()
       path = Blob.path(blob)
       token = Operately.Blobs.Tokens.gen_get_token(path)
+      filename = URI.encode_www_form(blob.filename)
 
-      {:ok, "#{host}/media/#{path}?token=#{token}"}
+      {:ok, "#{host}/media/#{path}?token=#{token}&disposition=#{disposition}&filename=#{filename}"}
     end
 
     def get_signed_upload_url(%Blob{} = blob) do
@@ -43,6 +46,12 @@ defmodule Operately.Blobs.SignedUrls do
       token = Operately.Blobs.Tokens.gen_upload_token(path)
 
       {:ok, "#{host}/media/#{path}?token=#{token}"}
+    end
+
+    def validate_disposition!(disposition) do
+      unless Operately.Blobs.SignedUrls.is_valid_disposition?(disposition) do
+        raise ArgumentError, "Invalid disposition type #{disposition}"
+      end
     end
   end
 
