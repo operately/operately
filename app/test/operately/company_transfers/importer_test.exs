@@ -75,18 +75,55 @@ defmodule Operately.CompanyTransfers.ImporterTest do
            }
   end
 
-  test "run/1 fails validation when the package short_id is already taken", ctx do
+  test "run/1 generates new short_id when the package short_id is already taken", ctx do
     ctx =
       ctx
       |> Factory.add_space(:space)
       |> Factory.add_project(:project, :space)
 
+    original_short_id = ctx.company.short_id
+
     assert {:ok, import_run} = export_and_stage_import(ctx)
     assert {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
 
-    assert {:error, {:validation_failed, message, errors}} = Importer.run(import_run)
-    assert message =~ "short_id"
-    assert Enum.any?(errors, &(&1["code"] == "company_short_id_taken"))
+    assert {:ok, completed_run} = Importer.run(import_run)
+
+    imported_company = Repo.get!(Company, completed_run.company_id)
+
+    # Import should succeed
+    assert completed_run.status == :completed
+
+    # Imported company should have a different short_id than the original
+    assert imported_company.short_id != original_short_id
+
+    # Original company should still exist with its short_id
+    original_company = Repo.get!(Company, ctx.company.id)
+    assert original_company.short_id == original_short_id
+  end
+
+  test "run/1 keeps original short_id when it is not taken", ctx do
+    ctx =
+      ctx
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
+
+    unique_id = unique_short_id()
+
+    assert {:ok, import_run} =
+             export_and_stage_import(ctx, fn package ->
+               replace_company_short_id(package, unique_id)
+             end)
+
+    assert {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
+    assert {:ok, completed_run} = Importer.run(import_run)
+
+    imported_company = Repo.get!(Company, completed_run.company_id)
+
+    # Import should succeed
+    assert completed_run.status == :completed
+
+    # Imported company should keep the original short_id since it wasn't taken
+    assert imported_company.short_id == unique_id
   end
 
   test "run/1 fails validation when schema migrations do not match", ctx do
