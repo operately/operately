@@ -69,6 +69,7 @@ export function createAppRoutes() {
         pageRoute("ai", pages.AiPlaygroundPage),
 
         pageRoute("admin", pages.CompanyAdminPage),
+        pageRoute("admin/export-company", pages.CompanyExportPage),
         pageRoute("admin/manage-admins", pages.CompanyAdminManageAdminsPage),
         pageRoute("admin/manage-people", pages.CompanyAdminManagePeoplePage),
         pageRoute("admin/manage-people/add", pages.CompanyAdminAddPeoplePage),
