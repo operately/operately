@@ -3,8 +3,6 @@ defmodule Operately.CompanyTransfers.Export.RelationalCollectorTest do
 
   alias Operately.CompanyTransfers.Package.Paths
   alias Operately.CompanyTransfers.Export.RelationalCollector
-  alias Operately.People.ApiToken
-  alias Operately.Repo
 
   setup do
     on_exit(fn -> File.rm_rf!(Paths.root()) end)
@@ -30,8 +28,6 @@ defmodule Operately.CompanyTransfers.Export.RelationalCollectorTest do
       |> Factory.add_project(:project, :space)
       |> Factory.add_api_token(:raw_token, :creator)
 
-    api_token = Repo.get_by!(ApiToken, person_id: ctx.creator.id)
-
     assert {:ok, collected} = RelationalCollector.collect(ctx.company.id)
 
     tables = table_map(collected)
@@ -50,21 +46,12 @@ defmodule Operately.CompanyTransfers.Export.RelationalCollectorTest do
     assert ctx.account.id in row_ids(tables, "accounts")
     assert ctx.project.subscription_list_id in row_ids(tables, "subscription_lists")
     assert ctx.subscription.id in row_ids(tables, "subscriptions")
-    assert api_token.id in row_ids(tables, "api_tokens")
 
     refute other_ctx.company.id in row_ids(tables, "companies")
     refute other_ctx.space.id in row_ids(tables, "groups")
     refute other_ctx.project.id in row_ids(tables, "projects")
     refute other_ctx.creator.id in row_ids(tables, "people")
     refute other_ctx.account.id in row_ids(tables, "accounts")
-
-    exported_token = find_row(tables, "api_tokens", api_token.id)
-
-    assert exported_token["token_hash"] == %{
-             "__type__" => "bytea",
-             "encoding" => "base64",
-             "value" => Base.encode64(api_token.token_hash)
-           }
 
     assert "id" in column_names(company_table)
     assert "name" in column_names(company_table)
@@ -105,10 +92,8 @@ defmodule Operately.CompanyTransfers.Export.RelationalCollectorTest do
 
     tables = table_map(collected)
 
-    assert Map.has_key?(tables, "api_tokens")
-    assert tables["api_tokens"]["classification"] == "included"
-    assert tables["api_tokens"]["row_count"] == 0
-    assert tables["api_tokens"]["rows"] == []
+    # api_tokens is now excluded, so it should not appear in the export
+    refute Map.has_key?(tables, "api_tokens")
 
     assert Map.has_key?(tables, "ownerships")
     assert tables["ownerships"]["classification"] == "included"
