@@ -1,5 +1,6 @@
 defimpl OperatelyWeb.Api.Serializable, for: Operately.CompanyTransfers.ExportRun do
   alias Operately.Blobs
+  alias OperatelyWeb.Api.Serializer
 
   def serialize(run, level: level) do
     base_fields = %{
@@ -12,9 +13,9 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.CompanyTransfers.ExportRun
       tables_count: run.tables_count,
       rows_count: run.rows_count,
       error_message: run.error_message,
-      inserted_at: run.inserted_at,
-      started_at: run.started_at,
-      completed_at: run.completed_at
+      inserted_at: Serializer.serialize(run.inserted_at),
+      started_at: Serializer.serialize(run.started_at),
+      completed_at: Serializer.serialize(run.completed_at)
     }
 
     case level do
