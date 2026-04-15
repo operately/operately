@@ -42,7 +42,7 @@ function AssignmentGroup({ group }: { group: ReviewPageV2.AssignmentGroup }) {
 
       <div className="flex flex-col gap-1">
         {group.assignments.map((assignment) => (
-          <AssignmentRow key={assignment.resourceId} assignment={assignment} />
+          <AssignmentItem key={assignment.resourceId} assignment={assignment} />
         ))}
       </div>
     </div>
@@ -72,7 +72,7 @@ function GroupHeader({ origin, relationship }: { origin: ReviewPageV2.Assignment
   );
 }
 
-function AssignmentRow({ assignment }: { assignment: ReviewPageV2.AssignmentWithMeta }) {
+function AssignmentItem({ assignment }: { assignment: ReviewPageV2.Assignment }) {
   const displayLabel = assignment.actionLabel ?? assignment.name;
   const urgencyDetails = getUrgencyDetails(assignment.dueStatus, assignment.dueDate);
 
@@ -104,13 +104,13 @@ function AssignmentRow({ assignment }: { assignment: ReviewPageV2.AssignmentWith
   );
 }
 
-function renderLeadingIndicator(assignment: ReviewPageV2.AssignmentWithMeta) {
+function renderLeadingIndicator(assignment: ReviewPageV2.Assignment) {
   const Icon = TYPE_ICON[assignment.type] ?? IconSquare;
   return <Icon size={16} className="text-content-base" />;
 }
 
-function getUrgencyDetails(status: ReviewPageV2.DueStatus, dueDate: Date | null) {
-  if (!dueDate || (status !== "overdue" && status !== "due_today" && status !== "due_soon")) {
+function getUrgencyDetails(status: ReviewPageV2.DueStatus | null, dueDate: string | null) {
+  if (!status || !dueDate || (status !== "overdue" && status !== "due_today" && status !== "due_soon")) {
     return null;
   }
 
@@ -128,7 +128,7 @@ function getUrgencyDetails(status: ReviewPageV2.DueStatus, dueDate: Date | null)
   }
 }
 
-function calculateDaysOverdue(dueDate: Date): number {
+function calculateDaysOverdue(dueDate: string): number {
   const today = new Date();
   today.setHours(0, 0, 0, 0); // Start of today
 
@@ -141,7 +141,7 @@ function calculateDaysOverdue(dueDate: Date): number {
   return Math.max(1, diffDays); // At least 1 day overdue
 }
 
-function getGroupRelationshipLabel(assignments: ReviewPageV2.AssignmentWithMeta[]): string | null {
+function getGroupRelationshipLabel(assignments: ReviewPageV2.Assignment[]): string | null {
   let label: string | null = null;
 
   assignments.forEach((assignment) => {

@@ -7,9 +7,12 @@ defmodule OperatelyWeb.Api.People.ListAssignments do
   use OperatelyWeb.Api.Helpers
 
   alias Operately.Assignments.LoaderV2
+  alias Operately.Assignments.Categorizer
 
   outputs do
-    field :assignments, list_of(:review_assignment), null: false
+    field :due_soon, list_of(:review_assignment_group), null: false
+    field :needs_review, list_of(:review_assignment_group), null: false
+    field :upcoming, list_of(:review_assignment_group), null: false
   end
 
   def call(conn, _inputs) do
@@ -17,7 +20,8 @@ defmodule OperatelyWeb.Api.People.ListAssignments do
     me = me(conn)
 
     assignments = LoaderV2.load(me, company)
+    categorized = Categorizer.categorize(assignments)
 
-    {:ok, %{assignments: Serializer.serialize(assignments)}}
+    {:ok, Serializer.serialize(categorized)}
   end
 end

@@ -4,34 +4,9 @@ defmodule Operately.Assignments.LoaderV2 do
   alias Operately.Repo
   alias Operately.Goals.{Goal, Update}
   alias Operately.Projects.{Project, CheckIn, Milestone}
-
-  alias Operately.ContextualDates.{ContextualDate, Timeframe}
-  alias OperatelyWeb.Paths
+  alias Operately.Assignments.Assignment
 
   @due_soon_window_in_days 1
-
-  defmodule AssignmentOrigin do
-    @enforce_keys [:id, :name, :type, :path]
-    defstruct [:id, :name, :type, :path, :space_name, :due_date]
-  end
-
-  defmodule Assignment do
-    @enforce_keys [:resource_id, :name, :due, :type, :role, :path, :origin]
-    defstruct [
-      :resource_id,
-      :name,
-      :due,
-      :type,
-      :role,
-      :action_label,
-      :path,
-      :origin,
-      :task_status,
-      :author_id,
-      :author_name,
-      :description
-    ]
-  end
 
   def load(person, company) do
     [
@@ -73,22 +48,7 @@ defmodule Operately.Assignments.LoaderV2 do
       preload: [project: {p, group: space}]
     )
     |> Repo.all()
-    |> Enum.map(fn task ->
-      origin = build_project_origin(company, task.project)
-      due_date = ContextualDate.get_date(task.due_date)
-
-      %Assignment{
-        resource_id: Paths.task_id(task),
-        name: task.name,
-        due: due_date,
-        type: :project_task,
-        role: :owner,
-        action_label: task.name,
-        path: Paths.project_task_path(company, task),
-        origin: origin,
-        task_status: String.to_atom(task.task_status.value)
-      }
-    end)
+    |> Enum.map(&Assignment.build(&1, company))
   end
 
   defp count_pending_tasks(person) do
@@ -126,21 +86,7 @@ defmodule Operately.Assignments.LoaderV2 do
       preload: [project: {p, group: space}]
     )
     |> Repo.all()
-    |> Enum.map(fn milestone ->
-      origin = build_project_origin(company, milestone.project)
-      due_date = Timeframe.end_date(milestone.timeframe)
-
-      %Assignment{
-        resource_id: Paths.milestone_id(milestone),
-        name: milestone.title,
-        due: due_date,
-        type: :milestone,
-        role: :owner,
-        action_label: milestone.title,
-        path: Paths.project_milestone_path(company, milestone),
-        origin: origin
-      }
-    end)
+    |> Enum.map(&Assignment.build(&1, company))
   end
 
   defp count_pending_milestones(person) do
@@ -178,20 +124,7 @@ defmodule Operately.Assignments.LoaderV2 do
       preload: [champion: c, group: space]
     )
     |> Repo.all()
-    |> Enum.map(fn project ->
-      origin = build_project_origin(company, project)
-
-      %Assignment{
-        resource_id: Paths.project_id(project),
-        name: "#{project.name} - Check-in",
-        due: Operately.Time.as_datetime(project.next_check_in_scheduled_at),
-        type: :check_in,
-        role: :owner,
-        action_label: "Submit weekly check-in",
-        path: Paths.project_check_in_new_path(company, project),
-        origin: origin
-      }
-    end)
+    |> Enum.map(&Assignment.build(&1, company))
   end
 
   defp count_pending_project_check_ins(person) do
@@ -231,22 +164,7 @@ defmodule Operately.Assignments.LoaderV2 do
       preload: [project: {p, reviewer: r, group: space}, author: a]
     )
     |> Repo.all()
-    |> Enum.map(fn check_in ->
-      origin = build_project_origin(company, check_in.project)
-
-      %Assignment{
-        resource_id: Paths.project_check_in_id(check_in),
-        name: "#{check_in.project.name} - Check-in",
-        due: Operately.Time.as_datetime(check_in.inserted_at),
-        type: :check_in,
-        role: :reviewer,
-        action_label: "Review weekly check-in",
-        path: Paths.project_check_in_path(company, check_in),
-        origin: origin,
-        author_id: Paths.person_id(check_in.author),
-        author_name: check_in.author.full_name
-      }
-    end)
+    |> Enum.map(&Assignment.build(&1, company))
   end
 
   defp count_pending_project_check_in_acknowledgements(person) do
@@ -293,20 +211,7 @@ defmodule Operately.Assignments.LoaderV2 do
       preload: [group: space]
     )
     |> Repo.all()
-    |> Enum.map(fn goal ->
-      origin = build_goal_origin(company, goal)
-
-      %Assignment{
-        resource_id: Paths.goal_id(goal),
-        name: "#{goal.name} - Goal Update",
-        due: Operately.Time.as_datetime(goal.next_update_scheduled_at),
-        type: :goal_update,
-        role: :owner,
-        action_label: "Submit goal progress update",
-        path: Paths.goal_check_in_new_path(company, goal),
-        origin: origin
-      }
-    end)
+    |> Enum.map(&Assignment.build(&1, company))
   end
 
   defp count_pending_goal_updates(person) do
@@ -344,22 +249,7 @@ defmodule Operately.Assignments.LoaderV2 do
       preload: [goal: {g, group: space}, author: a]
     )
     |> Repo.all()
-    |> Enum.map(fn update ->
-      origin = build_goal_origin(company, update.goal)
-
-      %Assignment{
-        resource_id: Paths.goal_update_id(update),
-        name: "#{update.goal.name} – Goal Update",
-        due: Operately.Time.as_datetime(update.inserted_at),
-        type: :goal_update,
-        role: :reviewer,
-        action_label: "Review goal progress update",
-        path: Paths.goal_check_in_path(company, update),
-        origin: origin,
-        author_id: Paths.person_id(update.author),
-        author_name: update.author.full_name
-      }
-    end)
+    |> Enum.map(&Assignment.build(&1, company))
   end
 
   defp count_pending_goal_update_acknowledgements(person) do
@@ -405,22 +295,7 @@ defmodule Operately.Assignments.LoaderV2 do
     )
     |> Repo.all()
 
-    Enum.map(result, fn task ->
-      origin = build_space_origin(company, task.space)
-      due_date = ContextualDate.get_date(task.due_date)
-
-      %Assignment{
-        resource_id: Paths.task_id(task),
-        name: task.name,
-        due: due_date,
-        type: :space_task,
-        role: :owner,
-        action_label: task.name,
-        path: Paths.space_task_path(company, task.space, task),
-        origin: origin,
-        task_status: String.to_atom(task.task_status.value)
-      }
-    end)
+    Enum.map(result, &Assignment.build(&1, company))
   end
 
   defp count_pending_space_tasks(person) do
@@ -452,49 +327,4 @@ defmodule Operately.Assignments.LoaderV2 do
   defp default_zero(nil), do: 0
   defp default_zero(count), do: count
 
-  defp build_project_origin(company, project) do
-    %AssignmentOrigin{
-      id: Paths.project_id(project),
-      name: project.name,
-      type: :project,
-      path: Paths.project_path(company, project),
-      space_name: if(project.group, do: project.group.name, else: nil),
-      due_date: extract_timeframe_end_date(project.timeframe)
-    }
-  end
-
-  defp build_space_origin(company, space) do
-    %AssignmentOrigin{
-      id: Paths.space_id(space),
-      name: space.name,
-      type: :space,
-      path: Paths.space_path(company, space),
-      space_name: space.name,
-      due_date: nil
-    }
-  end
-
-  defp build_goal_origin(company, goal) do
-    %AssignmentOrigin{
-      id: Paths.goal_id(goal),
-      name: goal.name,
-      type: :goal,
-      path: Paths.goal_path(company, goal),
-      space_name: if(goal.group, do: goal.group.name, else: nil),
-      due_date: extract_timeframe_end_date(goal.timeframe)
-    }
-  end
-
-  defp extract_timeframe_end_date(timeframe) do
-    case Operately.ContextualDates.Timeframe.end_date(timeframe) do
-      nil -> nil
-      date -> date_to_datetime(date)
-    end
-  end
-
-  defp date_to_datetime(%Date{} = date) do
-    DateTime.new!(date, ~T[00:00:00], "Etc/UTC")
-  end
-
-  defp date_to_datetime(_), do: nil
 end
