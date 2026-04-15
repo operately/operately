@@ -4,8 +4,8 @@ defmodule OperatelyWeb.EmailPreview.Previews.DailyActivityDigest do
   alias OperatelyEmail.Mailers.NotificationMailer, as: Mailer
   alias OperatelyWeb.EmailPreview.Preview
 
-  @notifications_url "https://app.operately.dev/acme-corp/notifications"
-  @subject "Daily summary from the last 24 hours"
+  @notifications_url "#"
+  @settings_url "#"
 
   def zero_state do
     build_preview([])
@@ -30,14 +30,20 @@ defmodule OperatelyWeb.EmailPreview.Previews.DailyActivityDigest do
   defp build_preview(digest_items) do
     {company, person} = base_context()
 
+    parent_groups = group_by_parent(digest_items)
+    total_updates = calculate_total_updates(parent_groups)
+    subject = "You have #{total_updates} new #{if total_updates == 1, do: "update", else: "updates"}"
+
     email =
       company
       |> Mailer.new()
       |> Mailer.from("Operately")
       |> Mailer.to(person)
-      |> Mailer.subject(@subject)
-      |> Mailer.assign(:parent_groups, group_by_parent(digest_items))
+      |> Mailer.subject(subject)
+      |> Mailer.assign(:total_updates, total_updates)
+      |> Mailer.assign(:parent_groups, parent_groups)
       |> Mailer.assign(:notifications_url, @notifications_url)
+      |> Mailer.assign(:settings_url, @settings_url)
 
     Preview.build(email, "daily_activity_digest")
   end
@@ -307,5 +313,15 @@ defmodule OperatelyWeb.EmailPreview.Previews.DailyActivityDigest do
     |> Enum.sort_by(fn group ->
       hd(group.items).occurred_at
     end, &NaiveDateTime.before?/2)
+  end
+
+  defp calculate_total_updates(parent_groups) do
+    parent_groups
+    |> Enum.reduce(0, fn group, acc ->
+      group_total = Enum.reduce(group.author_groups, 0, fn ag, ag_acc ->
+        ag_acc + length(ag.items)
+      end)
+      acc + group_total
+    end)
   end
 end

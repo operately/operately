@@ -1,11 +1,20 @@
-<%= title("Updates from the last #{@window_minutes} minutes") %>
-
-<%= spacer() %>
+<%= title("You have #{@total_updates} new #{if @total_updates == 1, do: "update", else: "updates"}") %>
 
 <%= if Enum.empty?(@parent_groups) do %>
-  <%= digest_empty_state("You're all caught up", "No new updates came in during the last #{@window_minutes} minutes.") %>
+  <%= spacer() %>
+  <%= digest_empty_state("You're all caught up", "No new updates.") %>
 <% else %>
   <%= for group <- @parent_groups do %>
     <%= digest_group(group) %>
   <% end %>
+<% end %>
+
+<%= spacer() %>
+<%= line() %>
+<%= spacer() %>
+
+<%= row do %>
+  <div style="font-family: sans-serif; font-size: 12px; color: #94a3b8; text-align: center;">
+    <%= link(@settings_url, "Manage email settings") %>
+  </div>
 <% end %>
