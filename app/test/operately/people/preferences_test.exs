@@ -1,4 +1,4 @@
-defmodule Operately.People.PersonPreferencesTest do
+defmodule Operately.People.PreferencesTest do
   use Operately.DataCase, async: true
 
   alias Operately.People.Preferences
@@ -15,7 +15,7 @@ defmodule Operately.People.PersonPreferencesTest do
       assert person.preferences.notifications.email_window_minutes == 5
       assert person.preferences.notifications.notify_about_assignments
       assert person.preferences.notifications.notify_on_mention
-      assert person.preferences.notifications.send_daily_summary
+      refute person.preferences.notifications.send_daily_summary
       assert person.preferences.notifications.daily_summary_delivery_time == "18:00"
     end
 
@@ -37,7 +37,7 @@ defmodule Operately.People.PersonPreferencesTest do
       assert person.preferences.notifications.email_window_minutes == 30
       refute person.preferences.notifications.notify_about_assignments
       refute person.preferences.notifications.notify_on_mention
-      assert person.preferences.notifications.send_daily_summary
+      refute person.preferences.notifications.send_daily_summary
       assert person.preferences.notifications.daily_summary_delivery_time == "18:00"
     end
 
@@ -125,7 +125,7 @@ defmodule Operately.People.PersonPreferencesTest do
       assert Person.email_window_minutes(%Person{}) == 5
       assert Person.notify_about_assignments?(%Person{})
       assert Person.notify_on_mention?(%Person{})
-      assert Person.send_daily_summary?(%Person{})
+      refute Person.send_daily_summary?(%Person{})
       assert Person.daily_summary_delivery_time(%Person{}) == "18:00"
     end
 
