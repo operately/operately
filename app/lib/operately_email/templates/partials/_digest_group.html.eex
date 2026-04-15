@@ -1,74 +1,57 @@
-<tr>
-  <td style="padding-bottom: 20px;">
-    <div style="border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff; overflow: hidden;">
-      <div style="padding: 18px 20px; background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
-        <div style="font-size: 10px; line-height: 1.4; font-family: sans-serif; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px;">
-          <%= Phoenix.Naming.humanize(to_string(hd(hd(@group.author_groups).items).parent_type)) %>
-        </div>
-        <div style="font-size: 18px; line-height: 1.35; font-family: sans-serif; font-weight: 700; color: #0f172a;">
-          <%= @group.parent_name %>
-        </div>
-        <div style="margin-top: 10px;">
-          <% total_updates = Enum.reduce(@group.author_groups, 0, fn ag, acc -> acc + length(ag.items) end) %>
-          <span style="display: inline-block; padding: 4px 10px; border-radius: 999px; background: #e2e8f0; font-size: 12px; line-height: 1.4; font-family: sans-serif; font-weight: 600; color: #334155;">
-            <%= total_updates %> <%= if total_updates == 1, do: "update", else: "updates" %>
-          </span>
-        </div>
-      </div>
+<%= spacer() %>
+<%= row(%{padding_top: 8, padding_bottom: 4}) do %>
+  <div style="font-family: sans-serif;">
+    <div style="font-size: 10px; line-height: 1.4; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #94a3b8; margin-bottom: 4px;">
+      <%= Phoenix.Naming.humanize(to_string(hd(hd(@group.author_groups).items).parent_type)) %>
+    </div>
+    <div style="font-weight: 600; font-size: 16px;">
+      <%= @group.parent_name %>
+    </div>
+  </div>
+<% end %>
 
-      <%= for {author_group, author_index} <- Enum.with_index(@group.author_groups) do %>
-        <%= if length(author_group.items) == 1 do %>
-          <%= for item <- author_group.items do %>
-            <div style="<%= if author_index > 0, do: "border-top: 1px solid #eef2f7;", else: "" %>padding: 18px 20px 20px 20px;">
-              <div style="font-size: 16px; line-height: 1.6; font-family: sans-serif; color: #0f172a; margin-bottom: 8px;">
-                <span style="font-weight: 700; color: #0f172a;"><%= item.actor_name %></span>
-                <span style="font-weight: 500; color: #334155;"><%= item.headline %></span>
-              </div>
-
-              <%= if item.excerpt_html do %>
-                <div style="margin-top: 12px; padding: 12px 14px; border-radius: 12px; background: #f8fafc; border-left: 3px solid #cbd5e1; font-size: 14px; line-height: 1.7; font-family: sans-serif; color: #475569;">
-                  <%= Phoenix.HTML.raw(item.excerpt_html) %>
-                </div>
-              <% end %>
-
-              <div style="margin-top: 14px;">
-                <a href="<%= item.item_url %>" class="digest-link" style="color: #475569; font-size: 13px; line-height: 1.4; font-family: sans-serif; font-weight: 600; text-decoration: none;">
-                  View update
-                </a>
-              </div>
+<%= for author_group <- @group.author_groups do %>
+  <%= if length(author_group.items) == 1 do %>
+    <%= for item <- author_group.items do %>
+      <%= row(%{padding_top: 2, padding_bottom: 10}) do %>
+        <div style="font-family: sans-serif; padding-left: 16px;">
+          <div style="font-size: 14px; line-height: 1.6;">
+            <span style="font-weight: 600;"><%= item.actor_name %></span>
+            <span><%= item.headline %></span>
+          </div>
+          <%= if item.excerpt_html do %>
+            <div style="margin-top: 6px; padding-left: 8px; border-left: 2px solid #e2e8f0; font-size: 13px; line-height: 1.6; color: #6b6b6b;">
+              <%= Phoenix.HTML.raw(item.excerpt_html) %>
             </div>
           <% end %>
-        <% else %>
-          <div style="<%= if author_index > 0, do: "border-top: 1px solid #eef2f7;", else: "" %>padding: 18px 20px 20px 20px;">
-            <div style="font-size: 16px; line-height: 1.6; font-family: sans-serif; font-weight: 700; color: #0f172a; margin-bottom: 12px;">
-              <%= author_group.actor_name %>:
+          <div style="margin-top: 4px; font-size: 12px;">
+            <%= link(item.item_url, "View update") %>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  <% else %>
+    <%= row(%{padding_top: 2, padding_bottom: 10}) do %>
+      <div style="font-family: sans-serif; padding-left: 16px;">
+        <div style="font-size: 14px; line-height: 1.6; font-weight: 600; margin-bottom: 6px;">
+          <%= author_group.actor_name %>:
+        </div>
+        <%= for item <- author_group.items do %>
+          <div style="padding-left: 12px; margin-bottom: 12px;">
+            <div style="font-size: 14px; line-height: 1.6;">
+              <%= item.headline %>
             </div>
-
-            <%= for {item, item_index} <- Enum.with_index(author_group.items) do %>
-              <div style="padding-left: 16px; margin-bottom: 16px;">
-                <%= if item_index > 0 do %>
-                  <div style="margin: 0 16px 16px 0; border-top: 1px solid #f1f5f9;"></div>
-                <% end %>
-                <div style="font-size: 15px; line-height: 1.6; font-family: sans-serif; color: #334155; margin-bottom: 8px;">
-                  <span style="font-weight: 500;"><%= item.headline %></span>
-                </div>
-
-                <%= if item.excerpt_html do %>
-                  <div style="margin-top: 10px; padding: 12px 14px; border-radius: 12px; background: #f8fafc; border-left: 3px solid #cbd5e1; font-size: 14px; line-height: 1.7; font-family: sans-serif; color: #475569;">
-                    <%= Phoenix.HTML.raw(item.excerpt_html) %>
-                  </div>
-                <% end %>
-
-                <div style="margin-top: 10px;">
-                  <a href="<%= item.item_url %>" class="digest-link" style="color: #475569; font-size: 13px; line-height: 1.4; font-family: sans-serif; font-weight: 600; text-decoration: none;">
-                    View update
-                  </a>
-                </div>
+            <%= if item.excerpt_html do %>
+              <div style="margin-top: 4px; padding-left: 8px; border-left: 2px solid #e2e8f0; font-size: 13px; line-height: 1.6; color: #6b6b6b;">
+                <%= Phoenix.HTML.raw(item.excerpt_html) %>
               </div>
             <% end %>
+            <div style="margin-top: 4px; font-size: 12px;">
+              <%= link(item.item_url, "View update") %>
+            </div>
           </div>
         <% end %>
-      <% end %>
-    </div>
-  </td>
-</tr>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>

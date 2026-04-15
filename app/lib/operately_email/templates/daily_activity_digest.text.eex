@@ -1,12 +1,12 @@
-Daily summary from the last 24 hours
+You have <%= @total_updates %> new <%= if @total_updates == 1, do: "update", else: "updates" %>
 
 <%= if Enum.empty?(@parent_groups) do %>
 You're all caught up.
-No new updates were posted in the last 24 hours.
+No new updates.
 <% else %>
 <%= for group <- @parent_groups do %>
-<% total_updates = Enum.reduce(group.author_groups, 0, fn ag, acc -> acc + length(ag.items) end) %>
-<%= group.parent_name %> (<%= total_updates %> <%= if total_updates == 1, do: "update", else: "updates" %>)
+<% group_total = Enum.reduce(group.author_groups, 0, fn ag, acc -> acc + length(ag.items) end) %>
+<%= group.parent_name %> (<%= group_total %> <%= if group_total == 1, do: "update", else: "updates" %>)
 <%= for author_group <- group.author_groups do %>
 <%= if length(author_group.items) == 1 do %>
 <%= for item <- author_group.items do %>
@@ -32,3 +32,6 @@ No new updates were posted in the last 24 hours.
 <% end %>
 <% end %>
 <% end %>
+
+---
+Manage email settings: <%= @settings_url %>
