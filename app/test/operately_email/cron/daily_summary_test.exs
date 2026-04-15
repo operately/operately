@@ -19,6 +19,8 @@ defmodule OperatelyEmail.Cron.DailySummaryTest do
       |> Factory.add_project(:project, :space)
       |> Factory.add_goal(:goal, :space)
 
+    Operately.People.update_person(ctx.creator, %{preferences: %{notifications: %{send_daily_summary: true}}})
+
     {:ok, ctx}
   end
 
@@ -26,7 +28,7 @@ defmodule OperatelyEmail.Cron.DailySummaryTest do
     test "returns only people with account emails and daily summary preference enabled", ctx do
       ctx =
         ctx
-        |> Factory.add_company_member(:enabled_member)
+        |> Factory.add_company_member(:enabled_member, preferences: %{notifications: %{send_daily_summary: true}})
         |> Factory.add_company_member(:disabled_member, preferences: %{notifications: %{send_daily_summary: false}})
 
       {:ok, no_account_member} =
@@ -50,9 +52,9 @@ defmodule OperatelyEmail.Cron.DailySummaryTest do
     test "returns schedule offsets based on delivery time and timezone", ctx do
       ctx =
         ctx
-        |> Factory.add_company_member(:new_york_due, timezone: "America/New_York", preferences: %{notifications: %{daily_summary_delivery_time: "14:00"}})
-        |> Factory.add_company_member(:new_york_not_due, timezone: "America/New_York", preferences: %{notifications: %{daily_summary_delivery_time: "15:00"}})
-        |> Factory.add_company_member(:invalid_timezone_due, timezone: "America/New_Jersey", preferences: %{notifications: %{daily_summary_delivery_time: "18:00"}})
+        |> Factory.add_company_member(:new_york_due, timezone: "America/New_York", preferences: %{notifications: %{send_daily_summary: true, daily_summary_delivery_time: "14:00"}})
+        |> Factory.add_company_member(:new_york_not_due, timezone: "America/New_York", preferences: %{notifications: %{send_daily_summary: true, daily_summary_delivery_time: "15:00"}})
+        |> Factory.add_company_member(:invalid_timezone_due, timezone: "America/New_Jersey", preferences: %{notifications: %{send_daily_summary: true, daily_summary_delivery_time: "18:00"}})
         |> Factory.add_company_member(:disabled_member, preferences: %{notifications: %{send_daily_summary: false, daily_summary_delivery_time: "18:00"}})
 
       {:ok, no_account_member} =
@@ -88,7 +90,7 @@ defmodule OperatelyEmail.Cron.DailySummaryTest do
     test "rolls over to the next local day when delivery time already passed", ctx do
       ctx =
         ctx
-        |> Factory.add_company_member(:past_due_member, timezone: "Etc/UTC", preferences: %{notifications: %{daily_summary_delivery_time: "17:00"}})
+        |> Factory.add_company_member(:past_due_member, timezone: "Etc/UTC", preferences: %{notifications: %{send_daily_summary: true, daily_summary_delivery_time: "17:00"}})
 
       schedules = DailySummary.people_with_daily_summary_schedule(~U[2026-04-08 18:00:00Z])
       schedule_by_person = Map.new(schedules, fn row -> {row.person_id, row.schedule_in_seconds} end)
@@ -99,8 +101,8 @@ defmodule OperatelyEmail.Cron.DailySummaryTest do
     test "falls back to UTC when timezone is invalid or missing", ctx do
       ctx =
         ctx
-        |> Factory.add_company_member(:invalid_timezone_member, timezone: "America/New_Jersey", preferences: %{notifications: %{daily_summary_delivery_time: "19:00"}})
-        |> Factory.add_company_member(:nil_timezone_member, timezone: nil, preferences: %{notifications: %{daily_summary_delivery_time: "19:00"}})
+        |> Factory.add_company_member(:invalid_timezone_member, timezone: "America/New_Jersey", preferences: %{notifications: %{send_daily_summary: true, daily_summary_delivery_time: "19:00"}})
+        |> Factory.add_company_member(:nil_timezone_member, timezone: nil, preferences: %{notifications: %{send_daily_summary: true, daily_summary_delivery_time: "19:00"}})
 
       schedules = DailySummary.people_with_daily_summary_schedule(~U[2026-04-08 18:00:00Z])
       schedule_by_person = Map.new(schedules, fn row -> {row.person_id, row.schedule_in_seconds} end)
@@ -112,7 +114,7 @@ defmodule OperatelyEmail.Cron.DailySummaryTest do
     test "keeps second-level precision when computing offsets", ctx do
       ctx =
         ctx
-        |> Factory.add_company_member(:precision_member, timezone: "Etc/UTC", preferences: %{notifications: %{daily_summary_delivery_time: "19:00"}})
+        |> Factory.add_company_member(:precision_member, timezone: "Etc/UTC", preferences: %{notifications: %{send_daily_summary: true, daily_summary_delivery_time: "19:00"}})
 
       schedules = DailySummary.people_with_daily_summary_schedule(~U[2026-04-08 18:23:10Z])
       schedule_by_person = Map.new(schedules, fn row -> {row.person_id, row.schedule_in_seconds} end)
@@ -125,8 +127,8 @@ defmodule OperatelyEmail.Cron.DailySummaryTest do
     test "enqueues summary delivery jobs for each eligible person with the right schedule", ctx do
       ctx =
         ctx
-        |> Factory.add_company_member(:new_york_due, timezone: "America/New_York", preferences: %{notifications: %{daily_summary_delivery_time: "14:00"}})
-        |> Factory.add_company_member(:new_york_not_due, timezone: "America/New_York", preferences: %{notifications: %{daily_summary_delivery_time: "15:00"}})
+        |> Factory.add_company_member(:new_york_due, timezone: "America/New_York", preferences: %{notifications: %{send_daily_summary: true, daily_summary_delivery_time: "14:00"}})
+        |> Factory.add_company_member(:new_york_not_due, timezone: "America/New_York", preferences: %{notifications: %{send_daily_summary: true, daily_summary_delivery_time: "15:00"}})
         |> Factory.add_company_member(:disabled_member, preferences: %{notifications: %{send_daily_summary: false}})
 
       now = ~U[2026-04-08 18:00:00Z]

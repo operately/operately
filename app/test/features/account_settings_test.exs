@@ -94,6 +94,7 @@ defmodule Operately.Features.AccountSettingsTest do
     |> Steps.navigate_to_notification_settings_page()
     |> Steps.choose_instant_direct_mentions()
     |> Steps.choose_buffer_window("10 minutes")
+    |> Steps.enable_daily_summary()
     |> Steps.choose_daily_summary_delivery_time("9:00 AM")
     |> Steps.save_notification_settings()
     |> Steps.assert_notification_preferences_saved(%{

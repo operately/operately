@@ -208,6 +208,14 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
     |> UI.select(testid: "daily-summary-delivery-time-dropdown", option: option)
   end
 
+  step :enable_daily_summary, ctx do
+    if Operately.People.Person.send_daily_summary?(ctx.person) do
+      ctx
+    else
+      ctx |> UI.click(testid: "enable-daily-summary-toggle")
+    end
+  end
+
   step :disable_daily_summary, ctx do
     person = Operately.People.get_person!(ctx.person.id)
 
