@@ -326,6 +326,8 @@ defmodule OperatelyWeb.Api.Types do
     field :due_date, :date, null: true
   end
 
+  enum(:review_assignment_due_status, values: Operately.Assignments.Assignment.due_status_values())
+
   object :review_assignment do
     field :resource_id, :string, null: false
     field :name, :string, null: false
@@ -339,6 +341,15 @@ defmodule OperatelyWeb.Api.Types do
     field :author_id, :string, null: true
     field :author_name, :string, null: true
     field :description, :string, null: true
+
+    field :due_date, :date, null: true
+    field :due_status, :review_assignment_due_status, null: true
+    field :due_status_label, :string, null: true
+  end
+
+  object :review_assignment_group do
+    field :origin, :review_assignment_origin, null: false
+    field :assignments, list_of(:review_assignment), null: false
   end
 
   union(:update_content,

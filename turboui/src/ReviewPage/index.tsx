@@ -1,21 +1,17 @@
 import * as React from "react";
 
-import { differenceInCalendarDays, isValid, startOfDay } from "date-fns";
-
 import { PageNew } from "../Page";
 import { IconCoffee, IconInfoCircle, IconSparkles } from "../icons";
-import { parseDate } from "../utils/time";
 import { TestableElement } from "../TestableElement";
 import { Tooltip } from "../Tooltip";
 
 import { AssignmentGroups } from "./AssignmentsList";
 
-const DUE_SOON_WINDOW_IN_DAYS = 1;
-
 export namespace ReviewPageV2 {
   export type AssignmentRole = "owner" | "reviewer";
   export type AssignmentType = "check_in" | "goal_update" | "space_task" | "project_task" | "milestone";
   export type OriginType = "project" | "goal" | "space";
+  export type DueStatus = "overdue" | "due_today" | "due_soon" | "upcoming" | "none";
 
   export interface AssignmentOrigin {
     id: string;
@@ -39,58 +35,46 @@ export namespace ReviewPageV2 {
     authorId?: string | null;
     authorName?: string | null;
     description?: string | null;
-  }
-
-  export type DueStatus = "overdue" | "due_today" | "due_soon" | "upcoming" | "none";
-
-  export interface AssignmentWithMeta extends Assignment {
-    dueDate: Date | null;
-    dueStatus: DueStatus;
-    dueStatusLabel: string;
+    dueDate: string | null;
+    dueStatus: DueStatus | null;
+    dueStatusLabel: string | null;
   }
 
   export interface AssignmentGroup {
     origin: AssignmentOrigin;
-    assignments: AssignmentWithMeta[];
+    assignments: Assignment[];
   }
 
-  export interface CategorizedAssignments {
+  export interface Props {
     dueSoon: AssignmentGroup[];
     needsReview: AssignmentGroup[];
     upcoming: AssignmentGroup[];
   }
-
-  export interface Props {
-    assignments: Assignment[];
-    assignmentsCount?: number;
-    showUpcomingSection?: boolean;
-  }
 }
 
 export function ReviewPage(props: ReviewPageV2.Props) {
-  const assignments = props.assignments || [];
-  const showUpcomingSection = props.showUpcomingSection ?? true;
-  const categorized = React.useMemo(() => categorizeAssignments(assignments), [assignments]);
+  const { dueSoon, needsReview, upcoming } = props;
 
   const urgentGroups = React.useMemo(() => {
-    const dueSoonAssignments = categorized.dueSoon.flatMap((group) => group.assignments);
-    const reviewAssignments = categorized.needsReview.flatMap((group) => group.assignments);
+    const dueSoonAssignments = dueSoon.flatMap((group) => group.assignments);
+    const reviewAssignments = needsReview.flatMap((group) => group.assignments);
 
     if (dueSoonAssignments.length === 0 && reviewAssignments.length === 0) {
       return [];
     }
 
+    // Combine and re-group by origin
     return groupAssignmentsByOrigin([...dueSoonAssignments, ...reviewAssignments]);
-  }, [categorized]);
+  }, [dueSoon, needsReview]);
 
   const hasUrgent = urgentGroups.length > 0;
-  const hasUpcoming = showUpcomingSection && categorized.upcoming.length > 0;
+  const hasUpcoming = upcoming.length > 0;
   const hasAnyAssignments = hasUrgent || hasUpcoming;
 
   // Count only urgent items (due soon + needs review), not upcoming
   const urgentCount =
-    categorized.dueSoon.reduce((sum, group) => sum + group.assignments.length, 0) +
-    categorized.needsReview.reduce((sum, group) => sum + group.assignments.length, 0);
+    dueSoon.reduce((sum, group) => sum + group.assignments.length, 0) +
+    needsReview.reduce((sum, group) => sum + group.assignments.length, 0);
 
   const pageTitle = urgentCount === 0 ? "Review" : `Review (${urgentCount})`;
 
@@ -108,7 +92,7 @@ export function ReviewPage(props: ReviewPageV2.Props) {
                 <Section
                   title="My upcoming work"
                   description="Work assigned to you with future due dates, sorted chronologically."
-                  groups={categorized.upcoming}
+                  groups={upcoming}
                   testId="upcoming-section"
                 />
               )}
@@ -204,94 +188,8 @@ function CaughtUpState() {
   );
 }
 
-function categorizeAssignments(assignments: ReviewPageV2.Assignment[]): ReviewPageV2.CategorizedAssignments {
-  const enrichedAssignments = assignments.map(enrichAssignment);
-
-  const ownerAssignments = enrichedAssignments.filter((assignment) => assignment.role === "owner");
-  const reviewerAssignments = enrichedAssignments.filter((assignment) => assignment.role === "reviewer");
-
-  const dueSoonAssignments = ownerAssignments.filter((assignment) => isDueSoon(assignment.dueStatus));
-  const upcomingAssignments = ownerAssignments.filter((assignment) => isUpcoming(assignment.dueStatus));
-
-  return {
-    dueSoon: groupAssignmentsByOrigin(dueSoonAssignments),
-    needsReview: groupAssignmentsByOrigin(reviewerAssignments),
-    upcoming: groupAssignmentsByOrigin(upcomingAssignments),
-  };
-}
-
-function enrichAssignment(assignment: ReviewPageV2.Assignment): ReviewPageV2.AssignmentWithMeta {
-  const dueDate = safeParseDate(assignment.due);
-  const { status, label } = resolveDueStatus(dueDate);
-
-  return {
-    ...assignment,
-    dueDate,
-    dueStatus: status,
-    dueStatusLabel: label,
-  };
-}
-
-function safeParseDate(value: string | null): Date | null {
-  if (!value) return null;
-
-  try {
-    const parsed = parseDate(value);
-    return parsed && isValid(parsed) ? parsed : null;
-  } catch (error) {
-    return null;
-  }
-}
-
-function resolveDueStatus(dueDate: Date | null): { status: ReviewPageV2.DueStatus; label: string } {
-  if (!dueDate || !isValid(dueDate)) {
-    return { status: "none", label: "No due date" };
-  }
-
-  const today = startOfDay(new Date());
-  const dueDay = startOfDay(dueDate);
-  const diff = differenceInCalendarDays(dueDay, today);
-
-  if (diff < 0) {
-    const days = Math.abs(diff);
-    return {
-      status: "overdue",
-      label: days === 1 ? "Overdue by 1 day" : `Overdue by ${days} days`,
-    };
-  }
-
-  if (diff === 0) {
-    return { status: "due_today", label: "Due today" };
-  }
-
-  if (diff === 1) {
-    return { status: "due_soon", label: "Due tomorrow" };
-  }
-
-  if (diff <= DUE_SOON_WINDOW_IN_DAYS) {
-    return { status: "due_soon", label: `Due in ${diff} days` };
-  }
-
-  return { status: "upcoming", label: `Due in ${diff} days` };
-}
-
-function isDueSoon(status: ReviewPageV2.DueStatus) {
-  return status === "overdue" || status === "due_today" || status === "due_soon";
-}
-
-function isUpcoming(status: ReviewPageV2.DueStatus) {
-  return status === "upcoming" || status === "none";
-}
-
-const DUE_STATUS_RANK: Record<ReviewPageV2.DueStatus, number> = {
-  overdue: 0,
-  due_today: 1,
-  due_soon: 2,
-  upcoming: 3,
-  none: 4,
-};
-
-function groupAssignmentsByOrigin(assignments: ReviewPageV2.AssignmentWithMeta[]): ReviewPageV2.AssignmentGroup[] {
+// Helper to re-group assignments by origin when combining due_soon and needs_review
+function groupAssignmentsByOrigin(assignments: ReviewPageV2.Assignment[]): ReviewPageV2.AssignmentGroup[] {
   const groups = new Map<string, ReviewPageV2.AssignmentGroup>();
 
   assignments.forEach((assignment) => {
@@ -307,46 +205,5 @@ function groupAssignmentsByOrigin(assignments: ReviewPageV2.AssignmentWithMeta[]
     groups.get(key)!.assignments.push(assignment);
   });
 
-  const result = Array.from(groups.values());
-
-  result.forEach((group) => {
-    group.assignments.sort(compareAssignments);
-  });
-
-  result.sort((a, b) => compareGroups(a, b));
-
-  return result;
-}
-
-function compareAssignments(a: ReviewPageV2.AssignmentWithMeta, b: ReviewPageV2.AssignmentWithMeta) {
-  const statusDiff = DUE_STATUS_RANK[a.dueStatus] - DUE_STATUS_RANK[b.dueStatus];
-  if (statusDiff !== 0) return statusDiff;
-
-  return compareDates(a.dueDate, b.dueDate);
-}
-
-function compareGroups(a: ReviewPageV2.AssignmentGroup, b: ReviewPageV2.AssignmentGroup) {
-  const firstA = a.assignments[0];
-  const firstB = b.assignments[0];
-
-  if (!firstA && !firstB) return 0;
-  if (!firstA) return 1;
-  if (!firstB) return -1;
-
-  const statusDiff = DUE_STATUS_RANK[firstA.dueStatus] - DUE_STATUS_RANK[firstB.dueStatus];
-  if (statusDiff !== 0) return statusDiff;
-
-  const dateDiff = compareDates(firstA.dueDate, firstB.dueDate);
-  if (dateDiff !== 0) return dateDiff;
-
-  return a.origin.name.localeCompare(b.origin.name);
-}
-
-function compareDates(a: Date | null, b: Date | null) {
-  if (a === null && b === null) return 0;
-  if (a === null) return 1;
-  if (b === null) return -1;
-
-  if (a.getTime() === b.getTime()) return 0;
-  return a.getTime() < b.getTime() ? -1 : 1;
+  return Array.from(groups.values());
 }

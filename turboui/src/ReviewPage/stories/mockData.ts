@@ -6,6 +6,52 @@ function getDateOffset(daysOffset: number): string {
   return date.toISOString();
 }
 
+function enrichAssignment(
+  assignment: Omit<ReviewPageV2.Assignment, "dueDate" | "dueStatus" | "dueStatusLabel">,
+): ReviewPageV2.Assignment {
+  const dueDate = assignment.due;
+  const { dueStatus, dueStatusLabel } = calculateDueStatus(dueDate);
+
+  return {
+    ...assignment,
+    dueDate,
+    dueStatus,
+    dueStatusLabel,
+  };
+}
+
+function calculateDueStatus(dueDate: string | null): {
+  dueStatus: ReviewPageV2.DueStatus | null;
+  dueStatusLabel: string | null;
+} {
+  if (!dueDate) {
+    return { dueStatus: "none", dueStatusLabel: "No due date" };
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const due = new Date(dueDate);
+  due.setHours(0, 0, 0, 0);
+
+  const diffTime = due.getTime() - today.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffDays < 0) {
+    const days = Math.abs(diffDays);
+    const label = days === 1 ? "Overdue by 1 day" : `Overdue by ${days} days`;
+    return { dueStatus: "overdue", dueStatusLabel: label };
+  } else if (diffDays === 0) {
+    return { dueStatus: "due_today", dueStatusLabel: "Due today" };
+  } else if (diffDays === 1) {
+    return { dueStatus: "due_soon", dueStatusLabel: "Due tomorrow" };
+  } else if (diffDays <= 1) {
+    return { dueStatus: "due_soon", dueStatusLabel: `Due in ${diffDays} days` };
+  } else {
+    return { dueStatus: "upcoming", dueStatusLabel: `Due in ${diffDays} days` };
+  }
+}
+
 // Project Origins
 const mobileAppLaunch: ReviewPageV2.AssignmentOrigin = {
   id: "project-mobile-app",
@@ -71,7 +117,7 @@ const engagementGoal: ReviewPageV2.AssignmentOrigin = {
   dueDate: getDateOffset(9),
 };
 
-export const dueSoonAssignments: ReviewPageV2.Assignment[] = [
+const rawDueSoonAssignments = [
   // Overdue items
   {
     resourceId: "milestone-mobile-beta",
@@ -152,9 +198,11 @@ export const dueSoonAssignments: ReviewPageV2.Assignment[] = [
     origin: websiteRedesign,
     taskStatus: null,
   },
-];
+] as const;
 
-export const reviewAssignments: ReviewPageV2.Assignment[] = [
+export const dueSoonAssignments: ReviewPageV2.Assignment[] = rawDueSoonAssignments.map(enrichAssignment);
+
+const rawReviewAssignments = [
   {
     resourceId: "check-in-review-retention",
     name: "Retention Playbook – Week 5 check-in",
@@ -194,9 +242,11 @@ export const reviewAssignments: ReviewPageV2.Assignment[] = [
     authorName: "Maria Garcia",
     taskStatus: null,
   },
-];
+] as const;
 
-export const upcomingAssignments: ReviewPageV2.Assignment[] = [
+export const reviewAssignments: ReviewPageV2.Assignment[] = rawReviewAssignments.map(enrichAssignment);
+
+const rawUpcomingAssignments = [
   {
     resourceId: "task-beta-feedback",
     name: "Compile beta feedback summary",
@@ -263,7 +313,9 @@ export const upcomingAssignments: ReviewPageV2.Assignment[] = [
     origin: websiteRedesign,
     taskStatus: "pending",
   },
-];
+] as const;
+
+export const upcomingAssignments: ReviewPageV2.Assignment[] = rawUpcomingAssignments.map(enrichAssignment);
 
 export const allAssignments: ReviewPageV2.Assignment[] = [
   ...dueSoonAssignments,
@@ -277,7 +329,7 @@ export const smallPlateDueSoon: ReviewPageV2.Assignment[] = dueSoonAssignments.s
 
 export const smallPlateReview: ReviewPageV2.Assignment[] = reviewAssignments.slice(0, 1);
 
-export const taskOnlyDueSoon: ReviewPageV2.Assignment[] = [
+const rawTaskOnlyDueSoon = [
   {
     resourceId: "task-copy-refresh",
     name: "Refresh onboarding copy",
@@ -302,4 +354,34 @@ export const taskOnlyDueSoon: ReviewPageV2.Assignment[] = [
     taskStatus: "todo",
     description: null,
   },
-];
+] as const;
+
+export const taskOnlyDueSoon: ReviewPageV2.Assignment[] = rawTaskOnlyDueSoon.map(enrichAssignment);
+
+// Helper to group assignments by origin for stories
+function groupByOrigin(assignments: ReviewPageV2.Assignment[]): ReviewPageV2.AssignmentGroup[] {
+  const groups = new Map<string, ReviewPageV2.AssignmentGroup>();
+
+  assignments.forEach((assignment) => {
+    const key = `${assignment.origin.type}:${assignment.origin.id}`;
+
+    if (!groups.has(key)) {
+      groups.set(key, {
+        origin: assignment.origin,
+        assignments: [],
+      });
+    }
+
+    groups.get(key)!.assignments.push(assignment);
+  });
+
+  return Array.from(groups.values());
+}
+
+// Categorized groups for stories
+export const dueSoonGroups: ReviewPageV2.AssignmentGroup[] = groupByOrigin(dueSoonAssignments);
+export const reviewGroups: ReviewPageV2.AssignmentGroup[] = groupByOrigin(reviewAssignments);
+export const upcomingGroups: ReviewPageV2.AssignmentGroup[] = groupByOrigin(upcomingAssignments);
+export const smallPlateDueSoonGroups: ReviewPageV2.AssignmentGroup[] = groupByOrigin(smallPlateDueSoon);
+export const smallPlateReviewGroups: ReviewPageV2.AssignmentGroup[] = groupByOrigin(smallPlateReview);
+export const taskOnlyDueSoonGroups: ReviewPageV2.AssignmentGroup[] = groupByOrigin(taskOnlyDueSoon);

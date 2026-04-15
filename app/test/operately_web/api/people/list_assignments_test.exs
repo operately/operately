@@ -35,13 +35,18 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
       create_project(ctx, past_date(), %{creator_id: another_person.id})
       create_project(ctx, upcoming_date(), %{creator_id: another_person.id})
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
+      assert {200, %{due_soon: due_soon, needs_review: needs_review, upcoming: upcoming} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
 
       assert Repo.aggregate(Project, :count, :id) == 5
-      assert length(assignments) == 2
+      assert length(needs_review) == 0
+      assert length(upcoming) == 0
+      assert length(due_soon) == 2  # Two separate project groups
 
-      p1 = Enum.find(assignments, &(&1.resource_id == Paths.project_id(today_project)))
-      p2 = Enum.find(assignments, &(&1.resource_id == Paths.project_id(due_project)))
+      all_assignments = Enum.flat_map(due_soon, & &1.assignments)
+      assert length(all_assignments) == 2
+
+      p1 = Enum.find(all_assignments, &(&1.resource_id == Paths.project_id(today_project)))
+      p2 = Enum.find(all_assignments, &(&1.resource_id == Paths.project_id(due_project)))
 
       assert p1.name == "today - Check-in"
       assert p1.due
@@ -52,11 +57,14 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
       assert p1.origin
       assert p1.origin.type == "project"
       assert p1.origin.name == "today"
+      assert p1.due_status in ["overdue", "due_today", "due_soon"]
+      assert p1.due_status_label
 
       assert p2.name == "3 days ago - Check-in"
       assert p2.due
       assert p2.type == "check_in"
       assert p2.role == "owner"
+      assert p2.due_status == "overdue"
     end
 
     test "ignores pending check-ins of closed projects", ctx do
@@ -64,12 +72,17 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
       create_project(ctx, past_date()) |> close_project()
       due_project = create_project(ctx, past_date(), %{name: "single project"})
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
+      assert {200, %{due_soon: due_soon, needs_review: needs_review, upcoming: upcoming} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
 
       assert Repo.aggregate(Project, :count, :id) == 3
-      assert length(assignments) == 1
+      assert length(needs_review) == 0
+      assert length(upcoming) == 0
+      assert length(due_soon) == 1
 
-      [p] = assignments
+      all_assignments = Enum.flat_map(due_soon, & &1.assignments)
+      assert length(all_assignments) == 1
+
+      [p] = all_assignments
 
       assert p.resource_id == Paths.project_id(due_project)
       assert p.name == "single project - Check-in"
@@ -100,12 +113,14 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
         }
       })
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
+      assert {200, %{due_soon: due_soon} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
 
       assert Repo.aggregate(Project, :count, :id) == 2
-      assert length(assignments) == 1
 
-      [p] = assignments
+      all_assignments = Enum.flat_map(due_soon, & &1.assignments)
+      assert length(all_assignments) == 1
+
+      [p] = all_assignments
 
       assert p.resource_id == Paths.project_id(started_project)
       assert p.name == "Started Project - Check-in"
@@ -122,13 +137,15 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
       create_goal(another_person, ctx.company, past_date())
       create_goal(another_person, ctx.company, upcoming_date())
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
+      assert {200, %{due_soon: due_soon} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
 
       assert Repo.aggregate(Goal, :count, :id) == 5
-      assert length(assignments) == 2
 
-      g1 = Enum.find(assignments, &(&1.resource_id == Paths.goal_id(today_goal)))
-      g2 = Enum.find(assignments, &(&1.resource_id == Paths.goal_id(due_goal)))
+      all_assignments = Enum.flat_map(due_soon, & &1.assignments)
+      assert length(all_assignments) == 2
+
+      g1 = Enum.find(all_assignments, &(&1.resource_id == Paths.goal_id(today_goal)))
+      g2 = Enum.find(all_assignments, &(&1.resource_id == Paths.goal_id(due_goal)))
 
       assert g1.name == "today - Goal Update"
       assert g1.due
@@ -150,12 +167,14 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
       create_goal(ctx.person, ctx.company, past_date()) |> close_goal()
       due_goal = create_goal(ctx.person, ctx.company, past_date(), %{name: "single goal"})
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
+      assert {200, %{due_soon: due_soon} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
 
       assert Repo.aggregate(Goal, :count, :id) == 3
-      assert length(assignments) == 1
 
-      [g] = assignments
+      all_assignments = Enum.flat_map(due_soon, & &1.assignments)
+      assert length(all_assignments) == 1
+
+      [g] = all_assignments
 
       assert g.resource_id == Paths.goal_id(due_goal)
       assert g.name == "single goal - Goal Update"
@@ -174,11 +193,14 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
 
       check_in = create_check_in(project)
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
+      assert {200, %{needs_review: needs_review} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
 
-      assert length(assignments) == 1
+      assert length(needs_review) == 1
 
-      [c] = assignments
+      all_assignments = Enum.flat_map(needs_review, & &1.assignments)
+      assert length(all_assignments) == 1
+
+      [c] = all_assignments
 
       assert c.resource_id == Paths.project_check_in_id(check_in)
       assert c.type == "check_in"
@@ -194,9 +216,11 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
       project = create_project(ctx, upcoming_date())
       create_check_in(project)
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
+      assert {200, %{due_soon: due_soon, needs_review: needs_review, upcoming: upcoming} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
 
-      assert length(assignments) == 0
+      assert length(due_soon) == 0
+      assert length(needs_review) == 0
+      assert length(upcoming) == 0
     end
 
     test "get pending goal check-in acknowledgements", ctx do
@@ -208,11 +232,14 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
 
       update = create_update(another_person, goal)
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
+      assert {200, %{needs_review: needs_review} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
 
-      assert length(assignments) == 1
+      assert length(needs_review) == 1
 
-      [u] = assignments
+      all_assignments = Enum.flat_map(needs_review, & &1.assignments)
+      assert length(all_assignments) == 1
+
+      [u] = all_assignments
 
       assert u.resource_id == Paths.goal_update_id(update)
       assert u.type == "goal_update"
@@ -228,9 +255,11 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
       goal = create_goal(ctx.person, ctx.company, upcoming_date())
       create_update(ctx.person, goal)
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
+      assert {200, %{due_soon: due_soon, needs_review: needs_review, upcoming: upcoming} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
 
-      assert length(assignments) == 0
+      assert length(due_soon) == 0
+      assert length(needs_review) == 0
+      assert length(upcoming) == 0
     end
 
     test "get pending tasks", ctx do
@@ -267,12 +296,12 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
         due_date: ContextualDate.create_day_date(past_date_as_date())
       })
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
+      assert {200, %{due_soon: due_soon} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
 
       assert Repo.aggregate(ProjectTask, :count, :id) == 4
-      assert length(assignments) == 2
 
-      task_assignments = Enum.filter(assignments, &(&1.type == "project_task"))
+      all_assignments = Enum.flat_map(due_soon, & &1.assignments)
+      task_assignments = Enum.filter(all_assignments, &(&1.type == "project_task"))
       assert length(task_assignments) == 2
 
       [t1, t2] = Enum.sort_by(task_assignments, & &1.name)
@@ -316,9 +345,10 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
         due_date: ContextualDate.create_day_date(past_date_as_date())
       })
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
+      assert {200, %{due_soon: due_soon} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
 
-      space_task_assignments = Enum.filter(assignments, &(&1.type == "space_task" and &1.origin.type == "space"))
+      all_assignments = Enum.flat_map(due_soon, & &1.assignments)
+      space_task_assignments = Enum.filter(all_assignments, &(&1.type == "space_task" and &1.origin.type == "space"))
 
       assert length(space_task_assignments) == 2
 
@@ -350,9 +380,10 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
 
       Repo.soft_delete(project)
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
+      assert {200, %{due_soon: due_soon, needs_review: needs_review, upcoming: upcoming} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
 
-      task_assignments = Enum.filter(assignments, &(&1.type == "project_task"))
+      all_assignments = Enum.flat_map(due_soon ++ needs_review ++ upcoming, & &1.assignments)
+      task_assignments = Enum.filter(all_assignments, &(&1.type == "project_task"))
       assert length(task_assignments) == 0
     end
 
@@ -365,14 +396,16 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
         due_date: ContextualDate.create_day_date(past_date_as_date())
       })
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
-      assert length(assignments) == 1
+      assert {200, %{due_soon: due_soon} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
+      all_assignments = Enum.flat_map(due_soon, & &1.assignments)
+      assert length(all_assignments) == 1
 
       Map.put(ctx, :project, project)
       |> Factory.close_project(:project)
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
-      assert length(assignments) == 0
+      assert {200, %{due_soon: due_soon} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
+      all_assignments = Enum.flat_map(due_soon, & &1.assignments)
+      assert length(all_assignments) == 0
     end
 
     test "get pending milestones", ctx do
@@ -402,9 +435,10 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
         status: :done
       })
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
+      assert {200, %{upcoming: upcoming} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
 
-      milestone_assignments = Enum.filter(assignments, &(&1.type == "milestone"))
+      all_assignments = Enum.flat_map(upcoming, & &1.assignments)
+      milestone_assignments = Enum.filter(all_assignments, &(&1.type == "milestone"))
       assert length(milestone_assignments) == 2
 
       [m1, m2] = Enum.sort_by(milestone_assignments, & &1.name)
@@ -433,9 +467,10 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
       # Soft delete the project
       Repo.soft_delete(project)
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
+      assert {200, %{due_soon: due_soon, needs_review: needs_review, upcoming: upcoming} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
 
-      milestone_assignments = Enum.filter(assignments, &(&1.type == "milestone"))
+      all_assignments = Enum.flat_map(due_soon ++ needs_review ++ upcoming, & &1.assignments)
+      milestone_assignments = Enum.filter(all_assignments, &(&1.type == "milestone"))
       assert length(milestone_assignments) == 0
     end
 
@@ -447,14 +482,18 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
         status: :pending
       })
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
-      assert length(assignments) == 1
+      assert {200, %{due_soon: due_soon} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
+      all_assignments = Enum.flat_map(due_soon, & &1.assignments)
+      milestone_assignments = Enum.filter(all_assignments, &(&1.type == "milestone"))
+      assert length(milestone_assignments) == 1
 
       Map.put(ctx, :project, project)
       |> Factory.close_project(:project)
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
-      assert length(assignments) == 0
+      assert {200, %{due_soon: due_soon} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
+      all_assignments = Enum.flat_map(due_soon, & &1.assignments)
+      milestone_assignments = Enum.filter(all_assignments, &(&1.type == "milestone"))
+      assert length(milestone_assignments) == 0
     end
 
     test "get pending milestones for project champion only", ctx do
@@ -469,9 +508,10 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
         status: :pending
       })
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
+      assert {200, %{due_soon: due_soon, needs_review: needs_review, upcoming: upcoming} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
 
-      milestone_assignments = Enum.filter(assignments, &(&1.type == "milestone"))
+      all_assignments = Enum.flat_map(due_soon ++ needs_review ++ upcoming, & &1.assignments)
+      milestone_assignments = Enum.filter(all_assignments, &(&1.type == "milestone"))
       assert length(milestone_assignments) == 0
     end
 
@@ -490,9 +530,10 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
 
       Repo.soft_delete(deleted_milestone)
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
+      assert {200, %{due_soon: due_soon} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
 
-      milestone_assignments = Enum.filter(assignments, &(&1.type == "milestone"))
+      all_assignments = Enum.flat_map(due_soon, & &1.assignments)
+      milestone_assignments = Enum.filter(all_assignments, &(&1.type == "milestone"))
       assert length(milestone_assignments) == 1
 
       [m] = milestone_assignments
@@ -530,17 +571,18 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
       })
       create_update(another_person, review_goal)
 
-      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
+      assert {200, %{due_soon: due_soon, needs_review: needs_review, upcoming: upcoming} = _res} = query(ctx.conn, [:people, :list_assignments], %{})
 
       # Should have: 2 check-ins (1 to submit, 1 to review), 2 goal updates (1 to submit, 1 to review), 1 task, 1 milestone
-      assert length(assignments) == 6
+      all_assignments = Enum.flat_map(due_soon ++ needs_review ++ upcoming, & &1.assignments)
+      assert length(all_assignments) == 6
 
-      owner_check_ins = Enum.filter(assignments, &(&1.type == "check_in" and &1.role == "owner"))
-      reviewer_check_ins = Enum.filter(assignments, &(&1.type == "check_in" and &1.role == "reviewer"))
-      owner_goal_updates = Enum.filter(assignments, &(&1.type == "goal_update" and &1.role == "owner"))
-      reviewer_goal_updates = Enum.filter(assignments, &(&1.type == "goal_update" and &1.role == "reviewer"))
-      tasks = Enum.filter(assignments, &(&1.type == "project_task"))
-      milestones = Enum.filter(assignments, &(&1.type == "milestone"))
+      owner_check_ins = Enum.filter(all_assignments, &(&1.type == "check_in" and &1.role == "owner"))
+      reviewer_check_ins = Enum.filter(all_assignments, &(&1.type == "check_in" and &1.role == "reviewer"))
+      owner_goal_updates = Enum.filter(all_assignments, &(&1.type == "goal_update" and &1.role == "owner"))
+      reviewer_goal_updates = Enum.filter(all_assignments, &(&1.type == "goal_update" and &1.role == "reviewer"))
+      tasks = Enum.filter(all_assignments, &(&1.type == "project_task"))
+      milestones = Enum.filter(all_assignments, &(&1.type == "milestone"))
 
       assert length(owner_check_ins) == 1
       assert length(reviewer_check_ins) == 1
@@ -572,9 +614,10 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
       })
       create_check_in(project)
 
-      assert {200, %{assignments: assignments}} = query(ctx.conn, [:people, :list_assignments], %{})
+      assert {200, %{needs_review: needs_review}} = query(ctx.conn, [:people, :list_assignments], %{})
 
-      assert length(assignments) == 1
+      all_assignments = Enum.flat_map(needs_review, & &1.assignments)
+      assert length(all_assignments) == 1
 
       # Change reviewer to new reviewer
       assert {200, _} = mutation(ctx.conn, [:projects, :update_reviewer], %{
@@ -583,19 +626,21 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
       })
 
       ctx = Factory.log_in_person(ctx, :new_reviewer)
-      assert {200, %{assignments: assignments}} = query(ctx.conn, [:people, :list_assignments], %{})
+      assert {200, %{due_soon: due_soon, needs_review: needs_review, upcoming: upcoming}} = query(ctx.conn, [:people, :list_assignments], %{})
 
-      assert length(assignments) == 0
+      all_assignments = Enum.flat_map(due_soon ++ needs_review ++ upcoming, & &1.assignments)
+      assert length(all_assignments) == 0
 
       # Small delay to ensure the new check-in has a later timestamp than the activity
       Process.sleep(1000)
       new_check_in = create_check_in(project)
 
-      assert {200, %{assignments: assignments}} = query(ctx.conn, [:people, :list_assignments], %{})
+      assert {200, %{needs_review: needs_review}} = query(ctx.conn, [:people, :list_assignments], %{})
 
-      assert length(assignments) == 1
+      all_assignments = Enum.flat_map(needs_review, & &1.assignments)
+      assert length(all_assignments) == 1
 
-      [assignment] = assignments
+      [assignment] = all_assignments
       assert assignment.resource_id == Paths.project_check_in_id(new_check_in)
     end
 
@@ -611,9 +656,10 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
 
       # Reviewer should see both check-ins (no reviewer change activity exists)
       ctx = Factory.log_in_person(ctx, :reviewer)
-      assert {200, %{assignments: assignments}} = query(ctx.conn, [:people, :list_assignments], %{})
+      assert {200, %{needs_review: needs_review}} = query(ctx.conn, [:people, :list_assignments], %{})
 
-      check_in_assignments = Enum.filter(assignments, &(&1.type == "check_in" && &1.role == "reviewer"))
+      all_assignments = Enum.flat_map(needs_review, & &1.assignments)
+      check_in_assignments = Enum.filter(all_assignments, &(&1.type == "check_in" && &1.role == "reviewer"))
       assert length(check_in_assignments) == 2
 
       check_in_ids = Enum.map(check_in_assignments, & &1.resource_id)
@@ -655,9 +701,10 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
 
       # New reviewer should only see check-ins after the latest reviewer change
       ctx = Factory.log_in_person(ctx, :new_reviewer)
-      assert {200, %{assignments: assignments}} = query(ctx.conn, [:people, :list_assignments], %{})
+      assert {200, %{needs_review: needs_review}} = query(ctx.conn, [:people, :list_assignments], %{})
 
-      check_in_assignments = Enum.filter(assignments, &(&1.type == "check_in" && &1.role == "reviewer"))
+      all_assignments = Enum.flat_map(needs_review, & &1.assignments)
+      check_in_assignments = Enum.filter(all_assignments, &(&1.type == "check_in" && &1.role == "reviewer"))
       assert length(check_in_assignments) == 1
 
       [assignment] = check_in_assignments
@@ -686,9 +733,10 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
 
       # New reviewer should only see the update created after they became reviewer
       ctx = Factory.log_in_person(ctx, :new_reviewer)
-      assert {200, %{assignments: assignments}} = query(ctx.conn, [:people, :list_assignments], %{})
+      assert {200, %{needs_review: needs_review}} = query(ctx.conn, [:people, :list_assignments], %{})
 
-      update_assignments = Enum.filter(assignments, &(&1.type == "goal_update" && &1.role == "reviewer"))
+      all_assignments = Enum.flat_map(needs_review, & &1.assignments)
+      update_assignments = Enum.filter(all_assignments, &(&1.type == "goal_update" && &1.role == "reviewer"))
       assert length(update_assignments) == 1
 
       [assignment] = update_assignments
@@ -705,9 +753,10 @@ defmodule OperatelyWeb.Api.People.ListAssignmentsTest do
 
       # Reviewer should see both updates (no reviewer change activity exists)
       ctx = Factory.log_in_person(ctx, :reviewer)
-      assert {200, %{assignments: assignments}} = query(ctx.conn, [:people, :list_assignments], %{})
+      assert {200, %{needs_review: needs_review}} = query(ctx.conn, [:people, :list_assignments], %{})
 
-      update_assignments = Enum.filter(assignments, &(&1.type == "goal_update" && &1.role == "reviewer"))
+      all_assignments = Enum.flat_map(needs_review, & &1.assignments)
+      update_assignments = Enum.filter(all_assignments, &(&1.type == "goal_update" && &1.role == "reviewer"))
       assert length(update_assignments) == 2
 
       update_ids = Enum.map(update_assignments, & &1.resource_id)

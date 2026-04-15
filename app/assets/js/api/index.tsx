@@ -1763,6 +1763,14 @@ export interface ReviewAssignment {
   authorId: string | null;
   authorName: string | null;
   description: string | null;
+  dueDate: string | null;
+  dueStatus: ReviewAssignmentDueStatus | null;
+  dueStatusLabel: string | null;
+}
+
+export interface ReviewAssignmentGroup {
+  origin: ReviewAssignmentOrigin;
+  assignments: ReviewAssignment[];
 }
 
 export interface ReviewAssignmentOrigin {
@@ -2220,6 +2228,8 @@ export type ResourceHubLinkType =
   | "google_slides"
   | "notion"
   | "other";
+
+export type ReviewAssignmentDueStatus = "overdue" | "due_today" | "due_soon" | "upcoming" | "none";
 
 export type ReviewAssignmentOriginTypes = "project" | "goal" | "space";
 
@@ -2709,7 +2719,9 @@ export interface PeopleListResult {
 export interface PeopleListAssignmentsInput {}
 
 export interface PeopleListAssignmentsResult {
-  assignments: ReviewAssignment[];
+  dueSoon: ReviewAssignmentGroup[];
+  needsReview: ReviewAssignmentGroup[];
+  upcoming: ReviewAssignmentGroup[];
 }
 
 export interface PeopleListPossibleManagersInput {

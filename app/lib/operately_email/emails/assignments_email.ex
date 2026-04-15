@@ -1,8 +1,7 @@
 defmodule OperatelyEmail.Emails.AssignmentsEmail do
   import OperatelyEmail.Mailers.NotificationMailer
 
-  alias Operately.Assignments.{Loader, LoaderV2}
-  alias Operately.Assignments.LoaderV2.Assignment, as: AssignmentV2
+  alias Operately.Assignments.{Loader, LoaderV2, Assignment}
   alias Operately.Companies
   alias Operately.Repo
   alias OperatelyWeb.Paths
@@ -106,7 +105,7 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
     }
   end
 
-  defp enrich_assignment(%AssignmentV2{} = assignment) do
+  defp enrich_assignment(%Assignment{} = assignment) do
     due_date = normalize_due_date(assignment.due)
     {due_status, due_status_label} = resolve_due_status(due_date)
 
