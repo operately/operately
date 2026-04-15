@@ -14,6 +14,7 @@ defmodule Operately.ApiDocs.MarkdownTest do
 
     endpoint = %{
       full_name: "tasks/create",
+      namespace_segment: "tasks",
       name: "create",
       type: :mutation,
       method: "POST",
@@ -31,6 +32,8 @@ defmodule Operately.ApiDocs.MarkdownTest do
 
     page = Markdown.endpoint_page(endpoint, types)
 
+    assert page =~ ~s(title: "Tasks API: Create")
+    assert page =~ ~s(description: "Create with the Operately Tasks API.")
     assert page =~ ~s(<div style={{ overflowX: "auto" }}>)
     assert page =~ ~s(<th style={{ whiteSpace: "nowrap" }}>Field</th>)
     assert page =~ ~s(<th style={{ whiteSpace: "normal" }}>Type</th>)
@@ -77,6 +80,30 @@ defmodule Operately.ApiDocs.MarkdownTest do
     refute page =~ "```json"
   end
 
+  test "humanizes namespace and operation slugs in titles, descriptions, and links" do
+    types = %{primitives: %{}, objects: %{}, unions: %{}, enums: %{}, int_enums: %{}}
+
+    endpoint = %{
+      full_name: "companies/update_members_permissions",
+      namespace_segment: "companies",
+      name: "update_members_permissions",
+      type: :mutation,
+      method: "POST",
+      path: "/api/external/v1/companies/update_members_permissions",
+      handler: "OperatelyWeb.Api.Companies.UpdateMembersPermissions",
+      inputs: [],
+      outputs: []
+    }
+
+    endpoint_page = Markdown.endpoint_page(endpoint, types)
+    namespace_page = Markdown.namespace_index("companies", [endpoint])
+
+    assert endpoint_page =~ ~s(title: "Companies API: Update members permissions")
+    assert endpoint_page =~ ~s(description: "Update members permissions with the Operately Companies API.")
+    assert namespace_page =~ "title: Companies API"
+    assert namespace_page =~ ~s(<a href="./update_members_permissions">Update members permissions</a>)
+  end
+
   test "renders root endpoints in api index without a root namespace section" do
     catalog = %{
       namespaces: ["root", "goals"],
@@ -102,10 +129,12 @@ defmodule Operately.ApiDocs.MarkdownTest do
 
     page = Markdown.api_index(catalog)
 
+    assert page =~ "title: Operately API"
+    assert page =~ "description: Browse the Operately API reference by namespace."
     assert page =~ "## Endpoint Namespaces"
     assert page =~ "## Other Endpoints"
-    assert page =~ "[Goals](./goals)"
-    assert page =~ ~s(<a href="./get_account">get_account</a>)
+    assert page =~ "[Goals API](./goals)"
+    assert page =~ ~s(<a href="./get_account">Get account</a>)
     assert page =~ ~s(<div style={{ overflowX: "auto" }}>)
     assert page =~ ~s(<table style={{ minWidth: "52rem", whiteSpace: "nowrap" }}>)
     refute page =~ "[Root](./root)"
@@ -126,9 +155,11 @@ defmodule Operately.ApiDocs.MarkdownTest do
         }
       ])
 
+    assert page =~ "title: Goals API"
+    assert page =~ "description: Browse endpoints in the Operately Goals API."
     assert page =~ ~s(<div style={{ overflowX: "auto" }}>)
     assert page =~ ~s(<table style={{ minWidth: "52rem", whiteSpace: "nowrap" }}>)
-    assert page =~ ~s(<a href="./update_name">update_name</a>)
+    assert page =~ ~s(<a href="./update_name">Update name</a>)
     assert page =~ ~s(<code>/api/external/v1/goals/update_name</code>)
   end
 end
