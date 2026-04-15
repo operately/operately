@@ -35,7 +35,7 @@ defmodule Operately.Beacon.Cron do
     query =
       from c in Operately.Companies.Company,
         left_join: p in assoc(c, :people),
-        group_by: c.id,
+        group_by: [c.id, c.name],
         select: %{
           name: c.name,
           user_count: count(p.id)
