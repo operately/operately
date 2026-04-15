@@ -43,6 +43,8 @@ defmodule Operately.ApiDocs.GeneratorTest do
     page_1 = File.read!(namespaced_endpoint_1)
     page_2 = File.read!(namespaced_endpoint_2)
 
+    assert page_1 =~ ~s(title: "People API: Get account")
+    assert page_1 =~ ~s(description: "Get account with the Operately People API.")
     assert page_1 =~ "| Type | `query` |"
     assert page_1 =~ "| Method | `GET` |"
     assert page_1 =~ "| Path | `/api/external/v1/people/get_account` |"
@@ -55,6 +57,8 @@ defmodule Operately.ApiDocs.GeneratorTest do
     assert page_1 =~ "## Response Example"
     assert page_1 =~ "```json"
 
+    assert page_2 =~ ~s(title: "Goals API: Update name")
+    assert page_2 =~ ~s(description: "Update name with the Operately Goals API.")
     assert page_2 =~ "| Type | `mutation` |"
     assert page_2 =~ "| Method | `POST` |"
     assert page_2 =~ "| Path | `/api/external/v1/goals/update_name` |"

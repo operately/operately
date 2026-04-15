@@ -12,7 +12,7 @@ defmodule Operately.ApiDocs.Markdown do
       |> Enum.map(fn endpoint ->
         """
         <tr>
-          <td><a href="./#{endpoint.name}">#{endpoint.name}</a></td>
+          <td><a href="./#{endpoint.name}">#{endpoint_label(endpoint.name)}</a></td>
           <td><code>#{endpoint.method}</code></td>
           <td><code>#{endpoint.type}</code></td>
           <td><code>#{endpoint.path}</code></td>
@@ -69,8 +69,8 @@ defmodule Operately.ApiDocs.Markdown do
 
     """
     ---
-    title: API docs
-    description: Generated reference for Operately API endpoints.
+    title: Operately API
+    description: Browse the Operately API reference by namespace.
     ---
 
     Operately API provides HTTP endpoints for querying and mutating Operately resources.
@@ -95,7 +95,7 @@ defmodule Operately.ApiDocs.Markdown do
       |> Enum.map(fn endpoint ->
         """
         <tr>
-          <td><a href="./#{endpoint.name}">#{endpoint.name}</a></td>
+          <td><a href="./#{endpoint.name}">#{endpoint_label(endpoint.name)}</a></td>
           <td><code>#{endpoint.method}</code></td>
           <td><code>#{endpoint.type}</code></td>
           <td><code>#{endpoint.path}</code></td>
@@ -139,8 +139,8 @@ defmodule Operately.ApiDocs.Markdown do
 
     """
     ---
-    title: API #{namespace_title(namespace)}
-    description: Generated endpoint reference for the #{namespace_title(namespace)} namespace.
+    title: #{namespace_title(namespace)}
+    description: #{namespace_description_text(namespace)}
     ---
 
     #{description_section}
@@ -158,8 +158,8 @@ defmodule Operately.ApiDocs.Markdown do
 
     """
     ---
-    title: "#{endpoint.name}"
-    description: "Generated reference for the #{endpoint.type} endpoint #{endpoint.full_name}."
+    title: "#{endpoint_title(endpoint)}"
+    description: "#{endpoint_description(endpoint)}"
     ---
 
     import CurlExampleBlock from "@components/CurlExampleBlock.jsx"
@@ -290,8 +290,59 @@ defmodule Operately.ApiDocs.Markdown do
     """
   end
 
-  defp namespace_title("root"), do: "Root"
-  defp namespace_title(namespace), do: namespace |> String.replace("_", " ") |> String.capitalize()
+  defp endpoint_title(endpoint) do
+    "#{namespace_title(endpoint_namespace(endpoint))}: #{endpoint_label(endpoint.name)}"
+  end
+
+  defp endpoint_description(endpoint) do
+    "#{endpoint_label(endpoint.name)} with the #{namespace_api_name(endpoint_namespace(endpoint))}."
+  end
+
+  defp namespace_description_text(namespace) do
+    "Browse endpoints in the #{namespace_api_name(namespace)}."
+  end
+
+  defp namespace_title("root"), do: "Operately API"
+
+  defp namespace_title(namespace) do
+    "#{namespace_label(namespace)} API"
+  end
+
+  defp namespace_api_name("root"), do: "Operately API"
+  defp namespace_api_name(namespace), do: "Operately #{namespace_label(namespace)} API"
+
+  defp namespace_label(namespace) do
+    namespace
+    |> humanize_slug()
+    |> String.split()
+    |> Enum.map(&String.capitalize/1)
+    |> Enum.join(" ")
+  end
+
+  defp endpoint_label(name) do
+    name
+    |> humanize_slug()
+    |> String.capitalize()
+  end
+
+  defp endpoint_namespace(endpoint) do
+    cond do
+      Map.get(endpoint, :namespace_segment) not in [nil, ""] ->
+        Map.get(endpoint, :namespace_segment)
+
+      Map.get(endpoint, :namespace) not in [nil, ""] ->
+        endpoint.namespace |> to_string()
+
+      true ->
+        "root"
+    end
+  end
+
+  defp humanize_slug(value) do
+    value
+    |> to_string()
+    |> String.replace("_", " ")
+  end
 
   defp other_endpoints_section(root_endpoints_section) do
     if root_endpoints_section == "There are currently no additional endpoints." do
