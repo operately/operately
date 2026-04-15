@@ -536,6 +536,175 @@
           }
         ]
       },
+      "company_import_run": {
+        "fields": [
+          {
+            "default": null,
+            "name": "id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "company",
+            "type": {
+              "name": "company",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "requested_by",
+            "type": {
+              "name": "account",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "status",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "current_step",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "percentage",
+            "type": {
+              "name": "float",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "tables_count",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "rows_count",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "json_blob_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "zip_blob_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "error_message",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "validation_errors",
+            "type": {
+              "name": "json",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "inserted_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "started_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "completed_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          }
+        ]
+      },
       "goal_progress_update": {
         "fields": [
           {
@@ -1783,6 +1952,35 @@
             "optional": true,
             "has_default": false,
             "nullable": true
+          }
+        ]
+      },
+      "review_assignment_group": {
+        "fields": [
+          {
+            "default": null,
+            "name": "origin",
+            "type": {
+              "name": "review_assignment_origin",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "assignments",
+            "type": {
+              "item": {
+                "name": "review_assignment",
+                "kind": "named"
+              },
+              "kind": "list"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
           }
         ]
       },
@@ -8905,6 +9103,17 @@
           },
           {
             "default": null,
+            "name": "daily_summary_delivery_time",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
             "name": "notify_on_mention",
             "type": {
               "name": "boolean",
@@ -10584,6 +10793,208 @@
           }
         ]
       },
+      "company_export_run": {
+        "fields": [
+          {
+            "default": null,
+            "name": "id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "company",
+            "type": {
+              "name": "company",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "requested_by",
+            "type": {
+              "name": "account",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "status",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "current_step",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "percentage",
+            "type": {
+              "name": "float",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "tables_count",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "rows_count",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "json_blob_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "zip_blob_id",
+            "type": {
+              "name": "id",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "json_download_url",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "zip_download_url",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "json_size_bytes",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "zip_size_bytes",
+            "type": {
+              "name": "integer",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "error_message",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "inserted_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "started_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          },
+          {
+            "default": null,
+            "name": "completed_at",
+            "type": {
+              "name": "datetime",
+              "kind": "named"
+            },
+            "optional": true,
+            "has_default": false,
+            "nullable": false
+          }
+        ]
+      },
       "activity_content_resource_hub_file_created": {
         "fields": [
           {
@@ -11674,6 +12085,39 @@
           {
             "default": null,
             "name": "description",
+            "type": {
+              "name": "string",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "due_date",
+            "type": {
+              "name": "date",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "due_status",
+            "type": {
+              "name": "review_assignment_due_status",
+              "kind": "named"
+            },
+            "optional": false,
+            "has_default": false,
+            "nullable": true
+          },
+          {
+            "default": null,
+            "name": "due_status_label",
             "type": {
               "name": "string",
               "kind": "named"
@@ -14791,6 +15235,13 @@
         "off_track",
         "pending",
         "outdated"
+      ],
+      "review_assignment_due_status": [
+        "overdue",
+        "due_today",
+        "due_soon",
+        "upcoming",
+        "none"
       ],
       "work_map_item_privacy": [
         "public",
@@ -20425,10 +20876,38 @@
       "outputs": [
         {
           "default": null,
-          "name": "assignments",
+          "name": "due_soon",
           "type": {
             "item": {
-              "name": "review_assignment",
+              "name": "review_assignment_group",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "needs_review",
+          "type": {
+            "item": {
+              "name": "review_assignment_group",
+              "kind": "named"
+            },
+            "kind": "list"
+          },
+          "optional": false,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "upcoming",
+          "type": {
+            "item": {
+              "name": "review_assignment_group",
               "kind": "named"
             },
             "kind": "list"
@@ -20693,6 +21172,17 @@
           "name": "email_window_minutes",
           "type": {
             "name": "integer",
+            "kind": "named"
+          },
+          "optional": true,
+          "has_default": false,
+          "nullable": false
+        },
+        {
+          "default": null,
+          "name": "daily_summary_delivery_time",
+          "type": {
+            "name": "string",
             "kind": "named"
           },
           "optional": true,
@@ -27479,6 +27969,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-04-07T17:42:32Z",
+  "generated_at": "2026-04-15T15:54:56Z",
   "schema_version": 1
 }
