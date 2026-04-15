@@ -19,8 +19,9 @@ const meta = {
     ),
   ],
   argTypes: {
-    assignments: { control: "object" },
-    assignmentsCount: { control: "number" },
+    dueSoon: { control: "object" },
+    needsReview: { control: "object" },
+    upcoming: { control: "object" },
   },
 } satisfies Meta<typeof ReviewPage>;
 
@@ -31,37 +32,44 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   render: (args) => <ReviewPage {...args} />,
   args: {
-    assignments: [...data.dueSoonAssignments, ...data.reviewAssignments],
-    showUpcomingSection: false,
+    dueSoon: data.dueSoonGroups,
+    needsReview: data.reviewGroups,
+    upcoming: [],
   },
 };
 
 export const SmallPlate: Story = {
   render: (args) => <ReviewPage {...args} />,
   args: {
-    assignments: [...data.smallPlateDueSoon, ...data.smallPlateReview],
-    showUpcomingSection: false,
+    dueSoon: data.smallPlateDueSoonGroups,
+    needsReview: data.smallPlateReviewGroups,
+    upcoming: [],
   },
 };
 
 export const OnlyTasks: Story = {
   render: (args) => <ReviewPage {...args} />,
   args: {
-    assignments: data.taskOnlyDueSoon,
-    showUpcomingSection: false,
+    dueSoon: data.taskOnlyDueSoonGroups,
+    needsReview: [],
+    upcoming: [],
   },
 };
 
 export const Empty: Story = {
   render: (args) => <ReviewPage {...args} />,
   args: {
-    assignments: data.emptyStateAssignments,
+    dueSoon: [],
+    needsReview: [],
+    upcoming: [],
   },
 };
 
-export const MyUpcomingWorkWIP: Story = {
+export const WithUpcoming: Story = {
   render: (args) => <ReviewPage {...args} />,
   args: {
-    assignments: data.upcomingAssignments,
+    dueSoon: data.dueSoonGroups,
+    needsReview: data.reviewGroups,
+    upcoming: data.upcomingGroups,
   },
 };

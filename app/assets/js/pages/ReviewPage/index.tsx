@@ -1,23 +1,23 @@
 import * as React from "react";
 import * as Pages from "@/components/Pages";
-import { ReviewAssignment, listAssignments } from "@/models/assignments";
+import { ReviewAssignmentGroup, listAssignments } from "@/models/assignments";
 import { PageModule } from "@/routes/types";
 import { ReviewPage } from "turboui";
 
 export default { name: "ReviewPage", loader, Page } as PageModule;
 
 function Page() {
-  const { assignments } = Pages.useLoadedData() as LoaderResult;
+  const data = Pages.useLoadedData() as LoaderResult;
 
-  return <ReviewPage assignments={assignments} assignmentsCount={assignments.length} showUpcomingSection={false} />;
+  return <ReviewPage dueSoon={data.dueSoon} needsReview={data.needsReview} upcoming={data.upcoming} />;
 }
 
 interface LoaderResult {
-  assignments: ReviewAssignment[];
+  dueSoon: ReviewAssignmentGroup[];
+  needsReview: ReviewAssignmentGroup[];
+  upcoming: ReviewAssignmentGroup[];
 }
 
 async function loader(): Promise<LoaderResult> {
-  return {
-    assignments: await listAssignments({}).then((res) => res.assignments),
-  };
+  return await listAssignments({});
 }
