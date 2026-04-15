@@ -42,7 +42,7 @@ defmodule Operately.People.Preferences do
       field :email_window_minutes, :integer, default: 5
       field :notify_about_assignments, :boolean, default: true
       field :notify_on_mention, :boolean, default: true
-      field :send_daily_summary, :boolean, default: true
+      field :send_daily_summary, :boolean, default: false
       field :daily_summary_delivery_time, :string, default: @default_daily_summary_delivery_time
     end
 

@@ -95,7 +95,7 @@ defmodule Operately.PeopleTest do
 
       assert person.preferences.notifications.notify_about_assignments
       assert person.preferences.notifications.notify_on_mention
-      assert person.preferences.notifications.send_daily_summary
+      refute person.preferences.notifications.send_daily_summary
       assert person.preferences.notifications.daily_summary_delivery_time == "18:00"
     end
 
@@ -110,7 +110,7 @@ defmodule Operately.PeopleTest do
 
       assert person.preferences.notifications.notify_about_assignments
       assert person.preferences.notifications.notify_on_mention
-      assert person.preferences.notifications.send_daily_summary
+      refute person.preferences.notifications.send_daily_summary
       assert person.preferences.notifications.daily_summary_delivery_time == "18:00"
     end
 
