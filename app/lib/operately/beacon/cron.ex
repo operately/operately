@@ -24,8 +24,24 @@ defmodule Operately.Beacon.Cron do
   defp collect_beacon_data do
     %{
       version: Operately.version(),
-      installation_id: Operately.installation_id()
+      installation_id: Operately.installation_id(),
+      companies: collect_companies_data()
     }
+  end
+
+  defp collect_companies_data do
+    import Ecto.Query
+
+    query =
+      from c in Operately.Companies.Company,
+        left_join: p in assoc(c, :people),
+        group_by: [c.id, c.name],
+        select: %{
+          name: c.name,
+          user_count: count(p.id)
+        }
+
+    Operately.Repo.all(query)
   end
 
   defp send_to_beacon_service(data) do
