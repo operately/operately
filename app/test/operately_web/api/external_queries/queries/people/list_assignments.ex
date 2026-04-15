@@ -11,6 +11,8 @@ defmodule OperatelyWeb.Api.ExternalQueries.Queries.People.ListAssignments do
 
   @impl true
   def assert(response, _ctx) do
-    assert is_list(response.assignments)
+    assert is_list(response.due_soon)
+    assert is_list(response.needs_review)
+    assert is_list(response.upcoming)
   end
 end
