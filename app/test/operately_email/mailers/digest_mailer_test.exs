@@ -192,10 +192,10 @@ defmodule OperatelyEmail.Mailers.DigestMailerTest do
 
     email = DigestMailer.build_daily_summary_email(ctx.person, digest_items)
 
-    assert email.subject == "Daily summary from the last 24 hours"
-    assert email.html_body =~ "Daily summary from the last 24 hours"
+    assert email.subject == "You have 2 new updates"
+    assert email.html_body =~ "You have 2 new updates"
     assert email.html_body =~ "Goal 1"
     assert email.html_body =~ "Project Alpha"
-    assert email.text_body =~ "Daily summary from the last 24 hours"
+    assert email.text_body =~ "You have 2 new updates"
   end
 end
