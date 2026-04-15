@@ -28,6 +28,10 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "account", "security", "api-tokens", "usage"])
   end
 
+  def account_notification_settings_path(company = %Company{}) do
+    create_path([company_id(company), "account", "settings", "notifications"])
+  end
+
   def login_path do
     create_path(["log_in"])
   end

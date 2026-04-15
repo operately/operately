@@ -13,18 +13,21 @@ defmodule OperatelyEmail.Mailers.DigestMailer do
     |> OperatelyEmail.Mailers.BaseMailer.deliver_now()
   end
 
-  def build_digest_email(person, batch, digest_items) do
+  def build_digest_email(person, _batch, digest_items) do
     company = Operately.Repo.preload(person, :company).company
 
     parent_groups = group_by_parent(digest_items)
+    total_updates = calculate_total_updates(parent_groups)
     notifications_url = OperatelyWeb.Paths.notifications_path(company) |> OperatelyWeb.Paths.to_url()
-    subject = "Updates from the last #{batch.window_minutes} minutes"
+    settings_url = OperatelyWeb.Paths.account_notification_settings_path(company) |> OperatelyWeb.Paths.to_url()
+    subject = "You have #{total_updates} new #{if total_updates == 1, do: "update", else: "updates"}"
 
     assigns = %{
       subject: subject,
-      window_minutes: batch.window_minutes,
+      total_updates: total_updates,
       parent_groups: parent_groups,
-      notifications_url: notifications_url
+      notifications_url: notifications_url,
+      settings_url: settings_url
     }
 
     Swoosh.Email.new()
@@ -39,13 +42,17 @@ defmodule OperatelyEmail.Mailers.DigestMailer do
     company = Operately.Repo.preload(person, :company).company
 
     parent_groups = group_by_parent(digest_items)
+    total_updates = calculate_total_updates(parent_groups)
     notifications_url = OperatelyWeb.Paths.notifications_path(company) |> OperatelyWeb.Paths.to_url()
-    subject = "Daily summary from the last 24 hours"
+    settings_url = OperatelyWeb.Paths.account_notification_settings_path(company) |> OperatelyWeb.Paths.to_url()
+    subject = "You have #{total_updates} new #{if total_updates == 1, do: "update", else: "updates"}"
 
     assigns = %{
       subject: subject,
+      total_updates: total_updates,
       parent_groups: parent_groups,
-      notifications_url: notifications_url
+      notifications_url: notifications_url,
+      settings_url: settings_url
     }
 
     Swoosh.Email.new()
@@ -54,6 +61,16 @@ defmodule OperatelyEmail.Mailers.DigestMailer do
     |> Swoosh.Email.subject(subject)
     |> Swoosh.Email.html_body(html("daily_activity_digest", assigns))
     |> Swoosh.Email.text_body(text("daily_activity_digest", assigns))
+  end
+
+  defp calculate_total_updates(parent_groups) do
+    parent_groups
+    |> Enum.reduce(0, fn group, acc ->
+      group_total = Enum.reduce(group.author_groups, 0, fn ag, ag_acc ->
+        ag_acc + length(ag.items)
+      end)
+      acc + group_total
+    end)
   end
 
   defp group_by_parent(digest_items) do
