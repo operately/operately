@@ -6,6 +6,7 @@ import { TestableElement } from "../TestableElement";
 import { Tooltip } from "../Tooltip";
 
 import { AssignmentGroups } from "./AssignmentsList";
+import { mergeUrgentGroups } from "./utils";
 
 export namespace ReviewPageV2 {
   export type AssignmentRole = "owner" | "reviewer";
@@ -55,26 +56,18 @@ export namespace ReviewPageV2 {
 export function ReviewPage(props: ReviewPageV2.Props) {
   const { dueSoon, needsReview, upcoming } = props;
 
-  const urgentGroups = React.useMemo(() => {
-    const dueSoonAssignments = dueSoon.flatMap((group) => group.assignments);
-    const reviewAssignments = needsReview.flatMap((group) => group.assignments);
-
-    if (dueSoonAssignments.length === 0 && reviewAssignments.length === 0) {
-      return [];
-    }
-
-    // Combine and re-group by origin
-    return groupAssignmentsByOrigin([...dueSoonAssignments, ...reviewAssignments]);
-  }, [dueSoon, needsReview]);
+  // Merge due_soon and needs_review while maintaining backend's sort order
+  const urgentGroups = React.useMemo(
+    () => mergeUrgentGroups(dueSoon, needsReview),
+    [dueSoon, needsReview]
+  );
 
   const hasUrgent = urgentGroups.length > 0;
   const hasUpcoming = upcoming.length > 0;
   const hasAnyAssignments = hasUrgent || hasUpcoming;
 
   // Count only urgent items (due soon + needs review), not upcoming
-  const urgentCount =
-    dueSoon.reduce((sum, group) => sum + group.assignments.length, 0) +
-    needsReview.reduce((sum, group) => sum + group.assignments.length, 0);
+  const urgentCount = urgentGroups.reduce((sum, group) => sum + group.assignments.length, 0);
 
   const pageTitle = urgentCount === 0 ? "Review" : `Review (${urgentCount})`;
 
@@ -186,24 +179,4 @@ function CaughtUpState() {
       </div>
     </div>
   );
-}
-
-// Helper to re-group assignments by origin when combining due_soon and needs_review
-function groupAssignmentsByOrigin(assignments: ReviewPageV2.Assignment[]): ReviewPageV2.AssignmentGroup[] {
-  const groups = new Map<string, ReviewPageV2.AssignmentGroup>();
-
-  assignments.forEach((assignment) => {
-    const key = `${assignment.origin.type}:${assignment.origin.id}`;
-
-    if (!groups.has(key)) {
-      groups.set(key, {
-        origin: assignment.origin,
-        assignments: [],
-      });
-    }
-
-    groups.get(key)!.assignments.push(assignment);
-  });
-
-  return Array.from(groups.values());
 }
