@@ -3,7 +3,7 @@ defmodule Operately.Groups do
 
   alias Operately.Repo
   alias Ecto.Multi
-  alias Operately.Groups.{Group, Member, Contact}
+  alias Operately.Groups.{Group, Member}
   alias Operately.Access.Fetch
   alias Operately.People.Person
   alias Operately.Activities
@@ -35,12 +35,6 @@ defmodule Operately.Groups do
       order_by: p.full_name,
       limit: ^limit
     )
-
-    Repo.all(query)
-  end
-
-  def list_contacts(group) do
-    query = (from c in Contact, where: c.group_id == ^group.id)
 
     Repo.all(query)
   end
@@ -124,17 +118,6 @@ defmodule Operately.Groups do
   end
 
   defdelegate add_members(author, group_id, people_ids), to: Operately.Operations.GroupMembersAdding, as: :run
-
-  def add_contact(group, name, value, type) do
-    contact = %Contact{
-      group_id: group.id,
-      name: name,
-      value: value,
-      type: String.to_existing_atom(type)
-    }
-
-    Repo.insert(contact)
-  end
 
   def list_members(group_id, limit, include_total) do
     total = if include_total do
