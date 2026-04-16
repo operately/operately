@@ -50,5 +50,6 @@ media
 # Ignore test reports
 testreports
 
+notes/
 locals3root/
 *.DS_Store

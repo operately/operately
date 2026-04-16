@@ -45,6 +45,7 @@ export function createAppRoutes() {
         pageRoute("/reset-password", pages.ResetPasswordPage, { auth: false }),
 
         pageRoute("", pages.LobbyPage),
+        pageRoute("/company-import", pages.CompanyImportPage),
         pageRoute("/new", pages.NewCompanyPage),
         pageRoute("/setup", pages.SetupPage, { auth: false }),
         pageRoute("/join", pages.JoinPage, { auth: false }),

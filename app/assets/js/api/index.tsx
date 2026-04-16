@@ -3998,6 +3998,14 @@ export interface LinksUpdateResult {
   link: ResourceHubLink;
 }
 
+export interface MarkBlobUploadedInput {
+  blobId: Id;
+}
+
+export interface MarkBlobUploadedResult {
+  blob: Blob;
+}
+
 export interface NotificationsMarkAllAsReadInput {}
 
 export interface NotificationsMarkAllAsReadResult {}
@@ -5037,6 +5045,10 @@ class ApiNamespaceRoot {
     return this.client.post("/join_company", input);
   }
 
+  async markBlobUploaded(input: MarkBlobUploadedInput): Promise<MarkBlobUploadedResult> {
+    return this.client.post("/mark_blob_uploaded", input);
+  }
+
   async requestPasswordReset(input: RequestPasswordResetInput): Promise<RequestPasswordResetResult> {
     return this.client.post("/request_password_reset", input);
   }
@@ -6039,6 +6051,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.joinCompany(input);
   }
 
+  markBlobUploaded(input: MarkBlobUploadedInput): Promise<MarkBlobUploadedResult> {
+    return this.apiNamespaceRoot.markBlobUploaded(input);
+  }
+
   requestPasswordReset(input: RequestPasswordResetInput): Promise<RequestPasswordResetResult> {
     return this.apiNamespaceRoot.requestPasswordReset(input);
   }
@@ -6089,6 +6105,9 @@ export async function deleteCompany(input: DeleteCompanyInput): Promise<DeleteCo
 }
 export async function joinCompany(input: JoinCompanyInput): Promise<JoinCompanyResult> {
   return defaultApiClient.joinCompany(input);
+}
+export async function markBlobUploaded(input: MarkBlobUploadedInput): Promise<MarkBlobUploadedResult> {
+  return defaultApiClient.markBlobUploaded(input);
 }
 export async function requestPasswordReset(input: RequestPasswordResetInput): Promise<RequestPasswordResetResult> {
   return defaultApiClient.requestPasswordReset(input);
@@ -6164,6 +6183,12 @@ export function useJoinCompany(): UseMutationHookResult<JoinCompanyInput, JoinCo
   return useMutation<JoinCompanyInput, JoinCompanyResult>((input) => defaultApiClient.joinCompany(input));
 }
 
+export function useMarkBlobUploaded(): UseMutationHookResult<MarkBlobUploadedInput, MarkBlobUploadedResult> {
+  return useMutation<MarkBlobUploadedInput, MarkBlobUploadedResult>((input) =>
+    defaultApiClient.markBlobUploaded(input),
+  );
+}
+
 export function useRequestPasswordReset(): UseMutationHookResult<
   RequestPasswordResetInput,
   RequestPasswordResetResult
@@ -6204,6 +6229,8 @@ export default {
   useDeleteCompany,
   joinCompany,
   useJoinCompany,
+  markBlobUploaded,
+  useMarkBlobUploaded,
   requestPasswordReset,
   useRequestPasswordReset,
   resetPassword,

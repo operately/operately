@@ -17,15 +17,21 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
      - `comments` - `entity_type`/`entity_id`
      - `reactions` - `entity_type`/`entity_id`
 
-  3. **Dependency parent tables** - Referenced but not company-owned:
+  3. **Exception tables** - Known special cases deferred from the minimal slice:
+     - `activities` - requires separate handling due to serialized references and legacy resource columns
+     - `notifications` - depends on deferred `activities`
+     - `milestone_comments` - depends on polymorphic `comments`
+     - `project_review_requests` - depends on polymorphic `updates`
+
+  4. **Dependency parent tables** - Referenced but not company-owned:
      - `accounts` - Shared across companies
      - `subscription_lists`, `subscriptions` - Referenced by multiple entities
 
-  4. **Included tables** - Normal company-owned tables to export:
+  5. **Included tables** - Normal company-owned tables to export:
      - Explicitly listed (50+ tables including `companies`, `projects`, `goals`, etc.)
      - **Must be manually maintained** - new tables will cause tests to fail until classified
 
-  5. **Rich text columns** - Columns containing JSON with blob references:
+  6. **Rich text columns** - Columns containing JSON with blob references:
      - `projects.description`, `goals.description`
      - `messages.body`, `resource_hub_documents.content`
      - And others (see module attributes for full list)
@@ -36,6 +42,7 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
   - `included?/1` - Check if table is a normal company-owned table
   - `polymorphic?/1` - Check if table uses polymorphic associations
   - `get_polymorphic_config/1` - Get type/id column names
+  - `exception?/1` - Check if table is deferred for separate handling
   - `dependency_parent?/1` - Check if table is dependency-only
   - `has_rich_text?/2` - Check if column contains rich text
 
@@ -43,7 +50,7 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
 
   The explicit `@included_tables` list ensures:
   - New tables added via migrations will cause `Discovery.validate_schema_coverage/0` to fail
-  - Developers must explicitly decide: excluded, polymorphic, dependency_parent, or included
+  - Developers must explicitly decide: excluded, polymorphic, exception, dependency_parent, or included
   - No tables can be accidentally exported or skipped
   - The list serves as a complete inventory of exportable tables
   """
@@ -65,8 +72,16 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
   @polymorphic_tables %{
     "updates" => %{type_column: "updatable_type", id_column: "updatable_id"},
     "comments" => %{type_column: "entity_type", id_column: "entity_id"},
-    "reactions" => %{type_column: "entity_type", id_column: "entity_id"}
+    "reactions" => %{type_column: "entity_type", id_column: "entity_id"},
+    "comment_threads" => %{type_column: "parent_type", id_column: "parent_id"}
   }
+
+  @exception_tables [
+    "activities",
+    "milestone_comments",
+    "notifications",
+    "project_review_requests"
+  ]
 
   @dependency_parent_tables [
     "accounts",
@@ -79,13 +94,11 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
     "access_contexts",
     "access_group_memberships",
     "access_groups",
-    "activities",
     "agent_convos",
     "agent_defs",
     "agent_messages",
     "agent_runs",
     "blobs",
-    "comment_threads",
     "companies",
     "dashboard_panels",
     "dashboards",
@@ -100,8 +113,6 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
     "members",
     "messages",
     "messages_boards",
-    "milestone_comments",
-    "notifications",
     "people",
     "project_check_ins",
     "project_contributors",
@@ -110,7 +121,6 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
     "project_milestones",
     "project_phase_history",
     "project_retrospectives",
-    "project_review_requests",
     "projects",
     "resource_documents",
     "resource_files",
@@ -158,6 +168,12 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
   end
 
   def polymorphic_tables, do: @polymorphic_tables
+
+  def exception?(table_name) when is_binary(table_name) do
+    table_name in @exception_tables
+  end
+
+  def exception_tables, do: @exception_tables
 
   def dependency_parent?(table_name) when is_binary(table_name) do
     table_name in @dependency_parent_tables

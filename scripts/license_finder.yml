@@ -226,6 +226,12 @@
     :versions: []
     :when: 2025-04-14 08:40:00.000000000 Z
 - - :approve
+  - ecto
+  - :who: Adriano Lazzaretti
+    :why: Elixir package declares Apache-2.0 in deps/ecto/mix.exs
+    :versions: []
+    :when: 2026-04-16 00:00:00.000000000 Z
+- - :approve
   - ecto_sql
   - :who: Adriano Lazzaretti
     :why: Elixir package licensed under Apache 2.0

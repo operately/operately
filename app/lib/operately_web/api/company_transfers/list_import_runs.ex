@@ -27,6 +27,11 @@ defmodule OperatelyWeb.Api.CompanyTransfers.ListImportRuns do
   end
 
   defp fetch_runs(account_id) do
-    {:ok, CompanyTransfers.list_account_import_runs(account_id)}
+    runs =
+      account_id
+      |> CompanyTransfers.list_account_import_runs()
+      |> Repo.preload(:company)
+
+    {:ok, runs}
   end
 end
