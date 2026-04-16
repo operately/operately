@@ -42,6 +42,7 @@ defmodule Operately.CompanyTransfers.Schema.Discovery do
 
   - **`:excluded`** - System tables not exported (migrations, oban, sessions)
   - **`:polymorphic`** - Tables using type/id pattern (comments, reactions, updates)
+  - **`:exception`** - Deferred special cases handled outside the minimal slice
   - **`:dependency_parent`** - Referenced but not company-owned (accounts, subscriptions)
   - **`:included`** - Normal company-owned tables to export (50+ tables)
   - **`:unclassified`** - Unknown tables (causes test failure)
@@ -64,19 +65,22 @@ defmodule Operately.CompanyTransfers.Schema.Discovery do
   def discover_exportable_tables do
     all_tables = Graph.get_tables()
 
-    included_tables =
+    exportable_tables =
       all_tables
-      |> Enum.reject(&PolicyRegistry.excluded?/1)
+      |> Enum.filter(fn table ->
+        classification = classify_table(table)
+        classification in [:included, :dependency_parent]
+      end)
 
     dependency_graph = Graph.build_dependency_graph()
 
     filtered_graph =
       dependency_graph
-      |> Enum.filter(fn {table, _deps} -> table in included_tables end)
+      |> Enum.filter(fn {table, _deps} -> table in exportable_tables end)
       |> Enum.into(%{})
 
     {:ok, sorted_tables} = TopologicalSort.sort(filtered_graph)
-    exportable = Enum.filter(sorted_tables, &(&1 in included_tables))
+    exportable = Enum.filter(sorted_tables, &(&1 in exportable_tables))
     {:ok, exportable}
   end
 
@@ -95,6 +99,7 @@ defmodule Operately.CompanyTransfers.Schema.Discovery do
     cond do
       PolicyRegistry.excluded?(table_name) -> :excluded
       PolicyRegistry.polymorphic?(table_name) -> :polymorphic
+      PolicyRegistry.exception?(table_name) -> :exception
       PolicyRegistry.dependency_parent?(table_name) -> :dependency_parent
       PolicyRegistry.included?(table_name) -> :included
       true -> :unclassified
@@ -108,7 +113,7 @@ defmodule Operately.CompanyTransfers.Schema.Discovery do
       all_tables
       |> Enum.reject(fn table ->
         classification = classify_table(table)
-        classification in [:excluded, :polymorphic, :dependency_parent, :included]
+        classification in [:excluded, :polymorphic, :exception, :dependency_parent, :included]
       end)
 
     if unclassified == [] do
@@ -129,6 +134,7 @@ defmodule Operately.CompanyTransfers.Schema.Discovery do
       total_tables: length(all_tables),
       excluded: length(Map.get(classified, :excluded, [])),
       polymorphic: length(Map.get(classified, :polymorphic, [])),
+      exception: length(Map.get(classified, :exception, [])),
       dependency_parent: length(Map.get(classified, :dependency_parent, [])),
       included: length(Map.get(classified, :included, [])),
       tables_by_classification: classified

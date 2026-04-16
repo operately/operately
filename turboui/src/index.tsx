@@ -48,6 +48,7 @@ export { MilestonePage } from "./MilestonePage";
 export { MiniWorkMap } from "./MiniWorkMap";
 export { Modal } from "./Modal";
 export { CompanyCreatorOnboardingWizard, CompanyMemberOnboardingWizard } from "./OnboardingWizard";
+export { CompanyImportPage } from "./CompanyImportPage";
 export { PrivacyField } from "./PrivacyField";
 export { ProfileEditPage } from "./ProfileEditPage";
 export { ProfilePage } from "./ProfilePage";

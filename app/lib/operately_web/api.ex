@@ -280,6 +280,7 @@ defmodule OperatelyWeb.Api do
 
       mutation(:create_blob, OperatelyWeb.Api.Mutations.CreateBlob)
       mutation(:create_avatar_blob, OperatelyWeb.Api.Mutations.CreateAvatarBlob)
+      mutation(:mark_blob_uploaded, OperatelyWeb.Api.Mutations.MarkBlobUploaded)
       mutation(:delete_company, OperatelyWeb.Api.Mutations.DeleteCompany)
       mutation(:add_company_owners, OperatelyWeb.Api.Mutations.AddCompanyOwners)
       mutation(:add_company_trusted_email_domain, OperatelyWeb.Api.Mutations.AddCompanyTrustedEmailDomain)

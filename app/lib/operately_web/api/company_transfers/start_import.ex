@@ -1,6 +1,7 @@
 defmodule OperatelyWeb.Api.CompanyTransfers.StartImport do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
+  require Logger
 
   alias Operately.CompanyTransfers
   alias Operately.Blobs.Blob
@@ -26,11 +27,13 @@ defmodule OperatelyWeb.Api.CompanyTransfers.StartImport do
   defp respond(result) do
     case result do
       {:ok, ctx} -> {:ok, %{import_run: Serializer.serialize(ctx.import_run, level: :full)}}
-      {:error, :blobs, :not_found} -> {:error, :not_found}
-      {:error, :blobs, :forbidden} -> {:error, :forbidden}
-      {:error, :blobs, :not_uploaded} -> {:error, :bad_request}
+      {:error, :blobs, %{error: :not_found}} -> {:error, :not_found}
+      {:error, :blobs, %{error: :forbidden}} -> {:error, :forbidden}
+      {:error, :blobs, %{error: :not_uploaded}} -> {:error, :bad_request, "Import artifacts must finish uploading before the import can start"}
       {:error, :import_run, changeset} -> {:error, changeset}
-      _ -> {:error, :internal_server_error}
+      error ->
+        Logger.error("Unexpected error in start_import: #{inspect(error)}")
+        {:error, :internal_server_error}
     end
   end
 

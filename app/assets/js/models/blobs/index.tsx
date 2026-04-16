@@ -2,7 +2,7 @@ import { AxiosRequestConfig } from "axios";
 import csrftoken from "@/utils/csrf_token";
 import { createSentryAxiosClient } from "@/utils/axiosErrorReporting";
 
-import { createBlob, createAvatarBlob } from "@/api";
+import { createBlob, createAvatarBlob, markBlobUploaded } from "@/api";
 import { findImageDimensions, findVideoDimensions } from "./utils";
 
 export { useDownloadFile } from "./useDownloadFile";
@@ -51,6 +51,8 @@ async function uploadWithCreator(
   } else {
     await multipartUpload(file, url, progressCallback);
   }
+
+  await markBlobUploaded({ blobId: blob.id! });
 
   return { id: blob.id!, url: blob.url! };
 }

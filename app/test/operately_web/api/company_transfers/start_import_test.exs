@@ -114,5 +114,32 @@ defmodule OperatelyWeb.Api.CompanyTransfers.StartImportTest do
         json_blob_id: json_blob.id
       })
     end
+
+    test "requires both blobs to be marked as uploaded", ctx do
+      {:ok, json_blob} = Operately.Blobs.create_blob(%{
+        company_id: ctx.company.id,
+        author_id: ctx.member.id,
+        status: :pending,
+        filename: "import.json",
+        size: 1024,
+        content_type: "application/json"
+      })
+
+      {:ok, zip_blob} = Operately.Blobs.create_blob(%{
+        company_id: ctx.company.id,
+        author_id: ctx.member.id,
+        status: :pending,
+        filename: "import.zip",
+        size: 2048,
+        content_type: "application/zip"
+      })
+
+      assert {400, res} = mutation(ctx.conn, [:company_transfers, :start_import], %{
+        json_blob_id: json_blob.id,
+        zip_blob_id: zip_blob.id
+      })
+
+      assert res.message == "Import artifacts must finish uploading before the import can start"
+    end
   end
 end
