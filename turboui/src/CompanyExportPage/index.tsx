@@ -6,6 +6,7 @@ import { Page } from "../Page";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { ProgressBar } from "../ProgressBar";
 import { Tooltip } from "../Tooltip";
+import classNames from "../utils/classnames";
 
 export namespace CompanyExportPage {
   export interface Run {
@@ -195,20 +196,13 @@ function progressStatus(status: string) {
 }
 
 function statusClassName(status: string) {
-  const base = "inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold capitalize";
-
-  switch (status) {
-    case "completed":
-      return `${base} bg-green-100 text-green-700`;
-    case "failed":
-      return `${base} bg-red-100 text-red-700`;
-    case "running":
-      return `${base} bg-blue-100 text-blue-700`;
-    case "cancelled":
-      return `${base} bg-slate-200 text-slate-700`;
-    default:
-      return `${base} bg-amber-100 text-amber-700`;
-  }
+  return classNames("inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold capitalize", {
+    "bg-green-100 text-green-700": status === "completed",
+    "bg-red-100 text-red-700": status === "failed",
+    "bg-blue-100 text-blue-700": status === "running",
+    "bg-slate-200 text-slate-700": status === "cancelled",
+    "bg-amber-100 text-amber-700": !["completed", "failed", "running", "cancelled"].includes(status),
+  });
 }
 
 function humanizeStep(step?: string | null) {

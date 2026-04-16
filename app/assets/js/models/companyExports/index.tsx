@@ -1,12 +1,21 @@
-import { CompanyExportRun } from "@/api";
+import { CompanyImportRun } from "@/api";
+import { Paths } from "@/routes/paths";
 
 export const FEATURE_NAME = "company_transfers";
 
-export function isActiveRun(run: CompanyExportRun) {
+type SortableRun = {
+  insertedAt: string;
+};
+
+type MergeableRun = SortableRun & {
+  id: string;
+};
+
+export function isActiveRun(run: { status: string }) {
   return run.status === "pending" || run.status === "running";
 }
 
-export function sortRuns(runs: CompanyExportRun[]) {
+export function sortRuns<T extends SortableRun>(runs: T[]) {
   return [...runs].sort((a, b) => {
     const left = new Date(b.insertedAt).getTime();
     const right = new Date(a.insertedAt).getTime();
@@ -14,7 +23,14 @@ export function sortRuns(runs: CompanyExportRun[]) {
   });
 }
 
-export function mergeRun(runs: CompanyExportRun[], nextRun: CompanyExportRun) {
+export function mergeRun<T extends MergeableRun>(runs: T[], nextRun: T) {
   const filtered = runs.filter((run) => run.id !== nextRun.id);
   return sortRuns([nextRun, ...filtered]);
+}
+
+export function toImportPageRun(run: CompanyImportRun) {
+  return {
+    ...run,
+    companyPath: run.company ? Paths.companyHomePath(run.company.id) : null,
+  };
 }

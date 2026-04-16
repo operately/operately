@@ -144,6 +144,7 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
       assert PolicyRegistry.polymorphic?("updates")
       assert PolicyRegistry.polymorphic?("comments")
       assert PolicyRegistry.polymorphic?("reactions")
+      assert PolicyRegistry.polymorphic?("comment_threads")
     end
 
     test "returns false for non-polymorphic tables" do
@@ -163,6 +164,20 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
     test "returns nil for non-polymorphic tables" do
       config = PolicyRegistry.get_polymorphic_config("companies")
       assert config == nil
+    end
+  end
+
+  describe "PolicyRegistry.exception?/1" do
+    test "returns true for deferred exception tables" do
+      assert PolicyRegistry.exception?("activities")
+      assert PolicyRegistry.exception?("notifications")
+      assert PolicyRegistry.exception?("milestone_comments")
+      assert PolicyRegistry.exception?("project_review_requests")
+    end
+
+    test "returns false for normal tables" do
+      refute PolicyRegistry.exception?("companies")
+      refute PolicyRegistry.exception?("projects")
     end
   end
 
@@ -284,6 +299,11 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
       assert "companies" in tables
       assert "projects" in tables
       assert "goals" in tables
+      refute "comment_threads" in tables
+      refute "activities" in tables
+      refute "notifications" in tables
+      refute "milestone_comments" in tables
+      refute "project_review_requests" in tables
     end
 
     test "excludes system tables" do
@@ -312,7 +332,7 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
       assert metadata.name == "projects"
       assert is_list(metadata.columns)
       assert is_list(metadata.foreign_keys)
-      assert metadata.classification in [:included, :excluded, :polymorphic, :dependency_parent]
+      assert metadata.classification in [:included, :excluded, :polymorphic, :exception, :dependency_parent]
     end
 
     test "includes polymorphic config for polymorphic tables" do
@@ -338,6 +358,14 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
     test "classifies polymorphic tables" do
       assert Discovery.classify_table("updates") == :polymorphic
       assert Discovery.classify_table("comments") == :polymorphic
+      assert Discovery.classify_table("comment_threads") == :polymorphic
+    end
+
+    test "classifies deferred exception tables" do
+      assert Discovery.classify_table("activities") == :exception
+      assert Discovery.classify_table("notifications") == :exception
+      assert Discovery.classify_table("milestone_comments") == :exception
+      assert Discovery.classify_table("project_review_requests") == :exception
     end
 
     test "classifies dependency parent tables" do
@@ -356,6 +384,21 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
 
       assert result == {:ok, :all_tables_classified}
     end
+
+    test "keeps included tables closed under hard foreign keys for the minimal slice" do
+      invalid_refs =
+        PolicyRegistry.included_tables()
+        |> Enum.flat_map(fn table ->
+          Graph.get_foreign_keys(table)
+          |> Enum.reject(fn fk ->
+            classification = Discovery.classify_table(fk.references_table)
+            classification in [:included, :dependency_parent]
+          end)
+          |> Enum.map(fn fk -> {table, fk.column, fk.references_table, Discovery.classify_table(fk.references_table)} end)
+        end)
+
+      assert invalid_refs == []
+    end
   end
 
   describe "SchemaDiscovery.get_schema_summary/0" do
@@ -372,7 +415,9 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
       summary = Discovery.get_schema_summary()
 
       excluded_count = length(Map.get(summary.tables_by_classification, :excluded, []))
+      exception_count = length(Map.get(summary.tables_by_classification, :exception, []))
       assert summary.excluded == excluded_count
+      assert summary.exception == exception_count
     end
   end
 end

@@ -1,7 +1,10 @@
 defimpl OperatelyWeb.Api.Serializable, for: Operately.CompanyTransfers.ImportRun do
+  alias OperatelyWeb.Api.Serializer
+
   def serialize(run, level: _level) do
     %{
       id: run.id,
+      company: Serializer.serialize(run.company),
       company_id: run.company_id,
       requested_by_id: run.requested_by_id,
       status: to_string(run.status),
@@ -13,9 +16,9 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.CompanyTransfers.ImportRun
       zip_blob_id: run.zip_blob_id,
       error_message: run.error_message,
       validation_errors: run.validation_errors,
-      inserted_at: run.inserted_at,
-      started_at: run.started_at,
-      completed_at: run.completed_at
+      inserted_at: Serializer.serialize(run.inserted_at),
+      started_at: Serializer.serialize(run.started_at),
+      completed_at: Serializer.serialize(run.completed_at)
     }
   end
 end
