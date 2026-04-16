@@ -2,8 +2,6 @@ defmodule Operately.Okrs.Objective do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Operately.Alignments.Alignment
-
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "objectives" do
@@ -12,8 +10,6 @@ defmodule Operately.Okrs.Objective do
     belongs_to :tenet, Operately.Tenets.Tenet, foreign_key: :tenet_id
 
     has_many :key_results, Operately.Okrs.KeyResult, on_delete: :delete_all
-
-    has_one :parent, Alignment, foreign_key: :child
 
     field :description, :map
     field :name, :string
