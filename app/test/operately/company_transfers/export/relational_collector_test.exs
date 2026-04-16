@@ -3,6 +3,7 @@ defmodule Operately.CompanyTransfers.Export.RelationalCollectorTest do
 
   alias Operately.CompanyTransfers.Package.Paths
   alias Operately.CompanyTransfers.Export.RelationalCollector
+  alias Operately.CompanyTransfers.Schema.PolicyRegistry
 
   setup do
     on_exit(fn -> File.rm_rf!(Paths.root()) end)
@@ -87,18 +88,23 @@ defmodule Operately.CompanyTransfers.Export.RelationalCollectorTest do
     assert subscription["type"] == "mentioned"
   end
 
-  test "keeps empty and currently unreachable included tables present in the minimal slice", ctx do
+  test "keeps empty included tables present in the minimal slice", ctx do
     assert {:ok, collected} = RelationalCollector.collect(ctx.company.id)
 
     tables = table_map(collected)
+    included_tables = PolicyRegistry.included_tables()
+    empty_included_tables =
+      included_tables
+      |> Enum.map(&Map.fetch!(tables, &1))
+      |> Enum.filter(&(&1["row_count"] == 0))
 
     # api_tokens is now excluded, so it should not appear in the export
     refute Map.has_key?(tables, "api_tokens")
 
-    assert Map.has_key?(tables, "ownerships")
-    assert tables["ownerships"]["classification"] == "included"
-    assert tables["ownerships"]["row_count"] == 0
-    assert tables["ownerships"]["rows"] == []
+    assert Enum.all?(included_tables, &Map.has_key?(tables, &1))
+    assert Enum.all?(included_tables, &(tables[&1]["classification"] == "included"))
+    assert empty_included_tables != []
+    assert Enum.all?(empty_included_tables, &(&1["rows"] == []))
 
     assert non_empty_table_count(collected) < length(collected.tables)
     assert collected.rows_count == total_row_count(collected)
