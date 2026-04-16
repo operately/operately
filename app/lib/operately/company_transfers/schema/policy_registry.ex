@@ -102,7 +102,6 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
     "messages_boards",
     "milestone_comments",
     "notifications",
-    "ownerships",
     "people",
     "project_check_ins",
     "project_contributors",
