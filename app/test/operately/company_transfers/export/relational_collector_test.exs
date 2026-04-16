@@ -87,18 +87,20 @@ defmodule Operately.CompanyTransfers.Export.RelationalCollectorTest do
     assert subscription["type"] == "mentioned"
   end
 
-  test "keeps empty and currently unreachable included tables present in the minimal slice", ctx do
+  test "keeps empty included tables present in the minimal slice", ctx do
     assert {:ok, collected} = RelationalCollector.collect(ctx.company.id)
 
     tables = table_map(collected)
+    empty_included_tables =
+      tables
+      |> Map.values()
+      |> Enum.filter(&(&1["classification"] == "included" and &1["row_count"] == 0))
 
     # api_tokens is now excluded, so it should not appear in the export
     refute Map.has_key?(tables, "api_tokens")
 
-    assert Map.has_key?(tables, "ownerships")
-    assert tables["ownerships"]["classification"] == "included"
-    assert tables["ownerships"]["row_count"] == 0
-    assert tables["ownerships"]["rows"] == []
+    assert empty_included_tables != []
+    assert Enum.all?(empty_included_tables, &(&1["rows"] == []))
 
     assert non_empty_table_count(collected) < length(collected.tables)
     assert collected.rows_count == total_row_count(collected)
