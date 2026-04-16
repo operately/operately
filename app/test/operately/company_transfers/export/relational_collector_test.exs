@@ -3,6 +3,7 @@ defmodule Operately.CompanyTransfers.Export.RelationalCollectorTest do
 
   alias Operately.CompanyTransfers.Package.Paths
   alias Operately.CompanyTransfers.Export.RelationalCollector
+  alias Operately.CompanyTransfers.Schema.PolicyRegistry
 
   setup do
     on_exit(fn -> File.rm_rf!(Paths.root()) end)
