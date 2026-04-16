@@ -20,6 +20,7 @@ import CompanyAdminPage from "./CompanyAdminPage";
 import CompanyAdminRestoreSuspendedPeoplePage from "./CompanyAdminRestoreSuspendedPeoplePage";
 import CompanyAdminTrustedEmailDomainsPage from "./CompanyAdminTrustedEmailDomainsPage";
 import CompanyExportPage from "./CompanyExportPage";
+import CompanyImportPage from "./CompanyImportPage";
 import CompanyManageAiAgentsPage from "./CompanyManageAiAgentsPage";
 import CompanyPermissionsPage from "./CompanyPermissionsPage";
 import CompanyRenamePage from "./CompanyRenamePage";
@@ -128,6 +129,7 @@ export default {
   CompanyAdminRestoreSuspendedPeoplePage,
   CompanyAdminTrustedEmailDomainsPage,
   CompanyExportPage,
+  CompanyImportPage,
   CompanyManageAiAgentsPage,
   CompanyPermissionsPage,
   CompanyRenamePage,
