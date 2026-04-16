@@ -1,7 +1,7 @@
 import Api, { Company, CompanyImportRun } from "@/api";
 import * as Pages from "@/components/Pages";
 
-export interface LoaderResult {
+interface LoaderResult {
   importRuns: CompanyImportRun[];
   companies: Company[];
 }
