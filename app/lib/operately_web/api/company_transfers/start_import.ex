@@ -27,8 +27,9 @@ defmodule OperatelyWeb.Api.CompanyTransfers.StartImport do
   defp respond(result) do
     case result do
       {:ok, ctx} -> {:ok, %{import_run: Serializer.serialize(ctx.import_run, level: :full)}}
-      {:error, :blobs, :not_found} -> {:error, :not_found}
-      {:error, :blobs, :forbidden} -> {:error, :forbidden}
+      {:error, :blobs, %{error: :not_found}} -> {:error, :not_found}
+      {:error, :blobs, %{error: :forbidden}} -> {:error, :forbidden}
+      {:error, :blobs, %{error: :not_uploaded}} -> {:error, :bad_request, "Import artifacts must finish uploading before the import can start"}
       {:error, :import_run, changeset} -> {:error, changeset}
       error ->
         Logger.error("Unexpected error in start_import: #{inspect(error)}")
@@ -47,20 +48,20 @@ defmodule OperatelyWeb.Api.CompanyTransfers.StartImport do
       json_blob.author_id != person.id or zip_blob.author_id != person.id ->
         {:error, :forbidden}
 
+      json_blob.status != :uploaded or zip_blob.status != :uploaded ->
+        {:error, :not_uploaded}
+
       true ->
         {:ok, {json_blob, zip_blob}}
     end
   end
 
   defp create_import(account, {json_blob, zip_blob}) do
-    with {:ok, _} <- Operately.Blobs.update_blob(json_blob, %{status: :uploaded}),
-         {:ok, _} <- Operately.Blobs.update_blob(zip_blob, %{status: :uploaded}) do
-      attrs = %{
-        json_blob_id: json_blob.id,
-        zip_blob_id: zip_blob.id
-      }
+    attrs = %{
+      json_blob_id: json_blob.id,
+      zip_blob_id: zip_blob.id
+    }
 
-      CompanyTransfers.create_import_run(account, attrs)
-    end
+    CompanyTransfers.create_import_run(account, attrs)
   end
 end
