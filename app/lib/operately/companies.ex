@@ -3,7 +3,6 @@ defmodule Operately.Companies do
   alias Operately.Repo
 
   alias Operately.Companies.{AddPersonToGeneralSpace, Company}
-  alias Operately.Tenets.Tenet
   alias Operately.Access.Fetch
 
   def list_companies do
@@ -23,10 +22,6 @@ defmodule Operately.Companies do
 
   def count_companies do
     Repo.aggregate(Company, :count, :id)
-  end
-
-  def list_tenets(id) do
-    Repo.all(from t in Tenet, where: t.company_id == ^id)
   end
 
   def get_company!(id) when is_integer(id) do
