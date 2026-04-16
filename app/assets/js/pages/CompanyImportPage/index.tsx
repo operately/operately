@@ -21,7 +21,7 @@ const EMPTY_UPLOAD_STATE: CompanyImportPage.UploadedFileState = {
 };
 
 
-export function Page() {
+function Page() {
   const { importRuns, companies } = useLoadedData();
   const [runs, setRuns] = React.useState(() => CompanyExports.sortRuns(importRuns));
   const [jsonFile, setJsonFile] = React.useState<CompanyImportPage.UploadedFileState>(EMPTY_UPLOAD_STATE);
@@ -110,6 +110,8 @@ export function Page() {
         zipBlobId: zipFile.blobId,
       });
 
+      setJsonFile(EMPTY_UPLOAD_STATE);
+      setZipFile(EMPTY_UPLOAD_STATE);
       showSuccessToast("Import started", "The company is being imported in the background.");
       await refreshRuns();
     } catch {
