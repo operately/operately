@@ -53,3 +53,5 @@ testreports
 notes/
 locals3root/
 *.DS_Store
+
+.codex

@@ -7,6 +7,7 @@ defmodule OperatelyLocalMediaStorage.Plug do
   plug :dispatch
 
   get "*path" do
+    path = normalize_path(path)
     disposition = conn.query_params["disposition"] || "inline"
     filename = conn.query_params["filename"] || path
 
@@ -17,9 +18,11 @@ defmodule OperatelyLocalMediaStorage.Plug do
   end
 
   put "*path" do
+    path = normalize_path(path)
     source = conn.body_params["file"].path
     destination = "/media/#{path}"
 
+    File.mkdir_p!(Path.dirname(destination))
     :ok = File.cp(source, destination)
 
     json_response(conn, 200, %{message: "File uploaded successfully"})
@@ -52,7 +55,7 @@ defmodule OperatelyLocalMediaStorage.Plug do
     if conn.method == "OPTIONS" do
       conn
     else
-      path = conn.params["path"] && List.first(conn.params["path"])
+      path = normalize_path(conn.params["path"])
       token = conn.query_params["token"] || conn.body_params["token"]
 
       operation =
@@ -84,4 +87,7 @@ defmodule OperatelyLocalMediaStorage.Plug do
     |> String.replace("\\", "\\\\")
     |> String.replace("\"", "\\\"")
   end
+
+  defp normalize_path(path) when is_list(path), do: Enum.join(path, "/")
+  defp normalize_path(path), do: path
 end

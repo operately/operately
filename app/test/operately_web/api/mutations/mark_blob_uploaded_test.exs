@@ -50,4 +50,30 @@ defmodule OperatelyWeb.Api.Mutations.MarkBlobUploadedTest do
       assert res.message == "The requested resource was not found"
     end
   end
+
+  describe "mark_blob_uploaded for import artifacts" do
+    setup ctx do
+      ctx
+      |> Factory.add_account(:account)
+      |> Factory.log_in_account(:account)
+    end
+
+    test "allows the staging account to mark an import artifact blob as uploaded", ctx do
+      blob =
+        blob_fixture(%{
+          purpose: :company_transfer_import_artifact,
+          account_id: ctx.account.id,
+          author_id: nil,
+          company_id: nil
+        })
+
+      assert {200, res} = mutation(ctx.conn, :mark_blob_uploaded, %{blob_id: blob.id})
+
+      assert res.blob.id == Paths.blob_id(blob)
+      assert res.blob.status == "uploaded"
+
+      blob = Operately.Blobs.get_blob!(blob.id)
+      assert blob.status == :uploaded
+    end
+  end
 end

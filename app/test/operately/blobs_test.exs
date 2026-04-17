@@ -8,9 +8,10 @@ defmodule Operately.BlobsTest do
 
   setup do
     company = company_fixture()
-    person = person_fixture(company_id: company.id)
+    account = account_fixture()
+    person = person_fixture(%{company_id: company.id, account_id: account.id})
 
-    {:ok, company: company, person: person}
+    {:ok, company: company, person: person, account: account}
   end
 
   describe "blobs" do
@@ -48,6 +49,37 @@ defmodule Operately.BlobsTest do
 
     test "create_blob/1 with invalid data returns error changeset" do
       assert {:error, %Ecto.Changeset{}} = Blobs.create_blob(@invalid_attrs)
+    end
+
+    test "create_blob/1 accepts account-owned import artifact blobs", ctx do
+      valid_attrs = %{
+        purpose: :company_transfer_import_artifact,
+        account_id: ctx.account.id,
+        status: :pending,
+        filename: "import.json",
+        size: 1024,
+        content_type: "application/json"
+      }
+
+      assert {:ok, %Blob{} = blob} = Blobs.create_blob(valid_attrs)
+      assert blob.purpose == :company_transfer_import_artifact
+      assert blob.account_id == ctx.account.id
+      assert blob.company_id == nil
+      assert blob.author_id == nil
+    end
+
+    test "create_blob/1 rejects mixed company and import artifact ownership", ctx do
+      invalid_attrs = %{
+        purpose: :company_transfer_import_artifact,
+        account_id: ctx.account.id,
+        company_id: ctx.company.id,
+        status: :pending,
+        filename: "import.json",
+        size: 1024,
+        content_type: "application/json"
+      }
+
+      assert {:error, %Ecto.Changeset{}} = Blobs.create_blob(invalid_attrs)
     end
 
     test "update_blob/2 with valid data updates the blob", ctx do

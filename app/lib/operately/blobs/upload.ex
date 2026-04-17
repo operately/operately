@@ -17,6 +17,7 @@ defmodule Operately.Blobs.Upload do
 
     # Create blob record
     {:ok, blob} = Operately.Blobs.create_blob(%{
+      purpose: :company_file,
       company_id: company.id,
       author_id: author.id,
       status: :pending,

@@ -30,6 +30,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateBlob do
     Repo.transaction(fn ->
       Enum.map(files, fn file ->
         {:ok, blob} = Operately.Blobs.create_blob(%{
+          purpose: :company_file,
           company_id: person.company_id,
           author_id: person.id,
           status: :pending,
@@ -37,7 +38,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateBlob do
           size: file.size,
           content_type: file.content_type,
           width: file[:width],
-          height: file[:height],
+          height: file[:height]
         })
 
         blob
@@ -53,7 +54,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateBlob do
         id: blob.id,
         url: Operately.Blobs.Blob.url(blob),
         signed_upload_url: url,
-        upload_strategy: Operately.Blobs.Blob.upload_strategy(blob),
+        upload_strategy: Operately.Blobs.Blob.upload_strategy(blob)
       }
     end)
 

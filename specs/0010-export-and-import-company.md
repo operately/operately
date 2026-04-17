@@ -232,7 +232,7 @@ Implementation should be delivered in vertical slices. Each slice must leave the
    - Observation: download URLs are generated via `Operately.Blobs.SignedUrls` for secure, time-limited access.
    - Observation: tests use `Oban.Testing.with_testing_mode(:manual)` to prevent inline job execution and properly verify job enqueueing.
    - Observation: comprehensive test coverage in `app/test/operately_web/api/company_transfers/` validates permissions, functionality, and error cases.
-7. [ ] **PR 7: UI implementation.** Added the Company Admin export page and Lobby import page with end-to-end worker wiring:
+7. [x] **PR 7: UI implementation.** Added the Company Admin export page and Lobby import page with end-to-end worker wiring:
    - Company Admin export page: start export, view history, download artifacts, track progress
    - Lobby import page: upload JSON/ZIP files, start import, track progress, handle completion
    - Observation: use `app/assets/js/models/blobs/index.tsx` for blob uploads, following the same pattern as other file uploads in the application (e.g., `uploadFile()` and `uploadAvatarFile()`).
@@ -241,10 +241,10 @@ Implementation should be delivered in vertical slices. Each slice must leave the
    - Observation: the export page currently polls `list_export_runs` for status/progress and fetches `get_export_run` on demand when the user clicks a download action, so signed URLs are minted only when needed.
    - Observation: the current blob staging flow still depends on an existing company-scoped blob context. The PR 7 UI sets a company header when the importing account already belongs to a company, but a truly zero-company destination account will still need backend blob/auth loosening before Lobby import can be fully universal.
    - Observation: a basic feature test now proves export then import works for a fixture limited to schema-driven relational data, using browser-visible temp files materialized from the produced export blobs.
-8. [ ] **PR 8: Import artifact staging scope fix.** Decouple import-artifact blob staging from an arbitrary existing company context so Slice 1 import works for destination accounts with zero companies.
+8. [x] **PR 8: Import artifact staging scope fix.** Decouple import-artifact blob staging from an arbitrary existing company context so Slice 1 import works for destination accounts with zero companies.
    - Add a dedicated import-artifact blob creation/upload flow owned by the importing account or import run rather than `person.company_id`.
    - Remove the requirement for the Lobby import UI to send an existing `x-company-id` header just to stage JSON/ZIP files.
-   - Keep `start_import` authorization tied to the importing account / blob author and preserve cleanup of staged artifacts on failure or user delete.
+   - Keep `start_import` authorization tied to the importing account and staged import artifacts.
    - Observation: import artifacts are temporary staging files for the import workflow, not files that belong to an existing destination company and not files that belong to the not-yet-created imported company.
 
 **Slice 2 outcome:** export and import continue to work end-to-end, now with explicit polymorphic coverage and serialized ID rewriting for non-file content.
