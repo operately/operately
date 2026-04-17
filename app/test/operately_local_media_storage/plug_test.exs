@@ -66,4 +66,46 @@ defmodule OperatelyLocalMediaStorage.PlugTest do
       assert conn.resp_body == "Unauthorized"
     end
   end
+
+  describe "nested paths" do
+    test "verify_token/2 accepts upload tokens for nested paths" do
+      path = "company-transfer-import-artifacts/account/blob"
+      token = Tokens.gen_upload_token(path)
+
+      conn =
+        conn(:put, "/#{path}?token=#{token}")
+        |> Plug.Conn.fetch_query_params()
+
+      conn = %{conn | params: %{"path" => String.split(path, "/")}, body_params: %{}}
+
+      result = OperatelyLocalMediaStorage.Plug.verify_token(conn, nil)
+
+      assert result == conn
+    end
+
+    test "PUT requests upload files to nested paths" do
+      source = Path.join(System.tmp_dir!(), "local-media-upload-#{System.unique_integer([:positive])}.txt")
+      path = "company-transfer-import-artifacts/account/blob"
+      destination = "/media/#{path}"
+      token = Tokens.gen_upload_token(path)
+
+      File.write!(source, "hello")
+
+      on_exit(fn ->
+        File.rm(source)
+        File.rm(destination)
+        File.rmdir(Path.dirname(destination))
+      end)
+
+      conn =
+        conn(:put, "/#{path}?token=#{token}")
+        |> Plug.Conn.fetch_query_params()
+
+      conn = %{conn | body_params: %{"file" => %{path: source}}}
+      conn = OperatelyLocalMediaStorage.Plug.call(conn, OperatelyLocalMediaStorage.Plug.init([]))
+
+      assert conn.status == 200
+      assert File.read!(destination) == "hello"
+    end
+  end
 end

@@ -3448,6 +3448,14 @@ export interface CompaniesUpdateMembersPermissionsResult {
   success: boolean;
 }
 
+export interface CompanyTransfersCreateImportArtifactBlobsInput {
+  files?: BlobCreationInput[] | null;
+}
+
+export interface CompanyTransfersCreateImportArtifactBlobsResult {
+  blobs?: BlobCreationOutput[] | null;
+}
+
 export interface CompanyTransfersStartExportInput {}
 
 export interface CompanyTransfersStartExportResult {
@@ -4815,6 +4823,12 @@ class ApiNamespaceCompanyTransfers {
 
   async listImportRuns(input: CompanyTransfersListImportRunsInput): Promise<CompanyTransfersListImportRunsResult> {
     return this.client.get("/company_transfers/list_import_runs", input);
+  }
+
+  async createImportArtifactBlobs(
+    input: CompanyTransfersCreateImportArtifactBlobsInput,
+  ): Promise<CompanyTransfersCreateImportArtifactBlobsResult> {
+    return this.client.post("/company_transfers/create_import_artifact_blobs", input);
   }
 
   async startExport(input: CompanyTransfersStartExportInput): Promise<CompanyTransfersStartExportResult> {
@@ -6263,6 +6277,13 @@ export default {
     useGetExportRun: (input: CompanyTransfersGetExportRunInput) =>
       useQuery<CompanyTransfersGetExportRunResult>(() =>
         defaultApiClient.apiNamespaceCompanyTransfers.getExportRun(input),
+      ),
+
+    createImportArtifactBlobs: (input: CompanyTransfersCreateImportArtifactBlobsInput) =>
+      defaultApiClient.apiNamespaceCompanyTransfers.createImportArtifactBlobs(input),
+    useCreateImportArtifactBlobs: () =>
+      useMutation<CompanyTransfersCreateImportArtifactBlobsInput, CompanyTransfersCreateImportArtifactBlobsResult>(
+        (input) => defaultApiClient.apiNamespaceCompanyTransfers.createImportArtifactBlobs(input),
       ),
 
     startImport: (input: CompanyTransfersStartImportInput) =>

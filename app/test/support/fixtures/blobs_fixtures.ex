@@ -11,6 +11,7 @@ defmodule Operately.BlobsFixtures do
     {:ok, blob} =
       attrs
       |> Enum.into(%{
+        purpose: :company_file,
         filename: "some filename",
         status: :pending,
         storage_type: :local,

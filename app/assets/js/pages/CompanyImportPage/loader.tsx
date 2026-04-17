@@ -1,15 +1,17 @@
-import Api, { Company, CompanyImportRun } from "@/api";
+import Api, { CompanyImportRun } from "@/api";
+import * as Socket from "@/api/socket";
 import * as Pages from "@/components/Pages";
 
 interface LoaderResult {
   importRuns: CompanyImportRun[];
-  companies: Company[];
 }
 
 export async function loader(): Promise<LoaderResult> {
+  Api.default.setHeaders({});
+  Socket.setHeaders({});
+
   return {
     importRuns: await Api.company_transfers.listImportRuns({}).then((res) => res.importRuns),
-    companies: await Api.companies.list({}).then((res) => res.companies),
   };
 }
 

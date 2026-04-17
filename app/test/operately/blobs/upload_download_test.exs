@@ -123,7 +123,21 @@ defmodule Operately.Blobs.UploadDownloadTest do
 
       assert path == "#{blob.company_id}-#{blob.id}"
       assert String.contains?(path, "-")
-      assert String.length(path) > 10  # Should be two UUIDs joined
+      # Should be two UUIDs joined
+      assert String.length(path) > 10
+    end
+
+    test "uses account-scoped paths for import artifacts", ctx do
+      blob = blob_fixture(%{
+        purpose: :company_transfer_import_artifact,
+        account_id: ctx.account.id,
+        author_id: nil,
+        company_id: nil
+      })
+
+      path = Operately.Blobs.Blob.path(blob)
+
+      assert path == "company-transfer-import-artifacts/#{ctx.account.id}/#{blob.id}"
     end
 
     test "path is consistent across multiple calls", ctx do
