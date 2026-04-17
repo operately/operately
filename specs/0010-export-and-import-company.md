@@ -247,6 +247,12 @@ Implementation should be delivered in vertical slices. Each slice must leave the
    - Keep `start_import` authorization tied to the importing account and staged import artifacts.
    - Observation: import artifacts are temporary staging files for the import workflow, not files that belong to an existing destination company and not files that belong to the not-yet-created imported company.
 
+- [x] **DB cleanup PR.** Audit the live database for schema drift and remove stale tables and columns that no longer have a matching Ecto schema or field definition in the app.
+  - Observation: we already found this drift in `people.home_dashboard_id` and in the `dashboards` / `dashboard_panels` tables, which still existed in Postgres after their Ecto schemas had long been removed from the codebase.
+  - Scope: list all live database tables and verify that each legitimate application table still has a current Ecto schema defined in the app, excluding framework/default tables from Elixir, Phoenix, Ecto, Oban, and similar infrastructure.
+  - Scope: for legitimate application tables, compare the live database columns against the fields currently defined in the Ecto schema and identify stale columns that were removed from the code but never removed from the database.
+  - Scope: for each stale table or column that we find, decide whether it is truly dead and should be deleted, then write the cleanup migrations.
+
 **Slice 2 outcome:** export and import continue to work end-to-end, now with explicit polymorphic coverage and serialized ID rewriting for non-file content.
 
 9. [ ] **PR 9: Polymorphic audit and registry.** Audit the real schema and codebase for polymorphic associations, add explicit registry entries only for confirmed cases, and add CI coverage that fails on new unclassified polymorphic patterns.
