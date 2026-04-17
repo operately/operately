@@ -2,7 +2,7 @@ import { AxiosRequestConfig } from "axios";
 import csrftoken from "@/utils/csrf_token";
 import { createSentryAxiosClient } from "@/utils/axiosErrorReporting";
 
-import { createBlob, createAvatarBlob, markBlobUploaded } from "@/api";
+import Api, { BlobCreationInput, BlobCreationOutput, createBlob, createAvatarBlob, markBlobUploaded } from "@/api";
 import { findImageDimensions, findVideoDimensions } from "./utils";
 
 export { useDownloadFile } from "./useDownloadFile";
@@ -19,10 +19,14 @@ export async function uploadAvatarFile(file: File, progressCallback: ProgressCal
   return uploadWithCreator(file, progressCallback, createAvatarBlob);
 }
 
+export async function uploadImportArtifactFile(file: File, progressCallback: ProgressCallback): Promise<UploadResult> {
+  return uploadWithCreator(file, progressCallback, Api.company_transfers.createImportArtifactBlobs);
+}
+
 async function uploadWithCreator(
   file: File,
   progressCallback: ProgressCallback,
-  createFn: typeof createBlob,
+  createFn: (input: { files: BlobCreationInput[] }) => Promise<{ blobs?: BlobCreationOutput[] | null }>,
 ): Promise<UploadResult> {
   let dimensions = {};
   const attrs = {

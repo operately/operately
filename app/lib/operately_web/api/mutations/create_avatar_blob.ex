@@ -43,6 +43,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateAvatarBlob do
           Enum.map(files, fn file ->
             {:ok, blob} =
               Operately.Blobs.create_blob(%{
+                purpose: :company_file,
                 company_id: person.company_id,
                 author_id: person.id,
                 status: :pending,

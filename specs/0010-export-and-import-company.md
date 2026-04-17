@@ -232,7 +232,7 @@ Implementation should be delivered in vertical slices. Each slice must leave the
    - Observation: download URLs are generated via `Operately.Blobs.SignedUrls` for secure, time-limited access.
    - Observation: tests use `Oban.Testing.with_testing_mode(:manual)` to prevent inline job execution and properly verify job enqueueing.
    - Observation: comprehensive test coverage in `app/test/operately_web/api/company_transfers/` validates permissions, functionality, and error cases.
-7. [ ] **PR 7: UI implementation.** Added the Company Admin export page and Lobby import page with end-to-end worker wiring:
+7. [x] **PR 7: UI implementation.** Added the Company Admin export page and Lobby import page with end-to-end worker wiring:
    - Company Admin export page: start export, view history, download artifacts, track progress
    - Lobby import page: upload JSON/ZIP files, start import, track progress, handle completion
    - Observation: use `app/assets/js/models/blobs/index.tsx` for blob uploads, following the same pattern as other file uploads in the application (e.g., `uploadFile()` and `uploadAvatarFile()`).

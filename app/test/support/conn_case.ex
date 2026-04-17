@@ -84,6 +84,7 @@ defmodule OperatelyWeb.ConnCase do
     token = Operately.People.generate_account_session_token(account)
 
     conn
+    |> Plug.Conn.delete_req_header("x-company-id")
     |> Phoenix.ConnTest.init_test_session(%{})
     |> Plug.Conn.put_session(:account_token, token)
   end

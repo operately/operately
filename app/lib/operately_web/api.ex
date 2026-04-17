@@ -362,6 +362,7 @@ defmodule OperatelyWeb.Api do
         query(:get_import_run, OperatelyWeb.Api.CompanyTransfers.GetImportRun)
         query(:list_import_runs, OperatelyWeb.Api.CompanyTransfers.ListImportRuns)
 
+        mutation(:create_import_artifact_blobs, OperatelyWeb.Api.CompanyTransfers.CreateImportArtifactBlobs)
         mutation(:start_export, OperatelyWeb.Api.CompanyTransfers.StartExport)
         mutation(:start_import, OperatelyWeb.Api.CompanyTransfers.StartImport)
       end

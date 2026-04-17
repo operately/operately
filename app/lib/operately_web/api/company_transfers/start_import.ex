@@ -18,34 +18,49 @@ defmodule OperatelyWeb.Api.CompanyTransfers.StartImport do
   def call(conn, inputs) do
     Action.new()
     |> run(:account, fn -> find_account(conn) end)
-    |> run(:me, fn -> find_me(conn) end)
-    |> run(:blobs, fn ctx -> validate_blobs(inputs.json_blob_id, inputs.zip_blob_id, ctx.me) end)
+    |> run(:blobs, fn ctx -> validate_blobs(inputs.json_blob_id, inputs.zip_blob_id, ctx.account) end)
     |> run(:import_run, fn ctx -> create_import(ctx.account, ctx.blobs) end)
     |> respond()
   end
 
   defp respond(result) do
     case result do
-      {:ok, ctx} -> {:ok, %{import_run: Serializer.serialize(ctx.import_run, level: :full)}}
-      {:error, :blobs, %{error: :not_found}} -> {:error, :not_found}
-      {:error, :blobs, %{error: :forbidden}} -> {:error, :forbidden}
-      {:error, :blobs, %{error: :not_uploaded}} -> {:error, :bad_request, "Import artifacts must finish uploading before the import can start"}
-      {:error, :import_run, changeset} -> {:error, changeset}
+      {:ok, ctx} ->
+        {:ok, %{import_run: Serializer.serialize(ctx.import_run, level: :full)}}
+
+      {:error, :blobs, %{error: :not_found}} ->
+        {:error, :not_found}
+
+      {:error, :blobs, %{error: :forbidden}} ->
+        {:error, :forbidden}
+
+      {:error, :blobs, %{error: :invalid_purpose}} ->
+        {:error, :bad_request, "Import artifacts must be staged through the company import flow"}
+
+      {:error, :blobs, %{error: :not_uploaded}} ->
+        {:error, :bad_request, "Import artifacts must finish uploading before the import can start"}
+
+      {:error, :import_run, changeset} ->
+        {:error, changeset}
+
       error ->
         Logger.error("Unexpected error in start_import: #{inspect(error)}")
         {:error, :internal_server_error}
     end
   end
 
-  defp validate_blobs(json_blob_id, zip_blob_id, person) do
-    json_blob = Repo.get(Blob, json_blob_id) |> Repo.preload(:author)
-    zip_blob = Repo.get(Blob, zip_blob_id) |> Repo.preload(:author)
+  defp validate_blobs(json_blob_id, zip_blob_id, account) do
+    json_blob = Repo.get(Blob, json_blob_id)
+    zip_blob = Repo.get(Blob, zip_blob_id)
 
     cond do
       is_nil(json_blob) or is_nil(zip_blob) ->
         {:error, :not_found}
 
-      json_blob.author_id != person.id or zip_blob.author_id != person.id ->
+      json_blob.purpose != :company_transfer_import_artifact or zip_blob.purpose != :company_transfer_import_artifact ->
+        {:error, :invalid_purpose}
+
+      json_blob.account_id != account.id or zip_blob.account_id != account.id ->
         {:error, :forbidden}
 
       json_blob.status != :uploaded or zip_blob.status != :uploaded ->

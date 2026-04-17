@@ -15,9 +15,9 @@ defmodule OperatelyWeb.Api.Mutations.MarkBlobUploaded do
 
   def call(conn, inputs) do
     Action.new()
-    |> run(:me, fn -> find_me(conn) end)
+    |> run(:account, fn -> find_account(conn) end)
     |> run(:blob, fn -> fetch_blob(inputs.blob_id) end)
-    |> run(:permissions, fn ctx -> authorize(ctx.blob, ctx.me) end)
+    |> run(:permissions, fn ctx -> authorize(ctx.blob, ctx.account, conn.assigns[:current_person]) end)
     |> run(:updated_blob, fn ctx -> mark_uploaded(ctx.blob) end)
     |> respond()
   end
@@ -39,13 +39,23 @@ defmodule OperatelyWeb.Api.Mutations.MarkBlobUploaded do
     end
   end
 
-  defp authorize(blob, person) do
+  defp authorize(%Blob{purpose: :company_transfer_import_artifact} = blob, account, _person) do
+    if blob.account_id == account.id do
+      {:ok, :allowed}
+    else
+      {:error, :forbidden}
+    end
+  end
+
+  defp authorize(blob, _account, person) when not is_nil(person) do
     if blob.author_id == person.id do
       {:ok, :allowed}
     else
       {:error, :forbidden}
     end
   end
+
+  defp authorize(_blob, _account, _person), do: {:error, :forbidden}
 
   defp mark_uploaded(%Blob{status: :pending} = blob), do: Blobs.update_blob(blob, %{status: :uploaded})
   defp mark_uploaded(%Blob{status: :uploaded} = blob), do: {:ok, blob}
