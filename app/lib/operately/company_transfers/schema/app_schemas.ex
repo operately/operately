@@ -23,8 +23,7 @@ defmodule Operately.CompanyTransfers.Schema.AppSchemas do
 
   defp schema_for_table(table_name) when is_binary(table_name) do
     operately_modules()
-    |> Enum.filter(&schema_module?/1)
-    |> Enum.find(&(&1.__schema__(:source) == table_name))
+    |> Enum.find(&schema_module_for_table?(&1, table_name))
   end
 
   defp operately_modules do
@@ -32,6 +31,10 @@ defmodule Operately.CompanyTransfers.Schema.AppSchemas do
       {:ok, modules} -> modules
       :undefined -> []
     end
+  end
+
+  defp schema_module_for_table?(module, table_name) do
+    schema_module?(module) and module.__schema__(:source) == table_name
   end
 
   defp schema_module?(module) do
