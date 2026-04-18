@@ -14,7 +14,6 @@ defmodule Operately.Projects do
     Contributor,
     Milestone,
     ReviewRequest,
-    Document,
     KeyResource,
     CheckIn
   }
@@ -235,32 +234,6 @@ defmodule Operately.Projects do
 
   def get_control_review(project) do
     Repo.preload(project, :control_review).control_review
-  end
-
-  def list_project_documents do
-    Repo.all(Document)
-  end
-
-  def get_document!(id), do: Repo.get!(Document, id)
-
-  def create_document(attrs \\ %{}) do
-    %Document{}
-    |> Document.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  def update_document(%Document{} = document, attrs) do
-    document
-    |> Document.changeset(attrs)
-    |> Repo.update()
-  end
-
-  def delete_document(%Document{} = document) do
-    Repo.delete(document)
-  end
-
-  def change_document(%Document{} = document, attrs \\ %{}) do
-    Document.changeset(document, attrs)
   end
 
   def list_key_resources(project) do
