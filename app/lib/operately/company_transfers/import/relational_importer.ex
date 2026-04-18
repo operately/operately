@@ -6,6 +6,7 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
   alias Operately.CompanyTransfers.Export.Relational.SchemaSnapshot
   alias Operately.CompanyTransfers.Import.{AccountResolver, Package, PackageOrder, RichTextRewriter, RowDeserializer, TranslationPlan}
   alias Operately.CompanyTransfers.Import.Relational.Sql
+  alias Operately.CompanyTransfers.Schema.AppSchemas
 
   @plain_reference_registry %{
     "comment_threads" => [
@@ -77,9 +78,10 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
     columns = Enum.map(table_entry["columns"], & &1["name"])
     nullable_columns = Map.new(table_entry["columns"], &{&1["name"], &1["nullable"]})
     foreign_keys = Map.get(schema.foreign_keys, table, [])
+    map_fields = AppSchemas.map_fields_for_table(table)
 
     Enum.reduce_while(table_entry["rows"], {:ok, []}, fn row, {:ok, deferred_updates} ->
-      with {:ok, import_row, row_deferred_updates} <- build_import_row(row, table, columns, nullable_columns, foreign_keys, plan) do
+      with {:ok, import_row, row_deferred_updates} <- build_import_row(row, table, columns, nullable_columns, foreign_keys, map_fields, plan) do
         Sql.insert_row!(table, columns, import_row)
         {:cont, {:ok, deferred_updates ++ row_deferred_updates}}
       else
@@ -90,18 +92,18 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
   end
 
   # Prepares one row for insert by translating rich text mention IDs, translating IDs, and deferring later foreign keys.
-  defp build_import_row(row, table, columns, nullable_columns, foreign_keys, %TranslationPlan{} = plan) do
-    with {:ok, row} <- prepare_row(row, table, plan),
+  defp build_import_row(row, table, columns, nullable_columns, foreign_keys, map_fields, %TranslationPlan{} = plan) do
+    with {:ok, row} <- prepare_row(row, table, map_fields, plan),
          row = apply_translations(row, table, plan),
          {:ok, translated_row, deferred_updates} <- translate_foreign_keys(row, table, nullable_columns, foreign_keys, plan) do
       {:ok, Map.take(translated_row, columns), deferred_updates}
     end
   end
 
-  defp prepare_row(row, table, %TranslationPlan{} = plan) do
+  defp prepare_row(row, table, map_fields, %TranslationPlan{} = plan) do
     row
     |> RowDeserializer.deserialize_row()
-    |> RichTextRewriter.rewrite_row_mentions(table, plan)
+    |> RichTextRewriter.rewrite_row_mentions(table, plan, map_fields)
   end
 
   defp apply_translations(row, table, plan) do

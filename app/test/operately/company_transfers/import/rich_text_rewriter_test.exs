@@ -2,6 +2,7 @@ defmodule Operately.CompanyTransfers.Import.RichTextRewriterTest do
   use ExUnit.Case, async: true
 
   alias Operately.CompanyTransfers.Import.{RichTextRewriter, TranslationPlan}
+  alias Operately.CompanyTransfers.Schema.AppSchemas
   alias Operately.People.Person
   alias Operately.RichContent
   alias Operately.ShortUuid
@@ -15,7 +16,7 @@ defmodule Operately.CompanyTransfers.Import.RichTextRewriterTest do
 
     row = %{"content" => mention_doc([source_person])}
 
-    assert {:ok, rewritten} = RichTextRewriter.rewrite_row_mentions(row, "resource_documents", plan)
+    assert {:ok, rewritten} = RichTextRewriter.rewrite_row_mentions(row, "resource_documents", plan, map_fields_for("resource_documents"))
     assert RichContent.find_mentioned_ids(rewritten["content"]) == [encoded_person_id("Source Person", destination_person_id)]
   end
 
@@ -33,7 +34,7 @@ defmodule Operately.CompanyTransfers.Import.RichTextRewriterTest do
 
     row = %{"content" => mention_doc([first_source_person, second_source_person])}
 
-    assert {:ok, rewritten} = RichTextRewriter.rewrite_row_mentions(row, "resource_documents", plan)
+    assert {:ok, rewritten} = RichTextRewriter.rewrite_row_mentions(row, "resource_documents", plan, map_fields_for("resource_documents"))
 
     assert RichContent.find_mentioned_ids(rewritten["content"]) == [
              encoded_person_id("First Person", first_destination_id),
@@ -44,7 +45,7 @@ defmodule Operately.CompanyTransfers.Import.RichTextRewriterTest do
   test "leaves non-TipTap map fields unchanged" do
     row = %{"content" => %{"message" => "plain map"}}
 
-    assert {:ok, ^row} = RichTextRewriter.rewrite_row_mentions(row, "resource_documents", translation_plan(%{}))
+    assert {:ok, ^row} = RichTextRewriter.rewrite_row_mentions(row, "resource_documents", translation_plan(%{}), map_fields_for("resource_documents"))
   end
 
   test "leaves nested rich text inside wrapper maps unchanged" do
@@ -52,7 +53,7 @@ defmodule Operately.CompanyTransfers.Import.RichTextRewriterTest do
     row = %{"content" => %{"message" => mention_doc([source_person])}}
     plan = translation_plan(%{source_person.id => Ecto.UUID.generate()})
 
-    assert {:ok, rewritten} = RichTextRewriter.rewrite_row_mentions(row, "comments", plan)
+    assert {:ok, rewritten} = RichTextRewriter.rewrite_row_mentions(row, "comments", plan, map_fields_for("comments"))
     assert rewritten == row
   end
 
@@ -62,7 +63,7 @@ defmodule Operately.CompanyTransfers.Import.RichTextRewriterTest do
     row = %{"content" => mention_doc([source_person])}
 
     assert {:error, {:missing_rich_text_mention_translation, "resource_documents", "content", ^source_person_id}} =
-             RichTextRewriter.rewrite_row_mentions(row, "resource_documents", translation_plan(%{}))
+             RichTextRewriter.rewrite_row_mentions(row, "resource_documents", translation_plan(%{}), map_fields_for("resource_documents"))
   end
 
   defp person(full_name) do
@@ -80,5 +81,9 @@ defmodule Operately.CompanyTransfers.Import.RichTextRewriterTest do
 
   defp encoded_person_id(label, person_id) do
     Helpers.id_with_comments(label, ShortUuid.encode!(person_id))
+  end
+
+  defp map_fields_for(table) do
+    AppSchemas.map_fields_for_table(table)
   end
 end

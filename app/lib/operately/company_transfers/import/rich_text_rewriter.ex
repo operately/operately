@@ -6,20 +6,19 @@ defmodule Operately.CompanyTransfers.Import.RichTextRewriter do
   """
 
   alias Operately.CompanyTransfers.Import.TranslationPlan
-  alias Operately.CompanyTransfers.Schema.AppSchemas
   alias Operately.RichContent
   alias Operately.ShortUuid
   alias OperatelyWeb.Api.Helpers
 
   @doc """
-  Rewrites person mention IDs in any schema-backed `:map` field whose value is a
-  top-level TipTap document.
+  Rewrites person mention IDs in any precomputed schema-backed `:map` field whose value
+  is a top-level TipTap document.
 
   Each mention ID is decoded, translated through the import `TranslationPlan` for the
   `people` table, and written back using the app's normal encoded mention ID format.
   """
-  def rewrite_row_mentions(row, table, %TranslationPlan{} = plan) when is_map(row) and is_binary(table) do
-    Enum.reduce_while(AppSchemas.map_fields_for_table(table), {:ok, row}, fn field, {:ok, acc_row} ->
+  def rewrite_row_mentions(row, table, %TranslationPlan{} = plan, map_fields) when is_map(row) and is_binary(table) and is_list(map_fields) do
+    Enum.reduce_while(map_fields, {:ok, row}, fn field, {:ok, acc_row} ->
       rewrite_map_field(acc_row, field, table, plan)
     end)
   end
