@@ -8,7 +8,10 @@ defmodule Operately.CompanyTransfers.RoundTripTest do
   alias Operately.People.Person
   alias Operately.Projects.Project
   alias Operately.Repo
+  alias Operately.RichContent
   alias Operately.Support.CompanyTransfer.Helpers, as: Transfers
+  alias Operately.Support.RichText
+  alias OperatelyWeb.Api.Helpers
 
   setup do
     on_exit(fn -> File.rm_rf!(Paths.root()) end)
@@ -83,6 +86,16 @@ defmodule Operately.CompanyTransfers.RoundTripTest do
 
     assert table_row_counts(round_trip.source.package) == table_row_counts(round_trip.reexported.package)
     assert core_relationship_snapshot(round_trip.source.package) == core_relationship_snapshot(round_trip.reexported.package)
+
+    [source_document] = table_rows(round_trip.source.package, "resource_documents")
+    [imported_document] = table_rows(round_trip.reexported.package, "resource_documents")
+    imported_member = person_row_by_full_name(round_trip.reexported.package, ctx.member.full_name)
+
+    assert mention_labels(imported_document["content"]) == mention_labels(source_document["content"])
+    refute RichContent.find_mentioned_ids(imported_document["content"]) == RichContent.find_mentioned_ids(source_document["content"])
+
+    assert [imported_mention_id] = RichContent.find_mentioned_ids(imported_document["content"])
+    assert {:ok, imported_member["id"]} == Helpers.decode_id(imported_mention_id)
   end
 
   test "imports into a destination with unrelated companies and multiple existing accounts", ctx do
@@ -197,7 +210,10 @@ defmodule Operately.CompanyTransfers.RoundTripTest do
       |> Factory.add_messages_board(:board, :space)
       |> Factory.add_message(:message, :board)
       |> Factory.add_resource_hub(:hub, :space, :admin)
-      |> Factory.add_document(:document, :hub, author: :admin)
+
+    ctx =
+      ctx
+      |> Factory.add_document(:document, :hub, author: :admin, content: mention_doc([ctx.member]))
       |> Factory.add_link(:link, :hub, author: :admin)
 
     Factory.add_subscription(ctx, :subscription, :project, person: ctx.member, type: :mentioned)
@@ -401,6 +417,27 @@ defmodule Operately.CompanyTransfers.RoundTripTest do
     |> Map.get("rows", [])
   end
 
+  defp person_row_by_full_name(package, full_name) do
+    package
+    |> table_rows("people")
+    |> Enum.find(&(&1["full_name"] == full_name))
+    |> case do
+      nil -> raise "Person #{inspect(full_name)} not found"
+      row -> row
+    end
+  end
+
+  defp mention_doc(people) do
+    RichText.rich_text(mentioned_people: people)
+    |> Jason.decode!()
+  end
+
+  defp mention_labels(document) do
+    document
+    |> extract_mention_labels()
+    |> Enum.sort()
+  end
+
   defp find_row!(package, table_name, row_id) do
     package
     |> table_rows(table_name)
@@ -410,6 +447,20 @@ defmodule Operately.CompanyTransfers.RoundTripTest do
       row -> row
     end
   end
+
+  defp extract_mention_labels(value) when is_list(value) do
+    Enum.flat_map(value, &extract_mention_labels/1)
+  end
+
+  defp extract_mention_labels(%{"type" => "mention", "attrs" => %{"label" => label}}) when is_binary(label) do
+    [label]
+  end
+
+  defp extract_mention_labels(value) when is_map(value) do
+    Enum.flat_map(value, fn {_key, nested_value} -> extract_mention_labels(nested_value) end)
+  end
+
+  defp extract_mention_labels(_value), do: []
 
   defp demo_slice_1_data do
     data = Demo.Data.data()
@@ -426,7 +477,6 @@ defmodule Operately.CompanyTransfers.RoundTripTest do
   defp refresh_unique_tokens(package) do
     package
     |> refresh_table_tokens("invite_links")
-    |> refresh_table_tokens("invitation_tokens")
   end
 
   defp refresh_table_tokens(package, table_name) do

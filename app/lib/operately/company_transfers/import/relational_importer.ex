@@ -4,14 +4,10 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
   """
 
   alias Operately.CompanyTransfers.Export.Relational.SchemaSnapshot
-  alias Operately.CompanyTransfers.Import.{AccountResolver, Package, PackageOrder, RowDeserializer, TranslationPlan}
+  alias Operately.CompanyTransfers.Import.{AccountResolver, Package, PackageOrder, RichTextRewriter, RowDeserializer, TranslationPlan}
   alias Operately.CompanyTransfers.Import.Relational.Sql
 
   @plain_reference_registry %{
-    "alignments" => [
-      %{column: "parent", type_column: "parent_type", table_map: %{"objective" => "objectives"}},
-      %{column: "child", type_column: "child_type", table_map: %{"objective" => "objectives", "project" => "projects"}}
-    ],
     "comment_threads" => [
       %{column: "parent_id", type_column: "parent_type", table_map: %{"activity" => "activities", "project" => "projects"}}
     ],
@@ -93,20 +89,26 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
     end)
   end
 
+  # Prepares one row for insert by translating rich text mention IDs, translating IDs, and deferring later foreign keys.
   defp build_import_row(row, table, columns, nullable_columns, foreign_keys, %TranslationPlan{} = plan) do
+    with {:ok, row} <- prepare_row(row, table, plan),
+         row = apply_translations(row, table, plan),
+         {:ok, translated_row, deferred_updates} <- translate_foreign_keys(row, table, nullable_columns, foreign_keys, plan) do
+      {:ok, Map.take(translated_row, columns), deferred_updates}
+    end
+  end
+
+  defp prepare_row(row, table, %TranslationPlan{} = plan) do
     row
     |> RowDeserializer.deserialize_row()
+    |> RichTextRewriter.rewrite_row_mentions(table, plan)
+  end
+
+  defp apply_translations(row, table, plan) do
+    row
     |> translate_primary_key(table, plan)
     |> handle_company_short_id(table)
     |> translate_plain_references(table, plan)
-    |> translate_foreign_keys(table, nullable_columns, foreign_keys, plan)
-    |> then(fn
-      {:ok, translated_row, deferred_updates} ->
-        {:ok, Map.take(translated_row, columns), deferred_updates}
-
-      {:error, _reason} = error ->
-        error
-    end)
   end
 
   defp translate_primary_key(row, table, %TranslationPlan{} = plan) do

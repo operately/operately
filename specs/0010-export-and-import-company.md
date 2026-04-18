@@ -255,7 +255,7 @@ Implementation should be delivered in vertical slices. Each slice must leave the
 
 **Slice 2 outcome:** export and import continue to work end-to-end, now with explicit polymorphic coverage and serialized ID rewriting for non-file content.
 
-9. [ ] **PR 9: Polymorphic audit and registry.** Audit the real schema and codebase for polymorphic associations, add explicit registry entries only for confirmed cases, and add CI coverage that fails on new unclassified polymorphic patterns.
+9. [x] **PR 9: Polymorphic audit and registry.** Audit the real schema and codebase for polymorphic associations, add explicit registry entries only for confirmed cases, and add CI coverage that fails on new unclassified polymorphic patterns.
    - Observation: validate the real schema first; the current plan names `notifications` and `access_contexts` here as likely audit targets, not confirmed polymorphic tables.
 10. [ ] **PR 10: Serialized reference registry.** Audit JSON/map/string columns for embedded resource IDs, mentions, and ordering-state references; create a generalized serialized-reference rewrite registry rather than a blob-only registry.
    - Observation: because import always remaps IDs, this registry is required for correctness, not just completeness.
