@@ -12,26 +12,32 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
      - `accounts_tokens`, `api_tokens`, `email_activation_codes`, `invite_links` - Authentication/invitation tokens
      - `notification_email_batches`, `system_settings` - Transient
 
-  2. **Polymorphic tables** - Tables using type/id pattern:
+  2. **Polymorphic tables** - Confirmed tables using a type/id pattern:
      - `updates` - `updatable_type`/`updatable_id`
      - `comments` - `entity_type`/`entity_id`
      - `reactions` - `entity_type`/`entity_id`
+     - `comment_threads` - `parent_type`/`parent_id`
 
-  3. **Exception tables** - Known special cases deferred from the minimal slice:
+  3. **Audited type/id reference tables** - Real schema tables using a type/id pattern
+     that are not part of the confirmed polymorphic set:
+     - `activities` - legacy `resource_type`/`resource_id`
+     - `subscription_lists` - `parent_type`/`parent_id`
+
+  4. **Exception tables** - Known special cases deferred from the minimal slice:
      - `activities` - requires separate handling due to serialized references and legacy resource columns
-     - `notifications` - depends on deferred `activities`
+     - `notifications` - depends on deferred `activities`, but is not polymorphic itself
      - `milestone_comments` - depends on polymorphic `comments`
      - `project_review_requests` - depends on polymorphic `updates`
 
-  4. **Dependency parent tables** - Referenced but not company-owned:
+  5. **Dependency parent tables** - Referenced but not company-owned:
      - `accounts` - Shared across companies
      - `subscription_lists`, `subscriptions` - Referenced by multiple entities
 
-  5. **Included tables** - Normal company-owned tables to export:
+  6. **Included tables** - Normal company-owned tables to export:
      - Explicitly listed (50+ tables including `companies`, `projects`, `goals`, etc.)
      - **Must be manually maintained** - new tables will cause tests to fail until classified
 
-  6. **Rich text columns** - Columns containing JSON with blob references:
+  7. **Rich text columns** - Columns containing JSON with blob references:
      - `projects.description`, `goals.description`
      - `messages.body`, `resource_hub_documents.content`
      - And others (see module attributes for full list)
@@ -42,6 +48,7 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
   - `included?/1` - Check if table is a normal company-owned table
   - `polymorphic?/1` - Check if table uses polymorphic associations
   - `get_polymorphic_config/1` - Get type/id column names
+  - `get_type_id_reference_configs/1` - Get audited type/id column names and kinds
   - `exception?/1` - Check if table is deferred for separate handling
   - `dependency_parent?/1` - Check if table is dependency-only
   - `has_rich_text?/2` - Check if column contains rich text
@@ -76,6 +83,15 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
     "comment_threads" => %{type_column: "parent_type", id_column: "parent_id"}
   }
 
+  @typed_reference_tables %{
+    "activities" => [
+      %{type_column: "resource_type", id_column: "resource_id"}
+    ],
+    "subscription_lists" => [
+      %{type_column: "parent_type", id_column: "parent_id"}
+    ]
+  }
+
   @exception_tables [
     "activities",
     "milestone_comments",
@@ -100,16 +116,10 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
     "agent_runs",
     "blobs",
     "companies",
-    "dashboard_panels",
-    "dashboards",
     "goal_checks",
     "goal_updates",
     "goals",
     "groups",
-    "invitation_tokens",
-    "invitations",
-    "kpi_metrics",
-    "kpis",
     "members",
     "messages",
     "messages_boards",
@@ -130,8 +140,7 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
     "resource_nodes",
     "targets",
     "task_assignees",
-    "tasks",
-    "tenets"
+    "tasks"
   ]
 
   @rich_text_columns %{
@@ -168,6 +177,21 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
   end
 
   def polymorphic_tables, do: @polymorphic_tables
+
+  def get_type_id_reference_configs(table_name) when is_binary(table_name) do
+    polymorphic_configs =
+      case Map.get(@polymorphic_tables, table_name) do
+        nil -> []
+        config -> [Map.put(config, :reference_kind, :polymorphic)]
+      end
+
+    typed_reference_configs =
+      @typed_reference_tables
+      |> Map.get(table_name, [])
+      |> Enum.map(&Map.put(&1, :reference_kind, :typed_reference))
+
+    polymorphic_configs ++ typed_reference_configs
+  end
 
   def exception?(table_name) when is_binary(table_name) do
     table_name in @exception_tables

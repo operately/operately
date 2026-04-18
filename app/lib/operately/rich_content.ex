@@ -18,6 +18,9 @@ defmodule Operately.RichContent do
     |> Enum.filter(fn person -> person != nil end)
   end
 
+  def tiptap_document?(%{"type" => "doc", "content" => content}) when is_list(content), do: true
+  def tiptap_document?(_), do: false
+
   def find_persons_by_id(id) do
     with {:ok, id} <- OperatelyWeb.Api.Helpers.decode_id(id) do
       Operately.People.get_person(id)
