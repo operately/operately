@@ -187,4 +187,39 @@ defmodule Operately.RichContentTest do
     assert Enum.find(people, & &1.id == ctx.michael.id)
     assert Enum.find(people, & &1.id == ctx.john.id)
   end
+
+  describe ".tiptap_document?/1" do
+    test "returns true for an empty TipTap document" do
+      assert Operately.RichContent.tiptap_document?(%{"type" => "doc", "content" => []})
+    end
+
+    test "returns true for a TipTap document with paragraph content" do
+      assert Operately.RichContent.tiptap_document?(%{
+               "type" => "doc",
+               "content" => [%{"type" => "paragraph", "content" => [%{"type" => "text", "text" => "hello"}]}]
+             })
+    end
+
+    test "returns false for arbitrary maps" do
+      refute Operately.RichContent.tiptap_document?(%{})
+    end
+
+    test "returns false for maps whose root is not a doc" do
+      refute Operately.RichContent.tiptap_document?(%{"type" => "paragraph", "content" => []})
+    end
+
+    test "returns false when content is not a list" do
+      refute Operately.RichContent.tiptap_document?(%{"type" => "doc", "content" => %{}})
+    end
+
+    test "returns false for wrapper maps that contain a TipTap document" do
+      refute Operately.RichContent.tiptap_document?(%{
+               "message" => %{"type" => "doc", "content" => []}
+             })
+    end
+
+    test "returns false for JSON strings" do
+      refute Operately.RichContent.tiptap_document?(~s({"type":"doc","content":[]}))
+    end
+  end
 end
