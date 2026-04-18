@@ -77,21 +77,6 @@ defmodule Operately.ProjectsFixtures do
   end
 
   @doc """
-  Generate a document.
-  """
-  def document_fixture(attrs \\ %{}) do
-    {:ok, document} =
-      attrs
-      |> Enum.into(%{
-        content: %{},
-        title: "some title"
-      })
-      |> Operately.Projects.create_document()
-
-    document
-  end
-
-  @doc """
   Generate a key_resource.
   """
   def key_resource_fixture(attrs \\ %{}) do

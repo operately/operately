@@ -126,7 +126,6 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
     "people",
     "project_check_ins",
     "project_contributors",
-    "project_documents",
     "project_key_resources",
     "project_milestones",
     "project_phase_history",
