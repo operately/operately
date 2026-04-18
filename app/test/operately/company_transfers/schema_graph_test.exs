@@ -150,6 +150,10 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
     test "returns false for non-polymorphic tables" do
       refute PolicyRegistry.polymorphic?("companies")
       refute PolicyRegistry.polymorphic?("projects")
+      refute PolicyRegistry.polymorphic?("activities")
+      refute PolicyRegistry.polymorphic?("subscription_lists")
+      refute PolicyRegistry.polymorphic?("notifications")
+      refute PolicyRegistry.polymorphic?("access_contexts")
     end
   end
 
@@ -164,6 +168,29 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
     test "returns nil for non-polymorphic tables" do
       config = PolicyRegistry.get_polymorphic_config("companies")
       assert config == nil
+    end
+  end
+
+  describe "PolicyRegistry.get_type_id_reference_configs/1" do
+    test "returns config for polymorphic type/id tables" do
+      [config] = PolicyRegistry.get_type_id_reference_configs("updates")
+
+      assert config.type_column == "updatable_type"
+      assert config.id_column == "updatable_id"
+      assert config.reference_kind == :polymorphic
+    end
+
+    test "returns configs for non-polymorphic type/id tables" do
+      configs = PolicyRegistry.get_type_id_reference_configs("activities")
+
+      assert configs == [
+               %{type_column: "resource_type", id_column: "resource_id", reference_kind: :typed_reference}
+             ]
+    end
+
+    test "returns empty configs for tables without audited type/id references" do
+      assert PolicyRegistry.get_type_id_reference_configs("notifications") == []
+      assert PolicyRegistry.get_type_id_reference_configs("access_contexts") == []
     end
   end
 
@@ -340,6 +367,21 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
 
       assert metadata.classification == :polymorphic
       assert metadata.polymorphic_config.type_column == "updatable_type"
+
+      assert metadata.type_id_reference_configs == [
+               %{type_column: "updatable_type", id_column: "updatable_id", reference_kind: :polymorphic}
+             ]
+    end
+
+    test "includes audited type/id reference config for non-polymorphic tables" do
+      metadata = Discovery.get_table_metadata("activities")
+
+      assert metadata.classification == :exception
+      assert metadata.polymorphic_config == nil
+
+      assert metadata.type_id_reference_configs == [
+               %{type_column: "resource_type", id_column: "resource_id", reference_kind: :typed_reference}
+             ]
     end
 
     test "includes rich text columns" do
