@@ -257,7 +257,9 @@ Implementation should be delivered in vertical slices. Each slice must leave the
 
 9. [x] **PR 9: Polymorphic audit and registry.** Audit the real schema and codebase for polymorphic associations, add explicit registry entries only for confirmed cases, and add CI coverage that fails on new unclassified polymorphic patterns.
    - Observation: validate the real schema first; the current plan names `notifications` and `access_contexts` here as likely audit targets, not confirmed polymorphic tables.
-10. [ ] **PR 10: Serialized reference registry.** Audit JSON/map/string columns for embedded resource IDs, mentions, and ordering-state references; create a generalized serialized-reference rewrite registry rather than a blob-only registry.
+10. **PR 10: Serialized reference handling.**
+   - [x] **Part 1: Rich text mention rewriting.** Detect top-level TipTap rich text in schema-backed map fields and rewrite mentioned person IDs during import.
+   - [ ] **Part 2: Serialized reference registry.** Audit remaining JSON/map/string columns for embedded resource IDs and ordering-state references; create a generalized serialized-reference rewrite registry rather than a blob-only registry.
    - Observation: because import always remaps IDs, this registry is required for correctness, not just completeness.
 11. [ ] **PR 11: Polymorphic export/import coverage.** Add explicit collectors and import support for polymorphic tables and serialized payload rewrites, including activities, comments, reactions, updates, comment threads, and other audited cases.
 12. [ ] **PR 12: Polymorphic slice tests.** Add E2E tests showing that export/import now preserves polymorphic data and serialized references correctly.
