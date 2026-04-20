@@ -1,7 +1,9 @@
 defmodule Operately.CompanyTransfers.ImporterTest do
   use Operately.DataCase
-  import Ecto.Query, only: [from: 2]
+  import Ecto.Query, only: [from: 2, fragment: 3]
 
+  alias Operately.Activities
+  alias Operately.Activities.Activity
   alias Operately.Companies.Company
   alias Operately.CompanyTransfers
   alias Operately.CompanyTransfers.{Exporter, Importer}
@@ -11,6 +13,7 @@ defmodule Operately.CompanyTransfers.ImporterTest do
   alias Operately.People.Person
   alias Operately.Projects.Project
   alias Operately.Repo
+  alias Operately.Support.CompanyTransfer.Helpers, as: Transfers
 
   setup do
     on_exit(fn -> File.rm_rf!(Paths.root()) end)
@@ -177,6 +180,110 @@ defmodule Operately.CompanyTransfers.ImporterTest do
            }
   end
 
+  test "run/1 imports activities, preserves missing content ids, and clears untranslated comment_thread_id", ctx do
+    ctx =
+      ctx
+      |> Factory.add_company_member(:member)
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
+
+    create_transfer_activity!(ctx.creator, :project_champion_updating, %{
+      company_id: ctx.company.id,
+      space_id: ctx.space.id,
+      project_id: ctx.project.id,
+      old_champion_id: ctx.creator.id,
+      new_champion_id: ctx.member.id
+    })
+
+    missing_champion_id = Ecto.UUID.generate()
+    missing_comment_thread_id = Ecto.UUID.generate()
+
+    assert {:ok, import_run} =
+             export_and_stage_import(ctx, fn package ->
+               activity = activity_row!(package, "project_champion_updating")
+
+               Transfers.update_row(package, "activities", activity["id"], fn row ->
+                 row
+                 |> Map.put("comment_thread_id", missing_comment_thread_id)
+                 |> put_in(["content", "new_champion_id"], missing_champion_id)
+               end)
+             end)
+
+    assert {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
+    assert {:ok, completed_run} = Importer.run(import_run)
+
+    imported_project = Repo.get_by!(Project, company_id: completed_run.company_id, name: ctx.project.name)
+
+    imported_activity =
+      Repo.one!(
+        from a in Activity,
+          where: a.action == "project_champion_updating",
+          where: fragment("? ->> 'company_id' = ?", a.content, ^completed_run.company_id)
+      )
+
+    assert imported_activity.comment_thread_id == nil
+    assert imported_activity.content["project_id"] == imported_project.id
+    assert imported_activity.content["new_champion_id"] == missing_champion_id
+  end
+
+  test "run/1 fails when an activity author_id cannot be translated", ctx do
+    ctx =
+      ctx
+      |> Factory.add_company_member(:member)
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
+
+    create_transfer_activity!(ctx.creator, :project_champion_updating, %{
+      company_id: ctx.company.id,
+      space_id: ctx.space.id,
+      project_id: ctx.project.id,
+      old_champion_id: ctx.creator.id,
+      new_champion_id: ctx.member.id
+    })
+
+    missing_author_id = Ecto.UUID.generate()
+
+    assert {:ok, import_run} =
+             export_and_stage_import(ctx, fn package ->
+               activity = activity_row!(package, "project_champion_updating")
+
+               Transfers.update_row(package, "activities", activity["id"], &Map.put(&1, "author_id", missing_author_id))
+             end)
+
+    assert {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
+
+    assert {:error, {:missing_reference_translation, "activities", "author_id", "people", ^missing_author_id}} = Importer.run(import_run)
+  end
+
+  test "run/1 fails when an activity access_context_id cannot be translated", ctx do
+    ctx =
+      ctx
+      |> Factory.add_company_member(:member)
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
+
+    create_transfer_activity!(ctx.creator, :project_champion_updating, %{
+      company_id: ctx.company.id,
+      space_id: ctx.space.id,
+      project_id: ctx.project.id,
+      old_champion_id: ctx.creator.id,
+      new_champion_id: ctx.member.id
+    })
+
+    missing_access_context_id = Ecto.UUID.generate()
+
+    assert {:ok, import_run} =
+             export_and_stage_import(ctx, fn package ->
+               activity = activity_row!(package, "project_champion_updating")
+
+               Transfers.update_row(package, "activities", activity["id"], &Map.put(&1, "access_context_id", missing_access_context_id))
+             end)
+
+    assert {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
+
+    assert {:error, {:missing_reference_translation, "activities", "access_context_id", "access_contexts", ^missing_access_context_id}} = Importer.run(import_run)
+  end
+
   defp export_and_stage_import(ctx, mutate_package \\ & &1) do
     package = export_package(ctx, mutate_package)
     stage_import(ctx.account, package)
@@ -271,5 +378,26 @@ defmodule Operately.CompanyTransfers.ImporterTest do
 
   defp unique_short_id do
     1_000_000 + System.unique_integer([:positive])
+  end
+
+  defp create_transfer_activity!(author, action, content) do
+    multi =
+      Ecto.Multi.new()
+      |> Activities.insert_sync(author.id, action, fn _ -> content end, include_notification: false)
+
+    {:ok, %{updated_activity: activity}} = Repo.transaction(multi)
+    activity
+  end
+
+  defp activity_row!(package, action) do
+    package
+    |> Map.fetch!("tables")
+    |> Enum.find(&(&1["name"] == "activities"))
+    |> Map.get("rows", [])
+    |> Enum.find(&(&1["action"] == action))
+    |> case do
+      nil -> raise "Activity #{inspect(action)} not found in package"
+      row -> row
+    end
   end
 end

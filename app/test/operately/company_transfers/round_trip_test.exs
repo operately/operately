@@ -1,6 +1,7 @@
 defmodule Operately.CompanyTransfers.RoundTripTest do
   use Operately.DataCase
 
+  alias Operately.Activities
   alias Operately.Access.{Binding, Context, Group, GroupMembership}
   alias Operately.Companies.Company
   alias Operately.CompanyTransfers.Package.Paths
@@ -144,6 +145,119 @@ defmodule Operately.CompanyTransfers.RoundTripTest do
     assert Repo.aggregate(Ecto.assoc(destination_ctx.company, :people), :count, :id) == destination_people_before
     refute destination_ctx.other_dest_member.account_id in Map.values(imported_people)
     refute destination_ctx.loose_account.id in Map.values(imported_people)
+  end
+
+  test "activity export/import rewrites content ids and preserves missing serialized ids", ctx do
+    ctx =
+      ctx
+      |> Factory.add_company_member(:member)
+      |> Factory.add_company_member(:reviewer)
+      |> Factory.add_space(:space)
+      |> Factory.add_goal(:goal, :space, champion: :creator, reviewer: :reviewer)
+      |> Factory.add_goal_target(:target_one, :goal, name: "Growth")
+      |> Factory.add_goal_target(:target_two, :goal, name: "Retention")
+      |> Factory.add_goal_target(:target_three, :goal, name: "Revenue")
+      |> Factory.add_project(:project, :space, creator: :creator)
+      |> Factory.add_project_milestone(:milestone, :project)
+      |> Factory.add_resource_hub(:hub, :space, :creator)
+      |> Factory.add_folder(:folder, :hub)
+      |> Factory.add_document(:document, :hub, author: :creator)
+
+    create_transfer_activity!(ctx.creator, :project_champion_updating, %{
+      company_id: ctx.company.id,
+      space_id: ctx.space.id,
+      project_id: ctx.project.id,
+      old_champion_id: ctx.creator.id,
+      new_champion_id: ctx.member.id
+    })
+
+    create_transfer_activity!(ctx.creator, :space_members_added, %{
+      company_id: ctx.company.id,
+      space_id: ctx.space.id,
+      members: [%{person_id: ctx.member.id, person_name: ctx.member.full_name, access_level: 1}]
+    })
+
+    create_transfer_activity!(ctx.creator, :goal_editing, %{
+      company_id: ctx.company.id,
+      space_id: ctx.space.id,
+      goal_id: ctx.goal.id,
+      old_name: ctx.goal.name,
+      new_name: "#{ctx.goal.name} updated",
+      old_champion_id: ctx.creator.id,
+      new_champion_id: ctx.member.id,
+      old_reviewer_id: ctx.reviewer.id,
+      new_reviewer_id: ctx.reviewer.id,
+      added_targets: [%{id: ctx.target_one.id, name: "Growth", from: 0.0, to: 10.0, unit: "%", index: 1}],
+      updated_targets: [
+        %{
+          id: ctx.target_two.id,
+          old_name: "Retention",
+          new_name: "Retention+",
+          old_from: 0.0,
+          new_from: 1.0,
+          old_to: 5.0,
+          new_to: 6.0,
+          old_unit: "%",
+          new_unit: "%",
+          old_index: 1,
+          new_index: 2
+        }
+      ],
+      deleted_targets: [%{id: ctx.target_three.id, name: "Revenue", from: 0.0, to: 2.0, unit: "$", index: 3}]
+    })
+
+    create_transfer_activity!(ctx.creator, :resource_hub_parent_folder_edited, %{
+      company_id: ctx.company.id,
+      space_id: ctx.space.id,
+      resource_hub_id: ctx.hub.id,
+      node_id: ctx.document.node_id,
+      new_folder_id: ctx.folder.id,
+      resource_id: ctx.document.id,
+      resource_type: "document"
+    })
+
+    missing_person_id = Ecto.UUID.generate()
+    missing_email = "missing-admin-#{System.unique_integer([:positive])}@example.com"
+
+    create_transfer_activity!(ctx.creator, :company_admin_added, %{
+      company_id: ctx.company.id,
+      people: [%{id: ctx.member.id, full_name: "Missing Admin", email: missing_email}]
+    })
+
+    round_trip =
+      Transfers.round_trip!(ctx.company, ctx.account,
+        mutate_package: fn package ->
+          package
+          |> Transfers.replace_company_short_id(unique_short_id())
+          |> update_missing_admin_activity_id(missing_email, missing_person_id)
+        end
+      )
+
+    reexported_package = round_trip.reexported.package
+
+    champion_activity = activity_row!(reexported_package, "project_champion_updating")
+    space_members_activity = activity_row!(reexported_package, "space_members_added")
+    goal_editing_activity = activity_row!(reexported_package, "goal_editing")
+    parent_folder_activity = activity_row!(reexported_package, "resource_hub_parent_folder_edited")
+    missing_admin_activity = activity_row!(reexported_package, "company_admin_added", fn row -> row["content"]["people"] |> hd() |> Map.fetch!("email") == missing_email end)
+
+    imported_project = find_named_row!(reexported_package, "projects", ctx.project.name)
+    imported_member = person_row_by_full_name(reexported_package, ctx.member.full_name)
+    imported_target_one = find_named_row!(reexported_package, "targets", "Growth")
+    imported_target_two = find_named_row!(reexported_package, "targets", "Retention")
+    imported_target_three = find_named_row!(reexported_package, "targets", "Revenue")
+    [imported_document] = table_rows(reexported_package, "resource_documents")
+
+    assert table_row_counts(round_trip.imported.package)["activities"] == table_row_counts(reexported_package)["activities"]
+
+    assert champion_activity["content"]["project_id"] == imported_project["id"]
+    assert champion_activity["content"]["new_champion_id"] == imported_member["id"]
+    assert (space_members_activity["content"]["members"] |> hd() |> Map.fetch!("person_id")) == imported_member["id"]
+    assert (goal_editing_activity["content"]["added_targets"] |> hd() |> Map.fetch!("id")) == imported_target_one["id"]
+    assert (goal_editing_activity["content"]["updated_targets"] |> hd() |> Map.fetch!("id")) == imported_target_two["id"]
+    assert (goal_editing_activity["content"]["deleted_targets"] |> hd() |> Map.fetch!("id")) == imported_target_three["id"]
+    assert parent_folder_activity["content"]["resource_id"] == imported_document["id"]
+    assert (missing_admin_activity["content"]["people"] |> hd() |> Map.fetch!("id")) == missing_person_id
   end
 
   @tag ownership_timeout: 180_000
@@ -491,5 +605,44 @@ defmodule Operately.CompanyTransfers.RoundTripTest do
 
   defp unique_short_id do
     4_000_000 + System.unique_integer([:positive])
+  end
+
+  defp create_transfer_activity!(author, action, content) do
+    multi =
+      Ecto.Multi.new()
+      |> Activities.insert_sync(author.id, action, fn _ -> content end, include_notification: false)
+
+    {:ok, %{updated_activity: activity}} = Repo.transaction(multi)
+    activity
+  end
+
+  defp activity_row!(package, action, predicate \\ fn _row -> true end) do
+    package
+    |> table_rows("activities")
+    |> Enum.find(&(&1["action"] == action and predicate.(&1)))
+    |> case do
+      nil -> raise "Activity #{inspect(action)} not found"
+      row -> row
+    end
+  end
+
+  defp find_named_row!(package, table_name, name) do
+    package
+    |> table_rows(table_name)
+    |> Enum.find(&(&1["name"] == name))
+    |> case do
+      nil -> raise "Row #{inspect(name)} not found in #{table_name}"
+      row -> row
+    end
+  end
+
+  defp update_missing_admin_activity_id(package, email, missing_person_id) do
+    activity = activity_row!(package, "company_admin_added", fn row -> row["content"]["people"] |> hd() |> Map.fetch!("email") == email end)
+
+    Transfers.update_row(package, "activities", activity["id"], fn row ->
+      update_in(row, ["content", "people"], fn people ->
+        List.update_at(people, 0, &Map.put(&1, "id", missing_person_id))
+      end)
+    end)
   end
 end

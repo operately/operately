@@ -5,6 +5,7 @@ defmodule Operately.CompanyTransfers.Export.Relational.Sql do
   Public functions:
   - `ownership_path_query/2` builds the company-ownership query for a table/path pair
   - `fetch_rows_by_column!/4` fetches rows by a specific column and preserves stable ordering
+  - `fetch_rows_by_json_text_field!/5` fetches rows by a JSON text field and preserves stable ordering
   - `result_rows/1` converts raw query results into `%{"column" => value}` maps
   """
 
@@ -77,6 +78,20 @@ defmodule Operately.CompanyTransfers.Export.Relational.Sql do
     |> result_rows()
     |> load_uuid_columns(columns)
     # Keep output stable even when PostgreSQL returns `IN (...)` rows in a different order.
+    |> Enum.sort_by(&Map.get(&1, primary_key(columns)))
+  end
+
+  def fetch_rows_by_json_text_field!(_table, _json_column, _json_key, [], _columns), do: []
+
+  def fetch_rows_by_json_text_field!(table, json_column, json_key, values, columns) do
+    quoted_table = quote_identifier(table)
+    quoted_json_column = quote_identifier(json_column)
+    placeholders = Enum.map_join(2..(length(values) + 1), ", ", &"$#{&1}")
+    query = "SELECT * FROM #{quoted_table} WHERE #{quoted_json_column} ->> $1 IN (#{placeholders})"
+
+    Repo.query!(query, [json_key | values])
+    |> result_rows()
+    |> load_uuid_columns(columns)
     |> Enum.sort_by(&Map.get(&1, primary_key(columns)))
   end
 
