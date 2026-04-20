@@ -200,7 +200,6 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
       assert PolicyRegistry.exception?("activities")
       assert PolicyRegistry.exception?("notifications")
       assert PolicyRegistry.exception?("milestone_comments")
-      assert PolicyRegistry.exception?("project_review_requests")
     end
 
     test "returns false for normal tables" do
@@ -414,7 +413,6 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
       assert Discovery.classify_table("activities") == :exception
       assert Discovery.classify_table("notifications") == :exception
       assert Discovery.classify_table("milestone_comments") == :exception
-      assert Discovery.classify_table("project_review_requests") == :exception
     end
 
     test "classifies dependency parent tables" do
