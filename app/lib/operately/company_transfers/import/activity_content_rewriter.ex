@@ -125,7 +125,7 @@ defmodule Operately.CompanyTransfers.Import.ActivityContentRewriter do
   defp translate_embed_value(value, _embed, %TranslationPlan{}), do: value
 
   defp related_table(%{related: related}) do
-    if function_exported?(related, :__schema__, 1) do
+    if Code.ensure_loaded?(related) and function_exported?(related, :__schema__, 1) do
       related.__schema__(:source)
     end
   end
