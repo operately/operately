@@ -9,7 +9,7 @@ defmodule Operately.CompanyTransfers.Export.PolymorphicCollector do
   alias Operately.CompanyTransfers.Export.Relational.{SchemaSnapshot, Sql}
   alias Operately.CompanyTransfers.Schema.PolicyRegistry
 
-  @collection_order ["updates", "comment_threads", "comments", "reactions"]
+  @collection_order ["comment_threads", "comments", "reactions"]
 
   @doc """
   Collects polymorphic table rows that reference entities in the base dataset.

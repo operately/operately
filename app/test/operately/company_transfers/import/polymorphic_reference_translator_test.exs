@@ -4,14 +4,14 @@ defmodule Operately.CompanyTransfers.Import.PolymorphicReferenceTranslatorTest d
   alias Operately.CompanyTransfers.Import.{PolymorphicReferenceTranslator, TranslationPlan}
 
   test "translates a supported polymorphic reference" do
-    source_project_id = Ecto.UUID.generate()
-    destination_project_id = Ecto.UUID.generate()
+    source_thread_id = Ecto.UUID.generate()
+    destination_thread_id = Ecto.UUID.generate()
 
-    row = %{"updatable_type" => "project", "updatable_id" => source_project_id}
-    plan = translation_plan(%{"projects" => %{source_project_id => destination_project_id}})
+    row = %{"entity_type" => "comment_thread", "entity_id" => source_thread_id}
+    plan = translation_plan(%{"comment_threads" => %{source_thread_id => destination_thread_id}})
 
-    assert {:ok, rewritten} = PolymorphicReferenceTranslator.translate_row(row, "updates", plan)
-    assert rewritten["updatable_id"] == destination_project_id
+    assert {:ok, rewritten} = PolymorphicReferenceTranslator.translate_row(row, "comments", plan)
+    assert rewritten["entity_id"] == destination_thread_id
   end
 
   test "skips a row when its polymorphic parent cannot be translated" do

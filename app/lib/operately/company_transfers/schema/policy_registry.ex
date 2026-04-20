@@ -13,7 +13,6 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
      - `notification_email_batches`, `system_settings` - Transient
 
   2. **Polymorphic tables** - Confirmed tables using a type/id pattern:
-     - `updates` - `updatable_type`/`updatable_id`
      - `comments` - `entity_type`/`entity_id`
      - `reactions` - `entity_type`/`entity_id`
      - `comment_threads` - `parent_type`/`parent_id`
@@ -75,15 +74,6 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
   ]
 
   @polymorphic_tables %{
-    "updates" => %{
-      type_column: "updatable_type",
-      id_column: "updatable_id",
-      table_map: %{
-        "goal" => "goals",
-        "project" => "projects",
-        "space" => "groups"
-      }
-    },
     "comments" => %{
       type_column: "entity_type",
       id_column: "entity_id",
@@ -98,8 +88,7 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
         "resource_hub_document" => "resource_documents",
         "resource_hub_file" => "resource_files",
         "resource_hub_link" => "resource_links",
-        "space_task" => "tasks",
-        "update" => "updates"
+        "space_task" => "tasks"
       }
     },
     "reactions" => %{
@@ -115,8 +104,7 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
         "resource_hub_document" => "resource_documents",
         "resource_hub_file" => "resource_files",
         "resource_hub_link" => "resource_links",
-        "space_task" => "tasks",
-        "update" => "updates"
+        "space_task" => "tasks"
       }
     },
     "comment_threads" => %{

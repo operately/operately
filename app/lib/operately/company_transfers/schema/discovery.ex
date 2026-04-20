@@ -42,7 +42,7 @@ defmodule Operately.CompanyTransfers.Schema.Discovery do
   All tables must be explicitly classified in `PolicyRegistry`:
 
   - **`:excluded`** - System tables not exported (migrations, oban, sessions)
-  - **`:polymorphic`** - Tables using type/id pattern (comments, reactions, updates)
+  - **`:polymorphic`** - Tables using type/id pattern (comments, reactions, comment_threads)
   - **`:exception`** - Deferred special cases handled outside the minimal slice
   - **`:dependency_parent`** - Referenced but not company-owned (accounts, subscriptions)
   - **`:included`** - Normal company-owned tables to export (50+ tables)

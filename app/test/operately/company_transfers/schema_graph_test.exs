@@ -141,13 +141,13 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
 
   describe "PolicyRegistry.polymorphic?/1" do
     test "returns true for polymorphic tables" do
-      assert PolicyRegistry.polymorphic?("updates")
       assert PolicyRegistry.polymorphic?("comments")
       assert PolicyRegistry.polymorphic?("reactions")
       assert PolicyRegistry.polymorphic?("comment_threads")
     end
 
     test "returns false for non-polymorphic tables" do
+      refute PolicyRegistry.polymorphic?("updates")
       refute PolicyRegistry.polymorphic?("companies")
       refute PolicyRegistry.polymorphic?("projects")
       refute PolicyRegistry.polymorphic?("activities")
@@ -159,10 +159,12 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
 
   describe "PolicyRegistry.get_polymorphic_config/1" do
     test "returns config for polymorphic tables" do
-      config = PolicyRegistry.get_polymorphic_config("updates")
+      config = PolicyRegistry.get_polymorphic_config("comments")
 
-      assert config.type_column == "updatable_type"
-      assert config.id_column == "updatable_id"
+      assert config.type_column == "entity_type"
+      assert config.id_column == "entity_id"
+      assert config.table_map["comment_thread"] == "comment_threads"
+      refute Map.has_key?(config.table_map, "update")
     end
 
     test "returns nil for non-polymorphic tables" do
@@ -173,11 +175,12 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
 
   describe "PolicyRegistry.get_type_id_reference_configs/1" do
     test "returns config for polymorphic type/id tables" do
-      [config] = PolicyRegistry.get_type_id_reference_configs("updates")
+      [config] = PolicyRegistry.get_type_id_reference_configs("comments")
 
-      assert config.type_column == "updatable_type"
-      assert config.id_column == "updatable_id"
+      assert config.type_column == "entity_type"
+      assert config.id_column == "entity_id"
       assert config.reference_kind == :polymorphic
+      refute Map.has_key?(config.table_map, "update")
     end
 
     test "returns configs for non-polymorphic type/id tables" do
@@ -363,23 +366,14 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
     end
 
     test "includes polymorphic config for polymorphic tables" do
-      metadata = Discovery.get_table_metadata("updates")
+      metadata = Discovery.get_table_metadata("comments")
 
       assert metadata.classification == :polymorphic
-      assert metadata.polymorphic_config.type_column == "updatable_type"
-
-      assert metadata.type_id_reference_configs == [
-               %{
-                 table_map: %{
-                   "goal" => "goals",
-                   "project" => "projects",
-                   "space" => "groups"
-                 },
-                 type_column: "updatable_type",
-                 id_column: "updatable_id",
-                 reference_kind: :polymorphic
-               }
-             ]
+      assert metadata.polymorphic_config.type_column == "entity_type"
+      assert metadata.polymorphic_config.id_column == "entity_id"
+      assert metadata.polymorphic_config.table_map["comment_thread"] == "comment_threads"
+      refute Map.has_key?(metadata.polymorphic_config.table_map, "update")
+      assert metadata.type_id_reference_configs == [Map.put(metadata.polymorphic_config, :reference_kind, :polymorphic)]
     end
 
     test "includes audited type/id reference config for non-polymorphic tables" do
@@ -404,7 +398,7 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
     end
 
     test "classifies polymorphic tables" do
-      assert Discovery.classify_table("updates") == :polymorphic
+      assert Discovery.classify_table("updates") == :unclassified
       assert Discovery.classify_table("comments") == :polymorphic
       assert Discovery.classify_table("comment_threads") == :polymorphic
     end
