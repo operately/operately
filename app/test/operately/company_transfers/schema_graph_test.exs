@@ -370,7 +370,16 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
       assert metadata.polymorphic_config.type_column == "updatable_type"
 
       assert metadata.type_id_reference_configs == [
-               %{type_column: "updatable_type", id_column: "updatable_id", reference_kind: :polymorphic}
+               %{
+                 table_map: %{
+                   "goal" => "goals",
+                   "project" => "projects",
+                   "space" => "groups"
+                 },
+                 type_column: "updatable_type",
+                 id_column: "updatable_id",
+                 reference_kind: :polymorphic
+               }
              ]
     end
 
