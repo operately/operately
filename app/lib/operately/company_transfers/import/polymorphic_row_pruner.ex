@@ -9,7 +9,7 @@ defmodule Operately.CompanyTransfers.Import.PolymorphicRowPruner do
   alias Operately.CompanyTransfers.Import.Package
   alias Operately.CompanyTransfers.Schema.PolicyRegistry
 
-  @prune_order ["updates", "comment_threads", "comments", "reactions"]
+  @prune_order ["comment_threads", "comments", "reactions"]
 
   def prune(%Package{} = package) do
     initial_rows = Map.new(package.tables, &{&1["name"], Map.get(&1, "rows", [])})

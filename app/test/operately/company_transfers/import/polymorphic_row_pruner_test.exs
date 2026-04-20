@@ -7,17 +7,13 @@ defmodule Operately.CompanyTransfers.Import.PolymorphicRowPrunerTest do
     package =
       package([
         table("projects", [%{"id" => "project-1"}]),
-        table("updates", [
-          %{"id" => "update-1", "updatable_type" => "project", "updatable_id" => "project-1"},
-          %{"id" => "update-2", "updatable_type" => "project", "updatable_id" => "missing-project"}
-        ]),
         table("comment_threads", [
           %{"id" => "thread-1", "parent_type" => "project", "parent_id" => "project-1"},
           %{"id" => "thread-2", "parent_type" => "activity", "parent_id" => "missing-activity"}
         ]),
         table("comments", [
-          %{"id" => "comment-1", "entity_type" => "update", "entity_id" => "update-1"},
-          %{"id" => "comment-2", "entity_type" => "comment_thread", "entity_id" => "thread-2"}
+          %{"id" => "comment-1", "entity_type" => "comment_thread", "entity_id" => "thread-2"},
+          %{"id" => "comment-2", "entity_type" => "comment_thread", "entity_id" => "thread-1"}
         ]),
         table("reactions", [
           %{"id" => "reaction-1", "entity_type" => "comment", "entity_id" => "comment-1"},
@@ -27,12 +23,11 @@ defmodule Operately.CompanyTransfers.Import.PolymorphicRowPrunerTest do
 
     package = PolymorphicRowPruner.prune(package)
 
-    assert row_ids(package, "updates") == ["update-1"]
     assert row_ids(package, "comment_threads") == ["thread-1"]
-    assert row_ids(package, "comments") == ["comment-1"]
-    assert row_ids(package, "reactions") == ["reaction-1"]
-    assert package.manifest["rows_count"] == 5
-    assert package.manifest["tables_count"] == 5
+    assert row_ids(package, "comments") == ["comment-2"]
+    assert row_ids(package, "reactions") == ["reaction-2"]
+    assert package.manifest["rows_count"] == 4
+    assert package.manifest["tables_count"] == 4
   end
 
   defp package(tables) do
