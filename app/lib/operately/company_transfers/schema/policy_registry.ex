@@ -26,7 +26,6 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
      - `activities` - requires separate handling due to serialized references in activity content
      - `notifications` - depends on deferred `activities`, but is not polymorphic itself
      - `milestone_comments` - depends on polymorphic `comments`
-     - `project_review_requests` - depends on polymorphic `updates`
 
   5. **Dependency parent tables** - Referenced but not company-owned:
      - `accounts` - Shared across companies
@@ -140,7 +139,6 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
     "activities",
     "milestone_comments",
     "notifications",
-    "project_review_requests"
   ]
 
   @dependency_parent_tables [
