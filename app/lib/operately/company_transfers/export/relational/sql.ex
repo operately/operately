@@ -5,6 +5,7 @@ defmodule Operately.CompanyTransfers.Export.Relational.Sql do
   Public functions:
   - `ownership_path_query/2` builds the company-ownership query for a table/path pair
   - `fetch_rows_by_column!/4` fetches rows by a specific column and preserves stable ordering
+  - `fetch_rows_by_type_and_ids!/6` fetches rows by a type/id pair and preserves stable ordering
   - `fetch_rows_by_json_text_field!/5` fetches rows by a JSON text field and preserves stable ordering
   - `result_rows/1` converts raw query results into `%{"column" => value}` maps
   """
@@ -78,6 +79,23 @@ defmodule Operately.CompanyTransfers.Export.Relational.Sql do
     |> result_rows()
     |> load_uuid_columns(columns)
     # Keep output stable even when PostgreSQL returns `IN (...)` rows in a different order.
+    |> Enum.sort_by(&Map.get(&1, primary_key(columns)))
+  end
+
+  def fetch_rows_by_type_and_ids!(_table, _type_column, _type_value, _id_column, [], _columns), do: []
+
+  def fetch_rows_by_type_and_ids!(table, type_column, type_value, id_column, values, columns) do
+    quoted_table = quote_identifier(table)
+    quoted_type_column = quote_identifier(type_column)
+    quoted_id_column = quote_identifier(id_column)
+    placeholders = Enum.map_join(2..(length(values) + 1), ", ", &"$#{&1}")
+    id_column_type = lookup_column_type(columns, id_column)
+    params = [type_value | dump_query_values(values, id_column_type, id_column)]
+    query = "SELECT * FROM #{quoted_table} WHERE #{quoted_type_column} = $1 AND #{quoted_id_column} IN (#{placeholders})"
+
+    Repo.query!(query, params)
+    |> result_rows()
+    |> load_uuid_columns(columns)
     |> Enum.sort_by(&Map.get(&1, primary_key(columns)))
   end
 

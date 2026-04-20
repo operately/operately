@@ -4,22 +4,23 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
   """
 
   alias Operately.CompanyTransfers.Export.Relational.SchemaSnapshot
+
   alias Operately.CompanyTransfers.Import.{
     AccountResolver,
     ActivityContentRewriter,
     Package,
     PackageOrder,
+    PolymorphicReferenceTranslator,
+    PolymorphicRowPruner,
     RichTextRewriter,
     RowDeserializer,
-    TranslationPlan,
+    TranslationPlan
   }
+
   alias Operately.CompanyTransfers.Import.Relational.Sql
   alias Operately.CompanyTransfers.Schema.AppSchemas
 
   @plain_reference_registry %{
-    "comment_threads" => [
-      %{column: "parent_id", type_column: "parent_type", table_map: %{"activity" => "activities", "project" => "projects"}}
-    ],
     "subscription_lists" => [
       %{
         column: "parent_id",
@@ -43,7 +44,11 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
 
   def import(%Package{} = package) do
     schema = SchemaSnapshot.load()
-    package = PackageOrder.reorder_for_insert(package, schema)
+
+    package =
+      package
+      |> PolymorphicRowPruner.prune()
+      |> PackageOrder.reorder_for_insert(schema)
 
     with {:ok, account_resolution} <- AccountResolver.resolve(package),
          plan = TranslationPlan.build(package, account_resolution.mapping),
@@ -89,20 +94,25 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
     map_fields = AppSchemas.map_fields_for_table(table)
 
     Enum.reduce_while(table_entry["rows"], {:ok, []}, fn row, {:ok, deferred_updates} ->
-      with {:ok, import_row, row_deferred_updates} <- build_import_row(row, table, columns, nullable_columns, foreign_keys, map_fields, plan) do
-        Sql.insert_row!(table, columns, import_row)
-        {:cont, {:ok, deferred_updates ++ row_deferred_updates}}
-      else
+      case build_import_row(row, table, columns, nullable_columns, foreign_keys, map_fields, plan) do
+        {:ok, import_row, row_deferred_updates} ->
+          Sql.insert_row!(table, columns, import_row)
+          {:cont, {:ok, deferred_updates ++ row_deferred_updates}}
+
+        {:skip, _reason} ->
+          {:cont, {:ok, deferred_updates}}
+
         {:error, _reason} = error ->
           {:halt, error}
       end
     end)
   end
 
-  # Prepares one row for insert by translating rich text mention IDs, translating IDs, and deferring later foreign keys.
+  # Prepares one row for insert by rewriting serialized content, translating IDs,
+  # and deferring later foreign keys.
   defp build_import_row(row, table, columns, nullable_columns, foreign_keys, map_fields, %TranslationPlan{} = plan) do
     with {:ok, row} <- prepare_row(row, table, map_fields, plan),
-         row = apply_translations(row, table, plan),
+         {:ok, row} <- apply_translations(row, table, plan),
          {:ok, translated_row, deferred_updates} <- translate_foreign_keys(row, table, nullable_columns, foreign_keys, plan) do
       {:ok, Map.take(translated_row, columns), deferred_updates}
     end
@@ -122,7 +132,11 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
     row
     |> translate_primary_key(table, plan)
     |> handle_company_short_id(table)
-    |> translate_plain_references(table, plan)
+    |> PolymorphicReferenceTranslator.translate_row(table, plan)
+    |> case do
+      {:ok, row} -> {:ok, translate_plain_references(row, table, plan)}
+      other -> other
+    end
   end
 
   defp translate_primary_key(row, table, %TranslationPlan{} = plan) do
@@ -161,6 +175,7 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
     Operately.Repo.exists?(from c in Company, where: c.short_id == ^short_id)
   end
 
+  # Translates typed references stored outside normal foreign keys.
   defp translate_plain_references(row, table, %TranslationPlan{} = plan) do
     Enum.reduce(Map.get(@plain_reference_registry, table, []), row, fn config, acc ->
       translate_plain_reference(acc, config, plan)
