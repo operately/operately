@@ -69,9 +69,7 @@ defmodule Operately.Activities do
   end
 
   def cast_content(activity) do
-    module = find_module("Operately.Activities.Content", activity.action)
-
-    if module do
+    if module = content_module(activity.action) do
       changeset = module.cast_all_fields(activity.content)
       casted = Ecto.Changeset.apply_changes(changeset)
 
@@ -82,7 +80,7 @@ defmodule Operately.Activities do
   end
 
   def build_content(action, params) do
-    module = find_module("Operately.Activities.Content", action)
+    module = content_module!(action)
     changeset = module.changeset(params)
 
     if changeset.valid? do
@@ -96,13 +94,24 @@ defmodule Operately.Activities do
     end
   end
 
-  defp find_module(base, action) when is_atom(action) do
-    find_module(base, Atom.to_string(action))
+  def content_module(action) when is_atom(action) do
+    content_module(Atom.to_string(action))
   end
 
-  defp find_module(base, action) when is_binary(action) do
-    full_module_name = "Elixir.#{base}.#{Macro.camelize(action)}"
-    String.to_existing_atom(full_module_name)
+  def content_module(action) when is_binary(action) do
+    full_module_name = "Elixir.Operately.Activities.Content.#{Macro.camelize(action)}"
+
+    try do
+      String.to_existing_atom(full_module_name)
+    rescue
+      ArgumentError -> nil
+    end
   end
 
+  defp content_module!(action) do
+    case content_module(action) do
+      nil -> raise ArgumentError, "Unknown activity action: #{inspect(action)}"
+      module -> module
+    end
+  end
 end

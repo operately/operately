@@ -3,12 +3,17 @@ defmodule Operately.CompanyTransfers.Export.Relational.PackageTables do
   alias Operately.CompanyTransfers.Export.RowSerializer
   alias Operately.CompanyTransfers.Schema.TopologicalSort
 
-  def build(%SchemaSnapshot{} = schema, included_rows, dependency_rows) when is_map(included_rows) and is_map(dependency_rows) do
+  def build(%SchemaSnapshot{} = schema, included_rows, dependency_rows, custom_rows \\ %{})
+      when is_map(included_rows) and is_map(dependency_rows) and is_map(custom_rows) do
     included_tables = SchemaSnapshot.included_tables(schema)
-    dependency_tables = Map.keys(dependency_rows)
-    selected_tables = Enum.uniq(included_tables ++ dependency_tables)
+    extra_tables = Map.keys(dependency_rows) ++ Map.keys(custom_rows)
+    selected_tables = Enum.uniq(included_tables ++ extra_tables)
     ordered_tables = sort_tables(selected_tables, schema.foreign_keys)
-    row_map = Map.merge(Map.new(included_tables, &{&1, Map.get(included_rows, &1, [])}), dependency_rows)
+    row_map =
+      included_tables
+      |> Map.new(&{&1, Map.get(included_rows, &1, [])})
+      |> Map.merge(dependency_rows)
+      |> Map.merge(custom_rows)
 
     tables =
       Enum.map(ordered_tables, fn table ->

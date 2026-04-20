@@ -23,9 +23,6 @@ defmodule Operately.Activities.Activity do
     field :action, :string
     field :content, :map
 
-    field :resource_id, :binary_id
-    field :resource_type, :string
-
     # populated with after load hooks
     field :notifications, :any, virtual: true, default: []
     field :permissions, :any, virtual: true
@@ -40,7 +37,8 @@ defmodule Operately.Activities.Activity do
   end
 
   def changeset(activity, attrs) do
-    activity |> cast(attrs, [:author_id, :action, :content, :comment_thread_id, :access_context_id])
+    activity
+    |> cast(attrs, [:author_id, :action, :content, :comment_thread_id, :access_context_id])
   end
 
   def deprecated_actions, do: @deprecated_actions
