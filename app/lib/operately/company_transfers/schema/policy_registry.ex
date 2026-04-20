@@ -76,10 +76,58 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
   ]
 
   @polymorphic_tables %{
-    "updates" => %{type_column: "updatable_type", id_column: "updatable_id"},
-    "comments" => %{type_column: "entity_type", id_column: "entity_id"},
-    "reactions" => %{type_column: "entity_type", id_column: "entity_id"},
-    "comment_threads" => %{type_column: "parent_type", id_column: "parent_id"}
+    "updates" => %{
+      type_column: "updatable_type",
+      id_column: "updatable_id",
+      table_map: %{
+        "goal" => "goals",
+        "project" => "projects",
+        "space" => "groups"
+      }
+    },
+    "comments" => %{
+      type_column: "entity_type",
+      id_column: "entity_id",
+      table_map: %{
+        "comment_thread" => "comment_threads",
+        "goal_update" => "goal_updates",
+        "message" => "messages",
+        "project_check_in" => "project_check_ins",
+        "project_milestone" => "project_milestones",
+        "project_retrospective" => "project_retrospectives",
+        "project_task" => "tasks",
+        "resource_hub_document" => "resource_documents",
+        "resource_hub_file" => "resource_files",
+        "resource_hub_link" => "resource_links",
+        "space_task" => "tasks",
+        "update" => "updates"
+      }
+    },
+    "reactions" => %{
+      type_column: "entity_type",
+      id_column: "entity_id",
+      table_map: %{
+        "comment" => "comments",
+        "comment_thread" => "comment_threads",
+        "goal_update" => "goal_updates",
+        "message" => "messages",
+        "project_check_in" => "project_check_ins",
+        "project_retrospective" => "project_retrospectives",
+        "resource_hub_document" => "resource_documents",
+        "resource_hub_file" => "resource_files",
+        "resource_hub_link" => "resource_links",
+        "space_task" => "tasks",
+        "update" => "updates"
+      }
+    },
+    "comment_threads" => %{
+      type_column: "parent_type",
+      id_column: "parent_id",
+      table_map: %{
+        "activity" => "activities",
+        "project" => "projects"
+      }
+    }
   }
 
   @typed_reference_tables %{
