@@ -21,7 +21,7 @@ defmodule Operately.CommentsTest do
       comment_attrs = %{
         author_id: person.id,
         content: %{
-          "message" => Operately.UpdatesFixtures.rich_text_fixture("hello world")
+          "message" => Operately.Support.RichText.rich_text("hello world")
         }
       }
 
