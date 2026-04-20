@@ -4,6 +4,7 @@ defmodule Operately.Data.Change004CreateProjectCheckinsFromUpdates do
   alias Operately.Repo
   alias Operately.Activities.Activity
   alias Ecto.Multi
+  alias __MODULE__.Update
 
   def run do
     activities = Repo.all(from a in Activity, where: a.action == "project_status_update_submitted")
@@ -18,7 +19,7 @@ defmodule Operately.Data.Change004CreateProjectCheckinsFromUpdates do
 
     IO.puts "Creating project check-in for status update #{status_update_id}"
 
-    update = Repo.get!(Operately.Updates.Update, status_update_id)
+    update = Repo.get!(Update, status_update_id)
 
     IO.puts "Found update from #{update.inserted_at}"
 
@@ -59,11 +60,25 @@ defmodule Operately.Data.Change004CreateProjectCheckinsFromUpdates do
 
   def calculate_new_status(old_status) do
     case old_status do
-      "on_track" -> "on_track"
-      "at_risk" -> "caution"
-      "off_track" -> "issue"
-      "paused" -> "on_track"
+      "on_track" -> :on_track
+      "at_risk" -> :caution
+      "off_track" -> :off_track
+      "paused" -> :on_track
       _ -> raise "Unknown status: #{old_status}"
+    end
+  end
+
+  defmodule Update do
+    use Operately.Schema
+
+    schema "updates" do
+      field :author_id, :binary_id
+      field :updatable_id, Ecto.UUID
+      field :content, :map
+      field :acknowledging_person_id, :binary_id
+      field :acknowledged_at, :utc_datetime
+
+      timestamps()
     end
   end
 end
