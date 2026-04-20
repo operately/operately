@@ -4,7 +4,15 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
   """
 
   alias Operately.CompanyTransfers.Export.Relational.SchemaSnapshot
-  alias Operately.CompanyTransfers.Import.{AccountResolver, Package, PackageOrder, RichTextRewriter, RowDeserializer, TranslationPlan}
+  alias Operately.CompanyTransfers.Import.{
+    AccountResolver,
+    ActivityContentRewriter,
+    Package,
+    PackageOrder,
+    RichTextRewriter,
+    RowDeserializer,
+    TranslationPlan,
+  }
   alias Operately.CompanyTransfers.Import.Relational.Sql
   alias Operately.CompanyTransfers.Schema.AppSchemas
 
@@ -101,9 +109,13 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
   end
 
   defp prepare_row(row, table, map_fields, %TranslationPlan{} = plan) do
-    row
-    |> RowDeserializer.deserialize_row()
-    |> RichTextRewriter.rewrite_row_mentions(table, plan, map_fields)
+    with {:ok, row} <-
+           row
+           |> RowDeserializer.deserialize_row()
+           |> ActivityContentRewriter.rewrite_row_content(table, plan),
+         {:ok, row} <- RichTextRewriter.rewrite_row_mentions(row, table, plan, map_fields) do
+      {:ok, row}
+    end
   end
 
   defp apply_translations(row, table, plan) do
@@ -185,7 +197,7 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
         source_id ->
           case TranslationPlan.translate(plan, fk.references_table, source_id) do
             nil ->
-              {:halt, {:error, {:missing_reference_translation, table, fk.column, fk.references_table, source_id}}}
+              handle_missing_reference_translation(table, fk, acc_row, deferred_updates, source_id)
 
             translated_id ->
               if defer_foreign_key?(table, fk, nullable_columns, order_index) do
@@ -197,6 +209,17 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
           end
       end
     end)
+  end
+
+  # Temporary until comment threads are included in company transfers. Activities
+  # can point at threads that were intentionally not imported, so we clear the FK
+  # instead of failing the whole import.
+  defp handle_missing_reference_translation("activities", %{column: "comment_thread_id"}, acc_row, deferred_updates, _source_id) do
+    {:cont, {:ok, Map.put(acc_row, "comment_thread_id", nil), deferred_updates}}
+  end
+
+  defp handle_missing_reference_translation(table, fk, _acc_row, _deferred_updates, source_id) do
+    {:halt, {:error, {:missing_reference_translation, table, fk.column, fk.references_table, source_id}}}
   end
 
   defp defer_foreign_key?(table, fk, nullable_columns, order_index) do

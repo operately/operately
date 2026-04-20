@@ -20,11 +20,10 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
 
   3. **Audited type/id reference tables** - Real schema tables using a type/id pattern
      that are not part of the confirmed polymorphic set:
-     - `activities` - legacy `resource_type`/`resource_id`
      - `subscription_lists` - `parent_type`/`parent_id`
 
   4. **Exception tables** - Known special cases deferred from the minimal slice:
-     - `activities` - requires separate handling due to serialized references and legacy resource columns
+     - `activities` - requires separate handling due to serialized references in activity content
      - `notifications` - depends on deferred `activities`, but is not polymorphic itself
      - `milestone_comments` - depends on polymorphic `comments`
      - `project_review_requests` - depends on polymorphic `updates`
@@ -84,9 +83,6 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
   }
 
   @typed_reference_tables %{
-    "activities" => [
-      %{type_column: "resource_type", id_column: "resource_id"}
-    ],
     "subscription_lists" => [
       %{type_column: "parent_type", id_column: "parent_id"}
     ]

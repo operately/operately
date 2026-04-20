@@ -181,14 +181,15 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
     end
 
     test "returns configs for non-polymorphic type/id tables" do
-      configs = PolicyRegistry.get_type_id_reference_configs("activities")
+      configs = PolicyRegistry.get_type_id_reference_configs("subscription_lists")
 
       assert configs == [
-               %{type_column: "resource_type", id_column: "resource_id", reference_kind: :typed_reference}
+               %{type_column: "parent_type", id_column: "parent_id", reference_kind: :typed_reference}
              ]
     end
 
     test "returns empty configs for tables without audited type/id references" do
+      assert PolicyRegistry.get_type_id_reference_configs("activities") == []
       assert PolicyRegistry.get_type_id_reference_configs("notifications") == []
       assert PolicyRegistry.get_type_id_reference_configs("access_contexts") == []
     end
@@ -378,10 +379,7 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
 
       assert metadata.classification == :exception
       assert metadata.polymorphic_config == nil
-
-      assert metadata.type_id_reference_configs == [
-               %{type_column: "resource_type", id_column: "resource_id", reference_kind: :typed_reference}
-             ]
+      assert metadata.type_id_reference_configs == []
     end
 
     test "includes rich text columns" do
