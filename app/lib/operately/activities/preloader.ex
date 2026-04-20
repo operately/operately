@@ -10,7 +10,6 @@ defmodule Operately.Activities.Preloader do
 
   def preload(activities) when is_list(activities) do
     activities
-    |> preload(Operately.Updates.Update)
     |> preload(Operately.People.Person)
     |> preload(Operately.Goals.Goal)
     |> preload(Operately.Goals.Update)

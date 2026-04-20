@@ -3,7 +3,6 @@ defmodule Operately.Updates.Comment do
   import Ecto.Changeset
 
   schema "comments" do
-    belongs_to :update, Operately.Updates.Update
     belongs_to :author, Operately.People.Person
 
     field :entity_id, Ecto.UUID

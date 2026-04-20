@@ -6,62 +6,11 @@ defmodule Operately.Updates do
   import Ecto.Query, warn: false
 
   alias Operately.Activities
-  alias Operately.Updates.Update
   alias Operately.Access.Fetch
 
   alias Operately.Repo
-  alias Ecto.Multi
-
-  def list_updates do
-    Repo.all(Update)
-  end
-
-  def list_updates(updatable_id, updatable_type, update_type \\ nil) do
-    query =
-      from u in Update,
-        where: u.updatable_id == ^updatable_id,
-        where: u.updatable_type == ^updatable_type,
-        order_by: [desc: u.inserted_at]
-
-    query =
-      case update_type do
-        nil -> query
-        _ -> from u in query, where: u.type == ^update_type
-      end
-
-    Repo.all(query)
-  end
-
-  def get_update!(id), do: Repo.get!(Update, id)
-
-  def create_update(attrs \\ %{}) do
-    %Update{} |> Update.changeset(attrs) |> Repo.insert()
-  end
-
-  def update_update(%Update{} = update, attrs) do
-    update
-    |> Update.changeset(attrs)
-    |> Repo.update()
-  end
-
-  def delete_update(%Update{} = update) do
-    Repo.delete(update)
-  end
-
-  def change_update(%Update{} = update, attrs \\ %{}) do
-    Update.changeset(update, attrs)
-  end
 
   alias Operately.Updates.Comment
-
-  def list_comments(update_id) do
-    query =
-      from c in Comment,
-        where: c.update_id == ^update_id,
-        order_by: [asc: c.inserted_at]
-
-    Repo.all(query)
-  end
 
   def list_comments(entity_id, entity_type) do
     query =
@@ -190,46 +139,6 @@ defmodule Operately.Updates do
     changeset = Comment.changeset(attrs)
 
     Repo.insert(changeset)
-  end
-
-  def create_comment(author, update, content) do
-    changeset =
-      Comment.changeset(%{
-        author_id: author.id,
-        update_id: update.id,
-        content: %{"message" => content}
-      })
-
-    Multi.new()
-    |> Multi.insert(:comment, changeset)
-    |> then(fn multi ->
-      case update.type do
-        :project_discussion ->
-          Activities.insert_sync(multi, author.id, :discussion_comment_submitted, fn changes ->
-            %{
-              company_id: author.company_id,
-              space_id: update.updatable_id,
-              discussion_id: update.id,
-              comment_id: changes.comment.id
-            }
-          end)
-
-        :status_update ->
-          Activities.insert_sync(multi, author.id, :project_status_update_commented, fn changes ->
-            %{
-              company_id: author.company_id,
-              project_id: update.updatable_id,
-              update_id: update.id,
-              comment_id: changes.comment.id
-            }
-          end)
-
-        _ ->
-          raise "Unknown update type"
-      end
-    end)
-    |> Repo.transaction()
-    |> Repo.extract_result(:comment)
   end
 
   def update_comment(%Comment{} = comment, attrs) do
