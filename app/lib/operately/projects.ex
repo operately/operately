@@ -13,7 +13,6 @@ defmodule Operately.Projects do
     PhaseHistory,
     Contributor,
     Milestone,
-    ReviewRequest,
     KeyResource,
     CheckIn
   }
@@ -320,35 +319,6 @@ defmodule Operately.Projects do
 
       phase
     end)
-  end
-
-  def list_project_review_requests do
-    Repo.all(ReviewRequest)
-  end
-
-  def list_project_review_requests(project) do
-    Repo.all(from rr in ReviewRequest, where: rr.project_id == ^project.id)
-  end
-
-  def list_pending_project_review_requests(project) do
-    Repo.all(from rr in ReviewRequest, where: rr.project_id == ^project.id, where: rr.status == ^:pending)
-  end
-
-  def get_review_request!(id), do: Repo.get!(ReviewRequest, id)
-  def get_review_request(id), do: {:ok, Repo.get(ReviewRequest, id)}
-
-  def update_review_request(%ReviewRequest{} = review_request, attrs) do
-    review_request
-    |> ReviewRequest.changeset(attrs)
-    |> Repo.update()
-  end
-
-  def delete_review_request(%ReviewRequest{} = review_request) do
-    Repo.delete(review_request)
-  end
-
-  def change_review_request(%ReviewRequest{} = review_request, attrs \\ %{}) do
-    ReviewRequest.changeset(review_request, attrs)
   end
 
   def outdated?(project) do
