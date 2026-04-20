@@ -605,8 +605,6 @@ defmodule OperatelyWeb.Api.Types do
     field :id, :string, null: false
     field? :scope_type, :string, null: true
     field? :scope_id, :string, null: true
-    field? :resource_id, :string, null: true
-    field? :resource_type, :string, null: true
     field :action, :string, null: false
     field :inserted_at, :datetime, null: false
     field? :updated_at, :datetime, null: true
