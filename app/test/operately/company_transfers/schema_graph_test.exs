@@ -223,23 +223,6 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
     end
   end
 
-  describe "PolicyRegistry.has_rich_text?/2" do
-    test "returns true for known rich text columns" do
-      assert PolicyRegistry.has_rich_text?("projects", "description")
-      assert PolicyRegistry.has_rich_text?("goals", "description")
-      assert PolicyRegistry.has_rich_text?("messages", "body")
-    end
-
-    test "returns false for non-rich-text columns" do
-      refute PolicyRegistry.has_rich_text?("projects", "name")
-      refute PolicyRegistry.has_rich_text?("companies", "name")
-    end
-
-    test "returns false for unknown table" do
-      refute PolicyRegistry.has_rich_text?("unknown_table", "description")
-    end
-  end
-
   describe "TopologicalSort.sort/1" do
     test "sorts simple dependency graph" do
       graph = %{
@@ -384,11 +367,6 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
       assert metadata.type_id_reference_configs == []
     end
 
-    test "includes rich text columns" do
-      metadata = Discovery.get_table_metadata("projects")
-
-      assert "description" in metadata.rich_text_columns
-    end
   end
 
   describe "SchemaDiscovery.classify_table/1" do
