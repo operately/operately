@@ -12,31 +12,33 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
      - `accounts_tokens`, `api_tokens`, `email_activation_codes`, `invite_links` - Authentication/invitation tokens
      - `notification_email_batches`, `system_settings` - Transient
 
-  2. **Polymorphic tables** - Confirmed tables using a type/id pattern:
+  2. **Polymorphic tables** - Tables whose own rows are discovered through a type/id
+     reference to already-exported parent rows:
      - `comments` - `entity_type`/`entity_id`
      - `reactions` - `entity_type`/`entity_id`
      - `comment_threads` - `parent_type`/`parent_id`
 
-  3. **Audited type/id reference tables** - Real schema tables using a type/id pattern
-     that are not part of the confirmed polymorphic set:
+  3. **Typed reference tables** - Tables that contain a type/id pair which must be
+     translated on import, but are discovered some other way during export:
      - `subscription_lists` - `parent_type`/`parent_id`
 
   4. **Exception tables** - Known special cases deferred from the minimal slice:
      - `activities` - requires separate handling due to serialized references in activity content
      - `notifications` - depends on deferred `activities`, but is not polymorphic itself
 
-  5. **Dependency parent tables** - Referenced but not company-owned:
+  5. **Dependency parent tables** - Referenced by exported rows through normal foreign
+     keys, but not company-owned themselves:
      - `accounts` - Shared across companies
      - `subscription_lists`, `subscriptions` - Referenced by multiple entities
+
+     A table can belong to both category 3 and category 5. `subscription_lists` is the
+     main example:
+     - export discovers it as a dependency parent through `subscription_list_id`
+     - import still needs to translate its own `parent_type`/`parent_id`
 
   6. **Included tables** - Normal company-owned tables to export:
      - Explicitly listed (50+ tables including `companies`, `projects`, `goals`, etc.)
      - **Must be manually maintained** - new tables will cause tests to fail until classified
-
-  7. **Rich text columns** - Columns containing JSON with blob references:
-     - `projects.description`, `goals.description`
-     - `messages.body`, `resource_hub_documents.content`
-     - And others (see module attributes for full list)
 
   ## Key Functions
 
@@ -44,10 +46,9 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
   - `included?/1` - Check if table is a normal company-owned table
   - `polymorphic?/1` - Check if table uses polymorphic associations
   - `get_polymorphic_config/1` - Get type/id column names
-  - `get_type_id_reference_configs/1` - Get audited type/id column names and kinds
+  - `get_type_id_reference_configs/1` - Get type/id columns that need import-time translation
   - `exception?/1` - Check if table is deferred for separate handling
   - `dependency_parent?/1` - Check if table is dependency-only
-  - `has_rich_text?/2` - Check if column contains rich text
 
   ## Safety Mechanism
 
@@ -171,19 +172,6 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
     "tasks"
   ]
 
-  @rich_text_columns %{
-    "projects" => ["description"],
-    "goals" => ["description"],
-    "project_check_ins" => ["description"],
-    "goal_updates" => ["content"],
-    "messages" => ["body"],
-    "resource_hub_documents" => ["content"],
-    "milestones" => ["description"],
-    "tasks" => ["description"],
-    "project_retrospectives" => ["content"],
-    "comment_threads" => ["message"]
-  }
-
   def excluded?(table_name) when is_binary(table_name) do
     table_name in @excluded_tables
   end
@@ -232,17 +220,4 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
   end
 
   def dependency_parent_tables, do: @dependency_parent_tables
-
-  def has_rich_text?(table_name, column_name) when is_binary(table_name) and is_binary(column_name) do
-    case Map.get(@rich_text_columns, table_name) do
-      nil -> false
-      columns -> column_name in columns
-    end
-  end
-
-  def get_rich_text_columns(table_name) when is_binary(table_name) do
-    Map.get(@rich_text_columns, table_name, [])
-  end
-
-  def rich_text_columns, do: @rich_text_columns
 end

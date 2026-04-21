@@ -11,7 +11,7 @@ defmodule Operately.CompanyTransfers.Schema.Discovery do
   - Discovers all database tables via `information_schema`
   - Classifies tables using explicit policy lists (no catch-all defaults)
   - Orders tables topologically to satisfy foreign key constraints
-  - Provides metadata about columns, FKs, type/id reference patterns, and rich text
+  - Provides metadata about columns, FKs, and type/id reference patterns
 
   ## Usage
 
@@ -27,8 +27,7 @@ defmodule Operately.CompanyTransfers.Schema.Discovery do
       #   foreign_keys: [...],
       #   classification: :included,
       #   polymorphic_config: nil,
-      #   type_id_reference_configs: [],
-      #   rich_text_columns: ["description"]
+      #   type_id_reference_configs: []
       # }
 
       # Validate all tables are classified (CI guard)
@@ -92,8 +91,7 @@ defmodule Operately.CompanyTransfers.Schema.Discovery do
       foreign_keys: Graph.get_foreign_keys(table_name),
       classification: classify_table(table_name),
       polymorphic_config: PolicyRegistry.get_polymorphic_config(table_name),
-      type_id_reference_configs: PolicyRegistry.get_type_id_reference_configs(table_name),
-      rich_text_columns: PolicyRegistry.get_rich_text_columns(table_name)
+      type_id_reference_configs: PolicyRegistry.get_type_id_reference_configs(table_name)
     }
   end
 
