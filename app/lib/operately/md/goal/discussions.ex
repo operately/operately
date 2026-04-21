@@ -52,7 +52,7 @@ defmodule Operately.MD.Goal.Discussions do
     """
     ### Comment by #{comment.author.full_name} on #{Operately.Time.as_date(comment.inserted_at) |> Date.to_iso8601()}
 
-    #{Operately.MD.RichText.render(comment.content["message"])}
+    #{Operately.MD.RichText.render(comment.content)}
 
     #{render_reactions(comment.reactions)}
     """

@@ -29,7 +29,7 @@ defmodule OperatelyEmail.Emails.ResourceHubFileCommentedEmail do
     company = Operately.Repo.preload(author, :company).company
     {:ok, file} = File.get(:system, id: activity.content["file_id"], opts: [preload: [:node, :space]])
     comment = Updates.get_comment!(activity.content["comment_id"])
-    %{html: excerpt_html, text: excerpt_text} = OperatelyEmail.RichTextExcerpt.excerpt(comment.content["message"])
+    %{html: excerpt_html, text: excerpt_text} = OperatelyEmail.RichTextExcerpt.excerpt(comment.content)
 
     %{
       parent_id: file.space.id,

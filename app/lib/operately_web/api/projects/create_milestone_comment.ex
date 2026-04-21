@@ -46,7 +46,7 @@ defmodule OperatelyWeb.Api.Projects.CreateMilestoneComment do
       milestone,
       inputs.action,
       %{
-        content: %{"message" => inputs.content},
+        content: inputs.content || %{},
         author_id: person.id,
         entity_id: milestone.id,
         entity_type: :project_milestone,

@@ -29,7 +29,7 @@ defmodule OperatelyEmail.Emails.GoalCheckInCommentedEmail do
   def buffered_item(_person, activity) do
     goal = Operately.Goals.get_goal!(activity.content["goal_id"])
     comment = Operately.Updates.get_comment!(activity.content["comment_id"])
-    content = comment.content["message"]
+    content = comment.content
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
     %{html: excerpt_html, text: excerpt_text} = OperatelyEmail.RichTextExcerpt.excerpt(content)

@@ -127,7 +127,7 @@ defmodule OperatelyWeb.Api.Projects.GetMilestoneTest do
     test "include_comments", ctx do
       person = person_fixture(%{company_id: ctx.company.id})
       Operately.Comments.create_milestone_comment(person, ctx.milestone, "none", %{
-        content: %{"message" => RichText.rich_text("some message")},
+        content: RichText.rich_text("some message"),
         author_id: person.id,
       })
 

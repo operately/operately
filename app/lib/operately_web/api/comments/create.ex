@@ -91,7 +91,7 @@ defmodule OperatelyWeb.Api.Comments.Create do
     case inputs.entity_type do
       :milestone ->
         Operately.Comments.create_milestone_comment(ctx.me, ctx.parent, "none", %{
-          content: %{"message" => inputs.content},
+          content: inputs.content,
           author_id: ctx.me.id,
           entity_id: ctx.parent.id,
           entity_type: :project_milestone

@@ -73,7 +73,7 @@ defmodule Operately.Data.Change049PopulateCommentEntityIdWithMilestoneIdTest do
       ctx.milestone,
       "none",
       Map.merge(attrs, %{
-        content: %{"message" => RichText.rich_text("content")},
+        content: RichText.rich_text("content"),
         author_id: ctx.creator.id,
       })
     )

@@ -18,7 +18,7 @@ defmodule OperatelyEmail.Emails.ProjectMilestoneCommentedEmail do
     |> subject(where: project.name, who: author, action: action_text(milestone, action))
     |> assign(:author, author)
     |> assign(:project, project)
-    |> assign(:content, comment.content["message"])
+    |> assign(:content, comment.content)
     |> assign(:milestone, milestone)
     |> assign(:action_text, action_text(milestone, action))
     |> assign(:button_text, button_text(action))
@@ -45,7 +45,7 @@ defmodule OperatelyEmail.Emails.ProjectMilestoneCommentedEmail do
   def buffered_item(_person, activity) do
     milestone = Operately.Projects.get_milestone!(activity.content["milestone_id"])
     comment = Operately.Updates.get_comment!(activity.content["comment_id"])
-    content = comment.content["message"]
+    content = comment.content
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
     parent = OperatelyEmail.DigestParent.for_milestone(milestone)

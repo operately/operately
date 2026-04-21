@@ -8,6 +8,7 @@ import { usePaths } from "@/routes/paths";
 import { Link, Summary } from "turboui";
 import { feedTitle, projectLink } from "./../feedItemLinks";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { parseCommentContent } from "@/models/comments";
 
 const ProjectTaskCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -55,7 +56,7 @@ const ProjectTaskCommented: ActivityHandler = {
       return null;
     }
 
-    const commentContent = comment?.content ? JSON.parse(comment.content)["message"] : null;
+    const commentContent = parseCommentContent(comment.content);
 
     if (!commentContent) {
       return null;

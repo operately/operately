@@ -11,7 +11,7 @@ defmodule Operately.Operations.CommentAdding do
         author_id: creator.id,
         entity_id: entity.id,
         entity_type: entity_type,
-        content: %{"message" => content}
+        content: content
       })
 
     action = find_action(entity)

@@ -52,7 +52,7 @@ defmodule Operately.Data.Change034AddSpaceProjectPausingToActivityTest do
     test "migration doesn't delete existing data in activity content", ctx do
       comments = Enum.map(1..3, fn _ ->
         {:ok, comment} = Operately.Comments.create_milestone_comment(ctx.creator, ctx.milestone, "none", %{
-          content: %{"message" => RichText.rich_text("message")},
+          content: RichText.rich_text("message"),
           author_id: ctx.creator.id,
         })
         comment

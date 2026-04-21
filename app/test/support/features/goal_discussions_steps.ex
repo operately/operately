@@ -164,7 +164,7 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
 
     assert comment != nil
     assert comment.author_id == ctx.reviewer.id
-    assert Jason.encode!(comment.content["message"]) |> String.contains?(message)
+    assert Jason.encode!(comment.content) |> String.contains?(message)
 
     ctx
   end

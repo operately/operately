@@ -41,7 +41,7 @@ defmodule Operately.CompanyTransfers.Export.PolymorphicCollectorTest do
         author_id: ctx.creator.id,
         entity_id: comment_thread.id,
         entity_type: :comment_thread,
-        content: %{"message" => tiptap_document()}
+        content: tiptap_document()
       })
       |> Repo.insert()
 

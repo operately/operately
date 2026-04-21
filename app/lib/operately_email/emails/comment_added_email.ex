@@ -102,7 +102,7 @@ defmodule OperatelyEmail.Emails.CommentAddedEmail do
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
     comment = Operately.Updates.get_comment!(activity.content["comment_id"])
-    %{html: excerpt_html, text: excerpt_text} = OperatelyEmail.RichTextExcerpt.excerpt(comment.content["message"])
+    %{html: excerpt_html, text: excerpt_text} = OperatelyEmail.RichTextExcerpt.excerpt(comment.content)
     {parent_type, parent_id, parent_name} = digest_parent(activity)
 
     %{

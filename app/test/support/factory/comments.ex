@@ -10,7 +10,7 @@ defmodule Operately.Support.Factory.Comments do
     {:ok, comment} =
       if entity_type == "project_milestone" do
         Operately.Comments.create_milestone_comment(creator, ctx[parent_name], "none", %{
-          content: %{"message" => content},
+          content: content,
           author_id: creator.id,
           entity_id: ctx[parent_name].id,
           entity_type: :project_milestone,

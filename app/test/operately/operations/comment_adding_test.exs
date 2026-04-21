@@ -804,7 +804,7 @@ defmodule Operately.Operations.CommentAddingTest do
 
       assert comment.entity_id == ctx.task.id
       assert comment.entity_type == :project_task
-      assert comment.content == %{"message" => RichText.rich_text("Some comment")}
+      assert comment.content == RichText.rich_text("Some comment")
     end
 
     test "Commenting on task notifies creator and assginee", ctx do
@@ -879,7 +879,7 @@ defmodule Operately.Operations.CommentAddingTest do
 
       assert comment.entity_id == ctx.task.id
       assert comment.entity_type == :space_task
-      assert comment.content == %{"message" => RichText.rich_text("Some comment")}
+      assert comment.content == RichText.rich_text("Some comment")
     end
 
     test "Commenting on task notifies creator and assginee", ctx do

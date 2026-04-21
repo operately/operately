@@ -39,7 +39,7 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
         preload: :subscriptions
       ])
     end)
-    |> SubscriptionOperations.update_mentioned_people(attrs.content["message"])
+    |> SubscriptionOperations.update_mentioned_people(attrs.content)
   end
 
   defp ensure_subscription_step(multi, _author, _milestone, action) when action in ["complete", "reopen"],

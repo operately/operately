@@ -155,7 +155,7 @@ defmodule Operately.Comments.CreateMilestoneCommentOperationTest do
 
   defp comment_attrs(ctx, content) do
     %{
-      content: %{"message" => content},
+      content: content,
       author_id: ctx.creator.id,
       entity_id: ctx.milestone.id,
       entity_type: :project_milestone
