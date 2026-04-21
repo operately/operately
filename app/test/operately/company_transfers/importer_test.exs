@@ -1,6 +1,6 @@
 defmodule Operately.CompanyTransfers.ImporterTest do
   use Operately.DataCase
-  import Ecto.Query, only: [from: 2, fragment: 3]
+  import Ecto.Query, only: [from: 2]
 
   alias Operately.Activities
   alias Operately.Activities.Activity

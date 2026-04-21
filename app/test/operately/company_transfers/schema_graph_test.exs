@@ -202,12 +202,12 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
     test "returns true for deferred exception tables" do
       assert PolicyRegistry.exception?("activities")
       assert PolicyRegistry.exception?("notifications")
-      assert PolicyRegistry.exception?("milestone_comments")
     end
 
     test "returns false for normal tables" do
       refute PolicyRegistry.exception?("companies")
       refute PolicyRegistry.exception?("projects")
+      refute PolicyRegistry.exception?("milestone_comments")
     end
   end
 
@@ -332,7 +332,7 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
       refute "comment_threads" in tables
       refute "activities" in tables
       refute "notifications" in tables
-      refute "milestone_comments" in tables
+      assert "milestone_comments" in tables
       refute "project_review_requests" in tables
     end
 
@@ -406,7 +406,6 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
     test "classifies deferred exception tables" do
       assert Discovery.classify_table("activities") == :exception
       assert Discovery.classify_table("notifications") == :exception
-      assert Discovery.classify_table("milestone_comments") == :exception
     end
 
     test "classifies dependency parent tables" do
@@ -416,6 +415,7 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
     test "classifies normal tables as included" do
       assert Discovery.classify_table("companies") == :included
       assert Discovery.classify_table("projects") == :included
+      assert Discovery.classify_table("milestone_comments") == :included
     end
   end
 
@@ -427,13 +427,18 @@ defmodule Operately.CompanyTransfers.SchemaGraphTest do
     end
 
     test "keeps included tables closed under hard foreign keys for the minimal slice" do
+      allowed_refs = MapSet.new([
+        {"milestone_comments", "comment_id", "comments", :polymorphic}
+      ])
+
       invalid_refs =
         PolicyRegistry.included_tables()
         |> Enum.flat_map(fn table ->
           Graph.get_foreign_keys(table)
           |> Enum.reject(fn fk ->
             classification = Discovery.classify_table(fk.references_table)
-            classification in [:included, :dependency_parent]
+            classification in [:included, :dependency_parent] or
+              MapSet.member?(allowed_refs, {table, fk.column, fk.references_table, classification})
           end)
           |> Enum.map(fn fk -> {table, fk.column, fk.references_table, Discovery.classify_table(fk.references_table)} end)
         end)

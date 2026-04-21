@@ -24,7 +24,6 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
   4. **Exception tables** - Known special cases deferred from the minimal slice:
      - `activities` - requires separate handling due to serialized references in activity content
      - `notifications` - depends on deferred `activities`, but is not polymorphic itself
-     - `milestone_comments` - depends on polymorphic `comments`
 
   5. **Dependency parent tables** - Referenced but not company-owned:
      - `accounts` - Shared across companies
@@ -125,7 +124,6 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
 
   @exception_tables [
     "activities",
-    "milestone_comments",
     "notifications",
   ]
 
@@ -153,6 +151,7 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
     "members",
     "messages",
     "messages_boards",
+    "milestone_comments",
     "people",
     "project_check_ins",
     "project_contributors",
