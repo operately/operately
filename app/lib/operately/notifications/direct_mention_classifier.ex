@@ -21,28 +21,28 @@ defmodule Operately.Notifications.DirectMentionClassifier do
   ]
 
   @preloaded_content_actions [
-    {"comment_added", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: nil}},
-    {"project_check_in_commented", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: nil}},
-    {"goal_check_in_commented", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: nil}},
-    {"project_retrospective_commented", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: nil}},
-    {"project_task_commented", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: nil}},
-    {"space_task_commented", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: nil}},
-    {"discussion_comment_submitted", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: nil}},
-    {"discussion_posting", %{resource: :message, resource_id: {:content, "discussion_id"}, content_field_key: nil}},
-    {"discussion_editing", %{resource: :message, resource_id: {:content, "discussion_id"}, content_field_key: nil}},
-    {"goal_check_in", %{resource: :goal_update, resource_id: {:content, "update_id"}, content_field_key: nil}},
-    {"project_check_in_submitted", %{resource: :project_check_in, resource_id: {:content, "check_in_id"}, content_field_key: nil}},
-    {"project_discussion_submitted", %{resource: :comment_thread, resource_id: {:content, "discussion_id"}, content_field_key: nil}},
-    {"goal_closing", %{resource: :comment_thread, resource_id: {:activity, :comment_thread_id}, content_field_key: nil}},
-    {"goal_discussion_creation", %{resource: :comment_thread, resource_id: {:activity, :comment_thread_id}, content_field_key: nil}},
-    {"goal_reopening", %{resource: :comment_thread, resource_id: {:activity, :comment_thread_id}, content_field_key: nil}},
-    {"goal_timeframe_editing", %{resource: :comment_thread, resource_id: {:activity, :comment_thread_id}, content_field_key: nil}},
-    {"project_resuming", %{resource: :comment_thread, resource_id: {:activity, :comment_thread_id}, content_field_key: nil}},
-    {"project_closed", %{resource: :project_retrospective, resource_id: {:content, "retrospective_id"}, content_field_key: nil}},
-    {"resource_hub_document_created", %{resource: :resource_hub_document, resource_id: {:content, "document_id"}, content_field_key: nil}},
-    {"resource_hub_document_commented", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: nil}},
-    {"resource_hub_file_commented", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: nil}},
-    {"resource_hub_link_commented", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: nil}}
+    {"comment_added", %{resource: :comment, resource_id: {:content, "comment_id"}}},
+    {"project_check_in_commented", %{resource: :comment, resource_id: {:content, "comment_id"}}},
+    {"goal_check_in_commented", %{resource: :comment, resource_id: {:content, "comment_id"}}},
+    {"project_retrospective_commented", %{resource: :comment, resource_id: {:content, "comment_id"}}},
+    {"project_task_commented", %{resource: :comment, resource_id: {:content, "comment_id"}}},
+    {"space_task_commented", %{resource: :comment, resource_id: {:content, "comment_id"}}},
+    {"discussion_comment_submitted", %{resource: :comment, resource_id: {:content, "comment_id"}}},
+    {"discussion_posting", %{resource: :message, resource_id: {:content, "discussion_id"}}},
+    {"discussion_editing", %{resource: :message, resource_id: {:content, "discussion_id"}}},
+    {"goal_check_in", %{resource: :goal_update, resource_id: {:content, "update_id"}}},
+    {"project_check_in_submitted", %{resource: :project_check_in, resource_id: {:content, "check_in_id"}}},
+    {"project_discussion_submitted", %{resource: :comment_thread, resource_id: {:content, "discussion_id"}}},
+    {"goal_closing", %{resource: :comment_thread, resource_id: {:activity, :comment_thread_id}}},
+    {"goal_discussion_creation", %{resource: :comment_thread, resource_id: {:activity, :comment_thread_id}}},
+    {"goal_reopening", %{resource: :comment_thread, resource_id: {:activity, :comment_thread_id}}},
+    {"goal_timeframe_editing", %{resource: :comment_thread, resource_id: {:activity, :comment_thread_id}}},
+    {"project_resuming", %{resource: :comment_thread, resource_id: {:activity, :comment_thread_id}}},
+    {"project_closed", %{resource: :project_retrospective, resource_id: {:content, "retrospective_id"}}},
+    {"resource_hub_document_created", %{resource: :resource_hub_document, resource_id: {:content, "document_id"}}},
+    {"resource_hub_document_commented", %{resource: :comment, resource_id: {:content, "comment_id"}}},
+    {"resource_hub_file_commented", %{resource: :comment, resource_id: {:content, "comment_id"}}},
+    {"resource_hub_link_commented", %{resource: :comment, resource_id: {:content, "comment_id"}}}
   ]
 
   @never_mention_actions [
@@ -229,7 +229,7 @@ defmodule Operately.Notifications.DirectMentionClassifier do
 
   defp project_milestone_mentions_recipient?(notification, preloaded, recipient_id) do
     if activity_content_value(notification, "comment_action") == "none" do
-      spec = %{resource: :comment, content_field_key: nil}
+      spec = %{resource: :comment}
 
       notification
       |> activity_content_value("comment_id")
@@ -316,17 +316,10 @@ defmodule Operately.Notifications.DirectMentionClassifier do
 
   defp lookup_preloaded_content(nil, _preloaded, _spec), do: nil
 
-  defp lookup_preloaded_content(resource_id, preloaded, %{resource: resource, content_field_key: nil}) do
+  defp lookup_preloaded_content(resource_id, preloaded, %{resource: resource}) do
     preloaded
     |> Map.get(resource, %{})
     |> Map.get(resource_id)
-  end
-
-  defp lookup_preloaded_content(resource_id, preloaded, %{resource: resource, content_field_key: field_key}) do
-    preloaded
-    |> Map.get(resource, %{})
-    |> Map.get(resource_id)
-    |> content_value(field_key)
   end
 
   defp activity_content_value(notification, key) do
