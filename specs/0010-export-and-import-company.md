@@ -262,7 +262,7 @@ Implementation should be delivered in vertical slices. Each slice must leave the
    - [ ] **Part 2: Serialized reference registry.** Audit remaining JSON/map/string columns for embedded resource IDs and ordering-state references; create a generalized serialized-reference rewrite registry rather than a blob-only registry.
    - Observation: activities can be imported before comment threads land, but any untranslated `activities.comment_thread_id` must be cleared on import and revisited once comment-thread transfer support exists.
    - Observation: because import always remaps IDs, this registry is required for correctness, not just completeness.
-11. [ ] **PR 11: Polymorphic export/import coverage.** Add explicit collectors and import support for polymorphic tables and serialized payload rewrites, including activities, comments, reactions, updates, comment threads, and other audited cases.
+11. [x] **PR 11: Polymorphic export/import coverage.** Add explicit collectors and import support for polymorphic tables and serialized payload rewrites, including activities, comments, reactions, comment threads, and other audited live cases.
 12. [ ] **PR 12: Polymorphic slice tests.** Add E2E tests showing that export/import now preserves polymorphic data and serialized references correctly.
 
 **Slice 3 outcome:** export and import continue to work end-to-end, now with real file coverage and cross-storage correctness.
