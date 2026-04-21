@@ -21,13 +21,13 @@ defmodule Operately.Notifications.DirectMentionClassifier do
   ]
 
   @preloaded_content_actions [
-    {"comment_added", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: "message"}},
-    {"project_check_in_commented", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: "message"}},
-    {"goal_check_in_commented", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: "message"}},
-    {"project_retrospective_commented", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: "message"}},
-    {"project_task_commented", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: "message"}},
-    {"space_task_commented", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: "message"}},
-    {"discussion_comment_submitted", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: "message"}},
+    {"comment_added", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: nil}},
+    {"project_check_in_commented", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: nil}},
+    {"goal_check_in_commented", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: nil}},
+    {"project_retrospective_commented", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: nil}},
+    {"project_task_commented", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: nil}},
+    {"space_task_commented", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: nil}},
+    {"discussion_comment_submitted", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: nil}},
     {"discussion_posting", %{resource: :message, resource_id: {:content, "discussion_id"}, content_field_key: nil}},
     {"discussion_editing", %{resource: :message, resource_id: {:content, "discussion_id"}, content_field_key: nil}},
     {"goal_check_in", %{resource: :goal_update, resource_id: {:content, "update_id"}, content_field_key: nil}},
@@ -40,9 +40,9 @@ defmodule Operately.Notifications.DirectMentionClassifier do
     {"project_resuming", %{resource: :comment_thread, resource_id: {:activity, :comment_thread_id}, content_field_key: nil}},
     {"project_closed", %{resource: :project_retrospective, resource_id: {:content, "retrospective_id"}, content_field_key: nil}},
     {"resource_hub_document_created", %{resource: :resource_hub_document, resource_id: {:content, "document_id"}, content_field_key: nil}},
-    {"resource_hub_document_commented", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: "message"}},
-    {"resource_hub_file_commented", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: "message"}},
-    {"resource_hub_link_commented", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: "message"}}
+    {"resource_hub_document_commented", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: nil}},
+    {"resource_hub_file_commented", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: nil}},
+    {"resource_hub_link_commented", %{resource: :comment, resource_id: {:content, "comment_id"}, content_field_key: nil}}
   ]
 
   @never_mention_actions [
@@ -229,7 +229,7 @@ defmodule Operately.Notifications.DirectMentionClassifier do
 
   defp project_milestone_mentions_recipient?(notification, preloaded, recipient_id) do
     if activity_content_value(notification, "comment_action") == "none" do
-      spec = %{resource: :comment, content_field_key: "message"}
+      spec = %{resource: :comment, content_field_key: nil}
 
       notification
       |> activity_content_value("comment_id")

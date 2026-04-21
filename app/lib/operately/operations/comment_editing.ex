@@ -5,7 +5,7 @@ defmodule Operately.Operations.CommentEditing do
   alias Operately.Repo
 
   def run(comment, new_content) do
-    changeset = Comment.changeset(comment, %{content: %{"message" => new_content}})
+    changeset = Comment.changeset(comment, %{content: new_content})
 
     Multi.new()
     |> Multi.update(:comment, changeset)

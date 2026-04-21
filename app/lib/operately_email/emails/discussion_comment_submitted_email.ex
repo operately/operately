@@ -34,7 +34,7 @@ defmodule OperatelyEmail.Emails.DiscussionCommentSubmittedEmail do
     {:ok, %{title: title} = message} = Message.get(:system, id: activity.content["discussion_id"])
     comment = Updates.get_comment!(activity.content["comment_id"])
     space = Operately.Groups.get_group!(activity.content["space_id"])
-    %{html: excerpt_html, text: excerpt_text} = OperatelyEmail.RichTextExcerpt.excerpt(comment.content["message"])
+    %{html: excerpt_html, text: excerpt_text} = OperatelyEmail.RichTextExcerpt.excerpt(comment.content)
 
     %{
       parent_id: space.id,

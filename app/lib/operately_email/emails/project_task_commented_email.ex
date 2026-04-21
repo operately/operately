@@ -29,7 +29,7 @@ defmodule OperatelyEmail.Emails.ProjectTaskCommentedEmail do
   def buffered_item(_person, activity) do
     task = Operately.Tasks.get_task!(activity.content["task_id"]) |> Operately.Repo.preload(:space)
     comment = Operately.Updates.get_comment!(activity.content["comment_id"])
-    content = comment.content["message"]
+    content = comment.content
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
     parent = OperatelyEmail.DigestParent.for_task(task)
