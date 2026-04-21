@@ -8,6 +8,7 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
   alias Operately.CompanyTransfers.Import.{
     AccountResolver,
     ActivityContentRewriter,
+    OrderingStateRewriter,
     Package,
     PackageOrder,
     PolymorphicReferenceTranslator,
@@ -120,9 +121,10 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
 
   defp prepare_row(row, table, map_fields, %TranslationPlan{} = plan) do
     with {:ok, row} <-
-           row
+         row
            |> RowDeserializer.deserialize_row()
            |> ActivityContentRewriter.rewrite_row_content(table, plan),
+         {:ok, row} <- OrderingStateRewriter.rewrite_row_fields(row, table, plan),
          {:ok, row} <- RichTextRewriter.rewrite_row_mentions(row, table, plan, map_fields) do
       {:ok, row}
     end

@@ -259,9 +259,8 @@ Implementation should be delivered in vertical slices. Each slice must leave the
    - Observation: validate the real schema first; the current plan names `notifications` and `access_contexts` here as likely audit targets, not confirmed polymorphic tables.
 10. **PR 10: Serialized reference handling.**
    - [x] **Part 1: Rich text mention rewriting.** Detect top-level TipTap rich text in schema-backed map fields and rewrite mentioned person IDs during import.
-   - [ ] **Part 2: Serialized reference registry.** Audit remaining JSON/map/string columns for embedded resource IDs and ordering-state references; create a generalized serialized-reference rewrite registry rather than a blob-only registry.
-   - Observation: activities can be imported before comment threads land, but any untranslated `activities.comment_thread_id` must be cleared on import and revisited once comment-thread transfer support exists.
-   - Observation: because import always remaps IDs, this registry is required for correctness, not just completeness.
+   - [x] **Part 2: Explicit serialized state/reference rewriters.** Audit the remaining live serialized reference formats and add small explicit importer-side rewriters for known fields such as activity-content IDs and ordering/kanban state fields, rather than a single generalized registry.
+   - Observation: because import always remaps IDs, these explicit rewriters are required for correctness, not just completeness.
 11. [x] **PR 11: Polymorphic export/import coverage.** Add explicit collectors and import support for polymorphic tables and serialized payload rewrites, including activities, comments, reactions, comment threads, and other audited live cases.
 12. [ ] **PR 12: Polymorphic slice tests.** Add E2E tests showing that export/import now preserves polymorphic data and serialized references correctly.
 
