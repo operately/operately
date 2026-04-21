@@ -96,7 +96,7 @@ export const createMockTimelineItems = (): any[] => [
       id: "comment-1",
       author: mockPeople[0],
       insertedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
-      content: JSON.stringify({ message: "Just wanted to update everyone on the progress. We're making good headway on the authentication system." }),
+      content: JSON.stringify(asRichTextWithList(["Just wanted to update everyone on the progress. We're making good headway on the authentication system."])),
       reactions: [
         { id: "reaction-1", emoji: "👍", person: mockPeople[1] },
         { id: "reaction-2", emoji: "🎉", person: mockPeople[2] },
@@ -119,7 +119,7 @@ export const createMockTimelineItems = (): any[] => [
       id: "comment-3",
       author: mockPeople[2],
       insertedAt: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(), // 12 hours ago
-      content: JSON.stringify({ message: "The dark mode implementation is looking great! Should be ready for review tomorrow." }),
+      content: JSON.stringify(asRichTextWithList(["The dark mode implementation is looking great! Should be ready for review tomorrow."])),
       reactions: [
         { id: "reaction-3", emoji: "🔥", person: mockPeople[3] },
       ],

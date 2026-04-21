@@ -4,6 +4,7 @@ import { Avatar } from "../Avatar";
 import { Menu, MenuActionItem } from "../Menu";
 import { FormattedTime } from "../FormattedTime";
 import RichContent from "../RichContent";
+import { parseContent } from "../RichContent/contentOps";
 import { IconEdit, IconTrash, IconLink } from "../icons";
 import { CommentItemProps } from "./types";
 import { compareIds } from "../utils/ids";
@@ -49,7 +50,7 @@ export function CommentItem({
   onRemoveReaction,
 }: CommentItemProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const parsedContent = JSON.parse(comment.content)["message"];
+  const parsedContent = parseContent(comment.content);
   const isOwnComment = compareIds(currentUserId, comment.author.id);
 
   useScrollIntoViewOnLoad(comment.id);

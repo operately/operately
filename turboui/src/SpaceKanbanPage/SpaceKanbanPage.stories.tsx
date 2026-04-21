@@ -19,7 +19,7 @@ import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 import { useMockTaskBoardActions } from "../utils/storybook/tasks";
 import type { TimelineItem as TimelineItemType } from "../Timeline/types";
 import { Reactions } from "../Reactions";
-import { createActiveTaskTimeline, createComment, currentUser as mockCurrentUser } from "../TaskPage/mockData";
+import { asRichText, createActiveTaskTimeline, createComment, currentUser as mockCurrentUser } from "../TaskPage/mockData";
 
 import type { KanbanStatus, TaskSlideInContext } from "../TaskBoard/KanbanView/types";
 
@@ -73,12 +73,16 @@ const toTaskPageMilestone = (milestone: Types.Milestone): TaskPage.Milestone => 
 
 const commentCountFromTimeline = (items: TimelineItemType[]) => items.filter((i) => i.type === "comment").length;
 
-const extractCommentMessage = (content: any) => {
-  if (!content) return "";
-  if (typeof content === "string") return content;
-  if (typeof content?.message !== "undefined") return content.message;
+const normalizeCommentContent = (content: any) => {
+  if (!content) return asRichText("");
 
-  return content;
+  if (typeof content !== "string") return content;
+
+  try {
+    return JSON.parse(content);
+  } catch {
+    return asRichText(content);
+  }
 };
 
 const buildTaskPageProps = (
@@ -196,15 +200,13 @@ export const Default: Story = {
 
     const onAddComment = React.useCallback(
       (taskId: string, content: any) => {
-        const message = extractCommentMessage(content);
-        updateTimeline(taskId, (prev) => [...prev, createComment(currentUser, message, 0)]);
+        updateTimeline(taskId, (prev) => [...prev, createComment(currentUser, normalizeCommentContent(content), 0)]);
       },
       [currentUser, updateTimeline],
     );
 
     const onEditComment = React.useCallback(
       (taskId: string, commentId: string, content: any) => {
-        const message = extractCommentMessage(content);
         updateTimeline(taskId, (prev) =>
           prev.map((item) => {
             if (item.type !== "comment") return item;
@@ -213,7 +215,7 @@ export const Default: Story = {
               ...item,
               value: {
                 ...item.value,
-                content: JSON.stringify({ message }),
+                content: JSON.stringify(normalizeCommentContent(content)),
               },
             };
           }),
@@ -398,15 +400,13 @@ export const WithStatusManagement: Story = {
 
     const onAddComment = React.useCallback(
       (taskId: string, content: any) => {
-        const message = extractCommentMessage(content);
-        updateTimeline(taskId, (prev) => [...prev, createComment(currentUser, message, 0)]);
+        updateTimeline(taskId, (prev) => [...prev, createComment(currentUser, normalizeCommentContent(content), 0)]);
       },
       [currentUser, updateTimeline],
     );
 
     const onEditComment = React.useCallback(
       (taskId: string, commentId: string, content: any) => {
-        const message = extractCommentMessage(content);
         updateTimeline(taskId, (prev) =>
           prev.map((item) => {
             if (item.type !== "comment") return item;
@@ -415,7 +415,7 @@ export const WithStatusManagement: Story = {
               ...item,
               value: {
                 ...item.value,
-                content: JSON.stringify({ message }),
+                content: JSON.stringify(normalizeCommentContent(content)),
               },
             };
           }),
