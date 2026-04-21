@@ -291,6 +291,46 @@ defmodule Operately.CompanyTransfers.RoundTripTest do
     assert (missing_admin_activity["content"]["people"] |> hd() |> Map.fetch!("id")) == missing_person_id
   end
 
+  test "comment threads, comments, and reactions survive a round trip", ctx do
+    ctx =
+      ctx
+      |> Factory.add_company_member(:member)
+      |> Factory.add_space(:space)
+      |> Factory.add_goal(:goal, :space)
+      |> Factory.add_project(:project, :space, goal: :goal)
+
+    ctx =
+      ctx
+      |> Factory.add_project_discussion(:project_discussion, :project, title: "Project Thread", message: "Project thread message")
+      |> Factory.add_comment(:project_comment, :project_discussion, creator: ctx.member, content: mention_doc([ctx.creator]))
+      |> Factory.add_reactions(:project_thread_reaction, :project_discussion, creator: ctx.creator, emoji: "rocket")
+      |> Factory.add_reactions(:project_comment_reaction, :project_comment, creator: ctx.member, emoji: "eyes")
+
+    ctx =
+      ctx
+      |> Factory.add_goal_discussion(:goal_discussion, :goal, title: "Goal Thread", message: mention_doc([ctx.member]))
+      |> Factory.add_comment(:goal_comment, :goal_discussion, creator: ctx.creator, content: mention_doc([ctx.member]))
+      |> Factory.add_reactions(:goal_thread_reaction, :goal_discussion, creator: ctx.member, emoji: "tada")
+      |> Factory.add_reactions(:goal_comment_reaction, :goal_comment, creator: ctx.creator, emoji: "heart")
+
+    round_trip =
+      Transfers.round_trip!(ctx.company, ctx.account,
+        mutate_package: &Transfers.replace_company_short_id(&1, unique_short_id())
+      )
+
+    assert table_row_counts(round_trip.source.package)["comment_threads"] == 2
+    assert table_row_counts(round_trip.reexported.package)["comment_threads"] == 2
+    assert table_row_counts(round_trip.source.package)["comments"] == 2
+    assert table_row_counts(round_trip.reexported.package)["comments"] == 2
+    assert table_row_counts(round_trip.source.package)["reactions"] == 4
+    assert table_row_counts(round_trip.reexported.package)["reactions"] == 4
+
+    assert polymorphic_snapshot(round_trip.source.package) == polymorphic_snapshot(round_trip.reexported.package)
+
+    assert_mentions_resolve_to_people(round_trip.reexported.package, "comment_threads", "message")
+    assert_mentions_resolve_to_people(round_trip.reexported.package, "comments", "content")
+  end
+
   @tag ownership_timeout: 180_000
   test "a demo-built company can round-trip across the minimal slice", ctx do
     ctx = Factory.add_account(ctx, :demo_account)
@@ -394,6 +434,47 @@ defmodule Operately.CompanyTransfers.RoundTripTest do
       goals: goal_snapshot(package),
       projects: project_last_check_in_snapshot(package),
       task_assignees: task_assignee_snapshot(package)
+    }
+  end
+
+  defp polymorphic_snapshot(package) do
+    %{
+      comment_threads:
+        package
+        |> table_rows("comment_threads")
+        |> Enum.map(fn row ->
+          {
+            row["title"],
+            comment_thread_parent_signature(package, row),
+            person_name(package, row["author_id"]),
+            rich_text_signature(row["message"])
+          }
+        end)
+        |> Enum.sort(),
+      comments:
+        package
+        |> table_rows("comments")
+        |> Enum.map(fn row ->
+          {
+            row["entity_type"],
+            comment_entity_signature(package, row["entity_type"], row["entity_id"]),
+            person_name(package, row["author_id"]),
+            rich_text_signature(row["content"])
+          }
+        end)
+        |> Enum.sort(),
+      reactions:
+        package
+        |> table_rows("reactions")
+        |> Enum.map(fn row ->
+          {
+            row["entity_type"],
+            reaction_entity_signature(package, row["entity_type"], row["entity_id"]),
+            person_name(package, row["person_id"]),
+            row["emoji"]
+          }
+        end)
+        |> Enum.sort()
     }
   end
 
@@ -549,6 +630,69 @@ defmodule Operately.CompanyTransfers.RoundTripTest do
   defp person_name(_package, nil), do: nil
   defp person_name(package, person_id), do: resolve_name(package, "people", person_id, "full_name")
 
+  defp comment_thread_parent_signature(package, row) do
+    case row["parent_type"] do
+      "project" ->
+        {:project, resolve_name(package, "projects", row["parent_id"])}
+
+      "activity" ->
+        activity = find_row!(package, "activities", row["parent_id"])
+        {:activity, activity["action"], activity_scope_name(package, activity)}
+
+      other ->
+        {other, row["parent_id"]}
+    end
+  end
+
+  defp comment_entity_signature(package, "comment_thread", entity_id) do
+    row = find_row!(package, "comment_threads", entity_id)
+    {:comment_thread, row["title"]}
+  end
+
+  defp comment_entity_signature(package, entity_type, entity_id) do
+    {entity_type, reaction_entity_signature(package, entity_type, entity_id)}
+  end
+
+  defp reaction_entity_signature(package, "comment", entity_id) do
+    row = find_row!(package, "comments", entity_id)
+    {:comment, rich_text_signature(row["content"])}
+  end
+
+  defp reaction_entity_signature(package, "comment_thread", entity_id) do
+    row = find_row!(package, "comment_threads", entity_id)
+    {:comment_thread, row["title"]}
+  end
+
+  defp reaction_entity_signature(package, entity_type, entity_id) do
+    {entity_type, resolve_reaction_entity_name(package, entity_type, entity_id)}
+  end
+
+  defp resolve_reaction_entity_name(package, "message", entity_id), do: resolve_name(package, "messages", entity_id, "title")
+  defp resolve_reaction_entity_name(package, "goal_update", entity_id), do: goal_update_signature(package, entity_id)
+  defp resolve_reaction_entity_name(package, "project_check_in", entity_id), do: check_in_signature(package, entity_id)
+  defp resolve_reaction_entity_name(package, "project_retrospective", entity_id), do: resolve_name(package, "project_retrospectives", entity_id, "name")
+  defp resolve_reaction_entity_name(package, "resource_hub_document", entity_id), do: resolve_name(package, "resource_documents", entity_id)
+  defp resolve_reaction_entity_name(package, "resource_hub_file", entity_id), do: resolve_name(package, "resource_files", entity_id)
+  defp resolve_reaction_entity_name(package, "resource_hub_link", entity_id), do: resolve_name(package, "resource_links", entity_id)
+  defp resolve_reaction_entity_name(package, "space_task", entity_id), do: resolve_name(package, "tasks", entity_id)
+  defp resolve_reaction_entity_name(package, "project_task", entity_id), do: resolve_name(package, "tasks", entity_id)
+  defp resolve_reaction_entity_name(_package, _entity_type, entity_id), do: entity_id
+
+  defp activity_scope_name(package, activity) do
+    cond do
+      activity["content"]["project_id"] -> resolve_name(package, "projects", activity["content"]["project_id"])
+      activity["content"]["goal_id"] -> resolve_name(package, "goals", activity["content"]["goal_id"])
+      activity["content"]["space_id"] -> resolve_name(package, "groups", activity["content"]["space_id"])
+      true -> nil
+    end
+  end
+
+  defp rich_text_signature(nil), do: nil
+
+  defp rich_text_signature(document) do
+    {RichContent.rich_content_to_string(document), mention_labels(document)}
+  end
+
   defp resolve_name(package, table_name, row_id, field \\ "name")
   defp resolve_name(_package, _table_name, nil, _field), do: nil
 
@@ -606,6 +750,26 @@ defmodule Operately.CompanyTransfers.RoundTripTest do
   end
 
   defp extract_mention_labels(_value), do: []
+
+  defp assert_mentions_resolve_to_people(package, table_name, field) do
+    people_ids =
+      package
+      |> table_rows("people")
+      |> Enum.map(& &1["id"])
+      |> MapSet.new()
+
+    package
+    |> table_rows(table_name)
+    |> Enum.each(fn row ->
+      row
+      |> Map.get(field)
+      |> RichContent.find_mentioned_ids()
+      |> Enum.each(fn mention_id ->
+        assert {:ok, decoded_person_id} = Helpers.decode_id(mention_id)
+        assert decoded_person_id in people_ids
+      end)
+    end)
+  end
 
   defp demo_slice_1_data do
     data = Demo.Data.data()

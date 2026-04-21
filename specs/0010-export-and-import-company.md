@@ -262,7 +262,7 @@ Implementation should be delivered in vertical slices. Each slice must leave the
    - [x] **Part 2: Explicit serialized state/reference rewriters.** Audit the remaining live serialized reference formats and add small explicit importer-side rewriters for known fields such as activity-content IDs and ordering/kanban state fields, rather than a single generalized registry.
    - Observation: because import always remaps IDs, these explicit rewriters are required for correctness, not just completeness.
 11. [x] **PR 11: Polymorphic export/import coverage.** Add explicit collectors and import support for polymorphic tables and serialized payload rewrites, including activities, comments, reactions, comment threads, and other audited live cases.
-12. [ ] **PR 12: Polymorphic slice tests.** Add E2E tests showing that export/import now preserves polymorphic data and serialized references correctly.
+12. [x] **PR 12: Polymorphic slice tests.** Add E2E tests showing that export/import now preserves polymorphic data and serialized references correctly.
 
 **Slice 3 outcome:** export and import continue to work end-to-end, now with real file coverage and cross-storage correctness.
 
