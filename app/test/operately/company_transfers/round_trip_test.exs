@@ -99,6 +99,37 @@ defmodule Operately.CompanyTransfers.RoundTripTest do
     assert {:ok, imported_member["id"]} == Helpers.decode_id(imported_mention_id)
   end
 
+  test "milestone comments survive a round trip", ctx do
+    comment_content = RichText.rich_text("Milestone comment survives transfer")
+
+    ctx =
+      ctx
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
+      |> Factory.add_project_milestone(:milestone, :project)
+      |> Factory.add_comment(:comment, :milestone, content: comment_content)
+
+    round_trip =
+      Transfers.round_trip!(ctx.company, ctx.account,
+        mutate_package: &Transfers.replace_company_short_id(&1, unique_short_id())
+      )
+
+    assert table_row_counts(round_trip.source.package)["milestone_comments"] == 1
+    assert table_row_counts(round_trip.reexported.package)["milestone_comments"] == 1
+    assert table_row_counts(round_trip.source.package)["comments"] == 1
+    assert table_row_counts(round_trip.reexported.package)["comments"] == 1
+
+    [source_comment] = table_rows(round_trip.source.package, "comments")
+    [imported_comment] = table_rows(round_trip.reexported.package, "comments")
+    [source_milestone_comment] = table_rows(round_trip.source.package, "milestone_comments")
+    [imported_milestone_comment] = table_rows(round_trip.reexported.package, "milestone_comments")
+
+    assert source_comment["content"] == comment_content
+    assert imported_comment["content"] == comment_content
+    assert source_milestone_comment["action"] == "none"
+    assert imported_milestone_comment["action"] == "none"
+  end
+
   test "imports into a destination with unrelated companies and multiple existing accounts", ctx do
     ctx =
       ctx
