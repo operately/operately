@@ -732,7 +732,7 @@ defmodule OperatelyWeb.Api.Reactions.CreateTest do
         milestone,
         "none",
         %{
-          content: %{"message" => RichText.rich_text("Content")},
+          content: RichText.rich_text("Content"),
           author_id: ctx.creator.id
         }
       )

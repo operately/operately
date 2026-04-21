@@ -48,13 +48,14 @@ defmodule Operately.CompanyTransfers.Import.RichTextRewriterTest do
     assert {:ok, ^row} = RichTextRewriter.rewrite_row_mentions(row, "resource_documents", translation_plan(%{}), map_fields_for("resource_documents"))
   end
 
-  test "leaves nested rich text inside wrapper maps unchanged" do
-    source_person = person("Wrapped Mention")
-    row = %{"content" => %{"message" => mention_doc([source_person])}}
-    plan = translation_plan(%{source_person.id => Ecto.UUID.generate()})
+  test "rewrites mentions in comment content" do
+    source_person = person("Comment Mention")
+    destination_person_id = Ecto.UUID.generate()
+    row = %{"content" => mention_doc([source_person])}
+    plan = translation_plan(%{source_person.id => destination_person_id})
 
     assert {:ok, rewritten} = RichTextRewriter.rewrite_row_mentions(row, "comments", plan, map_fields_for("comments"))
-    assert rewritten == row
+    assert RichContent.find_mentioned_ids(rewritten["content"]) == [encoded_person_id("Comment Mention", destination_person_id)]
   end
 
   test "fails when a decoded mention id has no translation" do

@@ -86,8 +86,9 @@ defmodule Operately.MD.GoalTest do
 
   test "it renders discussion comments", ctx do
     message = Operately.Support.RichText.rich_text("This is a discussion about the goal.")
+    comment_content = Operately.Support.RichText.rich_text("Rendered goal discussion comment")
     ctx = Factory.add_goal_discussion(ctx, :discussion, :goal, title: "Discussion Title", message: message)
-    ctx = Factory.add_comment(ctx, :comment, :discussion)
+    ctx = Factory.add_comment(ctx, :comment, :discussion, content: comment_content)
     ctx = Factory.add_reactions(ctx, :reaction, :comment, emoji: "👍")
 
     rendered = Operately.MD.Goal.render(ctx.goal)
@@ -97,13 +98,15 @@ defmodule Operately.MD.GoalTest do
     assert rendered =~ "This is a discussion about the goal."
     assert rendered =~ "## Comments"
     assert rendered =~ "### Comment by #{ctx.creator.full_name} on #{Operately.Time.as_date(ctx.comment.inserted_at) |> Date.to_iso8601()}"
+    assert rendered =~ "Rendered goal discussion comment"
     assert rendered =~ "#{ctx.creator.full_name}: 👍"
   end
 
   test "it renders check-in comments with timestamps in the markdown", ctx do
+    comment_content = Operately.Support.RichText.rich_text("Rendered goal check-in comment")
     ctx = Factory.add_goal_update(ctx, :update, :goal, :creator)
     ctx = Factory.preload(ctx, :update, :goal)
-    ctx = Factory.add_comment(ctx, :comment, :update)
+    ctx = Factory.add_comment(ctx, :comment, :update, content: comment_content)
 
     rendered = Operately.MD.Goal.render(ctx.goal)
 
@@ -112,5 +115,6 @@ defmodule Operately.MD.GoalTest do
     assert rendered =~ "## Check-ins"
     assert rendered =~ "#### Comments"
     assert rendered =~ "**#{ctx.creator.full_name}** on #{expected_date}:"
+    assert rendered =~ "Rendered goal check-in comment"
   end
 end

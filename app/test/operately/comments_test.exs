@@ -20,9 +20,7 @@ defmodule Operately.CommentsTest do
 
       comment_attrs = %{
         author_id: person.id,
-        content: %{
-          "message" => Operately.Support.RichText.rich_text("hello world")
-        }
+        content: Operately.Support.RichText.rich_text("hello world")
       }
 
       {:ok, milestone_comment} = Operately.Comments.create_milestone_comment(

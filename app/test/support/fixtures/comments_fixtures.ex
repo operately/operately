@@ -8,7 +8,7 @@ defmodule Operately.CommentsFixtures do
       attrs
       |> Enum.into(%{
         author_id: author.id,
-        content: %{"message" => "some comment"}
+        content: Operately.Support.RichText.rich_text("some comment")
       })
       |> Comment.changeset()
       |> Repo.insert()
@@ -26,7 +26,7 @@ defmodule Operately.CommentsFixtures do
       attrs
       |> Enum.into(%{
         parent_type: :activity,
-        message: %{"message" => "some message"},
+        message: Operately.Support.RichText.rich_text("some message"),
         subscription_list_id: subscription_list.id
       })
       |> CommentThread.changeset()

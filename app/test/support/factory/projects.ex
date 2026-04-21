@@ -247,7 +247,7 @@ defmodule Operately.Support.Factory.Projects do
         milestone,
         "complete",
         %{
-          content: %{"message" => RichText.rich_text("some content")},
+          content: RichText.rich_text("some content"),
           author_id: creator.id,
           entity_id: milestone.id,
           entity_type: :project_milestone
