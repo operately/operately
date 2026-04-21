@@ -27,7 +27,7 @@ defmodule OperatelyEmail.Emails.ProjectCheckInCommentedEmail do
   def buffered_item(_person, activity) do
     project = Operately.Projects.get_project!(activity.content["project_id"])
     comment = Operately.Updates.get_comment!(activity.content["comment_id"])
-    content = comment.content["message"]
+    content = comment.content
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
     %{html: excerpt_html, text: excerpt_text} = OperatelyEmail.RichTextExcerpt.excerpt(content)

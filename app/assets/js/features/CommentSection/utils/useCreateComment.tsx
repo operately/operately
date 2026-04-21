@@ -23,7 +23,7 @@ export function useCreateComment({ setComments, entityId, entityType }: UseCreat
       const newComment: Comments.Comment = {
         id: tempId,
         insertedAt: new Date().toISOString(),
-        content: JSON.stringify({ message: content }),
+        content: Comments.stringifyCommentContent(content),
         author: me,
         reactions: [],
       };
@@ -67,7 +67,7 @@ function usePost({ entityId, entityType }: UsePost) {
     if (entityType === "milestone") {
       const res = await postMilestoneComment({
         milestoneId: entityId,
-        content: JSON.stringify(content),
+        content: Comments.stringifyCommentContent(content),
         action: "none",
       });
       return res.comment?.comment;
@@ -75,7 +75,7 @@ function usePost({ entityId, entityType }: UsePost) {
       const res = await postComment({
         entityId,
         entityType,
-        content: JSON.stringify(content),
+        content: Comments.stringifyCommentContent(content),
       });
       return res.comment;
     }

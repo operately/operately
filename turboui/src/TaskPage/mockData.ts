@@ -4,7 +4,9 @@ import type { Status } from "../TaskBoard/types";
 import type { TimelineItem as TimelineItemType } from "../Timeline/types";
 import { Person as TimelinePerson } from "../CommentSection/types";
 import { createContextualDate } from "../DateField/mockData";
-export { asRichText, asRichTextWithList } from "../utils/storybook/richContent";
+import { asRichText, asRichTextWithList } from "../utils/storybook/richContent";
+
+export { asRichText, asRichTextWithList };
 
 // Timeline people (with profile links)
 export const timelinePeople: TimelinePerson[] = [
@@ -157,12 +159,23 @@ export const mockMentionedPersonLookup = async (id: string) => {
 };
 
 // Helper functions for creating timeline data
-export function createComment(author: TimelinePerson, content: string, timeAgo: number): TimelineItemType {
+export function createComment(author: TimelinePerson, content: any, timeAgo: number): TimelineItemType {
+  const richContent =
+    typeof content === "string"
+      ? (() => {
+          try {
+            return JSON.parse(content);
+          } catch {
+            return asRichText(content);
+          }
+        })()
+      : content;
+
   return {
     type: "comment",
     value: {
       id: `comment-${Date.now()}-${Math.random()}`,
-      content: JSON.stringify({ message: content }),
+      content: JSON.stringify(richContent),
       author,
       insertedAt: new Date(Date.now() - timeAgo).toISOString(),
       reactions: [],

@@ -54,9 +54,10 @@ defmodule Operately.MD.ProjectTest do
   end
 
   test "it includes comments on check-ins with timestamps", ctx do
+    comment_content = Operately.Support.RichText.rich_text("Rendered project check-in comment")
     ctx = Factory.add_project_check_in(ctx, :check_in, :project, :creator)
     ctx = Factory.preload(ctx, :check_in, :project)
-    ctx = Factory.add_comment(ctx, :comment, :check_in)
+    ctx = Factory.add_comment(ctx, :comment, :check_in, content: comment_content)
 
     rendered = Operately.MD.Project.render(ctx.project)
 
@@ -72,6 +73,7 @@ defmodule Operately.MD.ProjectTest do
     # Check that the comment timestamp is rendered
     expected_date = ctx.comment.inserted_at |> Operately.Time.as_date() |> Date.to_iso8601()
     assert rendered =~ expected_date
+    assert rendered =~ "Rendered project check-in comment"
   end
 
   test "it renders check-ins without comments correctly", ctx do

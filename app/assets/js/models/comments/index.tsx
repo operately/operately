@@ -50,11 +50,24 @@ export function parseCommentContent(content: string | null | undefined) {
 
   try {
     const parsed = JSON.parse(content);
-    return parsed?.message;
+
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      return null;
+    }
+
+    if (Object.keys(parsed).length === 0) {
+      return null;
+    }
+
+    return parsed;
   } catch (error) {
     console.error("Failed to parse comment content:", error);
     return null;
   }
+}
+
+export function stringifyCommentContent(content: unknown) {
+  return JSON.stringify(content ?? {});
 }
 
 /**

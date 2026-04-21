@@ -259,7 +259,7 @@ defmodule OperatelyWeb.Api.Comments.UpdateTest do
       check_in = create_check_in(ctx.person, project)
       {:ok, comment} = Operately.Operations.CommentAdding.run(ctx.person, check_in, "project_check_in", RichText.rich_text("Content"))
 
-      assert comment.content["message"] == RichText.rich_text("Content")
+      assert comment.content == RichText.rich_text("Content")
 
       assert {200, res} =
                mutation(ctx.conn, [:comments, :update], %{
@@ -460,7 +460,7 @@ defmodule OperatelyWeb.Api.Comments.UpdateTest do
         milestone,
         "none",
         %{
-          content: %{"message" => RichText.rich_text("Content")},
+          content: RichText.rich_text("Content"),
           author_id: ctx.creator.id
         }
       )

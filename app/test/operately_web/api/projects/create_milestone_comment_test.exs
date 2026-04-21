@@ -123,7 +123,7 @@ defmodule OperatelyWeb.Api.Projects.CreateMilestoneCommentTest do
 
         comment = hd(comments)
         assert comment.action == @test.action
-        assert comment.comment.content["message"] == @test.result
+        assert comment.comment.content == (@test.result || %{})
       end
     end
 

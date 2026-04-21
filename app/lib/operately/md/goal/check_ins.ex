@@ -53,7 +53,7 @@ defmodule Operately.MD.Goal.CheckIns do
     """
     **#{comment.author.full_name}** on #{render_date(comment.inserted_at)}:
 
-    #{Operately.MD.RichText.render(comment.content["message"])}
+    #{Operately.MD.RichText.render(comment.content)}
     """
   end
 

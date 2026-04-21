@@ -46,7 +46,7 @@ export function useComments(paths: Paths, milestone: Milestones.Milestone, inval
           comment: {
             id: tempId,
             insertedAt: new Date().toISOString(),
-            content: JSON.stringify({ message: content }),
+            content: Comments.stringifyCommentContent(content),
             author: me,
             reactions: [],
           },
@@ -57,7 +57,7 @@ export function useComments(paths: Paths, milestone: Milestones.Milestone, inval
         const res = await Api.projects.createMilestoneComment({
           milestoneId: milestone.id!,
           action: "none",
-          content: JSON.stringify(content),
+          content: Comments.stringifyCommentContent(content),
         });
 
         if (res.comment) {
@@ -80,7 +80,6 @@ export function useComments(paths: Paths, milestone: Milestones.Milestone, inval
     },
     [paths, me, milestone.id],
   );
-
 
   return {
     comments,

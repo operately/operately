@@ -5,6 +5,7 @@ import { TimelineProps, TimelineItem, TaskActivity } from "./types";
 import { Person } from "../CommentSection/types";
 import { Page } from "../Page";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { asRichText } from "../utils/storybook/richContent";
 
 const meta: Meta<typeof Timeline> = {
   title: "Components/Timeline",
@@ -53,7 +54,7 @@ const mockComment: TimelineItem = {
   type: "comment",
   value: {
     id: "comment-1",
-    content: JSON.stringify({ message: "This looks great! I think we should also consider the mobile experience." }),
+    content: JSON.stringify(asRichText("This looks great! I think we should also consider the mobile experience.")),
     author: mockAuthor,
     insertedAt: new Date(Date.now() - 1800000).toISOString(), // 30 min ago
     reactions: [
@@ -213,7 +214,7 @@ export const CommentsOnly: Story = {
         value: {
           ...mockComment.value,
           id: "comment-2",
-          content: JSON.stringify({ message: "I agree! The mobile UX is crucial for this feature." }),
+          content: JSON.stringify(asRichText("I agree! The mobile UX is crucial for this feature.")),
           author: mockUser,
           insertedAt: new Date(Date.now() - 900000).toISOString(), // 15 min ago
         },

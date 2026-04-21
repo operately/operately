@@ -15,7 +15,7 @@ export function useEditComment({ comments, setComments, parentType }: UseEditCom
     setComments((comments) =>
       comments.map((c) => {
         if (c.value.id === commentID) {
-          const comment = { ...c.value, content: JSON.stringify({ message: content }) };
+          const comment = { ...c.value, content: Comments.stringifyCommentContent(content) };
           return parseComment(comment);
         } else {
           return c;
@@ -26,7 +26,7 @@ export function useEditComment({ comments, setComments, parentType }: UseEditCom
     try {
       await edit({
         commentId: commentID,
-        content: JSON.stringify(content),
+        content: Comments.stringifyCommentContent(content),
         parentType,
       });
     } catch {

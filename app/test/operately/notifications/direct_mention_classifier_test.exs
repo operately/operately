@@ -59,8 +59,8 @@ defmodule Operately.Notifications.DirectMentionClassifierTest do
     mention_message = RichText.rich_text(mentioned_people: [ctx.recipient]) |> Jason.decode!()
     plain_message = RichText.rich_text("No one mentioned here")
 
-    mentioned_comment = comment_fixture(ctx.author, %{content: %{"message" => mention_message}})
-    plain_comment = comment_fixture(ctx.author, %{content: %{"message" => plain_message}})
+    mentioned_comment = comment_fixture(ctx.author, %{content: mention_message})
+    plain_comment = comment_fixture(ctx.author, %{content: plain_message})
 
     mentioned_notification =
       notification_struct(
@@ -219,7 +219,7 @@ defmodule Operately.Notifications.DirectMentionClassifierTest do
 
   test "project_milestone_commented only uses comment message when comment_action is none", ctx do
     mention_message = RichText.rich_text(mentioned_people: [ctx.recipient]) |> Jason.decode!()
-    mentioned_comment = comment_fixture(ctx.author, %{content: %{"message" => mention_message}})
+    mentioned_comment = comment_fixture(ctx.author, %{content: mention_message})
 
     plain_comment_notification =
       notification_struct(
