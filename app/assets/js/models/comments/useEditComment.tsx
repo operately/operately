@@ -14,18 +14,16 @@ export function useEditComment<T extends { id?: string | null; content?: any }>(
       const comment = comments.find((c) => c.id && compareIds(c.id, commentId));
 
       try {
+        const nextContent = JSON.stringify(content ?? {});
+
         if (comment) {
-          setComments((prev) =>
-            prev.map((c) =>
-              compareIds(c.id, commentId) ? { ...c, content: JSON.stringify({ message: content }) } : c,
-            ),
-          );
+          setComments((prev) => prev.map((c) => (compareIds(c.id, commentId) ? { ...c, content: nextContent } : c)));
         }
 
         await Api.comments.update({
           commentId,
           parentType,
-          content: JSON.stringify(content),
+          content: nextContent,
         });
 
         invalidateCache();

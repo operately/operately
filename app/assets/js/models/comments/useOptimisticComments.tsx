@@ -32,7 +32,7 @@ export function useOptimisticComments(opts: {
       const optimisticComment: Comments.Comment = {
         id: tempId,
         author: me,
-        content: JSON.stringify({ message: content }),
+        content: stringifyCommentContent(content),
         insertedAt: new Date().toISOString().replace(/\.\d+Z$/, "Z"),
         reactions: [],
       };
@@ -43,7 +43,7 @@ export function useOptimisticComments(opts: {
         const res = await Api.comments.create({
           entityId: taskId,
           entityType: parentType,
-          content: JSON.stringify(content),
+          content: stringifyCommentContent(content),
         });
 
         const realId = res?.comment?.id;
@@ -68,7 +68,7 @@ export function useOptimisticComments(opts: {
 
   const editComment = React.useCallback(
     async (commentId: string, content: any) => {
-      const nextContent = JSON.stringify({ message: content });
+      const nextContent = stringifyCommentContent(content);
       const prevComment = comments.find((c) => c.id === commentId) ?? null;
 
       if (!taskId || !prevComment) {
@@ -82,7 +82,7 @@ export function useOptimisticComments(opts: {
         await Api.comments.update({
           commentId,
           parentType,
-          content: JSON.stringify(content),
+          content: stringifyCommentContent(content),
         });
 
         onAfterMutation?.();
@@ -246,4 +246,8 @@ export function useOptimisticComments(opts: {
     addReaction,
     removeReaction,
   };
+}
+
+function stringifyCommentContent(content: unknown) {
+  return JSON.stringify(content ?? {});
 }

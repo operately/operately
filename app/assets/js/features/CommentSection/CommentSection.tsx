@@ -13,7 +13,7 @@ import { useBoolState } from "@/hooks/useBoolState";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { compareIds } from "@/routes/paths";
-import { CommentParentType } from "@/models/comments";
+import { CommentParentType, parseCommentContent } from "@/models/comments";
 import { useScrollIntoViewOnLoad } from "./useScrollIntoViewOnLoad";
 import {
   Menu,
@@ -28,6 +28,7 @@ import {
   Editor,
   showSuccessToast,
   showErrorToast,
+  emptyContent,
 } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
@@ -92,7 +93,7 @@ function EditComment({ comment, onCancel, form }) {
   const editor = useEditor({
     placeholder: "Write a comment here...",
     className: "min-h-[200px] p-4",
-    content: JSON.parse(comment.content)["message"],
+    content: parseCommentContent(comment.content) ?? emptyContent(),
     handlers,
   });
 
@@ -187,7 +188,7 @@ function ViewComment({ comment, onEdit, onDelete, commentParentType, canComment 
   const addReactionForm = useReactionsForm(entity, comment.reactions);
 
   const testId = "comment-" + comment.id;
-  const content = JSON.parse(comment.content)["message"];
+  const content = parseCommentContent(comment.content);
 
   return (
     <div
@@ -215,9 +216,11 @@ function ViewComment({ comment, onEdit, onDelete, commentParentType, canComment 
           </div>
         </div>
 
-        <div className="mb-2">
-          <RichContent content={content} mentionedPersonLookup={mentionedPersonLookup} />
-        </div>
+        {content && (
+          <div className="mb-2">
+            <RichContent content={content} mentionedPersonLookup={mentionedPersonLookup} />
+          </div>
+        )}
 
         <ReactionList form={addReactionForm} size={20} canAddReaction={canComment} />
       </div>
