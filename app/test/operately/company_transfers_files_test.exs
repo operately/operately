@@ -57,10 +57,15 @@ defmodule Operately.CompanyTransfersFilesTest do
   test "archive helper creates and extracts zip entries" do
     zip_path = Path.join(Paths.root(), "zip/company_transfers_#{System.unique_integer([:positive])}.zip")
     extract_path = Path.join(Paths.root(), "extract/company_transfers_#{System.unique_integer([:positive])}")
+    source_path = Path.join(Paths.root(), "source/company_transfers_#{System.unique_integer([:positive])}.txt")
+
+    File.mkdir_p!(Path.dirname(source_path))
+    File.write!(source_path, "from file")
 
     Archive.create!(zip_path, [
       {"manifest.json", "{\"ok\":true}"},
-      {"nested/hello.txt", "world"}
+      {"nested/hello.txt", "world"},
+      %{path: "copied/source.txt", source_path: source_path}
     ])
 
     extracted_files = Archive.extract!(zip_path, extract_path)
@@ -68,7 +73,9 @@ defmodule Operately.CompanyTransfersFilesTest do
     assert File.exists?(zip_path)
     assert Path.join(extract_path, "manifest.json") in extracted_files
     assert Path.join(extract_path, "nested/hello.txt") in extracted_files
+    assert Path.join(extract_path, "copied/source.txt") in extracted_files
     assert File.read!(Path.join(extract_path, "nested/hello.txt")) == "world"
+    assert File.read!(Path.join(extract_path, "copied/source.txt")) == "from file"
   end
 
   test "export artifacts are published to blob storage", ctx do

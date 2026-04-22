@@ -268,7 +268,7 @@ Implementation should be delivered in vertical slices. Each slice must leave the
 
 13. [x] **PR 13: Transfer blob I/O abstraction.** Build a company-transfer-facing blob I/O interface on top of the existing local/S3 blob helpers, and add the remaining streaming-safe behavior needed for export and import.
 14. [x] **PR 14: Exported blob payload and reference discovery.** Discover the blob rows already present in the exported relational slice, determine which of those blobs need real file payloads in the ZIP, and add a small explicit registry for the live places that reference them: direct blob FK fields (for example `people.avatar_blob_id`, `resource_files.blob_id`, `resource_files.preview_blob_id`) plus blob references inside serialized rich-text/map fields.
-15. [ ] **PR 15: File export/import.** Pack real blob payloads into the ZIP, write imported blob bytes to destination storage, rewrite blob-backed references (`avatar_blob_id`, rich-text blob attrs such as `id`/`src`), and add cleanup on failure.
+15. [x] **PR 15: File export/import.** Pack real blob payloads into the ZIP, write imported blob bytes to destination storage, rewrite blob-backed references (`avatar_blob_id`, rich-text blob attrs such as `id`/`src`), and add cleanup on failure.
 16. [ ] **PR 16: File slice tests.** Add E2E tests for avatars, resource hub files, previews, and rich-text attachments under at least local storage. Add cross-storage tests after local coverage is stable.
 
 **Slice 4 outcome:** the feature is operationally usable by admins, with notifications, cancellation, cleanup, and stronger failure handling.

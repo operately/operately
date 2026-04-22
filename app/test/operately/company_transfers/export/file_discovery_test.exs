@@ -1,6 +1,9 @@
 defmodule Operately.CompanyTransfers.Export.FileDiscoveryTest do
   use Operately.DataCase
 
+  alias Operately.Blobs
+  alias Operately.Blobs.Blob
+  alias Operately.CompanyTransfers.BlobIO
   alias Operately.CompanyTransfers.Export.FileDiscovery
   alias Operately.CompanyTransfers.Package.Paths, as: PackagePaths
   alias Operately.Repo
@@ -43,6 +46,17 @@ defmodule Operately.CompanyTransfers.Export.FileDiscoveryTest do
       ctx
       |> Map.put(:creator, creator)
       |> Map.put(:file, file)
+
+    file_blob = Blobs.get_blob!(ctx.file.blob_id)
+
+    on_exit(fn ->
+      cleanup_blob_storage([ctx.avatar_blob, ctx.embedded_blob, ctx.preview_blob, file_blob])
+    end)
+
+    upload_blob_payload!(ctx.avatar_blob, "avatar payload")
+    upload_blob_payload!(ctx.embedded_blob, "embedded payload")
+    upload_blob_payload!(ctx.preview_blob, "preview payload")
+    upload_blob_payload!(file_blob, "resource file payload")
 
     package = Transfers.export!(ctx.company, ctx.account).package
     discovery = FileDiscovery.discover(package)
@@ -105,5 +119,22 @@ defmodule Operately.CompanyTransfers.Export.FileDiscoveryTest do
       nil -> raise "Blob #{inspect(blob_id)} not found in package"
       blob -> blob
     end
+  end
+
+  defp upload_blob_payload!(blob, content) do
+    source_path = Path.join(System.tmp_dir!(), "blob-payload-#{blob.id}")
+    File.write!(source_path, content)
+    assert {:ok, _blob} = BlobIO.upload_to_blob(blob, source_path)
+    File.rm!(source_path)
+  end
+
+  defp cleanup_blob_storage(blobs) do
+    Enum.each(blobs, fn blob ->
+      _ = File.rm(storage_path(blob))
+    end)
+  end
+
+  defp storage_path(%Blob{} = blob) do
+    Path.join("/media", Blob.path(blob))
   end
 end
