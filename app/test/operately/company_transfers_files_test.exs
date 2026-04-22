@@ -78,6 +78,16 @@ defmodule Operately.CompanyTransfersFilesTest do
     assert File.read!(Path.join(extract_path, "copied/source.txt")) == "from file"
   end
 
+  test "archive helper rejects unsafe entry paths" do
+    zip_path = Path.join(Paths.root(), "zip/company_transfers_#{System.unique_integer([:positive])}.zip")
+
+    assert_raise ArgumentError, ~r/traversal segments/, fn ->
+      Archive.create!(zip_path, [
+        {"../escape.txt", "nope"}
+      ])
+    end
+  end
+
   test "export artifacts are published to blob storage", ctx do
     assert {:ok, run} = CompanyTransfers.create_export_run(ctx.company, ctx.account, %{}, dispatch: false)
     assert {:ok, run, workspace} = CompanyTransfers.prepare_export_workspace(run)

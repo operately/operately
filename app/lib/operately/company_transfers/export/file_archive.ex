@@ -25,6 +25,7 @@ defmodule Operately.CompanyTransfers.Export.FileArchive do
         Enum.map(files, fn %{"blob_id" => blob_id, "path" => relative_path} ->
           blob = Blobs.get_blob!(blob_id)
           source_path = Path.join(staging_root, relative_path)
+          File.mkdir_p!(Path.dirname(source_path))
 
           case BlobIO.download_to_path(blob, source_path) do
             :ok ->

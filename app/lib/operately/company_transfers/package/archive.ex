@@ -51,6 +51,7 @@ defmodule Operately.CompanyTransfers.Package.Archive do
   end
 
   defp write_entry!(staging_root, relative_path, content) do
+    relative_path = normalize_relative_path!(relative_path)
     staged_path = Path.join(staging_root, relative_path)
     File.mkdir_p!(Path.dirname(staged_path))
     File.write!(staged_path, content)
@@ -58,9 +59,28 @@ defmodule Operately.CompanyTransfers.Package.Archive do
   end
 
   defp copy_entry!(staging_root, relative_path, source_path) do
+    relative_path = normalize_relative_path!(relative_path)
     staged_path = Path.join(staging_root, relative_path)
     File.mkdir_p!(Path.dirname(staged_path))
     File.cp!(source_path, staged_path)
     relative_path
+  end
+
+  defp normalize_relative_path!(relative_path) when is_binary(relative_path) do
+    segments = Path.split(relative_path)
+
+    cond do
+      relative_path == "" ->
+        raise ArgumentError, "Archive entry path must not be empty"
+
+      Path.type(relative_path) == :absolute ->
+        raise ArgumentError, "Archive entry path must be relative: #{inspect(relative_path)}"
+
+      Enum.any?(segments, &(&1 in [".", ".."])) ->
+        raise ArgumentError, "Archive entry path must not contain traversal segments: #{inspect(relative_path)}"
+
+      true ->
+        Path.join(segments)
+    end
   end
 end
