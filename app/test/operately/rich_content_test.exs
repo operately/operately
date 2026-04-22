@@ -2,6 +2,7 @@ defmodule Operately.RichContentTest do
   use Operately.DataCase
 
   import Operately.CompaniesFixtures
+  import Operately.BlobsFixtures
   import Operately.PeopleFixtures
   
   alias OperatelyWeb.Paths
@@ -186,6 +187,48 @@ defmodule Operately.RichContentTest do
 
     assert Enum.find(people, & &1.id == ctx.michael.id)
     assert Enum.find(people, & &1.id == ctx.john.id)
+  end
+
+  test ".find_blob_ids/1 returns normalized blob ids from rich text", ctx do
+    blob = blob_fixture(%{company_id: ctx.company.id, author_id: ctx.michael.id})
+
+    document = %{
+      "type" => "doc",
+      "content" => [
+        %{
+          "type" => "blob",
+          "attrs" => %{
+            "id" => Paths.blob_id(blob),
+            "src" => Operately.Blobs.Blob.url(blob),
+            "title" => blob.filename
+          }
+        }
+      ]
+    }
+
+    assert Operately.RichContent.find_blob_ids(document) == [blob.id]
+  end
+
+  test ".find_blob_ids/1 supports legacy blob src maps", ctx do
+    blob = blob_fixture(%{company_id: ctx.company.id, author_id: ctx.michael.id})
+
+    document = %{
+      "type" => "doc",
+      "content" => [
+        %{
+          "type" => "blob",
+          "attrs" => %{
+            "src" => %{
+              "id" => blob.id,
+              "url" => Operately.Blobs.Blob.url(blob)
+            },
+            "title" => blob.filename
+          }
+        }
+      ]
+    }
+
+    assert Operately.RichContent.find_blob_ids(document) == [blob.id]
   end
 
   describe ".tiptap_document?/1" do
