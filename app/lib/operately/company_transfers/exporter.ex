@@ -1,8 +1,8 @@
 defmodule Operately.CompanyTransfers.Exporter do
   alias Operately.Companies.Company
   alias Operately.CompanyTransfers
-  alias Operately.CompanyTransfers.Export.{FileDiscovery, Manifest, RelationalCollector}
-  alias Operately.CompanyTransfers.Package.{Archive, PackageJson}
+  alias Operately.CompanyTransfers.Export.{FileArchive, FileDiscovery, Manifest, RelationalCollector}
+  alias Operately.CompanyTransfers.Package.PackageJson
   alias Operately.Repo
 
   @steps %{
@@ -23,7 +23,7 @@ defmodule Operately.CompanyTransfers.Exporter do
          :ok <- mark_progress(export_run, "writing_package", @steps.writing_package),
          json_meta <- PackageJson.write!(workspace.json_path, payload),
          :ok <- mark_progress(export_run, "publishing_artifacts", @steps.publishing_artifacts),
-         zip_path <- Archive.create!(workspace.zip_path, [%{path: "README.txt", content: "No files are included in this export yet.\n"}]),
+         zip_path <- FileArchive.create!(workspace.zip_path, file_discovery.files),
          {:ok, export_run} <- CompanyTransfers.publish_export_artifacts(export_run, %{json_path: workspace.json_path, zip_path: zip_path}),
          {:ok, export_run} <- complete_export(export_run, manifest, collected, files_count, json_meta) do
       {:ok, export_run}
@@ -66,7 +66,7 @@ defmodule Operately.CompanyTransfers.Exporter do
         |> Map.put("package", %{
           "json_sha256" => json_meta.sha256,
           "json_size_bytes" => json_meta.size_bytes,
-          "zip_placeholder" => true,
+          "zip_placeholder" => files_count == 0,
           "files_count" => files_count
         })
     }
