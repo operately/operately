@@ -1,5 +1,6 @@
 defmodule Operately.Support.CompanyTransfer.Helpers do
   alias Operately.Companies.Company
+  alias Operately.CompanyTransfers.ExportRun
   alias Operately.CompanyTransfers.BlobIO
   alias Operately.CompanyTransfers
   alias Operately.CompanyTransfers.{Exporter, Importer}
@@ -27,12 +28,8 @@ defmodule Operately.Support.CompanyTransfer.Helpers do
     }
   end
 
-  def upload_import_artifacts_as_blobs(import_run, workspace, account) do
-    # Create placeholder zip if it doesn't exist
-    unless File.exists?(workspace.zip_path) do
-      alias Operately.CompanyTransfers.Package.Archive
-      Archive.create!(workspace.zip_path, [%{path: "README.txt", content: "Test import placeholder\n"}])
-    end
+  def upload_import_artifacts_as_blobs(import_run, workspace, account, opts \\ []) do
+    ensure_import_zip!(workspace, opts)
 
     # Get the first person associated with this account to use as blob author
     # Import runs don't have a company yet, so we use any company the account belongs to
@@ -71,12 +68,12 @@ defmodule Operately.Support.CompanyTransfer.Helpers do
     })
   end
 
-  def run_import(package, %Account{} = account) when is_map(package) do
+  def run_import(package, %Account{} = account, opts \\ []) when is_map(package) do
     {:ok, import_run} = CompanyTransfers.create_import_run(account, %{}, dispatch: false)
     {:ok, import_run, workspace} = CompanyTransfers.prepare_import_workspace(import_run)
     _json_meta = PackageJson.write!(workspace.json_path, package)
 
-    {:ok, import_run} = upload_import_artifacts_as_blobs(import_run, workspace, account)
+    {:ok, import_run} = upload_import_artifacts_as_blobs(import_run, workspace, account, opts)
     {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
 
     case Importer.run(import_run) do
@@ -88,8 +85,8 @@ defmodule Operately.Support.CompanyTransfer.Helpers do
     end
   end
 
-  def run_import!(package, %Account{} = account) when is_map(package) do
-    case run_import(package, account) do
+  def run_import!(package, %Account{} = account, opts \\ []) when is_map(package) do
+    case run_import(package, account, opts) do
       {:ok, result} -> result
       {:error, %{reason: reason}} -> raise "Expected import to succeed, got: #{inspect(reason)}"
     end
@@ -104,7 +101,7 @@ defmodule Operately.Support.CompanyTransfer.Helpers do
     imported =
       source.package
       |> mutate_package.()
-      |> run_import!(import_account)
+      |> run_import!(import_account, source_export_run: source.run)
 
     imported_company = Repo.get!(Company, imported.run.company_id)
     reexported = export!(imported_company, reexport_account)
@@ -167,5 +164,21 @@ defmodule Operately.Support.CompanyTransfer.Helpers do
         end
       end)
     end)
+  end
+
+  defp ensure_import_zip!(workspace, opts) do
+    cond do
+      File.exists?(workspace.zip_path) ->
+        :ok
+
+      match?(%ExportRun{}, Keyword.get(opts, :source_export_run)) ->
+        export_run = Keyword.fetch!(opts, :source_export_run)
+        export_run = Repo.preload(export_run, :zip_blob)
+        :ok = BlobIO.download_to_path(export_run.zip_blob, workspace.zip_path)
+
+      true ->
+        alias Operately.CompanyTransfers.Package.Archive
+        Archive.create!(workspace.zip_path, [%{path: "README.txt", content: "Test import placeholder\n"}])
+    end
   end
 end
