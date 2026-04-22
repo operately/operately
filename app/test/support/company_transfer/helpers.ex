@@ -1,5 +1,6 @@
 defmodule Operately.Support.CompanyTransfer.Helpers do
   alias Operately.Companies.Company
+  alias Operately.CompanyTransfers.BlobIO
   alias Operately.CompanyTransfers
   alias Operately.CompanyTransfers.{Exporter, Importer}
   alias Operately.CompanyTransfers.Package.PackageJson
@@ -50,8 +51,7 @@ defmodule Operately.Support.CompanyTransfer.Helpers do
       size: File.stat!(workspace.json_path).size,
       content_type: "application/json"
     })
-    {:ok, json_blob} = Operately.Blobs.Upload.upload(json_blob, workspace.json_path)
-    {:ok, json_blob} = Operately.Blobs.update_blob(json_blob, %{status: :uploaded})
+    {:ok, json_blob} = BlobIO.upload_to_blob(json_blob, workspace.json_path)
 
     # Create and upload ZIP blob
     {:ok, zip_blob} = Operately.Blobs.create_blob(%{
@@ -62,8 +62,7 @@ defmodule Operately.Support.CompanyTransfer.Helpers do
       size: File.stat!(workspace.zip_path).size,
       content_type: "application/zip"
     })
-    {:ok, zip_blob} = Operately.Blobs.Upload.upload(zip_blob, workspace.zip_path)
-    {:ok, zip_blob} = Operately.Blobs.update_blob(zip_blob, %{status: :uploaded})
+    {:ok, zip_blob} = BlobIO.upload_to_blob(zip_blob, workspace.zip_path)
 
     # Update import run with blob IDs
     CompanyTransfers.update_import_run(import_run, %{

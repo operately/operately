@@ -2,6 +2,7 @@ defmodule Operately.CompanyTransfers do
   import Ecto.Query, warn: false
 
   alias Ecto.Multi
+  alias Operately.CompanyTransfers.BlobIO
   alias Operately.CompanyTransfers.{ExportRun, ExportWorker, ImportRun, ImportWorker}
   alias Operately.CompanyTransfers.Package.Workspace
   alias Operately.People.Account
@@ -124,15 +125,14 @@ defmodule Operately.CompanyTransfers do
     export_run = Repo.preload(export_run, [:company, :requested_by])
     person = Operately.People.get_person!(export_run.requested_by, export_run.company)
 
-    # Create blobs and upload files using Blobs helper
-    {:ok, json_blob} = Operately.Blobs.upload_file_to_blob(
+    {:ok, json_blob} = BlobIO.create_and_upload_company_file(
       export_run.company,
       person,
       artifact_paths.json_path,
       "application/json"
     )
 
-    {:ok, zip_blob} = Operately.Blobs.upload_file_to_blob(
+    {:ok, zip_blob} = BlobIO.create_and_upload_company_file(
       export_run.company,
       person,
       artifact_paths.zip_path,
