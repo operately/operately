@@ -1,44 +1,45 @@
-defmodule Operately.CompanyTransfers.RoundTripTest do
-  use Operately.DataCase
+defmodule Operately.Support.Features.CompanyTransfersRoundTripSteps do
+  import ExUnit.Assertions
+  import Ecto.Query
+  import Operately.FeatureSteps
 
   alias Operately.Activities
   alias Operately.Access.{Binding, Context, Group, GroupMembership}
   alias Operately.Companies.Company
-  alias Operately.CompanyTransfers.Package.Paths
   alias Operately.Demo
   alias Operately.People.Person
   alias Operately.Projects.Project
   alias Operately.Repo
   alias Operately.RichContent
   alias Operately.Support.CompanyTransfer.Helpers, as: Transfers
+  alias Operately.Support.Factory
   alias Operately.Support.RichText
   alias OperatelyWeb.Api.Helpers
 
-  setup do
-    on_exit(fn -> File.rm_rf!(Paths.root()) end)
-    {:ok, Factory.setup(%{})}
+  step :setup, ctx do
+    Factory.setup(ctx)
   end
 
-  test "permissions and deferred references survive a round trip", ctx do
-    ctx =
-      ctx
-      |> Factory.add_company_owner(:owner)
-      |> Factory.add_company_admin(:admin)
-      |> Factory.add_company_member(:member)
-      |> Factory.add_space(:space)
-      |> Factory.add_project(:project, :space, creator: :admin)
-      |> Factory.add_project_check_in(:check_in, :project, :admin, status: "caution")
-      |> Factory.set_person_manager(:member, :admin)
-      |> Factory.edit_project_company_members_access(:project, :view_access)
-      |> Factory.edit_project_space_members_access(:project, :comment_access)
+  step :given_permissions_and_deferred_reference_company, ctx do
+    ctx
+    |> Factory.add_company_owner(:owner)
+    |> Factory.add_company_admin(:admin)
+    |> Factory.add_company_member(:member)
+    |> Factory.add_space(:space)
+    |> Factory.add_project(:project, :space, creator: :admin)
+    |> Factory.add_project_check_in(:check_in, :project, :admin, status: "caution")
+    |> Factory.set_person_manager(:member, :admin)
+    |> Factory.edit_project_company_members_access(:project, :view_access)
+    |> Factory.edit_project_space_members_access(:project, :comment_access)
+  end
 
-    round_trip =
-      Transfers.round_trip!(ctx.company, ctx.account,
-        mutate_package: &Transfers.replace_company_short_id(&1, unique_short_id())
-      )
+  step :when_company_round_trips, ctx do
+    Map.put(ctx, :round_trip, round_trip_company!(ctx.company, ctx.account))
+  end
 
-    source_counts = table_row_counts(round_trip.source.package)
-    imported_counts = table_row_counts(round_trip.reexported.package)
+  step :then_permissions_and_deferred_references_match, ctx do
+    source_counts = table_row_counts(ctx.round_trip.source.package)
+    imported_counts = table_row_counts(ctx.round_trip.reexported.package)
 
     assert_counts_doubled(source_counts, imported_counts, [
       "access_contexts",
@@ -47,19 +48,22 @@ defmodule Operately.CompanyTransfers.RoundTripTest do
       "access_bindings"
     ])
 
-    assert permission_snapshot(round_trip.source.package) == permission_snapshot(round_trip.reexported.package)
-    assert company_space_snapshot(round_trip.source.package) == company_space_snapshot(round_trip.reexported.package)
-    assert manager_snapshot(round_trip.source.package) == manager_snapshot(round_trip.reexported.package)
-    assert project_last_check_in_snapshot(round_trip.source.package) == project_last_check_in_snapshot(round_trip.reexported.package)
+    assert permission_snapshot(ctx.round_trip.source.package) == permission_snapshot(ctx.round_trip.reexported.package)
+    assert company_space_snapshot(ctx.round_trip.source.package) == company_space_snapshot(ctx.round_trip.reexported.package)
+    assert manager_snapshot(ctx.round_trip.source.package) == manager_snapshot(ctx.round_trip.reexported.package)
+    assert project_last_check_in_snapshot(ctx.round_trip.source.package) == project_last_check_in_snapshot(ctx.round_trip.reexported.package)
+
+    ctx
   end
 
-  test "rolls the import back when a later foreign key cannot be translated", ctx do
-    ctx =
-      ctx
-      |> Factory.add_space(:space)
-      |> Factory.add_project(:project, :space)
-      |> Factory.add_company_member(:member)
+  step :given_project_company_for_failed_import, ctx do
+    ctx
+    |> Factory.add_space(:space)
+    |> Factory.add_project(:project, :space)
+    |> Factory.add_company_member(:member)
+  end
 
+  step :when_import_uses_missing_project_creator, ctx do
     before_counts = db_counts()
     invalid_creator_id = Ecto.UUID.generate()
 
@@ -70,36 +74,47 @@ defmodule Operately.CompanyTransfers.RoundTripTest do
       |> Transfers.replace_company_short_id(unique_short_id())
       |> Transfers.update_row("projects", ctx.project.id, &Map.put(&1, "creator_id", invalid_creator_id))
 
-    assert {:error, %{reason: {:missing_reference_translation, "projects", "creator_id", "people", ^invalid_creator_id}}} =
-             Transfers.run_import(package, ctx.account)
+    import_result = Transfers.run_import(package, ctx.account)
 
-    assert Repo.get_by(Company, short_id: get_in(package, ["manifest", "source_company", "short_id"])) == nil
-    assert db_counts() == before_counts
+    ctx
+    |> Map.put(:before_counts, before_counts)
+    |> Map.put(:invalid_creator_id, invalid_creator_id)
+    |> Map.put(:package, package)
+    |> Map.put(:import_result, import_result)
   end
 
-  test "re-exported packages keep table counts and core relationships for a rich minimal-slice company", ctx do
-    ctx = build_rich_minimal_slice_company(ctx)
+  step :then_import_is_rolled_back, ctx do
+    invalid_creator_id = ctx.invalid_creator_id
 
-    round_trip =
-      Transfers.round_trip!(ctx.company, ctx.account,
-        mutate_package: &Transfers.replace_company_short_id(&1, unique_short_id())
-      )
+    assert {:error, %{reason: {:missing_reference_translation, "projects", "creator_id", "people", ^invalid_creator_id}}} = ctx.import_result
+    assert Repo.get_by(Company, short_id: get_in(ctx.package, ["manifest", "source_company", "short_id"])) == nil
+    assert db_counts() == ctx.before_counts
 
-    assert table_row_counts(round_trip.source.package) == table_row_counts(round_trip.reexported.package)
-    assert core_relationship_snapshot(round_trip.source.package) == core_relationship_snapshot(round_trip.reexported.package)
+    ctx
+  end
 
-    [source_document] = table_rows(round_trip.source.package, "resource_documents")
-    [imported_document] = table_rows(round_trip.reexported.package, "resource_documents")
-    imported_member = person_row_by_full_name(round_trip.reexported.package, ctx.member.full_name)
+  step :given_rich_minimal_slice_company, ctx do
+    build_rich_minimal_slice_company(ctx)
+  end
+
+  step :then_core_minimal_slice_data_matches, ctx do
+    assert table_row_counts(ctx.round_trip.source.package) == table_row_counts(ctx.round_trip.reexported.package)
+    assert core_relationship_snapshot(ctx.round_trip.source.package) == core_relationship_snapshot(ctx.round_trip.reexported.package)
+
+    [source_document] = table_rows(ctx.round_trip.source.package, "resource_documents")
+    [imported_document] = table_rows(ctx.round_trip.reexported.package, "resource_documents")
+    imported_member = person_row_by_full_name(ctx.round_trip.reexported.package, ctx.member.full_name)
 
     assert mention_labels(imported_document["content"]) == mention_labels(source_document["content"])
     refute RichContent.find_mentioned_ids(imported_document["content"]) == RichContent.find_mentioned_ids(source_document["content"])
 
     assert [imported_mention_id] = RichContent.find_mentioned_ids(imported_document["content"])
     assert {:ok, imported_member["id"]} == Helpers.decode_id(imported_mention_id)
+
+    ctx
   end
 
-  test "milestone comments survive a round trip", ctx do
+  step :given_company_with_milestone_comment, ctx do
     comment_content = RichText.rich_text("Milestone comment survives transfer")
 
     ctx =
@@ -109,34 +124,36 @@ defmodule Operately.CompanyTransfers.RoundTripTest do
       |> Factory.add_project_milestone(:milestone, :project)
       |> Factory.add_comment(:comment, :milestone, content: comment_content)
 
-    round_trip =
-      Transfers.round_trip!(ctx.company, ctx.account,
-        mutate_package: &Transfers.replace_company_short_id(&1, unique_short_id())
-      )
-
-    assert table_row_counts(round_trip.source.package)["milestone_comments"] == 1
-    assert table_row_counts(round_trip.reexported.package)["milestone_comments"] == 1
-    assert table_row_counts(round_trip.source.package)["comments"] == 1
-    assert table_row_counts(round_trip.reexported.package)["comments"] == 1
-
-    [source_comment] = table_rows(round_trip.source.package, "comments")
-    [imported_comment] = table_rows(round_trip.reexported.package, "comments")
-    [source_milestone_comment] = table_rows(round_trip.source.package, "milestone_comments")
-    [imported_milestone_comment] = table_rows(round_trip.reexported.package, "milestone_comments")
-
-    assert source_comment["content"] == comment_content
-    assert imported_comment["content"] == comment_content
-    assert source_milestone_comment["action"] == "none"
-    assert imported_milestone_comment["action"] == "none"
+    Map.put(ctx, :comment_content, comment_content)
   end
 
-  test "imports into a destination with unrelated companies and multiple existing accounts", ctx do
-    ctx =
-      ctx
-      |> Factory.add_space(:space)
-      |> Factory.add_project(:project, :space)
-      |> Factory.add_company_member(:member)
+  step :then_milestone_comments_survive, ctx do
+    assert table_row_counts(ctx.round_trip.source.package)["milestone_comments"] == 1
+    assert table_row_counts(ctx.round_trip.reexported.package)["milestone_comments"] == 1
+    assert table_row_counts(ctx.round_trip.source.package)["comments"] == 1
+    assert table_row_counts(ctx.round_trip.reexported.package)["comments"] == 1
 
+    [source_comment] = table_rows(ctx.round_trip.source.package, "comments")
+    [imported_comment] = table_rows(ctx.round_trip.reexported.package, "comments")
+    [source_milestone_comment] = table_rows(ctx.round_trip.source.package, "milestone_comments")
+    [imported_milestone_comment] = table_rows(ctx.round_trip.reexported.package, "milestone_comments")
+
+    assert source_comment["content"] == ctx.comment_content
+    assert imported_comment["content"] == ctx.comment_content
+    assert source_milestone_comment["action"] == "none"
+    assert imported_milestone_comment["action"] == "none"
+
+    ctx
+  end
+
+  step :given_company_for_existing_account_import, ctx do
+    ctx
+    |> Factory.add_space(:space)
+    |> Factory.add_project(:project, :space)
+    |> Factory.add_company_member(:member)
+  end
+
+  step :given_destination_with_existing_accounts, ctx do
     destination_ctx =
       %{}
       |> Factory.setup()
@@ -146,39 +163,50 @@ defmodule Operately.CompanyTransfers.RoundTripTest do
 
     destination_people_before = Repo.aggregate(Ecto.assoc(destination_ctx.company, :people), :count, :id)
 
-    # Use existing_match's account for reexport since that person will be in the imported company
-    reexport_account = Repo.get!(Operately.People.Account, destination_ctx.existing_match.account_id)
+    ctx
+    |> Map.put(:destination_ctx, destination_ctx)
+    |> Map.put(:destination_people_before, destination_people_before)
+  end
+
+  step :when_import_targets_existing_destination_accounts, ctx do
+    reexport_account = Repo.get!(Operately.People.Account, ctx.destination_ctx.existing_match.account_id)
 
     round_trip =
-      Transfers.round_trip!(ctx.company, ctx.account,
-        import_account: destination_ctx.account,
+      round_trip_company!(ctx.company, ctx.account,
+        import_account: ctx.destination_ctx.account,
         reexport_account: reexport_account,
         mutate_package: fn package ->
           package
-          |> Transfers.replace_company_short_id(unique_short_id())
-          |> Transfers.replace_account_email(ctx.member.account_id, destination_ctx.existing_match.email, destination_ctx.existing_match.full_name)
-          |> Transfers.replace_person_email(ctx.member.id, destination_ctx.existing_match.email, destination_ctx.existing_match.full_name)
+          |> replace_exported_company_short_id()
+          |> Transfers.replace_account_email(ctx.member.account_id, ctx.destination_ctx.existing_match.email, ctx.destination_ctx.existing_match.full_name)
+          |> Transfers.replace_person_email(ctx.member.id, ctx.destination_ctx.existing_match.email, ctx.destination_ctx.existing_match.full_name)
         end
       )
 
+    Map.put(ctx, :round_trip, round_trip)
+  end
+
+  step :then_existing_account_is_reused_without_touching_unrelated_people, ctx do
     imported_person =
       Repo.get_by!(Person,
-        company_id: round_trip.imported_company.id,
-        email: destination_ctx.existing_match.email
+        company_id: ctx.round_trip.imported_company.id,
+        email: ctx.destination_ctx.existing_match.email
       )
 
     imported_people =
-      from(p in Person, where: p.company_id == ^round_trip.imported_company.id, select: {p.full_name, p.account_id})
+      from(p in Person, where: p.company_id == ^ctx.round_trip.imported_company.id, select: {p.full_name, p.account_id})
       |> Repo.all()
       |> Map.new()
 
-    assert imported_person.account_id == destination_ctx.existing_match.account_id
-    assert Repo.aggregate(Ecto.assoc(destination_ctx.company, :people), :count, :id) == destination_people_before
-    refute destination_ctx.other_dest_member.account_id in Map.values(imported_people)
-    refute destination_ctx.loose_account.id in Map.values(imported_people)
+    assert imported_person.account_id == ctx.destination_ctx.existing_match.account_id
+    assert Repo.aggregate(Ecto.assoc(ctx.destination_ctx.company, :people), :count, :id) == ctx.destination_people_before
+    refute ctx.destination_ctx.other_dest_member.account_id in Map.values(imported_people)
+    refute ctx.destination_ctx.loose_account.id in Map.values(imported_people)
+
+    ctx
   end
 
-  test "activity export/import rewrites content ids and preserves missing serialized ids", ctx do
+  step :given_company_with_activity_content_ids, ctx do
     ctx =
       ctx
       |> Factory.add_company_member(:member)
@@ -255,22 +283,36 @@ defmodule Operately.CompanyTransfers.RoundTripTest do
       people: [%{id: ctx.member.id, full_name: "Missing Admin", email: missing_email}]
     })
 
+    ctx
+    |> Map.put(:missing_person_id, missing_person_id)
+    |> Map.put(:missing_email, missing_email)
+  end
+
+  step :when_activity_content_round_trips_with_missing_serialized_person, ctx do
     round_trip =
-      Transfers.round_trip!(ctx.company, ctx.account,
+      round_trip_company!(ctx.company, ctx.account,
         mutate_package: fn package ->
           package
-          |> Transfers.replace_company_short_id(unique_short_id())
-          |> update_missing_admin_activity_id(missing_email, missing_person_id)
+          |> replace_exported_company_short_id()
+          |> update_missing_admin_activity_id(ctx.missing_email, ctx.missing_person_id)
         end
       )
 
-    reexported_package = round_trip.reexported.package
+    Map.put(ctx, :round_trip, round_trip)
+  end
+
+  step :then_activity_content_ids_are_rewritten_and_missing_ids_preserved, ctx do
+    reexported_package = ctx.round_trip.reexported.package
 
     champion_activity = activity_row!(reexported_package, "project_champion_updating")
     space_members_activity = activity_row!(reexported_package, "space_members_added")
     goal_editing_activity = activity_row!(reexported_package, "goal_editing")
     parent_folder_activity = activity_row!(reexported_package, "resource_hub_parent_folder_edited")
-    missing_admin_activity = activity_row!(reexported_package, "company_admin_added", fn row -> row["content"]["people"] |> hd() |> Map.fetch!("email") == missing_email end)
+
+    missing_admin_activity =
+      activity_row!(reexported_package, "company_admin_added", fn row ->
+        row["content"]["people"] |> hd() |> Map.fetch!("email") == ctx.missing_email
+      end)
 
     imported_project = find_named_row!(reexported_package, "projects", ctx.project.name)
     imported_member = person_row_by_full_name(reexported_package, ctx.member.full_name)
@@ -279,7 +321,7 @@ defmodule Operately.CompanyTransfers.RoundTripTest do
     imported_target_three = find_named_row!(reexported_package, "targets", "Revenue")
     [imported_document] = table_rows(reexported_package, "resource_documents")
 
-    assert table_row_counts(round_trip.imported.package)["activities"] == table_row_counts(reexported_package)["activities"]
+    assert table_row_counts(ctx.round_trip.imported.package)["activities"] == table_row_counts(reexported_package)["activities"]
 
     assert champion_activity["content"]["project_id"] == imported_project["id"]
     assert champion_activity["content"]["new_champion_id"] == imported_member["id"]
@@ -288,10 +330,12 @@ defmodule Operately.CompanyTransfers.RoundTripTest do
     assert (goal_editing_activity["content"]["updated_targets"] |> hd() |> Map.fetch!("id")) == imported_target_two["id"]
     assert (goal_editing_activity["content"]["deleted_targets"] |> hd() |> Map.fetch!("id")) == imported_target_three["id"]
     assert parent_folder_activity["content"]["resource_id"] == imported_document["id"]
-    assert (missing_admin_activity["content"]["people"] |> hd() |> Map.fetch!("id")) == missing_person_id
+    assert (missing_admin_activity["content"]["people"] |> hd() |> Map.fetch!("id")) == ctx.missing_person_id
+
+    ctx
   end
 
-  test "comment threads, comments, and reactions survive a round trip", ctx do
+  step :given_company_with_polymorphic_threads_comments_and_reactions, ctx do
     ctx =
       ctx
       |> Factory.add_company_member(:member)
@@ -306,40 +350,31 @@ defmodule Operately.CompanyTransfers.RoundTripTest do
       |> Factory.add_reactions(:project_thread_reaction, :project_discussion, creator: ctx.creator, emoji: "rocket")
       |> Factory.add_reactions(:project_comment_reaction, :project_comment, creator: ctx.member, emoji: "eyes")
 
-    ctx =
-      ctx
-      |> Factory.add_goal_discussion(:goal_discussion, :goal, title: "Goal Thread", message: mention_doc([ctx.member]))
-      |> Factory.add_comment(:goal_comment, :goal_discussion, creator: ctx.creator, content: mention_doc([ctx.member]))
-      |> Factory.add_reactions(:goal_thread_reaction, :goal_discussion, creator: ctx.member, emoji: "tada")
-      |> Factory.add_reactions(:goal_comment_reaction, :goal_comment, creator: ctx.creator, emoji: "heart")
-
-    round_trip =
-      Transfers.round_trip!(ctx.company, ctx.account,
-        mutate_package: &Transfers.replace_company_short_id(&1, unique_short_id())
-      )
-
-    assert table_row_counts(round_trip.source.package)["comment_threads"] == 2
-    assert table_row_counts(round_trip.reexported.package)["comment_threads"] == 2
-    assert table_row_counts(round_trip.source.package)["comments"] == 2
-    assert table_row_counts(round_trip.reexported.package)["comments"] == 2
-    assert table_row_counts(round_trip.source.package)["reactions"] == 4
-    assert table_row_counts(round_trip.reexported.package)["reactions"] == 4
-
-    assert polymorphic_snapshot(round_trip.source.package) == polymorphic_snapshot(round_trip.reexported.package)
-
-    assert_mentions_resolve_to_people(round_trip.reexported.package, "comment_threads", "message")
-    assert_mentions_resolve_to_people(round_trip.reexported.package, "comments", "content")
+    ctx
+    |> Factory.add_goal_discussion(:goal_discussion, :goal, title: "Goal Thread", message: mention_doc([ctx.member]))
+    |> Factory.add_comment(:goal_comment, :goal_discussion, creator: ctx.creator, content: mention_doc([ctx.member]))
+    |> Factory.add_reactions(:goal_thread_reaction, :goal_discussion, creator: ctx.member, emoji: "tada")
+    |> Factory.add_reactions(:goal_comment_reaction, :goal_comment, creator: ctx.creator, emoji: "heart")
   end
 
-  @tag ownership_timeout: 180_000
-  test "a demo-built company can round-trip across the minimal slice", ctx do
-    ctx = Factory.add_account(ctx, :demo_account)
-    previous_demo_setting = Application.get_env(:operately, :demo_builder_allowed)
-    Application.put_env(:operately, :demo_builder_allowed, true)
+  step :then_polymorphic_graph_survives, ctx do
+    assert table_row_counts(ctx.round_trip.source.package)["comment_threads"] == 2
+    assert table_row_counts(ctx.round_trip.reexported.package)["comment_threads"] == 2
+    assert table_row_counts(ctx.round_trip.source.package)["comments"] == 2
+    assert table_row_counts(ctx.round_trip.reexported.package)["comments"] == 2
+    assert table_row_counts(ctx.round_trip.source.package)["reactions"] == 4
+    assert table_row_counts(ctx.round_trip.reexported.package)["reactions"] == 4
 
-    on_exit(fn ->
-      Application.put_env(:operately, :demo_builder_allowed, previous_demo_setting)
-    end)
+    assert polymorphic_snapshot(ctx.round_trip.source.package) == polymorphic_snapshot(ctx.round_trip.reexported.package)
+
+    assert_mentions_resolve_to_people(ctx.round_trip.reexported.package, "comment_threads", "message")
+    assert_mentions_resolve_to_people(ctx.round_trip.reexported.package, "comments", "content")
+
+    ctx
+  end
+
+  step :given_demo_built_company, ctx do
+    ctx = Factory.add_account(ctx, :demo_account)
 
     {:ok, demo_company} =
       Demo.run(
@@ -349,17 +384,25 @@ defmodule Operately.CompanyTransfers.RoundTripTest do
         demo_slice_1_data()
       )
 
+    Map.put(ctx, :demo_company, demo_company)
+  end
+
+  step :when_demo_company_round_trips, ctx do
     round_trip =
-      Transfers.round_trip!(demo_company, ctx.demo_account,
+      round_trip_company!(ctx.demo_company, ctx.demo_account,
         mutate_package: fn package ->
           package
-          |> Transfers.replace_company_short_id(unique_short_id())
+          |> replace_exported_company_short_id()
           |> refresh_unique_tokens()
         end
       )
 
-    source_counts = table_row_counts(round_trip.source.package)
-    imported_counts = table_row_counts(round_trip.reexported.package)
+    Map.put(ctx, :round_trip, round_trip)
+  end
+
+  step :then_demo_slice_matches, ctx do
+    source_counts = table_row_counts(ctx.round_trip.source.package)
+    imported_counts = table_row_counts(ctx.round_trip.reexported.package)
 
     assert_counts_doubled(source_counts, imported_counts, [
       "people",
@@ -371,9 +414,20 @@ defmodule Operately.CompanyTransfers.RoundTripTest do
       "tasks"
     ])
 
-    assert source_counts == table_row_counts(round_trip.reexported.package)
-    assert company_space_snapshot(round_trip.source.package) == company_space_snapshot(round_trip.reexported.package)
-    assert manager_snapshot(round_trip.source.package) == manager_snapshot(round_trip.reexported.package)
+    assert source_counts == table_row_counts(ctx.round_trip.reexported.package)
+    assert company_space_snapshot(ctx.round_trip.source.package) == company_space_snapshot(ctx.round_trip.reexported.package)
+    assert manager_snapshot(ctx.round_trip.source.package) == manager_snapshot(ctx.round_trip.reexported.package)
+
+    ctx
+  end
+
+  defp round_trip_company!(company, export_account, opts \\ []) do
+    default_opts = [mutate_package: &replace_exported_company_short_id/1]
+    Transfers.round_trip!(company, export_account, Keyword.merge(default_opts, opts))
+  end
+
+  defp replace_exported_company_short_id(package) do
+    Transfers.replace_company_short_id(package, unique_short_id())
   end
 
   defp build_rich_minimal_slice_company(ctx) do
@@ -784,8 +838,7 @@ defmodule Operately.CompanyTransfers.RoundTripTest do
   end
 
   defp refresh_unique_tokens(package) do
-    package
-    |> refresh_table_tokens("invite_links")
+    refresh_table_tokens(package, "invite_links")
   end
 
   defp refresh_table_tokens(package, table_name) do
@@ -832,7 +885,10 @@ defmodule Operately.CompanyTransfers.RoundTripTest do
   end
 
   defp update_missing_admin_activity_id(package, email, missing_person_id) do
-    activity = activity_row!(package, "company_admin_added", fn row -> row["content"]["people"] |> hd() |> Map.fetch!("email") == email end)
+    activity =
+      activity_row!(package, "company_admin_added", fn row ->
+        row["content"]["people"] |> hd() |> Map.fetch!("email") == email
+      end)
 
     Transfers.update_row(package, "activities", activity["id"], fn row ->
       update_in(row, ["content", "people"], fn people ->
