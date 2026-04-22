@@ -1,5 +1,6 @@
 defmodule Operately.CompanyTransfers.Importer do
   alias Operately.CompanyTransfers
+  alias Operately.CompanyTransfers.BlobIO
   alias Operately.CompanyTransfers.Import.{Package, RelationalImporter, Validator}
   alias Operately.Repo
 
@@ -38,11 +39,10 @@ defmodule Operately.CompanyTransfers.Importer do
         {:error, {:package_not_found, "No JSON blob associated with import run"}}
 
       true ->
-        # Download blob to temporary workspace using Blobs helper
         workspace = Operately.CompanyTransfers.Package.Workspace.prepare!(:import, import_run.id)
         json_path = Path.join(workspace.root_path, "data.json")
 
-        case Operately.Blobs.download_blob_to_file(import_run.json_blob, json_path) do
+        case BlobIO.download_to_path(import_run.json_blob, json_path) do
           :ok -> {:ok, json_path}
           {:error, reason} -> {:error, {:package_not_found, reason}}
         end

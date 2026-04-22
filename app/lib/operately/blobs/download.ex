@@ -49,11 +49,10 @@ defmodule Operately.Blobs.Download do
     def download(%Blob{} = blob, dest_path) do
       bucket = S3Config.bucket!()
       path = Blob.path(blob)
+      File.mkdir_p!(Path.dirname(dest_path))
 
-      case ExAws.S3.get_object(bucket, path) |> ExAws.request() do
-        {:ok, %{body: body}} ->
-          File.mkdir_p!(Path.dirname(dest_path))
-          File.write!(dest_path, body)
+      case ExAws.S3.download_file(bucket, path, dest_path) |> ExAws.request() do
+        {:ok, _result} ->
           :ok
 
         {:error, reason} ->
