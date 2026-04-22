@@ -3,7 +3,7 @@ import * as People from "@/models/people";
 import * as ReactionsModel from "@/models/reactions";
 import * as Time from "@/utils/time";
 import { Timeline, parseContent, richContentToString } from "turboui";
-import { Paths } from "@/routes/paths";
+import { Paths, compareIds, includesId } from "@/routes/paths";
 import { parseContextualDate } from "../contextualDates";
 
 interface ParsedMilestonesForTurboUi {
@@ -103,28 +103,31 @@ export function splitByStatus(milestones: Milestone[]) {
   };
 }
 
-function normalizeOrderingState(orderingState: string[], milestoneIds: string[]): string[] {
+export function normalizeOrderingState(orderingState: string[], milestoneIds: string[]): string[] {
   if (milestoneIds.length === 0) {
     return [];
   }
 
-  const knownMilestoneIds = new Set(milestoneIds);
-  const seen = new Set<string>();
+  const seen: string[] = [];
   const normalized: string[] = [];
 
-  (orderingState || []).forEach((id) => {
-    if (!knownMilestoneIds.has(id)) return;
-    if (seen.has(id)) return;
+  // First, add IDs from orderingState that exist in milestoneIds
+  // Important: push the actual milestone ID, not the ordering ID, to maintain consistent format
+  orderingState.forEach((orderingId) => {
+    const matchingMilestoneId = milestoneIds.find((mId) => compareIds(mId, orderingId));
+    if (!matchingMilestoneId) return;
+    if (includesId(seen, matchingMilestoneId)) return;
 
-    normalized.push(id);
-    seen.add(id);
+    normalized.push(matchingMilestoneId);
+    seen.push(matchingMilestoneId);
   });
 
+  // Then, add any remaining milestones that weren't in the ordering
   milestoneIds.forEach((id) => {
-    if (seen.has(id)) return;
+    if (includesId(seen, id)) return;
 
     normalized.push(id);
-    seen.add(id);
+    seen.push(id);
   });
 
   return normalized;

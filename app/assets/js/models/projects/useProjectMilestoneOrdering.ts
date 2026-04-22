@@ -3,6 +3,7 @@ import * as React from "react";
 import Api from "@/api";
 import { PageCache } from "@/routes/PageCache";
 import { showErrorToast, TaskBoard } from "turboui";
+import { normalizeOrderingState } from "@/models/milestones";
 
 interface UseProjectMilestoneOrderingOptions {
   projectId: string;
@@ -37,7 +38,7 @@ export function useProjectMilestoneOrdering({
   const initialDataRef = React.useRef<{ milestones: TaskBoard.Milestone[]; ordering: string[] } | null>(null);
 
   if (!initialDataRef.current) {
-    const ordering = normalizeMilestoneOrdering(initialOrderingState, initialMilestones);
+    const ordering = normalizeOrderingState(initialOrderingState, initialMilestones.map(m => m.id));
     initialDataRef.current = {
       milestones: reorderMilestonesByIds(initialMilestones, ordering),
       ordering,
@@ -58,7 +59,7 @@ export function useProjectMilestoneOrdering({
       setMilestonesState((prev) => {
         const next =
           typeof update === "function" ? (update as (value: TaskBoard.Milestone[]) => TaskBoard.Milestone[])(prev) : update;
-        const normalized = normalizeMilestoneOrdering(orderingRef.current, next);
+        const normalized = normalizeOrderingState(orderingRef.current, next.map(m => m.id));
 
         setOrderingState((prevOrdering) => (arraysEqual(prevOrdering, normalized) ? prevOrdering : normalized));
 
@@ -96,7 +97,7 @@ export function useProjectMilestoneOrdering({
         const serverOrdering = response.project?.milestonesOrderingState || updatedOrder;
 
         setMilestonesState((prev) => {
-          const normalized = normalizeMilestoneOrdering(serverOrdering, prev);
+          const normalized = normalizeOrderingState(serverOrdering, prev.map(m => m.id));
           setOrderingState((prevOrdering) => (arraysEqual(prevOrdering, normalized) ? prevOrdering : normalized));
           return reorderMilestonesByIds(prev, normalized);
         });
@@ -123,36 +124,6 @@ export function useProjectMilestoneOrdering({
   };
 }
 
-// Builds a deduped sequence that preserves known ids, discards stale ones, 
-// and appends unseen milestones at the end so data is never dropped.
-function normalizeMilestoneOrdering(ordering: string[] | undefined, milestones: TaskBoard.Milestone[]): string[] {
-  if (milestones.length === 0) {
-    return [];
-  }
-
-  const milestoneIds = milestones.map((milestone) => milestone.id);
-  const idSet = new Set(milestoneIds);
-  const seen = new Set<string>();
-  const normalized: string[] = [];
-
-  (ordering || []).forEach((id) => {
-    if (!idSet.has(id)) return;
-    if (seen.has(id)) return;
-
-    normalized.push(id);
-    seen.add(id);
-  });
-
-  milestoneIds.forEach((id) => {
-    if (seen.has(id)) return;
-
-    normalized.push(id);
-    seen.add(id);
-  });
-
-  return normalized;
-}
-
 // Converts the normalized ordering back into milestone objects, 
 // skipping ids that are no longer present in the map.
 function reorderMilestonesByIds(
@@ -163,11 +134,12 @@ function reorderMilestonesByIds(
     return [];
   }
 
-  const map = new Map(milestones.map((milestone) => [milestone.id, milestone] as const));
-  const normalized = normalizeMilestoneOrdering(ordering, milestones);
+  const milestoneIds = milestones.map(m => m.id);
+  const normalized = normalizeOrderingState(ordering, milestoneIds);
+  const milestoneMap = new Map(milestones.map((m) => [m.id, m]));
 
   return normalized
-    .map((id) => map.get(id))
+    .map((id) => milestoneMap.get(id))
     .filter((milestone): milestone is TaskBoard.Milestone => Boolean(milestone));
 }
 
@@ -198,9 +170,3 @@ function arraysEqual(a: string[], b: string[]): boolean {
   }
   return true;
 }
-
-export const __testExports = {
-  normalizeMilestoneOrdering,
-  reorderMilestonesByIds,
-  moveMilestoneId,
-};
