@@ -42,20 +42,36 @@ defmodule OperatelyEmail.Emails.ProjectMilestoneCommentedEmail do
     end
   end
 
+  def headline_text(milestone, action) do
+    case action do
+      "none" -> "commented on the milestone \"#{milestone.title}\""
+      "complete" -> "completed the milestone \"#{milestone.title}\""
+      "reopen" -> "re-opened the milestone \"#{milestone.title}\""
+      _ -> raise "Unknown action: #{action}"
+    end
+  end
+
   def buffered_item(_person, activity) do
     milestone = Operately.Projects.get_milestone!(activity.content["milestone_id"])
     comment = Operately.Updates.get_comment!(activity.content["comment_id"])
     content = comment.content
+    action = activity.content["comment_action"]
     author = Operately.Repo.preload(activity, :author).author
     company = Operately.Repo.preload(author, :company).company
     parent = OperatelyEmail.DigestParent.for_milestone(milestone)
-    %{html: excerpt_html, text: excerpt_text} = OperatelyEmail.RichTextExcerpt.excerpt(content)
+
+    {excerpt_html, excerpt_text} = if action == "none" do
+      %{html: html, text: text} = OperatelyEmail.RichTextExcerpt.excerpt(content)
+      {html, text}
+    else
+      {nil, nil}
+    end
 
     %{
       parent_id: parent.id,
       parent_type: parent.type,
       parent_name: parent.name,
-      headline: "commented on the milestone \"#{milestone.title}\"",
+      headline: headline_text(milestone, action),
       excerpt_html: excerpt_html,
       excerpt_text: excerpt_text,
       item_url: OperatelyWeb.Paths.project_milestone_path(company, milestone) |> OperatelyWeb.Paths.to_url(),
