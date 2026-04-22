@@ -109,12 +109,39 @@ defmodule Operately.CompanyTransfers.Import.Validator do
     end
   end
 
-  defp validate_files(errors, %Package{files: []}), do: errors
+  defp validate_files(errors, %Package{manifest: manifest, files: files}) do
+    errors
+    |> validate_files_count(manifest, files)
+    |> validate_file_entries(files)
+  end
 
-  defp validate_files(errors, %Package{files: files}) do
-    [error("files_not_supported_yet", "This import slice does not support file payloads yet", %{
-       "files_count" => length(files)
-     }) | errors]
+  defp validate_files_count(errors, manifest, files) do
+    expected = manifest["files_count"] || 0
+    actual = length(files)
+
+    if expected == actual do
+      errors
+    else
+      [error("file_count_mismatch", "Manifest files_count does not match package files", %{
+         "expected" => expected,
+         "actual" => actual
+       }) | errors]
+    end
+  end
+
+  defp validate_file_entries(errors, files) do
+    invalid_paths =
+      files
+      |> Enum.filter(&(not valid_file_entry?(&1)))
+      |> Enum.map(&Map.get(&1, "path"))
+
+    if invalid_paths == [] do
+      errors
+    else
+      [error("invalid_file_entries", "Package contains invalid file entries", %{
+         "paths" => invalid_paths
+       }) | errors]
+    end
   end
 
   defp normalized_email(%{"email" => email}) when is_binary(email) do
@@ -122,6 +149,12 @@ defmodule Operately.CompanyTransfers.Import.Validator do
   end
 
   defp normalized_email(_), do: nil
+
+  defp valid_file_entry?(%{"blob_id" => blob_id, "path" => path}) when is_binary(blob_id) and is_binary(path) do
+    not String.starts_with?(path, "/") and not String.contains?(path, "../")
+  end
+
+  defp valid_file_entry?(_), do: false
 
   defp load_schema_migrations do
     case Repo.query("SELECT version FROM schema_migrations ORDER BY version", []) do

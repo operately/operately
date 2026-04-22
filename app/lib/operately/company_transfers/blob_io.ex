@@ -9,6 +9,7 @@ defmodule Operately.CompanyTransfers.BlobIO do
 
   alias Operately.Blobs
   alias Operately.Blobs.Blob
+  alias Operately.Blobs.S3Config
   alias Operately.Companies.Company
   alias Operately.People.Person
 
@@ -25,5 +26,30 @@ defmodule Operately.CompanyTransfers.BlobIO do
 
   def download_to_path(%Blob{} = blob, dest_path) do
     Blobs.download_blob_to_file(blob, dest_path)
+  end
+
+  def delete(%Blob{} = blob) do
+    case blob.storage_type do
+      :local ->
+        blob
+        |> Blob.path()
+        |> then(&Path.join("/media", &1))
+        |> File.rm()
+        |> case do
+          :ok -> :ok
+          {:error, :enoent} -> :ok
+          {:error, reason} -> {:error, reason}
+        end
+
+      :s3 ->
+        blob
+        |> Blob.path()
+        |> then(fn path -> ExAws.S3.delete_object(S3Config.bucket!(), path) end)
+        |> ExAws.request()
+        |> case do
+          {:ok, _} -> :ok
+          {:error, reason} -> {:error, reason}
+        end
+    end
   end
 end

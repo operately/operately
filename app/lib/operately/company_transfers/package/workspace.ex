@@ -12,7 +12,8 @@ defmodule Operately.CompanyTransfers.Package.Workspace do
       run_id: run_id,
       root_path: root_path,
       json_path: Paths.staged_json_path(kind, run_id),
-      zip_path: Paths.staged_zip_path(kind, run_id)
+      zip_path: Paths.staged_zip_path(kind, run_id),
+      files_path: Path.join(root_path, "files")
     }
   end
 
@@ -23,13 +24,14 @@ defmodule Operately.CompanyTransfers.Package.Workspace do
     :ok
   end
 
-  def metadata(%{kind: kind, run_id: run_id, root_path: root_path, json_path: json_path, zip_path: zip_path}) do
+  def metadata(%{kind: kind, run_id: run_id, root_path: root_path, json_path: json_path, zip_path: zip_path, files_path: files_path}) do
     %{
       "kind" => Atom.to_string(kind),
       "run_id" => run_id,
       "root_path" => root_path,
       "json_path" => json_path,
-      "zip_path" => zip_path
+      "zip_path" => zip_path,
+      "files_path" => files_path
     }
   end
 end

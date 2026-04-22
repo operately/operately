@@ -59,6 +59,7 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
        %{
          company_id: TranslationPlan.imported_company_id(plan, package),
          account_resolution: account_resolution,
+         blob_id_map: Map.get(plan.id_map, "blobs", %{}),
          rows_count: package.manifest["rows_count"] || 0,
          tables_count: package.manifest["tables_count"] || 0,
          files_count: package.manifest["files_count"] || 0
@@ -133,6 +134,7 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
   defp apply_translations(row, table, plan) do
     row
     |> translate_primary_key(table, plan)
+    |> handle_blob_storage_type(table)
     |> handle_company_short_id(table)
     |> PolymorphicReferenceTranslator.translate_row(table, plan)
     |> case do
@@ -153,6 +155,12 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
         row
     end
   end
+
+  defp handle_blob_storage_type(row, "blobs") do
+    Map.put(row, "storage_type", Application.get_env(:operately, :storage_type))
+  end
+
+  defp handle_blob_storage_type(row, _table), do: row
 
   defp handle_company_short_id(row, "companies") do
     case row["short_id"] do
