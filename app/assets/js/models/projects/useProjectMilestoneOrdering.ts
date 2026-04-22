@@ -170,8 +170,3 @@ function arraysEqual(a: string[], b: string[]): boolean {
   }
   return true;
 }
-
-export const __testExports = {
-  reorderMilestonesByIds,
-  moveMilestoneId,
-};
