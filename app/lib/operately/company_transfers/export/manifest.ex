@@ -24,7 +24,7 @@ defmodule Operately.CompanyTransfers.Export.Manifest do
     }
   end
 
-  def summary(manifest, collected, file_count) do
+  def summary(manifest, collected) do
     %{
       "package_format_version" => manifest["package_format_version"],
       "slice" => manifest["slice"],
@@ -32,7 +32,7 @@ defmodule Operately.CompanyTransfers.Export.Manifest do
       "source_company" => manifest["source_company"],
       "tables_count" => collected.non_empty_tables_count,
       "rows_count" => collected.rows_count,
-      "files_count" => file_count
+      "files_count" => manifest["files_count"]
     }
   end
 
