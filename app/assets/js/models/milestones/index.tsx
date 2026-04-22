@@ -113,7 +113,7 @@ export function normalizeOrderingState(orderingState: string[], milestoneIds: st
 
   // First, add IDs from orderingState that exist in milestoneIds
   // Important: push the actual milestone ID, not the ordering ID, to maintain consistent format
-  (orderingState || []).forEach((orderingId) => {
+  orderingState.forEach((orderingId) => {
     const matchingMilestoneId = milestoneIds.find((mId) => compareIds(mId, orderingId));
     if (!matchingMilestoneId) return;
     if (includesId(seen, matchingMilestoneId)) return;

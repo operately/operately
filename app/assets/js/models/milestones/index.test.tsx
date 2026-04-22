@@ -85,9 +85,9 @@ describe("normalizeOrderingState", () => {
       expect(ordering).toEqual([]);
     });
 
-    it("returns all milestone IDs when ordering is undefined", () => {
+    it("returns all milestone IDs when ordering is empty", () => {
       const milestoneIds = ["m1", "m2", "m3"];
-      const ordering = normalizeOrderingState(undefined as any, milestoneIds);
+      const ordering = normalizeOrderingState([], milestoneIds);
 
       expect(ordering).toEqual(["m1", "m2", "m3"]);
     });
