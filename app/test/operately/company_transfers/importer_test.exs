@@ -4,7 +4,10 @@ defmodule Operately.CompanyTransfers.ImporterTest do
 
   alias Operately.Activities
   alias Operately.Activities.Activity
+  alias Operately.Blobs
+  alias Operately.Blobs.Blob
   alias Operately.Companies.Company
+  alias Operately.CompanyTransfers.BlobIO
   alias Operately.CompanyTransfers
   alias Operately.CompanyTransfers.{Exporter, Importer}
   alias Operately.CompanyTransfers.Package.{PackageJson, Paths}
@@ -12,8 +15,10 @@ defmodule Operately.CompanyTransfers.ImporterTest do
   alias Operately.People.Account
   alias Operately.People.Person
   alias Operately.Projects.Project
+  alias Operately.ResourceHubs.Document
   alias Operately.Repo
   alias Operately.Support.CompanyTransfer.Helpers, as: Transfers
+  alias OperatelyWeb.Paths, as: WebPaths
 
   setup do
     on_exit(fn -> File.rm_rf!(Paths.root()) end)
@@ -284,6 +289,64 @@ defmodule Operately.CompanyTransfers.ImporterTest do
     assert {:error, {:missing_reference_translation, "activities", "access_context_id", "access_contexts", ^missing_access_context_id}} = Importer.run(import_run)
   end
 
+  test "run/1 uploads blob payloads and rewrites blob references in rich text", ctx do
+    ctx =
+      ctx
+      |> Factory.add_blob(:embedded_blob)
+      |> Factory.add_space(:space)
+      |> Factory.add_resource_hub(:hub, :space, :creator)
+
+    ctx =
+      ctx
+      |> Factory.add_document(:document, :hub, content: blob_document(ctx.embedded_blob))
+
+    on_exit(fn ->
+      cleanup_blob_storage([ctx.embedded_blob])
+    end)
+
+    upload_blob_payload!(ctx.embedded_blob, "embedded payload")
+
+    assert {:ok, export_run} = CompanyTransfers.create_export_run(ctx.company, ctx.account, %{}, dispatch: false)
+    assert {:ok, export_run} = CompanyTransfers.mark_export_run_running(export_run)
+    assert {:ok, export_run} = Exporter.run(export_run)
+
+    assert {:ok, import_run} =
+             CompanyTransfers.create_import_run(
+               ctx.account,
+               %{
+                 json_blob_id: export_run.json_blob_id,
+                 zip_blob_id: export_run.zip_blob_id
+               },
+               dispatch: false
+             )
+
+    assert {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
+    assert {:ok, completed_run} = Importer.run(import_run)
+
+    imported_document =
+      Repo.one!(
+        from d in Document,
+          join: n in assoc(d, :node),
+          join: h in assoc(n, :resource_hub),
+          join: s in assoc(h, :space),
+          where: s.company_id == ^completed_run.company_id,
+          where: n.name == "Document"
+      )
+
+    [imported_blob_id] = Operately.RichContent.Blob.find_ids(imported_document.content)
+    imported_blob = Blobs.get_blob!(imported_blob_id)
+
+    assert imported_blob.id != ctx.embedded_blob.id
+    assert imported_blob.storage_type == String.to_existing_atom(Application.get_env(:operately, :storage_type))
+    assert File.read!(storage_path(imported_blob)) == "embedded payload"
+
+    [blob_node] = imported_document.content["content"]
+    assert blob_node["attrs"]["id"] == WebPaths.blob_id(imported_blob)
+    assert blob_node["attrs"]["src"] == Blob.url(imported_blob)
+
+    _ = File.rm(storage_path(imported_blob))
+  end
+
   defp export_and_stage_import(ctx, mutate_package \\ & &1) do
     package = export_package(ctx, mutate_package)
     stage_import(ctx.account, package)
@@ -378,6 +441,40 @@ defmodule Operately.CompanyTransfers.ImporterTest do
 
   defp unique_short_id do
     1_000_000 + System.unique_integer([:positive])
+  end
+
+  defp blob_document(blob) do
+    %{
+      "type" => "doc",
+      "content" => [
+        %{
+          "type" => "blob",
+          "attrs" => %{
+            "id" => WebPaths.blob_id(blob),
+            "src" => Blob.url(blob),
+            "title" => blob.filename,
+            "filetype" => blob.content_type
+          }
+        }
+      ]
+    }
+  end
+
+  defp upload_blob_payload!(blob, content) do
+    source_path = Path.join(System.tmp_dir!(), "blob-payload-#{blob.id}")
+    File.write!(source_path, content)
+    assert {:ok, _blob} = BlobIO.upload_to_blob(blob, source_path)
+    File.rm!(source_path)
+  end
+
+  defp cleanup_blob_storage(blobs) do
+    Enum.each(blobs, fn blob ->
+      _ = File.rm(storage_path(blob))
+    end)
+  end
+
+  defp storage_path(%Blob{} = blob) do
+    Path.join("/media", Blob.path(blob))
   end
 
   defp create_transfer_activity!(author, action, content) do

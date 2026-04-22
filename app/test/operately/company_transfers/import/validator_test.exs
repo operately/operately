@@ -91,16 +91,43 @@ defmodule Operately.CompanyTransfers.Import.ValidatorTest do
            ]
   end
 
-  test "validate/1 rejects packages with files in this slice" do
+  test "validate/1 accepts packages with matching file metadata" do
     package =
       build_package(%{
+        manifest: %{"files_count" => 1},
+        files: [
+          %{"path" => "avatars/a.png", "blob_id" => Ecto.UUID.generate()}
+        ]
+      })
+
+    assert :ok = Validator.validate(package)
+  end
+
+  test "validate/1 rejects packages whose manifest files_count does not match package files" do
+    package =
+      build_package(%{
+        manifest: %{"files_count" => 2},
         files: [
           %{"path" => "avatars/a.png", "blob_id" => Ecto.UUID.generate()}
         ]
       })
 
     assert {:error, errors} = Validator.validate(package)
-    assert find_error(errors, "files_not_supported_yet")["details"]["files_count"] == 1
+    assert find_error(errors, "file_count_mismatch")["details"]["expected"] == 2
+    assert find_error(errors, "file_count_mismatch")["details"]["actual"] == 1
+  end
+
+  test "validate/1 rejects invalid file entries" do
+    package =
+      build_package(%{
+        manifest: %{"files_count" => 1},
+        files: [
+          %{"path" => "../avatars/a.png", "blob_id" => Ecto.UUID.generate()}
+        ]
+      })
+
+    assert {:error, errors} = Validator.validate(package)
+    assert find_error(errors, "invalid_file_entries")["details"]["paths"] == ["../avatars/a.png"]
   end
 
   test "validate/1 accumulates errors in check order" do
@@ -110,7 +137,8 @@ defmodule Operately.CompanyTransfers.Import.ValidatorTest do
           "package_format_version" => 2,
           "slice" => "full_migration",
           "operately_version" => "0.0.0-test",
-          "schema_migrations" => [999_999_999]
+          "schema_migrations" => [999_999_999],
+          "files_count" => 1
         },
         tables: [],
         files: [%{"path" => "files.zip"}]
@@ -124,7 +152,7 @@ defmodule Operately.CompanyTransfers.Import.ValidatorTest do
              "operately_version_mismatch",
              "schema_migration_mismatch",
              "invalid_company_count",
-             "files_not_supported_yet"
+             "invalid_file_entries"
            ]
   end
 

@@ -2,8 +2,11 @@ defmodule Operately.CompanyTransfers.ExporterTest do
   use Operately.DataCase
 
   alias Operately.CompanyTransfers
+  alias Operately.CompanyTransfers.BlobIO
   alias Operately.CompanyTransfers.{ExportRun, Exporter}
   alias Operately.CompanyTransfers.Package.{Archive, PackageJson, Paths}
+  alias Operately.Blobs
+  alias Operately.Blobs.Blob
   alias Operately.Repo
   alias Operately.ResourceHubs.File, as: ResourceHubFile
   alias OperatelyWeb.Paths, as: WebPaths
@@ -123,6 +126,17 @@ defmodule Operately.CompanyTransfers.ExporterTest do
       |> Map.put(:creator, creator)
       |> Map.put(:file, file)
 
+    file_blob = Blobs.get_blob!(ctx.file.blob_id)
+
+    on_exit(fn ->
+      cleanup_blob_storage([ctx.avatar_blob, ctx.embedded_blob, ctx.preview_blob, file_blob])
+    end)
+
+    upload_blob_payload!(ctx.avatar_blob, "avatar payload")
+    upload_blob_payload!(ctx.embedded_blob, "embedded payload")
+    upload_blob_payload!(ctx.preview_blob, "preview payload")
+    upload_blob_payload!(file_blob, "resource file payload")
+
     assert {:ok, run} = CompanyTransfers.create_export_run(ctx.company, ctx.account, %{}, dispatch: false)
     assert {:ok, run} = CompanyTransfers.mark_export_run_running(run)
     assert {:ok, completed_run} = Exporter.run(run)
@@ -145,6 +159,43 @@ defmodule Operately.CompanyTransfers.ExporterTest do
     assert package["manifest"]["files_count"] == 4
     assert completed_run.artifacts_metadata["package"]["files_count"] == 4
     assert completed_run.manifest_summary["files_count"] == 4
+    assert completed_run.artifacts_metadata["package"]["zip_placeholder"] == false
+  end
+
+  test "run/1 writes referenced blob payloads into the zip artifact", ctx do
+    ctx =
+      ctx
+      |> Factory.add_blob(:embedded_blob)
+      |> Factory.add_space(:space)
+      |> Factory.add_resource_hub(:hub, :space, :creator)
+
+    ctx =
+      ctx
+      |> Factory.add_document(:document, :hub, content: blob_document(ctx.embedded_blob))
+
+    on_exit(fn ->
+      cleanup_blob_storage([ctx.embedded_blob])
+    end)
+
+    upload_blob_payload!(ctx.embedded_blob, "embedded payload")
+
+    assert {:ok, run} = CompanyTransfers.create_export_run(ctx.company, ctx.account, %{}, dispatch: false)
+    assert {:ok, run} = CompanyTransfers.mark_export_run_running(run)
+    assert {:ok, completed_run} = Exporter.run(run)
+
+    completed_run = Repo.preload(completed_run, :zip_blob)
+    temp_zip_path = Path.join(System.tmp_dir!(), "export_test_payloads_#{completed_run.id}.zip")
+    :ok = Operately.Blobs.download_blob_to_file(completed_run.zip_blob, temp_zip_path)
+
+    extract_dir = Path.join(Paths.root(), "extract-#{Ecto.UUID.generate()}")
+    extracted_paths = Archive.extract!(temp_zip_path, extract_dir)
+
+    embedded_path = Path.join(extract_dir, Path.join(["blobs", ctx.embedded_blob.id, ctx.embedded_blob.filename]))
+
+    assert embedded_path in extracted_paths
+    assert File.read!(embedded_path) == "embedded payload"
+
+    File.rm!(temp_zip_path)
   end
 
   test "run/1 returns company_not_found when the source company does not exist", ctx do
@@ -207,5 +258,22 @@ defmodule Operately.CompanyTransfers.ExporterTest do
       nil -> raise "Blob #{inspect(blob_id)} not found in package"
       blob -> blob
     end
+  end
+
+  defp upload_blob_payload!(blob, content) do
+    source_path = Path.join(System.tmp_dir!(), "blob-payload-#{blob.id}")
+    File.write!(source_path, content)
+    assert {:ok, _blob} = BlobIO.upload_to_blob(blob, source_path)
+    File.rm!(source_path)
+  end
+
+  defp cleanup_blob_storage(blobs) do
+    Enum.each(blobs, fn blob ->
+      _ = File.rm(storage_path(blob))
+    end)
+  end
+
+  defp storage_path(%Blob{} = blob) do
+    Path.join("/media", Blob.path(blob))
   end
 end
