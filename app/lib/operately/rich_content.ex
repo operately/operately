@@ -45,6 +45,12 @@ defmodule Operately.RichContent do
     ids
   end
 
+  def find_blob_ids(nil), do: []
+
+  def find_blob_ids(document) do
+    Operately.RichContent.Blob.find_ids(document)
+  end
+
   def extract_mentions_from_node(%{"type" => "mention", "attrs" => %{"id" => id}}) do
     [id]
   end
@@ -97,6 +103,55 @@ defmodule Operately.RichContent do
   end
 
   def rich_content_to_string(_), do: ""
+
+  defmodule Blob do
+    def find_ids(nil), do: []
+
+    def find_ids(document) do
+      extract_ids_from_node(document) |> Enum.uniq()
+    end
+
+    defp extract_ids_from_node(%{"type" => "blob", "attrs" => attrs}) when is_map(attrs) do
+      attrs
+      |> extract_id_from_attrs()
+      |> case do
+        nil -> []
+        blob_id -> [blob_id]
+      end
+    end
+
+    defp extract_ids_from_node(%{"content" => content}) do
+      content |> Enum.flat_map(fn node -> extract_ids_from_node(node) end)
+    end
+
+    defp extract_ids_from_node(_), do: []
+
+    defp extract_id_from_attrs(%{"id" => id}) when is_binary(id) do
+      normalize_id(id)
+    end
+
+    defp extract_id_from_attrs(%{"src" => %{"id" => id}}) when is_binary(id) do
+      normalize_id(id)
+    end
+
+    defp extract_id_from_attrs(%{"src" => src}) when is_binary(src) do
+      src
+      |> String.split("/blobs/")
+      |> List.last()
+      |> normalize_id()
+    end
+
+    defp extract_id_from_attrs(_attrs), do: nil
+
+    defp normalize_id(id) when is_binary(id) do
+      case OperatelyWeb.Api.Helpers.decode_id(id) do
+        {:ok, decoded_id} -> decoded_id
+        _ -> nil
+      end
+    end
+
+    defp normalize_id(_id), do: nil
+  end
 
   defmodule Builder do
     def empty_content do

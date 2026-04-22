@@ -5,6 +5,8 @@ defmodule Operately.CompanyTransfers.ExporterTest do
   alias Operately.CompanyTransfers.{ExportRun, Exporter}
   alias Operately.CompanyTransfers.Package.{Archive, PackageJson, Paths}
   alias Operately.Repo
+  alias Operately.ResourceHubs.File, as: ResourceHubFile
+  alias OperatelyWeb.Paths, as: WebPaths
 
   setup do
     on_exit(fn -> File.rm_rf!(Paths.root()) end)
@@ -91,6 +93,60 @@ defmodule Operately.CompanyTransfers.ExporterTest do
     File.rm!(temp_zip_path)
   end
 
+  test "run/1 writes discovered file entries into the package and manifest", ctx do
+    ctx =
+      ctx
+      |> Factory.add_blob(:avatar_blob)
+      |> Factory.add_blob(:embedded_blob)
+      |> Factory.add_blob(:preview_blob)
+      |> Factory.add_space(:space)
+      |> Factory.add_resource_hub(:hub, :space, :creator)
+
+    ctx =
+      ctx
+      |> Factory.add_document(:document, :hub, content: blob_document(ctx.embedded_blob))
+      |> Factory.add_file(:file, :hub)
+
+    {:ok, creator} =
+      Operately.People.update_person(ctx.creator, %{
+        avatar_blob_id: ctx.avatar_blob.id,
+        avatar_url: Operately.Blobs.Blob.url(ctx.avatar_blob)
+      })
+
+    {:ok, file} =
+      ctx.file
+      |> ResourceHubFile.changeset(%{preview_blob_id: ctx.preview_blob.id})
+      |> Repo.update()
+
+    ctx =
+      ctx
+      |> Map.put(:creator, creator)
+      |> Map.put(:file, file)
+
+    assert {:ok, run} = CompanyTransfers.create_export_run(ctx.company, ctx.account, %{}, dispatch: false)
+    assert {:ok, run} = CompanyTransfers.mark_export_run_running(run)
+    assert {:ok, completed_run} = Exporter.run(run)
+
+    completed_run = Repo.preload(completed_run, :json_blob)
+    temp_path = Path.join(System.tmp_dir!(), "export_test_#{completed_run.id}.json")
+    :ok = Operately.Blobs.download_blob_to_file(completed_run.json_blob, temp_path)
+    package = PackageJson.read!(temp_path)
+    File.rm!(temp_path)
+
+    assert MapSet.new(package["files"]) ==
+             MapSet.new([
+               file_entry(ctx.avatar_blob),
+               file_entry(ctx.embedded_blob),
+               file_entry(find_blob!(package, ctx.file.blob_id)),
+               file_entry(ctx.preview_blob)
+             ])
+
+    assert completed_run.files_count == 4
+    assert package["manifest"]["files_count"] == 4
+    assert completed_run.artifacts_metadata["package"]["files_count"] == 4
+    assert completed_run.manifest_summary["files_count"] == 4
+  end
+
   test "run/1 returns company_not_found when the source company does not exist", ctx do
     missing_run = %ExportRun{
       id: Ecto.UUID.generate(),
@@ -110,5 +166,46 @@ defmodule Operately.CompanyTransfers.ExporterTest do
 
     assert {:error, {:exception, message}} = Exporter.run(invalid_run)
     assert message =~ "Invalid run_id format"
+  end
+
+  defp blob_document(blob) do
+    %{
+      "type" => "doc",
+      "content" => [
+        %{
+          "type" => "blob",
+          "attrs" => %{
+            "id" => WebPaths.blob_id(blob),
+            "src" => Operately.Blobs.Blob.url(blob),
+            "title" => blob.filename,
+            "filetype" => blob.content_type
+          }
+        }
+      ]
+    }
+  end
+
+  defp file_entry(blob) do
+    %{
+      "blob_id" => blob_id(blob),
+      "path" => Path.join(["blobs", blob_id(blob), blob_filename(blob)])
+    }
+  end
+
+  defp blob_id(%{"id" => id}), do: id
+  defp blob_id(%{id: id}), do: id
+
+  defp blob_filename(%{"filename" => filename}), do: filename
+  defp blob_filename(%{filename: filename}), do: filename
+
+  defp find_blob!(package, blob_id) do
+    package["tables"]
+    |> Enum.find(&(&1["name"] == "blobs"))
+    |> Map.get("rows", [])
+    |> Enum.find(&(&1["id"] == blob_id))
+    |> case do
+      nil -> raise "Blob #{inspect(blob_id)} not found in package"
+      blob -> blob
+    end
   end
 end
