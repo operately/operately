@@ -1,7 +1,7 @@
 defmodule Operately.CompanyTransfers.Exporter do
   alias Operately.Companies.Company
   alias Operately.CompanyTransfers
-  alias Operately.CompanyTransfers.Export.{Manifest, RelationalCollector}
+  alias Operately.CompanyTransfers.Export.{FileDiscovery, Manifest, RelationalCollector}
   alias Operately.CompanyTransfers.Package.{Archive, PackageJson}
   alias Operately.Repo
 
@@ -16,14 +16,15 @@ defmodule Operately.CompanyTransfers.Exporter do
     with %Company{} = company <- Repo.get(Company, export_run.company_id),
          {:ok, export_run, workspace} <- prepare_workspace(export_run),
          {:ok, collected} <- collect_rows(export_run, company),
-         manifest <- Manifest.build(export_run, company, collected),
-         payload = build_payload(manifest, collected),
+         file_discovery <- FileDiscovery.discover(collected.tables),
+         manifest <- Manifest.build(export_run, company, collected, length(file_discovery.files)),
+         payload = build_payload(manifest, collected, file_discovery),
          :ok <- mark_progress(export_run, "writing_package", @steps.writing_package),
          json_meta <- PackageJson.write!(workspace.json_path, payload),
          :ok <- mark_progress(export_run, "publishing_artifacts", @steps.publishing_artifacts),
          zip_path <- Archive.create!(workspace.zip_path, [%{path: "README.txt", content: "No files are included in this export yet.\n"}]),
          {:ok, export_run} <- CompanyTransfers.publish_export_artifacts(export_run, %{json_path: workspace.json_path, zip_path: zip_path}),
-         {:ok, export_run} <- complete_export(export_run, manifest, collected, json_meta) do
+         {:ok, export_run} <- complete_export(export_run, manifest, collected, file_discovery, json_meta) do
       {:ok, export_run}
     else
       nil ->
@@ -49,7 +50,9 @@ defmodule Operately.CompanyTransfers.Exporter do
     RelationalCollector.collect(company.id)
   end
 
-  defp complete_export(export_run, manifest, collected, json_meta) do
+  defp complete_export(export_run, manifest, collected, file_discovery, json_meta) do
+    files_count = length(file_discovery.files)
+
     completion_attrs = %{
       current_step: "completed",
       total_steps: map_size(@steps),
@@ -57,25 +60,26 @@ defmodule Operately.CompanyTransfers.Exporter do
       current_table: nil,
       tables_count: collected.non_empty_tables_count,
       rows_count: collected.rows_count,
-      files_count: 0,
-      manifest_summary: Manifest.summary(manifest, collected),
+      files_count: files_count,
+      manifest_summary: Manifest.summary(manifest, collected, files_count),
       artifacts_metadata:
         (export_run.artifacts_metadata || %{})
         |> Map.put("package", %{
           "json_sha256" => json_meta.sha256,
           "json_size_bytes" => json_meta.size_bytes,
-          "zip_placeholder" => true
+          "zip_placeholder" => true,
+          "files_count" => files_count
         })
     }
 
     CompanyTransfers.mark_export_run_completed(export_run, completion_attrs)
   end
 
-  defp build_payload(manifest, collected) do
+  defp build_payload(manifest, collected, file_discovery) do
     %{
       "manifest" => manifest,
       "tables" => collected.tables,
-      "files" => []
+      "files" => file_discovery.files
     }
   end
 
