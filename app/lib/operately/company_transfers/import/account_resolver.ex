@@ -14,6 +14,12 @@ defmodule Operately.CompanyTransfers.Import.AccountResolver do
     end)
   end
 
+  def destination_account_ids(%{mapping: mapping}) when is_map(mapping) do
+    mapping
+    |> Map.values()
+    |> Enum.uniq()
+  end
+
   defp resolve_account(%{"id" => source_id, "email" => email} = account_row, resolution) when is_binary(source_id) and is_binary(email) do
     normalized_email = email |> String.trim() |> String.downcase()
 
