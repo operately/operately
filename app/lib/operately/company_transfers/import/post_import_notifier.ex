@@ -48,6 +48,9 @@ defmodule Operately.CompanyTransfers.Import.PostImportNotifier do
     |> Repo.all()
   end
 
+  # Temporary until PR 17B guarantees the importer is an owner in the imported
+  # company. At that point the post-import emails should always use the importer
+  # as the inviter/sender.
   defp author_candidates(%Company{} = company, requested_by_id) do
     company = Company.load_owners(company)
 
