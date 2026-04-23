@@ -271,17 +271,19 @@ Implementation should be delivered in vertical slices. Each slice must leave the
 15. [x] **PR 15: File export/import.** Pack real blob payloads into the ZIP, write imported blob bytes to destination storage, rewrite blob-backed references (`avatar_blob_id`, rich-text blob attrs such as `id`/`src`), and add cleanup on failure.
 16. [x] **PR 16: File slice tests.** Add E2E tests for avatars, resource hub files, previews, and rich-text attachments under at least local storage. Add cross-storage tests after local coverage is stable.
 
-**Slice 4 outcome:** the feature is operationally usable by admins, with notifications, cancellation, cleanup, and stronger failure handling.
+**Slice 4 outcome:** the feature is rollout-ready: imported people are informed about the new company, permissions are proven to survive transfer correctly, and the transfer path is hardened against real destination state and failure modes.
 
-17. [ ] **PR 17: Export completion notifications.** Add in-app notification and email delivery for completed exports, plus click-through back to the export page.
-18. [ ] **PR 18: Export management UX.** Expand the Company Admin export page to show history, status, download actions, and delete actions for completed/failed runs.
-19. [ ] **PR 19: Cancellation and artifact cleanup.** Implement graceful cancellation, cancel endpoints, deletion of artifacts on cancellation/failure/user delete, and tests for cleanup behavior.
-20. [ ] **PR 20: Import UX and finalization.** Expand the Lobby import page with validation feedback, progress tracking, success/failure presentation, importer-owner grant, and redirect into the imported company.
-
-**Slice 5 outcome:** the feature is hardened for broader use and future schema evolution.
-
-21. [ ] **PR 21: Permission fidelity tests.** Add focused tests for access groups, memberships, bindings, contexts, and effective permissions after account matching and ID translation.
-22. [ ] **PR 22: Existing-destination tests.** Add E2E coverage for importing into an instance that already has other companies and some existing accounts, verifying no cross-company leakage.
-23. [ ] **PR 23: Failure and rollback tests.** Add tests for version mismatch, malformed packages, hash mismatches, missing ZIP entries, `short_id` collision, duplicate source emails, DB failures, and file write failures.
-24. [ ] **PR 24: Cross-storage tests.** Add S3→local, local→S3, and S3→S3 migration tests once the local-path file slice is stable.
-25. [ ] **PR 25: Schema-guard hardening and docs.** Harden CI so new tables, polymorphic associations, and serialized-reference columns must be classified, and document the workflow and known limitations for admins.
+17. [x] **PR 17A: Post-import destination account notifications.** After a successful import, notify every imported person except the importer using the same destination-side logic as normal company-member/guest onboarding:
+   - if the destination email already belongs to an existing account, send a "you were added to a new company" email
+   - if the destination email does not exist yet, create/send a personal invite link so the recipient can log in for the first time
+   - use the destination instance's account-email resolution to decide which path applies
+   - add tests covering both reused accounts and newly created accounts
+18. [ ] **PR 17B: Importer owner finalization.** After a successful import, ensure the importing person is the owner of the imported company:
+   - if the importer was imported as a destination person, update that person to owner access
+   - if the importer was not imported as a destination person, add them to the imported company as an owner
+   - update the post-import onboarding sender logic to use the importer as the inviter once this guarantee exists
+19. [ ] **PR 18: Permission fidelity tests.** Add focused tests for access groups, memberships, bindings, contexts, and effective permissions for imported people after account matching and ID translation.
+20. [ ] **PR 19: Existing-destination tests.** Expand E2E coverage for importing into an instance that already has other companies and some existing accounts, verifying no cross-company leakage and correct access for the imported people afterward.
+21. [ ] **PR 20: Failure and rollback tests.** Add tests for version mismatch, malformed packages, hash mismatches, missing ZIP entries, duplicate source emails, DB failures, file write failures, and cleanup after failed delete/import/export paths.
+22. [ ] **PR 21: Cross-storage tests.** Add S3→local, local→S3, and S3→S3 migration tests once the local-path file slice is stable.
+23. [ ] **PR 22: Schema-guard hardening and docs.** Harden CI so new tables, polymorphic associations, and serialized-reference columns must be classified, and document the workflow and known limitations for admins.
