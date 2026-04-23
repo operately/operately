@@ -10,6 +10,7 @@ defmodule Operately.CompanyTransfers.ImporterTest do
   alias Operately.CompanyTransfers.BlobIO
   alias Operately.CompanyTransfers
   alias Operately.CompanyTransfers.{Exporter, Importer}
+  alias Operately.InviteLinks
   alias Operately.CompanyTransfers.Package.{PackageJson, Paths}
   alias Operately.Notifications.{Subscription, SubscriptionList}
   alias Operately.People.Account
@@ -183,6 +184,55 @@ defmodule Operately.CompanyTransfers.ImporterTest do
              "reused_count" => 1,
              "created_count" => 1
            }
+  end
+
+  test "run/1 emails imported people, excludes the importer, and creates invite links for newly created accounts", ctx do
+    ctx =
+      ctx
+      |> Factory.add_company_member(:member)
+      |> Factory.add_outside_collaborator(:guest, :creator)
+
+    imported_guest_email = "imported-guest-#{System.unique_integer([:positive])}@example.com"
+    imported_guest_name = "Imported #{ctx.guest.full_name}"
+
+    assert {:ok, import_run} =
+             export_and_stage_import(ctx, fn package ->
+               package
+               |> replace_account_email(ctx.guest.account_id, imported_guest_email, imported_guest_name)
+               |> replace_person_email(ctx.guest.id, imported_guest_email, imported_guest_name)
+             end)
+
+    assert {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
+    assert {:ok, completed_run} = Importer.run(import_run)
+
+    imported_company = Repo.get!(Company, completed_run.company_id)
+    imported_member = Repo.get_by!(Person, company_id: imported_company.id, email: ctx.member.email)
+    imported_guest = Repo.get_by!(Person, company_id: imported_company.id, email: imported_guest_email)
+
+    login_url = WebPaths.login_path() |> WebPaths.to_url()
+    {:ok, invite_link} = InviteLinks.get_personal_invite_link_for_person(imported_guest.id)
+    invite_url = WebPaths.join_path(invite_link.token) |> WebPaths.to_url()
+
+    # Reused accounts should be notified without getting a fresh personal invite link.
+    assert {:error, :not_found} = InviteLinks.get_personal_invite_link_for_person(imported_member.id)
+
+    member_email = imported_member.email
+    guest_email = imported_guest.email
+    creator_email = ctx.creator.email
+
+    # Existing destination accounts get the standard "added to company" email path.
+    assert_received {:email, %{to: [{_, ^member_email}], text_body: member_text_body}}
+    assert member_text_body =~ "added you as a company member"
+    assert member_text_body =~ login_url
+    refute String.contains?(member_text_body, "/join?token=")
+
+    # Newly created destination accounts get the first-login invite path.
+    assert_received {:email, %{to: [{_, ^guest_email}], text_body: guest_text_body}}
+    assert guest_text_body =~ "outside collaborator"
+    assert guest_text_body =~ invite_url
+
+    # The importer already knows about the transfer and should not be emailed.
+    refute_received {:email, %{to: [{_, ^creator_email}]}}
   end
 
   test "run/1 imports activities, preserves missing content ids, and clears untranslated comment_thread_id", ctx do
