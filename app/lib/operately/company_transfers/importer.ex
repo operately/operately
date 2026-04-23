@@ -1,7 +1,9 @@
 defmodule Operately.CompanyTransfers.Importer do
+  require Logger
+
   alias Operately.CompanyTransfers
   alias Operately.CompanyTransfers.BlobIO
-  alias Operately.CompanyTransfers.Import.{FileImporter, Package, RelationalImporter, Validator}
+  alias Operately.CompanyTransfers.Import.{FileImporter, Package, PostImportNotifier, RelationalImporter, Validator}
   alias Operately.CompanyTransfers.Package.{Archive, Workspace}
   alias Operately.Repo
 
@@ -22,6 +24,7 @@ defmodule Operately.CompanyTransfers.Importer do
          :ok <- mark_progress(import_run, "importing_rows", @steps.importing_rows),
          {:ok, result} <- import_package(package, files_root),
          :ok <- mark_progress(import_run, "finalizing_import", @steps.finalizing_import),
+         :ok <- notify_imported_people(import_run, result),
          {:ok, import_run} <- complete_import(import_run, package, result) do
       {:ok, import_run}
     else
@@ -104,6 +107,14 @@ defmodule Operately.CompanyTransfers.Importer do
     }
 
     CompanyTransfers.mark_import_run_completed(import_run, completion_attrs)
+  end
+
+  defp notify_imported_people(import_run, result) do
+    PostImportNotifier.notify(result.company_id, import_run.requested_by_id, result.account_resolution)
+  rescue
+    error ->
+      Logger.error("Failed to send post-import notifications for import run #{import_run.id}: #{Exception.message(error)}")
+      :ok
   end
 
   defp validation_message(errors) do
