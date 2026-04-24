@@ -75,6 +75,14 @@ ai_configured =
 
 config :operately, :ai_configured, ai_configured
 
+config :operately, Operately.CompanyTransfers.Package.Limits,
+  max_json_size_bytes: String.to_integer(System.get_env("OPERATELY_MAX_JSON_SIZE_BYTES") || "#{50 * 1024 * 1024}"),
+  max_zip_size_bytes: String.to_integer(System.get_env("OPERATELY_MAX_ZIP_SIZE_BYTES") || "#{1024 * 1024 * 1024}"),
+  max_extracted_file_size_bytes: String.to_integer(System.get_env("OPERATELY_MAX_EXTRACTED_FILE_SIZE_BYTES") || "#{100 * 1024 * 1024}"),
+  max_files_count: String.to_integer(System.get_env("OPERATELY_MAX_FILES_COUNT") || "10000"),
+  max_rows_count: String.to_integer(System.get_env("OPERATELY_MAX_ROWS_COUNT") || "1000000"),
+  max_tables_count: String.to_integer(System.get_env("OPERATELY_MAX_TABLES_COUNT") || "200")
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||

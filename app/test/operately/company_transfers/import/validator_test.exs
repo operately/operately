@@ -2,6 +2,7 @@ defmodule Operately.CompanyTransfers.Import.ValidatorTest do
   use Operately.DataCase
 
   alias Operately.CompanyTransfers.Import.{Package, Validator}
+  alias Operately.CompanyTransfers.Package.Limits
   alias Operately.Repo
 
   setup do
@@ -70,6 +71,24 @@ defmodule Operately.CompanyTransfers.Import.ValidatorTest do
 
     assert {:error, errors} = Validator.validate(package)
     assert find_error(errors, "invalid_company_count")["details"]["count"] == 0
+  end
+
+  test "validate/1 rejects packages that exceed configured table, row, or file limits" do
+    with_package_limits([max_tables_count: 1, max_rows_count: 1, max_files_count: 0], fn ->
+      package =
+        build_package(%{
+          manifest: %{"files_count" => 1},
+          files: [
+            %{"path" => "avatars/a.png", "blob_id" => Ecto.UUID.generate()}
+          ]
+        })
+
+      assert {:error, errors} = Validator.validate(package)
+
+      assert find_limit_error(errors, "max_tables_count")["details"]["actual"] == 2
+      assert find_limit_error(errors, "max_rows_count")["details"]["actual"] == 2
+      assert find_limit_error(errors, "max_files_count")["details"]["actual"] == 1
+    end)
   end
 
   test "validate/1 rejects duplicate account emails after normalization" do
@@ -212,6 +231,25 @@ defmodule Operately.CompanyTransfers.Import.ValidatorTest do
 
   defp find_error(errors, code) do
     Enum.find(errors, &(&1["code"] == code))
+  end
+
+  defp find_limit_error(errors, limit) do
+    Enum.find(errors, &(&1["code"] == "package_limit_exceeded" and &1["details"]["limit"] == limit))
+  end
+
+  defp with_package_limits(limits, fun) do
+    original = Application.get_env(:operately, Limits)
+    Application.put_env(:operately, Limits, limits)
+
+    try do
+      fun.()
+    after
+      if original == nil do
+        Application.delete_env(:operately, Limits)
+      else
+        Application.put_env(:operately, Limits, original)
+      end
+    end
   end
 
   defp unique_short_id do

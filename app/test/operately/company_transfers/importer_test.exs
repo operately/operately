@@ -13,7 +13,7 @@ defmodule Operately.CompanyTransfers.ImporterTest do
   alias Operately.CompanyTransfers
   alias Operately.CompanyTransfers.{Exporter, Importer}
   alias Operately.InviteLinks
-  alias Operately.CompanyTransfers.Package.{PackageJson, Paths}
+  alias Operately.CompanyTransfers.Package.{Limits, PackageJson, Paths}
   alias Operately.Notifications.{Subscription, SubscriptionList}
   alias Operately.People
   alias Operately.People.Account
@@ -173,6 +173,29 @@ defmodule Operately.CompanyTransfers.ImporterTest do
 
     assert {:error, {:unknown_columns, "companies", ["not_a_real_column"]}} = Importer.run(import_run)
     assert Repo.aggregate(Company, :count, :id) == company_count_before
+  end
+
+  test "run/1 rejects import artifacts that exceed configured size limits", ctx do
+    ctx =
+      ctx
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
+
+    assert {:ok, json_limited_run} = export_and_stage_import(ctx)
+    assert {:ok, json_limited_run} = CompanyTransfers.mark_import_run_running(json_limited_run)
+
+    with_package_limits([max_json_size_bytes: 1], fn ->
+      assert {:error, {:package_limit_exceeded, :max_json_size_bytes, 1, actual}} = Importer.run(json_limited_run)
+      assert actual > 1
+    end)
+
+    assert {:ok, zip_limited_run} = export_and_stage_import(ctx)
+    assert {:ok, zip_limited_run} = CompanyTransfers.mark_import_run_running(zip_limited_run)
+
+    with_package_limits([max_zip_size_bytes: 1], fn ->
+      assert {:error, {:package_limit_exceeded, :max_zip_size_bytes, 1, actual}} = Importer.run(zip_limited_run)
+      assert actual > 1
+    end)
   end
 
   test "run/1 creates missing destination accounts when exported emails do not exist", ctx do
@@ -696,6 +719,21 @@ defmodule Operately.CompanyTransfers.ImporterTest do
     |> case do
       nil -> raise "Activity #{inspect(action)} not found in package"
       row -> row
+    end
+  end
+
+  defp with_package_limits(limits, fun) do
+    original = Application.get_env(:operately, Limits)
+    Application.put_env(:operately, Limits, limits)
+
+    try do
+      fun.()
+    after
+      if original == nil do
+        Application.delete_env(:operately, Limits)
+      else
+        Application.put_env(:operately, Limits, original)
+      end
     end
   end
 end
