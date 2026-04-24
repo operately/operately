@@ -43,17 +43,11 @@ defmodule Operately.Support.Features.CompanyTransfersRoundTripSteps do
   end
 
   step :then_permissions_and_deferred_references_match, ctx do
-    source_counts = table_row_counts(ctx.round_trip.source.package)
-    imported_counts = table_row_counts(ctx.round_trip.reexported.package)
+    assert_permission_counts_match_after_importer_owner_finalization(ctx.round_trip.source.package, ctx.round_trip.reexported.package, ctx.creator.full_name)
 
-    assert_counts_doubled(source_counts, imported_counts, [
-      "access_contexts",
-      "access_groups",
-      "access_group_memberships",
-      "access_bindings"
-    ])
+    assert permission_snapshot(ctx.round_trip.source.package) ==
+             permission_snapshot_after_importer_owner_finalization(ctx.round_trip.source.package, ctx.round_trip.reexported.package, ctx.creator.full_name)
 
-    assert permission_snapshot(ctx.round_trip.source.package) == permission_snapshot(ctx.round_trip.reexported.package)
     assert company_space_snapshot(ctx.round_trip.source.package) == company_space_snapshot(ctx.round_trip.reexported.package)
     assert manager_snapshot(ctx.round_trip.source.package) == manager_snapshot(ctx.round_trip.reexported.package)
     assert project_last_check_in_snapshot(ctx.round_trip.source.package) == project_last_check_in_snapshot(ctx.round_trip.reexported.package)
@@ -103,7 +97,7 @@ defmodule Operately.Support.Features.CompanyTransfersRoundTripSteps do
   end
 
   step :then_core_minimal_slice_data_matches, ctx do
-    assert table_row_counts(ctx.round_trip.source.package) == table_row_counts(ctx.round_trip.reexported.package)
+    assert_table_row_counts_match_after_importer_owner_finalization(ctx.round_trip.source.package, ctx.round_trip.reexported.package, ctx.creator.full_name)
     assert core_relationship_snapshot(ctx.round_trip.source.package) == core_relationship_snapshot(ctx.round_trip.reexported.package)
 
     [source_document] = table_rows(ctx.round_trip.source.package, "resource_documents")
@@ -419,7 +413,7 @@ defmodule Operately.Support.Features.CompanyTransfersRoundTripSteps do
       "tasks"
     ])
 
-    assert source_counts == table_row_counts(ctx.round_trip.reexported.package)
+    assert_table_row_counts_match_after_importer_owner_finalization(ctx.round_trip.source.package, ctx.round_trip.reexported.package, ctx.demo_account.full_name)
     assert company_space_snapshot(ctx.round_trip.source.package) == company_space_snapshot(ctx.round_trip.reexported.package)
     assert manager_snapshot(ctx.round_trip.source.package) == manager_snapshot(ctx.round_trip.reexported.package)
 
@@ -590,6 +584,27 @@ defmodule Operately.Support.Features.CompanyTransfersRoundTripSteps do
     end)
   end
 
+  defp assert_permission_counts_match_after_importer_owner_finalization(source_package, imported_package, importer_name) do
+    source_counts = table_row_counts(source_package)
+    imported_counts = table_row_counts(imported_package)
+
+    assert_counts_doubled(source_counts, imported_counts, [
+      "access_contexts",
+      "access_groups",
+      "access_group_memberships"
+    ])
+
+    assert imported_counts["access_bindings"] == source_counts["access_bindings"] + importer_owner_binding_delta(source_package, imported_package, importer_name)
+  end
+
+  defp assert_table_row_counts_match_after_importer_owner_finalization(source_package, imported_package, importer_name) do
+    source_counts = table_row_counts(source_package)
+    imported_counts = table_row_counts(imported_package)
+    expected_counts = Map.put(source_counts, "access_bindings", source_counts["access_bindings"] + importer_owner_binding_delta(source_package, imported_package, importer_name))
+
+    assert expected_counts == imported_counts
+  end
+
   defp table_row_counts(package) do
     Map.new(package["tables"], &{&1["name"], &1["row_count"]})
   end
@@ -680,6 +695,61 @@ defmodule Operately.Support.Features.CompanyTransfersRoundTripSteps do
         end)
         |> Enum.sort()
     }
+  end
+
+  defp permission_snapshot_after_importer_owner_finalization(source_package, imported_package, importer_name) do
+    source_snapshot = permission_snapshot(source_package)
+    imported_snapshot = permission_snapshot(imported_package)
+    expected_binding = importer_owner_binding(imported_package, importer_name)
+
+    source_count = binding_occurrences(source_snapshot, expected_binding)
+    imported_count = binding_occurrences(imported_snapshot, expected_binding)
+
+    if imported_count == source_count + 1 do
+      update_in(imported_snapshot.bindings, &remove_one(&1, expected_binding))
+    else
+      imported_snapshot
+    end
+  end
+
+  defp importer_owner_binding_delta(source_package, imported_package, importer_name) do
+    expected_binding = importer_owner_binding(imported_package, importer_name)
+
+    source_package
+    |> permission_snapshot()
+    |> binding_occurrences(expected_binding)
+    |> then(fn source_count ->
+      imported_count =
+        imported_package
+        |> permission_snapshot()
+        |> binding_occurrences(expected_binding)
+
+      max(imported_count - source_count, 0)
+    end)
+  end
+
+  defp importer_owner_binding(package, importer_name) do
+    [company] = table_rows(package, "companies")
+
+    {
+      {:company, company["name"]},
+      {:person, importer_name},
+      Binding.full_access(),
+      nil
+    }
+  end
+
+  defp binding_occurrences(snapshot, binding) do
+    Enum.count(snapshot.bindings, &(&1 == binding))
+  end
+
+  defp remove_one(list, item) do
+    {before, rest} = Enum.split_while(list, &(&1 != item))
+
+    case rest do
+      [_item | after_item] -> before ++ after_item
+      [] -> list
+    end
   end
 
   defp company_space_snapshot(package) do

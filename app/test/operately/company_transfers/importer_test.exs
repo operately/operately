@@ -4,6 +4,8 @@ defmodule Operately.CompanyTransfers.ImporterTest do
 
   alias Operately.Activities
   alias Operately.Activities.Activity
+  alias Operately.Access
+  alias Operately.Access.{Binding, GroupMembership}
   alias Operately.Blobs
   alias Operately.Blobs.Blob
   alias Operately.Companies.Company
@@ -13,6 +15,7 @@ defmodule Operately.CompanyTransfers.ImporterTest do
   alias Operately.InviteLinks
   alias Operately.CompanyTransfers.Package.{PackageJson, Paths}
   alias Operately.Notifications.{Subscription, SubscriptionList}
+  alias Operately.People
   alias Operately.People.Account
   alias Operately.People.Person
   alias Operately.Projects.Project
@@ -78,6 +81,7 @@ defmodule Operately.CompanyTransfers.ImporterTest do
     assert imported_subscription_list.parent_id == imported_project.id
 
     assert completed_run.manifest_summary["source_company"]["id"] == ctx.company.id
+
     assert completed_run.manifest_summary["account_resolution"] == %{
              "reused_count" => 2,
              "created_count" => 0
@@ -180,10 +184,65 @@ defmodule Operately.CompanyTransfers.ImporterTest do
 
     assert imported_account.email == imported_email
     assert imported_account.id != ctx.member.account_id
+
     assert completed_run.manifest_summary["account_resolution"] == %{
              "reused_count" => 1,
              "created_count" => 1
            }
+  end
+
+  test "run/1 makes the imported importer person an owner", ctx do
+    ctx =
+      ctx
+      |> Factory.add_company_member(:member, has_open_invitation: false)
+
+    import_account = Repo.get!(Account, ctx.member.account_id)
+
+    refute Company.is_owner?(ctx.company, ctx.member)
+
+    assert {:ok, import_run} = export_and_stage_import_as(ctx, import_account)
+    assert {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
+    assert {:ok, completed_run} = Importer.run(import_run)
+
+    imported_company = Repo.get!(Company, completed_run.company_id)
+    imported_importer = People.get_person!(import_account, imported_company)
+
+    assert imported_importer.email == ctx.member.email
+    assert Company.is_owner?(imported_company, imported_importer)
+  end
+
+  test "run/1 creates an owner person when the importer was not in the package", ctx do
+    import_account =
+      Operately.PeopleFixtures.account_fixture(%{
+        full_name: "Destination Importer",
+        email: "destination-importer-#{System.unique_integer([:positive])}@example.com"
+      })
+
+    ctx = Factory.add_company(ctx, :destination_company, import_account, name: "Destination Company")
+
+    assert {:ok, import_run} = export_and_stage_import_as(ctx, import_account)
+    assert {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
+    assert {:ok, completed_run} = Importer.run(import_run)
+
+    imported_company = Repo.get!(Company, completed_run.company_id)
+    imported_importer = People.get_person!(import_account, imported_company)
+
+    assert imported_importer.full_name == import_account.full_name
+    assert imported_importer.email == import_account.email
+    assert Company.is_owner?(imported_company, imported_importer)
+  end
+
+  test "run/1 keeps owner finalization idempotent when the importer is already an owner", ctx do
+    assert {:ok, import_run} = export_and_stage_import(ctx)
+    assert {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
+    assert {:ok, completed_run} = Importer.run(import_run)
+
+    imported_company = Repo.get!(Company, completed_run.company_id)
+    imported_importer = People.get_person!(ctx.account, imported_company)
+
+    assert Company.is_owner?(imported_company, imported_importer)
+    assert owner_group_membership_count(imported_company, imported_importer) == 1
+    assert personal_owner_binding_count(imported_company, imported_importer) == 1
   end
 
   test "run/1 emails imported people, excludes the importer, and creates invite links for newly created accounts", ctx do
@@ -213,6 +272,7 @@ defmodule Operately.CompanyTransfers.ImporterTest do
     assert {:ok, completed_run} = Importer.run(import_run)
 
     imported_company = Repo.get!(Company, completed_run.company_id)
+    imported_creator = People.get_person!(ctx.account, imported_company)
     imported_member = Repo.get_by!(Person, company_id: imported_company.id, email: ctx.member.email)
     imported_new_member = Repo.get_by!(Person, company_id: imported_company.id, email: imported_new_member_email)
     imported_guest = Repo.get_by!(Person, company_id: imported_company.id, email: imported_guest_email)
@@ -222,6 +282,11 @@ defmodule Operately.CompanyTransfers.ImporterTest do
     {:ok, invite_link} = InviteLinks.get_personal_invite_link_for_person(imported_guest.id)
     new_member_invite_url = WebPaths.join_path(new_member_invite_link.token) |> WebPaths.to_url()
     invite_url = WebPaths.join_path(invite_link.token) |> WebPaths.to_url()
+
+    assert new_member_invite_link.author_id == imported_creator.id
+    assert invite_link.author_id == imported_creator.id
+
+    importer_short_name = Person.short_name(imported_creator)
 
     # Reused accounts should be notified without getting a fresh personal invite link.
     assert {:error, :not_found} = InviteLinks.get_personal_invite_link_for_person(imported_member.id)
@@ -233,17 +298,20 @@ defmodule Operately.CompanyTransfers.ImporterTest do
 
     # Existing destination accounts get the standard "added to company" email path.
     assert_received {:email, %{to: [{_, ^member_email}], text_body: member_text_body}}
+    assert member_text_body =~ importer_short_name
     assert member_text_body =~ "added you as a company member"
     assert member_text_body =~ login_url
     refute String.contains?(member_text_body, "/join?token=")
 
     # Newly created company members get the first-login invite path too.
     assert_received {:email, %{to: [{_, ^new_member_email}], text_body: new_member_text_body}}
+    assert new_member_text_body =~ importer_short_name
     assert new_member_text_body =~ "invited you to join #{imported_company.name}"
     assert new_member_text_body =~ new_member_invite_url
 
     # Newly created destination accounts get the first-login invite path.
     assert_received {:email, %{to: [{_, ^guest_email}], text_body: guest_text_body}}
+    assert guest_text_body =~ importer_short_name
     assert guest_text_body =~ "outside collaborator"
     assert guest_text_body =~ invite_url
 
@@ -414,8 +482,40 @@ defmodule Operately.CompanyTransfers.ImporterTest do
   end
 
   defp export_and_stage_import(ctx, mutate_package \\ & &1) do
+    export_and_stage_import_as(ctx, ctx.account, mutate_package)
+  end
+
+  defp export_and_stage_import_as(ctx, account, mutate_package \\ & &1) do
     package = export_package(ctx, mutate_package)
-    stage_import(ctx.account, package)
+    stage_import(account, package)
+  end
+
+  defp owner_group_membership_count(%Company{} = company, %Person{} = person) do
+    owner_group = Access.get_group!(company_id: company.id, tag: :full_access)
+
+    Repo.aggregate(
+      from(m in GroupMembership,
+        where: m.group_id == ^owner_group.id,
+        where: m.person_id == ^person.id
+      ),
+      :count,
+      :id
+    )
+  end
+
+  defp personal_owner_binding_count(%Company{} = company, %Person{} = person) do
+    context = Access.get_context!(company_id: company.id)
+    person_group = Access.get_group!(person_id: person.id)
+
+    Repo.aggregate(
+      from(b in Binding,
+        where: b.context_id == ^context.id,
+        where: b.group_id == ^person_group.id,
+        where: b.access_level == ^Binding.full_access()
+      ),
+      :count,
+      :id
+    )
   end
 
   defp export_package(ctx, mutate_package) do

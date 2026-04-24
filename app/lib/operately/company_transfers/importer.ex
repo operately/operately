@@ -3,7 +3,7 @@ defmodule Operately.CompanyTransfers.Importer do
 
   alias Operately.CompanyTransfers
   alias Operately.CompanyTransfers.BlobIO
-  alias Operately.CompanyTransfers.Import.{FileImporter, Package, PostImportNotifier, RelationalImporter, Validator}
+  alias Operately.CompanyTransfers.Import.{FileImporter, ImporterOwnerFinalizer, Package, PostImportNotifier, RelationalImporter, Validator}
   alias Operately.CompanyTransfers.Package.{Archive, Workspace}
   alias Operately.Repo
 
@@ -22,7 +22,7 @@ defmodule Operately.CompanyTransfers.Importer do
          :ok <- validate_package(package),
          files_root <- extract_files(workspace, package),
          :ok <- mark_progress(import_run, "importing_rows", @steps.importing_rows),
-         {:ok, result} <- import_package(package, files_root),
+         {:ok, result} <- import_package(package, files_root, import_run.requested_by_id),
          :ok <- mark_progress(import_run, "finalizing_import", @steps.finalizing_import),
          :ok <- notify_imported_people(import_run, result),
          {:ok, import_run} <- complete_import(import_run, package, result) do
@@ -72,11 +72,14 @@ defmodule Operately.CompanyTransfers.Importer do
     end
   end
 
-  defp import_package(package, files_root) do
+  defp import_package(package, files_root, requested_by_id) do
     Repo.transaction(fn ->
       with {:ok, result} <- RelationalImporter.import(package),
+           {:ok, importer_person} <- ImporterOwnerFinalizer.finalize(result.company_id, requested_by_id),
            {:ok, files_count} <- FileImporter.import(package, files_root, result.blob_id_map) do
-        %{result | files_count: files_count}
+        result
+        |> Map.put(:files_count, files_count)
+        |> Map.put(:importer_person_id, importer_person.id)
       else
         {:error, reason} -> Repo.rollback(reason)
       end
@@ -110,7 +113,7 @@ defmodule Operately.CompanyTransfers.Importer do
   end
 
   defp notify_imported_people(import_run, result) do
-    PostImportNotifier.notify(result.company_id, import_run.requested_by_id, result.account_resolution)
+    PostImportNotifier.notify(result.company_id, import_run.requested_by_id, result.account_resolution, result.importer_person_id)
   rescue
     error ->
       Logger.error("Failed to send post-import notifications for import run #{import_run.id}: #{Exception.message(error)}")
