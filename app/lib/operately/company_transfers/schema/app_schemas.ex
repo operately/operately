@@ -21,9 +21,45 @@ defmodule Operately.CompanyTransfers.Schema.AppSchemas do
     end
   end
 
-  defp schema_for_table(table_name) when is_binary(table_name) do
-    operately_modules()
-    |> Enum.find(&schema_module_for_table?(&1, table_name))
+  @doc """
+  Returns the current application schema module for a DB table.
+  """
+  def schema_for_table(table_name) when is_binary(table_name) do
+    Map.get(table_schema_map(), table_name)
+  end
+
+  @doc """
+  Returns a DB column name to Ecto field atom map for persisted fields on the table schema.
+  """
+  def persisted_fields_for_table(table_name) when is_binary(table_name) do
+    case schema_for_table(table_name) do
+      nil -> %{}
+      module -> persisted_fields(module)
+    end
+  end
+
+  defp table_schema_map do
+    key = {__MODULE__, :table_schema_map}
+
+    case :persistent_term.get(key, nil) do
+      nil ->
+        map =
+          operately_modules()
+          |> Enum.filter(&schema_module?/1)
+          |> Map.new(fn module -> {module.__schema__(:source), module} end)
+
+        :persistent_term.put(key, map)
+        map
+
+      map ->
+        map
+    end
+  end
+
+  defp persisted_fields(module) do
+    (module.__schema__(:fields) ++ module.__schema__(:embeds))
+    |> Enum.reject(&(&1 in module.__schema__(:virtual_fields)))
+    |> Map.new(fn field -> {module.__schema__(:field_source, field) |> to_string(), field} end)
   end
 
   defp operately_modules do
@@ -31,10 +67,6 @@ defmodule Operately.CompanyTransfers.Schema.AppSchemas do
       {:ok, modules} -> modules
       :undefined -> []
     end
-  end
-
-  defp schema_module_for_table?(module, table_name) do
-    schema_module?(module) and module.__schema__(:source) == table_name
   end
 
   defp schema_module?(module) do
