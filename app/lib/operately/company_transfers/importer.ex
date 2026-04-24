@@ -4,7 +4,7 @@ defmodule Operately.CompanyTransfers.Importer do
   alias Operately.CompanyTransfers
   alias Operately.CompanyTransfers.BlobIO
   alias Operately.CompanyTransfers.Import.{FileImporter, ImporterOwnerFinalizer, Package, PostImportNotifier, RelationalImporter, Validator}
-  alias Operately.CompanyTransfers.Package.{Archive, Workspace}
+  alias Operately.CompanyTransfers.Package.{Archive, Limits, Workspace}
   alias Operately.Repo
 
   @steps %{
@@ -17,6 +17,7 @@ defmodule Operately.CompanyTransfers.Importer do
   def run(import_run) do
     with {:ok, workspace} <- fetch_package_workspace(import_run),
          :ok <- mark_progress(import_run, "loading_package", @steps.loading_package),
+         :ok <- validate_artifact_sizes(workspace),
          package = Package.load!(workspace.json_path),
          :ok <- mark_progress(import_run, "validating_package", @steps.validating_package),
          :ok <- validate_package(package),
@@ -55,6 +56,13 @@ defmodule Operately.CompanyTransfers.Importer do
         else
           {:error, reason} -> {:error, {:package_not_found, reason}}
         end
+    end
+  end
+
+  defp validate_artifact_sizes(workspace) do
+    with :ok <- Limits.validate_file_size(:max_json_size_bytes, workspace.json_path),
+         :ok <- Limits.validate_file_size(:max_zip_size_bytes, workspace.zip_path) do
+      :ok
     end
   end
 
