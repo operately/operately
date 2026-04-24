@@ -2,7 +2,7 @@ defmodule Operately.CompanyTransfersFilesTest do
   use Operately.DataCase
 
   alias Operately.CompanyTransfers
-  alias Operately.CompanyTransfers.Package.{Archive, Hashing, PackageJson, Paths, Workspace}
+  alias Operately.CompanyTransfers.Package.{Archive, Hashing, Limits, PackageJson, Paths, Workspace}
   alias Operately.Blobs
 
   setup do
@@ -139,6 +139,21 @@ defmodule Operately.CompanyTransfersFilesTest do
     end
   end
 
+  test "archive helper rejects oversized zip entries in strict mode" do
+    zip_path = Path.join(Paths.root(), "zip/company_transfers_#{System.unique_integer([:positive])}.zip")
+    extract_path = Path.join(Paths.root(), "extract/company_transfers_#{System.unique_integer([:positive])}")
+
+    Archive.create!(zip_path, [
+      {"blobs/blob-1/file.txt", "payload"}
+    ])
+
+    with_package_limits([max_extracted_file_size_bytes: 3], fn ->
+      assert_raise ArgumentError, ~r/exceeds size limit/, fn ->
+        Archive.extract!(zip_path, extract_path, ["blobs/blob-1/file.txt"])
+      end
+    end)
+  end
+
   test "archive helper rejects missing declared zip entries in strict mode" do
     zip_path = Path.join(Paths.root(), "zip/company_transfers_#{System.unique_integer([:positive])}.zip")
     extract_path = Path.join(Paths.root(), "extract/company_transfers_#{System.unique_integer([:positive])}")
@@ -208,5 +223,20 @@ defmodule Operately.CompanyTransfersFilesTest do
     assert File.exists?(workspace.root_path)
     assert :ok = Workspace.cleanup!(workspace)
     refute File.exists?(workspace.root_path)
+  end
+
+  defp with_package_limits(limits, fun) do
+    original = Application.get_env(:operately, Limits)
+    Application.put_env(:operately, Limits, limits)
+
+    try do
+      fun.()
+    after
+      if original == nil do
+        Application.delete_env(:operately, Limits)
+      else
+        Application.put_env(:operately, Limits, original)
+      end
+    end
   end
 end
