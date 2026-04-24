@@ -60,9 +60,13 @@ defmodule Operately.CompanyTransfers.Importer do
 
   defp extract_files(workspace, %Package{files: []}), do: workspace.files_path
 
-  defp extract_files(workspace, %Package{}) do
-    Archive.extract!(workspace.zip_path, workspace.files_path)
+  defp extract_files(workspace, %Package{} = package) do
+    Archive.extract!(workspace.zip_path, workspace.files_path, declared_file_paths(package))
     workspace.files_path
+  end
+
+  defp declared_file_paths(%Package{} = package) do
+    Enum.map(package.files, & &1["path"])
   end
 
   defp validate_package(package) do
