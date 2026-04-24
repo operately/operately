@@ -5,6 +5,7 @@ defmodule Operately.CompanyTransfers.Import.Relational.RowWriter do
 
   alias Ecto.Changeset
   alias Operately.CompanyTransfers.Schema.AppSchemas
+  alias Operately.CompanyTransfers.Schema.PolicyRegistry
   alias Operately.Repo
 
   def insert_row(table, columns, row) when is_binary(table) and is_list(columns) and is_map(row) do
@@ -41,9 +42,15 @@ defmodule Operately.CompanyTransfers.Import.Relational.RowWriter do
   end
 
   defp schema_metadata(table) do
-    case AppSchemas.schema_for_table(table) do
-      nil -> {:error, {:unknown_table, table}}
-      schema -> {:ok, schema, AppSchemas.persisted_fields_for_table(table)}
+    cond do
+      not PolicyRegistry.importable?(table) ->
+        {:error, {:table_not_importable, table}}
+
+      true ->
+        case AppSchemas.schema_for_table(table) do
+          nil -> {:error, {:unknown_table, table}}
+          schema -> {:ok, schema, AppSchemas.persisted_fields_for_table(table)}
+        end
     end
   end
 

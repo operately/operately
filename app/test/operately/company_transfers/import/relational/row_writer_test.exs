@@ -81,14 +81,39 @@ defmodule Operately.CompanyTransfers.Import.Relational.RowWriterTest do
     end
 
     test "rejects unknown tables and schema-qualified names" do
-      assert {:error, {:unknown_table, "nonexistent_table"}} =
+      assert {:error, {:table_not_importable, "nonexistent_table"}} =
                RowWriter.insert_row("nonexistent_table", ["id"], %{"id" => Ecto.UUID.generate()})
 
-      assert {:error, {:unknown_table, "public.companies"}} =
+      assert {:error, {:table_not_importable, "public.companies"}} =
                RowWriter.insert_row("public.companies", ["id"], %{"id" => Ecto.UUID.generate()})
 
-      assert {:error, {:unknown_table, "companies; DROP TABLE people; --"}} =
+      assert {:error, {:table_not_importable, "companies; DROP TABLE people; --"}} =
                RowWriter.insert_row("companies; DROP TABLE people; --", ["id"], %{"id" => Ecto.UUID.generate()})
+    end
+
+    test "rejects excluded schema-backed tables" do
+      assert {:error, {:table_not_importable, "api_tokens"}} =
+               RowWriter.insert_row(
+                 "api_tokens",
+                 ["id", "token_hash"],
+                 %{"id" => Ecto.UUID.generate(), "token_hash" => "abc"}
+               )
+
+      assert {:error, {:table_not_importable, "invite_links"}} =
+               RowWriter.insert_row(
+                 "invite_links",
+                 ["id", "token"],
+                 %{"id" => Ecto.UUID.generate(), "token" => String.duplicate("a", 32)}
+               )
+    end
+
+    test "rejects accounts because they are handled by account resolution" do
+      assert {:error, {:table_not_importable, "accounts"}} =
+               RowWriter.insert_row(
+                 "accounts",
+                 ["id", "email", "full_name"],
+                 %{"id" => Ecto.UUID.generate(), "email" => "person@example.com", "full_name" => "Person"}
+               )
     end
 
     test "rejects unknown columns" do
