@@ -724,7 +724,18 @@ defmodule Operately.CompanyTransfers.ImporterTest do
 
   defp with_package_limits(limits, fun) do
     original = Application.get_env(:operately, Limits)
-    Application.put_env(:operately, Limits, limits)
+
+    defaults = %{
+      max_json_size_bytes: 1_000_000_000,
+      max_zip_size_bytes: 1_000_000_000,
+      max_extracted_file_size_bytes: 1_000_000_000,
+      max_files_count: 1_000_000,
+      max_rows_count: 1_000_000,
+      max_tables_count: 1_000
+    }
+
+    merged_limits = Map.merge(defaults, Map.new(limits))
+    Application.put_env(:operately, Limits, merged_limits)
 
     try do
       fun.()
