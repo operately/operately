@@ -78,6 +78,80 @@ defmodule Operately.CompanyTransfersFilesTest do
     assert File.read!(Path.join(extract_path, "copied/source.txt")) == "from file"
   end
 
+  test "archive helper extracts only declared zip entries in strict mode" do
+    zip_path = Path.join(Paths.root(), "zip/company_transfers_#{System.unique_integer([:positive])}.zip")
+    extract_path = Path.join(Paths.root(), "extract/company_transfers_#{System.unique_integer([:positive])}")
+
+    Archive.create!(zip_path, [
+      {"blobs/blob-1/file.txt", "payload"}
+    ])
+
+    extracted_files = Archive.extract!(zip_path, extract_path, ["blobs/blob-1/file.txt"])
+
+    assert extracted_files == [Path.join(extract_path, "blobs/blob-1/file.txt")]
+    assert File.read!(Path.join(extract_path, "blobs/blob-1/file.txt")) == "payload"
+  end
+
+  test "archive helper rejects undeclared zip entries in strict mode" do
+    zip_path = Path.join(Paths.root(), "zip/company_transfers_#{System.unique_integer([:positive])}.zip")
+    extract_path = Path.join(Paths.root(), "extract/company_transfers_#{System.unique_integer([:positive])}")
+
+    Archive.create!(zip_path, [
+      {"blobs/blob-1/file.txt", "payload"},
+      {"extra.txt", "not declared"}
+    ])
+
+    assert_raise ArgumentError, ~r/undeclared entries/, fn ->
+      Archive.extract!(zip_path, extract_path, ["blobs/blob-1/file.txt"])
+    end
+  end
+
+  test "archive helper rejects duplicate zip entries in strict mode" do
+    zip_path = Path.join(Paths.root(), "zip/company_transfers_#{System.unique_integer([:positive])}.zip")
+    extract_path = Path.join(Paths.root(), "extract/company_transfers_#{System.unique_integer([:positive])}")
+
+    File.mkdir_p!(Path.dirname(zip_path))
+
+    assert {:ok, _zip_path} =
+             :zip.create(String.to_charlist(zip_path), [
+               {~c"blobs/blob-1/file.txt", "first"},
+               {~c"blobs/blob-1/file.txt", "second"}
+             ])
+
+    assert_raise ArgumentError, ~r/duplicate entries/, fn ->
+      Archive.extract!(zip_path, extract_path, ["blobs/blob-1/file.txt"])
+    end
+  end
+
+  test "archive helper rejects unsafe zip entry paths in strict mode" do
+    zip_path = Path.join(Paths.root(), "zip/company_transfers_#{System.unique_integer([:positive])}.zip")
+    extract_path = Path.join(Paths.root(), "extract/company_transfers_#{System.unique_integer([:positive])}")
+
+    File.mkdir_p!(Path.dirname(zip_path))
+
+    assert {:ok, _zip_path} =
+             :zip.create(String.to_charlist(zip_path), [
+               {~c"../escape.txt", "nope"}
+             ])
+
+    assert_raise ArgumentError, ~r/traversal segments/, fn ->
+      Archive.extract!(zip_path, extract_path, ["blobs/blob-1/file.txt"])
+    end
+  end
+
+  test "archive helper rejects missing declared zip entries in strict mode" do
+    zip_path = Path.join(Paths.root(), "zip/company_transfers_#{System.unique_integer([:positive])}.zip")
+    extract_path = Path.join(Paths.root(), "extract/company_transfers_#{System.unique_integer([:positive])}")
+
+    Archive.create!(zip_path, [
+      {"blobs/blob-1/file.txt", "payload"}
+    ])
+
+    assert_raise ArgumentError, ~r/missing declared entries/, fn ->
+      Archive.extract!(zip_path, extract_path, ["blobs/blob-1/file.txt", "blobs/blob-2/file.txt"])
+    end
+  end
+
   test "archive helper rejects unsafe entry paths" do
     zip_path = Path.join(Paths.root(), "zip/company_transfers_#{System.unique_integer([:positive])}.zip")
 
