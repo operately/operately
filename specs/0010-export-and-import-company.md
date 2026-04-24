@@ -282,7 +282,7 @@ Implementation should be delivered in vertical slices. Each slice must leave the
    - if the importer was imported as a destination person, update that person to owner access
    - if the importer was not imported as a destination person, add them to the imported company as an owner
    - update the post-import onboarding sender logic to use the importer as the inviter once this guarantee exists
-19. [ ] **PR 18: Permission fidelity tests.** Add focused tests for access groups, memberships, bindings, contexts, and effective permissions for imported people after account matching and ID translation.
+19. [x] **PR 18: Permission fidelity tests.** Add focused tests for access groups, memberships, bindings, contexts, and effective permissions for imported people after account matching and ID translation.
 20. [ ] **PR 19: Existing-destination tests.** Expand E2E coverage for importing into an instance that already has other companies and some existing accounts, verifying no cross-company leakage and correct access for the imported people afterward.
 21. [ ] **PR 20: Failure and rollback tests.** Add tests for version mismatch, malformed packages, hash mismatches, missing ZIP entries, duplicate source emails, DB failures, file write failures, and cleanup after failed delete/import/export paths.
 22. [ ] **PR 21: Cross-storage tests.** Add S3→local, local→S3, and S3→S3 migration tests once the local-path file slice is stable.
