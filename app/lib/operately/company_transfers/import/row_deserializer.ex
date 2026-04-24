@@ -1,6 +1,6 @@
 defmodule Operately.CompanyTransfers.Import.RowDeserializer do
   @moduledoc """
-  Converts exported row payloads back into JSON values PostgreSQL can cast on import.
+  Converts exported row payloads back into values Ecto can cast on import.
   """
 
   def deserialize_row(row) when is_map(row) do
@@ -14,8 +14,7 @@ defmodule Operately.CompanyTransfers.Import.RowDeserializer do
   defp deserialize_value(%{"__type__" => type} = value) do
     case type do
       "bytea" ->
-        decoded = Base.decode64!(value["value"])
-        "\\x" <> Base.encode16(decoded, case: :lower)
+        Base.decode64!(value["value"])
 
       "decimal" ->
         value["value"]

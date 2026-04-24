@@ -18,7 +18,7 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
     TranslationPlan
   }
 
-  alias Operately.CompanyTransfers.Import.Relational.Sql
+  alias Operately.CompanyTransfers.Import.Relational.RowWriter
   alias Operately.CompanyTransfers.Schema.AppSchemas
 
   @plain_reference_registry %{
@@ -97,9 +97,14 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
 
     Enum.reduce_while(table_entry["rows"], {:ok, []}, fn row, {:ok, deferred_updates} ->
       case build_import_row(row, table, columns, nullable_columns, foreign_keys, map_fields, plan) do
-        {:ok, import_row, row_deferred_updates} ->
-          Sql.insert_row!(table, columns, import_row)
-          {:cont, {:ok, deferred_updates ++ row_deferred_updates}}
+      {:ok, import_row, row_deferred_updates} ->
+          case RowWriter.insert_row(table, columns, import_row) do
+            :ok ->
+              {:cont, {:ok, deferred_updates ++ row_deferred_updates}}
+
+            {:error, _reason} = error ->
+              {:halt, error}
+          end
 
         {:skip, _reason} ->
           {:cont, {:ok, deferred_updates}}
@@ -122,7 +127,7 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
 
   defp prepare_row(row, table, map_fields, %TranslationPlan{} = plan) do
     with {:ok, row} <-
-         row
+           row
            |> RowDeserializer.deserialize_row()
            |> ActivityContentRewriter.rewrite_row_content(table, plan),
          {:ok, row} <- OrderingStateRewriter.rewrite_row_fields(row, table, plan),
@@ -268,10 +273,11 @@ defmodule Operately.CompanyTransfers.Import.RelationalImporter do
   end
 
   defp apply_deferred_updates(deferred_updates) do
-    Enum.each(deferred_updates, fn update ->
-      Sql.update_row!(update.table, update.columns, update.row)
+    Enum.reduce_while(deferred_updates, :ok, fn update, :ok ->
+      case RowWriter.update_row(update.table, update.columns, update.row) do
+        :ok -> {:cont, :ok}
+        {:error, _reason} = error -> {:halt, error}
+      end
     end)
-
-    :ok
   end
 end

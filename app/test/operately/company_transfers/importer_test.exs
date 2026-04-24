@@ -156,6 +156,25 @@ defmodule Operately.CompanyTransfers.ImporterTest do
     assert Enum.any?(errors, &(&1["code"] == "schema_migration_mismatch"))
   end
 
+  test "run/1 rejects package columns that are not backed by the table schema", ctx do
+    ctx =
+      ctx
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
+
+    company_count_before = Repo.aggregate(Company, :count, :id)
+
+    assert {:ok, import_run} =
+             export_and_stage_import(ctx, fn package ->
+               add_unknown_company_column(package, "not_a_real_column", "not a real value")
+             end)
+
+    assert {:ok, import_run} = CompanyTransfers.mark_import_run_running(import_run)
+
+    assert {:error, {:unknown_columns, "companies", ["not_a_real_column"]}} = Importer.run(import_run)
+    assert Repo.aggregate(Company, :count, :id) == company_count_before
+  end
+
   test "run/1 creates missing destination accounts when exported emails do not exist", ctx do
     ctx =
       ctx
@@ -559,6 +578,22 @@ defmodule Operately.CompanyTransfers.ImporterTest do
       end)
     end)
     |> put_in(["manifest", "source_company", "short_id"], short_id)
+  end
+
+  defp add_unknown_company_column(package, column, value) do
+    update_in(package, ["tables"], fn tables ->
+      Enum.map(tables, fn table ->
+        if table["name"] == "companies" do
+          table
+          |> update_in(["columns"], &(&1 ++ [%{"name" => column, "type" => "text", "nullable" => true}]))
+          |> update_in(["rows"], fn rows ->
+            Enum.map(rows, &Map.put(&1, column, value))
+          end)
+        else
+          table
+        end
+      end)
+    end)
   end
 
   defp replace_account_email(package, account_id, email, full_name) do
