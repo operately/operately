@@ -49,6 +49,7 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
   - `get_type_id_reference_configs/1` - Get type/id columns that need import-time translation
   - `exception?/1` - Check if table is deferred for separate handling
   - `dependency_parent?/1` - Check if table is dependency-only
+  - `importable?/1` - Check if package rows may be persisted by the importer
 
   ## Safety Mechanism
 
@@ -125,7 +126,7 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
 
   @exception_tables [
     "activities",
-    "notifications",
+    "notifications"
   ]
 
   @dependency_parent_tables [
@@ -220,4 +221,10 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
   end
 
   def dependency_parent_tables, do: @dependency_parent_tables
+
+  def importable?("accounts"), do: false
+
+  def importable?(table_name) when is_binary(table_name) do
+    included?(table_name) or polymorphic?(table_name) or exception?(table_name) or dependency_parent?(table_name)
+  end
 end
