@@ -17,7 +17,8 @@ defmodule Operately.CompanyTransfers.Import.PostImportNotifier do
   alias Operately.Repo
   alias OperatelyEmail.Emails.{CompanyMemberAddedEmail, GuestInvitedEmail}
 
-  def notify(company_id, requested_by_id, account_resolution) when is_binary(company_id) and is_binary(requested_by_id) do
+  def notify(company_id, requested_by_id, account_resolution, importer_person_id)
+      when is_binary(company_id) and is_binary(requested_by_id) and is_binary(importer_person_id) do
     company = Companies.get_company!(company_id)
     destination_account_ids = AccountResolver.destination_account_ids(account_resolution)
 
@@ -26,10 +27,10 @@ defmodule Operately.CompanyTransfers.Import.PostImportNotifier do
     if people == [] do
       :ok
     else
-      authors = author_candidates(company, requested_by_id)
+      author = Repo.get_by!(Person, id: importer_person_id, company_id: company_id)
 
       Enum.each(people, fn person ->
-        notify_person(person, company, authors)
+        notify_person(person, company, author)
       end)
 
       :ok
@@ -49,29 +50,7 @@ defmodule Operately.CompanyTransfers.Import.PostImportNotifier do
     |> Repo.all()
   end
 
-  # Temporary until PR 17B guarantees the importer is an owner in the imported
-  # company. At that point the post-import emails should always use the importer
-  # as the inviter/sender.
-  defp author_candidates(%Company{} = company, requested_by_id) do
-    company = Company.load_owners(company)
-
-    people =
-      from(p in Person,
-        where: p.company_id == ^company.id,
-        where: p.type in [:human, :guest],
-        order_by: [asc: p.inserted_at]
-      )
-      |> Repo.all()
-
-    importer = Enum.find(people, &(&1.account_id == requested_by_id))
-
-    (List.wrap(importer) ++ List.wrap(company.owners) ++ people)
-    |> Enum.uniq_by(& &1.id)
-  end
-
-  defp notify_person(%Person{} = person, %Company{} = company, authors) do
-    author = Enum.find(authors, &(&1.id != person.id)) || person
-
+  defp notify_person(%Person{} = person, company, %Person{} = author) do
     case invite_link_for(person, company, author) do
       {:ok, invite_link} ->
         activity = email_activity(person, company, author, invite_link)
