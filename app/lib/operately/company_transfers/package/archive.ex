@@ -23,7 +23,12 @@ defmodule Operately.CompanyTransfers.Package.Archive do
   end
 
   def extract!(zip_path, destination_path) when is_binary(zip_path) and is_binary(destination_path) do
+    extract!(zip_path, destination_path, :all)
+  end
+
+  def extract!(zip_path, destination_path, allowed_paths) when is_binary(zip_path) and is_binary(destination_path) do
     File.mkdir_p!(destination_path)
+    validate_zip_entries!(zip_path, allowed_paths)
 
     case :zip.extract(String.to_charlist(zip_path), cwd: String.to_charlist(destination_path)) do
       {:ok, files} ->
@@ -83,4 +88,43 @@ defmodule Operately.CompanyTransfers.Package.Archive do
         Path.join(segments)
     end
   end
+
+  defp validate_zip_entries!(_zip_path, :all), do: :ok
+
+  defp validate_zip_entries!(zip_path, allowed_paths) when is_list(allowed_paths) do
+    allowed = allowed_paths |> Enum.map(&normalize_relative_path!/1) |> MapSet.new()
+    entries = zip_path |> zip_entry_paths!() |> Enum.map(&normalize_relative_path!/1)
+    entry_set = MapSet.new(entries)
+
+    cond do
+      length(entries) != MapSet.size(entry_set) ->
+        raise ArgumentError, "Archive contains duplicate entries"
+
+      not MapSet.subset?(entry_set, allowed) ->
+        extra_entries = entry_set |> MapSet.difference(allowed) |> MapSet.to_list()
+        raise ArgumentError, "Archive contains undeclared entries: #{inspect(extra_entries)}"
+
+      not MapSet.equal?(entry_set, allowed) ->
+        missing_entries = allowed |> MapSet.difference(entry_set) |> MapSet.to_list()
+        raise ArgumentError, "Archive is missing declared entries: #{inspect(missing_entries)}"
+
+      true ->
+        :ok
+    end
+  end
+
+  defp zip_entry_paths!(zip_path) do
+    case :zip.table(String.to_charlist(zip_path)) do
+      {:ok, entries} ->
+        entries
+        |> Enum.filter(&zip_file_entry?/1)
+        |> Enum.map(fn {:zip_file, path, _info, _comment, _offset, _compressed_size} -> List.to_string(path) end)
+
+      {:error, reason} ->
+        raise "Failed to inspect zip archive #{zip_path}: #{inspect(reason)}"
+    end
+  end
+
+  defp zip_file_entry?({:zip_file, _path, _info, _comment, _offset, _compressed_size}), do: true
+  defp zip_file_entry?(_entry), do: false
 end
