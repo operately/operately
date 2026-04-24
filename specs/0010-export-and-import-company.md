@@ -278,7 +278,7 @@ Implementation should be delivered in vertical slices. Each slice must leave the
    - if the destination email does not exist yet, create/send a personal invite link so the recipient can log in for the first time
    - use the destination instance's account-email resolution to decide which path applies
    - add tests covering both reused accounts and newly created accounts
-18. [ ] **PR 17B: Importer owner finalization.** After a successful import, ensure the importing person is the owner of the imported company:
+18. [x] **PR 17B: Importer owner finalization.** After a successful import, ensure the importing person is the owner of the imported company:
    - if the importer was imported as a destination person, update that person to owner access
    - if the importer was not imported as a destination person, add them to the imported company as an owner
    - update the post-import onboarding sender logic to use the importer as the inviter once this guarantee exists
