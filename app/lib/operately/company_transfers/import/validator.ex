@@ -4,6 +4,7 @@ defmodule Operately.CompanyTransfers.Import.Validator do
   """
 
   alias Operately.CompanyTransfers.Import.Package
+  alias Operately.CompanyTransfers.Package.Limits
   alias Operately.Repo
 
   @package_format_version 1
@@ -12,6 +13,7 @@ defmodule Operately.CompanyTransfers.Import.Validator do
   def validate(%Package{} = package) do
     []
     |> validate_manifest(package)
+    |> validate_package_limits(package)
     |> validate_company_row(package)
     |> validate_account_emails(package)
     |> validate_files(package)
@@ -76,6 +78,33 @@ defmodule Operately.CompanyTransfers.Import.Validator do
          "actual" => manifest["schema_migrations"]
        }) | errors]
     end
+  end
+
+  defp validate_package_limits(errors, %Package{} = package) do
+    errors
+    |> validate_count_limit(:max_tables_count, length(package.tables))
+    |> validate_count_limit(:max_rows_count, rows_count(package))
+    |> validate_count_limit(:max_files_count, length(package.files))
+  end
+
+  defp validate_count_limit(errors, limit, value) do
+    case Limits.validate_value(limit, value) do
+      :ok ->
+        errors
+
+      {:error, {:package_limit_exceeded, ^limit, max, actual}} ->
+        [error("package_limit_exceeded", "Package exceeds configured import limit", %{
+           "limit" => Atom.to_string(limit),
+           "max" => max,
+           "actual" => actual
+         }) | errors]
+    end
+  end
+
+  defp rows_count(%Package{} = package) do
+    Enum.reduce(package.tables, 0, fn table, count ->
+      count + length(Map.get(table, "rows", []))
+    end)
   end
 
   defp validate_company_row(errors, %Package{} = package) do

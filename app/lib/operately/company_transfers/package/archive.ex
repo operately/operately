@@ -1,4 +1,6 @@
 defmodule Operately.CompanyTransfers.Package.Archive do
+  alias Operately.CompanyTransfers.Package.Limits
+
   def create!(zip_path, entries \\ []) when is_binary(zip_path) and is_list(entries) do
     File.mkdir_p!(Path.dirname(zip_path))
 
@@ -93,7 +95,8 @@ defmodule Operately.CompanyTransfers.Package.Archive do
 
   defp validate_zip_entries!(zip_path, allowed_paths) when is_list(allowed_paths) do
     allowed = allowed_paths |> Enum.map(&normalize_relative_path!/1) |> MapSet.new()
-    entries = zip_path |> zip_entry_paths!() |> Enum.map(&normalize_relative_path!/1)
+    zip_entries = zip_entries!(zip_path)
+    entries = Enum.map(zip_entries, &normalize_relative_path!(&1.path))
     entry_set = MapSet.new(entries)
 
     cond do
@@ -108,17 +111,23 @@ defmodule Operately.CompanyTransfers.Package.Archive do
         missing_entries = allowed |> MapSet.difference(entry_set) |> MapSet.to_list()
         raise ArgumentError, "Archive is missing declared entries: #{inspect(missing_entries)}"
 
+      oversized_entry = Enum.find(zip_entries, &(Limits.validate_value(:max_extracted_file_size_bytes, &1.size) != :ok)) ->
+        max = Limits.get(:max_extracted_file_size_bytes)
+        raise ArgumentError, "Archive entry #{inspect(oversized_entry.path)} exceeds size limit #{max} bytes"
+
       true ->
         :ok
     end
   end
 
-  defp zip_entry_paths!(zip_path) do
+  defp zip_entries!(zip_path) do
     case :zip.table(String.to_charlist(zip_path)) do
       {:ok, entries} ->
         entries
         |> Enum.filter(&zip_file_entry?/1)
-        |> Enum.map(fn {:zip_file, path, _info, _comment, _offset, _compressed_size} -> List.to_string(path) end)
+        |> Enum.map(fn {:zip_file, path, info, _comment, _offset, _compressed_size} ->
+          %{path: List.to_string(path), size: zip_file_size(info)}
+        end)
 
       {:error, reason} ->
         raise "Failed to inspect zip archive #{zip_path}: #{inspect(reason)}"
@@ -127,4 +136,6 @@ defmodule Operately.CompanyTransfers.Package.Archive do
 
   defp zip_file_entry?({:zip_file, _path, _info, _comment, _offset, _compressed_size}), do: true
   defp zip_file_entry?(_entry), do: false
+
+  defp zip_file_size({:file_info, size, _type, _access, _atime, _mtime, _ctime, _mode, _links, _major, _minor, _inode, _uid, _gid}), do: size
 end
