@@ -4214,6 +4214,14 @@ export interface ProjectsDeleteContributorResult {
   projectContributor: ProjectContributor;
 }
 
+export interface ProjectsDeleteCheckInInput {
+  checkInId: Id;
+}
+
+export interface ProjectsDeleteCheckInResult {
+  success: boolean;
+}
+
 export interface ProjectsDeleteKeyResourceInput {
   id: Id;
 }
@@ -5641,6 +5649,10 @@ class ApiNamespaceProjects {
 
   async deleteContributor(input: ProjectsDeleteContributorInput): Promise<ProjectsDeleteContributorResult> {
     return this.client.post("/projects/delete_contributor", input);
+  }
+
+  async deleteCheckIn(input: ProjectsDeleteCheckInInput): Promise<ProjectsDeleteCheckInResult> {
+    return this.client.post("/projects/delete_check_in", input);
   }
 
   async deleteKeyResource(input: ProjectsDeleteKeyResourceInput): Promise<ProjectsDeleteKeyResourceResult> {
@@ -7177,6 +7189,12 @@ export default {
     useDeleteContributor: () =>
       useMutation<ProjectsDeleteContributorInput, ProjectsDeleteContributorResult>((input) =>
         defaultApiClient.apiNamespaceProjects.deleteContributor(input),
+      ),
+
+    deleteCheckIn: (input: ProjectsDeleteCheckInInput) => defaultApiClient.apiNamespaceProjects.deleteCheckIn(input),
+    useDeleteCheckIn: () =>
+      useMutation<ProjectsDeleteCheckInInput, ProjectsDeleteCheckInResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.deleteCheckIn(input),
       ),
 
     updateDueDate: (input: ProjectsUpdateDueDateInput) => defaultApiClient.apiNamespaceProjects.updateDueDate(input),
