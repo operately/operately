@@ -37,6 +37,25 @@ defmodule Operately.Features.GoalChecksInsTest do
     |> Steps.assert_check_in_status_displayed("caution")
   end
 
+  feature "check-in title shows only month on check-ins tab", ctx do
+    params = %{
+      status: "on_track",
+      message: "Checking-in on my goal",
+      targets: %{
+        "First response time" => 20,
+        "Increase feedback score to 90%" => 80
+      }
+    }
+    today = Date.utc_today()
+    month = Calendar.strftime(today, "%B")
+
+    ctx
+    |> Steps.check_in(params)
+    |> Steps.visit_check_ins_tab()
+    |> UI.assert_text("Check-In for #{month}", testid: "check-in-title")
+    |> UI.refute_text("Check-In for #{month} #{today.day}", testid: "check-in-title")
+  end
+
   feature "acknowledge a check-in in the web app", ctx do
     ctx
     |> Steps.given_a_check_in_exists()
