@@ -3,9 +3,11 @@ import * as assert from "node:assert";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
+import { PassThrough, Writable } from "node:stream";
 import { executeAuthBootstrap } from "../../commands/auth-bootstrap";
 import { ApiError } from "../../core/http";
 import { cliAuth } from "../../core/paths";
+import { askChoiceWithIO } from "../../core/prompts";
 import type { ChildProcess } from "child_process";
 
 interface MockCall {
@@ -13,13 +15,18 @@ interface MockCall {
   path?: string;
   inputs: Record<string, unknown>;
   token?: string;
+  timeoutMs?: number;
 }
+
+type AskChoiceFn = <T>(prompt: string, choices: { label: string; value: T }[]) => Promise<T>;
+type AskQuestionFn = (prompt: string) => Promise<string>;
+type AskPasswordFn = (prompt: string) => Promise<string>;
 
 const calls: MockCall[] = [];
 let responses: Array<unknown> = [];
 let promptQueue: Array<unknown> = [];
 
-function nextPrompt<T>(): Promise<T> {
+function nextPrompt<T>(..._args: unknown[]): Promise<T> {
   return Promise.resolve(promptQueue.shift() as T);
 }
 
@@ -55,12 +62,50 @@ function mockEndpoint(args: {
   timeoutMs: number;
   verbose?: boolean;
 }): Promise<unknown> {
-  calls.push({ method: "endpoint", inputs: args.inputs, token: args.token });
+  calls.push({ method: "endpoint", inputs: args.inputs, token: args.token, timeoutMs: args.timeoutMs });
   return nextResponse();
 }
 
 function mockOpen(_url: string): Promise<ChildProcess | boolean | undefined> {
   return Promise.resolve(true);
+}
+
+function createScriptedChoicePrompter(...scripts: string[]) {
+  let callIndex = 0;
+
+  return async function askChoice<T>(prompt: string, choices: { label: string; value: T }[]): Promise<T> {
+    const input = new PassThrough();
+    const output = new Writable({
+      write(_chunk, _encoding, callback) {
+        callback();
+      },
+    });
+
+    const script = scripts[callIndex] ?? "";
+    callIndex += 1;
+
+    queueInputLines(input, script);
+
+    return askChoiceWithIO(prompt, choices, { input, output });
+  };
+}
+
+function queueInputLines(input: PassThrough, script: string): void {
+  const lines = script.split("\n").filter((line, index, all) => line.length > 0 || index < all.length - 1);
+
+  if (lines.length === 0) {
+    setTimeout(() => input.end(), 0);
+    return;
+  }
+
+  lines.forEach((line, index) => {
+    setTimeout(() => {
+      input.write(`${line}\n`);
+      if (index === lines.length - 1) {
+        input.end();
+      }
+    }, index * 5);
+  });
 }
 
 // Registry stub
@@ -103,9 +148,9 @@ describe("Auth Bootstrap", () => {
 
   function makeDeps() {
     return {
-      askChoice: nextPrompt,
-      askQuestion: nextPrompt,
-      askPassword: nextPrompt,
+      askChoice: nextPrompt as AskChoiceFn,
+      askQuestion: nextPrompt as AskQuestionFn,
+      askPassword: nextPrompt as AskPasswordFn,
       callInternalMutation: mockMutation,
       callInternalQuery: mockQuery,
       callEndpoint: mockEndpoint,
@@ -329,6 +374,7 @@ describe("Auth Bootstrap", () => {
     assert.strictEqual(calls.length, 1);
     assert.strictEqual(calls[0].method, "endpoint");
     assert.strictEqual(calls[0].token, "op_test_token");
+    assert.strictEqual(calls[0].timeoutMs, 30000);
   });
 
   it("token flow invalid token returns exit code 4", async () => {
@@ -348,6 +394,109 @@ describe("Auth Bootstrap", () => {
 
     assert.strictEqual(result, 4);
     assert.ok(errorsPrinted.some((e) => e.includes("Invalid token")));
+  });
+
+  it("retries invalid auth method input until a valid choice is entered", async () => {
+    promptQueue.push("", "", "op_test_token");
+    responses.push({ me: { full_name: "Retry User", email: "retry@example.com" } });
+
+    const deps = makeDeps();
+    deps.askChoice = createScriptedChoicePrompter("9\n3\n");
+
+    process.env.HOME = tmpDir;
+
+    const result = await executeAuthBootstrap(
+      new Map(),
+      { activeProfile: "default", profiles: {} },
+      registryStub as any,
+      deps,
+    );
+
+    assert.strictEqual(result, 0);
+    assert.strictEqual(calls.length, 1);
+    assert.strictEqual(calls[0].method, "endpoint");
+    assert.strictEqual(calls[0].token, "op_test_token");
+  });
+
+  it("retries invalid company and access mode selections without exiting", async () => {
+    promptQueue.push("", "", "user@example.com", "secret123");
+
+    responses.push({
+      status: "authenticated",
+      bootstrap_token: "bootstrap_xxx",
+      companies: [
+        { id: "c1", name: "Acme Corp" },
+        { id: "c2", name: "Beta Inc" },
+      ],
+    });
+    responses.push({
+      token: "op_live_token",
+      company: { id: "c2", name: "Beta Inc" },
+    });
+    responses.push({ me: { full_name: "Retry User", email: "retry@example.com" } });
+
+    const deps = makeDeps();
+    deps.askChoice = createScriptedChoicePrompter("1\n", "9\n2\n", "9\n1\n");
+
+    process.env.HOME = tmpDir;
+
+    const result = await executeAuthBootstrap(
+      new Map(),
+      { activeProfile: "default", profiles: {} },
+      registryStub as any,
+      deps,
+    );
+
+    assert.strictEqual(result, 0);
+    assert.strictEqual(calls[1].method, "mutation");
+    assert.strictEqual((calls[1].inputs as any).company_id, "c2");
+    assert.strictEqual((calls[1].inputs as any).read_only, true);
+  });
+
+  it("cancelling at a choice prompt exits cleanly without saving config", async () => {
+    promptQueue.push("", "");
+
+    const deps = makeDeps();
+    deps.askChoice = createScriptedChoicePrompter("q\n");
+
+    process.env.HOME = tmpDir;
+
+    const result = await executeAuthBootstrap(
+      new Map(),
+      { activeProfile: "default", profiles: {} },
+      registryStub as any,
+      deps,
+    );
+
+    assert.strictEqual(result, 1);
+    assert.deepStrictEqual(calls, []);
+    assert.ok(errorsPrinted.includes("Authentication cancelled."));
+    assert.ok(!fs.existsSync(path.join(tmpDir, ".operately", "config.json")));
+  });
+
+  it("token flow uses the runtime timeout instead of a hardcoded value", async () => {
+    promptQueue.push("token", "", "", "op_test_token");
+    responses.push({ me: { full_name: "Token User", email: "token@example.com" } });
+
+    const deps = makeDeps();
+    deps.resolveRuntimeOptions = (_c: unknown, _o: unknown) => ({
+      baseUrl: "https://app.operately.com",
+      token: null,
+      timeoutMs: 12345,
+      profile: "default",
+    });
+
+    process.env.HOME = tmpDir;
+
+    const result = await executeAuthBootstrap(
+      new Map(),
+      { activeProfile: "default", profiles: {} },
+      registryStub as any,
+      deps,
+    );
+
+    assert.strictEqual(result, 0);
+    assert.strictEqual(calls[0].timeoutMs, 12345);
   });
 
   it("base-url flag skips base-url prompt", async () => {

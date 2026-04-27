@@ -1,4 +1,3 @@
-import open from "open";
 import {
   resolveRuntimeOptions,
   saveProfile,
@@ -8,7 +7,7 @@ import {
 } from "../core/config";
 import { printError, printSuccess } from "../core/output";
 import { callInternalMutation, callInternalQuery } from "../core/internal-api";
-import { askQuestion, askChoice, askPassword } from "../core/prompts";
+import { askQuestion, askChoice, askPassword, PromptCancelledError } from "../core/prompts";
 import { callEndpoint, ApiError } from "../core/http";
 import { cliAuth } from "../core/paths";
 import type { EndpointRegistry } from "./registry";
@@ -42,7 +41,7 @@ const defaultDeps: BootstrapDeps = {
   callInternalMutation,
   callInternalQuery,
   callEndpoint,
-  openUrl: (url: string) => open(url),
+  openUrl: (url: string) => openExternalUrl(url),
   printError,
   printSuccess,
   saveProfile,
@@ -58,38 +57,40 @@ export async function executeAuthBootstrap(
 ): Promise<number> {
   const d = { ...defaultDeps, ...deps };
 
-  const method = await d.askChoice<string>("How would you like to authenticate?", [
-    { label: "Email and password", value: "password" },
-    { label: "Google OAuth (opens browser)", value: "google" },
-    { label: "I have an API token", value: "token" },
-  ]);
-
   let baseUrl = readStringFlag(flags, "base-url");
   let profile = readStringFlag(flags, "profile");
-
-  if (!baseUrl) {
-    const answer = await d.askQuestion(
-      `Base URL for the Operately instance (default: ${DEFAULT_BASE_URL}):`,
-    );
-    baseUrl = answer.trim() || null;
-  }
-
-  if (!profile) {
-    const answer = await d.askQuestion(
-      `Profile name (default: default):`,
-    );
-    profile = answer.trim() || "default";
-  }
-
-  const runtime = d.resolveRuntimeOptions(config, {
-    token: null,
-    baseUrl: baseUrl ?? null,
-    profile: null,
-  });
+  let runtimeBaseUrl = baseUrl ?? DEFAULT_BASE_URL;
 
   try {
+    const method = await d.askChoice<string>("How would you like to authenticate?", [
+      { label: "Email and password", value: "password" },
+      { label: "Google OAuth (opens browser)", value: "google" },
+      { label: "I have an API token", value: "token" },
+    ]);
+
+    if (!baseUrl) {
+      const answer = await d.askQuestion(
+        `Base URL for the Operately instance (default: ${DEFAULT_BASE_URL}):`,
+      );
+      baseUrl = answer.trim() || null;
+    }
+
+    if (!profile) {
+      const answer = await d.askQuestion(
+        `Profile name (default: default):`,
+      );
+      profile = answer.trim() || "default";
+    }
+
+    const runtime = d.resolveRuntimeOptions(config, {
+      token: null,
+      baseUrl: baseUrl ?? null,
+      profile: null,
+    });
+    runtimeBaseUrl = runtime.baseUrl;
+
     if (method === "token") {
-      return await runTokenFlow(runtime.baseUrl, baseUrl ?? null, profile, config, registry, d);
+      return await runTokenFlow(runtime.baseUrl, runtime.timeoutMs, baseUrl ?? null, profile, config, registry, d);
     }
 
     let bootstrapToken: string;
@@ -151,7 +152,7 @@ export async function executeAuthBootstrap(
 
     return 0;
   } catch (error) {
-    return handleBootstrapError(error, runtime.baseUrl, d.printError);
+    return handleBootstrapError(error, runtimeBaseUrl, d.printError);
   }
 }
 
@@ -185,6 +186,7 @@ async function runPasswordFlow(
 
 async function runTokenFlow(
   apiBaseUrl: string,
+  timeoutMs: number,
   explicitBaseUrl: string | null,
   profile: string,
   config: CliConfig,
@@ -205,7 +207,7 @@ async function runTokenFlow(
       baseUrl: apiBaseUrl,
       token: token,
       inputs: {},
-      timeoutMs: 30000,
+      timeoutMs,
       verbose: false,
     });
     const user = payload as { me?: { full_name?: string; email?: string } };
@@ -310,6 +312,11 @@ async function selectCompany(companies: Company[], d: BootstrapDeps): Promise<Co
 }
 
 function handleBootstrapError(error: unknown, baseUrl: string, printErrorFn: typeof printError): number {
+  if (error instanceof PromptCancelledError) {
+    printErrorFn("Authentication cancelled.");
+    return 1;
+  }
+
   if (error instanceof ApiError) {
     if (error.status === 401 || error.status === 403) {
       printErrorFn(`Authentication failed: Invalid credentials for ${baseUrl}`);
@@ -339,6 +346,18 @@ function handleBootstrapError(error: unknown, baseUrl: string, printErrorFn: typ
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+async function openExternalUrl(url: string): Promise<ChildProcess | boolean | undefined> {
+  const openModule = (await importModule("open")) as {
+    default: (target: string) => Promise<ChildProcess | boolean | undefined>;
+  };
+
+  return openModule.default(url);
+}
+
+const importModule = new Function("specifier", "return import(specifier)") as (
+  specifier: string,
+) => Promise<unknown>;
 
 function readStringFlag(flags: Map<string, unknown[]>, name: string): string | null {
   const value = flags.get(name)?.at(-1);
