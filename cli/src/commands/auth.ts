@@ -8,6 +8,7 @@ import {
   type RuntimeOptions,
 } from "../core/config";
 import { printError, printSuccess } from "../core/output";
+import { executeAuthBootstrap } from "./auth-bootstrap";
 import type { EndpointRegistry } from "./registry";
 
 interface AuthExecutionInput {
@@ -41,8 +42,7 @@ async function executeAuthLogin(
 ): Promise<number> {
   const token = readStringFlag(flags, "token");
   if (!token) {
-    printError("Missing --token for auth login.");
-    return 2;
+    return executeAuthBootstrap(flags, config, registry);
   }
 
   const baseUrl = readStringFlag(flags, "base-url");
