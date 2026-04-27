@@ -70,6 +70,10 @@ defmodule OperatelyWeb.Router do
     pipe_through([:browser])
 
     delete("/accounts/log_out", AccountSessionController, :delete)
+
+    get("/cli-login/:id", CliLoginController, :show)
+    get("/cli-login/:id/success", CliLoginController, :success)
+
     get("/accounts/auth/:provider", AccountOauthController, :request)
     get("/accounts/auth/:provider/callback", AccountOauthController, :callback)
   end
