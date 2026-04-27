@@ -356,6 +356,14 @@ defmodule OperatelyWeb.Api do
         mutation(:delete, OperatelyWeb.Api.ApiTokens.Delete)
       end
 
+      namespace(:cli_auth) do
+        query(:status, OperatelyWeb.Api.CliAuth.Status)
+
+        mutation(:auth_password, OperatelyWeb.Api.CliAuth.AuthPassword)
+        mutation(:start_google, OperatelyWeb.Api.CliAuth.StartGoogle)
+        mutation(:create_token, OperatelyWeb.Api.CliAuth.CreateToken)
+      end
+
       namespace(:company_transfers) do
         query(:get_export_run, OperatelyWeb.Api.CompanyTransfers.GetExportRun)
         query(:list_export_runs, OperatelyWeb.Api.CompanyTransfers.ListExportRuns)

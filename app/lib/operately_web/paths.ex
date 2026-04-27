@@ -40,6 +40,14 @@ defmodule OperatelyWeb.Paths do
     create_path(["join"]) <> "?token=#{token}"
   end
 
+  def cli_login_path(session_id) when is_binary(session_id) do
+    create_path(["cli-login", session_id])
+  end
+
+  def cli_login_success_path(session_id) when is_binary(session_id) do
+    create_path(["cli-login", session_id, "success"])
+  end
+
   def person_path(company = %Company{}, person = %Person{}) do
     create_path([company_id(company), "people", person_id(person)])
   end

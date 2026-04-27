@@ -35,6 +35,12 @@ defmodule TurboConnect.Plugs.Dispatch do
       {:error, :forbidden, message} ->
         forbidden(conn, message)
 
+      {:error, :unauthorized} ->
+        unauthorized(conn, "Authentication required")
+
+      {:error, :unauthorized, message} ->
+        unauthorized(conn, message)
+
       {:error, :internal_server_error} ->
         internal_server_error(conn, "An unexpected error occurred")
 
@@ -82,6 +88,12 @@ defmodule TurboConnect.Plugs.Dispatch do
     conn
     |> put_resp_content_type("application/json")
     |> send_resp(403, Jason.encode!(%{error: "Forbidden", message: message}))
+  end
+
+  defp unauthorized(conn, message) do
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(401, Jason.encode!(%{error: "Unauthorized", message: message}))
   end
 
   defp internal_server_error(conn, message) do

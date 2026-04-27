@@ -5,10 +5,14 @@ defmodule OperatelyWeb.Api.Internal do
     except: [
       {:mutation, "add_first_company"},
       {:mutation, "join_company"},
+      {:mutation, "cli_auth/auth_password"},
+      {:mutation, "cli_auth/start_google"},
+      {:mutation, "cli_auth/create_token"},
       {:mutation, "create_email_activation_code"},
       {:mutation, "create_account"},
       {:mutation, "request_password_reset"},
       {:mutation, "reset_password"},
+      {:query, "cli_auth/status"},
 
       # must be public to allow lookup by token
       {:query, "invitations/get_invitation"},
@@ -18,6 +22,13 @@ defmodule OperatelyWeb.Api.Internal do
       # so it's public to avoid returning 401. If there isn't an account logged-in, the query
       # returns the default theme: "system".
       {:query, "get_theme"}
+    ]
+  )
+
+  plug(OperatelyWeb.Api.Plugs.RequireCliAuthSession,
+    only: [
+      {:query, "cli_auth/status"},
+      {:mutation, "cli_auth/create_token"}
     ]
   )
 
