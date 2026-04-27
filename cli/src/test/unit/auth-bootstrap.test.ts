@@ -1,4 +1,4 @@
-import { describe, it, beforeEach } from "node:test";
+import { describe, it, beforeEach, afterEach } from "node:test";
 import * as assert from "node:assert";
 import * as fs from "fs";
 import * as os from "os";
@@ -25,12 +25,21 @@ type AskPasswordFn = (prompt: string) => Promise<string>;
 const calls: MockCall[] = [];
 let responses: Array<unknown> = [];
 let promptQueue: Array<unknown> = [];
+const scriptedChoiceStates: Array<{ remainingScripts: () => string[] }> = [];
 
 function nextPrompt<T>(..._args: unknown[]): Promise<T> {
+  if (promptQueue.length === 0) {
+    throw new Error("Prompt requested, but promptQueue is empty");
+  }
+
   return Promise.resolve(promptQueue.shift() as T);
 }
 
 function nextResponse(): Promise<unknown> {
+  if (responses.length === 0) {
+    throw new Error("Mock response requested, but responses is empty");
+  }
+
   return Promise.resolve(responses.shift());
 }
 
@@ -73,7 +82,15 @@ function mockOpen(_url: string): Promise<ChildProcess | boolean | undefined> {
 function createScriptedChoicePrompter(...scripts: string[]) {
   let callIndex = 0;
 
+  scriptedChoiceStates.push({
+    remainingScripts: () => scripts.slice(callIndex),
+  });
+
   return async function askChoice<T>(prompt: string, choices: { label: string; value: T }[]): Promise<T> {
+    if (callIndex >= scripts.length) {
+      throw new Error("Scripted choice requested more times than configured");
+    }
+
     const input = new PassThrough();
     const output = new Writable({
       write(_chunk, _encoding, callback) {
@@ -141,9 +158,19 @@ describe("Auth Bootstrap", () => {
     calls.length = 0;
     responses = [];
     promptQueue = [];
+    scriptedChoiceStates.length = 0;
     errorsPrinted.length = 0;
     successPrinted.length = 0;
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "op-cli-test-"));
+  });
+
+  afterEach(() => {
+    assertQueueIsEmpty("promptQueue", promptQueue);
+    assertQueueIsEmpty("responses", responses);
+
+    scriptedChoiceStates.forEach((state, index) => {
+      assertQueueIsEmpty(`scripted choice sequences #${index + 1}`, state.remainingScripts());
+    });
   });
 
   function makeDeps() {
@@ -329,7 +356,7 @@ describe("Auth Bootstrap", () => {
   });
 
   it("expired google session returns exit code 4", async () => {
-    promptQueue.push("google", "", "", true);
+    promptQueue.push("google", "", "");
 
     responses.push({
       status: "pending",
@@ -454,8 +481,6 @@ describe("Auth Bootstrap", () => {
   });
 
   it("cancelling at a choice prompt exits cleanly without saving config", async () => {
-    promptQueue.push("", "");
-
     const deps = makeDeps();
     deps.askChoice = createScriptedChoicePrompter("q\n");
 
@@ -547,3 +572,22 @@ describe("Auth Bootstrap", () => {
     assert.strictEqual(saved.profiles.work.token, "op_test_token");
   });
 });
+
+function assertQueueIsEmpty(name: string, items: unknown[]): void {
+  assert.strictEqual(items.length, 0, `Expected ${name} to be fully consumed, but found leftover values: ${formatRemaining(items)}`);
+}
+
+function formatRemaining(items: unknown[]): string {
+  return items
+    .map((item) => {
+      if (typeof item === "string") return JSON.stringify(item);
+      if (typeof item === "boolean" || typeof item === "number" || item === null) return String(item);
+
+      try {
+        return JSON.stringify(item);
+      } catch {
+        return String(item);
+      }
+    })
+    .join(", ");
+}
