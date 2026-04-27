@@ -43,7 +43,7 @@ export function CheckInCard({ checkIn, mentionedPersonLookup, type }: CheckInCar
 
         <div className="flex-1 h-full">
           <div className="flex items-center gap-2 mb-1">
-            <div className="font-semibold leading-none" data-testid="check-in-title">Check-In for {formatTitleDate(checkIn.date, type)}</div>
+            <div className="font-semibold leading-none" data-test-id="check-in-title">Check-In for {formatTitleDate(checkIn.date, type)}</div>
             <StatusBadge status={checkIn.status} hideIcon className="scale-95 inline-block shrink-0" />
           </div>
           <div className="break-words">
