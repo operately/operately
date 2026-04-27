@@ -1,24 +1,25 @@
 import type { CatalogEndpoint, CatalogTypeRef, CatalogTypes } from "../types/catalog";
 import { AUTH_ACTIONS, type AuthAction } from "../core/parser-types";
+import { DEFAULT_BASE_URL } from "../core/config";
 import type { EndpointRegistry } from "./registry";
 
 export function printNamespaceHelp(namespace: string, registry: EndpointRegistry): void {
-  const endpoints = registry.endpoints.filter((ep) => ep.namespace === namespace);
+  const endpoints = registry.endpoints.filter((ep: CatalogEndpoint) => ep.namespace === namespace);
 
   if (endpoints.length === 0) {
     console.log(`No commands found in namespace '${namespace}'.`);
     return;
   }
 
-  const sortedEndpoints = endpoints.sort((a, b) => a.name.localeCompare(b.name));
-  const maxNameLength = Math.max(...sortedEndpoints.map((ep) => ep.name.length));
+  const sortedEndpoints = endpoints.sort((a: CatalogEndpoint, b: CatalogEndpoint) => a.name.localeCompare(b.name));
+  const maxNameLength = Math.max(...sortedEndpoints.map((ep: CatalogEndpoint) => ep.name.length));
   const padding = maxNameLength + 10;
 
   const commandLines = sortedEndpoints
-    .map((ep) => {
-      const commandName = ep.name.padEnd(padding);
-      const description = ep.docstring || "";
-      return `  ${commandName}${description}`;
+    .map((ep: CatalogEndpoint) => {
+      const padded = ep.name.padEnd(maxNameLength + 1);
+      const shortDesc = ep.docstring ? ` - ${ep.docstring}` : "";
+      return `  ${padded} ${shortDesc}`;
     })
     .join("\n");
 
@@ -56,7 +57,7 @@ Available Commands:
 ${namespaceLines}
 
 Utility commands:
-  auth login --token <token> [--base-url <url>] [--profile <name>]
+  auth login [--token <token>] [--base-url <url>] [--profile <name>]
   auth status [--profile <name>]
   auth whoami [--profile <name>]
   auth logout [--profile <name>]
@@ -76,7 +77,7 @@ Use 'operately help <command>' for command-specific input flags.`);
 }
 
 interface AuthCommandHelp {
-  description: string;
+  description: string | string[];
   usage: string;
   flags: string[];
   examples: string[];
@@ -84,10 +85,26 @@ interface AuthCommandHelp {
 
 const AUTH_COMMAND_HELP: Record<AuthAction, AuthCommandHelp> = {
   login: {
-    description: "Authenticate with an API token",
-    usage: "operately auth login --token <token> [--base-url <url>] [--profile <name>]",
-    flags: ["--token <token>", "--base-url <url>", "--profile <name>"],
+    usage: "operately auth login [--token <token>] [--base-url <url>] [--profile <name>]",
+    description: [
+      "Log in interactively or with a token",
+      "",
+      "  1. Interactive mode: run 'operately auth login' and follow prompts.",
+      `     You will be asked for a base URL (default: ${DEFAULT_BASE_URL}),`,
+      "     a profile name (default: default), and an authentication method",
+      "     (email/password, Google OAuth, or existing API token).",
+      "",
+      "  2. Quick token mode: run 'operately auth login --token <token>'",
+      "     to skip prompts and log in directly with a token.",
+      "     Optionally pass --base-url and --profile to override defaults.",
+    ],
+    flags: [
+      "--token <token>       (skip interactive flow and use an existing token)",
+      "--base-url <url>",
+      "--profile <name>",
+    ],
     examples: [
+      "operately auth login",
       "operately auth login --token op_live_xxx",
       "operately auth login --token op_staging_xxx --profile staging --base-url https://staging.operately.com",
     ],
@@ -114,7 +131,8 @@ const AUTH_COMMAND_HELP: Record<AuthAction, AuthCommandHelp> = {
 
 export function printAuthHelp(): void {
   const commandLines = AUTH_ACTIONS.map((action) => {
-    const description = AUTH_COMMAND_HELP[action].description;
+    const helpEntry = AUTH_COMMAND_HELP[action];
+    const description = Array.isArray(helpEntry.description) ? helpEntry.description[0] : helpEntry.description;
     return `  ${action.padEnd(20)} ${description}`;
   }).join("\n");
 
@@ -146,7 +164,7 @@ Command:
   auth ${action}
 
 Description:
-  ${help.description}
+  ${Array.isArray(help.description) ? help.description.join("\n  ") : help.description}
 
 Usage:
   ${help.usage}
