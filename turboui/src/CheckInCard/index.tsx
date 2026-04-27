@@ -22,10 +22,11 @@ namespace CheckInCard {
   export interface Props {
     checkIn: CheckIn;
     mentionedPersonLookup: MentionedPersonLookupFn;
+    type: "goal" | "project";
   }
 }
 
-export function CheckInCard({ checkIn, mentionedPersonLookup }: CheckInCard.Props) {
+export function CheckInCard({ checkIn, mentionedPersonLookup, type }: CheckInCard.Props) {
   const className = classNames(
     "flex gap-4 items-center",
     "py-3 px-3",
@@ -42,7 +43,7 @@ export function CheckInCard({ checkIn, mentionedPersonLookup }: CheckInCard.Prop
 
         <div className="flex-1 h-full">
           <div className="flex items-center gap-2 mb-1">
-            <div className="font-semibold leading-none">Check-In for {getMonth(checkIn.date)}</div>
+            <div className="font-semibold leading-none" data-testid="check-in-title">Check-In for {formatTitleDate(checkIn.date, type)}</div>
             <StatusBadge status={checkIn.status} hideIcon className="scale-95 inline-block shrink-0" />
           </div>
           <div className="break-words">
@@ -64,15 +65,25 @@ export function CheckInCard({ checkIn, mentionedPersonLookup }: CheckInCard.Prop
   );
 }
 
-function getMonth(date: Date) {
+function formatTitleDate(date: Date, type: "goal" | "project") {
   const year = date.getFullYear();
   const thisYear = new Date().getFullYear();
 
-  if (year === thisYear) {
-    const options: Intl.DateTimeFormatOptions = { month: "long" };
-    return new Intl.DateTimeFormat("en-US", options).format(date);
+  if (type === "project") {
+    if (year === thisYear) {
+      const options: Intl.DateTimeFormatOptions = { month: "long", day: "numeric" };
+      return new Intl.DateTimeFormat("en-US", options).format(date);
+    } else {
+      const options: Intl.DateTimeFormatOptions = { month: "long", day: "numeric", year: "numeric" };
+      return new Intl.DateTimeFormat("en-US", options).format(date);
+    }
   } else {
-    const options: Intl.DateTimeFormatOptions = { month: "long", year: "numeric" };
-    return new Intl.DateTimeFormat("en-US", options).format(date);
+    if (year === thisYear) {
+      const options: Intl.DateTimeFormatOptions = { month: "long" };
+      return new Intl.DateTimeFormat("en-US", options).format(date);
+    } else {
+      const options: Intl.DateTimeFormatOptions = { month: "long", year: "numeric" };
+      return new Intl.DateTimeFormat("en-US", options).format(date);
+    }
   }
 }

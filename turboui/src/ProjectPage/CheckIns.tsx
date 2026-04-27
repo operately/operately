@@ -29,6 +29,7 @@ export function CheckIns(props: ProjectPage.State) {
             key={checkIn.id}
             checkIn={checkIn}
             mentionedPersonLookup={props.richTextHandlers.mentionedPersonLookup}
+            type="project"
           />
         ))}
       </div>
