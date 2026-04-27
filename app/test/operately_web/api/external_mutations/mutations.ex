@@ -96,6 +96,7 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations do
       Mutations.Projects.CreateCheckIn,
       Mutations.Projects.UpdateCheckIn,
       Mutations.Projects.AcknowledgeCheckIn,
+      Mutations.Projects.DeleteCheckIn,
       Mutations.Projects.Discussions.Create,
       Mutations.Projects.Discussions.Update,
       Mutations.Spaces.ArchiveDiscussion,
