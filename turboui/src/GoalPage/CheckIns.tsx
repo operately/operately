@@ -29,6 +29,7 @@ export function CheckIns(props: GoalPage.State) {
             key={checkIn.id}
             checkIn={checkIn}
             mentionedPersonLookup={props.richTextHandlers.mentionedPersonLookup}
+            type="goal"
           />
         ))}
       </div>
