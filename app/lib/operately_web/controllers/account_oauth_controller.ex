@@ -3,6 +3,7 @@ defmodule OperatelyWeb.AccountOauthController do
   require Logger
 
   alias Operately.People
+  alias Operately.People.CliAuthSession
   alias Operately.InviteLinks
   alias Operately.Companies
   alias OperatelyWeb.AccountAuth
@@ -10,6 +11,8 @@ defmodule OperatelyWeb.AccountOauthController do
 
   plug :store_redirect_in_state when action == :request
   plug Ueberauth
+
+  @cli_auth_session_key :oauth_cli_auth_session_id
 
   @doc """
   Stores the redirect_to parameter in the session before initiating OAuth flow.
@@ -44,6 +47,9 @@ defmodule OperatelyWeb.AccountOauthController do
 
     case People.find_or_create_account(account_attrs) do
       {:ok, account} ->
+        {conn, cli_auth_session_id} = get_and_clear_cli_auth_session_id(conn)
+        maybe_complete_cli_auth(cli_auth_session_id, account)
+
         {redirect_params, conn} =
           maybe_handle_invite(conn, account, invite_token, redirect_params)
 
@@ -80,6 +86,13 @@ defmodule OperatelyWeb.AccountOauthController do
     {conn, normalize_invite_token(invite_token)}
   end
 
+  defp get_and_clear_cli_auth_session_id(conn) do
+    cli_auth_session_id = get_session(conn, @cli_auth_session_key)
+    conn = delete_session(conn, @cli_auth_session_key)
+
+    {conn, cli_auth_session_id}
+  end
+
   defp maybe_store_redirect(conn, nil), do: conn
   defp maybe_store_redirect(conn, ""), do: conn
 
@@ -103,6 +116,21 @@ defmodule OperatelyWeb.AccountOauthController do
 
       {:error, _reason} ->
         {params, conn}
+    end
+  end
+
+  defp maybe_complete_cli_auth(nil, _account), do: :ok
+
+  defp maybe_complete_cli_auth(cli_auth_session_id, account) do
+    case CliAuthSession.get_by_id(cli_auth_session_id) do
+      nil ->
+        :ok
+
+      session ->
+        case CliAuthSession.complete_google_auth(session, account) do
+          {:ok, _session} -> :ok
+          {:error, _reason} -> :ok
+        end
     end
   end
 
