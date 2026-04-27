@@ -50,6 +50,18 @@ defmodule Operately.Features.ProjectCheckInsTest do
     |> Steps.assert_check_in_status_displayed("caution")
   end
 
+  feature "check-in title shows month and day on check-ins tab", ctx do
+    values = %{status: "on_track", description: "This is a check-in."}
+    today = Date.utc_today()
+    month = Calendar.strftime(today, "%B")
+    day = to_string(today.day)
+
+    ctx
+    |> Steps.submit_check_in(values)
+    |> Steps.visit_check_ins_tab()
+    |> UI.assert_text("Check-In for #{month} #{day}", testid: "check-in-title")
+  end
+
   feature "acknowledge a check-in in the web app", ctx do
     values = %{status: "on_track", description: "This is a check-in."}
 
