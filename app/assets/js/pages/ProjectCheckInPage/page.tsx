@@ -4,8 +4,14 @@ import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as Reactions from "@/models/reactions";
 import * as React from "react";
 
+import { useNavigate } from "react-router-dom";
+import { useBoolState } from "@/hooks/useBoolState";
+import { useDeleteProjectCheckIn } from "@/models/projectCheckIns";
+
 import FormattedTime from "@/components/FormattedTime";
-import { Avatar, IconEdit, IconSquareCheckFilled, CurrentSubscriptions } from "turboui";
+import Modal from "@/components/Modal";
+import Forms from "@/components/Forms";
+import { Avatar, IconEdit, IconSquareCheckFilled, IconTrash, CurrentSubscriptions, showSuccessToast } from "turboui";
 
 import { TextSeparator } from "@/components/TextSeparator";
 import { compareIds } from "@/routes/paths";
@@ -29,6 +35,7 @@ import { usePaths } from "@/routes/paths";
 
 export function Page() {
   const { checkIn } = useLoadedData();
+  const [showDeleteConfirmModal, toggleDeleteConfirmModal] = useBoolState(false);
 
   assertPresent(checkIn.project, "Check-in project must be defined");
 
@@ -40,7 +47,7 @@ export function Page() {
         <Navigation />
 
         <Paper.Body className="p-4 md:p-8 lg:px-28 lg:pt-8" noPadding banner={banner(checkIn.project)}>
-          <Options />
+          <Options showDeleteModal={toggleDeleteConfirmModal} />
           <Title />
           <StatusSection checkIn={checkIn} reviewer={checkIn.project!.reviewer} />
           <DescriptionSection checkIn={checkIn} />
@@ -55,6 +62,8 @@ export function Page() {
           <div className="border-t border-stroke-base mt-16 mb-8" />
 
           <SubscriptionsSection />
+
+          <DeleteCheckInModal isOpen={showDeleteConfirmModal} toggleModal={toggleDeleteConfirmModal} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -162,21 +171,69 @@ function Acknowledgement() {
   }
 }
 
-function Options() {
+function Options({ showDeleteModal }: { showDeleteModal: () => void }) {
   const paths = usePaths();
   const { checkIn } = useLoadedData();
   const me = useMe()!;
 
-  if (!compareIds(me.id!, checkIn.author!.id!)) return null;
+  const isAuthor = compareIds(me.id!, checkIn.author!.id!);
+  const canDelete = checkIn.project?.permissions?.hasFullAccess || false;
+
+  if (!isAuthor && !canDelete) return null;
 
   return (
     <PageOptions.Root testId="options-button">
-      <PageOptions.Link
-        icon={IconEdit}
-        title="Edit check-in"
-        to={paths.projectCheckInEditPath(checkIn.id!)}
-        testId="edit-check-in"
-      />
+      {isAuthor && (
+        <PageOptions.Link
+          icon={IconEdit}
+          title="Edit check-in"
+          to={paths.projectCheckInEditPath(checkIn.id!)}
+          testId="edit-check-in"
+        />
+      )}
+      {canDelete && (
+        <PageOptions.Action
+          icon={IconTrash}
+          title="Delete check-in"
+          onClick={showDeleteModal}
+          testId="delete-check-in"
+        />
+      )}
     </PageOptions.Root>
+  );
+}
+
+interface DeleteCheckInModalProps {
+  isOpen: boolean;
+  toggleModal: () => void;
+}
+
+function DeleteCheckInModal({ isOpen, toggleModal }: DeleteCheckInModalProps) {
+  const navigate = useNavigate();
+  const { checkIn } = useLoadedData();
+  const [remove] = useDeleteProjectCheckIn();
+  const paths = usePaths();
+
+  assertPresent(checkIn.project, "Check-in project must be defined");
+
+  const form = Forms.useForm({
+    fields: {},
+    cancel: toggleModal,
+    submit: async () => {
+      await remove({ checkInId: checkIn.id });
+      showSuccessToast("Check-in deleted", "The check-in has been successfully deleted.");
+      navigate(paths.projectCheckInsPath(checkIn.project?.id!));
+    },
+  });
+
+  return (
+    <Modal isOpen={isOpen} hideModal={toggleModal}>
+      <Forms.Form form={form}>
+        <p>
+          Are you sure you want to delete this check-in?
+        </p>
+        <Forms.Submit saveText="Delete" cancelText="Cancel" />
+      </Forms.Form>
+    </Modal>
   );
 }
