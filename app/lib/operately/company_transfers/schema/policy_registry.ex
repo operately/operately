@@ -9,7 +9,7 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
   1. **Excluded tables** - System tables not exported:
      - `schema_migrations`, `oban_*` - System/infrastructure
      - `company_export_runs`, `company_import_runs` - Transfer metadata
-     - `accounts_tokens`, `api_tokens`, `email_activation_codes`, `invite_links` - Authentication/invitation tokens
+     - `accounts_tokens`, `api_tokens`, `cli_auth_sessions`, `email_activation_codes`, `invite_links` - Authentication/invitation tokens
      - `notification_email_batches`, `system_settings` - Transient
 
   2. **Polymorphic tables** - Tables whose own rows are discovered through a type/id
@@ -68,6 +68,7 @@ defmodule Operately.CompanyTransfers.Schema.PolicyRegistry do
     "company_import_runs",
     "accounts_tokens",
     "api_tokens",
+    "cli_auth_sessions",
     "email_activation_codes",
     "invite_links",
     "notification_email_batches",
