@@ -12,6 +12,7 @@ export const getProjectCheckIn = Api.projects.getCheckIn;
 export const useAcknowledgeProjectCheckIn = Api.projects.useAcknowledgeCheckIn;
 export const useEditProjectCheckIn = Api.projects.useUpdateCheckIn;
 export const usePostProjectCheckIn = Api.projects.useCreateCheckIn;
+export const useDeleteProjectCheckIn = Api.projects.useDeleteCheckIn;
 
 export function parseCheckInsForTurboUi(paths: Paths, checkIns: api.ProjectCheckIn[]) {
   return checkIns.map((checkIn) => {

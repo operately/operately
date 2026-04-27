@@ -101,6 +101,7 @@ defmodule OperatelyWeb.Api do
         mutation(:create_check_in, OperatelyWeb.Api.Projects.CreateCheckIn)
         mutation(:update_check_in, OperatelyWeb.Api.Projects.UpdateCheckIn)
         mutation(:acknowledge_check_in, OperatelyWeb.Api.Projects.AcknowledgeCheckIn)
+        mutation(:delete_check_in, OperatelyWeb.Api.Projects.DeleteCheckIn)
         mutation(:create_discussion, OperatelyWeb.Api.Projects.Discussions.Create)
         mutation(:update_discussion, OperatelyWeb.Api.Projects.Discussions.Update)
 
