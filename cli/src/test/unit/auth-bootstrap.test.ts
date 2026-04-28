@@ -4,9 +4,9 @@ import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 import { PassThrough, Writable } from "node:stream";
-import { executeAuthBootstrap } from "../../commands/auth-bootstrap";
+import { executeAuthBootstrap } from "../../auth/bootstrap";
 import { ApiError } from "../../core/http";
-import { cliAuth } from "../../core/paths";
+import { cliAuth } from "../../auth/shared/api";
 import { askChoiceWithIO } from "../../core/prompts";
 import type { ChildProcess } from "child_process";
 

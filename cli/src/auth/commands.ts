@@ -6,10 +6,10 @@ import {
   writeConfig,
   type CliConfig,
   type RuntimeOptions,
-} from "../core/config";
+} from "./config";
 import { printError, printSuccess } from "../core/output";
-import { executeAuthBootstrap } from "./auth-bootstrap";
-import type { EndpointRegistry } from "./registry";
+import { executeAuthBootstrap } from "./bootstrap";
+import type { EndpointRegistry } from "../commands/registry";
 
 interface AuthExecutionInput {
   action: "login" | "status" | "whoami" | "logout";
