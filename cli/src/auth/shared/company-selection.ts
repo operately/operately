@@ -1,7 +1,9 @@
-import { askChoice } from "../../core/prompts";
+import type { askChoice as askChoiceFn } from "../../core/prompts";
 import type { Company } from "../types";
 
-export async function selectCompany(companies: Company[]): Promise<Company> {
+type AskChoice = typeof askChoiceFn;
+
+export async function selectCompany(companies: Company[], askChoice: AskChoice): Promise<Company> {
   if (companies.length === 1) {
     console.log(`Using company: ${companies[0].name ?? companies[0].id}`);
     return companies[0];

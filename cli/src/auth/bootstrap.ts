@@ -136,7 +136,7 @@ export async function executeAuthBootstrap(
       return 1;
     }
 
-    const company = await selectCompany(companies);
+    const company = await selectCompany(companies, d.askChoice);
 
     const readOnly = await d.askChoice<boolean>("Select access mode:", [
       { label: "Read-only", value: true },
@@ -153,6 +153,12 @@ export async function executeAuthBootstrap(
       readOnly,
       timeoutMs: runtime.timeoutMs,
       registry,
+      callInternalMutation: d.callInternalMutation,
+      callEndpoint: d.callEndpoint,
+      printError: d.printError,
+      printSuccess: d.printSuccess,
+      saveProfile: d.saveProfile,
+      writeConfig: d.writeConfig,
     });
   } catch (error) {
     return handleBootstrapError(error, runtimeBaseUrl, d.printError);

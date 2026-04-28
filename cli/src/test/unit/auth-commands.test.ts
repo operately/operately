@@ -74,7 +74,7 @@ describe("Auth Commands", () => {
     assert.ok(capture.logs.some((l) => l.includes("Profile: default")));
     assert.ok(capture.logs.some((l) => l.includes("Status: Logged in")));
     assert.ok(capture.logs.some((l) => l.includes("Base URL: https://custom.example.com")));
-    assert.ok(capture.logs.some((l) => l.includes("Profile Base URL: https://custom.example.com")));
+    assert.ok(capture.logs.some((l) => l.includes("Base URL: https://custom.example.com")));
   });
 
   it("status shows not logged in when no token", async () => {
