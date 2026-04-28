@@ -26,7 +26,10 @@ const ProjectGoalConnection: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const { project: p, goal: g, goalName, previousGoal, previousGoalName } = content(activity);
+    const data = content(activity);
+    const { project: p, goal: g, previousGoal } = data;
+    const connectedGoalName = currentGoalName(data);
+    const disconnectedGoalName = previousGoalName(data);
 
     const project = projectLink(p);
 
@@ -42,11 +45,11 @@ const ProjectGoalConnection: ActivityHandler = {
       }
     }
 
-    if (goalName) {
+    if (connectedGoalName) {
       if (page === "project") {
-        return feedTitle(activity, "connected the project to the", goalName, "goal");
+        return feedTitle(activity, "connected the project to the", connectedGoalName, "goal");
       } else {
-        return feedTitle(activity, "connected the", project, "project to the", goalName, "goal");
+        return feedTitle(activity, "connected the", project, "project to the", connectedGoalName, "goal");
       }
     }
 
@@ -59,11 +62,11 @@ const ProjectGoalConnection: ActivityHandler = {
       } else {
         return feedTitle(activity, "disconnected the", project, "project from the", prevGoal, "goal");
       }
-    } else if (previousGoalName) {
+    } else if (disconnectedGoalName) {
       if (page === "project") {
-        return feedTitle(activity, "disconnected the project from the", previousGoalName, "goal");
+        return feedTitle(activity, "disconnected the project from the", disconnectedGoalName, "goal");
       } else {
-        return feedTitle(activity, "disconnected the", project, "project from the", previousGoalName, "goal");
+        return feedTitle(activity, "disconnected the", project, "project from the", disconnectedGoalName, "goal");
       }
     }
 
@@ -92,19 +95,43 @@ const ProjectGoalConnection: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    const projectName = content(activity).project!.name!;
-    const goalName = content(activity).goal!.name!;
+    const data = content(activity);
+    const projectName = data.project?.name;
+    const connectedGoalName = currentGoalName(data);
+    const disconnectedGoalName = previousGoalName(data);
 
-    return `Connected ${projectName} project to the ${goalName} goal`;
+    if (connectedGoalName) {
+      return projectName
+        ? `Connected ${projectName} project to the ${connectedGoalName} goal`
+        : `Connected a project to the ${connectedGoalName} goal`;
+    }
+
+    if (disconnectedGoalName) {
+      return projectName
+        ? `Disconnected ${projectName} project from the ${disconnectedGoalName} goal`
+        : `Disconnected a project from the ${disconnectedGoalName} goal`;
+    }
+
+    return projectName ? `Updated the parent goal of ${projectName} project` : "Updated a project's parent goal";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
-    return content(activity).project!.name!;
+    const data = content(activity);
+
+    return data.project?.name ?? currentGoalName(data) ?? previousGoalName(data);
   },
 };
 
 function content(activity: Activity): ActivityContentProjectGoalConnection {
   return activity.content as ActivityContentProjectGoalConnection;
+}
+
+function currentGoalName(content: ActivityContentProjectGoalConnection): string | null {
+  return content.goal?.name ?? content.goalName;
+}
+
+function previousGoalName(content: ActivityContentProjectGoalConnection): string | null {
+  return content.previousGoal?.name ?? content.previousGoalName;
 }
 
 export default ProjectGoalConnection;
