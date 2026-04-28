@@ -289,9 +289,8 @@ defmodule Operately.Assignments.Loader do
   defp load_pending_space_tasks(company, person) do
     base_query = pending_space_tasks_query(person)
 
-    result = from([task: t] in base_query,
-      join: space in assoc(t, :space),
-      preload: [space: space]
+    result = from([space: s] in base_query,
+      preload: [space: s]
     )
     |> Repo.all()
 
