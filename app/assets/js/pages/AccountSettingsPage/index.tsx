@@ -5,20 +5,10 @@ import { IconBell, IconPalette, OptionsMenuItem } from "turboui";
 
 import { PageNavigation } from "@/features/accounts/PageNavigation";
 
-import { Paths } from "@/routes/paths";
-import { redirectIfFeatureNotEnabled } from "@/routes/redirectUtils";
 import { PageModule } from "@/routes/types";
 import { usePaths } from "@/routes/paths";
-export default { name: "AccountSettingsPage", loader, Page } as PageModule;
 
-async function loader({ params }) {
-  await redirectIfFeatureNotEnabled(params, {
-    feature: "buffered_notifications",
-    path: new Paths({ companyId: params.companyId! }).homePath(),
-  });
-
-  return null;
-}
+export default { name: "AccountSettingsPage", loader: Pages.emptyLoader, Page } as PageModule;
 
 function Page() {
   const paths = usePaths();

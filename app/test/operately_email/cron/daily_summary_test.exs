@@ -14,7 +14,6 @@ defmodule OperatelyEmail.Cron.DailySummaryTest do
     ctx =
       ctx
       |> Factory.setup()
-      |> Factory.enable_feature("buffered_notifications")
       |> Factory.add_space(:space)
       |> Factory.add_project(:project, :space)
       |> Factory.add_goal(:goal, :space)

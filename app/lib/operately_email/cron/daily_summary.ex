@@ -56,7 +56,6 @@ defmodule OperatelyEmail.Cron.DailySummary do
       where: not is_nil(a.email),
       where: not is_nil(p.email),
       where: fragment("COALESCE((?->'notifications'->>'send_daily_summary')::boolean, true)", p.preferences),
-      where: fragment("? = ANY(?)", ^BufferedEmailPolicy.feature_name(), c.enabled_experimental_features),
       preload: [account: a, company: c]
     )
     |> Repo.all()
@@ -72,11 +71,9 @@ defmodule OperatelyEmail.Cron.DailySummary do
         p in Person,
         inner_join: a in Account,
         on: p.account_id == a.id,
-        inner_join: c in assoc(p, :company),
         where: not is_nil(a.email),
         where: not is_nil(p.email),
         where: fragment("COALESCE((?->'notifications'->>'send_daily_summary')::boolean, true)", p.preferences),
-        where: fragment("? = ANY(?)", ^BufferedEmailPolicy.feature_name(), c.enabled_experimental_features),
         select: %{
           person_id: p.id,
           local_now:
@@ -189,7 +186,7 @@ defmodule OperatelyEmail.Cron.DailySummary do
   end
 
   defp eligible_person?(person = %Person{}) do
-    Person.send_daily_summary?(person) and BufferedEmailPolicy.enabled?(person.company)
+    Person.send_daily_summary?(person)
   end
 
   defp eligible_person?(_), do: false

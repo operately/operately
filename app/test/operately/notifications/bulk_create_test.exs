@@ -6,7 +6,6 @@ defmodule Operately.Notifications.BulkCreateTest do
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
 
-  alias Operately.Companies
   alias Operately.Notifications
   alias Operately.Notifications.BufferedEmailWorker
   alias Operately.Notifications.EmailBatch
@@ -20,25 +19,7 @@ defmodule Operately.Notifications.BulkCreateTest do
     {:ok, company: company, person: person}
   end
 
-  test "keeps immediate delivery when the feature flag is disabled", ctx do
-    activity = activity_fixture(author_id: ctx.person.id, action: "project_created")
-
-    Oban.Testing.with_testing_mode(:manual, fn ->
-      assert {:ok, notifications} =
-               Notifications.bulk_create([
-                 %{person_id: ctx.person.id, activity_id: activity.id, should_send_email: true}
-               ])
-
-      assert length(notifications) == 1
-      assert_enqueued worker: EmailWorker, args: %{notification_id: hd(notifications).id}
-      refute_enqueued worker: BufferedEmailWorker
-    end)
-
-    assert Repo.all(EmailBatch) == []
-  end
-
   test "creates one buffered batch per person across different activity types", ctx do
-    {:ok, _company} = Companies.enable_experimental_feature(ctx.company, "buffered_notifications")
     activity_one = activity_fixture(author_id: ctx.person.id, action: "project_created")
     activity_two = activity_fixture(author_id: ctx.person.id, action: "goal_created")
 
@@ -62,7 +43,6 @@ defmodule Operately.Notifications.BulkCreateTest do
   end
 
   test "reuses an open batch without moving send_at or scheduling another worker", ctx do
-    {:ok, _company} = Companies.enable_experimental_feature(ctx.company, "buffered_notifications")
     activity_one = activity_fixture(author_id: ctx.person.id, action: "project_created")
     activity_two = activity_fixture(author_id: ctx.person.id, action: "goal_created")
 
@@ -95,7 +75,6 @@ defmodule Operately.Notifications.BulkCreateTest do
   end
 
   test "creates a new batch after the existing fixed window has closed", ctx do
-    {:ok, _company} = Companies.enable_experimental_feature(ctx.company, "buffered_notifications")
     activity = activity_fixture(author_id: ctx.person.id, action: "project_created")
 
     {:ok, existing_batch} =
@@ -123,7 +102,6 @@ defmodule Operately.Notifications.BulkCreateTest do
   end
 
   test "keeps bypassed actions on the immediate path even when buffering is enabled", ctx do
-    {:ok, _company} = Companies.enable_experimental_feature(ctx.company, "buffered_notifications")
     activity = activity_fixture(author_id: ctx.person.id, action: "guest_invited")
 
     Oban.Testing.with_testing_mode(:manual, fn ->
@@ -140,8 +118,6 @@ defmodule Operately.Notifications.BulkCreateTest do
   end
 
   test "notify_on_mention sends direct mentions immediately", ctx do
-    {:ok, _company} = Companies.enable_experimental_feature(ctx.company, "buffered_notifications")
-
     {:ok, _person} =
       Operately.People.update_person(ctx.person, %{
         preferences: %{notifications: %{notify_on_mention: true}}
@@ -164,8 +140,6 @@ defmodule Operately.Notifications.BulkCreateTest do
   end
 
   test "notify_on_mention keeps non-mentions buffered for mention-capable actions", ctx do
-    {:ok, _company} = Companies.enable_experimental_feature(ctx.company, "buffered_notifications")
-
     {:ok, _person} =
       Operately.People.update_person(ctx.person, %{
         preferences: %{notifications: %{notify_on_mention: true}}
@@ -188,8 +162,6 @@ defmodule Operately.Notifications.BulkCreateTest do
   end
 
   test "notify_on_mention keeps unsupported actions buffered", ctx do
-    {:ok, _company} = Companies.enable_experimental_feature(ctx.company, "buffered_notifications")
-
     {:ok, _person} =
       Operately.People.update_person(ctx.person, %{
         preferences: %{notifications: %{notify_on_mention: true}}
