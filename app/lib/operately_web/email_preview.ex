@@ -12,7 +12,7 @@ defmodule OperatelyWeb.EmailPreview do
   plug :match
   plug :dispatch
 
-  group "assignments", module: Previews.AssignmentsV2 do
+  group "assignments", module: Previews.Assignments do
     preview :single, label: "Single Item"
     preview :simple
     preview :complete

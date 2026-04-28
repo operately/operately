@@ -6,14 +6,14 @@ defmodule OperatelyWeb.Api.People.GetAssignmentsCount do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
-  alias Operately.Assignments.LoaderV2
+  alias Operately.Assignments.Loader
 
   outputs do
     field :count, :integer, null: false
   end
 
   def call(conn, _inputs) do
-    count = LoaderV2.count(me(conn))
+    count = Loader.count(me(conn))
 
     {:ok, %{count: count}}
   end

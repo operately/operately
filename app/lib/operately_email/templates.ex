@@ -76,19 +76,6 @@ defmodule OperatelyEmail.Templates do
     {:safe, Prosemirror2Html.convert(content, opts)}
   end
 
-  def assignment_to_text(assignment) do
-    case assignment.type do
-    :project ->
-      "- Check-In #{assignment.url}"
-    :goal ->
-      "- Progress Update #{assignment.url}"
-    :check_in ->
-      "- Acknowledge Check-In #{assignment.url}"
-    :goal_update ->
-      "- Acknowledge Progress Update #{assignment.url}"
-    end
-  end
-
   def short_name(person) do
     Operately.People.Person.short_name(person)
   end

@@ -6,7 +6,7 @@ defmodule OperatelyWeb.Api.People.ListAssignments do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
-  alias Operately.Assignments.LoaderV2
+  alias Operately.Assignments.Loader
   alias Operately.Assignments.Categorizer
 
   outputs do
@@ -19,7 +19,7 @@ defmodule OperatelyWeb.Api.People.ListAssignments do
     company = company(conn)
     me = me(conn)
 
-    assignments = LoaderV2.load(me, company)
+    assignments = Loader.load(me, company)
     categorized = Categorizer.categorize(assignments)
 
     {:ok, Serializer.serialize(categorized)}

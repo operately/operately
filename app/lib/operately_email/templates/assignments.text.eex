@@ -1,5 +1,10 @@
-Here are your assignments for today:
-<%= Enum.map @assignments, fn assignment -> %>
-<%= assignment.name %>
-<%= assignment_to_text(assignment) %>
-<% end %>
+<%= @company.name %> - Assignments
+
+<%= Enum.map(@urgent_groups, fn group -> %>
+- <%= group.origin.name %><%= if group.origin.space_name do %> — Space: <%= group.origin.space_name %><% end %>
+<%= Enum.map(group.assignments, fn assignment -> %>
+  * <%= assignment.display_label %><%= if assignment.badge_label do %> — <%= assignment.badge_label %><% end %>
+    <%= assignment.url %>
+<% end) %>
+
+<% end) %>

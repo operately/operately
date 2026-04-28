@@ -1,8 +1,7 @@
 defmodule OperatelyEmail.Emails.AssignmentsEmail do
   import OperatelyEmail.Mailers.NotificationMailer
 
-  alias Operately.Assignments.{Loader, LoaderV2, Assignment}
-  alias Operately.Companies
+  alias Operately.Assignments.{Loader, Assignment}
   alias Operately.Repo
   alias OperatelyWeb.Paths
 
@@ -45,29 +44,7 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
   defp load_assignments_payload(_person, nil), do: :no_assignments
 
   defp load_assignments_payload(person, company) do
-    if Companies.has_experimental_feature?(company, "review_v2") do
-      v2_payload(person, company)
-    else
-      v1_payload(person, company)
-    end
-  end
-
-  defp v1_payload(person, company) do
     assignments = Loader.load(person, company)
-
-    if assignments == [] do
-      :no_assignments
-    else
-      {:ok,
-       %{
-         template: "assignments",
-         assigns: %{assignments: assignments}
-       }}
-    end
-  end
-
-  defp v2_payload(person, company) do
-    assignments = LoaderV2.load(person, company)
 
     if assignments == [] do
       :no_assignments
@@ -79,7 +56,7 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
       else
         {:ok,
          %{
-           template: "assignments_v2",
+           template: "assignments",
            assigns: %{
              urgent_groups: categorized.urgent_groups
            }

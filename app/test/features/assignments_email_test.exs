@@ -23,16 +23,16 @@ defmodule Operately.Features.AssignmentsEmailTest do
     expected_subject = "#{company_name}: Your assignments for today"
     assert email.subject == expected_subject
 
-    link = UI.Emails.find_link(email, "Check-In")
+    link = UI.Emails.find_link(email, "Submit weekly check-in")
 
     ctx
     |> UI.visit(link)
     |> UI.assert_text("What's new since the last check-in?")
   end
 
-  describe "assignments email v2" do
+  describe "assignments email" do
     setup _ctx do
-      {:ok, Steps.setup_review_v2()}
+      {:ok, Steps.setup_assignments_email()}
     end
 
     feature "groups champion assignments by origin with urgent items", ctx do
