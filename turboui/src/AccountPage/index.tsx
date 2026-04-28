@@ -1,7 +1,7 @@
 import React from "react";
 import { Page } from "../Page";
 import { Avatar } from "../Avatar";
-import { IconUserCircle, IconPalette, IconSettings, IconLockPassword, IconDoorExit } from "../icons";
+import { IconUserCircle, IconSettings, IconLockPassword, IconDoorExit } from "../icons";
 import classNames from "../utils/classnames";
 import { BlackLink } from "../Link";
 
@@ -30,10 +30,7 @@ export namespace AccountPage {
   export interface Props {
     person: Person;
     profilePath: string;
-    appearancePath: string;
     settingsPath: string;
-    showAppearance: boolean;
-    showSettings: boolean;
     securityPath: string;
     homePath: string;
     onLogOut: () => void;
@@ -49,30 +46,18 @@ export function AccountPage(props: AccountPage.Props) {
       testId: "profile-link",
     },
     {
+      icon: IconSettings,
+      label: "Settings",
+      to: props.settingsPath,
+      testId: "settings-link",
+    },
+    {
       icon: IconLockPassword,
       label: "Password & Security",
       to: props.securityPath,
       testId: "password-link",
     },
   ];
-
-  if (props.showAppearance) {
-    actionLinks.splice(1, 0, {
-      icon: IconPalette,
-      label: "Appearance",
-      to: props.appearancePath,
-      testId: "appearance-link",
-    });
-  }
-
-  if (props.showSettings) {
-    actionLinks.splice(1, 0, {
-      icon: IconSettings,
-      label: "Settings",
-      to: props.settingsPath,
-      testId: "settings-link",
-    });
-  }
 
   const actionButtons: AccountPage.ActionButton[] = [
     {

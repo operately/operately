@@ -2,7 +2,7 @@
 
 <%= spacer() %>
 
-<%= if @content do %>
+<%= if @content not in [nil, %{}] do %>
   <%= row do %>
       <%= rich_text(@content) %>
   <% end %>

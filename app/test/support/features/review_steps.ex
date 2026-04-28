@@ -294,7 +294,9 @@ defmodule Operately.Support.Features.ReviewSteps do
     ctx
     |> UI.click(testid: UI.testid(["assignment", Paths.task_id(ctx.space_task)]))
     |> UI.find([testid: "task-slide-in"], fn el ->
-      UI.click_text(el, "Not started")
+      el
+      |> UI.sleep(150)
+      |> UI.click_text("Not started")
     end)
     |> UI.click(testid: "status-option-done")
     |> UI.sleep(500)
