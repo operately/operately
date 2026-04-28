@@ -1,5 +1,4 @@
 defmodule Operately.Notifications.BufferedEmailPolicy do
-  @feature_name "buffered_notifications"
   @default_email_preference :buffered
   @deafult_buffer_window 5
   @bypass_actions [
@@ -24,8 +23,6 @@ defmodule Operately.Notifications.BufferedEmailPolicy do
     "project_permissions_edited"
   ]
 
-  def feature_name, do: @feature_name
-
   def email_preference, do: @default_email_preference
   def email_preference(%Operately.People.Person{} = person), do: Operately.People.Person.email_preference(person) || @default_email_preference
 
@@ -41,8 +38,4 @@ defmodule Operately.Notifications.BufferedEmailPolicy do
   def bypass_action?(action) when is_binary(action), do: action in @bypass_actions
 
   def bufferable_action?(action), do: not bypass_action?(action)
-
-  def enabled?(%Operately.Companies.Company{} = company) do
-    Operately.Companies.has_experimental_feature?(company, feature_name())
-  end
 end

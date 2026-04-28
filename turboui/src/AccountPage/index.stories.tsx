@@ -22,10 +22,7 @@ const mockPerson: AccountPage.Person = {
 const defaultArgs = {
   person: mockPerson,
   profilePath: "#",
-  appearancePath: "#",
   settingsPath: "#",
-  showAppearance: true,
-  showSettings: false,
   securityPath: "#",
   homePath: "#",
   onLogOut: () => console.log("Sign out clicked"),
@@ -71,13 +68,5 @@ export const Tablet: Story = {
     viewport: {
       defaultViewport: "tablet",
     },
-  },
-};
-
-export const WithSettings: Story = {
-  args: {
-    ...defaultArgs,
-    showAppearance: false,
-    showSettings: true,
   },
 };

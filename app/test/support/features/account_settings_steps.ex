@@ -10,19 +10,20 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
 
   step :change_theme, ctx, theme do
     ctx = try do
-      # Try to find and click appearance-link within the account page content
+      # If we're already on the account page, use the settings entry there.
       UI.find(ctx, UI.query(testid: "my-account-page"), fn el ->
-        UI.click(el, testid: "appearance-link")
+        UI.click(el, testid: "settings-link")
       end)
     rescue
       _ ->
-        # If not on account page, use the dropdown menu
+        # Otherwise open the account menu and navigate through Settings.
         ctx
         |> UI.click(testid: "account-menu")
-        |> UI.click(testid: "appearance-link")
+        |> UI.click(testid: "settings-link")
     end
 
     ctx
+    |> UI.click(testid: "appearance")
     |> UI.click(testid: "color-mode-#{theme}")
     |> UI.click(testid: "submit")
     |> UI.assert_has(testid: "my-account-page")
