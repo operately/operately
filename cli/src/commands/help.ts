@@ -1,6 +1,6 @@
 import type { CatalogEndpoint, CatalogTypeRef, CatalogTypes } from "../types/catalog";
 import { AUTH_ACTIONS, type AuthAction } from "../core/parser-types";
-import { DEFAULT_BASE_URL } from "../core/config";
+import { DEFAULT_BASE_URL } from "../auth/config";
 import type { EndpointRegistry } from "./registry";
 
 export function printNamespaceHelp(namespace: string, registry: EndpointRegistry): void {

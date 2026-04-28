@@ -4,7 +4,7 @@ import catalogJson from "./generated/api-catalog.json";
 import type { Catalog } from "./types/catalog";
 import { createRegistry } from "./commands/registry";
 import { handleHelpRequest } from "./commands/help-handler";
-import { executeAuthCommand } from "./commands/auth";
+import { executeAuthCommand } from "./auth";
 import { executeEndpointCommand } from "./commands/executor";
 import { parseCommand, UsageError } from "./core/parser";
 import { printError } from "./core/output";
