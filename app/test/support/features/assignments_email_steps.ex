@@ -5,10 +5,9 @@ defmodule Operately.Support.Features.AssignmentsEmailSteps do
   alias Operately.Support.Factory
   alias Operately.{Goals, Repo}
 
-  def setup_review_v2 do
+  def setup_assignments_email do
     %{}
     |> Factory.setup()
-    |> Factory.enable_feature("review_v2")
     |> Factory.add_space(:product_space, name: "Product Space")
     |> Factory.add_space_member(:champion, :product_space, name: "Casey Champion")
     |> Factory.add_space_member(:reviewer, :product_space, name: "Riley Reviewer")

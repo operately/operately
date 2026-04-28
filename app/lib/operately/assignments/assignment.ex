@@ -2,7 +2,7 @@ defmodule Operately.Assignments.Assignment do
   @moduledoc """
   Represents an assignment with metadata for categorization and display.
 
-  This struct is used by both LoaderV2 (for loading raw assignments) and
+  This struct is used by Loader (for loading raw assignments) and
   Categorizer (which enriches assignments with due status metadata).
   """
 
