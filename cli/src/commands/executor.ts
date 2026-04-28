@@ -1,5 +1,5 @@
 import { callEndpoint, ApiError } from "../core/http";
-import { readConfig, resolveRuntimeOptions } from "../core/config";
+import { readConfig, resolveRuntimeOptions } from "../auth/config";
 import { printError, printJson, writeJsonFile } from "../core/output";
 import type { GlobalFlags } from "../core/parser";
 import type { CatalogEndpoint } from "../types/catalog";
