@@ -22,7 +22,7 @@ export async function runTokenFlow(
   registry: EndpointRegistry,
   deps: TokenFlowDeps,
 ): Promise<number> {
-  const token = await deps.askQuestion("API token:");
+  const token = (await deps.askQuestion("API token:")).trim();
 
   const getMe = registry.find(["people", "get_me"]);
   if (!getMe) {

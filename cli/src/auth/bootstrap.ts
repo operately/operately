@@ -17,7 +17,7 @@ import { createTokenAndSaveProfile } from "./shared/token-creation";
 import { openExternalUrl } from "./shared/api";
 import { handleBootstrapError } from "./shared/errors";
 import type { EndpointRegistry } from "../commands/registry";
-import type { Company } from "./types";
+import type { Company, AuthMethod } from "./types";
 import type { ChildProcess } from "child_process";
 
 export interface BootstrapDeps {
@@ -63,7 +63,7 @@ export async function executeAuthBootstrap(
   let runtimeBaseUrl = baseUrl ?? DEFAULT_BASE_URL;
 
   try {
-    const method = await d.askChoice<string>("How would you like to authenticate?", [
+    const method = await d.askChoice<AuthMethod>("How would you like to authenticate?", [
       { label: "Email and password", value: "password" },
       { label: "Google OAuth (opens browser)", value: "google" },
       { label: "I have an API token", value: "token" },
