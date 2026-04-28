@@ -1,14 +1,14 @@
 import * as People from "@/models/people";
 import * as React from "react";
 
+import { emptyLoader } from "@/components/Pages";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import {
   AccountNotificationSettingsPage as NotificationSettingsPage,
   showErrorToast,
 } from "turboui";
 
-import { Paths, usePaths } from "@/routes/paths";
-import { redirectIfFeatureNotEnabled } from "@/routes/redirectUtils";
+import { usePaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { useNavigate } from "react-router-dom";
 import {
@@ -16,16 +16,7 @@ import {
   getNotificationSettingsFormState,
 } from "./state";
 
-export default { name: "AccountNotificationSettingsPage", loader, Page } as PageModule;
-
-async function loader({ params }) {
-  await redirectIfFeatureNotEnabled(params, {
-    feature: "buffered_notifications",
-    path: new Paths({ companyId: params.companyId! }).homePath(),
-  });
-
-  return null;
-}
+export default { name: "AccountNotificationSettingsPage", loader: emptyLoader, Page } as PageModule;
 
 function Page() {
   const me = useMe()!;

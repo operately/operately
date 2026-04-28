@@ -80,7 +80,6 @@ defmodule Operately.Operations.NotificationsBulkCreate do
 
     cond do
       not notification.should_send_email -> :no_email
-      not BufferedEmailPolicy.enabled?(person.company) -> :immediate_email
       BufferedEmailPolicy.bypass_action?(notification.activity.action) -> :immediate_email
       BufferedEmailPolicy.notify_on_mention?(person) and Map.get(mention_lookup, notification.id, false) -> :immediate_email
       true -> :buffered_email
@@ -91,7 +90,6 @@ defmodule Operately.Operations.NotificationsBulkCreate do
     person = notification.person
 
     notification.should_send_email &&
-      BufferedEmailPolicy.enabled?(person.company) &&
       not BufferedEmailPolicy.bypass_action?(notification.activity.action) &&
       BufferedEmailPolicy.notify_on_mention?(person)
   end

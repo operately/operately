@@ -73,8 +73,6 @@ defmodule Operately.Features.AccountSettingsTest do
 
   feature "saving buffered notification settings", ctx do
     ctx
-    |> Factory.enable_feature("buffered_notifications")
-    |> Factory.log_in_person(:person)
     |> Steps.navigate_to_notification_settings_page()
     |> Steps.choose_buffered_notifications()
     |> Steps.choose_buffer_window("30 minutes")
@@ -89,8 +87,6 @@ defmodule Operately.Features.AccountSettingsTest do
 
   feature "saving instant direct mention notification settings", ctx do
     ctx
-    |> Factory.enable_feature("buffered_notifications")
-    |> Factory.log_in_person(:person)
     |> Steps.navigate_to_notification_settings_page()
     |> Steps.choose_instant_direct_mentions()
     |> Steps.choose_buffer_window("10 minutes")

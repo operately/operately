@@ -1,25 +1,10 @@
 defmodule Operately.Notifications.BufferedEmailPolicyTest do
   use Operately.DataCase
 
-  import Operately.CompaniesFixtures
-
-  alias Operately.Companies
   alias Operately.Notifications.BufferedEmailPolicy
   alias Operately.People.Person
   alias Operately.People.Preferences
   alias Operately.People.Preferences.Notifications, as: NotificationPreferences
-
-  describe "enabled?/1" do
-    test "is disabled by default and can be enabled per company" do
-      company = company_fixture()
-
-      refute BufferedEmailPolicy.enabled?(company)
-
-      {:ok, company} = Companies.enable_experimental_feature(company, BufferedEmailPolicy.feature_name())
-
-      assert BufferedEmailPolicy.enabled?(company)
-    end
-  end
 
   describe "buffer window" do
     test "uses the policy default of five minutes" do
