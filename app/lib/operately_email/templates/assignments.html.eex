@@ -1,30 +1,36 @@
 <%= title(@company.name) %>
-<%= title("Here are your assignments") %>
+<%= subtitle("Catch up on work that's due soon or waiting for your review.") %>
 
 <%= spacer() %>
 <%= line() %>
 
-<%= Enum.map @assignments, fn assignment -> %>
-  <%= title(assignment.name, font_size: 20) %>
-
-  <%= case assignment.type do %>
-  <% :project -> %>
-    <%= row(%{padding_top: 2, padding_bottom: 2}) do %>
-      <%= link(assignment.url, "Check-In") %> <%= subtle(assignment.relative_due) %>
-    <% end %>
-  <% :goal -> %>
-    <%= row(%{padding_top: 2, padding_bottom: 2}) do %>
-      <%= link(assignment.url, "Progress Update") %> <%= subtle(assignment.relative_due) %>
-    <% end %>
-  <% :check_in -> %>
-    <%= row(%{padding_top: 2, padding_bottom: 2}) do %>
-      <%= link(assignment.url, "Acknowledge Check-In") %> <%= subtle(assignment.relative_due) %>
-    <% end %>
-  <% :goal_update -> %>
-    <%= row(%{padding_top: 2, padding_bottom: 2}) do %>
-      <%= link(assignment.url, "Acknowledge Progress Update") %> <%= subtle(assignment.relative_due) %>
-    <% end %>
+<%= Enum.map(@urgent_groups, fn group -> %>
+  <%= spacer() %>
+  <%= row(%{padding_top: 8, padding_bottom: 4}) do %>
+    <div style="font-family: sans-serif;">
+      <div style="font-weight: 600; font-size: 16px;">
+        <%= link(group.origin.url, group.origin.name) %>
+      </div>
+      <%= if group.origin.space_name do %>
+        <div style="margin-top: 4px; color: #6b6b6b; font-size: 12px;">
+          Space: <%= group.origin.space_name %>
+        </div>
+      <% end %>
+    </div>
   <% end %>
 
-  <%= spacer() %>
-<% end %>
+  <%= Enum.map(group.assignments, fn assignment -> %>
+    <%= row(%{padding_top: 2, padding_bottom: 6}) do %>
+      <div style="font-family: sans-serif; padding-left: 16px;">
+        <div>
+          <%= link(assignment.url, assignment.display_label) %>
+        </div>
+        <%= if assignment.badge_label do %>
+          <div style="margin-top: 2px; color: #6b6b6b; font-size: 13px;">
+            <span><%= assignment.badge_label %></span>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  <% end) %>
+<% end) %>

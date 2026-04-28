@@ -23,7 +23,7 @@ defmodule Operately.Assignments.Categorizer do
   @doc """
   Categorizes a list of fully-enriched assignments into due_soon, needs_review, and upcoming groups.
 
-  Assignments must already have due_status metadata populated (done by Assignment.build/1 in LoaderV2).
+  Assignments must already have due_status metadata populated (done by Assignment.build/1 in Loader).
 
   Returns three sorted categories:
   - due_soon: Owner assignments that are overdue, due today, or due soon
