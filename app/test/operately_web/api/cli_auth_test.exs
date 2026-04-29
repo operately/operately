@@ -397,6 +397,42 @@ defmodule OperatelyWeb.Api.CliAuthTest do
     end
   end
 
+  describe "create_company_on_non_empty" do
+    test "creates company when companies already exist", ctx do
+      assert Operately.Companies.count_companies() == 1
+
+      {:ok, _session, raw_token} = CliAuthSession.create_authenticated_session(ctx.account)
+
+      assert {200, res} =
+               bootstrap_mutation(ctx.conn, raw_token, [:cli_auth, :create_company_on_non_empty], %{
+                 company_name: "Second Company"
+               })
+
+      assert res.company.name == "Second Company"
+      assert res.person.full_name == ctx.account.full_name
+    end
+
+    test "returns unauthorized with invalid bootstrap session", ctx do
+      assert {401, _res} =
+               bootstrap_mutation(ctx.conn, "invalid-token", [:cli_auth, :create_company_on_non_empty], %{
+                 company_name: "My Company"
+               })
+    end
+
+    test "returns unauthorized with expired bootstrap session", ctx do
+      {:ok, session, raw_token} = CliAuthSession.create_authenticated_session(ctx.account)
+
+      session
+      |> CliAuthSession.changeset(%{expires_at: DateTime.utc_now() |> DateTime.add(-1, :second)})
+      |> Repo.update!()
+
+      assert {401, _res} =
+               bootstrap_mutation(ctx.conn, raw_token, [:cli_auth, :create_company_on_non_empty], %{
+                 company_name: "My Company"
+               })
+    end
+  end
+
   describe "signup and create_company end-to-end" do
     @tag :empty_instance
     test "new user signs up and creates the first company on an empty instance", ctx do

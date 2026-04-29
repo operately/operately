@@ -11,6 +11,7 @@ defmodule OperatelyWeb.Api.Internal do
       {:mutation, "cli_auth/check_account"},
       {:mutation, "cli_auth/signup"},
       {:mutation, "cli_auth/create_company"},
+      {:mutation, "cli_auth/create_company_on_non_empty"},
       {:mutation, "create_email_activation_code"},
       {:mutation, "create_account"},
       {:mutation, "request_password_reset"},
@@ -32,7 +33,8 @@ defmodule OperatelyWeb.Api.Internal do
     only: [
       {:query, "cli_auth/status"},
       {:mutation, "cli_auth/create_token"},
-      {:mutation, "cli_auth/create_company"}
+      {:mutation, "cli_auth/create_company"},
+      {:mutation, "cli_auth/create_company_on_non_empty"}
     ]
   )
 

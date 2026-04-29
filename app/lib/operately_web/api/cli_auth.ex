@@ -445,6 +445,60 @@ defmodule OperatelyWeb.Api.CliAuth do
     end
   end
 
+  defmodule CreateCompanyOnNonEmpty do
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
+
+    alias Operately.Operations.CompanyAdding
+    alias Operately.People.{Account, CliAuthSession}
+
+    inputs do
+      field :company_name, :string
+      field? :title, :string, null: true
+    end
+
+    outputs do
+      field :company, :company, null: false
+      field :person, :person, null: false
+    end
+
+    def call(conn, inputs) do
+      session = conn.assigns[:current_cli_auth_session]
+      account = conn.assigns[:current_account]
+
+      with :ok <- Steps.validate_token_creation_session(session),
+           %{} <- account do
+        attrs = %{
+          company_name: inputs.company_name,
+          title: inputs[:title]
+        }
+
+        with {:ok, company} <- CompanyAdding.run(attrs, account) do
+          person = Operately.People.get_person(account, company)
+
+          if person do
+            {:ok,
+             %{
+               company: Serializer.serialize(company, level: :essential),
+               person: Serializer.serialize(person, level: :essential)
+             }}
+          else
+            {:error, :internal_server_error}
+          end
+        else
+          {:error, _reason} ->
+            {:error, :internal_server_error}
+        end
+      else
+        {:error, :unauthorized} ->
+          {:error, :unauthorized}
+
+        nil ->
+          {:error, :unauthorized}
+      end
+    end
+  end
+
   defmodule SharedSteps do
     alias Operately.People.CliAuthSession
 
