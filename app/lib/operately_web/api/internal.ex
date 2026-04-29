@@ -8,6 +8,9 @@ defmodule OperatelyWeb.Api.Internal do
       {:mutation, "cli_auth/auth_password"},
       {:mutation, "cli_auth/start_google"},
       {:mutation, "cli_auth/create_token"},
+      {:mutation, "cli_auth/check_account"},
+      {:mutation, "cli_auth/signup"},
+      {:mutation, "cli_auth/create_company"},
       {:mutation, "create_email_activation_code"},
       {:mutation, "create_account"},
       {:mutation, "request_password_reset"},
@@ -28,7 +31,8 @@ defmodule OperatelyWeb.Api.Internal do
   plug(OperatelyWeb.Api.Plugs.RequireCliAuthSession,
     only: [
       {:query, "cli_auth/status"},
-      {:mutation, "cli_auth/create_token"}
+      {:mutation, "cli_auth/create_token"},
+      {:mutation, "cli_auth/create_company"}
     ]
   )
 
