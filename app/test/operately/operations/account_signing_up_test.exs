@@ -110,7 +110,7 @@ defmodule Operately.Operations.AccountSigningUpTest do
       {:ok, activation} = EmailActivationCode.create(@email)
 
       activation
-      |> Ecto.Changeset.change(expires_at: DateTime.utc_now() |> DateTime.add(-1, :second))
+      |> Ecto.Changeset.change(expires_at: DateTime.utc_now() |> DateTime.truncate(:second) |> DateTime.add(-1, :second))
       |> Operately.Repo.update!()
 
       assert {:error, :invalid} =

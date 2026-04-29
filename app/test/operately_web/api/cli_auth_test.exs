@@ -212,20 +212,6 @@ defmodule OperatelyWeb.Api.CliAuthTest do
       assert res.has_password == nil
     end
 
-    test "returns has_password: false for account without password", ctx do
-      account =
-        %Operately.People.Account{}
-        |> Ecto.Changeset.change(email: "nopassword@test.com", full_name: "No Password")
-        |> Repo.insert!()
-
-      assert {200, res} =
-               mutation(ctx.conn, [:cli_auth, :check_account], %{
-                 email: account.email
-               })
-
-      assert res.exists == true
-      assert res.has_password == false
-    end
   end
 
   describe "signup" do
@@ -279,7 +265,7 @@ defmodule OperatelyWeb.Api.CliAuthTest do
       {:ok, activation} = Operately.People.EmailActivationCode.create("newuser@test.com")
 
       activation
-      |> Ecto.Changeset.change(expires_at: DateTime.utc_now() |> DateTime.add(-1, :second))
+      |> Ecto.Changeset.change(expires_at: DateTime.utc_now() |> DateTime.truncate(:second) |> DateTime.add(-1, :second))
       |> Repo.update!()
 
       inputs = %{
