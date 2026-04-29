@@ -5,6 +5,9 @@ export const cliAuth = {
   startGoogle: "/cli_auth/start_google",
   status: "/cli_auth/status",
   createToken: "/cli_auth/create_token",
+  checkAccount: "/cli_auth/check_account",
+  signup: "/cli_auth/signup",
+  createCompany: "/cli_auth/create_company",
 };
 
 export async function openExternalUrl(url: string): Promise<ChildProcess | boolean | undefined> {
