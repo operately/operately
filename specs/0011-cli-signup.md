@@ -92,33 +92,39 @@ The CLI creates a pending Google OAuth session, opens the browser, and polls the
 
 ---
 
-### Flow 4 - CLI Signup and Create Company (new user, empty instance)
+### Flow 4 - CLI Signup and Create Company (new user)
 
 ```
 cli: askChoice("What would you like to do?", [Create a new company, Join with invite])
 
+cli: askQuestion("Email:")
 cli: askBaseUrl()
 cli: askProfile()
 
-cli: askQuestion("Email:")
 cli: POST /cli_auth/check_account { email }
   -> { exists: false }  // must not exist
 
 cli: POST /create_email_activation_code { email }
-cli: askQuestion("Verification code sent to email. Enter code:")
+cli: askQuestion("Verification code sent to your email. Enter the code:")
 
 cli: askQuestion("Full name:")
 cli: askPassword("Password:")
 
 cli: POST /cli_auth/signup { email, code, full_name, password }
-  -> { status: "no_companies", companies: [], message? }
+  -> { status: "no_companies", companies: [], bootstrap_token, message? }
 
 cli: askQuestion("Company name:")
 cli: POST /cli_auth/create_company { company_name } with Bootstrap-Token
-  -> { company, person }
 
+// Empty instance
+  -> { company, person }
 cli: GET /cli_auth/status { } with Bootstrap-Token
   -> { status: "authenticated", companies: [company] }
+
+// Non-empty instance (future PR)
+  -> { error: :forbidden }
+cli: POST /companies/create { company_name, title } with Bootstrap-Token
+  -> { company }
 
 cli: askChoice("Select access mode:", [read-only, full-access])
 cli: POST /cli_auth/create_token { company_id, read_only } with Bootstrap-Token
@@ -127,9 +133,9 @@ cli: saveProfile(profile, token, baseUrl)
 cli: display("Logged in as {full_name}")
 ```
 
-A new user signs up on an empty instance. After email verification and account creation, the CLI creates the first company, then exchanges the bootstrap token for a permanent API token. This is the simplest new flow because there is no invite token handling.
+A new user signs up and creates a company. After email verification and account creation, the CLI attempts to create a company. On an **empty instance**, `create_company` succeeds and promotes the user to admin. On a **non-empty instance**, `create_company` returns `forbidden`; the CLI falls back to `companies/create` (requires backend support for bootstrap-token access or an alternative token mechanism). The flow then exchanges the bootstrap token for a permanent API token.
 
-**Backend endpoints used:** `cli_auth/check_account`, `create_email_activation_code`, `cli_auth/signup`, `cli_auth/create_company`, `cli_auth/status`, `cli_auth/create_token`
+**Backend endpoints used:** `cli_auth/check_account`, `create_email_activation_code`, `cli_auth/signup`, `cli_auth/create_company`, `companies/create`, `cli_auth/status`, `cli_auth/create_token`
 
 ---
 
@@ -246,7 +252,7 @@ An invited user whose account was auto-created by an admin but who never set a p
 
 1. **Keep `CliAuthSession` for temporary bootstrap state.** All flows that need to create an API token go through `CliAuthSession`. Signup creates an authenticated session after account creation. Login creates an authenticated session after credential validation.
 2. **Reuse email activation codes.** The CLI signup uses the same `EmailActivationCode` system as the web. No new email infrastructure is needed.
-3. **No CLI-first-company for non-admin instances.** `AddFirstCompany` is gated to empty instances. The CLI respects this.
+3. **Two company creation paths.** `cli_auth/create_company` is gated to empty instances (first company only). For non-empty instances, the CLI will use the existing `companies/create` endpoint. Both paths require an authenticated user.
 4. **Invite tokens are opaque to the CLI.** The CLI passes the invite token to the backend; the backend validates it and determines whether a company-wide or personal link is involved.
 5. **Reorganize CLI auth code before adding signup.** This keeps the new code clean and provides a model for future auth flows.
 
@@ -313,6 +319,8 @@ Behavior:
 3. Call `CompanyAdding.run/2` with the account from the session.
 4. Call `Account.promote_to_admin/1`.
 5. Re-fetch eligible companies for the account (should now be exactly one).
+
+**Note:** For creating a company on a non-empty instance, the existing `POST /api/v2/companies/create` endpoint is used instead. This requires a future PR to support bootstrap-token authorization or an alternative authentication mechanism for newly signed-up users before they have a permanent API token.
 
 #### `POST /api/v2/cli_auth/join_with_invite`
 
@@ -533,9 +541,33 @@ Each step is a shippable PR. Flows are implemented in order of simplicity, build
 - Unit tests for `signup-create-company.ts` flow with mocked API calls.
 - Integration test: simulate full `operately auth signup` -> create company flow.
 
+**Note:** PR 3 only implements the empty-instance path (`cli_auth/create_company`). The non-empty instance fallback (`companies/create`) is deferred to a future PR.
+
 ---
 
-### PR 4: Backend API for Flow 5 — `join_with_invite`
+### PR 4: Backend + CLI — Company Creation on Non-Empty Instance
+
+**Goal:** Allow newly signed-up users to create a company even when the instance already has one or more companies.
+
+**Backend:**
+- Add `OperatelyWeb.Api.CliAuth.CreateCompanyOnNonEmpty` mutation (or extend `RequireCliAuthSession` to cover `companies/create`).
+- The endpoint must accept an authenticated `CliAuthSession` (bootstrap token) and call `Operately.Operations.CompanyAdding.run/2`.
+- Register in `OperatelyWeb.Api` and `OperatelyWeb.Api.Internal`.
+
+**CLI:**
+- Update `auth/flows/signup-create-company.ts`:
+  - After `signup` returns `no_companies`, call `cli_auth/create_company` as before.
+  - If `create_company` returns 403 (companies already exist), call the new non-empty instance endpoint instead of showing an error.
+  - Skip the `cli_auth/status` poll for the non-empty path (the creation response includes the company).
+
+**Tests:**
+- Backend unit test: creating a company on a non-empty instance with a valid bootstrap token.
+- Backend unit test: rejecting creation with an invalid/expired bootstrap token.
+- CLI unit test: simulating the 403 fallback path.
+
+---
+
+### PR 5: Backend API for Flow 5 — `join_with_invite`
 
 **Goal:** Enable new users to sign up and join a company via invite token.
 
@@ -550,7 +582,7 @@ Each step is a shippable PR. Flows are implemented in order of simplicity, build
 
 ---
 
-### PR 5: CLI Flow 5 — Signup and Join via Invite (new user)
+### PR 6: CLI Flow 5 — Signup and Join via Invite (new user)
 
 **Goal:** Wire the CLI for invite-based signup with a new account.
 
@@ -563,7 +595,7 @@ Each step is a shippable PR. Flows are implemented in order of simplicity, build
 
 ---
 
-### PR 6: CLI Flow 6 — Join via Invite (existing account with password)
+### PR 7: CLI Flow 6 — Join via Invite (existing account with password)
 
 **Goal:** Wire the CLI for existing users with passwords to join via invite.
 
@@ -576,7 +608,7 @@ Each step is a shippable PR. Flows are implemented in order of simplicity, build
 
 ---
 
-### PR 7: CLI Flow 7 — Join via Invite (existing account, no password yet)
+### PR 8: CLI Flow 7 — Join via Invite (existing account, no password yet)
 
 **Goal:** Wire the CLI for invited users who need to set a password first.
 
@@ -590,12 +622,13 @@ Each step is a shippable PR. Flows are implemented in order of simplicity, build
 
 ---
 
-### PR 8: End-to-end tests and polish
+### PR 9: End-to-end tests and polish
 
 **Goal:** Ensure all signup flows work against a real backend.
 
 - Add feature tests for:
   - CLI signup + create company on empty instance (Flow 4).
+  - CLI signup + create company on non-empty instance (Flow 4 extended).
   - CLI signup + join via company-wide invite link (Flow 5).
   - CLI signup + join via personal invite link (Flow 5).
   - CLI signup with existing account + join via invite (Flow 6).

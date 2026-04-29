@@ -58,6 +58,7 @@ ${namespaceLines}
 
 Utility commands:
   auth login [--token <token>] [--base-url <url>] [--profile <name>]
+  auth signup [--base-url <url>] [--profile <name>]
   auth status [--profile <name>]
   auth whoami [--profile <name>]
   auth logout [--profile <name>]
@@ -107,6 +108,25 @@ const AUTH_COMMAND_HELP: Record<AuthAction, AuthCommandHelp> = {
       "operately auth login",
       "operately auth login --token op_live_xxx",
       "operately auth login --token op_staging_xxx --profile staging --base-url https://staging.operately.com",
+    ],
+  },
+  signup: {
+    usage: "operately auth signup [--base-url <url>] [--profile <name>]",
+    description: [
+      "Sign up and create a new company on an empty instance",
+      "",
+      "  Interactive flow: run 'operately auth signup' and follow prompts.",
+      `     You will be asked for a base URL (default: ${DEFAULT_BASE_URL}),`,
+      "     a profile name (default: default), your email, a verification",
+      "     code, full name, password, and company name.",
+    ],
+    flags: [
+      "--base-url <url>",
+      "--profile <name>",
+    ],
+    examples: [
+      "operately auth signup",
+      "operately auth signup --base-url https://staging.operately.com --profile staging",
     ],
   },
   status: {

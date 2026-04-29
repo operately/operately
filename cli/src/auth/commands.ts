@@ -9,10 +9,13 @@ import {
 } from "./config";
 import { printError, printSuccess } from "../core/output";
 import { executeAuthBootstrap } from "./bootstrap";
+import { runSignupCreateCompanyFlow } from "./flows/signup-create-company";
+import { askChoice } from "../core/prompts";
+import type { AuthAction } from "../core/parser-types";
 import type { EndpointRegistry } from "../commands/registry";
 
 interface AuthExecutionInput {
-  action: "login" | "status" | "whoami" | "logout";
+  action: AuthAction;
   flags: Map<string, unknown[]>;
   registry: EndpointRegistry;
 }
@@ -24,6 +27,10 @@ export async function executeAuthCommand(input: AuthExecutionInput): Promise<num
     return executeAuthLogin(input.flags, config, input.registry);
   }
 
+  if (input.action === "signup") {
+    return executeAuthSignup(input.flags, config, input.registry);
+  }
+
   if (input.action === "status") {
     return executeAuthStatus(input.flags, config);
   }
@@ -33,6 +40,24 @@ export async function executeAuthCommand(input: AuthExecutionInput): Promise<num
   }
 
   return executeAuthWhoami(input.flags, config, input.registry);
+}
+
+async function executeAuthSignup(
+  flags: Map<string, unknown[]>,
+  config: CliConfig,
+  registry: EndpointRegistry,
+): Promise<number> {
+  const path = await askChoice<"create-company" | "join-invite">("What would you like to do?", [
+    { label: "Create a new company", value: "create-company" },
+    { label: "Join a company with an invite", value: "join-invite" },
+  ]);
+
+  if (path === "create-company") {
+    return runSignupCreateCompanyFlow(flags, config, registry);
+  }
+
+  printError("Joining with an invite is not yet implemented.");
+  return 1;
 }
 
 async function executeAuthLogin(

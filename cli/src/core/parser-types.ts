@@ -2,7 +2,7 @@ import type { CatalogEndpoint } from "../types/catalog";
 
 export class UsageError extends Error {}
 
-export const AUTH_ACTIONS = ["login", "status", "whoami", "logout"] as const;
+export const AUTH_ACTIONS = ["login", "signup", "status", "whoami", "logout"] as const;
 
 export type AuthAction = (typeof AUTH_ACTIONS)[number];
 
