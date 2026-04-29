@@ -117,35 +117,28 @@ export async function runSignupCreateCompanyFlow(
       const companyName = await d.askQuestion("Company name:");
 
       try {
-        await d.callInternalMutation(
+        const createResult = (await d.callInternalMutation(
           runtime.baseUrl,
           cliAuth.createCompany,
           { company_name: companyName },
           bootstrapToken,
-        );
+        )) as { company: Company };
+
+        companies = [createResult.company];
       } catch (error) {
         if (error instanceof ApiError && error.status === 403) {
-          d.printError("This instance already has one or more companies.");
-          d.printError("As a new user, you cannot create a company here.");
-          d.printError("Please use 'Join a company with an invite' instead.");
-          return 1;
+          const fallbackResult = (await d.callInternalMutation(
+            runtime.baseUrl,
+            cliAuth.createCompanyOnNonEmpty,
+            { company_name: companyName },
+            bootstrapToken,
+          )) as { company: Company };
+
+          companies = [fallbackResult.company];
+        } else {
+          throw error;
         }
-        throw error;
       }
-
-      const statusResult = (await d.callInternalMutation(
-        runtime.baseUrl,
-        cliAuth.status,
-        {},
-        bootstrapToken,
-      )) as { status: string; companies: Company[] };
-
-      if (statusResult.status !== "authenticated" || statusResult.companies.length === 0) {
-        d.printError("Failed to create company. Please try again.");
-        return 1;
-      }
-
-      companies = statusResult.companies;
     }
 
     if (companies.length === 0) {

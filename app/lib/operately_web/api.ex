@@ -366,6 +366,7 @@ defmodule OperatelyWeb.Api do
         mutation(:check_account, OperatelyWeb.Api.CliAuth.CheckAccount)
         mutation(:signup, OperatelyWeb.Api.CliAuth.Signup)
         mutation(:create_company, OperatelyWeb.Api.CliAuth.CreateCompany)
+        mutation(:create_company_on_non_empty, OperatelyWeb.Api.CliAuth.CreateCompanyOnNonEmpty)
       end
 
       namespace(:company_transfers) do
