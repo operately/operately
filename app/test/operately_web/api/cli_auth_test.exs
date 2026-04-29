@@ -2,21 +2,28 @@ defmodule OperatelyWeb.Api.CliAuthTest do
   use OperatelyWeb.TurboCase
 
   alias Operately.People.CliAuthSession
+  alias Operately.Support.Factory
 
   setup ctx do
     previous_allow_login_with_email = Application.get_env(:operately, :allow_login_with_email)
     previous_allow_login_with_google = Application.get_env(:operately, :allow_login_with_google)
+    previous_allow_signup_with_email = Application.get_env(:operately, :allow_signup_with_email)
 
     Application.put_env(:operately, :allow_login_with_email, true)
     Application.put_env(:operately, :allow_login_with_google, true)
+    Application.put_env(:operately, :allow_signup_with_email, true)
 
     on_exit(fn ->
       Application.put_env(:operately, :allow_login_with_email, previous_allow_login_with_email)
       Application.put_env(:operately, :allow_login_with_google, previous_allow_login_with_google)
+      Application.put_env(:operately, :allow_signup_with_email, previous_allow_signup_with_email)
     end)
 
-    ctx
-    |> Factory.setup()
+    if ctx[:empty_instance] do
+      ctx
+    else
+      ctx |> Factory.setup()
+    end
   end
 
   describe "auth_password" do
@@ -181,6 +188,272 @@ defmodule OperatelyWeb.Api.CliAuthTest do
                  company_id: company_id,
                  read_only: true
                })
+    end
+  end
+
+  describe "check_account" do
+    test "returns exists: true for an existing account", ctx do
+      assert {200, res} =
+               mutation(ctx.conn, [:cli_auth, :check_account], %{
+                 email: ctx.account.email
+               })
+
+      assert res.exists == true
+      assert res.has_password == true
+    end
+
+    test "returns exists: false for a non-existent account", ctx do
+      assert {200, res} =
+               mutation(ctx.conn, [:cli_auth, :check_account], %{
+                 email: "nonexistent@test.com"
+               })
+
+      assert res.exists == false
+      assert res.has_password == nil
+    end
+
+    test "returns has_password: false for account without password", ctx do
+      account =
+        %Operately.People.Account{}
+        |> Ecto.Changeset.change(email: "nopassword@test.com", full_name: "No Password")
+        |> Repo.insert!()
+
+      assert {200, res} =
+               mutation(ctx.conn, [:cli_auth, :check_account], %{
+                 email: account.email
+               })
+
+      assert res.exists == true
+      assert res.has_password == false
+    end
+  end
+
+  describe "signup" do
+    @tag :empty_instance
+    test "creates account and returns no_companies on empty instance", ctx do
+      assert Operately.Companies.count_companies() == 0
+      {:ok, activation} = Operately.People.EmailActivationCode.create("newuser@test.com")
+
+      inputs = %{
+        email: "newuser@test.com",
+        code: activation.code,
+        full_name: "New User",
+        password: "password1234"
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:cli_auth, :signup], inputs)
+
+      assert res.status == "no_companies"
+      assert res.companies == []
+      assert is_binary(res.bootstrap_token)
+      assert res.message =~ "not a member of any companies"
+    end
+
+    test "returns bad_request when email already exists", ctx do
+      {:ok, activation} = Operately.People.EmailActivationCode.create(ctx.account.email)
+
+      inputs = %{
+        email: ctx.account.email,
+        code: activation.code,
+        full_name: "Duplicate User",
+        password: "password1234"
+      }
+
+      assert {400, res} = mutation(ctx.conn, [:cli_auth, :signup], inputs)
+      assert res.message =~ "already registered"
+    end
+
+    test "returns bad_request for invalid code", ctx do
+      inputs = %{
+        email: "newuser@test.com",
+        code: "INVALID",
+        full_name: "New User",
+        password: "password1234"
+      }
+
+      assert {400, res} = mutation(ctx.conn, [:cli_auth, :signup], inputs)
+      assert res.message =~ "Invalid activation code"
+    end
+
+    test "returns bad_request for expired code", ctx do
+      {:ok, activation} = Operately.People.EmailActivationCode.create("newuser@test.com")
+
+      activation
+      |> Ecto.Changeset.change(expires_at: DateTime.utc_now() |> DateTime.add(-1, :second))
+      |> Repo.update!()
+
+      inputs = %{
+        email: "newuser@test.com",
+        code: activation.code,
+        full_name: "New User",
+        password: "password1234"
+      }
+
+      assert {400, res} = mutation(ctx.conn, [:cli_auth, :signup], inputs)
+      assert res.message =~ "expired"
+    end
+
+    test "creates account and joins company with valid invite token", ctx do
+      {:ok, invite_link} =
+        Operately.InviteLinks.create_invite_link(%{
+          company_id: ctx.company.id,
+          author_id: ctx.creator.id
+        })
+
+      {:ok, activation} = Operately.People.EmailActivationCode.create("inviteduser@test.com")
+
+      inputs = %{
+        email: "inviteduser@test.com",
+        code: activation.code,
+        full_name: "Invited User",
+        password: "password1234",
+        invite_token: invite_link.token
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:cli_auth, :signup], inputs)
+
+      assert res.status == "authenticated"
+      assert length(res.companies) == 1
+      assert [company] = res.companies
+      assert company.id == Paths.company_id(ctx.company)
+      assert is_binary(res.bootstrap_token)
+    end
+
+    test "creates account but returns error with invalid invite token", ctx do
+      {:ok, activation} = Operately.People.EmailActivationCode.create("badinvite@test.com")
+
+      inputs = %{
+        email: "badinvite@test.com",
+        code: activation.code,
+        full_name: "Bad Invite User",
+        password: "password1234",
+        invite_token: "invalid-token"
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:cli_auth, :signup], inputs)
+
+      assert res.status == "no_companies"
+      assert res.companies == []
+      assert is_binary(res.bootstrap_token)
+      assert res.message =~ "Invalid invite link"
+    end
+
+    test "returns forbidden when signup is not allowed", ctx do
+      Application.put_env(:operately, :allow_signup_with_email, false)
+
+      inputs = %{
+        email: "newuser@test.com",
+        code: "ABCDEF",
+        full_name: "New User",
+        password: "password1234"
+      }
+
+      assert {403, _res} = mutation(ctx.conn, [:cli_auth, :signup], inputs)
+    end
+  end
+
+  describe "create_company" do
+    @tag :empty_instance
+    test "creates first company on empty instance after signup", ctx do
+      assert Operately.Companies.count_companies() == 0
+
+      {:ok, activation} = Operately.People.EmailActivationCode.create("founder@test.com")
+
+      inputs = %{
+        email: "founder@test.com",
+        code: activation.code,
+        full_name: "Founder",
+        password: "password1234"
+      }
+
+      assert {200, signup_res} = mutation(ctx.conn, [:cli_auth, :signup], inputs)
+      assert signup_res.status == "no_companies"
+
+      assert {200, res} =
+               bootstrap_mutation(ctx.conn, signup_res.bootstrap_token, [:cli_auth, :create_company], %{
+                 company_name: "My New Company"
+               })
+
+      assert res.company.name == "My New Company"
+      assert res.person.full_name == "Founder"
+
+      account = Operately.People.get_account_by_email("founder@test.com")
+      assert account.site_admin == true
+    end
+
+    test "returns forbidden when companies already exist", ctx do
+      {:ok, _session, raw_token} = CliAuthSession.create_authenticated_session(ctx.account)
+
+      assert {403, _res} =
+               bootstrap_mutation(ctx.conn, raw_token, [:cli_auth, :create_company], %{
+                 company_name: "Another Company"
+               })
+    end
+
+    test "returns unauthorized with invalid bootstrap session", ctx do
+      assert {401, _res} =
+               bootstrap_mutation(ctx.conn, "invalid-token", [:cli_auth, :create_company], %{
+                 company_name: "My Company"
+               })
+    end
+
+    test "returns unauthorized with expired bootstrap session", ctx do
+      {:ok, session, raw_token} = CliAuthSession.create_authenticated_session(ctx.account)
+
+      session
+      |> CliAuthSession.changeset(%{expires_at: DateTime.utc_now() |> DateTime.add(-1, :second)})
+      |> Repo.update!()
+
+      assert {401, _res} =
+               bootstrap_mutation(ctx.conn, raw_token, [:cli_auth, :create_company], %{
+                 company_name: "My Company"
+               })
+    end
+  end
+
+  describe "signup and create_company end-to-end" do
+    @tag :empty_instance
+    test "new user signs up and creates the first company on an empty instance", ctx do
+      assert Operately.Companies.count_companies() == 0
+
+      # 1. Check account does not exist
+      assert {200, check_res} =
+               mutation(ctx.conn, [:cli_auth, :check_account], %{email: "founder@example.com"})
+
+      assert check_res.exists == false
+
+      # 2. Create email activation code
+      {:ok, activation} = Operately.People.EmailActivationCode.create("founder@example.com")
+
+      # 3. Sign up
+      assert {200, signup_res} =
+               mutation(ctx.conn, [:cli_auth, :signup], %{
+                 email: "founder@example.com",
+                 code: activation.code,
+                 full_name: "Jane Founder",
+                 password: "password1234"
+               })
+
+      assert signup_res.status == "no_companies"
+      assert signup_res.companies == []
+      assert is_binary(signup_res.bootstrap_token)
+
+      # 4. Create company using bootstrap token
+      assert {200, create_res} =
+               bootstrap_mutation(ctx.conn, signup_res.bootstrap_token, [:cli_auth, :create_company], %{
+                 company_name: "Jane's Company"
+               })
+
+      assert create_res.company.name == "Jane's Company"
+      assert create_res.person.full_name == "Jane Founder"
+
+      # 5. Query status to verify session is now authenticated with the company
+      assert {200, status_res} =
+               bootstrap_query(ctx.conn, signup_res.bootstrap_token, [:cli_auth, :status], %{})
+
+      assert status_res.status == "authenticated"
+      assert length(status_res.companies) == 1
+      assert hd(status_res.companies).id == create_res.company.id
     end
   end
 
