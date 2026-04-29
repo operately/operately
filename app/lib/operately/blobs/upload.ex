@@ -16,15 +16,16 @@ defmodule Operately.Blobs.Upload do
     file_size = File.stat!(file_path).size
 
     # Create blob record
-    {:ok, blob} = Operately.Blobs.create_blob(%{
-      purpose: :company_file,
-      company_id: company.id,
-      author_id: author.id,
-      status: :pending,
-      filename: filename,
-      size: file_size,
-      content_type: content_type
-    })
+    {:ok, blob} =
+      Operately.Blobs.create_blob(%{
+        purpose: :company_file,
+        company_id: company.id,
+        author_id: author.id,
+        status: :pending,
+        filename: filename,
+        size: file_size,
+        content_type: content_type
+      })
 
     # Upload file to storage
     {:ok, blob} = upload(blob, file_path)
@@ -83,7 +84,7 @@ defmodule Operately.Blobs.Upload do
         content_type: blob.content_type,
         acl: :private
       )
-      |> ExAws.request!()
+      |> ExAws.request!(S3Config.request_config())
 
       {:ok, blob}
     end
