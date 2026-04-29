@@ -5,11 +5,11 @@ export function parseAuthCommand(argv: string[]): ParsedCommand {
   const action = argv[1];
 
   if (!action) {
-    throw new UsageError("Missing auth command. Use: auth <login|status|whoami|logout>");
+    throw new UsageError("Missing auth command. Use: auth <login|signup|status|whoami|logout>");
   }
 
   if (!AUTH_ACTIONS.includes(action as AuthAction)) {
-    throw new UsageError("Invalid auth command. Use: auth <login|status|whoami|logout>");
+    throw new UsageError("Invalid auth command. Use: auth <login|signup|status|whoami|logout>");
   }
 
   const flags = parseFlags(argv.slice(2));
