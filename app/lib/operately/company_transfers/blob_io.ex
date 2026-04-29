@@ -45,7 +45,7 @@ defmodule Operately.CompanyTransfers.BlobIO do
         blob
         |> Blob.path()
         |> then(fn path -> ExAws.S3.delete_object(S3Config.bucket!(), path) end)
-        |> ExAws.request()
+        |> ExAws.request(S3Config.request_config())
         |> case do
           {:ok, _} -> :ok
           {:error, reason} -> {:error, reason}

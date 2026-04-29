@@ -2,9 +2,10 @@ defmodule Operately.CompanyTransfersTest do
   use Operately.DataCase
   use Oban.Testing, repo: Operately.Repo
   import Ecto.Query, only: [from: 2]
+  import Mock
 
   alias Operately.CompanyTransfers
-  alias Operately.CompanyTransfers.Exporter
+  alias Operately.CompanyTransfers.{Exporter, Importer}
   alias Operately.CompanyTransfers.Package.PackageJson
   alias Operately.CompanyTransfers.Package.Paths
   alias Operately.CompanyTransfers.{ExportRun, ExportWorker, ImportRun, ImportWorker}
@@ -125,6 +126,21 @@ defmodule Operately.CompanyTransfersTest do
     refute Map.has_key?(tables, "api_tokens")
   end
 
+  test "export worker marks the run as failed when the exporter exits", ctx do
+    assert {:ok, run} = CompanyTransfers.create_export_run(ctx.company, ctx.account, %{}, dispatch: false)
+
+    with_mock Exporter, run: fn _run -> exit(:boom) end do
+      assert :ok = perform_job(ExportWorker, %{export_run_id: run.id})
+    end
+
+    run = CompanyTransfers.get_export_run!(run.id)
+
+    assert run.status == :failed
+    assert run.completed_at != nil
+    assert run.error_message =~ "exit"
+    assert run.error_message =~ "boom"
+  end
+
   test "import worker imports a staged relational package", ctx do
     ctx =
       ctx
@@ -179,5 +195,20 @@ defmodule Operately.CompanyTransfersTest do
     assert run.error_message == nil
     assert imported_company.short_id == short_id
     assert Enum.any?(imported_people, &(&1.full_name == ctx.member.full_name))
+  end
+
+  test "import worker marks the run as failed when the importer exits", ctx do
+    assert {:ok, run} = CompanyTransfers.create_import_run(ctx.account, %{}, dispatch: false)
+
+    with_mock Importer, run: fn _run -> exit(:boom) end do
+      assert :ok = perform_job(ImportWorker, %{import_run_id: run.id})
+    end
+
+    run = CompanyTransfers.get_import_run!(run.id)
+
+    assert run.status == :failed
+    assert run.completed_at != nil
+    assert run.error_message =~ "exit"
+    assert run.error_message =~ "boom"
   end
 end

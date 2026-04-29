@@ -42,13 +42,10 @@ defmodule Operately.CompanyTransfers.ImportWorker do
     end
   rescue
     error ->
-      Logger.error(Exception.format(:error, error, __STACKTRACE__))
-
-      if run = CompanyTransfers.get_import_run(import_run_id) do
-        {:ok, _run} = CompanyTransfers.mark_import_run_failed(run, Exception.message(error))
-      end
-
-      :ok
+      handle_trapped_failure(import_run_id, {:error, error, __STACKTRACE__})
+  catch
+    kind, reason ->
+      handle_trapped_failure(import_run_id, {kind, reason})
   end
 
   defp format_reason({:account_creation_failed, email, changeset}) do
@@ -64,4 +61,25 @@ defmodule Operately.CompanyTransfers.ImportWorker do
   end
 
   defp format_reason(reason), do: inspect(reason)
+
+  defp handle_trapped_failure(import_run_id, {:error, error, stacktrace}) do
+    Logger.error(Exception.format(:error, error, stacktrace))
+
+    if run = CompanyTransfers.get_import_run(import_run_id) do
+      {:ok, _run} = CompanyTransfers.mark_import_run_failed(run, Exception.message(error))
+    end
+
+    :ok
+  end
+
+  defp handle_trapped_failure(import_run_id, {kind, reason}) do
+    message = Exception.format_banner(kind, reason)
+    Logger.error(message)
+
+    if run = CompanyTransfers.get_import_run(import_run_id) do
+      {:ok, _run} = CompanyTransfers.mark_import_run_failed(run, message)
+    end
+
+    :ok
+  end
 end
