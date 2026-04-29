@@ -117,14 +117,21 @@ export async function runSignupCreateCompanyFlow(
       const companyName = await d.askQuestion("Company name:");
 
       try {
-        const createResult = (await d.callInternalMutation(
+        await d.callInternalMutation(
           runtime.baseUrl,
           cliAuth.createCompany,
           { company_name: companyName },
           bootstrapToken,
-        )) as { company: Company };
+        );
 
-        companies = [createResult.company];
+        const statusResult = (await d.callInternalMutation(
+          runtime.baseUrl,
+          cliAuth.status,
+          {},
+          bootstrapToken,
+        )) as { status: string; companies: Company[] };
+
+        companies = statusResult.companies ?? [];
       } catch (error) {
         if (error instanceof ApiError && error.status === 403) {
           const fallbackResult = (await d.callInternalMutation(

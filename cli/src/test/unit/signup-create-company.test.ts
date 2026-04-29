@@ -273,10 +273,10 @@ describe("Signup Create Company Flow", () => {
 
     const deps = makeDeps();
     deps.callInternalMutation = (_baseUrl: string, path: string, _inputs: Record<string, unknown>, _token?: string) => {
-      calls.push({ method: "mutation", path, inputs: _inputs, token: _token });
       if (path === cliAuth.createCompany) {
         return Promise.reject(new ApiError("Forbidden", 403, { message: "Companies already exist" }));
       }
+      calls.push({ method: "mutation", path, inputs: _inputs, token: _token });
       return nextResponse();
     };
 
