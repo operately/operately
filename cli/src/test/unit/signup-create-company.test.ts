@@ -5,6 +5,7 @@ import * as os from "os";
 import * as path from "path";
 import { runSignupCreateCompanyFlow } from "../../auth/flows/signup-create-company";
 import { ApiError } from "../../core/http";
+import { PromptCancelledError } from "../../core/prompts";
 import { cliAuth } from "../../auth/shared/api";
 
 interface MockCall {
@@ -85,6 +86,7 @@ const registryStub = {
 
 describe("Signup Create Company Flow", () => {
   let tmpDir: string;
+  let origHome: string | undefined;
   const errorsPrinted: string[] = [];
   const successPrinted: string[] = [];
 
@@ -95,11 +97,16 @@ describe("Signup Create Company Flow", () => {
     errorsPrinted.length = 0;
     successPrinted.length = 0;
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "op-cli-signup-test-"));
+    origHome = process.env.HOME;
+    process.env.HOME = tmpDir;
   });
 
   afterEach(() => {
     assert.strictEqual(promptQueue.length, 0, `promptQueue not empty: ${JSON.stringify(promptQueue)}`);
     assert.strictEqual(responses.length, 0, `responses not empty: ${JSON.stringify(responses)}`);
+    if (origHome !== undefined) {
+      process.env.HOME = origHome;
+    }
   });
 
   function makeDeps() {
@@ -155,8 +162,6 @@ describe("Signup Create Company Flow", () => {
     responses.push({ token: "op_live_final_token", company: { id: "c1", name: "Acme Corp" } });
     // get_me response
     responses.push({ me: { full_name: "New User", email: "newuser@example.com" } });
-
-    process.env.HOME = tmpDir;
 
     const result = await runSignupCreateCompanyFlow(
       new Map(),
@@ -282,5 +287,20 @@ describe("Signup Create Company Flow", () => {
     assert.strictEqual(result, 1);
     assert.ok(errorsPrinted.some((e) => e.includes("already has one or more companies")));
     assert.ok(errorsPrinted.some((e) => e.includes("Join a company with an invite")));
+  });
+
+  it("cancels cleanly when user aborts a prompt", async () => {
+    const deps = makeDeps();
+    deps.askQuestion = () => Promise.reject(new PromptCancelledError("cancelled"));
+
+    const result = await runSignupCreateCompanyFlow(
+      new Map(),
+      { activeProfile: "default", profiles: {} },
+      registryStub as any,
+      deps,
+    );
+
+    assert.strictEqual(result, 1);
+    assert.ok(errorsPrinted.some((e) => e.includes("Signup cancelled.")));
   });
 });
