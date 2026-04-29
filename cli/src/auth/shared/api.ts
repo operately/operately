@@ -8,6 +8,7 @@ export const cliAuth = {
   checkAccount: "/cli_auth/check_account",
   signup: "/cli_auth/signup",
   createCompany: "/cli_auth/create_company",
+  createCompanyOnNonEmpty: "/cli_auth/create_company_on_non_empty",
 };
 
 export async function openExternalUrl(url: string): Promise<ChildProcess | boolean | undefined> {
