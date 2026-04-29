@@ -2,7 +2,6 @@ import React from "react";
 
 import { Activity, ActivityContentGoalReparent } from "@/api";
 
-import { assertPresent } from "@/utils/assertions";
 import { feedTitle, goalLink } from "../feedItemLinks";
 import { ActivityHandler } from "../interfaces";
 
@@ -12,10 +11,9 @@ const GoalReparent: ActivityHandler = {
   },
 
   pagePath(paths, activity: Activity): string {
-    const data = content(activity);
-    assertPresent(data.goal?.id, "goal.id must be present in activity");
+    const goalId = content(activity).goal?.id;
 
-    return paths.goalPath(data.goal.id);
+    return goalId ? paths.goalPath(goalId) : paths.workMapPath();
   },
 
   PageTitle(_props: { activity: any }) {
@@ -32,11 +30,9 @@ const GoalReparent: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: string }) {
     const data = content(activity);
-    assertPresent(data.goal, "goal must be present in activity");
+    const goal = data.goal ? goalLink(data.goal) : null;
 
-    const goal = goalLink(data.goal);
-
-    if (page === "goal") {
+    if (page === "goal" || !goal) {
       return feedTitle(activity, "changed the parent goal");
     } else {
       return feedTitle(activity, "changed the parent goal of", goal);
@@ -81,11 +77,15 @@ const GoalReparent: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return "Changed the parent goal of " + content(activity).goal!.name!;
+    const goalName = content(activity).goal?.name;
+
+    return goalName ? "Changed the parent goal of " + goalName : "Changed a goal's parent goal";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
-    return content(activity).goal!.name!;
+    const data = content(activity);
+
+    return data.goal?.name ?? data.newParentGoal?.name ?? data.oldParentGoal?.name ?? null;
   },
 };
 
