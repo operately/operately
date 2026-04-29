@@ -256,8 +256,8 @@ describe("Signup Create Company Flow", () => {
     assert.ok(errorsPrinted.some((e) => e.includes("Server error")));
   });
 
-  it("handles 403 from create_company on non-empty instance", async () => {
-    promptQueue.push("newuser@example.com", "", "", "ABC123", "New User", "secret123456", "Acme Corp");
+  it("falls back to create_company_on_non_empty when instance already has companies", async () => {
+    promptQueue.push("newuser@example.com", "", "", "ABC123", "New User", "secret123456", "Acme Corp", false);
 
     responses.push({ exists: false });
     responses.push({});
@@ -267,13 +267,16 @@ describe("Signup Create Company Flow", () => {
       bootstrap_token: "bootstrap_xxx",
       message: "not a member of any companies",
     });
+    responses.push({ company: { id: "c2", name: "Acme Corp" }, person: { id: "p2", full_name: "New User" } });
+    responses.push({ token: "op_live_final_token", company: { id: "c2", name: "Acme Corp" } });
+    responses.push({ me: { full_name: "New User", email: "newuser@example.com" } });
 
     const deps = makeDeps();
     deps.callInternalMutation = (_baseUrl: string, path: string, _inputs: Record<string, unknown>, _token?: string) => {
-      calls.push({ method: "mutation", path, inputs: _inputs, token: _token });
       if (path === cliAuth.createCompany) {
         return Promise.reject(new ApiError("Forbidden", 403, { message: "Companies already exist" }));
       }
+      calls.push({ method: "mutation", path, inputs: _inputs, token: _token });
       return nextResponse();
     };
 
@@ -284,9 +287,14 @@ describe("Signup Create Company Flow", () => {
       deps,
     );
 
-    assert.strictEqual(result, 1);
-    assert.ok(errorsPrinted.some((e) => e.includes("already has one or more companies")));
-    assert.ok(errorsPrinted.some((e) => e.includes("Join a company with an invite")));
+    assert.strictEqual(result, 0);
+    assert.ok(successPrinted.some((s) => s.includes("Logged in")));
+
+    assert.strictEqual(calls.length, 6);
+    assert.strictEqual(calls[3].method, "mutation");
+    assert.strictEqual(calls[3].path, cliAuth.createCompanyOnNonEmpty);
+    assert.strictEqual((calls[3].inputs as any).company_name, "Acme Corp");
+    assert.strictEqual(calls[3].token, "bootstrap_xxx");
   });
 
   it("cancels cleanly when user aborts a prompt", async () => {

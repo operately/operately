@@ -487,7 +487,7 @@ Update `command-routing.ts`, `parser-types.ts`, `help.ts`, and `help-handler.ts`
 
 Each step is a shippable PR. Flows are implemented in order of simplicity, building on code from previous PRs.
 
-### PR 1: Reorganize CLI auth code (refactor only)
+### Completed: PR 1: Reorganize CLI auth code (refactor only)
 
 **Goal:** Split monolithic auth files into the `auth/` directory structure without changing behavior.
 
@@ -509,7 +509,7 @@ Each step is a shippable PR. Flows are implemented in order of simplicity, build
 
 ---
 
-### PR 2: Backend API for Flow 4 — `check_account`, `signup`, `create_company`
+### Completed: PR 2: Backend API for Flow 4 — `check_account`, `signup`, `create_company`
 
 **Goal:** Enable new users to sign up and create the first company on an empty instance.
 
@@ -529,7 +529,7 @@ Each step is a shippable PR. Flows are implemented in order of simplicity, build
 
 ---
 
-### PR 3: CLI Flow 4 — Signup and Create Company
+### Completed: PR 3: CLI Flow 4 — Signup and Create Company
 
 **Goal:** Wire the CLI to the new backend APIs for the "create company" path.
 
@@ -545,7 +545,7 @@ Each step is a shippable PR. Flows are implemented in order of simplicity, build
 
 ---
 
-### PR 4: Backend + CLI — Company Creation on Non-Empty Instance
+### Completed: PR 4: Backend + CLI — Company Creation on Non-Empty Instance
 
 **Goal:** Allow newly signed-up users to create a company even when the instance already has one or more companies.
 
