@@ -12,6 +12,7 @@ defmodule OperatelyWeb.Api.CliAuth do
     inputs do
       field :email, :string
       field :password, :string
+      field? :invite_token, :string, null: true
     end
 
     outputs do
@@ -23,7 +24,8 @@ defmodule OperatelyWeb.Api.CliAuth do
 
     def call(_conn, inputs) do
       with {:ok, :allowed} <- check_login_allowed(),
-           {:ok, account} <- authenticate_account(inputs) do
+           {:ok, account} <- authenticate_account(inputs),
+           {:ok, account} <- maybe_join_via_invite(account, inputs[:invite_token]) do
         respond_with_authenticated_account(account)
       else
         {:error, :forbidden} ->
@@ -32,6 +34,9 @@ defmodule OperatelyWeb.Api.CliAuth do
         {:error, :unauthorized} ->
           Logger.info("CLI password authentication failed for #{inputs.email}")
           {:error, :unauthorized, "Invalid email or password"}
+
+        {:error, reason} when is_binary(reason) ->
+          {:error, :bad_request, reason}
       end
     end
 
@@ -47,6 +52,20 @@ defmodule OperatelyWeb.Api.CliAuth do
       case Operately.People.get_account_by_email_and_password(inputs.email, inputs.password) do
         %Account{} = account -> {:ok, account}
         _ -> {:error, :unauthorized}
+      end
+    end
+
+    defp maybe_join_via_invite(account, nil), do: {:ok, account}
+
+    defp maybe_join_via_invite(account, token) do
+      case Operately.InviteLinks.join_company_via_invite_link(account, token) do
+        {:ok, _person} -> {:ok, account}
+        {:error, :invite_token_not_found} -> {:error, "Invalid invite link"}
+        {:error, :invite_token_inactive} -> {:error, "This invite link is no longer valid"}
+        {:error, :invite_token_domain_not_allowed} -> {:error, "This invite link is restricted to specific email domains"}
+        {:error, :invite_token_invalid} -> {:error, "This invite link is no longer valid"}
+        {:error, :person_creation_failed} -> {:error, "Unable to add you to this company."}
+        {:error, :invite_link_update_failed} -> {:error, "Something went wrong while using this invite link."}
       end
     end
 
@@ -91,6 +110,10 @@ defmodule OperatelyWeb.Api.CliAuth do
     alias Operately.People.CliAuthSession
     alias OperatelyWeb.Paths
 
+    inputs do
+      field? :invite_token, :string, null: true
+    end
+
     outputs do
       field :status, :cli_auth_status
       field :companies, list_of(:company)
@@ -99,7 +122,7 @@ defmodule OperatelyWeb.Api.CliAuth do
       field :poll_interval_ms, :integer, null: false
     end
 
-    def call(_conn, _inputs) do
+    def call(_conn, inputs) do
       with {:ok, :allowed} <- check_login_allowed(),
            {:ok, session, raw_token} <- CliAuthSession.create_pending_google_session() do
         {:ok,
@@ -107,7 +130,7 @@ defmodule OperatelyWeb.Api.CliAuth do
            status: :pending,
            companies: [],
            bootstrap_token: raw_token,
-           login_url: Paths.cli_login_path(session.id) |> Paths.to_url(),
+           login_url: build_login_url(session.id, inputs[:invite_token]),
            poll_interval_ms: CliAuthSession.poll_interval_ms()
          }}
       else
@@ -119,11 +142,93 @@ defmodule OperatelyWeb.Api.CliAuth do
       end
     end
 
+    defp build_login_url(session_id, nil) do
+      Paths.cli_login_path(session_id) |> Paths.to_url()
+    end
+
+    defp build_login_url(session_id, invite_token) do
+      path = Paths.cli_login_path(session_id)
+      "#{Paths.to_url(path)}?invite_token=#{URI.encode_www_form(invite_token)}"
+    end
+
     defp check_login_allowed do
       if Application.get_env(:operately, :allow_login_with_google) do
         {:ok, :allowed}
       else
         {:error, :forbidden}
+      end
+    end
+  end
+
+  defmodule JoinCompany do
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
+
+    alias Operately.People.{Account, CliAuthSession}
+
+    require Logger
+
+    inputs do
+      field :token, :string, null: false
+      field :password, :string, null: false
+      field :password_confirmation, :string, null: false
+    end
+
+    outputs do
+      field :status, :cli_auth_status
+      field :companies, list_of(:company)
+      field? :bootstrap_token, :string, null: true
+      field? :message, :string, null: true
+    end
+
+    def call(_conn, inputs) do
+      case validate(inputs) do
+        {:ok, invite_link} ->
+          Operately.Operations.PasswordFirstTimeChanging.run(inputs, invite_link)
+
+          account = Repo.preload(invite_link, person: [:account]).person.account
+          companies = CliAuthSession.eligible_companies(account)
+
+          case create_authenticated_response(account, companies) do
+            {:ok, response} -> {:ok, response}
+            {:error, _changeset} -> {:error, :internal_server_error}
+          end
+
+        {:error, reason} ->
+          {:error, :bad_request, reason}
+      end
+    end
+
+    defp validate(inputs) do
+      cond do
+        inputs.password != inputs.password_confirmation ->
+          {:error, "Passwords don't match"}
+
+        true ->
+          with(
+            {:ok, invite_link} <- Operately.InviteLinks.get_personal_invite_link_by_token(inputs.token, preload: [person: [:account]]),
+            {:ok, _invite_link} <- Operately.InviteLinks.validate_personal_invite_link(invite_link),
+            true <- not is_nil(invite_link.person)
+          ) do
+            {:ok, invite_link}
+          else
+            _ -> {:error, "Invalid token"}
+          end
+      end
+    end
+
+    defp create_authenticated_response(account, companies) do
+      case CliAuthSession.create_authenticated_session(account) do
+        {:ok, _session, raw_token} ->
+          {:ok,
+           %{
+             status: :authenticated,
+             companies: Serializer.serialize(companies, level: :essential),
+             bootstrap_token: raw_token
+           }}
+
+        {:error, changeset} ->
+          {:error, changeset}
       end
     end
   end

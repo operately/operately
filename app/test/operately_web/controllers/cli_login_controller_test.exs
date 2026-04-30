@@ -96,4 +96,52 @@ defmodule OperatelyWeb.CliLoginControllerTest do
     assert updated_session.status == :failed
     assert updated_session.failure_reason == CliAuthSession.no_companies_reason()
   end
+
+  test "show forwards invite_token to the google auth redirect url", ctx do
+    {:ok, session, _raw_token} = CliAuthSession.create_pending_google_session()
+
+    conn = get(ctx.conn, "/cli-login/#{session.id}?invite_token=my-invite-token")
+
+    assert redirected_to(conn) == "/accounts/auth/google?redirect_to=%2Fcli-login%2F#{session.id}%2Fsuccess&invite_token=my-invite-token"
+    assert get_session(conn, :oauth_cli_auth_session_id) == session.id
+  end
+
+  test "google callback handles invite before completing cli auth session", ctx do
+    {:ok, invite_link} =
+      Operately.InviteLinks.create_invite_link(%{
+        company_id: ctx.company.id,
+        author_id: ctx.creator.id
+      })
+
+    lonely_account = Operately.PeopleFixtures.account_fixture()
+    {:ok, session, _raw_token} = CliAuthSession.create_pending_google_session()
+
+    conn =
+      ctx.conn
+      |> init_test_session(%{
+        oauth_cli_auth_session_id: session.id,
+        oauth_redirect_to: "/cli-login/#{session.id}/success"
+      })
+      |> fetch_flash()
+      |> Plug.Conn.assign(:ueberauth_auth, %{
+        info: %{
+          email: lonely_account.email,
+          image: "http://example.com/avatar.png",
+          name: lonely_account.full_name
+        }
+      })
+      |> get("/accounts/auth/google/callback", %{
+        "provider" => "google",
+        "invite_token" => invite_link.token
+      })
+
+    updated_session = Repo.get!(CliAuthSession, session.id)
+
+    assert redirected_to(conn) == OperatelyWeb.Paths.home_path(ctx.company)
+    assert updated_session.status == :authenticated
+    assert updated_session.account_id == lonely_account.id
+
+    person = Operately.People.get_person(lonely_account, ctx.company)
+    assert person != nil
+  end
 end
