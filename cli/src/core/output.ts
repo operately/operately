@@ -14,6 +14,10 @@ export function printError(message: string): void {
   console.error(message);
 }
 
+export function printInfo(message: string): void {
+  console.log(message);
+}
+
 export function printSuccess(message: string): void {
   console.log(message);
 }

@@ -9,6 +9,11 @@ export const cliAuth = {
   signup: "/cli_auth/signup",
   createCompany: "/cli_auth/create_company",
   createCompanyOnNonEmpty: "/cli_auth/create_company_on_non_empty",
+  joinCompany: "/cli_auth/join_company",
+};
+
+export const publicQuery = {
+  getInviteLinkByToken: "/invitations/get_invite_link_by_token",
 };
 
 export async function openExternalUrl(url: string): Promise<ChildProcess | boolean | undefined> {

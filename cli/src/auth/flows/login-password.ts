@@ -12,14 +12,15 @@ interface PasswordFlowDeps {
 export async function runPasswordFlow(
   baseUrl: string,
   deps: PasswordFlowDeps,
+  inviteToken?: string,
 ): Promise<{ bootstrapToken: string; companies: Company[] }> {
   const email = await deps.askQuestion("Email:");
   const password = await deps.askPassword("Password:");
 
-  const response = (await deps.callInternalMutation(baseUrl, cliAuth.authPassword, {
-    email,
-    password,
-  })) as {
+  const payload: Record<string, unknown> = { email, password };
+  if (inviteToken) payload.invite_token = inviteToken;
+
+  const response = (await deps.callInternalMutation(baseUrl, cliAuth.authPassword, payload)) as {
     status: string;
     companies: Company[];
     bootstrap_token?: string;

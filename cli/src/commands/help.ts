@@ -129,6 +129,26 @@ const AUTH_COMMAND_HELP: Record<AuthAction, AuthCommandHelp> = {
       "operately auth signup --base-url https://staging.operately.com --profile staging",
     ],
   },
+  join: {
+    usage: "operately auth join --invite-token <token> [--base-url <url>] [--profile <name>]",
+    description: [
+      "Join a company using an invite token",
+      "",
+      "  Interactive flow: run 'operately auth join' and follow prompts.",
+      "     You will be asked for an invite token, base URL, profile name,",
+      "     and authentication method (email+password or Google OAuth).",
+    ],
+    flags: [
+      "--invite-token <token>  (skip prompt and use this token directly)",
+      "--base-url <url>",
+      "--profile <name>",
+    ],
+    examples: [
+      "operately auth join",
+      "operately auth join --invite-token abc123",
+      "operately auth join --invite-token abc123 --base-url https://staging.operately.com --profile staging",
+    ],
+  },
   status: {
     description: "Show authentication status for current profile",
     usage: "operately auth status [--profile <name>]",
