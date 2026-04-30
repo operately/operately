@@ -6,11 +6,13 @@ const path = require("path");
 const { execSync } = require("child_process");
 
 function findUnitTests() {
+  const excludedSuites = ["test/features", "test/cli_e2e"];
+
   return fs
     .readdirSync("app/test", { recursive: true })
     .map((f) => path.join("test", f))
     .filter((f) => f.endsWith("_test.exs"))
-    .filter((f) => !f.includes("test/features"));
+    .filter((f) => !excludedSuites.some((suite) => f.includes(suite)));
 }
 
 function runTests(testFiles) {
