@@ -68,6 +68,7 @@ defmodule OperatelyWeb.CliLoginControllerTest do
     assert redirected_to(conn) == "/cli-login/#{session.id}/success"
     assert updated_session.status == :authenticated
     assert updated_session.account_id == ctx.creator.account_id
+    refute get_session(conn, :account_token)
   end
 
   test "google callback marks no_companies when the authenticated account has no memberships", ctx do
@@ -137,11 +138,67 @@ defmodule OperatelyWeb.CliLoginControllerTest do
 
     updated_session = Repo.get!(CliAuthSession, session.id)
 
-    assert redirected_to(conn) == OperatelyWeb.Paths.home_path(ctx.company)
+    assert redirected_to(conn) == "/cli-login/#{session.id}/success"
     assert updated_session.status == :authenticated
     assert updated_session.account_id == lonely_account.id
+    refute get_session(conn, :account_token)
 
     person = Operately.People.get_person(lonely_account, ctx.company)
     assert person != nil
+  end
+
+  test "google callback does not replace an existing browser session during cli auth", ctx do
+    other_company = company_fixture(%{company_name: "Other Company"})
+    other_creator = other_company |> Ecto.assoc(:people) |> Operately.Repo.one() |> Operately.Repo.preload(:account)
+    {:ok, session, _raw_token} = CliAuthSession.create_pending_google_session()
+
+    conn =
+      ctx.conn
+      |> log_in_account(ctx.creator.account, ctx.company)
+      |> then(fn conn ->
+        original_token = get_session(conn, :account_token)
+
+        conn =
+          conn
+          |> put_session(:oauth_cli_auth_session_id, session.id)
+          |> put_session(:oauth_redirect_to, "/cli-login/#{session.id}/success")
+          |> fetch_flash()
+          |> Plug.Conn.assign(:ueberauth_auth, %{
+            info: %{
+              email: other_creator.account.email,
+              image: "http://example.com/avatar.png",
+              name: other_creator.full_name
+            }
+          })
+          |> get("/accounts/auth/google/callback", %{"provider" => "google"})
+
+        {conn, original_token}
+      end)
+
+    {conn, original_token} = conn
+    updated_session = Repo.get!(CliAuthSession, session.id)
+
+    assert redirected_to(conn) == "/cli-login/#{session.id}/success"
+    assert updated_session.status == :authenticated
+    assert updated_session.account_id == other_creator.account.id
+    assert get_session(conn, :account_token) == original_token
+  end
+
+  test "test_google completes cli auth without creating a browser session", ctx do
+    {:ok, session, _raw_token} = CliAuthSession.create_pending_google_session()
+
+    conn =
+      get(ctx.conn, "/accounts/auth/test_google", %{
+        "account_id" => ctx.creator.account.id,
+        "cli_auth_session_id" => session.id,
+        "redirect_to" => "/cli-login/#{session.id}/success"
+      })
+
+    updated_session = Repo.get!(CliAuthSession, session.id)
+
+    assert redirected_to(conn) == "/cli-login/#{session.id}/success"
+    assert updated_session.status == :authenticated
+    assert updated_session.account_id == ctx.creator.account.id
+    refute get_session(conn, :account_token)
   end
 end
