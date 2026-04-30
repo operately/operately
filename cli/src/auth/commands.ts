@@ -12,6 +12,7 @@ import { executeAuthBootstrap } from "./bootstrap";
 import { runSignupCreateCompanyFlow } from "./flows/signup-create-company";
 import { runJoinInviteFlow } from "./flows/join-invite";
 import { askChoice } from "../core/prompts";
+import { fetchProfileMetadata } from "./shared/profile-metadata";
 import type { AuthAction } from "../core/parser-types";
 import type { EndpointRegistry } from "../commands/registry";
 
@@ -84,8 +85,8 @@ async function executeAuthLogin(
 
   const baseUrl = readStringFlag(flags, "base-url");
   const profile = readStringFlag(flags, "profile") ?? config.activeProfile ?? "default";
-
   const getMe = registry.find(["people", "get_me"]);
+
   if (!getMe) {
     printError("Endpoint 'people/get_me' is not present in the API catalog.");
     return 2;
@@ -103,26 +104,25 @@ async function executeAuthLogin(
   }
 
   try {
-    const payload = await callEndpoint({
-      endpoint: getMe,
+    const metadata = await fetchProfileMetadata({
+      registry,
+      callEndpoint,
       baseUrl: runtime.baseUrl,
       token: runtime.token,
-      inputs: {},
       timeoutMs: runtime.timeoutMs,
-      verbose: false,
     });
 
     const updated = saveProfile(config, profile, {
       token,
       baseUrl: baseUrl ?? undefined,
+      name: metadata.name,
+      companyName: metadata.companyName,
     });
     writeConfig(updated);
 
-    const user = payload as { me?: { full_name?: string; email?: string } };
-    const userName = user.me?.full_name || user.me?.email;
     const displayUrl = updated.profiles[profile]?.baseUrl || runtime.baseUrl;
 
-    printSuccess(`✓ Logged in to ${displayUrl} ${userName ? `as ${userName}` : ""}`);
+    printSuccess(`✓ Logged in to ${displayUrl} ${metadata.name ? `as ${metadata.name}` : ""}`);
     return 0;
   } catch (error) {
     if (error instanceof ApiError) {
@@ -153,6 +153,12 @@ function executeAuthStatus(flags: Map<string, unknown[]>, config: CliConfig): nu
 
   console.log(`Profile: ${runtime.profile}`);
   console.log(`Status: ${runtime.token ? "Logged in" : "Not logged in"}`);
+  if (runtime.token && profileData.name) {
+    console.log(`Name: ${profileData.name}`);
+  }
+  if (runtime.token && profileData.companyName) {
+    console.log(`Company: ${profileData.companyName}`);
+  }
   console.log(`Base URL: ${runtime.baseUrl}`);
 
   if (profileData.baseUrl && profileData.baseUrl !== runtime.baseUrl) {
@@ -174,6 +180,8 @@ function executeAuthLogout(flags: Map<string, unknown[]>, config: CliConfig): nu
   const updated = saveProfile(config, profile, {
     ...existing,
     token: "",
+    name: undefined,
+    companyName: undefined,
   });
   writeConfig(updated);
   printSuccess(`✓ Logged out from profile '${profile}'`);

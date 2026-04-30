@@ -49,7 +49,7 @@ defmodule OperatelyWeb.AccountOauthController do
       {:ok, account} ->
         {redirect_params, conn} = maybe_handle_invite(conn, account, invite_token, redirect_params)
 
-        {conn, cli_auth_session_id} = get_and_clear_cli_auth_session_id(conn)
+        {conn, cli_auth_session_id} = get_and_clear_cli_auth_session_id(conn, params)
         maybe_complete_cli_auth(cli_auth_session_id, account)
 
         params = Map.put(redirect_params, "remember_me", "true")
@@ -85,8 +85,8 @@ defmodule OperatelyWeb.AccountOauthController do
     {conn, normalize_invite_token(invite_token)}
   end
 
-  defp get_and_clear_cli_auth_session_id(conn) do
-    cli_auth_session_id = get_session(conn, @cli_auth_session_key)
+  defp get_and_clear_cli_auth_session_id(conn, params) do
+    cli_auth_session_id = params["cli_auth_session_id"] || get_session(conn, @cli_auth_session_key)
     conn = delete_session(conn, @cli_auth_session_key)
 
     {conn, cli_auth_session_id}
@@ -141,6 +141,7 @@ defmodule OperatelyWeb.AccountOauthController do
     def test_google(conn, params) do
       verify_application_env()
 
+      # Test-only shortcut for Google OAuth. We still complete the real CLI auth session below.
       account =
         cond do
           params["account_id"] ->
@@ -164,7 +165,9 @@ defmodule OperatelyWeb.AccountOauthController do
 
       {conn, redirect_params} = get_and_clear_redirect_params(conn, params)
       {conn, invite_token} = get_and_clear_invite_token(conn, params)
+      {conn, cli_auth_session_id} = get_and_clear_cli_auth_session_id(conn, params)
       {redirect_params, conn} = maybe_handle_invite(conn, account, invite_token, redirect_params)
+      maybe_complete_cli_auth(cli_auth_session_id, account)
       params = Map.put(redirect_params, "remember_me", "true")
 
       AccountAuth.log_in_account(conn, account, params)
