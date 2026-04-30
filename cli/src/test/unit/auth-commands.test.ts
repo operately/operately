@@ -59,7 +59,12 @@ describe("Auth Commands", () => {
     writeConfig({
       activeProfile: "default",
       profiles: {
-        default: { token: "op_live_xxx", baseUrl: "https://custom.example.com" },
+        default: {
+          token: "op_live_xxx",
+          baseUrl: "https://custom.example.com",
+          name: "Jane Admin",
+          companyName: "Acme Corp",
+        },
       },
     });
 
@@ -73,6 +78,8 @@ describe("Auth Commands", () => {
     assert.strictEqual(result, 0);
     assert.ok(capture.logs.some((l) => l.includes("Profile: default")));
     assert.ok(capture.logs.some((l) => l.includes("Status: Logged in")));
+    assert.ok(capture.logs.some((l) => l.includes("Name: Jane Admin")));
+    assert.ok(capture.logs.some((l) => l.includes("Company: Acme Corp")));
     assert.ok(capture.logs.some((l) => l.includes("Base URL: https://custom.example.com")));
     assert.ok(capture.logs.some((l) => l.includes("Base URL: https://custom.example.com")));
   });
@@ -132,7 +139,7 @@ describe("Auth Commands", () => {
 
 describe("runTokenFlow", () => {
   it("validates token and saves profile", async () => {
-    let savedProfile: { token: string; baseUrl?: string } | null = null;
+    let savedProfile: { token: string; baseUrl?: string; name?: string; companyName?: string } | null = null;
 
     const result = await runTokenFlow(
       "https://app.operately.com",
@@ -141,27 +148,54 @@ describe("runTokenFlow", () => {
       "default",
       { activeProfile: "default", profiles: {} },
       {
-        find: () => ({
-          full_name: "people/get_me",
-          namespace: "people",
-          name: "get_me",
-          type: "query",
-          method: "GET",
-          path: "/api/external/v1/people/get_me",
-          handler: "",
-          inputs: [],
-          outputs: [],
-          docstring: null,
-        }),
+        find: (parts: string[]) => {
+          if (parts.join("/") === "people/get_me") {
+            return {
+              full_name: "people/get_me",
+              namespace: "people",
+              name: "get_me",
+              type: "query",
+              method: "GET",
+              path: "/api/external/v1/people/get_me",
+              handler: "",
+              inputs: [],
+              outputs: [],
+              docstring: null,
+            };
+          }
+
+          if (parts.join("/") === "companies/get") {
+            return {
+              full_name: "companies/get",
+              namespace: "companies",
+              name: "get",
+              type: "query",
+              method: "GET",
+              path: "/api/external/v1/companies/get",
+              handler: "",
+              inputs: [],
+              outputs: [],
+              docstring: null,
+            };
+          }
+
+          return null;
+        },
         byKey: new Map(),
         endpoints: [],
         commandFor: () => "",
       },
       {
         askQuestion: () => Promise.resolve("op_test_token"),
-        callEndpoint: () => Promise.resolve({ me: { full_name: "Test User", email: "test@example.com" } }),
+        callEndpoint: (args) => {
+          if (args.endpoint.path === "/api/external/v1/people/get_me") {
+            return Promise.resolve({ me: { full_name: "Test User", email: "test@example.com" } });
+          }
+
+          return Promise.resolve({ company: { name: "Acme Corp" } });
+        },
         saveProfile: (_config, _profile, data) => {
-          savedProfile = data as { token: string; baseUrl?: string };
+          savedProfile = data as { token: string; baseUrl?: string; name?: string; companyName?: string };
           return { activeProfile: "default", profiles: { default: data } };
         },
         writeConfig: () => {},
@@ -176,7 +210,13 @@ describe("runTokenFlow", () => {
 
     assert.strictEqual(result, 0);
     assert.ok(savedProfile);
-    assert.strictEqual((savedProfile as { token: string }).token, "op_test_token");
+    assert.notStrictEqual(savedProfile, null);
+
+    const profileData = savedProfile as { token: string; baseUrl?: string; name?: string; companyName?: string };
+
+    assert.strictEqual(profileData.token, "op_test_token");
+    assert.strictEqual(profileData.name, "Test User");
+    assert.strictEqual(profileData.companyName, "Acme Corp");
   });
 
   it("returns exit code 4 for invalid token", async () => {

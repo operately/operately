@@ -8,6 +8,8 @@ export interface ProfileConfig {
   token?: string;
   baseUrl?: string;
   timeoutMs?: number;
+  name?: string;
+  companyName?: string;
 }
 
 export interface CliConfig {
@@ -52,10 +54,13 @@ export function readConfig(): CliConfig {
 
   const raw = fs.readFileSync(filePath, "utf8");
   const parsed = JSON.parse(raw) as Partial<CliConfig>;
+  const profiles = Object.fromEntries(
+    Object.entries(parsed.profiles ?? {}).map(([name, profile]) => [name, normalizeProfile(profile)]),
+  );
 
   return {
     activeProfile: parsed.activeProfile ?? DEFAULT_PROFILE,
-    profiles: parsed.profiles ?? {},
+    profiles,
   };
 }
 
@@ -77,6 +82,8 @@ export function saveProfile(
     token?: string;
     baseUrl?: string;
     timeoutMs?: number;
+    name?: string;
+    companyName?: string;
   },
 ): CliConfig {
   const existing = getProfile(config, profile);
@@ -112,4 +119,16 @@ export function resolveRuntimeOptions(config: CliConfig, overrides: RuntimeOverr
   const timeoutMs = profileData.timeoutMs ?? DEFAULT_TIMEOUT_MS;
 
   return { token, baseUrl, profile, timeoutMs };
+}
+
+function normalizeProfile(profile: unknown): ProfileConfig {
+  const input = (profile ?? {}) as ProfileConfig;
+
+  return {
+    token: input.token,
+    baseUrl: input.baseUrl,
+    timeoutMs: input.timeoutMs,
+    name: input.name,
+    companyName: input.companyName,
+  };
 }
