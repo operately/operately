@@ -585,6 +585,38 @@ defmodule OperatelyWeb.Api.CliAuthTest do
       assert Operately.People.get_account_by_email_and_password("invited@example.com", "newPassword123") != nil
     end
 
+    test "returns bad_request when the password update fails", ctx do
+      {:ok, account} = Operately.People.Account.create("Invited Member", "invited@example.com", :crypto.strong_rand_bytes(32) |> Base.encode64())
+
+      {:ok, member} = Operately.People.create_person(%{
+        full_name: "Invited Member",
+        email: "invited@example.com",
+        company_id: ctx.company.id,
+        account_id: account.id
+      })
+
+      {:ok, invite_link} =
+        Operately.InviteLinks.create_personal_invite_link(%{
+          company_id: ctx.company.id,
+          author_id: ctx.creator.id,
+          person_id: member.id
+        })
+
+      session_count = Repo.aggregate(CliAuthSession, :count)
+
+      assert {400, res} =
+               mutation(ctx.conn, [:cli_auth, :join_company], %{
+                 token: invite_link.token,
+                 password: "shortpass1",
+                 password_confirmation: "shortpass1"
+               })
+
+      assert res.message =~ "should be at least 12 character"
+      assert Operately.People.get_account_by_email_and_password("invited@example.com", "shortpass1") == nil
+      assert Repo.reload!(invite_link).is_active
+      assert Repo.aggregate(CliAuthSession, :count) == session_count
+    end
+
     test "returns bad_request when passwords don't match", ctx do
       assert {400, res} =
                mutation(ctx.conn, [:cli_auth, :join_company], %{

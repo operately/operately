@@ -182,20 +182,23 @@ defmodule OperatelyWeb.Api.CliAuth do
     end
 
     def call(_conn, inputs) do
-      case validate(inputs) do
-        {:ok, invite_link} ->
-          Operately.Operations.PasswordFirstTimeChanging.run(inputs, invite_link)
+      with {:ok, invite_link} <- validate(inputs),
+           {:ok, %{member_account: account}} <- Operately.Operations.PasswordFirstTimeChanging.run(inputs, invite_link) do
+        companies = CliAuthSession.eligible_companies(account)
 
-          account = Repo.preload(invite_link, person: [:account]).person.account
-          companies = CliAuthSession.eligible_companies(account)
-
-          case create_authenticated_response(account, companies) do
-            {:ok, response} -> {:ok, response}
-            {:error, _changeset} -> {:error, :internal_server_error}
-          end
-
-        {:error, reason} ->
+        case create_authenticated_response(account, companies) do
+          {:ok, response} -> {:ok, response}
+          {:error, _changeset} -> {:error, :internal_server_error}
+        end
+      else
+        {:error, reason} when is_binary(reason) ->
           {:error, :bad_request, reason}
+
+        {:error, :member_account, changeset, _changes} ->
+          {:error, :bad_request, format_changeset_error(changeset)}
+
+        {:error, _step, _error, _changes} ->
+          {:error, :internal_server_error}
       end
     end
 
@@ -230,6 +233,19 @@ defmodule OperatelyWeb.Api.CliAuth do
         {:error, changeset} ->
           {:error, changeset}
       end
+    end
+
+    defp format_changeset_error(changeset) do
+      changeset
+      |> Ecto.Changeset.traverse_errors(fn {message, opts} ->
+        Regex.replace(~r"%{(\w+)}", message, fn _, key ->
+          opts
+          |> Keyword.get(String.to_existing_atom(key), key)
+          |> to_string()
+        end)
+      end)
+      |> Enum.flat_map(fn {_field, messages} -> messages end)
+      |> Enum.at(0, "The request was malformed")
     end
   end
 

@@ -5,7 +5,7 @@ import {
   DEFAULT_BASE_URL,
   type CliConfig,
 } from "../config";
-import { printError, printSuccess } from "../../core/output";
+import { printError, printInfo, printSuccess } from "../../core/output";
 import { callInternalMutation, callInternalQuery } from "../../core/internal-api";
 import { askQuestion, askPassword, askChoice } from "../../core/prompts";
 import { callEndpoint } from "../../core/http";
@@ -29,6 +29,7 @@ interface JoinInviteFlowDeps {
   callEndpoint: typeof callEndpoint;
   openUrl: (url: string) => Promise<ChildProcess | boolean | undefined>;
   printError: typeof printError;
+  printInfo: typeof printInfo;
   printSuccess: typeof printSuccess;
   saveProfile: typeof saveProfile;
   writeConfig: typeof writeConfig;
@@ -44,6 +45,7 @@ const defaultDeps: JoinInviteFlowDeps = {
   callEndpoint,
   openUrl: (url: string) => openExternalUrl(url),
   printError,
+  printInfo,
   printSuccess,
   saveProfile,
   writeConfig,
@@ -141,7 +143,7 @@ async function handlePersonalInvite(
 
   const memberEmail = invitation.member.email;
 
-  console.log(`\nJoining as ${memberEmail}`);
+  d.printInfo(`\nJoining as ${memberEmail}`);
   const method = await d.askChoice<"password" | "google">("How would you like to sign in?", [
     { label: "Email and password", value: "password" },
     { label: "Google OAuth (opens browser)", value: "google" },

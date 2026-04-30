@@ -15,8 +15,11 @@ interface MockCall {
 const calls: MockCall[] = [];
 let responses: Array<unknown> = [];
 let promptQueue: Array<unknown> = [];
+let askedPrompts: string[] = [];
 
-function nextPrompt<T>(..._args: unknown[]): Promise<T> {
+function nextPrompt<T>(prompt: string, ..._args: unknown[]): Promise<T> {
+  askedPrompts.push(prompt);
+
   if (promptQueue.length === 0) {
     throw new Error("Prompt requested, but promptQueue is empty");
   }
@@ -99,6 +102,7 @@ describe("runJoinInviteFlow", () => {
     calls.length = 0;
     responses = [{ invite_link: null }];
     promptQueue = ["my-token", "https://example.com", "default", "user@example.com", "password123"];
+    askedPrompts = [];
 
     const exitCode = await runJoinInviteFlow(
       makeFlags({}),
@@ -113,6 +117,7 @@ describe("runJoinInviteFlow", () => {
         callEndpoint: mockEndpoint,
         openUrl: mockOpen,
         printError: () => {},
+        printInfo: () => {},
         printSuccess: () => {},
         saveProfile: (c) => c,
         writeConfig: () => {},
@@ -140,6 +145,7 @@ describe("runJoinInviteFlow", () => {
       { me: { full_name: "User", email: "user@example.com" } },
     ];
     promptQueue = ["my-token", "https://example.com", "default", "user@example.com", "password123"];
+    askedPrompts = [];
 
     const exitCode = await runJoinInviteFlow(
       makeFlags({}),
@@ -156,6 +162,7 @@ describe("runJoinInviteFlow", () => {
         printError: (msg: string) => {
           throw new Error(`printError called: ${msg}`);
         },
+        printInfo: () => {},
         printSuccess: () => {},
         saveProfile: (c) => c,
         writeConfig: () => {},
@@ -172,7 +179,11 @@ describe("runJoinInviteFlow", () => {
 
     const authPasswordCall = calls.find((c) => c.path === cliAuth.authPassword);
     assert.ok(authPasswordCall, "Expected auth_password call");
-    assert.strictEqual(authPasswordCall!.inputs["invite_token"], "my-token");
+    assert.deepStrictEqual(authPasswordCall.inputs, {
+      email: "user@example.com",
+      password: "password123",
+      invite_token: "my-token",
+    });
 
     const createTokenCall = calls.find((c) => c.path === cliAuth.createToken);
     assert.ok(createTokenCall, "Expected create_token call");
@@ -190,6 +201,7 @@ describe("runJoinInviteFlow", () => {
       { me: { full_name: "New User", email: "new@example.com" } },
     ];
     promptQueue = ["my-token", "https://example.com", "default", "password1", "password1"];
+    askedPrompts = [];
 
     const exitCode = await runJoinInviteFlow(
       makeFlags({}),
@@ -204,6 +216,7 @@ describe("runJoinInviteFlow", () => {
         callEndpoint: mockEndpoint,
         openUrl: mockOpen,
         printError: () => {},
+        printInfo: () => {},
         printSuccess: () => {},
         saveProfile: (c) => c,
         writeConfig: () => {},
@@ -241,6 +254,7 @@ describe("runJoinInviteFlow", () => {
       { me: { full_name: "User", email: "user@example.com" } },
     ];
     promptQueue = ["my-token", "https://example.com", "default"];
+    askedPrompts = [];
 
     const exitCode = await runJoinInviteFlow(
       makeFlags({}),
@@ -255,6 +269,7 @@ describe("runJoinInviteFlow", () => {
         callEndpoint: mockEndpoint,
         openUrl: mockOpen,
         printError: () => {},
+        printInfo: () => {},
         printSuccess: () => {},
         saveProfile: (c) => c,
         writeConfig: () => {},
@@ -289,6 +304,7 @@ describe("runJoinInviteFlow", () => {
       { me: { full_name: "User", email: "user@example.com" } },
     ];
     promptQueue = ["my-token", "https://example.com", "default"];
+    askedPrompts = [];
 
     const exitCode = await runJoinInviteFlow(
       makeFlags({}),
@@ -303,6 +319,7 @@ describe("runJoinInviteFlow", () => {
         callEndpoint: mockEndpoint,
         openUrl: mockOpen,
         printError: () => {},
+        printInfo: () => {},
         printSuccess: () => {},
         saveProfile: (c) => c,
         writeConfig: () => {},
@@ -337,6 +354,7 @@ describe("runJoinInviteFlow", () => {
       { me: { full_name: "User", email: "user@example.com" } },
     ];
     promptQueue = ["https://example.com", "default"];
+    askedPrompts = [];
 
     const exitCode = await runJoinInviteFlow(
       makeFlags({ "invite-token": "flag-token" }),
@@ -351,6 +369,7 @@ describe("runJoinInviteFlow", () => {
         callEndpoint: mockEndpoint,
         openUrl: mockOpen,
         printError: () => {},
+        printInfo: () => {},
         printSuccess: () => {},
         saveProfile: (c) => c,
         writeConfig: () => {},
@@ -368,6 +387,7 @@ describe("runJoinInviteFlow", () => {
     const tokenCheck = calls.find((c) => c.path === publicQuery.getInviteLinkByToken);
     assert.ok(tokenCheck, "Expected get_invite_link_by_token call");
     assert.strictEqual(tokenCheck!.inputs["token"], "flag-token");
+    assert.ok(!askedPrompts.includes("Invite token:"), "Invite token prompt should be skipped when --invite-token is provided");
 
     const createTokenCall = calls.find((c) => c.path === cliAuth.createToken);
     assert.ok(createTokenCall, "Expected create_token call");
