@@ -47,6 +47,10 @@ defmodule Operately.Blobs.S3Config do
     System.get_env("OPERATELY_STORAGE_S3_HOST")
   end
 
+  def host! do
+    host() || ExAws.Config.Defaults.host(:s3, region!())
+  end
+
   @doc """
   Returns the S3 scheme (optional, defaults to https).
   """
@@ -76,15 +80,40 @@ defmodule Operately.Blobs.S3Config do
   Returns ExAws request overrides for S3-compatible object storage.
   """
   def request_config do
-    [
-      access_key_id: access_key_id!(),
-      secret_access_key: secret_access_key!(),
-      region: region!(),
-      virtual_host: false,
-      scheme: request_scheme()
-    ]
+    ExAws.Config.Defaults.defaults(:s3)
+    |> Map.merge(ex_aws_config())
+    |> Map.put(:virtual_host, false)
+    |> Map.put(:scheme, request_scheme())
     |> maybe_put(:host, host())
     |> maybe_put(:port, request_port())
+  end
+
+  @doc """
+  Returns the full object URL for a bucket path.
+  """
+  def object_url(path) do
+    port = if port = request_port(), do: ":#{port}", else: ""
+    "#{scheme()}://#{host!()}#{port}/#{bucket!()}/#{path}"
+  end
+
+  @doc """
+  Returns a presigned URL for an S3-compatible object request.
+  """
+  def presigned_url(method, path, headers \\ [], query_params \\ [], opts \\ []) when method in [:get, :put, :delete] do
+    time = Keyword.get(opts, :time, NaiveDateTime.utc_now() |> NaiveDateTime.to_erl())
+    expires_in = Keyword.get(opts, :expires_in, 3600)
+
+    ExAws.Auth.presigned_url(
+      method,
+      object_url(path),
+      :s3,
+      time,
+      ex_aws_config(),
+      expires_in,
+      query_params,
+      nil,
+      headers
+    )
   end
 
   defp request_scheme do
@@ -102,5 +131,5 @@ defmodule Operately.Blobs.S3Config do
   end
 
   defp maybe_put(config, _key, nil), do: config
-  defp maybe_put(config, key, value), do: Keyword.put(config, key, value)
+  defp maybe_put(config, key, value), do: Map.put(config, key, value)
 end

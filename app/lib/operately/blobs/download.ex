@@ -44,19 +44,14 @@ defmodule Operately.Blobs.Download do
     """
 
     alias Operately.Blobs.Blob
-    alias Operately.Blobs.S3Config
+    alias Operately.Blobs.S3Http
 
     def download(%Blob{} = blob, dest_path) do
-      bucket = S3Config.bucket!()
       path = Blob.path(blob)
-      File.mkdir_p!(Path.dirname(dest_path))
 
-      case ExAws.S3.download_file(bucket, path, dest_path) |> ExAws.request(S3Config.request_config()) do
-        {:ok, _result} ->
-          :ok
-
-        {:error, reason} ->
-          {:error, "Failed to download from S3: #{inspect(reason)}"}
+      case S3Http.download_to_file(path, dest_path) do
+        :ok -> :ok
+        {:error, reason} -> {:error, "Failed to download from S3: #{inspect(reason)}"}
       end
     end
   end

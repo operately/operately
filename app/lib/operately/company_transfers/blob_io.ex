@@ -9,7 +9,7 @@ defmodule Operately.CompanyTransfers.BlobIO do
 
   alias Operately.Blobs
   alias Operately.Blobs.Blob
-  alias Operately.Blobs.S3Config
+  alias Operately.Blobs.S3Http
   alias Operately.Companies.Company
   alias Operately.People.Person
 
@@ -44,12 +44,7 @@ defmodule Operately.CompanyTransfers.BlobIO do
       :s3 ->
         blob
         |> Blob.path()
-        |> then(fn path -> ExAws.S3.delete_object(S3Config.bucket!(), path) end)
-        |> ExAws.request(S3Config.request_config())
-        |> case do
-          {:ok, _} -> :ok
-          {:error, reason} -> {:error, reason}
-        end
+        |> S3Http.delete_object()
     end
   end
 end
