@@ -6,7 +6,7 @@ defmodule OperatelyWeb.CliLoginController do
 
   @cli_auth_session_key :oauth_cli_auth_session_id
 
-  def show(conn, %{"id" => id}) do
+  def show(conn, %{"id" => id} = params) do
     case CliAuthSession.get_by_id(id) do
       nil ->
         send_not_found(conn)
@@ -15,13 +15,23 @@ defmodule OperatelyWeb.CliLoginController do
         if session.status == :pending and not CliAuthSession.expired?(session) do
           redirect_to = Paths.cli_login_success_path(session.id)
 
+          auth_url = build_google_auth_url(redirect_to, params["invite_token"])
+
           conn
           |> put_session(@cli_auth_session_key, session.id)
-          |> redirect(to: "/accounts/auth/google?redirect_to=#{URI.encode_www_form(redirect_to)}")
+          |> redirect(to: auth_url)
         else
           redirect(conn, to: Paths.cli_login_success_path(session.id))
         end
     end
+  end
+
+  defp build_google_auth_url(redirect_to, nil) do
+    "/accounts/auth/google?redirect_to=#{URI.encode_www_form(redirect_to)}"
+  end
+
+  defp build_google_auth_url(redirect_to, invite_token) do
+    "/accounts/auth/google?redirect_to=#{URI.encode_www_form(redirect_to)}&invite_token=#{URI.encode_www_form(invite_token)}"
   end
 
   def success(conn, %{"id" => id}) do

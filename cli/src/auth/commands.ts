@@ -10,6 +10,7 @@ import {
 import { printError, printSuccess } from "../core/output";
 import { executeAuthBootstrap } from "./bootstrap";
 import { runSignupCreateCompanyFlow } from "./flows/signup-create-company";
+import { runJoinInviteFlow } from "./flows/join-invite";
 import { askChoice } from "../core/prompts";
 import type { AuthAction } from "../core/parser-types";
 import type { EndpointRegistry } from "../commands/registry";
@@ -29,6 +30,10 @@ export async function executeAuthCommand(input: AuthExecutionInput): Promise<num
 
   if (input.action === "signup") {
     return executeAuthSignup(input.flags, config, input.registry);
+  }
+
+  if (input.action === "join") {
+    return executeAuthJoin(input.flags, config, input.registry);
   }
 
   if (input.action === "status") {
@@ -56,8 +61,15 @@ async function executeAuthSignup(
     return runSignupCreateCompanyFlow(flags, config, registry);
   }
 
-  printError("Joining with an invite is not yet implemented.");
-  return 1;
+  return executeAuthJoin(flags, config, registry);
+}
+
+async function executeAuthJoin(
+  flags: Map<string, unknown[]>,
+  config: CliConfig,
+  registry: EndpointRegistry,
+): Promise<number> {
+  return runJoinInviteFlow(flags, config, registry);
 }
 
 async function executeAuthLogin(
