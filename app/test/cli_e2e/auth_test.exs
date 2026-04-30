@@ -32,6 +32,15 @@ defmodule Operately.CliE2E.AuthTest do
     assert config["activeProfile"] == "e2e"
     assert get_in(config, ["profiles", "e2e", "token"]) == ctx.api_token
     assert get_in(config, ["profiles", "e2e", "baseUrl"]) == ctx.cli_base_url
+    assert get_in(config, ["profiles", "e2e", "name"]) == ctx.creator.full_name
+    assert get_in(config, ["profiles", "e2e", "companyName"]) == ctx.company.name
+
+    status = run_cli(ctx, ["auth", "status", "--profile", "e2e"])
+
+    assert status.exit_code == 0
+    assert status.output =~ "Status: Logged in"
+    assert status.output =~ "Name: #{ctx.creator.full_name}"
+    assert status.output =~ "Company: #{ctx.company.name}"
 
     whoami = run_cli(ctx, ["auth", "whoami", "--profile", "e2e"])
 

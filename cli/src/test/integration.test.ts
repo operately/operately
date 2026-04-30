@@ -56,6 +56,7 @@ describe("CLI Integration Tests", () => {
       assert.strictEqual(result.exitCode, 0);
       assert.ok(result.stdout.includes("Operately CLI"));
       assert.ok(result.stdout.includes("Usage:"));
+      assert.ok(result.stdout.includes("auth join"));
     });
 
     it("shows version with --version flag", async () => {

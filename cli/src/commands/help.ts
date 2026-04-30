@@ -59,6 +59,7 @@ ${namespaceLines}
 Utility commands:
   auth login [--token <token>] [--base-url <url>] [--profile <name>]
   auth signup [--base-url <url>] [--profile <name>]
+  auth join [--invite-token <token>] [--base-url <url>] [--profile <name>]
   auth status [--profile <name>]
   auth whoami [--profile <name>]
   auth logout [--profile <name>]
