@@ -9,9 +9,9 @@ export async function callInternalMutation(
   bootstrapToken?: string,
 ): Promise<unknown> {
   const url = internalApiUrl(baseUrl, path);
-  const headers: Record<string, string> = {
+  const headers = withE2EUserAgent({
     "Content-Type": "application/json",
-  };
+  });
   if (bootstrapToken) {
     headers.Authorization = `Bearer ${bootstrapToken}`;
   }
@@ -47,7 +47,7 @@ export async function callInternalQuery(
   const queryString = params.toString();
   const fullUrl = queryString ? `${url}?${queryString}` : url;
 
-  const headers: Record<string, string> = {};
+  const headers = withE2EUserAgent({});
   if (bootstrapToken) {
     headers.Authorization = `Bearer ${bootstrapToken}`;
   }
@@ -67,3 +67,12 @@ export async function callInternalQuery(
   }
 }
 
+function withE2EUserAgent(headers: Record<string, string>): Record<string, string> {
+  const userAgent = process.env.OPERATELY_E2E_USER_AGENT;
+
+  if (userAgent) {
+    headers["User-Agent"] = userAgent;
+  }
+
+  return headers;
+}

@@ -112,7 +112,7 @@ blocks:
 
   - name: CLI Tests
     run:
-      when: "change_in('/cli', {default_branch: 'main'})"
+      when: "change_in('/cli', {default_branch: 'main'}) or change_in('/app', {default_branch: 'main'})"
     dependencies: []
     task:
       secrets:
@@ -120,12 +120,27 @@ blocks:
       prologue:
         commands:
           - checkout
+          - cache restore app-deps
+          - cache restore app-build
+          - cache restore app-node-modules
+          - cache restore turboui-node-modules
+          - cache restore turboui-dist
           - cache restore cli-node-modules
+          - ./scripts/cache-fix-for-erlang
 
       jobs:
-        - name: CLI Test
+        - name: CLI Unit Tests
           commands:
-            - make cli.test
+            - make cli.test.unit
+
+        - name: CLI E2E Tests
+          commands:
+            - make cli.test.e2e
+
+      epilogue:
+        always:
+          commands:
+            - "[ -f app/testreports/junit.xml ] && test-results publish app/testreports/junit.xml"
 
   - name: Docker Build
     dependencies: []
