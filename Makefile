@@ -1,7 +1,7 @@
 SHELL := /bin/bash  # Use bash syntax
 MAKEFLAGS += -s     # Silent mode
 
-.PHONY: test
+.PHONY: test cli.build cli.test cli.test.unit cli.test.e2e
 
 REPORTS_DIR ?= $(PWD)/app/testreports
 SCREENSHOTS_DIR ?= $(PWD)/app/screenshots
@@ -88,9 +88,16 @@ turboui.test:
 cli.build:
 	./devenv bash -c "cd cli && npm install && npm run build"
 
-cli.test:
+cli.test: cli.test.unit
+
+cli.test.unit:
 	npm --prefix cli install
 	npm --prefix cli test
+
+cli.test.e2e: test.init
+	$(MAKE) test.build
+	$(MAKE) cli.build
+	./devenv bash -c "cd app && mix test test/cli_e2e"
 
 gen.cli.catalog:
 	$(MAKE) gen.api.catalog

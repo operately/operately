@@ -23,9 +23,9 @@ export interface RequestOptions {
 
 export async function callEndpoint(options: RequestOptions): Promise<unknown> {
   const url = buildUrl(options.baseUrl, options.endpoint.path, options.endpoint.type === "query" ? options.inputs : undefined);
-  const headers: Record<string, string> = {
+  const headers = withE2EUserAgent({
     Authorization: `Bearer ${options.token}`,
-  };
+  });
 
   try {
     if (options.verbose) {
@@ -65,6 +65,16 @@ export async function callEndpoint(options: RequestOptions): Promise<unknown> {
 
     throw new ApiError("Network error while calling API endpoint", 0, null);
   }
+}
+
+function withE2EUserAgent(headers: Record<string, string>): Record<string, string> {
+  const userAgent = process.env.OPERATELY_E2E_USER_AGENT;
+
+  if (userAgent) {
+    headers["User-Agent"] = userAgent;
+  }
+
+  return headers;
 }
 
 function buildUrl(baseUrl: string, endpointPath: string, query?: Record<string, unknown>): string {
