@@ -77,56 +77,66 @@ defmodule Operately.CompanyTransfers.BlobIOTest do
       :ok
     end
 
-    test "create_and_upload_company_file/4 passes the S3-compatible request config", ctx do
+    test "create_and_upload_company_file/4 uploads through the S3 HTTP wrapper", ctx do
       source_path = temp_path("blob-io-s3-upload-source.txt")
       File.write!(source_path, "blob io upload content")
+
+      expected_headers = [
+        {"Content-Type", "text/plain"},
+        {"Content-Length", Integer.to_string(File.stat!(source_path).size)}
+      ]
 
       on_exit(fn ->
         cleanup_paths([source_path])
       end)
 
-      with_mock ExAws,
-        request!: fn op, config ->
-          send(self(), {:request!, op, config})
-          :done
+      with_mock Operately.Blobs.S3Http,
+        put_file: fn path, incoming_source_path, headers ->
+          send(self(), {:put_file, path, incoming_source_path, headers})
+          :ok
         end do
         assert {:ok, blob} = BlobIO.create_and_upload_company_file(ctx.company, ctx.creator, source_path, "text/plain")
 
         assert blob.storage_type == :s3
         assert blob.status == :uploaded
 
-        assert_received {:request!, %ExAws.S3.Upload{bucket: "test-bucket", path: path}, config}
+        assert_received {:put_file, path, ^source_path, headers}
         assert path == Blob.path(blob)
-        assert config == expected_s3_request_config()
+        assert headers == expected_headers
       end
     end
 
-    test "upload_to_blob/2 passes the S3-compatible request config", ctx do
+    test "upload_to_blob/2 uploads through the S3 HTTP wrapper", ctx do
       source_path = temp_path("blob-io-s3-existing-source.txt")
       File.write!(source_path, "existing blob content")
       blob = blob_fixture(%{company_id: ctx.company.id, author_id: ctx.creator.id})
+
+      expected_headers = [
+        {"Content-Type", blob.content_type},
+        {"Content-Length", Integer.to_string(File.stat!(source_path).size)}
+      ]
 
       on_exit(fn ->
         cleanup_paths([source_path])
       end)
 
-      with_mock ExAws,
-        request!: fn op, config ->
-          send(self(), {:request!, op, config})
-          :done
+      with_mock Operately.Blobs.S3Http,
+        put_file: fn path, incoming_source_path, headers ->
+          send(self(), {:put_file, path, incoming_source_path, headers})
+          :ok
         end do
         assert {:ok, uploaded_blob} = BlobIO.upload_to_blob(blob, source_path)
 
         assert uploaded_blob.id == blob.id
         assert uploaded_blob.status == :uploaded
 
-        assert_received {:request!, %ExAws.S3.Upload{bucket: "test-bucket", path: path}, config}
+        assert_received {:put_file, path, ^source_path, headers}
         assert path == Blob.path(blob)
-        assert config == expected_s3_request_config()
+        assert headers == expected_headers
       end
     end
 
-    test "download_to_path/2 passes the S3-compatible request config", ctx do
+    test "download_to_path/2 downloads through the S3 HTTP wrapper", ctx do
       blob = blob_fixture(%{company_id: ctx.company.id, author_id: ctx.creator.id})
       dest_path = temp_path("blob-io-s3-download-dest.txt")
 
@@ -134,32 +144,32 @@ defmodule Operately.CompanyTransfers.BlobIOTest do
         cleanup_paths([dest_path])
       end)
 
-      with_mock ExAws,
-        request: fn op, config ->
-          send(self(), {:request, op, config})
-          {:ok, :done}
+      with_mock Operately.Blobs.S3Http,
+        download_to_file: fn path, incoming_dest_path ->
+          send(self(), {:download_to_file, path, incoming_dest_path})
+          File.write!(incoming_dest_path, "blob io download content")
+          :ok
         end do
         assert :ok = BlobIO.download_to_path(blob, dest_path)
 
-        assert_received {:request, %ExAws.S3.Download{bucket: "test-bucket", path: path}, config}
+        assert_received {:download_to_file, path, ^dest_path}
         assert path == Blob.path(blob)
-        assert config == expected_s3_request_config()
+        assert File.read!(dest_path) == "blob io download content"
       end
     end
 
-    test "delete/1 passes the S3-compatible request config", ctx do
+    test "delete/1 deletes through the S3 HTTP wrapper", ctx do
       blob = blob_fixture(%{company_id: ctx.company.id, author_id: ctx.creator.id})
 
-      with_mock ExAws,
-        request: fn op, config ->
-          send(self(), {:request, op, config})
-          {:ok, :done}
+      with_mock Operately.Blobs.S3Http,
+        delete_object: fn path ->
+          send(self(), {:delete_object, path})
+          :ok
         end do
         assert :ok = BlobIO.delete(blob)
 
-        assert_received {:request, %ExAws.Operation.S3{bucket: "test-bucket", path: path, http_method: :delete}, config}
+        assert_received {:delete_object, path}
         assert path == Blob.path(blob)
-        assert config == expected_s3_request_config()
       end
     end
   end
@@ -176,18 +186,6 @@ defmodule Operately.CompanyTransfers.BlobIOTest do
     Enum.each(paths, fn path ->
       if File.exists?(path), do: File.rm_rf!(path)
     end)
-  end
-
-  defp expected_s3_request_config do
-    [
-      port: 9000,
-      host: "localhost",
-      access_key_id: "test-access-key",
-      secret_access_key: "test-secret-key",
-      region: "us-east-1",
-      virtual_host: false,
-      scheme: "http://"
-    ]
   end
 
   defp s3_env do
