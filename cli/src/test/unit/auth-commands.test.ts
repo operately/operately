@@ -81,7 +81,6 @@ describe("Auth Commands", () => {
     assert.ok(capture.logs.some((l) => l.includes("Name: Jane Admin")));
     assert.ok(capture.logs.some((l) => l.includes("Company: Acme Corp")));
     assert.ok(capture.logs.some((l) => l.includes("Base URL: https://custom.example.com")));
-    assert.ok(capture.logs.some((l) => l.includes("Base URL: https://custom.example.com")));
   });
 
   it("status shows not logged in when no token", async () => {
