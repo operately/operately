@@ -36,6 +36,17 @@
         "panel": "new"
       },
       "problemMatcher": []
+    },
+    {
+      "label": "CLI E2E Test Current File",
+      "type": "shell",
+      "command": "cd ${workspaceFolder} && FILEPATH=\"${relativeFile}\" && TESTPATH=\"${FILEPATH#*app/}\" && echo \"Running CLI E2E test for: $TESTPATH\" && make test FILE=\"$TESTPATH\"",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
     }
   ]
 }
