@@ -479,6 +479,135 @@ defmodule OperatelyWeb.Api.CliAuthTest do
     end
   end
 
+  describe "auth_password with invite_token" do
+    test "joins company via invite link for existing account and returns the company", ctx do
+      {:ok, invite_link} =
+        Operately.InviteLinks.create_invite_link(%{
+          company_id: ctx.company.id,
+          author_id: ctx.creator.id
+        })
+
+      assert {200, res} =
+               mutation(ctx.conn, [:cli_auth, :auth_password], %{
+                 email: ctx.account.email,
+                 password: "hello world!",
+                 invite_token: invite_link.token
+               })
+
+      assert res.status == "authenticated"
+      ids = Enum.map(res.companies, & &1.id)
+      assert Paths.company_id(ctx.company) in ids
+      assert is_binary(res.bootstrap_token)
+    end
+
+    test "returns bad_request for invalid invite token", ctx do
+      assert {400, res} =
+               mutation(ctx.conn, [:cli_auth, :auth_password], %{
+                 email: ctx.account.email,
+                 password: "hello world!",
+                 invite_token: "invalid-token"
+               })
+
+      assert res.message == "Invalid invite link"
+    end
+
+    test "returns bad_request for inactive invite token", ctx do
+      {:ok, invite_link} =
+        Operately.InviteLinks.create_invite_link(%{
+          company_id: ctx.company.id,
+          author_id: ctx.creator.id
+        })
+
+      Operately.InviteLinks.revoke_invite_link(invite_link)
+
+      assert {400, res} =
+               mutation(ctx.conn, [:cli_auth, :auth_password], %{
+                 email: ctx.account.email,
+                 password: "hello world!",
+                 invite_token: invite_link.token
+               })
+
+      assert res.message == "This invite link is no longer valid"
+    end
+  end
+
+  describe "start_google with invite_token" do
+    test "login_url includes the invite_token as a query parameter", ctx do
+      assert {200, res} =
+               mutation(ctx.conn, [:cli_auth, :start_google], %{
+                 invite_token: "my-invite-token"
+               })
+
+      assert res.status == "pending"
+      assert res.login_url =~ "/cli-login/"
+      assert res.login_url =~ "invite_token=my-invite-token"
+    end
+
+    test "login_url omits invite_token when not provided", ctx do
+      assert {200, res} = mutation(ctx.conn, [:cli_auth, :start_google], %{})
+
+      assert res.status == "pending"
+      assert res.login_url =~ "/cli-login/"
+      refute res.login_url =~ "invite_token"
+    end
+  end
+
+  describe "join_company" do
+    test "sets password and joins company for a personal invite link", ctx do
+      {:ok, account} = Operately.People.Account.create("Invited Member", "invited@example.com", :crypto.strong_rand_bytes(32) |> Base.encode64())
+
+      {:ok, member} = Operately.People.create_person(%{
+        full_name: "Invited Member",
+        email: "invited@example.com",
+        company_id: ctx.company.id,
+        account_id: account.id
+      })
+
+      {:ok, invite_link} =
+        Operately.InviteLinks.create_personal_invite_link(%{
+          company_id: ctx.company.id,
+          author_id: ctx.creator.id,
+          person_id: member.id
+        })
+
+      assert {200, res} =
+               mutation(ctx.conn, [:cli_auth, :join_company], %{
+                 token: invite_link.token,
+                 password: "newPassword123",
+                 password_confirmation: "newPassword123"
+               })
+
+      assert res.status == "authenticated"
+      assert length(res.companies) == 1
+      assert hd(res.companies).id == Paths.company_id(ctx.company)
+      assert is_binary(res.bootstrap_token)
+
+      assert Operately.People.get_account_by_email_and_password("invited@example.com", "newPassword123") != nil
+    end
+
+    test "returns bad_request when passwords don't match", ctx do
+      assert {400, res} =
+               mutation(ctx.conn, [:cli_auth, :join_company], %{
+                 token: "any-token",
+                 password: "password1",
+                 password_confirmation: "password2"
+               })
+
+      assert res.message == "Passwords don't match"
+    end
+
+    test "returns bad_request for invalid personal invite token", ctx do
+      assert {400, res} =
+               mutation(ctx.conn, [:cli_auth, :join_company], %{
+                 token: "invalid-token",
+                 password: "password123",
+                 password_confirmation: "password123"
+               })
+
+      assert res.message == "Invalid token"
+    end
+  end
+
   defp bootstrap_query(conn, token, query_name, inputs) do
     conn
     |> Plug.Conn.put_req_header("authorization", "Bearer #{token}")

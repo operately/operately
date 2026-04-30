@@ -12,8 +12,12 @@ interface GoogleFlowDeps {
 export async function runGoogleFlow(
   baseUrl: string,
   deps: GoogleFlowDeps,
+  inviteToken?: string,
 ): Promise<{ bootstrapToken: string; companies: Company[] }> {
-  const response = (await deps.callInternalMutation(baseUrl, cliAuth.startGoogle, {})) as {
+  const payload: Record<string, unknown> = {};
+  if (inviteToken) payload.invite_token = inviteToken;
+
+  const response = (await deps.callInternalMutation(baseUrl, cliAuth.startGoogle, payload)) as {
     status: string;
     bootstrap_token: string;
     login_url: string;

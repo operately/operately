@@ -47,11 +47,10 @@ defmodule OperatelyWeb.AccountOauthController do
 
     case People.find_or_create_account(account_attrs) do
       {:ok, account} ->
+        {redirect_params, conn} = maybe_handle_invite(conn, account, invite_token, redirect_params)
+
         {conn, cli_auth_session_id} = get_and_clear_cli_auth_session_id(conn)
         maybe_complete_cli_auth(cli_auth_session_id, account)
-
-        {redirect_params, conn} =
-          maybe_handle_invite(conn, account, invite_token, redirect_params)
 
         params = Map.put(redirect_params, "remember_me", "true")
         AccountAuth.log_in_account(conn, account, params)
