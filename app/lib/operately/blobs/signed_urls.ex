@@ -122,16 +122,7 @@ defmodule Operately.Blobs.SignedUrls do
     def presigned_s3_url(method, path, time, expires_in, headers, query_params) when method in [:get, :put] do
       alias Operately.Blobs.S3Config
 
-      host = S3Config.host()
-      scheme = S3Config.scheme()
-      port = S3Config.port()
-      bucket = S3Config.bucket!()
-      config = S3Config.ex_aws_config()
-
-      port = if port == nil, do: "", else: ":#{port}"
-      url = "#{scheme}://#{host}#{port}/#{bucket}/#{path}"
-
-      ExAws.Auth.presigned_url(method, url, :s3, time, config, expires_in, query_params, nil, headers)
+      S3Config.presigned_url(method, path, headers, query_params, time: time, expires_in: expires_in)
     end
 
     def validate_disposition!(disposition) do
