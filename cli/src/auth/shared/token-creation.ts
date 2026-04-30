@@ -4,6 +4,7 @@ import { callInternalMutation, callInternalQuery } from "../../core/internal-api
 import { saveProfile, writeConfig, type CliConfig } from "../config";
 import { cliAuth } from "./api";
 import { handleBootstrapError } from "./errors";
+import { fetchProfileMetadata } from "./profile-metadata";
 import type { Company } from "../types";
 import type { EndpointRegistry } from "../../commands/registry";
 
@@ -34,30 +35,25 @@ export async function createTokenAndSaveProfile(input: TokenCreationInput): Prom
       input.bootstrapToken,
     )) as { token: string; company: Company };
 
+    const metadata = await fetchProfileMetadata({
+      registry: input.registry,
+      callEndpoint: input.callEndpoint,
+      baseUrl: input.runtimeBaseUrl,
+      token: tokenResult.token,
+      timeoutMs: input.timeoutMs,
+      fallbackCompanyName: tokenResult.company.name ?? input.company.name,
+    });
+
     const updated = input.saveProfile(input.config, input.profile, {
       token: tokenResult.token,
       baseUrl: input.baseUrl ?? undefined,
+      name: metadata.name,
+      companyName: metadata.companyName,
     });
     input.writeConfig(updated);
 
-    const getMe = input.registry.find(["people", "get_me"]);
-
-    if (getMe) {
-      const payload = await input.callEndpoint({
-        endpoint: getMe,
-        baseUrl: input.runtimeBaseUrl,
-        token: tokenResult.token,
-        inputs: {},
-        timeoutMs: input.timeoutMs,
-        verbose: false,
-      });
-      const user = payload as { me?: { full_name?: string; email?: string } };
-      const userName = user.me?.full_name || user.me?.email;
-      const displayUrl = updated.profiles[input.profile]?.baseUrl || input.runtimeBaseUrl;
-      input.printSuccess(`Logged in to ${displayUrl} ${userName ? `as ${userName}` : ""}`);
-    } else {
-      input.printSuccess("Authentication successful.");
-    }
+    const displayUrl = updated.profiles[input.profile]?.baseUrl || input.runtimeBaseUrl;
+    input.printSuccess(`Logged in to ${displayUrl} ${metadata.name ? `as ${metadata.name}` : ""}`);
 
     return 0;
   } catch (error) {

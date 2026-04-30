@@ -15,7 +15,7 @@ defmodule OperatelyWeb.CliLoginController do
         if session.status == :pending and not CliAuthSession.expired?(session) do
           redirect_to = Paths.cli_login_success_path(session.id)
 
-          auth_url = build_google_auth_url(redirect_to, params["invite_token"])
+          auth_url = build_google_auth_url(session.id, redirect_to, params)
 
           conn
           |> put_session(@cli_auth_session_key, session.id)
@@ -26,12 +26,17 @@ defmodule OperatelyWeb.CliLoginController do
     end
   end
 
-  defp build_google_auth_url(redirect_to, nil) do
-    "/accounts/auth/google?redirect_to=#{URI.encode_www_form(redirect_to)}"
-  end
+  defp build_google_auth_url(session_id, redirect_to, params) do
+    query =
+      [
+        {"redirect_to", redirect_to},
+        {"invite_token", params["invite_token"]}
+      ]
+      |> maybe_add_test_google_params(session_id, params)
+      |> Enum.reject(fn {_key, value} -> is_nil(value) or value == "" end)
+      |> URI.encode_query()
 
-  defp build_google_auth_url(redirect_to, invite_token) do
-    "/accounts/auth/google?redirect_to=#{URI.encode_www_form(redirect_to)}&invite_token=#{URI.encode_www_form(invite_token)}"
+    "#{auth_route(params)}?#{query}"
   end
 
   def success(conn, %{"id" => id}) do
@@ -136,4 +141,37 @@ defmodule OperatelyWeb.CliLoginController do
     conn
     |> send_resp(404, "Not Found")
   end
+
+  if Application.compile_env(:operately, :test_routes) do
+    defp maybe_add_test_google_params(query, session_id, params) do
+      if use_test_google_route?(params) do
+        # The E2E "browser" is stateless, so pass the CLI auth session id explicitly.
+        query ++
+          [
+            {"account_id", params["account_id"]},
+            {"email", params["email"]},
+            {"name", params["name"]},
+            {"image", params["image"]},
+            {"cli_auth_session_id", session_id}
+          ]
+      else
+        query
+      end
+    end
+
+    defp auth_route(params) do
+      if use_test_google_route?(params), do: "/accounts/auth/test_google", else: "/accounts/auth/google"
+    end
+
+    defp use_test_google_route?(params) do
+      present?(params["account_id"]) or present?(params["email"])
+    end
+  else
+    defp maybe_add_test_google_params(query, _session_id, _params), do: query
+    defp auth_route(_params), do: "/accounts/auth/google"
+  end
+
+  defp present?(nil), do: false
+  defp present?(""), do: false
+  defp present?(_), do: true
 end
