@@ -47,13 +47,16 @@ defmodule OperatelyWeb.AccountOauthController do
 
     case People.find_or_create_account(account_attrs) do
       {:ok, account} ->
-        {redirect_params, conn} = maybe_handle_invite(conn, account, invite_token, redirect_params)
-
         {conn, cli_auth_session_id} = get_and_clear_cli_auth_session_id(conn, params)
-        maybe_complete_cli_auth(cli_auth_session_id, account)
 
-        params = Map.put(redirect_params, "remember_me", "true")
-        AccountAuth.log_in_account(conn, account, params)
+        if cli_auth_session_id do
+          complete_cli_auth_without_browser_login(conn, account, invite_token, cli_auth_session_id, redirect_params)
+        else
+          {redirect_params, conn} = maybe_handle_invite(conn, account, invite_token, redirect_params)
+
+          params = Map.put(redirect_params, "remember_me", "true")
+          AccountAuth.log_in_account(conn, account, params)
+        end
 
       e ->
         Logger.error("Failed to fetch or create account: #{inspect(e)}")
@@ -133,6 +136,23 @@ defmodule OperatelyWeb.AccountOauthController do
     end
   end
 
+  defp complete_cli_auth_without_browser_login(conn, account, invite_token, cli_auth_session_id, redirect_params) do
+    maybe_join_via_invite(account, invite_token)
+    maybe_complete_cli_auth(cli_auth_session_id, account)
+
+    redirect_to = redirect_params["redirect_to"] || Paths.cli_login_success_path(cli_auth_session_id)
+    redirect(conn, to: redirect_to)
+  end
+
+  defp maybe_join_via_invite(_account, nil), do: :ok
+
+  defp maybe_join_via_invite(account, invite_token) do
+    case InviteLinks.join_company_via_invite_link(account, invite_token) do
+      {:ok, _person} -> :ok
+      {:error, _reason} -> :ok
+    end
+  end
+
   defp normalize_invite_token(nil), do: nil
   defp normalize_invite_token(""), do: nil
   defp normalize_invite_token(token), do: token
@@ -166,11 +186,15 @@ defmodule OperatelyWeb.AccountOauthController do
       {conn, redirect_params} = get_and_clear_redirect_params(conn, params)
       {conn, invite_token} = get_and_clear_invite_token(conn, params)
       {conn, cli_auth_session_id} = get_and_clear_cli_auth_session_id(conn, params)
-      {redirect_params, conn} = maybe_handle_invite(conn, account, invite_token, redirect_params)
-      maybe_complete_cli_auth(cli_auth_session_id, account)
-      params = Map.put(redirect_params, "remember_me", "true")
 
-      AccountAuth.log_in_account(conn, account, params)
+      if cli_auth_session_id do
+        complete_cli_auth_without_browser_login(conn, account, invite_token, cli_auth_session_id, redirect_params)
+      else
+        {redirect_params, conn} = maybe_handle_invite(conn, account, invite_token, redirect_params)
+        params = Map.put(redirect_params, "remember_me", "true")
+
+        AccountAuth.log_in_account(conn, account, params)
+      end
     end
 
     defp verify_application_env() do
