@@ -164,6 +164,13 @@ defmodule OperatelyWeb.Api.Goals.CreateTest do
 
       assert binding.access_level == Binding.no_access()
     end
+
+    test "creates goal with description", ctx do
+      assert {200, res} = request(ctx.conn, ctx, %{
+        description: Operately.Support.RichText.rich_text("This is a goal description") |> Jason.encode!(),
+      })
+      assert_goal_created(res)
+    end
   end
 
   #
