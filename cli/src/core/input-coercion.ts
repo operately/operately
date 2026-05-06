@@ -1,3 +1,4 @@
+import * as fs from "fs";
 import { UsageError } from "./parser-types";
 import type { CatalogEndpoint, CatalogField, CatalogTypeRef, CatalogTypes } from "../types/catalog";
 import { isGlobalFlag } from "./flags";
@@ -11,10 +12,11 @@ export function parseEndpointInputs(
   flags: Map<string, unknown[]>,
   types: CatalogTypes,
 ): Record<string, unknown> {
+  const preprocessedFlags = preprocessMarkdownFileFlags(endpoint, flags);
   const rawInputs: Record<string, unknown> = {};
   const fieldNames = new Set(endpoint.inputs.map((field) => field.name));
 
-  for (const [flagKey, values] of flags.entries()) {
+  for (const [flagKey, values] of preprocessedFlags.entries()) {
     if (isGlobalFlag(flagKey)) continue;
 
     const normalizedPath = flagKey.split(".").map(normalizePathSegment);
@@ -30,6 +32,67 @@ export function parseEndpointInputs(
   }
 
   return coerceEndpointInputs(endpoint.inputs, rawInputs, types);
+}
+
+function preprocessMarkdownFileFlags(endpoint: CatalogEndpoint, flags: Map<string, unknown[]>): Map<string, unknown[]> {
+  const fieldsByFlag = new Map(endpoint.inputs.map((field) => [toFlagKey(field.name), field]));
+  const preprocessedFlags = new Map<string, unknown[]>();
+
+  for (const [flagKey, values] of flags.entries()) {
+    if (isGlobalFlag(flagKey)) {
+      preprocessedFlags.set(flagKey, values);
+      continue;
+    }
+
+    if (!flagKey.endsWith("-file")) {
+      preprocessedFlags.set(flagKey, values);
+      continue;
+    }
+
+    const baseFlagKey = flagKey.slice(0, -"-file".length);
+    const field = fieldsByFlag.get(baseFlagKey);
+
+    if (!field) {
+      preprocessedFlags.set(flagKey, values);
+      continue;
+    }
+
+    if (!supportsMarkdownInput(field)) {
+      throw new UsageError(`Flag '--${flagKey}' is only supported for markdown input fields.`);
+    }
+
+    if (flags.has(baseFlagKey)) {
+      throw new UsageError(`Flags '--${baseFlagKey}' and '--${flagKey}' are mutually exclusive.`);
+    }
+
+    if (values.length !== 1) {
+      throw new UsageError(`Flag '--${flagKey}' may only be specified once.`);
+    }
+
+    const pathValue = values[0];
+    if (typeof pathValue !== "string") {
+      throw new UsageError(`Flag '--${flagKey}' must be a file path.`);
+    }
+
+    try {
+      const content = fs.readFileSync(pathValue, "utf8");
+      preprocessedFlags.set(baseFlagKey, [content]);
+    } catch (error) {
+      throw new UsageError(
+        `Failed to read file for '--${flagKey}': ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
+  }
+
+  return preprocessedFlags;
+}
+
+function toFlagKey(fieldName: string): string {
+  return fieldName.replace(/_/g, "-");
+}
+
+function supportsMarkdownInput(field: CatalogField): boolean {
+  return field.type.kind === "named" && field.type.name === "json";
 }
 
 function normalizePathSegment(segment: string): string {
@@ -166,7 +229,7 @@ function coerceFieldValue(
 
   const typeName = typeRef.name;
 
-  // Handle built-in types (string, integer, float, boolean, json)
+  // Handle built-in types (string, integer, float, boolean, rich text)
   if (BUILTIN_TYPES.has(typeName)) {
     return coerceBuiltinType(typeName, value, path);
   }
@@ -259,13 +322,13 @@ function coerceBuiltinType(typeName: string, value: unknown, path: string): unkn
   }
 
   if (typeName === "json") {
-    return coerceJsonType(value, path);
+    return coerceMarkdownInputValue(value, path);
   }
 
   throw new UsageError(`Unknown builtin type '${typeName}'.`);
 }
 
-function coerceJsonType(value: unknown, path: string): string {
+function coerceMarkdownInputValue(value: unknown, path: string): string {
   if (typeof value === "object" && value !== null) {
     return JSON.stringify(value);
   }
@@ -282,7 +345,7 @@ function coerceJsonType(value: unknown, path: string): string {
       const tiptapJson = convertMarkdownToTiptap(value);
       return JSON.stringify(tiptapJson);
     } catch (error) {
-      throw new UsageError(`Failed to parse '${path}' as JSON or markdown: ${error instanceof Error ? error.message : String(error)}`);
+      throw new UsageError(`Failed to parse markdown for '${path}': ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 }
