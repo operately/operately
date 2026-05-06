@@ -19,7 +19,6 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations.Projects.UpdateParentGoal
     %{
       project_id: Paths.project_id(ctx.project),
       goal_id: Paths.goal_id(ctx.goal),
-      goal_name: nil,
     }
   end
 

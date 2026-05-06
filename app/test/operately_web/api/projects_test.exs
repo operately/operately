@@ -1162,7 +1162,6 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert {403, _} = mutation(ctx.conn, [:projects, :update_parent_goal], %{
         project_id: Paths.project_id(ctx.project),
         goal_id: Ecto.UUID.generate(),
-        goal_name: ""
       })
     end
 
@@ -1175,7 +1174,6 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert {200, %{success: true}} = mutation(ctx.conn, [:projects, :update_parent_goal], %{
         project_id: Paths.project_id(ctx.project),
         goal_id: Paths.goal_id(ctx.parent_goal),
-        goal_name: ctx.parent_goal.name
       })
 
       updated_project = Repo.reload(ctx.project)
@@ -1194,7 +1192,6 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert {200, %{success: true}} = mutation(ctx.conn, [:projects, :update_parent_goal], %{
         project_id: Paths.project_id(ctx.project2),
         goal_id: nil,
-        goal_name: nil
       })
 
       updated_project = Repo.reload(ctx.project2)
@@ -1212,7 +1209,6 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert {200, %{success: true}} = mutation(ctx.conn, [:projects, :update_parent_goal], %{
         project_id: Paths.project_id(ctx.project1),
         goal_id: Paths.goal_id(ctx.parent_goal2),
-        goal_name: ctx.parent_goal2.name
       })
 
       count = count_activities(ctx.project1.id, "project_goal_connection")

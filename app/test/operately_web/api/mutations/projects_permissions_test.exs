@@ -261,7 +261,6 @@ defmodule OperatelyWeb.Api.Mutations.ProjectsPermissionsTest do
         assert {code, res} = mutation(ctx.conn, [:projects, :update_parent_goal], %{
           project_id: Paths.project_id(project),
           goal_id: nil,
-          goal_name: nil
         })
         assert code == @test.expected
 
