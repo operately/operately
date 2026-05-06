@@ -17,10 +17,12 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
   defp find_existing_account(%{email: email, image: image}) do
     case Account.get(:system, email: email) do
       {:ok, account} ->
-        {:ok, account} = update_avatar(account, image)
-        {:ok, account, :existing}
+        case update_avatar(account, image) do
+          {:ok, account} -> {:ok, account, :existing}
+          {:error, reason} -> {:error, reason}
+        end
 
-      {:error, _reason} -> {:error, "Not found"}
+      {:error, _reason} -> {:error, :not_found}
     end
   end
 
@@ -38,7 +40,8 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
   defp first_succesfull([strategy | rest], params, on_not_found: on_not_found) do
     case strategy.(params) do
       {:ok, result, source} -> {:ok, result, source}
-      {:error, _reason} -> first_succesfull(rest, params, on_not_found: on_not_found)
+      {:error, :not_found} -> first_succesfull(rest, params, on_not_found: on_not_found)
+      {:error, reason} -> {:error, reason}
     end
   end
 
@@ -55,16 +58,17 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
   defp update_avatar(account, image) do
     people = Operately.Repo.preload(account, :people).people
 
-    Enum.each(people, fn person ->
+    Enum.reduce_while(people, {:ok, account}, fn person, {:ok, account} ->
       cond do
-        person.avatar_blob_id -> :ok
-        person.avatar_url == image -> :ok
+        person.avatar_blob_id -> {:cont, {:ok, account}}
+        person.avatar_url == image -> {:cont, {:ok, account}}
         true ->
-          {:ok, _} = Operately.People.update_person(person, %{avatar_url: image})
+          case Operately.People.update_person(person, %{avatar_url: image}) do
+            {:ok, _person} -> {:cont, {:ok, account}}
+            {:error, reason} -> {:halt, {:error, reason}}
+          end
       end
     end)
-
-    {:ok, account}
   end
 
 end

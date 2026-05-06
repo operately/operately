@@ -2,6 +2,7 @@ defmodule Operately.People.FetchOrCreateAccountOperationTest do
   use OperatelyWeb.TurboCase
 
   import Operately.BlobsFixtures
+  import Mock
   import Operately.PeopleFixtures
 
   describe "avatar syncing" do
@@ -27,6 +28,19 @@ defmodule Operately.People.FetchOrCreateAccountOperationTest do
 
       person = Operately.People.get_person!(ctx.person.id)
       assert person.avatar_url == "https://example.com/google.png"
+    end
+
+    test "returns an error when syncing the avatar fails", ctx do
+      changeset =
+        Ecto.Changeset.change(ctx.person)
+        |> Ecto.Changeset.add_error(:avatar_url, "is invalid")
+
+      attrs = %{email: ctx.account.email, name: ctx.account.full_name, image: "https://example.com/google.png"}
+
+      with_mock Operately.People, [:passthrough], update_person: fn _person, _attrs -> {:error, changeset} end do
+        assert {:error, ^changeset} = Operately.People.FetchOrCreateAccountOperation.call(attrs)
+        assert_called(Operately.People.update_person(:_, :_))
+      end
     end
   end
 
