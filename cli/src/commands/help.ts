@@ -125,10 +125,7 @@ const AUTH_COMMAND_HELP: Record<AuthAction, AuthCommandHelp> = {
       "  The --profile flag is only used if the flow reaches a point where",
       "  the CLI can save an authenticated profile.",
     ],
-    flags: [
-      "--base-url <url>",
-      "--profile <name>",
-    ],
+    flags: ["--base-url <url>", "--profile <name>"],
     examples: [
       "operately auth signup",
       "operately auth signup --base-url https://staging.operately.com --profile staging",
@@ -253,6 +250,7 @@ export function printEndpointHelp(endpoint: CatalogEndpoint, command: string, ty
   let hasContextualDate = false;
   let hasContextualDateNullable = false;
   let hasMarkdown = false;
+  const includeTargets: string[] = [];
 
   const flagRows: string[] =
     endpoint.inputs.length === 0
@@ -295,6 +293,10 @@ export function printEndpointHelp(endpoint: CatalogEndpoint, command: string, ty
 
           if (field.type.kind === "named" && field.type.name === "json") {
             hasMarkdown = true;
+          }
+
+          if (field.name.startsWith("include_")) {
+            includeTargets.push(field.name.replace(/^include_/, ""));
           }
 
           return `  ${flag} <${typeHint}> (${required}${nullable})`;
@@ -341,6 +343,19 @@ export function printEndpointHelp(endpoint: CatalogEndpoint, command: string, ty
   if (hasContextualDate) {
     additionalSections.push("");
     additionalSections.push(...formatContextualDateHelp(hasContextualDateNullable));
+  }
+
+  if (includeTargets.length > 0) {
+    additionalSections.push("");
+    additionalSections.push("Include flag behavior:");
+    additionalSections.push("  These flags request extra data in the response.");
+    additionalSections.push("  If omitted, that data is not returned.");
+    additionalSections.push("  This does not mean the data does not exist; it simply was not preloaded.\n");
+    additionalSections.push("  Included resources for this endpoint:");
+
+    for (const target of includeTargets) {
+      additionalSections.push(`    - ${target}`);
+    }
   }
 
   console.log([...header, ...flagRows, ...additionalSections].join("\n"));
