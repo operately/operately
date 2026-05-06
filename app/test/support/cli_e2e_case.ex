@@ -89,6 +89,12 @@ defmodule Operately.CliE2ECase do
     Path.join([ctx.cli_home, ".operately", "config.json"])
   end
 
+  def create_temp_file!(prefix, contents, extension \\ ".txt") do
+    path = Path.join(System.tmp_dir!(), "#{prefix}-#{System.unique_integer([:positive])}#{extension}")
+    File.write!(path, contents)
+    path
+  end
+
   defp create_cli_home! do
     path = Path.join(System.tmp_dir!(), "operately-cli-e2e-#{System.unique_integer([:positive])}")
     File.mkdir_p!(path)
