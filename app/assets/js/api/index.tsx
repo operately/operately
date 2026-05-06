@@ -2142,6 +2142,8 @@ export type AgentMessageSender = "user" | "ai";
 
 export type AgentMessageStatus = "pending" | "done";
 
+export type CliAuthStatus = "pending" | "authenticated" | "failed" | "no_companies" | "expired";
+
 export type CommentParentType =
   | "project_check_in"
   | "project_retrospective"
@@ -2333,6 +2335,14 @@ export interface ApiTokensListInput {}
 
 export interface ApiTokensListResult {
   apiTokens: ApiToken[];
+}
+
+export interface CliAuthStatusInput {}
+
+export interface CliAuthStatusResult {
+  status: CliAuthStatus;
+  companies: Company[];
+  message?: string | null;
 }
 
 export interface CommentsListInput {
@@ -3307,6 +3317,116 @@ export interface ChangePasswordInput {
 
 export interface ChangePasswordResult {}
 
+export interface CliAuthAuthPasswordInput {
+  email: string;
+  password: string;
+  inviteToken?: string | null;
+}
+
+export interface CliAuthAuthPasswordResult {
+  status: CliAuthStatus;
+  companies: Company[];
+  bootstrapToken?: string | null;
+  message?: string | null;
+}
+
+export interface CliAuthCheckAccountInput {
+  email: string;
+}
+
+export interface CliAuthCheckAccountResult {
+  exists: boolean;
+  hasPassword?: boolean | null;
+}
+
+export interface CliAuthCreateCompanyInput {
+  companyName: string;
+  title?: string | null;
+}
+
+export interface CliAuthCreateCompanyResult {
+  company: Company;
+  person: Person;
+}
+
+export interface CliAuthCreateCompanyOnNonEmptyInput {
+  companyName: string;
+  title?: string | null;
+}
+
+export interface CliAuthCreateCompanyOnNonEmptyResult {
+  company: Company;
+  person: Person;
+}
+
+export interface CliAuthCreateTokenInput {
+  companyId: CompanyId;
+  readOnly?: boolean;
+}
+
+export interface CliAuthCreateTokenResult {
+  company: Company;
+  apiToken: ApiToken;
+  token: string;
+}
+
+export interface CliAuthJoinCompanyInput {
+  token: string;
+  password: string;
+  passwordConfirmation: string;
+}
+
+export interface CliAuthJoinCompanyResult {
+  status: CliAuthStatus;
+  companies: Company[];
+  bootstrapToken?: string | null;
+  message?: string | null;
+}
+
+export interface CliAuthJoinWithInviteInput {
+  token: string;
+}
+
+export interface CliAuthJoinWithInviteResult {
+  company: Company;
+}
+
+export interface CliAuthSignupInput {
+  email: string;
+  code: string;
+  fullName: string;
+  password: string;
+}
+
+export interface CliAuthSignupResult {
+  status: CliAuthStatus;
+  companies: Company[];
+  bootstrapToken?: string | null;
+  message?: string | null;
+}
+
+export interface CliAuthStartGoogleInput {
+  inviteToken?: string | null;
+}
+
+export interface CliAuthStartGoogleResult {
+  status: CliAuthStatus;
+  companies: Company[];
+  bootstrapToken: string;
+  loginUrl: string;
+  pollIntervalMs: number;
+}
+
+export interface CliAuthStartGoogleSignupInput {}
+
+export interface CliAuthStartGoogleSignupResult {
+  status: CliAuthStatus;
+  companies: Company[];
+  bootstrapToken: string;
+  loginUrl: string;
+  pollIntervalMs: number;
+}
+
 export interface CommentsCreateInput {
   entityId: Id;
   entityType: CommentParentType;
@@ -4206,20 +4326,20 @@ export interface ProjectsDeleteResult {
   project: Project;
 }
 
-export interface ProjectsDeleteContributorInput {
-  contribId: string;
-}
-
-export interface ProjectsDeleteContributorResult {
-  projectContributor: ProjectContributor;
-}
-
 export interface ProjectsDeleteCheckInInput {
   checkInId: Id;
 }
 
 export interface ProjectsDeleteCheckInResult {
   success: boolean;
+}
+
+export interface ProjectsDeleteContributorInput {
+  contribId: string;
+}
+
+export interface ProjectsDeleteContributorResult {
+  projectContributor: ProjectContributor;
 }
 
 export interface ProjectsDeleteKeyResourceInput {
@@ -4416,7 +4536,6 @@ export interface ProjectsUpdateNameResult {
 export interface ProjectsUpdateParentGoalInput {
   projectId: Id;
   goalId: Id | null;
-  goalName: string | null;
 }
 
 export interface ProjectsUpdateParentGoalResult {
@@ -4843,6 +4962,56 @@ class ApiNamespaceCompanyTransfers {
 
   async startImport(input: CompanyTransfersStartImportInput): Promise<CompanyTransfersStartImportResult> {
     return this.client.post("/company_transfers/start_import", input);
+  }
+}
+
+class ApiNamespaceCliAuth {
+  constructor(private client: ApiClient) {}
+
+  async status(input: CliAuthStatusInput): Promise<CliAuthStatusResult> {
+    return this.client.get("/cli_auth/status", input);
+  }
+
+  async authPassword(input: CliAuthAuthPasswordInput): Promise<CliAuthAuthPasswordResult> {
+    return this.client.post("/cli_auth/auth_password", input);
+  }
+
+  async checkAccount(input: CliAuthCheckAccountInput): Promise<CliAuthCheckAccountResult> {
+    return this.client.post("/cli_auth/check_account", input);
+  }
+
+  async createCompany(input: CliAuthCreateCompanyInput): Promise<CliAuthCreateCompanyResult> {
+    return this.client.post("/cli_auth/create_company", input);
+  }
+
+  async createCompanyOnNonEmpty(
+    input: CliAuthCreateCompanyOnNonEmptyInput,
+  ): Promise<CliAuthCreateCompanyOnNonEmptyResult> {
+    return this.client.post("/cli_auth/create_company_on_non_empty", input);
+  }
+
+  async createToken(input: CliAuthCreateTokenInput): Promise<CliAuthCreateTokenResult> {
+    return this.client.post("/cli_auth/create_token", input);
+  }
+
+  async joinCompany(input: CliAuthJoinCompanyInput): Promise<CliAuthJoinCompanyResult> {
+    return this.client.post("/cli_auth/join_company", input);
+  }
+
+  async joinWithInvite(input: CliAuthJoinWithInviteInput): Promise<CliAuthJoinWithInviteResult> {
+    return this.client.post("/cli_auth/join_with_invite", input);
+  }
+
+  async signup(input: CliAuthSignupInput): Promise<CliAuthSignupResult> {
+    return this.client.post("/cli_auth/signup", input);
+  }
+
+  async startGoogle(input: CliAuthStartGoogleInput): Promise<CliAuthStartGoogleResult> {
+    return this.client.post("/cli_auth/start_google", input);
+  }
+
+  async startGoogleSignup(input: CliAuthStartGoogleSignupInput): Promise<CliAuthStartGoogleSignupResult> {
+    return this.client.post("/cli_auth/start_google_signup", input);
   }
 }
 
@@ -5647,12 +5816,12 @@ class ApiNamespaceProjects {
     return this.client.post("/projects/delete", input);
   }
 
-  async deleteContributor(input: ProjectsDeleteContributorInput): Promise<ProjectsDeleteContributorResult> {
-    return this.client.post("/projects/delete_contributor", input);
-  }
-
   async deleteCheckIn(input: ProjectsDeleteCheckInInput): Promise<ProjectsDeleteCheckInResult> {
     return this.client.post("/projects/delete_check_in", input);
+  }
+
+  async deleteContributor(input: ProjectsDeleteContributorInput): Promise<ProjectsDeleteContributorResult> {
+    return this.client.post("/projects/delete_contributor", input);
   }
 
   async deleteKeyResource(input: ProjectsDeleteKeyResourceInput): Promise<ProjectsDeleteKeyResourceResult> {
@@ -5946,6 +6115,7 @@ export class ApiClient {
   private basePath: string;
   private headers: any;
   public apiNamespaceCompanyTransfers: ApiNamespaceCompanyTransfers;
+  public apiNamespaceCliAuth: ApiNamespaceCliAuth;
   public apiNamespaceApiTokens: ApiNamespaceApiTokens;
   public apiNamespaceInvitations: ApiNamespaceInvitations;
   public apiNamespaceFiles: ApiNamespaceFiles;
@@ -5966,6 +6136,7 @@ export class ApiClient {
 
   constructor() {
     this.apiNamespaceCompanyTransfers = new ApiNamespaceCompanyTransfers(this);
+    this.apiNamespaceCliAuth = new ApiNamespaceCliAuth(this);
     this.apiNamespaceApiTokens = new ApiNamespaceApiTokens(this);
     this.apiNamespaceInvitations = new ApiNamespaceInvitations(this);
     this.apiNamespaceFiles = new ApiNamespaceFiles(this);
@@ -6308,6 +6479,74 @@ export default {
     useStartExport: () =>
       useMutation<CompanyTransfersStartExportInput, CompanyTransfersStartExportResult>((input) =>
         defaultApiClient.apiNamespaceCompanyTransfers.startExport(input),
+      ),
+  },
+
+  cli_auth: {
+    status: (input: CliAuthStatusInput) => defaultApiClient.apiNamespaceCliAuth.status(input),
+    useStatus: (input: CliAuthStatusInput) =>
+      useQuery<CliAuthStatusResult>(() => defaultApiClient.apiNamespaceCliAuth.status(input)),
+
+    startGoogleSignup: (input: CliAuthStartGoogleSignupInput) =>
+      defaultApiClient.apiNamespaceCliAuth.startGoogleSignup(input),
+    useStartGoogleSignup: () =>
+      useMutation<CliAuthStartGoogleSignupInput, CliAuthStartGoogleSignupResult>((input) =>
+        defaultApiClient.apiNamespaceCliAuth.startGoogleSignup(input),
+      ),
+
+    createToken: (input: CliAuthCreateTokenInput) => defaultApiClient.apiNamespaceCliAuth.createToken(input),
+    useCreateToken: () =>
+      useMutation<CliAuthCreateTokenInput, CliAuthCreateTokenResult>((input) =>
+        defaultApiClient.apiNamespaceCliAuth.createToken(input),
+      ),
+
+    createCompany: (input: CliAuthCreateCompanyInput) => defaultApiClient.apiNamespaceCliAuth.createCompany(input),
+    useCreateCompany: () =>
+      useMutation<CliAuthCreateCompanyInput, CliAuthCreateCompanyResult>((input) =>
+        defaultApiClient.apiNamespaceCliAuth.createCompany(input),
+      ),
+
+    joinWithInvite: (input: CliAuthJoinWithInviteInput) => defaultApiClient.apiNamespaceCliAuth.joinWithInvite(input),
+    useJoinWithInvite: () =>
+      useMutation<CliAuthJoinWithInviteInput, CliAuthJoinWithInviteResult>((input) =>
+        defaultApiClient.apiNamespaceCliAuth.joinWithInvite(input),
+      ),
+
+    joinCompany: (input: CliAuthJoinCompanyInput) => defaultApiClient.apiNamespaceCliAuth.joinCompany(input),
+    useJoinCompany: () =>
+      useMutation<CliAuthJoinCompanyInput, CliAuthJoinCompanyResult>((input) =>
+        defaultApiClient.apiNamespaceCliAuth.joinCompany(input),
+      ),
+
+    startGoogle: (input: CliAuthStartGoogleInput) => defaultApiClient.apiNamespaceCliAuth.startGoogle(input),
+    useStartGoogle: () =>
+      useMutation<CliAuthStartGoogleInput, CliAuthStartGoogleResult>((input) =>
+        defaultApiClient.apiNamespaceCliAuth.startGoogle(input),
+      ),
+
+    checkAccount: (input: CliAuthCheckAccountInput) => defaultApiClient.apiNamespaceCliAuth.checkAccount(input),
+    useCheckAccount: () =>
+      useMutation<CliAuthCheckAccountInput, CliAuthCheckAccountResult>((input) =>
+        defaultApiClient.apiNamespaceCliAuth.checkAccount(input),
+      ),
+
+    createCompanyOnNonEmpty: (input: CliAuthCreateCompanyOnNonEmptyInput) =>
+      defaultApiClient.apiNamespaceCliAuth.createCompanyOnNonEmpty(input),
+    useCreateCompanyOnNonEmpty: () =>
+      useMutation<CliAuthCreateCompanyOnNonEmptyInput, CliAuthCreateCompanyOnNonEmptyResult>((input) =>
+        defaultApiClient.apiNamespaceCliAuth.createCompanyOnNonEmpty(input),
+      ),
+
+    authPassword: (input: CliAuthAuthPasswordInput) => defaultApiClient.apiNamespaceCliAuth.authPassword(input),
+    useAuthPassword: () =>
+      useMutation<CliAuthAuthPasswordInput, CliAuthAuthPasswordResult>((input) =>
+        defaultApiClient.apiNamespaceCliAuth.authPassword(input),
+      ),
+
+    signup: (input: CliAuthSignupInput) => defaultApiClient.apiNamespaceCliAuth.signup(input),
+    useSignup: () =>
+      useMutation<CliAuthSignupInput, CliAuthSignupResult>((input) =>
+        defaultApiClient.apiNamespaceCliAuth.signup(input),
       ),
   },
 
@@ -7191,12 +7430,6 @@ export default {
         defaultApiClient.apiNamespaceProjects.deleteContributor(input),
       ),
 
-    deleteCheckIn: (input: ProjectsDeleteCheckInInput) => defaultApiClient.apiNamespaceProjects.deleteCheckIn(input),
-    useDeleteCheckIn: () =>
-      useMutation<ProjectsDeleteCheckInInput, ProjectsDeleteCheckInResult>((input) =>
-        defaultApiClient.apiNamespaceProjects.deleteCheckIn(input),
-      ),
-
     updateDueDate: (input: ProjectsUpdateDueDateInput) => defaultApiClient.apiNamespaceProjects.updateDueDate(input),
     useUpdateDueDate: () =>
       useMutation<ProjectsUpdateDueDateInput, ProjectsUpdateDueDateResult>((input) =>
@@ -7221,6 +7454,12 @@ export default {
     useUpdateRetrospective: () =>
       useMutation<ProjectsUpdateRetrospectiveInput, ProjectsUpdateRetrospectiveResult>((input) =>
         defaultApiClient.apiNamespaceProjects.updateRetrospective(input),
+      ),
+
+    deleteCheckIn: (input: ProjectsDeleteCheckInInput) => defaultApiClient.apiNamespaceProjects.deleteCheckIn(input),
+    useDeleteCheckIn: () =>
+      useMutation<ProjectsDeleteCheckInInput, ProjectsDeleteCheckInResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.deleteCheckIn(input),
       ),
 
     moveToSpace: (input: ProjectsMoveToSpaceInput) => defaultApiClient.apiNamespaceProjects.moveToSpace(input),
