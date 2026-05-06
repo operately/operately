@@ -29,7 +29,7 @@ defmodule Operately.Operations.GoalCreation do
         reviewer_id: attrs[:reviewer_id],
         timeframe: attrs[:timeframe] || default_timeframe(),
         parent_goal_id: attrs[:parent_goal_id],
-        description: attrs[:description] && Jason.decode!(attrs[:description]),
+        description: attrs[:description],
         creator_id: creator.id,
         next_update_scheduled_at: Operately.Time.first_of_next_month(Date.utc_today())
       })
