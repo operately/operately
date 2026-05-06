@@ -315,7 +315,6 @@ defmodule OperatelyWeb.Api.Projects do
     inputs do
       field :project_id, :id, null: false
       field :goal_id, :id, null: true
-      field :goal_name, :string, null: true
     end
 
     outputs do
@@ -330,12 +329,14 @@ defmodule OperatelyWeb.Api.Projects do
       |> Steps.update_parent_goal(inputs.goal_id)
       |> Steps.find_previous_goal()
       |> Steps.save_activity(:project_goal_connection, fn changes ->
+        goal = changes.updated_project.goal
+
         %{
           company_id: changes.project.company_id,
           space_id: changes.project.group_id,
           project_id: changes.project.id,
           goal_id: inputs.goal_id,
-          goal_name: inputs.goal_name,
+          goal_name: goal && goal.name,
           previous_goal_id: changes.previous_goal && changes.previous_goal.id,
           previous_goal_name: changes.previous_goal && changes.previous_goal.name,
         }
@@ -909,8 +910,9 @@ defmodule OperatelyWeb.Api.Projects do
     end
 
     def update_parent_goal(multi, goal_id) do
-      Ecto.Multi.update(multi, :updated_project, fn %{project: project} ->
-        Operately.Projects.Project.changeset(project, %{goal_id: goal_id})
+      Ecto.Multi.run(multi, :updated_project, fn _repo, %{project: project} ->
+        {:ok, project} = Operately.Projects.update_project(project, %{goal_id: goal_id})
+        {:ok, Repo.preload(project, :goal)}
       end)
     end
 

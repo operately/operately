@@ -114,7 +114,6 @@ function Page() {
       Api.projects.updateParentGoal({
         projectId: project.id,
         goalId: v && v.id,
-        goalName: v && v.name,
       }),
     onError: () => showErrorToast("Network Error", "Reverted the parent goal to its previous value."),
   });
