@@ -7,12 +7,14 @@ defmodule OperatelyWeb.Api.Internal do
       {:mutation, "join_company"},
       {:mutation, "cli_auth/auth_password"},
       {:mutation, "cli_auth/start_google"},
+      {:mutation, "cli_auth/start_google_signup"},
       {:mutation, "cli_auth/create_token"},
       {:mutation, "cli_auth/check_account"},
       {:mutation, "cli_auth/signup"},
       {:mutation, "cli_auth/create_company"},
       {:mutation, "cli_auth/create_company_on_non_empty"},
       {:mutation, "cli_auth/join_company"},
+      {:mutation, "cli_auth/join_with_invite"},
       {:mutation, "create_email_activation_code"},
       {:mutation, "create_account"},
       {:mutation, "request_password_reset"},
@@ -35,7 +37,8 @@ defmodule OperatelyWeb.Api.Internal do
       {:query, "cli_auth/status"},
       {:mutation, "cli_auth/create_token"},
       {:mutation, "cli_auth/create_company"},
-      {:mutation, "cli_auth/create_company_on_non_empty"}
+      {:mutation, "cli_auth/create_company_on_non_empty"},
+      {:mutation, "cli_auth/join_with_invite"}
     ]
   )
 

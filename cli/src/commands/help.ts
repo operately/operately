@@ -114,12 +114,16 @@ const AUTH_COMMAND_HELP: Record<AuthAction, AuthCommandHelp> = {
   signup: {
     usage: "operately auth signup [--base-url <url>] [--profile <name>]",
     description: [
-      "Sign up and create a new company on an empty instance",
+      "Create a new account, then create or join a company",
       "",
       "  Interactive flow: run 'operately auth signup' and follow prompts.",
       `     You will be asked for a base URL (default: ${DEFAULT_BASE_URL}),`,
-      "     a profile name (default: default), your email, a verification",
-      "     code, full name, password, and company name.",
+      "     a signup method (email/password or Google OAuth), and then",
+      "     whether to create a company, join with an invite token,",
+      "     or do that later.",
+      "",
+      "  The --profile flag is only used if the flow reaches a point where",
+      "  the CLI can save an authenticated profile.",
     ],
     flags: [
       "--base-url <url>",

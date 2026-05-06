@@ -28,7 +28,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :last_used_at, :datetime, null: true
   end
 
-  enum :cli_auth_status, values: [:pending, :authenticated, :no_companies, :expired]
+  enum :cli_auth_status, values: [:pending, :authenticated, :failed, :no_companies, :expired]
 
   enum :account_theme, values: Operately.People.Account.valid_themes()
 
