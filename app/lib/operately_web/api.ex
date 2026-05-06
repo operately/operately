@@ -362,12 +362,14 @@ defmodule OperatelyWeb.Api do
 
         mutation(:auth_password, OperatelyWeb.Api.CliAuth.AuthPassword)
         mutation(:start_google, OperatelyWeb.Api.CliAuth.StartGoogle)
+        mutation(:start_google_signup, OperatelyWeb.Api.CliAuth.StartGoogleSignup)
         mutation(:create_token, OperatelyWeb.Api.CliAuth.CreateToken)
         mutation(:check_account, OperatelyWeb.Api.CliAuth.CheckAccount)
         mutation(:signup, OperatelyWeb.Api.CliAuth.Signup)
         mutation(:create_company, OperatelyWeb.Api.CliAuth.CreateCompany)
         mutation(:create_company_on_non_empty, OperatelyWeb.Api.CliAuth.CreateCompanyOnNonEmpty)
         mutation(:join_company, OperatelyWeb.Api.CliAuth.JoinCompany)
+        mutation(:join_with_invite, OperatelyWeb.Api.CliAuth.JoinWithInvite)
       end
 
       namespace(:company_transfers) do

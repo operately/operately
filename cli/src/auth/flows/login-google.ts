@@ -1,5 +1,5 @@
 import { callInternalMutation, callInternalQuery } from "../../core/internal-api";
-import { cliAuth, openExternalUrl } from "../shared/api";
+import { cliAuth } from "../shared/api";
 import { sleep } from "../shared/errors";
 import type { Company } from "../types";
 
@@ -12,12 +12,15 @@ interface GoogleFlowDeps {
 export async function runGoogleFlow(
   baseUrl: string,
   deps: GoogleFlowDeps,
-  inviteToken?: string,
+  options: {
+    inviteToken?: string;
+    startPath?: string;
+  } = {},
 ): Promise<{ bootstrapToken: string; companies: Company[] }> {
   const payload: Record<string, unknown> = {};
-  if (inviteToken) payload.invite_token = inviteToken;
+  if (options.inviteToken) payload.invite_token = options.inviteToken;
 
-  const response = (await deps.callInternalMutation(baseUrl, cliAuth.startGoogle, payload)) as {
+  const response = (await deps.callInternalMutation(baseUrl, options.startPath || cliAuth.startGoogle, payload)) as {
     status: string;
     bootstrap_token: string;
     login_url: string;
@@ -67,6 +70,10 @@ async function pollGoogleStatus(
 
     if (status.status === "no_companies") {
       return { bootstrapToken, companies: [] };
+    }
+
+    if (status.status === "failed") {
+      throw new Error(status.message || "Authentication failed. Please try again.");
     }
 
     if (status.status === "expired") {

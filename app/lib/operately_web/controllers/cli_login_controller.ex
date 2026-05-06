@@ -56,6 +56,7 @@ defmodule OperatelyWeb.CliLoginController do
       CliAuthSession.expired?(session) -> "Authentication Expired"
       session.status == :pending -> "Authentication In Progress"
       CliAuthSession.no_companies?(session) -> "No Companies Found"
+      session.status == :failed -> "Authentication Failed"
       true -> "Authentication Complete"
     end
   end
@@ -65,6 +66,7 @@ defmodule OperatelyWeb.CliLoginController do
       CliAuthSession.expired?(session) -> "This authentication session has expired. Please return to the CLI and try again."
       session.status == :pending -> "Authentication is still in progress. Please complete the authentication in your browser."
       CliAuthSession.no_companies?(session) -> "Your account is not associated with any companies. Please contact your administrator."
+      session.status == :failed -> CliAuthSession.failure_message(session)
       true -> "Authentication complete. Return to the CLI to finish the setup."
     end
   end
@@ -166,12 +168,12 @@ defmodule OperatelyWeb.CliLoginController do
     defp use_test_google_route?(params) do
       present?(params["account_id"]) or present?(params["email"])
     end
+
+    defp present?(nil), do: false
+    defp present?(""), do: false
+    defp present?(_), do: true
   else
     defp maybe_add_test_google_params(query, _session_id, _params), do: query
     defp auth_route(_params), do: "/accounts/auth/google"
   end
-
-  defp present?(nil), do: false
-  defp present?(""), do: false
-  defp present?(_), do: true
 end

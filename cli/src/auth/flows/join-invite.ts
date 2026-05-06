@@ -195,7 +195,7 @@ async function handlePersonalInvite(
       callInternalMutation: d.callInternalMutation,
       callInternalQuery: d.callInternalQuery,
       openUrl: d.openUrl,
-    }, inviteToken);
+    }, { inviteToken });
     bootstrapToken = result.bootstrapToken;
   }
 
@@ -250,7 +250,7 @@ async function handleCompanyWideInvite(
       callInternalMutation: d.callInternalMutation,
       callInternalQuery: d.callInternalQuery,
       openUrl: d.openUrl,
-    }, inviteToken);
+    }, { inviteToken });
     bootstrapToken = result.bootstrapToken;
     companies = result.companies;
   }

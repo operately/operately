@@ -8,18 +8,21 @@ defmodule Operately.People.CliAuthSession do
   alias Operately.Repo
 
   @valid_auth_methods [:password, :google]
+  @valid_intents [:login, :signup]
   @valid_statuses [:pending, :authenticated, :failed, :consumed]
   @token_prefix "opbs_"
   @token_rand_size 32
   @token_ttl_seconds 10 * 60
   @poll_interval_ms 1_000
   @no_companies_reason "no_companies"
+  @existing_account_reason "existing_account"
 
   schema "cli_auth_sessions" do
     belongs_to :account, Account
 
     field :token_hash, :binary
     field :auth_method, Ecto.Enum, values: @valid_auth_methods
+    field :intent, Ecto.Enum, values: @valid_intents
     field :status, Ecto.Enum, values: @valid_statuses
     field :failure_reason, :string
     field :expires_at, :utc_datetime
@@ -28,14 +31,30 @@ defmodule Operately.People.CliAuthSession do
   end
 
   def changeset(session, attrs) do
+    attrs =
+      cond do
+        Map.has_key?(attrs, :intent) ->
+          attrs
+
+        Map.has_key?(attrs, "intent") ->
+          attrs
+
+        session.intent ->
+          attrs
+
+        true ->
+          Map.put(attrs, :intent, :login)
+      end
+
     session
-    |> cast(attrs, [:account_id, :token_hash, :auth_method, :status, :failure_reason, :expires_at])
-    |> validate_required([:token_hash, :auth_method, :status, :expires_at])
+    |> cast(attrs, [:account_id, :token_hash, :auth_method, :intent, :status, :failure_reason, :expires_at])
+    |> validate_required([:token_hash, :auth_method, :intent, :status, :expires_at])
     |> assoc_constraint(:account)
     |> unique_constraint(:token_hash)
   end
 
-  def create_authenticated_session(%Account{} = account, auth_method \\ :password) when auth_method in @valid_auth_methods do
+  def create_authenticated_session(%Account{} = account, auth_method \\ :password, intent \\ :login)
+      when auth_method in @valid_auth_methods and intent in @valid_intents do
     {raw_token, token_hash} = build_bootstrap_token()
 
     %CliAuthSession{}
@@ -43,6 +62,7 @@ defmodule Operately.People.CliAuthSession do
       account_id: account.id,
       token_hash: token_hash,
       auth_method: auth_method,
+      intent: intent,
       status: :authenticated,
       expires_at: expires_at()
     })
@@ -53,13 +73,14 @@ defmodule Operately.People.CliAuthSession do
     end
   end
 
-  def create_pending_google_session do
+  def create_pending_google_session(intent \\ :login) when intent in @valid_intents do
     {raw_token, token_hash} = build_bootstrap_token()
 
     %CliAuthSession{}
     |> changeset(%{
       token_hash: token_hash,
       auth_method: :google,
+      intent: intent,
       status: :pending,
       expires_at: expires_at()
     })
@@ -102,7 +123,8 @@ defmodule Operately.People.CliAuthSession do
 
   def authenticate(_), do: {:error, :unauthorized}
 
-  def complete_google_auth(%CliAuthSession{} = session, %Account{} = account) do
+  def complete_google_auth(%CliAuthSession{} = session, %Account{} = account, account_origin \\ :existing)
+      when account_origin in [:created, :existing] do
     cond do
       consumed?(session) ->
         {:error, :consumed}
@@ -113,14 +135,33 @@ defmodule Operately.People.CliAuthSession do
       session.status != :pending ->
         {:ok, session}
 
-      eligible_companies(account) == [] ->
+      signup?(session) and account_origin != :created ->
         session
         |> changeset(%{
           account_id: account.id,
           status: :failed,
-          failure_reason: @no_companies_reason
+          failure_reason: @existing_account_reason
         })
         |> Repo.update()
+
+      eligible_companies(account) == [] ->
+        if signup?(session) do
+          session
+          |> changeset(%{
+            account_id: account.id,
+            status: :authenticated,
+            failure_reason: nil
+          })
+          |> Repo.update()
+        else
+          session
+          |> changeset(%{
+            account_id: account.id,
+            status: :failed,
+            failure_reason: @no_companies_reason
+          })
+          |> Repo.update()
+        end
 
       true ->
         session
@@ -145,8 +186,21 @@ defmodule Operately.People.CliAuthSession do
 
   def poll_interval_ms, do: @poll_interval_ms
   def no_companies_message, do: "This account is not a member of any companies. Join a company in the browser before using the CLI."
+  def existing_account_message, do: "An account already exists for this Google account. Use `operately auth login` or `operately auth join` instead."
   def expired_message, do: "This authentication session has expired. Please start again from the CLI."
   def no_companies_reason, do: @no_companies_reason
+  def existing_account_reason, do: @existing_account_reason
+
+  def failure_message(%CliAuthSession{} = session) do
+    case session.failure_reason do
+      @no_companies_reason -> no_companies_message()
+      @existing_account_reason -> existing_account_message()
+      _ -> "Authentication failed. Please try again from the CLI."
+    end
+  end
+
+  def signup?(%CliAuthSession{intent: :signup}), do: true
+  def signup?(_), do: false
 
   def expired?(%CliAuthSession{} = session) do
     DateTime.compare(session.expires_at, DateTime.utc_now() |> DateTime.truncate(:second)) != :gt
@@ -159,6 +213,9 @@ defmodule Operately.People.CliAuthSession do
 
   def no_companies?(%CliAuthSession{status: :failed, failure_reason: @no_companies_reason}), do: true
   def no_companies?(_), do: false
+
+  def existing_account?(%CliAuthSession{status: :failed, failure_reason: @existing_account_reason}), do: true
+  def existing_account?(_), do: false
 
   defp build_bootstrap_token do
     raw_token =

@@ -160,6 +160,53 @@ defmodule OperatelyWeb.Api.CliAuth do
     end
   end
 
+  defmodule StartGoogleSignup do
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
+
+    alias Operately.People.CliAuthSession
+    alias OperatelyWeb.Paths
+
+    inputs do
+    end
+
+    outputs do
+      field :status, :cli_auth_status
+      field :companies, list_of(:company)
+      field :bootstrap_token, :string, null: false
+      field :login_url, :string, null: false
+      field :poll_interval_ms, :integer, null: false
+    end
+
+    def call(_conn, _inputs) do
+      with {:ok, :allowed} <- check_signup_allowed(),
+           {:ok, session, raw_token} <- CliAuthSession.create_pending_google_session(:signup) do
+        {:ok,
+         %{
+           status: :pending,
+           companies: [],
+           bootstrap_token: raw_token,
+           login_url: Paths.cli_login_path(session.id) |> Paths.to_url(),
+           poll_interval_ms: CliAuthSession.poll_interval_ms()
+         }}
+      else
+        {:error, :forbidden} ->
+          {:error, :forbidden}
+
+        {:error, _changeset} ->
+          {:error, :internal_server_error}
+      end
+    end
+
+    defp check_signup_allowed do
+      if Application.get_env(:operately, :allow_login_with_google) do
+        {:ok, :allowed}
+      else
+        {:error, :forbidden}
+      end
+    end
+  end
+
   defmodule JoinCompany do
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
@@ -290,10 +337,18 @@ defmodule OperatelyWeb.Api.CliAuth do
                message: CliAuthSession.no_companies_message()
              }}
 
+          session.status == :failed ->
+            {:ok,
+             %{
+               status: :failed,
+               companies: [],
+               message: CliAuthSession.failure_message(session)
+             }}
+
           account ->
             companies = CliAuthSession.eligible_companies(account)
 
-            if companies == [] do
+            if companies == [] and not CliAuthSession.signup?(session) do
               {:ok,
                %{
                  status: :no_companies,
@@ -320,9 +375,6 @@ defmodule OperatelyWeb.Api.CliAuth do
     defp validate_status_session(session) do
       cond do
         CliAuthSession.consumed?(session) ->
-          {:error, :unauthorized}
-
-        session.status == :failed and not CliAuthSession.no_companies?(session) ->
           {:error, :unauthorized}
 
         true ->
@@ -430,7 +482,6 @@ defmodule OperatelyWeb.Api.CliAuth do
       field :code, :string
       field :full_name, :string
       field :password, :string
-      field? :invite_token, :string, null: true
     end
 
     outputs do
@@ -441,9 +492,9 @@ defmodule OperatelyWeb.Api.CliAuth do
     end
 
     def call(_conn, inputs) do
-      with {:ok, account, invite_context} <- AccountSigningUp.run(inputs.full_name, inputs.email, inputs.password, inputs.code, inputs[:invite_token]),
-           {:ok, _session, raw_token} <- CliAuthSession.create_authenticated_session(account) do
-        build_response(account, invite_context, raw_token)
+      with {:ok, account, _invite_context} <- AccountSigningUp.run(inputs.full_name, inputs.email, inputs.password, inputs.code),
+           {:ok, _session, raw_token} <- CliAuthSession.create_authenticated_session(account, :password, :signup) do
+        build_response(account, raw_token)
       else
         {:error, :signup_not_allowed} ->
           {:error, :forbidden}
@@ -470,36 +521,15 @@ defmodule OperatelyWeb.Api.CliAuth do
       end
     end
 
-    defp build_response(account, invite_context, raw_token) do
+    defp build_response(account, raw_token) do
       companies = CliAuthSession.eligible_companies(account)
 
-      cond do
-        invite_context.error ->
-          {:ok,
-           %{
-             status: :no_companies,
-             companies: [],
-             bootstrap_token: raw_token,
-             message: invite_context.error
-           }}
-
-        companies == [] ->
-          {:ok,
-           %{
-             status: :no_companies,
-             companies: [],
-             bootstrap_token: raw_token,
-             message: CliAuthSession.no_companies_message()
-           }}
-
-        true ->
-          {:ok,
-           %{
-             status: :authenticated,
-             companies: Serializer.serialize(companies, level: :essential),
-             bootstrap_token: raw_token
-           }}
-      end
+      {:ok,
+       %{
+         status: :authenticated,
+         companies: Serializer.serialize(companies, level: :essential),
+         bootstrap_token: raw_token
+       }}
     end
   end
 
@@ -616,6 +646,62 @@ defmodule OperatelyWeb.Api.CliAuth do
 
         nil ->
           {:error, :unauthorized}
+      end
+    end
+  end
+
+  defmodule JoinWithInvite do
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
+
+    alias Operately.People.{Account, CliAuthSession}
+    alias Operately.Repo
+
+    inputs do
+      field :token, :string, null: false
+    end
+
+    outputs do
+      field :company, :company, null: false
+    end
+
+    def call(conn, inputs) do
+      session = conn.assigns[:current_cli_auth_session]
+      account = conn.assigns[:current_account]
+
+      with :ok <- Steps.validate_token_creation_session(session),
+           %Account{} <- account,
+           {:ok, person} <- Operately.InviteLinks.join_company_via_invite_link(account, inputs.token) do
+        company = Repo.preload(person, :company).company
+
+        {:ok,
+         %{
+           company: Serializer.serialize(company, level: :essential)
+         }}
+      else
+        {:error, :unauthorized} ->
+          {:error, :unauthorized}
+
+        nil ->
+          {:error, :unauthorized}
+
+        {:error, :invite_token_not_found} ->
+          {:error, :bad_request, "Invalid invite link"}
+
+        {:error, :invite_token_inactive} ->
+          {:error, :bad_request, "This invite link is no longer valid"}
+
+        {:error, :invite_token_domain_not_allowed} ->
+          {:error, :bad_request, "This invite link is restricted to specific email domains"}
+
+        {:error, :invite_token_invalid} ->
+          {:error, :bad_request, "This invite link is no longer valid"}
+
+        {:error, :person_creation_failed} ->
+          {:error, :bad_request, "Unable to add you to this company."}
+
+        {:error, :invite_link_update_failed} ->
+          {:error, :bad_request, "Something went wrong while using this invite link."}
       end
     end
   end
