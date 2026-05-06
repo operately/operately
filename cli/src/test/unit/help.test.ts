@@ -68,3 +68,13 @@ test("omits include guidance when an endpoint has no include flags", () => {
   assert.ok(!output.includes("Include flag behavior:"));
   assert.ok(!output.includes("Included resources for this endpoint:"));
 });
+
+test("prints companion file flags for markdown input fields", () => {
+  const output = captureHelpOutput(() => {
+    printEndpointHelp(findEndpoint("projects/update_description"), "projects update_description");
+  });
+
+  assert.ok(output.includes("--description <markdown> (required)"));
+  assert.ok(output.includes("--description-file <path> (optional, alternative to --description)"));
+  assert.ok(output.includes("File input: use --<field>-file <path> to load markdown from a file"));
+});

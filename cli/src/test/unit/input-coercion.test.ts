@@ -1,10 +1,25 @@
 import { test } from "node:test";
 import * as assert from "node:assert";
+import * as fs from "fs";
+import * as os from "os";
+import * as path from "path";
 import { createRegistry } from "../../commands/registry";
 import { parseCommand, UsageError } from "../../core/parser";
 import { fixtureCatalog } from "./fixture-catalog";
 
 const registry = createRegistry(fixtureCatalog);
+
+function withTempFile<T>(contents: string, run: (filePath: string) => T): T {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "operately-cli-input-coercion-"));
+  const filePath = path.join(dir, "input.md");
+  fs.writeFileSync(filePath, contents, "utf8");
+
+  try {
+    return run(filePath);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+}
 
 test("parses ISO date format (YYYY-MM-DD) as day type", () => {
   const parsed = parseCommand(
@@ -366,4 +381,91 @@ test("case-insensitive caret in quarter format", () => {
   if (parsed.kind === "endpoint") {
     assert.equal((parsed.endpointInputs as any).due_date.date, "2025-01-01");
   }
+});
+
+test("loads markdown content from --description-file for markdown fields", () => {
+  const markdown = "# Roadmap\n\n- Launch dashboard\n- Improve API latency";
+
+  withTempFile(markdown, (filePath) => {
+    const inline = parseCommand(
+      ["projects", "update_description", "--project-id", "p1", "--description", markdown],
+      registry,
+      fixtureCatalog.types,
+    );
+
+    const fromFile = parseCommand(
+      ["projects", "update_description", "--project-id", "p1", "--description-file", filePath],
+      registry,
+      fixtureCatalog.types,
+    );
+
+    assert.equal(inline.kind, "endpoint");
+    assert.equal(fromFile.kind, "endpoint");
+
+    if (inline.kind === "endpoint" && fromFile.kind === "endpoint") {
+      assert.equal(fromFile.endpointInputs.description, inline.endpointInputs.description);
+    }
+  });
+});
+
+test("loads preformatted stored content from --description-file for markdown fields", () => {
+  const storedContent = JSON.stringify({ type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: "Hello" }] }] });
+
+  withTempFile(storedContent, (filePath) => {
+    const parsed = parseCommand(
+      ["projects", "update_description", "--project-id", "p1", "--description-file", filePath],
+      registry,
+      fixtureCatalog.types,
+    );
+
+    assert.equal(parsed.kind, "endpoint");
+
+    if (parsed.kind === "endpoint") {
+      assert.equal(parsed.endpointInputs.description, storedContent);
+    }
+  });
+});
+
+test("rejects mixing inline markdown input with its file companion flag", () => {
+  withTempFile("# Roadmap", (filePath) => {
+    assert.throws(
+      () => {
+        parseCommand(
+          [
+            "projects",
+            "update_description",
+            "--project-id",
+            "p1",
+            "--description",
+            "# Inline",
+            "--description-file",
+            filePath,
+          ],
+          registry,
+          fixtureCatalog.types,
+        );
+      },
+      (err: any) => err instanceof UsageError && err.message.includes("mutually exclusive"),
+    );
+  });
+});
+
+test("rejects unreadable files for markdown companion flags", () => {
+  assert.throws(
+    () => {
+      parseCommand(
+        [
+          "projects",
+          "update_description",
+          "--project-id",
+          "p1",
+          "--description-file",
+          "/definitely/missing/operately-cli-input.md",
+        ],
+        registry,
+        fixtureCatalog.types,
+      );
+    },
+    (err: any) => err instanceof UsageError && err.message.includes("Failed to read file"),
+  );
 });

@@ -4,9 +4,9 @@ export const fixtureCatalog: Catalog = {
   schema_version: 1,
   api_base_path: "/api/external/v1",
   generated_at: "2026-01-01T00:00:00Z",
-  endpoint_count: 3,
+  endpoint_count: 5,
   query_count: 1,
-  mutation_count: 2,
+  mutation_count: 4,
   types: {
     primitives: {
       id: { encoded_type: "string" },
@@ -184,6 +184,35 @@ export const fixtureCatalog: Catalog = {
       ],
       outputs: [],
       docstring: null,
+    },
+    {
+      full_name: "projects/update_description",
+      namespace: "projects",
+      name: "update_description",
+      type: "mutation",
+      method: "POST",
+      path: "/api/external/v1/projects/update_description",
+      handler: "OperatelyWeb.Api.Projects.UpdateDescription",
+      inputs: [
+        {
+          name: "project_id",
+          type: { kind: "named", name: "id" },
+          optional: false,
+          nullable: false,
+          has_default: false,
+          default: null,
+        },
+        {
+          name: "description",
+          type: { kind: "named", name: "json" },
+          optional: false,
+          nullable: false,
+          has_default: false,
+          default: null,
+        },
+      ],
+      outputs: [],
+      docstring: "Updates the description of a project.",
     },
     {
       full_name: "projects/get",

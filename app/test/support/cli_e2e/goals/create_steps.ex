@@ -2,6 +2,7 @@ defmodule Operately.Support.CliE2E.Goals.CreateSteps do
   use Operately.Support.CliE2E
 
   alias Operately.Support.CliE2E.Helpers
+  alias Operately.Goals.Goal
 
   step :setup, ctx do
     previous = Helpers.enable_auth_methods()
@@ -81,6 +82,40 @@ defmodule Operately.Support.CliE2E.Goals.CreateSteps do
     |> Map.put(:goal_description, description)
   end
 
+  step :create_goal_with_description_file, ctx, params do
+    name = params[:name]
+    description = params[:description]
+    description_file = create_temp_file!("operately-cli-goal-description", description, ".md")
+
+    on_exit(fn ->
+      File.rm(description_file)
+    end)
+
+    result =
+      run_cli(ctx, [
+        "goals",
+        "create",
+        "--space-id",
+        ctx.engineering.id,
+        "--name",
+        name,
+        "--description-file",
+        description_file,
+        "--anonymous-access-level",
+        "0",
+        "--company-access-level",
+        "0",
+        "--space-access-level",
+        "100"
+      ])
+
+    ctx
+    |> Map.put(:cli_result, result)
+    |> Map.put(:goal_name, name)
+    |> Map.put(:goal_description, description)
+    |> Map.put(:goal_description_file, description_file)
+  end
+
   step :assert_goal_created_successfully, ctx do
     assert ctx.cli_result.exit_code == 0
     assert ctx.cli_result.output =~ "\"name\": \"#{ctx.goal_name}\""
@@ -106,8 +141,25 @@ defmodule Operately.Support.CliE2E.Goals.CreateSteps do
     ctx
   end
 
+  step :assert_goal_description_persisted_from_file, ctx do
+    goal = Repo.get_by!(Goal, name: ctx.goal_name, group_id: ctx.engineering.id)
+    text = goal.description |> collect_text() |> Enum.join(" ")
+
+    assert text =~ "Key initiatives:"
+    assert text =~ "Launch new dashboard"
+    assert text =~ "Improve API performance"
+    refute text =~ ctx.goal_description_file
+
+    ctx
+  end
+
   step :assert_goal_creation_failed, ctx do
     assert ctx.cli_result.exit_code != 0
     ctx
   end
+
+  defp collect_text(%{"text" => text}), do: [text]
+  defp collect_text(%{"content" => content}) when is_list(content), do: Enum.flat_map(content, &collect_text/1)
+  defp collect_text(list) when is_list(list), do: Enum.flat_map(list, &collect_text/1)
+  defp collect_text(_), do: []
 end

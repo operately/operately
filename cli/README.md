@@ -231,6 +231,14 @@ operately documents create \
   --content "# Getting Started\n\nWelcome to the team."
 ```
 
+The same markdown fields also accept a file path via `--<field>-file`:
+
+```bash
+operately projects update_description \
+  --project-id p1 \
+  --description-file ./roadmap.md
+```
+
 Contextual dates let you pass either an exact day or a broader period.
 For `year`, `quarter`, and `month` values, the CLI resolves the value to a real date:
 

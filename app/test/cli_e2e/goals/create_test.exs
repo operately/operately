@@ -32,4 +32,14 @@ defmodule Operately.CliE2E.Goals.CreateTest do
     |> Steps.assert_goal_created_successfully()
     |> Steps.assert_goal_has_description()
   end
+
+  test "creates a goal with markdown description from file", ctx do
+    ctx
+    |> Steps.create_goal_with_description_file(%{
+      name: "Product Roadmap Q2",
+      description: "Key initiatives:\n- Launch new dashboard\n- Improve API performance\n- Add analytics"
+    })
+    |> Steps.assert_goal_created_successfully()
+    |> Steps.assert_goal_description_persisted_from_file()
+  end
 end

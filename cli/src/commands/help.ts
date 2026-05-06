@@ -255,11 +255,12 @@ export function printEndpointHelp(endpoint: CatalogEndpoint, command: string, ty
   const flagRows: string[] =
     endpoint.inputs.length === 0
       ? ["  (none)"]
-      : endpoint.inputs.map((field) => {
+      : endpoint.inputs.flatMap((field) => {
           const flag = `--${field.name.replace(/_/g, "-")}`;
           const required = field.optional ? "optional" : "required";
           const nullable = field.nullable ? ", nullable" : "";
           const typeHint = formatTypeHint(field.type);
+          const rows = [`  ${flag} <${typeHint}> (${required}${nullable})`];
 
           if (field.type.kind === "named" && field.type.name === "contextual_date") {
             hasContextualDate = true;
@@ -293,13 +294,14 @@ export function printEndpointHelp(endpoint: CatalogEndpoint, command: string, ty
 
           if (field.type.kind === "named" && field.type.name === "json") {
             hasMarkdown = true;
+            rows.push(`  ${flag}-file <path> (optional, alternative to ${flag})`);
           }
 
           if (field.name.startsWith("include_")) {
             includeTargets.push(field.name.replace(/^include_/, ""));
           }
 
-          return `  ${flag} <${typeHint}> (${required}${nullable})`;
+          return rows;
         });
 
   const additionalSections: string[] = [];
@@ -386,6 +388,7 @@ function formatMarkdownHelp(): string[] {
   lines.push("  Lists: - item or 1. item");
   lines.push("  Links: [text](url)");
   lines.push("  Code: `inline` or ```block```");
+  lines.push("  File input: use --<field>-file <path> to load markdown from a file");
   return lines;
 }
 

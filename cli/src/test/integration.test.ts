@@ -308,17 +308,29 @@ describe("CLI Integration Tests", () => {
       assert.ok(result.stdout.includes("<access_options_int>"));
     });
 
-    it("shows markdown format for json fields", async () => {
+    it("shows markdown format for markdown fields", async () => {
       const result = await runCLI(["help", "projects", "update_description"]);
       assert.strictEqual(result.exitCode, 0);
       assert.ok(result.stdout.includes("<markdown>"));
+      assert.ok(result.stdout.includes("--description-file <path>"));
       assert.ok(result.stdout.includes("Markdown Format:"));
       assert.ok(result.stdout.includes("Headings: # H1"));
       assert.ok(result.stdout.includes("Bold: **text**"));
       assert.ok(result.stdout.includes("Lists: - item"));
     });
 
-    it("shows markdown help for all json type fields", async () => {
+    it("shows companion file flags for all markdown help entries", async () => {
+      const projectResult = await runCLI(["help", "projects", "update_description"]);
+      const spaceResult = await runCLI(["help", "spaces", "update_discussion"]);
+
+      assert.strictEqual(projectResult.exitCode, 0);
+      assert.strictEqual(spaceResult.exitCode, 0);
+      assert.ok(projectResult.stdout.includes("--description-file <path>"));
+      assert.ok(spaceResult.stdout.includes("--body-file <path>"));
+      assert.ok(projectResult.stdout.includes("File input: use --<field>-file <path> to load markdown from a file"));
+    });
+
+    it("shows markdown help for all markdown fields", async () => {
       const result = await runCLI(["help", "comments", "create"]);
       assert.strictEqual(result.exitCode, 0);
       assert.ok(result.stdout.includes("--content"));
@@ -398,14 +410,14 @@ describe("CLI Integration Tests", () => {
     });
   });
 
-  describe("JSON Field Input", () => {
-    it("accepts valid JSON string for json fields", async () => {
+  describe("Markdown Field Input", () => {
+    it("accepts stored rich content for markdown fields", async () => {
       const result = await runCLI(["help", "projects", "update_description"]);
       assert.strictEqual(result.exitCode, 0);
       assert.ok(result.stdout.includes("<markdown>"));
     });
 
-    it("accepts markdown input for json fields", async () => {
+    it("accepts markdown input for markdown fields", async () => {
       const result = await runCLI(["help", "comments", "create"]);
       assert.strictEqual(result.exitCode, 0);
       assert.ok(result.stdout.includes("--content"));
@@ -413,11 +425,34 @@ describe("CLI Integration Tests", () => {
       assert.ok(result.stdout.includes("Markdown Format:"));
     });
 
-    it("normalizes JSON strings for json fields", async () => {
+    it("shows markdown input hints for markdown fields", async () => {
       const result = await runCLI(["help", "projects", "update_description"]);
       assert.strictEqual(result.exitCode, 0);
       assert.ok(result.stdout.includes("--description"));
       assert.ok(result.stdout.includes("<markdown>"));
+    });
+
+    it("accepts file-backed markdown input for markdown fields", async () => {
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), "operately-cli-markdown-file-"));
+      const filePath = path.join(dir, "description.md");
+      fs.writeFileSync(filePath, "# Roadmap\n\n- Launch dashboard", "utf8");
+
+      try {
+        const result = await runCLI([
+          "projects",
+          "update_description",
+          "--project-id",
+          "p1",
+          "--description-file",
+          filePath,
+        ]);
+
+        assert.strictEqual(result.exitCode, 3);
+        assert.ok(result.stderr.includes("Missing API token"));
+        assert.ok(!result.stderr.includes("Unknown input flag"));
+      } finally {
+        fs.rmSync(dir, { recursive: true, force: true });
+      }
     });
   });
 

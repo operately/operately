@@ -147,3 +147,16 @@ test("rejects unknown flag names", () => {
     },
   );
 });
+
+test("rejects --*-file flags for non-markdown fields", () => {
+  const registry = createRegistry(fixtureCatalog);
+
+  assert.throws(
+    () => parseCommand(["edit_project_name", "--project-id", "p1", "--name-file", "./name.md"], registry, fixtureCatalog.types),
+    (error: unknown) => {
+      assert.ok(error instanceof UsageError);
+      assert.ok(error.message.includes("only supported for markdown input fields"));
+      return true;
+    },
+  );
+});
