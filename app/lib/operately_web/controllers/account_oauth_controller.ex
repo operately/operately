@@ -45,12 +45,12 @@ defmodule OperatelyWeb.AccountOauthController do
       image: account_info.image
     }
 
-    case People.find_or_create_account(account_attrs) do
-      {:ok, account} ->
+    case People.find_or_create_account_with_source(account_attrs) do
+      {:ok, account, account_source} ->
         {conn, cli_auth_session_id} = get_and_clear_cli_auth_session_id(conn, params)
 
         if cli_auth_session_id do
-          complete_cli_auth_without_browser_login(conn, account, invite_token, cli_auth_session_id, redirect_params)
+          complete_cli_auth_without_browser_login(conn, account, invite_token, cli_auth_session_id, redirect_params, account_source)
         else
           {redirect_params, conn} = maybe_handle_invite(conn, account, invite_token, redirect_params)
 
@@ -121,24 +121,24 @@ defmodule OperatelyWeb.AccountOauthController do
     end
   end
 
-  defp maybe_complete_cli_auth(nil, _account), do: :ok
+  defp maybe_complete_cli_auth(nil, _account, _account_source), do: :ok
 
-  defp maybe_complete_cli_auth(cli_auth_session_id, account) do
+  defp maybe_complete_cli_auth(cli_auth_session_id, account, account_source) do
     case CliAuthSession.get_by_id(cli_auth_session_id) do
       nil ->
         :ok
 
       session ->
-        case CliAuthSession.complete_google_auth(session, account) do
+        case CliAuthSession.complete_google_auth(session, account, account_source) do
           {:ok, _session} -> :ok
           {:error, _reason} -> :ok
         end
     end
   end
 
-  defp complete_cli_auth_without_browser_login(conn, account, invite_token, cli_auth_session_id, redirect_params) do
+  defp complete_cli_auth_without_browser_login(conn, account, invite_token, cli_auth_session_id, redirect_params, account_source) do
     maybe_join_via_invite(account, invite_token)
-    maybe_complete_cli_auth(cli_auth_session_id, account)
+    maybe_complete_cli_auth(cli_auth_session_id, account, account_source)
 
     redirect_to = redirect_params["redirect_to"] || Paths.cli_login_success_path(cli_auth_session_id)
     redirect(conn, to: redirect_to)
@@ -162,10 +162,10 @@ defmodule OperatelyWeb.AccountOauthController do
       verify_application_env()
 
       # Test-only shortcut for Google OAuth. We still complete the real CLI auth session below.
-      account =
+      {account, account_source} =
         cond do
           params["account_id"] ->
-            People.get_account!(params["account_id"])
+            {People.get_account!(params["account_id"]), :existing}
 
           params["email"] ->
             attrs = %{
@@ -174,8 +174,8 @@ defmodule OperatelyWeb.AccountOauthController do
               image: params["image"] || default_google_avatar()
             }
 
-            case People.find_or_create_account(attrs) do
-              {:ok, account} -> account
+            case People.find_or_create_account_with_source(attrs) do
+              {:ok, account, account_source} -> {account, account_source}
               {:error, reason} -> raise "Failed to create account: #{inspect(reason)}"
             end
 
@@ -188,7 +188,7 @@ defmodule OperatelyWeb.AccountOauthController do
       {conn, cli_auth_session_id} = get_and_clear_cli_auth_session_id(conn, params)
 
       if cli_auth_session_id do
-        complete_cli_auth_without_browser_login(conn, account, invite_token, cli_auth_session_id, redirect_params)
+        complete_cli_auth_without_browser_login(conn, account, invite_token, cli_auth_session_id, redirect_params, account_source)
       else
         {redirect_params, conn} = maybe_handle_invite(conn, account, invite_token, redirect_params)
         params = Map.put(redirect_params, "remember_me", "true")

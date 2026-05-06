@@ -352,6 +352,13 @@ defmodule Operately.People do
   end
 
   def find_or_create_account(attrs) do
+    case find_or_create_account_with_source(attrs) do
+      {:ok, account, _source} -> {:ok, account}
+      error -> error
+    end
+  end
+
+  def find_or_create_account_with_source(attrs) do
     Operately.People.FetchOrCreateAccountOperation.call(attrs)
   end
 end

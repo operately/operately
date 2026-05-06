@@ -17,6 +17,16 @@
     "alternate": "app/test/features/{}_test.exs",
     "template": ["# app/test/{}_test.exs", "defmodule XXX do", "end"]
   },
+  "app/test/cli_e2e/*_test.exs": {
+    "type": "test",
+    "alternate": "app/test/support/cli_e2e/{}_steps.ex",
+    "template": ["# app/test/cli_e2e/{}_test.exs", "defmodule XXX do", "end"]
+  },
+  "app/test/support/cli_e2e/*_steps.ex": {
+    "type": "test",
+    "alternate": "app/test/cli_e2e/{}_test.exs",
+    "template": ["# app/test/support/cli_e2e/{}_steps.ex", "defmodule XXX do", "end"]
+  },
   "app/lib/*.ex": {
     "type": "src",
     "alternate": "app/test/{}_test.exs",

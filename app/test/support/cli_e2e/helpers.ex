@@ -10,19 +10,23 @@ defmodule Operately.Support.CliE2E.Helpers do
   def enable_auth_methods do
     previous_allow_login_with_email = Application.get_env(:operately, :allow_login_with_email)
     previous_allow_login_with_google = Application.get_env(:operately, :allow_login_with_google)
+    previous_allow_signup_with_email = Application.get_env(:operately, :allow_signup_with_email)
 
     Application.put_env(:operately, :allow_login_with_email, true)
     Application.put_env(:operately, :allow_login_with_google, true)
+    Application.put_env(:operately, :allow_signup_with_email, true)
 
     %{
       allow_login_with_email: previous_allow_login_with_email,
-      allow_login_with_google: previous_allow_login_with_google
+      allow_login_with_google: previous_allow_login_with_google,
+      allow_signup_with_email: previous_allow_signup_with_email
     }
   end
 
   def restore_auth_methods(previous) do
     Application.put_env(:operately, :allow_login_with_email, previous.allow_login_with_email)
     Application.put_env(:operately, :allow_login_with_google, previous.allow_login_with_google)
+    Application.put_env(:operately, :allow_signup_with_email, previous.allow_signup_with_email)
   end
 
   def wait_for_google_session!(timeout_ms \\ 5_000) do
@@ -30,7 +34,7 @@ defmodule Operately.Support.CliE2E.Helpers do
     do_wait_for_google_session(deadline)
   end
 
-  def complete_mock_google_auth!(ctx, session, params) do
+  def complete_mock_google_auth!(ctx, session, params, expected_status \\ :authenticated) do
     login_response = browser_get(ctx, "/cli-login/#{session.id}?#{encode_query(params)}")
 
     assert login_response.status == 302
@@ -42,7 +46,7 @@ defmodule Operately.Support.CliE2E.Helpers do
     assert auth_response.headers["location"] == "/cli-login/#{session.id}/success"
 
     session = Repo.get!(CliAuthSession, session.id)
-    assert session.status == :authenticated
+    assert session.status == expected_status
 
     ctx
   end

@@ -9,9 +9,8 @@ import {
 } from "./config";
 import { printError, printSuccess } from "../core/output";
 import { executeAuthBootstrap } from "./bootstrap";
-import { runSignupCreateCompanyFlow } from "./flows/signup-create-company";
+import { runSignupFlow } from "./flows/signup";
 import { runJoinInviteFlow } from "./flows/join-invite";
-import { askChoice } from "../core/prompts";
 import { fetchProfileMetadata } from "./shared/profile-metadata";
 import type { AuthAction } from "../core/parser-types";
 import type { EndpointRegistry } from "../commands/registry";
@@ -53,16 +52,7 @@ async function executeAuthSignup(
   config: CliConfig,
   registry: EndpointRegistry,
 ): Promise<number> {
-  const path = await askChoice<"create-company" | "join-invite">("What would you like to do?", [
-    { label: "Create a new company", value: "create-company" },
-    { label: "Join a company with an invite", value: "join-invite" },
-  ]);
-
-  if (path === "create-company") {
-    return runSignupCreateCompanyFlow(flags, config, registry);
-  }
-
-  return executeAuthJoin(flags, config, registry);
+  return runSignupFlow(flags, config, registry);
 }
 
 async function executeAuthJoin(
