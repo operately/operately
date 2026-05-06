@@ -103,6 +103,27 @@ defmodule OperatelyWeb.Api.CliAuthTest do
       assert status_res.companies == []
     end
 
+    test "start_google_signup creates a pending signup session and status remains pending", ctx do
+      assert {200, res} = mutation(ctx.conn, [:cli_auth, :start_google_signup], %{})
+
+      assert res.status == "pending"
+      assert res.companies == []
+      assert is_binary(res.bootstrap_token)
+      assert res.login_url =~ "/cli-login/"
+      assert res.poll_interval_ms == CliAuthSession.poll_interval_ms()
+
+      session = Repo.get!(CliAuthSession, extract_session_id(res.login_url))
+
+      assert session.status == :pending
+      assert session.intent == :signup
+      assert session.account_id == nil
+
+      assert {200, status_res} = bootstrap_query(ctx.conn, res.bootstrap_token, [:cli_auth, :status], %{})
+
+      assert status_res.status == "pending"
+      assert status_res.companies == []
+    end
+
     test "status returns authenticated companies after google auth completes", ctx do
       {:ok, session, raw_token} = CliAuthSession.create_pending_google_session()
       assert {:ok, _session} = CliAuthSession.complete_google_auth(session, ctx.account)
@@ -123,6 +144,28 @@ defmodule OperatelyWeb.Api.CliAuthTest do
       assert res.status == "no_companies"
       assert res.companies == []
       assert res.message =~ "not a member of any companies"
+    end
+
+    test "status returns authenticated with no companies after google signup completes for a new account", ctx do
+      ctx = %{ctx | conn: ctx.conn} |> Map.take([:conn]) |> Factory.add_account(:lonely_account)
+      {:ok, session, raw_token} = CliAuthSession.create_pending_google_session(:signup)
+      assert {:ok, _session} = CliAuthSession.complete_google_auth(session, ctx.lonely_account, :created)
+
+      assert {200, res} = bootstrap_query(ctx.conn, raw_token, [:cli_auth, :status], %{})
+
+      assert res.status == "authenticated"
+      assert res.companies == []
+    end
+
+    test "status returns failed when google signup resolves to an existing account", ctx do
+      {:ok, session, raw_token} = CliAuthSession.create_pending_google_session(:signup)
+      assert {:ok, _session} = CliAuthSession.complete_google_auth(session, ctx.account, :existing)
+
+      assert {200, res} = bootstrap_query(ctx.conn, raw_token, [:cli_auth, :status], %{})
+
+      assert res.status == "failed"
+      assert res.companies == []
+      assert res.message =~ "already exists for this Google account"
     end
 
     test "status returns unauthorized for a consumed bootstrap session", ctx do
@@ -216,7 +259,7 @@ defmodule OperatelyWeb.Api.CliAuthTest do
 
   describe "signup" do
     @tag :empty_instance
-    test "creates account and returns no_companies on empty instance", ctx do
+    test "creates account and returns an authenticated bootstrap token on empty instance", ctx do
       assert Operately.Companies.count_companies() == 0
       {:ok, activation} = Operately.People.EmailActivationCode.create("newuser@test.com")
 
@@ -229,10 +272,13 @@ defmodule OperatelyWeb.Api.CliAuthTest do
 
       assert {200, res} = mutation(ctx.conn, [:cli_auth, :signup], inputs)
 
-      assert res.status == "no_companies"
+      assert res.status == "authenticated"
       assert res.companies == []
       assert is_binary(res.bootstrap_token)
-      assert res.message =~ "not a member of any companies"
+
+      assert {200, status_res} = bootstrap_query(ctx.conn, res.bootstrap_token, [:cli_auth, :status], %{})
+      assert status_res.status == "authenticated"
+      assert status_res.companies == []
     end
 
     test "returns bad_request when email already exists", ctx do
@@ -279,51 +325,6 @@ defmodule OperatelyWeb.Api.CliAuthTest do
       assert res.message =~ "expired"
     end
 
-    test "creates account and joins company with valid invite token", ctx do
-      {:ok, invite_link} =
-        Operately.InviteLinks.create_invite_link(%{
-          company_id: ctx.company.id,
-          author_id: ctx.creator.id
-        })
-
-      {:ok, activation} = Operately.People.EmailActivationCode.create("inviteduser@test.com")
-
-      inputs = %{
-        email: "inviteduser@test.com",
-        code: activation.code,
-        full_name: "Invited User",
-        password: "password1234",
-        invite_token: invite_link.token
-      }
-
-      assert {200, res} = mutation(ctx.conn, [:cli_auth, :signup], inputs)
-
-      assert res.status == "authenticated"
-      assert length(res.companies) == 1
-      assert [company] = res.companies
-      assert company.id == Paths.company_id(ctx.company)
-      assert is_binary(res.bootstrap_token)
-    end
-
-    test "creates account but returns error with invalid invite token", ctx do
-      {:ok, activation} = Operately.People.EmailActivationCode.create("badinvite@test.com")
-
-      inputs = %{
-        email: "badinvite@test.com",
-        code: activation.code,
-        full_name: "Bad Invite User",
-        password: "password1234",
-        invite_token: "invalid-token"
-      }
-
-      assert {200, res} = mutation(ctx.conn, [:cli_auth, :signup], inputs)
-
-      assert res.status == "no_companies"
-      assert res.companies == []
-      assert is_binary(res.bootstrap_token)
-      assert res.message =~ "Invalid invite link"
-    end
-
     test "returns forbidden when signup is not allowed", ctx do
       Application.put_env(:operately, :allow_signup_with_email, false)
 
@@ -353,7 +354,7 @@ defmodule OperatelyWeb.Api.CliAuthTest do
       }
 
       assert {200, signup_res} = mutation(ctx.conn, [:cli_auth, :signup], inputs)
-      assert signup_res.status == "no_companies"
+      assert signup_res.status == "authenticated"
 
       assert {200, res} =
                bootstrap_mutation(ctx.conn, signup_res.bootstrap_token, [:cli_auth, :create_company], %{
@@ -456,7 +457,7 @@ defmodule OperatelyWeb.Api.CliAuthTest do
                  password: "password1234"
                })
 
-      assert signup_res.status == "no_companies"
+      assert signup_res.status == "authenticated"
       assert signup_res.companies == []
       assert is_binary(signup_res.bootstrap_token)
 
@@ -476,6 +477,85 @@ defmodule OperatelyWeb.Api.CliAuthTest do
       assert status_res.status == "authenticated"
       assert length(status_res.companies) == 1
       assert hd(status_res.companies).id == create_res.company.id
+    end
+  end
+
+  describe "join_with_invite" do
+    test "joins a company-wide invite using an authenticated bootstrap session", ctx do
+      ctx = Factory.add_account(ctx, :lonely_account)
+
+      {:ok, invite_link} =
+        Operately.InviteLinks.create_invite_link(%{
+          company_id: ctx.company.id,
+          author_id: ctx.creator.id
+        })
+
+      {:ok, _session, raw_token} = CliAuthSession.create_authenticated_session(ctx.lonely_account, :password, :signup)
+
+      assert {200, res} =
+               bootstrap_mutation(ctx.conn, raw_token, [:cli_auth, :join_with_invite], %{
+                 token: invite_link.token
+               })
+
+      assert res.company.id == Paths.company_id(ctx.company)
+      assert Operately.People.get_person(ctx.lonely_account, ctx.company)
+    end
+
+    test "joins a personal invite using an authenticated bootstrap session for the invited account", ctx do
+      {:ok, account} = Operately.People.Account.create("Invited Member", "invited@example.com", :crypto.strong_rand_bytes(32) |> Base.encode64())
+
+      {:ok, member} = Operately.People.create_person(%{
+        full_name: "Invited Member",
+        email: "invited@example.com",
+        company_id: ctx.company.id,
+        account_id: account.id
+      })
+
+      {:ok, invite_link} =
+        Operately.InviteLinks.create_personal_invite_link(%{
+          company_id: ctx.company.id,
+          author_id: ctx.creator.id,
+          person_id: member.id
+        })
+
+      {:ok, _session, raw_token} = CliAuthSession.create_authenticated_session(account, :password, :signup)
+
+      assert {200, res} =
+               bootstrap_mutation(ctx.conn, raw_token, [:cli_auth, :join_with_invite], %{
+                 token: invite_link.token
+               })
+
+      assert res.company.id == Paths.company_id(ctx.company)
+      assert Repo.reload!(invite_link).is_active == false
+    end
+
+    test "returns bad_request for invalid invite token", ctx do
+      {:ok, _session, raw_token} = CliAuthSession.create_authenticated_session(ctx.account, :password, :signup)
+
+      assert {400, res} =
+               bootstrap_mutation(ctx.conn, raw_token, [:cli_auth, :join_with_invite], %{
+                 token: "invalid-token"
+               })
+
+      assert res.message == "Invalid invite link"
+    end
+
+    test "returns bad_request for inactive invite token", ctx do
+      {:ok, invite_link} =
+        Operately.InviteLinks.create_invite_link(%{
+          company_id: ctx.company.id,
+          author_id: ctx.creator.id
+        })
+
+      Operately.InviteLinks.revoke_invite_link(invite_link)
+      {:ok, _session, raw_token} = CliAuthSession.create_authenticated_session(ctx.account, :password, :signup)
+
+      assert {400, res} =
+               bootstrap_mutation(ctx.conn, raw_token, [:cli_auth, :join_with_invite], %{
+                 token: invite_link.token
+               })
+
+      assert res.message == "This invite link is no longer valid"
     end
   end
 
