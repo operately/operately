@@ -86,10 +86,20 @@ describe("CLI Integration Tests", () => {
     });
 
     it("shows command help with --help flag", async () => {
-      const result = await runCLI(["projects", "list", "--help"]);
+      const result = await runCLI(["projects", "get", "--help"]);
       assert.strictEqual(result.exitCode, 0);
-      assert.ok(result.stdout.includes("Command: projects list"));
+      assert.ok(result.stdout.includes("Command: projects get"));
       assert.ok(result.stdout.includes("Input flags:"));
+      assert.ok(result.stdout.includes("--id <id> (required)"));
+      assert.ok(result.stdout.includes("--include-contributors <boolean> (optional, nullable)"));
+      assert.ok(result.stdout.includes("Include flag behavior:"));
+      assert.ok(result.stdout.includes("This does not mean the data does not exist; it simply was not preloaded."));
+      assert.ok(result.stdout.includes("Included resources for this endpoint:"));
+      assert.ok(result.stdout.includes("    - contributors"));
+      assert.ok(result.stdout.includes("    - markdown"));
+      assert.ok(!result.stdout.includes("Required flags:"));
+      assert.ok(!result.stdout.includes("Optional flags:"));
+      assert.ok(!result.stdout.includes("Include flags:"));
     });
 
     it("shows command help with trailing help", async () => {
@@ -97,6 +107,18 @@ describe("CLI Integration Tests", () => {
       assert.strictEqual(result.exitCode, 0);
       assert.ok(result.stdout.includes("Command: projects update_due_date"));
       assert.ok(result.stdout.includes("Input flags:"));
+      assert.ok(!result.stdout.includes("Include flag behavior:"));
+    });
+
+    it("keeps include and non-include flags in the same input flag list", async () => {
+      const result = await runCLI(["projects", "list", "--help"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("Command: projects list"));
+      assert.ok(result.stdout.includes("Input flags:"));
+      assert.ok(result.stdout.includes("--only-my-projects <boolean> (optional, nullable)"));
+      assert.ok(result.stdout.includes("--include-milestones <boolean> (optional, nullable)"));
+      assert.ok(!result.stdout.includes("Optional flags:"));
+      assert.ok(!result.stdout.includes("Include flags:"));
     });
 
     it("shows error for unknown command", async () => {
