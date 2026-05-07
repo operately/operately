@@ -132,7 +132,7 @@ export async function executeAuthBootstrap(
 
     if (companies.length === 0) {
       d.printError("No companies found for this account.");
-      d.printError("Please join or create a company first.");
+      d.printError("Use `operately auth create-company` to create a company or `operately auth join` to join an existing one.");
       return 1;
     }
 

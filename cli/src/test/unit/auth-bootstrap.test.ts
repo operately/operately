@@ -249,6 +249,7 @@ describe("Auth Bootstrap", () => {
     responses.push({
       status: "no_companies",
       companies: [],
+      bootstrap_token: "bootstrap_xxx",
       message: "No companies available",
     });
 
@@ -261,6 +262,8 @@ describe("Auth Bootstrap", () => {
 
     assert.strictEqual(result, 1);
     assert.ok(errorsPrinted.some((e) => e.includes("No companies found")));
+    assert.ok(errorsPrinted.some((e) => e.includes("operately auth create-company")));
+    assert.ok(errorsPrinted.some((e) => e.includes("operately auth join")));
   });
 
   it("invalid credentials return exit code 4", async () => {

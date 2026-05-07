@@ -70,7 +70,13 @@ defmodule OperatelyWeb.Api.CliAuthTest do
 
       assert res.status == "no_companies"
       assert res.companies == []
+      assert is_binary(res.bootstrap_token)
       assert res.message =~ "not a member of any companies"
+
+      assert {200, status_res} = bootstrap_query(ctx.conn, res.bootstrap_token, [:cli_auth, :status], %{})
+
+      assert status_res.status == "no_companies"
+      assert status_res.companies == []
     end
 
     test "returns generic unauthorized for invalid credentials", ctx do
@@ -220,13 +226,13 @@ defmodule OperatelyWeb.Api.CliAuthTest do
       end)
     end
 
-    test "returns unauthorized when the bootstrap session is not authenticated", ctx do
+    test "returns not_found when an authenticated no-company bootstrap session selects an unrelated company", ctx do
       company_id = Paths.company_id(ctx.company)
       ctx = %{ctx | conn: ctx.conn} |> Map.take([:conn]) |> Factory.add_account(:lonely_account)
       {:ok, session, raw_token} = CliAuthSession.create_pending_google_session()
       assert {:ok, _session} = CliAuthSession.complete_google_auth(session, ctx.lonely_account)
 
-      assert {401, _res} =
+      assert {404, _res} =
                bootstrap_mutation(ctx.conn, raw_token, [:cli_auth, :create_token], %{
                  company_id: company_id,
                  read_only: true
@@ -339,7 +345,24 @@ defmodule OperatelyWeb.Api.CliAuthTest do
     end
   end
 
-  describe "create_company" do
+  describe "company_creation_status" do
+    @tag :empty_instance
+    test "returns configured false when there are no accounts and no companies", ctx do
+      assert {200, res} = query(ctx.conn, [:cli_auth, :company_creation_status], %{})
+
+      assert res.configured == false
+    end
+
+    test "returns configured true when there is at least one account", ctx do
+      ctx = %{ctx | conn: ctx.conn} |> Map.take([:conn]) |> Factory.add_account(:lonely_account)
+
+      assert {200, res} = query(ctx.conn, [:cli_auth, :company_creation_status], %{})
+
+      assert res.configured == true
+    end
+  end
+
+  describe "setup_company" do
     @tag :empty_instance
     test "creates first company on empty instance after signup", ctx do
       assert Operately.Companies.count_companies() == 0
@@ -357,7 +380,7 @@ defmodule OperatelyWeb.Api.CliAuthTest do
       assert signup_res.status == "authenticated"
 
       assert {200, res} =
-               bootstrap_mutation(ctx.conn, signup_res.bootstrap_token, [:cli_auth, :create_company], %{
+               bootstrap_mutation(ctx.conn, signup_res.bootstrap_token, [:cli_auth, :setup_company], %{
                  company_name: "My New Company"
                })
 
@@ -372,9 +395,67 @@ defmodule OperatelyWeb.Api.CliAuthTest do
       {:ok, _session, raw_token} = CliAuthSession.create_authenticated_session(ctx.account)
 
       assert {403, _res} =
-               bootstrap_mutation(ctx.conn, raw_token, [:cli_auth, :create_company], %{
+               bootstrap_mutation(ctx.conn, raw_token, [:cli_auth, :setup_company], %{
                  company_name: "Another Company"
                })
+    end
+
+    test "returns unauthorized with invalid bootstrap session", ctx do
+      assert {401, _res} =
+               bootstrap_mutation(ctx.conn, "invalid-token", [:cli_auth, :setup_company], %{
+                 company_name: "My Company"
+               })
+    end
+
+    test "returns unauthorized with expired bootstrap session", ctx do
+      {:ok, session, raw_token} = CliAuthSession.create_authenticated_session(ctx.account)
+
+      session
+      |> CliAuthSession.changeset(%{expires_at: DateTime.utc_now() |> DateTime.add(-1, :second)})
+      |> Repo.update!()
+
+      assert {401, _res} =
+               bootstrap_mutation(ctx.conn, raw_token, [:cli_auth, :setup_company], %{
+                 company_name: "My Company"
+               })
+    end
+
+    @tag :empty_instance
+    test "creates the first company from a no-company password bootstrap session", ctx do
+      ctx = Factory.add_account(ctx, :lonely_account)
+
+      assert {200, auth_res} =
+               mutation(ctx.conn, [:cli_auth, :auth_password], %{
+                 email: ctx.lonely_account.email,
+                 password: "hello world!"
+               })
+
+      assert auth_res.status == "no_companies"
+      assert is_binary(auth_res.bootstrap_token)
+
+      assert {200, res} =
+               bootstrap_mutation(ctx.conn, auth_res.bootstrap_token, [:cli_auth, :setup_company], %{
+                 company_name: "Bootstrap Company"
+               })
+
+      assert res.company.name == "Bootstrap Company"
+      assert res.person.full_name == ctx.lonely_account.full_name
+    end
+  end
+
+  describe "create_company" do
+    test "creates company when companies already exist", ctx do
+      assert Operately.Companies.count_companies() == 1
+
+      {:ok, _session, raw_token} = CliAuthSession.create_authenticated_session(ctx.account)
+
+      assert {200, res} =
+               bootstrap_mutation(ctx.conn, raw_token, [:cli_auth, :create_company], %{
+                 company_name: "Second Company"
+               })
+
+      assert res.company.name == "Second Company"
+      assert res.person.full_name == ctx.account.full_name
     end
 
     test "returns unauthorized with invalid bootstrap session", ctx do
@@ -396,45 +477,30 @@ defmodule OperatelyWeb.Api.CliAuthTest do
                  company_name: "My Company"
                })
     end
-  end
 
-  describe "create_company_on_non_empty" do
-    test "creates company when companies already exist", ctx do
-      assert Operately.Companies.count_companies() == 1
+    test "creates a company from a no-company password bootstrap session on a non-empty instance", ctx do
+      ctx = %{ctx | conn: ctx.conn} |> Map.take([:conn]) |> Factory.add_account(:lonely_account)
 
-      {:ok, _session, raw_token} = CliAuthSession.create_authenticated_session(ctx.account)
+      assert {200, auth_res} =
+               mutation(ctx.conn, [:cli_auth, :auth_password], %{
+                 email: ctx.lonely_account.email,
+                 password: "hello world!"
+               })
+
+      assert auth_res.status == "no_companies"
+      assert is_binary(auth_res.bootstrap_token)
 
       assert {200, res} =
-               bootstrap_mutation(ctx.conn, raw_token, [:cli_auth, :create_company_on_non_empty], %{
-                 company_name: "Second Company"
+               bootstrap_mutation(ctx.conn, auth_res.bootstrap_token, [:cli_auth, :create_company], %{
+                 company_name: "Later Company"
                })
 
-      assert res.company.name == "Second Company"
-      assert res.person.full_name == ctx.account.full_name
-    end
-
-    test "returns unauthorized with invalid bootstrap session", ctx do
-      assert {401, _res} =
-               bootstrap_mutation(ctx.conn, "invalid-token", [:cli_auth, :create_company_on_non_empty], %{
-                 company_name: "My Company"
-               })
-    end
-
-    test "returns unauthorized with expired bootstrap session", ctx do
-      {:ok, session, raw_token} = CliAuthSession.create_authenticated_session(ctx.account)
-
-      session
-      |> CliAuthSession.changeset(%{expires_at: DateTime.utc_now() |> DateTime.add(-1, :second)})
-      |> Repo.update!()
-
-      assert {401, _res} =
-               bootstrap_mutation(ctx.conn, raw_token, [:cli_auth, :create_company_on_non_empty], %{
-                 company_name: "My Company"
-               })
+      assert res.company.name == "Later Company"
+      assert res.person.full_name == ctx.lonely_account.full_name
     end
   end
 
-  describe "signup and create_company end-to-end" do
+  describe "signup and setup_company end-to-end" do
     @tag :empty_instance
     test "new user signs up and creates the first company on an empty instance", ctx do
       assert Operately.Companies.count_companies() == 0
@@ -463,7 +529,7 @@ defmodule OperatelyWeb.Api.CliAuthTest do
 
       # 4. Create company using bootstrap token
       assert {200, create_res} =
-               bootstrap_mutation(ctx.conn, signup_res.bootstrap_token, [:cli_auth, :create_company], %{
+               bootstrap_mutation(ctx.conn, signup_res.bootstrap_token, [:cli_auth, :setup_company], %{
                  company_name: "Jane's Company"
                })
 

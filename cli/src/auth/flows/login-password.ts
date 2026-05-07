@@ -28,7 +28,11 @@ export async function runPasswordFlow(
   };
 
   if (response.status === "no_companies") {
-    return { bootstrapToken: "", companies: [] };
+    if (!response.bootstrap_token) {
+      throw new Error("Authentication failed: no bootstrap token returned");
+    }
+
+    return { bootstrapToken: response.bootstrap_token, companies: [] };
   }
 
   if (!response.bootstrap_token) {
