@@ -10,11 +10,11 @@ import { callInternalMutation, callInternalQuery } from "../../core/internal-api
 import { askQuestion, askPassword, askChoice, PromptCancelledError } from "../../core/prompts";
 import { callEndpoint, ApiError } from "../../core/http";
 import { cliAuth, openExternalUrl } from "../shared/api";
-import { createCompanyAndSaveProfile } from "../shared/company-creation";
+import { createCompanyAndSaveProfile, resolveCompanyCreationMode } from "../shared/company-creation";
 import { createTokenAndSaveProfile } from "../shared/token-creation";
 import { runGoogleFlow } from "./login-google";
 import type { EndpointRegistry } from "../../commands/registry";
-import type { Company } from "../types";
+import type { Company, CompanyCreationMode } from "../types";
 import type { ChildProcess } from "child_process";
 
 interface SignupFlowDeps {
@@ -56,6 +56,7 @@ export async function runSignupFlow(
   let baseUrl = readStringFlag(flags, "base-url");
   const profileFlag = readStringFlag(flags, "profile");
   let runtimeBaseUrl = baseUrl ?? DEFAULT_BASE_URL;
+  let companyCreationMode: CompanyCreationMode = "create";
 
   try {
     const method = await d.askChoice<"password" | "google">("How would you like to sign up?", [
@@ -76,6 +77,7 @@ export async function runSignupFlow(
       profile: null,
     });
     runtimeBaseUrl = runtime.baseUrl;
+    companyCreationMode = await resolveCompanyCreationMode(runtime.baseUrl, d.callInternalQuery);
 
     const bootstrapToken =
       method === "password"
@@ -109,6 +111,7 @@ export async function runSignupFlow(
         runtimeBaseUrl: runtime.baseUrl,
         timeoutMs: runtime.timeoutMs,
         bootstrapToken,
+        mode: companyCreationMode,
         deps: {
           askQuestion: d.askQuestion,
           callInternalMutation: d.callInternalMutation,

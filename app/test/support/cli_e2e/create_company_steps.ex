@@ -46,7 +46,7 @@ defmodule Operately.Support.CliE2E.CreateCompanySteps do
         ctx,
         ["auth", "create-company"],
         script: [
-          {"How would you like to authenticate?", "1\n"},
+          {"You need to authenticate to create a company. Choose a sign-in method:", "1\n"},
           {"Base URL for the Operately instance", "#{ctx.cli_base_url}\n"},
           {"Email:", "#{account.email}\n"},
           {"Password:", "#{@password}\n"},
@@ -67,7 +67,7 @@ defmodule Operately.Support.CliE2E.CreateCompanySteps do
           ctx,
           ["auth", "create-company"],
           script: [
-            {"How would you like to authenticate?", "2\n"},
+            {"You need to authenticate to create a company. Choose a sign-in method:", "2\n"},
             {"Base URL for the Operately instance", "#{ctx.cli_base_url}\n"},
             {"Company name:", "#{ctx.expected_company_name}\n"},
             {"Profile name (default: default):", "#{ctx.profile}\n"}

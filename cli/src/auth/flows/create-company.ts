@@ -6,9 +6,10 @@ import { callEndpoint, ApiError } from "../../core/http";
 import { runGoogleFlow } from "./login-google";
 import { runPasswordFlow } from "./login-password";
 import { openExternalUrl } from "../shared/api";
-import { createCompanyAndSaveProfile } from "../shared/company-creation";
+import { createCompanyAndSaveProfile, resolveCompanyCreationMode } from "../shared/company-creation";
 import { handleBootstrapError } from "../shared/errors";
 import type { EndpointRegistry } from "../../commands/registry";
+import type { CompanyCreationMode } from "../types";
 import type { ChildProcess } from "child_process";
 
 interface CreateCompanyFlowDeps {
@@ -55,9 +56,10 @@ export async function runCreateCompanyFlow(
   let runtimeBaseUrl = baseUrl ?? DEFAULT_BASE_URL;
   let bootstrapToken = "";
   let timeoutMs = 30_000;
+  let companyCreationMode: CompanyCreationMode = "create";
 
   try {
-    const method = await d.askChoice<"password" | "google">("How would you like to authenticate?", [
+    const method = await d.askChoice<"password" | "google">("You need to authenticate to create a company. Choose a sign-in method:", [
       { label: "Email and password", value: "password" },
       { label: "Google OAuth (opens browser)", value: "google" },
     ]);
@@ -74,6 +76,7 @@ export async function runCreateCompanyFlow(
     });
     runtimeBaseUrl = runtime.baseUrl;
     timeoutMs = runtime.timeoutMs;
+    companyCreationMode = await resolveCompanyCreationMode(runtime.baseUrl, d.callInternalQuery);
 
     if (method === "password") {
       const result = await runPasswordFlow(runtime.baseUrl, {
@@ -103,6 +106,7 @@ export async function runCreateCompanyFlow(
       runtimeBaseUrl,
       timeoutMs,
       bootstrapToken,
+      mode: companyCreationMode,
       deps: {
         askQuestion: d.askQuestion,
         callInternalMutation: d.callInternalMutation,

@@ -540,12 +540,25 @@ defmodule OperatelyWeb.Api.CliAuth do
     end
   end
 
-  defmodule CreateCompany do
+  defmodule CompanyCreationStatus do
+    use TurboConnect.Query
+    use OperatelyWeb.Api.Helpers
+
+    outputs do
+      field :configured, :boolean, null: false
+    end
+
+    def call(_conn, _inputs) do
+      {:ok, %{configured: Operately.Setup.configured?()}}
+    end
+  end
+
+  defmodule SetupCompany do
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
     alias Operately.Operations.CompanyAdding
-    alias Operately.People.{Account, CliAuthSession}
+    alias Operately.People.Account
 
     inputs do
       field :company_name, :string
@@ -563,7 +576,7 @@ defmodule OperatelyWeb.Api.CliAuth do
 
       with :ok <- Steps.validate_token_creation_session(session),
            %{} <- account do
-        if Operately.Companies.count_companies() == 0 do
+        if Operately.Setup.company_setup_pending?() do
           do_create_company(account, inputs)
         else
           {:error, :forbidden}
@@ -603,12 +616,11 @@ defmodule OperatelyWeb.Api.CliAuth do
     end
   end
 
-  defmodule CreateCompanyOnNonEmpty do
+  defmodule CreateCompany do
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
     alias Operately.Operations.CompanyAdding
-    alias Operately.People.{Account, CliAuthSession}
 
     inputs do
       field :company_name, :string

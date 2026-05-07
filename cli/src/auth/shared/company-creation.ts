@@ -1,12 +1,12 @@
-import { callEndpoint, ApiError } from "../../core/http";
+import { callEndpoint } from "../../core/http";
 import { printError, printSuccess } from "../../core/output";
 import { askQuestion } from "../../core/prompts";
-import { callInternalMutation } from "../../core/internal-api";
+import { callInternalMutation, callInternalQuery } from "../../core/internal-api";
 import { saveProfile, writeConfig, type CliConfig } from "../config";
 import { cliAuth } from "./api";
 import { createTokenAndSaveProfile } from "./token-creation";
 import type { EndpointRegistry } from "../../commands/registry";
-import type { Company } from "../types";
+import type { Company, CompanyCreationMode } from "../types";
 
 interface CreateCompanyAndSaveProfileDeps {
   askQuestion: typeof askQuestion;
@@ -24,37 +24,29 @@ interface CreateCompanyAndSaveProfileInput {
   runtimeBaseUrl: string;
   timeoutMs: number;
   bootstrapToken: string;
+  mode: CompanyCreationMode;
   deps: CreateCompanyAndSaveProfileDeps;
+}
+
+export async function resolveCompanyCreationMode(
+  baseUrl: string,
+  queryFn: typeof callInternalQuery,
+): Promise<CompanyCreationMode> {
+  const result = (await queryFn(baseUrl, cliAuth.companyCreationStatus, {})) as { configured?: boolean };
+  return result.configured ? "create" : "setup";
 }
 
 export async function createCompanyAndSaveProfile(input: CreateCompanyAndSaveProfileInput): Promise<number> {
   const companyName = await input.deps.askQuestion("Company name:");
+  const path = input.mode === "setup" ? cliAuth.setupCompany : cliAuth.createCompany;
 
-  let company: Company;
-
-  try {
-    const result = (await input.deps.callInternalMutation(
-      input.runtimeBaseUrl,
-      cliAuth.createCompany,
-      { company_name: companyName },
-      input.bootstrapToken,
-    )) as { company?: Company };
-
-    company = assertCompany(result.company);
-  } catch (error) {
-    if (!(error instanceof ApiError) || error.status !== 403) {
-      throw error;
-    }
-
-    const result = (await input.deps.callInternalMutation(
-      input.runtimeBaseUrl,
-      cliAuth.createCompanyOnNonEmpty,
-      { company_name: companyName },
-      input.bootstrapToken,
-    )) as { company?: Company };
-
-    company = assertCompany(result.company);
-  }
+  const result = (await input.deps.callInternalMutation(
+    input.runtimeBaseUrl,
+    path,
+    { company_name: companyName },
+    input.bootstrapToken,
+  )) as { company?: Company };
+  const company = assertCompany(result.company);
 
   const profile = await resolveProfileName(input.profileFlag, input.deps.askQuestion);
 

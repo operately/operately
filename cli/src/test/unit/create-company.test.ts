@@ -170,6 +170,7 @@ describe("runCreateCompanyFlow", () => {
   it("authenticates with password, creates a company, and saves the profile for a no-company account", async () => {
     promptQueue.push("", "user@example.com", "secret123456", "Acme Corp", "");
 
+    responses.push({ configured: true });
     responses.push({
       status: "no_companies",
       companies: [],
@@ -182,10 +183,11 @@ describe("runCreateCompanyFlow", () => {
     const result = await runCreateCompanyFlow(new Map(), emptyConfig, registryStub, makeDeps(["password"]));
 
     assert.strictEqual(result, 0);
-    assert.strictEqual(calls[0].path, cliAuth.authPassword);
-    assert.strictEqual(calls[1].path, cliAuth.createCompany);
-    assert.strictEqual(calls[2].path, cliAuth.createToken);
-    assert.strictEqual(calls[2].token, "bootstrap_password");
+    assert.strictEqual(calls[0].path, cliAuth.companyCreationStatus);
+    assert.strictEqual(calls[1].path, cliAuth.authPassword);
+    assert.strictEqual(calls[2].path, cliAuth.createCompany);
+    assert.strictEqual(calls[3].path, cliAuth.createToken);
+    assert.strictEqual(calls[3].token, "bootstrap_password");
     assert.ok(successPrinted.some((msg) => msg.includes("Logged in to https://app.operately.com as Existing User")));
 
     const saved = readSavedConfig(tmpDir);
@@ -197,6 +199,7 @@ describe("runCreateCompanyFlow", () => {
   it("authenticates with Google, creates a company, and saves the profile for a no-company account", async () => {
     promptQueue.push("", "Acme Corp", "team");
 
+    responses.push({ configured: true });
     responses.push({
       status: "pending",
       bootstrap_token: "bootstrap_google",
@@ -211,9 +214,10 @@ describe("runCreateCompanyFlow", () => {
     const result = await runCreateCompanyFlow(new Map(), emptyConfig, registryStub, makeDeps(["google"]));
 
     assert.strictEqual(result, 0);
-    assert.strictEqual(calls[0].path, cliAuth.startGoogle);
-    assert.strictEqual(calls[1].path, cliAuth.status);
-    assert.strictEqual(calls[2].path, cliAuth.createCompany);
+    assert.strictEqual(calls[0].path, cliAuth.companyCreationStatus);
+    assert.strictEqual(calls[1].path, cliAuth.startGoogle);
+    assert.strictEqual(calls[2].path, cliAuth.status);
+    assert.strictEqual(calls[3].path, cliAuth.createCompany);
 
     const saved = readSavedConfig(tmpDir);
     assert.strictEqual(saved.activeProfile, "team");
@@ -221,9 +225,10 @@ describe("runCreateCompanyFlow", () => {
     assert.strictEqual(saved.profiles.team.companyName, "Acme Corp");
   });
 
-  it("falls back to create_company_on_non_empty when the instance already has companies", async () => {
+  it("uses setup_company when the instance is not configured", async () => {
     promptQueue.push("", "user@example.com", "secret123456", "Second Company", "work");
 
+    responses.push({ configured: false });
     responses.push({
       status: "no_companies",
       companies: [],
@@ -233,26 +238,17 @@ describe("runCreateCompanyFlow", () => {
     responses.push({ token: "op_team_token", company: { id: "c3", name: "Second Company" } });
     responses.push({ me: { full_name: "Existing User", email: "user@example.com" } });
 
-    const deps = makeDeps(["password"]);
-    deps.callInternalMutation = (_baseUrl: string, path: string, inputs: Record<string, unknown>, token?: string) => {
-      if (path === cliAuth.createCompany) {
-        calls.push({ method: "mutation", path, inputs, token });
-        return Promise.reject(new ApiError("Forbidden", 403, { message: "Companies already exist" }));
-      }
-
-      return mockMutation(_baseUrl, path, inputs, token);
-    };
-
-    const result = await runCreateCompanyFlow(new Map(), emptyConfig, registryStub, deps);
+    const result = await runCreateCompanyFlow(new Map(), emptyConfig, registryStub, makeDeps(["password"]));
 
     assert.strictEqual(result, 0);
-    assert.strictEqual(calls[1].path, cliAuth.createCompany);
-    assert.strictEqual(calls[2].path, cliAuth.createCompanyOnNonEmpty);
+    assert.strictEqual(calls[0].path, cliAuth.companyCreationStatus);
+    assert.strictEqual(calls[2].path, cliAuth.setupCompany);
   });
 
   it("asks for the profile name only after company creation succeeds", async () => {
     promptQueue.push("", "user@example.com", "secret123456", "Taken Company");
 
+    responses.push({ configured: true });
     responses.push({
       status: "no_companies",
       companies: [],

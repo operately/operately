@@ -4,7 +4,6 @@ import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 import { runSignupFlow } from "../../auth/flows/signup";
-import { ApiError } from "../../core/http";
 import { PromptCancelledError } from "../../core/prompts";
 import { cliAuth } from "../../auth/shared/api";
 import type { ChildProcess } from "child_process";
@@ -175,6 +174,7 @@ describe("runSignupFlow", () => {
   it("signs up with email, creates a company, and saves the profile", async () => {
     promptQueue.push("", "New User", "newuser@example.com", "secret123456", "secret123456", "ABC123", "Acme Corp", "");
 
+    responses.push({ configured: false });
     responses.push({ exists: false });
     responses.push({});
     responses.push({ status: "authenticated", companies: [], bootstrap_token: "bootstrap_xxx" });
@@ -188,14 +188,15 @@ describe("runSignupFlow", () => {
     assert.ok(successPrinted.includes("Account created."));
     assert.ok(successPrinted.some((msg) => msg.includes("Logged in to https://app.operately.com as New User")));
 
-    assert.strictEqual(calls[0].path, cliAuth.checkAccount);
-    assert.strictEqual(calls[1].path, "/create_email_activation_code");
-    assert.strictEqual(calls[2].path, cliAuth.signup);
-    assert.strictEqual(calls[3].path, cliAuth.createCompany);
-    assert.strictEqual(calls[4].path, cliAuth.createToken);
-    assert.strictEqual(calls[4].token, "bootstrap_xxx");
-    assert.strictEqual(calls[5].method, "endpoint");
-    assert.strictEqual(calls[5].token, "op_live_final_token");
+    assert.strictEqual(calls[0].path, cliAuth.companyCreationStatus);
+    assert.strictEqual(calls[1].path, cliAuth.checkAccount);
+    assert.strictEqual(calls[2].path, "/create_email_activation_code");
+    assert.strictEqual(calls[3].path, cliAuth.signup);
+    assert.strictEqual(calls[4].path, cliAuth.setupCompany);
+    assert.strictEqual(calls[5].path, cliAuth.createToken);
+    assert.strictEqual(calls[5].token, "bootstrap_xxx");
+    assert.strictEqual(calls[6].method, "endpoint");
+    assert.strictEqual(calls[6].token, "op_live_final_token");
 
     const saved = readSavedConfig(tmpDir);
     assert.strictEqual(saved.activeProfile, "default");
@@ -204,9 +205,10 @@ describe("runSignupFlow", () => {
     assert.strictEqual(saved.profiles.default.companyName, "Acme Corp");
   });
 
-  it("falls back to create_company_on_non_empty when the instance already has companies", async () => {
+  it("uses create_company when the instance is already configured", async () => {
     promptQueue.push("", "New User", "newuser@example.com", "secret123456", "secret123456", "ABC123", "Acme Corp", "team");
 
+    responses.push({ configured: true });
     responses.push({ exists: false });
     responses.push({});
     responses.push({ status: "authenticated", companies: [], bootstrap_token: "bootstrap_xxx" });
@@ -214,26 +216,17 @@ describe("runSignupFlow", () => {
     responses.push({ token: "op_live_team_token", company: { id: "c2", name: "Acme Corp" } });
     responses.push({ me: { full_name: "New User", email: "newuser@example.com" } });
 
-    const deps = makeDeps(["password", "create-company"]);
-    deps.callInternalMutation = (_baseUrl: string, path: string, inputs: Record<string, unknown>, token?: string) => {
-      if (path === cliAuth.createCompany) {
-        calls.push({ method: "mutation", path, inputs, token });
-        return Promise.reject(new ApiError("Forbidden", 403, { message: "Companies already exist" }));
-      }
-
-      return mockMutation(_baseUrl, path, inputs, token);
-    };
-
-    const result = await runSignupFlow(new Map(), emptyConfig, registryStub, deps);
+    const result = await runSignupFlow(new Map(), emptyConfig, registryStub, makeDeps(["password", "create-company"]));
 
     assert.strictEqual(result, 0);
-    assert.strictEqual(calls[3].path, cliAuth.createCompany);
-    assert.strictEqual(calls[4].path, cliAuth.createCompanyOnNonEmpty);
+    assert.strictEqual(calls[0].path, cliAuth.companyCreationStatus);
+    assert.strictEqual(calls[4].path, cliAuth.createCompany);
   });
 
   it("signs up with email, joins via invite token, and saves the profile", async () => {
     promptQueue.push("", "New User", "newuser@example.com", "secret123456", "secret123456", "ABC123", "invite-token-123", "joined");
 
+    responses.push({ configured: true });
     responses.push({ exists: false });
     responses.push({});
     responses.push({ status: "authenticated", companies: [], bootstrap_token: "bootstrap_xxx" });
@@ -244,9 +237,9 @@ describe("runSignupFlow", () => {
     const result = await runSignupFlow(new Map(), emptyConfig, registryStub, makeDeps(["password", "join-invite"]));
 
     assert.strictEqual(result, 0);
-    assert.strictEqual(calls[3].path, cliAuth.joinWithInvite);
-    assert.deepStrictEqual(calls[3].inputs, { token: "invite-token-123" });
-    assert.strictEqual(calls[4].path, cliAuth.createToken);
+    assert.strictEqual(calls[4].path, cliAuth.joinWithInvite);
+    assert.deepStrictEqual(calls[4].inputs, { token: "invite-token-123" });
+    assert.strictEqual(calls[5].path, cliAuth.createToken);
 
     const saved = readSavedConfig(tmpDir);
     assert.strictEqual(saved.activeProfile, "joined");
@@ -256,6 +249,7 @@ describe("runSignupFlow", () => {
   it("signs up with email and exits cleanly when the user chooses to do this later", async () => {
     promptQueue.push("", "New User", "newuser@example.com", "secret123456", "secret123456", "ABC123");
 
+    responses.push({ configured: true });
     responses.push({ exists: false });
     responses.push({});
     responses.push({ status: "authenticated", companies: [], bootstrap_token: "bootstrap_xxx" });
@@ -274,14 +268,16 @@ describe("runSignupFlow", () => {
   it("rejects signup when the email already exists", async () => {
     promptQueue.push("", "Existing User", "existing@example.com", "secret123456", "secret123456");
 
+    responses.push({ configured: true });
     responses.push({ exists: true });
 
     const result = await runSignupFlow(new Map(), emptyConfig, registryStub, makeDeps(["password"]));
 
     assert.strictEqual(result, 1);
     assert.ok(errorsPrinted.some((msg) => msg.includes("already exists for this email")));
-    assert.strictEqual(calls.length, 1);
-    assert.strictEqual(calls[0].path, cliAuth.checkAccount);
+    assert.strictEqual(calls.length, 2);
+    assert.strictEqual(calls[0].path, cliAuth.companyCreationStatus);
+    assert.strictEqual(calls[1].path, cliAuth.checkAccount);
   });
 
   it("re-prompts for the password when the confirmation does not match", async () => {
@@ -296,6 +292,7 @@ describe("runSignupFlow", () => {
       "ABC123",
     );
 
+    responses.push({ configured: true });
     responses.push({ exists: false });
     responses.push({});
     responses.push({ status: "authenticated", companies: [], bootstrap_token: "bootstrap_xxx" });
@@ -304,10 +301,11 @@ describe("runSignupFlow", () => {
 
     assert.strictEqual(result, 0);
     assert.ok(errorsPrinted.includes("\nPasswords don't match\n"));
-    assert.strictEqual(calls[0].path, cliAuth.checkAccount);
-    assert.strictEqual(calls[1].path, "/create_email_activation_code");
-    assert.strictEqual(calls[2].path, cliAuth.signup);
-    assert.deepStrictEqual(calls[2].inputs, {
+    assert.strictEqual(calls[0].path, cliAuth.companyCreationStatus);
+    assert.strictEqual(calls[1].path, cliAuth.checkAccount);
+    assert.strictEqual(calls[2].path, "/create_email_activation_code");
+    assert.strictEqual(calls[3].path, cliAuth.signup);
+    assert.deepStrictEqual(calls[3].inputs, {
       email: "newuser@example.com",
       code: "ABC123",
       full_name: "New User",
@@ -318,6 +316,7 @@ describe("runSignupFlow", () => {
   it("signs up with Google, creates a company, and saves the profile", async () => {
     promptQueue.push("", "Google Company", "google");
 
+    responses.push({ configured: false });
     responses.push({
       status: "pending",
       bootstrap_token: "bootstrap_google",
@@ -332,8 +331,10 @@ describe("runSignupFlow", () => {
     const result = await runSignupFlow(new Map(), emptyConfig, registryStub, makeDeps(["google", "create-company"]));
 
     assert.strictEqual(result, 0);
-    assert.strictEqual(calls[0].path, cliAuth.startGoogleSignup);
-    assert.strictEqual(calls[1].path, cliAuth.status);
+    assert.strictEqual(calls[0].path, cliAuth.companyCreationStatus);
+    assert.strictEqual(calls[1].path, cliAuth.startGoogleSignup);
+    assert.strictEqual(calls[2].path, cliAuth.status);
+    assert.strictEqual(calls[3].path, cliAuth.setupCompany);
 
     const saved = readSavedConfig(tmpDir);
     assert.strictEqual(saved.activeProfile, "google");
@@ -343,6 +344,7 @@ describe("runSignupFlow", () => {
   it("signs up with Google, exits later, and does not save a profile", async () => {
     promptQueue.push("");
 
+    responses.push({ configured: true });
     responses.push({
       status: "pending",
       bootstrap_token: "bootstrap_google",
@@ -361,6 +363,7 @@ describe("runSignupFlow", () => {
   it("rejects Google signup when Google resolves to an existing account", async () => {
     promptQueue.push("");
 
+    responses.push({ configured: true });
     responses.push({
       status: "pending",
       bootstrap_token: "bootstrap_google",

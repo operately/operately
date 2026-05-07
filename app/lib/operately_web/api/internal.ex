@@ -11,8 +11,9 @@ defmodule OperatelyWeb.Api.Internal do
       {:mutation, "cli_auth/create_token"},
       {:mutation, "cli_auth/check_account"},
       {:mutation, "cli_auth/signup"},
+      {:query, "cli_auth/company_creation_status"},
+      {:mutation, "cli_auth/setup_company"},
       {:mutation, "cli_auth/create_company"},
-      {:mutation, "cli_auth/create_company_on_non_empty"},
       {:mutation, "cli_auth/join_company"},
       {:mutation, "cli_auth/join_with_invite"},
       {:mutation, "create_email_activation_code"},
@@ -35,9 +36,9 @@ defmodule OperatelyWeb.Api.Internal do
   plug(OperatelyWeb.Api.Plugs.RequireCliAuthSession,
     only: [
       {:query, "cli_auth/status"},
+      {:mutation, "cli_auth/setup_company"},
       {:mutation, "cli_auth/create_token"},
       {:mutation, "cli_auth/create_company"},
-      {:mutation, "cli_auth/create_company_on_non_empty"},
       {:mutation, "cli_auth/join_with_invite"}
     ]
   )
