@@ -3,7 +3,6 @@ defmodule OperatelyWeb.Api.ExternalMutations.Mutations do
 
   def __spec_modules__ do
     [
-      Mutations.Companies.Create,
       Mutations.Companies.CreateAdmins,
       Mutations.Companies.CreateMember,
       Mutations.Comments.Create,
