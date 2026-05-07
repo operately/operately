@@ -88,7 +88,12 @@ defmodule Operately.Support.CliE2E.SignupSteps do
         ]
       )
 
-    Map.put(ctx, :cli_result, result)
+    ctx
+    |> Map.put(:cli_result, result)
+    |> Map.put(:expected_password_prompts, [
+      {"Password:", ctx.signup_password},
+      {"Confirm password:", ctx.signup_password}
+    ])
   end
 
   step :sign_up_with_email_and_join_with_an_invite, ctx do
@@ -110,7 +115,12 @@ defmodule Operately.Support.CliE2E.SignupSteps do
         ]
       )
 
-    Map.put(ctx, :cli_result, result)
+    ctx
+    |> Map.put(:cli_result, result)
+    |> Map.put(:expected_password_prompts, [
+      {"Password:", ctx.signup_password},
+      {"Confirm password:", ctx.signup_password}
+    ])
   end
 
   step :sign_up_with_email_and_do_this_later, ctx do
@@ -130,10 +140,17 @@ defmodule Operately.Support.CliE2E.SignupSteps do
         ]
       )
 
-    Map.put(ctx, :cli_result, result)
+    ctx
+    |> Map.put(:cli_result, result)
+    |> Map.put(:expected_password_prompts, [
+      {"Password:", ctx.signup_password},
+      {"Confirm password:", ctx.signup_password}
+    ])
   end
 
   step :sign_up_with_email_and_expect_existing_account_rejection, ctx do
+    password = "new password 123"
+
     result =
       run_cli(
         ctx,
@@ -143,12 +160,17 @@ defmodule Operately.Support.CliE2E.SignupSteps do
           {"Base URL for the Operately instance", "#{ctx.cli_base_url}\n"},
           {"Full name:", "Existing Signup User\n"},
           {"Email:", "#{ctx.existing_account.email}\n"},
-          {"Password:", "new password 123\n"},
-          {"Confirm password:", "new password 123\n"}
+          {"Password:", "#{password}\n"},
+          {"Confirm password:", "#{password}\n"}
         ]
       )
 
-    Map.put(ctx, :cli_result, result)
+    ctx
+    |> Map.put(:cli_result, result)
+    |> Map.put(:expected_password_prompts, [
+      {"Password:", password},
+      {"Confirm password:", password}
+    ])
   end
 
   step :start_google_signup_to_create_a_company, ctx do
@@ -262,6 +284,14 @@ defmodule Operately.Support.CliE2E.SignupSteps do
     assert get_in(config, ["profiles", ctx.profile, "companyName"]) == ctx.expected_company_name
 
     Map.put(ctx, :saved_profile_token, token)
+  end
+
+  step :assert_the_password_prompts_were_masked, ctx do
+    Enum.each(ctx.expected_password_prompts, fn {prompt, password} ->
+      assert_password_is_masked(ctx.cli_result.output, prompt, password)
+    end)
+
+    ctx
   end
 
   step :assert_the_signup_status_command_works, ctx do

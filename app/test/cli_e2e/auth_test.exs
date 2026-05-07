@@ -26,6 +26,7 @@ defmodule Operately.CliE2E.AuthTest do
     ctx
     |> Steps.use_profile("password-e2e")
     |> Steps.log_in_with_password()
+    |> Steps.assert_the_password_prompts_were_masked()
     |> Steps.assert_login_succeeded()
     |> Steps.assert_profile_was_saved()
     |> Steps.assert_status_command_works()

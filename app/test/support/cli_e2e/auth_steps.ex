@@ -3,6 +3,8 @@ defmodule Operately.Support.CliE2E.AuthSteps do
 
   alias Operately.Support.CliE2E.Helpers
 
+  @password "hello world!"
+
   step :setup, ctx do
     previous = Helpers.enable_auth_methods()
 
@@ -49,12 +51,14 @@ defmodule Operately.Support.CliE2E.AuthSteps do
         script: [
           {"Enter choice (1-3):", "1\n"},
           {"Email:", "#{ctx.account.email}\n"},
-          {"Password:", "hello world!\n"},
+          {"Password:", "#{@password}\n"},
           {"Enter choice (1-2):", "2\n"}
         ]
       )
 
-    Map.put(ctx, :cli_result, result)
+    ctx
+    |> Map.put(:cli_result, result)
+    |> Map.put(:expected_password_prompts, [{"Password:", @password}])
   end
 
   step :start_google_login, ctx do
@@ -105,6 +109,14 @@ defmodule Operately.Support.CliE2E.AuthSteps do
 
   step :assert_profile_was_saved, ctx do
     verify_profile_was_saved(ctx)
+  end
+
+  step :assert_the_password_prompts_were_masked, ctx do
+    Enum.each(ctx.expected_password_prompts, fn {prompt, password} ->
+      assert_password_is_masked(ctx.cli_result.output, prompt, password)
+    end)
+
+    ctx
   end
 
   step :assert_status_command_works, ctx do

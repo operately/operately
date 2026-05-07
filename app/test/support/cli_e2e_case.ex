@@ -1,5 +1,6 @@
 defmodule Operately.CliE2ECase do
   use ExUnit.CaseTemplate
+  import ExUnit.Assertions
 
   @base_url "http://localhost:4002"
 
@@ -93,6 +94,15 @@ defmodule Operately.CliE2ECase do
     path = Path.join(System.tmp_dir!(), "#{prefix}-#{System.unique_integer([:positive])}#{extension}")
     File.write!(path, contents)
     path
+  end
+
+  def assert_password_is_masked(output, prompt, password) do
+    masked = String.duplicate("*", String.length(password))
+    pattern = Regex.compile!(Regex.escape(prompt) <> "[\\s\\S]*" <> Regex.escape(masked))
+
+    assert output =~ pattern
+    refute output =~ password
+    refute output =~ "#{prompt} (hidden)"
   end
 
   defp create_cli_home! do
