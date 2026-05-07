@@ -15,6 +15,7 @@ defmodule Operately.CliE2E.SignupTest do
     |> Steps.given_a_new_email_signup_candidate(full_name: "Email Founder", email: "signup-email-founder@example.com")
     |> Steps.set_the_company_name_to_create("Email Founder Company")
     |> Steps.sign_up_with_email_and_create_a_company()
+    |> Steps.assert_the_password_prompts_were_masked()
     |> Steps.assert_signup_and_login_succeeded()
     |> Steps.assert_the_signup_profile_was_saved()
     |> Steps.assert_the_signup_status_command_works()
@@ -27,6 +28,7 @@ defmodule Operately.CliE2E.SignupTest do
     |> Steps.given_a_company_wide_invite_for_signup(company_name: "Email Invited Company")
     |> Steps.given_a_new_email_signup_candidate(full_name: "Email Joiner", email: "signup-email-joiner@example.com")
     |> Steps.sign_up_with_email_and_join_with_an_invite()
+    |> Steps.assert_the_password_prompts_were_masked()
     |> Steps.assert_signup_and_login_succeeded()
     |> Steps.assert_the_signup_profile_was_saved()
     |> Steps.assert_the_signup_status_command_works()
@@ -38,6 +40,7 @@ defmodule Operately.CliE2E.SignupTest do
     ctx
     |> Steps.given_a_new_email_signup_candidate(full_name: "Email Later", email: "signup-email-later@example.com")
     |> Steps.sign_up_with_email_and_do_this_later()
+    |> Steps.assert_the_password_prompts_were_masked()
     |> Steps.assert_the_signup_can_be_finished_later()
   end
 
@@ -45,6 +48,7 @@ defmodule Operately.CliE2E.SignupTest do
     ctx
     |> Steps.given_an_existing_signup_account(email: "signup-existing@example.com")
     |> Steps.sign_up_with_email_and_expect_existing_account_rejection()
+    |> Steps.assert_the_password_prompts_were_masked()
     |> Steps.assert_email_signup_existing_account_was_rejected()
   end
 

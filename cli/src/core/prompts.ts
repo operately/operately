@@ -1,20 +1,21 @@
 import { stdin as defaultInput, stdout as defaultOutput } from "node:process";
 import { createInterface, type Interface } from "node:readline";
-import { Writable } from "node:stream";
+import { readMaskedPassword } from "./password-prompt";
 
 export interface PromptIO {
   input: PromptInput;
   output: PromptOutput;
 }
 
-type PromptInput = NodeJS.ReadableStream & {
+export type PromptInput = NodeJS.ReadableStream & {
   isTTY?: boolean;
+  pause?: () => void;
+  resume?: () => void;
+  setRawMode?: (mode: boolean) => void;
 };
 
-type PromptOutput = NodeJS.WritableStream & {
-  isTTY?: boolean;
-  columns?: number;
-  rows?: number;
+export type PromptOutput = NodeJS.WritableStream & {
+  write(chunk: string | Uint8Array, cb?: (error?: Error | null) => void): boolean;
 };
 
 export class PromptCancelledError extends Error {
@@ -80,66 +81,17 @@ export async function askChoiceWithIO<T>(
 }
 
 export async function askPasswordWithIO(prompt: string, io: PromptIO): Promise<string> {
-  if (!supportsHiddenInput(io)) {
-    return askQuestionWithIO(prompt, io);
-  }
-
-  const output = io.output;
-  const mutedOutput = new MutedOutput(output);
-  const rl = createInterface({ input: io.input, output: mutedOutput, terminal: true });
-
-  output.write(`${prompt} (hidden) `);
-  mutedOutput.muted = true;
-
-  try {
-    const answer = await question(rl, "");
-    return answer.trim();
-  } finally {
-    mutedOutput.muted = false;
-    rl.close();
-    output.write("\n");
-  }
+  return new Promise((resolve, reject) => {
+    readMaskedPassword(prompt, io)
+      .then(resolve)
+      .catch(() => reject(new PromptCancelledError()));
+  });
 }
 
 function defaultPromptIO(): PromptIO {
   return { input: defaultInput, output: defaultOutput };
 }
 
-function supportsHiddenInput(io: PromptIO): boolean {
-  return Boolean(io.input.isTTY && io.output.isTTY);
-}
-
 function question(rl: Interface, prompt: string): Promise<string> {
   return new Promise((resolve) => rl.question(prompt, resolve));
-}
-
-class MutedOutput extends Writable {
-  public muted = false;
-  public readonly isTTY: boolean;
-  public readonly columns?: number;
-  public readonly rows?: number;
-
-  constructor(private readonly target: NodeJS.WritableStream) {
-    super();
-    const ttyTarget = target as PromptOutput;
-    this.isTTY = Boolean(ttyTarget.isTTY);
-    this.columns = ttyTarget.columns;
-    this.rows = ttyTarget.rows;
-  }
-
-  override _write(
-    chunk: string | Buffer,
-    encoding: BufferEncoding,
-    callback: (error?: Error | null) => void,
-  ): void {
-    if (!this.muted) {
-      if (typeof chunk === "string") {
-        this.target.write(chunk, encoding);
-      } else {
-        this.target.write(chunk);
-      }
-    }
-
-    callback();
-  }
 }
