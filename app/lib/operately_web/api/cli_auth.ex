@@ -73,18 +73,25 @@ defmodule OperatelyWeb.Api.CliAuth do
       companies = CliAuthSession.eligible_companies(account)
 
       case companies do
-        [] -> no_companies_response()
+        [] -> no_companies_response(account)
         companies -> create_authenticated_response(account, companies)
       end
     end
 
-    defp no_companies_response do
-      {:ok,
-       %{
-         status: :no_companies,
-         companies: [],
-         message: CliAuthSession.no_companies_message()
-       }}
+    defp no_companies_response(account) do
+      case CliAuthSession.create_authenticated_session(account) do
+        {:ok, _session, raw_token} ->
+          {:ok,
+           %{
+             status: :no_companies,
+             companies: [],
+             bootstrap_token: raw_token,
+             message: CliAuthSession.no_companies_message()
+           }}
+
+        {:error, _changeset} ->
+          {:error, :internal_server_error}
+      end
     end
 
     defp create_authenticated_response(account, companies) do
@@ -533,12 +540,25 @@ defmodule OperatelyWeb.Api.CliAuth do
     end
   end
 
-  defmodule CreateCompany do
+  defmodule CompanyCreationStatus do
+    use TurboConnect.Query
+    use OperatelyWeb.Api.Helpers
+
+    outputs do
+      field :configured, :boolean, null: false
+    end
+
+    def call(_conn, _inputs) do
+      {:ok, %{configured: Operately.Setup.configured?()}}
+    end
+  end
+
+  defmodule SetupCompany do
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
     alias Operately.Operations.CompanyAdding
-    alias Operately.People.{Account, CliAuthSession}
+    alias Operately.People.Account
 
     inputs do
       field :company_name, :string
@@ -556,7 +576,7 @@ defmodule OperatelyWeb.Api.CliAuth do
 
       with :ok <- Steps.validate_token_creation_session(session),
            %{} <- account do
-        if Operately.Companies.count_companies() == 0 do
+        if Operately.Setup.company_setup_pending?() do
           do_create_company(account, inputs)
         else
           {:error, :forbidden}
@@ -596,12 +616,11 @@ defmodule OperatelyWeb.Api.CliAuth do
     end
   end
 
-  defmodule CreateCompanyOnNonEmpty do
+  defmodule CreateCompany do
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
     alias Operately.Operations.CompanyAdding
-    alias Operately.People.{Account, CliAuthSession}
 
     inputs do
       field :company_name, :string

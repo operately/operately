@@ -145,23 +145,13 @@ defmodule Operately.People.CliAuthSession do
         |> Repo.update()
 
       eligible_companies(account) == [] ->
-        if signup?(session) do
-          session
-          |> changeset(%{
-            account_id: account.id,
-            status: :authenticated,
-            failure_reason: nil
-          })
-          |> Repo.update()
-        else
-          session
-          |> changeset(%{
-            account_id: account.id,
-            status: :failed,
-            failure_reason: @no_companies_reason
-          })
-          |> Repo.update()
-        end
+        session
+        |> changeset(%{
+          account_id: account.id,
+          status: :authenticated,
+          failure_reason: nil
+        })
+        |> Repo.update()
 
       true ->
         session
@@ -185,7 +175,9 @@ defmodule Operately.People.CliAuthSession do
   end
 
   def poll_interval_ms, do: @poll_interval_ms
-  def no_companies_message, do: "This account is not a member of any companies. Join a company in the browser before using the CLI."
+  def no_companies_message,
+    do:
+      "This account is not a member of any companies. Use `operately auth create-company` to create one or `operately auth join` to join an existing company."
   def existing_account_message, do: "An account already exists for this Google account. Use `operately auth login` or `operately auth join` instead."
   def expired_message, do: "This authentication session has expired. Please start again from the CLI."
   def no_companies_reason, do: @no_companies_reason

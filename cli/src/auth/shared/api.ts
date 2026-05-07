@@ -5,11 +5,12 @@ export const cliAuth = {
   startGoogle: "/cli_auth/start_google",
   startGoogleSignup: "/cli_auth/start_google_signup",
   status: "/cli_auth/status",
+  companyCreationStatus: "/cli_auth/company_creation_status",
   createToken: "/cli_auth/create_token",
   checkAccount: "/cli_auth/check_account",
   signup: "/cli_auth/signup",
+  setupCompany: "/cli_auth/setup_company",
   createCompany: "/cli_auth/create_company",
-  createCompanyOnNonEmpty: "/cli_auth/create_company_on_non_empty",
   joinCompany: "/cli_auth/join_company",
   joinWithInvite: "/cli_auth/join_with_invite",
 };

@@ -11,6 +11,7 @@ import { printError, printSuccess } from "../core/output";
 import { executeAuthBootstrap } from "./bootstrap";
 import { runSignupFlow } from "./flows/signup";
 import { runJoinInviteFlow } from "./flows/join-invite";
+import { runCreateCompanyFlow } from "./flows/create-company";
 import { fetchProfileMetadata } from "./shared/profile-metadata";
 import type { AuthAction } from "../core/parser-types";
 import type { EndpointRegistry } from "../commands/registry";
@@ -34,6 +35,10 @@ export async function executeAuthCommand(input: AuthExecutionInput): Promise<num
 
   if (input.action === "join") {
     return executeAuthJoin(input.flags, config, input.registry);
+  }
+
+  if (input.action === "create-company") {
+    return executeAuthCreateCompany(input.flags, config, input.registry);
   }
 
   if (input.action === "status") {
@@ -61,6 +66,14 @@ async function executeAuthJoin(
   registry: EndpointRegistry,
 ): Promise<number> {
   return runJoinInviteFlow(flags, config, registry);
+}
+
+async function executeAuthCreateCompany(
+  flags: Map<string, unknown[]>,
+  config: CliConfig,
+  registry: EndpointRegistry,
+): Promise<number> {
+  return runCreateCompanyFlow(flags, config, registry);
 }
 
 async function executeAuthLogin(

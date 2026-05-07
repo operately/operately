@@ -71,7 +71,7 @@ defmodule OperatelyWeb.CliLoginControllerTest do
     refute get_session(conn, :account_token)
   end
 
-  test "google callback marks no_companies when the authenticated account has no memberships", ctx do
+  test "google callback authenticates a no-company account without creating a browser session", ctx do
     lonely_account = Operately.PeopleFixtures.account_fixture()
     {:ok, session, _raw_token} = CliAuthSession.create_pending_google_session()
 
@@ -94,8 +94,10 @@ defmodule OperatelyWeb.CliLoginControllerTest do
     updated_session = Repo.get!(CliAuthSession, session.id)
 
     assert redirected_to(conn) == "/cli-login/#{session.id}/success"
-    assert updated_session.status == :failed
-    assert updated_session.failure_reason == CliAuthSession.no_companies_reason()
+    assert updated_session.status == :authenticated
+    assert updated_session.account_id == lonely_account.id
+    assert is_nil(updated_session.failure_reason)
+    refute get_session(conn, :account_token)
   end
 
   test "google signup callback authenticates a newly created account without creating a browser session", ctx do

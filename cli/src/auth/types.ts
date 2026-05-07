@@ -4,3 +4,4 @@ export interface Company {
 }
 
 export type AuthMethod = "password" | "google" | "token";
+export type CompanyCreationMode = "setup" | "create";

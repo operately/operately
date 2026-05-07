@@ -2337,6 +2337,12 @@ export interface ApiTokensListResult {
   apiTokens: ApiToken[];
 }
 
+export interface CliAuthCompanyCreationStatusInput {}
+
+export interface CliAuthCompanyCreationStatusResult {
+  configured: boolean;
+}
+
 export interface CliAuthStatusInput {}
 
 export interface CliAuthStatusResult {
@@ -3349,16 +3355,6 @@ export interface CliAuthCreateCompanyResult {
   person: Person;
 }
 
-export interface CliAuthCreateCompanyOnNonEmptyInput {
-  companyName: string;
-  title?: string | null;
-}
-
-export interface CliAuthCreateCompanyOnNonEmptyResult {
-  company: Company;
-  person: Person;
-}
-
 export interface CliAuthCreateTokenInput {
   companyId: CompanyId;
   readOnly?: boolean;
@@ -3389,6 +3385,16 @@ export interface CliAuthJoinWithInviteInput {
 
 export interface CliAuthJoinWithInviteResult {
   company: Company;
+}
+
+export interface CliAuthSetupCompanyInput {
+  companyName: string;
+  title?: string | null;
+}
+
+export interface CliAuthSetupCompanyResult {
+  company: Company;
+  person: Person;
 }
 
 export interface CliAuthSignupInput {
@@ -4968,6 +4974,10 @@ class ApiNamespaceCompanyTransfers {
 class ApiNamespaceCliAuth {
   constructor(private client: ApiClient) {}
 
+  async companyCreationStatus(input: CliAuthCompanyCreationStatusInput): Promise<CliAuthCompanyCreationStatusResult> {
+    return this.client.get("/cli_auth/company_creation_status", input);
+  }
+
   async status(input: CliAuthStatusInput): Promise<CliAuthStatusResult> {
     return this.client.get("/cli_auth/status", input);
   }
@@ -4984,12 +4994,6 @@ class ApiNamespaceCliAuth {
     return this.client.post("/cli_auth/create_company", input);
   }
 
-  async createCompanyOnNonEmpty(
-    input: CliAuthCreateCompanyOnNonEmptyInput,
-  ): Promise<CliAuthCreateCompanyOnNonEmptyResult> {
-    return this.client.post("/cli_auth/create_company_on_non_empty", input);
-  }
-
   async createToken(input: CliAuthCreateTokenInput): Promise<CliAuthCreateTokenResult> {
     return this.client.post("/cli_auth/create_token", input);
   }
@@ -5000,6 +5004,10 @@ class ApiNamespaceCliAuth {
 
   async joinWithInvite(input: CliAuthJoinWithInviteInput): Promise<CliAuthJoinWithInviteResult> {
     return this.client.post("/cli_auth/join_with_invite", input);
+  }
+
+  async setupCompany(input: CliAuthSetupCompanyInput): Promise<CliAuthSetupCompanyResult> {
+    return this.client.post("/cli_auth/setup_company", input);
   }
 
   async signup(input: CliAuthSignupInput): Promise<CliAuthSignupResult> {
@@ -6487,6 +6495,13 @@ export default {
     useStatus: (input: CliAuthStatusInput) =>
       useQuery<CliAuthStatusResult>(() => defaultApiClient.apiNamespaceCliAuth.status(input)),
 
+    companyCreationStatus: (input: CliAuthCompanyCreationStatusInput) =>
+      defaultApiClient.apiNamespaceCliAuth.companyCreationStatus(input),
+    useCompanyCreationStatus: (input: CliAuthCompanyCreationStatusInput) =>
+      useQuery<CliAuthCompanyCreationStatusResult>(() =>
+        defaultApiClient.apiNamespaceCliAuth.companyCreationStatus(input),
+      ),
+
     startGoogleSignup: (input: CliAuthStartGoogleSignupInput) =>
       defaultApiClient.apiNamespaceCliAuth.startGoogleSignup(input),
     useStartGoogleSignup: () =>
@@ -6498,6 +6513,12 @@ export default {
     useCreateToken: () =>
       useMutation<CliAuthCreateTokenInput, CliAuthCreateTokenResult>((input) =>
         defaultApiClient.apiNamespaceCliAuth.createToken(input),
+      ),
+
+    setupCompany: (input: CliAuthSetupCompanyInput) => defaultApiClient.apiNamespaceCliAuth.setupCompany(input),
+    useSetupCompany: () =>
+      useMutation<CliAuthSetupCompanyInput, CliAuthSetupCompanyResult>((input) =>
+        defaultApiClient.apiNamespaceCliAuth.setupCompany(input),
       ),
 
     createCompany: (input: CliAuthCreateCompanyInput) => defaultApiClient.apiNamespaceCliAuth.createCompany(input),
@@ -6528,13 +6549,6 @@ export default {
     useCheckAccount: () =>
       useMutation<CliAuthCheckAccountInput, CliAuthCheckAccountResult>((input) =>
         defaultApiClient.apiNamespaceCliAuth.checkAccount(input),
-      ),
-
-    createCompanyOnNonEmpty: (input: CliAuthCreateCompanyOnNonEmptyInput) =>
-      defaultApiClient.apiNamespaceCliAuth.createCompanyOnNonEmpty(input),
-    useCreateCompanyOnNonEmpty: () =>
-      useMutation<CliAuthCreateCompanyOnNonEmptyInput, CliAuthCreateCompanyOnNonEmptyResult>((input) =>
-        defaultApiClient.apiNamespaceCliAuth.createCompanyOnNonEmpty(input),
       ),
 
     authPassword: (input: CliAuthAuthPasswordInput) => defaultApiClient.apiNamespaceCliAuth.authPassword(input),
