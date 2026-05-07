@@ -5,6 +5,7 @@ import * as os from "os";
 import * as path from "path";
 import { runCreateCompanyFlow } from "../../auth/flows/create-company";
 import { ApiError } from "../../core/http";
+import { PromptCancelledError } from "../../core/prompts";
 import { cliAuth } from "../../auth/shared/api";
 import type { ChildProcess } from "child_process";
 
@@ -270,6 +271,43 @@ describe("runCreateCompanyFlow", () => {
     assert.strictEqual(result, 1);
     assert.ok(errorsPrinted.some((msg) => msg.includes("Company creation failed")));
     assert.ok(!askedPrompts.includes("Profile name (default: default):"));
+    assert.ok(!fs.existsSync(path.join(tmpDir, ".operately", "config.json")));
+  });
+
+  it("prints a cancellation message when company creation is cancelled", async () => {
+    const deps = makeDeps(["password"]);
+    deps.askQuestion = (prompt: string) => {
+      askedPrompts.push(prompt);
+
+      if (prompt === "Email:") {
+        return Promise.resolve("user@example.com");
+      }
+
+      if (prompt === "Company name:") {
+        return Promise.reject(new PromptCancelledError("cancelled"));
+      }
+
+      throw new Error(`Unexpected prompt: ${prompt}`);
+    };
+
+    deps.askPassword = () => Promise.resolve("secret123456");
+
+    responses.push({ configured: true });
+    responses.push({
+      status: "no_companies",
+      companies: [],
+      bootstrap_token: "bootstrap_password",
+    });
+
+    const result = await runCreateCompanyFlow(
+      new Map<string, unknown[]>([["base-url", ["https://app.operately.com"]]]),
+      emptyConfig,
+      registryStub,
+      deps,
+    );
+
+    assert.strictEqual(result, 1);
+    assert.ok(errorsPrinted.includes("Company creation cancelled."));
     assert.ok(!fs.existsSync(path.join(tmpDir, ".operately", "config.json")));
   });
 });

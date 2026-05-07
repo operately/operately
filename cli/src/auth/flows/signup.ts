@@ -11,6 +11,7 @@ import { askQuestion, askPassword, askChoice, PromptCancelledError } from "../..
 import { callEndpoint, ApiError } from "../../core/http";
 import { cliAuth, openExternalUrl } from "../shared/api";
 import { createCompanyAndSaveProfile, resolveCompanyCreationMode } from "../shared/company-creation";
+import { requireCompany, resolveProfileName } from "../shared/helpers";
 import { createTokenAndSaveProfile } from "../shared/token-creation";
 import { runGoogleFlow } from "./login-google";
 import type { EndpointRegistry } from "../../commands/registry";
@@ -253,7 +254,7 @@ async function joinCompanyAndSaveProfile(
     config,
     runtimeBaseUrl,
     bootstrapToken,
-    company: assertCompany(result.company),
+    company: requireCompany(result.company, "Join failed: no company returned."),
     readOnly: false,
     timeoutMs,
     registry,
@@ -264,26 +265,6 @@ async function joinCompanyAndSaveProfile(
     saveProfile,
     writeConfig,
   });
-}
-
-async function resolveProfileName(
-  profileFlag: string | null,
-  askQuestionFn: typeof askQuestion,
-): Promise<string> {
-  if (profileFlag && profileFlag.trim()) {
-    return profileFlag.trim();
-  }
-
-  const answer = await askQuestionFn("Profile name (default: default):");
-  return answer.trim() || "default";
-}
-
-function assertCompany(company: Company | undefined): Company {
-  if (!company?.id) {
-    throw new Error("Join failed: no company returned.");
-  }
-
-  return company;
 }
 
 function readStringFlag(flags: Map<string, unknown[]>, name: string): string | null {

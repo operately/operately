@@ -4,6 +4,7 @@ import { askQuestion } from "../../core/prompts";
 import { callInternalMutation, callInternalQuery } from "../../core/internal-api";
 import { saveProfile, writeConfig, type CliConfig } from "../config";
 import { cliAuth } from "./api";
+import { requireCompany, resolveProfileName } from "./helpers";
 import { createTokenAndSaveProfile } from "./token-creation";
 import type { EndpointRegistry } from "../../commands/registry";
 import type { Company, CompanyCreationMode } from "../types";
@@ -46,7 +47,7 @@ export async function createCompanyAndSaveProfile(input: CreateCompanyAndSavePro
     { company_name: companyName },
     input.bootstrapToken,
   )) as { company?: Company };
-  const company = assertCompany(result.company);
+  const company = requireCompany(result.company, "Company creation failed: no company returned.");
 
   const profile = await resolveProfileName(input.profileFlag, input.deps.askQuestion);
 
@@ -67,24 +68,4 @@ export async function createCompanyAndSaveProfile(input: CreateCompanyAndSavePro
     saveProfile,
     writeConfig,
   });
-}
-
-function assertCompany(company: Company | undefined): Company {
-  if (!company?.id) {
-    throw new Error("Company creation failed: no company returned.");
-  }
-
-  return company;
-}
-
-async function resolveProfileName(
-  profileFlag: string | null,
-  askQuestionFn: typeof askQuestion,
-): Promise<string> {
-  if (profileFlag && profileFlag.trim()) {
-    return profileFlag.trim();
-  }
-
-  const answer = await askQuestionFn("Profile name (default: default):");
-  return answer.trim() || "default";
 }
