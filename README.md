@@ -33,12 +33,28 @@ Unlike Notion or ClickUp that let you build anything but leave you to figure out
 
 - **Goals / OKRs** - Track company-wide progress with clear targets linked directly to daily work
 - **Project Management** - Keep projects on track with task boards, milestones, and consistent check-ins
-- **AI Executive Coach** - Get strategic guidance and operational feedback from an AI that understands your company's goals and progress _(early beta)_
 - **Team Spaces** - Give departments their own organized home for goals, projects, and documents
 - **Message Boards** - Replace scattered email threads with organized discussions that build shared understanding
 - **Documents & Files** - Create, store, and share content in one centralized system with proper organization
 - **Team Management** - Onboard members, manage permissions, and maintain company structure
 - **Execution Cadence** - Built-in check-ins and automated progress updates create a consistent rhythm that keeps teams moving forward
+- **CLI & API** - Full programmatic access. AI agents can create goals, update projects, and post check-ins via the [CLI](https://operately.com/help/cli) or [API](https://operately.com/help/api).
+- **Agent Skills** - Published [skills](https://github.com/operately/skills) for Codex and Claude Code, and for [OpenClaw](https://clawhub.ai/markoa/operately-cli).
+
+## How it compares
+
+| | Operately | Monday.com | Asana | Notion |
+|---|---|---|---|---|
+| Open source | Yes (Apache 2.0) | No | No | No |
+| Built-in goals | Yes, free | Paid add-on | Paid add-on | Manual setup |
+| Self-hostable | Yes | No | No | No |
+| SaaS pricing model | Flat rate, no per-seat | Per seat | Per seat | Per seat |
+| Progress check-ins | Built in | No | No | No |
+| AI agent access | CLI + API + skills | MCP server + API | API only | API only |
+
+## Who uses Operately
+
+Technology companies and startups, nonprofits, consulting firms, and compliance-focused organizations that need structured goal tracking and project management without enterprise complexity or per-seat pricing. Works best for teams of 5 to 100.
 
 ## Quick start
 
