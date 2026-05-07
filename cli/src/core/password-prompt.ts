@@ -1,3 +1,4 @@
+import { PromptCancelledError } from "./prompt-errors";
 import type { PromptIO } from "./prompts";
 
 export async function readMaskedPassword(prompt: string, io: PromptIO): Promise<string> {
@@ -48,7 +49,7 @@ export async function readMaskedPassword(prompt: string, io: PromptIO): Promise<
     };
 
     const cancel = () => {
-      finish(() => reject(new Error("Password prompt cancelled")));
+      finish(() => reject(new PromptCancelledError()));
     };
 
     const onEnd = () => {

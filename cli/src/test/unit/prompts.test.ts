@@ -1,7 +1,7 @@
 import { describe, it } from "node:test";
 import * as assert from "node:assert";
 import { PassThrough, Writable } from "node:stream";
-import { askChoiceWithIO, askPasswordWithIO } from "../../core/prompts";
+import { askChoiceWithIO, askPasswordWithIO, PromptCancelledError } from "../../core/prompts";
 
 class CaptureOutput extends Writable {
   public readonly chunks: string[] = [];
@@ -60,6 +60,22 @@ function createChunkedInput(chunks: string[], isTTY = false): NodeJS.ReadableStr
   }
 
   queueInputChunks(input, chunks);
+
+  return input;
+}
+
+function createErroredInput(error: Error, isTTY = false): NodeJS.ReadableStream {
+  const input = new PassThrough() as PassThrough & {
+    isTTY?: boolean;
+    setRawMode?: (mode: boolean) => void;
+  };
+
+  if (isTTY) {
+    input.isTTY = true;
+    input.setRawMode = () => {};
+  }
+
+  setTimeout(() => input.emit("error", error), 0);
 
   return input;
 }
@@ -159,5 +175,47 @@ describe("prompts", () => {
     assert.match(output.normalizedText(), /Password:.*\*{9}/);
     assert.doesNotMatch(output.text(), /secret123/);
     assert.doesNotMatch(output.normalizedText(), /\(hidden\)/);
+  });
+
+  it("rejects with PromptCancelledError on Ctrl-C", async () => {
+    const output = new CaptureOutput(true);
+
+    await assert.rejects(
+      askPasswordWithIO("Password:", {
+        input: createChunkedInput(["s", "e", "\u0003"], true),
+        output,
+      }),
+      PromptCancelledError,
+    );
+
+    assert.match(output.normalizedText(), /Password:.*\*.*\*\n/);
+    assert.doesNotMatch(output.text(), /se/);
+  });
+
+  it("rejects with PromptCancelledError on Ctrl-D", async () => {
+    const output = new CaptureOutput(true);
+
+    await assert.rejects(
+      askPasswordWithIO("Password:", {
+        input: createChunkedInput(["s", "e", "\u0004"], true),
+        output,
+      }),
+      PromptCancelledError,
+    );
+
+    assert.match(output.normalizedText(), /Password:.*\*.*\*\n/);
+    assert.doesNotMatch(output.text(), /se/);
+  });
+
+  it("preserves real stream errors", async () => {
+    const output = new CaptureOutput(true);
+
+    await assert.rejects(
+      askPasswordWithIO("Password:", {
+        input: createErroredInput(new Error("boom"), true),
+        output,
+      }),
+      /boom/,
+    );
   });
 });

@@ -1,5 +1,6 @@
 import { stdin as defaultInput, stdout as defaultOutput } from "node:process";
 import { createInterface, type Interface } from "node:readline";
+import { PromptCancelledError } from "./prompt-errors";
 import { readMaskedPassword } from "./password-prompt";
 
 export interface PromptIO {
@@ -18,12 +19,7 @@ export type PromptOutput = NodeJS.WritableStream & {
   write(chunk: string | Uint8Array, cb?: (error?: Error | null) => void): boolean;
 };
 
-export class PromptCancelledError extends Error {
-  constructor(message = "Prompt cancelled") {
-    super(message);
-    this.name = "PromptCancelledError";
-  }
-}
+export { PromptCancelledError } from "./prompt-errors";
 
 export async function askQuestion(prompt: string): Promise<string> {
   return askQuestionWithIO(prompt, defaultPromptIO());
@@ -81,11 +77,7 @@ export async function askChoiceWithIO<T>(
 }
 
 export async function askPasswordWithIO(prompt: string, io: PromptIO): Promise<string> {
-  return new Promise((resolve, reject) => {
-    readMaskedPassword(prompt, io)
-      .then(resolve)
-      .catch(() => reject(new PromptCancelledError()));
-  });
+  return readMaskedPassword(prompt, io);
 }
 
 function defaultPromptIO(): PromptIO {
