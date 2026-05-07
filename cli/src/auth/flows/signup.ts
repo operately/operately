@@ -159,12 +159,7 @@ export async function runSignupFlow(
 async function runEmailSignup(baseUrl: string, d: SignupFlowDeps): Promise<string> {
   const fullName = await d.askQuestion("Full name:");
   const email = await d.askQuestion("Email:");
-  const password = await d.askPassword("Password:");
-  const passwordConfirmation = await d.askPassword("Confirm password:");
-
-  if (password !== passwordConfirmation) {
-    throw new Error("Passwords don't match");
-  }
+  const password = await askForMatchingPassword(d);
 
   const checkResult = (await d.callInternalMutation(
     baseUrl,
@@ -193,6 +188,19 @@ async function runEmailSignup(baseUrl: string, d: SignupFlowDeps): Promise<strin
   }
 
   return signupResult.bootstrap_token;
+}
+
+async function askForMatchingPassword(d: SignupFlowDeps): Promise<string> {
+  while (true) {
+    const password = await d.askPassword("Password:");
+    const passwordConfirmation = await d.askPassword("Confirm password:");
+
+    if (password === passwordConfirmation) {
+      return password;
+    }
+
+    d.printError("\nPasswords don't match\n");
+  }
 }
 
 async function runGoogleSignup(baseUrl: string, d: SignupFlowDeps): Promise<string> {

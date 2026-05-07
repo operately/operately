@@ -283,14 +283,35 @@ describe("runSignupFlow", () => {
     assert.strictEqual(calls[0].path, cliAuth.checkAccount);
   });
 
-  it("rejects signup when the passwords do not match", async () => {
-    promptQueue.push("", "New User", "newuser@example.com", "secret123456", "different-password");
+  it("re-prompts for the password when the confirmation does not match", async () => {
+    promptQueue.push(
+      "",
+      "New User",
+      "newuser@example.com",
+      "secret123456",
+      "different-password",
+      "secret123456",
+      "secret123456",
+      "ABC123",
+    );
 
-    const result = await runSignupFlow(new Map(), emptyConfig, registryStub, makeDeps(["password"]));
+    responses.push({ exists: false });
+    responses.push({});
+    responses.push({ status: "authenticated", companies: [], bootstrap_token: "bootstrap_xxx" });
 
-    assert.strictEqual(result, 1);
-    assert.ok(errorsPrinted.includes("Passwords don't match"));
-    assert.deepStrictEqual(calls, []);
+    const result = await runSignupFlow(new Map(), emptyConfig, registryStub, makeDeps(["password", "later"]));
+
+    assert.strictEqual(result, 0);
+    assert.ok(errorsPrinted.includes("\nPasswords don't match\n"));
+    assert.strictEqual(calls[0].path, cliAuth.checkAccount);
+    assert.strictEqual(calls[1].path, "/create_email_activation_code");
+    assert.strictEqual(calls[2].path, cliAuth.signup);
+    assert.deepStrictEqual(calls[2].inputs, {
+      email: "newuser@example.com",
+      code: "ABC123",
+      full_name: "New User",
+      password: "secret123456",
+    });
   });
 
   it("signs up with Google, creates a company, and saves the profile", async () => {
