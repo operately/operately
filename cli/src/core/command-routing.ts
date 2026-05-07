@@ -3,13 +3,14 @@ import { parseFlags } from "./flags";
 
 export function parseAuthCommand(argv: string[]): ParsedCommand {
   const action = argv[1];
+  const usage = formatAuthUsage();
 
   if (!action) {
-    throw new UsageError("Missing auth command. Use: auth <login|signup|status|whoami|logout>");
+    throw new UsageError(`Missing auth command. Use: ${usage}`);
   }
 
   if (!AUTH_ACTIONS.includes(action as AuthAction)) {
-    throw new UsageError("Invalid auth command. Use: auth <login|signup|join|status|whoami|logout>");
+    throw new UsageError(`Invalid auth command. Use: ${usage}`);
   }
 
   const flags = parseFlags(argv.slice(2));
@@ -24,4 +25,8 @@ export function splitCommandAndFlagTokens(argv: string[]): { commandParts: strin
     commandParts: argv.slice(0, firstFlagIndex),
     flagTokens: argv.slice(firstFlagIndex),
   };
+}
+
+function formatAuthUsage(): string {
+  return `auth <${AUTH_ACTIONS.join("|")}>`;
 }

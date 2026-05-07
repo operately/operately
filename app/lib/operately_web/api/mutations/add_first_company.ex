@@ -15,7 +15,7 @@ defmodule OperatelyWeb.Api.Mutations.AddFirstCompany do
   end
 
   def call(_conn, inputs) do
-    allowed = Operately.Companies.count_companies() == 0
+    allowed = not Operately.Setup.configured?()
 
     if allowed do
       {:ok, company} = Operately.Operations.CompanyAdding.run(inputs)
