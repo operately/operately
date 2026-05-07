@@ -56,10 +56,11 @@ Usage:
 Available Commands:
 ${namespaceLines}
 
-Utility commands:
+Authentication & Setup:
   auth login [--token <token>] [--base-url <url>] [--profile <name>]
   auth signup [--base-url <url>] [--profile <name>]
   auth join [--invite-token <token>] [--base-url <url>] [--profile <name>]
+  auth create-company [--base-url <url>] [--profile <name>]
   auth status [--profile <name>]
   auth whoami [--profile <name>]
   auth logout [--profile <name>]
@@ -151,6 +152,25 @@ const AUTH_COMMAND_HELP: Record<AuthAction, AuthCommandHelp> = {
       "operately auth join --invite-token abc123 --base-url https://staging.operately.com --profile staging",
     ],
   },
+  "create-company": {
+    usage: "operately auth create-company [--base-url <url>] [--profile <name>]",
+    description: [
+      "Authenticate, create a company, and save a full-access CLI profile",
+      "",
+      "  Interactive flow: run 'operately auth create-company' and follow prompts.",
+      `     You will be asked for a base URL (default: ${DEFAULT_BASE_URL}),`,
+      "     an authentication method (email/password or Google OAuth),",
+      "     a company name, and then a profile name once the CLI can save it.",
+      "",
+      "  This command does not accept an API token because company creation",
+      "  happens before a company-scoped token exists.",
+    ],
+    flags: ["--base-url <url>", "--profile <name>"],
+    examples: [
+      "operately auth create-company",
+      "operately auth create-company --base-url https://staging.operately.com --profile staging",
+    ],
+  },
   status: {
     description: "Show authentication status for current profile",
     usage: "operately auth status [--profile <name>]",
@@ -180,7 +200,7 @@ export function printAuthHelp(): void {
 
   const exampleLines = AUTH_ACTIONS.map((action) => `  ${AUTH_COMMAND_HELP[action].usage}`).join("\n");
 
-  console.log(`Operately CLI - Authentication
+  console.log(`Operately CLI - Authentication & Setup
 
 Usage:
   operately auth <command> [flags]
@@ -191,7 +211,7 @@ ${commandLines}
 Examples:
 ${exampleLines}
 
-Use 'operately help auth <command>' for command-specific authentication help.
+Use 'operately help auth <command>' for command-specific authentication and setup help.
 Use 'operately help' to see all available commands.`);
 }
 
@@ -200,7 +220,7 @@ export function printAuthCommandHelp(action: AuthAction): void {
   const flagLines = help.flags.map((flag) => `  ${flag}`).join("\n");
   const exampleLines = help.examples.map((example) => `  ${example}`).join("\n");
 
-  console.log(`Operately CLI - Authentication
+  console.log(`Operately CLI - Authentication & Setup
 
 Command:
   auth ${action}
@@ -217,7 +237,7 @@ ${flagLines}
 Examples:
 ${exampleLines}
 
-Use 'operately help auth' to see all authentication commands.`);
+Use 'operately help auth' to see all authentication and setup commands.`);
 }
 
 function formatTypeHint(typeRef: CatalogTypeRef): string {

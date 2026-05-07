@@ -73,18 +73,25 @@ defmodule OperatelyWeb.Api.CliAuth do
       companies = CliAuthSession.eligible_companies(account)
 
       case companies do
-        [] -> no_companies_response()
+        [] -> no_companies_response(account)
         companies -> create_authenticated_response(account, companies)
       end
     end
 
-    defp no_companies_response do
-      {:ok,
-       %{
-         status: :no_companies,
-         companies: [],
-         message: CliAuthSession.no_companies_message()
-       }}
+    defp no_companies_response(account) do
+      case CliAuthSession.create_authenticated_session(account) do
+        {:ok, _session, raw_token} ->
+          {:ok,
+           %{
+             status: :no_companies,
+             companies: [],
+             bootstrap_token: raw_token,
+             message: CliAuthSession.no_companies_message()
+           }}
+
+        {:error, _changeset} ->
+          {:error, :internal_server_error}
+      end
     end
 
     defp create_authenticated_response(account, companies) do

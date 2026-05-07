@@ -15296,9 +15296,9 @@
       ]
     }
   },
-  "endpoint_count": 197,
+  "endpoint_count": 196,
   "query_count": 63,
-  "mutation_count": 134,
+  "mutation_count": 133,
   "endpoints": [
     {
       "name": "create",
@@ -15547,64 +15547,6 @@
       ],
       "docstring": "Converts a company member to a guest.",
       "full_name": "companies/convert_member_to_guest",
-      "method": "POST"
-    },
-    {
-      "name": "create",
-      "type": "mutation",
-      "path": "/api/external/v1/companies/create",
-      "handler": "OperatelyWeb.Api.Companies.Create",
-      "outputs": [
-        {
-          "default": null,
-          "name": "company",
-          "type": {
-            "name": "company",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "namespace": "companies",
-      "inputs": [
-        {
-          "default": null,
-          "name": "company_name",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "title",
-          "type": {
-            "name": "string",
-            "kind": "named"
-          },
-          "optional": false,
-          "has_default": false,
-          "nullable": false
-        },
-        {
-          "default": null,
-          "name": "is_demo",
-          "type": {
-            "name": "boolean",
-            "kind": "named"
-          },
-          "optional": true,
-          "has_default": false,
-          "nullable": false
-        }
-      ],
-      "docstring": "Creates a new company.",
-      "full_name": "companies/create",
       "method": "POST"
     },
     {
@@ -27979,6 +27921,6 @@
     "tasks": "Get, list, create and manage tasks across projects and spaces"
   },
   "api_base_path": "/api/external/v1",
-  "generated_at": "2026-05-06T15:20:19Z",
+  "generated_at": "2026-05-07T15:09:51Z",
   "schema_version": 1
 }

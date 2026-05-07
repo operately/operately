@@ -335,6 +335,7 @@ defmodule Operately.Support.CliE2E.SignupSteps do
     assert ctx.cli_result.exit_code == 0
     assert ctx.cli_result.output =~ "Account created."
     assert ctx.cli_result.output =~ "No CLI profile was saved because this account is not connected to a company yet."
+    assert ctx.cli_result.output =~ "Use `operately auth create-company` later to create a company."
     assert ctx.cli_result.output =~ "Use `operately auth join` later to join an existing company."
 
     refute File.exists?(cli_config_path(ctx))

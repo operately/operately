@@ -265,6 +265,7 @@ describe("runSignupFlow", () => {
     assert.strictEqual(result, 0);
     assert.ok(successPrinted.includes("Account created."));
     assert.ok(infoPrinted.some((msg) => msg.includes("No CLI profile was saved")));
+    assert.ok(infoPrinted.some((msg) => msg.includes("operately auth create-company")));
     assert.ok(infoPrinted.some((msg) => msg.includes("operately auth join")));
     assert.ok(!fs.existsSync(path.join(tmpDir, ".operately", "config.json")));
     assert.ok(!askedPrompts.includes("Profile name (default: default):"));

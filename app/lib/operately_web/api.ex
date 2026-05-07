@@ -193,7 +193,6 @@ defmodule OperatelyWeb.Api do
 
         mutation(:restore_member, OperatelyWeb.Api.Companies.RestoreMember)
         mutation(:convert_member_to_guest, OperatelyWeb.Api.Companies.ConvertMemberToGuest)
-        mutation(:create, OperatelyWeb.Api.Companies.Create)
         mutation(:create_admins, OperatelyWeb.Api.Companies.CreateAdmins)
         mutation(:create_member, OperatelyWeb.Api.Companies.CreateMember)
         mutation(:update_members_permissions, OperatelyWeb.Api.Companies.UpdateMembersPermissions)
@@ -316,6 +315,10 @@ defmodule OperatelyWeb.Api do
         query(:get_conversations, OperatelyWeb.Api.Ai.GetConversations)
         mutation(:create_conversation, OperatelyWeb.Api.Ai.CreateConversation)
         mutation(:send_message, OperatelyWeb.Api.Ai.SendMessage)
+      end
+
+      namespace(:companies) do
+        mutation(:create, OperatelyWeb.Api.Companies.Create)
       end
 
       namespace(:spaces) do

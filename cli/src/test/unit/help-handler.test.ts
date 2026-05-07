@@ -39,11 +39,25 @@ test("resolves auth whoami help from inline --help", () => {
   assert.deepEqual(request, { kind: "auth-command", action: "whoami" });
 });
 
+test("resolves auth create-company help from inline --help", () => {
+  const registry = createRegistry(fixtureCatalog);
+  const request = resolveHelpRequest(["auth", "create-company", "--help"], registry);
+
+  assert.deepEqual(request, { kind: "auth-command", action: "create-company" });
+});
+
 test("resolves auth whoami help from help command", () => {
   const registry = createRegistry(fixtureCatalog);
   const request = resolveHelpRequest(["help", "auth", "whoami"], registry);
 
   assert.deepEqual(request, { kind: "auth-command", action: "whoami" });
+});
+
+test("resolves auth create-company help from help command", () => {
+  const registry = createRegistry(fixtureCatalog);
+  const request = resolveHelpRequest(["help", "auth", "create-company"], registry);
+
+  assert.deepEqual(request, { kind: "auth-command", action: "create-company" });
 });
 
 test("resolves auth login help from trailing help", () => {
