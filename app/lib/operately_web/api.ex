@@ -193,7 +193,6 @@ defmodule OperatelyWeb.Api do
 
         mutation(:restore_member, OperatelyWeb.Api.Companies.RestoreMember)
         mutation(:convert_member_to_guest, OperatelyWeb.Api.Companies.ConvertMemberToGuest)
-        mutation(:create, OperatelyWeb.Api.Companies.Create)
         mutation(:create_admins, OperatelyWeb.Api.Companies.CreateAdmins)
         mutation(:create_member, OperatelyWeb.Api.Companies.CreateMember)
         mutation(:update_members_permissions, OperatelyWeb.Api.Companies.UpdateMembersPermissions)
@@ -318,6 +317,10 @@ defmodule OperatelyWeb.Api do
         mutation(:send_message, OperatelyWeb.Api.Ai.SendMessage)
       end
 
+      namespace(:companies) do
+        mutation(:create, OperatelyWeb.Api.Companies.Create)
+      end
+
       namespace(:spaces) do
         mutation(:update_kanban, OperatelyWeb.Api.Spaces.UpdateKanban)
       end
@@ -359,6 +362,7 @@ defmodule OperatelyWeb.Api do
 
       namespace(:cli_auth) do
         query(:status, OperatelyWeb.Api.CliAuth.Status)
+        query(:company_creation_status, OperatelyWeb.Api.CliAuth.CompanyCreationStatus)
 
         mutation(:auth_password, OperatelyWeb.Api.CliAuth.AuthPassword)
         mutation(:start_google, OperatelyWeb.Api.CliAuth.StartGoogle)
@@ -366,8 +370,8 @@ defmodule OperatelyWeb.Api do
         mutation(:create_token, OperatelyWeb.Api.CliAuth.CreateToken)
         mutation(:check_account, OperatelyWeb.Api.CliAuth.CheckAccount)
         mutation(:signup, OperatelyWeb.Api.CliAuth.Signup)
+        mutation(:setup_company, OperatelyWeb.Api.CliAuth.SetupCompany)
         mutation(:create_company, OperatelyWeb.Api.CliAuth.CreateCompany)
-        mutation(:create_company_on_non_empty, OperatelyWeb.Api.CliAuth.CreateCompanyOnNonEmpty)
         mutation(:join_company, OperatelyWeb.Api.CliAuth.JoinCompany)
         mutation(:join_with_invite, OperatelyWeb.Api.CliAuth.JoinWithInvite)
       end
