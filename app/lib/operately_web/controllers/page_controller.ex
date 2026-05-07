@@ -20,7 +20,7 @@ defmodule OperatelyWeb.PageController do
       baseUrl: OperatelyWeb.Endpoint.url(),
       demoBuilder: Application.get_env(:operately, :demo_builder_allowed),
       showDevBar: Application.get_env(:operately, :app_env) == :dev,
-      configured: Operately.Companies.count_companies() > 0,
+      configured: configured?(),
       allowLoginWithGoogle: Application.get_env(:operately, :allow_login_with_google),
       allowSignupWithGoogle: Application.get_env(:operately, :allow_signup_with_google),
       allowLoginWithEmail: Application.get_env(:operately, :allow_login_with_email),
@@ -64,6 +64,10 @@ defmodule OperatelyWeb.PageController do
 
   defp ai_configured? do
     Application.get_env(:operately, :ai_configured, false)
+  end
+
+  defp configured? do
+    Operately.Companies.count_companies() > 0 or Operately.People.count_accounts() > 0
   end
 
   defp vite_url do
