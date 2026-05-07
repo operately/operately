@@ -5,6 +5,9 @@ defmodule Operately.Support.CliE2E.JoinSteps do
   alias Operately.People
   alias Operately.Support.CliE2E.Helpers
 
+  @existing_account_password "hello world!"
+  @new_account_password "new password 123"
+
   step :setup, ctx do
     previous = Helpers.enable_auth_methods()
 
@@ -114,11 +117,13 @@ defmodule Operately.Support.CliE2E.JoinSteps do
           {"How would you like to sign in?", "1\n"},
           {"Is this your first time logging in?", "2\n"},
           {"Email:", "#{ctx.invitee.email}\n"},
-          {"Password:", "hello world!\n"}
+          {"Password:", "#{@existing_account_password}\n"}
         ]
       )
 
-    Map.put(ctx, :cli_result, result)
+    ctx
+    |> Map.put(:cli_result, result)
+    |> Map.put(:expected_password_prompts, [{"Password:", @existing_account_password}])
   end
 
   step :join_personal_invite_as_a_first_time_member_with_password, ctx do
@@ -138,12 +143,17 @@ defmodule Operately.Support.CliE2E.JoinSteps do
         script: [
           {"How would you like to sign in?", "1\n"},
           {"Is this your first time logging in?", "1\n"},
-          {"Password:", "new password 123\n"},
-          {"Confirm password:", "new password 123\n"}
+          {"Password:", "#{@new_account_password}\n"},
+          {"Confirm password:", "#{@new_account_password}\n"}
         ]
       )
 
-    Map.put(ctx, :cli_result, result)
+    ctx
+    |> Map.put(:cli_result, result)
+    |> Map.put(:expected_password_prompts, [
+      {"Password:", @new_account_password},
+      {"Confirm password:", @new_account_password}
+    ])
   end
 
   step :start_personal_invite_google_join, ctx do
@@ -248,12 +258,14 @@ defmodule Operately.Support.CliE2E.JoinSteps do
         script: [
           {"How would you like to sign in?", "1\n"},
           {"Email:", "#{ctx.account.email}\n"},
-          {"Password:", "hello world!\n"},
+          {"Password:", "#{@existing_account_password}\n"},
           {"Select a company:", "2\n"}
         ]
       )
 
-    Map.put(ctx, :cli_result, result)
+    ctx
+    |> Map.put(:cli_result, result)
+    |> Map.put(:expected_password_prompts, [{"Password:", @existing_account_password}])
   end
 
   step :assert_the_company_selection_prompt_was_skipped, ctx do
@@ -324,6 +336,14 @@ defmodule Operately.Support.CliE2E.JoinSteps do
 
   step :assert_profile_was_saved, ctx do
     verify_profile_was_saved(ctx)
+  end
+
+  step :assert_the_password_prompts_were_masked, ctx do
+    Enum.each(ctx.expected_password_prompts, fn {prompt, password} ->
+      assert_password_is_masked(ctx.cli_result.output, prompt, password)
+    end)
+
+    ctx
   end
 
   step :assert_status_command_works, ctx do

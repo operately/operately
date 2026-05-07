@@ -81,4 +81,12 @@ main(process.argv.slice(2))
   .catch(() => {
     printError("Fatal error.");
     process.exitCode = 5;
+  })
+  .finally(() => {
+    releaseStandardInput();
   });
+
+function releaseStandardInput(): void {
+  process.stdin.pause();
+  process.stdin.unref?.();
+}
