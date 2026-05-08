@@ -2,6 +2,24 @@ import { ApiError } from "../../core/http";
 import { printError } from "../../core/output";
 import { PromptCancelledError } from "../../core/prompts";
 
+export function formatApiMessage(error: ApiError): string {
+  const payload = error.payload;
+
+  if (typeof payload === "object" && payload !== null && "message" in payload) {
+    return String((payload as { message: string }).message);
+  }
+
+  if (typeof payload === "string") {
+    return payload;
+  }
+
+  if (payload == null) {
+    return "Unknown error";
+  }
+
+  return JSON.stringify(payload);
+}
+
 export function handleBootstrapError(error: unknown, baseUrl: string, printErrorFn: typeof printError): number {
   if (error instanceof PromptCancelledError) {
     printErrorFn("Authentication cancelled.");
@@ -20,8 +38,7 @@ export function handleBootstrapError(error: unknown, baseUrl: string, printError
       return 5;
     }
 
-    const payload = typeof error.payload === "string" ? error.payload : JSON.stringify(error.payload);
-    printErrorFn(`Authentication failed for ${baseUrl}: ${payload}`);
+    printErrorFn(`Authentication failed for ${baseUrl}: ${formatApiMessage(error)}`);
     return 4;
   }
 

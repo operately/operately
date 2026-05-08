@@ -243,6 +243,44 @@ describe("Auth Bootstrap", () => {
     assert.strictEqual(calls[1].token, "bootstrap_xxx");
   });
 
+  it("email-code flow with single company creates and saves token", async () => {
+    promptQueue.push("emailCode", "", "", "user@example.com", "ABC123", false);
+
+    responses.push({});
+    responses.push({
+      status: "authenticated",
+      bootstrap_token: "bootstrap_email",
+      companies: [{ id: "c1", name: "Acme Corp" }],
+    });
+
+    responses.push({
+      token: "op_live_email_token",
+      company: { id: "c1", name: "Acme Corp" },
+    });
+
+    responses.push({ me: { full_name: "Email User", email: "user@example.com" } });
+
+    process.env.HOME = tmpDir;
+    process.env.OPERATELY_API_TOKEN = "";
+    process.env.OPERATELY_BASE_URL = "";
+    process.env.OPERATELY_PROFILE = "";
+
+    const result = await executeAuthBootstrap(
+      new Map(),
+      { activeProfile: "default", profiles: {} },
+      registryStub as any,
+      makeDeps(),
+    );
+
+    assert.strictEqual(result, 0);
+    assert.strictEqual(calls[0].path, cliAuth.requestEmailCode);
+    assert.deepStrictEqual(calls[0].inputs, { email: "user@example.com" });
+    assert.strictEqual(calls[1].path, cliAuth.authEmailCode);
+    assert.deepStrictEqual(calls[1].inputs, { email: "user@example.com", code: "ABC123" });
+    assert.strictEqual(calls[2].path, cliAuth.createToken);
+    assert.strictEqual(calls[2].token, "bootstrap_email");
+  });
+
   it("password flow with no companies returns error", async () => {
     promptQueue.push("password", "", "", "user@example.com", "secret123");
 
@@ -431,7 +469,7 @@ describe("Auth Bootstrap", () => {
     responses.push({ me: { full_name: "Retry User", email: "retry@example.com" } });
 
     const deps = makeDeps();
-    deps.askChoice = createScriptedChoicePrompter("9\n3\n");
+    deps.askChoice = createScriptedChoicePrompter("9\n4\n");
 
     process.env.HOME = tmpDir;
 

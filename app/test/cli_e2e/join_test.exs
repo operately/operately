@@ -32,6 +32,20 @@ defmodule Operately.CliE2E.JoinTest do
     |> Steps.assert_people_get_me_command_works()
   end
 
+  test "personal invite joins a returning member with an email code and status works", ctx do
+    ctx
+    |> Steps.use_profile("personal-email-code-returning")
+    |> Steps.given_a_returning_personal_invitee()
+    |> Steps.given_a_personal_invite_for_the_invitee()
+    |> Steps.join_personal_invite_as_a_returning_member_with_email_code()
+    |> Steps.assert_join_login_succeeded()
+    |> Steps.assert_the_cli_announces_the_personal_invitee_email()
+    |> Steps.assert_the_personal_invite_was_consumed()
+    |> Steps.assert_profile_was_saved()
+    |> Steps.assert_status_command_works()
+    |> Steps.assert_people_get_me_command_works()
+  end
+
   test "personal invite lets a first-time member set a password and status works", ctx do
     ctx
     |> Steps.use_profile("personal-password-first-time")
@@ -70,6 +84,20 @@ defmodule Operately.CliE2E.JoinTest do
     |> Steps.given_a_company_wide_invite_for_another_company()
     |> Steps.join_company_wide_invite_with_password()
     |> Steps.assert_the_password_prompts_were_masked()
+    |> Steps.assert_join_login_succeeded()
+    |> Steps.assert_the_company_selection_prompt_was_skipped()
+    |> Steps.assert_the_company_wide_invite_was_used()
+    |> Steps.assert_the_existing_account_was_added_to_the_invited_company()
+    |> Steps.assert_profile_was_saved()
+    |> Steps.assert_status_command_works()
+    |> Steps.assert_people_get_me_command_works()
+  end
+
+  test "company-wide invite joins via email code, auto-selects the invited company, and status works", ctx do
+    ctx
+    |> Steps.use_profile("company-email-code")
+    |> Steps.given_a_company_wide_invite_for_another_company()
+    |> Steps.join_company_wide_invite_with_email_code()
     |> Steps.assert_join_login_succeeded()
     |> Steps.assert_the_company_selection_prompt_was_skipped()
     |> Steps.assert_the_company_wide_invite_was_used()

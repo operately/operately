@@ -2,6 +2,8 @@ import type { ChildProcess } from "child_process";
 
 export const cliAuth = {
   authPassword: "/cli_auth/auth_password",
+  requestEmailCode: "/cli_auth/request_email_code",
+  authEmailCode: "/cli_auth/auth_email_code",
   startGoogle: "/cli_auth/start_google",
   startGoogleSignup: "/cli_auth/start_google_signup",
   status: "/cli_auth/status",

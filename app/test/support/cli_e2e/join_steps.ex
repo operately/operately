@@ -3,6 +3,7 @@ defmodule Operately.Support.CliE2E.JoinSteps do
 
   alias Operately.InviteLinks
   alias Operately.People
+  alias Operately.People.EmailActivationCode
   alias Operately.Support.CliE2E.Helpers
 
   @existing_account_password "hello world!"
@@ -115,7 +116,6 @@ defmodule Operately.Support.CliE2E.JoinSteps do
         ],
         script: [
           {"How would you like to sign in?", "1\n"},
-          {"Is this your first time logging in?", "2\n"},
           {"Email:", "#{ctx.invitee.email}\n"},
           {"Password:", "#{@existing_account_password}\n"}
         ]
@@ -124,6 +124,31 @@ defmodule Operately.Support.CliE2E.JoinSteps do
     ctx
     |> Map.put(:cli_result, result)
     |> Map.put(:expected_password_prompts, [{"Password:", @existing_account_password}])
+  end
+
+  step :join_personal_invite_as_a_returning_member_with_email_code, ctx do
+    {:ok, activation} = EmailActivationCode.create(ctx.invitee.email)
+
+    result =
+      run_cli(
+        ctx,
+        [
+          "auth",
+          "join",
+          "--invite-token",
+          ctx.invite_token,
+          "--base-url",
+          ctx.cli_base_url,
+          "--profile",
+          ctx.profile
+        ],
+        script: [
+          {"How would you like to sign in?", "2\n"},
+          {"A verification code was sent to your email. Enter the code:", "#{activation.code}\n"}
+        ]
+      )
+
+    Map.put(ctx, :cli_result, result)
   end
 
   step :join_personal_invite_as_a_first_time_member_with_password, ctx do
@@ -142,7 +167,6 @@ defmodule Operately.Support.CliE2E.JoinSteps do
         ],
         script: [
           {"How would you like to sign in?", "1\n"},
-          {"Is this your first time logging in?", "1\n"},
           {"Password:", "#{@new_account_password}\n"},
           {"Confirm password:", "#{@new_account_password}\n"}
         ]
@@ -268,6 +292,33 @@ defmodule Operately.Support.CliE2E.JoinSteps do
     |> Map.put(:expected_password_prompts, [{"Password:", @existing_account_password}])
   end
 
+  step :join_company_wide_invite_with_email_code, ctx do
+    {:ok, activation} = EmailActivationCode.create(ctx.account.email)
+
+    result =
+      run_cli(
+        ctx,
+        [
+          "auth",
+          "join",
+          "--invite-token",
+          ctx.invite_token,
+          "--base-url",
+          ctx.cli_base_url,
+          "--profile",
+          ctx.profile
+        ],
+        script: [
+          {"How would you like to sign in?", "2\n"},
+          {"Email:", "#{ctx.account.email}\n"},
+          {"A verification code was sent to your email. Enter the code:", "#{activation.code}\n"},
+          {"Select a company:", "2\n"}
+        ]
+      )
+
+    Map.put(ctx, :cli_result, result)
+  end
+
   step :assert_the_company_selection_prompt_was_skipped, ctx do
     refute ctx.cli_result.output =~ "Select a company:"
     ctx
@@ -299,7 +350,7 @@ defmodule Operately.Support.CliE2E.JoinSteps do
             ctx.profile
           ],
           script: [
-            {"How would you like to sign in?", "2\n"}
+            {"How would you like to sign in?", "3\n"}
           ]
         )
       end)
