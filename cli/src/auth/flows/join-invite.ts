@@ -12,6 +12,7 @@ import { callEndpoint } from "../../core/http";
 import { cliAuth, publicQuery } from "../shared/api";
 import { selectCompany } from "../shared/company-selection";
 import { createTokenAndSaveProfile } from "../shared/token-creation";
+import { runEmailCodeFlow } from "./login-email-code";
 import { runPasswordFlow } from "./login-password";
 import { runGoogleFlow } from "./login-google";
 import { openExternalUrl } from "../shared/api";
@@ -138,26 +139,22 @@ async function handlePersonalInvite(
     { token: inviteToken },
   )) as {
     invite_link: { company: Company };
-    member: { email: string };
+    member: { email: string; has_open_invitation?: boolean | null };
   };
 
   const memberEmail = invitation.member.email;
+  const hasOpenInvitation = invitation.member.has_open_invitation === true;
 
   d.printInfo(`\nJoining as ${memberEmail}`);
-  const method = await d.askChoice<"password" | "google">("How would you like to sign in?", [
-    { label: "Email and password", value: "password" },
-    { label: "Google OAuth (opens browser)", value: "google" },
-  ]);
-
   let bootstrapToken: string;
 
-  if (method === "password") {
-    const isFirstTime = await d.askChoice<boolean>("Is this your first time logging in?", [
-      { label: "Yes", value: true },
-      { label: "No", value: false },
+  if (hasOpenInvitation) {
+    const method = await d.askChoice<"password" | "google">("How would you like to sign in?", [
+      { label: "Email and password", value: "password" },
+      { label: "Google OAuth (opens browser)", value: "google" },
     ]);
 
-    if (isFirstTime) {
+    if (method === "password") {
       const password = await d.askPassword("Password:");
       const passwordConfirmation = await d.askPassword("Confirm password:");
 
@@ -177,6 +174,21 @@ async function handlePersonalInvite(
 
       bootstrapToken = response.bootstrap_token;
     } else {
+      const result = await runGoogleFlow(baseUrl, {
+        callInternalMutation: d.callInternalMutation,
+        callInternalQuery: d.callInternalQuery,
+        openUrl: d.openUrl,
+      }, { inviteToken });
+      bootstrapToken = result.bootstrapToken;
+    }
+  } else {
+    const method = await d.askChoice<"password" | "emailCode" | "google">("How would you like to sign in?", [
+      { label: "Email and password", value: "password" },
+      { label: "Email code (no password)", value: "emailCode" },
+      { label: "Google OAuth (opens browser)", value: "google" },
+    ]);
+
+    if (method === "password") {
       const result = await runPasswordFlow(baseUrl, {
         askQuestion: d.askQuestion,
         askPassword: d.askPassword,
@@ -189,14 +201,24 @@ async function handlePersonalInvite(
       }
 
       bootstrapToken = result.bootstrapToken;
+    } else if (method === "emailCode") {
+      const result = await runEmailCodeFlow(baseUrl, {
+        askQuestion: d.askQuestion,
+        callInternalMutation: d.callInternalMutation,
+      }, {
+        email: memberEmail,
+        inviteToken,
+      });
+
+      bootstrapToken = result.bootstrapToken;
+    } else {
+      const result = await runGoogleFlow(baseUrl, {
+        callInternalMutation: d.callInternalMutation,
+        callInternalQuery: d.callInternalQuery,
+        openUrl: d.openUrl,
+      }, { inviteToken });
+      bootstrapToken = result.bootstrapToken;
     }
-  } else {
-    const result = await runGoogleFlow(baseUrl, {
-      callInternalMutation: d.callInternalMutation,
-      callInternalQuery: d.callInternalQuery,
-      openUrl: d.openUrl,
-    }, { inviteToken });
-    bootstrapToken = result.bootstrapToken;
   }
 
   return await createTokenAndSaveProfile({
@@ -229,8 +251,9 @@ async function handleCompanyWideInvite(
   d: JoinInviteFlowDeps,
   invitedCompany?: Company,
 ): Promise<number> {
-  const method = await d.askChoice<"password" | "google">("How would you like to sign in?", [
+  const method = await d.askChoice<"password" | "emailCode" | "google">("How would you like to sign in?", [
     { label: "Email and password", value: "password" },
+    { label: "Email code (no password)", value: "emailCode" },
     { label: "Google OAuth (opens browser)", value: "google" },
   ]);
 
@@ -243,6 +266,13 @@ async function handleCompanyWideInvite(
       askPassword: d.askPassword,
       callInternalMutation: d.callInternalMutation,
     }, inviteToken);
+    bootstrapToken = result.bootstrapToken;
+    companies = result.companies;
+  } else if (method === "emailCode") {
+    const result = await runEmailCodeFlow(baseUrl, {
+      askQuestion: d.askQuestion,
+      callInternalMutation: d.callInternalMutation,
+    }, { inviteToken });
     bootstrapToken = result.bootstrapToken;
     companies = result.companies;
   } else {

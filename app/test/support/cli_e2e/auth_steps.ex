@@ -49,7 +49,7 @@ defmodule Operately.Support.CliE2E.AuthSteps do
         ctx,
         ["auth", "login", "--base-url", ctx.cli_base_url, "--profile", ctx.profile],
         script: [
-          {"Enter choice (1-3):", "1\n"},
+          {"Enter choice (1-4):", "1\n"},
           {"Email:", "#{ctx.account.email}\n"},
           {"Password:", "#{@password}\n"},
           {"Enter choice (1-2):", "2\n"}
@@ -61,6 +61,22 @@ defmodule Operately.Support.CliE2E.AuthSteps do
     |> Map.put(:expected_password_prompts, [{"Password:", @password}])
   end
 
+  step :log_in_with_email_code, ctx do
+    result =
+      run_cli(
+        ctx,
+        ["auth", "login", "--base-url", ctx.cli_base_url, "--profile", ctx.profile],
+        script: [
+          {"Enter choice (1-4):", "2\n"},
+          {"Email:", "#{ctx.account.email}\n"},
+          {"A verification code was sent to your email. Enter the code:", Helpers.activation_code_response(ctx.account.email)},
+          {"Enter choice (1-2):", "2\n"}
+        ]
+      )
+
+    Map.put(ctx, :cli_result, result)
+  end
+
   step :start_google_login, ctx do
     task =
       Task.async(fn ->
@@ -68,7 +84,7 @@ defmodule Operately.Support.CliE2E.AuthSteps do
           ctx,
           ["auth", "login", "--base-url", ctx.cli_base_url, "--profile", ctx.profile],
           script: [
-            {"Enter choice (1-3):", "2\n"},
+            {"Enter choice (1-4):", "3\n"},
             {"Enter choice (1-2):", "2\n"}
           ]
         )

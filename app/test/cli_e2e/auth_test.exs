@@ -44,6 +44,16 @@ defmodule Operately.CliE2E.AuthTest do
     |> Steps.assert_status_command_works()
   end
 
+  @tag ownership_timeout: 60_000
+  test "email-code auth persists the profile and status works", ctx do
+    ctx
+    |> Steps.use_profile("email-code-e2e")
+    |> Steps.log_in_with_email_code()
+    |> Steps.assert_login_succeeded()
+    |> Steps.assert_profile_was_saved()
+    |> Steps.assert_status_command_works()
+  end
+
   test "token auth rejects invalid tokens", ctx do
     ctx
     |> Steps.use_profile("e2e")

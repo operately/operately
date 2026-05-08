@@ -60,6 +60,26 @@ defmodule Operately.Support.CliE2E.CreateCompanySteps do
     |> Map.put(:expected_password_prompts, [{"Password:", @password}])
   end
 
+  step :create_company_with_email_code, ctx do
+    account = Map.fetch!(ctx, ctx.auth_account_key)
+
+    result =
+      run_cli(
+        ctx,
+        ["auth", "create-company"],
+        script: [
+          {"You need to authenticate to create a company. Choose a sign-in method:", "2\n"},
+          {"Base URL for the Operately instance", "#{ctx.cli_base_url}\n"},
+          {"Email:", "#{account.email}\n"},
+          {"A verification code was sent to your email. Enter the code:", Helpers.activation_code_response(account.email)},
+          {"Company name:", "#{ctx.expected_company_name}\n"},
+          {"Profile name (default: default):", "#{ctx.profile}\n"}
+        ]
+      )
+
+    Map.put(ctx, :cli_result, result)
+  end
+
   step :start_google_create_company, ctx do
     task =
       Task.async(fn ->
@@ -67,7 +87,7 @@ defmodule Operately.Support.CliE2E.CreateCompanySteps do
           ctx,
           ["auth", "create-company"],
           script: [
-            {"You need to authenticate to create a company. Choose a sign-in method:", "2\n"},
+            {"You need to authenticate to create a company. Choose a sign-in method:", "3\n"},
             {"Base URL for the Operately instance", "#{ctx.cli_base_url}\n"},
             {"Company name:", "#{ctx.expected_company_name}\n"},
             {"Profile name (default: default):", "#{ctx.profile}\n"}

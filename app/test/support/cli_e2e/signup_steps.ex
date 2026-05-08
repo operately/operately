@@ -3,7 +3,6 @@ defmodule Operately.Support.CliE2E.SignupSteps do
 
   alias Operately.InviteLinks
   alias Operately.People
-  alias Operately.People.EmailActivationCode
   alias Operately.Support.CliE2E.Helpers
 
   step :setup, ctx do
@@ -25,13 +24,10 @@ defmodule Operately.Support.CliE2E.SignupSteps do
     email = Keyword.fetch!(attrs, :email)
     password = Keyword.get(attrs, :password, "new password 123")
 
-    {:ok, activation} = EmailActivationCode.create(email)
-
     ctx
     |> Map.put(:expected_name, full_name)
     |> Map.put(:expected_email, email)
     |> Map.put(:signup_password, password)
-    |> Map.put(:activation_code, activation.code)
   end
 
   step :given_a_company_wide_invite_for_signup, ctx, attrs do
@@ -81,7 +77,7 @@ defmodule Operately.Support.CliE2E.SignupSteps do
           {"Email:", "#{ctx.expected_email}\n"},
           {"Password:", "#{ctx.signup_password}\n"},
           {"Confirm password:", "#{ctx.signup_password}\n"},
-          {"A verification code was sent to your email. Enter the code:", "#{ctx.activation_code}\n"},
+          {"A verification code was sent to your email. Enter the code:", Helpers.activation_code_response(ctx.expected_email)},
           {"What would you like to do next?", "1\n"},
           {"Company name:", "#{ctx.expected_company_name}\n"},
           {"Profile name (default: default):", "#{ctx.profile}\n"}
@@ -108,7 +104,7 @@ defmodule Operately.Support.CliE2E.SignupSteps do
           {"Email:", "#{ctx.expected_email}\n"},
           {"Password:", "#{ctx.signup_password}\n"},
           {"Confirm password:", "#{ctx.signup_password}\n"},
-          {"A verification code was sent to your email. Enter the code:", "#{ctx.activation_code}\n"},
+          {"A verification code was sent to your email. Enter the code:", Helpers.activation_code_response(ctx.expected_email)},
           {"What would you like to do next?", "2\n"},
           {"Invite token:", "#{ctx.invite_token}\n"},
           {"Profile name (default: default):", "#{ctx.profile}\n"}
@@ -135,7 +131,7 @@ defmodule Operately.Support.CliE2E.SignupSteps do
           {"Email:", "#{ctx.expected_email}\n"},
           {"Password:", "#{ctx.signup_password}\n"},
           {"Confirm password:", "#{ctx.signup_password}\n"},
-          {"A verification code was sent to your email. Enter the code:", "#{ctx.activation_code}\n"},
+          {"A verification code was sent to your email. Enter the code:", Helpers.activation_code_response(ctx.expected_email)},
           {"What would you like to do next?", "3\n"}
         ]
       )

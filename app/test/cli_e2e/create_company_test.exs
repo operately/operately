@@ -39,6 +39,20 @@ defmodule Operately.CliE2E.CreateCompanyTest do
   end
 
   @tag ownership_timeout: 60_000
+  test "email-code auth creates a company for an existing account with no companies", ctx do
+    ctx
+    |> Steps.use_account_with_no_companies()
+    |> Steps.use_profile("create-company-email-code")
+    |> Steps.set_the_company_name_to_create("Email Code Bootstrap Company")
+    |> Steps.create_company_with_email_code()
+    |> Steps.assert_company_creation_succeeded()
+    |> Steps.assert_the_profile_was_saved()
+    |> Steps.assert_status_command_works()
+    |> Steps.assert_people_get_me_command_works()
+    |> Steps.assert_the_company_was_created_for_the_account()
+  end
+
+  @tag ownership_timeout: 60_000
   test "password auth creates another company for an account that already has one", ctx do
     ctx
     |> Steps.use_account_with_existing_company()
