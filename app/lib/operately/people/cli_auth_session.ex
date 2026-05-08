@@ -7,7 +7,7 @@ defmodule Operately.People.CliAuthSession do
   alias Operately.People.{Account, ApiToken, CliAuthSession}
   alias Operately.Repo
 
-  @valid_auth_methods [:password, :google]
+  @valid_auth_methods [:password, :google, :email_code]
   @valid_intents [:login, :signup]
   @valid_statuses [:pending, :authenticated, :failed, :consumed]
   @token_prefix "opbs_"

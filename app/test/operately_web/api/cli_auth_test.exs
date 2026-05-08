@@ -1,7 +1,7 @@
 defmodule OperatelyWeb.Api.CliAuthTest do
   use OperatelyWeb.TurboCase
 
-  alias Operately.People.CliAuthSession
+  alias Operately.People.{CliAuthSession, EmailActivationCode}
   alias Operately.Support.Factory
 
   setup ctx do
@@ -85,6 +85,219 @@ defmodule OperatelyWeb.Api.CliAuthTest do
                  email: ctx.account.email,
                  password: "wrong password"
                })
+    end
+  end
+
+  describe "request_email_code" do
+    test "creates an activation code for an existing account", ctx do
+      assert {200, res} =
+               mutation(ctx.conn, [:cli_auth, :request_email_code], %{
+                 email: ctx.account.email
+               })
+
+      assert res == %{}
+
+      code = Repo.get_by(EmailActivationCode, email: ctx.account.email)
+      assert code != nil
+      assert String.length(code.code) == 6
+    end
+
+    test "returns bad_request when no account exists for the email", ctx do
+      assert {400, res} =
+               mutation(ctx.conn, [:cli_auth, :request_email_code], %{
+                 email: "missing@example.com"
+               })
+
+      assert res.message =~ "No account exists for this email"
+    end
+
+    test "returns forbidden when email login is disabled", ctx do
+      Application.put_env(:operately, :allow_login_with_email, false)
+
+      assert {403, _res} =
+               mutation(ctx.conn, [:cli_auth, :request_email_code], %{
+                 email: ctx.account.email
+               })
+    end
+
+    test "returns bad_request when email delivery is not configured", ctx do
+      original_app_env = Application.get_env(:operately, :app_env)
+      original_sendgrid = System.get_env("SENDGRID_API_KEY")
+      original_smtp = System.get_env("SMTP_SERVER")
+
+      Application.put_env(:operately, :app_env, :prod)
+      System.delete_env("SENDGRID_API_KEY")
+      System.delete_env("SMTP_SERVER")
+
+      on_exit(fn ->
+        Application.put_env(:operately, :app_env, original_app_env)
+        restore_env("SENDGRID_API_KEY", original_sendgrid)
+        restore_env("SMTP_SERVER", original_smtp)
+      end)
+
+      assert {400, res} =
+               mutation(ctx.conn, [:cli_auth, :request_email_code], %{
+                 email: ctx.account.email
+               })
+
+      assert res.message =~ "email delivery hasn't been configured"
+    end
+
+  end
+
+  describe "auth_email_code" do
+    test "returns bootstrap token and one company for a single-company account", ctx do
+      {:ok, activation} = EmailActivationCode.create(ctx.account.email)
+
+      assert {200, res} =
+               mutation(ctx.conn, [:cli_auth, :auth_email_code], %{
+                 email: ctx.account.email,
+                 code: activation.code
+               })
+
+      assert res.status == "authenticated"
+      assert is_binary(res.bootstrap_token)
+      assert Enum.map(res.companies, & &1.id) == [Paths.company_id(ctx.company)]
+      assert Repo.get(EmailActivationCode, activation.id) == nil
+
+      assert {:ok, session} = CliAuthSession.authenticate(res.bootstrap_token)
+      assert session.auth_method == :email_code
+    end
+
+    test "returns all eligible companies for a multi-company account", ctx do
+      ctx = Factory.add_company(ctx, :second_company, ctx.account, name: "Second Company")
+      {:ok, activation} = EmailActivationCode.create(ctx.account.email)
+
+      assert {200, res} =
+               mutation(ctx.conn, [:cli_auth, :auth_email_code], %{
+                 email: ctx.account.email,
+                 code: activation.code
+               })
+
+      ids = MapSet.new(Enum.map(res.companies, & &1.id))
+
+      assert ids ==
+               MapSet.new([
+                 Paths.company_id(ctx.company),
+                 Paths.company_id(ctx.second_company)
+               ])
+    end
+
+    test "returns no_companies when the authenticated account has no eligible company", ctx do
+      ctx = %{ctx | conn: ctx.conn} |> Map.take([:conn]) |> Factory.add_account(:lonely_account)
+      {:ok, activation} = EmailActivationCode.create(ctx.lonely_account.email)
+
+      assert {200, res} =
+               mutation(ctx.conn, [:cli_auth, :auth_email_code], %{
+                 email: ctx.lonely_account.email,
+                 code: activation.code
+               })
+
+      assert res.status == "no_companies"
+      assert res.companies == []
+      assert is_binary(res.bootstrap_token)
+      assert res.message =~ "not a member of any companies"
+
+      assert {200, status_res} = bootstrap_query(ctx.conn, res.bootstrap_token, [:cli_auth, :status], %{})
+      assert status_res.status == "no_companies"
+    end
+
+    test "joins a company via company-wide invite token", ctx do
+      ctx = Factory.add_account(ctx, :lonely_account)
+
+      {:ok, invite_link} =
+        Operately.InviteLinks.create_invite_link(%{
+          company_id: ctx.company.id,
+          author_id: ctx.creator.id
+        })
+
+      {:ok, activation} = EmailActivationCode.create(ctx.lonely_account.email)
+
+      assert {200, res} =
+               mutation(ctx.conn, [:cli_auth, :auth_email_code], %{
+                 email: ctx.lonely_account.email,
+                 code: activation.code,
+                 invite_token: invite_link.token
+               })
+
+      assert res.status == "authenticated"
+      ids = Enum.map(res.companies, & &1.id)
+      assert Paths.company_id(ctx.company) in ids
+      assert Operately.People.get_person(ctx.lonely_account, ctx.company)
+    end
+
+    test "returns bad_request for an invalid code", ctx do
+      assert {400, res} =
+               mutation(ctx.conn, [:cli_auth, :auth_email_code], %{
+                 email: ctx.account.email,
+                 code: "INVALID"
+               })
+
+      assert res.message == "Invalid activation code"
+    end
+
+    test "returns bad_request for an expired code", ctx do
+      {:ok, activation} = EmailActivationCode.create(ctx.account.email)
+
+      activation
+      |> Ecto.Changeset.change(expires_at: DateTime.utc_now() |> DateTime.truncate(:second) |> DateTime.add(-1, :second))
+      |> Repo.update!()
+
+      assert {400, res} =
+               mutation(ctx.conn, [:cli_auth, :auth_email_code], %{
+                 email: ctx.account.email,
+                 code: activation.code
+               })
+
+      assert res.message =~ "expired"
+    end
+
+    test "returns bad_request for an already-consumed code", ctx do
+      {:ok, activation} = EmailActivationCode.create(ctx.account.email)
+
+      assert {200, _res} =
+               mutation(ctx.conn, [:cli_auth, :auth_email_code], %{
+                 email: ctx.account.email,
+                 code: activation.code
+               })
+
+      assert {400, res} =
+               mutation(ctx.conn, [:cli_auth, :auth_email_code], %{
+                 email: ctx.account.email,
+                 code: activation.code
+               })
+
+      assert res.message == "Invalid activation code"
+    end
+
+    test "returns bad_request for first-time personal invites without consuming the code", ctx do
+      {:ok, account} = Operately.People.Account.create("Invited Member", "blocked@example.com", :crypto.strong_rand_bytes(32) |> Base.encode64())
+
+      {:ok, member} = Operately.People.create_person(%{
+        full_name: "Invited Member",
+        email: "blocked@example.com",
+        company_id: ctx.company.id,
+        account_id: account.id
+      })
+
+      {:ok, invite_link} =
+        Operately.InviteLinks.create_personal_invite_link(%{
+          company_id: ctx.company.id,
+          author_id: ctx.creator.id,
+          person_id: member.id
+        })
+
+      {:ok, activation} = EmailActivationCode.create(account.email)
+
+      assert {400, res} =
+               mutation(ctx.conn, [:cli_auth, :auth_email_code], %{
+                 email: account.email,
+                 code: activation.code,
+                 invite_token: invite_link.token
+               })
+
+      assert res.message =~ "first-time invites"
+      assert Repo.get(EmailActivationCode, activation.id) != nil
     end
   end
 
@@ -805,4 +1018,7 @@ defmodule OperatelyWeb.Api.CliAuthTest do
     |> String.split("/")
     |> List.last()
   end
+
+  defp restore_env(key, nil), do: System.delete_env(key)
+  defp restore_env(key, value), do: System.put_env(key, value)
 end

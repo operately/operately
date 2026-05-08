@@ -27,7 +27,6 @@ defmodule Operately.People.EmailActivationCodeTest do
                Operately.People.EmailActivationCode.create("hello@text.localhost")
     end
   end
-
   defp restore_env(key, nil), do: System.delete_env(key)
   defp restore_env(key, value), do: System.put_env(key, value)
 end

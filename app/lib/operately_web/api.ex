@@ -365,6 +365,8 @@ defmodule OperatelyWeb.Api do
         query(:company_creation_status, OperatelyWeb.Api.CliAuth.CompanyCreationStatus)
 
         mutation(:auth_password, OperatelyWeb.Api.CliAuth.AuthPassword)
+        mutation(:request_email_code, OperatelyWeb.Api.CliAuth.RequestEmailCode)
+        mutation(:auth_email_code, OperatelyWeb.Api.CliAuth.AuthEmailCode)
         mutation(:start_google, OperatelyWeb.Api.CliAuth.StartGoogle)
         mutation(:start_google_signup, OperatelyWeb.Api.CliAuth.StartGoogleSignup)
         mutation(:create_token, OperatelyWeb.Api.CliAuth.CreateToken)

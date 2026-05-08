@@ -44,6 +44,15 @@ defmodule Operately.Operations.AccountSigningUpTest do
       assert account.email == @email
     end
 
+    test "consumes the activation code after a successful signup" do
+      {:ok, activation} = EmailActivationCode.create(@email)
+
+      assert {:ok, _account, _invite_context} =
+               AccountSigningUp.run(@full_name, @email, @password, activation.code)
+
+      assert Operately.Repo.get(EmailActivationCode, activation.id) == nil
+    end
+
     test "joins a company when a valid invite token is provided" do
       ctx = Factory.setup(%{}) |> Factory.add_company_member(:creator)
 

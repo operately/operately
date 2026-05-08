@@ -1,13 +1,12 @@
 defmodule OperatelyWeb.Api.CliAuth do
   alias OperatelyWeb.Api.CliAuth.SharedSteps, as: Steps
-
   defmodule AuthPassword do
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
     require Logger
 
-    alias Operately.People.{Account, CliAuthSession}
+    alias Operately.People.Account
 
     inputs do
       field :email, :string
@@ -23,10 +22,10 @@ defmodule OperatelyWeb.Api.CliAuth do
     end
 
     def call(_conn, inputs) do
-      with {:ok, :allowed} <- check_login_allowed(),
+      with {:ok, :allowed} <- Steps.check_email_login_allowed(),
            {:ok, account} <- authenticate_account(inputs),
-           {:ok, account} <- maybe_join_via_invite(account, inputs[:invite_token]) do
-        respond_with_authenticated_account(account)
+           {:ok, account} <- Steps.maybe_join_via_invite(account, inputs[:invite_token]) do
+        Steps.respond_with_authenticated_account(account, :password)
       else
         {:error, :forbidden} ->
           {:error, :forbidden}
@@ -40,71 +39,95 @@ defmodule OperatelyWeb.Api.CliAuth do
       end
     end
 
-    defp check_login_allowed do
-      if Application.get_env(:operately, :allow_login_with_email) do
-        {:ok, :allowed}
-      else
-        {:error, :forbidden}
-      end
-    end
-
     defp authenticate_account(inputs) do
       case Operately.People.get_account_by_email_and_password(inputs.email, inputs.password) do
         %Account{} = account -> {:ok, account}
         _ -> {:error, :unauthorized}
       end
     end
+  end
 
-    defp maybe_join_via_invite(account, nil), do: {:ok, account}
+  defmodule RequestEmailCode do
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
 
-    defp maybe_join_via_invite(account, token) do
-      case Operately.InviteLinks.join_company_via_invite_link(account, token) do
-        {:ok, _person} -> {:ok, account}
-        {:error, :invite_token_not_found} -> {:error, "Invalid invite link"}
-        {:error, :invite_token_inactive} -> {:error, "This invite link is no longer valid"}
-        {:error, :invite_token_domain_not_allowed} -> {:error, "This invite link is restricted to specific email domains"}
-        {:error, :invite_token_invalid} -> {:error, "This invite link is no longer valid"}
-        {:error, :person_creation_failed} -> {:error, "Unable to add you to this company."}
-        {:error, :invite_link_update_failed} -> {:error, "Something went wrong while using this invite link."}
-      end
+    alias Operately.People.EmailActivationCode
+
+    inputs do
+      field :email, :string
     end
 
-    defp respond_with_authenticated_account(account) do
-      companies = CliAuthSession.eligible_companies(account)
+    def call(_conn, inputs) do
+      with {:ok, :allowed} <- Steps.check_email_login_allowed(),
+           {:ok, _account} <- Steps.fetch_account(inputs.email),
+           {:ok, _activation} <- EmailActivationCode.create(inputs.email) do
+        {:ok, %{}}
+      else
+        {:error, :forbidden} ->
+          {:error, :forbidden}
 
-      case companies do
-        [] -> no_companies_response(account)
-        companies -> create_authenticated_response(account, companies)
-      end
-    end
+        {:error, :account_not_found} ->
+          {:error, :bad_request, Steps.account_not_found_message()}
 
-    defp no_companies_response(account) do
-      case CliAuthSession.create_authenticated_session(account) do
-        {:ok, _session, raw_token} ->
-          {:ok,
-           %{
-             status: :no_companies,
-             companies: [],
-             bootstrap_token: raw_token,
-             message: CliAuthSession.no_companies_message()
-           }}
+        {:error, :email_delivery_not_configured} ->
+          {:error, :bad_request, Steps.email_delivery_not_configured_message()}
 
-        {:error, _changeset} ->
+        {:error, reason} when is_binary(reason) ->
+          {:error, :bad_request, reason}
+
+        {:error, _reason} ->
           {:error, :internal_server_error}
       end
     end
+  end
 
-    defp create_authenticated_response(account, companies) do
-      case CliAuthSession.create_authenticated_session(account) do
-        {:ok, _session, raw_token} ->
-          {:ok,
-           %{
-             status: :authenticated,
-             companies: Serializer.serialize(companies, level: :essential),
-             bootstrap_token: raw_token
-           }}
+  defmodule AuthEmailCode do
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
 
-        {:error, _changeset} ->
+    alias Operately.Operations.EmailActivationCodeConsuming
+    alias Operately.People.EmailActivationCode
+
+    inputs do
+      field :email, :string
+      field :code, :string
+      field? :invite_token, :string, null: true
+    end
+
+    outputs do
+      field :status, :cli_auth_status
+      field :companies, list_of(:company)
+      field? :bootstrap_token, :string, null: true
+      field? :message, :string, null: true
+    end
+
+    def call(_conn, inputs) do
+      with {:ok, :allowed} <- Steps.check_email_login_allowed(),
+           {:ok, account} <- Steps.fetch_account(inputs.email),
+           {:ok, _account} <- Steps.validate_email_code_request(account, inputs[:invite_token]),
+           {:ok, _activation} <- EmailActivationCodeConsuming.run(inputs.email, inputs.code),
+           {:ok, account} <- Steps.maybe_join_via_invite(account, inputs[:invite_token]) do
+        Steps.respond_with_authenticated_account(account, :email_code)
+      else
+        {:error, :forbidden} ->
+          {:error, :forbidden}
+
+        {:error, :account_not_found} ->
+          {:error, :bad_request, Steps.account_not_found_message()}
+
+        {:error, :not_found} ->
+          {:error, :bad_request, "Invalid activation code"}
+
+        {:error, :invalid_code} ->
+          {:error, :bad_request, "Invalid activation code"}
+
+        {:error, :invalid} ->
+          {:error, :bad_request, "Activation code has expired"}
+
+        {:error, reason} when is_binary(reason) ->
+          {:error, :bad_request, reason}
+
+        {:error, _reason} ->
           {:error, :internal_server_error}
       end
     end
@@ -726,7 +749,150 @@ defmodule OperatelyWeb.Api.CliAuth do
   end
 
   defmodule SharedSteps do
-    alias Operately.People.CliAuthSession
+    alias Operately.InviteLinks
+    alias Operately.People.{Account, CliAuthSession}
+    alias Operately.Repo
+
+    def check_email_login_allowed do
+      if Application.get_env(:operately, :allow_login_with_email) do
+        {:ok, :allowed}
+      else
+        {:error, :forbidden}
+      end
+    end
+
+    def fetch_account(email) do
+      case Operately.People.get_account_by_email(email) do
+        %Account{} = account -> {:ok, account}
+        nil -> {:error, :account_not_found}
+      end
+    end
+
+    def maybe_join_via_invite(account, nil), do: {:ok, account}
+
+    def maybe_join_via_invite(account, token) do
+      case InviteLinks.join_company_via_invite_link(account, token) do
+        {:ok, _person} -> {:ok, account}
+        {:error, reason} -> map_join_invite_error(reason)
+      end
+    end
+
+    def validate_email_code_request(account, nil), do: {:ok, account}
+
+    def validate_email_code_request(account, token) do
+      case InviteLinks.get_invite_link_by_token(token) do
+        {:ok, %{type: :company_wide} = invite_link} ->
+          case InviteLinks.validate_invite_link(invite_link, account) do
+            {:ok, _invite_link} -> {:ok, account}
+            {:error, reason} -> map_company_wide_invite_validation_error(reason)
+          end
+
+        {:ok, %{type: :personal} = invite_link} ->
+          invite_link = Repo.preload(invite_link, person: [:account])
+
+          with {:ok, _invite_link} <- InviteLinks.validate_personal_invite_link(invite_link),
+               {:ok, _account} <- validate_personal_invite_account(account, invite_link) do
+            {:ok, account}
+          else
+            {:error, :invite_link_not_for_person} ->
+              {:error, "Invalid invite link"}
+
+            {:error, :first_time_invite} ->
+              {:error, "Email code login isn't available for first-time invites. Set a password or use Google OAuth instead."}
+
+            {:error, reason} ->
+              map_personal_invite_validation_error(reason)
+          end
+
+        {:error, :not_found} ->
+          {:error, "Invalid invite link"}
+      end
+    end
+
+    def respond_with_authenticated_account(account, auth_method \\ :password, intent \\ :login) do
+      companies = CliAuthSession.eligible_companies(account)
+
+      case companies do
+        [] -> no_companies_response(account, auth_method, intent)
+        companies -> create_authenticated_response(account, companies, auth_method, intent)
+      end
+    end
+
+    def account_not_found_message do
+      "No account exists for this email. Use `operately auth signup` or `operately auth join` instead."
+    end
+
+    def email_delivery_not_configured_message do
+      "Email code login isn't available because email delivery hasn't been configured. Please contact your organization administrator."
+    end
+
+    defp validate_personal_invite_account(account, invite_link) do
+      person = invite_link.person
+
+      cond do
+        is_nil(person) ->
+          {:error, :invite_link_not_for_person}
+
+        person.account_id != account.id ->
+          {:error, :invite_link_not_for_person}
+
+        person.email != account.email ->
+          {:error, :invite_link_not_for_person}
+
+        is_nil(person.account) ->
+          {:error, :invite_link_not_for_person}
+
+        is_nil(person.account.first_login_at) ->
+          {:error, :first_time_invite}
+
+        true ->
+          {:ok, account}
+      end
+    end
+
+    defp no_companies_response(account, auth_method, intent) do
+      case CliAuthSession.create_authenticated_session(account, auth_method, intent) do
+        {:ok, _session, raw_token} ->
+          {:ok,
+           %{
+             status: :no_companies,
+             companies: [],
+             bootstrap_token: raw_token,
+             message: CliAuthSession.no_companies_message()
+           }}
+
+        {:error, _changeset} ->
+          {:error, :internal_server_error}
+      end
+    end
+
+    defp create_authenticated_response(account, companies, auth_method, intent) do
+      case CliAuthSession.create_authenticated_session(account, auth_method, intent) do
+        {:ok, _session, raw_token} ->
+          {:ok,
+           %{
+             status: :authenticated,
+             companies: OperatelyWeb.Api.Serializer.serialize(companies, level: :essential),
+             bootstrap_token: raw_token
+           }}
+
+        {:error, _changeset} ->
+          {:error, :internal_server_error}
+      end
+    end
+
+    defp map_company_wide_invite_validation_error(:invite_link_inactive), do: {:error, "This invite link is no longer valid"}
+    defp map_company_wide_invite_validation_error(:invite_link_domain_not_allowed), do: {:error, "This invite link is restricted to specific email domains"}
+
+    defp map_personal_invite_validation_error(:invite_link_inactive), do: {:error, "This invite link is no longer valid"}
+    defp map_personal_invite_validation_error(:invite_link_expired), do: {:error, "This invite link is no longer valid"}
+
+    defp map_join_invite_error(:invite_token_not_found), do: {:error, "Invalid invite link"}
+    defp map_join_invite_error(:invite_token_inactive), do: {:error, "This invite link is no longer valid"}
+    defp map_join_invite_error(:invite_token_domain_not_allowed), do: {:error, "This invite link is restricted to specific email domains"}
+    defp map_join_invite_error(:invite_token_invalid), do: {:error, "This invite link is no longer valid"}
+    defp map_join_invite_error(:person_creation_failed), do: {:error, "Unable to add you to this company."}
+    defp map_join_invite_error(:invite_link_update_failed), do: {:error, "Something went wrong while using this invite link."}
 
     def validate_token_creation_session(session) do
       cond do
