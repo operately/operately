@@ -5,7 +5,7 @@ import {
   DEFAULT_BASE_URL,
   type CliConfig,
 } from "./config";
-import { printError, printSuccess } from "../core/output";
+import { printError, printInfo, printSuccess } from "../core/output";
 import { callInternalMutation, callInternalQuery } from "../core/internal-api";
 import { askQuestion, askChoice, askPassword } from "../core/prompts";
 import { callEndpoint } from "../core/http";
@@ -17,6 +17,7 @@ import { selectCompany } from "./shared/company-selection";
 import { createTokenAndSaveProfile } from "./shared/token-creation";
 import { openExternalUrl } from "./shared/api";
 import { handleBootstrapError } from "./shared/errors";
+import { resolveProfileName } from "./shared/helpers";
 import type { EndpointRegistry } from "../commands/registry";
 import type { Company, AuthMethod } from "./types";
 import type { ChildProcess } from "child_process";
@@ -30,6 +31,7 @@ export interface BootstrapDeps {
   callEndpoint: typeof callEndpoint;
   openUrl: (url: string) => Promise<ChildProcess | boolean | undefined>;
   printError: typeof printError;
+  printInfo: typeof printInfo;
   printSuccess: typeof printSuccess;
   saveProfile: typeof saveProfile;
   writeConfig: typeof writeConfig;
@@ -45,6 +47,7 @@ const defaultDeps: BootstrapDeps = {
   callEndpoint,
   openUrl: (url: string) => openExternalUrl(url),
   printError,
+  printInfo,
   printSuccess,
   saveProfile,
   writeConfig,
@@ -78,12 +81,7 @@ export async function executeAuthBootstrap(
       baseUrl = answer.trim() || null;
     }
 
-    if (!profile) {
-      const answer = await d.askQuestion(
-        `Profile name (default: default):`,
-      );
-      profile = answer.trim() || "default";
-    }
+    profile = await resolveProfileName(config, profile, d.askQuestion);
 
     const runtime = d.resolveRuntimeOptions(config, {
       token: null,

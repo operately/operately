@@ -1,5 +1,5 @@
 import { DEFAULT_BASE_URL, resolveRuntimeOptions, type CliConfig } from "../config";
-import { printError, printSuccess } from "../../core/output";
+import { printError, printInfo, printSuccess } from "../../core/output";
 import { callInternalMutation, callInternalQuery } from "../../core/internal-api";
 import { askChoice, askPassword, askQuestion, PromptCancelledError } from "../../core/prompts";
 import { callEndpoint, ApiError } from "../../core/http";
@@ -22,6 +22,7 @@ interface CreateCompanyFlowDeps {
   callEndpoint: typeof callEndpoint;
   openUrl: (url: string) => Promise<ChildProcess | boolean | undefined>;
   printError: typeof printError;
+  printInfo: typeof printInfo;
   printSuccess: typeof printSuccess;
   resolveRuntimeOptions: typeof resolveRuntimeOptions;
 }
@@ -35,6 +36,7 @@ const defaultDeps: CreateCompanyFlowDeps = {
   callEndpoint,
   openUrl: (url: string) => openExternalUrl(url),
   printError,
+  printInfo,
   printSuccess,
   resolveRuntimeOptions,
 };

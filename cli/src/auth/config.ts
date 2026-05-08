@@ -3,6 +3,7 @@ import os from "node:os";
 import path from "node:path";
 
 export const DEFAULT_BASE_URL = "https://app.operately.com";
+export const DEFAULT_PROFILE = "default";
 
 export interface ProfileConfig {
   token?: string;
@@ -31,7 +32,6 @@ export interface RuntimeOverrideOptions {
 }
 
 const CONFIG_FILE = "config.json";
-const DEFAULT_PROFILE = "default";
 const DEFAULT_TIMEOUT_MS = 30_000;
 
 export function configPath(): string {
