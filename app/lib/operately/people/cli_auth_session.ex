@@ -110,7 +110,7 @@ defmodule Operately.People.CliAuthSession do
       token_hash = ApiToken.hash_token(raw_token)
 
       from(s in CliAuthSession,
-        join: a in assoc(s, :account),
+        left_join: a in assoc(s, :account),
         where: s.token_hash == ^token_hash and is_nil(a.deleted_at),
         preload: [account: a]
       )
