@@ -3323,6 +3323,19 @@ export interface ChangePasswordInput {
 
 export interface ChangePasswordResult {}
 
+export interface CliAuthAuthEmailCodeInput {
+  email: string;
+  code: string;
+  inviteToken?: string | null;
+}
+
+export interface CliAuthAuthEmailCodeResult {
+  status: CliAuthStatus;
+  companies: Company[];
+  bootstrapToken?: string | null;
+  message?: string | null;
+}
+
 export interface CliAuthAuthPasswordInput {
   email: string;
   password: string;
@@ -3386,6 +3399,12 @@ export interface CliAuthJoinWithInviteInput {
 export interface CliAuthJoinWithInviteResult {
   company: Company;
 }
+
+export interface CliAuthRequestEmailCodeInput {
+  email: string;
+}
+
+export interface CliAuthRequestEmailCodeResult {}
 
 export interface CliAuthSetupCompanyInput {
   companyName: string;
@@ -4982,6 +5001,10 @@ class ApiNamespaceCliAuth {
     return this.client.get("/cli_auth/status", input);
   }
 
+  async authEmailCode(input: CliAuthAuthEmailCodeInput): Promise<CliAuthAuthEmailCodeResult> {
+    return this.client.post("/cli_auth/auth_email_code", input);
+  }
+
   async authPassword(input: CliAuthAuthPasswordInput): Promise<CliAuthAuthPasswordResult> {
     return this.client.post("/cli_auth/auth_password", input);
   }
@@ -5004,6 +5027,10 @@ class ApiNamespaceCliAuth {
 
   async joinWithInvite(input: CliAuthJoinWithInviteInput): Promise<CliAuthJoinWithInviteResult> {
     return this.client.post("/cli_auth/join_with_invite", input);
+  }
+
+  async requestEmailCode(input: CliAuthRequestEmailCodeInput): Promise<CliAuthRequestEmailCodeResult> {
+    return this.client.post("/cli_auth/request_email_code", input);
   }
 
   async setupCompany(input: CliAuthSetupCompanyInput): Promise<CliAuthSetupCompanyResult> {
@@ -6509,6 +6536,13 @@ export default {
         defaultApiClient.apiNamespaceCliAuth.startGoogleSignup(input),
       ),
 
+    requestEmailCode: (input: CliAuthRequestEmailCodeInput) =>
+      defaultApiClient.apiNamespaceCliAuth.requestEmailCode(input),
+    useRequestEmailCode: () =>
+      useMutation<CliAuthRequestEmailCodeInput, CliAuthRequestEmailCodeResult>((input) =>
+        defaultApiClient.apiNamespaceCliAuth.requestEmailCode(input),
+      ),
+
     createToken: (input: CliAuthCreateTokenInput) => defaultApiClient.apiNamespaceCliAuth.createToken(input),
     useCreateToken: () =>
       useMutation<CliAuthCreateTokenInput, CliAuthCreateTokenResult>((input) =>
@@ -6519,6 +6553,12 @@ export default {
     useSetupCompany: () =>
       useMutation<CliAuthSetupCompanyInput, CliAuthSetupCompanyResult>((input) =>
         defaultApiClient.apiNamespaceCliAuth.setupCompany(input),
+      ),
+
+    authEmailCode: (input: CliAuthAuthEmailCodeInput) => defaultApiClient.apiNamespaceCliAuth.authEmailCode(input),
+    useAuthEmailCode: () =>
+      useMutation<CliAuthAuthEmailCodeInput, CliAuthAuthEmailCodeResult>((input) =>
+        defaultApiClient.apiNamespaceCliAuth.authEmailCode(input),
       ),
 
     createCompany: (input: CliAuthCreateCompanyInput) => defaultApiClient.apiNamespaceCliAuth.createCompany(input),

@@ -6,6 +6,8 @@ defmodule OperatelyWeb.Api.Internal do
       {:mutation, "add_first_company"},
       {:mutation, "join_company"},
       {:mutation, "cli_auth/auth_password"},
+      {:mutation, "cli_auth/request_email_code"},
+      {:mutation, "cli_auth/auth_email_code"},
       {:mutation, "cli_auth/start_google"},
       {:mutation, "cli_auth/start_google_signup"},
       {:mutation, "cli_auth/create_token"},

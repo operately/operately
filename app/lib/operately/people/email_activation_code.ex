@@ -2,6 +2,7 @@ defmodule Operately.People.EmailActivationCode do
   use Operately.Schema
   use Operately.Repo.Getter
 
+  alias Operately.Operations.EmailActivationCodeConsuming
   alias OperatelyEmail.Mailers.BaseMailer
 
   schema "email_activation_codes" do
@@ -22,6 +23,8 @@ defmodule Operately.People.EmailActivationCode do
       {:ok, code}
     end
   end
+
+  def consume(email, code), do: EmailActivationCodeConsuming.run(email, code)
 
   defp changeset(attrs) do
     changeset(%__MODULE__{}, attrs)
@@ -72,5 +75,4 @@ defmodule Operately.People.EmailActivationCode do
     Enum.map(1..6, fn _ -> Enum.random(alpabet) end)
     |> Enum.join()
   end
-
 end
