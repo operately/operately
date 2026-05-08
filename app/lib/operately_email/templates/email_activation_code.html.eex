@@ -3,8 +3,8 @@
 <%= spacer() %>
 
 <%= row do %>
-  Your confirmation code is below — enter it in your open 
-  browser window and we'll help you get signed in.
+  Your confirmation code is below. Enter it in Operately to
+  confirm your email address or finish signing in.
 <% end %>
 
 <%= spacer() %>
