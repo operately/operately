@@ -80,7 +80,7 @@ function mockOpen(_url: string): Promise<ChildProcess | boolean | undefined> {
   return Promise.resolve(true);
 }
 
-function createMockAskChoice(sequence: Array<"password" | "google">) {
+function createMockAskChoice(sequence: Array<"password" | "emailCode" | "google">) {
   let index = 0;
 
   return async function askChoice<T>(
@@ -148,7 +148,7 @@ describe("runCreateCompanyFlow", () => {
     }
   });
 
-  function makeDeps(choiceSequence: Array<"password" | "google">) {
+  function makeDeps(choiceSequence: Array<"password" | "emailCode" | "google">) {
     return {
       askChoice: createMockAskChoice(choiceSequence) as AskChoiceFn,
       askQuestion: nextPrompt as AskQuestionFn,
@@ -224,6 +224,33 @@ describe("runCreateCompanyFlow", () => {
     assert.strictEqual(saved.activeProfile, "team");
     assert.strictEqual(saved.profiles.team.name, "Google User");
     assert.strictEqual(saved.profiles.team.companyName, "Acme Corp");
+  });
+
+  it("authenticates with an email code, creates a company, and saves the profile for a no-company account", async () => {
+    promptQueue.push("", "user@example.com", "ABC123", "Acme Corp", "email-team");
+
+    responses.push({ configured: true });
+    responses.push({});
+    responses.push({
+      status: "no_companies",
+      companies: [],
+      bootstrap_token: "bootstrap_email",
+    });
+    responses.push({ company: { id: "c-email", name: "Acme Corp" } });
+    responses.push({ token: "op_email_token", company: { id: "c-email", name: "Acme Corp" } });
+    responses.push({ me: { full_name: "Email User", email: "user@example.com" } });
+
+    const result = await runCreateCompanyFlow(new Map(), emptyConfig, registryStub, makeDeps(["emailCode"]));
+
+    assert.strictEqual(result, 0);
+    assert.strictEqual(calls[0].path, cliAuth.companyCreationStatus);
+    assert.strictEqual(calls[1].path, cliAuth.requestEmailCode);
+    assert.strictEqual(calls[2].path, cliAuth.authEmailCode);
+    assert.strictEqual(calls[3].path, cliAuth.createCompany);
+
+    const saved = readSavedConfig(tmpDir);
+    assert.strictEqual(saved.activeProfile, "email-team");
+    assert.strictEqual(saved.profiles["email-team"].name, "Email User");
   });
 
   it("uses setup_company when the instance is not configured", async () => {

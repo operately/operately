@@ -7,8 +7,9 @@ import {
 } from "./config";
 import { printError, printSuccess } from "../core/output";
 import { callInternalMutation, callInternalQuery } from "../core/internal-api";
-import { askQuestion, askChoice, askPassword, PromptCancelledError } from "../core/prompts";
-import { callEndpoint, ApiError } from "../core/http";
+import { askQuestion, askChoice, askPassword } from "../core/prompts";
+import { callEndpoint } from "../core/http";
+import { runEmailCodeFlow } from "./flows/login-email-code";
 import { runPasswordFlow } from "./flows/login-password";
 import { runGoogleFlow } from "./flows/login-google";
 import { runTokenFlow } from "./flows/login-token";
@@ -65,6 +66,7 @@ export async function executeAuthBootstrap(
   try {
     const method = await d.askChoice<AuthMethod>("How would you like to authenticate?", [
       { label: "Email and password", value: "password" },
+      { label: "Email code (no password)", value: "emailCode" },
       { label: "Google OAuth (opens browser)", value: "google" },
       { label: "I have an API token", value: "token" },
     ]);
@@ -116,6 +118,13 @@ export async function executeAuthBootstrap(
       const result = await runPasswordFlow(runtime.baseUrl, {
         askQuestion: d.askQuestion,
         askPassword: d.askPassword,
+        callInternalMutation: d.callInternalMutation,
+      });
+      bootstrapToken = result.bootstrapToken;
+      companies = result.companies;
+    } else if (method === "emailCode") {
+      const result = await runEmailCodeFlow(runtime.baseUrl, {
+        askQuestion: d.askQuestion,
         callInternalMutation: d.callInternalMutation,
       });
       bootstrapToken = result.bootstrapToken;

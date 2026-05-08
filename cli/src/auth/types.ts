@@ -3,5 +3,5 @@ export interface Company {
   name?: string;
 }
 
-export type AuthMethod = "password" | "google" | "token";
+export type AuthMethod = "password" | "emailCode" | "google" | "token";
 export type CompanyCreationMode = "setup" | "create";

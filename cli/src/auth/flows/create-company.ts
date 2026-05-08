@@ -3,6 +3,7 @@ import { printError, printSuccess } from "../../core/output";
 import { callInternalMutation, callInternalQuery } from "../../core/internal-api";
 import { askChoice, askPassword, askQuestion, PromptCancelledError } from "../../core/prompts";
 import { callEndpoint, ApiError } from "../../core/http";
+import { runEmailCodeFlow } from "./login-email-code";
 import { runGoogleFlow } from "./login-google";
 import { runPasswordFlow } from "./login-password";
 import { openExternalUrl } from "../shared/api";
@@ -47,7 +48,7 @@ export async function runCreateCompanyFlow(
   const d = { ...defaultDeps, ...deps };
 
   if (readStringFlag(flags, "token")) {
-    d.printError("`operately auth create-company` does not support `--token`. Use email/password or Google OAuth.");
+    d.printError("`operately auth create-company` does not support `--token`. Use email/password, email code, or Google OAuth.");
     return 2;
   }
 
@@ -59,8 +60,9 @@ export async function runCreateCompanyFlow(
   let companyCreationMode: CompanyCreationMode = "create";
 
   try {
-    const method = await d.askChoice<"password" | "google">("You need to authenticate to create a company. Choose a sign-in method:", [
+    const method = await d.askChoice<"password" | "emailCode" | "google">("You need to authenticate to create a company. Choose a sign-in method:", [
       { label: "Email and password", value: "password" },
+      { label: "Email code (no password)", value: "emailCode" },
       { label: "Google OAuth (opens browser)", value: "google" },
     ]);
 
@@ -82,6 +84,12 @@ export async function runCreateCompanyFlow(
       const result = await runPasswordFlow(runtime.baseUrl, {
         askQuestion: d.askQuestion,
         askPassword: d.askPassword,
+        callInternalMutation: d.callInternalMutation,
+      });
+      bootstrapToken = result.bootstrapToken;
+    } else if (method === "emailCode") {
+      const result = await runEmailCodeFlow(runtime.baseUrl, {
+        askQuestion: d.askQuestion,
         callInternalMutation: d.callInternalMutation,
       });
       bootstrapToken = result.bootstrapToken;

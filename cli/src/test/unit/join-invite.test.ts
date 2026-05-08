@@ -69,7 +69,7 @@ function mockOpen(_url: string): Promise<ChildProcess | boolean | undefined> {
   return Promise.resolve(true);
 }
 
-function createMockAskChoice(sequence: Array<"password" | "google" | boolean | { id: string; name: string }>) {
+function createMockAskChoice(sequence: Array<"password" | "emailCode" | "google" | boolean | { id: string; name: string }>) {
   let index = 0;
   return async function askChoice<T>(
     _prompt: string,
@@ -139,7 +139,7 @@ describe("runJoinInviteFlow", () => {
     calls.length = 0;
     responses = [
       { invite_link: { type: "personal" } },
-      { invite_link: { company: { id: "company-1", name: "Test Co" } }, member: { email: "user@example.com" } },
+      { invite_link: { company: { id: "company-1", name: "Test Co" } }, member: { email: "user@example.com", has_open_invitation: false } },
       { status: "authenticated", companies: [{ id: "company-1", name: "Test Co" }], bootstrap_token: "bt-123" },
       { token: "api-123", company: { id: "company-1", name: "Test Co" } },
       { me: { full_name: "User", email: "user@example.com" } },
@@ -154,7 +154,7 @@ describe("runJoinInviteFlow", () => {
       {
         askQuestion: nextPrompt,
         askPassword: nextPrompt,
-        askChoice: createMockAskChoice(["password", false]),
+        askChoice: createMockAskChoice(["password"]),
         callInternalMutation: mockMutation,
         callInternalQuery: mockQuery,
         callEndpoint: mockEndpoint,
@@ -195,7 +195,7 @@ describe("runJoinInviteFlow", () => {
     calls.length = 0;
     responses = [
       { invite_link: { type: "personal" } },
-      { invite_link: { company: { id: "company-1", name: "Test Co" } }, member: { email: "new@example.com" } },
+      { invite_link: { company: { id: "company-1", name: "Test Co" } }, member: { email: "new@example.com", has_open_invitation: true } },
       { status: "authenticated", bootstrap_token: "bt-456" },
       { token: "api-456", company: { id: "company-1", name: "Test Co" } },
       { me: { full_name: "New User", email: "new@example.com" } },
@@ -210,7 +210,7 @@ describe("runJoinInviteFlow", () => {
       {
         askQuestion: nextPrompt,
         askPassword: nextPrompt,
-        askChoice: createMockAskChoice(["password", true]),
+        askChoice: createMockAskChoice(["password"]),
         callInternalMutation: mockMutation,
         callInternalQuery: mockQuery,
         callEndpoint: mockEndpoint,
@@ -247,7 +247,7 @@ describe("runJoinInviteFlow", () => {
     calls.length = 0;
     responses = [
       { invite_link: { type: "personal" } },
-      { invite_link: { company: { id: "company-1", name: "Test Co" } }, member: { email: "user@example.com" } },
+      { invite_link: { company: { id: "company-1", name: "Test Co" } }, member: { email: "user@example.com", has_open_invitation: true } },
       { status: "pending", bootstrap_token: "bt-789", login_url: "https://example.com/cli-login/123", poll_interval_ms: 1000 },
       { status: "authenticated", companies: [{ id: "company-1", name: "Test Co" }] },
       { token: "api-789", company: { id: "company-1", name: "Test Co" } },
@@ -292,6 +292,63 @@ describe("runJoinInviteFlow", () => {
     assert.ok(createTokenCall, "Expected create_token call");
     assert.strictEqual(createTokenCall!.inputs["company_id"], "company-1");
     assert.strictEqual(createTokenCall!.inputs["read_only"], false);
+  });
+
+  it("uses email-code flow for returning user on personal invite without prompting for email", async () => {
+    calls.length = 0;
+    responses = [
+      { invite_link: { type: "personal" } },
+      { invite_link: { company: { id: "company-1", name: "Test Co" } }, member: { email: "user@example.com", has_open_invitation: false } },
+      {},
+      { status: "authenticated", companies: [{ id: "company-1", name: "Test Co" }], bootstrap_token: "bt-email-personal" },
+      { token: "api-email-personal", company: { id: "company-1", name: "Test Co" } },
+      { me: { full_name: "User", email: "user@example.com" } },
+    ];
+    promptQueue = ["my-token", "https://example.com", "default", "ABC123"];
+    askedPrompts = [];
+
+    const exitCode = await runJoinInviteFlow(
+      makeFlags({}),
+      emptyConfig,
+      mockRegistry,
+      {
+        askQuestion: nextPrompt,
+        askPassword: nextPrompt,
+        askChoice: createMockAskChoice(["emailCode"]),
+        callInternalMutation: mockMutation,
+        callInternalQuery: mockQuery,
+        callEndpoint: mockEndpoint,
+        openUrl: mockOpen,
+        printError: () => {},
+        printInfo: () => {},
+        printSuccess: () => {},
+        saveProfile: (c) => c,
+        writeConfig: () => {},
+        resolveRuntimeOptions: (_c, opts) => ({
+          baseUrl: opts.baseUrl || "https://app.operately.com",
+          token: opts.token || null,
+          profile: opts.profile || "default",
+          timeoutMs: 30000,
+        }),
+      },
+    );
+
+    assert.strictEqual(exitCode, 0);
+    assert.ok(!askedPrompts.includes("Email:"), "Returning personal invite should not prompt for email");
+
+    const requestCodeCall = calls.find((c) => c.path === cliAuth.requestEmailCode);
+    assert.ok(requestCodeCall, "Expected request_email_code call");
+    assert.deepStrictEqual(requestCodeCall!.inputs, {
+      email: "user@example.com",
+    });
+
+    const authCodeCall = calls.find((c) => c.path === cliAuth.authEmailCode);
+    assert.ok(authCodeCall, "Expected auth_email_code call");
+    assert.deepStrictEqual(authCodeCall!.inputs, {
+      email: "user@example.com",
+      code: "ABC123",
+      invite_token: "my-token",
+    });
   });
 
   it("uses google flow for company-wide invite", async () => {
@@ -342,6 +399,112 @@ describe("runJoinInviteFlow", () => {
     assert.ok(createTokenCall, "Expected create_token call");
     assert.strictEqual(createTokenCall!.inputs["company_id"], "company-1");
     assert.strictEqual(createTokenCall!.inputs["read_only"], false);
+  });
+
+  it("uses email-code flow for company-wide invite", async () => {
+    calls.length = 0;
+    responses = [
+      { invite_link: { type: "company_wide", company: { id: "company-1", name: "Test Co" } } },
+      {},
+      { status: "authenticated", companies: [{ id: "company-1", name: "Test Co" }], bootstrap_token: "bt-email-company" },
+      { token: "api-email-company", company: { id: "company-1", name: "Test Co" } },
+      { me: { full_name: "User", email: "user@example.com" } },
+    ];
+    promptQueue = ["my-token", "https://example.com", "default", "user@example.com", "ABC123"];
+    askedPrompts = [];
+
+    const exitCode = await runJoinInviteFlow(
+      makeFlags({}),
+      emptyConfig,
+      mockRegistry,
+      {
+        askQuestion: nextPrompt,
+        askPassword: nextPrompt,
+        askChoice: createMockAskChoice(["emailCode"]),
+        callInternalMutation: mockMutation,
+        callInternalQuery: mockQuery,
+        callEndpoint: mockEndpoint,
+        openUrl: mockOpen,
+        printError: () => {},
+        printInfo: () => {},
+        printSuccess: () => {},
+        saveProfile: (c) => c,
+        writeConfig: () => {},
+        resolveRuntimeOptions: (_c, opts) => ({
+          baseUrl: opts.baseUrl || "https://app.operately.com",
+          token: opts.token || null,
+          profile: opts.profile || "default",
+          timeoutMs: 30000,
+        }),
+      },
+    );
+
+    assert.strictEqual(exitCode, 0);
+
+    const requestCodeCall = calls.find((c) => c.path === cliAuth.requestEmailCode);
+    assert.ok(requestCodeCall, "Expected request_email_code call");
+    assert.deepStrictEqual(requestCodeCall!.inputs, {
+      email: "user@example.com",
+    });
+
+    const authCodeCall = calls.find((c) => c.path === cliAuth.authEmailCode);
+    assert.ok(authCodeCall, "Expected auth_email_code call");
+    assert.deepStrictEqual(authCodeCall!.inputs, {
+      email: "user@example.com",
+      code: "ABC123",
+      invite_token: "my-token",
+    });
+  });
+
+  it("does not offer email-code for first-time personal invites", async () => {
+    calls.length = 0;
+    responses = [
+      { invite_link: { type: "personal" } },
+      { invite_link: { company: { id: "company-1", name: "Test Co" } }, member: { email: "new@example.com", has_open_invitation: true } },
+      { status: "pending", bootstrap_token: "bt-789", login_url: "https://example.com/cli-login/123", poll_interval_ms: 1000 },
+      { status: "authenticated", companies: [{ id: "company-1", name: "Test Co" }] },
+      { token: "api-789", company: { id: "company-1", name: "Test Co" } },
+      { me: { full_name: "User", email: "new@example.com" } },
+    ];
+    promptQueue = ["my-token", "https://example.com", "default"];
+    askedPrompts = [];
+
+    let availableChoices: string[] = [];
+
+    const exitCode = await runJoinInviteFlow(
+      makeFlags({}),
+      emptyConfig,
+      mockRegistry,
+      {
+        askQuestion: nextPrompt,
+        askPassword: nextPrompt,
+        askChoice: async <T>(_prompt: string, choices: { label: string; value: T }[]): Promise<T> => {
+          availableChoices = choices.map((choice) => choice.label);
+          return "google" as T;
+        },
+        callInternalMutation: mockMutation,
+        callInternalQuery: mockQuery,
+        callEndpoint: mockEndpoint,
+        openUrl: mockOpen,
+        printError: () => {},
+        printInfo: () => {},
+        printSuccess: () => {},
+        saveProfile: (c) => c,
+        writeConfig: () => {},
+        resolveRuntimeOptions: (_c, opts) => ({
+          baseUrl: opts.baseUrl || "https://app.operately.com",
+          token: opts.token || null,
+          profile: opts.profile || "default",
+          timeoutMs: 30000,
+        }),
+      },
+    );
+
+    assert.strictEqual(exitCode, 0);
+    assert.deepStrictEqual(availableChoices, [
+      "Email and password",
+      "Google OAuth (opens browser)",
+    ]);
   });
 
   it("uses --invite-token flag without prompting", async () => {

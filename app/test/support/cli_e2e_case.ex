@@ -12,6 +12,9 @@ defmodule Operately.CliE2ECase do
       alias Operately.Support.Factory
 
       import Operately.CliE2ECase
+      import Swoosh.TestAssertions
+
+      setup :set_swoosh_global
     end
   end
 
@@ -218,7 +221,7 @@ defmodule Operately.CliE2ECase do
 
   defp maybe_send_script_steps(port, output, [{prompt, response} | rest]) do
     if String.contains?(output, prompt) do
-      Port.command(port, response)
+      Port.command(port, resolve_script_response(response))
       maybe_send_script_steps(port, output, rest)
     else
       [{prompt, response} | rest]
@@ -226,4 +229,7 @@ defmodule Operately.CliE2ECase do
   end
 
   defp maybe_send_script_steps(_port, _output, []), do: []
+
+  defp resolve_script_response(response) when is_function(response, 0), do: response.()
+  defp resolve_script_response(response) when is_binary(response), do: response
 end
