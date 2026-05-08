@@ -3,7 +3,6 @@ defmodule Operately.Support.CliE2E.JoinSteps do
 
   alias Operately.InviteLinks
   alias Operately.People
-  alias Operately.People.EmailActivationCode
   alias Operately.Support.CliE2E.Helpers
 
   @existing_account_password "hello world!"
@@ -127,8 +126,6 @@ defmodule Operately.Support.CliE2E.JoinSteps do
   end
 
   step :join_personal_invite_as_a_returning_member_with_email_code, ctx do
-    {:ok, activation} = EmailActivationCode.create(ctx.invitee.email)
-
     result =
       run_cli(
         ctx,
@@ -144,7 +141,7 @@ defmodule Operately.Support.CliE2E.JoinSteps do
         ],
         script: [
           {"How would you like to sign in?", "2\n"},
-          {"A verification code was sent to your email. Enter the code:", "#{activation.code}\n"}
+          {"A verification code was sent to your email. Enter the code:", Helpers.activation_code_response(ctx.invitee.email)}
         ]
       )
 
@@ -293,8 +290,6 @@ defmodule Operately.Support.CliE2E.JoinSteps do
   end
 
   step :join_company_wide_invite_with_email_code, ctx do
-    {:ok, activation} = EmailActivationCode.create(ctx.account.email)
-
     result =
       run_cli(
         ctx,
@@ -311,7 +306,7 @@ defmodule Operately.Support.CliE2E.JoinSteps do
         script: [
           {"How would you like to sign in?", "2\n"},
           {"Email:", "#{ctx.account.email}\n"},
-          {"A verification code was sent to your email. Enter the code:", "#{activation.code}\n"},
+          {"A verification code was sent to your email. Enter the code:", Helpers.activation_code_response(ctx.account.email)},
           {"Select a company:", "2\n"}
         ]
       )

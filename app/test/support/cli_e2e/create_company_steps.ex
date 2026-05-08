@@ -1,7 +1,6 @@
 defmodule Operately.Support.CliE2E.CreateCompanySteps do
   use Operately.Support.CliE2E
 
-  alias Operately.People.EmailActivationCode
   alias Operately.People
   alias Operately.Support.CliE2E.Helpers
 
@@ -63,7 +62,6 @@ defmodule Operately.Support.CliE2E.CreateCompanySteps do
 
   step :create_company_with_email_code, ctx do
     account = Map.fetch!(ctx, ctx.auth_account_key)
-    {:ok, activation} = EmailActivationCode.create(account.email)
 
     result =
       run_cli(
@@ -73,7 +71,7 @@ defmodule Operately.Support.CliE2E.CreateCompanySteps do
           {"You need to authenticate to create a company. Choose a sign-in method:", "2\n"},
           {"Base URL for the Operately instance", "#{ctx.cli_base_url}\n"},
           {"Email:", "#{account.email}\n"},
-          {"A verification code was sent to your email. Enter the code:", "#{activation.code}\n"},
+          {"A verification code was sent to your email. Enter the code:", Helpers.activation_code_response(account.email)},
           {"Company name:", "#{ctx.expected_company_name}\n"},
           {"Profile name (default: default):", "#{ctx.profile}\n"}
         ]

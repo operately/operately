@@ -1,7 +1,6 @@
 defmodule Operately.Support.CliE2E.AuthSteps do
   use Operately.Support.CliE2E
 
-  alias Operately.People.EmailActivationCode
   alias Operately.Support.CliE2E.Helpers
 
   @password "hello world!"
@@ -63,8 +62,6 @@ defmodule Operately.Support.CliE2E.AuthSteps do
   end
 
   step :log_in_with_email_code, ctx do
-    {:ok, activation} = EmailActivationCode.create(ctx.account.email)
-
     result =
       run_cli(
         ctx,
@@ -72,7 +69,7 @@ defmodule Operately.Support.CliE2E.AuthSteps do
         script: [
           {"Enter choice (1-4):", "2\n"},
           {"Email:", "#{ctx.account.email}\n"},
-          {"A verification code was sent to your email. Enter the code:", "#{activation.code}\n"},
+          {"A verification code was sent to your email. Enter the code:", Helpers.activation_code_response(ctx.account.email)},
           {"Enter choice (1-2):", "2\n"}
         ]
       )
