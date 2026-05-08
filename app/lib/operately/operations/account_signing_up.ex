@@ -1,5 +1,6 @@
 defmodule Operately.Operations.AccountSigningUp do
-  alias Operately.People.{Account, EmailActivationCode}
+  alias Operately.Operations.EmailActivationCodeConsuming
+  alias Operately.People.Account
   alias Operately.Repo
 
   require Logger
@@ -21,9 +22,7 @@ defmodule Operately.Operations.AccountSigningUp do
   def run(full_name, email, password, code, invite_token \\ nil) do
     with {:ok, :allowed} <- check_signup_allowed(),
          {:ok, _} <- check_email_available(email),
-         {:ok, parsed_code} <- parse_code(code),
-         {:ok, activation} <- EmailActivationCode.get(:system, email: email, code: parsed_code),
-         {:ok, :valid} <- check_validity(activation),
+         {:ok, _activation} <- EmailActivationCodeConsuming.run(email, code),
          {:ok, account} <- Account.create(full_name, email, password),
          {:ok, invite_context} <- handle_invite_token(account, invite_token) do
       {:ok, account, invite_context}
@@ -43,31 +42,6 @@ defmodule Operately.Operations.AccountSigningUp do
       {:error, :email_taken}
     else
       {:ok, :available}
-    end
-  end
-
-  defp check_validity(activation) do
-    if DateTime.compare(activation.expires_at, DateTime.utc_now()) == :gt do
-      {:ok, :valid}
-    else
-      {:error, :invalid}
-    end
-  end
-
-  defp parse_code(nil), do: {:error, :invalid_code}
-
-  defp parse_code(code) do
-    code = String.trim(code)
-
-    cond do
-      String.length(code) == 6 ->
-        {:ok, code}
-
-      String.length(code) == 7 ->
-        {:ok, String.slice(code, 0, 3) <> String.slice(code, 4, 6)}
-
-      true ->
-        {:error, :invalid_code}
     end
   end
 
