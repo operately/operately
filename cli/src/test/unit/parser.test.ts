@@ -71,6 +71,17 @@ test("coerces contextual date inputs from ISO date strings", () => {
   }
 });
 
+test("parses auth profiles commands", () => {
+  const registry = createRegistry(fixtureCatalog);
+  const parsed = parseCommand(["auth", "profiles"], registry, fixtureCatalog.types);
+
+  assert.equal(parsed.kind, "auth");
+  if (parsed.kind === "auth") {
+    assert.equal(parsed.action, "profiles");
+    assert.deepEqual(parsed.flags, new Map());
+  }
+});
+
 test("coerces bare boolean endpoint flags to true", () => {
   const registry = createRegistry(fixtureCatalog);
   const parsed = parseCommand(

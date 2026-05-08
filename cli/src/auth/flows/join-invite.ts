@@ -17,6 +17,7 @@ import { runPasswordFlow } from "./login-password";
 import { runGoogleFlow } from "./login-google";
 import { openExternalUrl } from "../shared/api";
 import { handleBootstrapError } from "../shared/errors";
+import { resolveProfileName } from "../shared/helpers";
 import type { EndpointRegistry } from "../../commands/registry";
 import type { Company } from "../types";
 import type { ChildProcess } from "child_process";
@@ -78,10 +79,7 @@ export async function runJoinInviteFlow(
       baseUrl = answer.trim() || null;
     }
 
-    if (!profile) {
-      const answer = await d.askQuestion(`Profile name (default: default):`);
-      profile = answer.trim() || "default";
-    }
+    profile = await resolveProfileName(config, profile, d.askQuestion);
 
     const runtime = d.resolveRuntimeOptions(config, {
       token: null,
