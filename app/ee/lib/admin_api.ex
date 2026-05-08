@@ -10,10 +10,12 @@ defmodule OperatelyEE.AdminApi do
 
   query :get_companies, Q.GetCompanies
   query :get_active_companies, Q.GetActiveCompanies
+  query :get_accounts, Q.GetAccounts
   query :get_company, Q.GetCompany
   query :get_activities, Q.GetActivities
   query :get_email_settings, Q.GetEmailSettings
 
+  mutation :delete_account, M.DeleteAccount
   mutation :enable_feature, M.EnableFeature
   mutation :update_email_settings, M.UpdateEmailSettings
   mutation :send_test_email, M.SendTestEmail

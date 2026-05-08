@@ -60,7 +60,7 @@ defmodule Operately.People.AccountToken do
     query =
       from token in token_and_context_query(token, "session"),
         join: account in assoc(token, :account),
-        where: token.inserted_at > ago(@session_validity_in_days, "day"),
+        where: token.inserted_at > ago(@session_validity_in_days, "day") and is_nil(account.deleted_at),
         select: account
 
     {:ok, query}
@@ -118,7 +118,7 @@ defmodule Operately.People.AccountToken do
         query =
           from token in token_and_context_query(hashed_token, context),
             join: account in assoc(token, :account),
-            where: token.inserted_at > ago(^days, "day") and token.sent_to == account.email,
+            where: token.inserted_at > ago(^days, "day") and token.sent_to == account.email and is_nil(account.deleted_at),
             select: account
 
         {:ok, query}
