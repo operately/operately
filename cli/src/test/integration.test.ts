@@ -49,6 +49,17 @@ async function runCLI(args: string[]): Promise<CLIResult> {
   });
 }
 
+function writeAuthConfig(config: { activeProfile: string; profiles: Record<string, unknown> }): void {
+  const configDir = path.join(testHome, ".operately");
+  clearAuthConfig();
+  fs.mkdirSync(configDir, { recursive: true });
+  fs.writeFileSync(path.join(configDir, "config.json"), JSON.stringify(config, null, 2));
+}
+
+function clearAuthConfig(): void {
+  fs.rmSync(path.join(testHome, ".operately"), { recursive: true, force: true });
+}
+
 describe("CLI Integration Tests", () => {
   describe("Command Routing", () => {
     it("shows general help when no command is provided", async () => {
@@ -137,6 +148,7 @@ describe("CLI Integration Tests", () => {
       assert.ok(result.stdout.includes("Authentication & Setup"));
       assert.ok(result.stdout.includes("login"));
       assert.ok(result.stdout.includes("create-company"));
+      assert.ok(result.stdout.includes("profiles"));
       assert.ok(result.stdout.includes("status"));
     });
 
@@ -146,6 +158,7 @@ describe("CLI Integration Tests", () => {
       assert.ok(result.stdout.includes("Authentication & Setup"));
       assert.ok(result.stdout.includes("login"));
       assert.ok(result.stdout.includes("create-company"));
+      assert.ok(result.stdout.includes("profiles"));
     });
 
     it("shows auth help when 'help auth' is used", async () => {
@@ -154,6 +167,7 @@ describe("CLI Integration Tests", () => {
       assert.ok(result.stdout.includes("Authentication & Setup"));
       assert.ok(result.stdout.includes("login"));
       assert.ok(result.stdout.includes("create-company"));
+      assert.ok(result.stdout.includes("profiles"));
       assert.ok(result.stdout.includes("status"));
     });
 
@@ -173,6 +187,15 @@ describe("CLI Integration Tests", () => {
       assert.ok(result.stdout.includes("auth login"));
       assert.ok(result.stdout.includes("operately auth login [--token <token>] [--base-url <url>] [--profile <name>]"));
       assert.ok(result.stdout.includes("interactively"));
+    });
+
+    it("shows auth profiles help with --help", async () => {
+      const result = await runCLI(["auth", "profiles", "--help"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("Command:"));
+      assert.ok(result.stdout.includes("auth profiles"));
+      assert.ok(result.stdout.includes("operately auth profiles"));
+      assert.ok(result.stdout.includes("List saved CLI profiles"));
     });
 
     it("shows auth whoami help with --help", async () => {
@@ -204,12 +227,20 @@ describe("CLI Integration Tests", () => {
       assert.ok(result.stdout.includes("operately auth create-company [--base-url <url>] [--profile <name>]"));
     });
 
+    it("shows auth profiles help when 'help auth profiles' is used", async () => {
+      const result = await runCLI(["help", "auth", "profiles"]);
+      assert.strictEqual(result.exitCode, 0);
+      assert.ok(result.stdout.includes("auth profiles"));
+      assert.ok(result.stdout.includes("operately auth profiles"));
+    });
+
     it("shows auth help when 'auth' is used alone", async () => {
       const result = await runCLI(["auth"]);
       assert.strictEqual(result.exitCode, 0);
       assert.ok(result.stdout.includes("Authentication & Setup"));
       assert.ok(result.stdout.includes("login"));
       assert.ok(result.stdout.includes("create-company"));
+      assert.ok(result.stdout.includes("profiles"));
       assert.ok(result.stdout.includes("status"));
     });
 
@@ -219,6 +250,39 @@ describe("CLI Integration Tests", () => {
       assert.ok(result.stdout.includes("Profile:"));
       assert.ok(result.stdout.includes("Status:"));
       assert.ok(!result.stdout.includes("token_configured"));
+    });
+
+    it("shows saved CLI profiles from local config", async () => {
+      try {
+        writeAuthConfig({
+          activeProfile: "default",
+          profiles: {
+            staging: {
+              token: "",
+              baseUrl: "https://staging.example.com",
+            },
+            default: {
+              token: "op_live_xxx",
+              name: "Jane Admin",
+              companyName: "Acme Corp",
+            },
+          },
+        });
+
+        const result = await runCLI(["auth", "profiles"]);
+        assert.strictEqual(result.exitCode, 0);
+        assert.ok(result.stdout.includes("Saved CLI profiles:"));
+        assert.ok(result.stdout.includes("* default (active)"));
+        assert.ok(result.stdout.includes("- staging"));
+        assert.ok(result.stdout.includes("Status: Logged in"));
+        assert.ok(result.stdout.includes("Status: Not logged in"));
+        assert.ok(result.stdout.includes("Name: Jane Admin"));
+        assert.ok(result.stdout.includes("Company: Acme Corp"));
+        assert.ok(result.stdout.includes("Base URL: https://app.operately.com"));
+        assert.ok(result.stdout.includes("Base URL: https://staging.example.com"));
+      } finally {
+        clearAuthConfig();
+      }
     });
 
     it("shows error for invalid auth command", async () => {

@@ -14,8 +14,6 @@ interface LogCapture {
 
 function captureConsole(): LogCapture {
   const capture: LogCapture = { logs: [], errors: [] };
-  const origLog = console.log;
-  const origError = console.error;
 
   console.log = (msg?: unknown) => {
     capture.logs.push(String(msg));
@@ -95,6 +93,98 @@ describe("Auth Commands", () => {
 
     assert.strictEqual(result, 0);
     assert.ok(capture.logs.some((l) => l.includes("Status: Not logged in")));
+  });
+
+  it("profiles shows an empty state when no profiles are saved", async () => {
+    writeConfig({ activeProfile: "default", profiles: {} });
+
+    const capture = captureConsole();
+    const result = await executeAuthCommand({
+      action: "profiles",
+      flags: new Map(),
+      registry: { find: () => null, byKey: new Map(), endpoints: [], commandFor: () => "" },
+    });
+
+    assert.strictEqual(result, 0);
+    assert.ok(capture.logs.includes("No saved CLI profiles."));
+    assert.ok(capture.logs.some((l) => l.includes("operately auth login")));
+    assert.ok(capture.logs.some((l) => l.includes("operately auth create-company")));
+  });
+
+  it("profiles lists saved profiles with active profile first and metadata", async () => {
+    writeConfig({
+      activeProfile: "default",
+      profiles: {
+        staging: {
+          token: "",
+          baseUrl: "https://staging.example.com",
+        },
+        default: {
+          token: "op_live_xxx",
+          name: "Jane Admin",
+          companyName: "Acme Corp",
+        },
+        local: {
+          token: "op_local_xxx",
+          baseUrl: "http://localhost:4000",
+          name: "Local User",
+        },
+      },
+    });
+
+    const capture = captureConsole();
+    const result = await executeAuthCommand({
+      action: "profiles",
+      flags: new Map(),
+      registry: { find: () => null, byKey: new Map(), endpoints: [], commandFor: () => "" },
+    });
+
+    assert.strictEqual(result, 0);
+    assert.ok(capture.logs.includes("Saved CLI profiles:"));
+
+    const defaultIndex = capture.logs.findIndex((l) => l.includes("* default (active)"));
+    const localIndex = capture.logs.findIndex((l) => l.includes("- local"));
+    const stagingIndex = capture.logs.findIndex((l) => l.includes("- staging"));
+
+    assert.ok(defaultIndex > -1);
+    assert.ok(localIndex > -1);
+    assert.ok(stagingIndex > -1);
+    assert.ok(defaultIndex < localIndex);
+    assert.ok(localIndex < stagingIndex);
+
+    assert.ok(capture.logs.some((l) => l.includes("Status: Logged in")));
+    assert.ok(capture.logs.some((l) => l.includes("Status: Not logged in")));
+    assert.ok(capture.logs.some((l) => l.includes("Name: Jane Admin")));
+    assert.ok(capture.logs.some((l) => l.includes("Company: Acme Corp")));
+    assert.ok(capture.logs.some((l) => l.includes("Base URL: https://app.operately.com")));
+    assert.ok(capture.logs.some((l) => l.includes("Base URL: https://staging.example.com")));
+    assert.ok(capture.logs.some((l) => l.includes("Base URL: http://localhost:4000")));
+    assert.ok(capture.logs.some((l) => l.includes("Use `--profile <name>` with any command")));
+  });
+
+  it("profiles trims active profile before marking it active", async () => {
+    writeConfig({
+      activeProfile: " default ",
+      profiles: {
+        default: {
+          token: "op_live_xxx",
+        },
+        staging: {
+          token: "",
+        },
+      },
+    });
+
+    const capture = captureConsole();
+    const result = await executeAuthCommand({
+      action: "profiles",
+      flags: new Map(),
+      registry: { find: () => null, byKey: new Map(), endpoints: [], commandFor: () => "" },
+    });
+
+    assert.strictEqual(result, 0);
+    assert.ok(capture.logs.some((l) => l.includes("* default (active)")));
+    assert.ok(!capture.logs.some((l) => l.includes("- default")));
   });
 
   it("logout clears token from profile", async () => {

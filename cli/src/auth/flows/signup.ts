@@ -246,7 +246,7 @@ async function joinCompanyAndSaveProfile(
     bootstrapToken,
   )) as { company?: Company };
 
-  const profile = await resolveProfileName(profileFlag, d.askQuestion);
+  const profile = await resolveProfileName(config, profileFlag, d.askQuestion);
 
   return await createTokenAndSaveProfile({
     baseUrl: explicitBaseUrl,

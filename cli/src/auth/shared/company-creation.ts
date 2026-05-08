@@ -49,7 +49,7 @@ export async function createCompanyAndSaveProfile(input: CreateCompanyAndSavePro
   )) as { company?: Company };
   const company = requireCompany(result.company, "Company creation failed: no company returned.");
 
-  const profile = await resolveProfileName(input.profileFlag, input.deps.askQuestion);
+  const profile = await resolveProfileName(input.config, input.profileFlag, input.deps.askQuestion);
 
   return createTokenAndSaveProfile({
     baseUrl: input.explicitBaseUrl,
