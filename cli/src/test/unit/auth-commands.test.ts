@@ -162,6 +162,31 @@ describe("Auth Commands", () => {
     assert.ok(capture.logs.some((l) => l.includes("Use `--profile <name>` with any command")));
   });
 
+  it("profiles trims active profile before marking it active", async () => {
+    writeConfig({
+      activeProfile: " default ",
+      profiles: {
+        default: {
+          token: "op_live_xxx",
+        },
+        staging: {
+          token: "",
+        },
+      },
+    });
+
+    const capture = captureConsole();
+    const result = await executeAuthCommand({
+      action: "profiles",
+      flags: new Map(),
+      registry: { find: () => null, byKey: new Map(), endpoints: [], commandFor: () => "" },
+    });
+
+    assert.strictEqual(result, 0);
+    assert.ok(capture.logs.some((l) => l.includes("* default (active)")));
+    assert.ok(!capture.logs.some((l) => l.includes("- default")));
+  });
+
   it("logout clears token from profile", async () => {
     writeConfig({
       activeProfile: "default",

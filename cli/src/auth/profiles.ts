@@ -1,7 +1,8 @@
-import { DEFAULT_BASE_URL, type CliConfig } from "./config";
+import { DEFAULT_BASE_URL, DEFAULT_PROFILE, type CliConfig } from "./config";
 import { getOrderedProfileNames } from "./shared/helpers";
 
 export function executeAuthProfiles(config: CliConfig): number {
+  const activeProfile = config.activeProfile?.trim() || DEFAULT_PROFILE;
   const profileNames = getOrderedProfileNames(config);
 
   if (profileNames.length === 0) {
@@ -14,7 +15,7 @@ export function executeAuthProfiles(config: CliConfig): number {
 
   for (const profileName of profileNames) {
     const profile = config.profiles[profileName] ?? {};
-    const isActive = profileName === config.activeProfile;
+    const isActive = profileName === activeProfile;
     const marker = isActive ? "*" : "-";
     const label = isActive ? `${profileName} (active)` : profileName;
 
