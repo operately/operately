@@ -8,12 +8,20 @@ import FormattedTime from "@/components/FormattedTime";
 import classNames from "classnames";
 import {
   AvatarList,
+  ConfirmDialog,
   DivLink,
   IconBuilding,
   IconBuildingCommunity,
   IconInfoCircle,
   IconMail,
+  IconShieldLock,
+  IconTrash,
+  IconUser,
+  Menu,
+  MenuActionItem,
   Tabs,
+  showErrorToast,
+  showSuccessToast,
   Tooltip,
   useTabs,
 } from "turboui";
@@ -26,6 +34,7 @@ export function Page() {
   const tabs = useTabs("active", [
     { id: "active", label: "Active Companies", icon: <IconBuildingCommunity size={16} /> },
     { id: "all", label: "All Companies", icon: <IconBuilding size={16} /> },
+    { id: "accounts", label: "All Accounts", icon: <IconUser size={16} /> },
   ]);
 
   return (
@@ -47,6 +56,10 @@ export function Page() {
 function PageHeader({ activeTab }: { activeTab: string }) {
   if (activeTab === "active") {
     return <HeaderWithInfo />;
+  }
+
+  if (activeTab === "accounts") {
+    return <Paper.Header title="All Accounts" />;
   }
 
   return <Paper.Header title="All Companies" />;
@@ -79,8 +92,10 @@ function HeaderWithInfo() {
 function CompanyListContainer({ activeTab }: { activeTab: string }) {
   if (activeTab === "active") {
     return <ActiveCompanyList />;
-  } else {
+  } else if (activeTab === "all") {
     return <AllCompanyList />;
+  } else {
+    return <AllAccountList />;
   }
 }
 
@@ -106,6 +121,38 @@ function AllCompanyList() {
   const companies = companiesData?.companies || [];
 
   return <CompanyTable companies={companies} />;
+}
+
+function AllAccountList() {
+  const { data: accountsData, loading, error, refetch } = AdminApi.useGetAccounts({});
+
+  if (loading) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-content-accent">Loading accounts...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-red-500">Error loading accounts: {error.message}</p>
+      </div>
+    );
+  }
+
+  const accounts = accountsData?.accounts || [];
+
+  if (accounts.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-content-accent text-lg">No accounts found</p>
+      </div>
+    );
+  }
+
+  return <AccountTable accounts={accounts} refetch={refetch} />;
 }
 
 function ActiveCompanyList() {
@@ -144,7 +191,7 @@ function ActiveCompanyList() {
 function CompanyTable({ companies }: { companies: AdminApi.Company[] }) {
   return (
     <div>
-      <TableRow header>
+      <TableRow header gridTemplateColumns="0.5fr 4fr 1fr 1fr 1fr 1fr 1fr 1.5fr 1.5fr">
         <div>#</div>
         <div>Company</div>
         <div className="text-right">People</div>
@@ -157,7 +204,7 @@ function CompanyTable({ companies }: { companies: AdminApi.Company[] }) {
       </TableRow>
 
       {companies.map((company, index) => (
-        <TableRow key={company.id} linkTo={`/admin/companies/${company.id}`}>
+        <TableRow key={company.id} linkTo={`/admin/companies/${company.id}`} gridTemplateColumns="0.5fr 4fr 1fr 1fr 1fr 1fr 1fr 1.5fr 1.5fr">
           <div>{index + 1}</div>
           <div>{company.name}</div>
           <div className="text-right">{company.peopleCount}</div>
@@ -166,29 +213,125 @@ function CompanyTable({ companies }: { companies: AdminApi.Company[] }) {
           <div className="text-right">{company.projectsCount}</div>
 
           <div className="flex justify-end -mt-0.5">
-            <AvatarList people={company.owners!} size={20} maxElements={3} stacked />
+            <AvatarList people={company.owners ?? []} size={20} maxElements={3} stacked />
           </div>
 
           <div className="text-right">
-            {company.lastActivityAt && <FormattedTime time={company.lastActivityAt!} format="relative" />}
+            {company.lastActivityAt && <FormattedTime time={company.lastActivityAt} format="relative" />}
           </div>
 
           <div className="text-right">
-            <FormattedTime time={company.insertedAt!} format="relative" />
+            {company.insertedAt && <FormattedTime time={company.insertedAt} format="relative" />}
           </div>
         </TableRow>
       ))}
 
-      {window.appConfig.version && (
-        <div className="flex justify-start mt-6 text-xs">
-          <div className="bg-surface-dimmed px-3 py-1 rounded-full">Version: {window.appConfig.version}</div>
-        </div>
-      )}
+      <VersionBadge />
     </div>
   );
 }
 
-function TableRow({ header, children, linkTo }: { header?: boolean; children: React.ReactNode; linkTo?: string }) {
+function AccountTable({ accounts, refetch }: { accounts: AdminApi.Account[]; refetch: () => void }) {
+  const [accountToDelete, setAccountToDelete] = React.useState<AdminApi.Account | null>(null);
+  const [deleteAccount] = AdminApi.useDeleteAccount();
+
+  const closeDialog = () => setAccountToDelete(null);
+
+  const handleDeleteAccount = async () => {
+    if (!accountToDelete) return;
+
+    try {
+      const result = await deleteAccount({ accountId: accountToDelete.id });
+
+      if (!result.success) {
+        showErrorToast("Account deletion blocked", result.error || "Failed to delete account.");
+        return;
+      }
+
+      showSuccessToast("Account deleted", `${accountToDelete.fullName} has been deleted.`);
+      closeDialog();
+
+      if (accountToDelete.id === String(window.appConfig.account?.id)) {
+        window.location.assign("/log_in");
+      } else {
+        refetch();
+      }
+    } catch (error: any) {
+      const message = error?.response?.data?.message || "Failed to delete account.";
+      showErrorToast("Account deletion failed", message);
+    }
+  };
+
+  return (
+    <div>
+      <TableRow header gridTemplateColumns="0.5fr 2fr 2.5fr 1fr 1fr 1fr 1.5fr 0.75fr">
+        <div>#</div>
+        <div>Account</div>
+        <div>Email</div>
+        <div className="text-center">Companies</div>
+        <div className="text-center">Owned Companies</div>
+        <div className="text-center">Site Admin</div>
+        <div className="text-center">Created At</div>
+        <div className="text-right">Actions</div>
+      </TableRow>
+
+      {accounts.map((account, index) => (
+        <TableRow key={account.id} gridTemplateColumns="0.5fr 2fr 2.5fr 1fr 1fr 1fr 1.5fr 0.75fr">
+          <div>{index + 1}</div>
+          <div className="font-medium">{account.fullName}</div>
+          <div className="text-content-accent">{account.email}</div>
+          <div className="text-center">{account.companiesCount}</div>
+          <div className="text-center">{account.ownedCompaniesCount}</div>
+          <div className="flex items-center justify-center gap-2">
+            {account.siteAdmin ? <IconShieldLock size={16} className="text-content-accent" /> : null}
+            <span>{account.siteAdmin ? "Yes" : "No"}</span>
+          </div>
+          <div className="text-center">
+            <FormattedTime time={account.insertedAt} format="relative" />
+          </div>
+          <div className="flex justify-end">
+            <Menu align="end" testId={`account-actions-${account.id}`}>
+              <MenuActionItem
+                icon={IconTrash}
+                danger
+                onClick={() => setAccountToDelete(account)}
+                testId={`delete-account-${account.id}`}
+              >
+                Delete account
+              </MenuActionItem>
+            </Menu>
+          </div>
+        </TableRow>
+      ))}
+
+      <VersionBadge />
+
+      <ConfirmDialog
+        isOpen={accountToDelete !== null}
+        onCancel={closeDialog}
+        onConfirm={handleDeleteAccount}
+        title="Delete account"
+        message={accountToDelete ? `Delete ${accountToDelete.fullName}? This will suspend all linked people, anonymize personal data, and revoke access permanently.` : ""}
+        confirmText="Delete account"
+        cancelText="Cancel"
+        variant="danger"
+        testId="delete-account-confirmation"
+      />
+    </div>
+  );
+}
+
+function TableRow({
+  header,
+  children,
+  linkTo,
+  gridTemplateColumns,
+}: {
+  header?: boolean;
+  children: React.ReactNode;
+  linkTo?: string;
+  gridTemplateColumns: string;
+}) {
   const className = classNames("grid pt-3 pb-2 items-center gap-2", {
     "border-y border-stroke-base": header,
     "border-b border-stroke-base": !header,
@@ -197,16 +340,26 @@ function TableRow({ header, children, linkTo }: { header?: boolean; children: Re
     "-mx-4 px-4": true,
     "bg-surface-dimmed": header,
     "hover:bg-surface-highlight": !header,
-    "cursor-pointer": !header,
+    "cursor-pointer": !header && !!linkTo,
   });
 
-  const style = { gridTemplateColumns: "0.5fr 4fr 1fr 1fr 1fr 1fr 1fr 1.5fr 1.5fr" };
+  const style = { gridTemplateColumns };
 
   if (linkTo) {
     return <DivLink to={linkTo} className={className} style={style} children={children} />;
   } else {
     return <div className={className} style={style} children={children} />;
   }
+}
+
+function VersionBadge() {
+  if (!window.appConfig.version) return null;
+
+  return (
+    <div className="flex justify-start mt-6 text-xs">
+      <div className="bg-surface-dimmed px-3 py-1 rounded-full">Version: {window.appConfig.version}</div>
+    </div>
+  );
 }
 
 function Options() {

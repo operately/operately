@@ -24,6 +24,10 @@ defmodule Operately.People do
     Repo.aggregate(Account, :count, :id)
   end
 
+  def list_accounts do
+    Repo.all(from a in Account, order_by: [desc: a.inserted_at])
+  end
+
   def get_account!(id), do: Repo.get!(Account, id)
   def get_person(id), do: Repo.get(Person, id)
   def get_person!(id), do: Repo.get!(Person, id)
@@ -291,7 +295,7 @@ defmodule Operately.People do
         join: p in assoc(t, :person),
         join: a in assoc(p, :account),
         join: c in assoc(p, :company),
-        where: t.token_hash == ^hash and p.suspended == false and is_nil(p.suspended_at),
+        where: t.token_hash == ^hash and p.suspended == false and is_nil(p.suspended_at) and is_nil(a.deleted_at),
         select: %{token: t, person: p, account: a, company: c}
       )
       |> Repo.one()
