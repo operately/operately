@@ -31,6 +31,16 @@ defmodule OperatelyEE.AdminApi.Types do
     field :title, :string
   end
 
+  object :account do
+    field :id, :string
+    field :full_name, :string
+    field :email, :string
+    field :site_admin, :boolean
+    field :companies_count, :integer
+    field :owned_companies_count, :integer
+    field :inserted_at, :datetime
+  end
+
   object :activity do
     field? :id, :string
     field? :action, :string
