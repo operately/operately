@@ -119,6 +119,16 @@ export function useMutation<InputT, ResultT>(
 
 export type CompanyId = string;
 
+export interface Account {
+  id: string;
+  fullName: string;
+  email: string;
+  siteAdmin: boolean;
+  companiesCount: number;
+  ownedCompaniesCount: number;
+  insertedAt: string;
+}
+
 export interface Activity {
   id?: string;
   action?: string;
@@ -166,6 +176,12 @@ export interface SmtpSettings {
 
 export type EmailProvider = "smtp" | "sendgrid";
 
+export interface GetAccountsInput {}
+
+export interface GetAccountsResult {
+  accounts: Account[];
+}
+
 export interface GetActiveCompaniesInput {}
 
 export interface GetActiveCompaniesResult {
@@ -198,6 +214,16 @@ export interface GetEmailSettingsInput {}
 
 export interface GetEmailSettingsResult {
   emailSettings: EmailSettings;
+}
+
+export interface DeleteAccountInput {
+  accountId: string;
+}
+
+export interface DeleteAccountResult {
+  success: boolean;
+  error?: string;
+  blockingCompanyNames?: string[];
 }
 
 export interface EnableFeatureInput {
@@ -241,6 +267,10 @@ export interface UpdateEmailSettingsResult {
 class ApiNamespaceRoot {
   constructor(private client: ApiClient) {}
 
+  async getAccounts(input: GetAccountsInput): Promise<GetAccountsResult> {
+    return this.client.get("/get_accounts", input);
+  }
+
   async getActiveCompanies(input: GetActiveCompaniesInput): Promise<GetActiveCompaniesResult> {
     return this.client.get("/get_active_companies", input);
   }
@@ -259,6 +289,10 @@ class ApiNamespaceRoot {
 
   async getEmailSettings(input: GetEmailSettingsInput): Promise<GetEmailSettingsResult> {
     return this.client.get("/get_email_settings", input);
+  }
+
+  async deleteAccount(input: DeleteAccountInput): Promise<DeleteAccountResult> {
+    return this.client.post("/delete_account", input);
   }
 
   async enableFeature(input: EnableFeatureInput): Promise<EnableFeatureResult> {
@@ -325,6 +359,10 @@ export class ApiClient {
     }
   }
 
+  getAccounts(input: GetAccountsInput): Promise<GetAccountsResult> {
+    return this.apiNamespaceRoot.getAccounts(input);
+  }
+
   getActiveCompanies(input: GetActiveCompaniesInput): Promise<GetActiveCompaniesResult> {
     return this.apiNamespaceRoot.getActiveCompanies(input);
   }
@@ -345,6 +383,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.getEmailSettings(input);
   }
 
+  deleteAccount(input: DeleteAccountInput): Promise<DeleteAccountResult> {
+    return this.apiNamespaceRoot.deleteAccount(input);
+  }
+
   enableFeature(input: EnableFeatureInput): Promise<EnableFeatureResult> {
     return this.apiNamespaceRoot.enableFeature(input);
   }
@@ -360,6 +402,9 @@ export class ApiClient {
 
 const defaultApiClient = new ApiClient();
 
+export async function getAccounts(input: GetAccountsInput): Promise<GetAccountsResult> {
+  return defaultApiClient.getAccounts(input);
+}
 export async function getActiveCompanies(input: GetActiveCompaniesInput): Promise<GetActiveCompaniesResult> {
   return defaultApiClient.getActiveCompanies(input);
 }
@@ -375,6 +420,9 @@ export async function getCompany(input: GetCompanyInput): Promise<GetCompanyResu
 export async function getEmailSettings(input: GetEmailSettingsInput): Promise<GetEmailSettingsResult> {
   return defaultApiClient.getEmailSettings(input);
 }
+export async function deleteAccount(input: DeleteAccountInput): Promise<DeleteAccountResult> {
+  return defaultApiClient.deleteAccount(input);
+}
 export async function enableFeature(input: EnableFeatureInput): Promise<EnableFeatureResult> {
   return defaultApiClient.enableFeature(input);
 }
@@ -383,6 +431,10 @@ export async function sendTestEmail(input: SendTestEmailInput): Promise<SendTest
 }
 export async function updateEmailSettings(input: UpdateEmailSettingsInput): Promise<UpdateEmailSettingsResult> {
   return defaultApiClient.updateEmailSettings(input);
+}
+
+export function useGetAccounts(input: GetAccountsInput): UseQueryHookResult<GetAccountsResult> {
+  return useQuery<GetAccountsResult>(() => defaultApiClient.getAccounts(input));
 }
 
 export function useGetActiveCompanies(input: GetActiveCompaniesInput): UseQueryHookResult<GetActiveCompaniesResult> {
@@ -405,6 +457,10 @@ export function useGetEmailSettings(input: GetEmailSettingsInput): UseQueryHookR
   return useQuery<GetEmailSettingsResult>(() => defaultApiClient.getEmailSettings(input));
 }
 
+export function useDeleteAccount(): UseMutationHookResult<DeleteAccountInput, DeleteAccountResult> {
+  return useMutation<DeleteAccountInput, DeleteAccountResult>((input) => defaultApiClient.deleteAccount(input));
+}
+
 export function useEnableFeature(): UseMutationHookResult<EnableFeatureInput, EnableFeatureResult> {
   return useMutation<EnableFeatureInput, EnableFeatureResult>((input) => defaultApiClient.enableFeature(input));
 }
@@ -422,6 +478,8 @@ export function useUpdateEmailSettings(): UseMutationHookResult<UpdateEmailSetti
 export default {
   default: defaultApiClient,
 
+  getAccounts,
+  useGetAccounts,
   getActiveCompanies,
   useGetActiveCompanies,
   getActivities,
@@ -432,6 +490,8 @@ export default {
   useGetCompany,
   getEmailSettings,
   useGetEmailSettings,
+  deleteAccount,
+  useDeleteAccount,
   enableFeature,
   useEnableFeature,
   sendTestEmail,

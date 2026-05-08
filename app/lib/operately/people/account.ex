@@ -17,6 +17,7 @@ defmodule Operately.People.Account do
     field :theme, Ecto.Enum, values: @valid_themes, default: :system
 
     request_info()
+    soft_delete()
     timestamps()
   end
 
@@ -127,6 +128,9 @@ defmodule Operately.People.Account do
   def is_site_admin?(account) do
     account.site_admin
   end
+
+  def deleted?(%__MODULE__{deleted_at: nil}), do: false
+  def deleted?(%__MODULE__{}), do: true
 
   @doc """
   Verifies the password.
