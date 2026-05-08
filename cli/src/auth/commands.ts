@@ -12,6 +12,7 @@ import { executeAuthBootstrap } from "./bootstrap";
 import { runSignupFlow } from "./flows/signup";
 import { runJoinInviteFlow } from "./flows/join-invite";
 import { runCreateCompanyFlow } from "./flows/create-company";
+import { executeAuthProfiles } from "./profiles";
 import { fetchProfileMetadata } from "./shared/profile-metadata";
 import type { AuthAction } from "../core/parser-types";
 import type { EndpointRegistry } from "../commands/registry";
@@ -43,6 +44,10 @@ export async function executeAuthCommand(input: AuthExecutionInput): Promise<num
 
   if (input.action === "status") {
     return executeAuthStatus(input.flags, config);
+  }
+
+  if (input.action === "profiles") {
+    return executeAuthProfiles(config);
   }
 
   if (input.action === "logout") {

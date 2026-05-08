@@ -6,6 +6,7 @@ Use an API token to authenticate CLI commands.
 
 ```bash
 operately auth login --token <your-token>
+operately auth profiles
 operately auth status
 operately auth whoami
 ```
@@ -47,6 +48,8 @@ Good pattern: one profile per environment.
 - `default` profile -> production URL
 - `staging` profile -> staging URL
 - `local` profile -> localhost URL
+
+When an interactive auth flow asks for a profile name, pressing Enter uses the current active profile.
 
 Examples:
 
@@ -92,6 +95,23 @@ OPERATELY_BASE_URL=https://preview.operately.com operately get_me --profile stag
 # Uses explicit flag (highest priority)
 operately get_me --profile staging --base-url http://localhost:4000
 ```
+
+### Profiles
+
+List the profiles saved in local CLI config:
+
+```bash
+operately auth profiles
+```
+
+This command:
+
+- marks the active profile with `*`
+- shows whether each profile is currently logged in
+- shows saved user/company metadata when available
+- shows the effective saved base URL for each profile
+
+Use `--profile <name>` with any command to select one of the saved profiles explicitly.
 
 ### Status
 

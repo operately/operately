@@ -61,6 +61,7 @@ Authentication & Setup:
   auth signup [--base-url <url>] [--profile <name>]
   auth join [--invite-token <token>] [--base-url <url>] [--profile <name>]
   auth create-company [--base-url <url>] [--profile <name>]
+  auth profiles
   auth status [--profile <name>]
   auth whoami [--profile <name>]
   auth logout [--profile <name>]
@@ -170,6 +171,20 @@ const AUTH_COMMAND_HELP: Record<AuthAction, AuthCommandHelp> = {
       "operately auth create-company",
       "operately auth create-company --base-url https://staging.operately.com --profile staging",
     ],
+  },
+  profiles: {
+    description: [
+      "List saved CLI profiles",
+      "",
+      "  Shows the saved profiles stored in local CLI config, marks the",
+      "  active profile, and displays saved login metadata and base URLs.",
+      "",
+      "  Use `--profile <name>` with any other command to select one of the",
+      "  saved profiles explicitly.",
+    ],
+    usage: "operately auth profiles",
+    flags: ["(none)"],
+    examples: ["operately auth profiles"],
   },
   status: {
     description: "Show authentication status for current profile",
