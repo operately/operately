@@ -226,6 +226,15 @@ export interface DeleteAccountResult {
   blockingCompanyNames?: string[];
 }
 
+export interface DemoteAccountFromSiteAdminInput {
+  accountId: string;
+}
+
+export interface DemoteAccountFromSiteAdminResult {
+  success: boolean;
+  error?: string;
+}
+
 export interface EnableFeatureInput {
   companyId: CompanyId;
   feature: string;
@@ -233,6 +242,15 @@ export interface EnableFeatureInput {
 
 export interface EnableFeatureResult {
   success: boolean;
+}
+
+export interface PromoteAccountToSiteAdminInput {
+  accountId: string;
+}
+
+export interface PromoteAccountToSiteAdminResult {
+  success: boolean;
+  error?: string;
 }
 
 export interface SendTestEmailInput {
@@ -295,8 +313,16 @@ class ApiNamespaceRoot {
     return this.client.post("/delete_account", input);
   }
 
+  async demoteAccountFromSiteAdmin(input: DemoteAccountFromSiteAdminInput): Promise<DemoteAccountFromSiteAdminResult> {
+    return this.client.post("/demote_account_from_site_admin", input);
+  }
+
   async enableFeature(input: EnableFeatureInput): Promise<EnableFeatureResult> {
     return this.client.post("/enable_feature", input);
+  }
+
+  async promoteAccountToSiteAdmin(input: PromoteAccountToSiteAdminInput): Promise<PromoteAccountToSiteAdminResult> {
+    return this.client.post("/promote_account_to_site_admin", input);
   }
 
   async sendTestEmail(input: SendTestEmailInput): Promise<SendTestEmailResult> {
@@ -387,8 +413,16 @@ export class ApiClient {
     return this.apiNamespaceRoot.deleteAccount(input);
   }
 
+  demoteAccountFromSiteAdmin(input: DemoteAccountFromSiteAdminInput): Promise<DemoteAccountFromSiteAdminResult> {
+    return this.apiNamespaceRoot.demoteAccountFromSiteAdmin(input);
+  }
+
   enableFeature(input: EnableFeatureInput): Promise<EnableFeatureResult> {
     return this.apiNamespaceRoot.enableFeature(input);
+  }
+
+  promoteAccountToSiteAdmin(input: PromoteAccountToSiteAdminInput): Promise<PromoteAccountToSiteAdminResult> {
+    return this.apiNamespaceRoot.promoteAccountToSiteAdmin(input);
   }
 
   sendTestEmail(input: SendTestEmailInput): Promise<SendTestEmailResult> {
@@ -423,8 +457,18 @@ export async function getEmailSettings(input: GetEmailSettingsInput): Promise<Ge
 export async function deleteAccount(input: DeleteAccountInput): Promise<DeleteAccountResult> {
   return defaultApiClient.deleteAccount(input);
 }
+export async function demoteAccountFromSiteAdmin(
+  input: DemoteAccountFromSiteAdminInput,
+): Promise<DemoteAccountFromSiteAdminResult> {
+  return defaultApiClient.demoteAccountFromSiteAdmin(input);
+}
 export async function enableFeature(input: EnableFeatureInput): Promise<EnableFeatureResult> {
   return defaultApiClient.enableFeature(input);
+}
+export async function promoteAccountToSiteAdmin(
+  input: PromoteAccountToSiteAdminInput,
+): Promise<PromoteAccountToSiteAdminResult> {
+  return defaultApiClient.promoteAccountToSiteAdmin(input);
 }
 export async function sendTestEmail(input: SendTestEmailInput): Promise<SendTestEmailResult> {
   return defaultApiClient.sendTestEmail(input);
@@ -461,8 +505,26 @@ export function useDeleteAccount(): UseMutationHookResult<DeleteAccountInput, De
   return useMutation<DeleteAccountInput, DeleteAccountResult>((input) => defaultApiClient.deleteAccount(input));
 }
 
+export function useDemoteAccountFromSiteAdmin(): UseMutationHookResult<
+  DemoteAccountFromSiteAdminInput,
+  DemoteAccountFromSiteAdminResult
+> {
+  return useMutation<DemoteAccountFromSiteAdminInput, DemoteAccountFromSiteAdminResult>((input) =>
+    defaultApiClient.demoteAccountFromSiteAdmin(input),
+  );
+}
+
 export function useEnableFeature(): UseMutationHookResult<EnableFeatureInput, EnableFeatureResult> {
   return useMutation<EnableFeatureInput, EnableFeatureResult>((input) => defaultApiClient.enableFeature(input));
+}
+
+export function usePromoteAccountToSiteAdmin(): UseMutationHookResult<
+  PromoteAccountToSiteAdminInput,
+  PromoteAccountToSiteAdminResult
+> {
+  return useMutation<PromoteAccountToSiteAdminInput, PromoteAccountToSiteAdminResult>((input) =>
+    defaultApiClient.promoteAccountToSiteAdmin(input),
+  );
 }
 
 export function useSendTestEmail(): UseMutationHookResult<SendTestEmailInput, SendTestEmailResult> {
@@ -492,8 +554,12 @@ export default {
   useGetEmailSettings,
   deleteAccount,
   useDeleteAccount,
+  demoteAccountFromSiteAdmin,
+  useDemoteAccountFromSiteAdmin,
   enableFeature,
   useEnableFeature,
+  promoteAccountToSiteAdmin,
+  usePromoteAccountToSiteAdmin,
   sendTestEmail,
   useSendTestEmail,
   updateEmailSettings,

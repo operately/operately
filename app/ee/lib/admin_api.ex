@@ -16,6 +16,8 @@ defmodule OperatelyEE.AdminApi do
   query :get_email_settings, Q.GetEmailSettings
 
   mutation :delete_account, M.DeleteAccount
+  mutation :promote_account_to_site_admin, M.PromoteAccountToSiteAdmin
+  mutation :demote_account_from_site_admin, M.DemoteAccountFromSiteAdmin
   mutation :enable_feature, M.EnableFeature
   mutation :update_email_settings, M.UpdateEmailSettings
   mutation :send_test_email, M.SendTestEmail
