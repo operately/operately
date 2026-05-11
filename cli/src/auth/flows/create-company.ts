@@ -13,6 +13,19 @@ import type { EndpointRegistry } from "../../commands/registry";
 import type { CompanyCreationMode } from "../types";
 import type { ChildProcess } from "child_process";
 
+type CreateCompanyMethod = "password" | "emailCode" | "google";
+
+interface CreateCompanyFlagOptions {
+  baseUrl: string | null;
+  profile: string | null;
+  method: CreateCompanyMethod | null;
+  email: string | null;
+  password: string | null;
+  companyName: string | null;
+}
+
+class CreateCompanyFlagError extends Error {}
+
 interface CreateCompanyFlowDeps {
   askChoice: typeof askChoice;
   askQuestion: typeof askQuestion;
@@ -49,24 +62,34 @@ export async function runCreateCompanyFlow(
 ): Promise<number> {
   const d = { ...defaultDeps, ...deps };
 
-  if (readStringFlag(flags, "token")) {
+  if (flags.has("token")) {
     d.printError("`operately auth create-company` does not support `--token`. Use email/password, email code, or Google OAuth.");
     return 2;
   }
 
-  let baseUrl = readStringFlag(flags, "base-url");
-  const profileFlag = readStringFlag(flags, "profile");
+  let options = emptyCreateCompanyFlagOptions();
+  let baseUrl: string | null = null;
+  let profileFlag: string | null = null;
   let runtimeBaseUrl = baseUrl ?? DEFAULT_BASE_URL;
   let bootstrapToken = "";
   let timeoutMs = 30_000;
   let companyCreationMode: CompanyCreationMode = "create";
 
   try {
-    const method = await d.askChoice<"password" | "emailCode" | "google">("You need to authenticate to create a company. Choose a sign-in method:", [
-      { label: "Email and password", value: "password" },
-      { label: "Email code (no password)", value: "emailCode" },
-      { label: "Google OAuth (opens browser)", value: "google" },
-    ]);
+    options = parseCreateCompanyFlagOptions(flags);
+    validateCreateCompanyFlagOptions(flags, options);
+
+    baseUrl = options.baseUrl;
+    profileFlag = options.profile;
+    runtimeBaseUrl = baseUrl ?? DEFAULT_BASE_URL;
+
+    const method =
+      options.method ??
+      await d.askChoice<"password" | "emailCode" | "google">("You need to authenticate to create a company. Choose a sign-in method:", [
+        { label: "Email and password", value: "password" },
+        { label: "Email code (no password)", value: "emailCode" },
+        { label: "Google OAuth (opens browser)", value: "google" },
+      ]);
 
     if (!baseUrl) {
       const answer = await d.askQuestion(`Base URL for the Operately instance (default: ${DEFAULT_BASE_URL}):`);
@@ -87,12 +110,17 @@ export async function runCreateCompanyFlow(
         askQuestion: d.askQuestion,
         askPassword: d.askPassword,
         callInternalMutation: d.callInternalMutation,
+      }, {
+        email: options.email ?? undefined,
+        password: options.password ?? undefined,
       });
       bootstrapToken = result.bootstrapToken;
     } else if (method === "emailCode") {
       const result = await runEmailCodeFlow(runtime.baseUrl, {
         askQuestion: d.askQuestion,
         callInternalMutation: d.callInternalMutation,
+      }, {
+        email: options.email ?? undefined,
       });
       bootstrapToken = result.bootstrapToken;
     } else {
@@ -104,6 +132,11 @@ export async function runCreateCompanyFlow(
       bootstrapToken = result.bootstrapToken;
     }
   } catch (error) {
+    if (error instanceof CreateCompanyFlagError) {
+      d.printError(error.message);
+      return 2;
+    }
+
     return handleBootstrapError(error, runtimeBaseUrl, d.printError);
   }
 
@@ -117,6 +150,7 @@ export async function runCreateCompanyFlow(
       timeoutMs,
       bootstrapToken,
       mode: companyCreationMode,
+      companyName: options.companyName,
       deps: {
         askQuestion: d.askQuestion,
         callInternalMutation: d.callInternalMutation,
@@ -151,10 +185,73 @@ export async function runCreateCompanyFlow(
   }
 }
 
+function parseCreateCompanyFlagOptions(flags: Map<string, unknown[]>): CreateCompanyFlagOptions {
+  return {
+    baseUrl: readStringFlag(flags, "base-url"),
+    profile: readStringFlag(flags, "profile"),
+    method: normalizeCreateCompanyMethod(readStringFlag(flags, "method")),
+    email: readStringFlag(flags, "email"),
+    password: readStringFlag(flags, "password"),
+    companyName: readStringFlag(flags, "company-name"),
+  };
+}
+
+function validateCreateCompanyFlagOptions(
+  flags: Map<string, unknown[]>,
+  options: Pick<CreateCompanyFlagOptions, "method">,
+): void {
+  if (options.method === "google" && (flags.has("email") || flags.has("password"))) {
+    throw new CreateCompanyFlagError("`--method google` cannot be combined with `--email` or `--password`.");
+  }
+
+  if (options.method === "emailCode" && flags.has("password")) {
+    throw new CreateCompanyFlagError("`--method email-code` cannot be combined with `--password`.");
+  }
+}
+
+function normalizeCreateCompanyMethod(value: string | null): CreateCompanyMethod | null {
+  if (value === null) return null;
+
+  const normalized = value.trim().toLowerCase();
+
+  if (normalized === "email-password" || normalized === "password") {
+    return "password";
+  }
+
+  if (normalized === "email-code" || normalized === "emailcode") {
+    return "emailCode";
+  }
+
+  if (normalized === "google") {
+    return "google";
+  }
+
+  throw new CreateCompanyFlagError("Invalid value for `--method`. Use `email-password`, `email-code`, or `google`.");
+}
+
+function emptyCreateCompanyFlagOptions(): CreateCompanyFlagOptions {
+  return {
+    baseUrl: null,
+    profile: null,
+    method: null,
+    email: null,
+    password: null,
+    companyName: null,
+  };
+}
+
 function readStringFlag(flags: Map<string, unknown[]>, name: string): string | null {
   const value = flags.get(name)?.at(-1);
-  if (typeof value === "string") return value;
-  return null;
+
+  if (value === undefined) {
+    return null;
+  }
+
+  if (typeof value === "string") {
+    return value;
+  }
+
+  throw new CreateCompanyFlagError(`Flag \`--${name}\` requires a value.`);
 }
 
 function formatApiMessage(error: ApiError): string {

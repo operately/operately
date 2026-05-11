@@ -72,9 +72,10 @@ function mockOpen(_url: string): Promise<ChildProcess | boolean | undefined> {
 function createMockAskChoice(sequence: Array<"password" | "emailCode" | "google" | boolean | { id: string; name: string }>) {
   let index = 0;
   return async function askChoice<T>(
-    _prompt: string,
+    prompt: string,
     _choices: { label: string; value: T }[],
   ): Promise<T> {
+    askedPrompts.push(prompt);
     const val = sequence[index++];
     return val as T;
   };
@@ -351,6 +352,168 @@ describe("runJoinInviteFlow", () => {
     });
   });
 
+  it("uses password flags for a returning personal invite so no auth prompts are required", async () => {
+    calls.length = 0;
+    responses = [
+      { invite_link: { type: "personal" } },
+      { invite_link: { company: { id: "company-1", name: "Test Co" } }, member: { email: "user@example.com", has_open_invitation: false } },
+      { status: "authenticated", companies: [{ id: "company-1", name: "Test Co" }], bootstrap_token: "bt-flags-personal" },
+      { token: "api-flags-personal", company: { id: "company-1", name: "Test Co" } },
+      { me: { full_name: "User", email: "user@example.com" } },
+    ];
+    promptQueue = [];
+    askedPrompts = [];
+
+    const exitCode = await runJoinInviteFlow(
+      makeFlags({
+        "invite-token": "flag-token",
+        "base-url": "https://example.com",
+        profile: "default",
+        method: "password",
+        email: "user@example.com",
+        password: "password123",
+      }),
+      emptyConfig,
+      mockRegistry,
+      {
+        askQuestion: nextPrompt,
+        askPassword: nextPrompt,
+        askChoice: createMockAskChoice([]),
+        callInternalMutation: mockMutation,
+        callInternalQuery: mockQuery,
+        callEndpoint: mockEndpoint,
+        openUrl: mockOpen,
+        printError: () => {},
+        printInfo: () => {},
+        printSuccess: () => {},
+        saveProfile: (c) => c,
+        writeConfig: () => {},
+        resolveRuntimeOptions: (_c, opts) => ({
+          baseUrl: opts.baseUrl || "https://app.operately.com",
+          token: opts.token || null,
+          profile: opts.profile || "default",
+          timeoutMs: 30000,
+        }),
+      },
+    );
+
+    assert.strictEqual(exitCode, 0);
+    assert.deepStrictEqual(askedPrompts, []);
+
+    const authPasswordCall = calls.find((c) => c.path === cliAuth.authPassword);
+    assert.ok(authPasswordCall);
+    assert.deepStrictEqual(authPasswordCall!.inputs, {
+      email: "user@example.com",
+      password: "password123",
+      invite_token: "flag-token",
+    });
+  });
+
+  it("uses email-code flags for a returning personal invite so only the verification code prompt remains", async () => {
+    calls.length = 0;
+    responses = [
+      { invite_link: { type: "personal" } },
+      { invite_link: { company: { id: "company-1", name: "Test Co" } }, member: { email: "user@example.com", has_open_invitation: false } },
+      {},
+      { status: "authenticated", companies: [{ id: "company-1", name: "Test Co" }], bootstrap_token: "bt-email-flags-personal" },
+      { token: "api-email-flags-personal", company: { id: "company-1", name: "Test Co" } },
+      { me: { full_name: "User", email: "user@example.com" } },
+    ];
+    promptQueue = ["ABC123"];
+    askedPrompts = [];
+
+    const exitCode = await runJoinInviteFlow(
+      makeFlags({
+        "invite-token": "flag-token",
+        "base-url": "https://example.com",
+        profile: "default",
+        method: "email-code",
+        email: "user@example.com",
+      }),
+      emptyConfig,
+      mockRegistry,
+      {
+        askQuestion: nextPrompt,
+        askPassword: nextPrompt,
+        askChoice: createMockAskChoice([]),
+        callInternalMutation: mockMutation,
+        callInternalQuery: mockQuery,
+        callEndpoint: mockEndpoint,
+        openUrl: mockOpen,
+        printError: () => {},
+        printInfo: () => {},
+        printSuccess: () => {},
+        saveProfile: (c) => c,
+        writeConfig: () => {},
+        resolveRuntimeOptions: (_c, opts) => ({
+          baseUrl: opts.baseUrl || "https://app.operately.com",
+          token: opts.token || null,
+          profile: opts.profile || "default",
+          timeoutMs: 30000,
+        }),
+      },
+    );
+
+    assert.strictEqual(exitCode, 0);
+    assert.deepStrictEqual(askedPrompts, ["A verification code was sent to your email. Enter the code:"]);
+  });
+
+  it("uses a password flag for first-time personal invites and skips confirmation prompts", async () => {
+    calls.length = 0;
+    responses = [
+      { invite_link: { type: "personal" } },
+      { invite_link: { company: { id: "company-1", name: "Test Co" } }, member: { email: "new@example.com", has_open_invitation: true } },
+      { status: "authenticated", bootstrap_token: "bt-first-time-flags" },
+      { token: "api-first-time-flags", company: { id: "company-1", name: "Test Co" } },
+      { me: { full_name: "New User", email: "new@example.com" } },
+    ];
+    promptQueue = [];
+    askedPrompts = [];
+
+    const exitCode = await runJoinInviteFlow(
+      makeFlags({
+        "invite-token": "flag-token",
+        "base-url": "https://example.com",
+        profile: "default",
+        method: "password",
+        password: "password1",
+      }),
+      emptyConfig,
+      mockRegistry,
+      {
+        askQuestion: nextPrompt,
+        askPassword: nextPrompt,
+        askChoice: createMockAskChoice([]),
+        callInternalMutation: mockMutation,
+        callInternalQuery: mockQuery,
+        callEndpoint: mockEndpoint,
+        openUrl: mockOpen,
+        printError: () => {},
+        printInfo: () => {},
+        printSuccess: () => {},
+        saveProfile: (c) => c,
+        writeConfig: () => {},
+        resolveRuntimeOptions: (_c, opts) => ({
+          baseUrl: opts.baseUrl || "https://app.operately.com",
+          token: opts.token || null,
+          profile: opts.profile || "default",
+          timeoutMs: 30000,
+        }),
+      },
+    );
+
+    assert.strictEqual(exitCode, 0);
+    assert.deepStrictEqual(askedPrompts, []);
+
+    const joinCall = calls.find((c) => c.path === cliAuth.joinCompany);
+    assert.ok(joinCall);
+    assert.deepStrictEqual(joinCall!.inputs, {
+      token: "flag-token",
+      password: "password1",
+      password_confirmation: "password1",
+    });
+  });
+
   it("uses google flow for company-wide invite", async () => {
     calls.length = 0;
     responses = [
@@ -454,6 +617,170 @@ describe("runJoinInviteFlow", () => {
       code: "ABC123",
       invite_token: "my-token",
     });
+  });
+
+  it("uses company-wide password flags so no auth prompts are required", async () => {
+    calls.length = 0;
+    responses = [
+      { invite_link: { type: "company_wide", company: { id: "company-1", name: "Test Co" } } },
+      { status: "authenticated", companies: [{ id: "company-1", name: "Test Co" }], bootstrap_token: "bt-company-flags" },
+      { token: "api-company-flags", company: { id: "company-1", name: "Test Co" } },
+      { me: { full_name: "User", email: "user@example.com" } },
+    ];
+    promptQueue = [];
+    askedPrompts = [];
+
+    const exitCode = await runJoinInviteFlow(
+      makeFlags({
+        "invite-token": "flag-token",
+        "base-url": "https://example.com",
+        profile: "default",
+        method: "password",
+        email: "user@example.com",
+        password: "password123",
+        "company-name": "Test Co",
+      }),
+      emptyConfig,
+      mockRegistry,
+      {
+        askQuestion: nextPrompt,
+        askPassword: nextPrompt,
+        askChoice: createMockAskChoice([]),
+        callInternalMutation: mockMutation,
+        callInternalQuery: mockQuery,
+        callEndpoint: mockEndpoint,
+        openUrl: mockOpen,
+        printError: () => {},
+        printInfo: () => {},
+        printSuccess: () => {},
+        saveProfile: (c) => c,
+        writeConfig: () => {},
+        resolveRuntimeOptions: (_c, opts) => ({
+          baseUrl: opts.baseUrl || "https://app.operately.com",
+          token: opts.token || null,
+          profile: opts.profile || "default",
+          timeoutMs: 30000,
+        }),
+      },
+    );
+
+    assert.strictEqual(exitCode, 0);
+    assert.deepStrictEqual(askedPrompts, []);
+  });
+
+  it("rejects an unsupported --method value", async () => {
+    calls.length = 0;
+    responses = [];
+    promptQueue = [];
+    askedPrompts = [];
+
+    const exitCode = await runJoinInviteFlow(
+      makeFlags({ method: "github" }),
+      emptyConfig,
+      mockRegistry,
+      {
+        askQuestion: nextPrompt,
+        askPassword: nextPrompt,
+        askChoice: createMockAskChoice([]),
+        callInternalMutation: mockMutation,
+        callInternalQuery: mockQuery,
+        callEndpoint: mockEndpoint,
+        openUrl: mockOpen,
+        printError: () => {},
+        printInfo: () => {},
+        printSuccess: () => {},
+        saveProfile: (c) => c,
+        writeConfig: () => {},
+        resolveRuntimeOptions: (_c, opts) => ({
+          baseUrl: opts.baseUrl || "https://app.operately.com",
+          token: opts.token || null,
+          profile: opts.profile || "default",
+          timeoutMs: 30000,
+        }),
+      },
+    );
+
+    assert.strictEqual(exitCode, 2);
+    assert.deepStrictEqual(calls, []);
+  });
+
+  it("rejects google join when email flags are also passed", async () => {
+    calls.length = 0;
+    responses = [];
+    promptQueue = [];
+    askedPrompts = [];
+
+    const exitCode = await runJoinInviteFlow(
+      makeFlags({ method: "google", email: "user@example.com" }),
+      emptyConfig,
+      mockRegistry,
+      {
+        askQuestion: nextPrompt,
+        askPassword: nextPrompt,
+        askChoice: createMockAskChoice([]),
+        callInternalMutation: mockMutation,
+        callInternalQuery: mockQuery,
+        callEndpoint: mockEndpoint,
+        openUrl: mockOpen,
+        printError: () => {},
+        printInfo: () => {},
+        printSuccess: () => {},
+        saveProfile: (c) => c,
+        writeConfig: () => {},
+        resolveRuntimeOptions: (_c, opts) => ({
+          baseUrl: opts.baseUrl || "https://app.operately.com",
+          token: opts.token || null,
+          profile: opts.profile || "default",
+          timeoutMs: 30000,
+        }),
+      },
+    );
+
+    assert.strictEqual(exitCode, 2);
+    assert.deepStrictEqual(calls, []);
+  });
+
+  it("rejects email-code for first-time personal invites", async () => {
+    calls.length = 0;
+    responses = [
+      { invite_link: { type: "personal" } },
+      { invite_link: { company: { id: "company-1", name: "Test Co" } }, member: { email: "new@example.com", has_open_invitation: true } },
+    ];
+    promptQueue = [];
+    askedPrompts = [];
+
+    const exitCode = await runJoinInviteFlow(
+      makeFlags({
+        "invite-token": "flag-token",
+        "base-url": "https://example.com",
+        profile: "default",
+        method: "email-code",
+      }),
+      emptyConfig,
+      mockRegistry,
+      {
+        askQuestion: nextPrompt,
+        askPassword: nextPrompt,
+        askChoice: createMockAskChoice([]),
+        callInternalMutation: mockMutation,
+        callInternalQuery: mockQuery,
+        callEndpoint: mockEndpoint,
+        openUrl: mockOpen,
+        printError: () => {},
+        printInfo: () => {},
+        printSuccess: () => {},
+        saveProfile: (c) => c,
+        writeConfig: () => {},
+        resolveRuntimeOptions: (_c, opts) => ({
+          baseUrl: opts.baseUrl || "https://app.operately.com",
+          token: opts.token || null,
+          profile: opts.profile || "default",
+          timeoutMs: 30000,
+        }),
+      },
+    );
+
+    assert.strictEqual(exitCode, 2);
   });
 
   it("does not offer email-code for first-time personal invites", async () => {

@@ -59,8 +59,8 @@ ${namespaceLines}
 Authentication & Setup:
   auth login [--token <token>] [--method <email-password|email-code|google>] [--email <email>] [--password <password>] [--company-id <id>] [--company-name <name>] [--access-mode <read-only|full-access>] [--base-url <url>] [--profile <name>]
   auth signup [--method <email-password|google>] [--full-name <name>] [--email <email>] [--password <password>] [--next-step <create-company|join|later>] [--company-name <name>] [--invite-token <token>] [--base-url <url>] [--profile <name>]
-  auth join [--invite-token <token>] [--base-url <url>] [--profile <name>]
-  auth create-company [--base-url <url>] [--profile <name>]
+  auth join [--invite-token <token>] [--method <email-password|email-code|google>] [--email <email>] [--password <password>] [--company-id <id>] [--company-name <name>] [--base-url <url>] [--profile <name>]
+  auth create-company [--method <email-password|email-code|google>] [--email <email>] [--password <password>] [--company-name <name>] [--base-url <url>] [--profile <name>]
   auth profiles
   auth status [--profile <name>]
   auth whoami [--profile <name>]
@@ -177,42 +177,79 @@ const AUTH_COMMAND_HELP: Record<AuthAction, AuthCommandHelp> = {
     ],
   },
   join: {
-    usage: "operately auth join --invite-token <token> [--base-url <url>] [--profile <name>]",
+    usage: "operately auth join [--invite-token <token>] [--method <email-password|email-code|google>] [--email <email>] [--password <password>] [--company-id <id>] [--company-name <name>] [--base-url <url>] [--profile <name>]",
     description: [
       "Join a company using an invite token",
       "",
-      "  Interactive flow: run 'operately auth join' and follow prompts.",
-      "     You will be asked for an invite token, base URL, profile name,",
-      "     and authentication method (email+password, email code when available, or Google OAuth).",
+      "  Hybrid flow: run 'operately auth join' with no extra flags for the",
+      "  fully interactive invite flow, or pass any subset of join flags to skip",
+      "  only those prompts. Missing values are still asked interactively.",
+      "",
+      `  If --base-url is omitted, the CLI asks for it and defaults to ${DEFAULT_BASE_URL}.`,
+      "  If --method is omitted, the CLI asks which sign-in method to use after",
+      "  the invite has been resolved.",
+      "  If the invite already determines the company, any company-selection",
+      "  prompt is skipped automatically.",
+      "",
+      "  Unavoidable manual steps:",
+      "    - Google join always requires browser confirmation.",
+      "    - Email-code join always sends a verification code that must be entered manually.",
+      "",
+      "  First-time personal invites only support email/password or Google OAuth.",
+      "  All other join prompts can be skipped with flags.",
     ],
     flags: [
-      "--invite-token <token>  (skip prompt and use this token directly)",
+      "--invite-token <token>               (skip the invite-token prompt)",
+      "--method <email-password|email-code|google>  (accepted aliases: password, emailCode)",
+      "--email <email>                      (company-wide joins, or returning personal invites when it matches the invited email)",
+      "--password <password>                (password joins only; also skips password confirmation for first-time personal invites)",
+      "--company-id <id>                    (takes precedence over --company-name when company selection is needed)",
+      "--company-name <name>                (used only when company selection is needed; must match exactly one authenticated company)",
       "--base-url <url>",
       "--profile <name>",
     ],
     examples: [
       "operately auth join",
       "operately auth join --invite-token abc123",
-      "operately auth join --invite-token abc123 --base-url https://staging.operately.com --profile staging",
+      "operately auth join --invite-token abc123 --method email-password --email user@example.com --password secret123456 --profile team",
+      "operately auth join --invite-token abc123 --method email-code --email user@example.com --profile team",
+      "operately auth join --invite-token abc123 --method google --profile team",
     ],
   },
   "create-company": {
-    usage: "operately auth create-company [--base-url <url>] [--profile <name>]",
+    usage: "operately auth create-company [--method <email-password|email-code|google>] [--email <email>] [--password <password>] [--company-name <name>] [--base-url <url>] [--profile <name>]",
     description: [
       "Authenticate, create a company, and save a full-access CLI profile",
       "",
-      "  Interactive flow: run 'operately auth create-company' and follow prompts.",
-      `     You will be asked for a base URL (default: ${DEFAULT_BASE_URL}),`,
-      "     an authentication method (email/password, email code, or Google OAuth),",
-      "     a company name, and then a profile name once the CLI can save it.",
+      "  Hybrid flow: run 'operately auth create-company' with no extra flags for the",
+      "  fully interactive flow, or pass any subset of create-company flags to",
+      "  skip only those prompts. Missing values are still asked interactively.",
+      "",
+      `  If --base-url is omitted, the CLI asks for it and defaults to ${DEFAULT_BASE_URL}.`,
+      "  If --method is omitted, the CLI asks which sign-in method to use.",
+      "",
+      "  Unavoidable manual steps:",
+      "    - Google create-company always requires browser confirmation.",
+      "    - Email-code create-company always sends a verification code that must be entered manually.",
+      "",
+      "  All other create-company prompts can be skipped with flags.",
       "",
       "  This command does not accept an API token because company creation",
       "  happens before a company-scoped token exists.",
     ],
-    flags: ["--base-url <url>", "--profile <name>"],
+    flags: [
+      "--method <email-password|email-code|google>  (accepted aliases: password, emailCode)",
+      "--email <email>                      (email/password and email-code create-company only)",
+      "--password <password>                (email/password create-company only)",
+      "--company-name <name>                (skip the company-name prompt)",
+      "--base-url <url>",
+      "--profile <name>",
+    ],
     examples: [
       "operately auth create-company",
-      "operately auth create-company --base-url https://staging.operately.com --profile staging",
+      "operately auth create-company --method email-password --email user@example.com --password secret123456 --company-name \"Acme Corp\" --profile team",
+      "operately auth create-company --method email-code --email user@example.com --company-name \"Acme Corp\" --profile team",
+      "operately auth create-company --method google --company-name \"Acme Corp\" --profile team",
     ],
   },
   profiles: {

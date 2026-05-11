@@ -60,6 +60,30 @@ defmodule Operately.Support.CliE2E.CreateCompanySteps do
     |> Map.put(:expected_password_prompts, [{"Password:", @password}])
   end
 
+  step :create_company_with_password_flags, ctx do
+    account = Map.fetch!(ctx, ctx.auth_account_key)
+
+    result =
+      run_cli(ctx, [
+        "auth",
+        "create-company",
+        "--method",
+        "email-password",
+        "--email",
+        account.email,
+        "--password",
+        @password,
+        "--company-name",
+        ctx.expected_company_name,
+        "--base-url",
+        ctx.cli_base_url,
+        "--profile",
+        ctx.profile
+      ])
+
+    Map.put(ctx, :cli_result, result)
+  end
+
   step :create_company_with_email_code, ctx do
     account = Map.fetch!(ctx, ctx.auth_account_key)
 
@@ -74,6 +98,34 @@ defmodule Operately.Support.CliE2E.CreateCompanySteps do
           {"A verification code was sent to your email. Enter the code:", Helpers.activation_code_response(account.email)},
           {"Company name:", "#{ctx.expected_company_name}\n"},
           {"Profile name (default: default):", "#{ctx.profile}\n"}
+        ]
+      )
+
+    Map.put(ctx, :cli_result, result)
+  end
+
+  step :create_company_with_email_code_flags, ctx do
+    account = Map.fetch!(ctx, ctx.auth_account_key)
+
+    result =
+      run_cli(
+        ctx,
+        [
+          "auth",
+          "create-company",
+          "--method",
+          "emailCode",
+          "--email",
+          account.email,
+          "--company-name",
+          ctx.expected_company_name,
+          "--base-url",
+          ctx.cli_base_url,
+          "--profile",
+          ctx.profile
+        ],
+        script: [
+          {"A verification code was sent to your email. Enter the code:", Helpers.activation_code_response(account.email)}
         ]
       )
 
@@ -96,6 +148,42 @@ defmodule Operately.Support.CliE2E.CreateCompanySteps do
       end)
 
     Map.put(ctx, :cli_task, task)
+  end
+
+  step :start_google_create_company_with_flags, ctx do
+    task =
+      Task.async(fn ->
+        run_cli(ctx, [
+          "auth",
+          "create-company",
+          "--method",
+          "google",
+          "--company-name",
+          ctx.expected_company_name,
+          "--base-url",
+          ctx.cli_base_url,
+          "--profile",
+          ctx.profile
+        ])
+      end)
+
+    Map.put(ctx, :cli_task, task)
+  end
+
+  step :create_company_with_invalid_hybrid_flags, ctx do
+    result =
+      run_cli(ctx, [
+        "auth",
+        "create-company",
+        "--method",
+        "google",
+        "--email",
+        "bad@example.com",
+        "--base-url",
+        ctx.cli_base_url
+      ])
+
+    Map.put(ctx, :cli_result, result)
   end
 
   step :complete_pending_google_create_company, ctx do
@@ -170,6 +258,30 @@ defmodule Operately.Support.CliE2E.CreateCompanySteps do
     company = Operately.Repo.get_by!(Operately.Companies.Company, name: ctx.expected_company_name)
 
     assert People.get_person(account, company)
+
+    ctx
+  end
+
+  step :assert_the_cli_output_contains, ctx, snippets do
+    Enum.each(snippets, fn snippet ->
+      assert ctx.cli_result.output =~ snippet
+    end)
+
+    ctx
+  end
+
+  step :assert_the_cli_output_does_not_contain, ctx, snippets do
+    Enum.each(snippets, fn snippet ->
+      refute ctx.cli_result.output =~ snippet
+    end)
+
+    ctx
+  end
+
+  step :assert_invalid_hybrid_flags_were_rejected, ctx do
+    assert ctx.cli_result.exit_code == 2
+    assert ctx.cli_result.output =~ "`--method google` cannot be combined with `--email` or `--password`."
+    refute File.exists?(cli_config_path(ctx))
 
     ctx
   end
