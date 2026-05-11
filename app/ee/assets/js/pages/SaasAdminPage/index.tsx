@@ -4,6 +4,7 @@ import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as AdminApi from "@/ee/admin_api";
 import * as React from "react";
 
+import { AccountActionsMenu, PendingAccountAction, useAccountActions } from "./AccountActionsMenu";
 import FormattedTime from "@/components/FormattedTime";
 import classNames from "classnames";
 import {
@@ -15,13 +16,8 @@ import {
   IconInfoCircle,
   IconMail,
   IconShieldLock,
-  IconTrash,
   IconUser,
-  Menu,
-  MenuActionItem,
   Tabs,
-  showErrorToast,
-  showSuccessToast,
   Tooltip,
   useTabs,
 } from "turboui";
@@ -232,35 +228,10 @@ function CompanyTable({ companies }: { companies: AdminApi.Company[] }) {
 }
 
 function AccountTable({ accounts, refetch }: { accounts: AdminApi.Account[]; refetch: () => void }) {
-  const [accountToDelete, setAccountToDelete] = React.useState<AdminApi.Account | null>(null);
-  const [deleteAccount] = AdminApi.useDeleteAccount();
+  const [pendingAction, setPendingAction] = React.useState<PendingAccountAction | null>(null);
 
-  const closeDialog = () => setAccountToDelete(null);
-
-  const handleDeleteAccount = async () => {
-    if (!accountToDelete) return;
-
-    try {
-      const result = await deleteAccount({ accountId: accountToDelete.id });
-
-      if (!result.success) {
-        showErrorToast("Account deletion blocked", result.error || "Failed to delete account.");
-        return;
-      }
-
-      showSuccessToast("Account deleted", `${accountToDelete.fullName} has been deleted.`);
-      closeDialog();
-
-      if (accountToDelete.id === String(window.appConfig.account?.id)) {
-        window.location.assign("/log_in");
-      } else {
-        refetch();
-      }
-    } catch (error: any) {
-      const message = error?.response?.data?.message || "Failed to delete account.";
-      showErrorToast("Account deletion failed", message);
-    }
-  };
+  const closeDialog = () => setPendingAction(null);
+  const { handleConfirmAction, dialogContent } = useAccountActions({ pendingAction, closeDialog, refetch });
 
   return (
     <div>
@@ -290,16 +261,12 @@ function AccountTable({ accounts, refetch }: { accounts: AdminApi.Account[]; ref
             <FormattedTime time={account.insertedAt} format="relative" />
           </div>
           <div className="flex justify-end">
-            <Menu align="end" testId={`account-actions-${account.id}`}>
-              <MenuActionItem
-                icon={IconTrash}
-                danger
-                onClick={() => setAccountToDelete(account)}
-                testId={`delete-account-${account.id}`}
-              >
-                Delete account
-              </MenuActionItem>
-            </Menu>
+            <AccountActionsMenu
+              account={account}
+              onPromote={() => setPendingAction({ type: "promote", account })}
+              onDemote={() => setPendingAction({ type: "demote", account })}
+              onDelete={() => setPendingAction({ type: "delete", account })}
+            />
           </div>
         </TableRow>
       ))}
@@ -307,15 +274,15 @@ function AccountTable({ accounts, refetch }: { accounts: AdminApi.Account[]; ref
       <VersionBadge />
 
       <ConfirmDialog
-        isOpen={accountToDelete !== null}
+        isOpen={pendingAction !== null}
         onCancel={closeDialog}
-        onConfirm={handleDeleteAccount}
-        title="Delete account"
-        message={accountToDelete ? `Delete ${accountToDelete.fullName}? This will suspend all linked people, anonymize personal data, and revoke access permanently.` : ""}
-        confirmText="Delete account"
+        onConfirm={handleConfirmAction}
+        title={dialogContent?.title || ""}
+        message={dialogContent?.message || ""}
+        confirmText={dialogContent?.confirmText || "Confirm"}
         cancelText="Cancel"
-        variant="danger"
-        testId="delete-account-confirmation"
+        variant={dialogContent?.variant || "default"}
+        testId={dialogContent?.testId || "account-action-confirmation"}
       />
     </div>
   );

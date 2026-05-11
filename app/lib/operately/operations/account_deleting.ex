@@ -7,6 +7,7 @@ defmodule Operately.Operations.AccountDeleting do
   alias Operately.People.AccountToken
   alias Operately.People.ApiToken
   alias Operately.People.CliAuthSession
+  alias Operately.Operations.AccountSiteAdminUpdating
   alias Operately.Repo
 
   @deleted_account_name "Deleted Account"
@@ -16,8 +17,7 @@ defmodule Operately.Operations.AccountDeleting do
   def run(%Account{} = account) do
     account = Repo.preload(account, :people)
 
-    with :ok <- ensure_not_deleted(account),
-         :ok <- ensure_not_last_site_admin(account),
+    with :ok <- AccountSiteAdminUpdating.ensure_can_remove_site_admin(account),
          :ok <- ensure_not_last_owner(account) do
       Multi.new()
       |> anonymize_people(account.people)
@@ -27,27 +27,6 @@ defmodule Operately.Operations.AccountDeleting do
       |> Multi.delete_all(:api_tokens, api_tokens_query(account.id))
       |> Repo.transaction()
       |> Repo.extract_result(:account)
-    end
-  end
-
-  defp ensure_not_deleted(account) do
-    if Account.deleted?(account), do: {:error, :not_found}, else: :ok
-  end
-
-  defp ensure_not_last_site_admin(%Account{site_admin: false}), do: :ok
-
-  defp ensure_not_last_site_admin(%Account{} = account) do
-    site_admin_count =
-      Repo.aggregate(
-        from(a in Account, where: a.site_admin == true and a.id != ^account.id),
-        :count,
-        :id
-      )
-
-    if site_admin_count == 0 do
-      {:error, :last_site_admin}
-    else
-      :ok
     end
   end
 
