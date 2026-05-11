@@ -18,6 +18,23 @@ import type { EndpointRegistry } from "../../commands/registry";
 import type { Company, CompanyCreationMode } from "../types";
 import type { ChildProcess } from "child_process";
 
+type SignupMethod = "password" | "google";
+type SignupNextStep = "create-company" | "join" | "later";
+
+interface SignupFlagOptions {
+  baseUrl: string | null;
+  profile: string | null;
+  method: SignupMethod | null;
+  fullName: string | null;
+  email: string | null;
+  password: string | null;
+  nextStep: SignupNextStep | null;
+  companyName: string | null;
+  inviteToken: string | null;
+}
+
+class SignupFlagError extends Error {}
+
 interface SignupFlowDeps {
   askQuestion: typeof askQuestion;
   askPassword: typeof askPassword;
@@ -54,16 +71,26 @@ export async function runSignupFlow(
 ): Promise<number> {
   const d = { ...defaultDeps, ...deps };
 
-  let baseUrl = readStringFlag(flags, "base-url");
-  const profileFlag = readStringFlag(flags, "profile");
+  let options: SignupFlagOptions;
+  let baseUrl: string | null = null;
+  let profileFlag: string | null = null;
   let runtimeBaseUrl = baseUrl ?? DEFAULT_BASE_URL;
   let companyCreationMode: CompanyCreationMode = "create";
 
   try {
-    const method = await d.askChoice<"password" | "google">("How would you like to sign up?", [
-      { label: "Email and password", value: "password" },
-      { label: "Google OAuth (opens browser)", value: "google" },
-    ]);
+    options = parseSignupFlagOptions(flags);
+    validateSignupFlagOptions(flags, options);
+
+    baseUrl = options.baseUrl;
+    profileFlag = options.profile;
+    runtimeBaseUrl = baseUrl ?? DEFAULT_BASE_URL;
+
+    const method =
+      options.method ??
+      await d.askChoice<SignupMethod>("How would you like to sign up?", [
+        { label: "Email and password", value: "password" },
+        { label: "Google OAuth (opens browser)", value: "google" },
+      ]);
 
     if (!baseUrl) {
       const answer = await d.askQuestion(
@@ -82,19 +109,21 @@ export async function runSignupFlow(
 
     const bootstrapToken =
       method === "password"
-        ? await runEmailSignup(runtime.baseUrl, d)
+        ? await runEmailSignup(runtime.baseUrl, d, options)
         : await runGoogleSignup(runtime.baseUrl, d);
 
     d.printSuccess("Account created.");
 
-    const nextStep = await d.askChoice<"create-company" | "join-invite" | "later">(
-      "What would you like to do next? You can also do this later with `operately auth create-company` or `operately auth join`.",
-      [
-        { label: "Create a company now", value: "create-company" },
-        { label: "Join a company with an invite token", value: "join-invite" },
-        { label: "Do this later", value: "later" },
-      ],
-    );
+    const nextStep =
+      options.nextStep ??
+      await d.askChoice<SignupNextStep>(
+        "What would you like to do next? You can also do this later with `operately auth create-company` or `operately auth join`.",
+        [
+          { label: "Create a company now", value: "create-company" },
+          { label: "Join a company with an invite token", value: "join" },
+          { label: "Do this later", value: "later" },
+        ],
+      );
 
     if (nextStep === "later") {
       d.printInfo("No CLI profile was saved because this account is not connected to a company yet.");
@@ -113,6 +142,7 @@ export async function runSignupFlow(
         timeoutMs: runtime.timeoutMs,
         bootstrapToken,
         mode: companyCreationMode,
+        companyName: options.companyName,
         deps: {
           askQuestion: d.askQuestion,
           callInternalMutation: d.callInternalMutation,
@@ -131,12 +161,18 @@ export async function runSignupFlow(
       runtime.baseUrl,
       runtime.timeoutMs,
       bootstrapToken,
+      options.inviteToken,
       d,
     );
   } catch (error) {
     if (error instanceof PromptCancelledError) {
       d.printError("Signup cancelled.");
       return 1;
+    }
+
+    if (error instanceof SignupFlagError) {
+      d.printError(error.message);
+      return 2;
     }
 
     if (error instanceof ApiError) {
@@ -167,10 +203,14 @@ export async function runSignupFlow(
   }
 }
 
-async function runEmailSignup(baseUrl: string, d: SignupFlowDeps): Promise<string> {
-  const fullName = await d.askQuestion("Full name:");
-  const email = await d.askQuestion("Email:");
-  const password = await askForMatchingPassword(d);
+async function runEmailSignup(
+  baseUrl: string,
+  d: SignupFlowDeps,
+  options: Pick<SignupFlagOptions, "fullName" | "email" | "password">,
+): Promise<string> {
+  const fullName = options.fullName ?? await d.askQuestion("Full name:");
+  const email = options.email ?? await d.askQuestion("Email:");
+  const password = options.password ?? await askForMatchingPassword(d);
 
   const checkResult = (await d.callInternalMutation(
     baseUrl,
@@ -236,13 +276,14 @@ async function joinCompanyAndSaveProfile(
   runtimeBaseUrl: string,
   timeoutMs: number,
   bootstrapToken: string,
+  inviteToken: string | null,
   d: SignupFlowDeps,
 ): Promise<number> {
-  const inviteToken = (await d.askQuestion("Invite token:")).trim();
+  const resolvedInviteToken = inviteToken ?? (await d.askQuestion("Invite token:")).trim();
   const result = (await d.callInternalMutation(
     runtimeBaseUrl,
     cliAuth.joinWithInvite,
-    { token: inviteToken },
+    { token: resolvedInviteToken },
     bootstrapToken,
   )) as { company?: Company };
 
@@ -267,8 +308,87 @@ async function joinCompanyAndSaveProfile(
   });
 }
 
+function parseSignupFlagOptions(flags: Map<string, unknown[]>): SignupFlagOptions {
+  return {
+    baseUrl: readStringFlag(flags, "base-url"),
+    profile: readStringFlag(flags, "profile"),
+    method: normalizeSignupMethod(readStringFlag(flags, "method")),
+    fullName: readStringFlag(flags, "full-name"),
+    email: readStringFlag(flags, "email"),
+    password: readStringFlag(flags, "password"),
+    nextStep: normalizeSignupNextStep(readStringFlag(flags, "next-step")),
+    companyName: readStringFlag(flags, "company-name"),
+    inviteToken: readStringFlag(flags, "invite-token"),
+  };
+}
+
+function validateSignupFlagOptions(
+  flags: Map<string, unknown[]>,
+  options: Pick<SignupFlagOptions, "method" | "nextStep">,
+): void {
+  if (options.method === "google" && (flags.has("full-name") || flags.has("email") || flags.has("password"))) {
+    throw new SignupFlagError("`--method google` cannot be combined with `--full-name`, `--email`, or `--password`.");
+  }
+
+  if (options.nextStep === "later" && (flags.has("company-name") || flags.has("invite-token"))) {
+    throw new SignupFlagError("`--next-step later` cannot be combined with `--company-name` or `--invite-token`.");
+  }
+
+  if (options.nextStep === "create-company" && flags.has("invite-token")) {
+    throw new SignupFlagError("`--next-step create-company` cannot be combined with `--invite-token`.");
+  }
+
+  if (options.nextStep === "join" && flags.has("company-name")) {
+    throw new SignupFlagError("`--next-step join` cannot be combined with `--company-name`.");
+  }
+}
+
+function normalizeSignupMethod(value: string | null): SignupMethod | null {
+  if (value === null) return null;
+
+  const normalized = value.trim().toLowerCase();
+
+  if (normalized === "email-password" || normalized === "password") {
+    return "password";
+  }
+
+  if (normalized === "google") {
+    return "google";
+  }
+
+  throw new SignupFlagError("Invalid value for `--method`. Use `email-password` or `google`.");
+}
+
+function normalizeSignupNextStep(value: string | null): SignupNextStep | null {
+  if (value === null) return null;
+
+  const normalized = value.trim().toLowerCase();
+
+  if (normalized === "create-company") {
+    return "create-company";
+  }
+
+  if (normalized === "join" || normalized === "join-invite") {
+    return "join";
+  }
+
+  if (normalized === "later") {
+    return "later";
+  }
+
+  throw new SignupFlagError("Invalid value for `--next-step`. Use `create-company`, `join`, or `later`.");
+}
+
 function readStringFlag(flags: Map<string, unknown[]>, name: string): string | null {
   const value = flags.get(name)?.at(-1);
-  if (typeof value === "string") return value;
-  return null;
+
+  if (value === undefined) {
+    return null;
+  }
+
+  if (typeof value === "string") {
+    return value;
+  }
+
+  throw new SignupFlagError(`Flag \`--${name}\` requires a value.`);
 }
