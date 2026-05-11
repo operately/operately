@@ -92,6 +92,16 @@ function createMockAskChoice(sequence: Array<"password" | "emailCode" | "google"
   };
 }
 
+function makeFlags(entries: Record<string, string>): Map<string, unknown[]> {
+  const flags = new Map<string, unknown[]>();
+
+  for (const [key, value] of Object.entries(entries)) {
+    flags.set(key, [value]);
+  }
+
+  return flags;
+}
+
 const registryStub = {
   find: (parts: string[]) => {
     if (parts[0] === "people" && parts[1] === "get_me") {
@@ -253,6 +263,134 @@ describe("runCreateCompanyFlow", () => {
     assert.strictEqual(saved.profiles["email-team"].name, "Email User");
   });
 
+  it("uses password flags so no prompts are required", async () => {
+    responses.push({ configured: true });
+    responses.push({
+      status: "no_companies",
+      companies: [],
+      bootstrap_token: "bootstrap_password_flags",
+    });
+    responses.push({ company: { id: "c-flags", name: "Flag Company" } });
+    responses.push({ token: "op_flags_token", company: { id: "c-flags", name: "Flag Company" } });
+    responses.push({ me: { full_name: "Existing User", email: "user@example.com" } });
+
+    const result = await runCreateCompanyFlow(
+      makeFlags({
+        method: "email-password",
+        email: "user@example.com",
+        password: "secret123456",
+        "company-name": "Flag Company",
+        "base-url": "https://custom.example.com",
+        profile: "work",
+      }),
+      emptyConfig,
+      registryStub,
+      makeDeps([]),
+    );
+
+    assert.strictEqual(result, 0);
+    assert.deepStrictEqual(askedPrompts, []);
+    assert.deepStrictEqual(calls[1].inputs, { email: "user@example.com", password: "secret123456" });
+    assert.strictEqual(calls[2].path, cliAuth.createCompany);
+    assert.deepStrictEqual(calls[2].inputs, { company_name: "Flag Company" });
+  });
+
+  it("uses email-code flags so only the verification code prompt remains", async () => {
+    promptQueue.push("ABC123");
+
+    responses.push({ configured: true });
+    responses.push({});
+    responses.push({
+      status: "no_companies",
+      companies: [],
+      bootstrap_token: "bootstrap_email_flags",
+    });
+    responses.push({ company: { id: "c-email-flags", name: "Email Flags Company" } });
+    responses.push({ token: "op_email_flags_token", company: { id: "c-email-flags", name: "Email Flags Company" } });
+    responses.push({ me: { full_name: "Email User", email: "user@example.com" } });
+
+    const result = await runCreateCompanyFlow(
+      makeFlags({
+        method: "emailCode",
+        email: "user@example.com",
+        "company-name": "Email Flags Company",
+        "base-url": "https://custom.example.com",
+        profile: "email-flags",
+      }),
+      emptyConfig,
+      registryStub,
+      makeDeps([]),
+    );
+
+    assert.strictEqual(result, 0);
+    assert.deepStrictEqual(askedPrompts, ["A verification code was sent to your email. Enter the code:"]);
+    assert.strictEqual(calls[1].path, cliAuth.requestEmailCode);
+    assert.deepStrictEqual(calls[1].inputs, { email: "user@example.com" });
+    assert.strictEqual(calls[2].path, cliAuth.authEmailCode);
+    assert.deepStrictEqual(calls[2].inputs, { email: "user@example.com", code: "ABC123" });
+  });
+
+  it("uses google flags so only browser confirmation remains", async () => {
+    responses.push({ configured: true });
+    responses.push({
+      status: "pending",
+      bootstrap_token: "bootstrap_google_flags",
+      login_url: "https://example.com/cli-login/123",
+      poll_interval_ms: 10,
+    });
+    responses.push({ status: "no_companies", companies: [] });
+    responses.push({ company: { id: "c-google-flags", name: "Google Flags Company" } });
+    responses.push({ token: "op_google_flags_token", company: { id: "c-google-flags", name: "Google Flags Company" } });
+    responses.push({ me: { full_name: "Google User", email: "google@example.com" } });
+
+    const result = await runCreateCompanyFlow(
+      makeFlags({
+        method: "google",
+        "company-name": "Google Flags Company",
+        "base-url": "https://custom.example.com",
+        profile: "google-flags",
+      }),
+      emptyConfig,
+      registryStub,
+      makeDeps([]),
+    );
+
+    assert.strictEqual(result, 0);
+    assert.deepStrictEqual(askedPrompts, []);
+    assert.strictEqual(calls[1].path, cliAuth.startGoogle);
+    assert.deepStrictEqual(calls[3].inputs, { company_name: "Google Flags Company" });
+  });
+
+  it("prompts only for the company name when auth flags are already provided", async () => {
+    promptQueue.push("Prompted Company");
+
+    responses.push({ configured: true });
+    responses.push({
+      status: "no_companies",
+      companies: [],
+      bootstrap_token: "bootstrap_prompt_company",
+    });
+    responses.push({ company: { id: "c-prompt", name: "Prompted Company" } });
+    responses.push({ token: "op_prompt_company_token", company: { id: "c-prompt", name: "Prompted Company" } });
+    responses.push({ me: { full_name: "Existing User", email: "user@example.com" } });
+
+    const result = await runCreateCompanyFlow(
+      makeFlags({
+        method: "password",
+        email: "user@example.com",
+        password: "secret123456",
+        "base-url": "https://custom.example.com",
+        profile: "prompt-company",
+      }),
+      emptyConfig,
+      registryStub,
+      makeDeps([]),
+    );
+
+    assert.strictEqual(result, 0);
+    assert.deepStrictEqual(askedPrompts, ["Company name:"]);
+  });
+
   it("uses setup_company when the instance is not configured", async () => {
     promptQueue.push("", "user@example.com", "secret123456", "Second Company", "work");
 
@@ -336,6 +474,45 @@ describe("runCreateCompanyFlow", () => {
     assert.strictEqual(result, 1);
     assert.ok(errorsPrinted.includes("Company creation cancelled."));
     assert.ok(!fs.existsSync(path.join(tmpDir, ".operately", "config.json")));
+  });
+
+  it("rejects an unsupported --method value", async () => {
+    const result = await runCreateCompanyFlow(
+      makeFlags({ method: "github" }),
+      emptyConfig,
+      registryStub,
+      makeDeps([]),
+    );
+
+    assert.strictEqual(result, 2);
+    assert.deepStrictEqual(calls, []);
+    assert.ok(errorsPrinted.some((msg) => msg.includes("Invalid value for `--method`")));
+  });
+
+  it("rejects google create-company when email flags are also passed", async () => {
+    const result = await runCreateCompanyFlow(
+      makeFlags({ method: "google", email: "user@example.com" }),
+      emptyConfig,
+      registryStub,
+      makeDeps([]),
+    );
+
+    assert.strictEqual(result, 2);
+    assert.deepStrictEqual(calls, []);
+    assert.ok(errorsPrinted.some((msg) => msg.includes("`--method google` cannot be combined")));
+  });
+
+  it("rejects email-code create-company when password is also passed", async () => {
+    const result = await runCreateCompanyFlow(
+      makeFlags({ method: "email-code", password: "secret123456" }),
+      emptyConfig,
+      registryStub,
+      makeDeps([]),
+    );
+
+    assert.strictEqual(result, 2);
+    assert.deepStrictEqual(calls, []);
+    assert.ok(errorsPrinted.some((msg) => msg.includes("`--method email-code` cannot be combined with `--password`")));
   });
 });
 
