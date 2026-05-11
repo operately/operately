@@ -279,7 +279,7 @@ async function joinCompanyAndSaveProfile(
   inviteToken: string | null,
   d: SignupFlowDeps,
 ): Promise<number> {
-  const resolvedInviteToken = inviteToken ?? (await d.askQuestion("Invite token:")).trim();
+  const resolvedInviteToken = (inviteToken ?? (await d.askQuestion("Invite token:"))).trim();
   const result = (await d.callInternalMutation(
     runtimeBaseUrl,
     cliAuth.joinWithInvite,

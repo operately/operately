@@ -70,6 +70,8 @@ export async function runJoinInviteFlow(
   try {
     if (!inviteToken) {
       inviteToken = (await d.askQuestion("Invite token:")).trim();
+    } else {
+      inviteToken = inviteToken.trim();
     }
 
     if (!baseUrl) {
