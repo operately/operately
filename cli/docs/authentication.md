@@ -75,25 +75,33 @@ Use `operately auth <command> --help` for the full flag list, accepted method al
 
 ### Login
 
-Save a token to a profile, and optionally set the API base URL for that profile:
+Log in interactively, with hybrid flags, or with a token:
+
+```bash
+operately auth login [--token <token>] [--method <email-password|email-code|google>] [--email <email>] [--password <password>] [--company-id <id>] [--company-name <name>] [--access-mode <read-only|full-access>] [--base-url <url>] [--profile <name>]
+```
+
+Two modes:
+
+**1. Hybrid login** — run with no extra flags for the fully interactive flow, or pass any subset of flags to suppress only those prompts:
+
+```bash
+# Fully interactive
+operately auth login
+
+# Suppress individual prompts
+operately auth login --method email-password --email user@example.com --password secret123456 --company-name "Acme Corp" --access-mode full-access
+```
+
+Unavoidable manual steps:
+- Google login always requires browser confirmation.
+- Email-code login always sends a verification code to the inbox that must be entered.
+
+**2. Quick token mode** — skip the bootstrap flow and log in directly with an existing token:
 
 ```bash
 operately auth login --token <token> [--base-url <url>] [--profile <name>]
 ```
-
-Use `--base-url` when your token should talk to a non-default environment (for example staging or local).
-
-If you omit `--base-url`, the CLI uses the default production URL:
-
-`https://app.operately.com`
-
-Good pattern: one profile per environment.
-
-- `default` profile -> production URL
-- `staging` profile -> staging URL
-- `local` profile -> localhost URL
-
-When an interactive auth flow asks for a profile name, pressing Enter uses the current active profile.
 
 Examples:
 
@@ -107,6 +115,16 @@ operately auth login --token op_staging_xxx --profile staging --base-url https:/
 # Local profile
 operately auth login --token op_local_xxx --profile local --base-url http://localhost:4000
 ```
+
+Use `--base-url` when your token should talk to a non-default environment. If omitted, the CLI defaults to `https://app.operately.com`.
+
+Good pattern: one profile per environment.
+
+- `default` profile -> production URL
+- `staging` profile -> staging URL
+- `local` profile -> localhost URL
+
+When an interactive auth flow asks for a profile name, pressing Enter uses the current active profile.
 
 #### How Base URL Is Resolved
 
