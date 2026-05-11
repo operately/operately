@@ -23,6 +23,28 @@ defmodule Operately.CliE2E.CreateCompanyTest do
   end
 
   @tag ownership_timeout: 60_000
+  test "password auth with flags skips optional prompts", ctx do
+    ctx
+    |> Steps.use_account_with_no_companies()
+    |> Steps.use_profile("create-company-password-flags")
+    |> Steps.set_the_company_name_to_create("Password Flags Company")
+    |> Steps.create_company_with_password_flags()
+    |> Steps.assert_the_cli_output_does_not_contain([
+      "You need to authenticate to create a company. Choose a sign-in method:",
+      "Base URL for the Operately instance",
+      "Email:",
+      "Password:",
+      "Company name:",
+      "Profile name (default: default):"
+    ])
+    |> Steps.assert_company_creation_succeeded()
+    |> Steps.assert_the_profile_was_saved()
+    |> Steps.assert_status_command_works()
+    |> Steps.assert_people_get_me_command_works()
+    |> Steps.assert_the_company_was_created_for_the_account()
+  end
+
+  @tag ownership_timeout: 60_000
   test "google auth creates a company for an existing account with no companies", ctx do
     ctx
     |> Steps.use_account_with_no_companies()
@@ -39,12 +61,62 @@ defmodule Operately.CliE2E.CreateCompanyTest do
   end
 
   @tag ownership_timeout: 60_000
+  test "google auth with flags only requires browser confirmation", ctx do
+    ctx
+    |> Steps.use_account_with_no_companies()
+    |> Steps.use_profile("create-company-google-flags")
+    |> Steps.set_the_company_name_to_create("Google Flags Company")
+    |> Steps.start_google_create_company_with_flags()
+    |> Steps.complete_pending_google_create_company()
+    |> Steps.wait_for_google_create_company_to_finish()
+    |> Steps.assert_the_cli_output_contains([
+      "Please sign in via Google:",
+      "Browser opened automatically."
+    ])
+    |> Steps.assert_the_cli_output_does_not_contain([
+      "You need to authenticate to create a company. Choose a sign-in method:",
+      "Base URL for the Operately instance",
+      "Company name:",
+      "Profile name (default: default):"
+    ])
+    |> Steps.assert_company_creation_succeeded()
+    |> Steps.assert_the_profile_was_saved()
+    |> Steps.assert_status_command_works()
+    |> Steps.assert_people_get_me_command_works()
+    |> Steps.assert_the_company_was_created_for_the_account()
+  end
+
+  @tag ownership_timeout: 60_000
   test "email-code auth creates a company for an existing account with no companies", ctx do
     ctx
     |> Steps.use_account_with_no_companies()
     |> Steps.use_profile("create-company-email-code")
     |> Steps.set_the_company_name_to_create("Email Code Bootstrap Company")
     |> Steps.create_company_with_email_code()
+    |> Steps.assert_company_creation_succeeded()
+    |> Steps.assert_the_profile_was_saved()
+    |> Steps.assert_status_command_works()
+    |> Steps.assert_people_get_me_command_works()
+    |> Steps.assert_the_company_was_created_for_the_account()
+  end
+
+  @tag ownership_timeout: 60_000
+  test "email-code auth with flags only leaves the verification code prompt", ctx do
+    ctx
+    |> Steps.use_account_with_no_companies()
+    |> Steps.use_profile("create-company-email-code-flags")
+    |> Steps.set_the_company_name_to_create("Email Code Flags Company")
+    |> Steps.create_company_with_email_code_flags()
+    |> Steps.assert_the_cli_output_contains([
+      "A verification code was sent to your email. Enter the code:"
+    ])
+    |> Steps.assert_the_cli_output_does_not_contain([
+      "You need to authenticate to create a company. Choose a sign-in method:",
+      "Base URL for the Operately instance",
+      "Email:",
+      "Company name:",
+      "Profile name (default: default):"
+    ])
     |> Steps.assert_company_creation_succeeded()
     |> Steps.assert_the_profile_was_saved()
     |> Steps.assert_status_command_works()
@@ -81,5 +153,18 @@ defmodule Operately.CliE2E.CreateCompanyTest do
     |> Steps.assert_status_command_works()
     |> Steps.assert_people_get_me_command_works()
     |> Steps.assert_the_company_was_created_for_the_account()
+  end
+
+  test "create-company rejects invalid hybrid flag combinations before prompting", ctx do
+    ctx
+    |> Steps.use_account_with_no_companies()
+    |> Steps.use_profile("create-company-invalid-flags")
+    |> Steps.create_company_with_invalid_hybrid_flags()
+    |> Steps.assert_the_cli_output_does_not_contain([
+      "You need to authenticate to create a company. Choose a sign-in method:",
+      "Email:",
+      "Company name:"
+    ])
+    |> Steps.assert_invalid_hybrid_flags_were_rejected()
   end
 end
