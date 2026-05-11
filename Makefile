@@ -199,8 +199,8 @@ test.app.js.build:
 test: test.init
 	@if [[ "$(FILE)" == assets/js* ]]; then \
 		$(MAKE) test.npm FILE=$(FILE); \
-	elif [[ "$(FILE)" == test/* ]] || [[ "$(FILE)" == ee/test/* ]]; then \
-		./devenv bash -c "cd app && mix test $(FILE)"; \
+	elif [[ "$(FILE)" == test/* ]] || [[ "$(FILE)" == ee/test/* ]] || [[ "$(FILE)" == app/test/* ]] || [[ "$(FILE)" == app/ee/test/* ]]; then \
+		./devenv bash -c "cd app && mix test $$(echo $(FILE) | sed 's|^app/||')"; \
 	else \
 		$(MAKE) test.all; \
 	fi
